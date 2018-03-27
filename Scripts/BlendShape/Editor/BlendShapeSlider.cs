@@ -23,7 +23,10 @@ namespace VRM
             }
 
             var oldClip = m_target.BlendShapeAvatar.GetClip(m_key);
-            /*var newClip = (BlendShapeClip)*/EditorGUILayout.ObjectField(m_key.ToString(), oldClip, typeof(BlendShapeClip), true);
+            GUI.enabled = false;
+            /*var newClip = (BlendShapeClip)*/
+            EditorGUILayout.ObjectField(m_key.ToString(), oldClip, typeof(BlendShapeClip), true);
+            GUI.enabled = true;
             /*
             if (oldClip != newClip)
             {

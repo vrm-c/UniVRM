@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UniGLTF;
 using UnityEditor;
@@ -106,7 +107,7 @@ namespace VRM
             m_target = (VRMBlendShapeProxy)target;
 
             if (m_target.BlendShapeAvatar == null) return;
-            m_loadClip = m_target.BlendShapeAvatar.GetClip(BlendShapePreset.Neutral.ToString());
+            m_currentClip = m_target.BlendShapeAvatar.GetClip(BlendShapePreset.Neutral.ToString());
 
             m_renderers = m_target.transform
                 .Traverse()
@@ -116,7 +117,7 @@ namespace VRM
                 ;
 
             m_sliders = m_target.BlendShapeAvatar.Clips
-                .Where(x => x!=null)
+                .Where(x => x != null)
                 .Select(x => new BlendShapeSlider(m_target, BlendShapeKey.CreateFrom(x)))
                 .ToList()
                 ;
@@ -127,7 +128,7 @@ namespace VRM
 
         private void OnDisable()
         {
-            if(m_mode==EditorMode.Editor)
+            if (m_mode == EditorMode.Editor)
             {
                 ClearBlendShape();
             }
@@ -202,26 +203,29 @@ namespace VRM
         #endregion
 
         #region EditorInspector
-        BlendShapeClip m_loadClip;
-        BlendShapeClip LoadClip
+        BlendShapeClip m_currentClip;
+        BlendShapeClip CurrentClip
         {
-            get { return m_loadClip; }
+            get { return m_currentClip; }
             set
             {
-                if (m_loadClip == value) return;
+                if (m_currentClip == value) return;
 
-                m_loadClip = value;
+                m_currentClip = value;
                 ClearBlendShape();
                 Apply();
             }
         }
         void Apply()
         {
-            if (m_loadClip != null)
+            if (m_currentClip != null)
             {
-                m_loadClip.Apply(m_target.transform, 1.0f);
+                m_currentClip.Apply(m_target.transform, 1.0f);
             }
         }
+
+        static String[] Presets = ((BlendShapePreset[])Enum.GetValues(typeof(BlendShapePreset)))
+            .Select(x => x.ToString()).ToArray();
 
         int m_preset;
         void EditorInspector(bool changed)
@@ -230,48 +234,62 @@ namespace VRM
             {
                 ClearBlendShape();
                 Apply();
-            }   
-            
+            }
+
+            m_target.BlendShapeAvatar = (BlendShapeAvatar)EditorGUILayout.ObjectField("BlendShapeAvatar",
+                m_target.BlendShapeAvatar, typeof(BlendShapeAvatar), false);
             if (m_target.BlendShapeAvatar == null) return;
 
-            if (GUILayout.Button("Clear"))
-            {
-                ClearBlendShape();
-            }
-
-            /*
-            if (GUILayout.Button("Create BlendShapeClip"))
-            {
-                CreateBlendShapeClip();
-            }
-            */
-
-            GUILayout.BeginHorizontal();
-            if (m_loadClip != null && GUILayout.Button("Apply"))
-            {
-                /*var loadClip = (BlendShapeClip)*/
-                EditorGUILayout.ObjectField("Load clip",
-                    LoadClip, typeof(BlendShapeClip), false);
-                string maxWeightString;
-                m_loadClip.Values = GetBindings(out maxWeightString);
-            }
-            GUILayout.EndHorizontal();
-
             // buttons
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Select BlendShapeClip", EditorStyles.boldLabel);
             var preset = GUILayout.SelectionGrid(m_preset, m_target.BlendShapeAvatar.Clips
-                .Where(x => x!=null)
+                .Where(x => x != null)
                 .Select(x => BlendShapeKey.CreateFrom(x).ToString()).ToArray(), 4);
             if (preset != m_preset)
             {
-                LoadClip = m_target.BlendShapeAvatar.Clips[preset];
+                CurrentClip = m_target.BlendShapeAvatar.Clips[preset];
                 m_preset = preset;
             }
 
-            EditorGUILayout.Space();
-
-            // sliders
-            if (m_loadClip != null)
+            // Add
+            if (GUILayout.Button("Add BlendShapeClip"))
             {
+                AddBlendShapeClip();
+            }
+
+            if (CurrentClip != null)
+            {
+                // clip
+                EditorGUILayout.Space();
+                EditorGUILayout.LabelField("CurrentClip", EditorStyles.boldLabel);
+
+                /*var loadClip = (BlendShapeClip)*/
+                GUI.enabled = false;
+                EditorGUILayout.ObjectField("Current clip",
+                    CurrentClip, typeof(BlendShapeClip), false);
+                GUI.enabled = true;
+
+                CurrentClip.Preset = (BlendShapePreset)EditorGUILayout.Popup("Preset", (int)CurrentClip.Preset, Presets);
+
+                CurrentClip.BlendShapeName = EditorGUILayout.TextField("BlendShapeName", CurrentClip.BlendShapeName);
+
+                // sliders
+                EditorGUILayout.Space();
+                EditorGUILayout.LabelField("BlendShapeValues", EditorStyles.boldLabel);
+
+                EditorGUILayout.BeginHorizontal();
+                if (GUILayout.Button("Clear"))
+                {
+                    ClearBlendShape();
+                }
+                if (CurrentClip != null && GUILayout.Button("Apply"))
+                {
+                    string maxWeightString;
+                    CurrentClip.Values = GetBindings(out maxWeightString);
+                }
+                EditorGUILayout.EndHorizontal();
+
                 foreach (var renderer in m_renderers)
                 {
                     var mesh = renderer.sharedMesh;
@@ -295,43 +313,63 @@ namespace VRM
             }
         }
 
+        void AddBlendShapeClip()
+        {
+            var dir = Path.GetDirectoryName(AssetDatabase.GetAssetPath(m_target.BlendShapeAvatar));
+            var path = EditorUtility.SaveFilePanel(
+                           "Create BlendShapeClip",
+                           dir,
+                           string.Format("BlendShapeClip#{0}.asset", m_target.BlendShapeAvatar.Clips.Count),
+                           "asset");
+            if (string.IsNullOrEmpty(path))
+            {
+                return;
+            }
+            path = path.ToUnityRelativePath();
+            Debug.LogFormat("{0}", path);
+            var clip = ScriptableObject.CreateInstance<BlendShapeClip>();
+            m_target.BlendShapeAvatar.Clips.Add(clip);
+            AssetDatabase.CreateAsset(clip, path);
+            AssetDatabase.ImportAsset(path);
+        }
+
         BlendShapeBinding[] GetBindings(out string _maxWeightName)
         {
             var maxWeight = 0.0f;
             var maxWeightName = "";
             // weightのついたblendShapeを集める
-            var values= m_renderers.SelectMany(x =>
-            {
-                var mesh = x.sharedMesh;
+            var values = m_renderers.SelectMany(x =>
+             {
+                 var mesh = x.sharedMesh;
 
-                var relativePath = UniGLTF.UnityExtensions.RelativePathFrom(x.transform, m_target.transform);
+                 var relativePath = UniGLTF.UnityExtensions.RelativePathFrom(x.transform, m_target.transform);
 
-                var list = new List<BlendShapeBinding>();
-                if (mesh != null)
-                {
-                    for (int i = 0; i < mesh.blendShapeCount; ++i)
-                    {
-                        var weight = x.GetBlendShapeWeight(i);
-                        if (weight == 0)
-                        {
-                            continue;
-                        }
-                        var name = mesh.GetBlendShapeName(i);
-                        if (weight > maxWeight)
-                        {
-                            maxWeightName = name;
-                            maxWeight = weight;
-                        }
-                        list.Add(new BlendShapeBinding
-                        {
-                            Index = i,
-                            RelativePath = relativePath,
-                            Weight = weight
-                        });
-                    }
-                }
-                return list;
-            }).ToArray()
+                 var list = new List<BlendShapeBinding>();
+                 if (mesh != null)
+                 {
+                     for (int i = 0; i < mesh.blendShapeCount; ++i)
+                     {
+                         var weight = x.GetBlendShapeWeight(i);
+                         if (weight == 0)
+                         {
+                             continue;
+                         }
+                         var name = mesh.GetBlendShapeName(i);
+                         if (weight > maxWeight)
+                         {
+                             maxWeightName = name;
+                             maxWeight = weight;
+                         }
+                         list.Add(new BlendShapeBinding
+                         {
+                             Index = i,
+                             RelativePath = relativePath,
+                             Weight = weight
+                         });
+                     }
+                 }
+                 return list;
+             }).ToArray()
             ;
             _maxWeightName = maxWeightName;
             return values;

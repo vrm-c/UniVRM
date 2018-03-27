@@ -41,7 +41,7 @@ namespace VRM
     public class BlendShapeClip : ScriptableObject
     {
         [SerializeField]
-        public string BlendShapeName;
+        public string BlendShapeName = "";
 
         [SerializeField]
         public BlendShapePreset Preset;
