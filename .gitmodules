@@ -1,3 +1,6 @@
 [submodule "UniHumanoid"]
 	path = UniHumanoid
 	url = https://github.com/ousttrue/UniHumanoid.git
+[submodule "UniGLTF"]
+	path = UniGLTF
+	url = https://github.com/ousttrue/UniGLTF.git
