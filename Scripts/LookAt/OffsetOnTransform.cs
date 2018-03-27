@@ -19,6 +19,15 @@ namespace VRM
             }
         }
 
+        public Vector3 WorldForward
+        {
+            get
+            {
+                var m = WorldMatrix;
+                return m.GetColumn(2); // zaxis
+            }
+        }
+
         Matrix4x4 m_initialLocalMatrix;
         public void Setup()
         {

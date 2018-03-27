@@ -29,11 +29,36 @@ namespace VRM
 
         static readonly string BLINK_NAME = BlendShapePreset.Blink.ToString();
 
+        float m_nextRequest;
+        bool m_request;
+        public bool Request
+        {
+            get { return m_request; }
+            set
+            {
+                if (Time.time < m_nextRequest)
+                {
+                    return;
+                }
+                m_request = value;
+                m_nextRequest = Time.time + 1.0f;
+            }
+        }
+
         IEnumerator BlinkRoutine()
         {
             while (true)
             {
-                yield return new WaitForSeconds(Random.value * m_interVal);
+                var waitTime = Time.time + Random.value * m_interVal;
+                while (waitTime>Time.time)
+                {
+                    if (Request)
+                    {
+                        m_request = false;
+                        break;
+                    }
+                    yield return null;
+                }
 
                 // close
                 var value = 0.0f;
