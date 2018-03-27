@@ -145,59 +145,50 @@ namespace VRM
 
         public override void OnInspectorGUI()
         {
-            /// xxxx
             var mode =
                 (EditorMode)GUILayout.Toolbar((int)m_mode, MODES);
-            if (mode != m_mode)
-            {
-                m_mode = mode;
-                ClearBlendShape();
-                switch ((EditorMode)m_mode)
-                {
-                    case EditorMode.Runtime:
-                        if (Application.isPlaying)
-                        {
-                            m_target.Reload();
-                        }
-                        else
-                        {
-                            if (m_sliders != null)
-                            {
-                                foreach (var x in m_sliders)
-                                {
-                                    x.RestoreEditorValue();
-                                }
-                            }
-                        }
-                        RuntimeInspector();
-                        break;
 
-                    case EditorMode.Editor:
-                        Apply();
-                        EditorInspector();
-                        break;
-                }
-            }
-            else
+            switch (mode)
             {
-                switch ((EditorMode)m_mode)
-                {
-                    case EditorMode.Runtime:
-                        RuntimeInspector();
-                        break;
+                case EditorMode.Runtime:
+                    RuntimeInspector(mode != m_mode);
+                    break;
 
-                    case EditorMode.Editor:
-                        EditorInspector();
-                        break;
-                }
+                case EditorMode.Editor:
+                    EditorInspector(mode != m_mode);
+                    break;
+
+                default:
+                    throw new NotImplementedException();
             }
+
+            m_mode = mode;
         }
 
         #region RuntimeInspector
         List<BlendShapeSlider> m_sliders;
 
-        void RuntimeInspector()
+        void RuntimeInspector(bool changed)
         {
+            if (changed)
+            {
+                ClearBlendShape();
+                if (Application.isPlaying)
+                {
+                    m_target.Reload();
+                }
+                else
+                {
+                    if (m_sliders != null)
+                    {
+                        foreach (var x in m_sliders)
+                        {
+                            x.RestoreEditorValue();
+                        }
+                    }
+                }
+            }
+
             base.OnInspectorGUI();
 
             if (m_sliders != null)
@@ -233,8 +224,14 @@ namespace VRM
         }
 
         int m_preset;
-        void EditorInspector()
+        void EditorInspector(bool changed)
         {
+            if (changed)
+            {
+                ClearBlendShape();
+                Apply();
+            }   
+            
             if (m_target.BlendShapeAvatar == null) return;
 
             if (GUILayout.Button("Clear"))
