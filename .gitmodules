@@ -4,3 +4,6 @@
 [submodule "UniGLTF"]
 	path = UniGLTF
 	url = https://github.com/ousttrue/UniGLTF.git
+[submodule "MToon"]
+	path = MToon
+	url = https://github.com/Santarh/MToon.git
