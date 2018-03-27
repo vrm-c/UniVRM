@@ -1,0 +1,3 @@
+[submodule "UniHumanoid"]
+	path = UniHumanoid
+	url = https://github.com/ousttrue/UniHumanoid.git
