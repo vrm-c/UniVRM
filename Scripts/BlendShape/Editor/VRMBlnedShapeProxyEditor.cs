@@ -264,6 +264,12 @@ namespace VRM
                 EditorGUILayout.Space();
                 EditorGUILayout.LabelField("CurrentClip", EditorStyles.boldLabel);
 
+                var key = BlendShapeKey.CreateFrom(CurrentClip);
+                if(m_target.BlendShapeAvatar.Clips.Where(x => key.Match(x)).Count() > 1)
+                {
+                    EditorGUILayout.HelpBox("duplicate clip", MessageType.Error);
+                }
+
                 /*var loadClip = (BlendShapeClip)*/
                 GUI.enabled = false;
                 EditorGUILayout.ObjectField("Current clip",
