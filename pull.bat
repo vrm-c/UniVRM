@@ -1,7 +1,8 @@
-:: pushd Assets\VRM
+::pushd Assets\VRM
 git pull
 git submodule init
-git submodule foreach --recursive git checkout master
-git submodule update --recursive --remote
-:: popd
+::git submodule update --remote
+git submodule foreach git checkout master
+git submodule foreach git pull
+::popd
 pause
