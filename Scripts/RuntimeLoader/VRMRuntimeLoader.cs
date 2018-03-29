@@ -65,7 +65,7 @@ namespace VRM
         {
             return string.Join("\0", filters) + "\0";
         }
-        static string FileDialog(string extension)
+        public static string FileDialog(string title, string extension)
         {
             OpenFileName ofn = new OpenFileName();
             ofn.structSize = Marshal.SizeOf(ofn);
@@ -76,7 +76,7 @@ namespace VRM
             ofn.fileTitle = new string(new char[64]);
             ofn.maxFileTitle = ofn.fileTitle.Length;
             ofn.initialDir = UnityEngine.Application.dataPath;
-            ofn.title = "Upload Image";
+            ofn.title = title;
             ofn.defExt = "PNG";
             ofn.flags = 0x00080000 | 0x00001000 | 0x00000800 | 0x00000200 | 0x00000008;//OFN_EXPLORER|OFN_FILEMUSTEXIST|OFN_PATHMUSTEXIST| OFN_ALLOWMULTISELECT|OFN_NOCHANGEDIR
             if (!GetOpenFileName(ofn))
@@ -136,7 +136,7 @@ namespace VRM
         void LoadVRMClicked()
         {
 #if UNITY_STANDALONE_WIN
-            var path = FileDialog(".vrm");
+            var path = FileDialog("open VRM", ".vrm");
 #else
             var path = Application.dataPath + "/default.vrm";
 #endif
@@ -185,7 +185,7 @@ namespace VRM
 
         void LoadBVHClicked()
         {
-            var path = FileDialog(".bvh");
+            var path = FileDialog("open BVH", ".bvh");
             if (!string.IsNullOrEmpty(path))
             {
                 LoadBvh(path);
@@ -194,10 +194,6 @@ namespace VRM
 
         void OnLoaded(GameObject root)
         {
-#if UNITY_EDITOR
-            UnityEditor.Selection.activeGameObject = root;
-#endif
-
             root.transform.SetParent(transform, false);
 
             // add motion
