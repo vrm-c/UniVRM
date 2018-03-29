@@ -273,24 +273,9 @@ namespace VRM
                     context.BlendShapeAvatar.Clips.Add(LoadBlendShapeBind(context, x));
                 }
             }
-            else
-            {
-                // set default
-                context.BlendShapeAvatar.Clips.Add(BlendShapeClip.Create(BlendShapePreset.Neutral));
-                context.BlendShapeAvatar.Clips.Add(BlendShapeClip.Create(BlendShapePreset.A));
-                context.BlendShapeAvatar.Clips.Add(BlendShapeClip.Create(BlendShapePreset.I));
-                context.BlendShapeAvatar.Clips.Add(BlendShapeClip.Create(BlendShapePreset.U));
-                context.BlendShapeAvatar.Clips.Add(BlendShapeClip.Create(BlendShapePreset.E));
-                context.BlendShapeAvatar.Clips.Add(BlendShapeClip.Create(BlendShapePreset.O));
-                context.BlendShapeAvatar.Clips.Add(BlendShapeClip.Create(BlendShapePreset.Blink));
-                context.BlendShapeAvatar.Clips.Add(BlendShapeClip.Create(BlendShapePreset.Joy));
-                context.BlendShapeAvatar.Clips.Add(BlendShapeClip.Create(BlendShapePreset.Angry));
-                context.BlendShapeAvatar.Clips.Add(BlendShapeClip.Create(BlendShapePreset.Sorrow));
-                context.BlendShapeAvatar.Clips.Add(BlendShapeClip.Create(BlendShapePreset.Fun));
-            }
 
             var proxy = context.Root.AddComponent<VRMBlendShapeProxy>();
-            context.BlendShapeAvatar.CreateDefault();
+            context.BlendShapeAvatar.CreateDefaultPreset();
             proxy.BlendShapeAvatar = context.BlendShapeAvatar;
         }
 

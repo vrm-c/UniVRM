@@ -12,22 +12,27 @@ namespace VRM
         [SerializeField]
         public List<BlendShapeClip> Clips = new List<BlendShapeClip>();
 
-        public void CreateDefault()
+        /// <summary>
+        /// Unknown以外で存在しないものを全て作る
+        /// </summary>
+        public void CreateDefaultPreset()
         {
-            foreach (BlendShapePreset preset in Enum.GetValues(typeof(BlendShapePreset)))
+            foreach (var preset in ((BlendShapePreset[])Enum.GetValues(typeof(BlendShapePreset)))
+                .Where(x => x != BlendShapePreset.Unknown))
             {
-                if (preset != BlendShapePreset.Unknown)
-                {
-                    var clip = GetClip(preset);
-                    if (clip == null)
-                    {
-                        clip = ScriptableObject.CreateInstance<BlendShapeClip>();
-                        clip.name = preset.ToString();
-                        clip.BlendShapeName = preset.ToString();
-                        Clips.Add(clip);
-                    }
-                }
+                CreateDefaultPreset(preset);
             }
+        }
+
+        void CreateDefaultPreset(BlendShapePreset preset)
+        {
+            var clip = GetClip(preset);
+            if (clip != null) return;
+            clip = ScriptableObject.CreateInstance<BlendShapeClip>();
+            clip.name = preset.ToString();
+            clip.BlendShapeName = preset.ToString();
+            clip.Preset = preset;
+            Clips.Add(clip);
         }
 
         public void SetClip(BlendShapeKey key, BlendShapeClip clip)
