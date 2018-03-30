@@ -9,7 +9,7 @@ namespace VRM
 {
     public static class VRMHumanoidNorimalizerMenu
     {
-        const string MENU_KEY = "VRM/create normalized humanoid";
+        const string MENU_KEY = "VRM/freeze T-Pose";
         [MenuItem(MENU_KEY, true, 1)]
         private static bool ExportValidate()
         {
@@ -49,7 +49,7 @@ namespace VRM
             var go = Selection.activeObject as GameObject;
             Undo.RecordObjects(go.transform.Traverse().ToArray(), "before normalize");
             var map = new Dictionary<Transform, Transform>();
-            var normalized = VRM.BoneNormalizer.Execute(go, map);
+            var normalized = VRM.BoneNormalizer.Execute(go, map, true);
             CopyVRMComponents(go, normalized, map);
             Undo.PerformUndo();
         }

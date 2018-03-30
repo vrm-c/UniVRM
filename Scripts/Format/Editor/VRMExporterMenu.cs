@@ -13,7 +13,9 @@ namespace VRM
 
         public GameObject Target;
 
-        public bool PoseNormalization;
+        public bool ForceTPose;
+
+        public bool PoseFreeze;
 
         public static void CreateWizard()
         {
@@ -25,7 +27,8 @@ namespace VRM
             var desc = wiz.Target.GetComponent<VRMHumanoidDescription>();
             if (desc == null)
             {
-                wiz.PoseNormalization = true;
+                wiz.ForceTPose = true;
+                wiz.PoseFreeze = true;
             }
         }
 
@@ -48,11 +51,11 @@ namespace VRM
 
             // export
             var target = Target;
-            if (PoseNormalization)
+            if (PoseFreeze)
             {
                 Undo.RecordObjects(Target.transform.Traverse().ToArray(), "before normalize");
                 var map = new Dictionary<Transform, Transform>();
-                target = VRM.BoneNormalizer.Execute(Target, map);
+                target = VRM.BoneNormalizer.Execute(Target, map, ForceTPose);
                 VRMHumanoidNorimalizerMenu.CopyVRMComponents(Target, target, map);
                 Undo.PerformUndo();
             }

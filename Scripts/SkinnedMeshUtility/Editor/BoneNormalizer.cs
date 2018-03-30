@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using UniHumanoid;
-using UnityEditor;
 using UnityEngine;
 
 
@@ -44,11 +42,12 @@ namespace VRM
             }
         }
 
-        public static GameObject Execute(GameObject go, Dictionary<Transform, Transform> boneMap)
+        public static GameObject Execute(GameObject go, Dictionary<Transform, Transform> boneMap, bool forceTPose)
         {
             //
             // T-Poseにする
             //
+            if(forceTPose)
             {
                 var animator = go.GetComponent<Animator>();
                 if (animator == null)
