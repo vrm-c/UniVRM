@@ -15,10 +15,10 @@ namespace VRM
                 var ext = Path.GetExtension(path).ToLower();
                 if (ext == ".vrm")
                 {
-                    VRMImporterContext context = null;
+                    var context = new VRMImporterContext(path);
                     try
                     {
-                        context=VRMImporter.LoadFromPath(path);
+                        VRMImporter.LoadFromPath(context);
 
                         /*
                         var prefabPath = String.Format("{0}/{1}.prefab",

@@ -16,43 +16,17 @@ namespace VRM
         const string HUMANOID_KEY = "humanoid";
         const string MATERIAL_KEY = "materialProperties";
 
-        public static VRMImporterContext LoadFromPath(string path)
+        public static void LoadFromPath(VRMImporterContext context)
         {
-            return LoadFromBytes(File.ReadAllBytes(path), path);
+            var dataChunk = context.ParseVrm(File.ReadAllBytes(context.Path));
+            LoadFromBytes(context, dataChunk);
         }
 
-        public static VRMImporterContext LoadFromBytes(byte[] bytes, string path=null)
+        public static void LoadFromBytes(VRMImporterContext context, ArraySegment<byte> dataChunk)
         {
-            var context = new VRMImporterContext();
-            if (!string.IsNullOrEmpty(path))
-            {
-                context.Path = path;
-            }
+            context.CreateMaterial = VRMImporter.GetMaterialFunc(glTF_VRM_Material.Parse(context.Json));
 
-            var chunks = glbImporter.ParseGlbChanks(bytes);
-
-            if (chunks.Count != 2)
-            {
-                throw new Exception("unknown chunk count: " + chunks.Count);
-            }
-
-            if (chunks[0].ChunkType != GlbChunkType.JSON)
-            {
-                throw new Exception("chunk 0 is not JSON");
-            }
-
-            if (chunks[1].ChunkType != GlbChunkType.BIN)
-            {
-                throw new Exception("chunk 1 is not BIN");
-            }
-
-            var jsonBytes = chunks[0].Bytes;
-            var json = Encoding.UTF8.GetString(jsonBytes.Array, jsonBytes.Offset, jsonBytes.Count);
-
-            context.Json = json;
-            context.CreateMaterial = VRMImporter.GetMaterialFunc(glTF_VRM_Material.Parse(json));
-
-            gltfImporter.Import<glTF_VRM>(context, chunks[1].Bytes);
+            gltfImporter.Import<glTF_VRM>(context, dataChunk);
             if (string.IsNullOrEmpty(context.Path))
             {
                 if (string.IsNullOrEmpty(context.VRM.extensions.VRM.meta.title))
@@ -72,8 +46,6 @@ namespace VRM
             OnLoadModel(context);
 
             context.ShowMeshes();
-
-            return context;
         }
 
         public static CreateMaterialFunc GetMaterialFunc(List<glTF_VRM_Material> materials)
@@ -156,17 +128,8 @@ namespace VRM
 
         static void LoadMeta(VRMImporterContext context)
         {
-            var meta = ScriptableObject.CreateInstance<VRMMetaObject>();
-            meta.name = "Meta";
-            var gltfMeta = context.VRM.extensions.VRM.meta;
-            meta.Author = gltfMeta.author;
-            meta.ContactInformation = gltfMeta.contactInformation;
-            meta.Title = gltfMeta.title;
-            if (gltfMeta.texture != -1)
-            {
-                meta.Thumbnail = context.Textures[gltfMeta.texture].Texture;
-            }
-            else
+            var meta = context.ReadMeta();
+            if (meta.Thumbnail == null)
             {
                 // 作る
                 var lookAt = context.Root.GetComponent<VRMLookAtHead>();
@@ -175,10 +138,6 @@ namespace VRM
                 meta.Thumbnail = thumbnail;
                 context.Textures.Add(new TextureItem(thumbnail));
             }
-            meta.LicenseType = gltfMeta.licenseType;
-            meta.OtherLicenseUrl = gltfMeta.otherLicenseUrl;
-            meta.Reference = gltfMeta.reference;
-
             var _meta = context.Root.AddComponent<VRMMeta>();
             _meta.Meta = meta;
             context.Meta = meta;
@@ -497,100 +456,21 @@ namespace VRM
             yield return null;
         }
 
-        public static void LoadVrmAsync(Byte[] bytes, Action<GameObject> onLoaded)
-        {
-            var ctx = new VRMImporterContext();
-            LoadVrmAsync(ctx, bytes, onLoaded);
-        }
-
-        public static void LoadVrmAsync(string path, Action<GameObject> onLoaded)
-        {
-            var ctx = new VRMImporterContext
-            {
-                Path = path,
-            };
-
-            var schedule = Schedulable.Create();
-
-            schedule.AddTask(MainThreadDispatcher.Instance.ThreadScheduler, () =>
-            {
-                return File.ReadAllBytes(path);
-            })
-                .Subscribe(MainThreadDispatcher.Instance.UnityScheduler,
-                bytes =>
-                {
-                    LoadVrmAsync(ctx, bytes, onLoaded);
-                },
-                ex =>
-                {
-                    ctx.Destroy(true);
-                    Debug.LogErrorFormat("Error in scheduler: {0}", ex);
-                })
-                ;
-        }
-
-        public static void LoadVrmAsync(VRMImporterContext ctx, Byte[] bytes, Action<GameObject> onLoaded)
-        {
-            var schedule = Schedulable.Create();
-
-            schedule
-            .AddTask(MainThreadDispatcher.Instance.ThreadScheduler, () =>
-            {
-                return glbImporter.ParseGlbChanks(bytes);
-            })
-            .ContinueWith(MainThreadDispatcher.Instance.ThreadScheduler, chunks =>
-            {
-                if (chunks.Count != 2)
-                {
-                    throw new Exception("unknown chunk count: " + chunks.Count);
-                }
-
-                if (chunks[0].ChunkType != GlbChunkType.JSON)
-                {
-                    throw new Exception("chunk 0 is not JSON");
-                }
-
-                if (chunks[1].ChunkType != GlbChunkType.BIN)
-                {
-                    throw new Exception("chunk 1 is not BIN");
-                }
-
-                var jsonBytes = chunks[0].Bytes;
-                ctx.Json = Encoding.UTF8.GetString(jsonBytes.Array, jsonBytes.Offset, jsonBytes.Count);
-
-                //var parsed = json.ParseAsJson();
-                ctx.GLTF = JsonUtility.FromJson<glTF_VRM>(ctx.Json);
-                if (ctx.GLTF.asset.version != "2.0")
-                {
-                    throw new VRMException("unknown gltf version {0}", ctx.GLTF.asset.version);
-                }
-                ctx.GLTF.baseDir = Path.GetDirectoryName(ctx.Path);
-                foreach (var buffer in ctx.GLTF.buffers)
-                {
-                    buffer.OpenStorage(ctx.GLTF.baseDir, chunks[1].Bytes);
-                }
-
-                return Unit.Default;
-            })
-                .Subscribe(MainThreadDispatcher.Instance.UnityScheduler,
-                _ =>
-                {
-                    BuildAsync(ctx, onLoaded);
-                },
-                ex =>
-                {
-                    ctx.Destroy(true);
-                    Debug.LogErrorFormat("Error in scheduler: {0}", ex);
-                })
-                ;
-        }
-
-        static void BuildAsync(VRMImporterContext ctx, Action<GameObject> onLoaded)
+        public static void LoadVrmAsync(VRMImporterContext ctx, ArraySegment<Byte> chunkData, Action<GameObject> onLoaded)
         {
             var schedulable = Schedulable.Create();
 
             schedulable
                 .AddTask(MainThreadDispatcher.Instance.ThreadScheduler, () =>
+                {
+                    ctx.GLTF.baseDir = Path.GetDirectoryName(ctx.Path);
+                    foreach (var buffer in ctx.GLTF.buffers)
+                    {
+                        buffer.OpenStorage(ctx.GLTF.baseDir, chunkData);
+                    }
+                    return Unit.Default;
+                })
+                .ContinueWith(MainThreadDispatcher.Instance.ThreadScheduler, _ =>
                 {
                     return glTF_VRM_Material.Parse(ctx.Json);
                 })

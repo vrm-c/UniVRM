@@ -140,26 +140,42 @@ namespace VRM
 #else
             var path = Application.dataPath + "/default.vrm";
 #endif
-            if (!string.IsNullOrEmpty(path))
+            if (string.IsNullOrEmpty(path))
             {
-                if (m_loadAsync)
-                {
-                    LoadAsync(path);
-                }
-                else
-                {
-                    LoadSync(path);
-                }
+                return;
+            }
+
+            var bytes = File.ReadAllBytes(path);
+            // なんらかの方法でByte列を得た
+
+            var context = new VRMImporterContext(path);
+
+            // GLB形式でJSONを取得しParseします
+            var dataChunk = context.ParseVrm(bytes);
+
+
+            // metaを取得(todo: thumbnailテクスチャのロード)
+            var meta = context.ReadMeta();
+            Debug.LogFormat("meta: title:{0}", meta.Title);
+
+
+            // ParseしたJSONをシーンオブジェクトに変換していく
+            if (m_loadAsync)
+            {
+                LoadAsync(context, dataChunk);
+            }
+            else
+            {
+                VRMImporter.LoadFromBytes(context, dataChunk);
+                OnLoaded(context.Root);
             }
         }
 
-        void LoadAsync(string path)
+        void LoadAsync(VRMImporterContext context, ArraySegment<byte> dataChunk)
         {
 #if true
             var now = Time.time;
-            // ネットワーク経由等でbyte列が取得できる場合はこちら
-            var bytes = File.ReadAllBytes(path);
-            VRMImporter.LoadVrmAsync(bytes, go=> {
+            VRMImporter.LoadVrmAsync(context, dataChunk, go=> {
                 var delta = Time.time - now;
                 Debug.LogFormat("LoadVrmAsync {0:0.0} seconds", delta);
                 OnLoaded(go);
@@ -168,24 +184,6 @@ namespace VRM
             // ローカルファイルシステムからロードします
             VRMImporter.LoadVrmAsync(path, OnLoaded);
 #endif
-        }
-
-        void LoadSync(string path)
-        {
-#if true
-            // ネットワーク経由等でbyte列が取得できる場合はこちら
-            var bytes = File.ReadAllBytes(path);
-            LoadSync(bytes);
-#else
-            // ローカルファイルシステムからロードします
-            VRMImporter.LoadFromPath(path);
-#endif
-        }
-
-        void LoadSync(byte[] bytes)
-        {
-            var context = VRMImporter.LoadFromBytes(bytes);
-            OnLoaded(context.Root);
         }
 
         void LoadBVHClicked()

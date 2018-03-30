@@ -7,6 +7,15 @@ namespace VRM
 {
     public class VRMImporterContext : ImporterContext
     {
+        public VRMImporterContext()
+        {
+
+        }
+        public VRMImporterContext(string path)
+        {
+            Path = path;
+        }
+
         public UniHumanoid.AvatarDescription AvatarDescription;
         public Avatar HumanoidAvatar;
         public BlendShapeAvatar BlendShapeAvatar;
@@ -18,6 +27,29 @@ namespace VRM
             {
                 return (glTF_VRM)GLTF;
             }
+        }
+
+        public System.ArraySegment<byte> ParseVrm(byte[] bytes)
+        {
+            return ParseGlb<glTF_VRM>(bytes);
+        }
+
+        public VRMMetaObject ReadMeta()
+        {
+            var meta=ScriptableObject.CreateInstance<VRMMetaObject>();
+            meta.name = "Meta";
+            var gltfMeta = VRM.extensions.VRM.meta;
+            meta.Author = gltfMeta.author;
+            meta.ContactInformation = gltfMeta.contactInformation;
+            meta.Title = gltfMeta.title;
+            if (gltfMeta.texture != -1)
+            {
+                meta.Thumbnail = Textures[gltfMeta.texture].Texture;
+            }
+            meta.LicenseType = gltfMeta.licenseType;
+            meta.OtherLicenseUrl = gltfMeta.otherLicenseUrl;
+            meta.Reference = gltfMeta.reference;
+            return meta;
         }
 
 #if UNITY_EDITOR
