@@ -156,9 +156,14 @@ namespace VRM
         void LoadAsync(string path)
         {
 #if true
+            var now = Time.time;
             // ネットワーク経由等でbyte列が取得できる場合はこちら
             var bytes = File.ReadAllBytes(path);
-            VRMImporter.LoadVrmAsync(bytes, OnLoaded);
+            VRMImporter.LoadVrmAsync(bytes, go=> {
+                var delta = Time.time - now;
+                Debug.LogFormat("LoadVrmAsync {0:0.0} seconds", delta);
+                OnLoaded(go);
+            });
 #else
             // ローカルファイルシステムからロードします
             VRMImporter.LoadVrmAsync(path, OnLoaded);

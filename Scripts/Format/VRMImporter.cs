@@ -461,8 +461,9 @@ namespace VRM
             foreach (var x in context.GLTF.nodes)
             {
                 context.Nodes.Add(gltfImporter.ImportNode(x).transform);
-                yield return null;
             }
+
+            yield return null;
         }
 
         static IEnumerator BuildHierarchy(VRMImporterContext context)
@@ -471,7 +472,6 @@ namespace VRM
             for (int i = 0; i < context.Nodes.Count; ++i)
             {
                 nodes.Add(gltfImporter.BuildHierarchy(context, i));
-                yield return null;
             }
 
             gltfImporter.FixCoordinate(context, nodes);
@@ -489,6 +489,8 @@ namespace VRM
                 var t = nodes[x].Transform;
                 t.SetParent(context.Root.transform, false);
             }
+
+            yield return null;
         }
 
         public static void LoadVrmAsync(Byte[] bytes, Action<GameObject> onLoaded)
@@ -624,12 +626,14 @@ namespace VRM
                 .Subscribe(MainThreadDispatcher.Instance.UnityScheduler,
                 _ =>
             {
+                /*
                 Debug.LogFormat("task end: {0}/{1}/{2}/{3}",
                     ctx.Textures.Count,
                     ctx.Materials.Count,
                     ctx.Meshes.Count,
                     ctx.Nodes.Count
                     );
+                    */
                 ctx.Root.name = Path.GetFileNameWithoutExtension(ctx.Path);
 
                 // 非表示のメッシュを表示する
