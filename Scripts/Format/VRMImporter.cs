@@ -156,7 +156,8 @@ namespace VRM
 
         static void LoadMeta(VRMImporterContext context)
         {
-            var meta = context.Root.AddComponent<VRMMetaInformation>();
+            var meta = ScriptableObject.CreateInstance<VRMMetaObject>();
+            meta.name = "Meta";
             var gltfMeta = context.VRM.extensions.VRM.meta;
             meta.Author = gltfMeta.author;
             meta.ContactInformation = gltfMeta.contactInformation;
@@ -172,12 +173,15 @@ namespace VRM
                 var thumbnail = lookAt.CreateThumbnail();
                 thumbnail.name = "thumbnail";
                 meta.Thumbnail = thumbnail;
-                //context.Textures.Add(new TextureItem(thumbnail));
+                context.Textures.Add(new TextureItem(thumbnail));
             }
-
             meta.LicenseType = gltfMeta.licenseType;
             meta.OtherLicenseUrl = gltfMeta.otherLicenseUrl;
             meta.Reference = gltfMeta.reference;
+
+            var _meta = context.Root.AddComponent<VRMMeta>();
+            _meta.Meta = meta;
+            context.Meta = meta;
         }
 
         static void LoadFirstPerson(VRMImporterContext context)

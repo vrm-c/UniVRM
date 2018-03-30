@@ -10,6 +10,7 @@ namespace VRM
         public UniHumanoid.AvatarDescription AvatarDescription;
         public Avatar HumanoidAvatar;
         public BlendShapeAvatar BlendShapeAvatar;
+        public VRMMetaObject Meta;
 
         public glTF_VRM VRM
         {
@@ -37,6 +38,8 @@ namespace VRM
                     yield return x;
                 }
             }
+
+            yield return Meta;
         }
 #endif
     }

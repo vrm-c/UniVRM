@@ -8,8 +8,8 @@ public static class VRMMonoBehaviourComparator
     public static bool AssertAreEquals(GameObject l, GameObject r)
     {
         return
-            AssertAreEquals<VRMMetaInformation>(l, r,
-            (x, y) => x[0].Equals(y[0]))
+            AssertAreEquals<VRMMeta>(l, r,
+            (x, y) => x[0].Meta.Equals(y[0].Meta))
             ;
     }
 

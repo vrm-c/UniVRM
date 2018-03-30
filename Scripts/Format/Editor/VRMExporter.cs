@@ -147,21 +147,41 @@ namespace VRM
                 });
             }
 
-            // meta
-            var meta = exporter.Copy.GetComponent<VRMMetaInformation>();
-            if (meta != null)
+            // meta(obsolete)
             {
-                gltf.extensions.VRM.meta.author = meta.Author;
-                gltf.extensions.VRM.meta.contactInformation = meta.ContactInformation;
-                gltf.extensions.VRM.meta.title = meta.Title;
-                if (meta.Thumbnail != null)
+                var meta = exporter.Copy.GetComponent<VRMMetaInformation>();
+                if (meta != null)
                 {
-                    gltf.extensions.VRM.meta.texture = gltfExporter.ExportTexture(gltf, gltf.buffers.Count - 1, meta.Thumbnail);
+                    gltf.extensions.VRM.meta.author = meta.Author;
+                    gltf.extensions.VRM.meta.contactInformation = meta.ContactInformation;
+                    gltf.extensions.VRM.meta.title = meta.Title;
+                    if (meta.Thumbnail != null)
+                    {
+                        gltf.extensions.VRM.meta.texture = gltfExporter.ExportTexture(gltf, gltf.buffers.Count - 1, meta.Thumbnail);
+                    }
+                    gltf.extensions.VRM.meta.licenseType = meta.LicenseType;
+                    gltf.extensions.VRM.meta.otherLicenseUrl = meta.OtherLicenseUrl;
+                    gltf.extensions.VRM.meta.reference = meta.Reference;
                 }
-                gltf.extensions.VRM.meta.licenseType = meta.LicenseType;
-                gltf.extensions.VRM.meta.otherLicenseUrl = meta.OtherLicenseUrl;
-                gltf.extensions.VRM.meta.reference = meta.Reference;
             }
+            // meta
+            {
+                var _meta = exporter.Copy.GetComponent<VRMMeta>();
+                if (_meta != null && _meta.Meta!=null)
+                {
+                    var meta = _meta.Meta;
+                    gltf.extensions.VRM.meta.author = meta.Author;
+                    gltf.extensions.VRM.meta.contactInformation = meta.ContactInformation;
+                    gltf.extensions.VRM.meta.title = meta.Title;
+                    if (meta.Thumbnail != null)
+                    {
+                        gltf.extensions.VRM.meta.texture = gltfExporter.ExportTexture(gltf, gltf.buffers.Count - 1, meta.Thumbnail);
+                    }
+                    gltf.extensions.VRM.meta.licenseType = meta.LicenseType;
+                    gltf.extensions.VRM.meta.otherLicenseUrl = meta.OtherLicenseUrl;
+                    gltf.extensions.VRM.meta.reference = meta.Reference;
+                }
+            }           
 
             // firstPerson
             var firstPerson = exporter.Copy.GetComponent<VRMFirstPerson>();

@@ -113,11 +113,20 @@ namespace VRM
             }
 
             {
-                // meta
+                // meta(obsolete)
                 var src = go.GetComponent<VRMMetaInformation>();
                 if (src != null)
                 {
                     src.CopyTo(root);
+                }
+            }
+            {
+                // meta
+                var src = go.GetComponent<VRMMeta>();
+                if (src != null)
+                {
+                    var dst = root.AddComponent<VRMMeta>();
+                    dst.Meta = src.Meta;
                 }
             }
 
