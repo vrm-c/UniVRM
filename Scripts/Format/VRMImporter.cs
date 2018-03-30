@@ -16,6 +16,22 @@ namespace VRM
         const string HUMANOID_KEY = "humanoid";
         const string MATERIAL_KEY = "materialProperties";
 
+        public static GameObject LoadFromPath(string path)
+        {
+            var context = new VRMImporterContext(path);
+            var dataChunk = context.ParseVrm(File.ReadAllBytes(path));
+            LoadFromBytes(context, dataChunk);
+            return context.Root;
+        }
+
+        public static GameObject LoadFromBytes(Byte[] bytes)
+        {
+            var context = new VRMImporterContext();
+            var dataChunk = context.ParseVrm(bytes);
+            LoadFromBytes(context, dataChunk);
+            return context.Root;
+        }
+
         public static void LoadFromPath(VRMImporterContext context)
         {
             var dataChunk = context.ParseVrm(File.ReadAllBytes(context.Path));
@@ -454,6 +470,20 @@ namespace VRM
             }
 
             yield return null;
+        }
+
+        public static void LoadVrmAsync(string path, Action<GameObject> onLoaded)
+        {
+            var context = new VRMImporterContext(path);
+            var dataChunk = context.ParseVrm(File.ReadAllBytes(path));
+            LoadVrmAsync(context, dataChunk, onLoaded);
+        }
+
+        public static void LoadVrmAsync(Byte[] bytes, Action<GameObject> onLoaded)
+        {
+            var context = new VRMImporterContext();
+            var dataChunk = context.ParseVrm(bytes);
+            LoadVrmAsync(context, dataChunk, onLoaded);
         }
 
         public static void LoadVrmAsync(VRMImporterContext ctx, ArraySegment<Byte> chunkData, Action<GameObject> onLoaded)

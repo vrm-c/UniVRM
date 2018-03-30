@@ -171,6 +171,52 @@ namespace VRM
             }
         }
 
+        /// <summary>
+        /// メタが不要な場合のローダー
+        /// </summary>
+        void LoadVRMClicked_without_meta()
+        {
+#if UNITY_STANDALONE_WIN
+            var path = FileDialog("open VRM", ".vrm");
+#else
+            var path = Application.dataPath + "/default.vrm";
+#endif
+            if (string.IsNullOrEmpty(path))
+            {
+                return;
+            }
+
+#if true
+            var bytes = File.ReadAllBytes(path);
+            // なんらかの方法でByte列を得た
+
+            if (m_loadAsync)
+            {
+                // ローカルファイルシステムからロードします
+                VRMImporter.LoadVrmAsync(bytes, OnLoaded);
+            }
+            else
+            {
+                var root=VRMImporter.LoadFromBytes(bytes);
+                OnLoaded(root);
+            }
+
+#else
+            // ParseしたJSONをシーンオブジェクトに変換していく
+            if (m_loadAsync)
+            {
+                // ローカルファイルシステムからロードします
+                VRMImporter.LoadVrmAsync(path, OnLoaded);
+            }
+            else
+            {
+                var root=VRMImporter.LoadFromPath(path);
+                OnLoaded(root);
+            }
+#endif
+        }
+
+
         void LoadAsync(VRMImporterContext context, ArraySegment<byte> dataChunk)
         {
 #if true
