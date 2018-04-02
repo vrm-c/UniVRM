@@ -155,6 +155,8 @@ namespace VRM
                         }
                         mesh.boneWeights = srcMesh.boneWeights;
 
+                        var blendShapeMatrix = default(Matrix4x4);
+                        blendShapeMatrix.SetTRS(Vector3.zero, src.localRotation, Vector3.one);
                         for (int i = 0; i < srcMesh.blendShapeCount; ++i)
                         {
                             var vertices = srcMesh.vertices;
@@ -176,8 +178,8 @@ namespace VRM
                             {
                                 mesh.AddBlendShapeFrame(name,
                                     srcMesh.GetBlendShapeFrameWeight(i, 0),
-                                    vertices.Select(x => m.MultiplyPoint(x) * s).ToArray(),
-                                    normals.Select(x => m.MultiplyVector(x).normalized).ToArray(),
+                                    vertices.Select(x => blendShapeMatrix.MultiplyPoint(x) * s).ToArray(),
+                                    normals.Select(x => blendShapeMatrix.MultiplyVector(x).normalized).ToArray(),
                                     tangents
                                     );
                             }
