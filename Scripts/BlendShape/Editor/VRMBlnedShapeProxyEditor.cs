@@ -14,7 +14,8 @@ namespace VRM
     {
         VRMBlendShapeProxy m_target;
         SkinnedMeshRenderer[] m_renderers;
-        VRMLookAt m_lookAt;
+
+        VRMLookAtHead m_lookAt;
 
         #region Preview
         class PreviewRenderer
@@ -122,7 +123,7 @@ namespace VRM
                 .ToList()
                 ;
 
-            m_lookAt = m_target.GetComponent<VRMLookAt>();
+            m_lookAt = m_target.GetComponent<VRMLookAtHead>();
             m_preview = new PreviewRenderer();
         }
 
