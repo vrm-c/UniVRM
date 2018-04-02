@@ -4,7 +4,6 @@ using System.Linq;
 using UnityEngine;
 using UniGLTF;
 using System.Collections.Generic;
-using System.Text;
 using System.Collections;
 using UniTask;
 
@@ -66,7 +65,21 @@ namespace VRM
 
         public static CreateMaterialFunc GetMaterialFunc(List<glTF_VRM_Material> materials)
         {
-            var fallback = gltfImporter.CreateMaterialFuncFromShader(Shader.Find("Standard"));
+            var CreateDefault= gltfImporter.CreateMaterialFuncFromShader(Shader.Find("VRM/UnlitTexture"));
+            var CreateZWrite = gltfImporter.CreateMaterialFuncFromShader(Shader.Find("VRM/UnlitTransparentZWrite"));
+            CreateMaterialFunc fallback = (ctx, i) =>
+            {
+                var vrm = ctx.GLTF as glTF_VRM;
+                if(vrm!=null && vrm.materials[i].name.ToLower().Contains("zwrite"))
+                {
+                    // 一応。不要かも
+                    return CreateZWrite(ctx, i);
+                }
+                else
+                {
+                    return CreateDefault(ctx, i);
+                }
+            };
             if (materials == null && materials.Count == 0)
             {
                 return fallback;
