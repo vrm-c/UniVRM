@@ -7,7 +7,7 @@ namespace VRM
 {
     public class VRMLookAtBoneApplyer : MonoBehaviour
     {
-        public bool DrawGizmo = true;
+        public bool DrawGizmo = false;
 
         [SerializeField]
         public OffsetOnTransform LeftEye;
