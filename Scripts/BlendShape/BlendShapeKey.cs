@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+
 
 namespace VRM
 {
@@ -58,29 +58,24 @@ namespace VRM
 
         public bool Equals(BlendShapeKey other)
         {
-            /*
-            if (Preset != BlendShapePreset.Unknown && Preset == other.Preset)
-            {
-                // Unknown以外のPresetが一致したら一致とみなす
-                return true;
-            }
-            // .ToUpper()済み
-            return Name == other.Name;
-            */
             return ID == other.ID;
         }
 
-        public class CustomerEqualityComparer : IEqualityComparer<BlendShapeKey>
+        public override bool Equals(object obj)
         {
-            public bool Equals(BlendShapeKey x, BlendShapeKey y)
+            if (obj is BlendShapeKey)
             {
-                return x.Equals(y);
+                return Equals((BlendShapeKey)obj);
             }
+            else
+            {
+                return false;
+            }
+        }
 
-            public int GetHashCode(BlendShapeKey obj)
-            {
-                return obj.ToString().GetHashCode();
-            }
+        public override int GetHashCode()
+        {
+            return ID.GetHashCode();
         }
 
         public static BlendShapeKey CreateFrom(BlendShapeClip clip)

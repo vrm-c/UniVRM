@@ -65,8 +65,8 @@ namespace VRM
 
             public BlendShapeMerger(IEnumerable<BlendShapeClip> clips, Transform root)
             {
-                m_clipMap = clips.ToDictionary(x => BlendShapeKey.CreateFrom(x), x => x, new BlendShapeKey.CustomerEqualityComparer());
-                m_valueMap = new Dictionary<BlendShapeKey, float>(new BlendShapeKey.CustomerEqualityComparer());
+                m_clipMap = clips.ToDictionary(x => BlendShapeKey.CreateFrom(x), x => x);
+                m_valueMap = new Dictionary<BlendShapeKey, float>();
                 foreach (var kv in m_clipMap)
                 {
                     foreach (var binding in kv.Value.Values) {

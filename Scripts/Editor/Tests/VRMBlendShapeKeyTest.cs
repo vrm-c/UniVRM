@@ -14,7 +14,7 @@ public class VRMBlendShapeKeyTest
         Assert.AreEqual(key, new BlendShapeKey(BlendShapePreset.Blink));
         Assert.AreEqual(key, new BlendShapeKey("xxx", BlendShapePreset.Blink));
 
-        var dict = new Dictionary<BlendShapeKey, float>(new BlendShapeKey.CustomerEqualityComparer());
+        var dict = new Dictionary<BlendShapeKey, float>();
         dict[new BlendShapeKey("xxx", BlendShapePreset.Blink)] = 1.0f;
 
         Assert.IsTrue(dict.ContainsKey(new BlendShapeKey("blink")));
