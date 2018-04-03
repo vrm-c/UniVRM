@@ -139,7 +139,7 @@ namespace VRM
             {
                 var go = new GameObject("_headless_" + renderer.name);
                 go.layer = FIRSTPERSON_ONLY_LAYER;
-                go.transform.SetParent(transform, false);
+                go.transform.SetParent(renderer.transform, false);
 
                 var m_eraseBones = renderer.bones.Select(x =>
                 {
@@ -178,11 +178,15 @@ namespace VRM
             }
         }
 
+        bool m_done;
+
         /// <summary>
         /// 配下のモデルのレイヤー設定など
         /// </summary>
         public void Setup()
         {
+            if (m_done) return;
+            m_done = true;
             foreach (var x in Renderers)
             {
                 switch (x.FirstPersonFlag)
