@@ -18,7 +18,7 @@ namespace VRM
         const string DATE_FORMAT = "yyyyMMdd";
         const string PREFIX = "UniVRM";
 
-        static string GetPath()
+        static string GetPath(string prefix)
         {
             var folder = GetDesktop();
             if (!Directory.Exists(folder))
@@ -30,7 +30,7 @@ namespace VRM
 
             var path = string.Format("{0}/{1}-{2}.unitypackage",
                 folder,
-                PREFIX,
+                prefix,
                 VRMVersion.VERSION
                 ).Replace("\\", "/");
 
@@ -68,8 +68,7 @@ namespace VRM
 #endif
         public static void CreateUnityPackage()
         {
-            var path = GetPath();
-
+            var path = GetPath(PREFIX);
             if (File.Exists(path))
             {
                 Debug.LogErrorFormat("{0} is already exists", path);
@@ -79,7 +78,16 @@ namespace VRM
             var files = EnumerateFiles("Assets/VRM")
                 .ToArray();
 
-            AssetDatabase.ExportPackage(files, path, ExportPackageOptions.Interactive);
+            // 本体
+            AssetDatabase.ExportPackage(files
+                .Where(x => !x.StartsWith("Assets/VRM/_RuntimeLoaderSample/")).ToArray()
+                , path, ExportPackageOptions.Interactive);
+
+            // サンプル
+            AssetDatabase.ExportPackage(files
+                .Where(x => x.StartsWith("Assets/VRM/_RuntimeLoaderSample/")).ToArray()
+                , GetPath(PREFIX+"-RuntimeLoaderSample"), ExportPackageOptions.Interactive);
+
             Debug.LogFormat("exported: {0}", path);
         }
     }
