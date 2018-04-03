@@ -177,7 +177,8 @@ namespace VRM
                 ClearBlendShape();
                 if (Application.isPlaying)
                 {
-                    m_target.Reload();
+                    m_target.Restore();
+                    m_target.Apply();
                 }
                 else
                 {
