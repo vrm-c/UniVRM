@@ -98,6 +98,7 @@ namespace VRM
             if (m_target != null)
             {
                 m_target.Source = m_source;
+                m_target.SourceType = UniHumanoid.HumanPoseTransfer.HumanPoseTransferSourceType.HumanPoseTransfer;
 
                 m_blendShape = m_target.GetComponent<VRMBlendShapeProxy>();
 

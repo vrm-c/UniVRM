@@ -202,7 +202,7 @@ namespace VRM
                         dstRenderer.sharedMaterials = srcRenderer.sharedMaterials;
                         dstRenderer.sharedMesh = mesh;
                         dstRenderer.bones = bones;
-                        if (!bones.Any() && srcRenderer.rootBone != null)
+                        if (srcRenderer.rootBone != null)
                         {
                             dstRenderer.rootBone = boneMap[srcRenderer.rootBone];
                         }
