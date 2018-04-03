@@ -6,7 +6,7 @@ using UniGLTF;
 
 namespace VRM
 {
-    [Obsolete]
+    [Obsolete("reimport, use VRMMeta")]
     [Serializable]
     [DisallowMultipleComponent]
     public class VRMMetaInformation : MonoBehaviour, IEquatable<VRMMetaInformation>
