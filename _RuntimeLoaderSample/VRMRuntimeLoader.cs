@@ -234,11 +234,15 @@ namespace VRM
 
         void LoadBVHClicked()
         {
+#if UNITY_STANDALONE_WIN
             var path = FileDialog("open BVH", ".bvh");
             if (!string.IsNullOrEmpty(path))
             {
                 LoadBvh(path);
             }
+#else
+            LoadBvh(Application.dataPath + "/default.bvh");
+#endif
         }
 
         void OnLoaded(GameObject root)
