@@ -36,6 +36,7 @@ namespace VRM
 
         [SerializeField]
         public List<Transform> RootBones = new List<Transform>();
+        Dictionary<Transform, Quaternion> m_initialLocalRotationMap;
 
         [SerializeField, Range(0, 0.5f), Header("Collider")]
         public float m_hitRadius = 0.02f;
@@ -191,14 +192,34 @@ namespace VRM
             Setup();
         }
 
+        [ContextMenu("Reset bones")]
         public void Setup()
         {
             if (RootBones != null)
             {
+                if (m_initialLocalRotationMap == null)
+                {
+                    m_initialLocalRotationMap = new Dictionary<Transform, Quaternion>();
+                }
+                else
+                {
+                    foreach(var kv in m_initialLocalRotationMap)
+                    {
+                        kv.Key.localRotation = kv.Value;
+                    }
+                    m_initialLocalRotationMap.Clear();
+                }
+                m_verlet.Clear();
+
                 foreach (var go in RootBones)
                 {
                     if (go != null)
                     {
+                        foreach(var x in go.transform.Traverse())
+                        {
+                            m_initialLocalRotationMap[x] = x.localRotation;
+                        }
+
                         SetupRecursive(m_center, go);
                     }
                 }
