@@ -180,7 +180,7 @@ namespace VRM
                                     srcMesh.GetBlendShapeFrameWeight(i, 0),
                                     vertices.Select(x => blendShapeMatrix.MultiplyPoint(x) * s).ToArray(),
                                     normals.Select(x => blendShapeMatrix.MultiplyVector(x).normalized).ToArray(),
-                                    tangents
+                                    tangents.Select(x => blendShapeMatrix.MultiplyVector(x).normalized).ToArray()
                                     );
                             }
                             catch (Exception)
