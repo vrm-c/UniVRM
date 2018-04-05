@@ -134,8 +134,14 @@ namespace VRM
                     var srcRenderer = src.GetComponent<SkinnedMeshRenderer>();
                     if (srcRenderer != null && srcRenderer.enabled)
                     {
-                        var mesh = new Mesh();
+                        // clear blendShape
                         var srcMesh = srcRenderer.sharedMesh;
+                        for (int i = 0; i < srcMesh.blendShapeCount; ++i)
+                        {
+                            srcRenderer.SetBlendShapeWeight(i, 0);
+                        }
+
+                        var mesh = new Mesh();
                         mesh.name = srcMesh.name + ".baked";
                         srcRenderer.BakeMesh(mesh);
 
@@ -155,17 +161,12 @@ namespace VRM
                         }
                         mesh.boneWeights = srcMesh.boneWeights;
 
-                        var blendShapeMatrix = default(Matrix4x4);
-                        blendShapeMatrix.SetTRS(Vector3.zero, src.localRotation, Vector3.one);
+                        var blendShapeMesh = new Mesh();
                         for (int i = 0; i < srcMesh.blendShapeCount; ++i)
                         {
-                            var vertices = srcMesh.vertices;
-                            var normals = srcMesh.normals;
-                            var tangents = (srcMesh.tangents != null && srcMesh.tangents.Any())
-                                ? srcMesh.tangents.Select(x => (Vector3)x).ToArray()
-                                : null
-                                ;
-                            srcMesh.GetBlendShapeFrameVertices(i, 0, vertices, normals, tangents);
+                            srcRenderer.SetBlendShapeWeight(i, 100.0f);
+                            srcRenderer.BakeMesh(blendShapeMesh);
+                            srcRenderer.SetBlendShapeWeight(i, 0);
 
                             var name = srcMesh.GetBlendShapeName(i);
                             if (string.IsNullOrEmpty(name))
@@ -173,14 +174,16 @@ namespace VRM
                                 name = String.Format("{0}", i);
                             }
 
+                            var weight = srcMesh.GetBlendShapeFrameWeight(i, 0);
+
                             var s = src.localScale.x;
                             try
                             {
                                 mesh.AddBlendShapeFrame(name,
-                                    srcMesh.GetBlendShapeFrameWeight(i, 0),
-                                    vertices.Select(x => blendShapeMatrix.MultiplyPoint(x) * s).ToArray(),
-                                    normals.Select(x => blendShapeMatrix.MultiplyVector(x).normalized).ToArray(),
-                                    tangents.Select(x => blendShapeMatrix.MultiplyVector(x).normalized).ToArray()
+                                    weight,
+                                    blendShapeMesh.vertices.Select((x, j) => m.MultiplyPoint(x) - mesh.vertices[j]).ToArray(),
+                                    blendShapeMesh.normals.Select(x => m.MultiplyVector(x).normalized).ToArray(),
+                                    blendShapeMesh.tangents.Select(x => m.MultiplyVector(x).normalized).ToArray()
                                     );
                             }
                             catch (Exception)
