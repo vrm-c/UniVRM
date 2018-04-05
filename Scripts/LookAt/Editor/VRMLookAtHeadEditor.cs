@@ -18,7 +18,7 @@ namespace VRM
 
         void OnSceneGUI()
         {
-            if (!Application.isPlaying) return;
+            //if (!Application.isPlaying) return;
             if (!m_target.DrawGizmo) return;
             if (m_target.Target == null) return;
             if (m_target.Head.Transform == null) return;

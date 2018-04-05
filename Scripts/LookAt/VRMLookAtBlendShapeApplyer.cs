@@ -8,16 +8,14 @@ namespace VRM
     {
         public bool DrawGizmo = true;
 
+        [SerializeField, Header("Degree Mapping")]
+        public CurveMapper Horizontal = new CurveMapper();
+
         [SerializeField]
-        float Range = 20.0f;
+        public CurveMapper VerticalDown = new CurveMapper();
 
-        private void Reset()
-        {
-        }
-
-        private void OnValidate()
-        {
-        }
+        [SerializeField]
+        public CurveMapper VerticalUp = new CurveMapper();
 
         VRMLookAtHead m_head;
         VRMBlendShapeProxy m_propxy;
@@ -48,26 +46,27 @@ namespace VRM
             if (yaw < 0)
             {
                 // Left
-                m_propxy.SetValue(BlendShapePreset.LookLeft, -yaw / Range);
+                m_propxy.SetValue(BlendShapePreset.LookLeft, Horizontal.Map(-yaw));
                 m_propxy.SetValue(BlendShapePreset.LookRight, 0);
             }
-            else{
+            else
+            {
                 // Right
                 m_propxy.SetValue(BlendShapePreset.LookLeft, 0);
-                m_propxy.SetValue(BlendShapePreset.LookRight, yaw / Range);
+                m_propxy.SetValue(BlendShapePreset.LookRight, Horizontal.Map(yaw));
             }
 
             if (pitch < 0)
             {
-                // Up
-                m_propxy.SetValue(BlendShapePreset.LookUp, -pitch / Range);
-                m_propxy.SetValue(BlendShapePreset.LookDown, 0);
+                // Down
+                m_propxy.SetValue(BlendShapePreset.LookUp, 0);
+                m_propxy.SetValue(BlendShapePreset.LookDown, VerticalDown.Map(-pitch));
             }
             else
             {
-                // Down
-                m_propxy.SetValue(BlendShapePreset.LookUp, 0);
-                m_propxy.SetValue(BlendShapePreset.LookDown, pitch / Range);
+                // Up
+                m_propxy.SetValue(BlendShapePreset.LookUp, VerticalUp.Map(pitch));
+                m_propxy.SetValue(BlendShapePreset.LookDown, 0);
             }
         }
     }

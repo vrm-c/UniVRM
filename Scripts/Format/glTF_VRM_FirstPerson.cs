@@ -55,6 +55,13 @@ namespace VRM
         }
     }
 
+    public enum LookAtType
+    {
+        None,
+        Bone,
+        BlendShape,
+    }
+
     [Serializable]
     public class glTF_VRM_Firstperson : UniGLTF.JsonSerializableBase
     {
@@ -65,6 +72,19 @@ namespace VRM
         public List<glTF_VRM_MeshAnnotation> meshAnnotations = new List<glTF_VRM_MeshAnnotation>();
 
         // lookat
+        public string lookAtTypeName = "Bone";
+        public LookAtType lookAtType
+        {
+            get {
+                if (string.IsNullOrEmpty(lookAtTypeName))
+                {
+                    // fallback
+                    return LookAtType.Bone;
+                }
+                return (LookAtType)Enum.Parse(typeof(LookAtType), lookAtTypeName, true);
+            }
+            set { lookAtTypeName = value.ToString(); }
+        }
         public glTF_VRM_DegreeMap lookAtHorizontalInner = new glTF_VRM_DegreeMap();
         public glTF_VRM_DegreeMap lookAtHorizontalOuter = new glTF_VRM_DegreeMap();
         public glTF_VRM_DegreeMap lookAtVerticalDown = new glTF_VRM_DegreeMap();
@@ -76,6 +96,7 @@ namespace VRM
             f.KeyValue(() => firstPersonBoneOffset);
             f.KeyValue(() => meshAnnotations);
 
+            f.KeyValue(() => lookAtTypeName);
             f.KeyValue(() => lookAtHorizontalInner);
             f.KeyValue(() => lookAtHorizontalOuter);
             f.KeyValue(() => lookAtVerticalDown);

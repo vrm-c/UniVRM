@@ -208,6 +208,7 @@ namespace VRM
                         var blendShapeApplyer = exporter.Copy.GetComponent<VRMLookAtBlendShapeApplyer>();
                         if (boneApplyer != null)
                         {
+                            gltf.extensions.VRM.firstPerson.lookAtType = LookAtType.Bone;
                             gltf.extensions.VRM.firstPerson.lookAtHorizontalInner.Apply(boneApplyer.HorizontalInner);
                             gltf.extensions.VRM.firstPerson.lookAtHorizontalOuter.Apply(boneApplyer.HorizontalOuter);
                             gltf.extensions.VRM.firstPerson.lookAtVerticalDown.Apply(boneApplyer.VerticalDown);
@@ -215,8 +216,10 @@ namespace VRM
                         }
                         else if (blendShapeApplyer != null)
                         {
-                            // ToDo
-                            throw new NotImplementedException();
+                            gltf.extensions.VRM.firstPerson.lookAtType = LookAtType.BlendShape;
+                            gltf.extensions.VRM.firstPerson.lookAtHorizontalOuter.Apply(blendShapeApplyer.Horizontal);
+                            gltf.extensions.VRM.firstPerson.lookAtVerticalDown.Apply(blendShapeApplyer.VerticalDown);
+                            gltf.extensions.VRM.firstPerson.lookAtVerticalUp.Apply(blendShapeApplyer.VerticalUp);
                         }
                     }
                     else if (lookAt != null)
