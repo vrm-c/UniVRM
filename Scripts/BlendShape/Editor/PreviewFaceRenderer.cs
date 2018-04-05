@@ -2,7 +2,7 @@
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
-
+using UniGLTF;
 
 namespace VRM
 {
