@@ -12,10 +12,22 @@ namespace VRM
         public AnimationCurve Curve = AnimationCurve.Linear(0, 0, 1.0f, 1.0f);
 
         [Range(20.0f, 90.0f)]
-        public float CurveXRangeDegree = 90.0f;
+        public float CurveXRangeDegree;
 
         [Range(0, 90.0f)]
-        public float CurveYRangeDegree = 10.0f;
+        public float CurveYRangeDegree;
+
+        /*
+        public CurveMapper() : this(90.0f, 10.0f)
+        {
+        }
+        */
+
+        public CurveMapper(float xRange, float yRange)
+        {
+            CurveXRangeDegree = xRange;
+            CurveYRangeDegree = yRange;
+        }
 
         public void OnValidate()
         {

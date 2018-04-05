@@ -9,13 +9,13 @@ namespace VRM
         public bool DrawGizmo = true;
 
         [SerializeField, Header("Degree Mapping")]
-        public CurveMapper Horizontal = new CurveMapper();
+        public CurveMapper Horizontal = new CurveMapper(90.0f, 1.0f);
 
         [SerializeField]
-        public CurveMapper VerticalDown = new CurveMapper();
+        public CurveMapper VerticalDown = new CurveMapper(90.0f, 1.0f);
 
         [SerializeField]
-        public CurveMapper VerticalUp = new CurveMapper();
+        public CurveMapper VerticalUp = new CurveMapper(90.0f, 1.0f);
 
         VRMLookAtHead m_head;
         VRMBlendShapeProxy m_propxy;

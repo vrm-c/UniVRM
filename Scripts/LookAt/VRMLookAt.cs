@@ -28,16 +28,16 @@ namespace VRM
         public OffsetOnTransform Head;
 
         [SerializeField, Header("Degree Mapping")]
-        public CurveMapper HorizontalOuter = new CurveMapper();
+        public CurveMapper HorizontalOuter = new CurveMapper(90.0f, 10.0f);
 
         [SerializeField]
-        public CurveMapper HorizontalInner = new CurveMapper();
+        public CurveMapper HorizontalInner = new CurveMapper(90.0f, 10.0f);
 
         [SerializeField]
-        public CurveMapper VerticalDown = new CurveMapper();
+        public CurveMapper VerticalDown = new CurveMapper(90.0f, 10.0f);
 
         [SerializeField]
-        public CurveMapper VerticalUp = new CurveMapper();
+        public CurveMapper VerticalUp = new CurveMapper(90.0f, 10.0f);
 
         public Texture2D CreateThumbnail()
         {
