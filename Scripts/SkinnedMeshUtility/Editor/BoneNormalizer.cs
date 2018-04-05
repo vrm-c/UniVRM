@@ -161,6 +161,7 @@ namespace VRM
                         }
                         mesh.boneWeights = srcMesh.boneWeights;
 
+                        var meshVertices = mesh.vertices;
                         var blendShapeMesh = new Mesh();
                         for (int i = 0; i < srcMesh.blendShapeCount; ++i)
                         {
@@ -168,22 +169,41 @@ namespace VRM
                             srcRenderer.BakeMesh(blendShapeMesh);
                             srcRenderer.SetBlendShapeWeight(i, 0);
 
+                            if (blendShapeMesh.vertices.Length!=mesh.vertices.Length){
+                                throw new Exception("diffrent vertex count");
+                            }
+
+                            var weight = srcMesh.GetBlendShapeFrameWeight(i, 0);
+                            var vertices = blendShapeMesh.vertices;
+                            var normals = blendShapeMesh.normals;
+                            var tangents = blendShapeMesh.tangents.Select(x => (Vector3)x).ToArray();
+
+                            for (int j = 0; j < vertices.Length; ++j) {
+                                vertices[j]= m.MultiplyPoint(vertices[j]) - meshVertices[j];
+                            }
+                            for (int j = 0; j < normals.Length; ++j)
+                            {
+                                normals[j] = m.MultiplyVector(normals[j]).normalized;
+                            }
+                            for(int j=0; j<tangents.Length; ++j)
+                            {
+                                tangents[j] = m.MultiplyVector(tangents[j]).normalized;
+                            }
+
                             var name = srcMesh.GetBlendShapeName(i);
                             if (string.IsNullOrEmpty(name))
                             {
                                 name = String.Format("{0}", i);
                             }
 
-                            var weight = srcMesh.GetBlendShapeFrameWeight(i, 0);
-
                             var s = src.localScale.x;
                             try
                             {
                                 mesh.AddBlendShapeFrame(name,
                                     weight,
-                                    blendShapeMesh.vertices.Select((x, j) => m.MultiplyPoint(x) - mesh.vertices[j]).ToArray(),
-                                    blendShapeMesh.normals.Select(x => m.MultiplyVector(x).normalized).ToArray(),
-                                    blendShapeMesh.tangents.Select(x => m.MultiplyVector(x).normalized).ToArray()
+                                    vertices.Length == meshVertices.Length ? vertices : null,
+                                    normals.Length == meshVertices.Length ? normals : null,
+                                    tangents.Length == meshVertices.Length ? tangents : null
                                     );
                             }
                             catch (Exception)
