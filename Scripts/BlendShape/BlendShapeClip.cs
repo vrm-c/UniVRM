@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using UnityEngine;
 
 
@@ -13,29 +12,15 @@ namespace VRM
         public float Weight;
     }
 
-    /*
-    public struct BlendShapeKey
+    [Serializable]
+    public struct MaterialValueBinding
     {
-        public BlendShapePreset Preset;
-        public String Name;
-
-        public BlendShapeKey(BlendShapePreset preset, String name)
-        {
-            Preset = preset;
-            Name = name.ToUpper();
-        }
-        public BlendShapeKey(BlendShapePreset preset)
-        {
-            Preset = preset;
-            Name = preset.ToString().ToUpper();
-        }
-        public BlendShapeKey(String name)
-        {
-            Preset = (BlendShapePreset)Enum.Parse(typeof(BlendShapePreset), name, true);
-            Name = name.ToUpper();
-        }
+        public String RelativePath;
+        public int Index;
+        public string ValueName; // _Color
+        public float MinValue;
+        public float MaxValue;
     }
-    */
 
     [CreateAssetMenu(menuName = "VRM/BlendShapeClip")]
     public class BlendShapeClip : ScriptableObject
@@ -49,6 +34,9 @@ namespace VRM
         [SerializeField]
         public BlendShapeBinding[] Values = new BlendShapeBinding[] { };
 
+        [SerializeField]
+        public MaterialValueBinding[] MaterialValues = new MaterialValueBinding[] { };
+
         public void Apply(Transform root, float value)
         {
             if (Values != null)
@@ -59,7 +47,29 @@ namespace VRM
                     if (target != null)
                     {
                         var sr = target.GetComponent<SkinnedMeshRenderer>();
-                        sr.SetBlendShapeWeight(x.Index, x.Weight * value);
+                        if (sr != null)
+                        {
+                            sr.SetBlendShapeWeight(x.Index, x.Weight * value);
+                        }
+                    }
+                }
+            }
+
+            if (MaterialValues != null)
+            {
+                foreach (var x in MaterialValues)
+                {
+                    var target = root.Find(x.RelativePath);
+                    if (target != null)
+                    {
+                        var sr = target.GetComponent<SkinnedMeshRenderer>();
+                        if (sr != null)
+                        {
+                            var m = sr.sharedMaterials[x.Index];
+                            var color = m.GetColor(x.ValueName);
+                            color.a = x.MinValue + (x.MaxValue - x.MinValue) * value;
+                            m.SetColor(x.ValueName, color);
+                        }
                     }
                 }
             }
