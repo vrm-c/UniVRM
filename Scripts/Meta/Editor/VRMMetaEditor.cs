@@ -82,11 +82,11 @@ namespace VRM
             m_foldoutInfo = EditorGUILayout.Foldout(m_foldoutInfo, "Information");
             if (m_foldoutInfo)
             {
+                EditorGUILayout.PropertyField(m_propMap["Title"]);
                 EditorGUILayout.PropertyField(m_propMap["Version"]);
                 EditorGUILayout.PropertyField(m_propMap["Author"]);
                 EditorGUILayout.PropertyField(m_propMap["ContactInformation"]);
                 EditorGUILayout.PropertyField(m_propMap["Reference"]);
-                EditorGUILayout.PropertyField(m_propMap["Title"]);
                 var thumbnail = m_propMap["Thumbnail"];
                 thumbnail.objectReferenceValue = TextureField("", (Texture2D)thumbnail.objectReferenceValue, 100);
             }

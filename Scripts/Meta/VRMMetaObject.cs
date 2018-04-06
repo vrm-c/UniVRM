@@ -7,6 +7,9 @@ namespace VRM
     {
         #region Info
         [SerializeField]
+        public string Title;
+
+        [SerializeField]
         public string Version;
 
         [SerializeField]
@@ -17,9 +20,6 @@ namespace VRM
 
         [SerializeField]
         public string Reference;
-
-        [SerializeField]
-        public string Title;
 
         [SerializeField]
         public Texture2D Thumbnail;

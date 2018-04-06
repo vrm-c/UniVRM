@@ -44,11 +44,11 @@ namespace VRM
                 return UssageLicense.Disallow;
             }
         }
+        public string title;
         public string version;
         public string author;
         public string contactInformation;
         public string reference;
-        public string title;
         public int texture = -1;
 
         #region Ussage Permission
