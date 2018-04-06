@@ -4,6 +4,13 @@ using UniGLTF;
 
 namespace VRM
 {
+    public enum AllowedUser
+    {
+        OnlyAuthor,
+        Everyone,
+    }
+
+
     public enum LicenseType
     {
         RedistributionProhibited,
@@ -19,32 +26,60 @@ namespace VRM
         Other
     }
 
-    public static class LicenseTypeExtensions
-    {
-        public static LicenseType ToLicenseType(this string src)
-        {
-            try
-            {
-                return (LicenseType)Enum.Parse(typeof(LicenseType), src, true);
-            }
-            catch (Exception)
-            {
-                return default(LicenseType);
-            }
-        }
-    }
 
     [Serializable]
     public class glTF_VRM_Meta : JsonSerializableBase
     {
+        public string version;
+
         public string author;
         public string contactInformation;
+        public string reference;
+
+        public string title;
+        public int texture = -1;
+
+        #region PersonationCharacterizationPermission Permission;
+        public string allowedUserName;
+        public AllowedUser allowedUser
+        {
+            get
+            {
+                try
+                {
+                    return (AllowedUser)Enum.Parse(typeof(AllowedUser), allowedUserName, true);
+                }
+                catch (Exception)
+                {
+                    return AllowedUser.OnlyAuthor;
+                }
+            }
+            set
+            {
+                allowedUserName = value.ToString();
+            }
+        }
+
+        public bool allowImmoralUssage;
+        public bool allowCcertainBeliefsUssage;
+        public bool allowPoliticalUssage;
+        public bool allowCommercialUssage;
+        #endregion
+
+        #region Distribution License
         public string licenseName;
         public LicenseType licenseType
         {
             get
             {
-                return licenseName.ToLicenseType();
+                try
+                {
+                    return (LicenseType)Enum.Parse(typeof(LicenseType), licenseName, true);
+                }
+                catch (Exception)
+                {
+                    return default(LicenseType);
+                }
             }
             set
             {
@@ -52,20 +87,27 @@ namespace VRM
             }
         }
         public string otherLicenseUrl;
-        public string reference;
-
-        public string title;
-        public int texture = -1;
+        #endregion
 
         protected override void SerializeMembers(JsonFormatter f)
         {
+            f.KeyValue(() => version);
+
             f.KeyValue(() => author);
             f.KeyValue(() => contactInformation);
-            f.KeyValue(() => licenseName);
-            f.KeyValue(() => otherLicenseUrl);
             f.KeyValue(() => reference);
+
             f.KeyValue(() => title);
             f.KeyValue(() => texture);
+
+            f.KeyValue(() => allowedUserName);
+            f.KeyValue(() => allowImmoralUssage);
+            f.KeyValue(() => allowCcertainBeliefsUssage);
+            f.KeyValue(() => allowPoliticalUssage);
+            f.KeyValue(() => allowCommercialUssage);
+
+            f.KeyValue(() => licenseName);
+            f.KeyValue(() => otherLicenseUrl);
         }
     }
 }

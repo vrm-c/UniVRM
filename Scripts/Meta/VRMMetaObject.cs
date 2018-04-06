@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 
 namespace VRM
@@ -9,7 +7,7 @@ namespace VRM
     {
         #region Info
         [SerializeField, Header("Information")]
-        public string Title;
+        public string Version;
 
         [SerializeField]
         public string Author;
@@ -18,14 +16,31 @@ namespace VRM
         public string ContactInformation;
 
         [SerializeField]
-        public Texture2D Thumbnail;
+        public string Reference;
 
         [SerializeField]
-        public string Reference;
+        public string Title;
+
+        [SerializeField]
+        public Texture2D Thumbnail;
+        #endregion
+
+        #region Permission
+        [SerializeField, Header("Permission")]
+        public AllowedUser allowedUser;
+
+        [SerializeField]
+        public bool allowImmoralUssage;
+        [SerializeField]
+        public bool allowCcertainBeliefsUssage;
+        [SerializeField]
+        public bool allowPoliticalUssage;
+        [SerializeField]
+        public bool allowCommercialUssage;
         #endregion
 
         #region License
-        [SerializeField, Header("License")]
+        [SerializeField, Header("Distribution License")]
         public LicenseType LicenseType;
 
         [SerializeField]
