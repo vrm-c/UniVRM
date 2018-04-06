@@ -1,4 +1,5 @@
-﻿using System;
+﻿#pragma warning disable 0414
+using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using UnityEngine;
