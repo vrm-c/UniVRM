@@ -185,8 +185,8 @@ namespace VRM
                     // ussage pemission
                     gltf.extensions.VRM.meta.allowedUser = meta.AllowedUser;
                     gltf.extensions.VRM.meta.violentUssage = meta.ViolentUssage;
-                    gltf.extensions.VRM.meta.sexualUssage = meta.ViolentUssage;
-                    gltf.extensions.VRM.meta.commercialUssage = meta.ViolentUssage;
+                    gltf.extensions.VRM.meta.sexualUssage = meta.SexualUssage;
+                    gltf.extensions.VRM.meta.commercialUssage = meta.CommercialUssage;
                     gltf.extensions.VRM.meta.otherPermissionUrl = meta.OtherPermissionUrl;
 
                     // distribution license

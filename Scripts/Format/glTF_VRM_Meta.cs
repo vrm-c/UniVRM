@@ -71,24 +71,28 @@ namespace VRM
                 allowedUserName = value.ToString();
             }
         }
+
         public string violentUssageName;
         public UssageLicense violentUssage
         {
             get { return FromString(violentUssageName); }
             set { violentUssageName = value.ToString(); }
         }
+
         public string sexualUssageName;
         public UssageLicense sexualUssage
         {
             get { return FromString(sexualUssageName); }
             set { sexualUssageName = value.ToString(); }
         }
+
         public string commercialUssageName;
         public UssageLicense commercialUssage
         {
             get { return FromString(commercialUssageName); }
             set { commercialUssageName = value.ToString(); }
         }
+
         public string otherPermissionUrl;
         #endregion
 
