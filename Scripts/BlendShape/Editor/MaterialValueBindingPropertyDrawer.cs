@@ -16,7 +16,7 @@ namespace VRM
             {
                 var y = position.y;
                 for (var depth = property.depth;
-                    property.NextVisible(true) && property.depth >= depth;
+                    property.NextVisible(true) && property.depth > depth;
                     )
                 {
                     {

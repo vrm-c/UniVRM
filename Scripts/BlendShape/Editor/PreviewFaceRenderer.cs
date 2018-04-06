@@ -3,6 +3,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UniGLTF;
+using System.Reflection;
 
 namespace VRM
 {
@@ -48,7 +49,22 @@ namespace VRM
                 m_previewInstance = (GameObject)GameObject.Instantiate(m_prefab, m_prefab.transform.position, m_prefab.transform.rotation);
                 m_previewInstance.name = PreviewInstanceName;
                 // HideFlags are special editor-only settings that let you have *secret* GameObjects in a scene, or to tell Unity not to save that temporary GameObject as part of the scene
-                m_previewInstance.hideFlags = HideFlags.DontSaveInEditor | HideFlags.DontSaveInBuild; // you could also hide it from the hierarchy or inspector, but personally I like knowing everything that's there
+                m_previewInstance.hideFlags =
+                     HideFlags.HideAndDontSave
+                //HideFlags.DontSaveInEditor 
+                //| HideFlags.DontSaveInBuild
+                ; // you could also hide it from the hierarchy or inspector, but personally I like knowing everything that's there
+
+                var flags = BindingFlags.Static | BindingFlags.NonPublic;
+                var propInfo = typeof(Camera).GetProperty("PreviewCullingLayer", flags);
+                int previewLayer = (int)propInfo.GetValue(null, new object[0]);
+                //previewLayer のみ表示する
+                m_previewUtility.m_Camera.cullingMask = 1 << previewLayer;
+
+                foreach (var x in m_previewInstance.transform.Traverse())
+                {
+                    x.gameObject.layer = previewLayer;
+                }
             }
 
             m_Renderers = m_previewInstance.transform.Traverse()
