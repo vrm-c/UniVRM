@@ -137,6 +137,8 @@ namespace VRM
         #region OnLoad
         public static Unit OnLoadModel(VRMImporterContext context)
         {
+            LoadMeta(context);
+
             try
             {
                 LoadHumanoidObsolete(context);
@@ -150,7 +152,6 @@ namespace VRM
             LoadBlendShapeMaster(context);
             LoadSecondaryMotions(context);
             LoadFirstPerson(context);
-            LoadMeta(context);
 
             return Unit.Default;
         }
@@ -160,12 +161,14 @@ namespace VRM
             var meta = context.ReadMeta();
             if (meta.Thumbnail == null)
             {
+                /*
                 // 作る
                 var lookAt = context.Root.GetComponent<VRMLookAtHead>();
                 var thumbnail = lookAt.CreateThumbnail();
                 thumbnail.name = "thumbnail";
                 meta.Thumbnail = thumbnail;
                 context.Textures.Add(new TextureItem(thumbnail));
+                */
             }
             var _meta = context.Root.AddComponent<VRMMeta>();
             _meta.Meta = meta;

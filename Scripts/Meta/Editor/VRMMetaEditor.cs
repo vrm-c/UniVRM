@@ -91,6 +91,8 @@ namespace VRM
                 thumbnail.objectReferenceValue = TextureField("", (Texture2D)thumbnail.objectReferenceValue, 100);
             }
 
+            EditorGUILayout.LabelField("License ", EditorStyles.boldLabel);
+
             m_foldoutPersmission = EditorGUILayout.Foldout(m_foldoutPersmission, "Personation / Characterization Permission");
             if (m_foldoutPersmission)
             {
