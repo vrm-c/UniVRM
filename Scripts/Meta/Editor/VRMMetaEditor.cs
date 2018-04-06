@@ -55,7 +55,7 @@ namespace VRM
                     */
                 if (iterator.name == "Thumbnail")
                 {
-                    iterator.objectReferenceValue=TextureField(iterator.name, (Texture2D)iterator.objectReferenceValue);
+                    iterator.objectReferenceValue=TextureField(iterator.name, (Texture2D)iterator.objectReferenceValue, 100);
                 }
                 else {
                     EditorGUILayout.PropertyField(iterator, false);
@@ -65,14 +65,14 @@ namespace VRM
             so.ApplyModifiedProperties();
         }
 
-        private static Texture2D TextureField(string name, Texture2D texture)
+        private static Texture2D TextureField(string name, Texture2D texture, int size)
         {
-            GUILayout.BeginVertical();
+            GUILayout.BeginHorizontal();
             var style = new GUIStyle(GUI.skin.label);
             style.alignment = TextAnchor.UpperCenter;
-            style.fixedWidth = 70;
+            //style.fixedWidth = size;
             GUILayout.Label(name, style);
-            var result = (Texture2D)EditorGUILayout.ObjectField(texture, typeof(Texture2D), false, GUILayout.Width(70), GUILayout.Height(70));
+            var result = (Texture2D)EditorGUILayout.ObjectField(texture, typeof(Texture2D), false, GUILayout.Width(size), GUILayout.Height(size));
             GUILayout.EndVertical();
             return result;
         }
