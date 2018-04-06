@@ -167,21 +167,36 @@ namespace VRM
             // meta
             {
                 var _meta = exporter.Copy.GetComponent<VRMMeta>();
-                if (_meta != null && _meta.Meta!=null)
+                if (_meta != null && _meta.Meta != null)
                 {
                     var meta = _meta.Meta;
+
+                    // info
+                    gltf.extensions.VRM.meta.version = meta.Version;
                     gltf.extensions.VRM.meta.author = meta.Author;
                     gltf.extensions.VRM.meta.contactInformation = meta.ContactInformation;
+                    gltf.extensions.VRM.meta.reference = meta.Reference;
                     gltf.extensions.VRM.meta.title = meta.Title;
                     if (meta.Thumbnail != null)
                     {
                         gltf.extensions.VRM.meta.texture = gltfExporter.ExportTexture(gltf, gltf.buffers.Count - 1, meta.Thumbnail);
                     }
+
+                    // ussage pemission
+                    gltf.extensions.VRM.meta.allowedUser = meta.AllowedUser;
+                    gltf.extensions.VRM.meta.violentUssage = meta.ViolentUssage;
+                    gltf.extensions.VRM.meta.sexualUssage = meta.ViolentUssage;
+                    gltf.extensions.VRM.meta.commercialUssage = meta.ViolentUssage;
+                    gltf.extensions.VRM.meta.otherPermissionUrl = meta.OtherPermissionUrl;
+
+                    // distribution license
                     gltf.extensions.VRM.meta.licenseType = meta.LicenseType;
-                    gltf.extensions.VRM.meta.otherLicenseUrl = meta.OtherLicenseUrl;
-                    gltf.extensions.VRM.meta.reference = meta.Reference;
+                    if (meta.LicenseType == LicenseType.Other)
+                    {
+                        gltf.extensions.VRM.meta.otherLicenseUrl = meta.OtherLicenseUrl;
+                    }
                 }
-            }           
+            }
 
             // firstPerson
             var firstPerson = exporter.Copy.GetComponent<VRMFirstPerson>();

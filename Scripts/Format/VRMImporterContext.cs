@@ -38,17 +38,27 @@ namespace VRM
         {
             var meta=ScriptableObject.CreateInstance<VRMMetaObject>();
             meta.name = "Meta";
+
             var gltfMeta = VRM.extensions.VRM.meta;
+            meta.Version = gltfMeta.version;
             meta.Author = gltfMeta.author;
             meta.ContactInformation = gltfMeta.contactInformation;
+            meta.Reference = gltfMeta.reference;
             meta.Title = gltfMeta.title;
             if (gltfMeta.texture != -1)
             {
                 meta.Thumbnail = Textures[gltfMeta.texture].Texture;
             }
+
+            meta.AllowedUser = gltfMeta.allowedUser;
+            meta.ViolentUssage = gltfMeta.violentUssage;
+            meta.SexualUssage = gltfMeta.sexualUssage;
+            meta.CommercialUssage = gltfMeta.commercialUssage;
+            meta.OtherPermissionUrl = gltfMeta.otherPermissionUrl;
+
             meta.LicenseType = gltfMeta.licenseType;
             meta.OtherLicenseUrl = gltfMeta.otherLicenseUrl;
-            meta.Reference = gltfMeta.reference;
+
             return meta;
         }
 

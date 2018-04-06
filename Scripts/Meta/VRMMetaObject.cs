@@ -6,7 +6,7 @@ namespace VRM
     public class VRMMetaObject : ScriptableObject
     {
         #region Info
-        [SerializeField, Header("Information")]
+        [SerializeField]
         public string Version;
 
         [SerializeField]
@@ -26,27 +26,31 @@ namespace VRM
         #endregion
 
         #region Permission
-        [SerializeField, Header("Permission")]
-        public AllowedUser allowedUser;
+        [SerializeField, Tooltip("A person who can perform with this avatar")]
+        public AllowedUser AllowedUser;
 
-        [SerializeField]
-        public bool allowImmoralUssage;
-        [SerializeField]
-        public bool allowCcertainBeliefsUssage;
-        [SerializeField]
-        public bool allowPoliticalUssage;
-        [SerializeField]
-        public bool allowCommercialUssage;
+        [SerializeField, Tooltip("Violent acts using this avatar")]
+        public UssageLicense ViolentUssage;
+
+        [SerializeField, Tooltip("Sexuality acts using this avatar")]
+        public UssageLicense SexualUssage;
+
+        [SerializeField, Tooltip("For commercial use")]
+        public UssageLicense CommercialUssage;
+
+        [SerializeField, Tooltip("Other License Url")]
+        public string OtherPermissionUrl;
         #endregion
 
-        #region License
-        [SerializeField, Header("Distribution License")]
+        #region Distribution License
+        [SerializeField]
         public LicenseType LicenseType;
 
         [SerializeField]
         public string OtherLicenseUrl;
         #endregion
 
+        /*
         public bool Equals(VRMMetaObject other)
         {
             return
@@ -55,5 +59,6 @@ namespace VRM
             && UniGLTF.MonoBehaviourComparator.AssetAreEquals(Thumbnail, other.Thumbnail)
             ;
         }
+        */
     }
 }
