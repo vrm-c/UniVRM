@@ -196,7 +196,6 @@ namespace VRM
                                 name = String.Format("{0}", i);
                             }
 
-                            var s = src.localScale.x;
                             try
                             {
                                 mesh.AddBlendShapeFrame(name,
