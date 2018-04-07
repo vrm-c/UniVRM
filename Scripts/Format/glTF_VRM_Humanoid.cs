@@ -75,7 +75,18 @@ namespace VRM
         }
         public static HumanBodyBones ToHumanBodyBone(this VRMBone bone)
         {
+#if  UNITY_5_6_OR_NEWER
             return EnumUtil.TryParseOrDefault<HumanBodyBones>(bone.ToString());
+#else
+            if (bone == VRMBone.upperChest)
+            {
+                return HumanBodyBones.LastBone;
+            }
+            else
+            {
+                return EnumUtil.TryParseOrDefault<HumanBodyBones>(bone.ToString());
+            }
+#endif
         }
     }
 
@@ -214,7 +225,9 @@ namespace VRM
                 min = x.min,
                 max = x.max,
                 humanBone = x.vrmBone.ToHumanBodyBone(),               
-            }).ToArray();
+            })
+            .Where(x => x.humanBone!= HumanBodyBones.LastBone)
+            .ToArray();
             return description;
         }
     }
