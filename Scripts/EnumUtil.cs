@@ -5,15 +5,15 @@ namespace VRM
 {
     public static class EnumUtil
     {
-        public static T TryParseOrDefault<T>(string src)where T: struct
+        public static T TryParseOrDefault<T>(string src, T defaultValue=default(T)) where T : struct
         {
             try
             {
                 return (T)Enum.Parse(typeof(T), src, true);
             }
-            catch(Exception)
+            catch (Exception)
             {
-                return default(T);
+                return defaultValue;
             }
         }
     }

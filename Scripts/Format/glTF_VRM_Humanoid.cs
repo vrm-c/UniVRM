@@ -65,28 +65,25 @@ namespace VRM
         rightLittleIntermediate,
         rightLittleDistal,
         upperChest,
+
+        unknown,
     }
 
     public static class VRMBoneExtensions
     {
         public static VRMBone FromHumanBodyBone(this HumanBodyBones human)
         {
-            return EnumUtil.TryParseOrDefault<VRMBone>(human.ToString());
+            return EnumUtil.TryParseOrDefault<VRMBone>(human.ToString(), VRMBone.unknown);
         }
         public static HumanBodyBones ToHumanBodyBone(this VRMBone bone)
         {
 #if  UNITY_5_6_OR_NEWER
-            return EnumUtil.TryParseOrDefault<HumanBodyBones>(bone.ToString());
-#else
             if (bone == VRMBone.upperChest)
             {
                 return HumanBodyBones.LastBone;
             }
-            else
-            {
-                return EnumUtil.TryParseOrDefault<HumanBodyBones>(bone.ToString());
-            }
 #endif
+            return EnumUtil.TryParseOrDefault<HumanBodyBones>(bone.ToString(), HumanBodyBones.LastBone);
         }
     }
 
