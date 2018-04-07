@@ -18,6 +18,17 @@ namespace VRM
     public class PreviewFaceRenderer : IDisposable
     {
         PreviewRenderUtility m_previewUtility;
+        public Camera PreviewCamera
+        {
+            get
+            {
+#if UNITY_2017_1_OR_NEWER
+                return m_previewUtility.camera;
+#else
+                return m_previewUtility.m_Camera;
+#endif
+            }
+        }
 
         public PreviewFaceRenderer()
         {
@@ -36,7 +47,7 @@ namespace VRM
                 m_previewUtility.BeginPreview(r, background); // set up the PreviewRenderUtility's mini internal scene
 
                 // setup the ObjectPreview's camera
-                scene.SetupCamera(m_previewUtility.camera);
+                scene.SetupCamera(PreviewCamera);
 
                 foreach (var item in scene.EnumRenderItems)
                 {
@@ -53,7 +64,7 @@ namespace VRM
                 }
 
                 // VERY IMPORTANT: this manually tells the camera to render and produce the render texture
-                m_previewUtility.camera.Render();
+                PreviewCamera.Render();
 
                 // reset the scene's fog from before
                 return m_previewUtility.EndPreview(); // grab the RenderTexture resulting from DoRenderPreview() > RenderMeshPreview() > PreviewRenderUtility.m_Camera.Render()
@@ -64,7 +75,7 @@ namespace VRM
             }
         }
 
-        #region IDisposable Support
+#region IDisposable Support
         private bool disposedValue = false; // 重複する呼び出しを検出するには
 
         protected virtual void Dispose(bool disposing)
@@ -102,6 +113,6 @@ namespace VRM
             // TODO: 上のファイナライザーがオーバーライドされる場合は、次の行のコメントを解除してください。
             // GC.SuppressFinalize(this);
         }
-        #endregion
+#endregion
     }
 }
