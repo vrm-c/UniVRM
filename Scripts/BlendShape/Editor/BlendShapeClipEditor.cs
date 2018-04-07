@@ -35,7 +35,7 @@ namespace VRM
                   rect.height -= 4;
                   rect.y += 2;
                   //EditorGUI.PropertyField(rect, element);
-                  BlendShapeBindingPropertyDrawer.DrawElement(rect, element, m_scene.SkinnedMeshRendererPathList);
+                  BlendShapeBindingPropertyDrawer.DrawElement(rect, element, m_scene);
               };
 
             m_MaterialValuesProp = serializedObject.FindProperty("MaterialValues");

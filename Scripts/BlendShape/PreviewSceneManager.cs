@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using System.Reflection;
+using System;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -85,6 +86,16 @@ namespace VRM
                 .ToArray()
                 ;
 
+            foreach(var x in m_meshes)
+            {
+                if (x.SkinnedMeshRenderer != null)
+                {
+                    var mesh = x.SkinnedMeshRenderer.sharedMesh;
+                    m_blendShapeNameMap.Add(m_blendShapeNameMap.Count, 
+                        Enumerable.Range(0, mesh.blendShapeCount).Select(y => mesh.GetBlendShapeName(y)).ToArray());
+                }
+            }
+
             Bake();
 
             m_rendererPathList = m_meshes.Select(x => x.Path).ToArray();
@@ -106,6 +117,12 @@ namespace VRM
             }
 
             public Mesh Mesh
+            {
+                get;
+                private set;
+            }
+
+            public int BlendShapeCount
             {
                 get;
                 private set;
@@ -159,6 +176,7 @@ namespace VRM
                     {
                         SkinnedMeshRenderer = skinnedMeshRenderer,
                         Mesh = new Mesh(), // for bake
+                        BlendShapeCount = skinnedMeshRenderer.sharedMesh.blendShapeCount,
                         Materials = skinnedMeshRenderer.sharedMaterials
                     };
                 }
@@ -193,6 +211,17 @@ namespace VRM
         public string[] SkinnedMeshRendererPathList
         {
             get { return m_skinnedMeshRendererPathList; }
+        }
+
+        Dictionary<int, string[]> m_blendShapeNameMap = new Dictionary<int, string[]>();
+        public string[] GetBlendShapeNames(int skinnedMeshIndex)
+        {
+            string[] names = null;
+            if(m_blendShapeNameMap.TryGetValue(skinnedMeshIndex, out names))
+            {
+                return names;
+            }
+            return null;
         }
 
         Bounds m_bounds;

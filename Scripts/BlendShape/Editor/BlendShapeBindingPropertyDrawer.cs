@@ -31,9 +31,9 @@ namespace VRM
             }
         }
 
-        public static void DrawElement(Rect position, SerializedProperty property, string[] pathList)
+        public static void DrawElement(Rect position, SerializedProperty property,
+            PreviewSceneManager scene)
         {
-            var y = position.y;
             /*
             for (var depth = property.depth;
                 property.NextVisible(true) && property.depth > depth;
@@ -46,22 +46,49 @@ namespace VRM
                 }
             }
             */
-            var pathProp = property.FindPropertyRelative("RelativePath");
+            var height = 16;
 
-            var height = EditorGUI.GetPropertyHeight(property);
+            var y = position.y;
             var rect = new Rect(position.x, y, position.width, height);
-            //EditorGUI.PropertyField(, pathProp, false);
+            var index=StringPopup(rect, property.FindPropertyRelative("RelativePath"), scene.SkinnedMeshRendererPathList);
 
-            StringPopup(rect, pathProp, pathList);
+            y += height;
+            rect = new Rect(position.x, y, position.width, height);
+            IntPopup(rect, property.FindPropertyRelative("Index"), scene.GetBlendShapeNames(index));
+
+            y += height;
+            rect = new Rect(position.x, y, position.width, height);
+            FloatSlider(rect, property.FindPropertyRelative("Weight"), 100);
         }
 
-        static void StringPopup(Rect rect, SerializedProperty prop, string[] options)
+        static int StringPopup(Rect rect, SerializedProperty prop, string[] options)
         {
             var oldIndex = Array.IndexOf(options, prop.stringValue);
             var newIndex = EditorGUI.Popup(rect, oldIndex, options);
             if (newIndex != oldIndex && newIndex >= 0 && newIndex < options.Length)
             {
                 prop.stringValue = options[newIndex];
+            }
+            return newIndex;
+        }
+
+        static void IntPopup(Rect rect, SerializedProperty prop, string[] options)
+        {
+            var oldIndex = prop.intValue;
+            var newIndex = EditorGUI.Popup(rect, oldIndex, options);
+            if (newIndex != oldIndex && newIndex >= 0 && newIndex < options.Length)
+            {
+                prop.intValue = newIndex;
+            }
+        }
+
+        static void FloatSlider(Rect rect, SerializedProperty prop, float maxValue)
+        {
+            var oldValue = prop.floatValue;
+            var newValue = EditorGUI.Slider(rect, prop.floatValue, 0, 100f);
+            if (newValue != oldValue)
+            {
+                prop.floatValue = newValue;
             }
         }
     }
