@@ -45,7 +45,7 @@ namespace VRM
             meta.ContactInformation = gltfMeta.contactInformation;
             meta.Reference = gltfMeta.reference;
             meta.Title = gltfMeta.title;
-            if (gltfMeta.texture != -1)
+            if (gltfMeta.texture >=0 && gltfMeta.texture< Textures.Count)
             {
                 meta.Thumbnail = Textures[gltfMeta.texture].Texture;
             }
