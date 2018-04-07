@@ -106,7 +106,7 @@ namespace VRM
 
         public override void OnInspectorGUI()
         {
-            m_prefab = (GameObject)EditorGUILayout.ObjectField("prefab", m_prefab, typeof(GameObject), false);
+            Prefab = (GameObject)EditorGUILayout.ObjectField("prefab", Prefab, typeof(GameObject), false);
 
             serializedObject.Update();
 
@@ -147,16 +147,18 @@ namespace VRM
 
             if (m_renderer != null && m_scene != null)
             {
-                var image = m_renderer.Render(r, background, m_scene);
-                if (image != null)
+                var texture = m_renderer.Render(r, background, m_scene);
+                if (texture != null)
                 {
                     // draw the RenderTexture in the ObjectPreview pane
-                    GUI.DrawTexture(r, image, ScaleMode.StretchToFill, false); 
+                    GUI.DrawTexture(r, texture, ScaleMode.StretchToFill, false); 
                 }
             }
+        }
 
-            EditorGUI.DropShadowLabel(new Rect(r.x, r.y, r.width, 40f), 
-            BlendShapeKey.CreateFrom((BlendShapeClip)target).ToString());
+        public override string GetInfoString()
+        {
+            return BlendShapeKey.CreateFrom((BlendShapeClip)target).ToString();
         }
     }
 }

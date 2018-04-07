@@ -72,12 +72,14 @@ namespace VRM
 
             var flags = BindingFlags.Static | BindingFlags.NonPublic;
             var propInfo = typeof(Camera).GetProperty("PreviewCullingLayer", flags);
-            PreviewLayer = (int)propInfo.GetValue(null, new object[0]);
+            //PreviewLayer = (int)propInfo.GetValue(null, new object[0]);
 
+            /*
             foreach (var x in transform.Traverse())
             {
                 x.gameObject.layer = PreviewLayer;
             }
+            */
 
             m_meshes = transform.Traverse()
                 .Select(x => MeshPreviewItem.Create(x, transform))
@@ -231,17 +233,17 @@ namespace VRM
             foreach (var x in m_meshes)
             {
                 x.Bake();
-                m_bounds.Expand(x.Mesh.bounds.min);
-                m_bounds.Expand(x.Mesh.bounds.max);
+                m_bounds.Expand(x.Mesh.bounds.size);
             }
         }
 
+        /*
         int PreviewLayer
         {
             get;
             set;
         }
-
+        */
 
         /// <summary>
         /// カメラパラメーターを決める
@@ -249,19 +251,19 @@ namespace VRM
         /// <param name="camera"></param>
         public void SetupCamera(Camera camera)
         {
-            float magnitude = m_bounds.extents.magnitude;
-            float distance = 4f * magnitude;
+            float magnitude = m_bounds.extents.magnitude * 0.5f;
+            float distance = magnitude;
             camera.fieldOfView = 27f;
             camera.backgroundColor = Color.gray;
             camera.clearFlags = CameraClearFlags.Color;
             // this used to be "-Vector3.forward * num" but I hardcoded my camera position instead
-            camera.transform.position = new Vector3(0f, 1.4f, 1.5f);
+            camera.transform.position = new Vector3(0f, 1.4f, distance);
             camera.transform.rotation = Quaternion.Euler(0, 180f, 0);
             camera.nearClipPlane = 0.3f;
             camera.farClipPlane = distance + magnitude * 1.1f;
 
             //previewLayer のみ表示する
-            camera.cullingMask = 1 << PreviewLayer;
+            //camera.cullingMask = 1 << PreviewLayer;
         }
     }
 }

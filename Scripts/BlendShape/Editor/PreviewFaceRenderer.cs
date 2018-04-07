@@ -33,16 +33,36 @@ namespace VRM
         public PreviewFaceRenderer()
         {
             m_previewUtility = new PreviewRenderUtility();
+
+            m_previewUtility.lights[0].intensity = 1.4f;
+            m_previewUtility.lights[0].transform.rotation = Quaternion.Euler(40f, 190f, 0);
+            m_previewUtility.lights[1].intensity = 1.4f;
+
+            m_previewUtility.ambientColor = new Color(.1f, .1f, .1f, 0);
+        }
+
+        class FogScope : IDisposable
+        {
+            bool fog;
+
+            public FogScope()
+            {
+                bool fog = RenderSettings.fog; // ... let's remember the current fog setting...
+                // we are technically rendering everything in the scene, so scene fog might affect it...
+                Unsupported.SetRenderSettingsUseFogNoDirty(false); // ... and then temporarily turn it off
+            }
+
+            public void Dispose()
+            {
+                Unsupported.SetRenderSettingsUseFogNoDirty(fog);
+            }
         }
 
         public Texture Render(Rect r, GUIStyle background, PreviewSceneManager scene)
         {
             if (scene == null) return null;
 
-            // we are technically rendering everything in the scene, so scene fog might affect it...
-            bool fog = RenderSettings.fog; // ... let's remember the current fog setting...
-            Unsupported.SetRenderSettingsUseFogNoDirty(false); // ... and then temporarily turn it off
-            try
+            using (var fog = new FogScope())
             {
                 m_previewUtility.BeginPreview(r, background); // set up the PreviewRenderUtility's mini internal scene
 
@@ -65,13 +85,10 @@ namespace VRM
 
                 // VERY IMPORTANT: this manually tells the camera to render and produce the render texture
                 PreviewCamera.Render();
+                //m_previewUtility.Render(false, false);
 
                 // reset the scene's fog from before
-                return m_previewUtility.EndPreview(); // grab the RenderTexture resulting from DoRenderPreview() > RenderMeshPreview() > PreviewRenderUtility.m_Camera.Render()
-            }
-            finally
-            {
-                Unsupported.SetRenderSettingsUseFogNoDirty(fog);
+                return m_previewUtility.EndPreview();
             }
         }
 
