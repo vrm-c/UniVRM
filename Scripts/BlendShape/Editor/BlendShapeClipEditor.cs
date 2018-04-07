@@ -8,6 +8,10 @@ namespace VRM
     [CustomEditor(typeof(BlendShapeClip))]
     public class BlendShapeClipEditor : Editor
     {
+        //const string PREVIEW_INSTANCE_NAME = "__FACE_PREVIEW_SCENE__";
+        PreviewSceneManager m_scene;
+        PreviewFaceRenderer m_renderer;
+
         #region for Editor
         SerializedProperty m_BlendShapeNameProp;
         SerializedProperty m_PresetProp;
@@ -15,11 +19,6 @@ namespace VRM
         ReorderableList m_ValuesList;
         SerializedProperty m_MaterialValuesProp;
         ReorderableList m_MaterialValuesList;
-        #endregion
-
-        #region for Preview
-        GameObject m_prefab;
-        PreviewFaceRenderer m_renderer;
         #endregion
 
         private void OnEnable()
@@ -35,7 +34,8 @@ namespace VRM
                   var element = m_ValuesProp.GetArrayElementAtIndex(index);
                   rect.height -= 4;
                   rect.y += 2;
-                  EditorGUI.PropertyField(rect, element);
+                  //EditorGUI.PropertyField(rect, element);
+                  BlendShapeBindingPropertyDrawer.DrawElement(rect, element, m_scene.SkinnedMeshRendererPathList);
               };
 
             m_MaterialValuesProp = serializedObject.FindProperty("MaterialValues");
@@ -49,23 +49,11 @@ namespace VRM
                   EditorGUI.PropertyField(rect, element);
               };
 
+            m_renderer = new PreviewFaceRenderer();
+
             var assetPath = AssetDatabase.GetAssetPath(target);
-
-            //Debug.LogFormat("BlendShapeClipEditor: {0}", assetPath);
-            if (!string.IsNullOrEmpty(assetPath))
-            {
-                m_prefab = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
-
-                if (m_prefab != null)
-                {
-                    if (m_renderer != null)
-                    {
-                        m_renderer.Dispose();
-                        m_renderer = null;
-                    }
-                    m_renderer = new PreviewFaceRenderer(m_prefab);
-                }
-            }
+            m_scene = PreviewSceneManager.GetOrCreate(assetPath);
+            m_scene.gameObject.SetActive(false);
         }
 
         private void OnDisable()
@@ -79,6 +67,12 @@ namespace VRM
 
         private void OnDestroy()
         {
+            if (m_scene != null)
+            {
+                //Debug.LogFormat("OnDestroy");
+                GameObject.DestroyImmediate(m_scene.gameObject);
+                m_scene = null;
+            }
         }
 
         public override void OnInspectorGUI()
@@ -129,7 +123,7 @@ namespace VRM
                 return;
             }
 
-            var image = m_renderer.Render(r, background);
+            var image = m_renderer.Render(r, background, m_scene);
             GUI.DrawTexture(r, image, ScaleMode.StretchToFill, false); // draw the RenderTexture in the ObjectPreview pane
 
             EditorGUI.DropShadowLabel(new Rect(r.x, r.y, r.width, 40f), 
