@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -34,18 +32,7 @@ namespace VRM
         public static void DrawElement(Rect position, SerializedProperty property,
             PreviewSceneManager scene)
         {
-            /*
-            for (var depth = property.depth;
-                property.NextVisible(true) && property.depth > depth;
-                )
-            {
-                {
-                    var height = EditorGUI.GetPropertyHeight(property);
-                    EditorGUI.PropertyField(new Rect(position.x, y, position.width, height), property, false);
-                    y += height;
-                }
-            }
-            */
+            if (scene == null) return;
             var height = 16;
 
             var y = position.y;
@@ -63,6 +50,8 @@ namespace VRM
 
         static int StringPopup(Rect rect, SerializedProperty prop, string[] options)
         {
+            if (options == null) { return -1; }
+
             var oldIndex = Array.IndexOf(options, prop.stringValue);
             var newIndex = EditorGUI.Popup(rect, oldIndex, options);
             if (newIndex != oldIndex && newIndex >= 0 && newIndex < options.Length)
@@ -72,14 +61,17 @@ namespace VRM
             return newIndex;
         }
 
-        static void IntPopup(Rect rect, SerializedProperty prop, string[] options)
+        static int IntPopup(Rect rect, SerializedProperty prop, string[] options)
         {
+            if (options == null){ return -1; }
+
             var oldIndex = prop.intValue;
             var newIndex = EditorGUI.Popup(rect, oldIndex, options);
             if (newIndex != oldIndex && newIndex >= 0 && newIndex < options.Length)
             {
                 prop.intValue = newIndex;
             }
+            return newIndex;
         }
 
         static void FloatSlider(Rect rect, SerializedProperty prop, float maxValue)

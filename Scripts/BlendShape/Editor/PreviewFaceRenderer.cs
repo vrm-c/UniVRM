@@ -26,6 +26,8 @@ namespace VRM
 
         public Texture Render(Rect r, GUIStyle background, PreviewSceneManager scene)
         {
+            if (scene == null) return null;
+
             // we are technically rendering everything in the scene, so scene fog might affect it...
             bool fog = RenderSettings.fog; // ... let's remember the current fog setting...
             Unsupported.SetRenderSettingsUseFogNoDirty(false); // ... and then temporarily turn it off
@@ -34,7 +36,7 @@ namespace VRM
                 m_previewUtility.BeginPreview(r, background); // set up the PreviewRenderUtility's mini internal scene
 
                 // setup the ObjectPreview's camera
-                scene.SetupCamera(m_previewUtility.m_Camera);
+                scene.SetupCamera(m_previewUtility.camera);
 
                 foreach (var item in scene.EnumRenderItems)
                 {
@@ -51,7 +53,7 @@ namespace VRM
                 }
 
                 // VERY IMPORTANT: this manually tells the camera to render and produce the render texture
-                m_previewUtility.m_Camera.Render();
+                m_previewUtility.camera.Render();
 
                 // reset the scene's fog from before
                 return m_previewUtility.EndPreview(); // grab the RenderTexture resulting from DoRenderPreview() > RenderMeshPreview() > PreviewRenderUtility.m_Camera.Render()

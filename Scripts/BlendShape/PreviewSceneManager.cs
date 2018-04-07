@@ -17,30 +17,29 @@ namespace VRM
     /// </summary>
     public class PreviewSceneManager : MonoBehaviour
     {
-        public string AssetPath;
+        public GameObject Prefab;
 
 #if UNITY_EDITOR
-        public static PreviewSceneManager GetOrCreate(string assetPath)
+        public static PreviewSceneManager GetOrCreate(GameObject prefab)
         {
+            if (prefab == null)
+            {
+                return null;
+            }
+
             PreviewSceneManager manager = null;
 
             // if we already instantiated a PreviewInstance previously but just lost the reference, then use that same instance instead of making a new one
             var managers = GameObject.FindObjectsOfType<PreviewSceneManager>();
             foreach (var x in managers)
             {
-                if (x.AssetPath == assetPath)
+                if (x.Prefab == prefab)
                 {
                     Debug.LogFormat("find {0}", manager);
                     return manager;
                 }
                 Debug.LogFormat("destroy {0}", x);
                 GameObject.DestroyImmediate(x.gameObject);
-            }
-
-            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
-            if (prefab == null)
-            {
-                return null;
             }
 
             // no previous instance detected, so now let's make a fresh one
@@ -51,7 +50,7 @@ namespace VRM
                 );
             go.name = "__PREVIEW_SCENE_MANGER__";
             manager = go.AddComponent<PreviewSceneManager>();
-            manager.Initialize(assetPath);
+            manager.Initialize(prefab);
 
             // HideFlags are special editor-only settings that let you have *secret* GameObjects in a scene, or to tell Unity not to save that temporary GameObject as part of the scene
             go.hideFlags |= HideFlags.DontSaveInEditor;
@@ -61,15 +60,15 @@ namespace VRM
             go.hideFlags |= HideFlags.HideAndDontSave;
             ; // you could also hide it from the hierarchy or inspector, but personally I like knowing everything that's there
 #endif
-            //Debug.LogFormat("Create {0}", manager);
+            Debug.LogFormat("Create {0}", manager);
 
             return manager;
         }
 #endif
 
-        private void Initialize(string assetPath)
+        private void Initialize(GameObject prefab)
         {
-            AssetPath = assetPath;
+            Prefab = prefab;
 
             var flags = BindingFlags.Static | BindingFlags.NonPublic;
             var propInfo = typeof(Camera).GetProperty("PreviewCullingLayer", flags);
@@ -227,7 +226,7 @@ namespace VRM
         Bounds m_bounds;
         public void Bake()
         {
-            //Debug.LogFormat("Bake");
+            Debug.LogFormat("Bake");
             m_bounds = default(Bounds);
             foreach (var x in m_meshes)
             {

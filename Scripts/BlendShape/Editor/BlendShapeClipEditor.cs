@@ -12,6 +12,33 @@ namespace VRM
         PreviewSceneManager m_scene;
         PreviewFaceRenderer m_renderer;
 
+        GameObject m_prefab;
+        GameObject Prefab
+        {
+            get { return m_prefab; }
+            set
+            {
+                if (m_prefab == value) return;
+                m_prefab = value;
+
+                if (m_scene != null)
+                {
+                    //Debug.LogFormat("OnDestroy");
+                    GameObject.DestroyImmediate(m_scene.gameObject);
+                    m_scene = null;
+                }
+
+                if (m_prefab != null)
+                {
+                    m_scene = PreviewSceneManager.GetOrCreate(m_prefab);
+                    if (m_scene != null)
+                    {
+                        m_scene.gameObject.SetActive(false);
+                    }
+                }
+            }
+        }
+
         #region for Editor
         SerializedProperty m_BlendShapeNameProp;
         SerializedProperty m_PresetProp;
@@ -52,8 +79,10 @@ namespace VRM
             m_renderer = new PreviewFaceRenderer();
 
             var assetPath = AssetDatabase.GetAssetPath(target);
-            m_scene = PreviewSceneManager.GetOrCreate(assetPath);
-            m_scene.gameObject.SetActive(false);
+            if (!string.IsNullOrEmpty(assetPath))
+            {
+                Prefab = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
+            }
         }
 
         private void OnDisable()
@@ -77,10 +106,7 @@ namespace VRM
 
         public override void OnInspectorGUI()
         {
-            //base.OnInspectorGUI();
-
-            //攻撃力の数値をラベルとして表示する
-            //EditorGUILayout.LabelField("攻撃力", character.攻撃力.ToString());
+            m_prefab = (GameObject)EditorGUILayout.ObjectField("prefab", m_prefab, typeof(GameObject), false);
 
             serializedObject.Update();
 
@@ -114,17 +140,20 @@ namespace VRM
                 return;
             }
             if (Event.current.type != EventType.Repaint)
-            { // if we don't need to update yet, then don't
-                return;
-            }
-
-            if (m_renderer == null)
             {
+                // if we don't need to update yet, then don't
                 return;
             }
 
-            var image = m_renderer.Render(r, background, m_scene);
-            GUI.DrawTexture(r, image, ScaleMode.StretchToFill, false); // draw the RenderTexture in the ObjectPreview pane
+            if (m_renderer != null && m_scene != null)
+            {
+                var image = m_renderer.Render(r, background, m_scene);
+                if (image != null)
+                {
+                    // draw the RenderTexture in the ObjectPreview pane
+                    GUI.DrawTexture(r, image, ScaleMode.StretchToFill, false); 
+                }
+            }
 
             EditorGUI.DropShadowLabel(new Rect(r.x, r.y, r.width, 40f), 
             BlendShapeKey.CreateFrom((BlendShapeClip)target).ToString());
