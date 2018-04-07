@@ -305,11 +305,11 @@ namespace VRM
             if (group != null)
             {
                 asset.BlendShapeName = groupName;
-                asset.Preset = group.presetName.ToBlendShapePreset();
+                asset.Preset = EnumUtil.TryParseOrDefault<BlendShapePreset>(group.presetName);
                 if (asset.Preset == BlendShapePreset.Unknown)
                 {
                     // fallback
-                    asset.Preset = group.name.ToBlendShapePreset();
+                    asset.Preset = EnumUtil.TryParseOrDefault<BlendShapePreset>(group.name);
                 }
                 asset.Values = group.binds.Select(x =>
                 {
@@ -367,7 +367,7 @@ namespace VRM
                 .Where(x => x.Index != -1)
                 .Select(x =>
                 {
-                    var humanBone = (HumanBodyBones)Enum.Parse(typeof(HumanBodyBones), x.Key.ToUpperCamelCase());
+                    var humanBone = EnumUtil.TryParseOrDefault<HumanBodyBones>(x.Key);
                     var hb = new HumanBone
                     {
                         boneName = context.Nodes[x.Index].name,

@@ -71,11 +71,11 @@ namespace VRM
     {
         public static VRMBone FromHumanBodyBone(this HumanBodyBones human)
         {
-            return (VRMBone)Enum.Parse(typeof(VRMBone), human.ToString(), true);
+            return EnumUtil.TryParseOrDefault<VRMBone>(human.ToString());
         }
         public static HumanBodyBones ToHumanBodyBone(this VRMBone bone)
         {
-            return (HumanBodyBones)Enum.Parse(typeof(HumanBodyBones), bone.ToString(), true);
+            return EnumUtil.TryParseOrDefault<HumanBodyBones>(bone.ToString());
         }
     }
 
@@ -91,7 +91,7 @@ namespace VRM
             }
             get
             {
-                return (VRMBone)Enum.Parse(typeof(VRMBone), bone, true);
+                return EnumUtil.TryParseOrDefault<VRMBone>(bone);
             }
         }
         public int node = -1;

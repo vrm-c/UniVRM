@@ -35,14 +35,7 @@ namespace VRM
     {
         static UssageLicense FromString(string src)
         {
-            try
-            {
-                return (UssageLicense)Enum.Parse(typeof(UssageLicense), src, true);
-            }
-            catch (Exception)
-            {
-                return UssageLicense.Disallow;
-            }
+            return EnumUtil.TryParseOrDefault<UssageLicense>(src);
         }
         public string title;
         public string version;
@@ -57,14 +50,7 @@ namespace VRM
         {
             get
             {
-                try
-                {
-                    return (AllowedUser)Enum.Parse(typeof(AllowedUser), allowedUserName, true);
-                }
-                catch (Exception)
-                {
-                    return AllowedUser.OnlyAuthor;
-                }
+                return EnumUtil.TryParseOrDefault<AllowedUser>(allowedUserName);
             }
             set
             {
@@ -102,14 +88,7 @@ namespace VRM
         {
             get
             {
-                try
-                {
-                    return (LicenseType)Enum.Parse(typeof(LicenseType), licenseName, true);
-                }
-                catch (Exception)
-                {
-                    return default(LicenseType);
-                }
+                return EnumUtil.TryParseOrDefault<LicenseType>(licenseName);
             }
             set
             {

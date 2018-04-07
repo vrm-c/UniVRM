@@ -76,12 +76,7 @@ namespace VRM
         public LookAtType lookAtType
         {
             get {
-                if (string.IsNullOrEmpty(lookAtTypeName))
-                {
-                    // fallback
-                    return LookAtType.Bone;
-                }
-                return (LookAtType)Enum.Parse(typeof(LookAtType), lookAtTypeName, true);
+                return EnumUtil.TryParseOrDefault<LookAtType>(lookAtTypeName);
             }
             set { lookAtTypeName = value.ToString(); }
         }

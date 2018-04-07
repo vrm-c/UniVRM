@@ -125,7 +125,7 @@ namespace VRM
             {
                 if (x.mesh == index)
                 {
-                    return (FirstPersonFlag)Enum.Parse(typeof(FirstPersonFlag), x.firstPersonFlag, true);
+                    return EnumUtil.TryParseOrDefault<FirstPersonFlag>(x.firstPersonFlag);
                 }
             }
 

@@ -70,29 +70,6 @@ namespace VRM
         Blink_R,
     }
 
-    public static class BlendShpaePresetExtensions
-    {
-        /*
-        static string ToCamel(this string src)
-        {
-            if (string.IsNullOrEmpty(src)) return string.Empty;
-            return src.Substring(0, 1).ToUpper() + src.Substring(1);
-        }
-        */
-
-        public static BlendShapePreset ToBlendShapePreset(this string preset)
-        {
-            try
-            {
-                return (BlendShapePreset)Enum.Parse(typeof(BlendShapePreset), preset, true);
-            }
-            catch (Exception)
-            {
-                return default(BlendShapePreset);
-            }
-        }
-    }
-
     [Serializable]
     public class glTF_VRM_BlendShapeGroup : UniGLTF.JsonSerializableBase
     {
