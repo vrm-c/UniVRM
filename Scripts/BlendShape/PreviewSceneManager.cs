@@ -92,6 +92,7 @@ namespace VRM
             var map = new Dictionary<Material, Material>();
             Func<Material, Material> getOrCreateMaterial = src =>
             {
+                if (src == null) return null;
                 Material dst;
                 if(!map.TryGetValue(src, out dst))
                 {
