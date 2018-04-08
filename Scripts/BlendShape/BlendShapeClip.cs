@@ -17,9 +17,10 @@ namespace VRM
     {
         public String RelativePath;
         public int Index;
-        public string ValueName; // _Color
-        public float MinValue;
-        public float MaxValue;
+        public string ValueName;
+        public Vector4 TargetValue;
+
+        public Vector4 BaseValue; // <- Get From RelativePath/Materials[Index][ValueName]
     }
 
     [CreateAssetMenu(menuName = "VRM/BlendShapeClip")]
@@ -66,8 +67,7 @@ namespace VRM
                         if (sr != null)
                         {
                             var m = sr.sharedMaterials[x.Index];
-                            var color = m.GetColor(x.ValueName);
-                            color.a = x.MinValue + (x.MaxValue - x.MinValue) * value;
+                            var color = x.BaseValue + (x.TargetValue - x.BaseValue) * value;
                             m.SetColor(x.ValueName, color);
                         }
                     }

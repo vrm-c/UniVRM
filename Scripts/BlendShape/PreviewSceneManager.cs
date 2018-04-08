@@ -20,7 +20,7 @@ namespace VRM
         public GameObject Prefab;
 
 #if UNITY_EDITOR
-        public static PreviewSceneManager GetOrCreate(GameObject prefab, BlendShapeBinding[] values)
+        public static PreviewSceneManager GetOrCreate(GameObject prefab, BlendShapeBinding[] values, MaterialValueBinding[] materialValues)
         {
             if (prefab == null)
             {
@@ -50,7 +50,7 @@ namespace VRM
                 );
             go.name = "__PREVIEW_SCENE_MANGER__";
             manager = go.AddComponent<PreviewSceneManager>();
-            manager.Initialize(prefab, values);
+            manager.Initialize(prefab, values, materialValues);
 
             // HideFlags are special editor-only settings that let you have *secret* GameObjects in a scene, or to tell Unity not to save that temporary GameObject as part of the scene
             go.hideFlags |= HideFlags.DontSaveInEditor;
@@ -66,7 +66,15 @@ namespace VRM
         }
 #endif
 
-        private void Initialize(GameObject prefab, BlendShapeBinding[] values)
+        public void Clean()
+        {
+            foreach(var x in m_meshes)
+            {
+                x.Clean();
+            }
+        }
+
+        private void Initialize(GameObject prefab, BlendShapeBinding[] values, MaterialValueBinding[] materialValues)
         {
             Prefab = prefab;
 
@@ -81,23 +89,29 @@ namespace VRM
             }
             */
 
+            var map = new Dictionary<Material, Material>();
+            Func<Material, Material> getOrCreateMaterial = src =>
+            {
+                Material dst;
+                if(!map.TryGetValue(src, out dst))
+                {
+                    dst = new Material(src);
+                    map.Add(src, dst);
+                }
+                return dst;
+            };
+
             m_meshes = transform.Traverse()
-                .Select(x => MeshPreviewItem.Create(x, transform))
+                .Select(x => MeshPreviewItem.Create(x, transform, getOrCreateMaterial))
                 .Where(x => x != null)
                 .ToArray()
                 ;
+            m_blendShapeMeshes = m_meshes
+                .Where(x => x.SkinnedMeshRenderer != null
+                && x.SkinnedMeshRenderer.sharedMesh.blendShapeCount>0)
+                .ToArray();
 
-            foreach(var x in m_meshes)
-            {
-                if (x.SkinnedMeshRenderer != null)
-                {
-                    var mesh = x.SkinnedMeshRenderer.sharedMesh;
-                    m_blendShapeNameMap.Add(m_blendShapeNameMap.Count, 
-                        Enumerable.Range(0, mesh.blendShapeCount).Select(y => mesh.GetBlendShapeName(y)).ToArray());
-                }
-            }
-
-            Bake(values);
+            Bake(values, materialValues);
 
             m_rendererPathList = m_meshes.Select(x => x.Path).ToArray();
             m_skinnedMeshRendererPathList = m_meshes
@@ -107,6 +121,7 @@ namespace VRM
         }
 
         MeshPreviewItem[] m_meshes;
+        MeshPreviewItem[] m_blendShapeMeshes;
         public IEnumerable<MeshPreviewItem> EnumRenderItems
         {
             get
@@ -133,14 +148,14 @@ namespace VRM
             get { return m_skinnedMeshRendererPathList; }
         }
 
-        Dictionary<int, string[]> m_blendShapeNameMap = new Dictionary<int, string[]>();
-        public string[] GetBlendShapeNames(int skinnedMeshIndex)
+        public string[] GetBlendShapeNames(int blendShapeMeshIndex)
         {
-            string[] names = null;
-            if(m_blendShapeNameMap.TryGetValue(skinnedMeshIndex, out names))
+            if (blendShapeMeshIndex >= 0 && blendShapeMeshIndex < m_blendShapeMeshes.Length)
             {
-                return names;
+                var item = m_blendShapeMeshes[blendShapeMeshIndex];
+                return item.BlendShapeNames;
             }
+
             return null;
         }
 
@@ -153,8 +168,53 @@ namespace VRM
             return null;
         }
 
+        public string[] GetMaterialPropNames(int rendererIndex, int materialIndex)
+        {
+            if(rendererIndex<0 || rendererIndex >= m_meshes.Length)
+            {
+                return null;
+            }
+
+            if(materialIndex<0 || materialIndex >= m_meshes[rendererIndex].MaterialsNames.Length)
+            {
+                return null;
+            }
+
+            return m_meshes[rendererIndex].GetMaterialPropNames(materialIndex);
+        }
+
+        public ShaderUtil.ShaderPropertyType[] GetMaterialPropTypes(int rendererIndex, int materialIndex)
+        {
+            if (rendererIndex < 0 || rendererIndex >= m_meshes.Length)
+            {
+                return null;
+            }
+
+            if (materialIndex < 0 || materialIndex >= m_meshes[rendererIndex].MaterialsNames.Length)
+            {
+                return null;
+            }
+
+            return m_meshes[rendererIndex].GetMaterialPropTypes(materialIndex);
+        }
+
+        public Vector4[] GetMaterialPropBaseValues(int rendererIndex, int materialIndex)
+        {
+            if (rendererIndex < 0 || rendererIndex >= m_meshes.Length)
+            {
+                return null;
+            }
+
+            if (materialIndex < 0 || materialIndex >= m_meshes[rendererIndex].MaterialsNames.Length)
+            {
+                return null;
+            }
+
+            return m_meshes[rendererIndex].GetMaterialPropBaseValues(materialIndex);
+        }
+
         Bounds m_bounds;
-        public void Bake(BlendShapeBinding[] values)
+        public void Bake(BlendShapeBinding[] values, MaterialValueBinding[] materialValues)
         {
             //Debug.LogFormat("Bake");
             m_bounds = default(Bounds);
@@ -162,7 +222,7 @@ namespace VRM
             {
                 foreach (var x in m_meshes)
                 {
-                    x.Bake(values);
+                    x.Bake(values, materialValues);
                     m_bounds.Expand(x.Mesh.bounds.size);
                 }
             }

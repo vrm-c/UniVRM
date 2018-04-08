@@ -31,7 +31,7 @@ namespace VRM
 
                 if (m_prefab != null)
                 {
-                    m_scene = PreviewSceneManager.GetOrCreate(m_prefab, m_target.Values);
+                    m_scene = PreviewSceneManager.GetOrCreate(m_prefab, m_target.Values, m_target.MaterialValues);
                     if (m_scene != null)
                     {
                         m_scene.gameObject.SetActive(false);
@@ -110,6 +110,7 @@ namespace VRM
             if (m_scene != null)
             {
                 //Debug.LogFormat("OnDestroy");
+                m_scene.Clean();
                 GameObject.DestroyImmediate(m_scene.gameObject);
                 m_scene = null;
             }
@@ -138,7 +139,7 @@ namespace VRM
 
             if (m_changed && m_scene!=null)
             {
-                m_scene.Bake(m_target.Values);
+                m_scene.Bake(m_target.Values, m_target.MaterialValues);
             }
         }
 
@@ -214,7 +215,7 @@ namespace VRM
             return changed;
         }
 
-        public static int MaterialValueBindingHeight = 60;
+        public static int MaterialValueBindingHeight = 90;
         public static bool DrawMaterialValueBinding(Rect position, SerializedProperty property,
             PreviewSceneManager scene)
         {
@@ -233,20 +234,44 @@ namespace VRM
 
                 y += height;
                 rect = new Rect(position.x, y, position.width, height);
-                int blendShapeIndex;
-                if (IntPopup(rect, property.FindPropertyRelative("Index"), scene.GetMaterialNames(pathIndex), out blendShapeIndex))
+                int materialIndex;
+                if (IntPopup(rect, property.FindPropertyRelative("Index"), scene.GetMaterialNames(pathIndex), out materialIndex))
                 {
                     changed = true;
                 }
 
-                /*
                 y += height;
                 rect = new Rect(position.x, y, position.width, height);
-                if (FloatSlider(rect, property.FindPropertyRelative("Weight"), 100))
+                int propIndex;
+                if (StringPopup(rect, property.FindPropertyRelative("ValueName"), scene.GetMaterialPropNames(pathIndex, materialIndex), out propIndex))
                 {
                     changed = true;
                 }
-                */
+
+                if (propIndex >= 0)
+                {
+                    var propTypes = scene.GetMaterialPropTypes(pathIndex, materialIndex);
+                    if (propTypes != null && propIndex < propTypes.Length)
+                    {
+                        switch (propTypes[propIndex])
+                        {
+                            case ShaderUtil.ShaderPropertyType.Color:
+                                {
+                                    var baseValues= scene.GetMaterialPropBaseValues(pathIndex, materialIndex);
+                                    property.FindPropertyRelative("BaseValue").vector4Value = baseValues[propIndex];
+
+                                    // max
+                                    y += height;
+                                    rect = new Rect(position.x, y, position.width, height);
+                                    if (ColorProp(rect, property.FindPropertyRelative("TargetValue")))
+                                    {
+                                        changed = true;
+                                    }
+                                }
+                                break;
+                        }
+                    }
+                }
             }
             return changed;
         }
@@ -308,5 +333,19 @@ namespace VRM
             }
         }
 
+        static bool ColorProp(Rect rect, SerializedProperty prop)
+        {
+            var oldValue = (Color)prop.vector4Value;
+            var newValue = EditorGUI.ColorField(rect, prop.displayName, oldValue);
+            if (newValue != oldValue)
+            {
+                prop.vector4Value = newValue;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }
