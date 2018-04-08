@@ -20,7 +20,7 @@ namespace VRM
         public GameObject Prefab;
 
 #if UNITY_EDITOR
-        public static PreviewSceneManager GetOrCreate(GameObject prefab)
+        public static PreviewSceneManager GetOrCreate(GameObject prefab, BlendShapeBinding[] values)
         {
             if (prefab == null)
             {
@@ -50,7 +50,7 @@ namespace VRM
                 );
             go.name = "__PREVIEW_SCENE_MANGER__";
             manager = go.AddComponent<PreviewSceneManager>();
-            manager.Initialize(prefab);
+            manager.Initialize(prefab, values);
 
             // HideFlags are special editor-only settings that let you have *secret* GameObjects in a scene, or to tell Unity not to save that temporary GameObject as part of the scene
             go.hideFlags |= HideFlags.DontSaveInEditor;
@@ -60,13 +60,13 @@ namespace VRM
             go.hideFlags |= HideFlags.HideAndDontSave;
             ; // you could also hide it from the hierarchy or inspector, but personally I like knowing everything that's there
 #endif
-            Debug.LogFormat("Create {0}", manager);
+            //Debug.LogFormat("Create {0}", manager);
 
             return manager;
         }
 #endif
 
-        private void Initialize(GameObject prefab)
+        private void Initialize(GameObject prefab, BlendShapeBinding[] values)
         {
             Prefab = prefab;
 
@@ -97,96 +97,15 @@ namespace VRM
                 }
             }
 
-            Bake();
+            Bake(values);
 
             m_rendererPathList = m_meshes.Select(x => x.Path).ToArray();
-            m_skinnedMeshRendererPathList = m_meshes.Where(x => x.SkinnedMeshRenderer != null).Select(x => x.Path).ToArray();
+            m_skinnedMeshRendererPathList = m_meshes
+                .Where(x => x.SkinnedMeshRenderer != null)
+                .Select(x => x.Path)
+                .ToArray();
         }
 
-        public class MeshPreviewItem
-        {
-            public string Path
-            {
-                get;
-                private set;
-            }
-
-            public SkinnedMeshRenderer SkinnedMeshRenderer
-            {
-                get;
-                private set;
-            }
-
-            public Mesh Mesh
-            {
-                get;
-                private set;
-            }
-
-            public int BlendShapeCount
-            {
-                get;
-                private set;
-            }
-
-            public Material[] Materials
-            {
-                get;
-                private set;
-            }
-
-
-            Transform m_transform;
-            public Vector3 Position
-            {
-                get { return m_transform.position; }
-            }
-            public Quaternion Rotation
-            {
-                get { return m_transform.rotation; }
-            }
-
-            MeshPreviewItem(string path, Transform transform)
-            {
-                Path = path;
-                m_transform = transform;
-            }
-
-            public void Bake()
-            {
-                if (SkinnedMeshRenderer == null) return;
-                SkinnedMeshRenderer.BakeMesh(Mesh);
-            }
-
-            public static MeshPreviewItem Create(Transform t, Transform root)
-            {
-                var meshFilter = t.GetComponent<MeshFilter>();
-                var meshRenderer = t.GetComponent<MeshRenderer>();
-                var skinnedMeshRenderer = t.GetComponent<SkinnedMeshRenderer>();
-                if (meshFilter != null && meshRenderer != null)
-                {
-                    return new MeshPreviewItem(t.RelativePathFrom(root), t)
-                    {
-                        Mesh = meshFilter.sharedMesh,
-                        Materials = meshRenderer.sharedMaterials
-                    };
-                }
-                else if (skinnedMeshRenderer != null)
-                {
-                    return new MeshPreviewItem(t.RelativePathFrom(root), t)
-                    {
-                        SkinnedMeshRenderer = skinnedMeshRenderer,
-                        Mesh = new Mesh(), // for bake
-                        BlendShapeCount = skinnedMeshRenderer.sharedMesh.blendShapeCount,
-                        Materials = skinnedMeshRenderer.sharedMaterials
-                    };
-                }
-                else
-                {
-                    return null;
-                }
-            }
-        }
         MeshPreviewItem[] m_meshes;
         public IEnumerable<MeshPreviewItem> EnumRenderItems
         {
@@ -225,15 +144,27 @@ namespace VRM
             return null;
         }
 
-        Bounds m_bounds;
-        public void Bake()
+        public string[] GetMaterialNames(int rendererIndex)
         {
-            Debug.LogFormat("Bake");
-            m_bounds = default(Bounds);
-            foreach (var x in m_meshes)
+            if (rendererIndex >= 0 && rendererIndex < m_meshes.Length)
             {
-                x.Bake();
-                m_bounds.Expand(x.Mesh.bounds.size);
+                return m_meshes[rendererIndex].MaterialsNames;
+            }
+            return null;
+        }
+
+        Bounds m_bounds;
+        public void Bake(BlendShapeBinding[] values)
+        {
+            //Debug.LogFormat("Bake");
+            m_bounds = default(Bounds);
+            if (m_meshes != null)
+            {
+                foreach (var x in m_meshes)
+                {
+                    x.Bake(values);
+                    m_bounds.Expand(x.Mesh.bounds.size);
+                }
             }
         }
 

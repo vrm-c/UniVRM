@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿using System;
+using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
 
@@ -30,7 +31,7 @@ namespace VRM
 
                 if (m_prefab != null)
                 {
-                    m_scene = PreviewSceneManager.GetOrCreate(m_prefab);
+                    m_scene = PreviewSceneManager.GetOrCreate(m_prefab, m_target.Values);
                     if (m_scene != null)
                     {
                         m_scene.gameObject.SetActive(false);
@@ -48,32 +49,42 @@ namespace VRM
         ReorderableList m_MaterialValuesList;
         #endregion
 
+        BlendShapeClip m_target;
+        bool m_changed;
+
         private void OnEnable()
         {
+            m_target = (BlendShapeClip)target;
+
             m_BlendShapeNameProp = serializedObject.FindProperty("BlendShapeName");
             m_PresetProp = serializedObject.FindProperty("Preset");
             m_ValuesProp = serializedObject.FindProperty("Values");
 
             m_ValuesList = new ReorderableList(serializedObject, m_ValuesProp);
-            m_ValuesList.elementHeight = BlendShapeBindingPropertyDrawer.GUIElementHeight;
+            m_ValuesList.elementHeight = BlendShapeBindingHeight;
             m_ValuesList.drawElementCallback =
               (rect, index, isActive, isFocused) => {
                   var element = m_ValuesProp.GetArrayElementAtIndex(index);
                   rect.height -= 4;
                   rect.y += 2;
-                  //EditorGUI.PropertyField(rect, element);
-                  BlendShapeBindingPropertyDrawer.DrawElement(rect, element, m_scene);
+                  if(DrawBlendShapeBinding(rect, element, m_scene))
+                  {
+                      m_changed = true;
+                  }
               };
 
             m_MaterialValuesProp = serializedObject.FindProperty("MaterialValues");
             m_MaterialValuesList = new ReorderableList(serializedObject, m_MaterialValuesProp);
-            m_MaterialValuesList.elementHeight = MaterialValueBindingPropertyDrawer.GUIElementHeight;
+            m_MaterialValuesList.elementHeight = MaterialValueBindingHeight;
             m_MaterialValuesList.drawElementCallback =
               (rect, index, isActive, isFocused) => {
                   var element = m_MaterialValuesProp.GetArrayElementAtIndex(index);
                   rect.height -= 4;
                   rect.y += 2;
-                  EditorGUI.PropertyField(rect, element);
+                  if(DrawMaterialValueBinding(rect, element, m_scene))
+                  {
+                      m_changed = true;
+                  }
               };
 
             m_renderer = new PreviewFaceRenderer();
@@ -106,6 +117,8 @@ namespace VRM
 
         public override void OnInspectorGUI()
         {
+            m_changed = false;
+
             Prefab = (GameObject)EditorGUILayout.ObjectField("prefab", Prefab, typeof(GameObject), false);
 
             serializedObject.Update();
@@ -122,6 +135,11 @@ namespace VRM
             m_MaterialValuesList.DoLayoutList();
 
             serializedObject.ApplyModifiedProperties();
+
+            if (m_changed && m_scene!=null)
+            {
+                m_scene.Bake(m_target.Values);
+            }
         }
 
         // very important to override this, it tells Unity to render an ObjectPreview at the bottom of the inspector
@@ -160,5 +178,135 @@ namespace VRM
         {
             return BlendShapeKey.CreateFrom((BlendShapeClip)target).ToString();
         }
+
+        public static int BlendShapeBindingHeight = 60;
+        public static bool DrawBlendShapeBinding(Rect position, SerializedProperty property,
+            PreviewSceneManager scene)
+        {
+            bool changed = false;
+            if (scene != null)
+            {
+                var height = 16;
+
+                var y = position.y;
+                var rect = new Rect(position.x, y, position.width, height);
+                int pathIndex;
+                if (StringPopup(rect, property.FindPropertyRelative("RelativePath"), scene.SkinnedMeshRendererPathList, out pathIndex))
+                {
+                    changed = true;
+                }
+
+                y += height;
+                rect = new Rect(position.x, y, position.width, height);
+                int blendShapeIndex;
+                if (IntPopup(rect, property.FindPropertyRelative("Index"), scene.GetBlendShapeNames(pathIndex), out blendShapeIndex))
+                {
+                    changed = true;
+                }
+
+                y += height;
+                rect = new Rect(position.x, y, position.width, height);
+                if (FloatSlider(rect, property.FindPropertyRelative("Weight"), 100))
+                {
+                    changed = true;
+                }
+            }
+            return changed;
+        }
+
+        public static int MaterialValueBindingHeight = 60;
+        public static bool DrawMaterialValueBinding(Rect position, SerializedProperty property,
+            PreviewSceneManager scene)
+        {
+            bool changed = false;
+            if (scene != null)
+            {
+                var height = 16;
+
+                var y = position.y;
+                var rect = new Rect(position.x, y, position.width, height);
+                int pathIndex;
+                if (StringPopup(rect, property.FindPropertyRelative("RelativePath"), scene.RendererPathList, out pathIndex))
+                {
+                    changed = true;
+                }
+
+                y += height;
+                rect = new Rect(position.x, y, position.width, height);
+                int blendShapeIndex;
+                if (IntPopup(rect, property.FindPropertyRelative("Index"), scene.GetMaterialNames(pathIndex), out blendShapeIndex))
+                {
+                    changed = true;
+                }
+
+                /*
+                y += height;
+                rect = new Rect(position.x, y, position.width, height);
+                if (FloatSlider(rect, property.FindPropertyRelative("Weight"), 100))
+                {
+                    changed = true;
+                }
+                */
+            }
+            return changed;
+        }
+
+        static bool StringPopup(Rect rect, SerializedProperty prop, string[] options, out int newIndex)
+        {
+            if (options == null)
+            {
+                newIndex = -1;
+                return false;
+            }
+
+            var oldIndex = Array.IndexOf(options, prop.stringValue);
+            newIndex = EditorGUI.Popup(rect, oldIndex, options);
+            if (newIndex != oldIndex && newIndex >= 0 && newIndex < options.Length)
+            {
+                prop.stringValue = options[newIndex];
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        static bool IntPopup(Rect rect, SerializedProperty prop, string[] options, out int newIndex)
+        {
+            if (options == null)
+            {
+                newIndex = -1;
+                return false;
+            }
+
+            var oldIndex = prop.intValue;
+            newIndex = EditorGUI.Popup(rect, oldIndex, options);
+            if (newIndex != oldIndex && newIndex >= 0 && newIndex < options.Length)
+            {
+                prop.intValue = newIndex;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        static bool FloatSlider(Rect rect, SerializedProperty prop, float maxValue)
+        {
+            var oldValue = prop.floatValue;
+            var newValue = EditorGUI.Slider(rect, prop.floatValue, 0, 100f);
+            if (newValue != oldValue)
+            {
+                prop.floatValue = newValue;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
     }
 }
