@@ -22,22 +22,10 @@ namespace VRM
                 return;
             }
 
-            var oldClip = m_target.BlendShapeAvatar.GetClip(m_key);
-            GUI.enabled = false;
-            /*var newClip = (BlendShapeClip)*/
-            EditorGUILayout.ObjectField(m_key.ToString(), oldClip, typeof(BlendShapeClip), true);
-            GUI.enabled = true;
-            /*
-            if (oldClip != newClip)
-            {
-                m_target.BlendShapeAvatar.SetClip(m_key, newClip);
-            }
-            */
-
             if (Application.isPlaying)
             {
                 var oldValue = m_target.GetValue(m_key);
-                var newValue = EditorGUILayout.Slider(oldValue, 0, 1.0f);
+                var newValue = EditorGUILayout.Slider(m_key.ToString(), oldValue, 0, 1.0f);
                 if (oldValue != newValue)
                 {
                     m_target.SetValue(m_key, newValue);
@@ -46,7 +34,7 @@ namespace VRM
             else
             {
                 var oldValue = m_editorValue.HasValue ? m_editorValue.Value : 0.0f;
-                var newValue = EditorGUILayout.Slider(oldValue, 0, 1.0f);
+                var newValue = EditorGUILayout.Slider(m_key.ToString(), oldValue, 0, 1.0f);
                 if (oldValue != newValue)
                 {
                     var clip = m_target.BlendShapeAvatar.GetClip(m_key);

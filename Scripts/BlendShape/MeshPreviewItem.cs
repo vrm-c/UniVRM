@@ -128,14 +128,14 @@ namespace VRM
         {
             if (SkinnedMeshRenderer == null) return;
 
-            // clear
-            for (int i = 0; i < BlendShapeCount; ++i)
-            {
-                SkinnedMeshRenderer.SetBlendShapeWeight(i, 0);
-            }
-
             if (values != null)
             {
+                // clear
+                for (int i = 0; i < BlendShapeCount; ++i)
+                {
+                    SkinnedMeshRenderer.SetBlendShapeWeight(i, 0);
+                }
+
                 foreach (var x in values)
                 {
                     if (x.RelativePath == Path)
@@ -145,7 +145,7 @@ namespace VRM
                 }
             }
 
-            if (materialValues != null)
+            if (materialValues != null && m_materialPropNamesList!=null)
             {
                 // clear
                 for (int i = 0; i < Materials.Length; ++i)

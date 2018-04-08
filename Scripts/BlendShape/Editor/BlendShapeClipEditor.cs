@@ -7,39 +7,8 @@ using UnityEngine;
 namespace VRM
 {
     [CustomEditor(typeof(BlendShapeClip))]
-    public class BlendShapeClipEditor : Editor
+    public class BlendShapeClipEditor : PreviewEditor
     {
-        //const string PREVIEW_INSTANCE_NAME = "__FACE_PREVIEW_SCENE__";
-        PreviewSceneManager m_scene;
-        PreviewFaceRenderer m_renderer;
-
-        GameObject m_prefab;
-        GameObject Prefab
-        {
-            get { return m_prefab; }
-            set
-            {
-                if (m_prefab == value) return;
-                m_prefab = value;
-
-                if (m_scene != null)
-                {
-                    //Debug.LogFormat("OnDestroy");
-                    GameObject.DestroyImmediate(m_scene.gameObject);
-                    m_scene = null;
-                }
-
-                if (m_prefab != null)
-                {
-                    m_scene = PreviewSceneManager.GetOrCreate(m_prefab, m_target.Values, m_target.MaterialValues);
-                    if (m_scene != null)
-                    {
-                        m_scene.gameObject.SetActive(false);
-                    }
-                }
-            }
-        }
-
         #region for Editor
         SerializedProperty m_BlendShapeNameProp;
         SerializedProperty m_PresetProp;
@@ -52,9 +21,12 @@ namespace VRM
         BlendShapeClip m_target;
         bool m_changed;
 
-        private void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
+
             m_target = (BlendShapeClip)target;
+            Bake(m_target.Values, m_target.MaterialValues);
 
             m_BlendShapeNameProp = serializedObject.FindProperty("BlendShapeName");
             m_PresetProp = serializedObject.FindProperty("Preset");
@@ -67,7 +39,7 @@ namespace VRM
                   var element = m_ValuesProp.GetArrayElementAtIndex(index);
                   rect.height -= 4;
                   rect.y += 2;
-                  if(DrawBlendShapeBinding(rect, element, m_scene))
+                  if(DrawBlendShapeBinding(rect, element, PreviewSceneManager))
                   {
                       m_changed = true;
                   }
@@ -81,46 +53,18 @@ namespace VRM
                   var element = m_MaterialValuesProp.GetArrayElementAtIndex(index);
                   rect.height -= 4;
                   rect.y += 2;
-                  if(DrawMaterialValueBinding(rect, element, m_scene))
+                  if(DrawMaterialValueBinding(rect, element, PreviewSceneManager))
                   {
                       m_changed = true;
                   }
               };
-
-            m_renderer = new PreviewFaceRenderer();
-
-            var assetPath = AssetDatabase.GetAssetPath(target);
-            if (!string.IsNullOrEmpty(assetPath))
-            {
-                Prefab = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
-            }
-        }
-
-        private void OnDisable()
-        {
-            if (m_renderer != null)
-            {
-                m_renderer.Dispose();
-                m_renderer = null;
-            }
-        }
-
-        private void OnDestroy()
-        {
-            if (m_scene != null)
-            {
-                //Debug.LogFormat("OnDestroy");
-                m_scene.Clean();
-                GameObject.DestroyImmediate(m_scene.gameObject);
-                m_scene = null;
-            }
         }
 
         public override void OnInspectorGUI()
         {
-            m_changed = false;
+            base.OnInspectorGUI();
 
-            Prefab = (GameObject)EditorGUILayout.ObjectField("prefab", Prefab, typeof(GameObject), false);
+            m_changed = false;
 
             serializedObject.Update();
 
@@ -128,50 +72,16 @@ namespace VRM
             EditorGUILayout.PropertyField(m_PresetProp, true);
 
             EditorGUILayout.LabelField("BlendShapeBindings", EditorStyles.boldLabel);
-            //EditorGUILayout.PropertyField(m_ValuesProp, true);
             m_ValuesList.DoLayoutList();
 
             EditorGUILayout.LabelField("MaterialValueBindings", EditorStyles.boldLabel);
-            //EditorGUILayout.PropertyField(m_BlendShapeNameProp);
             m_MaterialValuesList.DoLayoutList();
 
             serializedObject.ApplyModifiedProperties();
 
-            if (m_changed && m_scene!=null)
+            if (m_changed && PreviewSceneManager!=null)
             {
-                m_scene.Bake(m_target.Values, m_target.MaterialValues);
-            }
-        }
-
-        // very important to override this, it tells Unity to render an ObjectPreview at the bottom of the inspector
-        public override bool HasPreviewGUI() { return true; }
-
-        // the main ObjectPreview function... it's called constantly, like other IMGUI On*GUI() functions
-        public override void OnPreviewGUI(Rect r, GUIStyle background)
-        {
-            // if this is happening, you have bigger problems
-            if (!ShaderUtil.hardwareSupportsRectRenderTexture)
-            {
-                if (Event.current.type == EventType.Repaint)
-                {
-                    EditorGUI.DropShadowLabel(new Rect(r.x, r.y, r.width, 40f), "Mesh preview requires\nrender texture support");
-                }
-                return;
-            }
-            if (Event.current.type != EventType.Repaint)
-            {
-                // if we don't need to update yet, then don't
-                return;
-            }
-
-            if (m_renderer != null && m_scene != null)
-            {
-                var texture = m_renderer.Render(r, background, m_scene);
-                if (texture != null)
-                {
-                    // draw the RenderTexture in the ObjectPreview pane
-                    GUI.DrawTexture(r, texture, ScaleMode.StretchToFill, false); 
-                }
+                PreviewSceneManager.Bake(m_target.Values, m_target.MaterialValues);
             }
         }
 

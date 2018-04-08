@@ -20,7 +20,7 @@ namespace VRM
         public GameObject Prefab;
 
 #if UNITY_EDITOR
-        public static PreviewSceneManager GetOrCreate(GameObject prefab, BlendShapeBinding[] values, MaterialValueBinding[] materialValues)
+        public static PreviewSceneManager GetOrCreate(GameObject prefab)
         {
             if (prefab == null)
             {
@@ -50,7 +50,7 @@ namespace VRM
                 );
             go.name = "__PREVIEW_SCENE_MANGER__";
             manager = go.AddComponent<PreviewSceneManager>();
-            manager.Initialize(prefab, values, materialValues);
+            manager.Initialize(prefab);
 
             // HideFlags are special editor-only settings that let you have *secret* GameObjects in a scene, or to tell Unity not to save that temporary GameObject as part of the scene
             go.hideFlags |= HideFlags.DontSaveInEditor;
@@ -74,7 +74,7 @@ namespace VRM
             }
         }
 
-        private void Initialize(GameObject prefab, BlendShapeBinding[] values, MaterialValueBinding[] materialValues)
+        private void Initialize(GameObject prefab)
         {
             Prefab = prefab;
 
@@ -111,7 +111,7 @@ namespace VRM
                 && x.SkinnedMeshRenderer.sharedMesh.blendShapeCount>0)
                 .ToArray();
 
-            Bake(values, materialValues);
+            //Bake(values, materialValues);
 
             m_rendererPathList = m_meshes.Select(x => x.Path).ToArray();
             m_skinnedMeshRendererPathList = m_meshes
@@ -214,7 +214,7 @@ namespace VRM
         }
 
         Bounds m_bounds;
-        public void Bake(BlendShapeBinding[] values, MaterialValueBinding[] materialValues)
+        public void Bake(BlendShapeBinding[] values=null, MaterialValueBinding[] materialValues=null)
         {
             //Debug.LogFormat("Bake");
             m_bounds = default(Bounds);
