@@ -7,9 +7,21 @@ using UnityEngine;
 
 namespace VRM
 {
-    /// <summary>
-    /// BlendShapeBind
-    /// </summary>
+    [Serializable]
+    public class glTF_VRM_MaterialValueBind : UniGLTF.JsonSerializableBase
+    {
+        public string materialName;
+        public string propertyName;
+        public float[] targetValue;
+
+        protected override void SerializeMembers(JsonFormatter f)
+        {
+            f.KeyValue(() => materialName);
+            f.KeyValue(() => propertyName);
+            f.KeyValue(() => targetValue);
+        }
+    }
+
     [Serializable]
     public class glTF_VRM_BlendShapeBind : UniGLTF.JsonSerializableBase
     {
@@ -75,22 +87,15 @@ namespace VRM
     {
         public string name;
         public string presetName;
-        [Obsolete]
-        public string extendedName;
         public List<glTF_VRM_BlendShapeBind> binds = new List<glTF_VRM_BlendShapeBind>();
+        public List<glTF_VRM_MaterialValueBind> materialValues = new List<glTF_VRM_MaterialValueBind>();
 
         protected override void SerializeMembers(JsonFormatter f)
         {
             f.KeyValue(() => name);
             f.KeyValue(() => presetName);
-            /*
-            if (name == "extended")
-            {
-                f.KeyValue(() => extendedName);
-            }
-            f.Key("flags"); f.Value((int)flags);
-            */
             f.KeyValue(() => binds);
+            f.KeyValue(() => materialValues);
         }
     }
 
@@ -106,11 +111,24 @@ namespace VRM
             {
                 list.AddRange(clip.Values.Select(y => glTF_VRM_BlendShapeBind.Cerate(transform, meshes.ToList(), y)));
             }
+
+            var materialList = new List<glTF_VRM_MaterialValueBind>();
+            if (clip.MaterialValues != null)
+            {
+                materialList.AddRange(clip.MaterialValues.Select(y => new glTF_VRM_MaterialValueBind
+                {
+                    materialName = y.MaterialName,
+                    propertyName = y.ValueName,
+                    targetValue = y.TargetValue.ToArray(),
+                }));
+            }
+
             var group = new glTF_VRM_BlendShapeGroup
             {
                 name = clip.BlendShapeName,
                 presetName = clip.Preset.ToString().ToLower(),
                 binds = list,
+                materialValues = materialList,
             };
             blendShapeGroups.Add(group);
         }

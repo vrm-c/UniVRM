@@ -204,7 +204,7 @@ namespace VRM
             if (materialValues != null && m_materialMap != null)
             {
                 // clear
-                Debug.LogFormat("clear material");
+                //Debug.LogFormat("clear material");
                 foreach (var kv in m_materialMap)
                 {
                     foreach (var _kv in kv.Value.PropMap)
@@ -218,7 +218,7 @@ namespace VRM
                     MaterialItem item;
                     if (m_materialMap.TryGetValue(x.MaterialName, out item))
                     {
-                        Debug.Log("set material");
+                        //Debug.Log("set material");
                         PropItem prop;
                         if (item.PropMap.TryGetValue(x.ValueName, out prop))
                         {

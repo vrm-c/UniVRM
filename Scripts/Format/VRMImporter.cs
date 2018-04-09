@@ -318,10 +318,30 @@ namespace VRM
                     var relativePath = UniGLTF.UnityExtensions.RelativePathFrom(node, context.Root.transform);
                     return new BlendShapeBinding
                     {
-                        //Name = name,
                         RelativePath = relativePath,
                         Index = x.index,
                         Weight = x.weight,
+                    };
+                })
+                .ToArray();
+                asset.MaterialValues = group.materialValues.Select(x =>
+                {
+                    var value = new Vector4();
+                    for(int i=0; i<x.targetValue.Length; ++i)
+                    {
+                        switch (i)
+                        {
+                            case 0: value.x = x.targetValue[0]; break;
+                            case 1: value.y = x.targetValue[1]; break;
+                            case 2: value.z = x.targetValue[2]; break;
+                            case 3: value.w = x.targetValue[3]; break;
+                        }
+                    }
+                    return new MaterialValueBinding
+                    {
+                        MaterialName = x.materialName,
+                        ValueName = x.propertyName,
+                        TargetValue = value
                     };
                 })
                 .ToArray();

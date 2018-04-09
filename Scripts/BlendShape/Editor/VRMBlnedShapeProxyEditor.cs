@@ -19,7 +19,6 @@ namespace VRM
 
             if (m_target.BlendShapeAvatar != null)
             {
-
                 m_sliders = m_target.BlendShapeAvatar.Clips
                     .Where(x => x != null)
                     .Select(x => new BlendShapeSlider(m_target, BlendShapeKey.CreateFrom(x)))
