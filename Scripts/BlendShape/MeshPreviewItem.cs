@@ -117,8 +117,10 @@ namespace VRM
 
         public void Bake(BlendShapeBinding[] values, float weight)
         {
+            if (SkinnedMeshRenderer == null) return;
+
             // Update baked mesh
-            if (SkinnedMeshRenderer != null && values != null)
+            if (values != null)
             {
                 // clear
                 for (int i = 0; i < BlendShapeCount; ++i)
@@ -133,9 +135,8 @@ namespace VRM
                         SkinnedMeshRenderer.SetBlendShapeWeight(x.Index, x.Weight * weight);
                     }
                 }
-
-                SkinnedMeshRenderer.BakeMesh(Mesh);
             }
+            SkinnedMeshRenderer.BakeMesh(Mesh);
         }
 
         public static MeshPreviewItem Create(Transform t, Transform root,
