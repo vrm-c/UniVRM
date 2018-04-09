@@ -30,15 +30,36 @@ namespace VRM
             }
         }
 
+        public Light[] PreviewLights
+        {
+            get
+            {
+#if UNITY_2017_1_OR_NEWER
+                return m_previewUtility.lights;
+#else
+                return m_previewUtility.m_Light;
+#endif
+            }
+        }
+
+        public void SetAmbientColor(Color color)
+        {
+#if UNITY_2017_1_OR_NEWER
+            m_previewUtility.ambientColor = color;
+#else
+            // ?
+#endif
+        }
+
         public PreviewFaceRenderer()
         {
             m_previewUtility = new PreviewRenderUtility();
 
-            m_previewUtility.lights[0].intensity = 1.4f;
-            m_previewUtility.lights[0].transform.rotation = Quaternion.Euler(40f, 190f, 0);
-            m_previewUtility.lights[1].intensity = 1.4f;
+            PreviewLights[0].intensity = 1.4f;
+            PreviewLights[0].transform.rotation = Quaternion.Euler(40f, 190f, 0);
+            PreviewLights[1].intensity = 1.4f;
 
-            m_previewUtility.ambientColor = new Color(.1f, .1f, .1f, 0);
+            SetAmbientColor(new Color(.1f, .1f, .1f, 0));
         }
 
         class FogScope : IDisposable

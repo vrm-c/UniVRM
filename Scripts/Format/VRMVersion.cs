@@ -4,11 +4,11 @@ namespace VRM
     public static class VRMVersion
     {
         public const int MAJOR = 0;
-        public const int MINOR = 21;
+        public const int MINOR = 22;
 
-        public const string VERSION = "0.21";
+        public const string VERSION = "0.22";
 
-        public const string DecrementMenuName = "VRM/Version(0.21) Decrement";
-        public const string IncrementMenuName = "VRM/Version(0.21) Increment";
+        public const string DecrementMenuName = "VRM/Version(0.22) Decrement";
+        public const string IncrementMenuName = "VRM/Version(0.22) Increment";
     }
 }
