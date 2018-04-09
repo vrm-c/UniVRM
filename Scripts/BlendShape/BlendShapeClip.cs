@@ -15,12 +15,10 @@ namespace VRM
     [Serializable]
     public struct MaterialValueBinding
     {
-        public String RelativePath;
-        public int Index;
-        public string ValueName;
+        public String MaterialName;
+        public String ValueName;
         public Vector4 TargetValue;
-
-        public Vector4 BaseValue; // <- Get From RelativePath/Materials[Index][ValueName]
+        public Vector4 BaseValue;
     }
 
     [CreateAssetMenu(menuName = "VRM/BlendShapeClip")]
@@ -56,6 +54,7 @@ namespace VRM
                 }
             }
 
+            /*
             if (MaterialValues != null)
             {
                 foreach (var x in MaterialValues)
@@ -73,6 +72,7 @@ namespace VRM
                     }
                 }
             }
+            */
         }
 
         public static BlendShapeClip Create(BlendShapePreset preset)

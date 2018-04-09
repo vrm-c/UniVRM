@@ -68,9 +68,9 @@ namespace VRM
 
         public void Clean()
         {
-            foreach(var x in m_meshes)
+            foreach (var kv in m_materialMap)
             {
-                x.Clean();
+                UnityEngine.Object.DestroyImmediate(kv.Value.Material);
             }
         }
 
@@ -89,15 +89,21 @@ namespace VRM
             }
             */
 
+            var materialNames = new List<string>();
             var map = new Dictionary<Material, Material>();
             Func<Material, Material> getOrCreateMaterial = src =>
             {
                 if (src == null) return null;
+                if (string.IsNullOrEmpty(src.name)) return null; // !
+
                 Material dst;
                 if(!map.TryGetValue(src, out dst))
                 {
                     dst = new Material(src);
                     map.Add(src, dst);
+
+                    materialNames.Add(src.name);
+                    m_materialMap.Add(src.name, MaterialItem.Create(dst));
                 }
                 return dst;
             };
@@ -107,6 +113,8 @@ namespace VRM
                 .Where(x => x != null)
                 .ToArray()
                 ;
+            MaterialNames = materialNames.ToArray();
+
             m_blendShapeMeshes = m_meshes
                 .Where(x => x.SkinnedMeshRenderer != null
                 && x.SkinnedMeshRenderer.sharedMesh.blendShapeCount>0)
@@ -137,6 +145,14 @@ namespace VRM
             }
         }
 
+        public string[] MaterialNames
+        {
+            get;
+            private set;
+        }
+
+        Dictionary<string, MaterialItem> m_materialMap = new Dictionary<string, MaterialItem>();
+
         string[] m_rendererPathList;
         public string[] RendererPathList
         {
@@ -160,62 +176,18 @@ namespace VRM
             return null;
         }
 
-        public string[] GetMaterialNames(int rendererIndex)
+        public MaterialItem GetMaterialItem(string materialName)
         {
-            if (rendererIndex >= 0 && rendererIndex < m_meshes.Length)
-            {
-                return m_meshes[rendererIndex].MaterialsNames;
-            }
-            return null;
-        }
-
-        public string[] GetMaterialPropNames(int rendererIndex, int materialIndex)
-        {
-            if(rendererIndex<0 || rendererIndex >= m_meshes.Length)
-            {
+            MaterialItem item;
+            if(!m_materialMap.TryGetValue(materialName, out item)){
                 return null;
             }
 
-            if(materialIndex<0 || materialIndex >= m_meshes[rendererIndex].MaterialsNames.Length)
-            {
-                return null;
-            }
-
-            return m_meshes[rendererIndex].GetMaterialPropNames(materialIndex);
-        }
-
-        public ShaderUtil.ShaderPropertyType[] GetMaterialPropTypes(int rendererIndex, int materialIndex)
-        {
-            if (rendererIndex < 0 || rendererIndex >= m_meshes.Length)
-            {
-                return null;
-            }
-
-            if (materialIndex < 0 || materialIndex >= m_meshes[rendererIndex].MaterialsNames.Length)
-            {
-                return null;
-            }
-
-            return m_meshes[rendererIndex].GetMaterialPropTypes(materialIndex);
-        }
-
-        public Vector4[] GetMaterialPropBaseValues(int rendererIndex, int materialIndex)
-        {
-            if (rendererIndex < 0 || rendererIndex >= m_meshes.Length)
-            {
-                return null;
-            }
-
-            if (materialIndex < 0 || materialIndex >= m_meshes[rendererIndex].MaterialsNames.Length)
-            {
-                return null;
-            }
-
-            return m_meshes[rendererIndex].GetMaterialPropBaseValues(materialIndex);
+            return item;
         }
 
         Bounds m_bounds;
-        public void Bake(BlendShapeBinding[] values=null, MaterialValueBinding[] materialValues=null)
+        public void Bake(BlendShapeBinding[] values=null, MaterialValueBinding[] materialValues=null, float weight=1.0f)
         {
             //Debug.LogFormat("Bake");
             m_bounds = default(Bounds);
@@ -223,10 +195,40 @@ namespace VRM
             {
                 foreach (var x in m_meshes)
                 {
-                    x.Bake(values, materialValues);
+                    x.Bake(values, weight);
                     m_bounds.Expand(x.Mesh.bounds.size);
                 }
             }
+
+            // Udpate Material
+            if (materialValues != null && m_materialMap != null)
+            {
+                // clear
+                Debug.LogFormat("clear material");
+                foreach (var kv in m_materialMap)
+                {
+                    foreach (var _kv in kv.Value.PropMap)
+                    {
+                        kv.Value.Material.SetColor(_kv.Key, _kv.Value.DefaultValues);
+                    }
+                }
+
+                foreach (var x in materialValues)
+                {
+                    MaterialItem item;
+                    if (m_materialMap.TryGetValue(x.MaterialName, out item))
+                    {
+                        Debug.Log("set material");
+                        PropItem prop;
+                        if (item.PropMap.TryGetValue(x.ValueName, out prop))
+                        {
+                            var value = x.BaseValue + (x.TargetValue - x.BaseValue) * weight;
+                            item.Material.SetColor(x.ValueName, value);
+                        }
+                    }
+                }
+            }
+
         }
 
         /*

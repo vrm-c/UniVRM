@@ -42,11 +42,11 @@ namespace VRM
             }
         }
 
-        protected void Bake(BlendShapeBinding[] values, MaterialValueBinding[] materialValues)
+        protected void Bake(BlendShapeBinding[] values, MaterialValueBinding[] materialValues, float weight)
         {
             if (m_scene != null)
             {
-                m_scene.Bake(values, materialValues);
+                m_scene.Bake(values, materialValues, weight);
             }
         }
 

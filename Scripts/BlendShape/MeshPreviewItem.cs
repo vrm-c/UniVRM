@@ -7,8 +7,59 @@ using System.Collections.Generic;
 using UnityEditor;
 #endif
 
+
 namespace VRM
 {
+    [Serializable]
+    public struct PropItem
+    {
+        public ShaderUtil.ShaderPropertyType PropertyType;
+        public Vector4 DefaultValues;
+    }
+
+    [Serializable]
+    public class MaterialItem
+    {
+        public Material Material { get; private set; }
+#if UNITY_EDITOR
+        public Dictionary<string, PropItem> PropMap = new Dictionary<string, PropItem>();
+
+        public string[] PropNames
+        {
+            get;
+            private set;
+        }
+#endif
+
+        public static MaterialItem Create(Material material)
+        {
+            var item = new MaterialItem
+            {
+                Material = material
+            };
+#if UNITY_EDITOR
+
+            var propNames = new List<string>();
+            for (int i = 0; i < ShaderUtil.GetPropertyCount(material.shader); ++i)
+            {
+                var propType = ShaderUtil.GetPropertyType(material.shader, i);
+                if (propType == ShaderUtil.ShaderPropertyType.Color)
+                {
+                    var name = ShaderUtil.GetPropertyName(material.shader, i);
+                    item.PropMap.Add(name, new PropItem
+                    {
+                        PropertyType = propType,
+                        DefaultValues = material.GetColor(name),
+                    });
+                    propNames.Add(name);
+                }
+            }
+            item.PropNames = propNames.ToArray();
+#endif
+            return item;
+        }
+    }
+
     [Serializable]
     public class MeshPreviewItem
     {
@@ -35,77 +86,16 @@ namespace VRM
             get;
             private set;
         }
+
         public int BlendShapeCount
         {
             get { return BlendShapeNames.Length; }
         }
 
-        Material[] m_materials;
         public Material[] Materials
         {
-            get { return m_materials; }
-            private set
-            {
-                m_materials = value;
-                m_materialNames = value.Select(x => x.name).ToArray();
-
-#if UNITY_EDITOR
-                int i = 0;
-                foreach (var x in value)
-                {
-                    var propNames = Enumerable.Range(0, ShaderUtil.GetPropertyCount(x.shader))
-                        .Where(y => ShaderUtil.GetPropertyType(x.shader, y) == ShaderUtil.ShaderPropertyType.Color)
-                        .Select(y => ShaderUtil.GetPropertyName(x.shader, y))
-                        .ToArray();
-                    m_materialPropNamesList.Add(propNames);
-
-                    var propTypes = Enumerable.Range(0, ShaderUtil.GetPropertyCount(x.shader))
-                        .Select(y => ShaderUtil.GetPropertyType(x.shader, y))
-                        .Where(y => y == ShaderUtil.ShaderPropertyType.Color)
-                        .ToArray();
-                    m_materialPropTypesList.Add(propTypes);
-
-                    var propValues = propNames.Select(y => (Vector4)x.GetColor(y)).ToArray();
-                    m_materialPropDefaultValueList.Add(propValues);
-                }
-#endif
-            }
-        }
-
-        string[] m_materialNames;
-        public string[] MaterialsNames
-        {
-            get { return m_materialNames; }
-        }
-
-        List<string[]> m_materialPropNamesList = new List<string[]>();
-        public string[] GetMaterialPropNames(int materialIndex)
-        {
-            if(m_materialPropNamesList==null || materialIndex<0 || materialIndex >= m_materialPropNamesList.Count)
-            {
-                return null;
-            }
-            return m_materialPropNamesList[materialIndex];
-        }
-
-        List<ShaderUtil.ShaderPropertyType[]> m_materialPropTypesList = new List<ShaderUtil.ShaderPropertyType[]>();
-        public ShaderUtil.ShaderPropertyType[] GetMaterialPropTypes(int materialIndex)
-        {
-            if (m_materialPropTypesList == null || materialIndex < 0 || materialIndex >= m_materialPropTypesList.Count)
-            {
-                return null;
-            }
-            return m_materialPropTypesList[materialIndex];
-        }
-
-        List<Vector4[]> m_materialPropDefaultValueList = new List<Vector4[]>();
-        public Vector4[] GetMaterialPropBaseValues(int materialIndex)
-        {
-            if (m_materialPropDefaultValueList == null || materialIndex < 0 || materialIndex >= m_materialPropDefaultValueList.Count)
-            {
-                return null;
-            }
-            return m_materialPropDefaultValueList[materialIndex];
+            get;
+            private set;
         }
 
         Transform m_transform;
@@ -118,17 +108,17 @@ namespace VRM
             get { return m_transform.rotation; }
         }
 
-        MeshPreviewItem(string path, Transform transform)
+        MeshPreviewItem(string path, Transform transform, Material[] materials)
         {
             Path = path;
             m_transform = transform;
+            Materials = materials;
         }
 
-        public void Bake(BlendShapeBinding[] values, MaterialValueBinding[] materialValues)
+        public void Bake(BlendShapeBinding[] values, float weight)
         {
-            if (SkinnedMeshRenderer == null) return;
-
-            if (values != null)
+            // Update baked mesh
+            if (SkinnedMeshRenderer != null && values != null)
             {
                 // clear
                 for (int i = 0; i < BlendShapeCount; ++i)
@@ -140,47 +130,19 @@ namespace VRM
                 {
                     if (x.RelativePath == Path)
                     {
-                        SkinnedMeshRenderer.SetBlendShapeWeight(x.Index, x.Weight);
-                    }
-                }
-            }
-
-            if (materialValues != null && m_materialPropNamesList!=null)
-            {
-                // clear
-                for (int i = 0; i < Materials.Length; ++i)
-                {
-                    var names = m_materialPropNamesList[i];
-                    var defaultValues = m_materialPropDefaultValueList[i];
-                    for (int j = 0; j < names.Length; ++j)
-                    {
-                        Materials[i].SetColor(names[j], defaultValues[j]);
+                        SkinnedMeshRenderer.SetBlendShapeWeight(x.Index, x.Weight * weight);
                     }
                 }
 
-                foreach (var x in materialValues)
-                {
-                    if(x.RelativePath == Path)
-                    {
-                        var material = Materials[x.Index];
-                        material.SetColor(x.ValueName, x.TargetValue);
-                    }
-                }
-            }
-
-            SkinnedMeshRenderer.BakeMesh(Mesh);
-        }
-
-        public void Clean()
-        {
-            foreach (var x in Materials)
-            {
-                UnityEngine.Object.DestroyImmediate(x);
+                SkinnedMeshRenderer.BakeMesh(Mesh);
             }
         }
 
-        public static MeshPreviewItem Create(Transform t, Transform root, Func<Material, Material> getOrCreateMaterial)
+        public static MeshPreviewItem Create(Transform t, Transform root,
+            Func<Material, Material> getOrCreateMaterial)
         {
+            //Debug.Log("create");
+
             var meshFilter = t.GetComponent<MeshFilter>();
             var meshRenderer = t.GetComponent<MeshRenderer>();
             var skinnedMeshRenderer = t.GetComponent<SkinnedMeshRenderer>();
@@ -188,10 +150,9 @@ namespace VRM
             {
                 // copy
                 meshRenderer.sharedMaterials = meshRenderer.sharedMaterials.Select(x => getOrCreateMaterial(x)).ToArray();
-                return new MeshPreviewItem(t.RelativePathFrom(root), t)
+                return new MeshPreviewItem(t.RelativePathFrom(root), t, meshRenderer.sharedMaterials)
                 {
-                    Mesh = meshFilter.sharedMesh,
-                    Materials = meshRenderer.sharedMaterials
+                    Mesh = meshFilter.sharedMesh
                 };
             }
             else if (skinnedMeshRenderer != null)
@@ -202,20 +163,18 @@ namespace VRM
                 {
                     // bake required
                     var sharedMesh = skinnedMeshRenderer.sharedMesh;
-                    return new MeshPreviewItem(t.RelativePathFrom(root), t)
+                    return new MeshPreviewItem(t.RelativePathFrom(root), t, skinnedMeshRenderer.sharedMaterials)
                     {
                         SkinnedMeshRenderer = skinnedMeshRenderer,
                         Mesh = new Mesh(), // for bake
-                        BlendShapeNames = Enumerable.Range(0, sharedMesh.blendShapeCount).Select(x => sharedMesh.GetBlendShapeName(x)).ToArray(),
-                        Materials = skinnedMeshRenderer.sharedMaterials
+                        BlendShapeNames = Enumerable.Range(0, sharedMesh.blendShapeCount).Select(x => sharedMesh.GetBlendShapeName(x)).ToArray()
                     };
                 }
                 else
                 {
-                    return new MeshPreviewItem(t.RelativePathFrom(root), t)
+                    return new MeshPreviewItem(t.RelativePathFrom(root), t, skinnedMeshRenderer.sharedMaterials)
                     {
                         Mesh = skinnedMeshRenderer.sharedMesh,
-                        Materials = skinnedMeshRenderer.sharedMaterials
                     };
                 }
             }

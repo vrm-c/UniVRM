@@ -9,6 +9,8 @@ namespace VRM
     [CustomEditor(typeof(BlendShapeClip))]
     public class BlendShapeClipEditor : PreviewEditor
     {
+        float m_previewSlider;
+
         #region for Editor
         SerializedProperty m_BlendShapeNameProp;
         SerializedProperty m_PresetProp;
@@ -25,8 +27,10 @@ namespace VRM
         {
             base.OnEnable();
 
+            m_previewSlider = 1.0f;
+
             m_target = (BlendShapeClip)target;
-            Bake(m_target.Values, m_target.MaterialValues);
+            Bake(m_target.Values, m_target.MaterialValues, m_previewSlider);
 
             m_BlendShapeNameProp = serializedObject.FindProperty("BlendShapeName");
             m_PresetProp = serializedObject.FindProperty("Preset");
@@ -63,8 +67,16 @@ namespace VRM
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
-
             m_changed = false;
+
+            EditorGUILayout.Space();
+            var previewSlider= EditorGUILayout.Slider("Preview Weight", m_previewSlider, 0, 1.0f);
+            if (previewSlider != m_previewSlider) {
+                m_previewSlider = previewSlider;
+                m_changed = true;
+            }
+
+            EditorGUILayout.Space();
 
             serializedObject.Update();
 
@@ -81,7 +93,7 @@ namespace VRM
 
             if (m_changed && PreviewSceneManager!=null)
             {
-                PreviewSceneManager.Bake(m_target.Values, m_target.MaterialValues);
+                PreviewSceneManager.Bake(m_target.Values, m_target.MaterialValues, m_previewSlider);
             }
         }
 
@@ -136,49 +148,46 @@ namespace VRM
 
                 var y = position.y;
                 var rect = new Rect(position.x, y, position.width, height);
-                int pathIndex;
-                if (StringPopup(rect, property.FindPropertyRelative("RelativePath"), scene.RendererPathList, out pathIndex))
-                {
-                    changed = true;
-                }
-
-                y += height;
-                rect = new Rect(position.x, y, position.width, height);
                 int materialIndex;
-                if (IntPopup(rect, property.FindPropertyRelative("Index"), scene.GetMaterialNames(pathIndex), out materialIndex))
+                if (StringPopup(rect, property.FindPropertyRelative("MaterialName"), scene.MaterialNames, out materialIndex))
                 {
                     changed = true;
                 }
 
-                y += height;
-                rect = new Rect(position.x, y, position.width, height);
-                int propIndex;
-                if (StringPopup(rect, property.FindPropertyRelative("ValueName"), scene.GetMaterialPropNames(pathIndex, materialIndex), out propIndex))
+                if (materialIndex >= 0)
                 {
-                    changed = true;
-                }
-
-                if (propIndex >= 0)
-                {
-                    var propTypes = scene.GetMaterialPropTypes(pathIndex, materialIndex);
-                    if (propTypes != null && propIndex < propTypes.Length)
+                    var materialItem = scene.GetMaterialItem(scene.MaterialNames[materialIndex]);
+                    if (materialItem != null)
                     {
-                        switch (propTypes[propIndex])
+                        y += height;
+                        rect = new Rect(position.x, y, position.width, height);
+                        int propIndex;
+                        if (StringPopup(rect, property.FindPropertyRelative("ValueName"), materialItem.PropNames, out propIndex))
                         {
-                            case ShaderUtil.ShaderPropertyType.Color:
-                                {
-                                    var baseValues= scene.GetMaterialPropBaseValues(pathIndex, materialIndex);
-                                    property.FindPropertyRelative("BaseValue").vector4Value = baseValues[propIndex];
+                            changed = true;
+                        }
 
-                                    // max
-                                    y += height;
-                                    rect = new Rect(position.x, y, position.width, height);
-                                    if (ColorProp(rect, property.FindPropertyRelative("TargetValue")))
-                                    {
-                                        changed = true;
-                                    }
+                        if (propIndex >= 0)
+                        {
+                            var propItem = materialItem.PropMap[materialItem.PropNames[propIndex]];
+                            {
+                                switch (propItem.PropertyType)
+                                {
+                                    case ShaderUtil.ShaderPropertyType.Color:
+                                        {
+                                            property.FindPropertyRelative("BaseValue").vector4Value = propItem.DefaultValues;
+
+                                            // max
+                                            y += height;
+                                            rect = new Rect(position.x, y, position.width, height);
+                                            if (ColorProp(rect, property.FindPropertyRelative("TargetValue")))
+                                            {
+                                                changed = true;
+                                            }
+                                        }
+                                        break;
                                 }
-                                break;
+                            }
                         }
                     }
                 }

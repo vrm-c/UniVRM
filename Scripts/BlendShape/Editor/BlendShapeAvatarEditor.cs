@@ -46,7 +46,7 @@ namespace VRM
 
                 m_currentClip = value;
                 //ClearBlendShape();
-                Bake(m_currentClip.Values, m_currentClip.MaterialValues);
+                Bake(m_currentClip.Values, m_currentClip.MaterialValues, 1.0f);
             }
         }
 
