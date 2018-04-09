@@ -1,20 +1,44 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
+using UnityEditorInternal;
 
 
 namespace VRM
 {
+    /// <summary>
+    /// Prefabをインスタンス化してPreviewに表示する
+    /// 
+    /// * https://github.com/Unity-Technologies/UnityCsReference/blob/11bcfd801fccd2a52b09bb6fd636c1ddcc9f1705/Editor/Mono/Inspector/ModelInspector.cs
+    /// 
+    /// </summary>
     public class PreviewEditor : Editor
     {
+        /// <summary>
+        /// PreviewRenderUtilityを管理する。
+        /// 
+        /// * PreviewRenderUtility.m_cameraのUnityVersionによる切り分け
+        /// 
+        /// </summary>
+        PreviewFaceRenderer m_renderer;
+
+        /// <summary>
+        /// Prefabをインスタンス化したシーンを管理する。
+        /// 
+        /// * BlendShapeのBake
+        /// * MaterialMorphの適用
+        /// * Previewカメラのコントロール
+        /// * Previewライティングのコントロール
+        /// 
+        /// </summary>
         PreviewSceneManager m_scene;
         protected PreviewSceneManager PreviewSceneManager
         {
             get { return m_scene; }
         }
 
-        PreviewFaceRenderer m_renderer;
+        /// <summary>
+        /// Previewシーンに表示するPrefab
+        /// </summary>
         GameObject m_prefab;
         GameObject Prefab
         {
@@ -42,6 +66,12 @@ namespace VRM
             }
         }
 
+        /// <summary>
+        /// シーンにBlendShapeとMaterialMorphを適用する
+        /// </summary>
+        /// <param name="values"></param>
+        /// <param name="materialValues"></param>
+        /// <param name="weight"></param>
         protected void Bake(BlendShapeBinding[] values, MaterialValueBinding[] materialValues, float weight)
         {
             if (m_scene != null)
@@ -88,6 +118,43 @@ namespace VRM
             Prefab = (GameObject)EditorGUILayout.ObjectField("prefab", Prefab, typeof(GameObject), false);
         }
 
+        private static int sliderHash = "Slider".GetHashCode();
+        public static Vector2 Drag2D(Vector2 scrollPosition, Rect position)
+        {
+            int controlId = GUIUtility.GetControlID(sliderHash, FocusType.Passive);
+            Event current = Event.current;
+            switch (current.GetTypeForControl(controlId))
+            {
+                case EventType.MouseDown:
+                    if (position.Contains(current.mousePosition) && (double)position.width > 50.0)
+                    {
+                        GUIUtility.hotControl = controlId;
+                        current.Use();
+                        EditorGUIUtility.SetWantsMouseJumping(1);
+                        break;
+                    }
+                    break;
+                case EventType.MouseUp:
+                    if (GUIUtility.hotControl == controlId)
+                        GUIUtility.hotControl = 0;
+                    EditorGUIUtility.SetWantsMouseJumping(0);
+                    break;
+                case EventType.MouseDrag:
+                    if (GUIUtility.hotControl == controlId)
+                    {
+                        scrollPosition -= current.delta * (!current.shift ? 1f : 3f) / Mathf.Min(position.width, position.height) * 140f;
+                        scrollPosition.y = Mathf.Clamp(scrollPosition.y, -90f, 90f);
+                        current.Use();
+                        GUI.changed = true;
+                        break;
+                    }
+                    break;
+            }
+            return scrollPosition;
+        }
+
+        Vector2 previewDir;
+
         // very important to override this, it tells Unity to render an ObjectPreview at the bottom of the inspector
         public override bool HasPreviewGUI() { return true; }
 
@@ -99,10 +166,15 @@ namespace VRM
             {
                 if (Event.current.type == EventType.Repaint)
                 {
-                    EditorGUI.DropShadowLabel(new Rect(r.x, r.y, r.width, 40f), "Mesh preview requires\nrender texture support");
+                    EditorGUI.DropShadowLabel(new Rect(r.x, r.y, r.width, 40f), 
+                        "Mesh preview requires\nrender texture support");
                 }
                 return;
             }
+
+            previewDir = Drag2D(previewDir, r);
+            //Debug.LogFormat("{0}", previewDir);
+
             if (Event.current.type != EventType.Repaint)
             {
                 // if we don't need to update yet, then don't
@@ -111,7 +183,7 @@ namespace VRM
 
             if (m_renderer != null && m_scene != null)
             {
-                var texture = m_renderer.Render(r, background, m_scene);
+                var texture = m_renderer.Render(r, background, m_scene, previewDir);
                 if (texture != null)
                 {
                     // draw the RenderTexture in the ObjectPreview pane

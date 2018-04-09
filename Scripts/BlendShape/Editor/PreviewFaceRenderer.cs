@@ -79,7 +79,9 @@ namespace VRM
             }
         }
 
-        public Texture Render(Rect r, GUIStyle background, PreviewSceneManager scene)
+        //const float FACTOR = 0.1f;
+
+        public Texture Render(Rect r, GUIStyle background, PreviewSceneManager scene, Vector2 drag)
         {
             if (scene == null) return null;
 
@@ -88,7 +90,7 @@ namespace VRM
                 m_previewUtility.BeginPreview(r, background); // set up the PreviewRenderUtility's mini internal scene
 
                 // setup the ObjectPreview's camera
-                scene.SetupCamera(PreviewCamera);
+                scene.SetupCamera(PreviewCamera, scene.TargetPosition, -drag.x, drag.y);
 
                 foreach (var item in scene.EnumRenderItems)
                 {

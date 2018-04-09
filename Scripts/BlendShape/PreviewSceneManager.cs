@@ -127,6 +127,16 @@ namespace VRM
                 .Where(x => x.SkinnedMeshRenderer != null)
                 .Select(x => x.Path)
                 .ToArray();
+
+            var animator = GetComponent<Animator>();
+            if (animator != null)
+            {
+                var head = animator.GetBoneTransform(HumanBodyBones.Head);
+                if (head != null)
+                {
+                    m_target = head;
+                }
+            }
         }
 
         MeshPreviewItem[] m_meshes;
@@ -186,6 +196,19 @@ namespace VRM
             return item;
         }
 
+        public Transform m_target;
+        public Vector3 TargetPosition
+        {
+            get
+            {
+                if (m_target == null)
+                {
+                    return new Vector3(0, 1.4f, 0);
+                }
+                return m_target.position;
+            }
+        }
+
         Bounds m_bounds;
         public void Bake(BlendShapeBinding[] values=null, MaterialValueBinding[] materialValues=null, float weight=1.0f)
         {
@@ -243,18 +266,28 @@ namespace VRM
         /// カメラパラメーターを決める
         /// </summary>
         /// <param name="camera"></param>
-        public void SetupCamera(Camera camera)
+        public void SetupCamera(Camera camera, Vector3 target, float yaw, float pitch)
         {
-            float magnitude = m_bounds.extents.magnitude * 0.5f;
-            float distance = magnitude;
-            camera.fieldOfView = 27f;
             camera.backgroundColor = Color.gray;
             camera.clearFlags = CameraClearFlags.Color;
+
+            // projection
+            //float magnitude = m_bounds.extents.magnitude * 0.5f;
+            //float distance = magnitude;
+            var distance = target.magnitude;
+
+            camera.fieldOfView = 27f;
+            camera.nearClipPlane = 0.3f;
+            camera.farClipPlane = distance /*+ magnitude*/ * 2.1f;
+
+#if false
             // this used to be "-Vector3.forward * num" but I hardcoded my camera position instead
             camera.transform.position = new Vector3(0f, 1.4f, distance);
             camera.transform.rotation = Quaternion.Euler(0, 180f, 0);
-            camera.nearClipPlane = 0.3f;
-            camera.farClipPlane = distance + magnitude * 1.1f;
+#else
+            camera.transform.position = target + Quaternion.Euler(pitch, yaw, 0) * Vector3.forward * distance;
+            camera.transform.LookAt(target);
+#endif
 
             //previewLayer のみ表示する
             //camera.cullingMask = 1 << PreviewLayer;
