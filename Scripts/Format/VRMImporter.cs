@@ -341,7 +341,8 @@ namespace VRM
                     {
                         MaterialName = x.materialName,
                         ValueName = x.propertyName,
-                        TargetValue = value
+                        TargetValue = value,
+                        BaseValue = context.Materials.First(y => y.name==x.materialName).GetColor(x.propertyName),
                     };
                 })
                 .ToArray();

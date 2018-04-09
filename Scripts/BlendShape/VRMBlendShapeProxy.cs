@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-
+using UniGLTF;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 
 namespace VRM
@@ -12,6 +15,51 @@ namespace VRM
     {
         [SerializeField]
         public BlendShapeAvatar BlendShapeAvatar;
+
+#if UNITY_EDITOR
+        public class BlendShapeSlider
+        {
+            VRMBlendShapeProxy m_target;
+            BlendShapeKey m_key;
+
+            public BlendShapeSlider(VRMBlendShapeProxy target, BlendShapeKey key)
+            {
+                m_target = target;
+                m_key = key;
+            }
+
+            public void Slider()
+            {
+                if (m_target.BlendShapeAvatar == null)
+                {
+                    return;
+                }
+
+                var oldValue = m_target.GetValue(m_key);
+                var newValue = EditorGUILayout.Slider(m_key.ToString(), oldValue, 0, 1.0f);
+                if (oldValue != newValue)
+                {
+                    m_target.SetValue(m_key, newValue);
+                }
+            }
+        }
+        List<BlendShapeSlider> m_sliders;
+        public List<BlendShapeSlider> Sliders
+        {
+            get { return m_sliders; }
+        }
+        private void SetupSliders()
+        {
+            if (BlendShapeAvatar != null && BlendShapeAvatar.Clips != null)
+            {
+                m_sliders = BlendShapeAvatar.Clips
+                    .Where(x => x != null)
+                    .Select(x => new BlendShapeSlider(this, BlendShapeKey.CreateFrom(x)))
+                    .ToList()
+                    ;
+            }
+        }
+#endif
 
         struct BlendShapePath
         {
@@ -69,7 +117,8 @@ namespace VRM
                 m_valueMap = new Dictionary<BlendShapeKey, float>();
                 foreach (var kv in m_clipMap)
                 {
-                    foreach (var binding in kv.Value.Values) {
+                    foreach (var binding in kv.Value.Values)
+                    {
 
                         if (!m_setterMap.ContainsKey(binding))
                         {
@@ -78,7 +127,7 @@ namespace VRM
                             if (_target != null)
                             {
                                 target = _target.GetComponent<SkinnedMeshRenderer>();
-                            }                           
+                            }
                             if (target != null)
                             {
                                 m_setterMap.Add(binding, new BlendShapePathHandler
@@ -100,42 +149,42 @@ namespace VRM
 
             public void Clear()
             {
-                foreach(var kv in m_setterMap)
+                foreach (var kv in m_setterMap)
                 {
                     kv.Value.Clear();
                 }
             }
 
-            public void Restore()
+            public void Restore(Dictionary<string, Material> materialMap)
             {
                 foreach (var kv in m_valueMap.ToArray())
                 {
-                    SetValue(kv.Key, kv.Value, false);
+                    SetValue(kv.Key, kv.Value, false, materialMap);
                 }
             }
 
             public void Apply()
             {
-                foreach(var kv in m_setterMap)
+                foreach (var kv in m_setterMap)
                 {
                     kv.Value.Apply();
                 }
             }
 
-            public void SetValue(BlendShapeKey key, float value, bool replace)
+            public void SetValue(BlendShapeKey key, float value, bool replace, Dictionary<string, Material> materialMap)
             {
                 m_valueMap[key] = value;
 
                 BlendShapeClip clip;
-                if(!m_clipMap.TryGetValue(key, out clip))
+                if (!m_clipMap.TryGetValue(key, out clip))
                 {
                     return;
                 }
 
-                foreach(var binding in clip.Values)
+                foreach (var binding in clip.Values)
                 {
                     BlendShapePathHandler handler;
-                    if(m_setterMap.TryGetValue(binding, out handler))
+                    if (m_setterMap.TryGetValue(binding, out handler))
                     {
                         if (replace)
                         {
@@ -147,12 +196,19 @@ namespace VRM
                         {
                             // 積算
                             handler.AddValue(binding.Weight * value);
-                        }                       
+                        }
                     }
                     else
                     {
                         Debug.LogWarningFormat("'{0}' not found", binding);
                     }
+                }
+
+                // materialの更新
+                foreach(var binding in clip.MaterialValues)
+                {
+                    var propValue = binding.BaseValue + (binding.TargetValue - binding.BaseValue) * value;
+                    materialMap[binding.MaterialName].SetColor(binding.ValueName, propValue);
                 }
             }
 
@@ -167,6 +223,47 @@ namespace VRM
             }
         }
         BlendShapeMerger m_merger;
+        Dictionary<string, Material> m_materialMap;
+        private void Awake()
+        {
+            m_materialMap = new Dictionary<string, Material>();
+            foreach(var x in transform.Traverse())
+            {
+                var renderer = x.GetComponent<Renderer>();
+                if (renderer != null)
+                {
+                    foreach (var y in renderer.sharedMaterials.Where(y => y != null))
+                    {
+                        if (!string.IsNullOrEmpty(y.name))
+                        {
+                            if (!m_materialMap.ContainsKey(y.name))
+                            {
+                                m_materialMap.Add(y.name, y);
+                            }
+                        }
+                    }
+                }
+            }
+
+#if UNITY_EDITOR
+            SetupSliders();
+#endif
+        }
+
+        private void OnDestroy()
+        {
+            if (m_materialMap != null)
+            {
+                foreach (var x in BlendShapeAvatar.Clips)
+                {
+                    foreach (var y in x.MaterialValues)
+                    {
+                        // restore values
+                        m_materialMap[y.MaterialName].SetColor(y.ValueName, y.BaseValue);
+                    }
+                }
+            }
+        }
 
         private void Update()
         {
@@ -179,7 +276,7 @@ namespace VRM
             }
         }
 
-        public void SetValue(BlendShapePreset key, float value, bool apply=true)
+        public void SetValue(BlendShapePreset key, float value, bool apply = true)
         {
             SetValue(new BlendShapeKey(key), value, apply);
         }
@@ -187,7 +284,7 @@ namespace VRM
         {
             return GetValue(new BlendShapeKey(key));
         }
-        public void SetValue(String key, float value, bool apply=true)
+        public void SetValue(String key, float value, bool apply = true)
         {
             SetValue(new BlendShapeKey(key), value, apply);
         }
@@ -195,11 +292,11 @@ namespace VRM
         {
             return GetValue(new BlendShapeKey(key));
         }
-        public void SetValue(BlendShapeKey key, float value, bool apply=true)
+        public void SetValue(BlendShapeKey key, float value, bool apply = true)
         {
             if (m_merger != null)
             {
-                m_merger.SetValue(key, value, apply);
+                m_merger.SetValue(key, value, apply, m_materialMap);
             }
         }
         public float GetValue(BlendShapeKey key)
@@ -223,7 +320,7 @@ namespace VRM
         {
             if (m_merger != null)
             {
-                m_merger.Restore();
+                m_merger.Restore(m_materialMap);
             }
         }
 
