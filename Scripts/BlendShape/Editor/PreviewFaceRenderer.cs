@@ -81,7 +81,7 @@ namespace VRM
 
         //const float FACTOR = 0.1f;
 
-        public Texture Render(Rect r, GUIStyle background, PreviewSceneManager scene, Vector2 drag)
+        public Texture Render(Rect r, GUIStyle background, PreviewSceneManager scene, Vector2 drag, float distance)
         {
             if (scene == null) return null;
 
@@ -90,7 +90,7 @@ namespace VRM
                 m_previewUtility.BeginPreview(r, background); // set up the PreviewRenderUtility's mini internal scene
 
                 // setup the ObjectPreview's camera
-                scene.SetupCamera(PreviewCamera, scene.TargetPosition, -drag.x, drag.y);
+                scene.SetupCamera(PreviewCamera, scene.TargetPosition, -drag.x, drag.y, distance);
 
                 foreach (var item in scene.EnumRenderItems)
                 {

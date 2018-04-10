@@ -119,41 +119,8 @@ namespace VRM
         }
 
         private static int sliderHash = "Slider".GetHashCode();
-        public static Vector2 Drag2D(Vector2 scrollPosition, Rect position)
-        {
-            int controlId = GUIUtility.GetControlID(sliderHash, FocusType.Passive);
-            Event current = Event.current;
-            switch (current.GetTypeForControl(controlId))
-            {
-                case EventType.MouseDown:
-                    if (position.Contains(current.mousePosition) && (double)position.width > 50.0)
-                    {
-                        GUIUtility.hotControl = controlId;
-                        current.Use();
-                        EditorGUIUtility.SetWantsMouseJumping(1);
-                        break;
-                    }
-                    break;
-                case EventType.MouseUp:
-                    if (GUIUtility.hotControl == controlId)
-                        GUIUtility.hotControl = 0;
-                    EditorGUIUtility.SetWantsMouseJumping(0);
-                    break;
-                case EventType.MouseDrag:
-                    if (GUIUtility.hotControl == controlId)
-                    {
-                        scrollPosition -= current.delta * (!current.shift ? 1f : 3f) / Mathf.Min(position.width, position.height) * 140f;
-                        scrollPosition.y = Mathf.Clamp(scrollPosition.y, -90f, 90f);
-                        current.Use();
-                        GUI.changed = true;
-                        break;
-                    }
-                    break;
-            }
-            return scrollPosition;
-        }
-
-        Vector2 previewDir;
+        Vector2 m_previewDir;
+        float m_distance = 1.0f;
 
         // very important to override this, it tells Unity to render an ObjectPreview at the bottom of the inspector
         public override bool HasPreviewGUI() { return true; }
@@ -172,7 +139,55 @@ namespace VRM
                 return;
             }
 
-            previewDir = Drag2D(previewDir, r);
+            //previewDir = Drag2D(previewDir, r);
+            {
+                int controlId = GUIUtility.GetControlID(sliderHash, FocusType.Passive);
+                Event current = Event.current;
+                switch (current.GetTypeForControl(controlId))
+                {
+                    case EventType.MouseDown:
+                        if (r.Contains(current.mousePosition) && (double)r.width > 50.0)
+                        {
+                            GUIUtility.hotControl = controlId;
+                            current.Use();
+                            EditorGUIUtility.SetWantsMouseJumping(1);
+                            break;
+                        }
+                        break;
+
+                    case EventType.MouseUp:
+                        if (GUIUtility.hotControl == controlId)
+                            GUIUtility.hotControl = 0;
+                        EditorGUIUtility.SetWantsMouseJumping(0);
+                        break;
+
+                    case EventType.MouseDrag:
+                        if (GUIUtility.hotControl == controlId)
+                        {
+                            m_previewDir -= current.delta * (!current.shift ? 1f : 3f) / Mathf.Min(r.width, r.height) * 140f;
+                            m_previewDir.y = Mathf.Clamp(m_previewDir.y, -90f, 90f);
+                            current.Use();
+                            GUI.changed = true;
+                            break;
+                        }
+                        break;
+
+                    case EventType.ScrollWheel:
+                        //Debug.LogFormat("wheel: {0}", current.delta);
+                        if (current.delta.y > 0)
+                        {
+                            m_distance *= 1.1f;
+                            Repaint();
+                        }
+                        else if (current.delta.y < 0)
+                        {
+                            m_distance *= 0.9f;
+                            Repaint();
+                        }
+                        break;
+                }
+                //return scrollPosition;
+            }
             //Debug.LogFormat("{0}", previewDir);
 
             if (Event.current.type != EventType.Repaint)
@@ -183,7 +198,7 @@ namespace VRM
 
             if (m_renderer != null && m_scene != null)
             {
-                var texture = m_renderer.Render(r, background, m_scene, previewDir);
+                var texture = m_renderer.Render(r, background, m_scene, m_previewDir, m_distance);
                 if (texture != null)
                 {
                     // draw the RenderTexture in the ObjectPreview pane

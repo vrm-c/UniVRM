@@ -205,7 +205,7 @@ namespace VRM
                 {
                     return new Vector3(0, 1.4f, 0);
                 }
-                return m_target.position;
+                return m_target.position + new Vector3(0, 0.1f, 0);
             }
         }
 
@@ -266,7 +266,7 @@ namespace VRM
         /// カメラパラメーターを決める
         /// </summary>
         /// <param name="camera"></param>
-        public void SetupCamera(Camera camera, Vector3 target, float yaw, float pitch)
+        public void SetupCamera(Camera camera, Vector3 target, float yaw, float pitch, float distance)
         {
             camera.backgroundColor = Color.gray;
             camera.clearFlags = CameraClearFlags.Color;
@@ -274,7 +274,7 @@ namespace VRM
             // projection
             //float magnitude = m_bounds.extents.magnitude * 0.5f;
             //float distance = magnitude;
-            var distance = target.magnitude;
+            //var distance = target.magnitude;
 
             camera.fieldOfView = 27f;
             camera.nearClipPlane = 0.3f;
