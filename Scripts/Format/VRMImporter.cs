@@ -92,7 +92,7 @@ namespace VRM
                 var shader = Shader.Find(shaderName);
                 if (shader == null)
                 {
-                    Debug.LogErrorFormat("shader {0} not found. set Assets/VRM/Shaders/VRMShaders to Edit - project setting - Graphics - preloaded shaders", shaderName);
+                    Debug.LogWarningFormat("shader {0} not found. set Assets/VRM/Shaders/VRMShaders to Edit - project setting - Graphics - preloaded shaders", shaderName);
                     return fallback(ctx, i);
                 }
                 else
