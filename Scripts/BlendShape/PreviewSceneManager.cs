@@ -53,14 +53,17 @@ namespace VRM
             manager.Initialize(prefab);
 
             // HideFlags are special editor-only settings that let you have *secret* GameObjects in a scene, or to tell Unity not to save that temporary GameObject as part of the scene
-            go.hideFlags |= HideFlags.DontSaveInEditor;
-            go.hideFlags |= HideFlags.DontSaveInBuild;
+            foreach (var x in go.transform.Traverse())
+            {
+                x.gameObject.hideFlags = HideFlags.None
+                | HideFlags.DontSave
+                //| HideFlags.DontSaveInBuild
 #if VRM_DEVELOP
 #else
-            go.hideFlags |= HideFlags.HideAndDontSave;
-            ; // you could also hide it from the hierarchy or inspector, but personally I like knowing everything that's there
+                | HideFlags.HideAndDontSave
 #endif
-            //Debug.LogFormat("Create {0}", manager);
+                ;
+            }
 
             return manager;
         }
