@@ -63,6 +63,16 @@ namespace VRM
             context.ShowMeshes();
         }
 
+        static string[] VRM_SHADER_NAMES =
+        {
+            "Standard",
+            "VRM/UnlitTexture",
+            "VRM/UnlitCutout",
+            "VRM/UnlitTransparent",
+            "VRM/UnlitTransparentZWrite",
+            "VRM/MToon",
+        };
+
         public static CreateMaterialFunc GetMaterialFunc(List<glTF_VRM_Material> materials)
         {
             var CreateDefault= gltfImporter.CreateMaterialFuncFromShader(Shader.Find("VRM/UnlitTexture"));
@@ -73,10 +83,12 @@ namespace VRM
                 if(vrm!=null && vrm.materials[i].name.ToLower().Contains("zwrite"))
                 {
                     // 一応。不要かも
+                    Debug.Log("fallback to VRM/UnlitTransparentZWrite");
                     return CreateZWrite(ctx, i);
                 }
                 else
                 {
+                    Debug.Log("fallback to VRM/UnlitTexture");
                     return CreateDefault(ctx, i);
                 }
             };
@@ -92,8 +104,16 @@ namespace VRM
                 var shader = Shader.Find(shaderName);
                 if (shader == null)
                 {
-                    Debug.LogWarningFormat("shader {0} not found. set Assets/VRM/Shaders/VRMShaders to Edit - project setting - Graphics - preloaded shaders", shaderName);
-                    return fallback(ctx, i);
+                    if (VRM_SHADER_NAMES.Contains(shaderName))
+                    {
+                        Debug.LogErrorFormat("shader {0} not found. set Assets/VRM/Shaders/VRMShaders to Edit - project setting - Graphics - preloaded shaders", shaderName);
+                        return fallback(ctx, i);
+                    }
+                    else
+                    {
+                        Debug.LogWarningFormat("unknown shader {0}.", shaderName);
+                        return fallback(ctx, i);
+                    }
                 }
                 else
                 {
