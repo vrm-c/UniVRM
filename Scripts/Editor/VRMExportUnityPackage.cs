@@ -68,6 +68,20 @@ namespace VRM
 #endif
         public static void CreateUnityPackage()
         {
+            // まずビルドする
+            var levels = new string[] { "Assets/VRM/_RuntimeLoaderSample/VRMRuntimeLoaderSample.unity" };
+            var buildPath = Path.GetFullPath(Application.dataPath + "/../build/build.exe");
+            Debug.LogFormat("{0}", buildPath);
+            var build=BuildPipeline.BuildPlayer(levels, 
+                buildPath, 
+                BuildTarget.StandaloneWindows, 
+                BuildOptions.None
+                );
+            if (!string.IsNullOrEmpty(build))
+            {
+                return;
+            }
+
             var path = GetPath(PREFIX);
             if (File.Exists(path))
             {
