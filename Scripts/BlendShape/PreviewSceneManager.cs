@@ -212,6 +212,7 @@ namespace VRM
             }
         }
 
+#if UNITY_EDITOR
         Bounds m_bounds;
         public void Bake(BlendShapeBinding[] values=null, MaterialValueBinding[] materialValues=null, float weight=1.0f)
         {
@@ -256,7 +257,7 @@ namespace VRM
             }
 
         }
-
+#endif
         /*
         int PreviewLayer
         {

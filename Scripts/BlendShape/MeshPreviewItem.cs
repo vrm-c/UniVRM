@@ -10,12 +10,14 @@ using UnityEditor;
 
 namespace VRM
 {
+#if UNITY_EDITOR
     [Serializable]
     public struct PropItem
     {
         public ShaderUtil.ShaderPropertyType PropertyType;
         public Vector4 DefaultValues;
     }
+#endif
 
     [Serializable]
     public class MaterialItem
