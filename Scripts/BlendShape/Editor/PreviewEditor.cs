@@ -174,15 +174,17 @@ namespace VRM
 
                     case EventType.ScrollWheel:
                         //Debug.LogFormat("wheel: {0}", current.delta);
-                        if (current.delta.y > 0)
-                        {
-                            m_distance *= 1.1f;
-                            Repaint();
-                        }
-                        else if (current.delta.y < 0)
-                        {
-                            m_distance *= 0.9f;
-                            Repaint();
+                        if (r.Contains(current.mousePosition)){
+                            if (current.delta.y > 0)
+                            {
+                                m_distance *= 1.1f;
+                                Repaint();
+                            }
+                            else if (current.delta.y < 0)
+                            {
+                                m_distance *= 0.9f;
+                                Repaint();
+                            }
                         }
                         break;
                 }
