@@ -1,7 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
 using UnityEditorInternal;
-
+using System;
 
 namespace VRM
 {
@@ -62,8 +62,16 @@ namespace VRM
                     {
                         m_scene.gameObject.SetActive(false);
                     }
+                    RaisePrefabChanged();
                 }
             }
+        }
+        protected event Action PrefabChanged;
+        void RaisePrefabChanged()
+        {
+            var handler = PrefabChanged;
+            if (handler == null) return;
+            handler();
         }
 
         /// <summary>
@@ -76,6 +84,7 @@ namespace VRM
         {
             if (m_scene != null)
             {
+                Debug.Log("Bake");
                 m_scene.Bake(values, materialValues, weight);
             }
         }

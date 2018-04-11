@@ -23,13 +23,20 @@ namespace VRM
         BlendShapeClip m_target;
         bool m_changed;
 
+        void OnPrefabChanged()
+        {
+            Bake(m_target.Values, m_target.MaterialValues, 1.0f);
+        }
+
         protected override void OnEnable()
         {
+            m_target = (BlendShapeClip)target;
+            PrefabChanged += OnPrefabChanged;
+
             base.OnEnable();
 
             m_previewSlider = 1.0f;
 
-            m_target = (BlendShapeClip)target;
             Bake(m_target.Values, m_target.MaterialValues, m_previewSlider);
 
             m_BlendShapeNameProp = serializedObject.FindProperty("BlendShapeName");
@@ -62,6 +69,12 @@ namespace VRM
                       m_changed = true;
                   }
               };
+        }
+
+        protected override void OnDisable()
+        {
+            base.OnDisable();
+            PrefabChanged -= OnPrefabChanged;
         }
 
         public override void OnInspectorGUI()

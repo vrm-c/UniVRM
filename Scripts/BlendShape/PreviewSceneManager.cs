@@ -42,6 +42,7 @@ namespace VRM
                 GameObject.DestroyImmediate(x.gameObject);
             }
 
+            Debug.Log("new prefab. instanciate");
             // no previous instance detected, so now let's make a fresh one
             // very important: this loads the PreviewInstance prefab and temporarily instantiates it into PreviewInstance
             var go = GameObject.Instantiate(prefab,
@@ -81,17 +82,6 @@ namespace VRM
         {
             Prefab = prefab;
 
-            var flags = BindingFlags.Static | BindingFlags.NonPublic;
-            var propInfo = typeof(Camera).GetProperty("PreviewCullingLayer", flags);
-            //PreviewLayer = (int)propInfo.GetValue(null, new object[0]);
-
-            /*
-            foreach (var x in transform.Traverse())
-            {
-                x.gameObject.layer = PreviewLayer;
-            }
-            */
-
             var materialNames = new List<string>();
             var map = new Dictionary<Material, Material>();
             Func<Material, Material> getOrCreateMaterial = src =>
@@ -105,6 +95,7 @@ namespace VRM
                     dst = new Material(src);
                     map.Add(src, dst);
 
+                    Debug.LogFormat("add material {0}", src.name);
                     materialNames.Add(src.name);
                     m_materialMap.Add(src.name, MaterialItem.Create(dst));
                 }

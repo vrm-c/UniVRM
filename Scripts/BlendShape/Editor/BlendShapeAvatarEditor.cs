@@ -50,12 +50,28 @@ namespace VRM
             }
         }
 
+        void OnPrefabChanged()
+        {
+            if (m_currentClip != null)
+            {
+                Bake(m_currentClip.Values, m_currentClip.MaterialValues, 1.0f);
+            }
+        }
+
         protected override void OnEnable()
         {
+            PrefabChanged += OnPrefabChanged;
+
             base.OnEnable();
             m_target = (BlendShapeAvatar)target;
 
             CurrentClip = m_target.Clips[0];
+        }
+
+        protected override void OnDisable()
+        {
+            base.OnDisable();
+            PrefabChanged -= OnPrefabChanged;
         }
 
         List<bool> m_meshFolds = new List<bool>();
@@ -65,15 +81,18 @@ namespace VRM
             base.OnInspectorGUI();
 
             // buttons
-            EditorGUILayout.Space();
-            EditorGUILayout.LabelField("Select BlendShapeClip", EditorStyles.boldLabel);
-            var preset = GUILayout.SelectionGrid(m_preset, m_target.Clips
-                .Where(x => x != null)
-                .Select(x => BlendShapeKey.CreateFrom(x).ToString()).ToArray(), 4);
-            if (preset != m_preset)
+            if (m_target.Clips != null)
             {
-                CurrentClip = m_target.Clips[preset];
-                m_preset = preset;
+                EditorGUILayout.Space();
+                EditorGUILayout.LabelField("Select BlendShapeClip", EditorStyles.boldLabel);
+                var preset = GUILayout.SelectionGrid(m_preset, m_target.Clips
+                    .Where(x => x != null)
+                    .Select(x => BlendShapeKey.CreateFrom(x).ToString()).ToArray(), 4);
+                if (preset != m_preset)
+                {
+                    CurrentClip = m_target.Clips[preset];
+                    m_preset = preset;
+                }
             }
 
             // Add
