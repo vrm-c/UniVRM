@@ -6,12 +6,19 @@ using UnityEngine;
 
 namespace VRM
 {
+    public enum UpdateType
+    {
+        None,
+        Update,
+        LateUpdate,
+    }
+
     public class VRMLookAtHead : MonoBehaviour
     {
         public bool DrawGizmo = true;
 
         [SerializeField]
-        public bool UseUpdate = true;
+        public UpdateType UpdateType = UpdateType.Update;
 
         [SerializeField]
         public Transform Target;
@@ -137,15 +144,26 @@ namespace VRM
                 handle(yaw, pitch);
             }
         }
+
         private void Update()
         {
-            if (!UseUpdate) return;
-            if (Target == null) return;
-            LookWorldPosition();
+            if(UpdateType==UpdateType.Update)
+            {
+                LookWorldPosition();
+            }
+        }
+
+        private void LateUpdate()
+        {
+            if (UpdateType == UpdateType.LateUpdate)
+            {
+                LookWorldPosition();
+            }
         }
 
         public void LookWorldPosition()
         {
+            if (Target == null) return;
             float yaw;
             float pitch;
             LookWorldPosition(Target.position, out yaw, out pitch);
