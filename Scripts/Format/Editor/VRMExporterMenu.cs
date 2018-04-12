@@ -47,6 +47,8 @@ namespace VRM
             {
                 wiz.Title = wiz.Target.name;
             }
+
+            wiz.OnWizardUpdate();
         }
 
         string m_dir;
@@ -121,13 +123,13 @@ namespace VRM
             if (string.IsNullOrEmpty(Title))
             {
                 isValid = false;
-                errorBuilder.Append("input vrm Title\n");
+                errorBuilder.Append("require Title\n");
             }
 
             if (string.IsNullOrEmpty(Author))
             {
                 isValid = false;
-                errorBuilder.Append("input vrm Author\n");
+                errorBuilder.Append("require Author\n");
             }
 
             helpString = helpBuilder.ToString();
