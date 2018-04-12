@@ -4,6 +4,7 @@ using UnityEditor;
 using UnityEngine;
 using UniGLTF;
 using System.IO;
+using System.Text;
 
 namespace VRM
 {
@@ -12,6 +13,11 @@ namespace VRM
         const string EXTENSION = ".vrm";
 
         public GameObject Target;
+        VRMMeta m_meta;
+
+        public string Title;
+
+        public string Author;
 
         public bool ForceTPose;
 
@@ -30,24 +36,50 @@ namespace VRM
                 wiz.ForceTPose = true;
                 wiz.PoseFreeze = true;
             }
+
+            var meta = wiz.Target.GetComponent<VRMMeta>();
+            if (meta != null && meta.Meta != null)
+            {
+                wiz.Title = meta.Meta.Title;
+                wiz.Author = meta.Meta.Author;
+            }
+            else
+            {
+                wiz.Title = wiz.Target.name;
+            }
         }
 
-        static string m_dir = Path.GetFullPath(Application.dataPath);
+        string m_dir;
+        string Dir
+        {
+            get
+            {
+                if (m_dir == null)
+                {
+                    m_dir = Path.GetFullPath(Application.dataPath); ;
+                }
+                return m_dir;
+            }
+            set
+            {
+                m_dir = value;
+            }
+        }
 
         void OnWizardCreate()
         {
             // save dialog
-            Debug.LogFormat("OnWizardCreate: {0}", m_dir);
+            Debug.LogFormat("OnWizardCreate: {0}", Dir);
             var path = EditorUtility.SaveFilePanel(
                     "Save vrm",
-                    m_dir,
+                    Dir,
                     Target.name + EXTENSION,
                     EXTENSION.Substring(1));
             if (string.IsNullOrEmpty(path))
             {
                 return;
             }
-            m_dir = Path.GetDirectoryName(path);
+            Dir = Path.GetDirectoryName(path);
 
             // export
             var target = Target;
@@ -60,7 +92,12 @@ namespace VRM
                 Undo.PerformUndo();
             }
 
-            VRMExporter.Export(target, path);
+            VRMExporter.Export(target, path, gltf => {
+
+                gltf.extensions.VRM.meta.title = Title;
+                gltf.extensions.VRM.meta.author = Author;
+
+            });
 
             if (Target!=target)
             {
@@ -75,8 +112,26 @@ namespace VRM
 
         void OnWizardUpdate()
         {
-            helpString = @"select humanoid root(require Animator with valid humanoid avatar).
-";
+            isValid = true;
+            var helpBuilder = new StringBuilder();
+            var errorBuilder = new StringBuilder();
+
+            helpBuilder.Append("select humanoid root(require Animator with valid humanoid avatar).\n");
+
+            if (string.IsNullOrEmpty(Title))
+            {
+                isValid = false;
+                errorBuilder.Append("input vrm Title\n");
+            }
+
+            if (string.IsNullOrEmpty(Author))
+            {
+                isValid = false;
+                errorBuilder.Append("input vrm Author\n");
+            }
+
+            helpString = helpBuilder.ToString();
+            errorString = errorBuilder.ToString();
         }
     }
 

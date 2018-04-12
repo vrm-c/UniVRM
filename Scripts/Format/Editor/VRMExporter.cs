@@ -12,13 +12,19 @@ namespace VRM
         public VRMExporter(glTF_VRM gltf) : base(gltf)
         { }
 
-        public static glTF Export(GameObject go, string path = null)
+        public static glTF Export(GameObject go, string path = null, Action<glTF_VRM> callback=null)
         {
             var gltf = new glTF_VRM();
             gltf.asset.generator = "Unity VRM Exporter";
             using (var exporter = new VRMExporter(gltf))
             {
                 _Export(gltf, exporter, go);
+
+                if (callback != null)
+                {
+                    callback(gltf);
+                }
+
                 if (!string.IsNullOrEmpty(path))
                 {
                     exporter.WriteTo(path);
