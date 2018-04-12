@@ -8,7 +8,9 @@ namespace VRM
     [Serializable]
     public class glTF_VRM_extensions : JsonSerializableBase
     {
+        [Obsolete("use gltf.asset.generator")]
         public string version = VRMVersion.VERSION;
+
         public glTF_VRM_Meta meta = new glTF_VRM_Meta();
         public glTF_VRM_Humanoid humanoid = new glTF_VRM_Humanoid();
         public glTF_VRM_Firstperson firstPerson = new glTF_VRM_Firstperson();
@@ -18,7 +20,7 @@ namespace VRM
 
         protected override void SerializeMembers(JsonFormatter f)
         {
-            f.KeyValue(() => version);
+            //f.KeyValue(() => version);
             f.KeyValue(() => meta);
             f.KeyValue(() => humanoid);
             f.KeyValue(() => firstPerson);
