@@ -164,7 +164,7 @@ namespace VRM
                 LoadHumanoidObsolete(context);
                 Debug.LogWarning("LoadHumanoidObsolete");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 LoadHumanoid(context);
             }
@@ -213,7 +213,7 @@ namespace VRM
             firstPerson.TraverseRenderers(context);
 
             // LookAt
-            var lookAtHead = context.Root.AddComponent<VRMLookAtHead>();
+            /*var lookAtHead =*/ context.Root.AddComponent<VRMLookAtHead>();
 
             switch(gltfFirstPerson.lookAtType)
             {

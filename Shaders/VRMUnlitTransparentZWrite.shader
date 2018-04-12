@@ -1,4 +1,6 @@
-﻿Shader "VRM/UnlitTransparentZWrite"{Properties {
+Shader "VRM/UnlitTransparentZWrite"
+{
+Properties {
 	_MainTex ("Base (RGB) Trans (A)", 2D) = "white" {}
 }
 
@@ -54,4 +56,5 @@ SubShader {
 		ENDCG
 	}
 }
-}
+
+}
