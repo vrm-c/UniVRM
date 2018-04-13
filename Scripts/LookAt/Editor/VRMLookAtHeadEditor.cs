@@ -8,10 +8,48 @@ namespace VRM
     public class VRMLookAtHeadEditor : Editor
     {
         VRMLookAtHead m_target;
+        PreviewRenderUtility m_previewRenderUtility;
 
         void OnEnable()
         {
             m_target = (VRMLookAtHead)target;
+            m_previewRenderUtility = new PreviewRenderUtility(true);
+        }
+
+        private void OnDisable()
+        {
+            m_previewRenderUtility.Cleanup();
+            m_previewRenderUtility = null;
+        }
+
+        static void SetPreviewCamera(Camera camera, Vector3 target, Vector3 forward)
+        {
+            camera.fieldOfView = 30f;
+            camera.farClipPlane = 100;
+            camera.nearClipPlane = 0.1f;
+
+            camera.transform.position = target + forward * 0.8f;
+            camera.transform.LookAt(target);
+            camera.Render();
+        }
+
+        public override bool HasPreviewGUI()
+        {
+            return true;
+        }
+
+        public override void OnPreviewGUI(Rect r, GUIStyle background)
+        {
+            m_previewRenderUtility.BeginPreview(r, background);
+            var target = m_target.Head.Transform;
+            if (target != null)
+            {
+                SetPreviewCamera(m_previewRenderUtility.m_Camera,
+                    target.position + new Vector3(0, 0.1f, 0),
+                    target.forward
+                    );
+            }
+            m_previewRenderUtility.EndAndDrawPreview(r);
         }
 
         const float RADIUS = 0.5f;
