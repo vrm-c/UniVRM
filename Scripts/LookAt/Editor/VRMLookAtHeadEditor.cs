@@ -1,5 +1,8 @@
-﻿using UnityEditor;
+﻿using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
+using UniGLTF;
+using System.Linq;
 
 
 namespace VRM
@@ -10,10 +13,64 @@ namespace VRM
         VRMLookAtHead m_target;
         PreviewRenderUtility m_previewRenderUtility;
 
+        struct Item
+        {
+            public Transform Transform;
+            public SkinnedMeshRenderer SkinnedMeshRenderer;
+            public Mesh Mesh;
+            public Material[] Materials;
+
+            public Mesh Baked()
+            {
+                if (SkinnedMeshRenderer != null)
+                {
+                    if (Mesh == null)
+                    {
+                        Mesh = new Mesh();
+                    }
+                    SkinnedMeshRenderer.BakeMesh(Mesh);
+                }
+                return Mesh;
+            }
+        }
+        Item[] m_items;
+
         void OnEnable()
         {
             m_target = (VRMLookAtHead)target;
             m_previewRenderUtility = new PreviewRenderUtility(true);
+
+            m_items = m_target.transform.Traverse().Select(x =>
+            {
+                var meshFilter = x.GetComponent<MeshFilter>();
+                var meshRenderer = x.GetComponent<MeshRenderer>();
+                var skinnedMeshRenderer = x.GetComponent<SkinnedMeshRenderer>();
+                if (meshFilter != null && meshRenderer != null)
+                {
+                    return new Item
+                    {
+                        Mesh = meshFilter.sharedMesh,
+                        Transform = x.transform,
+                        Materials = meshRenderer.sharedMaterials,
+                    };
+                }
+                else if (skinnedMeshRenderer != null)
+                {
+                    return new Item
+                    {
+                        //Mesh = skinnedMeshRenderer.sharedMesh,
+                        SkinnedMeshRenderer = skinnedMeshRenderer,
+                        Transform = x.transform,
+                        Materials = skinnedMeshRenderer.sharedMaterials
+                    };
+                }
+                else
+                {
+                    return default(Item);
+                }
+            })
+            .Where(x => x.Transform!=null)
+            .ToArray();
         }
 
         private void OnDisable()
@@ -30,7 +87,6 @@ namespace VRM
 
             camera.transform.position = target + forward * 0.8f;
             camera.transform.LookAt(target);
-            camera.Render();
         }
 
         public override bool HasPreviewGUI()
@@ -44,10 +100,31 @@ namespace VRM
             var target = m_target.Head.Transform;
             if (target != null)
             {
-                SetPreviewCamera(m_previewRenderUtility.m_Camera,
+#if UNITY_2017_1_OR_NEWER
+                SetPreviewCamera(
+                    m_previewRenderUtility.camera,
                     target.position + new Vector3(0, 0.1f, 0),
                     target.forward
                     );
+                foreach(var x in m_items)
+                {
+                    var mesh = x.Baked();
+                    for(int i=0; i<x.Materials.Length; ++i)
+                    {
+                        m_previewRenderUtility.DrawMesh(mesh, x.Transform.position, x.Transform.rotation,
+                            x.Materials[i], i);
+                    }
+                }
+
+                m_previewRenderUtility.Render();
+#else
+                SetPreviewCamera(
+                    m_previewRenderUtility.m_camera,
+                    target.position + new Vector3(0, 0.1f, 0),
+                    target.forward
+                    );
+                m_previewRenderUtility.m_camera.Render();
+#endif
             }
             m_previewRenderUtility.EndAndDrawPreview(r);
         }
