@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-#if (NET_4_6)
+#if (NET_4_6 && UNITY_2018_1_OR_NEWER) 
 using System.Threading;
 using System.Runtime.CompilerServices;
 #endif
@@ -185,7 +185,7 @@ namespace UniTask
             TaskChain.Schedule(schedulable.GetRoot(), onError);
         }
 
-#if (NET_4_6)
+#if (NET_4_6 && UNITY_2018_1_OR_NEWER) 
         public static SchedulableAwaiter<T> GetAwaiter<T>(this Schedulable<T> schedulable)
         {
             return new SchedulableAwaiter<T>(schedulable);
@@ -233,7 +233,7 @@ namespace UniTask
         }
         */
     }
-#if (NET_4_6)
+#if (NET_4_6 && UNITY_2018_1_OR_NEWER) 
     public class SchedulableAwaiter<T> : INotifyCompletion
     {
         private readonly Schedulable<T> target = null;

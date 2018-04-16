@@ -544,21 +544,48 @@ namespace VRM
             yield return null;
         }
 
+#if (NET_4_6 && UNITY_2018_1_OR_NEWER)
         public static Schedulable<GameObject> LoadVrmAsync(string path)
         {
             var context = new VRMImporterContext(path);
             var dataChunk = context.ParseVrm(File.ReadAllBytes(path));
-            return LoadVrmAsync(context, dataChunk);
+            return LoadVrmAsyncInternal(context, dataChunk);
         }
 
         public static Schedulable<GameObject> LoadVrmAsync(Byte[] bytes)
         {
             var context = new VRMImporterContext();
             var dataChunk = context.ParseVrm(bytes);
-            return LoadVrmAsync(context, dataChunk);
+            return LoadVrmAsyncInternal(context, dataChunk);
         }
 
         public static Schedulable<GameObject> LoadVrmAsync(VRMImporterContext ctx, ArraySegment<Byte> chunkData)
+        {
+            return LoadVrmAsyncInternal(ctx, chunkData);
+        }
+#endif
+
+        public static void LoadVrmAsync(string path, Action<GameObject> onLoaded)
+        {
+            var context = new VRMImporterContext(path);
+            var dataChunk = context.ParseVrm(File.ReadAllBytes(path));
+            LoadVrmAsync(context, dataChunk, onLoaded);
+        }
+
+        public static void LoadVrmAsync(Byte[] bytes, Action<GameObject> onLoaded)
+        {
+            var context = new VRMImporterContext();
+            var dataChunk = context.ParseVrm(bytes);
+            LoadVrmAsync(context, dataChunk, onLoaded);
+        }
+
+        public static void LoadVrmAsync(VRMImporterContext ctx, ArraySegment<Byte> chunkData, Action<GameObject> onLoaded)
+        {
+            LoadVrmAsyncInternal(ctx, chunkData)
+                .Subscribe(MainThreadDispatcher.Instance.UnityScheduler, onLoaded, Debug.LogError);
+        }
+
+        private static Schedulable<GameObject> LoadVrmAsyncInternal(VRMImporterContext ctx, ArraySegment<Byte> chunkData)
         {
             var schedulable = Schedulable.Create();
 
@@ -629,27 +656,6 @@ namespace VRM
                         return ctx.Root;
                     });
         }
-
-        public static void LoadVrmAsync(string path, Action<GameObject> onLoaded)
-        {
-            var context = new VRMImporterContext(path);
-            var dataChunk = context.ParseVrm(File.ReadAllBytes(path));
-            LoadVrmAsync(context, dataChunk, onLoaded);
-        }
-
-        public static void LoadVrmAsync(Byte[] bytes, Action<GameObject> onLoaded)
-        {
-            var context = new VRMImporterContext();
-            var dataChunk = context.ParseVrm(bytes);
-            LoadVrmAsync(context, dataChunk, onLoaded);
-        }
-
-        public static void LoadVrmAsync(VRMImporterContext ctx, ArraySegment<Byte> chunkData, Action<GameObject> onLoaded)
-        {
-            LoadVrmAsync(ctx, chunkData)
-                .Subscribe(MainThreadDispatcher.Instance.UnityScheduler, onLoaded, Debug.LogError);
-        }
-
         #endregion
     }
 }
