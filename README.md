@@ -2,5 +2,5 @@
 
 ## License
 
-* [MIT License](./LICENSE.md)
+* [MIT License](./LICENSE.txt)
 
