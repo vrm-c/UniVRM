@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-
+#if (NET_4_6)
+using System.Threading;
+using System.Runtime.CompilerServices;
+#endif
 
 namespace UniTask
 {
@@ -182,6 +185,12 @@ namespace UniTask
             TaskChain.Schedule(schedulable.GetRoot(), onError);
         }
 
+#if (NET_4_6)
+        public static SchedulableAwaiter<T> GetAwaiter<T>(this Schedulable<T> schedulable)
+        {
+            return new SchedulableAwaiter<T>(schedulable);
+        }
+#endif
         /*
         public static ISchedulable<Unit> Sequencial<T>(IEnumerable<ISchedulable<T>> schedulables, Action<T> mergePred)
         {
@@ -224,4 +233,36 @@ namespace UniTask
         }
         */
     }
+#if (NET_4_6)
+    public class SchedulableAwaiter<T> : INotifyCompletion
+    {
+        private readonly Schedulable<T> target = null;
+
+        private T result;
+
+        public T GetResult()
+        {
+            return result;
+        }
+
+        public bool IsCompleted { get; private set; }
+
+        public SchedulableAwaiter(Schedulable<T> target)
+        {
+            this.target = target;
+        }
+
+        public void OnCompleted(Action continuation)
+        {
+            var context = SynchronizationContext.Current;
+
+            target.Subscribe(target.Parent.Schedulder, r =>
+            {
+                result = r;
+                IsCompleted = true;
+                context.Post(_ => continuation(), null);
+            }, ex => { throw ex; });
+        }
+    }
+#endif
 }

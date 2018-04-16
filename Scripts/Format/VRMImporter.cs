@@ -544,25 +544,25 @@ namespace VRM
             yield return null;
         }
 
-        public static void LoadVrmAsync(string path, Action<GameObject> onLoaded)
+        public static Schedulable<GameObject> LoadVrmAsync(string path)
         {
             var context = new VRMImporterContext(path);
             var dataChunk = context.ParseVrm(File.ReadAllBytes(path));
-            LoadVrmAsync(context, dataChunk, onLoaded);
+            return LoadVrmAsync(context, dataChunk);
         }
 
-        public static void LoadVrmAsync(Byte[] bytes, Action<GameObject> onLoaded)
+        public static Schedulable<GameObject> LoadVrmAsync(Byte[] bytes)
         {
             var context = new VRMImporterContext();
             var dataChunk = context.ParseVrm(bytes);
-            LoadVrmAsync(context, dataChunk, onLoaded);
+            return LoadVrmAsync(context, dataChunk);
         }
 
-        public static void LoadVrmAsync(VRMImporterContext ctx, ArraySegment<Byte> chunkData, Action<GameObject> onLoaded)
+        public static Schedulable<GameObject> LoadVrmAsync(VRMImporterContext ctx, ArraySegment<Byte> chunkData)
         {
             var schedulable = Schedulable.Create();
 
-            schedulable
+            return schedulable
                 .AddTask(MainThreadDispatcher.Instance.ThreadScheduler, () =>
                 {
                     ctx.GLTF.baseDir = Path.GetDirectoryName(ctx.Path);
@@ -601,37 +601,55 @@ namespace VRM
                         var index = i;
                         parent.AddTask(MainThreadDispatcher.Instance.ThreadScheduler,
                                 () => gltfImporter.ReadMesh(ctx, index))
-                        .ContinueWith(MainThreadDispatcher.Instance.UnityScheduler, x => gltfImporter.BuildMesh(ctx, x))
-                        .ContinueWith(MainThreadDispatcher.Instance.ThreadScheduler, x => ctx.Meshes.Add(x))
-                        ;
+                            .ContinueWith(MainThreadDispatcher.Instance.UnityScheduler,
+                                x => gltfImporter.BuildMesh(ctx, x))
+                            .ContinueWith(MainThreadDispatcher.Instance.ThreadScheduler, x => ctx.Meshes.Add(x))
+                            ;
                     }
                 })
                 .ContinueWithCoroutine(MainThreadDispatcher.Instance.UnityScheduler, () => LoadNodes(ctx))
                 .ContinueWithCoroutine(MainThreadDispatcher.Instance.UnityScheduler, () => BuildHierarchy(ctx))
                 .ContinueWith(MainThreadDispatcher.Instance.UnityScheduler, _ => VRMImporter.OnLoadModel(ctx))
-                .Subscribe(MainThreadDispatcher.Instance.UnityScheduler,
-                _ =>
-            {
-                /*
-                Debug.LogFormat("task end: {0}/{1}/{2}/{3}",
-                    ctx.Textures.Count,
-                    ctx.Materials.Count,
-                    ctx.Meshes.Count,
-                    ctx.Nodes.Count
-                    );
-                    */
-                ctx.Root.name = Path.GetFileNameWithoutExtension(ctx.Path);
+                .ContinueWith(MainThreadDispatcher.Instance.UnityScheduler,
+                    _ =>
+                    {
+                        /*
+                        Debug.LogFormat("task end: {0}/{1}/{2}/{3}",
+                            ctx.Textures.Count,
+                            ctx.Materials.Count,
+                            ctx.Meshes.Count,
+                            ctx.Nodes.Count
+                            );
+                            */
+                        ctx.Root.name = Path.GetFileNameWithoutExtension(ctx.Path);
 
-                // 非表示のメッシュを表示する
-                ctx.ShowMeshes();
+                        // 非表示のメッシュを表示する
+                        ctx.ShowMeshes();
 
-                onLoaded(ctx.Root);
-            }, ex =>
-            {
-                Debug.LogError(ex);
-            })
-            ;
+                        return ctx.Root;
+                    });
         }
+
+        public static void LoadVrmAsync(string path, Action<GameObject> onLoaded)
+        {
+            var context = new VRMImporterContext(path);
+            var dataChunk = context.ParseVrm(File.ReadAllBytes(path));
+            LoadVrmAsync(context, dataChunk, onLoaded);
+        }
+
+        public static void LoadVrmAsync(Byte[] bytes, Action<GameObject> onLoaded)
+        {
+            var context = new VRMImporterContext();
+            var dataChunk = context.ParseVrm(bytes);
+            LoadVrmAsync(context, dataChunk, onLoaded);
+        }
+
+        public static void LoadVrmAsync(VRMImporterContext ctx, ArraySegment<Byte> chunkData, Action<GameObject> onLoaded)
+        {
+            LoadVrmAsync(ctx, chunkData)
+                .Subscribe(MainThreadDispatcher.Instance.UnityScheduler, onLoaded, Debug.LogError);
+        }
+
         #endregion
     }
 }
