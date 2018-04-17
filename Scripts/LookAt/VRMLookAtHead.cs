@@ -72,10 +72,8 @@ namespace VRM
         }
         #endregion
 
-        private void Reset()
+        public void Initialize()
         {
-            Target = Camera.main.transform;
-
             var animator = GetComponent<Animator>();
             if (animator != null)
             {

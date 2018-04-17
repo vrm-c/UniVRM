@@ -213,9 +213,10 @@ namespace VRM
             firstPerson.TraverseRenderers(context);
 
             // LookAt
-            /*var lookAtHead =*/ context.Root.AddComponent<VRMLookAtHead>();
+            var lookAtHead = context.Root.AddComponent<VRMLookAtHead>();
+            lookAtHead.Initialize();
 
-            switch(gltfFirstPerson.lookAtType)
+            switch (gltfFirstPerson.lookAtType)
             {
                 case LookAtType.Bone:
                     {
