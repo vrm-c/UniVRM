@@ -119,11 +119,11 @@ namespace VRM
                 m_previewRenderUtility.Render();
 #else
                 SetPreviewCamera(
-                    m_previewRenderUtility.m_camera,
+                    m_previewRenderUtility.m_Camera,
                     target.position + new Vector3(0, 0.1f, 0),
                     target.forward
                     );
-                m_previewRenderUtility.m_camera.Render();
+                m_previewRenderUtility.m_Camera.Render();
 #endif
             }
             m_previewRenderUtility.EndAndDrawPreview(r);
