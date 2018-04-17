@@ -223,16 +223,18 @@ namespace VRM
                             {
                                 mesh.AddBlendShapeFrame(name,
                                     weight,
-                                    hasVertices && vertices.Length == mesh.vertexCount ? vertices : null,
+                                    vertices,
                                     hasNormals && normals.Length == mesh.vertexCount ? normals : null,
                                     hasTangents && tangents.Length == mesh.vertexCount ? tangents : null
                                     );
                             }
-                            catch (Exception)
+                            catch (Exception ex)
                             {
-                                Debug.LogWarningFormat("{0}.{1}", mesh.name, srcMesh.GetBlendShapeName(i));
-
-                                throw;
+                                Debug.LogWarningFormat("fail to mesh.AddBlendShapeFrame {0}.{1}: {2}",
+                                    mesh.name,
+                                    srcMesh.GetBlendShapeName(i),
+                                    ex
+                                    );
                             }
                         }
 
