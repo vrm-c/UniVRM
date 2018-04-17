@@ -5,19 +5,21 @@
 * [MIT License](./LICENSE.txt)
 
 ## [VRM](https://dwango.github.io/vrm/)
-
-"VRM" is a file format for using 3d humanoid avatars (and models) in VR applications.  
+###
+"VRM" is a file format for using 3d humanoid avatars (and models) in VR applications.
 VRM is based on glTF2.0. And if you comply with the MIT license, you are free to use it.
-  
+
+###
 「VRM」はVRアプリケーション向けの人型3Dアバター（3Dモデル）データを扱うためのファイルフォーマットです。
 glTF2.0をベースとしており、誰でも自由に利用することができます。
 
 ## [UniVRM](https://github.com/dwango/UniVRM)
-
+###
 "UniVRM" is an implementation for Unity of VRM. It can create, import and export for VRM models.
-* Currently, support for Unity 5.6+
-  
-「UniVRM」はVRMのUnity実装で、VRMモデルの作成・インポート・エクスポートができます。
+* Currently, support for Unity 5.6+  
+
+###
+「UniVRM」はVRMのUnity実装で、VRMモデルの作成・インポート・エクスポートができます。  
 * Unity 5.6以降をサポートしています。
 
 ## Download
