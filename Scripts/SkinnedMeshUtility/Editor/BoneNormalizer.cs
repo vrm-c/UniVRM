@@ -162,9 +162,22 @@ namespace VRM
                         mesh.boneWeights = srcMesh.boneWeights;
 
                         var meshVertices = mesh.vertices;
+                        var meshNormals = mesh.normals;
+                        var meshTangents = mesh.tangents.Select(x => (Vector3)x).ToArray();
+
+                        var _meshVertices = new Vector3[meshVertices.Length];
+                        var _meshNormals = new Vector3[meshVertices.Length];
+                        var _meshTangents = new Vector3[meshVertices.Length];
+
                         var blendShapeMesh = new Mesh();
                         for (int i = 0; i < srcMesh.blendShapeCount; ++i)
                         {
+                            // check blendShape
+                            srcRenderer.sharedMesh.GetBlendShapeFrameVertices(i, 0, _meshVertices, _meshNormals, _meshTangents);
+                            var hasVertices = !_meshVertices.All(x => x == Vector3.zero);
+                            var hasNormals = !_meshNormals.All(x => x == Vector3.zero);
+                            var hasTangents = !_meshTangents.All(x => x == Vector3.zero);
+
                             srcRenderer.SetBlendShapeWeight(i, 100.0f);
                             srcRenderer.BakeMesh(blendShapeMesh);
                             srcRenderer.SetBlendShapeWeight(i, 0);
@@ -181,13 +194,21 @@ namespace VRM
                             for (int j = 0; j < vertices.Length; ++j) {
                                 vertices[j]= m.MultiplyPoint(vertices[j]) - meshVertices[j];
                             }
-                            for (int j = 0; j < normals.Length; ++j)
+
+                            if (hasNormals)
                             {
-                                normals[j] = m.MultiplyVector(normals[j]).normalized;
+                                for (int j = 0; j < normals.Length; ++j)
+                                {
+                                    normals[j] = m.MultiplyVector(normals[j]) - meshNormals[j];
+                                }
                             }
-                            for(int j=0; j<tangents.Length; ++j)
+
+                            if (hasTangents)
                             {
-                                tangents[j] = m.MultiplyVector(tangents[j]).normalized;
+                                for (int j = 0; j < tangents.Length; ++j)
+                                {
+                                    tangents[j] = m.MultiplyVector(tangents[j]) - meshTangents[j];
+                                }
                             }
 
                             var name = srcMesh.GetBlendShapeName(i);
@@ -200,9 +221,9 @@ namespace VRM
                             {
                                 mesh.AddBlendShapeFrame(name,
                                     weight,
-                                    vertices.Length == meshVertices.Length ? vertices : null,
-                                    normals.Length == meshVertices.Length ? normals : null,
-                                    tangents.Length == meshVertices.Length ? tangents : null
+                                    hasVertices ? vertices : null,
+                                    hasNormals ? normals: null,
+                                    hasTangents ? tangents: null
                                     );
                             }
                             catch (Exception)
