@@ -180,37 +180,55 @@ namespace VRM
 
                             srcRenderer.SetBlendShapeWeight(i, 100.0f);
                             srcRenderer.BakeMesh(blendShapeMesh);
-                            srcRenderer.SetBlendShapeWeight(i, 0);
-
                             if (blendShapeMesh.vertices.Length != mesh.vertices.Length)
                             {
                                 throw new Exception("diffrent vertex count");
                             }
+                            srcRenderer.SetBlendShapeWeight(i, 0);
 
-                            var weight = srcMesh.GetBlendShapeFrameWeight(i, 0);
-                            var vertices = blendShapeMesh.vertices;
-                            var normals = blendShapeMesh.normals;
-                            var tangents = blendShapeMesh.tangents.Select(x => (Vector3)x).ToArray();
-
-                            for (int j = 0; j < vertices.Length; ++j)
+                            Vector3[] vertices = null;
+                            if (hasVertices)
                             {
-                                vertices[j] = m.MultiplyPoint(vertices[j]) - meshVertices[j];
+                                vertices = blendShapeMesh.vertices;
+                                // to delta
+                                for (int j = 0; j < vertices.Length; ++j)
+                                {
+                                    vertices[j] = m.MultiplyPoint(vertices[j]) - meshVertices[j];
+                                }
+                            }
+                            else
+                            {
+                                vertices = new Vector3[mesh.vertexCount];
                             }
 
+                            Vector3[] normals = null;
                             if (hasNormals)
                             {
+                                normals = blendShapeMesh.normals;
+                                // to delta
                                 for (int j = 0; j < normals.Length; ++j)
                                 {
                                     normals[j] = m.MultiplyVector(normals[j]) - meshNormals[j];
                                 }
                             }
+                            else
+                            {
+                                normals = new Vector3[mesh.vertexCount];
+                            }
 
+                            Vector3[] tangents = null;
                             if (hasTangents)
                             {
+                                tangents = blendShapeMesh.tangents.Select(x => (Vector3)x).ToArray();
+                                // to delta
                                 for (int j = 0; j < tangents.Length; ++j)
                                 {
                                     tangents[j] = m.MultiplyVector(tangents[j]) - meshTangents[j];
                                 }
+                            }
+                            else
+                            {
+                                tangents = new Vector3[mesh.vertexCount];
                             }
 
                             var name = srcMesh.GetBlendShapeName(i);
@@ -219,22 +237,24 @@ namespace VRM
                                 name = String.Format("{0}", i);
                             }
 
+                            var weight = srcMesh.GetBlendShapeFrameWeight(i, 0);
+
                             try
                             {
                                 mesh.AddBlendShapeFrame(name,
                                     weight,
                                     vertices,
-                                    hasNormals && normals.Length == mesh.vertexCount ? normals : null,
-                                    hasTangents && tangents.Length == mesh.vertexCount ? tangents : null
+                                    normals,
+                                    tangents
                                     );
                             }
-                            catch (Exception ex)
+                            catch (Exception)
                             {
-                                Debug.LogWarningFormat("fail to mesh.AddBlendShapeFrame {0}.{1}: {2}",
+                                Debug.LogErrorFormat("fail to mesh.AddBlendShapeFrame {0}.{1}",
                                     mesh.name,
-                                    srcMesh.GetBlendShapeName(i),
-                                    ex
+                                    srcMesh.GetBlendShapeName(i)
                                     );
+                                throw;
                             }
                         }
 
