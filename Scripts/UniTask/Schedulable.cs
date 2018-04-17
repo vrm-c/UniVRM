@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 #if (NET_4_6 && UNITY_2018_1_OR_NEWER) 
 using System.Threading;
 using System.Runtime.CompilerServices;
@@ -165,6 +166,26 @@ namespace UniTask
         */
     }
 
+#if (NET_4_6 && UNITY_2018_1_OR_NEWER)
+    public class ConfiguredSchedulableAwaitable<T>
+    {
+        private readonly Schedulable<T> parent;
+
+        public bool continueOnCapturedContext;
+
+        public ConfiguredSchedulableAwaitable(Schedulable<T> parent, bool continueOnCapturedContext)
+        {
+            this.parent = parent;
+            this.continueOnCapturedContext = continueOnCapturedContext;
+        }
+
+        public SchedulableAwaiter<T> GetAwaiter()
+        {
+            return new SchedulableAwaiter<T>(parent, continueOnCapturedContext);
+        }
+    }
+#endif
+
     public static class Schedulable
     {
         public static Schedulable<Unit> Create()
@@ -189,6 +210,11 @@ namespace UniTask
         public static SchedulableAwaiter<T> GetAwaiter<T>(this Schedulable<T> schedulable)
         {
             return new SchedulableAwaiter<T>(schedulable);
+        }
+
+        public static ConfiguredSchedulableAwaitable<T> ConfigureAwait<T>(this Schedulable<T> schedulable, bool continueOnCapturedContext)
+        {
+            return new ConfiguredSchedulableAwaitable<T>(schedulable, continueOnCapturedContext);
         }
 #endif
         /*
@@ -240,6 +266,8 @@ namespace UniTask
 
         private T result;
 
+        private readonly bool continueOnCapturedContext;
+
         public T GetResult()
         {
             return result;
@@ -250,18 +278,36 @@ namespace UniTask
         public SchedulableAwaiter(Schedulable<T> target)
         {
             this.target = target;
+            continueOnCapturedContext = true;
+        }
+
+        public SchedulableAwaiter(Schedulable<T> target, bool continueOnCapturedContext)
+        {
+            this.target = target;
+            this.continueOnCapturedContext = continueOnCapturedContext;
         }
 
         public void OnCompleted(Action continuation)
         {
-            var context = SynchronizationContext.Current;
-
-            target.Subscribe(target.Parent.Schedulder, r =>
+            if (continueOnCapturedContext && SynchronizationContext.Current != null)
             {
-                result = r;
-                IsCompleted = true;
-                context.Post(_ => continuation(), null);
-            }, ex => { throw ex; });
+                var context = SynchronizationContext.Current;
+                target.Subscribe(target.Parent.Schedulder, r =>
+                {
+                    result = r;
+                    IsCompleted = true;
+                    context.Post(_ => continuation(), null);
+                }, ex => { throw ex; });
+            }
+            else
+            {
+                target.Subscribe(target.Parent.Schedulder, r =>
+                {
+                    result = r;
+                    IsCompleted = true;
+                    continuation();
+                }, ex => { throw ex; });
+            }
         }
     }
 #endif
