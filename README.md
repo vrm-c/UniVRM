@@ -16,8 +16,8 @@ glTF2.0をベースとしており、誰でも自由に利用することがで�
 
 "UniVRM" is an implementation for Unity of VRM. It can create, import and export for VRM models.
 * Currently, support for Unity 5.6+
-  
-UniVRMはVRMのUnity実装で、VRMモデルの作成・インポート・エクスポートができます。
+  
+「UniVRM」はVRMのUnity実装で、VRMモデルの作成・インポート・エクスポートができます。
 * Unity 5.6以降をサポートしています。
 
 ## Download
