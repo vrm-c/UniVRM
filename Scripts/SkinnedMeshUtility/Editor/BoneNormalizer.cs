@@ -182,7 +182,8 @@ namespace VRM
                             srcRenderer.BakeMesh(blendShapeMesh);
                             srcRenderer.SetBlendShapeWeight(i, 0);
 
-                            if (blendShapeMesh.vertices.Length!=mesh.vertices.Length){
+                            if (blendShapeMesh.vertices.Length != mesh.vertices.Length)
+                            {
                                 throw new Exception("diffrent vertex count");
                             }
 
@@ -191,8 +192,9 @@ namespace VRM
                             var normals = blendShapeMesh.normals;
                             var tangents = blendShapeMesh.tangents.Select(x => (Vector3)x).ToArray();
 
-                            for (int j = 0; j < vertices.Length; ++j) {
-                                vertices[j]= m.MultiplyPoint(vertices[j]) - meshVertices[j];
+                            for (int j = 0; j < vertices.Length; ++j)
+                            {
+                                vertices[j] = m.MultiplyPoint(vertices[j]) - meshVertices[j];
                             }
 
                             if (hasNormals)
@@ -221,9 +223,9 @@ namespace VRM
                             {
                                 mesh.AddBlendShapeFrame(name,
                                     weight,
-                                    hasVertices ? vertices : null,
-                                    hasNormals ? normals: null,
-                                    hasTangents ? tangents: null
+                                    hasVertices && vertices.Length == mesh.vertexCount ? vertices : null,
+                                    hasNormals && normals.Length == mesh.vertexCount ? normals : null,
+                                    hasTangents && tangents.Length == mesh.vertexCount ? tangents : null
                                     );
                             }
                             catch (Exception)
