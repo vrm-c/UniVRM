@@ -10,6 +10,9 @@ namespace VRM
     {
         #region UI
         [SerializeField]
+        Text m_version;
+
+        [SerializeField]
         Button m_open;
 
         [SerializeField]
@@ -34,9 +37,13 @@ namespace VRM
             m_enableLipSync = toggles.First(x => x.name == "EnableLipSync");
             m_enableAutoBlink = toggles.First(x => x.name == "EnableAutoBlink");
 
+            var texts= GameObject.FindObjectsOfType<Text>();
+            m_version = texts.First(x => x.name == "Version");
+
             m_src = GameObject.FindObjectOfType<HumanPoseTransfer>();
 
             m_target = GameObject.FindObjectOfType<TargetMover>().gameObject;
+
         }
 
         GameObject m_loaded;
@@ -73,6 +80,8 @@ namespace VRM
 
         private void Start()
         {
+            m_version.text = string.Format("VRMViewer {0}.{1}", 
+                VRMVersion.MAJOR, VRMVersion.MINOR);
             m_open.onClick.AddListener(OnOpenClicked);
         }
 
