@@ -3,6 +3,9 @@ using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
+#if UNITY_2018_1_OR_NEWER
+using UnityEditor.Build.Reporting;
+#endif
 using UnityEngine;
 
 
@@ -77,10 +80,11 @@ namespace VRM
                 BuildTarget.StandaloneWindows, 
                 BuildOptions.None
                 );
-            if (!string.IsNullOrEmpty(build))
-            {
-                return;
-            }
+#if UNITY_2018_1_OR_NEWER
+            var iSuccess = build.summary.result != BuildResult.Succeeded;
+#else
+            var iSuccess = !string.IsNullOrEmpty(build);
+#endif
 
             var path = GetPath(PREFIX);
             if (File.Exists(path))
