@@ -32,7 +32,7 @@ namespace UniTask
                 if (item.Enumerator.Current.Schedulder == null)
                 {
                     // default
-                    MainThreadDispatcher.Instance.UnityScheduler.Enqueue(item);
+                    Scheduler.MainThread.Enqueue(item);
                 }
                 else
                 {
