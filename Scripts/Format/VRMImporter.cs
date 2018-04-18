@@ -542,7 +542,7 @@ namespace VRM
             var schedulable = Schedulable.Create();
 
             schedulable
-                .AddTask(MainThreadDispatcher.Instance.ThreadScheduler, () =>
+                .AddTask(Scheduler.ThreadPool, () =>
                 {
                     ctx.GLTF.baseDir = Path.GetDirectoryName(ctx.Path);
                     foreach (var buffer in ctx.GLTF.buffers)
@@ -551,44 +551,44 @@ namespace VRM
                     }
                     return Unit.Default;
                 })
-                .ContinueWith(MainThreadDispatcher.Instance.ThreadScheduler, _ =>
+                .ContinueWith(Scheduler.ThreadPool, _ =>
                 {
                     return glTF_VRM_Material.Parse(ctx.Json);
                 })
-                .ContinueWith(MainThreadDispatcher.Instance.UnityScheduler, x =>
+                .ContinueWith(Scheduler.MainThread, x =>
                 {
                     // material function
                     ctx.CreateMaterial = VRMImporter.GetMaterialFunc(x);
                 })
-                .OnExecute(MainThreadDispatcher.Instance.UnityScheduler, parent =>
+                .OnExecute(Scheduler.ThreadPool, parent =>
                 {
                     // textures
                     for (int i = 0; i < ctx.GLTF.textures.Count; ++i)
                     {
                         var index = i;
-                        parent.AddTask(MainThreadDispatcher.Instance.UnityScheduler,
+                        parent.AddTask(Scheduler.MainThread,
                                 () => gltfImporter.ImportTexture(ctx.GLTF, index))
-                            .ContinueWith(MainThreadDispatcher.Instance.ThreadScheduler, x => ctx.Textures.Add(x));
+                            .ContinueWith(Scheduler.ThreadPool, x => ctx.Textures.Add(x));
                     }
                 })
-                .ContinueWithCoroutine(MainThreadDispatcher.Instance.UnityScheduler, () => LoadMaterials(ctx))
-                .OnExecute(MainThreadDispatcher.Instance.UnityScheduler, parent =>
+                .ContinueWithCoroutine(Scheduler.MainThread, () => LoadMaterials(ctx))
+                .OnExecute(Scheduler.ThreadPool, parent =>
                 {
                     // meshes
                     for (int i = 0; i < ctx.GLTF.meshes.Count; ++i)
                     {
                         var index = i;
-                        parent.AddTask(MainThreadDispatcher.Instance.ThreadScheduler,
+                        parent.AddTask(Scheduler.ThreadPool,
                                 () => gltfImporter.ReadMesh(ctx, index))
-                        .ContinueWith(MainThreadDispatcher.Instance.UnityScheduler, x => gltfImporter.BuildMesh(ctx, x))
-                        .ContinueWith(MainThreadDispatcher.Instance.ThreadScheduler, x => ctx.Meshes.Add(x))
+                        .ContinueWith(Scheduler.MainThread, x => gltfImporter.BuildMesh(ctx, x))
+                        .ContinueWith(Scheduler.ThreadPool, x => ctx.Meshes.Add(x))
                         ;
                     }
                 })
-                .ContinueWithCoroutine(MainThreadDispatcher.Instance.UnityScheduler, () => LoadNodes(ctx))
-                .ContinueWithCoroutine(MainThreadDispatcher.Instance.UnityScheduler, () => BuildHierarchy(ctx))
-                .ContinueWith(MainThreadDispatcher.Instance.UnityScheduler, _ => VRMImporter.OnLoadModel(ctx))
-                .Subscribe(MainThreadDispatcher.Instance.UnityScheduler,
+                .ContinueWithCoroutine(Scheduler.MainThread, () => LoadNodes(ctx))
+                .ContinueWithCoroutine(Scheduler.MainThread, () => BuildHierarchy(ctx))
+                .ContinueWith(Scheduler.MainThread, _ => VRMImporter.OnLoadModel(ctx))
+                .Subscribe(Scheduler.MainThread,
                 _ =>
             {
                 /*

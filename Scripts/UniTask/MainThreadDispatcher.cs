@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-
 namespace UniTask
 {
     /// <summary>
@@ -11,37 +10,6 @@ namespace UniTask
     /// </summary>
     public class MainThreadDispatcher : MonoBehaviour
     {
-        StepScheduler m_unityScheduler;
-        /// <summary>
-        /// Dequeueとタスク実行がUnityのMainThread上であるこを保証する
-        /// </summary>
-        public StepScheduler UnityScheduler
-        {
-            get
-            {
-                if (m_unityScheduler == null)
-                {
-                    m_unityScheduler = new StepScheduler();
-                }
-                return m_unityScheduler;
-            }
-        }
-
-        ThreadScheduler m_threadScheduler;
-        /// <summary>
-        /// Dequeuとタスク実行がWorkerThread上で実行される
-        /// </summary>
-        public ThreadScheduler ThreadScheduler
-        {
-            get
-            {
-                if (m_threadScheduler == null)
-                {
-                    m_threadScheduler = new ThreadScheduler();
-                }
-                return m_threadScheduler;
-            }
-        }
 
         [Header("Debug")]
         public int TaskCount;
@@ -61,7 +29,7 @@ namespace UniTask
 
         private void Update()
         {
-            TaskCount = UnityScheduler.UpdateAndGetTaskCount();
+            TaskCount = Scheduler.MainThread.UpdateAndGetTaskCount();
         }
 
         static MainThreadDispatcher instance;
@@ -166,10 +134,9 @@ namespace UniTask
                 initialized = instance != null;
             }
 
-            if (m_threadScheduler != null)
+            if (Scheduler.SingleWorkerThread != null)
             {
-                m_threadScheduler.Dispose();
-                m_threadScheduler = null;
+                Scheduler.SingleWorkerThread.Dispose();
             }
         }
 
