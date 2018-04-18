@@ -88,7 +88,7 @@ namespace VRM
             var context = new VRMImporterContext(path);
 
             // GLB形式でJSONを取得しParseします
-            var dataChunk = context.ParseVrm(bytes);
+            context.ParseVrm(bytes);
 
 
             // metaを取得(todo: thumbnailテクスチャのロード)
@@ -99,11 +99,11 @@ namespace VRM
             // ParseしたJSONをシーンオブジェクトに変換していく
             if (m_loadAsync)
             {
-                LoadAsync(context, dataChunk);
+                LoadAsync(context);
             }
             else
             {
-                VRMImporter.LoadFromBytes(context, dataChunk);
+                VRMImporter.LoadFromBytes(context);
                 OnLoaded(context.Root);
             }
         }
@@ -154,11 +154,11 @@ namespace VRM
         }
 
 
-        void LoadAsync(VRMImporterContext context, ArraySegment<byte> dataChunk)
+        void LoadAsync(VRMImporterContext context)
         {
 #if true
             var now = Time.time;
-            VRMImporter.LoadVrmAsync(context, dataChunk, go=> {
+            VRMImporter.LoadVrmAsync(context, go=> {
                 var delta = Time.time - now;
                 Debug.LogFormat("LoadVrmAsync {0:0.0} seconds", delta);
                 OnLoaded(go);

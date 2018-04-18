@@ -29,9 +29,9 @@ namespace VRM
             }
         }
 
-        public System.ArraySegment<byte> ParseVrm(byte[] bytes)
+        public void ParseVrm(byte[] bytes)
         {
-            return ParseGlb<glTF_VRM>(bytes);
+            ParseGlb<glTF_VRM>(bytes);
         }
 
         public VRMMetaObject ReadMeta()

@@ -18,30 +18,30 @@ namespace VRM
         public static GameObject LoadFromPath(string path)
         {
             var context = new VRMImporterContext(path);
-            var dataChunk = context.ParseVrm(File.ReadAllBytes(path));
-            LoadFromBytes(context, dataChunk);
+            context.ParseVrm(File.ReadAllBytes(path));
+            LoadFromBytes(context);
             return context.Root;
         }
 
         public static GameObject LoadFromBytes(Byte[] bytes)
         {
             var context = new VRMImporterContext();
-            var dataChunk = context.ParseVrm(bytes);
-            LoadFromBytes(context, dataChunk);
+            context.ParseVrm(bytes);
+            LoadFromBytes(context);
             return context.Root;
         }
 
         public static void LoadFromPath(VRMImporterContext context)
         {
-            var dataChunk = context.ParseVrm(File.ReadAllBytes(context.Path));
-            LoadFromBytes(context, dataChunk);
+            context.ParseVrm(File.ReadAllBytes(context.Path));
+            LoadFromBytes(context);
         }
 
-        public static void LoadFromBytes(VRMImporterContext context, ArraySegment<byte> dataChunk)
+        public static void LoadFromBytes(VRMImporterContext context)
         {
             context.CreateMaterial = VRMImporter.GetMaterialFunc(glTF_VRM_Material.Parse(context.Json));
 
-            gltfImporter.Import<glTF_VRM>(context, dataChunk);
+            gltfImporter.Import<glTF_VRM>(context);
             if (string.IsNullOrEmpty(context.Path))
             {
                 if (string.IsNullOrEmpty(context.VRM.extensions.VRM.meta.title))
@@ -526,18 +526,18 @@ namespace VRM
         public static void LoadVrmAsync(string path, Action<GameObject> onLoaded)
         {
             var context = new VRMImporterContext(path);
-            var dataChunk = context.ParseVrm(File.ReadAllBytes(path));
-            LoadVrmAsync(context, dataChunk, onLoaded);
+            context.ParseVrm(File.ReadAllBytes(path));
+            LoadVrmAsync(context, onLoaded);
         }
 
         public static void LoadVrmAsync(Byte[] bytes, Action<GameObject> onLoaded)
         {
             var context = new VRMImporterContext();
-            var dataChunk = context.ParseVrm(bytes);
-            LoadVrmAsync(context, dataChunk, onLoaded);
+            context.ParseVrm(bytes);
+            LoadVrmAsync(context, onLoaded);
         }
 
-        public static void LoadVrmAsync(VRMImporterContext ctx, ArraySegment<Byte> chunkData, Action<GameObject> onLoaded)
+        public static void LoadVrmAsync(VRMImporterContext ctx, Action<GameObject> onLoaded)
         {
             var schedulable = Schedulable.Create();
 
@@ -545,10 +545,6 @@ namespace VRM
                 .AddTask(Scheduler.ThreadPool, () =>
                 {
                     ctx.GLTF.baseDir = Path.GetDirectoryName(ctx.Path);
-                    foreach (var buffer in ctx.GLTF.buffers)
-                    {
-                        buffer.OpenStorage(ctx.GLTF.baseDir, chunkData);
-                    }
                     return Unit.Default;
                 })
                 .ContinueWith(Scheduler.ThreadPool, _ =>

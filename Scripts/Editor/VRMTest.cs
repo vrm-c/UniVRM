@@ -61,7 +61,7 @@ public class VRMTest
                 // import
                 context.Json = gltf.ToJson();
                 Debug.LogFormat("{0}", context.Json);
-                gltfImporter.Import<glTF>(context, new ArraySegment<byte>());
+                gltfImporter.Import<glTF>(context);
 
                 AssertAreEqual(go.transform, context.Root.transform);
             }
