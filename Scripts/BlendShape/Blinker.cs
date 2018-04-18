@@ -27,7 +27,7 @@ namespace VRM
 
         Coroutine m_coroutine;
 
-        static readonly string BLINK_NAME = BlendShapePreset.Blink.ToString();
+        //static readonly string BLINK_NAME = BlendShapePreset.Blink.ToString();
 
         float m_nextRequest;
         bool m_request;
@@ -71,10 +71,10 @@ namespace VRM
                         break;
                     }
 
-                    BlendShapes.SetValue(BLINK_NAME, value);
+                    BlendShapes.SetValue(BlendShapePreset.Blink, value);
                     yield return null;
                 }
-                BlendShapes.SetValue(BLINK_NAME, 1.0f);
+                BlendShapes.SetValue(BlendShapePreset.Blink, 1.0f);
 
                 // wait...
                 yield return new WaitForSeconds(m_closingTime);
@@ -90,11 +90,16 @@ namespace VRM
                         break;
                     }
 
-                    BlendShapes.SetValue(BLINK_NAME, value);
+                    BlendShapes.SetValue(BlendShapePreset.Blink, value);
                     yield return null;
                 }
-                BlendShapes.SetValue(BLINK_NAME, 0);
+                BlendShapes.SetValue(BlendShapePreset.Blink, 0);
             }
+        }
+
+        private void Awake()
+        {
+            if (BlendShapes == null) BlendShapes = GetComponent<VRM.VRMBlendShapeProxy>();
         }
 
         private void Start()

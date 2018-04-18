@@ -38,31 +38,37 @@ namespace VRM
             m_appyerO = new BlendShapeClipHandler(avatar.GetClip("O"), transform);
         }
 
+        static IEnumerator RoutineNest(BlendShapeClipHandler applyer, float velocity, float wait)
+        {
+            for (var value = 0.0f; value <= 1.0f; value += velocity)
+            {
+                if (applyer != null) applyer.Apply(value);
+                yield return null;
+            }
+            if (applyer != null) applyer.Apply(1.0f);
+            yield return new WaitForSeconds(wait);
+            for (var value = 1.0f; value >= 0; value -= velocity)
+            {
+                if (applyer != null) applyer.Apply(value);
+                yield return null;
+            }
+            if (applyer != null) applyer.Apply(0);
+            yield return new WaitForSeconds(wait * 2);
+        }
+
         IEnumerator Routine()
         {
             while (true)
             {
                 yield return new WaitForSeconds(1.0f);
 
-                if (m_appyerA != null) m_appyerA.Apply(1.0f);
-                yield return new WaitForSeconds(m_wait);
-                if (m_appyerA != null) m_appyerA.Apply(0);
+                var velocity = 0.1f;
 
-                if (m_appyerI != null) m_appyerI.Apply(1.0f);
-                yield return new WaitForSeconds(m_wait);
-                if (m_appyerI != null) m_appyerI.Apply(0);
-
-                if (m_appyerU != null) m_appyerU.Apply(1.0f);
-                yield return new WaitForSeconds(m_wait);
-                if (m_appyerU != null) m_appyerU.Apply(0);
-
-                if (m_appyerE != null) m_appyerE.Apply(1.0f);
-                yield return new WaitForSeconds(m_wait);
-                if (m_appyerE != null) m_appyerE.Apply(0);
-
-                if (m_appyerO != null) m_appyerO.Apply(1.0f);
-                yield return new WaitForSeconds(m_wait);
-                if (m_appyerO != null) m_appyerO.Apply(0);
+                yield return RoutineNest(m_appyerA, velocity, m_wait);
+                yield return RoutineNest(m_appyerI, velocity, m_wait);
+                yield return RoutineNest(m_appyerU, velocity, m_wait);
+                yield return RoutineNest(m_appyerE, velocity, m_wait);
+                yield return RoutineNest(m_appyerO, velocity, m_wait);
             }
         }
 

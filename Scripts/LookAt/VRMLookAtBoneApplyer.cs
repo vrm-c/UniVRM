@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace VRM
 {
-    public class VRMLookAtBoneApplyer : MonoBehaviour
+    public class VRMLookAtBoneApplyer : MonoBehaviour, IVRMComponent
     {
         public bool DrawGizmo = false;
 
@@ -27,7 +27,7 @@ namespace VRM
         [SerializeField]
         public CurveMapper VerticalUp = new CurveMapper(90.0f, 10.0f);
 
-        private void Reset()
+        public void OnImported(VRMImporterContext context)
         {
             var animator = GetComponent<Animator>();
             if (animator != null)
@@ -35,6 +35,12 @@ namespace VRM
                 LeftEye = OffsetOnTransform.Create(animator.GetBoneTransform(HumanBodyBones.LeftEye));
                 RightEye = OffsetOnTransform.Create(animator.GetBoneTransform(HumanBodyBones.RightEye));
             }
+
+            var gltfFirstPerson = context.VRM.extensions.VRM.firstPerson;
+            HorizontalInner.Apply(gltfFirstPerson.lookAtHorizontalInner);
+            HorizontalOuter.Apply(gltfFirstPerson.lookAtHorizontalOuter);
+            VerticalDown.Apply(gltfFirstPerson.lookAtVerticalDown);
+            VerticalUp.Apply(gltfFirstPerson.lookAtVerticalUp);
         }
 
         private void OnValidate()
@@ -47,26 +53,27 @@ namespace VRM
 
         VRMLookAtHead m_head;
 
-        private void Awake()
-        {
-            m_head = GetComponent<VRMLookAtHead>();
-            LeftEye.Setup();
-            RightEye.Setup();
-        }
-
-        private void OnEnable()
+        void Update()
         {
             if (m_head == null)
             {
-                enabled = false;
-                return;
+                m_head = GetComponent<VRMLookAtHead>();
+                if (m_head == null)
+                {
+                    enabled = false;
+                    Debug.LogError("[VRMLookAtBoneApplyer]VRMLookAtHead not found");
+                    return;
+                }
+                m_head.YawPitchChanged += ApplyRotations;
+                LeftEye.Setup();
+                RightEye.Setup();
             }
-            m_head.YawPitchChanged += ApplyRotations;
         }
 
         private void OnDisable()
         {
             m_head.YawPitchChanged -= ApplyRotations;
+            m_head = null;
         }
 
         #region Gizmo

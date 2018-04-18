@@ -214,29 +214,7 @@ namespace VRM
 
             // LookAt
             var lookAtHead = context.Root.AddComponent<VRMLookAtHead>();
-            lookAtHead.Initialize();
-
-            switch (gltfFirstPerson.lookAtType)
-            {
-                case LookAtType.Bone:
-                    {
-                        var applyer = context.Root.AddComponent<VRMLookAtBoneApplyer>();
-                        applyer.HorizontalInner.Apply(gltfFirstPerson.lookAtHorizontalInner);
-                        applyer.HorizontalOuter.Apply(gltfFirstPerson.lookAtHorizontalOuter);
-                        applyer.VerticalDown.Apply(gltfFirstPerson.lookAtVerticalDown);
-                        applyer.VerticalUp.Apply(gltfFirstPerson.lookAtVerticalUp);
-                    }
-                    break;
-
-                case LookAtType.BlendShape:
-                    {
-                        var applyer = context.Root.AddComponent<VRMLookAtBlendShapeApplyer>();
-                        applyer.Horizontal.Apply(gltfFirstPerson.lookAtHorizontalOuter);
-                        applyer.VerticalDown.Apply(gltfFirstPerson.lookAtVerticalDown);
-                        applyer.VerticalUp.Apply(gltfFirstPerson.lookAtVerticalUp);
-                    }
-                    break;
-            }
+            lookAtHead.OnImported(context);
         }
 
         static void LoadSecondaryMotions(VRMImporterContext context)

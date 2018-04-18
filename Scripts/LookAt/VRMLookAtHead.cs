@@ -13,7 +13,7 @@ namespace VRM
         LateUpdate,
     }
 
-    public class VRMLookAtHead : MonoBehaviour
+    public class VRMLookAtHead : MonoBehaviour, IVRMComponent
     {
         public bool DrawGizmo = true;
 
@@ -72,16 +72,46 @@ namespace VRM
         }
         #endregion
 
-        public void Initialize()
+        public void OnImported(VRMImporterContext context)
         {
             var animator = GetComponent<Animator>();
-            if (animator != null)
+            if (animator == null)
             {
-                Head = OffsetOnTransform.Create(animator.GetBoneTransform(HumanBodyBones.Head));
+                Debug.LogWarning("animator is not found");
+                return;
+            }
+
+            var head = animator.GetBoneTransform(HumanBodyBones.Head);
+            if (head == null)
+            {
+                Debug.LogWarning("head is not found");
+                return;
+            }
+
+            Head = OffsetOnTransform.Create(head);
+
+            var gltfFirstPerson = context.VRM.extensions.VRM.firstPerson;
+            switch (gltfFirstPerson.lookAtType)
+            {
+                case LookAtType.Bone:
+                    {
+                        var applyer = gameObject.AddComponent<VRMLookAtBoneApplyer>();
+                        applyer.OnImported(context);
+                    }
+                    break;
+
+                case LookAtType.BlendShape:
+                    {
+                        var applyer = gameObject.AddComponent<VRMLookAtBlendShapeApplyer>();
+                        applyer.Horizontal.Apply(gltfFirstPerson.lookAtHorizontalOuter);
+                        applyer.VerticalDown.Apply(gltfFirstPerson.lookAtVerticalDown);
+                        applyer.VerticalUp.Apply(gltfFirstPerson.lookAtVerticalUp);
+                    }
+                    break;
             }
         }
 
-        private void Awake()
+        private void Start()
         {
             Head.Setup();
         }
