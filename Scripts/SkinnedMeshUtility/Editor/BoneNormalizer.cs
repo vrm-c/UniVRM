@@ -132,7 +132,9 @@ namespace VRM
                     // SkinnedMesh
                     //
                     var srcRenderer = src.GetComponent<SkinnedMeshRenderer>();
-                    if (srcRenderer != null && srcRenderer.enabled)
+                    if (srcRenderer != null && srcRenderer.enabled
+                        && srcRenderer.sharedMesh!=null
+                        && srcRenderer.sharedMesh.vertexCount>0)
                     {
                         // clear blendShape
                         var srcMesh = srcRenderer.sharedMesh;
@@ -143,6 +145,10 @@ namespace VRM
 
                         var mesh = new Mesh();
                         mesh.name = srcMesh.name + ".baked";
+#if UNITY_2017_3_OR_NEWER
+                        mesh.indexFormat = srcMesh.indexFormat;
+#endif
+
                         srcRenderer.BakeMesh(mesh);
 
                         //var m = src.localToWorldMatrix;
@@ -281,7 +287,9 @@ namespace VRM
                     // not SkinnedMesh
                     //
                     var srcFilter = src.GetComponent<MeshFilter>();
-                    if (srcFilter != null)
+                    if (srcFilter != null 
+                        && srcFilter.sharedMesh!=null 
+                        && srcFilter.sharedMesh.vertexCount>0)
                     {
                         var srcRenderer = src.GetComponent<MeshRenderer>();
                         if (srcRenderer!=null && srcRenderer.enabled)

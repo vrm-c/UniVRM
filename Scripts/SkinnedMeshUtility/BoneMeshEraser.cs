@@ -71,6 +71,10 @@ namespace VRM
             var mesh = new Mesh();
             mesh.name = src.name + "(erased)";
 
+#if UNITY_2017_3_OR_NEWER
+            mesh.indexFormat = src.indexFormat;
+#endif
+
             mesh.vertices = src.vertices;
             mesh.normals = src.normals;
             mesh.uv = src.uv;
