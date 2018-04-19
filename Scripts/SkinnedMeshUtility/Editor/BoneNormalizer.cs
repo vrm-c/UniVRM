@@ -145,6 +145,10 @@ namespace VRM
 
                         var mesh = new Mesh();
                         mesh.name = srcMesh.name + ".baked";
+#if UNITY_2017_3_OR_NEWER
+                        mesh.indexFormat = srcMesh.indexFormat;
+#endif
+
                         srcRenderer.BakeMesh(mesh);
 
                         //var m = src.localToWorldMatrix;
