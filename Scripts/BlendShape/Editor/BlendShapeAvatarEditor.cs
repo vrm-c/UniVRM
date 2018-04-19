@@ -136,6 +136,7 @@ namespace VRM
                 {
                     string maxWeightString;
                     CurrentClip.Values = GetBindings(out maxWeightString);
+                    EditorUtility.SetDirty(CurrentClip);
                 }
                 EditorGUILayout.EndHorizontal();
 
