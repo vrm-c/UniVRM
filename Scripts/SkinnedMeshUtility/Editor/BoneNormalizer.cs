@@ -132,7 +132,9 @@ namespace VRM
                     // SkinnedMesh
                     //
                     var srcRenderer = src.GetComponent<SkinnedMeshRenderer>();
-                    if (srcRenderer != null && srcRenderer.enabled)
+                    if (srcRenderer != null && srcRenderer.enabled
+                        && srcRenderer.sharedMesh!=null
+                        && srcRenderer.sharedMesh.vertexCount>0)
                     {
                         // clear blendShape
                         var srcMesh = srcRenderer.sharedMesh;
@@ -281,7 +283,9 @@ namespace VRM
                     // not SkinnedMesh
                     //
                     var srcFilter = src.GetComponent<MeshFilter>();
-                    if (srcFilter != null)
+                    if (srcFilter != null 
+                        && srcFilter.sharedMesh!=null 
+                        && srcFilter.sharedMesh.vertexCount>0)
                     {
                         var srcRenderer = src.GetComponent<MeshRenderer>();
                         if (srcRenderer!=null && srcRenderer.enabled)
