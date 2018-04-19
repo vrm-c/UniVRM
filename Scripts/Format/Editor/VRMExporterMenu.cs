@@ -6,13 +6,14 @@ using UniGLTF;
 using System.IO;
 using System.Text;
 
+
 namespace VRM
 {
     public class VRMExporterWizard : ScriptableWizard
     {
         const string EXTENSION = ".vrm";
 
-        public GameObject Target;
+        public Animator Target;
         VRMMeta m_meta;
 
         public string Title;
@@ -27,7 +28,11 @@ namespace VRM
         {
             var wiz = ScriptableWizard.DisplayWizard<VRMExporterWizard>(
                 "VRM Exporter", "Export");
-            wiz.Target = Selection.activeObject as GameObject;
+            var go= Selection.activeObject as GameObject;
+            if (go != null)
+            {
+                wiz.Target = go.GetComponent<Animator>();
+            }
 
             // update checkbox
             var desc = wiz.Target.GetComponent<VRMHumanoidDescription>();
@@ -84,13 +89,13 @@ namespace VRM
             Dir = Path.GetDirectoryName(path);
 
             // export
-            var target = Target;
+            var target = Target.gameObject;
             if (PoseFreeze)
             {
                 Undo.RecordObjects(Target.transform.Traverse().ToArray(), "before normalize");
                 var map = new Dictionary<Transform, Transform>();
-                target = VRM.BoneNormalizer.Execute(Target, map, ForceTPose);
-                VRMHumanoidNorimalizerMenu.CopyVRMComponents(Target, target, map);
+                target = VRM.BoneNormalizer.Execute(Target.gameObject, map, ForceTPose);
+                VRMHumanoidNorimalizerMenu.CopyVRMComponents(Target.gameObject, target, map);
                 Undo.PerformUndo();
             }
 
@@ -118,18 +123,38 @@ namespace VRM
             var helpBuilder = new StringBuilder();
             var errorBuilder = new StringBuilder();
 
-            helpBuilder.Append("select humanoid root(require Animator with valid humanoid avatar).\n");
+            if (Target == null)
+            {
+                isValid = false;
+                errorBuilder.Append("Require animator. ");
+            }
+            else if (Target.avatar == null)
+            {
+                isValid = false;
+                errorBuilder.Append("Require animator.avatar. ");
+            }
+            else if (!Target.avatar.isValid)
+            {
+                isValid = false;
+                errorBuilder.Append("Animator.avatar is not valid. ");
+            }
+            else if (!Target.avatar.isHuman)
+            {
+                isValid = false;
+                errorBuilder.Append("Animator.avatar is not humanoid. Please change model's AnimationType to humanoid. ");
+            }
+
 
             if (string.IsNullOrEmpty(Title))
             {
                 isValid = false;
-                errorBuilder.Append("require Title\n");
+                errorBuilder.Append("Require Title. ");
             }
 
             if (string.IsNullOrEmpty(Author))
             {
                 isValid = false;
-                errorBuilder.Append("require Author\n");
+                errorBuilder.Append("Require Author. ");
             }
 
             helpString = helpBuilder.ToString();
@@ -152,22 +177,6 @@ namespace VRM
 
             var animator = root.GetComponent<Animator>();
             if (animator == null)
-            {
-                return false;
-            }
-
-            var avatar = animator.avatar;
-            if (avatar == null)
-            {
-                return false;
-            }
-
-            if (!avatar.isValid)
-            {
-                return false;
-            }
-
-            if (!avatar.isHuman)
             {
                 return false;
             }
