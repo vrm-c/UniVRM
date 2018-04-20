@@ -31,8 +31,11 @@ namespace VRM
                 }
 
                 var oldValue = m_target.GetValue(m_key);
+                var enable = GUI.enabled;
+                GUI.enabled = Application.isPlaying;
                 var newValue = EditorGUILayout.Slider(m_key.ToString(), oldValue, 0, 1.0f);
-                if (oldValue != newValue)
+                GUI.enabled = enable;
+                if (Application.isPlaying && oldValue != newValue)
                 {
                     m_target.SetValue(m_key, newValue);
                 }
@@ -56,6 +59,11 @@ namespace VRM
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
+
+            if (!Application.isPlaying)
+            {
+                EditorGUILayout.HelpBox("Enable when playing", MessageType.Info);
+            }
 
             if (m_sliders != null)
             {
