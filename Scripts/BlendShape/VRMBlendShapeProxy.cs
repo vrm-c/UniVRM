@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UniGLTF;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 
 
 namespace VRM
@@ -16,70 +13,12 @@ namespace VRM
         [SerializeField]
         public BlendShapeAvatar BlendShapeAvatar;
 
-#if UNITY_EDITOR
-        public class BlendShapeSlider
-        {
-            VRMBlendShapeProxy m_target;
-            BlendShapeKey m_key;
-
-            public BlendShapeSlider(VRMBlendShapeProxy target, BlendShapeKey key)
-            {
-                m_target = target;
-                m_key = key;
-            }
-
-            public void Slider()
-            {
-                if (m_target.BlendShapeAvatar == null)
-                {
-                    return;
-                }
-
-                var oldValue = m_target.GetValue(m_key);
-                var newValue = EditorGUILayout.Slider(m_key.ToString(), oldValue, 0, 1.0f);
-                if (oldValue != newValue)
-                {
-                    m_target.SetValue(m_key, newValue);
-                }
-            }
-        }
-        List<BlendShapeSlider> m_sliders;
-        public List<BlendShapeSlider> Sliders
-        {
-            get { return m_sliders; }
-        }
-        private void SetupSliders()
-        {
-            if (BlendShapeAvatar != null && BlendShapeAvatar.Clips != null)
-            {
-                m_sliders = BlendShapeAvatar.Clips
-                    .Where(x => x != null)
-                    .Select(x => new BlendShapeSlider(this, BlendShapeKey.CreateFrom(x)))
-                    .ToList()
-                    ;
-            }
-        }
-#endif
-
-        struct BlendShapePath
-        {
-            public String RelativePath;
-            public int Index;
-        }
-
         delegate void BlendShapeSetter(float value);
 
         class BlendShapePathHandler
         {
             public BlendShapeSetter Setter;
             float m_value;
-
-            /*
-            public void ReplaceValue(float value)
-            {
-                m_value = value;
-            }
-            */
 
             public void AddValue(float value)
             {
@@ -244,10 +183,6 @@ namespace VRM
                     }
                 }
             }
-
-#if UNITY_EDITOR
-            SetupSliders();
-#endif
         }
 
         private void OnDestroy()
