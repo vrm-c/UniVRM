@@ -1,21 +1,23 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UniGLTF;
+using UnityEngine;
 
 
 namespace VRM
 {
+    /// <summary>
+    /// ブレンドシェイプを蓄えてまとめて適用するクラス
+    /// </summary>
     class BlendShapeMerger
     {
-        delegate void BlendShapeSetter(float value);
-
         Dictionary<BlendShapeKey, BlendShapeClip> m_clipMap;
         Dictionary<BlendShapeKey, float> m_valueMap;
 
-        class BlendShapePathHandler
+        class AccumulatingSetter
         {
-            public BlendShapeSetter Setter;
+            public Action<float> Setter;
             float m_value;
 
             public void AddValue(float value)
@@ -41,8 +43,9 @@ namespace VRM
                 Apply();
             }
         }
-        Dictionary<BlendShapeBinding, BlendShapePathHandler> m_setterMap = new Dictionary<BlendShapeBinding, BlendShapePathHandler>();
+        Dictionary<BlendShapeBinding, AccumulatingSetter> m_setterMap;
         Dictionary<string, Material> m_materialMap;
+        Dictionary<MaterialValueBinding, AccumulatingSetter> m_materialSetterMap;
 
         public BlendShapeMerger(IEnumerable<BlendShapeClip> clips, Transform root)
         {
@@ -66,12 +69,14 @@ namespace VRM
             }
 
             m_clipMap = clips.ToDictionary(x => BlendShapeKey.CreateFrom(x), x => x);
+
             m_valueMap = new Dictionary<BlendShapeKey, float>();
+            m_setterMap = new Dictionary<BlendShapeBinding, AccumulatingSetter>();
+            m_materialSetterMap = new Dictionary<MaterialValueBinding, AccumulatingSetter>();
             foreach (var kv in m_clipMap)
             {
                 foreach (var binding in kv.Value.Values)
                 {
-
                     if (!m_setterMap.ContainsKey(binding))
                     {
                         var _target = root.Find(binding.RelativePath);
@@ -82,7 +87,7 @@ namespace VRM
                         }
                         if (target != null)
                         {
-                            m_setterMap.Add(binding, new BlendShapePathHandler
+                            m_setterMap.Add(binding, new AccumulatingSetter
                             {
                                 Setter = x =>
                                 {
@@ -92,7 +97,31 @@ namespace VRM
                         }
                         else
                         {
-                            Debug.LogWarningFormat("{0} not found", binding.RelativePath);
+                            Debug.LogWarningFormat("SkinnedMeshRenderer: {0} not found", binding.RelativePath);
+                        }
+                    }
+                }
+
+                foreach(var binding in kv.Value.MaterialValues)
+                {
+                    if (!m_materialSetterMap.ContainsKey(binding))
+                    {
+                        Material target;
+                        if(m_materialMap.TryGetValue(binding.MaterialName, out target))
+                        {
+                            m_materialSetterMap.Add(binding, new AccumulatingSetter
+                            {
+                                Setter = x =>
+                                {
+                                    //target.SetBlendShapeWeight(binding.Index, x);
+                                    var propValue = binding.BaseValue + (binding.TargetValue - binding.BaseValue) * x;
+                                    target.SetColor(binding.ValueName, propValue);
+                                }
+                            });
+                        }
+                        else
+                        {
+                            Debug.LogWarningFormat("material: {0} not found", binding.MaterialName);
                         }
                     }
                 }
@@ -135,13 +164,12 @@ namespace VRM
 
             foreach (var binding in clip.Values)
             {
-                BlendShapePathHandler handler;
+                AccumulatingSetter handler;
                 if (m_setterMap.TryGetValue(binding, out handler))
                 {
                     if (replace)
                     {
                         // 値置き換え
-                        //handler.ReplaceValue();
                         handler.Apply(binding.Weight * value);
                     }
                     else
@@ -159,8 +187,24 @@ namespace VRM
             // materialの更新
             foreach (var binding in clip.MaterialValues)
             {
-                var propValue = binding.BaseValue + (binding.TargetValue - binding.BaseValue) * value;
-                m_materialMap[binding.MaterialName].SetColor(binding.ValueName, propValue);
+                AccumulatingSetter handler;
+                if(m_materialSetterMap.TryGetValue(binding, out handler))
+                {
+                    if (replace)
+                    {
+                        // 値置き換え
+                        handler.Apply(value);
+                    }
+                    else
+                    {
+                        // 積算
+                        handler.AddValue(value);
+                    }
+                }
+                else
+                {
+                    Debug.LogWarningFormat("'{0}' not found", binding);
+                }
             }
         }
 
@@ -174,7 +218,7 @@ namespace VRM
             return value;
         }
 
-        public void RestoreMaterialValues(IEnumerable<BlendShapeClip> clips)
+        public void RestoreMaterialInitialValues(IEnumerable<BlendShapeClip> clips)
         {
             if (m_materialMap != null)
             {

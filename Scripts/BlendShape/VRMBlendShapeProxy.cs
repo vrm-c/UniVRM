@@ -21,7 +21,7 @@ namespace VRM
         {
             if (m_merger != null)
             {
-                m_merger.RestoreMaterialValues(BlendShapeAvatar.Clips);
+                m_merger.RestoreMaterialInitialValues(BlendShapeAvatar.Clips);
             }
         }
 
