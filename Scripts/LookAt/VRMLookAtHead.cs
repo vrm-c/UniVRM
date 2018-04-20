@@ -163,7 +163,6 @@ namespace VRM
         public event Action<float, float> YawPitchChanged;
         void RaiseYawPitchChanged(float yaw, float pitch)
         {
-            if (m_yaw == yaw && m_pitch == pitch) return;
             m_yaw = yaw;
             m_pitch = pitch;
             var handle = YawPitchChanged;
