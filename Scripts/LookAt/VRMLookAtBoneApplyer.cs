@@ -53,27 +53,18 @@ namespace VRM
 
         VRMLookAtHead m_head;
 
-        void Update()
+        void Start()
         {
+            m_head = GetComponent<VRMLookAtHead>();
             if (m_head == null)
             {
-                m_head = GetComponent<VRMLookAtHead>();
-                if (m_head == null)
-                {
-                    enabled = false;
-                    Debug.LogError("[VRMLookAtBoneApplyer]VRMLookAtHead not found");
-                    return;
-                }
-                m_head.YawPitchChanged += ApplyRotations;
-                LeftEye.Setup();
-                RightEye.Setup();
+                enabled = false;
+                Debug.LogError("[VRMLookAtBoneApplyer]VRMLookAtHead not found");
+                return;
             }
-        }
-
-        private void OnDisable()
-        {
-            m_head.YawPitchChanged -= ApplyRotations;
-            m_head = null;
+            m_head.YawPitchChanged += ApplyRotations;
+            LeftEye.Setup();
+            RightEye.Setup();
         }
 
         #region Gizmo

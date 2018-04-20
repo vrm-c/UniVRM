@@ -103,9 +103,7 @@ namespace VRM
                 case LookAtType.BlendShape:
                     {
                         var applyer = gameObject.AddComponent<VRMLookAtBlendShapeApplyer>();
-                        applyer.Horizontal.Apply(gltfFirstPerson.lookAtHorizontalOuter);
-                        applyer.VerticalDown.Apply(gltfFirstPerson.lookAtVerticalDown);
-                        applyer.VerticalUp.Apply(gltfFirstPerson.lookAtVerticalUp);
+                        applyer.OnImported(context);
                     }
                     break;
             }
