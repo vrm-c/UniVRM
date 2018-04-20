@@ -25,6 +25,26 @@ namespace VRM
     public class BlendShapeClip : ScriptableObject
     {
         [SerializeField]
+        GameObject m_prefab;
+        public GameObject Prefab
+        {
+            set { m_prefab = value; }
+            get {
+#if UNITY_EDITOR
+                if (m_prefab == null)
+                {
+                    var assetPath = UnityEditor.AssetDatabase.GetAssetPath(this);
+                    if (!string.IsNullOrEmpty(assetPath))
+                    {
+                        m_prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
+                    }
+                }
+#endif
+                return m_prefab;
+            }
+        }
+
+        [SerializeField]
         public string BlendShapeName = "";
 
         [SerializeField]
@@ -73,15 +93,6 @@ namespace VRM
                 }
             }
             */
-        }
-
-        public static BlendShapeClip Create(BlendShapePreset preset)
-        {
-            var clip = ScriptableObject.CreateInstance<BlendShapeClip>();
-            clip.Preset = preset;
-            clip.BlendShapeName = preset.ToString();
-            clip.name = preset.ToString();
-            return clip;
         }
     }
 }

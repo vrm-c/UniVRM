@@ -23,8 +23,14 @@ namespace VRM
         BlendShapeClip m_target;
         bool m_changed;
 
+        protected override GameObject GetPrefab()
+        {
+            return m_target.Prefab;
+        }
+
         void OnPrefabChanged()
         {
+            m_target.Prefab = Prefab;
             Bake(m_target.Values, m_target.MaterialValues, 1.0f);
         }
 

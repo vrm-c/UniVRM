@@ -40,10 +40,10 @@ namespace VRM
         /// Previewシーンに表示するPrefab
         /// </summary>
         GameObject m_prefab;
-        GameObject Prefab
+        protected GameObject Prefab
         {
             get { return m_prefab; }
-            set
+            private set
             {
                 if (m_prefab == value) return;
                 m_prefab = value;
@@ -89,15 +89,20 @@ namespace VRM
             }
         }
 
+        protected virtual GameObject GetPrefab()
+        {
+            var assetPath = AssetDatabase.GetAssetPath(target);
+            if (string.IsNullOrEmpty(assetPath))
+            {
+                return null;
+            }
+            return AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
+        }
+
         protected virtual void OnEnable()
         {
             m_renderer = new PreviewFaceRenderer();
-            var assetPath = AssetDatabase.GetAssetPath(target);
-            //Debug.LogFormat("assetPath: {0}", assetPath);
-            if (!string.IsNullOrEmpty(assetPath))
-            {
-                Prefab = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
-            }
+            Prefab = GetPrefab();
         }
 
         protected virtual void OnDisable()
