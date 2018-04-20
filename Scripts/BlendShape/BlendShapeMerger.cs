@@ -15,37 +15,13 @@ namespace VRM
         Dictionary<BlendShapeKey, BlendShapeClip> m_clipMap;
         Dictionary<BlendShapeKey, float> m_valueMap;
 
-        class AccumulatingSetter
-        {
-            public Action<float> Setter;
-            float m_value;
-
-            public void AddValue(float value)
-            {
-                m_value += value;
-            }
-
-            public void Apply(float value)
-            {
-                Setter(value);
-                m_value = 0;
-            }
-
-            public void Apply()
-            {
-                Setter(m_value);
-                m_value = 0;
-            }
-
-            public void Clear()
-            {
-                m_value = 0;
-                Apply();
-            }
-        }
-        Dictionary<BlendShapeBinding, AccumulatingSetter> m_setterMap;
         Dictionary<string, Material> m_materialMap;
-        Dictionary<MaterialValueBinding, AccumulatingSetter> m_materialSetterMap;
+
+        Dictionary<BlendShapeBinding, float> m_blendShapeValueMap = new Dictionary<BlendShapeBinding, float>();
+        Dictionary<BlendShapeBinding, Action<float>> m_blendShapeSetterMap = new Dictionary<BlendShapeBinding, Action<float>>();
+
+        Dictionary<MaterialValueBinding, float> m_materialValueMap = new Dictionary<MaterialValueBinding, float>();
+        Dictionary<MaterialValueBinding, Action<float>> m_materialSetterMap = new Dictionary<MaterialValueBinding, Action<float>>();
 
         public BlendShapeMerger(IEnumerable<BlendShapeClip> clips, Transform root)
         {
@@ -71,13 +47,12 @@ namespace VRM
             m_clipMap = clips.ToDictionary(x => BlendShapeKey.CreateFrom(x), x => x);
 
             m_valueMap = new Dictionary<BlendShapeKey, float>();
-            m_setterMap = new Dictionary<BlendShapeBinding, AccumulatingSetter>();
-            m_materialSetterMap = new Dictionary<MaterialValueBinding, AccumulatingSetter>();
+
             foreach (var kv in m_clipMap)
             {
                 foreach (var binding in kv.Value.Values)
                 {
-                    if (!m_setterMap.ContainsKey(binding))
+                    if (!m_blendShapeSetterMap.ContainsKey(binding))
                     {
                         var _target = root.Find(binding.RelativePath);
                         SkinnedMeshRenderer target = null;
@@ -87,13 +62,10 @@ namespace VRM
                         }
                         if (target != null)
                         {
-                            m_setterMap.Add(binding, new AccumulatingSetter
-                            {
-                                Setter = x =>
+                            m_blendShapeSetterMap.Add(binding, x =>
                                 {
                                     target.SetBlendShapeWeight(binding.Index, x);
-                                }
-                            });
+                                });
                         }
                         else
                         {
@@ -109,15 +81,12 @@ namespace VRM
                         Material target;
                         if(m_materialMap.TryGetValue(binding.MaterialName, out target))
                         {
-                            m_materialSetterMap.Add(binding, new AccumulatingSetter
-                            {
-                                Setter = x =>
+                            m_materialSetterMap.Add(binding, x =>
                                 {
                                     //target.SetBlendShapeWeight(binding.Index, x);
                                     var propValue = binding.BaseValue + (binding.TargetValue - binding.BaseValue) * x;
                                     target.SetColor(binding.ValueName, propValue);
-                                }
-                            });
+                                });
                         }
                         else
                         {
@@ -130,26 +99,34 @@ namespace VRM
 
         public void Clear()
         {
-            foreach (var kv in m_setterMap)
-            {
-                kv.Value.Clear();
-            }
-        }
-
-        public void Restore()
-        {
             foreach (var kv in m_valueMap.ToArray())
             {
                 SetValue(kv.Key, kv.Value, false);
             }
+            Apply();
         }
 
         public void Apply()
         {
-            foreach (var kv in m_setterMap)
+            foreach (var kv in m_blendShapeValueMap)
             {
-                kv.Value.Apply();
+                Action<float> setter;
+                if(m_blendShapeSetterMap.TryGetValue(kv.Key, out setter))
+                {
+                    setter(kv.Value);
+                }
             }
+            m_blendShapeValueMap.Clear();
+
+            foreach(var kv in m_materialValueMap)
+            {
+                Action<float> setter;
+                if(m_materialSetterMap.TryGetValue(kv.Key, out setter))
+                {
+                    setter(kv.Value);
+                }
+            }
+            m_materialValueMap.Clear();
         }
 
         public void SetValue(BlendShapeKey key, float value, bool replace)
@@ -164,46 +141,54 @@ namespace VRM
 
             foreach (var binding in clip.Values)
             {
-                AccumulatingSetter handler;
-                if (m_setterMap.TryGetValue(binding, out handler))
+                if (replace)
                 {
-                    if (replace)
+                    // 値置き換え
+                    Action<float> setter;
+                    if(m_blendShapeSetterMap.TryGetValue(binding, out setter))
                     {
-                        // 値置き換え
-                        handler.Apply(binding.Weight * value);
-                    }
-                    else
-                    {
-                        // 積算
-                        handler.AddValue(binding.Weight * value);
+                        setter(binding.Weight * value);
                     }
                 }
                 else
                 {
-                    Debug.LogWarningFormat("'{0}' not found", binding);
+                    // 積算
+                    float acc;
+                    if(m_blendShapeValueMap.TryGetValue(binding, out acc))
+                    {
+                        m_blendShapeValueMap[binding] = acc + binding.Weight * value;
+                    }
+                    else
+                    {
+                        m_blendShapeValueMap[binding] = binding.Weight * value;
+                    }
                 }
             }
 
             // materialの更新
             foreach (var binding in clip.MaterialValues)
             {
-                AccumulatingSetter handler;
-                if(m_materialSetterMap.TryGetValue(binding, out handler))
+                if (replace)
                 {
-                    if (replace)
+                    // 値置き換え
+                    Action<float> setter;
+                    if (m_materialSetterMap.TryGetValue(binding, out setter))
                     {
-                        // 値置き換え
-                        handler.Apply(value);
-                    }
-                    else
-                    {
-                        // 積算
-                        handler.AddValue(value);
+                        setter(value);
                     }
                 }
                 else
                 {
-                    Debug.LogWarningFormat("'{0}' not found", binding);
+                    // 積算
+                    float acc;
+                    if (m_materialValueMap.TryGetValue(binding, out acc))
+                    {
+                        m_materialValueMap[binding] = acc + value;
+                    }
+                    else
+                    {
+                        m_materialValueMap[binding] = value;
+                    }
                 }
             }
         }
