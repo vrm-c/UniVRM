@@ -106,7 +106,7 @@ namespace VRM
 
             });
 
-            if (Target!=target)
+            if (Target.gameObject!=target)
             {
                 GameObject.DestroyImmediate(target);
             }

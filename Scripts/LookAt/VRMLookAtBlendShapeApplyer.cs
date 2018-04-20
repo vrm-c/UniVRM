@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace VRM
 {
-    public class VRMLookAtBlendShapeApplyer : MonoBehaviour
+    public class VRMLookAtBlendShapeApplyer : MonoBehaviour, IVRMComponent
     {
         public bool DrawGizmo = true;
 
@@ -17,28 +17,27 @@ namespace VRM
         [SerializeField]
         public CurveMapper VerticalUp = new CurveMapper(90.0f, 1.0f);
 
+        public void OnImported(VRMImporterContext context)
+        {
+            var gltfFirstPerson = context.VRM.extensions.VRM.firstPerson;
+            Horizontal.Apply(gltfFirstPerson.lookAtHorizontalOuter);
+            VerticalDown.Apply(gltfFirstPerson.lookAtVerticalDown);
+            VerticalUp.Apply(gltfFirstPerson.lookAtVerticalUp);
+        }
+
         VRMLookAtHead m_head;
         VRMBlendShapeProxy m_propxy;
 
-        private void Awake()
+        private void Start()
         {
             m_head = GetComponent<VRMLookAtHead>();
             m_propxy = GetComponent<VRMBlendShapeProxy>();
-        }
-
-        private void OnEnable()
-        {
             if (m_head == null)
             {
                 enabled = false;
                 return;
             }
             m_head.YawPitchChanged += ApplyRotations;
-        }
-
-        private void OnDisable()
-        {
-            m_head.YawPitchChanged -= ApplyRotations;
         }
 
         void ApplyRotations(float yaw, float pitch)

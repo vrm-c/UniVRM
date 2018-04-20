@@ -13,6 +13,7 @@ namespace VRM
         VRMLookAtHead m_target;
         PreviewRenderUtility m_previewRenderUtility;
 
+#if UNITY_2017_1_OR_NEWER
         struct Item
         {
             public Transform Transform;
@@ -35,11 +36,8 @@ namespace VRM
         }
         Item[] m_items;
 
-        void OnEnable()
+        void SetupItems()
         {
-            m_target = (VRMLookAtHead)target;
-            m_previewRenderUtility = new PreviewRenderUtility(true);
-
             m_items = m_target.transform.Traverse().Select(x =>
             {
                 var meshFilter = x.GetComponent<MeshFilter>();
@@ -69,8 +67,19 @@ namespace VRM
                     return default(Item);
                 }
             })
-            .Where(x => x.Transform!=null)
+            .Where(x => x.Transform != null)
             .ToArray();
+        }
+#endif
+
+        void OnEnable()
+        {
+            m_target = (VRMLookAtHead)target;
+            m_previewRenderUtility = new PreviewRenderUtility(true);
+
+#if UNITY_2017_1_OR_NEWER
+            SetupItems();
+#endif
         }
 
         private void OnDisable()

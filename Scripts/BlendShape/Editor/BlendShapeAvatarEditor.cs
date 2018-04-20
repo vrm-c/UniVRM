@@ -32,6 +32,7 @@ namespace VRM
             Debug.LogFormat("{0}", path);
             var clip = ScriptableObject.CreateInstance<BlendShapeClip>();
             m_target.Clips.Add(clip);
+            clip.Prefab = AssetDatabase.LoadAssetAtPath<GameObject>(AssetDatabase.GetAssetPath(m_target));
             AssetDatabase.CreateAsset(clip, path);
             AssetDatabase.ImportAsset(path);
         }

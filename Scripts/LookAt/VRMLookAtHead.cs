@@ -103,9 +103,7 @@ namespace VRM
                 case LookAtType.BlendShape:
                     {
                         var applyer = gameObject.AddComponent<VRMLookAtBlendShapeApplyer>();
-                        applyer.Horizontal.Apply(gltfFirstPerson.lookAtHorizontalOuter);
-                        applyer.VerticalDown.Apply(gltfFirstPerson.lookAtVerticalDown);
-                        applyer.VerticalUp.Apply(gltfFirstPerson.lookAtVerticalUp);
+                        applyer.OnImported(context);
                     }
                     break;
             }
@@ -163,7 +161,6 @@ namespace VRM
         public event Action<float, float> YawPitchChanged;
         void RaiseYawPitchChanged(float yaw, float pitch)
         {
-            if (m_yaw == yaw && m_pitch == pitch) return;
             m_yaw = yaw;
             m_pitch = pitch;
             var handle = YawPitchChanged;
