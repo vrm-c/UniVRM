@@ -6,6 +6,9 @@ using UniGLTF;
 using System.Collections.Generic;
 using System.Collections;
 using UniTask;
+#if (NET_4_6 && UNITY_2018_1_OR_NEWER)
+using System.Threading.Tasks;
+#endif
 
 
 namespace VRM
@@ -524,32 +527,26 @@ namespace VRM
         }
 
 #if (NET_4_6 && UNITY_2018_1_OR_NEWER)
-        /// <summary>
-        /// Gets an awaiter that returns the loaded GameObject.
-        /// </summary>
-        public static Schedulable<GameObject> LoadVrmAsync(string path)
+
+        public static Task<GameObject> LoadVrmAsync(string path)
         {
             var context = new VRMImporterContext(path);
             context.ParseVrm(File.ReadAllBytes(path));
-            return LoadVrmAsyncInternal(context);
+            return LoadVrmAsyncInternal(context).ToTask();
         }
 
-        /// <summary>
-        /// Gets an awaiter that returns the loaded GameObject.
-        /// </summary>
-        public static Schedulable<GameObject> LoadVrmAsync(Byte[] bytes)
+
+        public static Task<GameObject> LoadVrmAsync(Byte[] bytes)
         {
             var context = new VRMImporterContext();
             context.ParseVrm(bytes);
             return LoadVrmAsync(context);
         }
 
-        /// <summary>
-        /// Gets an awaiter that returns the loaded GameObject.
-        /// </summary>
-        public static Schedulable<GameObject> LoadVrmAsync(VRMImporterContext ctx)
+
+        public static Task<GameObject> LoadVrmAsync(VRMImporterContext ctx)
         {
-            return LoadVrmAsyncInternal(ctx);
+            return LoadVrmAsyncInternal(ctx).ToTask();
         }
 #endif
 
