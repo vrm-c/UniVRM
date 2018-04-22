@@ -52,6 +52,7 @@ namespace VRM
 
         protected override void SerializeMembers(JsonFormatter f)
         {
+            f.KeyValue(() => extensionsUsed);
             f.KeyValue(() => extensions);
             base.SerializeMembers(f);
         }
