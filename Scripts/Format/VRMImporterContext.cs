@@ -38,9 +38,10 @@ namespace VRM
         {
             var meta=ScriptableObject.CreateInstance<VRMMetaObject>();
             meta.name = "Meta";
+            meta.ExporterVersion = VRM.extensions.VRM.exporterVersion;
 
             var gltfMeta = VRM.extensions.VRM.meta;
-            meta.Version = gltfMeta.version;
+            meta.Version = gltfMeta.version; // model version
             meta.Author = gltfMeta.author;
             meta.ContactInformation = gltfMeta.contactInformation;
             meta.Reference = gltfMeta.reference;
