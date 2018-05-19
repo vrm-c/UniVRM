@@ -20,13 +20,14 @@ namespace VRM
 
             foreach (Transform child in src)
             {
-                var dstChild = new GameObject(child.name);
-                dstChild.transform.SetParent(dst);
-                dstChild.transform.position = child.position; // copy position only
+                if (child.gameObject.activeSelf)
+                {
+                    var dstChild = new GameObject(child.name);
+                    dstChild.transform.SetParent(dst);
+                    dstChild.transform.position = child.position; // copy position only
 
-                //dstChild.AddComponent<UniHumanoid.BoneGizmoDrawer>();
-
-                CopyAndBuild(child, dstChild.transform, boneMap);
+                    CopyAndBuild(child, dstChild.transform, boneMap);
+                }
             }
         }
 
@@ -125,7 +126,11 @@ namespace VRM
             //
             foreach (var src in go.transform.Traverse())
             {
-                var dst = boneMap[src];
+                Transform dst;
+                if(!boneMap.TryGetValue(src, out dst))
+                {
+                    continue;
+                }
 
                 {
                     //
