@@ -300,7 +300,7 @@ namespace VRM
                         if (srcRenderer!=null && srcRenderer.enabled)
                         {
                             var dstFilter = dst.gameObject.AddComponent<MeshFilter>();
-                            dstFilter.sharedMesh = srcFilter.sharedMesh;
+                            dstFilter.sharedMesh = TransformMesh(srcFilter.sharedMesh, src.localToWorldMatrix);
 
                             var dstRenderer = dst.gameObject.AddComponent<MeshRenderer>();
                             dstRenderer.sharedMaterials = srcRenderer.sharedMaterials;
@@ -310,6 +310,33 @@ namespace VRM
             }
 
             return normalized;
+        }
+
+        static Mesh TransformMesh(Mesh src, Matrix4x4 m)
+        {
+            m.SetColumn(3, new Vector4(0, 0, 0, 1));
+
+            var mesh = new Mesh();
+            mesh.name = src.name + "(transformed)";
+
+            mesh.vertices = src.vertices.Select(x => m.MultiplyPoint(x)).ToArray();
+            if(src.normals!=null)mesh.normals = src.normals.Select(x => m.MultiplyVector(x)).ToArray();
+            if(src.tangents!=null)mesh.tangents = src.tangents.Select(x =>
+            {
+                var v = m.MultiplyVector(x);
+                return new Vector4(v.x, v.y, v.z, x.w);
+            }).ToArray();
+            mesh.uv = src.uv;
+            mesh.uv2 = src.uv2;
+            mesh.uv3 = src.uv3;
+            mesh.uv4 = src.uv4;
+            mesh.colors = src.colors;
+            mesh.subMeshCount = src.subMeshCount;
+            for(int i=0; i<mesh.subMeshCount; ++i)
+            {
+                mesh.SetIndices(src.GetIndices(i), src.GetTopology(i), i);
+            }
+            return mesh;
         }
     }
 }
