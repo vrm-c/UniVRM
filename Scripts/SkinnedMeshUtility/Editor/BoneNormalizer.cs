@@ -20,13 +20,14 @@ namespace VRM
 
             foreach (Transform child in src)
             {
-                var dstChild = new GameObject(child.name);
-                dstChild.transform.SetParent(dst);
-                dstChild.transform.position = child.position; // copy position only
+                if (child.gameObject.activeSelf)
+                {
+                    var dstChild = new GameObject(child.name);
+                    dstChild.transform.SetParent(dst);
+                    dstChild.transform.position = child.position; // copy position only
 
-                //dstChild.AddComponent<UniHumanoid.BoneGizmoDrawer>();
-
-                CopyAndBuild(child, dstChild.transform, boneMap);
+                    CopyAndBuild(child, dstChild.transform, boneMap);
+                }
             }
         }
 
@@ -125,7 +126,11 @@ namespace VRM
             //
             foreach (var src in go.transform.Traverse())
             {
-                var dst = boneMap[src];
+                Transform dst;
+                if(!boneMap.TryGetValue(src, out dst))
+                {
+                    continue;
+                }
 
                 {
                     //
@@ -295,7 +300,7 @@ namespace VRM
                         if (srcRenderer!=null && srcRenderer.enabled)
                         {
                             var dstFilter = dst.gameObject.AddComponent<MeshFilter>();
-                            dstFilter.sharedMesh = srcFilter.sharedMesh;
+                            dstFilter.sharedMesh = TransformMesh(srcFilter.sharedMesh, src.localToWorldMatrix);
 
                             var dstRenderer = dst.gameObject.AddComponent<MeshRenderer>();
                             dstRenderer.sharedMaterials = srcRenderer.sharedMaterials;
@@ -306,5 +311,42 @@ namespace VRM
 
             return normalized;
         }
+
+        static Mesh TransformMesh(Mesh src, Matrix4x4 m)
+        {
+            m.SetColumn(3, new Vector4(0, 0, 0, 1));
+
+            var mesh = new Mesh();
+            mesh.name = src.name + "(transformed)";
+
+            mesh.vertices = src.vertices.Select(x => m.MultiplyPoint(x)).ToArray();
+            if (src.normals != null && src.normals.Length > 0)
+            {
+                mesh.normals = src.normals.Select(x => m.MultiplyVector(x)).ToArray();
+            }
+            if (src.tangents != null && src.tangents.Length > 0)
+            {
+                mesh.tangents = src.tangents.Select(x =>
+                {
+                    var t = m.MultiplyVector((Vector3)x);
+                    return new Vector4(t.x, t.y, t.z, x.w);
+                }).ToArray();
+            }
+
+            if (src.colors != null && src.colors.Length > 0) mesh.colors = src.colors;
+            if (src.uv != null && src.uv.Length > 0) mesh.uv = src.uv;
+            if (src.uv2 != null && src.uv2.Length > 0) mesh.uv2 = src.uv2;
+            if (src.uv3 != null && src.uv3.Length > 0) mesh.uv3 = src.uv3;
+            if (src.uv4 != null && src.uv4.Length > 0) mesh.uv4 = src.uv4;
+
+            mesh.subMeshCount = src.subMeshCount;
+            for(int i=0; i<mesh.subMeshCount; ++i)
+            {
+                mesh.SetIndices(src.GetIndices(i), src.GetTopology(i), i);
+            }
+
+            return mesh;
+        }
     }
 }
+

@@ -76,14 +76,6 @@ namespace VRM
             }
         }
 
-        public void Restore()
-        {
-            if (m_merger != null)
-            {
-                m_merger.Restore();
-            }
-        }
-
         public void Apply()
         {
             if (m_merger != null)

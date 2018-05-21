@@ -19,7 +19,6 @@ namespace VRM
         public Dictionary<string, float> floatProperties = new Dictionary<string, float>();
         public Dictionary<string, float[]> vectorProperties = new Dictionary<string, float[]>();
         public Dictionary<string, int> textureProperties = new Dictionary<string, int>();
-
         public Dictionary<string, bool> keywordMap = new Dictionary<string, bool>();
         public Dictionary<string, string> tagMap = new Dictionary<string, string>();
 
@@ -145,6 +144,12 @@ namespace VRM
                                     material.textureProperties.Add(name, value);
                                 }
                             }
+
+                            // offset & scaling
+                            var offset = m.GetTextureOffset(name);
+                            var scaling = m.GetTextureScale(name);
+                            material.vectorProperties.Add(name, 
+                                new float[] { offset.x, offset.y, scaling.x, scaling.y });
                         }
                         break;
 

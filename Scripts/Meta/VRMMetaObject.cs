@@ -5,6 +5,9 @@ namespace VRM
 {
     public class VRMMetaObject : ScriptableObject
     {
+        [SerializeField]
+        public string ExporterVersion;
+
         #region Info
         [SerializeField]
         public string Title;

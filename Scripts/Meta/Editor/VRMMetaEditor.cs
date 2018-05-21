@@ -79,6 +79,14 @@ namespace VRM
 
             so.Update();
 
+            GUI.enabled = false;
+            EditorGUILayout.PropertyField(m_propMap["ExporterVersion"]);
+            if (VRMVersion.IsNewer(m_propMap["ExporterVersion"].stringValue))
+            {
+                EditorGUILayout.HelpBox("Check UniVRM new version. https://github.com/dwango/UniVRM/releases", MessageType.Warning);
+            }
+            GUI.enabled = true;
+
             m_foldoutInfo = EditorGUILayout.Foldout(m_foldoutInfo, "Information");
             if (m_foldoutInfo)
             {

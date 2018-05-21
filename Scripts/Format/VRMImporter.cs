@@ -127,8 +127,18 @@ namespace VRM
                     }
                     foreach (var kv in item.vectorProperties)
                     {
-                        var v = new Vector4(kv.Value[0], kv.Value[1], kv.Value[2], kv.Value[3]);
-                        material.SetVector(kv.Key, v);
+                        if (item.textureProperties.ContainsKey(kv.Key))
+                        {
+                            // texture offset & scale
+                            material.SetTextureOffset(kv.Key, new Vector2(kv.Value[0], kv.Value[1]));
+                            material.SetTextureScale(kv.Key, new Vector2(kv.Value[2], kv.Value[3]));
+                        }
+                        else
+                        {
+                            // vector4
+                            var v = new Vector4(kv.Value[0], kv.Value[1], kv.Value[2], kv.Value[3]);
+                            material.SetVector(kv.Key, v);
+                        }
                     }
                     foreach (var kv in item.textureProperties)
                     {
