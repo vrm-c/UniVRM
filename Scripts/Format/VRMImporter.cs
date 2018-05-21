@@ -6,6 +6,9 @@ using UniGLTF;
 using System.Collections.Generic;
 using System.Collections;
 using UniTask;
+#if (NET_4_6 && UNITY_2018_1_OR_NEWER)
+using System.Threading.Tasks;
+#endif
 
 
 namespace VRM
@@ -75,12 +78,12 @@ namespace VRM
 
         public static CreateMaterialFunc GetMaterialFunc(List<glTF_VRM_Material> materials)
         {
-            var CreateDefault= gltfImporter.CreateMaterialFuncFromShader(Shader.Find("VRM/UnlitTexture"));
+            var CreateDefault = gltfImporter.CreateMaterialFuncFromShader(Shader.Find("VRM/UnlitTexture"));
             var CreateZWrite = gltfImporter.CreateMaterialFuncFromShader(Shader.Find("VRM/UnlitTransparentZWrite"));
             CreateMaterialFunc fallback = (ctx, i) =>
             {
                 var vrm = ctx.GLTF as glTF_VRM;
-                if(vrm!=null && vrm.materials[i].name.ToLower().Contains("zwrite"))
+                if (vrm != null && vrm.materials[i].name.ToLower().Contains("zwrite"))
                 {
                     // 一応。不要かも
                     Debug.Log("fallback to VRM/UnlitTransparentZWrite");
@@ -336,7 +339,7 @@ namespace VRM
                 asset.MaterialValues = group.materialValues.Select(x =>
                 {
                     var value = new Vector4();
-                    for(int i=0; i<x.targetValue.Length; ++i)
+                    for (int i = 0; i < x.targetValue.Length; ++i)
                     {
                         switch (i)
                         {
@@ -351,7 +354,7 @@ namespace VRM
                         MaterialName = x.materialName,
                         ValueName = x.propertyName,
                         TargetValue = value,
-                        BaseValue = context.Materials.First(y => y.name==x.materialName).GetColor(x.propertyName),
+                        BaseValue = context.Materials.First(y => y.name == x.materialName).GetColor(x.propertyName),
                     };
                 })
                 .ToArray();
@@ -533,6 +536,30 @@ namespace VRM
             yield return null;
         }
 
+#if (NET_4_6 && UNITY_2018_1_OR_NEWER)
+
+        public static Task<GameObject> LoadVrmAsync(string path)
+        {
+            var context = new VRMImporterContext(path);
+            context.ParseVrm(File.ReadAllBytes(path));
+            return LoadVrmAsyncInternal(context).ToTask();
+        }
+
+
+        public static Task<GameObject> LoadVrmAsync(Byte[] bytes)
+        {
+            var context = new VRMImporterContext();
+            context.ParseVrm(bytes);
+            return LoadVrmAsync(context);
+        }
+
+
+        public static Task<GameObject> LoadVrmAsync(VRMImporterContext ctx)
+        {
+            return LoadVrmAsyncInternal(ctx).ToTask();
+        }
+#endif
+
         public static void LoadVrmAsync(string path, Action<GameObject> onLoaded)
         {
             var context = new VRMImporterContext(path);
@@ -549,9 +576,15 @@ namespace VRM
 
         public static void LoadVrmAsync(VRMImporterContext ctx, Action<GameObject> onLoaded)
         {
+            LoadVrmAsyncInternal(ctx)
+                .Subscribe(Scheduler.MainThread, onLoaded, Debug.LogError);
+        }
+
+        private static Schedulable<GameObject> LoadVrmAsyncInternal(VRMImporterContext ctx)
+        {
             var schedulable = Schedulable.Create();
 
-            schedulable
+            return schedulable
                 .AddTask(Scheduler.ThreadPool, () =>
                 {
                     ctx.GLTF.baseDir = Path.GetDirectoryName(ctx.Path);
@@ -594,28 +627,24 @@ namespace VRM
                 .ContinueWithCoroutine(Scheduler.MainThread, () => LoadNodes(ctx))
                 .ContinueWithCoroutine(Scheduler.MainThread, () => BuildHierarchy(ctx))
                 .ContinueWith(Scheduler.MainThread, _ => VRMImporter.OnLoadModel(ctx))
-                .Subscribe(Scheduler.MainThread,
-                _ =>
-            {
-                /*
-                Debug.LogFormat("task end: {0}/{1}/{2}/{3}",
-                    ctx.Textures.Count,
-                    ctx.Materials.Count,
-                    ctx.Meshes.Count,
-                    ctx.Nodes.Count
-                    );
-                    */
-                ctx.Root.name = Path.GetFileNameWithoutExtension(ctx.Path);
+                .ContinueWith(Scheduler.MainThread,
+                    _ =>
+                    {
+                        /*
+                        Debug.LogFormat("task end: {0}/{1}/{2}/{3}",
+                            ctx.Textures.Count,
+                            ctx.Materials.Count,
+                            ctx.Meshes.Count,
+                            ctx.Nodes.Count
+                            );
+                            */
+                        ctx.Root.name = Path.GetFileNameWithoutExtension(ctx.Path);
 
-                // 非表示のメッシュを表示する
-                ctx.ShowMeshes();
+                        // 非表示のメッシュを表示する
+                        ctx.ShowMeshes();
 
-                onLoaded(ctx.Root);
-            }, ex =>
-            {
-                Debug.LogError(ex);
-            })
-            ;
+                        return ctx.Root;
+                    });
         }
         #endregion
     }

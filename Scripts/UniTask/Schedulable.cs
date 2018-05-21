@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-
+#if (NET_4_6 && UNITY_2018_1_OR_NEWER) 
+using System.Threading.Tasks;
+#endif
 
 namespace UniTask
 {
@@ -181,6 +183,20 @@ namespace UniTask
             schedulable.ContinueWith(scheduler, onCompleted);
             TaskChain.Schedule(schedulable.GetRoot(), onError);
         }
+
+#if (NET_4_6 && UNITY_2018_1_OR_NEWER)
+        public static Task<T> ToTask<T>(this Schedulable<T> schedulable)
+        {
+            return ToTask(schedulable, Scheduler.MainThread);
+        }
+
+        public static Task<T> ToTask<T>(this Schedulable<T> schedulable, IScheduler scheduler)
+        {
+            var tcs = new TaskCompletionSource<T>();
+            schedulable.Subscribe(scheduler, r => tcs.TrySetResult(r), ex => tcs.TrySetException(ex));
+            return tcs.Task;
+        }
+#endif
 
         /*
         public static ISchedulable<Unit> Sequencial<T>(IEnumerable<ISchedulable<T>> schedulables, Action<T> mergePred)

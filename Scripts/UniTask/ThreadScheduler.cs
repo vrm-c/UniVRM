@@ -5,11 +5,11 @@ namespace UniTask
 {
     public static partial class Scheduler
     {
-        private static IScheduler singleWorkerTrehad;
+        private static IScheduler singleWorkerThread;
 
         public static IScheduler SingleWorkerThread
         {
-            get { return singleWorkerTrehad ?? (singleWorkerTrehad = new ThreadScheduler()); }
+            get { return singleWorkerThread ?? (singleWorkerThread = new ThreadScheduler()); }
         }
 
         public class ThreadScheduler : IScheduler
