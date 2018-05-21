@@ -193,7 +193,7 @@ namespace UniTask
         public static Task<T> ToTask<T>(this Schedulable<T> schedulable, IScheduler scheduler)
         {
             var tcs = new TaskCompletionSource<T>();
-            schedulable.Subscribe(scheduler, r => tcs.SetResult(r), ex => tcs.SetException(ex));
+            schedulable.Subscribe(scheduler, r => tcs.TrySetResult(r), ex => tcs.TrySetException(ex));
             return tcs.Task;
         }
 #endif
