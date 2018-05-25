@@ -77,7 +77,8 @@ namespace VRM
         }
         public static HumanBodyBones ToHumanBodyBone(this VRMBone bone)
         {
-#if  UNITY_5_6_OR_NEWER
+#if UNITY_5_6_OR_NEWER
+#else
             if (bone == VRMBone.upperChest)
             {
                 return HumanBodyBones.LastBone;
