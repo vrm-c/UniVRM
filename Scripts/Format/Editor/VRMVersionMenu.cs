@@ -10,7 +10,7 @@ namespace VRM
         const string template = @"
 namespace VRM
 {{
-    public static class VRMVersion
+    public static partial class VRMVersion
     {{
         public const int MAJOR = {0};
         public const int MINOR = {1};
