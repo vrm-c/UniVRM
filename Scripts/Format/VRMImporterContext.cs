@@ -34,7 +34,7 @@ namespace VRM
             ParseGlb<glTF_VRM>(bytes);
         }
 
-        public VRMMetaObject ReadMeta()
+        public VRMMetaObject ReadMeta(bool createThumbnail=false)
         {
             var meta=ScriptableObject.CreateInstance<VRMMetaObject>();
             meta.name = "Meta";
@@ -46,9 +46,15 @@ namespace VRM
             meta.ContactInformation = gltfMeta.contactInformation;
             meta.Reference = gltfMeta.reference;
             meta.Title = gltfMeta.title;
-            if (gltfMeta.texture >=0 && gltfMeta.texture< Textures.Count)
+
+            if (createThumbnail)
             {
-                meta.Thumbnail = Textures[gltfMeta.texture].Texture;
+                if(gltfMeta.texture >= 0 && gltfMeta.texture < VRM.textures.Count)
+                {
+                    var t = new TextureItem(VRM, gltfMeta.texture);
+                    t.Process();
+                    meta.Thumbnail=t.Texture;
+                }
             }
 
             meta.AllowedUser = gltfMeta.allowedUser;
