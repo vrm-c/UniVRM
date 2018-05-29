@@ -99,12 +99,16 @@ namespace VRM
                 Undo.PerformUndo();
             }
 
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+
             VRMExporter.Export(target, path, gltf => {
 
                 gltf.extensions.VRM.meta.title = Title;
                 gltf.extensions.VRM.meta.author = Author;
 
             });
+
+            Debug.LogFormat("Export elapsed {0}", sw.Elapsed);
 
             if (Target.gameObject!=target)
             {
