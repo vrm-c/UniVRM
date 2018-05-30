@@ -30,6 +30,13 @@ namespace VRM
                     exporter.WriteTo(path);
                 }
             }
+
+            // update buffer size
+            foreach (var b in gltf.buffers)
+            {
+                b.UpdateByteLength();
+            }
+
             return gltf;
         }
 
