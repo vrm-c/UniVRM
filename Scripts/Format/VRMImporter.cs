@@ -459,9 +459,10 @@ namespace VRM
         #region LoadVrmAsync
         static IEnumerator LoadTextures(VRMImporterContext context)
         {
-            foreach (var gltfTexture in context.GLTF.textures)
+            for(int i=0; i<context.GLTF.textures.Count; ++i)
             {
-                var x = UniGLTF.gltfImporter.ImportTexture(context.GLTF, gltfTexture.source);
+                var x = new TextureItem(context.GLTF, i);
+                x.Process();
                 context.Textures.Add(x);
                 yield return null;
             }
@@ -606,7 +607,12 @@ namespace VRM
                     {
                         var index = i;
                         parent.AddTask(Scheduler.MainThread,
-                                () => gltfImporter.ImportTexture(ctx.GLTF, index))
+                                () =>
+                                {
+                                    var texture = new TextureItem(ctx.GLTF, index);
+                                    texture.Process();
+                                    return texture;
+                                })
                             .ContinueWith(Scheduler.ThreadPool, x => ctx.Textures.Add(x));
                     }
                 })
