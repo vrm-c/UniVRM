@@ -31,12 +31,6 @@ namespace VRM
                 }
             }
 
-            // update buffer size
-            foreach (var b in gltf.buffers)
-            {
-                b.UpdateByteLength();
-            }
-
             return gltf;
         }
 
