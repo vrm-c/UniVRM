@@ -59,7 +59,7 @@ public class VRMTest
                 exporter.Export();
 
                 // import
-                context.Json = gltf.ToJson();
+                context.ParseJson<glTF_VRM>(gltf.ToJson(), new ArraySegment<byte>());
                 Debug.LogFormat("{0}", context.Json);
                 gltfImporter.Import<glTF>(context);
 
