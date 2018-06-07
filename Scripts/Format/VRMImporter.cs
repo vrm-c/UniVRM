@@ -78,8 +78,8 @@ namespace VRM
 
         public static CreateMaterialFunc GetMaterialFunc(List<glTF_VRM_Material> materials)
         {
-            var CreateDefault = gltfImporter.CreateMaterialFuncFromShader(Shader.Find("VRM/UnlitTexture"));
-            var CreateZWrite = gltfImporter.CreateMaterialFuncFromShader(Shader.Find("VRM/UnlitTransparentZWrite"));
+            var CreateDefault = gltfImporter.CreateMaterialFuncFromShader(new ShaderStore("VRM/UnlitTexture"));
+            var CreateZWrite = gltfImporter.CreateMaterialFuncFromShader(new ShaderStore("VRM/UnlitTransparentZWrite"));
             CreateMaterialFunc fallback = (ctx, i) =>
             {
                 var vrm = ctx.GLTF as glTF_VRM;

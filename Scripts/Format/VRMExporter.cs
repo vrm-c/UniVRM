@@ -16,7 +16,13 @@ namespace VRM
         {
             var gltf = new glTF_VRM();
             gltf.asset.generator = string.Format("UniVRM-{0}.{1}", VRMVersion.MAJOR, VRMVersion.MINOR);
-            using (var exporter = new VRMExporter(gltf))
+            using (var exporter = new VRMExporter(gltf)
+            {
+#if VRM_EXPORTER_USE_SPARSE
+                // experimental
+                UseSparseAccessorForBlendShape=true
+#endif
+            })
             {
                 _Export(gltf, exporter, go);
 
