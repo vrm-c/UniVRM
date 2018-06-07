@@ -183,7 +183,8 @@ namespace VRM
             }
 
             LoadBlendShapeMaster(context);
-            LoadSecondaryMotions(context);
+            VRMSpringUtility.LoadSecondary(context.Root.transform, context.Nodes, 
+                context.VRM.extensions.VRM.secondaryAnimation);
             LoadFirstPerson(context);
 
             return Unit.Default;
@@ -228,59 +229,6 @@ namespace VRM
             // LookAt
             var lookAtHead = context.Root.AddComponent<VRMLookAtHead>();
             lookAtHead.OnImported(context);
-        }
-
-        static void LoadSecondaryMotions(VRMImporterContext context)
-        {
-            var secondary = context.Root.transform.Find("secondary");
-            if (secondary == null)
-            {
-                secondary = new GameObject("secondary").transform;
-                secondary.SetParent(context.Root.transform, false);
-            }
-
-            var secondaryAnimation = context.VRM.extensions.VRM.secondaryAnimation;
-            var colliders = new List<VRMSpringBoneColliderGroup>();
-            foreach (var colliderGroup in secondaryAnimation.colliderGroups)
-            {
-                var vrmGroup = context.Nodes[colliderGroup.node].gameObject.AddComponent<VRMSpringBoneColliderGroup>();
-                vrmGroup.Colliders = colliderGroup.colliders.Select(x =>
-                {
-                    return new VRMSpringBoneColliderGroup.SphereCollider
-                    {
-                        Offset = x.offset,
-                        Radius = x.radius
-                    };
-                }).ToArray();
-                colliders.Add(vrmGroup);
-            }
-
-            if (secondaryAnimation.boneGroups.Count > 0)
-            {
-                foreach (var boneGroup in secondaryAnimation.boneGroups)
-                {
-                    var vrmBoneGroup = secondary.gameObject.AddComponent<VRMSpringBone>();
-                    if (boneGroup.center != -1)
-                    {
-                        vrmBoneGroup.m_center = context.Nodes[boneGroup.center];
-                    }
-                    vrmBoneGroup.m_comment = boneGroup.comment;
-                    vrmBoneGroup.m_dragForce = boneGroup.dragForce;
-                    vrmBoneGroup.m_gravityDir = boneGroup.gravityDir;
-                    vrmBoneGroup.m_gravityPower = boneGroup.gravityPower;
-                    vrmBoneGroup.m_hitRadius = boneGroup.hitRadius;
-                    vrmBoneGroup.m_stiffnessForce = boneGroup.stiffiness;
-                    if (boneGroup.colliderGroups != null && boneGroup.colliderGroups.Any())
-                    {
-                        vrmBoneGroup.ColliderGroups = boneGroup.colliderGroups.Select(x => colliders[x]).ToArray();
-                    }
-                    vrmBoneGroup.RootBones = boneGroup.bones.Select(x => context.Nodes[x]).ToList();
-                }
-            }
-            else
-            {
-                secondary.gameObject.AddComponent<VRMSpringBone>();
-            }
         }
 
         static void LoadBlendShapeMaster(VRMImporterContext context)

@@ -105,7 +105,7 @@ namespace VRM
             }
 
             // secondary
-            ExportSecondary(exporter.Copy.transform, exporter.Nodes,
+            VRMSpringUtility.ExportSecondary(exporter.Copy.transform, exporter.Nodes,
                 x => gltf.extensions.VRM.secondaryAnimation.colliderGroups.Add(x),
                 x => gltf.extensions.VRM.secondaryAnimation.boneGroups.Add(x)
                 );
