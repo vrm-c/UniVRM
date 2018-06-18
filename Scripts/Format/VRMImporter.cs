@@ -405,12 +405,12 @@ namespace VRM
         #endregion
 
         #region LoadVrmAsync
-        static IEnumerator LoadTextures(VRMImporterContext context)
+        static IEnumerator LoadTextures(VRMImporterContext context, IStorage storage)
         {
             for(int i=0; i<context.GLTF.textures.Count; ++i)
             {
                 var x = new TextureItem(context.GLTF, i);
-                x.Process();
+                x.Process(storage);
                 context.Textures.Add(x);
                 yield return null;
             }
@@ -558,7 +558,7 @@ namespace VRM
                                 () =>
                                 {
                                     var texture = new TextureItem(ctx.GLTF, index);
-                                    texture.Process();
+                                    texture.Process(ctx.Storage);
                                     return texture;
                                 })
                             .ContinueWith(Scheduler.ThreadPool, x => ctx.Textures.Add(x));
