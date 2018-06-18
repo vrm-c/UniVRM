@@ -183,7 +183,7 @@ namespace VRM
             }
 
             LoadBlendShapeMaster(context);
-            VRMSpringUtility.LoadSecondary(context.Root.transform, context.Nodes, 
+            VRMSpringUtility.LoadSecondary(context.Root.transform, context.Nodes,
                 context.VRM.extensions.VRM.secondaryAnimation);
             LoadFirstPerson(context);
 
@@ -407,7 +407,7 @@ namespace VRM
         #region LoadVrmAsync
         static IEnumerator LoadTextures(VRMImporterContext context, IStorage storage)
         {
-            for(int i=0; i<context.GLTF.textures.Count; ++i)
+            for (int i = 0; i < context.GLTF.textures.Count; ++i)
             {
                 var x = new TextureItem(context.GLTF, i);
                 x.Process(storage);
@@ -509,27 +509,26 @@ namespace VRM
         }
 #endif
 
-        public static void LoadVrmAsync(string path, Action<GameObject> onLoaded)
+        public static void LoadVrmAsync(string path, Action<GameObject> onLoaded, Action<Exception> onError = null)
         {
             var context = new VRMImporterContext(path);
             context.ParseVrm(File.ReadAllBytes(path));
-            LoadVrmAsync(context, onLoaded);
+            LoadVrmAsync(context, onLoaded, onError);
         }
 
-        public static void LoadVrmAsync(Byte[] bytes, Action<GameObject> onLoaded)
+        public static void LoadVrmAsync(Byte[] bytes, Action<GameObject> onLoaded, Action<Exception> onError = null)
         {
             var context = new VRMImporterContext();
             context.ParseVrm(bytes);
-            LoadVrmAsync(context, onLoaded);
+            LoadVrmAsync(context, onLoaded, onError);
         }
 
-        public static void LoadVrmAsync(VRMImporterContext ctx, Action<GameObject> onLoaded)
+        public static void LoadVrmAsync(VRMImporterContext ctx, Action<GameObject> onLoaded, Action<Exception> onError = null)
         {
-            LoadVrmAsync(ctx, onLoaded, Debug.LogError);
-        }
-
-        public static void LoadVrmAsync(VRMImporterContext ctx, Action<GameObject> onLoaded, Action<Exception> onError)
-        {
+            if (onError == null)
+            {
+                onError = Debug.LogError;
+            }
             LoadVrmAsyncInternal(ctx)
                 .Subscribe(Scheduler.MainThread, onLoaded, onError);
         }
