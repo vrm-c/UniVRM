@@ -525,8 +525,13 @@ namespace VRM
 
         public static void LoadVrmAsync(VRMImporterContext ctx, Action<GameObject> onLoaded)
         {
+            LoadVrmAsync(ctx, onLoaded, Debug.LogError);
+        }
+
+        public static void LoadVrmAsync(VRMImporterContext ctx, Action<GameObject> onLoaded, Action<Exception> onError)
+        {
             LoadVrmAsyncInternal(ctx)
-                .Subscribe(Scheduler.MainThread, onLoaded, Debug.LogError);
+                .Subscribe(Scheduler.MainThread, onLoaded, onError);
         }
 
         private static Schedulable<GameObject> LoadVrmAsyncInternal(VRMImporterContext ctx)
