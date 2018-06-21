@@ -98,7 +98,7 @@ namespace VRM
             return materials;
         }
 
-        public static glTF_VRM_Material CreateFromMaterial(Material m, List<Texture2D> textures)
+        public static glTF_VRM_Material CreateFromMaterial(Material m, List<Texture> textures)
         {
             var material = new glTF_VRM_Material
             {

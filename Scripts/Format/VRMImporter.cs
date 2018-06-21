@@ -410,7 +410,7 @@ namespace VRM
             for (int i = 0; i < context.GLTF.textures.Count; ++i)
             {
                 var x = new TextureItem(context.GLTF, i);
-                x.Process(storage);
+                x.Process(context.GLTF, storage);
                 context.Textures.Add(x);
                 yield return null;
             }
@@ -562,7 +562,7 @@ namespace VRM
                                 () =>
                                 {
                                     var texture = new TextureItem(ctx.GLTF, index);
-                                    texture.Process(ctx.Storage);
+                                    texture.Process(ctx.GLTF, ctx.Storage);
                                     return texture;
                                 })
                             .ContinueWith(Scheduler.ThreadPool, x => ctx.Textures.Add(x));
