@@ -134,7 +134,7 @@ namespace VRM
             }
 
             foreach (var spring in root.Traverse()
-                .Select(x => x.GetComponent<VRMSpringBone>())
+                .SelectMany(x => x.GetComponents<VRMSpringBone>())
                 .Where(x => x != null))
             {
                 addSecondaryGroup(new glTF_VRM_SecondaryAnimationGroup
