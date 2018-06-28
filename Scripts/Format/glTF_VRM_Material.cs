@@ -131,7 +131,7 @@ namespace VRM
 
                     case ShaderUtil.ShaderPropertyType.TexEnv:
                         {
-                            var texture = m.GetTexture(name) as Texture2D;
+                            var texture = m.GetTexture(name);
                             if (texture != null)
                             {
                                 var value = textures.IndexOf(texture);
