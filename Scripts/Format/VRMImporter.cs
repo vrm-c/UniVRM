@@ -578,7 +578,7 @@ namespace VRM
         public static void LoadVrmAsync(VRMImporterContext ctx, Action<GameObject> onLoaded)
         {
             LoadVrmAsyncInternal(ctx)
-                .Subscribe(Scheduler.MainThread, onLoaded, Debug.LogError);
+                .Subscribe(Scheduler.CurrentThread, onLoaded, Debug.LogError);
         }
 
         private static Schedulable<GameObject> LoadVrmAsyncInternal(VRMImporterContext ctx)
@@ -591,7 +591,7 @@ namespace VRM
                     ctx.GLTF.baseDir = Path.GetDirectoryName(ctx.Path);
                     return Unit.Default;
                 })
-                .ContinueWith(Scheduler.ThreadPool, _ =>
+                .ContinueWith(Scheduler.CurrentThread, _ =>
                 {
                     return glTF_VRM_Material.Parse(ctx.Json);
                 })
@@ -632,8 +632,8 @@ namespace VRM
                 })
                 .ContinueWithCoroutine(Scheduler.MainThread, () => LoadNodes(ctx))
                 .ContinueWithCoroutine(Scheduler.MainThread, () => BuildHierarchy(ctx))
-                .ContinueWith(Scheduler.MainThread, _ => VRMImporter.OnLoadModel(ctx))
-                .ContinueWith(Scheduler.MainThread,
+                .ContinueWith(Scheduler.CurrentThread, _ => VRMImporter.OnLoadModel(ctx))
+                .ContinueWith(Scheduler.CurrentThread,
                     _ =>
                     {
                         /*
