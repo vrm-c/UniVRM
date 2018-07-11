@@ -10,6 +10,7 @@ using UnityEditor;
 
 namespace VRM
 {
+    [Serializable]
     public class glTF_VRM_Material : UniGLTF.JsonSerializableBase
     {
         public string name;
