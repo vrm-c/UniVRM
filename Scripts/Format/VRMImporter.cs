@@ -78,8 +78,8 @@ namespace VRM
 
         public static CreateMaterialFunc GetMaterialFunc(List<glTF_VRM_Material> materials)
         {
-            var CreateDefault = gltfImporter.CreateMaterialFuncFromShader(Shader.Find("VRM/UnlitTexture"));
-            var CreateZWrite = gltfImporter.CreateMaterialFuncFromShader(Shader.Find("VRM/UnlitTransparentZWrite"));
+            var CreateDefault = gltfImporter.CreateMaterialFuncFromShader(new ShaderStore("VRM/UnlitTexture"));
+            var CreateZWrite = gltfImporter.CreateMaterialFuncFromShader(new ShaderStore("VRM/UnlitTransparentZWrite"));
             CreateMaterialFunc fallback = (ctx, i) =>
             {
                 var vrm = ctx.GLTF as glTF_VRM;
@@ -183,7 +183,8 @@ namespace VRM
             }
 
             LoadBlendShapeMaster(context);
-            LoadSecondaryMotions(context);
+            VRMSpringUtility.LoadSecondary(context.Root.transform, context.Nodes,
+                context.VRM.extensions.VRM.secondaryAnimation);
             LoadFirstPerson(context);
 
             return Unit.Default;
@@ -228,59 +229,6 @@ namespace VRM
             // LookAt
             var lookAtHead = context.Root.AddComponent<VRMLookAtHead>();
             lookAtHead.OnImported(context);
-        }
-
-        static void LoadSecondaryMotions(VRMImporterContext context)
-        {
-            var secondary = context.Root.transform.Find("secondary");
-            if (secondary == null)
-            {
-                secondary = new GameObject("secondary").transform;
-                secondary.SetParent(context.Root.transform, false);
-            }
-
-            var secondaryAnimation = context.VRM.extensions.VRM.secondaryAnimation;
-            var colliders = new List<VRMSpringBoneColliderGroup>();
-            foreach (var colliderGroup in secondaryAnimation.colliderGroups)
-            {
-                var vrmGroup = context.Nodes[colliderGroup.node].gameObject.AddComponent<VRMSpringBoneColliderGroup>();
-                vrmGroup.Colliders = colliderGroup.colliders.Select(x =>
-                {
-                    return new VRMSpringBoneColliderGroup.SphereCollider
-                    {
-                        Offset = x.offset,
-                        Radius = x.radius
-                    };
-                }).ToArray();
-                colliders.Add(vrmGroup);
-            }
-
-            if (secondaryAnimation.boneGroups.Count > 0)
-            {
-                foreach (var boneGroup in secondaryAnimation.boneGroups)
-                {
-                    var vrmBoneGroup = secondary.gameObject.AddComponent<VRMSpringBone>();
-                    if (boneGroup.center != -1)
-                    {
-                        vrmBoneGroup.m_center = context.Nodes[boneGroup.center];
-                    }
-                    vrmBoneGroup.m_comment = boneGroup.comment;
-                    vrmBoneGroup.m_dragForce = boneGroup.dragForce;
-                    vrmBoneGroup.m_gravityDir = boneGroup.gravityDir;
-                    vrmBoneGroup.m_gravityPower = boneGroup.gravityPower;
-                    vrmBoneGroup.m_hitRadius = boneGroup.hitRadius;
-                    vrmBoneGroup.m_stiffnessForce = boneGroup.stiffiness;
-                    if (boneGroup.colliderGroups != null && boneGroup.colliderGroups.Any())
-                    {
-                        vrmBoneGroup.ColliderGroups = boneGroup.colliderGroups.Select(x => colliders[x]).ToArray();
-                    }
-                    vrmBoneGroup.RootBones = boneGroup.bones.Select(x => context.Nodes[x]).ToList();
-                }
-            }
-            else
-            {
-                secondary.gameObject.AddComponent<VRMSpringBone>();
-            }
         }
 
         static void LoadBlendShapeMaster(VRMImporterContext context)
@@ -457,12 +405,12 @@ namespace VRM
         #endregion
 
         #region LoadVrmAsync
-        static IEnumerator LoadTextures(VRMImporterContext context)
+        static IEnumerator LoadTextures(VRMImporterContext context, IStorage storage)
         {
-            for(int i=0; i<context.GLTF.textures.Count; ++i)
+            for (int i = 0; i < context.GLTF.textures.Count; ++i)
             {
                 var x = new TextureItem(context.GLTF, i);
-                x.Process();
+                x.Process(context.GLTF, storage);
                 context.Textures.Add(x);
                 yield return null;
             }
@@ -561,24 +509,28 @@ namespace VRM
         }
 #endif
 
-        public static void LoadVrmAsync(string path, Action<GameObject> onLoaded)
+        public static void LoadVrmAsync(string path, Action<GameObject> onLoaded, Action<Exception> onError = null)
         {
             var context = new VRMImporterContext(path);
             context.ParseVrm(File.ReadAllBytes(path));
-            LoadVrmAsync(context, onLoaded);
+            LoadVrmAsync(context, onLoaded, onError);
         }
 
-        public static void LoadVrmAsync(Byte[] bytes, Action<GameObject> onLoaded)
+        public static void LoadVrmAsync(Byte[] bytes, Action<GameObject> onLoaded, Action<Exception> onError = null)
         {
             var context = new VRMImporterContext();
             context.ParseVrm(bytes);
-            LoadVrmAsync(context, onLoaded);
+            LoadVrmAsync(context, onLoaded, onError);
         }
 
-        public static void LoadVrmAsync(VRMImporterContext ctx, Action<GameObject> onLoaded)
+        public static void LoadVrmAsync(VRMImporterContext ctx, Action<GameObject> onLoaded, Action<Exception> onError = null)
         {
+            if (onError == null)
+            {
+                onError = Debug.LogError;
+            }
             LoadVrmAsyncInternal(ctx)
-                .Subscribe(Scheduler.MainThread, onLoaded, Debug.LogError);
+                .Subscribe(Scheduler.MainThread, onLoaded, onError);
         }
 
         private static Schedulable<GameObject> LoadVrmAsyncInternal(VRMImporterContext ctx)
@@ -610,7 +562,7 @@ namespace VRM
                                 () =>
                                 {
                                     var texture = new TextureItem(ctx.GLTF, index);
-                                    texture.Process();
+                                    texture.Process(ctx.GLTF, ctx.Storage);
                                     return texture;
                                 })
                             .ContinueWith(Scheduler.ThreadPool, x => ctx.Textures.Add(x));

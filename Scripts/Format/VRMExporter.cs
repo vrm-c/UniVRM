@@ -16,7 +16,13 @@ namespace VRM
         {
             var gltf = new glTF_VRM();
             gltf.asset.generator = string.Format("UniVRM-{0}.{1}", VRMVersion.MAJOR, VRMVersion.MINOR);
-            using (var exporter = new VRMExporter(gltf))
+            using (var exporter = new VRMExporter(gltf)
+            {
+#if VRM_EXPORTER_USE_SPARSE
+                // experimental
+                UseSparseAccessorForBlendShape=true
+#endif
+            })
             {
                 _Export(gltf, exporter, go);
 
@@ -99,60 +105,10 @@ namespace VRM
             }
 
             // secondary
-            var secondary = exporter.Copy.transform.Find("secondary");
-            if (secondary == null)
-            {
-                secondary = exporter.Copy.transform;
-            }
-
-            var colliders = new List<VRMSpringBoneColliderGroup>();
-            foreach (var vrmColliderGroup in exporter.Copy.transform.Traverse().Select(x => x.GetComponent<VRMSpringBoneColliderGroup>()).Where(x => x != null))
-            {
-                colliders.Add(vrmColliderGroup);
-
-                var colliderGroup = new glTF_VRM_SecondaryAnimationColliderGroup
-                {
-                    node = exporter.Nodes.IndexOf(vrmColliderGroup.transform)
-                };
-
-                colliderGroup.colliders = vrmColliderGroup.Colliders.Select(x =>
-                {
-                    return new glTF_VRM_SecondaryAnimationCollider
-                    {
-                        offset = x.Offset,
-                        radius = x.Radius,
-                    };
-
-                }).ToList();
-
-                gltf.extensions.VRM.secondaryAnimation.colliderGroups.Add(colliderGroup);
-            }
-
-            foreach (var spring in secondary.GetComponents<VRMSpringBone>())
-            {
-                gltf.extensions.VRM.secondaryAnimation.boneGroups.Add(new glTF_VRM_SecondaryAnimationGroup
-                {
-                    comment = spring.m_comment,
-                    center = exporter.Nodes.IndexOf(spring.m_center),
-                    dragForce = spring.m_dragForce,
-                    gravityDir = spring.m_gravityDir,
-                    gravityPower = spring.m_gravityPower,
-                    stiffiness = spring.m_stiffnessForce,
-                    hitRadius = spring.m_hitRadius,
-                    colliderGroups = spring.ColliderGroups
-                        .Select(x =>
-                        {
-                            var index = colliders.IndexOf(x);
-                            if (index == -1)
-                            {
-                                throw new IndexOutOfRangeException();
-                            }
-                            return index;
-                        })
-                        .ToArray(),
-                    bones = spring.RootBones.Select(x => exporter.Nodes.IndexOf(x)).ToArray(),
-                });
-            }
+            VRMSpringUtility.ExportSecondary(exporter.Copy.transform, exporter.Nodes,
+                x => gltf.extensions.VRM.secondaryAnimation.colliderGroups.Add(x),
+                x => gltf.extensions.VRM.secondaryAnimation.boneGroups.Add(x)
+                );
 
             // meta(obsolete)
             {

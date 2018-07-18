@@ -170,7 +170,30 @@ namespace VRM
                         {
                             mesh.SetIndices(srcMesh.GetIndices(i), srcMesh.GetTopology(i), i);
                         }
-                        mesh.boneWeights = srcMesh.boneWeights;
+
+                        // boneweights
+                        var bones = srcRenderer.bones.Select(x => boneMap[x]).ToArray();
+                        if (bones.Length > 0)
+                        {
+                            mesh.boneWeights = srcMesh.boneWeights;
+                        }
+                        else
+                        {
+                            Debug.LogFormat("no weight: {0}", srcMesh.name);
+                            bones = new[] { boneMap[srcRenderer.transform] };
+                            var bw = new BoneWeight
+                            {
+                                boneIndex0 = 0,
+                                boneIndex1 = 0,
+                                boneIndex2 = 0,
+                                boneIndex3 = 0,
+                                weight0 = 1.0f,
+                                weight1 = 0.0f,
+                                weight2 = 0.0f,
+                                weight3 = 0.0f,
+                            };
+                            mesh.boneWeights = Enumerable.Range(0, srcMesh.vertexCount).Select(x => bw).ToArray();
+                        }
 
                         var meshVertices = mesh.vertices;
                         var meshNormals = mesh.normals;
@@ -270,7 +293,6 @@ namespace VRM
                         }
 
                         // recalc bindposes
-                        var bones = srcRenderer.bones.Select(x => boneMap[x]).ToArray();
                         mesh.bindposes = bones.Select(x =>
                             x.worldToLocalMatrix * dst.transform.localToWorldMatrix).ToArray();
 
