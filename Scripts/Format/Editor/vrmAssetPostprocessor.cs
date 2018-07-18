@@ -6,6 +6,7 @@ using UnityEditor;
 
 namespace VRM
 {
+#if !VRM_STOP_ASSETPOSTPROCESSOR
     public class vrmAssetPostprocessor : AssetPostprocessor
     {
         static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
@@ -59,4 +60,5 @@ namespace VRM
             }
         }
     }
+#endif
 }

@@ -10,6 +10,7 @@ using UnityEditor;
 
 namespace VRM
 {
+    [Serializable]
     public class glTF_VRM_Material : UniGLTF.JsonSerializableBase
     {
         public string name;
@@ -98,7 +99,7 @@ namespace VRM
             return materials;
         }
 
-        public static glTF_VRM_Material CreateFromMaterial(Material m, List<Texture2D> textures)
+        public static glTF_VRM_Material CreateFromMaterial(Material m, List<Texture> textures)
         {
             var material = new glTF_VRM_Material
             {
@@ -131,7 +132,7 @@ namespace VRM
 
                     case ShaderUtil.ShaderPropertyType.TexEnv:
                         {
-                            var texture = m.GetTexture(name) as Texture2D;
+                            var texture = m.GetTexture(name);
                             if (texture != null)
                             {
                                 var value = textures.IndexOf(texture);

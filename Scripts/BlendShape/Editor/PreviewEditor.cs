@@ -84,7 +84,7 @@ namespace VRM
         {
             if (m_scene != null)
             {
-                Debug.Log("Bake");
+                //Debug.Log("Bake");
                 m_scene.Bake(values, materialValues, weight);
             }
         }

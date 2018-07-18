@@ -25,7 +25,7 @@ namespace VRM
         [SerializeField]
         float m_closeSeconds = 0.1f;
 
-        Coroutine m_coroutine;
+        protected Coroutine m_coroutine;
 
         //static readonly string BLINK_NAME = BlendShapePreset.Blink.ToString();
 
@@ -45,7 +45,7 @@ namespace VRM
             }
         }
 
-        IEnumerator BlinkRoutine()
+        protected IEnumerator BlinkRoutine()
         {
             while (true)
             {

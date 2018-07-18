@@ -100,7 +100,7 @@ namespace VRM
                     }).ToArray();
                 }
 
-                foreach (var src in secondary.GetComponents<VRMSpringBone>())
+                foreach (var src in go.transform.Traverse().SelectMany(x => x.GetComponents<VRMSpringBone>()))
                 {
                     var dst = dstSecondary.gameObject.AddComponent<VRMSpringBone>();
                     dst.m_comment = src.m_comment;
