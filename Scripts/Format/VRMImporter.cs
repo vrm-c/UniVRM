@@ -543,7 +543,7 @@ namespace VRM
                     ctx.GLTF.baseDir = Path.GetDirectoryName(ctx.Path);
                     return Unit.Default;
                 })
-                .ContinueWith(Scheduler.ThreadPool, _ =>
+                .ContinueWith(Scheduler.CurrentThread, _ =>
                 {
                     return glTF_VRM_Material.Parse(ctx.Json);
                 })
@@ -584,8 +584,8 @@ namespace VRM
                 })
                 .ContinueWithCoroutine(Scheduler.MainThread, () => LoadNodes(ctx))
                 .ContinueWithCoroutine(Scheduler.MainThread, () => BuildHierarchy(ctx))
-                .ContinueWith(Scheduler.MainThread, _ => VRMImporter.OnLoadModel(ctx))
-                .ContinueWith(Scheduler.MainThread,
+                .ContinueWith(Scheduler.CurrentThread, _ => VRMImporter.OnLoadModel(ctx))
+                .ContinueWith(Scheduler.CurrentThread,
                     _ =>
                     {
                         /*
