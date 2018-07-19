@@ -28,7 +28,7 @@ namespace VRM
         {
             var wiz = ScriptableWizard.DisplayWizard<VRMExporterWizard>(
                 "VRM Exporter", "Export");
-            var go= Selection.activeObject as GameObject;
+            var go = Selection.activeObject as GameObject;
             if (go != null)
             {
                 wiz.Target = go.GetComponent<Animator>();
@@ -110,7 +110,7 @@ namespace VRM
 
             Debug.LogFormat("Export elapsed {0}", sw.Elapsed);
 
-            if (Target.gameObject!=target)
+            if (Target.gameObject != target)
             {
                 GameObject.DestroyImmediate(target);
             }
@@ -168,7 +168,7 @@ namespace VRM
 
     public static class VRMExporterMenu
     {
-        const string CONVERT_HUMANOID_KEY = "VRM/export humanoid";
+        const string CONVERT_HUMANOID_KEY = VRMVersion.VRM_VERSION + "/export humanoid";
 
         [MenuItem(CONVERT_HUMANOID_KEY, true, 1)]
         private static bool ExportValidate()

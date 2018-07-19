@@ -47,5 +47,7 @@ namespace VRM
                 return false;
             }
         }
+
+        public const string VRM_VERSION = "VRM-" + VERSION;
     }
 }

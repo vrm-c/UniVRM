@@ -16,15 +16,12 @@ namespace VRM
         public const int MINOR = {1};
 
         public const string VERSION = ""{0}.{1}"";
-
-        public const string DecrementMenuName = ""VRM/Version({0}.{1}) Decrement"";
-        public const string IncrementMenuName = ""VRM/Version({0}.{1}) Increment"";
     }}
 }}
 ";
 
 #if VRM_DEVELOP
-        [MenuItem(VRMVersion.IncrementMenuName)]
+        [MenuItem(VRMVersion.VRM_VERSION+"/Increment")]
 #endif
         public static void IncrementVersion()
         {
@@ -34,7 +31,7 @@ namespace VRM
         }
 
 #if VRM_DEVELOP
-        [MenuItem(VRMVersion.DecrementMenuName)]
+        [MenuItem(VRMVersion.VRM_VERSION+"/Decrement")]
 #endif
         public static void DecrementVersion()
         {

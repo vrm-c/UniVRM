@@ -16,7 +16,7 @@ namespace VRM
     {
 #if UNITY_EDITOR
         #region save
-        [MenuItem("VRM/SaveSpringBoneToJSON", validate = true)]
+        [MenuItem(VRMVersion.VRM_VERSION + "/SaveSpringBoneToJSON", validate = true)]
         static bool SaveSpringBoneToJSONIsEnable()
         {
             var root = Selection.activeObject as GameObject;
@@ -34,7 +34,7 @@ namespace VRM
             return true;
         }
 
-        [MenuItem("VRM/SaveSpringBoneToJSON")]
+        [MenuItem(VRMVersion.VRM_VERSION + "/SaveSpringBoneToJSON")]
         static void SaveSpringBoneToJSON()
         {
             var path = EditorUtility.SaveFilePanel(
@@ -62,7 +62,7 @@ namespace VRM
         #endregion
 
         #region load
-        [MenuItem("VRM/LoadSpringBoneFromJSON", true)]
+        [MenuItem(VRMVersion.VRM_VERSION + "/LoadSpringBoneFromJSON", true)]
         static bool LoadSpringBoneFromJSONIsEnable()
         {
             var root = Selection.activeObject as GameObject;
@@ -80,7 +80,7 @@ namespace VRM
             return true;
         }
 
-        [MenuItem("VRM/LoadSpringBoneFromJSON")]
+        [MenuItem(VRMVersion.VRM_VERSION + "/LoadSpringBoneFromJSON")]
         static void LoadSpringBoneFromJSON()
         {
             var path = EditorUtility.OpenFilePanel(
@@ -177,7 +177,7 @@ namespace VRM
                 .SelectMany(x => x.GetComponents<Component>())
                 .Where(x => x is VRMSpringBone || x is VRMSpringBoneColliderGroup)
                 .ToArray();
-            foreach(var x in remove)
+            foreach (var x in remove)
             {
                 if (Application.isPlaying)
                 {
