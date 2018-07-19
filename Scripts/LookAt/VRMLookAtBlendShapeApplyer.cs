@@ -19,7 +19,7 @@ namespace VRM
 
         public void OnImported(VRMImporterContext context)
         {
-            var gltfFirstPerson = context.VRM.extensions.VRM.firstPerson;
+            var gltfFirstPerson = context.GLTF.extensions.VRM.firstPerson;
             Horizontal.Apply(gltfFirstPerson.lookAtHorizontalOuter);
             VerticalDown.Apply(gltfFirstPerson.lookAtVerticalDown);
             VerticalUp.Apply(gltfFirstPerson.lookAtVerticalUp);

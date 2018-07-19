@@ -9,12 +9,12 @@ namespace VRM
 {
     public class VRMExporter : gltfExporter
     {
-        public VRMExporter(glTF_VRM gltf) : base(gltf)
+        public VRMExporter(glTF gltf) : base(gltf)
         { }
 
-        public static glTF_VRM Export(GameObject go)
+        public static glTF Export(GameObject go)
         {
-            var gltf = new glTF_VRM();
+            var gltf = new glTF();
             using (var exporter = new VRMExporter(gltf)
             {
 #if VRM_EXPORTER_USE_SPARSE
@@ -30,7 +30,7 @@ namespace VRM
             return gltf;
         }
 
-        public static void _Export(glTF_VRM gltf, VRMExporter exporter, GameObject go)
+        public static void _Export(glTF gltf, VRMExporter exporter, GameObject go)
         {
             exporter.Prepare(go);
             exporter.Export();

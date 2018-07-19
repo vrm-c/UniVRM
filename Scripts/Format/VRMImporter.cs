@@ -21,7 +21,7 @@ namespace VRM
         public static GameObject LoadFromPath(string path)
         {
             var context = new VRMImporterContext(path);
-            context.ParseVrm(File.ReadAllBytes(path));
+            context.ParseGlb(File.ReadAllBytes(path));
             LoadFromBytes(context);
             return context.Root;
         }
@@ -29,14 +29,14 @@ namespace VRM
         public static GameObject LoadFromBytes(Byte[] bytes)
         {
             var context = new VRMImporterContext();
-            context.ParseVrm(bytes);
+            context.ParseGlb(bytes);
             LoadFromBytes(context);
             return context.Root;
         }
 
         public static void LoadFromPath(VRMImporterContext context)
         {
-            context.ParseVrm(File.ReadAllBytes(context.Path));
+            context.ParseGlb(File.ReadAllBytes(context.Path));
             LoadFromBytes(context);
         }
 
@@ -44,16 +44,16 @@ namespace VRM
         {
             context.CreateMaterial = VRMImporter.GetMaterialFunc(glTF_VRM_Material.Parse(context.Json));
 
-            gltfImporter.Import<glTF_VRM>(context);
+            gltfImporter.Import(context);
             if (string.IsNullOrEmpty(context.Path))
             {
-                if (string.IsNullOrEmpty(context.VRM.extensions.VRM.meta.title))
+                if (string.IsNullOrEmpty(context.GLTF.extensions.VRM.meta.title))
                 {
                     context.Root.name = "VRM_LOADED";
                 }
                 else
                 {
-                    context.Root.name = context.VRM.extensions.VRM.meta.title;
+                    context.Root.name = context.GLTF.extensions.VRM.meta.title;
                 }
             }
             else
@@ -82,7 +82,7 @@ namespace VRM
             var CreateZWrite = gltfImporter.CreateMaterialFuncFromShader(new ShaderStore("VRM/UnlitTransparentZWrite"));
             CreateMaterialFunc fallback = (ctx, i) =>
             {
-                var vrm = ctx.GLTF as glTF_VRM;
+                var vrm = ctx.GLTF;
                 if (vrm != null && vrm.materials[i].name.ToLower().Contains("zwrite"))
                 {
                     // 一応。不要かも
@@ -184,7 +184,7 @@ namespace VRM
 
             LoadBlendShapeMaster(context);
             VRMSpringUtility.LoadSecondary(context.Root.transform, context.Nodes,
-                context.VRM.extensions.VRM.secondaryAnimation);
+                context.GLTF.extensions.VRM.secondaryAnimation);
             LoadFirstPerson(context);
 
             return Unit.Default;
@@ -213,7 +213,7 @@ namespace VRM
         {
             var firstPerson = context.Root.AddComponent<VRMFirstPerson>();
 
-            var gltfFirstPerson = context.VRM.extensions.VRM.firstPerson;
+            var gltfFirstPerson = context.GLTF.extensions.VRM.firstPerson;
             if (gltfFirstPerson.firstPersonBone != -1)
             {
                 firstPerson.FirstPersonBone = context.Nodes[gltfFirstPerson.firstPersonBone];
@@ -236,7 +236,7 @@ namespace VRM
             context.BlendShapeAvatar = ScriptableObject.CreateInstance<BlendShapeAvatar>();
             context.BlendShapeAvatar.name = "BlendShape";
 
-            var blendShapeList = context.VRM.extensions.VRM.blendShapeMaster.blendShapeGroups;
+            var blendShapeList = context.GLTF.extensions.VRM.blendShapeMaster.blendShapeGroups;
             if (blendShapeList != null && blendShapeList.Count > 0)
             {
                 foreach (var x in blendShapeList)
@@ -386,7 +386,7 @@ namespace VRM
 
         private static void LoadHumanoid(VRMImporterContext context)
         {
-            context.AvatarDescription = context.VRM.extensions.VRM.humanoid.ToDescription(context.Nodes);
+            context.AvatarDescription = context.GLTF.extensions.VRM.humanoid.ToDescription(context.Nodes);
             context.AvatarDescription.name = "AvatarDescription";
             context.HumanoidAvatar = context.AvatarDescription.CreateAvatar(context.Root.transform);
             context.HumanoidAvatar.name = Path.GetFileNameWithoutExtension(context.Path);
@@ -512,14 +512,14 @@ namespace VRM
         public static void LoadVrmAsync(string path, Action<GameObject> onLoaded, Action<Exception> onError = null, bool show = true)
         {
             var context = new VRMImporterContext(path);
-            context.ParseVrm(File.ReadAllBytes(path));
+            context.ParseGlb(File.ReadAllBytes(path));
             LoadVrmAsync(context, onLoaded, onError, show);
         }
 
         public static void LoadVrmAsync(Byte[] bytes, Action<GameObject> onLoaded, Action<Exception> onError = null, bool show = true)
         {
             var context = new VRMImporterContext();
-            context.ParseVrm(bytes);
+            context.ParseGlb(bytes);
             LoadVrmAsync(context, onLoaded, onError, show);
         }
 

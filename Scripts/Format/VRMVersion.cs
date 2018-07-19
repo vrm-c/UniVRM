@@ -7,8 +7,5 @@ namespace VRM
         public const int MINOR = 41;
 
         public const string VERSION = "0.41";
-
-        public const string DecrementMenuName = "VRM/Version(0.41) Decrement";
-        public const string IncrementMenuName = "VRM/Version(0.41) Increment";
     }
 }

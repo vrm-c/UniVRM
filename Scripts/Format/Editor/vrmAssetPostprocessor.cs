@@ -18,7 +18,7 @@ namespace VRM
                 {
                     var context = new VRMImporterContext(path);
 
-                    context.ParseVrm(File.ReadAllBytes(context.Path));
+                    context.ParseGlb(File.ReadAllBytes(context.Path));
 
                     //
                     // https://answers.unity.com/questions/647615/how-to-update-import-settings-for-newly-created-as.html

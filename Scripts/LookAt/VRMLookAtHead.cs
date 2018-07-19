@@ -90,7 +90,7 @@ namespace VRM
 
             Head = OffsetOnTransform.Create(head);
 
-            var gltfFirstPerson = context.VRM.extensions.VRM.firstPerson;
+            var gltfFirstPerson = context.GLTF.extensions.VRM.firstPerson;
             switch (gltfFirstPerson.lookAtType)
             {
                 case LookAtType.Bone:
