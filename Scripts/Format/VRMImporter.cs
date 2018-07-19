@@ -487,53 +487,53 @@ namespace VRM
 
 #if (NET_4_6 && UNITY_2018_1_OR_NEWER)
 
-        public static Task<GameObject> LoadVrmAsync(string path)
+        public static Task<GameObject> LoadVrmAsync(string path, bool show=true)
         {
             var context = new VRMImporterContext(path);
             context.ParseVrm(File.ReadAllBytes(path));
-            return LoadVrmAsyncInternal(context).ToTask();
+            return LoadVrmAsyncInternal(context, show).ToTask();
         }
 
 
-        public static Task<GameObject> LoadVrmAsync(Byte[] bytes)
+        public static Task<GameObject> LoadVrmAsync(Byte[] bytes, bool show=true)
         {
             var context = new VRMImporterContext();
             context.ParseVrm(bytes);
-            return LoadVrmAsync(context);
+            return LoadVrmAsync(context, show);
         }
 
 
-        public static Task<GameObject> LoadVrmAsync(VRMImporterContext ctx)
+        public static Task<GameObject> LoadVrmAsync(VRMImporterContext ctx, bool show=true)
         {
-            return LoadVrmAsyncInternal(ctx).ToTask();
+            return LoadVrmAsyncInternal(ctx, show).ToTask();
         }
 #endif
 
-        public static void LoadVrmAsync(string path, Action<GameObject> onLoaded, Action<Exception> onError = null)
+        public static void LoadVrmAsync(string path, Action<GameObject> onLoaded, Action<Exception> onError = null, bool show = true)
         {
             var context = new VRMImporterContext(path);
             context.ParseVrm(File.ReadAllBytes(path));
-            LoadVrmAsync(context, onLoaded, onError);
+            LoadVrmAsync(context, onLoaded, onError, show);
         }
 
-        public static void LoadVrmAsync(Byte[] bytes, Action<GameObject> onLoaded, Action<Exception> onError = null)
+        public static void LoadVrmAsync(Byte[] bytes, Action<GameObject> onLoaded, Action<Exception> onError = null, bool show = true)
         {
             var context = new VRMImporterContext();
             context.ParseVrm(bytes);
-            LoadVrmAsync(context, onLoaded, onError);
+            LoadVrmAsync(context, onLoaded, onError, show);
         }
 
-        public static void LoadVrmAsync(VRMImporterContext ctx, Action<GameObject> onLoaded, Action<Exception> onError = null)
+        public static void LoadVrmAsync(VRMImporterContext ctx, Action<GameObject> onLoaded, Action<Exception> onError = null, bool show = true)
         {
             if (onError == null)
             {
                 onError = Debug.LogError;
             }
-            LoadVrmAsyncInternal(ctx)
+            LoadVrmAsyncInternal(ctx, show)
                 .Subscribe(Scheduler.MainThread, onLoaded, onError);
         }
 
-        private static Schedulable<GameObject> LoadVrmAsyncInternal(VRMImporterContext ctx)
+        private static Schedulable<GameObject> LoadVrmAsyncInternal(VRMImporterContext ctx, bool show)
         {
             var schedulable = Schedulable.Create();
 
@@ -588,18 +588,12 @@ namespace VRM
                 .ContinueWith(Scheduler.CurrentThread,
                     _ =>
                     {
-                        /*
-                        Debug.LogFormat("task end: {0}/{1}/{2}/{3}",
-                            ctx.Textures.Count,
-                            ctx.Materials.Count,
-                            ctx.Meshes.Count,
-                            ctx.Nodes.Count
-                            );
-                            */
                         ctx.Root.name = Path.GetFileNameWithoutExtension(ctx.Path);
 
-                        // 非表示のメッシュを表示する
-                        ctx.ShowMeshes();
+                        if (show)
+                        {
+                            ctx.ShowMeshes();
+                        }
 
                         return ctx.Root;
                     });
