@@ -101,12 +101,12 @@ namespace VRM
 
             var sw = System.Diagnostics.Stopwatch.StartNew();
 
-            VRMExporter.Export(target, path, gltf => {
+            var vrm = VRMExporter.Export(target);
+            vrm.extensions.VRM.meta.title = Title;
+            vrm.extensions.VRM.meta.author = Author;
 
-                gltf.extensions.VRM.meta.title = Title;
-                gltf.extensions.VRM.meta.author = Author;
-
-            });
+            var bytes = vrm.ToGlbBytes();
+            File.WriteAllBytes(path, bytes);
 
             Debug.LogFormat("Export elapsed {0}", sw.Elapsed);
 
