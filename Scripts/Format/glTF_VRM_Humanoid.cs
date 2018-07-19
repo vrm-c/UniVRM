@@ -111,7 +111,7 @@ namespace VRM
         public Vector3 center;
         public float axisLength;
 
-        protected override void SerializeMembers(JsonFormatter f)
+        protected override void SerializeMembers(GLTFJsonFormatter f)
         {
             f.Key("bone"); f.Value((string)bone.ToString());
             f.KeyValue(() => node);
@@ -158,7 +158,7 @@ namespace VRM
             }
         }
 
-        protected override void SerializeMembers(JsonFormatter f)
+        protected override void SerializeMembers(GLTFJsonFormatter f)
         {
             f.KeyValue(() => humanBones);
             f.KeyValue(() => armStretch);

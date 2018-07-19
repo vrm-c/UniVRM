@@ -17,7 +17,7 @@ namespace VRM
         public glTF_VRM_SecondaryAnimation secondaryAnimation = new glTF_VRM_SecondaryAnimation();
         public List<glTF_VRM_Material> materialProperties = new List<glTF_VRM_Material>();
 
-        protected override void SerializeMembers(JsonFormatter f)
+        protected override void SerializeMembers(GLTFJsonFormatter f)
         {
             f.KeyValue(() => exporterVersion);
             f.KeyValue(() => meta);
@@ -34,7 +34,7 @@ namespace VRM
     {
         public glTF_VRM_extensions VRM = new glTF_VRM_extensions();
 
-        protected override void SerializeMembers(JsonFormatter f)
+        protected override void SerializeMembers(GLTFJsonFormatter f)
         {
             f.KeyValue(() => VRM);
         }
@@ -49,7 +49,7 @@ namespace VRM
             "VRM",
         };
 
-        protected override void SerializeMembers(JsonFormatter f)
+        protected override void SerializeMembers(GLTFJsonFormatter f)
         {
             f.KeyValue(() => extensionsUsed);
             f.KeyValue(() => extensions);

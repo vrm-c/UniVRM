@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UniGLTF;
 using UnityEngine;
+using UniJSON;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -28,7 +29,7 @@ namespace VRM
             // "Queue",
         };
 
-        protected override void SerializeMembers(JsonFormatter f)
+        protected override void SerializeMembers(GLTFJsonFormatter f)
         {
             f.KeyValue(() => name);
             f.KeyValue(() => renderQueue);
@@ -77,17 +78,17 @@ namespace VRM
 
         public static List<glTF_VRM_Material> Parse(string src)
         {
-            var json = src.ParseAsJson()["extensions"]["VRM"]["materialProperties"];
+            var json =  UniJSON.JsonParser.Parse(src)["extensions"]["VRM"]["materialProperties"];
             var materials = json.DeserializeList<glTF_VRM_Material>();
-            var jsonItems = json.ListItems.ToArray();
+            var jsonItems = json.ArrayItems.ToArray();
             for(int i=0; i<materials.Count; ++i)
             {
                 materials[i].floatProperties = 
-                    jsonItems[i]["floatProperties"].ObjectItems.ToDictionary(x => x.Key, x => x.Value.GetSingle());
+                    jsonItems[i]["floatProperties"].ObjectItems.ToDictionary(x => x.Key, x => x.Value.Value.GetSingle());
                 materials[i].vectorProperties =
                     jsonItems[i]["vectorProperties"].ObjectItems.ToDictionary(x => x.Key, x =>
                     {
-                        return x.Value.ListItems.Select(y => y.GetSingle()).ToArray();
+                        return x.Value.ArrayItems.Select(y => y.Value.GetSingle()).ToArray();
                     });
                 materials[i].keywordMap =
                     jsonItems[i]["keywordMap"].ObjectItems.ToDictionary(x => x.Key, x => x.Value.GetBoolean());

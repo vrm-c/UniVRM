@@ -14,7 +14,7 @@ namespace VRM
         public string propertyName;
         public float[] targetValue;
 
-        protected override void SerializeMembers(JsonFormatter f)
+        protected override void SerializeMembers(GLTFJsonFormatter f)
         {
             f.KeyValue(() => materialName);
             f.KeyValue(() => propertyName);
@@ -29,7 +29,7 @@ namespace VRM
         public int index = -1;
         public float weight = 0;
 
-        protected override void SerializeMembers(UniGLTF.JsonFormatter f)
+        protected override void SerializeMembers(GLTFJsonFormatter f)
         {
             f.KeyValue(() => mesh);
             f.KeyValue(() => index);
@@ -90,7 +90,7 @@ namespace VRM
         public List<glTF_VRM_BlendShapeBind> binds = new List<glTF_VRM_BlendShapeBind>();
         public List<glTF_VRM_MaterialValueBind> materialValues = new List<glTF_VRM_MaterialValueBind>();
 
-        protected override void SerializeMembers(JsonFormatter f)
+        protected override void SerializeMembers(GLTFJsonFormatter f)
         {
             f.KeyValue(() => name);
             f.KeyValue(() => presetName);
@@ -133,7 +133,7 @@ namespace VRM
             blendShapeGroups.Add(group);
         }
 
-        protected override void SerializeMembers(UniGLTF.JsonFormatter f)
+        protected override void SerializeMembers(GLTFJsonFormatter f)
         {
             f.KeyValue(() => blendShapeGroups);
         }

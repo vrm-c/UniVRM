@@ -15,7 +15,6 @@ namespace VRM
         public static glTF_VRM Export(GameObject go)
         {
             var gltf = new glTF_VRM();
-            gltf.asset.generator = string.Format("UniVRM-{0}.{1}", VRMVersion.MAJOR, VRMVersion.MINOR);
             using (var exporter = new VRMExporter(gltf)
             {
 #if VRM_EXPORTER_USE_SPARSE
@@ -27,6 +26,7 @@ namespace VRM
                 _Export(gltf, exporter, go);
             }
 
+            gltf.asset.generator = string.Format("UniVRM-{0}.{1}", VRMVersion.MAJOR, VRMVersion.MINOR);
             return gltf;
         }
 

@@ -337,14 +337,14 @@ namespace VRM
         [Obsolete]
         private static void LoadHumanoidObsolete(VRMImporterContext context)
         {
-            var parsed = context.Json.ParseAsJson()["extensions"]["VRM"];
+            var parsed = UniJSON.JsonParser.Parse(context.Json)["extensions"]["VRM"];
             var skeleton = context.Root.transform.Traverse().Select(x => ToSkeletonBone(x)).ToArray();
 
             var description = new HumanDescription
             {
                 human = parsed[HUMANOID_KEY]["bones"]
                 .ObjectItems
-                .Select(x => new { x.Key, Index = x.Value.GetInt32() })
+                .Select(x => new { x.Key, Index = x.Value.Value.GetInt32() })
                 .Where(x => x.Index != -1)
                 .Select(x =>
                 {

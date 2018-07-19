@@ -98,7 +98,7 @@ namespace VRM
         public string otherLicenseUrl;
         #endregion
 
-        protected override void SerializeMembers(JsonFormatter f)
+        protected override void SerializeMembers(GLTFJsonFormatter f)
         {
             f.KeyValue(() => version);
 
