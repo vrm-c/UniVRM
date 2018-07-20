@@ -13,104 +13,58 @@ namespace VRM
     {
         const string EXTENSION = ".vrm";
 
-        public Animator Target;
         VRMMeta m_meta;
 
-        public string Title;
-
-        public string Author;
-
-        public bool ForceTPose;
-
-        public bool PoseFreeze;
+        public VRMExportSettings m_settings = new VRMExportSettings();
 
         public static void CreateWizard()
         {
             var wiz = ScriptableWizard.DisplayWizard<VRMExporterWizard>(
                 "VRM Exporter", "Export");
             var go = Selection.activeObject as GameObject;
-            if (go != null)
-            {
-                wiz.Target = go.GetComponent<Animator>();
-            }
 
             // update checkbox
-            var desc = wiz.Target.GetComponent<VRMHumanoidDescription>();
-            if (desc == null)
-            {
-                wiz.ForceTPose = true;
-                wiz.PoseFreeze = true;
-            }
-
-            var meta = wiz.Target.GetComponent<VRMMeta>();
-            if (meta != null && meta.Meta != null)
-            {
-                wiz.Title = meta.Meta.Title;
-                wiz.Author = meta.Meta.Author;
-            }
-            else
-            {
-                wiz.Title = wiz.Target.name;
-            }
+            wiz.m_settings.InitializeFrom(go);
 
             wiz.OnWizardUpdate();
-        }
-
-        string m_dir;
-        string Dir
-        {
-            get
-            {
-                if (m_dir == null)
-                {
-                    m_dir = Path.GetFullPath(Application.dataPath); ;
-                }
-                return m_dir;
-            }
-            set
-            {
-                m_dir = value;
-            }
         }
 
         void OnWizardCreate()
         {
             // save dialog
-            Debug.LogFormat("OnWizardCreate: {0}", Dir);
             var path = EditorUtility.SaveFilePanel(
                     "Save vrm",
-                    Dir,
-                    Target.name + EXTENSION,
+                    null,
+                    m_settings.Source.name + EXTENSION,
                     EXTENSION.Substring(1));
             if (string.IsNullOrEmpty(path))
             {
                 return;
             }
-            Dir = Path.GetDirectoryName(path);
 
             // export
-            var target = Target.gameObject;
-            if (PoseFreeze)
+            var target = m_settings.Source;
+            if (m_settings.PoseFreeze)
             {
-                Undo.RecordObjects(Target.transform.Traverse().ToArray(), "before normalize");
+                Undo.RecordObjects(m_settings.Source.transform.Traverse().ToArray(), "before normalize");
                 var map = new Dictionary<Transform, Transform>();
-                target = VRM.BoneNormalizer.Execute(Target.gameObject, map, ForceTPose);
-                VRMHumanoidNorimalizerMenu.CopyVRMComponents(Target.gameObject, target, map);
+                target = VRM.BoneNormalizer.Execute(m_settings.Source.gameObject, map, m_settings.ForceTPose);
+                VRMHumanoidNorimalizerMenu.CopyVRMComponents(m_settings.Source.gameObject, target, map);
                 Undo.PerformUndo();
             }
 
             var sw = System.Diagnostics.Stopwatch.StartNew();
 
             var vrm = VRMExporter.Export(target);
-            vrm.extensions.VRM.meta.title = Title;
-            vrm.extensions.VRM.meta.author = Author;
+            vrm.extensions.VRM.meta.title = m_settings.Title;
+            vrm.extensions.VRM.meta.author = m_settings.Author;
 
             var bytes = vrm.ToGlbBytes();
             File.WriteAllBytes(path, bytes);
 
             Debug.LogFormat("Export elapsed {0}", sw.Elapsed);
 
-            if (Target.gameObject != target)
+            if (m_settings.Source.gameObject != target)
             {
                 GameObject.DestroyImmediate(target);
             }
@@ -127,38 +81,10 @@ namespace VRM
             var helpBuilder = new StringBuilder();
             var errorBuilder = new StringBuilder();
 
-            if (Target == null)
+            foreach(var msg in m_settings.CanExport())
             {
                 isValid = false;
-                errorBuilder.Append("Require animator. ");
-            }
-            else if (Target.avatar == null)
-            {
-                isValid = false;
-                errorBuilder.Append("Require animator.avatar. ");
-            }
-            else if (!Target.avatar.isValid)
-            {
-                isValid = false;
-                errorBuilder.Append("Animator.avatar is not valid. ");
-            }
-            else if (!Target.avatar.isHuman)
-            {
-                isValid = false;
-                errorBuilder.Append("Animator.avatar is not humanoid. Please change model's AnimationType to humanoid. ");
-            }
-
-
-            if (string.IsNullOrEmpty(Title))
-            {
-                isValid = false;
-                errorBuilder.Append("Require Title. ");
-            }
-
-            if (string.IsNullOrEmpty(Author))
-            {
-                isValid = false;
-                errorBuilder.Append("Require Author. ");
+                errorBuilder.Append(msg);
             }
 
             helpString = helpBuilder.ToString();
