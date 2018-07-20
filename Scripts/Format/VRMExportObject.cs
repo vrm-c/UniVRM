@@ -7,6 +7,6 @@ namespace VRM
     public class VRMExportObject : ScriptableObject
     {
         [SerializeField]
-        public VRMExportSettings Settings;
+        public VRMExportSettings Settings = new VRMExportSettings();
     }
 }

@@ -1,10 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Text;
 using UnityEditor;
 using UnityEngine;
-using UniGLTF;
-using System.IO;
-using System.Text;
 
 
 namespace VRM
@@ -43,36 +39,7 @@ namespace VRM
             }
 
             // export
-            var target = m_settings.Source;
-            if (m_settings.PoseFreeze)
-            {
-                Undo.RecordObjects(m_settings.Source.transform.Traverse().ToArray(), "before normalize");
-                var map = new Dictionary<Transform, Transform>();
-                target = VRM.BoneNormalizer.Execute(m_settings.Source.gameObject, map, m_settings.ForceTPose);
-                VRMHumanoidNorimalizerMenu.CopyVRMComponents(m_settings.Source.gameObject, target, map);
-                Undo.PerformUndo();
-            }
-
-            var sw = System.Diagnostics.Stopwatch.StartNew();
-
-            var vrm = VRMExporter.Export(target);
-            vrm.extensions.VRM.meta.title = m_settings.Title;
-            vrm.extensions.VRM.meta.author = m_settings.Author;
-
-            var bytes = vrm.ToGlbBytes();
-            File.WriteAllBytes(path, bytes);
-
-            Debug.LogFormat("Export elapsed {0}", sw.Elapsed);
-
-            if (m_settings.Source.gameObject != target)
-            {
-                GameObject.DestroyImmediate(target);
-            }
-
-            if (path.StartsWithUnityAssetPath())
-            {
-                AssetDatabase.ImportAsset(path.ToUnityRelativePath());
-            }
+            m_settings.Export(path);
         }
 
         void OnWizardUpdate()

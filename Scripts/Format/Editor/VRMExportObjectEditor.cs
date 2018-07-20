@@ -56,7 +56,11 @@ namespace VRM
                             "vrm");
                     if (!string.IsNullOrEmpty(path))
                     {
-                        Export(path);
+                        var target = m_target;
+                        EditorApplication.delayCall += () =>
+                        {
+                            target.Settings.Export(path);
+                        };
                     }
                 }
             }
@@ -92,20 +96,6 @@ namespace VRM
                     }
                 }
             }
-        }
-
-        void Export(string path)
-        {
-            Debug.LogFormat("export: {0}", path);
-
-            /*
-            using (var instance = new DisposableInstance(m_source.objectReferenceValue as GameObject))
-            {
-                var vrm = VRMExporter.Export(instance.GameObject);
-                var bytes = vrm.ToGlbBytes();
-                File.WriteAllBytes(path, bytes);
-            }
-            */
         }
     }
 }
