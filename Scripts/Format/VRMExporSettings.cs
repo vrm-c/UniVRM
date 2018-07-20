@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UniGLTF;
-using UnityEditor;
 using System.IO;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 
 namespace VRM
@@ -208,6 +210,7 @@ namespace VRM
             return go.scene.name == null;
         }
 
+#if UNITY_EDITOR
         struct RecordDisposer : IDisposable
         {
             public RecordDisposer(UnityEngine.Object[] objects, string msg)
@@ -221,7 +224,6 @@ namespace VRM
             }
         }
 
-#if UNITY_EDITOR
         public void Export(string path)
         {
             List<GameObject> destroy = new List<GameObject>();
