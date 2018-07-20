@@ -17,7 +17,6 @@ namespace UniGLTF
         }
     }
 
-    [Serializable]
     public partial class glTF_extensions : JsonSerializableBase
     {
         public VRM.glTF_VRM_extensions VRM = new VRM.glTF_VRM_extensions();
