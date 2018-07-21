@@ -25,8 +25,6 @@ namespace VRM
             {
                 _Export(gltf, exporter, go);
             }
-
-            gltf.asset.generator = string.Format("UniVRM-{0}.{1}", VRMVersion.MAJOR, VRMVersion.MINOR);
             return gltf;
         }
 
