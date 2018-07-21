@@ -48,6 +48,6 @@ namespace VRM
             }
         }
 
-        public const string VRM_VERSION = "VRM-" + VERSION;
+        public const string VRM_VERSION = "UniVRM-" + VERSION;
     }
 }
