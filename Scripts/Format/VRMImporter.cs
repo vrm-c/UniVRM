@@ -44,7 +44,7 @@ namespace VRM
         {
             context.CreateMaterial = VRMImporter.GetMaterialFunc(glTF_VRM_Material.Parse(context.Json));
 
-            gltfImporter.Import(context);
+            gltfImporter.Load(context);
             if (string.IsNullOrEmpty(context.Path))
             {
                 if (string.IsNullOrEmpty(context.GLTF.extensions.VRM.meta.title))
