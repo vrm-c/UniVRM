@@ -12,7 +12,7 @@ namespace VRM
         public VRMExporter(glTF gltf) : base(gltf)
         { }
 
-        public static glTF Export(GameObject go)
+        public new static glTF Export(GameObject go)
         {
             var gltf = new glTF();
             using (var exporter = new VRMExporter(gltf)
