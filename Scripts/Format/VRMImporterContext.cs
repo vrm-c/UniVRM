@@ -7,7 +7,7 @@ namespace VRM
 {
     public class VRMImporterContext : ImporterContext
     {
-        public VRMImporterContext(string path):base(path)
+        public VRMImporterContext(UnityPath gltfPath = default(UnityPath)) : base(gltfPath)
         {
         }
 
@@ -16,9 +16,9 @@ namespace VRM
         public BlendShapeAvatar BlendShapeAvatar;
         public VRMMetaObject Meta;
 
-        public VRMMetaObject ReadMeta(bool createThumbnail=false)
+        public VRMMetaObject ReadMeta(bool createThumbnail = false)
         {
-            var meta=ScriptableObject.CreateInstance<VRMMetaObject>();
+            var meta = ScriptableObject.CreateInstance<VRMMetaObject>();
             meta.name = "Meta";
             meta.ExporterVersion = GLTF.extensions.VRM.exporterVersion;
 
@@ -37,11 +37,11 @@ namespace VRM
             else if (createThumbnail)
             {
                 // 作成する(先行ロード用)
-                if(gltfMeta.texture >= 0 && gltfMeta.texture < GLTF.textures.Count)
+                if (gltfMeta.texture >= 0 && gltfMeta.texture < GLTF.textures.Count)
                 {
-                    var t = new TextureItem(GLTF, gltfMeta.texture, null);
+                    var t = new TextureItem(GLTF, gltfMeta.texture);
                     t.Process(GLTF, Storage);
-                    meta.Thumbnail=t.Texture;
+                    meta.Thumbnail = t.Texture;
                 }
             }
 

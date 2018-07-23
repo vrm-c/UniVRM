@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using UniGLTF;
 using UnityEditor;
@@ -16,17 +17,21 @@ namespace VRM
                 var ext = Path.GetExtension(path).ToLower();
                 if (ext == ".vrm")
                 {
-                    ImportVrm(path);
+                    ImportVrm(UnityPath.FromUnityPath(path));
                 }
             }
         }
 
-        static void ImportVrm(string path)
+        static void ImportVrm(UnityPath path)
         {
+            if (!path.IsUnderAssetsFolder)
+            {
+                throw new Exception();
+            }
             var context = new VRMImporterContext(path);
-            context.ParseGlb(File.ReadAllBytes(path));
+            context.ParseGlb(File.ReadAllBytes(path.FullPath));
 
-            var prefabPath = (Path.GetDirectoryName(path) + "/" + Path.GetFileNameWithoutExtension(path) + ".prefab").Replace("\\", "/");
+            var prefabPath = path.Parent.Child(path.FileNameWithoutExtension + ".prefab");
             context.SaveTexturesAsPng(prefabPath);
 
             EditorApplication.delayCall += () =>

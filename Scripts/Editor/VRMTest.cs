@@ -46,7 +46,7 @@ public class VRMTest
     public void VRMSimpleSceneTest()
     {
         var go = CreateSimpelScene();
-        var context = new VRMImporterContext(null);
+        var context = new VRMImporterContext();
 
         try
         {

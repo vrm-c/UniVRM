@@ -20,7 +20,7 @@ namespace VRM
 
         public static GameObject LoadFromPath(string path)
         {
-            var context = new VRMImporterContext(path);
+            var context = new VRMImporterContext(UniGLTF.UnityPath.FromFullpath(path));
             context.ParseGlb(File.ReadAllBytes(path));
             LoadFromBytes(context);
             return context.Root;
@@ -28,7 +28,7 @@ namespace VRM
 
         public static GameObject LoadFromBytes(Byte[] bytes)
         {
-            var context = new VRMImporterContext(null);
+            var context = new VRMImporterContext();
             context.ParseGlb(bytes);
             LoadFromBytes(context);
             return context.Root;
@@ -388,7 +388,7 @@ namespace VRM
         {
             for (int i = 0; i < context.GLTF.textures.Count; ++i)
             {
-                var x = new TextureItem(context.GLTF, i, null);
+                var x = new TextureItem(context.GLTF, i);
                 x.Process(context.GLTF, storage);
                 context.Textures.Add(x);
                 yield return null;
@@ -490,14 +490,14 @@ namespace VRM
 
         public static void LoadVrmAsync(string path, Action<GameObject> onLoaded, Action<Exception> onError = null, bool show = true)
         {
-            var context = new VRMImporterContext(path);
+            var context = new VRMImporterContext(UnityPath.FromFullpath(path));
             context.ParseGlb(File.ReadAllBytes(path));
             LoadVrmAsync(context, onLoaded, onError, show);
         }
 
         public static void LoadVrmAsync(Byte[] bytes, Action<GameObject> onLoaded, Action<Exception> onError = null, bool show = true)
         {
-            var context = new VRMImporterContext(null);
+            var context = new VRMImporterContext();
             context.ParseGlb(bytes);
             LoadVrmAsync(context, onLoaded, onError, show);
         }
@@ -535,7 +535,7 @@ namespace VRM
                         parent.AddTask(Scheduler.MainThread,
                                 () =>
                                 {
-                                    var texture = new TextureItem(ctx.GLTF, index, null);
+                                    var texture = new TextureItem(ctx.GLTF, index);
                                     texture.Process(ctx.GLTF, ctx.Storage);
                                     return texture;
                                 })
