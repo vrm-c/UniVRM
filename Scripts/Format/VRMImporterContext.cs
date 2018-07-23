@@ -7,13 +7,8 @@ namespace VRM
 {
     public class VRMImporterContext : ImporterContext
     {
-        public VRMImporterContext()
+        public VRMImporterContext(string path):base(path)
         {
-
-        }
-        public VRMImporterContext(string path)
-        {
-            Path = path;
         }
 
         public UniHumanoid.AvatarDescription AvatarDescription;
@@ -44,7 +39,7 @@ namespace VRM
                 // 作成する(先行ロード用)
                 if(gltfMeta.texture >= 0 && gltfMeta.texture < GLTF.textures.Count)
                 {
-                    var t = new TextureItem(GLTF, gltfMeta.texture);
+                    var t = new TextureItem(GLTF, gltfMeta.texture, null);
                     t.Process(GLTF, Storage);
                     meta.Thumbnail=t.Texture;
                 }

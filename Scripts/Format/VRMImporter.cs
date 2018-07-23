@@ -28,16 +28,10 @@ namespace VRM
 
         public static GameObject LoadFromBytes(Byte[] bytes)
         {
-            var context = new VRMImporterContext();
+            var context = new VRMImporterContext(null);
             context.ParseGlb(bytes);
             LoadFromBytes(context);
             return context.Root;
-        }
-
-        public static void LoadFromPath(VRMImporterContext context)
-        {
-            context.ParseGlb(File.ReadAllBytes(context.Path));
-            LoadFromBytes(context);
         }
 
         public static void LoadFromBytes(VRMImporterContext context)
@@ -45,21 +39,6 @@ namespace VRM
             context.CreateMaterial = VRMImporter.GetMaterialFunc(glTF_VRM_Material.Parse(context.Json));
 
             gltfImporter.Load(context);
-            if (string.IsNullOrEmpty(context.Path))
-            {
-                if (string.IsNullOrEmpty(context.GLTF.extensions.VRM.meta.title))
-                {
-                    context.Root.name = "VRM_LOADED";
-                }
-                else
-                {
-                    context.Root.name = context.GLTF.extensions.VRM.meta.title;
-                }
-            }
-            else
-            {
-                context.Root.name = Path.GetFileNameWithoutExtension(context.Path);
-            }
 
             OnLoadModel(context);
 
@@ -368,7 +347,7 @@ namespace VRM
             };
 
             context.HumanoidAvatar = AvatarBuilder.BuildHumanAvatar(context.Root, description);
-            context.HumanoidAvatar.name = Path.GetFileNameWithoutExtension(context.Path);
+            context.HumanoidAvatar.name = "VrmAvatar";
 
             context.AvatarDescription = UniHumanoid.AvatarDescription.CreateFrom(description);
             context.AvatarDescription.name = "AvatarDescription";
@@ -389,7 +368,7 @@ namespace VRM
             context.AvatarDescription = context.GLTF.extensions.VRM.humanoid.ToDescription(context.Nodes);
             context.AvatarDescription.name = "AvatarDescription";
             context.HumanoidAvatar = context.AvatarDescription.CreateAvatar(context.Root.transform);
-            context.HumanoidAvatar.name = Path.GetFileNameWithoutExtension(context.Path);
+            context.HumanoidAvatar.name = "VrmAvatar";
 
             var humanoid = context.Root.AddComponent<VRMHumanoidDescription>();
             humanoid.Avatar = context.HumanoidAvatar;
@@ -409,7 +388,7 @@ namespace VRM
         {
             for (int i = 0; i < context.GLTF.textures.Count; ++i)
             {
-                var x = new TextureItem(context.GLTF, i);
+                var x = new TextureItem(context.GLTF, i, null);
                 x.Process(context.GLTF, storage);
                 context.Textures.Add(x);
                 yield return null;
@@ -518,7 +497,7 @@ namespace VRM
 
         public static void LoadVrmAsync(Byte[] bytes, Action<GameObject> onLoaded, Action<Exception> onError = null, bool show = true)
         {
-            var context = new VRMImporterContext();
+            var context = new VRMImporterContext(null);
             context.ParseGlb(bytes);
             LoadVrmAsync(context, onLoaded, onError, show);
         }
@@ -540,11 +519,6 @@ namespace VRM
             return schedulable
                 .AddTask(Scheduler.ThreadPool, () =>
                 {
-                    ctx.GLTF.baseDir = Path.GetDirectoryName(ctx.Path);
-                    return Unit.Default;
-                })
-                .ContinueWith(Scheduler.CurrentThread, _ =>
-                {
                     return glTF_VRM_Material.Parse(ctx.Json);
                 })
                 .ContinueWith(Scheduler.MainThread, x =>
@@ -561,7 +535,7 @@ namespace VRM
                         parent.AddTask(Scheduler.MainThread,
                                 () =>
                                 {
-                                    var texture = new TextureItem(ctx.GLTF, index);
+                                    var texture = new TextureItem(ctx.GLTF, index, null);
                                     texture.Process(ctx.GLTF, ctx.Storage);
                                     return texture;
                                 })
@@ -588,7 +562,7 @@ namespace VRM
                 .ContinueWith(Scheduler.CurrentThread,
                     _ =>
                     {
-                        ctx.Root.name = Path.GetFileNameWithoutExtension(ctx.Path);
+                        ctx.Root.name = "VRM";
 
                         if (show)
                         {
