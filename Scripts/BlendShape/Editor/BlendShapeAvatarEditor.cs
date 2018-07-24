@@ -29,8 +29,9 @@ namespace VRM
                 return;
             }
             path = path.ToUnityRelativePath();
-            Debug.LogFormat("{0}", path);
+            //Debug.LogFormat("{0}", path);
             var clip = ScriptableObject.CreateInstance<BlendShapeClip>();
+            clip.BlendShapeName = Path.GetFileNameWithoutExtension(path);
             m_target.Clips.Add(clip);
             clip.Prefab = AssetDatabase.LoadAssetAtPath<GameObject>(AssetDatabase.GetAssetPath(m_target));
             AssetDatabase.CreateAsset(clip, path);
@@ -128,7 +129,9 @@ namespace VRM
 
                 CurrentClip.Preset = (BlendShapePreset)EditorGUILayout.Popup("Preset", (int)CurrentClip.Preset, Presets);
 
+                GUI.enabled = false;
                 CurrentClip.BlendShapeName = EditorGUILayout.TextField("BlendShapeName", CurrentClip.BlendShapeName);
+                GUI.enabled = true;
 
                 var key = BlendShapeKey.CreateFrom(CurrentClip);
                 if (m_target.Clips.Where(x => key.Match(x)).Count() > 1)
