@@ -129,6 +129,15 @@ namespace VRM
             m_materialValueMap.Clear();
         }
 
+        public void SetValues(IEnumerable<KeyValuePair<BlendShapeKey, float>> values)
+        {
+            foreach(var kv in values)
+            {
+                SetValue(kv.Key, kv.Value, false);
+            }
+            Apply();
+        }
+
         public void SetValue(BlendShapeKey key, float value, bool replace)
         {
             m_valueMap[key] = value;

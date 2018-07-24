@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 
@@ -52,13 +53,32 @@ namespace VRM
         {
             return GetValue(new BlendShapeKey(key));
         }
-        public void SetValue(BlendShapeKey key, float value, bool apply = true)
+
+        [Obsolete("Use SetValues")]
+        public void SetValue(BlendShapeKey key, float value, bool apply)
         {
             if (m_merger != null)
             {
                 m_merger.SetValue(key, value, apply);
             }
         }
+
+        public void SetValue(BlendShapeKey key, float value)
+        {
+            if (m_merger != null)
+            {
+                m_merger.SetValue(key, value, true);
+            }
+        }
+
+        public void SetValues(IEnumerable<KeyValuePair<BlendShapeKey, float>> values)
+        {
+            if (m_merger != null)
+            {
+                m_merger.SetValues(values);
+            }
+        }
+
         public float GetValue(BlendShapeKey key)
         {
             if (m_merger == null)
