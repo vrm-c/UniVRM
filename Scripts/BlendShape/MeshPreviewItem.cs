@@ -45,15 +45,28 @@ namespace VRM
             for (int i = 0; i < ShaderUtil.GetPropertyCount(material.shader); ++i)
             {
                 var propType = ShaderUtil.GetPropertyType(material.shader, i);
-                if (propType == ShaderUtil.ShaderPropertyType.Color)
+                var name = ShaderUtil.GetPropertyName(material.shader, i);
+
+                switch (propType)
                 {
-                    var name = ShaderUtil.GetPropertyName(material.shader, i);
-                    item.PropMap.Add(name, new PropItem
-                    {
-                        PropertyType = propType,
-                        DefaultValues = material.GetColor(name),
-                    });
-                    propNames.Add(name);
+                    case ShaderUtil.ShaderPropertyType.Color:
+                        item.PropMap.Add(name, new PropItem
+                        {
+                            PropertyType = propType,
+                            DefaultValues = material.GetColor(name),
+                        });
+                        propNames.Add(name);
+                        break;
+
+                    case ShaderUtil.ShaderPropertyType.TexEnv:
+                        name += "_ST";
+                        item.PropMap.Add(name, new PropItem
+                        {
+                            PropertyType = propType,
+                            DefaultValues = material.GetVector(name),
+                        });
+                        propNames.Add(name);
+                        break;
                 }
             }
             item.PropNames = propNames.ToArray();

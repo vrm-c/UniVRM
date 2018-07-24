@@ -42,7 +42,7 @@ namespace VRM
                 GameObject.DestroyImmediate(x.gameObject);
             }
 
-            Debug.Log("new prefab. instanciate");
+            //Debug.Log("new prefab. instanciate");
             // no previous instance detected, so now let's make a fresh one
             // very important: this loads the PreviewInstance prefab and temporarily instantiates it into PreviewInstance
             var go = GameObject.Instantiate(prefab,
@@ -95,7 +95,7 @@ namespace VRM
                     dst = new Material(src);
                     map.Add(src, dst);
 
-                    Debug.LogFormat("add material {0}", src.name);
+                    //Debug.LogFormat("add material {0}", src.name);
                     materialNames.Add(src.name);
                     m_materialMap.Add(src.name, MaterialItem.Create(dst));
                 }
