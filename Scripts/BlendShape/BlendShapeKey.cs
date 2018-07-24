@@ -80,6 +80,10 @@ namespace VRM
 
         public static BlendShapeKey CreateFrom(BlendShapeClip clip)
         {
+            if (clip == null)
+            {
+                return default(BlendShapeKey);
+            }
             return new BlendShapeKey(clip.BlendShapeName, clip.Preset);
         }
 
