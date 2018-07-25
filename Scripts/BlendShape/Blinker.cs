@@ -107,34 +107,7 @@ namespace VRM
             m_coroutine = StartCoroutine(BlinkRoutine());
         }
 
-        private void Update()
-        {
-            /*
-            var weight = BlendShapes.GetWeightByFlags(BlendShapeFlags.Eye, m_key);
-            if (m_coroutine != null)
-            {
-                if (weight > 0)
-                {
-                    Debug.LogFormat("[Blinker] cancel: {0}", BlendShapes.Status);
-                    // まばたきキャンセル
-                    StopCoroutine(m_coroutine);
-                    m_coroutine = null;
-                    BlendShapes.Set(m_key, 0);
-                }
-            }
-            else
-            {
-                if (weight == 0)
-                {
-                    Debug.Log("[Blinker] start");
-                    // 開始
-                    m_coroutine = StartCoroutine(BlinkRoutine());
-                }
-            }
-            */
-        }
-
-        private void OnDisable()
+        private void OnDestroy()
         {
             if (m_coroutine != null)
             {
