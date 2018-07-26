@@ -74,19 +74,48 @@ namespace VRM
                     }
                 }
 
-                foreach(var binding in kv.Value.MaterialValues)
+                foreach (var binding in kv.Value.MaterialValues)
                 {
                     if (!m_materialSetterMap.ContainsKey(binding))
                     {
                         Material target;
-                        if(m_materialMap.TryGetValue(binding.MaterialName, out target))
+                        if (m_materialMap.TryGetValue(binding.MaterialName, out target))
                         {
-                            m_materialSetterMap.Add(binding, x =>
+                            if (binding.ValueName.EndsWith("_ST_S"))
+                            {
+                                var valueName = binding.ValueName.Substring(0, binding.ValueName.Length - 2);
+                                Action<float> setter = value =>
                                 {
-                                    //target.SetBlendShapeWeight(binding.Index, x);
+                                    var propValue = binding.BaseValue + (binding.TargetValue - binding.BaseValue) * value;
+                                    var src = target.GetVector(valueName);
+                                    src.x = propValue.x; // horizontal only
+                                    src.z = propValue.z; // horizontal only
+                                    target.SetVector(valueName, src);
+                                };
+                                m_materialSetterMap.Add(binding, setter);
+                            }
+                            else if(binding.ValueName.EndsWith("_ST_T"))
+                            {
+                                var valueName = binding.ValueName.Substring(0, binding.ValueName.Length - 2);
+                                Action<float> setter = value =>
+                                {
+                                    var propValue = binding.BaseValue + (binding.TargetValue - binding.BaseValue) * value;
+                                    var src = target.GetVector(valueName);
+                                    src.y = propValue.y; // vertical only
+                                    src.w = propValue.w; // vertical only
+                                    target.SetVector(valueName, src);
+                                };
+                                m_materialSetterMap.Add(binding, setter);
+                            }
+                            else
+                            {
+                                Action<float> vec4Setter = x =>
+                                {
                                     var propValue = binding.BaseValue + (binding.TargetValue - binding.BaseValue) * x;
                                     target.SetColor(binding.ValueName, propValue);
-                                });
+                                };
+                                m_materialSetterMap.Add(binding, vec4Setter);
+                            }
                         }
                         else
                         {
@@ -111,17 +140,17 @@ namespace VRM
             foreach (var kv in m_blendShapeValueMap)
             {
                 Action<float> setter;
-                if(m_blendShapeSetterMap.TryGetValue(kv.Key, out setter))
+                if (m_blendShapeSetterMap.TryGetValue(kv.Key, out setter))
                 {
                     setter(kv.Value);
                 }
             }
             m_blendShapeValueMap.Clear();
 
-            foreach(var kv in m_materialValueMap)
+            foreach (var kv in m_materialValueMap)
             {
                 Action<float> setter;
-                if(m_materialSetterMap.TryGetValue(kv.Key, out setter))
+                if (m_materialSetterMap.TryGetValue(kv.Key, out setter))
                 {
                     setter(kv.Value);
                 }
@@ -131,7 +160,7 @@ namespace VRM
 
         public void SetValues(IEnumerable<KeyValuePair<BlendShapeKey, float>> values)
         {
-            foreach(var kv in values)
+            foreach (var kv in values)
             {
                 SetValue(kv.Key, kv.Value, false);
             }
@@ -154,7 +183,7 @@ namespace VRM
                 {
                     // 値置き換え
                     Action<float> setter;
-                    if(m_blendShapeSetterMap.TryGetValue(binding, out setter))
+                    if (m_blendShapeSetterMap.TryGetValue(binding, out setter))
                     {
                         setter(binding.Weight * value);
                     }
@@ -163,7 +192,7 @@ namespace VRM
                 {
                     // 積算
                     float acc;
-                    if(m_blendShapeValueMap.TryGetValue(binding, out acc))
+                    if (m_blendShapeValueMap.TryGetValue(binding, out acc))
                     {
                         m_blendShapeValueMap[binding] = acc + binding.Weight * value;
                     }
