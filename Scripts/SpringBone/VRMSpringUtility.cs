@@ -147,15 +147,8 @@ namespace VRM
                     stiffiness = spring.m_stiffnessForce,
                     hitRadius = spring.m_hitRadius,
                     colliderGroups = spring.ColliderGroups
-                        .Select(x =>
-                        {
-                            var index = colliders.IndexOf(x);
-                            if (index == -1)
-                            {
-                                throw new IndexOutOfRangeException();
-                            }
-                            return index;
-                        })
+                        .Select(x => colliders.IndexOf(x))
+                        .Where(x => x != -1)
                         .ToArray(),
                     bones = spring.RootBones.Select(x => nodes.IndexOf(x)).ToArray(),
                 });
