@@ -286,13 +286,16 @@ namespace VRM
             {
                 foreach (var group in ColliderGroups)
                 {
-                    foreach(var collider in group.Colliders)
+                    if (group != null)
                     {
-                        m_colliderList.Add(new SphereCollider
+                        foreach (var collider in group.Colliders)
                         {
-                            Position = group.transform.TransformPoint(collider.Offset),
-                            Radius = collider.Radius,
-                        });
+                            m_colliderList.Add(new SphereCollider
+                            {
+                                Position = group.transform.TransformPoint(collider.Offset),
+                                Radius = collider.Radius,
+                            });
+                        }
                     }
                 }
             }
