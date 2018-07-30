@@ -169,6 +169,7 @@ namespace VRM
                 srcMesh.bindposes = new Matrix4x4[] { Matrix4x4.identity };
 
                 srcRenderer.rootBone = srcRenderer.transform;
+                bones = new[] { boneMap[srcRenderer.transform] };
                 srcRenderer.bones = new[] { srcRenderer.transform };
                 srcRenderer.sharedMesh = srcMesh;
             }
@@ -177,22 +178,14 @@ namespace VRM
             var mesh = srcMesh.Copy();
             mesh.name = srcMesh.name + ".baked";
             srcRenderer.BakeMesh(mesh);
+            mesh.boneWeights = srcMesh.boneWeights; // restore weights. clear when BakeMesh
+            // recalc bindposes
+            mesh.bindposes = bones.Select(x => x.worldToLocalMatrix * dst.transform.localToWorldMatrix).ToArray();
 
             //var m = src.localToWorldMatrix; // include scaling
             var m = default(Matrix4x4);
-            m.SetTRS(Vector3.zero, src.rotation, Vector3.one); // without scaling
-
-            mesh.vertices = mesh.vertices.Select(x => m.MultiplyPoint(x)).ToArray();
-            mesh.normals = mesh.normals.Select(x => m.MultiplyVector(x).normalized).ToArray();
-
-            mesh.uv = srcMesh.uv;
-            mesh.tangents = srcMesh.tangents;
-            mesh.subMeshCount = srcMesh.subMeshCount;
-            for (int i = 0; i < srcMesh.subMeshCount; ++i)
-            {
-                mesh.SetIndices(srcMesh.GetIndices(i), srcMesh.GetTopology(i), i);
-            }
-            mesh.boneWeights = srcMesh.boneWeights;
+            m.SetTRS(Vector3.zero, src.rotation, Vector3.one); // rotation only
+            mesh.ApplyMatrix(m);
 
             //
             // BlendShapes
@@ -293,11 +286,6 @@ namespace VRM
                     throw;
                 }
             }
-
-            // recalc bindposes
-            mesh.bindposes = bones.Select(x =>
-                x.worldToLocalMatrix * dst.transform.localToWorldMatrix).ToArray();
-            mesh.RecalculateBounds();
 
             var dstRenderer = dst.gameObject.AddComponent<SkinnedMeshRenderer>();
             dstRenderer.sharedMaterials = srcRenderer.sharedMaterials;
