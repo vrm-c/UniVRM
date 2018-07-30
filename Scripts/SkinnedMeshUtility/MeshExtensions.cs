@@ -10,6 +10,9 @@ namespace VRM
         {
             var dst = new Mesh();
             dst.name = src.name + "(copy)";
+#if UNITY_2017_3_OR_NEWER
+            dst.indexFormat = src.indexFormat;
+#endif
 
             dst.vertices = src.vertices;
             dst.normals = src.normals;

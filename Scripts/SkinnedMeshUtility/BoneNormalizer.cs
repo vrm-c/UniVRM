@@ -121,24 +121,20 @@ namespace VRM
         }
 
         /// <summary>
-        /// 各メッシュから回転・スケールを取り除いてBinding行列を再計算する
+        /// srcのSkinnedMeshRendererを正規化して、dstにアタッチする
         /// </summary>
-        /// <param name="src"></param>
-        /// <param name="dst"></param>
-        /// <param name="boneMap"></param>
+        /// <param name="src">正規化前のSkinnedMeshRendererのTransform</param>
+        /// <param name="dst">正規化後のSkinnedMeshRendererのTransform</param>
+        /// <param name="boneMap">正規化前のボーンから正規化後のボーンを得る</param>
         static void NormalizeSkinnedMesh(Transform src, Transform dst, Dictionary<Transform, Transform> boneMap)
         {
-            //
-            // SkinnedMesh
-            //
             var srcRenderer = src.GetComponent<SkinnedMeshRenderer>();
-            if (srcRenderer != null && srcRenderer.enabled
-                && srcRenderer.sharedMesh != null
-                && srcRenderer.sharedMesh.vertexCount > 0)
+            if (srcRenderer == null 
+                || !srcRenderer.enabled
+                || srcRenderer.sharedMesh == null
+                || srcRenderer.sharedMesh.vertexCount == 0)
             {
-            }
-            else
-            {
+                // 有効なSkinnedMeshRendererが無かった
                 return;
             }
 
@@ -149,12 +145,9 @@ namespace VRM
                 srcRenderer.SetBlendShapeWeight(i, 0);
             }
 
-            var mesh = new Mesh();
+            // BakeMesh
+            var mesh = srcMesh.Copy();
             mesh.name = srcMesh.name + ".baked";
-#if UNITY_2017_3_OR_NEWER
-                        mesh.indexFormat = srcMesh.indexFormat;
-#endif
-
             srcRenderer.BakeMesh(mesh);
 
             //var m = src.localToWorldMatrix;

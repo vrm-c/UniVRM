@@ -47,11 +47,12 @@ namespace VRM
         private static void ExportFromMenu()
         {
             var go = Selection.activeObject as GameObject;
-            Undo.RecordObjects(go.transform.Traverse().ToArray(), "before normalize");
 
             var normalized = VRM.BoneNormalizer.Execute(go, true);
             VRMExportSettings.CopyVRMComponents(go, normalized.Root, normalized.BoneMap);
-            Undo.PerformUndo();
+            Selection.activeGameObject = normalized.Root;
+
+            Undo.RegisterCreatedObjectUndo(normalized.Root, "normalize");
         }
     }
 }
