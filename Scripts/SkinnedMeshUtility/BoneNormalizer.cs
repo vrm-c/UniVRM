@@ -140,42 +140,20 @@ namespace VRM
 
             // clear blendShape
             var srcMesh = srcRenderer.sharedMesh;
+            var originalSrcMesh = srcMesh;
             for (int i = 0; i < srcMesh.blendShapeCount; ++i)
             {
                 srcRenderer.SetBlendShapeWeight(i, 0);
             }
 
-            // BakeMesh
-            var mesh = srcMesh.Copy();
-            mesh.name = srcMesh.name + ".baked";
-            srcRenderer.BakeMesh(mesh);
-
-            //var m = src.localToWorldMatrix;
-            var m = default(Matrix4x4);
-            m.SetTRS(Vector3.zero, src.rotation, Vector3.one);
-
-            mesh.vertices = mesh.vertices.Select(x => m.MultiplyPoint(x)).ToArray();
-            mesh.normals = mesh.normals.Select(x => m.MultiplyVector(x).normalized).ToArray();
-
-            mesh.uv = srcMesh.uv;
-            mesh.tangents = srcMesh.tangents;
-            mesh.subMeshCount = srcMesh.subMeshCount;
-            for (int i = 0; i < srcMesh.subMeshCount; ++i)
-            {
-                mesh.SetIndices(srcMesh.GetIndices(i), srcMesh.GetTopology(i), i);
-            }
-
-            // boneweights
             var bones = srcRenderer.bones.Select(x => boneMap[x]).ToArray();
-            var hasBoneWeight = bones.Length > 0;
-            if (hasBoneWeight)
+            var hasBoneWeight = srcRenderer.bones!=null && srcRenderer.bones.Length > 0;
+            if (!hasBoneWeight)
             {
-                mesh.boneWeights = srcMesh.boneWeights;
-            }
-            else
-            {
-                Debug.LogFormat("no weight: {0}", srcMesh.name);
-                bones = new[] { boneMap[srcRenderer.transform] };
+                // Before bake, bind no weight bones
+                //Debug.LogFormat("no weight: {0}", srcMesh.name);
+
+                srcMesh = srcMesh.Copy();
                 var bw = new BoneWeight
                 {
                     boneIndex0 = 0,
@@ -187,9 +165,38 @@ namespace VRM
                     weight2 = 0.0f,
                     weight3 = 0.0f,
                 };
-                mesh.boneWeights = Enumerable.Range(0, srcMesh.vertexCount).Select(x => bw).ToArray();
+                srcMesh.boneWeights = Enumerable.Range(0, srcMesh.vertexCount).Select(x => bw).ToArray();
+                srcMesh.bindposes = new Matrix4x4[] { Matrix4x4.identity };
+
+                srcRenderer.rootBone = srcRenderer.transform;
+                srcRenderer.bones = new[] { srcRenderer.transform };
+                srcRenderer.sharedMesh = srcMesh;
             }
 
+            // BakeMesh
+            var mesh = srcMesh.Copy();
+            mesh.name = srcMesh.name + ".baked";
+            srcRenderer.BakeMesh(mesh);
+
+            //var m = src.localToWorldMatrix; // include scaling
+            var m = default(Matrix4x4);
+            m.SetTRS(Vector3.zero, src.rotation, Vector3.one); // without scaling
+
+            mesh.vertices = mesh.vertices.Select(x => m.MultiplyPoint(x)).ToArray();
+            mesh.normals = mesh.normals.Select(x => m.MultiplyVector(x).normalized).ToArray();
+
+            mesh.uv = srcMesh.uv;
+            mesh.tangents = srcMesh.tangents;
+            mesh.subMeshCount = srcMesh.subMeshCount;
+            for (int i = 0; i < srcMesh.subMeshCount; ++i)
+            {
+                mesh.SetIndices(srcMesh.GetIndices(i), srcMesh.GetTopology(i), i);
+            }
+            mesh.boneWeights = srcMesh.boneWeights;
+
+            //
+            // BlendShapes
+            //
             var meshVertices = mesh.vertices;
             var meshNormals = mesh.normals;
             var meshTangents = mesh.tangents.Select(x => (Vector3)x).ToArray();
@@ -290,16 +297,22 @@ namespace VRM
             // recalc bindposes
             mesh.bindposes = bones.Select(x =>
                 x.worldToLocalMatrix * dst.transform.localToWorldMatrix).ToArray();
-
             mesh.RecalculateBounds();
 
             var dstRenderer = dst.gameObject.AddComponent<SkinnedMeshRenderer>();
             dstRenderer.sharedMaterials = srcRenderer.sharedMaterials;
-            dstRenderer.sharedMesh = mesh;
-            dstRenderer.bones = bones;
             if (srcRenderer.rootBone != null)
             {
                 dstRenderer.rootBone = boneMap[srcRenderer.rootBone];
+            }
+            dstRenderer.bones = bones;
+            dstRenderer.sharedMesh = mesh;
+
+            if (!hasBoneWeight)
+            {
+                // restore bones
+                srcRenderer.bones = new Transform[] { };
+                srcRenderer.sharedMesh = originalSrcMesh;
             }
         }
 
