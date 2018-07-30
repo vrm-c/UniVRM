@@ -1,6 +1,9 @@
 ﻿using System.IO;
+using System.Text;
+using UniGLTF;
+using UniJSON;
 using UnityEditor;
-
+using UnityEngine;
 
 namespace VRM
 {
@@ -21,9 +24,9 @@ namespace VRM
 ";
 
 #if VRM_DEVELOP
-        [MenuItem(VRMVersion.VRM_VERSION+"/Increment")]
+        [MenuItem(VRMVersion.VRM_VERSION + "/Increment")]
 #endif
-        public static void IncrementVersion()
+        static void IncrementVersion()
         {
             var source = string.Format(template, VRMVersion.MAJOR, VRMVersion.MINOR + 1);
             File.WriteAllText(path, source);
@@ -31,13 +34,33 @@ namespace VRM
         }
 
 #if VRM_DEVELOP
-        [MenuItem(VRMVersion.VRM_VERSION+"/Decrement")]
+        [MenuItem(VRMVersion.VRM_VERSION + "/Decrement")]
 #endif
-        public static void DecrementVersion()
+        static void DecrementVersion()
         {
             var source = string.Format(template, VRMVersion.MAJOR, VRMVersion.MINOR - 1);
             File.WriteAllText(path, source);
             AssetDatabase.Refresh();
+        }
+
+#if VRM_DEVELOP
+        [MenuItem(VRMVersion.VRM_VERSION + "/Export JsonSchema")]
+#endif
+        static void ExportJsonSchema()
+        {
+            var dir = UnityPath.FromFullpath(Application.dataPath + "/VRM/specification/0.0/schema");
+            dir.EnsureFolder();
+
+            var path = dir.Child("vrm.schema.json");
+
+            Debug.LogFormat("write SsonSchema: {0}", path.FullPath);
+            var schema = JsonSchema.FromType<glTF_VRM_extensions>();
+            var f = new JsonFormatter();
+            schema.ToJson(f);
+            var json = f.ToString();
+            File.WriteAllText(path.FullPath, json, Encoding.UTF8);
+
+            Selection.activeObject = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(path.Value);
         }
     }
 }
