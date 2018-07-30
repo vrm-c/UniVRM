@@ -343,12 +343,26 @@ namespace VRM
             dstRenderer.sharedMaterials = srcRenderer.sharedMaterials;
         }
 
-        public static GameObject Execute(GameObject go, Dictionary<Transform, Transform> boneMap, bool forceTPose)
+        public struct NormalizedResult
         {
+            public GameObject Root;
+            public Dictionary<Transform, Transform> BoneMap;
+        }
+
+        /// <summary>
+        /// モデルの正規化を実行する
+        /// </summary>
+        /// <param name="go">対象モデルのルート</param>
+        /// <param name="forceTPose">強制的にT-Pose化するか</param>
+        /// <returns>正規化済みのモデル</returns>
+        public static NormalizedResult Execute(GameObject go, bool forceTPose)
+        {
+            Dictionary<Transform, Transform> boneMap = new Dictionary<Transform, Transform>();
+
             //
             // T-Poseにする
             //
-            if(forceTPose)
+            if (forceTPose)
             {
                 EnforceTPose(go);
             }
@@ -356,7 +370,7 @@ namespace VRM
             //
             // 正規化されたヒエラルキーを作る
             //
-            var normalized=NormalizeHierarchy(go, boneMap);
+            var normalized = NormalizeHierarchy(go, boneMap);
 
             //
             // 各メッシュから回転・スケールを取り除いてBinding行列を再計算する
@@ -364,7 +378,7 @@ namespace VRM
             foreach (var src in go.transform.Traverse())
             {
                 Transform dst;
-                if(!boneMap.TryGetValue(src, out dst))
+                if (!boneMap.TryGetValue(src, out dst))
                 {
                     continue;
                 }
@@ -374,7 +388,11 @@ namespace VRM
                 NormalizeNoneSkinnedMesh(src, dst);
             }
 
-            return normalized;
+            return new NormalizedResult
+            {
+                Root = normalized,
+                BoneMap = boneMap
+            };
         }
     }
 }

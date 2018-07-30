@@ -256,10 +256,9 @@ namespace VRM
             {
                 using (new RecordDisposer(target.transform.Traverse().ToArray(), "before normalize"))
                 {
-                    var map = new Dictionary<Transform, Transform>();
-                    var copy = BoneNormalizer.Execute(target, map, ForceTPose);
-                    CopyVRMComponents(target, copy, map);
-                    target = copy;
+                    var normalized = BoneNormalizer.Execute(target, ForceTPose);
+                    CopyVRMComponents(target, normalized.Root, normalized.BoneMap);
+                    target = normalized.Root;
                     destroy.Add(target);
                 }
             }

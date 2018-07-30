@@ -48,9 +48,9 @@ namespace VRM
         {
             var go = Selection.activeObject as GameObject;
             Undo.RecordObjects(go.transform.Traverse().ToArray(), "before normalize");
-            var map = new Dictionary<Transform, Transform>();
-            var normalized = VRM.BoneNormalizer.Execute(go, map, true);
-            VRMExportSettings.CopyVRMComponents(go, normalized, map);
+
+            var normalized = VRM.BoneNormalizer.Execute(go, true);
+            VRMExportSettings.CopyVRMComponents(go, normalized.Root, normalized.BoneMap);
             Undo.PerformUndo();
         }
     }
