@@ -4,19 +4,16 @@ using System.Linq;
 using UniGLTF;
 using UnityEngine;
 using UniJSON;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 
 
 namespace VRM
 {
     [Serializable]
-    public class glTF_VRM_Material : UniGLTF.JsonSerializableBase
+    public class glTF_VRM_Material : JsonSerializableBase
     {
         public string name;
         public string shader;
-        public int renderQueue=-1;
+        public int renderQueue = -1;
 
         public Dictionary<string, float> floatProperties = new Dictionary<string, float>();
         public Dictionary<string, float[]> vectorProperties = new Dictionary<string, float[]>();
@@ -60,7 +57,7 @@ namespace VRM
             }
             {
                 f.Key("keywordMap"); f.BeginMap();
-                foreach(var kv in keywordMap)
+                foreach (var kv in keywordMap)
                 {
                     f.Key(kv.Key); f.Value(kv.Value);
                 }
@@ -78,12 +75,12 @@ namespace VRM
 
         public static List<glTF_VRM_Material> Parse(string src)
         {
-            var json =  UniJSON.JsonParser.Parse(src)["extensions"]["VRM"]["materialProperties"];
+            var json = UniJSON.JsonParser.Parse(src)["extensions"]["VRM"]["materialProperties"];
             var materials = json.DeserializeList<glTF_VRM_Material>();
             var jsonItems = json.ArrayItems.ToArray();
-            for(int i=0; i<materials.Count; ++i)
+            for (int i = 0; i < materials.Count; ++i)
             {
-                materials[i].floatProperties = 
+                materials[i].floatProperties =
                     jsonItems[i]["floatProperties"].ObjectItems.ToDictionary(x => x.Key, x => x.Value.Value.GetSingle());
                 materials[i].vectorProperties =
                     jsonItems[i]["vectorProperties"].ObjectItems.ToDictionary(x => x.Key, x =>
@@ -109,73 +106,87 @@ namespace VRM
                 renderQueue = m.renderQueue,
             };
 
-#if UNITY_EDITOR
-            for (int i = 0; i < ShaderUtil.GetPropertyCount(m.shader); ++i)
+            var prop = VRMPreShaderPropExporter.GetPropsForSupportedShader(m.shader.name);
+            if (prop == null)
             {
-                var name = ShaderUtil.GetPropertyName(m.shader, i);
-                var propType = ShaderUtil.GetPropertyType(m.shader, i);
-                switch (propType)
-                {
-                    case ShaderUtil.ShaderPropertyType.Color:
-                        {
-                            var value = m.GetColor(name).ToArray();
-                            material.vectorProperties.Add(name, value);
-                        }
-                        break;
-
-                    case ShaderUtil.ShaderPropertyType.Range:
-                    case ShaderUtil.ShaderPropertyType.Float:
-                        {
-                            var value = m.GetFloat(name);
-                            material.floatProperties.Add(name, value);
-                        }
-                        break;
-
-                    case ShaderUtil.ShaderPropertyType.TexEnv:
-                        {
-                            var texture = m.GetTexture(name);
-                            if (texture != null)
-                            {
-                                var value = textures.IndexOf(texture);
-                                if (value == -1)
-                                {
-                                    Debug.LogFormat("not found {0}", texture.name);
-                                }
-                                else
-                                {
-                                    material.textureProperties.Add(name, value);
-                                }
-                            }
-
-                            // offset & scaling
-                            var offset = m.GetTextureOffset(name);
-                            var scaling = m.GetTextureScale(name);
-                            material.vectorProperties.Add(name, 
-                                new float[] { offset.x, offset.y, scaling.x, scaling.y });
-                        }
-                        break;
-
-                    case ShaderUtil.ShaderPropertyType.Vector:
-                        {
-                            var value = m.GetVector(name).ToArray();
-                            material.vectorProperties.Add(name, value);
-                        }
-                        break;
-
-                    default:
-                        throw new NotImplementedException();
-                }
-            }
-#else
-            Debug.LogWarning("cannot export material properties on runtime");           
+#if UNITY_EDITOR
+                // fallback
+                Debug.LogWarningFormat("Unsupported shader: {0}", m.shader.name);
+                prop = VRMPreShaderPropExporter.ShaderProps.FromShader(m.shader);
 #endif
+            }
+
+            if (prop == null)
+            {
+                Debug.LogWarningFormat("Fail to export shader: {0}", m.shader.name);
+            }
+            else
+            {
+                // get properties
+                //material.SetProp(prop);
+                foreach (var kv in prop.Properties)
+                {
+                    switch (kv.Value)
+                    {
+                        case VRMPreShaderPropExporter.ShaderPropertyType.Color:
+                            {
+                                var value = m.GetColor(kv.Key).ToArray();
+                                material.vectorProperties.Add(kv.Key, value);
+                            }
+                            break;
+
+                        case VRMPreShaderPropExporter.ShaderPropertyType.Range:
+                        case VRMPreShaderPropExporter.ShaderPropertyType.Float:
+                            {
+                                var value = m.GetFloat(kv.Key);
+                                material.floatProperties.Add(kv.Key, value);
+                            }
+                            break;
+
+                        case VRMPreShaderPropExporter.ShaderPropertyType.TexEnv:
+                            {
+                                var texture = m.GetTexture(kv.Key);
+                                if (texture != null)
+                                {
+                                    var value = textures.IndexOf(texture);
+                                    if (value == -1)
+                                    {
+                                        Debug.LogFormat("not found {0}", texture.name);
+                                    }
+                                    else
+                                    {
+                                        material.textureProperties.Add(kv.Key, value);
+                                    }
+                                }
+
+                                // offset & scaling
+                                var offset = m.GetTextureOffset(kv.Key);
+                                var scaling = m.GetTextureScale(kv.Key);
+                                material.vectorProperties.Add(kv.Key,
+                                    new float[] { offset.x, offset.y, scaling.x, scaling.y });
+                            }
+                            break;
+
+                        case VRMPreShaderPropExporter.ShaderPropertyType.Vector:
+                            {
+                                var value = m.GetVector(kv.Key).ToArray();
+                                material.vectorProperties.Add(kv.Key, value);
+                            }
+                            break;
+
+                        default:
+                            throw new NotImplementedException();
+                    }
+                }
+
+            }
 
             foreach (var keyword in m.shaderKeywords)
             {
                 material.keywordMap.Add(keyword, m.IsKeywordEnabled(keyword));
             }
 
-            foreach(var tag in TAGS)
+            foreach (var tag in TAGS)
             {
                 var value = m.GetTag(tag, false);
                 if (!String.IsNullOrEmpty(value))
