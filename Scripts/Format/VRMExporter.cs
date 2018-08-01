@@ -9,13 +9,12 @@ namespace VRM
 {
     public class VRMExporter : gltfExporter
     {
-        public VRMExporter(glTF_VRM gltf) : base(gltf)
+        public VRMExporter(glTF gltf) : base(gltf)
         { }
 
-        public static glTF Export(GameObject go, string path = null, Action<glTF_VRM> callback=null)
+        public new static glTF Export(GameObject go)
         {
-            var gltf = new glTF_VRM();
-            gltf.asset.generator = string.Format("UniVRM-{0}.{1}", VRMVersion.MAJOR, VRMVersion.MINOR);
+            var gltf = new glTF();
             using (var exporter = new VRMExporter(gltf)
             {
 #if VRM_EXPORTER_USE_SPARSE
@@ -25,22 +24,11 @@ namespace VRM
             })
             {
                 _Export(gltf, exporter, go);
-
-                if (callback != null)
-                {
-                    callback(gltf);
-                }
-
-                if (!string.IsNullOrEmpty(path))
-                {
-                    exporter.WriteTo(path);
-                }
             }
-
             return gltf;
         }
 
-        public static void _Export(glTF_VRM gltf, VRMExporter exporter, GameObject go)
+        public static void _Export(glTF gltf, VRMExporter exporter, GameObject go)
         {
             exporter.Prepare(go);
             exporter.Export();

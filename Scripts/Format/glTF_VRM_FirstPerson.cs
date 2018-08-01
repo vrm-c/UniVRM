@@ -15,7 +15,7 @@ namespace VRM
         public float xRange = 90.0f;
         public float yRange = 10.0f;
 
-        protected override void SerializeMembers(JsonFormatter f)
+        protected override void SerializeMembers(GLTFJsonFormatter f)
         {
             if (curve != null)
             {
@@ -48,7 +48,7 @@ namespace VRM
 
         public string firstPersonFlag;
 
-        protected override void SerializeMembers(JsonFormatter f)
+        protected override void SerializeMembers(GLTFJsonFormatter f)
         {
             f.KeyValue(() => mesh);
             f.KeyValue(() => firstPersonFlag);
@@ -85,7 +85,7 @@ namespace VRM
         public glTF_VRM_DegreeMap lookAtVerticalDown = new glTF_VRM_DegreeMap();
         public glTF_VRM_DegreeMap lookAtVerticalUp = new glTF_VRM_DegreeMap();
 
-        protected override void SerializeMembers(JsonFormatter f)
+        protected override void SerializeMembers(GLTFJsonFormatter f)
         {
             f.KeyValue(() => firstPersonBone);
             f.KeyValue(() => firstPersonBoneOffset);

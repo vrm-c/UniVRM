@@ -46,7 +46,7 @@ public class VRMTest
     public void VRMSimpleSceneTest()
     {
         var go = CreateSimpelScene();
-        var context = new VRMImporterContext(null);
+        var context = new VRMImporterContext();
 
         try
         {
@@ -59,9 +59,9 @@ public class VRMTest
                 exporter.Export();
 
                 // import
-                context.ParseJson<glTF_VRM>(gltf.ToJson(), new SimpleStorage());
-                Debug.LogFormat("{0}", context.Json);
-                gltfImporter.Import<glTF>(context);
+                context.ParseJson(gltf.ToJson(), new SimpleStorage());
+                //Debug.LogFormat("{0}", context.Json);
+                gltfImporter.Load(context);
 
                 AssertAreEqual(go.transform, context.Root.transform);
             }

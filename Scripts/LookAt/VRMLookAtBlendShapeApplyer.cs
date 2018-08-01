@@ -19,7 +19,7 @@ namespace VRM
 
         public void OnImported(VRMImporterContext context)
         {
-            var gltfFirstPerson = context.VRM.extensions.VRM.firstPerson;
+            var gltfFirstPerson = context.GLTF.extensions.VRM.firstPerson;
             Horizontal.Apply(gltfFirstPerson.lookAtHorizontalOuter);
             VerticalDown.Apply(gltfFirstPerson.lookAtVerticalDown);
             VerticalUp.Apply(gltfFirstPerson.lookAtVerticalUp);
@@ -45,27 +45,27 @@ namespace VRM
             if (yaw < 0)
             {
                 // Left
+                m_propxy.SetValue(BlendShapePreset.LookRight, 0); // clear first
                 m_propxy.SetValue(BlendShapePreset.LookLeft, Horizontal.Map(-yaw));
-                m_propxy.SetValue(BlendShapePreset.LookRight, 0);
             }
             else
             {
                 // Right
-                m_propxy.SetValue(BlendShapePreset.LookLeft, 0);
+                m_propxy.SetValue(BlendShapePreset.LookLeft, 0); // clear first
                 m_propxy.SetValue(BlendShapePreset.LookRight, Horizontal.Map(yaw));
             }
 
             if (pitch < 0)
             {
                 // Down
-                m_propxy.SetValue(BlendShapePreset.LookUp, 0);
+                m_propxy.SetValue(BlendShapePreset.LookUp, 0); // clear first
                 m_propxy.SetValue(BlendShapePreset.LookDown, VerticalDown.Map(-pitch));
             }
             else
             {
                 // Up
+                m_propxy.SetValue(BlendShapePreset.LookDown, 0); // clear first
                 m_propxy.SetValue(BlendShapePreset.LookUp, VerticalUp.Map(pitch));
-                m_propxy.SetValue(BlendShapePreset.LookDown, 0);
             }
         }
     }

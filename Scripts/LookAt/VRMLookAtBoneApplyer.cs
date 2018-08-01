@@ -36,7 +36,7 @@ namespace VRM
                 RightEye = OffsetOnTransform.Create(animator.GetBoneTransform(HumanBodyBones.RightEye));
             }
 
-            var gltfFirstPerson = context.VRM.extensions.VRM.firstPerson;
+            var gltfFirstPerson = context.GLTF.extensions.VRM.firstPerson;
             HorizontalInner.Apply(gltfFirstPerson.lookAtHorizontalInner);
             HorizontalOuter.Apply(gltfFirstPerson.lookAtHorizontalOuter);
             VerticalDown.Apply(gltfFirstPerson.lookAtVerticalDown);

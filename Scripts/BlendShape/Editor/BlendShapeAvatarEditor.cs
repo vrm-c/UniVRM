@@ -29,8 +29,9 @@ namespace VRM
                 return;
             }
             path = path.ToUnityRelativePath();
-            Debug.LogFormat("{0}", path);
+            //Debug.LogFormat("{0}", path);
             var clip = ScriptableObject.CreateInstance<BlendShapeClip>();
+            clip.BlendShapeName = Path.GetFileNameWithoutExtension(path);
             m_target.Clips.Add(clip);
             clip.Prefab = AssetDatabase.LoadAssetAtPath<GameObject>(AssetDatabase.GetAssetPath(m_target));
             AssetDatabase.CreateAsset(clip, path);
@@ -47,7 +48,10 @@ namespace VRM
 
                 m_currentClip = value;
                 //ClearBlendShape();
-                Bake(m_currentClip.Values, m_currentClip.MaterialValues, 1.0f);
+                if (m_currentClip != null)
+                {
+                    Bake(m_currentClip.Values, m_currentClip.MaterialValues, 1.0f);
+                }
             }
         }
 
@@ -65,6 +69,12 @@ namespace VRM
 
             base.OnEnable();
             m_target = (BlendShapeAvatar)target;
+
+            // remove missing values
+            foreach(var x in  m_target.Clips.Select((x, i) => new { i, x }).Where(x => x.x == null).Reverse())
+            {
+                m_target.Clips.RemoveAt(x.i);
+            }
 
             CurrentClip = m_target.Clips[0];
         }
@@ -86,9 +96,12 @@ namespace VRM
             {
                 EditorGUILayout.Space();
                 EditorGUILayout.LabelField("Select BlendShapeClip", EditorStyles.boldLabel);
-                var preset = GUILayout.SelectionGrid(m_preset, m_target.Clips
-                    .Where(x => x != null)
-                    .Select(x => BlendShapeKey.CreateFrom(x).ToString()).ToArray(), 4);
+                var array = m_target.Clips
+                    .Select(x => x != null
+                        ? BlendShapeKey.CreateFrom(x).ToString()
+                        : "null"
+                        ).ToArray();
+                var preset = GUILayout.SelectionGrid(m_preset, array, 4);
                 if (preset != m_preset)
                 {
                     CurrentClip = m_target.Clips[preset];
@@ -116,7 +129,9 @@ namespace VRM
 
                 CurrentClip.Preset = (BlendShapePreset)EditorGUILayout.Popup("Preset", (int)CurrentClip.Preset, Presets);
 
+                GUI.enabled = false;
                 CurrentClip.BlendShapeName = EditorGUILayout.TextField("BlendShapeName", CurrentClip.BlendShapeName);
+                GUI.enabled = true;
 
                 var key = BlendShapeKey.CreateFrom(CurrentClip);
                 if (m_target.Clips.Where(x => key.Match(x)).Count() > 1)

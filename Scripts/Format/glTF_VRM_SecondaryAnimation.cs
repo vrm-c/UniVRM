@@ -12,7 +12,7 @@ namespace VRM
         public Vector3 offset;
         public float radius;
 
-        protected override void SerializeMembers(JsonFormatter f)
+        protected override void SerializeMembers(GLTFJsonFormatter f)
         {
             f.KeyValue(() => offset);
             f.KeyValue(() => radius);
@@ -25,7 +25,7 @@ namespace VRM
         public int node;
         public List<glTF_VRM_SecondaryAnimationCollider> colliders = new List<glTF_VRM_SecondaryAnimationCollider>();
 
-        protected override void SerializeMembers(JsonFormatter f)
+        protected override void SerializeMembers(GLTFJsonFormatter f)
         {
             f.KeyValue(() => node);
             f.KeyValue(() => colliders);
@@ -46,7 +46,7 @@ namespace VRM
         public int[] bones = new int[] { };
         public int[] colliderGroups = new int[] { };
 
-        protected override void SerializeMembers(JsonFormatter f)
+        protected override void SerializeMembers(GLTFJsonFormatter f)
         {
             f.KeyValue(() => comment);
             f.KeyValue(() => stiffiness);
@@ -66,7 +66,7 @@ namespace VRM
         public List<glTF_VRM_SecondaryAnimationGroup> boneGroups = new List<glTF_VRM_SecondaryAnimationGroup>();
         public List<glTF_VRM_SecondaryAnimationColliderGroup> colliderGroups = new List<glTF_VRM_SecondaryAnimationColliderGroup>();
 
-        protected override void SerializeMembers(JsonFormatter f)
+        protected override void SerializeMembers(GLTFJsonFormatter f)
         {
             f.KeyValue(() => boneGroups);
             f.KeyValue(() => colliderGroups);

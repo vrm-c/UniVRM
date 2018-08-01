@@ -7,13 +7,8 @@ namespace VRM
 {
     public class VRMImporterContext : ImporterContext
     {
-        public VRMImporterContext()
+        public VRMImporterContext(UnityPath gltfPath = default(UnityPath)) : base(gltfPath)
         {
-
-        }
-        public VRMImporterContext(string path)
-        {
-            Path = path;
         }
 
         public UniHumanoid.AvatarDescription AvatarDescription;
@@ -21,26 +16,13 @@ namespace VRM
         public BlendShapeAvatar BlendShapeAvatar;
         public VRMMetaObject Meta;
 
-        public glTF_VRM VRM
+        public VRMMetaObject ReadMeta(bool createThumbnail = false)
         {
-            get
-            {
-                return (glTF_VRM)GLTF;
-            }
-        }
-
-        public void ParseVrm(byte[] bytes)
-        {
-            ParseGlb<glTF_VRM>(bytes);
-        }
-
-        public VRMMetaObject ReadMeta(bool createThumbnail=false)
-        {
-            var meta=ScriptableObject.CreateInstance<VRMMetaObject>();
+            var meta = ScriptableObject.CreateInstance<VRMMetaObject>();
             meta.name = "Meta";
-            meta.ExporterVersion = VRM.extensions.VRM.exporterVersion;
+            meta.ExporterVersion = GLTF.extensions.VRM.exporterVersion;
 
-            var gltfMeta = VRM.extensions.VRM.meta;
+            var gltfMeta = GLTF.extensions.VRM.meta;
             meta.Version = gltfMeta.version; // model version
             meta.Author = gltfMeta.author;
             meta.ContactInformation = gltfMeta.contactInformation;
@@ -55,11 +37,11 @@ namespace VRM
             else if (createThumbnail)
             {
                 // 作成する(先行ロード用)
-                if(gltfMeta.texture >= 0 && gltfMeta.texture < VRM.textures.Count)
+                if (gltfMeta.texture >= 0 && gltfMeta.texture < GLTF.textures.Count)
                 {
-                    var t = new TextureItem(VRM, gltfMeta.texture);
-                    t.Process(VRM, Storage);
-                    meta.Thumbnail=t.Texture;
+                    var t = new TextureItem(GLTF, gltfMeta.texture);
+                    t.Process(GLTF, Storage);
+                    meta.Thumbnail = t.Texture;
                 }
             }
 
