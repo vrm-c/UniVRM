@@ -6,7 +6,7 @@ using UniGLTF;
 using System.Collections.Generic;
 using System.Collections;
 using UniTask;
-#if (NET_4_6 && UNITY_2018_1_OR_NEWER)
+#if (NET_4_6 && UNITY_2017_1_OR_NEWER)
 using System.Threading.Tasks;
 #endif
 
@@ -485,7 +485,7 @@ namespace VRM
             yield return null;
         }
 
-#if (NET_4_6 && UNITY_2018_1_OR_NEWER)
+#if (NET_4_6 && UNITY_2017_1_OR_NEWER)
 
         public static Task<GameObject> LoadVrmAsync(string path)
         {
