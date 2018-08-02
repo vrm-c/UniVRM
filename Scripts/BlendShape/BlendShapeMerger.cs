@@ -62,10 +62,18 @@ namespace VRM
                         }
                         if (target != null)
                         {
-                            m_blendShapeSetterMap.Add(binding, x =>
+                            if (binding.Index >= 0 && binding.Index < target.sharedMesh.blendShapeCount)
+                            {
+                                m_blendShapeSetterMap.Add(binding, x =>
                                 {
                                     target.SetBlendShapeWeight(binding.Index, x);
                                 });
+                            }
+                            else
+                            {
+                                Debug.LogWarningFormat("Invalid blendshape binding: {0}: {1}", target.name, binding);
+                            }
+
                         }
                         else
                         {

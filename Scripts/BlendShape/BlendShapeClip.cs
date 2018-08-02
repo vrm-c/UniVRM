@@ -10,6 +10,11 @@ namespace VRM
         public String RelativePath;
         public int Index;
         public float Weight;
+
+        public override string ToString()
+        {
+            return string.Format("{0}[{1}]=>{2}", RelativePath, Index, Weight);
+        }
     }
 
     [Serializable]

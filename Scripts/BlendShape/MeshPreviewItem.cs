@@ -147,7 +147,17 @@ namespace VRM
                 {
                     if (x.RelativePath == Path)
                     {
-                        SkinnedMeshRenderer.SetBlendShapeWeight(x.Index, x.Weight * weight);
+                        if(x.Index>=0 && x.Index < SkinnedMeshRenderer.sharedMesh.blendShapeCount)
+                        {
+                            SkinnedMeshRenderer.SetBlendShapeWeight(x.Index, x.Weight * weight);
+                        }
+                        else
+                        {
+                            Debug.LogWarningFormat("Out of range {0}: 0 <= {1} < {2}", 
+                                SkinnedMeshRenderer.name, 
+                                x.Index, 
+                                SkinnedMeshRenderer.sharedMesh.blendShapeCount);
+                        }
                     }
                 }
             }
