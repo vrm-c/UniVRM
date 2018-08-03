@@ -153,7 +153,7 @@ namespace VRM
                 // Before bake, bind no weight bones
                 //Debug.LogFormat("no weight: {0}", srcMesh.name);
 
-                srcMesh = srcMesh.Copy();
+                srcMesh = srcMesh.Copy(true);
                 var bw = new BoneWeight
                 {
                     boneIndex0 = 0,
@@ -175,7 +175,7 @@ namespace VRM
             }
 
             // BakeMesh
-            var mesh = srcMesh.Copy();
+            var mesh = srcMesh.Copy(false);
             mesh.name = srcMesh.name + ".baked";
             srcRenderer.BakeMesh(mesh);
             mesh.boneWeights = srcMesh.boneWeights; // restore weights. clear when BakeMesh
@@ -328,7 +328,7 @@ namespace VRM
             // Meshに乗っているボーンの姿勢を適用する
             var dstFilter = dst.gameObject.AddComponent<MeshFilter>();
 
-            var dstMesh = srcFilter.sharedMesh.Copy();
+            var dstMesh = srcFilter.sharedMesh.Copy(false);
             dstMesh.ApplyRotationAndScale(src.localToWorldMatrix);
             dstFilter.sharedMesh = dstMesh;
 

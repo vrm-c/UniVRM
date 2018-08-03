@@ -6,7 +6,7 @@ namespace VRM
 {
     public static class MeshExtensions
     {
-        public static Mesh Copy(this Mesh src)
+        public static Mesh Copy(this Mesh src, bool copyBlendShape)
         {
             var dst = new Mesh();
             dst.name = src.name + "(copy)";
@@ -32,6 +32,24 @@ namespace VRM
             }
 
             dst.RecalculateBounds();
+
+            if (copyBlendShape)
+            {
+                var vertices = src.vertices;
+                var normals = src.normals;
+                var tangents = src.tangents.Select(x => (Vector3)x).ToArray();
+                for (int i = 0; i < src.blendShapeCount; ++i)
+                {
+                    src.GetBlendShapeFrameVertices(i, 0, vertices, normals, tangents);
+                    dst.AddBlendShapeFrame(
+                        src.GetBlendShapeName(i),
+                        src.GetBlendShapeFrameWeight(i, 0),
+                        vertices,
+                        normals,
+                        tangents
+                        );
+                }
+            }
 
             return dst;
         }
