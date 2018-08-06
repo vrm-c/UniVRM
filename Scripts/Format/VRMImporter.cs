@@ -55,11 +55,11 @@ namespace VRM
             "VRM/MToon",
         };
 
-        public static CreateMaterialFunc GetMaterialFunc(List<glTF_VRM_Material> materials)
+        public static MaterialIO.CreateMaterialFunc GetMaterialFunc(List<glTF_VRM_Material> materials)
         {
-            var CreateDefault = gltfImporter.CreateMaterialFuncFromShader(new ShaderStore("VRM/UnlitTexture"));
-            var CreateZWrite = gltfImporter.CreateMaterialFuncFromShader(new ShaderStore("VRM/UnlitTransparentZWrite"));
-            CreateMaterialFunc fallback = (ctx, i) =>
+            var CreateDefault = MaterialIO.CreateMaterialFuncFromShader(new ShaderStore("VRM/UnlitTexture"));
+            var CreateZWrite = MaterialIO.CreateMaterialFuncFromShader(new ShaderStore("VRM/UnlitTransparentZWrite"));
+            MaterialIO.CreateMaterialFunc fallback = (ctx, i) =>
             {
                 var vrm = ctx.GLTF;
                 if (vrm != null && vrm.materials[i].name.ToLower().Contains("zwrite"))

@@ -108,7 +108,7 @@ namespace VRM
                     gltf.extensions.VRM.meta.title = meta.Title;
                     if (meta.Thumbnail != null)
                     {
-                        gltf.extensions.VRM.meta.texture = gltfExporter.ExportTexture(gltf, gltf.buffers.Count - 1, meta.Thumbnail);
+                        gltf.extensions.VRM.meta.texture = TextureIO.ExportTexture(gltf, gltf.buffers.Count - 1, meta.Thumbnail);
                     }
                     gltf.extensions.VRM.meta.licenseType = meta.LicenseType;
                     gltf.extensions.VRM.meta.otherLicenseUrl = meta.OtherLicenseUrl;
@@ -130,7 +130,7 @@ namespace VRM
                     gltf.extensions.VRM.meta.title = meta.Title;
                     if (meta.Thumbnail != null)
                     {
-                        gltf.extensions.VRM.meta.texture = gltfExporter.ExportTexture(gltf, gltf.buffers.Count - 1, meta.Thumbnail);
+                        gltf.extensions.VRM.meta.texture = TextureIO.ExportTexture(gltf, gltf.buffers.Count - 1, meta.Thumbnail);
                     }
 
                     // ussage pemission
