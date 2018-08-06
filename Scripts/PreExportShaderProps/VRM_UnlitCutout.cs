@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 
 
-namespace VRM 
+namespace UniGLTF.ShaderPropExporter
 {
-    public static partial class VRMPreShaderPropExporter
+    public static partial class PreShaderPropExporter
     {
-        [VRMPreExportShader]
+        [PreExportShader]
         static KeyValuePair<string, ShaderProps> VRM_UnlitCutout 
         {
             get 
@@ -14,9 +14,9 @@ namespace VRM
                     "VRM/UnlitCutout",
                     new ShaderProps
                     {
-                        Properties = new KeyValuePair<string, ShaderPropertyType>[]{
-new KeyValuePair<string, ShaderPropertyType>("_MainTex", ShaderPropertyType.TexEnv)
-,new KeyValuePair<string, ShaderPropertyType>("_Cutoff", ShaderPropertyType.Range)
+                        Properties = new ShaderProperty[]{
+new ShaderProperty("_MainTex", ShaderPropertyType.TexEnv, false)
+,new ShaderProperty("_Cutoff", ShaderPropertyType.Range, false)
 
                         }
                     }

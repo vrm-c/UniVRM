@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 
 
-namespace VRM 
+namespace UniGLTF.ShaderPropExporter
 {
-    public static partial class VRMPreShaderPropExporter
+    public static partial class PreShaderPropExporter
     {
-        [VRMPreExportShader]
+        [PreExportShader]
         static KeyValuePair<string, ShaderProps> VRM_MToon 
         {
             get 
@@ -14,37 +14,37 @@ namespace VRM
                     "VRM/MToon",
                     new ShaderProps
                     {
-                        Properties = new KeyValuePair<string, ShaderPropertyType>[]{
-new KeyValuePair<string, ShaderPropertyType>("_Cutoff", ShaderPropertyType.Range)
-,new KeyValuePair<string, ShaderPropertyType>("_Color", ShaderPropertyType.Color)
-,new KeyValuePair<string, ShaderPropertyType>("_ShadeColor", ShaderPropertyType.Color)
-,new KeyValuePair<string, ShaderPropertyType>("_MainTex", ShaderPropertyType.TexEnv)
-,new KeyValuePair<string, ShaderPropertyType>("_ShadeTexture", ShaderPropertyType.TexEnv)
-,new KeyValuePair<string, ShaderPropertyType>("_BumpScale", ShaderPropertyType.Float)
-,new KeyValuePair<string, ShaderPropertyType>("_BumpMap", ShaderPropertyType.TexEnv)
-,new KeyValuePair<string, ShaderPropertyType>("_ReceiveShadowRate", ShaderPropertyType.Range)
-,new KeyValuePair<string, ShaderPropertyType>("_ReceiveShadowTexture", ShaderPropertyType.TexEnv)
-,new KeyValuePair<string, ShaderPropertyType>("_ShadeShift", ShaderPropertyType.Range)
-,new KeyValuePair<string, ShaderPropertyType>("_ShadeToony", ShaderPropertyType.Range)
-,new KeyValuePair<string, ShaderPropertyType>("_LightColorAttenuation", ShaderPropertyType.Range)
-,new KeyValuePair<string, ShaderPropertyType>("_SphereAdd", ShaderPropertyType.TexEnv)
-,new KeyValuePair<string, ShaderPropertyType>("_EmissionColor", ShaderPropertyType.Color)
-,new KeyValuePair<string, ShaderPropertyType>("_EmissionMap", ShaderPropertyType.TexEnv)
-,new KeyValuePair<string, ShaderPropertyType>("_OutlineWidthTexture", ShaderPropertyType.TexEnv)
-,new KeyValuePair<string, ShaderPropertyType>("_OutlineWidth", ShaderPropertyType.Range)
-,new KeyValuePair<string, ShaderPropertyType>("_OutlineScaledMaxDistance", ShaderPropertyType.Range)
-,new KeyValuePair<string, ShaderPropertyType>("_OutlineColor", ShaderPropertyType.Color)
-,new KeyValuePair<string, ShaderPropertyType>("_OutlineLightingMix", ShaderPropertyType.Range)
-,new KeyValuePair<string, ShaderPropertyType>("_DebugMode", ShaderPropertyType.Float)
-,new KeyValuePair<string, ShaderPropertyType>("_BlendMode", ShaderPropertyType.Float)
-,new KeyValuePair<string, ShaderPropertyType>("_OutlineWidthMode", ShaderPropertyType.Float)
-,new KeyValuePair<string, ShaderPropertyType>("_OutlineColorMode", ShaderPropertyType.Float)
-,new KeyValuePair<string, ShaderPropertyType>("_CullMode", ShaderPropertyType.Float)
-,new KeyValuePair<string, ShaderPropertyType>("_OutlineCullMode", ShaderPropertyType.Float)
-,new KeyValuePair<string, ShaderPropertyType>("_SrcBlend", ShaderPropertyType.Float)
-,new KeyValuePair<string, ShaderPropertyType>("_DstBlend", ShaderPropertyType.Float)
-,new KeyValuePair<string, ShaderPropertyType>("_ZWrite", ShaderPropertyType.Float)
-,new KeyValuePair<string, ShaderPropertyType>("_IsFirstSetup", ShaderPropertyType.Float)
+                        Properties = new ShaderProperty[]{
+new ShaderProperty("_Cutoff", ShaderPropertyType.Range, false)
+,new ShaderProperty("_Color", ShaderPropertyType.Color, false)
+,new ShaderProperty("_ShadeColor", ShaderPropertyType.Color, false)
+,new ShaderProperty("_MainTex", ShaderPropertyType.TexEnv, false)
+,new ShaderProperty("_ShadeTexture", ShaderPropertyType.TexEnv, false)
+,new ShaderProperty("_BumpScale", ShaderPropertyType.Float, false)
+,new ShaderProperty("_BumpMap", ShaderPropertyType.TexEnv, true)
+,new ShaderProperty("_ReceiveShadowRate", ShaderPropertyType.Range, false)
+,new ShaderProperty("_ReceiveShadowTexture", ShaderPropertyType.TexEnv, false)
+,new ShaderProperty("_ShadeShift", ShaderPropertyType.Range, false)
+,new ShaderProperty("_ShadeToony", ShaderPropertyType.Range, false)
+,new ShaderProperty("_LightColorAttenuation", ShaderPropertyType.Range, false)
+,new ShaderProperty("_SphereAdd", ShaderPropertyType.TexEnv, false)
+,new ShaderProperty("_EmissionColor", ShaderPropertyType.Color, false)
+,new ShaderProperty("_EmissionMap", ShaderPropertyType.TexEnv, false)
+,new ShaderProperty("_OutlineWidthTexture", ShaderPropertyType.TexEnv, false)
+,new ShaderProperty("_OutlineWidth", ShaderPropertyType.Range, false)
+,new ShaderProperty("_OutlineScaledMaxDistance", ShaderPropertyType.Range, false)
+,new ShaderProperty("_OutlineColor", ShaderPropertyType.Color, false)
+,new ShaderProperty("_OutlineLightingMix", ShaderPropertyType.Range, false)
+,new ShaderProperty("_DebugMode", ShaderPropertyType.Float, false)
+,new ShaderProperty("_BlendMode", ShaderPropertyType.Float, false)
+,new ShaderProperty("_OutlineWidthMode", ShaderPropertyType.Float, false)
+,new ShaderProperty("_OutlineColorMode", ShaderPropertyType.Float, false)
+,new ShaderProperty("_CullMode", ShaderPropertyType.Float, false)
+,new ShaderProperty("_OutlineCullMode", ShaderPropertyType.Float, false)
+,new ShaderProperty("_SrcBlend", ShaderPropertyType.Float, false)
+,new ShaderProperty("_DstBlend", ShaderPropertyType.Float, false)
+,new ShaderProperty("_ZWrite", ShaderPropertyType.Float, false)
+,new ShaderProperty("_IsFirstSetup", ShaderPropertyType.Float, false)
 
                         }
                     }

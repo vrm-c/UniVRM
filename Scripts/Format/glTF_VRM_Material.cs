@@ -4,7 +4,7 @@ using System.Linq;
 using UniGLTF;
 using UnityEngine;
 using UniJSON;
-
+using UniGLTF.ShaderPropExporter;
 
 namespace VRM
 {
@@ -106,13 +106,13 @@ namespace VRM
                 renderQueue = m.renderQueue,
             };
 
-            var prop = VRMPreShaderPropExporter.GetPropsForSupportedShader(m.shader.name);
+            var prop = PreShaderPropExporter.GetPropsForSupportedShader(m.shader.name);
             if (prop == null)
             {
 #if UNITY_EDITOR
                 // fallback
                 Debug.LogWarningFormat("Unsupported shader: {0}", m.shader.name);
-                prop = VRMPreShaderPropExporter.ShaderProps.FromShader(m.shader);
+                prop = ShaderProps.FromShader(m.shader);
 #endif
             }
 
@@ -126,24 +126,24 @@ namespace VRM
                 //material.SetProp(prop);
                 foreach (var kv in prop.Properties)
                 {
-                    switch (kv.Value)
+                    switch (kv.ShaderPropertyType)
                     {
-                        case VRMPreShaderPropExporter.ShaderPropertyType.Color:
+                        case ShaderPropertyType.Color:
                             {
                                 var value = m.GetColor(kv.Key).ToArray();
                                 material.vectorProperties.Add(kv.Key, value);
                             }
                             break;
 
-                        case VRMPreShaderPropExporter.ShaderPropertyType.Range:
-                        case VRMPreShaderPropExporter.ShaderPropertyType.Float:
+                        case ShaderPropertyType.Range:
+                        case ShaderPropertyType.Float:
                             {
                                 var value = m.GetFloat(kv.Key);
                                 material.floatProperties.Add(kv.Key, value);
                             }
                             break;
 
-                        case VRMPreShaderPropExporter.ShaderPropertyType.TexEnv:
+                        case ShaderPropertyType.TexEnv:
                             {
                                 var texture = m.GetTexture(kv.Key);
                                 if (texture != null)
@@ -167,7 +167,7 @@ namespace VRM
                             }
                             break;
 
-                        case VRMPreShaderPropExporter.ShaderPropertyType.Vector:
+                        case ShaderPropertyType.Vector:
                             {
                                 var value = m.GetVector(kv.Key).ToArray();
                                 material.vectorProperties.Add(kv.Key, value);
