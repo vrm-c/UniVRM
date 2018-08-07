@@ -36,7 +36,7 @@ namespace VRM
 
         public static void LoadFromBytes(VRMImporterContext context)
         {
-            context.MaterialImporter = new VRMMaterialImporter(glTF_VRM_Material.Parse(context.Json));
+            context.MaterialImporter = new VRMMaterialImporter(context, glTF_VRM_Material.Parse(context.Json));
 
             gltfImporter.Load(context);
 
@@ -424,7 +424,7 @@ namespace VRM
                 .ContinueWith(Scheduler.MainThread, x =>
                 {
                     // material function
-                    ctx.MaterialImporter = new VRMMaterialImporter(x);
+                    ctx.MaterialImporter = new VRMMaterialImporter(ctx, x);
                 })
                 .OnExecute(Scheduler.ThreadPool, parent =>
                 {
