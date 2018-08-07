@@ -181,7 +181,7 @@ namespace VRM
                         MaterialName = x.materialName,
                         ValueName = x.propertyName,
                         TargetValue = value,
-                        BaseValue = context.Materials.First(y => y.name == x.materialName).GetColor(x.propertyName),
+                        BaseValue = context.GetMaterials().First(y => y.name == x.materialName).GetColor(x.propertyName),
                     };
                 })
                 .ToArray();
@@ -297,15 +297,24 @@ namespace VRM
 
         static IEnumerator LoadMaterials(VRMImporterContext context)
         {
+            Func<int, TextureItem> getTexture = x =>
+            {
+                if (x < 0 || x >= context.Textures.Count)
+                {
+                    return null;
+                }
+                return context.Textures[x];
+            };
+
             if (context.GLTF.materials == null || !context.GLTF.materials.Any())
             {
-                context.Materials.Add(context.MaterialImporter.CreateMaterial(context, 0));
+                context.AddMaterial(context.MaterialImporter.CreateMaterial(0, null, getTexture));
             }
             else
             {
                 for (int i = 0; i < context.GLTF.materials.Count; ++i)
                 {
-                    context.Materials.Add(context.MaterialImporter.CreateMaterial(context, i));
+                    context.AddMaterial(context.MaterialImporter.CreateMaterial(i, context.GLTF.materials[i], getTexture));
                     yield return null;
                 }
             }

@@ -2,7 +2,7 @@
 using UniGLTF;
 using UnityEngine;
 using System.Linq;
-
+using System;
 
 namespace VRM
 {
@@ -47,7 +47,7 @@ namespace VRM
             "VRM/MToon",
         };
 
-        public override Material CreateMaterial(ImporterContext ctx, int i)
+        public override Material CreateMaterial(int i, glTFMaterial src, Func<int, TextureItem> getTexture)
         {
             var item = m_materials[i];
             var shaderName = item.shader;
@@ -60,12 +60,12 @@ namespace VRM
                 if (VRM_SHADER_NAMES.Contains(shaderName))
                 {
                     Debug.LogErrorFormat("shader {0} not found. set Assets/VRM/Shaders/VRMShaders to Edit - project setting - Graphics - preloaded shaders", shaderName);
-                    return base.CreateMaterial(ctx, i);
+                    return base.CreateMaterial(i, src, getTexture);
                 }
                 else
                 {
                     Debug.LogWarningFormat("unknown shader {0}.", shaderName);
-                    return base.CreateMaterial(ctx, i);
+                    return base.CreateMaterial(i, src, getTexture);
                 }
             }
 
@@ -97,7 +97,10 @@ namespace VRM
             }
             foreach (var kv in item.textureProperties)
             {
-                material.SetTexture(kv.Key, ctx.Textures[kv.Value].Texture);
+                var texture = getTexture(kv.Value);
+                if (texture != null) {
+                    material.SetTexture(kv.Key, texture.Texture);
+                }
             }
             foreach (var kv in item.keywordMap)
             {
