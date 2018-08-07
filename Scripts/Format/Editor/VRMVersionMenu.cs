@@ -55,7 +55,7 @@ namespace VRM
 
             Debug.LogFormat("write SsonSchema: {0}", path.FullPath);
             var schema = JsonSchema.FromType<glTF_VRM_extensions>();
-            var f = new JsonFormatter();
+            var f = new JsonFormatter(2);
             schema.ToJson(f);
             var json = f.ToString();
             File.WriteAllText(path.FullPath, json, Encoding.UTF8);
