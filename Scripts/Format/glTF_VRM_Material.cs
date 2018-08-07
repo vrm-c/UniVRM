@@ -109,15 +109,6 @@ namespace VRM
             var prop = PreShaderPropExporter.GetPropsForSupportedShader(m.shader.name);
             if (prop == null)
             {
-#if UNITY_EDITOR
-                // fallback
-                Debug.LogWarningFormat("Unsupported shader: {0}", m.shader.name);
-                prop = ShaderProps.FromShader(m.shader);
-#endif
-            }
-
-            if (prop == null)
-            {
                 Debug.LogWarningFormat("Fail to export shader: {0}", m.shader.name);
             }
             else
