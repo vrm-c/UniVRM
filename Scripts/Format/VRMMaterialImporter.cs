@@ -9,7 +9,7 @@ namespace VRM
     public class VRMMaterialImporter : MaterialImporter
     {
         List<glTF_VRM_Material> m_materials;
-        public VRMMaterialImporter(ImporterContext context, List<glTF_VRM_Material> materials) : base(new ShaderStore(context, "VRM/UnlitTexture"))
+        public VRMMaterialImporter(ImporterContext context, List<glTF_VRM_Material> materials) : base(new ShaderStore(context, "VRM/UnlitTexture"), context)
         {
             m_materials = materials;
             /*
@@ -47,7 +47,7 @@ namespace VRM
             "VRM/MToon",
         };
 
-        public override Material CreateMaterial(int i, glTFMaterial src, Func<int, TextureItem> getTexture)
+        public override Material CreateMaterial(int i, glTFMaterial src)
         {
             var item = m_materials[i];
             var shaderName = item.shader;
@@ -60,12 +60,12 @@ namespace VRM
                 if (VRM_SHADER_NAMES.Contains(shaderName))
                 {
                     Debug.LogErrorFormat("shader {0} not found. set Assets/VRM/Shaders/VRMShaders to Edit - project setting - Graphics - preloaded shaders", shaderName);
-                    return base.CreateMaterial(i, src, getTexture);
+                    return base.CreateMaterial(i, src);
                 }
                 else
                 {
                     Debug.LogWarningFormat("unknown shader {0}.", shaderName);
-                    return base.CreateMaterial(i, src, getTexture);
+                    return base.CreateMaterial(i, src);
                 }
             }
 
@@ -97,7 +97,7 @@ namespace VRM
             }
             foreach (var kv in item.textureProperties)
             {
-                var texture = getTexture(kv.Value);
+                var texture = Context.GetTexture(kv.Value);
                 if (texture != null) {
                     material.SetTexture(kv.Key, texture.Texture);
                 }

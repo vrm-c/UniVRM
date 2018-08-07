@@ -29,10 +29,11 @@ namespace VRM
             meta.Reference = gltfMeta.reference;
             meta.Title = gltfMeta.title;
 
-            if (gltfMeta.texture >= 0 && gltfMeta.texture < Textures.Count)
+            var thumbnail = GetTexture(gltfMeta.texture);
+            if (thumbnail!=null)
             {
                 // ロード済み
-                meta.Thumbnail = Textures[gltfMeta.texture].Texture;
+                meta.Thumbnail = thumbnail.Texture;
             }
             else if (createThumbnail)
             {

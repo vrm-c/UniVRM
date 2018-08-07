@@ -290,31 +290,22 @@ namespace VRM
             {
                 var x = new TextureItem(context.GLTF, i);
                 x.Process(context.GLTF, storage);
-                context.Textures.Add(x);
+                context.AddTexture(x);
                 yield return null;
             }
         }
 
         static IEnumerator LoadMaterials(VRMImporterContext context)
         {
-            Func<int, TextureItem> getTexture = x =>
-            {
-                if (x < 0 || x >= context.Textures.Count)
-                {
-                    return null;
-                }
-                return context.Textures[x];
-            };
-
             if (context.GLTF.materials == null || !context.GLTF.materials.Any())
             {
-                context.AddMaterial(context.MaterialImporter.CreateMaterial(0, null, getTexture));
+                context.AddMaterial(context.MaterialImporter.CreateMaterial(0, null));
             }
             else
             {
                 for (int i = 0; i < context.GLTF.materials.Count; ++i)
                 {
-                    context.AddMaterial(context.MaterialImporter.CreateMaterial(i, context.GLTF.materials[i], getTexture));
+                    context.AddMaterial(context.MaterialImporter.CreateMaterial(i, context.GLTF.materials[i]));
                     yield return null;
                 }
             }
@@ -448,7 +439,7 @@ namespace VRM
                                     texture.Process(ctx.GLTF, ctx.Storage);
                                     return texture;
                                 })
-                            .ContinueWith(Scheduler.ThreadPool, x => ctx.Textures.Add(x));
+                            .ContinueWith(Scheduler.ThreadPool, x => ctx.AddTexture(x));
                     }
                 })
                 .ContinueWithCoroutine(Scheduler.MainThread, () => LoadMaterials(ctx))
