@@ -468,8 +468,8 @@ namespace VRM
 
         public static Task<GameObject> LoadVrmAsync(string path, bool show=true)
         {
-            var context = new VRMImporterContext(path);
-            context.ParseVrm(File.ReadAllBytes(path));
+            var context = new VRMImporterContext(UnityPath.FromFullpath(path));
+            context.ParseGlb(File.ReadAllBytes(path));
             return LoadVrmAsyncInternal(context, show).ToTask();
         }
 
@@ -477,7 +477,7 @@ namespace VRM
         public static Task<GameObject> LoadVrmAsync(Byte[] bytes, bool show=true)
         {
             var context = new VRMImporterContext();
-            context.ParseVrm(bytes);
+            context.ParseGlb(bytes);
             return LoadVrmAsync(context, show);
         }
 
