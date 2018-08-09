@@ -3,7 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 
 
-namespace UniTask
+namespace DepthFirstScheduler
 {
     public enum ChainStatus
     {

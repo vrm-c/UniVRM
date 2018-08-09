@@ -1,4 +1,4 @@
-﻿namespace UniTask
+﻿namespace DepthFirstScheduler
 {
     public static partial class Scheduler
     {
