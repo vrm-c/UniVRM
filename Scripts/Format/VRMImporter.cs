@@ -56,15 +56,7 @@ namespace VRM
 
             using (context.MeasureTime("VRM LoadHumanoid"))
             {
-                try
-                {
-                    LoadHumanoidObsolete(context);
-                    Debug.LogWarning("LoadHumanoidObsolete");
-                }
-                catch (Exception)
-                {
-                    LoadHumanoid(context);
-                }
+                LoadHumanoid(context);
             }
 
             using (context.MeasureTime("VRM LoadBlendShapeMaster"))
@@ -226,56 +218,6 @@ namespace VRM
             sb.rotation = t.localRotation;
             sb.scale = t.localScale;
             return sb;
-        }
-
-        [Obsolete]
-        private static void LoadHumanoidObsolete(VRMImporterContext context)
-        {
-            var parsed = UniJSON.JsonParser.Parse(context.Json)["extensions"]["VRM"];
-            var skeleton = context.Root.transform.Traverse().Select(x => ToSkeletonBone(x)).ToArray();
-
-            var description = new HumanDescription
-            {
-                human = parsed[HUMANOID_KEY]["bones"]
-                .ObjectItems
-                .Select(x => new { x.Key, Index = x.Value.Value.GetInt32() })
-                .Where(x => x.Index != -1)
-                .Select(x =>
-                {
-                    var humanBone = EnumUtil.TryParseOrDefault<HumanBodyBones>(x.Key);
-                    var hb = new HumanBone
-                    {
-                        boneName = context.Nodes[x.Index].name,
-                        humanName = ToHumanBoneName(humanBone)
-                    };
-                    hb.limit.useDefaultValues = true;
-                    return hb;
-                }).ToArray(),
-                skeleton = skeleton,
-                lowerArmTwist = 0.5f,
-                upperArmTwist = 0.5f,
-                upperLegTwist = 0.5f,
-                lowerLegTwist = 0.5f,
-                armStretch = 0.05f,
-                legStretch = 0.05f,
-                feetSpacing = 0.0f,
-            };
-
-            context.HumanoidAvatar = AvatarBuilder.BuildHumanAvatar(context.Root, description);
-            context.HumanoidAvatar.name = "VrmAvatar";
-
-            context.AvatarDescription = UniHumanoid.AvatarDescription.CreateFrom(description);
-            context.AvatarDescription.name = "AvatarDescription";
-            var humanoid = context.Root.AddComponent<VRMHumanoidDescription>();
-            humanoid.Avatar = context.HumanoidAvatar;
-            humanoid.Description = context.AvatarDescription;
-
-            var animator = context.Root.GetComponent<Animator>();
-            if (animator == null)
-            {
-                animator = context.Root.AddComponent<Animator>();
-            }
-            animator.avatar = context.HumanoidAvatar;
         }
 
         private static void LoadHumanoid(VRMImporterContext context)
