@@ -45,7 +45,10 @@ namespace VRM
             {
                 var binding = m_clip.Values[i];
                 var target = m_renderers[i];
-                target.SetBlendShapeWeight(binding.Index, binding.Weight * value);
+                if(binding.Index>=0 && binding.Index < target.sharedMesh.blendShapeCount)
+                {
+                    target.SetBlendShapeWeight(binding.Index, binding.Weight * value);
+                }
             }
         }
     }
