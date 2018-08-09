@@ -49,22 +49,37 @@ namespace VRM
         #region OnLoad
         public static Unit OnLoadModel(VRMImporterContext context)
         {
-            LoadMeta(context);
-
-            try
+            using (context.MeasureTime("VRM LoadMeta"))
             {
-                LoadHumanoidObsolete(context);
-                Debug.LogWarning("LoadHumanoidObsolete");
-            }
-            catch (Exception)
-            {
-                LoadHumanoid(context);
+                LoadMeta(context);
             }
 
-            LoadBlendShapeMaster(context);
-            VRMSpringUtility.LoadSecondary(context.Root.transform, context.Nodes,
+            using (context.MeasureTime("VRM LoadHumanoid"))
+            {
+                try
+                {
+                    LoadHumanoidObsolete(context);
+                    Debug.LogWarning("LoadHumanoidObsolete");
+                }
+                catch (Exception)
+                {
+                    LoadHumanoid(context);
+                }
+            }
+
+            using (context.MeasureTime("VRM LoadBlendShapeMaster"))
+            {
+                LoadBlendShapeMaster(context);
+            }
+            using (context.MeasureTime("VRM LoadSecondary"))
+            {
+                VRMSpringUtility.LoadSecondary(context.Root.transform, context.Nodes,
                 context.GLTF.extensions.VRM.secondaryAnimation);
-            LoadFirstPerson(context);
+            }
+            using (context.MeasureTime("VRM LoadFirstPerson"))
+            {
+                LoadFirstPerson(context);
+            }
 
             return Unit.Default;
         }
@@ -391,14 +406,19 @@ namespace VRM
         public static void LoadVrmAsync(string path, Action<GameObject> onLoaded, Action<Exception> onError = null, bool show = true)
         {
             var context = new VRMImporterContext(UnityPath.FromFullpath(path));
-            context.ParseGlb(File.ReadAllBytes(path));
+            using (context.MeasureTime("ParseGlb"))
+            {
+                context.ParseGlb(File.ReadAllBytes(path));
+            }
             LoadVrmAsync(context, onLoaded, onError, show);
         }
 
         public static void LoadVrmAsync(Byte[] bytes, Action<GameObject> onLoaded, Action<Exception> onError = null, bool show = true)
         {
             var context = new VRMImporterContext();
-            context.ParseGlb(bytes);
+            using (context.MeasureTime("ParseGlb")) {
+                context.ParseGlb(bytes);
+            }
             LoadVrmAsync(context, onLoaded, onError, show);
         }
 
@@ -409,7 +429,10 @@ namespace VRM
                 onError = Debug.LogError;
             }
             LoadVrmAsyncInternal(ctx, show)
-                .Subscribe(Scheduler.MainThread, onLoaded, onError);
+                .Subscribe(Scheduler.MainThread,
+                onLoaded,
+                onError
+                );
         }
 
         private static Schedulable<GameObject> LoadVrmAsyncInternal(VRMImporterContext ctx, bool show)
@@ -417,11 +440,17 @@ namespace VRM
             return Schedulable.Create()
                 .AddTask(Scheduler.ThreadPool, () =>
                 {
-                    return glTF_VRM_Material.Parse(ctx.Json);
+                    using (ctx.MeasureTime("glTF_VRM_Material.Parse"))
+                    {
+                        return glTF_VRM_Material.Parse(ctx.Json);
+                    }
                 })
                 .ContinueWith(Scheduler.MainThread, gltfMaterials =>
                 {
-                    ctx.MaterialImporter = new VRMMaterialImporter(ctx, gltfMaterials);
+                    using (ctx.MeasureTime("new VRMMaterialImporter"))
+                    {
+                        ctx.MaterialImporter = new VRMMaterialImporter(ctx, gltfMaterials);
+                    }
                 })
                 .OnExecute(Scheduler.ThreadPool, parent =>
                 {
@@ -432,9 +461,12 @@ namespace VRM
                         parent.AddTask(Scheduler.MainThread,
                                 () =>
                                 {
-                                    var texture = new TextureItem(ctx.GLTF, index);
-                                    texture.Process(ctx.GLTF, ctx.Storage);
-                                    return texture;
+                                    using (ctx.MeasureTime("texture.Process"))
+                                    {
+                                        var texture = new TextureItem(ctx.GLTF, index);
+                                        texture.Process(ctx.GLTF, ctx.Storage);
+                                        return texture;
+                                    }
                                 })
                             .ContinueWith(Scheduler.ThreadPool, x => ctx.AddTexture(x));
                     }
@@ -447,15 +479,45 @@ namespace VRM
                     {
                         var index = i;
                         parent.AddTask(Scheduler.ThreadPool,
-                                () => gltfImporter.ReadMesh(ctx, index))
-                        .ContinueWith(Scheduler.MainThread, x => gltfImporter.BuildMesh(ctx, x))
+                                () =>
+                                {
+                                    using (ctx.MeasureTime("ReadMesh"))
+                                    {
+                                        return gltfImporter.ReadMesh(ctx, index);
+                                    }
+                                })
+                        .ContinueWith(Scheduler.MainThread, x =>
+                        {
+                            using (ctx.MeasureTime("BuildMesh"))
+                            {
+                                return gltfImporter.BuildMesh(ctx, x);
+                            }
+                        })
                         .ContinueWith(Scheduler.ThreadPool, x => ctx.Meshes.Add(x))
                         ;
                     }
                 })
-                .ContinueWithCoroutine(Scheduler.MainThread, () => LoadNodes(ctx))
-                .ContinueWithCoroutine(Scheduler.MainThread, () => BuildHierarchy(ctx))
-                .ContinueWith(Scheduler.CurrentThread, _ => VRMImporter.OnLoadModel(ctx))
+                .ContinueWithCoroutine(Scheduler.MainThread, () =>
+                {
+                    using (ctx.MeasureTime("LoadNodes"))
+                    {
+                        return LoadNodes(ctx);
+                    }
+                })
+                .ContinueWithCoroutine(Scheduler.MainThread, () =>
+                {
+                    using (ctx.MeasureTime("BuildHierarchy"))
+                    {
+                        return BuildHierarchy(ctx);
+                    }
+                })
+                .ContinueWith(Scheduler.CurrentThread, _ =>
+                {
+                    //using (ctx.MeasureTime("OnLoadModel"))
+                    {
+                        return VRMImporter.OnLoadModel(ctx);
+                    }
+                })
                 .ContinueWith(Scheduler.CurrentThread,
                     _ =>
                     {
@@ -466,6 +528,7 @@ namespace VRM
                             ctx.ShowMeshes();
                         }
 
+                        Debug.Log(ctx.GetSpeedLog());
                         return ctx.Root;
                     });
         }
