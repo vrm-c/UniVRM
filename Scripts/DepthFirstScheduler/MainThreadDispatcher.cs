@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace UniTask
+namespace DepthFirstScheduler
 {
     /// <summary>
     /// UniRxのMainThreadDispatcherを参考にした。

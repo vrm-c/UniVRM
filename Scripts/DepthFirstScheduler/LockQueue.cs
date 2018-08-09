@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 
-namespace UniTask
+namespace DepthFirstScheduler
 {
     public class LockQueue<T> where T : class
     {

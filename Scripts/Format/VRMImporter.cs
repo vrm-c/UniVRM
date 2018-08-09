@@ -5,7 +5,7 @@ using UnityEngine;
 using UniGLTF;
 using System.Collections.Generic;
 using System.Collections;
-using UniTask;
+using DepthFirstScheduler;
 #if (NET_4_6 && UNITY_2017_1_OR_NEWER)
 using System.Threading.Tasks;
 #endif
@@ -414,17 +414,14 @@ namespace VRM
 
         private static Schedulable<GameObject> LoadVrmAsyncInternal(VRMImporterContext ctx, bool show)
         {
-            var schedulable = Schedulable.Create();
-
-            return schedulable
+            return Schedulable.Create()
                 .AddTask(Scheduler.ThreadPool, () =>
                 {
                     return glTF_VRM_Material.Parse(ctx.Json);
                 })
-                .ContinueWith(Scheduler.MainThread, x =>
+                .ContinueWith(Scheduler.MainThread, gltfMaterials =>
                 {
-                    // material function
-                    ctx.MaterialImporter = new VRMMaterialImporter(ctx, x);
+                    ctx.MaterialImporter = new VRMMaterialImporter(ctx, gltfMaterials);
                 })
                 .OnExecute(Scheduler.ThreadPool, parent =>
                 {

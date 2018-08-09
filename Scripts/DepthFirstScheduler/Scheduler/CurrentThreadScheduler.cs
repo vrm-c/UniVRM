@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace UniTask
+namespace DepthFirstScheduler
 {
     public static partial class Scheduler
     {

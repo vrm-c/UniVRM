@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections;
 
-namespace UniTask
+namespace DepthFirstScheduler
 {
     public enum ExecutionStatus
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace UniTask
+namespace DepthFirstScheduler
 {
     public interface IScheduler : IDisposable
     {

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 #endif
 
-namespace UniTask
+namespace DepthFirstScheduler
 {
     public interface ISchedulable
     {

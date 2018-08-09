@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 
 
-namespace UniTask
+namespace DepthFirstScheduler
 {
     /// <summary>
     /// http://blogs.msdn.com/b/toub/archive/2006/04/12/blocking-queues.aspx

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace UniTask
+namespace DepthFirstScheduler
 {
     [Serializable]
     public struct Unit : IEquatable<Unit>
