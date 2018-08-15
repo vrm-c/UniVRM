@@ -183,14 +183,39 @@ namespace VRM
                             case 3: value.w = x.targetValue[3]; break;
                         }
                     }
-                    return new MaterialValueBinding
+
+                    var material = context.GetMaterials().FirstOrDefault(y => y.name == x.materialName);
+                    var propertyName = x.propertyName;
+                    if (x.propertyName.EndsWith("_ST_S")
+                    || x.propertyName.EndsWith("_ST_T"))
                     {
-                        MaterialName = x.materialName,
-                        ValueName = x.propertyName,
-                        TargetValue = value,
-                        BaseValue = context.GetMaterials().First(y => y.name == x.materialName).GetColor(x.propertyName),
-                    };
+                        propertyName = x.propertyName.Substring(0, x.propertyName.Length - 2);
+                    }
+
+                    var binding = default(MaterialValueBinding?);
+
+                    if (material != null)
+                    {
+                        try
+                        {
+                            binding = new MaterialValueBinding
+                            {
+                                MaterialName = x.materialName,
+                                ValueName = x.propertyName,
+                                TargetValue = value,
+                                BaseValue = material.GetColor(propertyName),
+                            };
+                        }
+                        catch(Exception)
+                        {
+                            // do nothing
+                        }
+                    }
+
+                    return binding;
                 })
+                .Where(x => x.HasValue)
+                .Select(x => x.Value)
                 .ToArray();
             }
 

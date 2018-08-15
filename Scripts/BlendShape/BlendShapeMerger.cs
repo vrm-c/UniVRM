@@ -258,7 +258,15 @@ namespace VRM
                     foreach (var y in x.MaterialValues)
                     {
                         // restore values
-                        m_materialMap[y.MaterialName].SetColor(y.ValueName, y.BaseValue);
+                        Material material;
+                        if(m_materialMap.TryGetValue(y.MaterialName, out material))
+                        {
+                            material.SetColor(y.ValueName, y.BaseValue);
+                        }
+                        else
+                        {
+                            Debug.LogWarningFormat("{0} not found", y.MaterialName);
+                        }
                     }
                 }
             }
