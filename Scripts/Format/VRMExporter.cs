@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using UniGLTF;
 using UnityEngine;
@@ -9,6 +8,11 @@ namespace VRM
 {
     public class VRMExporter : gltfExporter
     {
+        protected override IMaterialExporter CreateMaterialExporter()
+        {
+            return new VRMMaterialExporter();
+        }
+
         public VRMExporter(glTF gltf) : base(gltf)
         { }
 
