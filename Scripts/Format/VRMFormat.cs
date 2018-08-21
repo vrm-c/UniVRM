@@ -38,6 +38,7 @@ VRM extension is for 3d humanoid avatars (and models) in VR applications.
 ")]
     public class glTF_VRM_extensions : JsonSerializableBase
     {
+        [JsonSchema(Description = @"Version of exporter that vrm created. UniVRM-0.41")]
         public string exporterVersion = "UniVRM-" + VRMVersion.VERSION;
 
         public glTF_VRM_Meta meta = new glTF_VRM_Meta();

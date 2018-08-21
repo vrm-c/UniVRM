@@ -4,6 +4,7 @@
     "type":"object",
     "properties":{
         "exporterVersion":{
+            "description":"Version of exporter that vrm created. UniVRM-0.41",
             "type":"string"
         },
         "meta":{

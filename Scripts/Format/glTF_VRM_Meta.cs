@@ -38,14 +38,31 @@ namespace VRM
         {
             return EnumUtil.TryParseOrDefault<UssageLicense>(src);
         }
+
+        [JsonSchema(Description = "Title of VRM model")]
         public string title;
+
+        [JsonSchema(Description = "Version of VRM model")]
         public string version;
+
+        [JsonSchema(Description = "Author of VRM model")]
         public string author;
+
+        [JsonSchema(Description = "Contact Information of VRM model author")]
         public string contactInformation;
+
+        [JsonSchema(Description = "Reference of VRM model")]
         public string reference;
+
+        [JsonSchema(Description = "Thumbnail of VRM model")]
         public int texture = -1;
 
         #region Ussage Permission
+        [JsonSchema(Description = "A person who can perform with this avatar ", EnumValues = new object[] {
+            "OnlyAuthor",
+            "ExplicitlyLicensedPerson",
+            "Everyone",
+        })]
         public string allowedUserName;
         public AllowedUser allowedUser
         {
@@ -59,6 +76,11 @@ namespace VRM
             }
         }
 
+        [JsonSchema(Description = "Permission to perform violent acts with this avatar", EnumValues = new object[]
+        {
+        "Disallow",
+        "Allow",
+        })]
         public string violentUssageName;
         public UssageLicense violentUssage
         {
@@ -66,6 +88,11 @@ namespace VRM
             set { violentUssageName = value.ToString(); }
         }
 
+        [JsonSchema(Description = "Permission to perform sexual acts with this avatar", EnumValues = new object[]
+        {
+        "Disallow",
+        "Allow",
+        })]
         public string sexualUssageName;
         public UssageLicense sexualUssage
         {
@@ -73,6 +100,11 @@ namespace VRM
             set { sexualUssageName = value.ToString(); }
         }
 
+        [JsonSchema(Description = "For commercial use", EnumValues = new object[]
+        {
+        "Disallow",
+        "Allow",
+        })]
         public string commercialUssageName;
         public UssageLicense commercialUssage
         {
@@ -80,10 +112,23 @@ namespace VRM
             set { commercialUssageName = value.ToString(); }
         }
 
+        [JsonSchema(Description = "If there are any conditions not mentioned above, put the URL link of the license document here.")]
         public string otherPermissionUrl;
         #endregion
 
         #region Distribution License
+        [JsonSchema(Description = "License type", EnumValues = new object[]
+        {
+            "Redistribution_Prohibited",
+            "CC0",
+            "CC_BY",
+            "CC_BY_NC",
+            "CC_BY_SA",
+            "CC_BY_NC_SA",
+            "CC_BY_ND",
+            "CC_BY_NC_ND",
+            "Other"
+        })]
         public string licenseName;
         public LicenseType licenseType
         {
@@ -96,6 +141,8 @@ namespace VRM
                 licenseName = value.ToString();
             }
         }
+
+        [JsonSchema(Description = "If “Other” is selected, put the URL link of the license document here.")]
         public string otherLicenseUrl;
         #endregion
 
