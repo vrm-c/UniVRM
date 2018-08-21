@@ -1,74 +1,46 @@
 ﻿{
-    "title":"vrm.firstperson",
-    "type":"object",
-    "properties":{
-        "firstPersonBone":{
-            "type":"integer"
+    "title": "vrm.firstperson",
+    "type": "object",
+    "properties": {
+        "firstPersonBone": {
+            "description": "Switch to Head bone when model is rendered in first-person view.",
+            "type": "integer"
         },
-        "firstPersonBoneOffset":{
-            "type":"array"
+        "firstPersonBoneOffset": {
+            "description": "The target headset position in first-person view. Assuming the head bone is offset from the headset.",
+            "type": "array"
         },
-        "meshAnnotations":{
-            "type":"array"
-        },
-        "lookAtTypeName":{
-            "type":"string"
-        },
-        "lookAtHorizontalInner":{
-            "type":"object",
-            "properties":{
-                "curve":{
-                    "type":"array"
-                },
-                "xRange":{
-                    "type":"number"
-                },
-                "yRange":{
-                    "type":"number"
+        "meshAnnotations": {
+            "description": "Switch on \/ off mesh for display in first-person view, third-person view, or the others.",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "mesh": {
+                        "type": "integer"
+                    },
+                    "firstPersonFlag": {
+                        "type": "string"
+                    }
                 }
             }
         },
-        "lookAtHorizontalOuter":{
-            "type":"object",
-            "properties":{
-                "curve":{
-                    "type":"array"
-                },
-                "xRange":{
-                    "type":"number"
-                },
-                "yRange":{
-                    "type":"number"
-                }
-            }
+        "lookAtTypeName": {
+            "description": "Eye controller mode.",
+            "type": "string",
+            "enum": ["Bone","BlendShape"]
         },
-        "lookAtVerticalDown":{
-            "type":"object",
-            "properties":{
-                "curve":{
-                    "type":"array"
-                },
-                "xRange":{
-                    "type":"number"
-                },
-                "yRange":{
-                    "type":"number"
-                }
-            }
+        "lookAtHorizontalInner": {
+            "$ref": "vrm.degreemap.schema.json"
         },
-        "lookAtVerticalUp":{
-            "type":"object",
-            "properties":{
-                "curve":{
-                    "type":"array"
-                },
-                "xRange":{
-                    "type":"number"
-                },
-                "yRange":{
-                    "type":"number"
-                }
-            }
+        "lookAtHorizontalOuter": {
+            "$ref": "vrm.degreemap.schema.json"
+        },
+        "lookAtVerticalDown": {
+            "$ref": "vrm.degreemap.schema.json"
+        },
+        "lookAtVerticalUp": {
+            "$ref": "vrm.degreemap.schema.json"
         }
     }
 }

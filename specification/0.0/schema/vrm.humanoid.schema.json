@@ -1,33 +1,44 @@
 ﻿{
-    "title":"vrm.humanoid",
-    "type":"object",
-    "properties":{
-        "humanBones":{
-            "type":"array"
+    "title": "vrm.humanoid",
+    "type": "object",
+    "properties": {
+        "humanBones": {
+            "type": "array",
+            "items": {
+                "$ref": "vrm.humanoidbone.schema.json"
+            }
         },
-        "armStretch":{
-            "type":"number"
+        "armStretch": {
+            "description": "Unity's HumanDescription.armStretch",
+            "type": "number"
         },
-        "legStretch":{
-            "type":"number"
+        "legStretch": {
+            "description": "Unity's HumanDescription.legStretch",
+            "type": "number"
         },
-        "upperArmTwist":{
-            "type":"number"
+        "upperArmTwist": {
+            "description": "Unity's HumanDescription.upperArmTwist",
+            "type": "number"
         },
-        "lowerArmTwist":{
-            "type":"number"
+        "lowerArmTwist": {
+            "description": "Unity's HumanDescription.lowerArmTwist",
+            "type": "number"
         },
-        "upperLegTwist":{
-            "type":"number"
+        "upperLegTwist": {
+            "description": "Unity's HumanDescription.upperLegTwist",
+            "type": "number"
         },
-        "lowerLegTwist":{
-            "type":"number"
+        "lowerLegTwist": {
+            "description": "Unity's HumanDescription.lowerLegTwist",
+            "type": "number"
         },
-        "feetSpacing":{
-            "type":"number"
+        "feetSpacing": {
+            "description": "Unity's HumanDescription.feetSpacing",
+            "type": "number"
         },
-        "hasTranslationDoF":{
-            "type":"bool"
+        "hasTranslationDoF": {
+            "description": "Unity's HumanDescription.hasTranslationDoF",
+            "type": "bool"
         }
     }
 }

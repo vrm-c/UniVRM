@@ -61,6 +61,41 @@ namespace VRM
             return "";
         }
 
+        static void TraverseItem(JsonNode node, JsonFormatter f, UnityPath dir)
+        {
+            var title = GetTitle(node);
+            if (string.IsNullOrEmpty(title))
+            {
+                Traverse(node, f, dir);
+            }
+            else
+            {
+                // ref
+                f.BeginMap();
+                f.Key("$ref");
+                var fileName = string.Format("{0}.schema.json", title);
+                f.Value(fileName);
+                f.EndMap();
+
+                // new formatter
+                {
+                    var subFormatter = new JsonFormatter(4);
+
+                    subFormatter.BeginMap();
+                    foreach (var _kv in node.ObjectItems)
+                    {
+                        subFormatter.Key(_kv.Key);
+                        Traverse(_kv.Value, subFormatter, dir);
+                    }
+                    subFormatter.EndMap();
+
+                    var subJson = subFormatter.ToString();
+                    var path = dir.Child(fileName);
+                    File.WriteAllText(path.FullPath, subJson, Encoding.UTF8);
+                }
+            }
+        }
+
         static void Traverse(JsonNode node, JsonFormatter f, UnityPath dir)
         {
             switch(node.Value.ValueType)
@@ -69,7 +104,7 @@ namespace VRM
                     f.BeginList();
                     foreach(var x in node.ArrayItems)
                     {
-                        Traverse(x, f, dir);
+                        TraverseItem(x, f, dir);
                     }
                     f.EndList();
                     break;
@@ -81,37 +116,7 @@ namespace VRM
                         foreach (var kv in node.ObjectItems)
                         {
                             f.Key(kv.Key);
-                            var title = GetTitle(kv.Value);
-                            if (string.IsNullOrEmpty(title))
-                            {
-                                Traverse(kv.Value, f, dir);
-                            }
-                            else
-                            {
-                                // ref
-                                f.BeginMap();
-                                f.Key("$ref");
-                                var fileName = string.Format("{0}.schema.json", title);
-                                f.Value(fileName);
-                                f.EndMap();
-
-                                // new formatter
-                                {
-                                    var subFormatter = new JsonFormatter(4);
-
-                                    subFormatter.BeginMap();
-                                    foreach (var _kv in kv.Value.ObjectItems)
-                                    {
-                                        subFormatter.Key(_kv.Key);
-                                        Traverse(_kv.Value, subFormatter, dir);
-                                    }
-                                    subFormatter.EndMap();
-
-                                    var subJson = subFormatter.ToString();
-                                    var path = dir.Child(fileName);
-                                    File.WriteAllText(path.FullPath, subJson, Encoding.UTF8);
-                                }
-                            }
+                            TraverseItem(kv.Value, f, dir);
                         }
                         f.EndMap();
                     }

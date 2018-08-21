@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using UniGLTF;
-using UnityEngine;
-using UniHumanoid;
 using UniJSON;
+using UnityEngine;
+
 
 namespace VRM
 {
@@ -89,8 +89,66 @@ namespace VRM
     }
 
     [Serializable]
+    [JsonSchema(Title = "vrm.humanoidbone")]
     public class glTF_VRM_HumanoidBone : JsonSerializableBase
     {
+        [JsonSchema(Description = "Human bone name.", EnumValues = new object[] {
+            "hips",
+            "leftUpperLeg",
+            "rightUpperLeg",
+            "leftLowerLeg",
+            "rightLowerLeg",
+            "leftFoot",
+            "rightFoot",
+            "spine",
+            "chest",
+            "neck",
+            "head",
+            "leftShoulder",
+            "rightShoulder",
+            "leftUpperArm",
+            "rightUpperArm",
+            "leftLowerArm",
+            "rightLowerArm",
+            "leftHand",
+            "rightHand",
+            "leftToes",
+            "rightToes",
+            "leftEye",
+            "rightEye",
+            "jaw",
+            "leftThumbProximal",
+            "leftThumbIntermediate",
+            "leftThumbDistal",
+            "leftIndexProximal",
+            "leftIndexIntermediate",
+            "leftIndexDistal",
+            "leftMiddleProximal",
+            "leftMiddleIntermediate",
+            "leftMiddleDistal",
+            "leftRingProximal",
+            "leftRingIntermediate",
+            "leftRingDistal",
+            "leftLittleProximal",
+            "leftLittleIntermediate",
+            "leftLittleDistal",
+            "rightThumbProximal",
+            "rightThumbIntermediate",
+            "rightThumbDistal",
+            "rightIndexProximal",
+            "rightIndexIntermediate",
+            "rightIndexDistal",
+            "rightMiddleProximal",
+            "rightMiddleIntermediate",
+            "rightMiddleDistal",
+            "rightRingProximal",
+            "rightRingIntermediate",
+            "rightRingDistal",
+            "rightLittleProximal",
+            "rightLittleIntermediate",
+            "rightLittleDistal",
+            "upperChest",
+        })]
         public string bone;
         public VRMBone vrmBone
         {
@@ -103,12 +161,23 @@ namespace VRM
                 return EnumUtil.TryParseOrDefault<VRMBone>(bone);
             }
         }
+
+        [JsonSchema(Description = "Reference node index")]
         public int node = -1;
 
+        [JsonSchema(Description = "Unity's HumanLimit.useDefaultValues")]
         public bool useDefaultValues = true;
+
+        [JsonSchema(Description = "Unity's HumanLimit.min")]
         public Vector3 min;
+
+        [JsonSchema(Description = "Unity's HumanLimit.max")]
         public Vector3 max;
+
+        [JsonSchema(Description = "Unity's HumanLimit.center")]
         public Vector3 center;
+
+        [JsonSchema(Description = "Unity's HumanLimit.axisLength")]
         public float axisLength;
 
         protected override void SerializeMembers(GLTFJsonFormatter f)
@@ -131,13 +200,29 @@ namespace VRM
     public class glTF_VRM_Humanoid : JsonSerializableBase
     {
         public List<glTF_VRM_HumanoidBone> humanBones = new List<glTF_VRM_HumanoidBone>();
+
+        [JsonSchema(Description = "Unity's HumanDescription.armStretch")]
         public float armStretch = 0.05f;
+
+        [JsonSchema(Description = "Unity's HumanDescription.legStretch")]
         public float legStretch = 0.05f;
+
+        [JsonSchema(Description = "Unity's HumanDescription.upperArmTwist")]
         public float upperArmTwist = 0.5f;
+
+        [JsonSchema(Description = "Unity's HumanDescription.lowerArmTwist")]
         public float lowerArmTwist = 0.5f;
+
+        [JsonSchema(Description = "Unity's HumanDescription.upperLegTwist")]
         public float upperLegTwist = 0.5f;
+
+        [JsonSchema(Description = "Unity's HumanDescription.lowerLegTwist")]
         public float lowerLegTwist = 0.5f;
+
+        [JsonSchema(Description = "Unity's HumanDescription.feetSpacing")]
         public float feetSpacing = 0;
+
+        [JsonSchema(Description = "Unity's HumanDescription.hasTranslationDoF")]
         public bool hasTranslationDoF = false;
 
         public void SetNodeIndex(HumanBodyBones _key, int node)

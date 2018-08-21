@@ -8,6 +8,7 @@ using UniJSON;
 namespace VRM
 {
     [Serializable]
+    [JsonSchema(Title = "vrm.materialbind")]
     public class glTF_VRM_MaterialValueBind : UniGLTF.JsonSerializableBase
     {
         public string materialName;
@@ -23,6 +24,7 @@ namespace VRM
     }
 
     [Serializable]
+    [JsonSchema(Title = "vrm.blendshapebind")]
     public class glTF_VRM_BlendShapeBind : UniGLTF.JsonSerializableBase
     {
         public int mesh = -1;
@@ -83,11 +85,37 @@ namespace VRM
     }
 
     [Serializable]
+    [JsonSchema(Title = "vrm.blendshapegroup", Description = "BlendShapeClip of UniVRM")]
     public class glTF_VRM_BlendShapeGroup : UniGLTF.JsonSerializableBase
     {
+        [JsonSchema(Description = "Expression name")]
         public string name;
+
+        [JsonSchema(Description = "Predefined Expression name", EnumValues =new object[] {
+            "Neutral",
+            "A",
+            "I",
+            "U",
+            "E",
+            "O",
+            "Blink",
+            "Joy",
+            "Angry",
+            "Sorrow",
+            "Fun",
+            "LookUp",
+            "LookDown",
+            "LookLeft",
+            "LookRight",
+            "Blink_L",
+            "Blink_R",
+        })]
         public string presetName;
+
+        [JsonSchema(Description = "Low level blendshape references. ")]
         public List<glTF_VRM_BlendShapeBind> binds = new List<glTF_VRM_BlendShapeBind>();
+
+        [JsonSchema(Description = "Material animation references.")]
         public List<glTF_VRM_MaterialValueBind> materialValues = new List<glTF_VRM_MaterialValueBind>();
 
         protected override void SerializeMembers(GLTFJsonFormatter f)
@@ -100,7 +128,7 @@ namespace VRM
     }
 
     [Serializable]
-    [JsonSchema(Title = "vrm.blendshapemaster")]
+    [JsonSchema(Title = "vrm.blendshapemaster", Description = "BlendShapeAvatar of UniVRM")]
     public class glTF_VRM_BlendShapeMaster : UniGLTF.JsonSerializableBase
     {
         public List<glTF_VRM_BlendShapeGroup> blendShapeGroups = new List<glTF_VRM_BlendShapeGroup>();

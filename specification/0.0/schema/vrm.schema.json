@@ -1,29 +1,32 @@
 ﻿{
-    "title":"vrm",
-    "description":"VRM extension is for 3d humanoid avatars (and models) in VR applications.",
-    "type":"object",
-    "properties":{
-        "exporterVersion":{
-            "description":"Version of exporter that vrm created. UniVRM-0.41",
-            "type":"string"
+    "title": "vrm",
+    "description": "VRM extension is for 3d humanoid avatars (and models) in VR applications.",
+    "type": "object",
+    "properties": {
+        "exporterVersion": {
+            "description": "Version of exporter that vrm created. UniVRM-0.42",
+            "type": "string"
         },
-        "meta":{
-            "$ref":"vrm.meta.schema.json"
+        "meta": {
+            "$ref": "vrm.meta.schema.json"
         },
-        "humanoid":{
-            "$ref":"vrm.humanoid.schema.json"
+        "humanoid": {
+            "$ref": "vrm.humanoid.schema.json"
         },
-        "firstPerson":{
-            "$ref":"vrm.firstperson.schema.json"
+        "firstPerson": {
+            "$ref": "vrm.firstperson.schema.json"
         },
-        "blendShapeMaster":{
-            "$ref":"vrm.blendshapemaster.schema.json"
+        "blendShapeMaster": {
+            "$ref": "vrm.blendshapemaster.schema.json"
         },
-        "secondaryAnimation":{
-            "$ref":"vrm.secondaryanimation.schema.json"
+        "secondaryAnimation": {
+            "$ref": "vrm.secondaryanimation.schema.json"
         },
-        "materialProperties":{
-            "type":"array"
+        "materialProperties": {
+            "type": "array",
+            "items": {
+                "$ref": "vrm.material.schema.json"
+            }
         }
     }
 }

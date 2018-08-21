@@ -1,0 +1,15 @@
+﻿{
+    "title": "vrm.blendshapebind",
+    "type": "object",
+    "properties": {
+        "mesh": {
+            "type": "integer"
+        },
+        "index": {
+            "type": "integer"
+        },
+        "weight": {
+            "type": "number"
+        }
+    }
+}

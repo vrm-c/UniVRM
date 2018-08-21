@@ -1,0 +1,35 @@
+﻿{
+    "title": "vrm.humanoidbone",
+    "type": "object",
+    "properties": {
+        "bone": {
+            "description": "Human bone name.",
+            "type": "string",
+            "enum": ["hips","leftUpperLeg","rightUpperLeg","leftLowerLeg","rightLowerLeg","leftFoot","rightFoot","spine","chest","neck","head","leftShoulder","rightShoulder","leftUpperArm","rightUpperArm","leftLowerArm","rightLowerArm","leftHand","rightHand","leftToes","rightToes","leftEye","rightEye","jaw","leftThumbProximal","leftThumbIntermediate","leftThumbDistal","leftIndexProximal","leftIndexIntermediate","leftIndexDistal","leftMiddleProximal","leftMiddleIntermediate","leftMiddleDistal","leftRingProximal","leftRingIntermediate","leftRingDistal","leftLittleProximal","leftLittleIntermediate","leftLittleDistal","rightThumbProximal","rightThumbIntermediate","rightThumbDistal","rightIndexProximal","rightIndexIntermediate","rightIndexDistal","rightMiddleProximal","rightMiddleIntermediate","rightMiddleDistal","rightRingProximal","rightRingIntermediate","rightRingDistal","rightLittleProximal","rightLittleIntermediate","rightLittleDistal","upperChest"]
+        },
+        "node": {
+            "description": "Reference node index",
+            "type": "integer"
+        },
+        "useDefaultValues": {
+            "description": "Unity's HumanLimit.useDefaultValues",
+            "type": "bool"
+        },
+        "min": {
+            "description": "Unity's HumanLimit.min",
+            "type": "array"
+        },
+        "max": {
+            "description": "Unity's HumanLimit.max",
+            "type": "array"
+        },
+        "center": {
+            "description": "Unity's HumanLimit.center",
+            "type": "array"
+        },
+        "axisLength": {
+            "description": "Unity's HumanLimit.axisLength",
+            "type": "number"
+        }
+    }
+}

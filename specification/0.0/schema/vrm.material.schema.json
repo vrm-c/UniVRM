@@ -1,0 +1,30 @@
+﻿{
+    "title": "vrm.material",
+    "type": "object",
+    "properties": {
+        "name": {
+            "type": "string"
+        },
+        "shader": {
+            "type": "string"
+        },
+        "renderQueue": {
+            "type": "integer"
+        },
+        "floatProperties": {
+            "type": "object"
+        },
+        "vectorProperties": {
+            "type": "object"
+        },
+        "textureProperties": {
+            "type": "object"
+        },
+        "keywordMap": {
+            "type": "object"
+        },
+        "tagMap": {
+            "type": "object"
+        }
+    }
+}

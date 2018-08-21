@@ -1,9 +1,12 @@
 ﻿{
-    "title":"vrm.blendshapemaster",
-    "type":"object",
-    "properties":{
-        "blendShapeGroups":{
-            "type":"array"
+    "title": "vrm.blendshapemaster",
+    "type": "object",
+    "properties": {
+        "blendShapeGroups": {
+            "type": "array",
+            "items": {
+                "$ref": "vrm.blendshapegroup.schema.json"
+            }
         }
     }
 }

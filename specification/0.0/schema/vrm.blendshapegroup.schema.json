@@ -1,0 +1,29 @@
+﻿{
+    "title": "vrm.blendshapegroup",
+    "type": "object",
+    "properties": {
+        "name": {
+            "description": "Expression name",
+            "type": "string"
+        },
+        "presetName": {
+            "description": "Predefined Expression name",
+            "type": "string",
+            "enum": ["Neutral","A","I","U","E","O","Blink","Joy","Angry","Sorrow","Fun","LookUp","LookDown","LookLeft","LookRight","Blink_L","Blink_R"]
+        },
+        "binds": {
+            "description": "Low level blendshape references.",
+            "type": "array",
+            "items": {
+                "$ref": "vrm.blendshapebind.schema.json"
+            }
+        },
+        "materialValues": {
+            "description": "Material animation references.",
+            "type": "array",
+            "items": {
+                "$ref": "vrm.materialbind.schema.json"
+            }
+        }
+    }
+}

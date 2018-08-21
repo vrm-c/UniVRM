@@ -1,0 +1,18 @@
+﻿{
+    "title": "vrm.materialbind",
+    "type": "object",
+    "properties": {
+        "materialName": {
+            "type": "string"
+        },
+        "propertyName": {
+            "type": "string"
+        },
+        "targetValue": {
+            "type": "array",
+            "items": {
+                "type": "number"
+            }
+        }
+    }
+}
