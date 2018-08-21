@@ -3,7 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using UniGLTF;
 using UnityEngine;
-
+using UniJSON;
 
 namespace VRM
 {
@@ -63,6 +63,7 @@ namespace VRM
     }
 
     [Serializable]
+    [JsonSchema(Title = "vrm.firstperson")]
     public class glTF_VRM_Firstperson : UniGLTF.JsonSerializableBase
     {
         public int firstPersonBone = -1;
@@ -75,7 +76,8 @@ namespace VRM
         public string lookAtTypeName = "Bone";
         public LookAtType lookAtType
         {
-            get {
+            get
+            {
                 return EnumUtil.TryParseOrDefault<LookAtType>(lookAtTypeName);
             }
             set { lookAtTypeName = value.ToString(); }

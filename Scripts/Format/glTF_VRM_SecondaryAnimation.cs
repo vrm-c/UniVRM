@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UniGLTF;
+using UniJSON;
 using UnityEngine;
 
 
@@ -61,6 +62,7 @@ namespace VRM
     }
 
     [Serializable]
+    [JsonSchema(Title = "vrm.secondaryanimation")]
     public class glTF_VRM_SecondaryAnimation : JsonSerializableBase
     {
         public List<glTF_VRM_SecondaryAnimationGroup> boneGroups = new List<glTF_VRM_SecondaryAnimationGroup>();

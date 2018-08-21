@@ -1,0 +1,33 @@
+﻿{
+    "title":"vrm.humanoid",
+    "type":"object",
+    "properties":{
+        "humanBones":{
+            "type":"array"
+        },
+        "armStretch":{
+            "type":"number"
+        },
+        "legStretch":{
+            "type":"number"
+        },
+        "upperArmTwist":{
+            "type":"number"
+        },
+        "lowerArmTwist":{
+            "type":"number"
+        },
+        "upperLegTwist":{
+            "type":"number"
+        },
+        "lowerLegTwist":{
+            "type":"number"
+        },
+        "feetSpacing":{
+            "type":"number"
+        },
+        "hasTranslationDoF":{
+            "type":"bool"
+        }
+    }
+}

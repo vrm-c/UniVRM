@@ -4,7 +4,7 @@ using System.Linq;
 using UniGLTF;
 using UnityEngine;
 using UniHumanoid;
-
+using UniJSON;
 
 namespace VRM
 {
@@ -127,6 +127,7 @@ namespace VRM
     }
 
     [Serializable]
+    [JsonSchema(Title = "vrm.humanoid")]
     public class glTF_VRM_Humanoid : JsonSerializableBase
     {
         public List<glTF_VRM_HumanoidBone> humanBones = new List<glTF_VRM_HumanoidBone>();
@@ -222,9 +223,9 @@ namespace VRM
                 center = x.center,
                 min = x.min,
                 max = x.max,
-                humanBone = x.vrmBone.ToHumanBodyBone(),               
+                humanBone = x.vrmBone.ToHumanBodyBone(),
             })
-            .Where(x => x.humanBone!= HumanBodyBones.LastBone)
+            .Where(x => x.humanBone != HumanBodyBones.LastBone)
             .ToArray();
             return description;
         }

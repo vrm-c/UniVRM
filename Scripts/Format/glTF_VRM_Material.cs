@@ -9,6 +9,7 @@ using UniGLTF.ShaderPropExporter;
 namespace VRM
 {
     [Serializable]
+    [JsonSchema(Title = "vrm.material")]
     public class glTF_VRM_Material : JsonSerializableBase
     {
         public string name;

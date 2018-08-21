@@ -1,6 +1,6 @@
 ﻿using System;
 using UniGLTF;
-
+using UniJSON;
 
 namespace VRM
 {
@@ -31,6 +31,7 @@ namespace VRM
     }
 
     [Serializable]
+    [JsonSchema(Title = "vrm.meta")]
     public class glTF_VRM_Meta : JsonSerializableBase
     {
         static UssageLicense FromString(string src)

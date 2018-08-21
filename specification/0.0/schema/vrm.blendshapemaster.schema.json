@@ -1,0 +1,9 @@
+﻿{
+    "title":"vrm.blendshapemaster",
+    "type":"object",
+    "properties":{
+        "blendShapeGroups":{
+            "type":"array"
+        }
+    }
+}

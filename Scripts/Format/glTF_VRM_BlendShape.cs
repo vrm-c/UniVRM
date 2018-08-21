@@ -3,7 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using UniGLTF;
 using UnityEngine;
-
+using UniJSON;
 
 namespace VRM
 {
@@ -100,6 +100,7 @@ namespace VRM
     }
 
     [Serializable]
+    [JsonSchema(Title = "vrm.blendshapemaster")]
     public class glTF_VRM_BlendShapeMaster : UniGLTF.JsonSerializableBase
     {
         public List<glTF_VRM_BlendShapeGroup> blendShapeGroups = new List<glTF_VRM_BlendShapeGroup>();

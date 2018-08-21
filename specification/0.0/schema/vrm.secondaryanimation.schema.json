@@ -1,0 +1,12 @@
+﻿{
+    "title":"vrm.secondaryanimation",
+    "type":"object",
+    "properties":{
+        "boneGroups":{
+            "type":"array"
+        },
+        "colliderGroups":{
+            "type":"array"
+        }
+    }
+}
