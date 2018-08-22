@@ -120,6 +120,53 @@ namespace VRM
             return normalized;
         }
 
+        class BlendShapeReport
+        {
+            string m_name;
+            int m_count;
+            struct BlendShapeStat
+            {
+                public int Index;
+                public string Name;
+                public int VertexCount;
+                public int NormalCount;
+                public int TangentCount;
+
+                public override string ToString()
+                {
+                    return string.Format("[{0}]{1}: {2}, {3}, {4}\n", Index, Name, VertexCount, NormalCount, TangentCount);
+                }
+            }
+            List<BlendShapeStat> m_stats = new List<BlendShapeStat>();
+            public int Count
+            {
+                get { return m_stats.Count; }
+            }
+            public BlendShapeReport(Mesh mesh)
+            {
+                m_name = mesh.name;
+                m_count = mesh.vertexCount;
+            }
+            public void SetCount(int index, string name, int v, int n, int t)
+            {
+                m_stats.Add(new BlendShapeStat
+                {
+                    Index =index,
+                    Name = name,
+                    VertexCount = v,
+                    NormalCount = n,
+                    TangentCount = t,
+                });
+            }
+            public override string ToString()
+            {
+                return String.Format("NormalizeSkinnedMesh: {0}({1}verts)\n{2}",
+                    m_name,
+                    m_count,
+                    String.Join("", m_stats.Select(x => x.ToString()).ToArray()));
+            }
+        }
+
         /// <summary>
         /// srcのSkinnedMeshRendererを正規化して、dstにアタッチする
         /// </summary>
@@ -198,14 +245,22 @@ namespace VRM
             var _meshNormals = new Vector3[meshVertices.Length];
             var _meshTangents = new Vector3[meshVertices.Length];
 
+            var report = new BlendShapeReport(srcMesh);
             var blendShapeMesh = new Mesh();
             for (int i = 0; i < srcMesh.blendShapeCount; ++i)
             {
                 // check blendShape
                 srcRenderer.sharedMesh.GetBlendShapeFrameVertices(i, 0, _meshVertices, _meshNormals, _meshTangents);
-                var hasVertices = !_meshVertices.All(x => x == Vector3.zero);
-                var hasNormals = !_meshNormals.All(x => x == Vector3.zero);
-                var hasTangents = !_meshTangents.All(x => x == Vector3.zero);
+                var hasVertices = _meshVertices.Count(x => x != Vector3.zero);
+                var hasNormals = _meshNormals.Count(x => x != Vector3.zero);
+                var hasTangents = _meshTangents.Count(x => x != Vector3.zero);
+                var name = srcMesh.GetBlendShapeName(i);
+                if (string.IsNullOrEmpty(name))
+                {
+                    name = String.Format("{0}", i);
+                }
+
+                report.SetCount(i, name, hasVertices, hasNormals, hasTangents);
 
                 srcRenderer.SetBlendShapeWeight(i, 100.0f);
                 srcRenderer.BakeMesh(blendShapeMesh);
@@ -216,7 +271,7 @@ namespace VRM
                 srcRenderer.SetBlendShapeWeight(i, 0);
 
                 Vector3[] vertices = null;
-                if (hasVertices)
+                if (hasVertices>0)
                 {
                     vertices = blendShapeMesh.vertices;
                     // to delta
@@ -227,11 +282,12 @@ namespace VRM
                 }
                 else
                 {
+                    Debug.LogWarning("no vertices");
                     vertices = new Vector3[mesh.vertexCount];
                 }
 
                 Vector3[] normals = null;
-                if (hasNormals)
+                if (hasNormals>0)
                 {
                     normals = blendShapeMesh.normals;
                     // to delta
@@ -242,11 +298,11 @@ namespace VRM
                 }
                 else
                 {
-                    normals = new Vector3[mesh.vertexCount];
+                    //normals = new Vector3[mesh.vertexCount];
                 }
 
                 Vector3[] tangents = null;
-                if (hasTangents)
+                if (hasTangents>0)
                 {
                     tangents = blendShapeMesh.tangents.Select(x => (Vector3)x).ToArray();
                     // to delta
@@ -257,13 +313,7 @@ namespace VRM
                 }
                 else
                 {
-                    tangents = new Vector3[mesh.vertexCount];
-                }
-
-                var name = srcMesh.GetBlendShapeName(i);
-                if (string.IsNullOrEmpty(name))
-                {
-                    name = String.Format("{0}", i);
+                    //tangents = new Vector3[mesh.vertexCount];
                 }
 
                 var weight = srcMesh.GetBlendShapeFrameWeight(i, 0);
@@ -285,6 +335,11 @@ namespace VRM
                         );
                     throw;
                 }
+            }
+
+            if (report.Count > 0)
+            {
+                Debug.LogFormat("{0}", report.ToString());
             }
 
             var dstRenderer = dst.gameObject.AddComponent<SkinnedMeshRenderer>();
