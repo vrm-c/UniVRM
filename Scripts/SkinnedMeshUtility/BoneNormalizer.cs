@@ -358,7 +358,18 @@ namespace VRM
             //
             if (forceTPose)
             {
-                EnforceTPose(go);
+                var hips = go.GetComponent<Animator>().GetBoneTransform(HumanBodyBones.Hips);
+                var hipsPosition = hips.position;
+                var hipsRotation = hips.rotation;
+                try
+                {
+                    EnforceTPose(go);
+                }
+                finally
+                {
+                    hips.position = hipsPosition; // restore hipsPosition
+                    hips.rotation = hipsRotation;
+                }
             }
 
             //

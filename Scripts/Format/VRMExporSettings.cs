@@ -211,7 +211,7 @@ namespace VRM
         }
 
 #if UNITY_EDITOR
-        struct RecordDisposer : IDisposable
+        public struct RecordDisposer : IDisposable
         {
             public RecordDisposer(UnityEngine.Object[] objects, string msg)
             {

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UniGLTF;
@@ -9,11 +8,11 @@ namespace VRM
 {
     public static class VRMHumanoidNorimalizerMenu
     {
-        const string MENU_KEY = VRMVersion.VRM_VERSION+"/Freeze T-Pose";
+        const string MENU_KEY = VRMVersion.VRM_VERSION + "/Freeze T-Pose";
         [MenuItem(MENU_KEY, true, 1)]
         private static bool ExportValidate()
         {
-            var root=Selection.activeObject as GameObject;
+            var root = Selection.activeObject as GameObject;
             if (root == null)
             {
                 return false;
@@ -31,7 +30,8 @@ namespace VRM
                 return false;
             }
 
-            if (!avatar.isValid) {
+            if (!avatar.isValid)
+            {
                 return false;
             }
 
@@ -48,11 +48,14 @@ namespace VRM
         {
             var go = Selection.activeObject as GameObject;
 
-            var normalized = VRM.BoneNormalizer.Execute(go, true);
-            VRMExportSettings.CopyVRMComponents(go, normalized.Root, normalized.BoneMap);
-            Selection.activeGameObject = normalized.Root;
-
-            Undo.RegisterCreatedObjectUndo(normalized.Root, "normalize");
+            GameObject normalizedRoot = null;
+            using (new VRMExportSettings.RecordDisposer(go.transform.Traverse().ToArray(), "before normalize"))
+            {
+                var normalized = BoneNormalizer.Execute(go, true);
+                VRMExportSettings.CopyVRMComponents(go, normalized.Root, normalized.BoneMap);
+                normalizedRoot = normalized.Root;
+            }
+            Selection.activeGameObject = normalizedRoot;
         }
     }
 }
