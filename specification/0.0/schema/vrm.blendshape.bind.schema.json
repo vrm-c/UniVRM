@@ -1,5 +1,5 @@
 ﻿{
-    "title": "vrm.blendshapebind",
+    "title": "vrm.blendshape.bind",
     "type": "object",
     "properties": {
         "mesh": {

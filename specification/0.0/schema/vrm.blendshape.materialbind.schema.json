@@ -1,5 +1,5 @@
 ﻿{
-    "title": "vrm.materialbind",
+    "title": "vrm.blendshape.materialbind",
     "type": "object",
     "properties": {
         "materialName": {

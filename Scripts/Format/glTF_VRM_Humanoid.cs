@@ -89,7 +89,7 @@ namespace VRM
     }
 
     [Serializable]
-    [JsonSchema(Title = "vrm.humanoidbone")]
+    [JsonSchema(Title = "vrm.humanoid.bone")]
     public class glTF_VRM_HumanoidBone : JsonSerializableBase
     {
         [JsonSchema(Description = "Human bone name.", EnumValues = new object[] {

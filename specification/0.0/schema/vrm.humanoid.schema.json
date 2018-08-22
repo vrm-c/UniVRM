@@ -5,7 +5,7 @@
         "humanBones": {
             "type": "array",
             "items": {
-                "$ref": "vrm.humanoidbone.schema.json"
+                "$ref": "vrm.humanoid.bone.schema.json"
             }
         },
         "armStretch": {

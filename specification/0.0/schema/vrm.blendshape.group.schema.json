@@ -1,5 +1,5 @@
 ﻿{
-    "title": "vrm.blendshapegroup",
+    "title": "vrm.blendshape.group",
     "type": "object",
     "properties": {
         "name": {
@@ -15,14 +15,14 @@
             "description": "Low level blendshape references.",
             "type": "array",
             "items": {
-                "$ref": "vrm.blendshapebind.schema.json"
+                "$ref": "vrm.blendshape.bind.schema.json"
             }
         },
         "materialValues": {
             "description": "Material animation references.",
             "type": "array",
             "items": {
-                "$ref": "vrm.materialbind.schema.json"
+                "$ref": "vrm.blendshape.materialbind.schema.json"
             }
         }
     }

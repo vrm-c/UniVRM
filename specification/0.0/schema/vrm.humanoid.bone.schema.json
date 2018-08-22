@@ -1,5 +1,5 @@
 ﻿{
-    "title": "vrm.humanoidbone",
+    "title": "vrm.humanoid.bone",
     "type": "object",
     "properties": {
         "bone": {

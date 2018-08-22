@@ -8,7 +8,7 @@ using UniJSON;
 namespace VRM
 {
     [Serializable]
-    [JsonSchema(Title = "vrm.degreemap")]
+    [JsonSchema(Title = "vrm.firstperson.degreemap")]
     public class glTF_VRM_DegreeMap : UniGLTF.JsonSerializableBase
     {
         [JsonSchema(Description = "None linear mapping params. time, value, inTangent, outTangent")]
@@ -47,6 +47,7 @@ namespace VRM
     }
 
     [Serializable]
+    [JsonSchema(Title = "vrm.firstperson.meshannotation")]
     public class glTF_VRM_MeshAnnotation : JsonSerializableBase
     {
         public int mesh;

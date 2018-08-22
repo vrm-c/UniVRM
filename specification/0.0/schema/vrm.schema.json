@@ -17,7 +17,7 @@
             "$ref": "vrm.firstperson.schema.json"
         },
         "blendShapeMaster": {
-            "$ref": "vrm.blendshapemaster.schema.json"
+            "$ref": "vrm.blendshape.schema.json"
         },
         "secondaryAnimation": {
             "$ref": "vrm.secondaryanimation.schema.json"

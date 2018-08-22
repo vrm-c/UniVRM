@@ -14,15 +14,7 @@
             "description": "Switch on \/ off mesh for display in first-person view, third-person view, or the others.",
             "type": "array",
             "items": {
-                "type": "object",
-                "properties": {
-                    "mesh": {
-                        "type": "integer"
-                    },
-                    "firstPersonFlag": {
-                        "type": "string"
-                    }
-                }
+                "$ref": "vrm.firstperson.meshannotation.schema.json"
             }
         },
         "lookAtTypeName": {
@@ -31,16 +23,16 @@
             "enum": ["Bone","BlendShape"]
         },
         "lookAtHorizontalInner": {
-            "$ref": "vrm.degreemap.schema.json"
+            "$ref": "vrm.firstperson.degreemap.schema.json"
         },
         "lookAtHorizontalOuter": {
-            "$ref": "vrm.degreemap.schema.json"
+            "$ref": "vrm.firstperson.degreemap.schema.json"
         },
         "lookAtVerticalDown": {
-            "$ref": "vrm.degreemap.schema.json"
+            "$ref": "vrm.firstperson.degreemap.schema.json"
         },
         "lookAtVerticalUp": {
-            "$ref": "vrm.degreemap.schema.json"
+            "$ref": "vrm.firstperson.degreemap.schema.json"
         }
     }
 }

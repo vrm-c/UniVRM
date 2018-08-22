@@ -1,11 +1,11 @@
 ﻿{
-    "title": "vrm.blendshapemaster",
+    "title": "vrm.blendshape",
     "type": "object",
     "properties": {
         "blendShapeGroups": {
             "type": "array",
             "items": {
-                "$ref": "vrm.blendshapegroup.schema.json"
+                "$ref": "vrm.blendshape.group.schema.json"
             }
         }
     }

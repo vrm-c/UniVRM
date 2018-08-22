@@ -1,0 +1,12 @@
+﻿{
+    "title": "vrm.firstperson.meshannotation",
+    "type": "object",
+    "properties": {
+        "mesh": {
+            "type": "integer"
+        },
+        "firstPersonFlag": {
+            "type": "string"
+        }
+    }
+}

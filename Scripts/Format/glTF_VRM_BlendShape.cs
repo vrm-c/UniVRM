@@ -8,7 +8,7 @@ using UniJSON;
 namespace VRM
 {
     [Serializable]
-    [JsonSchema(Title = "vrm.materialbind")]
+    [JsonSchema(Title = "vrm.blendshape.materialbind")]
     public class glTF_VRM_MaterialValueBind : UniGLTF.JsonSerializableBase
     {
         public string materialName;
@@ -24,7 +24,7 @@ namespace VRM
     }
 
     [Serializable]
-    [JsonSchema(Title = "vrm.blendshapebind")]
+    [JsonSchema(Title = "vrm.blendshape.bind")]
     public class glTF_VRM_BlendShapeBind : UniGLTF.JsonSerializableBase
     {
         public int mesh = -1;
@@ -85,7 +85,7 @@ namespace VRM
     }
 
     [Serializable]
-    [JsonSchema(Title = "vrm.blendshapegroup", Description = "BlendShapeClip of UniVRM")]
+    [JsonSchema(Title = "vrm.blendshape.group", Description = "BlendShapeClip of UniVRM")]
     public class glTF_VRM_BlendShapeGroup : UniGLTF.JsonSerializableBase
     {
         [JsonSchema(Description = "Expression name")]
@@ -128,7 +128,7 @@ namespace VRM
     }
 
     [Serializable]
-    [JsonSchema(Title = "vrm.blendshapemaster", Description = "BlendShapeAvatar of UniVRM")]
+    [JsonSchema(Title = "vrm.blendshape", Description = "BlendShapeAvatar of UniVRM")]
     public class glTF_VRM_BlendShapeMaster : UniGLTF.JsonSerializableBase
     {
         public List<glTF_VRM_BlendShapeGroup> blendShapeGroups = new List<glTF_VRM_BlendShapeGroup>();
