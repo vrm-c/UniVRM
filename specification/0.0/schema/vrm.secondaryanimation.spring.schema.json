@@ -1,0 +1,48 @@
+﻿{
+    "title": "vrm.secondaryanimation.spring",
+    "type": "object",
+    "properties": {
+        "comment": {
+            "description": "Annotation comment",
+            "type": "string"
+        },
+        "stiffiness": {
+            "description": "The resilience of the swaying object (the power of returning to the initial pose).",
+            "type": "number"
+        },
+        "gravityPower": {
+            "description": "The strength of gravity.",
+            "type": "number"
+        },
+        "gravityDir": {
+            "description": "The direction of gravity. Gravity can be enabled by (0, -1, 0) and setting (1, 0, 0) will act like wind.",
+            "type": "array"
+        },
+        "dragForce": {
+            "description": "The resistance (deceleration) of automatic animation.",
+            "type": "number"
+        },
+        "center": {
+            "description": "The reference point of a swaying object can be set at any location except the origin. When implementing UI moving with warp, the parent node to be moved with warp can be specified if you don’t want to make the object moving by warp movement.",
+            "type": "integer"
+        },
+        "hitRadius": {
+            "description": "The radius of the sphere (swaying object) used for collision detection with colliders (specified body parts).",
+            "type": "number"
+        },
+        "bones": {
+            "description": "Specify the node index of the root bone of the swaying object.",
+            "type": "array",
+            "items": {
+                "type": "integer"
+            }
+        },
+        "colliderGroups": {
+            "description": "Specify the index of the collision detection group for the swaying object.",
+            "type": "array",
+            "items": {
+                "type": "integer"
+            }
+        }
+    }
+}

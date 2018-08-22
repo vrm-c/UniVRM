@@ -1,0 +1,26 @@
+﻿{
+    "title": "vrm.secondaryanimation.collidergroup",
+    "type": "object",
+    "properties": {
+        "node": {
+            "description": "Where the collision detection is set up.",
+            "type": "integer"
+        },
+        "colliders": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "offset": {
+                        "description": "The local coordinate from the collision detection node.",
+                        "type": "array"
+                    },
+                    "radius": {
+                        "description": "The radius of the sphere (specified body part) used for collision detection with swaying objects.",
+                        "type": "number"
+                    }
+                }
+            }
+        }
+    }
+}

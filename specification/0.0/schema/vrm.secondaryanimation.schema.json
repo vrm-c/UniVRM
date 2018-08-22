@@ -5,67 +5,13 @@
         "boneGroups": {
             "type": "array",
             "items": {
-                "type": "object",
-                "properties": {
-                    "comment": {
-                        "type": "string"
-                    },
-                    "stiffiness": {
-                        "type": "number"
-                    },
-                    "gravityPower": {
-                        "type": "number"
-                    },
-                    "gravityDir": {
-                        "type": "array"
-                    },
-                    "dragForce": {
-                        "type": "number"
-                    },
-                    "center": {
-                        "type": "integer"
-                    },
-                    "hitRadius": {
-                        "type": "number"
-                    },
-                    "bones": {
-                        "type": "array",
-                        "items": {
-                            "type": "integer"
-                        }
-                    },
-                    "colliderGroups": {
-                        "type": "array",
-                        "items": {
-                            "type": "integer"
-                        }
-                    }
-                }
+                "$ref": "vrm.secondaryanimation.spring.schema.json"
             }
         },
         "colliderGroups": {
             "type": "array",
             "items": {
-                "type": "object",
-                "properties": {
-                    "node": {
-                        "type": "integer"
-                    },
-                    "colliders": {
-                        "type": "array",
-                        "items": {
-                            "type": "object",
-                            "properties": {
-                                "offset": {
-                                    "type": "array"
-                                },
-                                "radius": {
-                                    "type": "number"
-                                }
-                            }
-                        }
-                    }
-                }
+                "$ref": "vrm.secondaryanimation.collidergroup.schema.json"
             }
         }
     }

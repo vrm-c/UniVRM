@@ -38,7 +38,7 @@
         },
         "hasTranslationDoF": {
             "description": "Unity's HumanDescription.hasTranslationDoF",
-            "type": "bool"
+            "type": "boolean"
         }
     }
 }

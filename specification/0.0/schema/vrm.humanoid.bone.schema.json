@@ -13,7 +13,7 @@
         },
         "useDefaultValues": {
             "description": "Unity's HumanLimit.useDefaultValues",
-            "type": "bool"
+            "type": "boolean"
         },
         "min": {
             "description": "Unity's HumanLimit.min",
