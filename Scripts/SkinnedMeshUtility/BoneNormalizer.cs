@@ -241,19 +241,19 @@ namespace VRM
             var meshNormals = mesh.normals;
             var meshTangents = mesh.tangents.Select(x => (Vector3)x).ToArray();
 
-            var _meshVertices = new Vector3[meshVertices.Length];
-            var _meshNormals = new Vector3[meshVertices.Length];
-            var _meshTangents = new Vector3[meshVertices.Length];
+            var originalBlendShapePositions = new Vector3[meshVertices.Length];
+            var originalBlendShapeNormals = new Vector3[meshVertices.Length];
+            var originalBlendShapeTangents = new Vector3[meshVertices.Length];
 
             var report = new BlendShapeReport(srcMesh);
             var blendShapeMesh = new Mesh();
             for (int i = 0; i < srcMesh.blendShapeCount; ++i)
             {
                 // check blendShape
-                srcRenderer.sharedMesh.GetBlendShapeFrameVertices(i, 0, _meshVertices, _meshNormals, _meshTangents);
-                var hasVertices = _meshVertices.Count(x => x != Vector3.zero);
-                var hasNormals = _meshNormals.Count(x => x != Vector3.zero);
-                var hasTangents = _meshTangents.Count(x => x != Vector3.zero);
+                srcRenderer.sharedMesh.GetBlendShapeFrameVertices(i, 0, originalBlendShapePositions, originalBlendShapeNormals, originalBlendShapeTangents);
+                var hasVertices = originalBlendShapePositions.Count(x => x != Vector3.zero);
+                var hasNormals = originalBlendShapeNormals.Count(x => x != Vector3.zero);
+                var hasTangents = originalBlendShapeTangents.Count(x => x != Vector3.zero);
                 var name = srcMesh.GetBlendShapeName(i);
                 if (string.IsNullOrEmpty(name))
                 {
@@ -270,50 +270,43 @@ namespace VRM
                 }
                 srcRenderer.SetBlendShapeWeight(i, 0);
 
-                Vector3[] vertices = null;
-                if (hasVertices>0)
+                Vector3[] vertices = blendShapeMesh.vertices;
+                for (int j = 0; j < vertices.Length; ++j)
                 {
-                    vertices = blendShapeMesh.vertices;
-                    // to delta
-                    for (int j = 0; j < vertices.Length; ++j)
+                    if (originalBlendShapePositions[j] == Vector3.zero)
+                    {
+                        vertices[j] = Vector3.zero;
+                    }
+                    else
                     {
                         vertices[j] = m.MultiplyPoint(vertices[j]) - meshVertices[j];
                     }
                 }
-                else
-                {
-                    Debug.LogWarning("no vertices");
-                    vertices = new Vector3[mesh.vertexCount];
-                }
 
-                Vector3[] normals = null;
-                if (hasNormals>0)
+                Vector3[] normals = blendShapeMesh.normals;
+                for (int j = 0; j < normals.Length; ++j)
                 {
-                    normals = blendShapeMesh.normals;
-                    // to delta
-                    for (int j = 0; j < normals.Length; ++j)
+                    if (originalBlendShapeNormals[j] == Vector3.zero)
+                    {
+                        normals[j] = Vector3.zero;
+                    }
+                    else
                     {
                         normals[j] = m.MultiplyVector(normals[j]) - meshNormals[j];
                     }
                 }
-                else
-                {
-                    //normals = new Vector3[mesh.vertexCount];
-                }
 
-                Vector3[] tangents = null;
-                if (hasTangents>0)
+                Vector3[] tangents = blendShapeMesh.tangents.Select(x => (Vector3)x).ToArray();
+                for (int j = 0; j < tangents.Length; ++j)
                 {
-                    tangents = blendShapeMesh.tangents.Select(x => (Vector3)x).ToArray();
-                    // to delta
-                    for (int j = 0; j < tangents.Length; ++j)
+                    if (originalBlendShapeTangents[j] == Vector3.zero)
+                    {
+                        tangents[j] = Vector3.zero;
+                    }
+                    else
                     {
                         tangents[j] = m.MultiplyVector(tangents[j]) - meshTangents[j];
                     }
-                }
-                else
-                {
-                    //tangents = new Vector3[mesh.vertexCount];
                 }
 
                 var weight = srcMesh.GetBlendShapeFrameWeight(i, 0);
@@ -323,8 +316,8 @@ namespace VRM
                     mesh.AddBlendShapeFrame(name,
                         weight,
                         vertices,
-                        normals,
-                        tangents
+                        hasNormals > 0 ? normals : null,
+                        hasTangents > 0 ? tangents : null
                         );
                 }
                 catch (Exception)
