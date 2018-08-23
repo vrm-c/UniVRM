@@ -32,10 +32,13 @@ namespace VRM
             //Debug.LogFormat("{0}", path);
             var clip = ScriptableObject.CreateInstance<BlendShapeClip>();
             clip.BlendShapeName = Path.GetFileNameWithoutExtension(path);
-            m_target.Clips.Add(clip);
             clip.Prefab = AssetDatabase.LoadAssetAtPath<GameObject>(AssetDatabase.GetAssetPath(m_target));
             AssetDatabase.CreateAsset(clip, path);
             AssetDatabase.ImportAsset(path);
+
+            m_target.Clips.Add(clip);
+            EditorUtility.SetDirty(m_target);
+            AssetDatabase.SaveAssets();
         }
 
         BlendShapeClip m_currentClip;
@@ -76,7 +79,11 @@ namespace VRM
                 m_target.Clips.RemoveAt(x.i);
             }
 
-            CurrentClip = m_target.Clips[0];
+
+            if(m_target.Clips.Count > 0)
+            {
+                CurrentClip = m_target.Clips[0];
+            }
         }
 
         protected override void OnDisable()
