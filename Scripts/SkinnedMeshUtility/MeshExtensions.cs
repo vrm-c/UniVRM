@@ -37,7 +37,12 @@ namespace VRM
             {
                 var vertices = src.vertices;
                 var normals = src.normals;
+#if VRM_NORMALIZE_BLENDSHAPE_TANGENT
                 var tangents = src.tangents.Select(x => (Vector3)x).ToArray();
+#else
+                Vector3[] tangents = null;
+#endif
+
                 for (int i = 0; i < src.blendShapeCount; ++i)
                 {
                     src.GetBlendShapeFrameVertices(i, 0, vertices, normals, tangents);
