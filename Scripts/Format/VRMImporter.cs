@@ -295,9 +295,11 @@ namespace VRM
 
         static IEnumerator LoadMeshes(VRMImporterContext context)
         {
+            var meshImporter = new MeshImporter();
             for (int i = 0; i < context.GLTF.meshes.Count; ++i)
             {
-                var meshWithMaterials = gltfImporter.ImportMesh(context, i);
+                var meshContext = meshImporter.ReadMesh(context, i);
+                var meshWithMaterials = gltfImporter.BuildMesh(context, meshContext);
                 var mesh = meshWithMaterials.Mesh;
                 if (string.IsNullOrEmpty(mesh.name))
                 {
@@ -442,6 +444,7 @@ namespace VRM
                 .OnExecute(Scheduler.ThreadPool, parent =>
                 {
                     // meshes
+                    var meshImporter = new MeshImporter();
                     for (int i = 0; i < ctx.GLTF.meshes.Count; ++i)
                     {
                         var index = i;
@@ -450,7 +453,7 @@ namespace VRM
                                 {
                                     using (ctx.MeasureTime("ReadMesh"))
                                     {
-                                        return gltfImporter.ReadMesh(ctx, index);
+                                        return meshImporter.ReadMesh(ctx, i);
                                     }
                                 })
                         .ContinueWith(Scheduler.MainThread, x =>
