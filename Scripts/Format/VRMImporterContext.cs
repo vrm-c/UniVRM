@@ -79,6 +79,21 @@ namespace VRM
 
             yield return Meta;
         }
+
+        protected override UnityPath GetAssetPath(UnityPath prefabPath, UnityEngine.Object o)
+        {
+            if (o is BlendShapeAvatar
+                || o is BlendShapeClip)
+            {
+                var dir = prefabPath.GetAssetFolder(".BlendShapes");
+                var assetPath = dir.Child(o.name.EscapeFilePath() + ".asset");
+                return assetPath;
+            }
+            else
+            {
+                return base.GetAssetPath(prefabPath, o);
+            }
+        }
 #endif
     }
 }
