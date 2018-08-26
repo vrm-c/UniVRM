@@ -41,7 +41,14 @@ namespace VRM
                     var assetPath = UnityEditor.AssetDatabase.GetAssetPath(this);
                     if (!string.IsNullOrEmpty(assetPath))
                     {
+                        // if asset is subasset of prefab
                         m_prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
+                        if (m_prefab == null)
+                        {
+                            var parent = UniGLTF.UnityPath.FromAsset(this).Parent;
+                            var prefabPath = parent.Parent.Child(parent.FileNameWithoutExtension + ".prefab");
+                            m_prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath.Value);
+                        }
                     }
                 }
 #endif

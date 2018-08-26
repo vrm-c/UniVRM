@@ -96,7 +96,15 @@ namespace VRM
             {
                 return null;
             }
-            return AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
+
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
+            if (prefab == null)
+            {
+                var parent = UniGLTF.UnityPath.FromUnityPath(assetPath).Parent;
+                var prefabPath = parent.Parent.Child(parent.FileNameWithoutExtension + ".prefab");
+                prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath.Value);
+            }
+            return prefab;
         }
 
         protected virtual void OnEnable()
