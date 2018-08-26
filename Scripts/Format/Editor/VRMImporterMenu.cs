@@ -1,13 +1,14 @@
-﻿#if USE_VRMIMPORTER_MENU
-using System.IO;
+﻿using System.IO;
 using UnityEditor;
 using UnityEngine;
+using UniGLTF;
+
 
 namespace VRM
 {
     public static class VRMImporterMenu
     {
-        [MenuItem("VRM/import from external file")]
+        [MenuItem(VRMVersion.VRM_VERSION + "/Import", priority =1)]
         static void ImportMenu()
         {
             var path = EditorUtility.OpenFilePanel("open vrm", "", "vrm");
@@ -16,39 +17,50 @@ namespace VRM
                 return;
             }
 
-            var ext = Path.GetExtension(path).ToLower();
-            if (ext != ".vrm")
+            if (Application.isPlaying)
             {
-                return;
+                // load into scene
+                Selection.activeGameObject = VRMImporter.LoadFromPath(path);
             }
-
-            if (path.StartsWithUnityAssetPath())
+            else
             {
-                Debug.LogWarning("vrm in AssetFolder is imported automatically");
-                Selection.activeObject = AssetDatabase.LoadAssetAtPath<GameObject>(path.Replace(".vrm", ".prefab").ToUnityRelativePath());
-                return;
-            }
-
-            var root = VRMImporter.LoadFromPath(path);
-
-            if (!EditorApplication.isPlaying)
-            {
-                // save root as Asset
-                var prefabPath = EditorUtility.SaveFilePanel("save vrm prefab",
-                    "Assets",
-                    Path.GetFileNameWithoutExtension(path) + ".prefab",
-                    "prefab"
-                    );
-
-                if (!string.IsNullOrEmpty(prefabPath))
+                if (path.StartsWithUnityAssetPath())
                 {
-                    VRMAssetWriter.SaveAsPrefab(root, prefabPath);
-
-                    var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath.ToUnityRelativePath());
-                    Selection.activeObject = prefab;
+                    Debug.LogWarningFormat("disallow import from folder under the Assets");
+                    return;
                 }
+
+                var assetPath = EditorUtility.SaveFilePanel("save prefab", "Assets", Path.GetFileNameWithoutExtension(path), "prefab");
+                if (string.IsNullOrEmpty(path))
+                {
+                    return;
+                }
+
+                if (!assetPath.StartsWithUnityAssetPath())
+                {
+                    Debug.LogWarningFormat("out of asset path: {0}", assetPath);
+                    return;
+                }
+
+                // import as asset
+                Import(path, UnityPath.FromUnityPath(assetPath));
             }
+        }
+
+        static void Import(string readPath, UnityPath prefabPath)
+        {
+            var bytes = File.ReadAllBytes(readPath);
+            var context = new VRMImporterContext(UnityPath.FromFullpath(readPath));
+            context.ParseGlb(File.ReadAllBytes(readPath));
+            context.SaveTexturesAsPng(prefabPath);
+
+            EditorApplication.delayCall += () =>
+            {
+                // delay and can import png texture
+                VRMImporter.LoadFromBytes(context);
+                context.SaveAsAsset(prefabPath);
+                context.Destroy(false);
+            };
         }
     }
 }
-#endif
