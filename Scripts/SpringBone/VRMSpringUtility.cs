@@ -56,7 +56,7 @@ namespace VRM
                 spring.boneGroups.Add
                 );
 
-            File.WriteAllText(path, spring.ToJson(), Encoding.UTF8);
+            File.WriteAllText(path, spring.ToJson());
         }
 
         #endregion

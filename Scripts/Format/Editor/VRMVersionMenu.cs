@@ -91,7 +91,7 @@ namespace VRM
 
                     var subJson = subFormatter.ToString();
                     var path = dir.Child(fileName);
-                    File.WriteAllText(path.FullPath, subJson, Encoding.UTF8);
+                    File.WriteAllText(path.FullPath, subJson);
                 }
             }
         }
@@ -136,7 +136,7 @@ namespace VRM
                 
             var path = dir.Child("vrm.schema.json");
             Debug.LogFormat("write JsonSchema: {0}", path.FullPath);
-            File.WriteAllText(path.FullPath, json, Encoding.UTF8);
+            File.WriteAllText(path.FullPath, json);
             return path;
         }
 
