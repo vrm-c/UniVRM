@@ -453,7 +453,7 @@ namespace VRM
                                 {
                                     using (ctx.MeasureTime("ReadMesh"))
                                     {
-                                        return meshImporter.ReadMesh(ctx, i);
+                                        return meshImporter.ReadMesh(ctx, index);
                                     }
                                 })
                         .ContinueWith(Scheduler.MainThread, x =>
