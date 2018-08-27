@@ -10,6 +10,7 @@ SubShader {
 	
 	ZWrite Off
 	Blend SrcAlpha OneMinusSrcAlpha 
+	BlendOp Add, Max
 	
 	Pass {  
 		CGPROGRAM
