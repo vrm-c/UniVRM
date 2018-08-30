@@ -51,7 +51,7 @@ namespace VRM
             GameObject normalizedRoot = null;
             using (new VRMExportSettings.RecordDisposer(go.transform.Traverse().ToArray(), "before normalize"))
             {
-                var normalized = BoneNormalizer.Execute(go, true);
+                var normalized = BoneNormalizer.Execute(go, true, false);
                 VRMExportSettings.CopyVRMComponents(go, normalized.Root, normalized.BoneMap);
                 normalizedRoot = normalized.Root;
             }

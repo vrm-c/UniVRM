@@ -173,7 +173,7 @@ namespace VRM
         /// <param name="src">正規化前のSkinnedMeshRendererのTransform</param>
         /// <param name="dst">正規化後のSkinnedMeshRendererのTransform</param>
         /// <param name="boneMap">正規化前のボーンから正規化後のボーンを得る</param>
-        static void NormalizeSkinnedMesh(Transform src, Transform dst, Dictionary<Transform, Transform> boneMap)
+        static void NormalizeSkinnedMesh(Transform src, Transform dst, Dictionary<Transform, Transform> boneMap, bool clearBlendShape)
         {
             var srcRenderer = src.GetComponent<SkinnedMeshRenderer>();
             if (srcRenderer == null 
@@ -185,12 +185,16 @@ namespace VRM
                 return;
             }
 
-            // clear blendShape
             var srcMesh = srcRenderer.sharedMesh;
             var originalSrcMesh = srcMesh;
-            for (int i = 0; i < srcMesh.blendShapeCount; ++i)
+
+            // clear blendShape
+            if (clearBlendShape)
             {
-                srcRenderer.SetBlendShapeWeight(i, 0);
+                for (int i = 0; i < srcMesh.blendShapeCount; ++i)
+                {
+                    srcRenderer.SetBlendShapeWeight(i, 0);
+                }
             }
 
             var bones = srcRenderer.bones.Select(x => boneMap[x]).ToArray();
@@ -405,7 +409,7 @@ namespace VRM
         /// <param name="go">対象モデルのルート</param>
         /// <param name="forceTPose">強制的にT-Pose化するか</param>
         /// <returns>正規化済みのモデル</returns>
-        public static NormalizedResult Execute(GameObject go, bool forceTPose)
+        public static NormalizedResult Execute(GameObject go, bool forceTPose, bool clearBlendShapeBeforeNormalize)
         {
             Dictionary<Transform, Transform> boneMap = new Dictionary<Transform, Transform>();
 
@@ -444,7 +448,7 @@ namespace VRM
                     continue;
                 }
 
-                NormalizeSkinnedMesh(src, dst, boneMap);
+                NormalizeSkinnedMesh(src, dst, boneMap, clearBlendShapeBeforeNormalize);
 
                 NormalizeNoneSkinnedMesh(src, dst);
             }
