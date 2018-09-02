@@ -50,7 +50,7 @@ namespace VRM
             while (true)
             {
                 var waitTime = Time.time + Random.value * m_interVal;
-                while (waitTime>Time.time)
+                while (waitTime > Time.time)
                 {
                     if (Request)
                     {
@@ -102,12 +102,12 @@ namespace VRM
             if (BlendShapes == null) BlendShapes = GetComponent<VRM.VRMBlendShapeProxy>();
         }
 
-        private void Start()
+        private void OnEnable()
         {
             m_coroutine = StartCoroutine(BlinkRoutine());
         }
 
-        private void OnDestroy()
+        private void OnDisable()
         {
             if (m_coroutine != null)
             {
