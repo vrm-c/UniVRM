@@ -85,13 +85,33 @@ namespace VRM
             {
                 var src = go.GetComponent<Animator>();
 
-                var map = Enum.GetValues(typeof(HumanBodyBones))
+                var srcHumanBones = Enum.GetValues(typeof(HumanBodyBones))
                     .Cast<HumanBodyBones>()
                     .Where(x => x != HumanBodyBones.LastBone)
                     .Select(x => new { Key = x, Value = src.GetBoneTransform(x) })
                     .Where(x => x.Value != null)
-                    .ToDictionary(x => x.Key, x => boneMap[x.Value])
                     ;
+
+                var map = default(Dictionary<HumanBodyBones, Transform>);
+
+                try
+                {
+                    map=
+                        srcHumanBones
+                        .ToDictionary(x => x.Key, x => boneMap[x.Value])
+                        ;
+                }
+                catch (KeyNotFoundException)
+                {
+                    foreach(var kv in srcHumanBones)
+                    {
+                        if (!boneMap.ContainsKey(kv.Value))
+                        {
+                            Debug.LogWarningFormat("{0} not found", kv.Key);
+                        }
+                    }
+                    throw;
+                }
 
                 var animator = normalized.AddComponent<Animator>();
                 var vrmHuman = go.GetComponent<VRMHumanoidDescription>();
@@ -151,7 +171,7 @@ namespace VRM
             {
                 m_stats.Add(new BlendShapeStat
                 {
-                    Index =index,
+                    Index = index,
                     Name = name,
                     VertexCount = v,
                     NormalCount = n,
@@ -167,6 +187,81 @@ namespace VRM
             }
         }
 
+        static BoneWeight[] MapBoneWeight(BoneWeight[] src,
+            Dictionary<Transform, Transform> boneMap,
+            Transform[] srcBones,
+            Transform[] dstBones
+            )
+        {
+            var indexMap =
+            srcBones
+                .Select((x, i) => new { i, x })
+                .Select(x => dstBones.IndexOf(boneMap[x.x]))
+                .ToArray();
+
+            for(int i=0; i<srcBones.Length; ++i)
+            {
+                if (indexMap[i] < 0)
+                {
+                    Debug.LogWarningFormat("{0} is removed", srcBones[i].name);
+                }
+            }
+
+            var dst = new BoneWeight[src.Length];
+            Array.Copy(src, dst, src.Length);
+
+            for (int i = 0; i < src.Length; ++i)
+            {
+                var x = src[i];
+
+                if (indexMap[x.boneIndex0] != -1)
+                {
+                    dst[i].boneIndex0 = indexMap[x.boneIndex0];
+                    dst[i].weight0 = x.weight0;
+                }
+                else if (x.weight0 > 0)
+                {
+                    Debug.LogWarningFormat("{0} weight0 is lost", i);
+                    dst[i].weight0 = 0;
+                }
+
+                if (indexMap[x.boneIndex1] != -1)
+                {
+                    dst[i].boneIndex1 = indexMap[x.boneIndex1];
+                    dst[i].weight1 = x.weight1;
+                }
+                else if (x.weight1 > 0)
+                {
+                    Debug.LogWarningFormat("{0} weight0 is lost", i);
+                    dst[i].weight1 = 0;
+                }
+
+                if (indexMap[x.boneIndex2] != -1)
+                {
+                    dst[i].boneIndex2 = indexMap[x.boneIndex2];
+                    dst[i].weight2 = x.weight2;
+                }
+                else if (x.weight2 > 0)
+                {
+                    Debug.LogWarningFormat("{0} weight0 is lost", i);
+                    dst[i].weight2 = 0;
+                }
+
+                if (indexMap[x.boneIndex3] != -1)
+                {
+                    dst[i].boneIndex3 = indexMap[x.boneIndex3];
+                    dst[i].weight3 = x.weight3;
+                }
+                else if (x.weight3 > 0)
+                {
+                    Debug.LogWarningFormat("{0} weight0 is lost", i);
+                    dst[i].weight3 = 0;
+                }
+            }
+
+            return dst;
+        }
+
         /// <summary>
         /// srcのSkinnedMeshRendererを正規化して、dstにアタッチする
         /// </summary>
@@ -176,7 +271,7 @@ namespace VRM
         static void NormalizeSkinnedMesh(Transform src, Transform dst, Dictionary<Transform, Transform> boneMap, bool clearBlendShape)
         {
             var srcRenderer = src.GetComponent<SkinnedMeshRenderer>();
-            if (srcRenderer == null 
+            if (srcRenderer == null
                 || !srcRenderer.enabled
                 || srcRenderer.sharedMesh == null
                 || srcRenderer.sharedMesh.vertexCount == 0)
@@ -197,8 +292,8 @@ namespace VRM
                 }
             }
 
-            var bones = srcRenderer.bones.Select(x => boneMap[x]).ToArray();
-            var hasBoneWeight = srcRenderer.bones!=null && srcRenderer.bones.Length > 0;
+            var dstBones = srcRenderer.bones.Select(x => boneMap[x]).ToArray();
+            var hasBoneWeight = srcRenderer.bones != null && srcRenderer.bones.Length > 0;
             if (!hasBoneWeight)
             {
                 // Before bake, bind no weight bones
@@ -220,7 +315,7 @@ namespace VRM
                 srcMesh.bindposes = new Matrix4x4[] { Matrix4x4.identity };
 
                 srcRenderer.rootBone = srcRenderer.transform;
-                bones = new[] { boneMap[srcRenderer.transform] };
+                dstBones = new[] { boneMap[srcRenderer.transform] };
                 srcRenderer.bones = new[] { srcRenderer.transform };
                 srcRenderer.sharedMesh = srcMesh;
             }
@@ -229,9 +324,11 @@ namespace VRM
             var mesh = srcMesh.Copy(false);
             mesh.name = srcMesh.name + ".baked";
             srcRenderer.BakeMesh(mesh);
-            mesh.boneWeights = srcMesh.boneWeights; // restore weights. clear when BakeMesh
+
+            mesh.boneWeights = MapBoneWeight(srcMesh.boneWeights, boneMap, srcRenderer.bones, dstBones); // restore weights. clear when BakeMesh
+
             // recalc bindposes
-            mesh.bindposes = bones.Select(x => x.worldToLocalMatrix * dst.transform.localToWorldMatrix).ToArray();
+            mesh.bindposes = dstBones.Select(x => x.worldToLocalMatrix * dst.transform.localToWorldMatrix).ToArray();
 
             //var m = src.localToWorldMatrix; // include scaling
             var m = default(Matrix4x4);
@@ -353,7 +450,7 @@ namespace VRM
             {
                 dstRenderer.rootBone = boneMap[srcRenderer.rootBone];
             }
-            dstRenderer.bones = bones;
+            dstRenderer.bones = dstBones;
             dstRenderer.sharedMesh = mesh;
 
             if (!hasBoneWeight)
