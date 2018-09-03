@@ -92,26 +92,11 @@ namespace VRM
                     .Where(x => x.Value != null)
                     ;
 
-                var map = default(Dictionary<HumanBodyBones, Transform>);
-
-                try
-                {
-                    map=
-                        srcHumanBones
-                        .ToDictionary(x => x.Key, x => boneMap[x.Value])
-                        ;
-                }
-                catch (KeyNotFoundException)
-                {
-                    foreach(var kv in srcHumanBones)
-                    {
-                        if (!boneMap.ContainsKey(kv.Value))
-                        {
-                            Debug.LogWarningFormat("{0} not found", kv.Key);
-                        }
-                    }
-                    throw;
-                }
+                var map =
+                       srcHumanBones
+                       .Where(x => boneMap.ContainsKey(x.Value))
+                       .ToDictionary(x => x.Key, x => boneMap[x.Value])
+                       ;
 
                 var animator = normalized.AddComponent<Animator>();
                 var vrmHuman = go.GetComponent<VRMHumanoidDescription>();
@@ -196,10 +181,20 @@ namespace VRM
             var indexMap =
             srcBones
                 .Select((x, i) => new { i, x })
-                .Select(x => dstBones.IndexOf(boneMap[x.x]))
+                .Select(x => {
+                    Transform dstBone;
+                    if(boneMap.TryGetValue(x.x, out dstBone))
+                    {
+                        return dstBones.IndexOf(dstBone);
+                    }
+                    else
+                    {
+                        return -1;
+                    }
+                 })
                 .ToArray();
 
-            for(int i=0; i<srcBones.Length; ++i)
+            for (int i = 0; i < srcBones.Length; ++i)
             {
                 if (indexMap[i] < 0)
                 {
@@ -221,7 +216,7 @@ namespace VRM
                 }
                 else if (x.weight0 > 0)
                 {
-                    Debug.LogWarningFormat("{0} weight0 is lost", i);
+                    Debug.LogWarningFormat("{0} weight0 to {1} is lost", i, srcBones[x.boneIndex0].name);
                     dst[i].weight0 = 0;
                 }
 
@@ -232,7 +227,7 @@ namespace VRM
                 }
                 else if (x.weight1 > 0)
                 {
-                    Debug.LogWarningFormat("{0} weight0 is lost", i);
+                    Debug.LogWarningFormat("{0} weight0 to {1} is lost", i, srcBones[x.boneIndex1].name);
                     dst[i].weight1 = 0;
                 }
 
@@ -243,7 +238,7 @@ namespace VRM
                 }
                 else if (x.weight2 > 0)
                 {
-                    Debug.LogWarningFormat("{0} weight0 is lost", i);
+                    Debug.LogWarningFormat("{0} weight0 to {1} is lost", i, srcBones[x.boneIndex2].name);
                     dst[i].weight2 = 0;
                 }
 
@@ -254,7 +249,7 @@ namespace VRM
                 }
                 else if (x.weight3 > 0)
                 {
-                    Debug.LogWarningFormat("{0} weight0 is lost", i);
+                    Debug.LogWarningFormat("{0} weight0 to {1} is lost", i, srcBones[x.boneIndex3].name);
                     dst[i].weight3 = 0;
                 }
             }
@@ -292,7 +287,10 @@ namespace VRM
                 }
             }
 
-            var dstBones = srcRenderer.bones.Select(x => boneMap[x]).ToArray();
+            var dstBones = srcRenderer.bones
+                .Where(x => boneMap.ContainsKey(x))
+                .Select(x => boneMap[x])
+                .ToArray();
             var hasBoneWeight = srcRenderer.bones != null && srcRenderer.bones.Length > 0;
             if (!hasBoneWeight)
             {
