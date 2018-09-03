@@ -52,6 +52,7 @@ SubShader {
 				fixed4 col = tex2D(_MainTex, i.texcoord);
 				clip(col.a - _Cutoff);
 				UNITY_APPLY_FOG(i.fogCoord, col);
+				UNITY_OPAQUE_ALPHA(col.a);
 				return col;
 			}
 		ENDCG
