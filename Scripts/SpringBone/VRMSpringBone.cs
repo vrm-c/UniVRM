@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UniGLTF;
@@ -193,11 +193,11 @@ namespace VRM
         }
 
         [ContextMenu("Reset bones")]
-        public void Setup()
+        public void Setup(bool force=false)
         {
             if (RootBones != null)
             {
-                if (m_initialLocalRotationMap == null)
+                if (force || m_initialLocalRotationMap == null)
                 {
                     m_initialLocalRotationMap = new Dictionary<Transform, Quaternion>();
                 }
