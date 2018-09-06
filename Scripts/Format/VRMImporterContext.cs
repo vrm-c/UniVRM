@@ -68,7 +68,7 @@ namespace VRM
 
             yield return AvatarDescription;
             yield return HumanoidAvatar;
-            yield return BlendShapeAvatar;
+
             if (BlendShapeAvatar != null && BlendShapeAvatar.Clips != null)
             {
                 foreach (var x in BlendShapeAvatar.Clips)
@@ -76,6 +76,7 @@ namespace VRM
                     yield return x;
                 }
             }
+            yield return BlendShapeAvatar;
 
             yield return Meta;
         }
