@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 
 
@@ -29,7 +29,12 @@ namespace VRM
         private void OnDrawGizmosSelected()
         {
             Gizmos.color = m_gizmoColor;
-            Gizmos.matrix = transform.localToWorldMatrix;
+            Matrix4x4 mat = transform.localToWorldMatrix;
+            Gizmos.matrix = mat * Matrix4x4.Scale(new Vector3(
+                1.0f / transform.lossyScale.x,
+                1.0f / transform.lossyScale.y,
+                1.0f / transform.lossyScale.z
+                ));
             foreach (var y in Colliders)
             {
                 Gizmos.DrawWireSphere(y.Offset, y.Radius);
