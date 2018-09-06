@@ -2,7 +2,7 @@
 using System.Linq;
 using System;
 using System.Collections.Generic;
-
+using UniGLTF;
 
 namespace VRM
 {
@@ -11,6 +11,33 @@ namespace VRM
     {
         [SerializeField]
         public List<BlendShapeClip> Clips = new List<BlendShapeClip>();
+
+#if UNITY_EDITOR
+        [ContextMenu("Restore")]
+        void Restore()
+        {
+            var assetPath = UnityPath.FromAsset(this);
+            if (assetPath.IsNull)
+            {
+                return;
+            }
+
+
+            foreach(var x in assetPath.Parent.ChildFiles)
+            {
+                var clip = UnityEditor.AssetDatabase.LoadAssetAtPath<BlendShapeClip>(x.Value);
+                if (clip == null) continue;
+
+                if (!Clips.Contains(clip))
+                {
+                    Clips.Add(clip);
+                }
+
+                Debug.LogFormat("{0}", clip.name);
+            }
+            Clips = Clips.OrderBy(x => BlendShapeKey.CreateFrom(x)).ToList();
+        }
+#endif
 
         /// <summary>
         /// Unknown以外で存在しないものを全て作る
