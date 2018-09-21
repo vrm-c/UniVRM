@@ -37,23 +37,80 @@ namespace VRM
             }
         }
 
-        public void SetValue(BlendShapePreset key, float value, bool apply = true)
+        /// <summary>
+        /// Set a blendShape value immediate
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        public void SetValue(BlendShapePreset key, float value)
+        {
+#pragma warning disable 0618
+            SetValue(new BlendShapeKey(key), value, true);
+#pragma warning restore 0618
+        }
+
+        /// <summary>
+        /// Set a blendShape value immediate or delayed.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="apply">immediate if true</param>
+        [Obsolete("Use SetValues")]
+        public void SetValue(BlendShapePreset key, float value, bool apply)
         {
             SetValue(new BlendShapeKey(key), value, apply);
         }
+
+        /// <summary>
+        /// Get a blendShape value
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public float GetValue(BlendShapePreset key)
         {
             return GetValue(new BlendShapeKey(key));
         }
-        public void SetValue(String key, float value, bool apply = true)
+
+        /// <summary>
+        /// Set a blendShape value immediate
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        public void SetValue(String key, float value)
+        {
+#pragma warning disable 0618
+            SetValue(new BlendShapeKey(key), value, true);
+#pragma warning restore 0618
+        }
+
+        /// <summary>
+        /// Set a blendShape value immediate or delayed.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="apply">immediate if true</param>
+        [Obsolete("Use SetValues")]
+        public void SetValue(String key, float value, bool apply)
         {
             SetValue(new BlendShapeKey(key), value, apply);
         }
+
+        /// <summary>
+        /// Get a blendShape value
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public float GetValue(String key)
         {
             return GetValue(new BlendShapeKey(key));
         }
 
+        /// <summary>
+        /// Set a blendShape value immediate or delayed.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="apply">immediate if true</param>
         [Obsolete("Use SetValues")]
         public void SetValue(BlendShapeKey key, float value, bool apply)
         {
@@ -63,6 +120,11 @@ namespace VRM
             }
         }
 
+        /// <summary>
+        /// Set a blendShape value immediate
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
         public void SetValue(BlendShapeKey key, float value)
         {
             if (m_merger != null)
@@ -71,14 +133,11 @@ namespace VRM
             }
         }
 
-        public void SetValues(IEnumerable<KeyValuePair<BlendShapeKey, float>> values)
-        {
-            if (m_merger != null)
-            {
-                m_merger.SetValues(values);
-            }
-        }
-
+        /// <summary>
+        /// Get a blendShape value
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public float GetValue(BlendShapeKey key)
         {
             if (m_merger == null)
@@ -88,6 +147,21 @@ namespace VRM
             return m_merger.GetValue(key);
         }
 
+        /// <summary>
+        /// Set blendShape values immediate.
+        /// </summary>
+        /// <param name="values"></param>
+        public void SetValues(IEnumerable<KeyValuePair<BlendShapeKey, float>> values)
+        {
+            if (m_merger != null)
+            {
+                m_merger.SetValues(values);
+            }
+        }
+
+        /// <summary>
+        /// Clear all blendShape values
+        /// </summary>
         public void ClearKeys()
         {
             if (m_merger != null)
@@ -96,6 +170,9 @@ namespace VRM
             }
         }
 
+        /// <summary>
+        /// Apply blendShape values that use SetValue apply=false
+        /// </summary>
         public void Apply()
         {
             if (m_merger != null)
