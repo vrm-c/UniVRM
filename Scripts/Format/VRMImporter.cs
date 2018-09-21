@@ -37,14 +37,10 @@ namespace VRM
         public static void LoadFromBytes(VRMImporterContext context)
         {
             context.MaterialImporter = new VRMMaterialImporter(context, glTF_VRM_Material.Parse(context.Json));
-
-            gltfImporter.Load(context);
-
+            context.Load();
             OnLoadModel(context);
-
             context.ShowMeshes();
         }
-
 
         #region OnLoad
         public static Unit OnLoadModel(VRMImporterContext context)
@@ -299,7 +295,7 @@ namespace VRM
             for (int i = 0; i < context.GLTF.meshes.Count; ++i)
             {
                 var meshContext = meshImporter.ReadMesh(context, i);
-                var meshWithMaterials = gltfImporter.BuildMesh(context, meshContext);
+                var meshWithMaterials = MeshImporter.BuildMesh(context, meshContext);
                 var mesh = meshWithMaterials.Mesh;
                 if (string.IsNullOrEmpty(mesh.name))
                 {
@@ -315,7 +311,7 @@ namespace VRM
         {
             foreach (var x in context.GLTF.nodes)
             {
-                context.Nodes.Add(gltfImporter.ImportNode(x).transform);
+                context.Nodes.Add(NodeImporter.ImportNode(x).transform);
             }
 
             yield return null;
@@ -323,18 +319,18 @@ namespace VRM
 
         static IEnumerator BuildHierarchy(VRMImporterContext context)
         {
-            var nodes = new List<gltfImporter.TransformWithSkin>();
+            var nodes = new List<NodeImporter.TransformWithSkin>();
             for (int i = 0; i < context.Nodes.Count; ++i)
             {
-                nodes.Add(gltfImporter.BuildHierarchy(context, i));
+                nodes.Add(NodeImporter.BuildHierarchy(context, i));
             }
 
-            gltfImporter.FixCoordinate(context, nodes);
+            NodeImporter.FixCoordinate(context, nodes);
 
             // skinning
             for (int i = 0; i < nodes.Count; ++i)
             {
-                gltfImporter.SetupSkinning(context, nodes, i);
+                NodeImporter.SetupSkinning(context, nodes, i);
             }
 
             // connect root
@@ -460,7 +456,7 @@ namespace VRM
                         {
                             using (ctx.MeasureTime("BuildMesh"))
                             {
-                                return gltfImporter.BuildMesh(ctx, x);
+                                return MeshImporter.BuildMesh(ctx, x);
                             }
                         })
                         .ContinueWith(Scheduler.ThreadPool, x => ctx.Meshes.Add(x))
