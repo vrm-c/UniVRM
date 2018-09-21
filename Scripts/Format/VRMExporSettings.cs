@@ -149,6 +149,7 @@ namespace VRM
                 }
             }
 
+#pragma warning disable 0618
             {
                 // meta(obsolete)
                 var src = go.GetComponent<VRMMetaInformation>();
@@ -157,6 +158,8 @@ namespace VRM
                     src.CopyTo(root);
                 }
             }
+#pragma warning restore 0618
+
             {
                 // meta
                 var src = go.GetComponent<VRMMeta>();

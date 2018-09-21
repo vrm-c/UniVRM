@@ -49,7 +49,7 @@ namespace VRM
 
         static void Import(string readPath, UnityPath prefabPath)
         {
-            var bytes = File.ReadAllBytes(readPath);
+            //var bytes = File.ReadAllBytes(readPath);
             var context = new VRMImporterContext(UnityPath.FromFullpath(readPath));
             context.ParseGlb(File.ReadAllBytes(readPath));
             context.SaveTexturesAsPng(prefabPath);

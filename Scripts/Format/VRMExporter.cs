@@ -102,6 +102,7 @@ namespace VRM
                 x => gltf.extensions.VRM.secondaryAnimation.boneGroups.Add(x)
                 );
 
+#pragma warning disable 0618
             // meta(obsolete)
             {
                 var meta = exporter.Copy.GetComponent<VRMMetaInformation>();
@@ -119,6 +120,8 @@ namespace VRM
                     gltf.extensions.VRM.meta.reference = meta.Reference;
                 }
             }
+#pragma warning restore 0618
+
             // meta
             {
                 var _meta = exporter.Copy.GetComponent<VRMMeta>();
