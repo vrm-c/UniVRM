@@ -2,6 +2,9 @@
 using System.IO;
 using UniGLTF;
 using UnityEngine;
+#if (NET_4_6 && UNITY_2017_1_OR_NEWER)
+using System.Threading.Tasks;
+#endif
 
 
 namespace VRM
@@ -52,5 +55,29 @@ namespace VRM
             context.LoadAsync(onLoaded, onError, show);
         }
         #endregion
+
+#if (NET_4_6 && UNITY_2017_1_OR_NEWER)
+
+        public static Task<GameObject> LoadVrmAsync(string path, bool show = true)
+        {
+            var context = new VRMImporterContext(UnityPath.FromFullpath(path));
+            context.ParseGlb(File.ReadAllBytes(path));
+            return LoadVrmAsync(context, show);
+        }
+
+
+        public static Task<GameObject> LoadVrmAsync(Byte[] bytes, bool show = true)
+        {
+            var context = new VRMImporterContext();
+            context.ParseGlb(bytes);
+            return LoadVrmAsync(context, show);
+        }
+
+        public static Task<GameObject> LoadVrmAsync(VRMImporterContext ctx, bool show = true)
+        {
+            return ctx.LoadAsyncTask(show);
+        }
+
+#endif
     }
 }

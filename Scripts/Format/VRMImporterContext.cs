@@ -41,7 +41,7 @@ namespace VRM
             OnLoadModel();
         }
 
-        protected override Schedulable<GameObject> LoadAsync()
+        protected override Schedulable<GameObject> LoadAsync(bool show)
         {
             return Schedulable.Create()
                 .AddTask(Scheduler.ThreadPool, () =>
