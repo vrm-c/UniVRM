@@ -14,13 +14,23 @@ namespace VRM
         [Obsolete("use VRMImporterContext.Load(path)")]
         public static GameObject LoadFromPath(string path)
         {
-            return VRMImporterContext.Load(path).Root;
+            var context = new VRMImporterContext();
+            context.Parse(path, File.ReadAllBytes(path));
+            context.Load();
+            context.ShowMeshes();
+            context.EnableUpdateWhenOffscreen();
+            return context.Root;
         }
 
         [Obsolete("use VRMImporterContext.Load(bytes)")]
         public static GameObject LoadFromBytes(Byte[] bytes)
         {
-            return VRMImporterContext.Load(bytes).Root;
+            var context = new VRMImporterContext();
+            context.ParseGlb(bytes);
+            context.Load();
+            context.ShowMeshes();
+            context.EnableUpdateWhenOffscreen();
+            return context.Root;
         }
 
         [Obsolete("use VRMImporterContext.Load()")]
@@ -28,6 +38,7 @@ namespace VRM
         {
             context.Load();
             context.ShowMeshes();
+            context.EnableUpdateWhenOffscreen();
         }
 
         #region LoadVrmAsync

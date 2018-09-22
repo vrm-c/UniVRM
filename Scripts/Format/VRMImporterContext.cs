@@ -2,7 +2,6 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using System.IO;
 using UniGLTF;
 using UnityEngine;
 
@@ -14,24 +13,13 @@ namespace VRM
         const string HUMANOID_KEY = "humanoid";
         const string MATERIAL_KEY = "materialProperties";
 
-        public VRMImporterContext(UnityPath gltfPath = default(UnityPath)) : base(gltfPath)
+        [Obsolete]
+        public VRMImporterContext(UnityPath gltfPath) : base(gltfPath)
         {
         }
 
-        public static VRMImporterContext Load(string path)
+        public VRMImporterContext()
         {
-            var context = new VRMImporterContext(UniGLTF.UnityPath.FromFullpath(path));
-            context.ParseGlb(File.ReadAllBytes(path));
-            context.Load();
-            return context;
-        }
-
-        public static VRMImporterContext Load(Byte[] bytes)
-        {
-            var context = new VRMImporterContext();
-            context.ParseGlb(bytes);
-            context.Load();
-            return context;
         }
 
         public override void Load()
