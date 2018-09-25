@@ -12,40 +12,27 @@ namespace VRM
         public VRMMaterialImporter(ImporterContext context, List<glTF_VRM_Material> materials) : base(new ShaderStore(context, "VRM/UnlitTexture"), context)
         {
             m_materials = materials;
-            /*
-            var CreateDefault = MaterialIO.CreateMaterialFuncFromShader(new ShaderStore("VRM/UnlitTexture"));
-            var CreateZWrite = MaterialIO.CreateMaterialFuncFromShader(new ShaderStore("VRM/UnlitTransparentZWrite"));
-            MaterialIO.CreateMaterialFunc fallback = (ctx, i) =>
-            {
-                var vrm = ctx.GLTF;
-                if (vrm != null && vrm.materials[i].name.ToLower().Contains("zwrite"))
-                {
-                    // 一応。不要かも
-                    Debug.Log("fallback to VRM/UnlitTransparentZWrite");
-                    return CreateZWrite(ctx, i);
-                }
-                else
-                {
-                    Debug.Log("fallback to VRM/UnlitTexture");
-                    return CreateDefault(ctx, i);
-                }
-            };
-            if (materials == null && materials.Count == 0)
-            {
-                return fallback;
-            }
-            */
         }
 
         static string[] VRM_SHADER_NAMES =
         {
             "Standard",
+            "VRM/MToon",
+            "UniGLTF/UniUnlit",
+
             "VRM/UnlitTexture",
             "VRM/UnlitCutout",
             "VRM/UnlitTransparent",
             "VRM/UnlitTransparentZWrite",
-            "VRM/MToon",
         };
+
+        static bool UseConverted(bool isPlaying, string shader, string prop)
+        {
+            if (isPlaying && prop == "_BumpMap") return true;
+            if (prop == "_MetallicGlossMap") return true;
+            if (prop == "_OcclusionMap") return true;
+            return false;
+        }
 
         public override Material CreateMaterial(int i, glTFMaterial src)
         {
@@ -60,13 +47,12 @@ namespace VRM
                 if (VRM_SHADER_NAMES.Contains(shaderName))
                 {
                     Debug.LogErrorFormat("shader {0} not found. set Assets/VRM/Shaders/VRMShaders to Edit - project setting - Graphics - preloaded shaders", shaderName);
-                    return base.CreateMaterial(i, src);
                 }
                 else
                 {
                     Debug.LogWarningFormat("unknown shader {0}.", shaderName);
-                    return base.CreateMaterial(i, src);
                 }
+                return base.CreateMaterial(i, src);
             }
 
             //
@@ -98,8 +84,16 @@ namespace VRM
             foreach (var kv in item.textureProperties)
             {
                 var texture = Context.GetTexture(kv.Value);
-                if (texture != null) {
-                    material.SetTexture(kv.Key, texture.Texture);
+                if (texture != null)
+                {
+                    if(UseConverted(Application.isPlaying, shaderName, kv.Key))
+                    {
+                        material.SetTexture(kv.Key, texture.Converted);
+                    }
+                    else
+                    {
+                        material.SetTexture(kv.Key, texture.Texture);
+                    }
                 }
             }
             foreach (var kv in item.keywordMap)
