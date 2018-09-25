@@ -45,7 +45,6 @@ namespace VRM
         [Obsolete("use VVRMImporterContext.LoadAsync")]
         public static void LoadVrmAsync(string path, Action<GameObject> onLoaded, Action<Exception> onError = null, bool show = true)
         {
-            var context = new VRMImporterContext(UnityPath.FromFullpath(path));
             LoadVrmAsync(File.ReadAllBytes(path), onLoaded, onError, show);
         }
 
@@ -71,11 +70,10 @@ namespace VRM
 
         public static Task<GameObject> LoadVrmAsync(string path, bool show = true)
         {
-            var context = new VRMImporterContext(UnityPath.FromFullpath(path));
+            var context = new VRMImporterContext();
             context.ParseGlb(File.ReadAllBytes(path));
             return LoadVrmAsync(context, show);
         }
-
 
         public static Task<GameObject> LoadVrmAsync(Byte[] bytes, bool show = true)
         {

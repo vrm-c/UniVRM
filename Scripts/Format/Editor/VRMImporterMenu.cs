@@ -8,7 +8,7 @@ namespace VRM
 {
     public static class VRMImporterMenu
     {
-        [MenuItem(VRMVersion.VRM_VERSION + "/Import", priority =1)]
+        [MenuItem(VRMVersion.VRM_VERSION + "/Import", priority = 1)]
         static void ImportMenu()
         {
             var path = EditorUtility.OpenFilePanel("open vrm", "", "vrm");
@@ -20,7 +20,11 @@ namespace VRM
             if (Application.isPlaying)
             {
                 // load into scene
-                Selection.activeGameObject = VRMImporter.LoadFromPath(path);
+                var context = new VRMImporterContext();
+                context.Load(path);
+                context.ShowMeshes();
+                context.EnableUpdateWhenOffscreen();
+                Selection.activeGameObject = context.Root;
             }
             else
             {
@@ -43,24 +47,21 @@ namespace VRM
                 }
 
                 // import as asset
-                Import(path, UnityPath.FromUnityPath(assetPath));
+                var prefabPath = UnityPath.FromUnityPath(assetPath);
+                var context = new VRMImporterContext();
+                context.ParseGlb(File.ReadAllBytes(path));
+                context.SaveTexturesAsPng(prefabPath);
+
+                EditorApplication.delayCall += () =>
+                {
+                    //
+                    // after textures imported
+                    //
+                    context.Load();
+                    context.SaveAsAsset(prefabPath);
+                    context.Destroy(false);
+                };
             }
-        }
-
-        static void Import(string readPath, UnityPath prefabPath)
-        {
-            //var bytes = File.ReadAllBytes(readPath);
-            var context = new VRMImporterContext(UnityPath.FromFullpath(readPath));
-            context.ParseGlb(File.ReadAllBytes(readPath));
-            context.SaveTexturesAsPng(prefabPath);
-
-            EditorApplication.delayCall += () =>
-            {
-                // delay and can import png texture
-                VRMImporter.LoadFromBytes(context);
-                context.SaveAsAsset(prefabPath);
-                context.Destroy(false);
-            };
         }
     }
 }

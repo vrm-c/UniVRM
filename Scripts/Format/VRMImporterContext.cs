@@ -4,7 +4,7 @@ using System.Linq;
 using System.Collections.Generic;
 using UniGLTF;
 using UnityEngine;
-
+using System.IO;
 
 namespace VRM
 {
@@ -13,13 +13,23 @@ namespace VRM
         const string HUMANOID_KEY = "humanoid";
         const string MATERIAL_KEY = "materialProperties";
 
-        [Obsolete]
-        public VRMImporterContext(UnityPath gltfPath) : base(gltfPath)
+        public VRMImporterContext()
         {
         }
 
-        public VRMImporterContext()
+        public override void Parse(string path, byte[] bytes)
         {
+            var ext = Path.GetExtension(path).ToLower();
+            switch (ext)
+            {
+                case ".vrm":
+                    ParseGlb(bytes);
+                    break;
+
+                default:
+                    base.Parse(path, bytes);
+                    break;
+            }
         }
 
         public override void Load()
@@ -57,7 +67,7 @@ namespace VRM
                                 {
                                     using (MeasureTime("texture.Process"))
                                     {
-                                        var texture = new TextureItem(GLTF, index);
+                                        var texture = new TextureItem(index);
                                         texture.Process(GLTF, Storage);
                                         return texture;
                                     }
@@ -369,7 +379,7 @@ namespace VRM
                 // 作成する(先行ロード用)
                 if (gltfMeta.texture >= 0 && gltfMeta.texture < GLTF.textures.Count)
                 {
-                    var t = new TextureItem(GLTF, gltfMeta.texture);
+                    var t = new TextureItem(gltfMeta.texture);
                     t.Process(GLTF, Storage);
                     meta.Thumbnail = t.Texture;
                 }
