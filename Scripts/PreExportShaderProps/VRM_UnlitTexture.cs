@@ -15,7 +15,7 @@ namespace UniGLTF.ShaderPropExporter
                     new ShaderProps
                     {
                         Properties = new ShaderProperty[]{
-new ShaderProperty("_MainTex", ShaderPropertyType.TexEnv, false)
+new ShaderProperty("_MainTex", ShaderPropertyType.TexEnv)
 
                         }
                     }

@@ -15,8 +15,8 @@ namespace UniGLTF.ShaderPropExporter
                     new ShaderProps
                     {
                         Properties = new ShaderProperty[]{
-new ShaderProperty("_MainTex", ShaderPropertyType.TexEnv, false)
-,new ShaderProperty("_Cutoff", ShaderPropertyType.Range, false)
+new ShaderProperty("_MainTex", ShaderPropertyType.TexEnv)
+,new ShaderProperty("_Cutoff", ShaderPropertyType.Range)
 
                         }
                     }

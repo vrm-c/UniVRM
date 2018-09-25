@@ -50,7 +50,7 @@ namespace VRM
                 var prefabPath = UnityPath.FromUnityPath(assetPath);
                 var context = new VRMImporterContext();
                 context.ParseGlb(File.ReadAllBytes(path));
-                context.SaveTexturesAsPng(prefabPath);
+                context.ExtranctImages(prefabPath);
 
                 EditorApplication.delayCall += () =>
                 {

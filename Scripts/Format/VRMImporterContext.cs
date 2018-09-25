@@ -34,7 +34,7 @@ namespace VRM
 
         public override void Load()
         {
-            MaterialImporter = new VRMMaterialImporter(this, glTF_VRM_Material.Parse(Json));
+            SetMaterialImporter(new VRMMaterialImporter(this, glTF_VRM_Material.Parse(Json)));
             base.Load();
             OnLoadModel();
         }
@@ -53,7 +53,7 @@ namespace VRM
                 {
                     using (MeasureTime("new VRMMaterialImporter"))
                     {
-                        MaterialImporter = new VRMMaterialImporter(this, gltfMaterials);
+                        SetMaterialImporter(new VRMMaterialImporter(this, gltfMaterials));
                     }
                 })
                 .OnExecute(Scheduler.ThreadPool, parent =>

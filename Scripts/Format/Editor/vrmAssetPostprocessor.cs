@@ -34,7 +34,7 @@ namespace VRM
             var prefabPath = path.Parent.Child(path.FileNameWithoutExtension + ".prefab");
 
             // save texture assets !
-            context.SaveTexturesAsPng(prefabPath);
+            context.ExtranctImages(prefabPath);
 
             EditorApplication.delayCall += () =>
             {
