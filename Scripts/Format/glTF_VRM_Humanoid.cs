@@ -300,16 +300,18 @@ namespace VRM
             description.armStretch = armStretch;
             description.legStretch = legStretch;
             description.hasTranslationDoF = hasTranslationDoF;
-            description.human = humanBones.Select(x => new UniHumanoid.BoneLimit
-            {
-                boneName = nodes[x.node].name,
-                useDefaultValues = x.useDefaultValues,
-                axisLength = x.axisLength,
-                center = x.center,
-                min = x.min,
-                max = x.max,
-                humanBone = x.vrmBone.ToHumanBodyBone(),
-            })
+            description.human = humanBones
+                .Where(x => x.node >= 0 && x.node < nodes.Count)
+                .Select(x => new UniHumanoid.BoneLimit
+                {
+                    boneName = nodes[x.node].name,
+                    useDefaultValues = x.useDefaultValues,
+                    axisLength = x.axisLength,
+                    center = x.center,
+                    min = x.min,
+                    max = x.max,
+                    humanBone = x.vrmBone.ToHumanBodyBone(),
+                })
             .Where(x => x.humanBone != HumanBodyBones.LastBone)
             .ToArray();
             return description;
