@@ -26,7 +26,7 @@ namespace VRM
 
         float CalcScore(Transform target)
         {
-            return Vector3.Dot(m_lookAtHead.Head.WorldForward, target.position - m_lookAtHead.Head.Transform.position);
+            return Vector3.Dot(m_lookAtHead.Head.forward, target.position - m_lookAtHead.Head.position);
         }
 
         Transform ChooseTarget()
@@ -65,7 +65,7 @@ namespace VRM
             if (target == null)
             {
                 // forward
-                targetPosition = m_lookAtHead.Head.Transform.position + m_lookAtHead.Head.WorldForward * 20.0f;
+                targetPosition = m_lookAtHead.Head.position + m_lookAtHead.Head.forward * 20.0f;
             }
             else
             {

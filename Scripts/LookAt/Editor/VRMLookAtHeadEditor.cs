@@ -106,7 +106,7 @@ namespace VRM
         public override void OnPreviewGUI(Rect r, GUIStyle background)
         {
             m_previewRenderUtility.BeginPreview(r, background);
-            var target = m_target.Head.Transform;
+            var target = m_target.Head;
             if (target != null)
             {
 #if UNITY_2017_1_OR_NEWER
@@ -145,7 +145,7 @@ namespace VRM
             //if (!Application.isPlaying) return;
             if (!m_target.DrawGizmo) return;
             if (m_target.Target == null) return;
-            if (m_target.Head.Transform == null) return;
+            if (m_target.Head == null) return;
 
             {
                 EditorGUI.BeginChangeCheck();
@@ -158,25 +158,25 @@ namespace VRM
             }
 
             Handles.color = new Color(1, 1, 1, 0.6f);
-            Handles.DrawDottedLine(m_target.Head.Transform.position, m_target.Target.position, 4.0f);
+            Handles.DrawDottedLine(m_target.Head.position, m_target.Target.position, 4.0f);
 
-            Handles.matrix = m_target.Head.InitialWorldMatrix;
+            Handles.matrix = m_target.Head.localToWorldMatrix;
             Handles.Label(Vector3.zero, string.Format("Yaw: {0:0.}degree\nPitch: {1:0.}degree",
                 m_target.Yaw,
                 m_target.Pitch));
 
             Handles.color = new Color(0, 1, 0, 0.2f);
             Handles.DrawSolidArc(Vector3.zero,
-                    m_target.Head.OffsetRotation.GetColumn(1),
-                    m_target.Head.OffsetRotation.GetColumn(2),
+                    Matrix4x4.identity.GetColumn(1),
+                    Matrix4x4.identity.GetColumn(2),
                     m_target.Yaw,
                     RADIUS);
 
-            Handles.matrix = m_target.Head.InitialWorldMatrix * m_target.YawMatrix;
+            Handles.matrix = m_target.Head.localToWorldMatrix * m_target.YawMatrix;
             Handles.color = new Color(1, 0, 0, 0.2f);
             Handles.DrawSolidArc(Vector3.zero,
-                    m_target.Head.OffsetRotation.GetColumn(0),
-                    m_target.Head.OffsetRotation.GetColumn(2),
+                    Matrix4x4.identity.GetColumn(0),
+                    Matrix4x4.identity.GetColumn(2),
                     -m_target.Pitch,
                     RADIUS);
         }

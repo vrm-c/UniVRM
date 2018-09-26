@@ -13,6 +13,13 @@ namespace VRM
         LateUpdate,
     }
 
+    /// <summary>
+    /// Headボーンローカルで目標物のYaw, Pitchを求めて目線に適用する
+    /// 
+    /// * VRMLookAtBoneApplyer
+    /// * VRMLookAtBlendShapeApplyer
+    /// 
+    /// </summary>
     public class VRMLookAtHead : MonoBehaviour, IVRMComponent
     {
         public bool DrawGizmo = true;
@@ -24,7 +31,7 @@ namespace VRM
         public Transform Target;
 
         [SerializeField]
-        public OffsetOnTransform Head;
+        public Transform Head;
 
         #region Thumbnail
         public Texture2D CreateThumbnail()
@@ -64,15 +71,14 @@ namespace VRM
 
         public void LookFace(Transform t)
         {
-            if (Head.Transform == null) return;
-            var head = Head.Transform;
-            var headPosition = head.position + new Vector3(0, 0.05f, 0);
-            t.position = headPosition + Head.WorldMatrix.ExtractRotation() * new Vector3(0, 0, 0.7f);
+            if (Head == null) return;
+            var headPosition = Head.position + new Vector3(0, 0.05f, 0);
+            t.position = headPosition + Head.localToWorldMatrix.ExtractRotation() * new Vector3(0, 0, 0.7f);
             t.LookAt(headPosition);
         }
         #endregion
 
-        public void OnImported(VRMImporterContext context)
+        void Awake()
         {
             var animator = GetComponent<Animator>();
             if (animator == null)
@@ -88,8 +94,11 @@ namespace VRM
                 return;
             }
 
-            Head = OffsetOnTransform.Create(head);
+            Head = head;
+        }
 
+        public void OnImported(VRMImporterContext context)
+        { 
             var gltfFirstPerson = context.GLTF.extensions.VRM.firstPerson;
             switch (gltfFirstPerson.lookAtType)
             {
@@ -107,11 +116,6 @@ namespace VRM
                     }
                     break;
             }
-        }
-
-        private void Start()
-        {
-            Head.Setup();
         }
 
         static Matrix4x4 LookAtMatrixFromWorld(Vector3 from, Vector3 target)
@@ -137,7 +141,7 @@ namespace VRM
         {
             get
             {
-                var yaw = Quaternion.AngleAxis(m_yaw, Head.OffsetRotation.GetColumn(1));
+                var yaw = Quaternion.AngleAxis(m_yaw, Vector3.up);
                 var m = default(Matrix4x4);
                 m.SetTRS(Vector3.zero, yaw, Vector3.one);
                 return m;
@@ -159,7 +163,7 @@ namespace VRM
         }
 
         public event Action<float, float> YawPitchChanged;
-        void RaiseYawPitchChanged(float yaw, float pitch)
+        public void RaiseYawPitchChanged(float yaw, float pitch)
         {
             m_yaw = yaw;
             m_pitch = pitch;
@@ -172,7 +176,7 @@ namespace VRM
 
         private void Update()
         {
-            if(UpdateType==UpdateType.Update)
+            if (UpdateType == UpdateType.Update)
             {
                 LookWorldPosition();
             }
@@ -196,8 +200,8 @@ namespace VRM
 
         public void LookWorldPosition(Vector3 targetPosition, out float yaw, out float pitch)
         {
-            var localPosition = Head.InitialWorldMatrix.inverse.MultiplyPoint(targetPosition);
-            Head.OffsetRotation.CalcYawPitch(localPosition, out yaw, out pitch);
+            var localPosition = Head.worldToLocalMatrix.MultiplyPoint(targetPosition);
+            Matrix4x4.identity.CalcYawPitch(localPosition, out yaw, out pitch);
             RaiseYawPitchChanged(yaw, pitch);
         }
     }

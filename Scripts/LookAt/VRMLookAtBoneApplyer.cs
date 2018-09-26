@@ -123,8 +123,8 @@ namespace VRM
             if (LeftEye.Transform != null && RightEye.Transform != null)
             {
                 // 目に値を適用する
-                LeftEye.Transform.rotation = LeftEye.InitialWorldMatrix.ExtractRotation() * m_head.Head.OffsetRotation.YawPitchRotation(leftYaw, pitch);
-                RightEye.Transform.rotation = RightEye.InitialWorldMatrix.ExtractRotation() * m_head.Head.OffsetRotation.YawPitchRotation(rightYaw, pitch);
+                LeftEye.Transform.rotation = LeftEye.InitialWorldMatrix.ExtractRotation() * Matrix4x4.identity.YawPitchRotation(leftYaw, pitch);
+                RightEye.Transform.rotation = RightEye.InitialWorldMatrix.ExtractRotation() * Matrix4x4.identity.YawPitchRotation(rightYaw, pitch);
             }
         }
     }
