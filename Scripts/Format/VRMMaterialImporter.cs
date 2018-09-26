@@ -36,6 +36,12 @@ namespace VRM
 
         public override Material CreateMaterial(int i, glTFMaterial src)
         {
+            if(i==0 && m_materials.Count == 0)
+            {
+                // dummy
+                return new Material(Shader.Find("Standard"));
+            }
+
             var item = m_materials[i];
             var shaderName = item.shader;
             var shader = Shader.Find(shaderName);
