@@ -129,6 +129,12 @@ namespace VRM
                     {
                         Root.name = "VRM";
                         Debug.Log(GetSpeedLog());
+
+                        if (show)
+                        {
+                            ShowMeshes();
+                        }
+
                         return Root;
                     });
         }
