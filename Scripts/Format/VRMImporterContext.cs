@@ -39,7 +39,7 @@ namespace VRM
             OnLoadModel();
         }
 
-        protected override Schedulable<GameObject> LoadAsync(bool show)
+        protected override Schedulable<Unit> LoadAsync()
         {
             return Schedulable.Create()
                 .AddTask(Scheduler.ThreadPool, () =>
@@ -129,16 +129,9 @@ namespace VRM
                     {
                         Root.name = "VRM";
                         Debug.Log(GetSpeedLog());
-
-                        if (show)
-                        {
-                            ShowMeshes();
-                        }
-
-                        return Root;
+                        return Unit.Default;
                     });
         }
-
 
         #region OnLoad
         void OnLoadModel()

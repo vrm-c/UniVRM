@@ -56,13 +56,29 @@ namespace VRM
             {
                 context.ParseGlb(bytes);
             }
-            context.LoadAsync(onLoaded, onError, show);
+            context.LoadAsync(_ =>
+            {
+                if (show)
+                {
+                    context.ShowMeshes();
+                }
+                onLoaded(context.Root);
+            }, 
+            onError);
         }
 
         [Obsolete("use VVRMImporterContext.LoadAsync")]
         public static void LoadVrmAsync(VRMImporterContext context, Action<GameObject> onLoaded, Action<Exception> onError = null, bool show = true)
         {
-            context.LoadAsync(onLoaded, onError, show);
+            context.LoadAsync(_ =>
+            {
+                if (show)
+                {
+                    context.ShowMeshes();
+                }
+                onLoaded(context.Root);
+            },
+            onError);
         }
         #endregion
 
