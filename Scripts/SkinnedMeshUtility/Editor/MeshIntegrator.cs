@@ -48,11 +48,16 @@ namespace VRM
             if (prefab != null)
             {
                 var prefabPath = AssetDatabase.GetAssetPath(prefab);
-                assetPath = string.Format("{0}/{1}{2}",
+                assetPath = string.Format("{0}/{1}_{2}{3}",
                     Path.GetDirectoryName(prefabPath),
                     Path.GetFileNameWithoutExtension(prefabPath),
+                    go.name,
                     ASSET_SUFFIX
                     );
+            }
+            else
+            {
+                assetPath = string.Format("Assets/{0}{1}", go.name, ASSET_SUFFIX);
             }
 
             Debug.LogFormat("CreateAsset: {0}", assetPath);
@@ -78,7 +83,7 @@ namespace VRM
 
         class Integrator
         {
-            public List<SkinnedMeshRenderer> Renderers { get; private set; }
+//            public List<SkinnedMeshRenderer> Renderers { get; private set; }
             public List<Vector3> Positions { get; private set; }
             public List<Vector3> Normals { get; private set; }
             public List<Vector2> UV { get; private set; }
@@ -132,7 +137,7 @@ namespace VRM
 
             public Integrator()
             {
-                Renderers = new List<SkinnedMeshRenderer>();
+//                Renderers = new List<SkinnedMeshRenderer>();
 
                 Positions = new List<Vector3>();
                 Normals = new List<Vector3>();
@@ -157,6 +162,79 @@ namespace VRM
                 return bw;
             }
 
+            public void Push(MeshRenderer renderer)
+            {
+                var meshFilter = renderer.GetComponent<MeshFilter>();
+                if (meshFilter == null)
+                {
+                    Debug.LogWarningFormat("{0} has no mesh filter", renderer.name);
+                    return;
+                }
+                var mesh = meshFilter.sharedMesh;
+                if (mesh == null)
+                {
+                    Debug.LogWarningFormat("{0} has no mesh", renderer.name);
+                    return;
+                }
+
+                var indexOffset = Positions.Count;
+                var boneIndexOffset = Bones.Count;
+
+                Positions.AddRange(mesh.vertices
+                    .Select(x => renderer.transform.TransformPoint(x))
+                );
+                Normals.AddRange(mesh.normals
+                    .Select(x => renderer.transform.TransformVector(x))
+                );
+                UV.AddRange(mesh.uv);
+                Tangents.AddRange(mesh.tangents
+                    .Select(t =>
+                    {
+                        var v = renderer.transform.TransformVector(t.x, t.y, t.z);
+                        return new Vector4(v.x, v.y, v.z, t.w);
+                    })
+                );
+
+                var self = renderer.transform;
+                var bone = self.parent;
+                if (bone == null)
+                {
+                    Debug.LogWarningFormat("{0} is root gameobject.", self.name);
+                    return;
+                }
+                var bindpose = bone.worldToLocalMatrix;
+                
+                BoneWeights.AddRange(Enumerable.Range(0, mesh.vertices.Length)
+                    .Select(x => new BoneWeight()
+                    {
+                        boneIndex0 = Bones.Count,
+                        weight0 = 1,
+                    })
+                );
+                
+                BindPoses.Add(bindpose);
+                Bones.Add(bone);
+                
+                for (int i = 0; i < mesh.subMeshCount; ++i)
+                {
+                    var indices = mesh.GetIndices(i).Select(x => x + indexOffset);
+                    var mat = renderer.sharedMaterials[i];
+                    var sameMaterialSubMeshIndex = SubMeshes.FindIndex(x => ReferenceEquals(x.Material, mat));
+                    if (sameMaterialSubMeshIndex >= 0)
+                    {
+                        SubMeshes[sameMaterialSubMeshIndex].Indices.AddRange(indices);
+                    }
+                    else
+                    {
+                        SubMeshes.Add(new SubMesh
+                        {
+                            Indices = indices.ToList(),
+                            Material = mat,
+                        });
+                    }
+                }
+            }
+
             public void Push(SkinnedMeshRenderer renderer)
             {
                 var mesh = renderer.sharedMesh;
@@ -166,7 +244,7 @@ namespace VRM
                     return;
                 }
 
-                Renderers.Add(renderer);
+//                Renderers.Add(renderer);
 
                 var indexOffset = Positions.Count;
                 var boneIndexOffset = Bones.Count;
@@ -264,6 +342,22 @@ namespace VRM
             }
         }
 
+        static IEnumerable<MeshRenderer> EnumerateMeshRenderer(Transform root)
+        {
+            foreach (var x in Traverse(root))
+            {
+                var renderer = x.GetComponent<MeshRenderer>();
+                if (renderer != null)
+                {
+                    var filter = x.GetComponent<MeshFilter>();
+                    if (filter != null && filter.sharedMesh != null && renderer.gameObject.activeSelf)
+                    {
+                        yield return renderer;
+                    }
+                }
+            }
+        }
+
         static IEnumerable<Transform> Ancestors(Transform self)
         {
             yield return self;
@@ -316,6 +410,11 @@ namespace VRM
             foreach(var x in renderers)
             {
                 integrator.Push(x);
+            }
+
+            foreach (var meshRenderer in EnumerateMeshRenderer(go.transform))
+            {
+                integrator.Push(meshRenderer);
             }
 
             var mesh = new Mesh();
