@@ -84,6 +84,7 @@ namespace VRM
 
 #if (NET_4_6 && UNITY_2017_1_OR_NEWER)
 
+        [Obsolete("use VRMImporterContext.LoadAsync()")]
         public static Task<GameObject> LoadVrmAsync(string path, bool show = true)
         {
             var context = new VRMImporterContext();
@@ -91,6 +92,7 @@ namespace VRM
             return LoadVrmAsync(context, show);
         }
 
+        [Obsolete("use VRMImporterContext.LoadAsync()")]
         public static Task<GameObject> LoadVrmAsync(Byte[] bytes, bool show = true)
         {
             var context = new VRMImporterContext();
@@ -98,9 +100,15 @@ namespace VRM
             return LoadVrmAsync(context, show);
         }
 
-        public static Task<GameObject> LoadVrmAsync(VRMImporterContext ctx, bool show = true)
+        [Obsolete("use VRMImporterContext.LoadAsync()")]
+        public async static Task<GameObject> LoadVrmAsync(VRMImporterContext ctx, bool show = true)
         {
-            return ctx.LoadAsyncTask(show);
+            await ctx.LoadAsyncTask();
+            if (show)
+            {
+                ctx.ShowMeshes();
+            }
+            return ctx.Root;
         }
 
 #endif
