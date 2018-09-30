@@ -279,7 +279,7 @@ namespace VRM
         static bool FloatSlider(Rect rect, SerializedProperty prop, float maxValue)
         {
             var oldValue = prop.floatValue;
-            var newValue = EditorGUI.Slider(rect, prop.floatValue, 0, 100f);
+            var newValue = EditorGUI.Slider(rect, prop.floatValue, 0, maxValue);
             if (newValue != oldValue)
             {
                 prop.floatValue = newValue;
