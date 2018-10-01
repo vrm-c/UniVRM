@@ -5,18 +5,6 @@ using UniJSON;
 
 namespace UniGLTF
 {
-    public partial class glTFUsedExtensions
-    {
-        [UsedExtension]
-        static string VRMGetUsedExtension
-        {
-            get
-            {
-                return "VRM";
-            }
-        }
-    }
-
     public partial class glTF_extensions : ExtensionsBase<glTF_extensions>
     {
         public VRM.glTF_VRM_extensions VRM = new VRM.glTF_VRM_extensions();
@@ -38,6 +26,14 @@ VRM extension is for 3d humanoid avatars (and models) in VR applications.
 ")]
     public class glTF_VRM_extensions : JsonSerializableBase
     {
+        public static string ExtensionName
+        {
+            get
+            {
+                return "VRM";
+            }
+        }
+
         [JsonSchema(Description = @"Version of exporter that vrm created. " + VRMVersion.VRM_VERSION)]
         public string exporterVersion = "UniVRM-" + VRMVersion.VERSION;
 

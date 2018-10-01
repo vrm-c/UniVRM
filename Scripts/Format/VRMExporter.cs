@@ -14,7 +14,9 @@ namespace VRM
         }
 
         public VRMExporter(glTF gltf) : base(gltf)
-        { }
+        {
+            gltf.extensionsUsed.Add(glTF_VRM_extensions.ExtensionName);
+        }
 
         public new static glTF Export(GameObject go)
         {
