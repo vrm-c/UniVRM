@@ -76,7 +76,12 @@ namespace VRM
 
         public static List<glTF_VRM_Material> Parse(string src)
         {
-            var json = UniJSON.JsonParser.Parse(src)["extensions"]["VRM"]["materialProperties"];
+            var json = JsonParser.Parse(src)["extensions"]["VRM"]["materialProperties"];
+            return Parse(json);
+        }
+
+        public static List<glTF_VRM_Material> Parse(JsonNode json)
+        {
             var materials = json.DeserializeList<glTF_VRM_Material>();
             var jsonItems = json.ArrayItems.ToArray();
             for (int i = 0; i < materials.Count; ++i)
