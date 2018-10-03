@@ -41,6 +41,8 @@ namespace VRM
         #region OnLoad
         protected override void OnLoadModel()
         {
+            Root.name = "VRM";
+
             using (MeasureTime("VRM LoadMeta"))
             {
                 LoadMeta();
@@ -64,9 +66,6 @@ namespace VRM
             {
                 LoadFirstPerson();
             }
-
-            Root.name = "VRM";
-            Debug.Log(GetSpeedLog());
         }
 
         void LoadMeta()
