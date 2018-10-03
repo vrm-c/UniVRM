@@ -119,6 +119,11 @@ namespace VRM
             }
             else
             {
+                foreach (var keyword in m.shaderKeywords)
+                {
+                    material.keywordMap.Add(keyword, m.IsKeywordEnabled(keyword));
+                }
+
                 // get properties
                 //material.SetProp(prop);
                 foreach (var kv in prop.Properties)
@@ -175,12 +180,6 @@ namespace VRM
                             throw new NotImplementedException();
                     }
                 }
-
-            }
-
-            foreach (var keyword in m.shaderKeywords)
-            {
-                material.keywordMap.Add(keyword, m.IsKeywordEnabled(keyword));
             }
 
             foreach (var tag in TAGS)

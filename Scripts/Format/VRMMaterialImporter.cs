@@ -26,14 +26,6 @@ namespace VRM
             "VRM/UnlitTransparentZWrite",
         };
 
-        static bool UseConverted(bool isPlaying, string shader, string prop)
-        {
-            if (isPlaying && prop == "_BumpMap") return true;
-            if (prop == "_MetallicGlossMap") return true;
-            if (prop == "_OcclusionMap") return true;
-            return false;
-        }
-
         public override Material CreateMaterial(int i, glTFMaterial src)
         {
             if(i==0 && m_materials.Count == 0)
@@ -92,7 +84,7 @@ namespace VRM
                 var texture = Context.GetTexture(kv.Value);
                 if (texture != null)
                 {
-                    if(UseConverted(Application.isPlaying, shaderName, kv.Key))
+                    if(texture.UseConverted(Application.isPlaying, shaderName, kv.Key))
                     {
                         material.SetTexture(kv.Key, texture.Converted);
                     }
