@@ -1,10 +1,10 @@
-﻿using DepthFirstScheduler;
-using System;
+﻿using System;
 using System.Linq;
 using System.Collections.Generic;
 using UniGLTF;
 using UnityEngine;
 using System.IO;
+
 
 namespace VRM
 {
@@ -32,110 +32,17 @@ namespace VRM
             }
         }
 
-        public override void Load()
+        public override void ParseJson(string json, IStorage storage)
         {
+            base.ParseJson(json, storage);
             SetMaterialImporter(new VRMMaterialImporter(this, glTF_VRM_Material.Parse(Json)));
-            base.Load();
-            OnLoadModel();
-        }
-
-        protected override Schedulable<Unit> LoadAsync()
-        {
-            return Schedulable.Create()
-                .AddTask(Scheduler.ThreadPool, () =>
-                {
-                    using (MeasureTime("glTF_VRM_Material.Parse"))
-                    {
-                        return glTF_VRM_Material.Parse(Json);
-                    }
-                })
-                .ContinueWith(Scheduler.MainThread, gltfMaterials =>
-                {
-                    using (MeasureTime("new VRMMaterialImporter"))
-                    {
-                        SetMaterialImporter(new VRMMaterialImporter(this, gltfMaterials));
-                    }
-                })
-                .OnExecute(Scheduler.ThreadPool, parent =>
-                {
-                    // textures
-                    for (int i = 0; i < GLTF.textures.Count; ++i)
-                    {
-                        var index = i;
-                        parent.AddTask(Scheduler.MainThread,
-                                () =>
-                                {
-                                    using (MeasureTime("texture.Process"))
-                                    {
-                                        var texture = new TextureItem(index);
-                                        texture.Process(GLTF, Storage);
-                                        return texture;
-                                    }
-                                })
-                            .ContinueWith(Scheduler.ThreadPool, x => AddTexture(x));
-                    }
-                })
-                .ContinueWithCoroutine(Scheduler.MainThread, () => LoadMaterials())
-                .OnExecute(Scheduler.ThreadPool, parent =>
-                {
-                    // meshes
-                    var meshImporter = new MeshImporter();
-                    for (int i = 0; i < GLTF.meshes.Count; ++i)
-                    {
-                        var index = i;
-                        parent.AddTask(Scheduler.ThreadPool,
-                                () =>
-                                {
-                                    using (MeasureTime("ReadMesh"))
-                                    {
-                                        return meshImporter.ReadMesh(this, index);
-                                    }
-                                })
-                        .ContinueWith(Scheduler.MainThread, x =>
-                        {
-                            using (MeasureTime("BuildMesh"))
-                            {
-                                return MeshImporter.BuildMesh(this, x);
-                            }
-                        })
-                        .ContinueWith(Scheduler.ThreadPool, x => Meshes.Add(x))
-                        ;
-                    }
-                })
-                .ContinueWithCoroutine(Scheduler.MainThread, () =>
-                {
-                    using (MeasureTime("LoadNodes"))
-                    {
-                        return LoadNodes();
-                    }
-                })
-                .ContinueWithCoroutine(Scheduler.MainThread, () =>
-                {
-                    using (MeasureTime("BuildHierarchy"))
-                    {
-                        return BuildHierarchy();
-                    }
-                })
-                .ContinueWith(Scheduler.CurrentThread, _ =>
-                {
-                    //using (MeasureTime("OnLoadModel"))
-                    {
-                        OnLoadModel();
-                        return Unit.Default;
-                    }
-                })
-                .ContinueWith(Scheduler.CurrentThread,
-                    _ =>
-                    {
-                        Root.name = "VRM";
-                        Debug.Log(GetSpeedLog());
-                        return Unit.Default;
-                    });
         }
 
         #region OnLoad
-        void OnLoadModel()
+        protected override void OnLoadModel()
         {
+            Root.name = "VRM";
+
             using (MeasureTime("VRM LoadMeta"))
             {
                 LoadMeta();
