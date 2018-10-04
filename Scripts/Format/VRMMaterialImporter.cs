@@ -84,9 +84,10 @@ namespace VRM
                 var texture = Context.GetTexture(kv.Value);
                 if (texture != null)
                 {
-                    if(texture.UseConverted(Application.isPlaying, shaderName, kv.Key))
+                    var converted = texture.ConvertTexture(kv.Key);
+                    if (converted != null)
                     {
-                        material.SetTexture(kv.Key, texture.Converted);
+                        material.SetTexture(kv.Key, converted);
                     }
                     else
                     {
