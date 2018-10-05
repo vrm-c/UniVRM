@@ -10,10 +10,10 @@ namespace VRM
     [Serializable]
     public class glTF_VRM_SecondaryAnimationCollider : JsonSerializableBase
     {
-        [JsonSchema(Description = "The local coordinate from the collision detection node.")]
+        [JsonSchema(Description = "The local coordinate from the node of the collider group.")]
         public Vector3 offset;
 
-        [JsonSchema(Description = "The radius of the sphere (specified body part) used for collision detection with swaying objects.")]
+        [JsonSchema(Description = "The radius of the collider.")]
         public float radius;
 
         protected override void SerializeMembers(GLTFJsonFormatter f)
@@ -25,10 +25,10 @@ namespace VRM
 
 
     [Serializable]
-    [JsonSchema(Title = "vrm.secondaryanimation.collidergroup", Description = "Set sphere balls (specified body parts) to collide with swaying objects.")]
+    [JsonSchema(Title = "vrm.secondaryanimation.collidergroup", Description = @"Set sphere balls for colliders used for collision detections with swaying objects.")]
     public class glTF_VRM_SecondaryAnimationColliderGroup : JsonSerializableBase
     {
-        [JsonSchema(Description = "Where the collision detection is set up.")]
+        [JsonSchema(Description = "The node of the collider group for setting up collision detections.")]
         public int node;
 
         public List<glTF_VRM_SecondaryAnimationCollider> colliders = new List<glTF_VRM_SecondaryAnimationCollider>();
@@ -54,22 +54,22 @@ namespace VRM
         [JsonSchema(Description = "The strength of gravity.")]
         public float gravityPower;
 
-        [JsonSchema(Description = "The direction of gravity. Gravity can be enabled by (0, -1, 0) and setting (1, 0, 0) will act like wind.")]
+        [JsonSchema(Description = "The direction of gravity. Set (0, -1, 0) for simulating the gravity. Set (1, 0, 0) for simulating the wind.")]
         public Vector3 gravityDir;
 
         [JsonSchema(Description = "The resistance (deceleration) of automatic animation.")]
         public float dragForce;
 
-        [JsonSchema(Description = @"The reference point of a swaying object can be set at any location except the origin. When implementing UI moving with warp, the parent node to be moved with warp can be specified if you don’t want to make the object moving by warp movement.")]
+        [JsonSchema(Description = @"The reference point of a swaying object can be set at any location except the origin. When implementing UI moving with warp, the parent node to move with warp can be specified if you don't want to make the object swaying with warp movement.")]
         public int center;
 
-        [JsonSchema(Description = "The radius of the sphere (swaying object) used for collision detection with colliders (specified body parts).")]
+        [JsonSchema(Description = "The radius of the sphere used for the collision detection with colliders.")]
         public float hitRadius;
 
         [JsonSchema(Description = "Specify the node index of the root bone of the swaying object.")]
         public int[] bones = new int[] { };
 
-        [JsonSchema(Description = "Specify the index of the collision detection group for the swaying object.")]
+        [JsonSchema(Description = "Specify the index of the collider group for collisions with swaying objects.")]
         public int[] colliderGroups = new int[] { };
 
         protected override void SerializeMembers(GLTFJsonFormatter f)
@@ -87,7 +87,7 @@ namespace VRM
     }
 
     [Serializable]
-    [JsonSchema(Title = "vrm.secondaryanimation", Description = "Automatic animation setting for string-shaped objects such as tail and hair.")]
+    [JsonSchema(Title = "vrm.secondaryanimation", Description = "The setting of automatic animation of string-like objects such as tails and hairs.")]
     public class glTF_VRM_SecondaryAnimation : JsonSerializableBase
     {
         public List<glTF_VRM_SecondaryAnimationGroup> boneGroups = new List<glTF_VRM_SecondaryAnimationGroup>();

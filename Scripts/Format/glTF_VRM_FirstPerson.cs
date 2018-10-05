@@ -72,13 +72,13 @@ namespace VRM
     [JsonSchema(Title = "vrm.firstperson")]
     public class glTF_VRM_Firstperson : UniGLTF.JsonSerializableBase
     {
-        [JsonSchema(Description = "Switch to Head bone when model is rendered in first-person view.")]
+        [JsonSchema(Description = "Specify a bone whose rendering mode should be switched in first-person view. Usually Head is specified.")]
         public int firstPersonBone = -1;
 
-        [JsonSchema(Description = "The target headset position in first-person view. Assuming the head bone is offset from the headset.")]
+        [JsonSchema(Description = @"The target position of the VR headset in first-person view. It is assumed that an offset from the head bone to the VR headset is added.")]
         public Vector3 firstPersonBoneOffset;
 
-        [JsonSchema(Description = "Switch on / off mesh for display in first-person view, third-person view, or the others.")]
+        [JsonSchema(Description = "Switch display / undisplay for each mesh in first-person view or the others.")]
         public List<glTF_VRM_MeshAnnotation> meshAnnotations = new List<glTF_VRM_MeshAnnotation>();
 
         // lookat
