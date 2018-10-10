@@ -134,48 +134,83 @@ namespace VRM
 
         void CreateHeadlessModel(Renderer _renderer, Transform EraseRoot)
         {
-            var renderer = _renderer as SkinnedMeshRenderer;
-            if (renderer != null)
             {
-                var go = new GameObject("_headless_" + renderer.name);
-                go.layer = FIRSTPERSON_ONLY_LAYER;
-                go.transform.SetParent(renderer.transform, false);
-
-                var m_eraseBones = renderer.bones.Select(x =>
+                var renderer = _renderer as SkinnedMeshRenderer;
+                if (renderer != null)
                 {
-                    var eb = new BoneMeshEraser.EraseBone
-                    {
-                        Bone = x,
-                    };
+                    CreateHeadlessModelForSkinnedMeshRenderer(renderer, EraseRoot);
+                    return;
+                }
+            }
 
-                    if (EraseRoot != null)
-                    {
+
+            {
+                var renderer = _renderer as MeshRenderer;
+                if (renderer != null)
+                {
+                    CreateHeadlessModelForMeshRenderer(renderer, EraseRoot);
+                    return;
+                }
+            }
+
+            // ここには来ない
+        }
+
+        private static void CreateHeadlessModelForMeshRenderer(MeshRenderer renderer, Transform eraseRoot)
+        {
+            if (renderer.transform.Ancestors().Any(x => x == eraseRoot))
+            {
+                // 祖先に削除ボーンが居る
+                renderer.gameObject.layer = THIRDPERSON_ONLY_LAYER;
+            }
+            else
+            {
+                // 特に変更しない => 両方表示
+            }
+        }
+
+        private static void CreateHeadlessModelForSkinnedMeshRenderer(SkinnedMeshRenderer renderer, Transform eraseRoot)
+        {
+            renderer.gameObject.layer = THIRDPERSON_ONLY_LAYER;
+
+            var go = new GameObject("_headless_" + renderer.name);
+            go.layer = FIRSTPERSON_ONLY_LAYER;
+            go.transform.SetParent(renderer.transform, false);
+
+            var m_eraseBones = renderer.bones.Select(x =>
+            {
+                var eb = new BoneMeshEraser.EraseBone
+                {
+                    Bone = x,
+                };
+
+                if (eraseRoot != null)
+                {
                     // 首の子孫を消去
-                    if (eb.Bone.Ancestor().Any(y => y == EraseRoot))
-                        {
+                    if (eb.Bone.Ancestor().Any(y => y == eraseRoot))
+                    {
                         //Debug.LogFormat("erase {0}", x);
                         eb.Erase = true;
-                        }
                     }
+                }
 
-                    return eb;
-                })
+                return eb;
+            })
+            .ToArray();
+
+            var bones = renderer.bones;
+            var eraseBones = m_eraseBones
+                .Where(x => x.Erase)
+                .Select(x => bones.IndexOf(x.Bone))
                 .ToArray();
 
-                var bones = renderer.bones;
-                var eraseBones = m_eraseBones
-                    .Where(x => x.Erase)
-                    .Select(x => bones.IndexOf(x.Bone))
-                    .ToArray();
+            var mesh = BoneMeshEraser.CreateErasedMesh(renderer.sharedMesh, eraseBones);
 
-                var mesh = BoneMeshEraser.CreateErasedMesh(renderer.sharedMesh, eraseBones);
-
-                var erased = go.AddComponent<SkinnedMeshRenderer>();
-                erased.sharedMesh = mesh;
-                erased.sharedMaterials = renderer.sharedMaterials;
-                erased.bones = renderer.bones;
-                erased.rootBone = renderer.rootBone;
-            }
+            var erased = go.AddComponent<SkinnedMeshRenderer>();
+            erased.sharedMesh = mesh;
+            erased.sharedMaterials = renderer.sharedMaterials;
+            erased.bones = renderer.bones;
+            erased.rootBone = renderer.rootBone;
         }
 
         bool m_done;
@@ -192,7 +227,6 @@ namespace VRM
                 switch (x.FirstPersonFlag)
                 {
                     case FirstPersonFlag.Auto:
-                        x.Renderer.gameObject.layer = THIRDPERSON_ONLY_LAYER;
                         CreateHeadlessModel(x.Renderer, FirstPersonBone);
                         break;
 
