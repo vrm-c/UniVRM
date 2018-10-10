@@ -15,7 +15,7 @@
             "type": "number"
         },
         "gravityDir": {
-            "description": "The direction of gravity. Gravity can be enabled by (0, -1, 0) and setting (1, 0, 0) will act like wind.",
+            "description": "The direction of gravity. Set (0, -1, 0) for simulating the gravity. Set (1, 0, 0) for simulating the wind.",
             "type": "array"
         },
         "dragForce": {
@@ -23,11 +23,11 @@
             "type": "number"
         },
         "center": {
-            "description": "The reference point of a swaying object can be set at any location except the origin. When implementing UI moving with warp, the parent node to be moved with warp can be specified if you don’t want to make the object moving by warp movement.",
+            "description": "The reference point of a swaying object can be set at any location except the origin. When implementing UI moving with warp, the parent node to move with warp can be specified if you don't want to make the object swaying with warp movement.",
             "type": "integer"
         },
         "hitRadius": {
-            "description": "The radius of the sphere (swaying object) used for collision detection with colliders (specified body parts).",
+            "description": "The radius of the sphere used for the collision detection with colliders.",
             "type": "number"
         },
         "bones": {
@@ -38,7 +38,7 @@
             }
         },
         "colliderGroups": {
-            "description": "Specify the index of the collision detection group for the swaying object.",
+            "description": "Specify the index of the collider group for collisions with swaying objects.",
             "type": "array",
             "items": {
                 "type": "integer"

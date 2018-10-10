@@ -3,7 +3,7 @@
     "type": "object",
     "properties": {
         "node": {
-            "description": "Where the collision detection is set up.",
+            "description": "The node of the collider group for setting up collision detections.",
             "type": "integer"
         },
         "colliders": {
@@ -12,11 +12,11 @@
                 "type": "object",
                 "properties": {
                     "offset": {
-                        "description": "The local coordinate from the collision detection node.",
+                        "description": "The local coordinate from the node of the collider group.",
                         "type": "array"
                     },
                     "radius": {
-                        "description": "The radius of the sphere (specified body part) used for collision detection with swaying objects.",
+                        "description": "The radius of the collider.",
                         "type": "number"
                     }
                 }
