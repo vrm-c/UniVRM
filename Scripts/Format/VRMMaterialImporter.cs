@@ -9,7 +9,7 @@ namespace VRM
     public class VRMMaterialImporter : MaterialImporter
     {
         List<glTF_VRM_Material> m_materials;
-        public VRMMaterialImporter(ImporterContext context, List<glTF_VRM_Material> materials) : base(new ShaderStore(context, "VRM/UnlitTexture"), context)
+        public VRMMaterialImporter(ImporterContext context, List<glTF_VRM_Material> materials) : base(new ShaderStore(context), context)
         {
             m_materials = materials;
         }

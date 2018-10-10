@@ -27,6 +27,14 @@ namespace VRM
             // "Queue",
         };
 
+        private static readonly string[] VRMExtensionShaders = new string[]
+        {
+            "VRM/UnlitTransparentZWrite",
+            "VRM/MToon"
+        };
+
+        private static readonly string VRM_USE_GLTFSHADER = "VRM_USE_GLTFSHADER";
+
         protected override void SerializeMembers(GLTFJsonFormatter f)
         {
             f.KeyValue(() => name);
@@ -111,6 +119,12 @@ namespace VRM
                 shader = m.shader.name,
                 renderQueue = m.renderQueue,
             };
+
+            if (!VRMExtensionShaders.Contains(m.shader.name))
+            {
+                material.shader = VRM_USE_GLTFSHADER;
+                return material;
+            }
 
             var prop = PreShaderPropExporter.GetPropsForSupportedShader(m.shader.name);
             if (prop == null)
