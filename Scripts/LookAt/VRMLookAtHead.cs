@@ -176,6 +176,12 @@ namespace VRM
 
         private void Update()
         {
+            if (Head == null)
+            {
+                enabled = false;
+                return;
+            }
+
             if (UpdateType == UpdateType.Update)
             {
                 LookWorldPosition();
@@ -184,6 +190,12 @@ namespace VRM
 
         private void LateUpdate()
         {
+            if (Head == null)
+            {
+                enabled = false;
+                return;
+            }
+
             if (UpdateType == UpdateType.LateUpdate)
             {
                 LookWorldPosition();

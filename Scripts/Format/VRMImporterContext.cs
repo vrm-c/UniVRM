@@ -241,6 +241,11 @@ namespace VRM
             AvatarDescription = GLTF.extensions.VRM.humanoid.ToDescription(Nodes);
             AvatarDescription.name = "AvatarDescription";
             HumanoidAvatar = AvatarDescription.CreateAvatar(Root.transform);
+            if(!HumanoidAvatar.isValid || !HumanoidAvatar.isHuman)
+            {
+                throw new Exception("fail to create avatar");
+            }
+
             HumanoidAvatar.name = "VrmAvatar";
 
             var humanoid = Root.AddComponent<VRMHumanoidDescription>();
