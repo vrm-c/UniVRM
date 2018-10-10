@@ -120,7 +120,11 @@ namespace VRM
             var assetPath = string.Format("Assets/{0}.{1}.asset",
                 m_target.name,
                 maxWeightName);
+#if UNITY_2018_2_OR_NEWER
+            var prefab = PrefabUtility.GetCorrespondingObjectFromSource(m_target.gameObject);
+#else
             var prefab = PrefabUtility.GetPrefabParent(m_target.gameObject);
+#endif
             if (prefab != null)
             {
                 var prefabPath = AssetDatabase.GetAssetPath(prefab);
