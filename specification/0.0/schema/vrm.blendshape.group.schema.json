@@ -9,7 +9,7 @@
         "presetName": {
             "description": "Predefined Expression name",
             "type": "string",
-            "enum": ["Neutral","A","I","U","E","O","Blink","Joy","Angry","Sorrow","Fun","LookUp","LookDown","LookLeft","LookRight","Blink_L","Blink_R"]
+            "enum": ["unknown","neutral","a","i","u","e","o","blink","joy","angry","sorrow","fun","lookup","lookdown","lookleft","lookright","blink_l","blink_r"]
         },
         "binds": {
             "description": "Low level blendshape references.",
