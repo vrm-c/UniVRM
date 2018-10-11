@@ -13,7 +13,18 @@
                 "properties": {
                     "offset": {
                         "description": "The local coordinate from the node of the collider group.",
-                        "type": "array"
+                        "type": "object",
+                        "properties": {
+                            "x": {
+                                "type": "number"
+                            },
+                            "y": {
+                                "type": "number"
+                            },
+                            "z": {
+                                "type": "number"
+                            }
+                        }
                     },
                     "radius": {
                         "description": "The radius of the collider.",

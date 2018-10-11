@@ -17,15 +17,48 @@
         },
         "min": {
             "description": "Unity's HumanLimit.min",
-            "type": "array"
+            "type": "object",
+            "properties": {
+                "x": {
+                    "type": "number"
+                },
+                "y": {
+                    "type": "number"
+                },
+                "z": {
+                    "type": "number"
+                }
+            }
         },
         "max": {
             "description": "Unity's HumanLimit.max",
-            "type": "array"
+            "type": "object",
+            "properties": {
+                "x": {
+                    "type": "number"
+                },
+                "y": {
+                    "type": "number"
+                },
+                "z": {
+                    "type": "number"
+                }
+            }
         },
         "center": {
             "description": "Unity's HumanLimit.center",
-            "type": "array"
+            "type": "object",
+            "properties": {
+                "x": {
+                    "type": "number"
+                },
+                "y": {
+                    "type": "number"
+                },
+                "z": {
+                    "type": "number"
+                }
+            }
         },
         "axisLength": {
             "description": "Unity's HumanLimit.axisLength",

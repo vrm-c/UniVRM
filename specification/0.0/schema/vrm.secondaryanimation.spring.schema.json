@@ -16,7 +16,18 @@
         },
         "gravityDir": {
             "description": "The direction of gravity. Set (0, -1, 0) for simulating the gravity. Set (1, 0, 0) for simulating the wind.",
-            "type": "array"
+            "type": "object",
+            "properties": {
+                "x": {
+                    "type": "number"
+                },
+                "y": {
+                    "type": "number"
+                },
+                "z": {
+                    "type": "number"
+                }
+            }
         },
         "dragForce": {
             "description": "The resistance (deceleration) of automatic animation.",

@@ -8,7 +8,18 @@
         },
         "firstPersonBoneOffset": {
             "description": "The target position of the VR headset in first-person view. It is assumed that an offset from the head bone to the VR headset is added.",
-            "type": "array"
+            "type": "object",
+            "properties": {
+                "x": {
+                    "type": "number"
+                },
+                "y": {
+                    "type": "number"
+                },
+                "z": {
+                    "type": "number"
+                }
+            }
         },
         "meshAnnotations": {
             "description": "Switch display \/ undisplay for each mesh in first-person view or the others.",
