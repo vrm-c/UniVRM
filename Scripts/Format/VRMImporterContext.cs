@@ -114,12 +114,21 @@ namespace VRM
             BlendShapeAvatar = ScriptableObject.CreateInstance<BlendShapeAvatar>();
             BlendShapeAvatar.name = "BlendShape";
 
+            var transformMeshTable = new Dictionary<Mesh, Transform>();
+            foreach (var transform in Root.transform.Traverse())
+            {
+                if (transform.GetSharedMesh() != null)
+                {
+                    transformMeshTable.Add(transform.GetSharedMesh(), transform);
+                }
+            }
+
             var blendShapeList = GLTF.extensions.VRM.blendShapeMaster.blendShapeGroups;
             if (blendShapeList != null && blendShapeList.Count > 0)
             {
                 foreach (var x in blendShapeList)
                 {
-                    BlendShapeAvatar.Clips.Add(LoadBlendShapeBind(x));
+                    BlendShapeAvatar.Clips.Add(LoadBlendShapeBind(x, transformMeshTable));
                 }
             }
 
@@ -128,7 +137,7 @@ namespace VRM
             proxy.BlendShapeAvatar = BlendShapeAvatar;
         }
 
-        BlendShapeClip LoadBlendShapeBind(glTF_VRM_BlendShapeGroup group)
+        BlendShapeClip LoadBlendShapeBind(glTF_VRM_BlendShapeGroup group, Dictionary<Mesh, Transform> transformMeshTable)
         {
             var asset = ScriptableObject.CreateInstance<BlendShapeClip>();
             var groupName = group.name;
@@ -151,7 +160,7 @@ namespace VRM
                 asset.Values = group.binds.Select(x =>
                 {
                     var mesh = Meshes[x.mesh].Mesh;
-                    var node = Root.transform.Traverse().First(y => y.GetSharedMesh() == mesh);
+                    var node = transformMeshTable[mesh];
                     var relativePath = UniGLTF.UnityExtensions.RelativePathFrom(node, Root.transform);
                     return new BlendShapeBinding
                     {
