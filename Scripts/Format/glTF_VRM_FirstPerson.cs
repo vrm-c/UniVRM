@@ -72,7 +72,7 @@ namespace VRM
     [JsonSchema(Title = "vrm.firstperson")]
     public class glTF_VRM_Firstperson : UniGLTF.JsonSerializableBase
     {
-        [JsonSchema(Description = "Specify a bone whose rendering mode should be switched in first-person view. Usually Head is specified.")]
+        [JsonSchema(Description = "The bone whose rendering should be turned off in first-person view. Usually Head is specified.")]
         public int firstPersonBone = -1;
 
         [JsonSchema(Description = @"The target position of the VR headset in first-person view. It is assumed that an offset from the head bone to the VR headset is added.")]
