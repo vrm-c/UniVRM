@@ -18,7 +18,7 @@ namespace VRM
         public CurveMapper VerticalUp = new CurveMapper(90.0f, 1.0f);
 
         [SerializeField]
-        bool m_notSetValueApply;
+        public bool m_notSetValueApply;
 
         public void OnImported(VRMImporterContext context)
         {
