@@ -23,7 +23,7 @@ namespace VRM
             }
 
 
-            foreach(var x in assetPath.Parent.ChildFiles)
+            foreach (var x in assetPath.Parent.ChildFiles)
             {
                 var clip = UnityEditor.AssetDatabase.LoadAssetAtPath<BlendShapeClip>(x.Value);
                 if (clip == null) continue;
@@ -97,14 +97,6 @@ namespace VRM
         public BlendShapeClip GetClip(String name)
         {
             return GetClip(new BlendShapeKey(name));
-        }
-
-        public bool Apply(string name, Transform transform, float value)
-        {
-            var clip = GetClip(name);
-            if (clip == null) return false;
-            clip.Apply(transform, value);
-            return true;
         }
     }
 }
