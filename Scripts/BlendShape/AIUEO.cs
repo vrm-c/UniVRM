@@ -13,12 +13,6 @@ namespace VRM
             BlendShapes = GetComponent<VRMBlendShapeProxy>();
         }
 
-        BlendShapeClipHandler m_appyerA;
-        BlendShapeClipHandler m_appyerI;
-        BlendShapeClipHandler m_appyerU;
-        BlendShapeClipHandler m_appyerE;
-        BlendShapeClipHandler m_appyerO;
-
         Coroutine m_coroutine;
 
         [SerializeField]
@@ -30,29 +24,23 @@ namespace VRM
             if (BlendShapes == null) return;
             if (BlendShapes.BlendShapeAvatar == null) return;
             var avatar = BlendShapes.BlendShapeAvatar;
-
-            m_appyerA = new BlendShapeClipHandler(avatar.GetClip("A"), transform);
-            m_appyerI = new BlendShapeClipHandler(avatar.GetClip("I"), transform);
-            m_appyerU = new BlendShapeClipHandler(avatar.GetClip("U"), transform);
-            m_appyerE = new BlendShapeClipHandler(avatar.GetClip("E"), transform);
-            m_appyerO = new BlendShapeClipHandler(avatar.GetClip("O"), transform);
         }
 
-        static IEnumerator RoutineNest(BlendShapeClipHandler applyer, float velocity, float wait)
+        IEnumerator RoutineNest(BlendShapePreset preset, float velocity, float wait)
         {
             for (var value = 0.0f; value <= 1.0f; value += velocity)
             {
-                if (applyer != null) applyer.Apply(value);
+                BlendShapes.SetValue(preset, value);
                 yield return null;
             }
-            if (applyer != null) applyer.Apply(1.0f);
+            BlendShapes.SetValue(preset, 1.0f);
             yield return new WaitForSeconds(wait);
             for (var value = 1.0f; value >= 0; value -= velocity)
             {
-                if (applyer != null) applyer.Apply(value);
+                BlendShapes.SetValue(preset, value);
                 yield return null;
             }
-            if (applyer != null) applyer.Apply(0);
+            BlendShapes.SetValue(preset, 0);
             yield return new WaitForSeconds(wait * 2);
         }
 
@@ -64,11 +52,11 @@ namespace VRM
 
                 var velocity = 0.1f;
 
-                yield return RoutineNest(m_appyerA, velocity, m_wait);
-                yield return RoutineNest(m_appyerI, velocity, m_wait);
-                yield return RoutineNest(m_appyerU, velocity, m_wait);
-                yield return RoutineNest(m_appyerE, velocity, m_wait);
-                yield return RoutineNest(m_appyerO, velocity, m_wait);
+                yield return RoutineNest(BlendShapePreset.A, velocity, m_wait);
+                yield return RoutineNest(BlendShapePreset.I, velocity, m_wait);
+                yield return RoutineNest(BlendShapePreset.U, velocity, m_wait);
+                yield return RoutineNest(BlendShapePreset.E, velocity, m_wait);
+                yield return RoutineNest(BlendShapePreset.O, velocity, m_wait);
             }
         }
 

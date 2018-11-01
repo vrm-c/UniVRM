@@ -1,9 +1,10 @@
 ﻿using UnityEngine;
 using System.Linq;
-
+using System;
 
 namespace VRM
 {
+    [Obsolete("Use VRMBlendShapeProxy")]
     public class BlendShapeClipHandler
     {
         BlendShapeClip m_clip;
@@ -17,7 +18,7 @@ namespace VRM
         {
             m_clip = clip;
 
-            if (m_clip != null && m_clip.Values!=null && transform != null)
+            if (m_clip != null && m_clip.Values != null && transform != null)
             {
                 m_renderers = m_clip.Values.Select(x =>
                 {
@@ -45,7 +46,7 @@ namespace VRM
             {
                 var binding = m_clip.Values[i];
                 var target = m_renderers[i];
-                if(binding.Index>=0 && binding.Index < target.sharedMesh.blendShapeCount)
+                if (binding.Index >= 0 && binding.Index < target.sharedMesh.blendShapeCount)
                 {
                     target.SetBlendShapeWeight(binding.Index, binding.Weight * value);
                 }
