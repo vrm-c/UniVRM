@@ -2,6 +2,8 @@
 using UnityEngine;
 using UnityEditorInternal;
 using System;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace VRM
 {
@@ -82,7 +84,7 @@ namespace VRM
         /// <param name="values"></param>
         /// <param name="materialValues"></param>
         /// <param name="weight"></param>
-        protected void Bake(BlendShapeBinding[] values, MaterialValueBinding[] materialValues, float weight)
+        protected void Bake(IEnumerable<BlendShapeBinding> values, IEnumerable<MaterialValueBinding> materialValues, float weight)
         {
             if (m_scene != null)
             {
@@ -93,7 +95,7 @@ namespace VRM
 
         protected void Bake(BlendShapeClip clip, float weight)
         {
-            Bake(clip.Values, clip.MaterialValues, weight);
+            Bake(Enumerable.Empty<BlendShapeBinding>(), Enumerable.Empty<MaterialValueBinding>(), weight);
         }
 
         protected virtual GameObject GetPrefab()

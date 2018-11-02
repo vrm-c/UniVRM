@@ -207,7 +207,10 @@ namespace VRM
 
 #if UNITY_EDITOR
         Bounds m_bounds;
-        public void Bake(BlendShapeBinding[] values = null, MaterialValueBinding[] materialValues = null, float weight = 1.0f)
+        public void Bake(
+            IEnumerable<BlendShapeBinding> values = null,
+            IEnumerable<MaterialValueBinding> materialValues = null,
+            float weight = 1.0f)
         {
             //Debug.LogFormat("Bake");
             m_bounds = default(Bounds);
@@ -251,13 +254,6 @@ namespace VRM
 
         }
 #endif
-        /*
-        int PreviewLayer
-        {
-            get;
-            set;
-        }
-        */
 
         /// <summary>
         /// カメラパラメーターを決める

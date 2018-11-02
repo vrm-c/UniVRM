@@ -153,7 +153,7 @@ namespace VRM
             Materials = materials;
         }
 
-        public void Bake(BlendShapeBinding[] values, float weight)
+        public void Bake(IEnumerable<BlendShapeBinding> values, float weight)
         {
             if (SkinnedMeshRenderer == null) return;
 
