@@ -64,6 +64,8 @@ namespace VRM
             {
                 Separator();
 
+                m_selector.DuplicateWarn();
+
                 var result = m_clipEditor.Draw();
                 if (result.Changed)
                 {
@@ -71,51 +73,5 @@ namespace VRM
                 }
             }
         }
-
-        /*
-                BlendShapeBinding[] GetBindings(out string _maxWeightName)
-                {
-                    var maxWeight = 0.0f;
-                    var maxWeightName = "";
-                    // weightのついたblendShapeを集める
-                    var values = PreviewSceneManager.EnumRenderItems
-                        .Where(x => x.SkinnedMeshRenderer != null)
-                        .SelectMany(x =>
-                    {
-                        var mesh = x.SkinnedMeshRenderer.sharedMesh;
-
-                        var relativePath = x.Path;
-
-                        var list = new List<BlendShapeBinding>();
-                        if (mesh != null)
-                        {
-                            for (int i = 0; i < mesh.blendShapeCount; ++i)
-                            {
-                                var weight = x.SkinnedMeshRenderer.GetBlendShapeWeight(i);
-                                if (weight == 0)
-                                {
-                                    continue;
-                                }
-                                var name = mesh.GetBlendShapeName(i);
-                                if (weight > maxWeight)
-                                {
-                                    maxWeightName = name;
-                                    maxWeight = weight;
-                                }
-                                list.Add(new BlendShapeBinding
-                                {
-                                    Index = i,
-                                    RelativePath = relativePath,
-                                    Weight = weight
-                                });
-                            }
-                        }
-                        return list;
-                    }).ToArray()
-                    ;
-                    _maxWeightName = maxWeightName;
-                    return values;
-                }
-                */
     }
 }
