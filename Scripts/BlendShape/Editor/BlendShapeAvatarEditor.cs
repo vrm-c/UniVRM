@@ -15,51 +15,22 @@ namespace VRM
         static String[] Presets = ((BlendShapePreset[])Enum.GetValues(typeof(BlendShapePreset)))
             .Select(x => x.ToString()).ToArray();
 
-        BlendShapeAvatar m_target;
-
-        BlendShapeClip m_currentClip;
-        BlendShapeClip CurrentClip
-        {
-            get { return m_currentClip; }
-            set
-            {
-                if (m_currentClip == value) return;
-
-                m_currentClip = value;
-                //ClearBlendShape();
-                if (m_currentClip != null)
-                {
-                    Bake(m_currentClip.Values, m_currentClip.MaterialValues, 1.0f);
-                }
-            }
-        }
+        BlendShapeClipSelect m_selector;
 
         void OnPrefabChanged()
         {
-            if (m_currentClip != null)
+            if (m_selector != null)
             {
-                Bake(m_currentClip.Values, m_currentClip.MaterialValues, 1.0f);
+                Bake(m_selector.Selected, 1.0f);
             }
         }
 
         protected override void OnEnable()
         {
             PrefabChanged += OnPrefabChanged;
-
             base.OnEnable();
-            m_target = (BlendShapeAvatar)target;
 
-            // remove missing values
-            foreach(var x in  m_target.Clips.Select((x, i) => new { i, x }).Where(x => x.x == null).Reverse())
-            {
-                m_target.Clips.RemoveAt(x.i);
-            }
-
-
-            if(m_target.Clips.Count > 0)
-            {
-                CurrentClip = m_target.Clips[0];
-            }
+            m_selector = new BlendShapeClipSelect((BlendShapeAvatar)target, clip => Bake(clip, 1.0f));
         }
 
         protected override void OnDisable()
@@ -74,114 +45,102 @@ namespace VRM
         {
             base.OnInspectorGUI();
 
-            // buttons
-            if (m_target.Clips != null)
+            m_selector.SelectGUI();
+
+            ClipGUI(m_selector.Selected);
+        }
+
+        void ClipGUI(BlendShapeClip clip)
+        {
+            if (clip == null)
             {
-                EditorGUILayout.Space();
-                EditorGUILayout.LabelField("Select BlendShapeClip", EditorStyles.boldLabel);
-                var array = m_target.Clips
-                    .Select(x => x != null
-                        ? BlendShapeKey.CreateFrom(x).ToString()
-                        : "null"
-                        ).ToArray();
-                var preset = GUILayout.SelectionGrid(m_preset, array, 4);
-                if (preset != m_preset)
-                {
-                    CurrentClip = m_target.Clips[preset];
-                    m_preset = preset;
-                }
+                Debug.LogWarning("no clip");
+                return;
             }
 
-            // Add
-            if (GUILayout.Button("Add BlendShapeClip"))
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("CurrentClip", EditorStyles.boldLabel);
+
+            // ReadonlyのBlendShapeClip参照
+            GUI.enabled = false;
+            EditorGUILayout.ObjectField("Current clip",
+                clip, typeof(BlendShapeClip), false);
+            GUI.enabled = true;
+
+            // Preset選択
+            clip.Preset = (BlendShapePreset)EditorGUILayout.Popup("Preset", (int)clip.Preset, Presets);
+
+            // Readonlyの名前入力
+            GUI.enabled = false;
+            EditorGUILayout.TextField("BlendShapeName", clip.BlendShapeName);
+            GUI.enabled = true;
+
+            // Key重複の警告
+            m_selector.DuplicateWarn();
+
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("BlendShapeValues", EditorStyles.boldLabel);
+
+            EditorGUILayout.BeginHorizontal();
+            if (GUILayout.Button("Clear"))
             {
-                m_target.AddBlendShapeClip();
+                ClearBlendShape();
             }
 
-            if (CurrentClip != null)
+            if (clip != null && GUILayout.Button("Apply"))
             {
-                // clip
-                EditorGUILayout.Space();
-                EditorGUILayout.LabelField("CurrentClip", EditorStyles.boldLabel);
+                string maxWeightString;
+                clip.Values = GetBindings(out maxWeightString);
+                EditorUtility.SetDirty(clip);
+            }
+            EditorGUILayout.EndHorizontal();
 
-                /*var loadClip = (BlendShapeClip)*/
-                GUI.enabled = false;
-                EditorGUILayout.ObjectField("Current clip",
-                    CurrentClip, typeof(BlendShapeClip), false);
-                GUI.enabled = true;
-
-                CurrentClip.Preset = (BlendShapePreset)EditorGUILayout.Popup("Preset", (int)CurrentClip.Preset, Presets);
-
-                GUI.enabled = false;
-                CurrentClip.BlendShapeName = EditorGUILayout.TextField("BlendShapeName", CurrentClip.BlendShapeName);
-                GUI.enabled = true;
-
-                var key = BlendShapeKey.CreateFrom(CurrentClip);
-                if (m_target.Clips.Where(x => key.Match(x)).Count() > 1)
+            if (PreviewSceneManager != null)
+            {
+                if (BlendShapeBindsGUI(clip))
                 {
-                    EditorGUILayout.HelpBox("duplicate clip", MessageType.Error);
+                    PreviewSceneManager.Bake();
                 }
+            }
+        }
 
-                EditorGUILayout.Space();
-                EditorGUILayout.LabelField("BlendShapeValues", EditorStyles.boldLabel);
-
-                EditorGUILayout.BeginHorizontal();
-                if (GUILayout.Button("Clear"))
+        bool BlendShapeBindsGUI(BlendShapeClip clip)
+        {
+            bool changed = false;
+            int foldIndex = 0;
+            // すべてのSkinnedMeshRendererを列挙する
+            foreach (var item in PreviewSceneManager.EnumRenderItems.Where(x => x.SkinnedMeshRenderer != null))
+            {
+                var mesh = item.SkinnedMeshRenderer.sharedMesh;
+                if (mesh != null && mesh.blendShapeCount > 0)
                 {
-                    ClearBlendShape();
-                }
+                    //var relativePath = UniGLTF.UnityExtensions.RelativePathFrom(renderer.transform, m_target.transform);
+                    //EditorGUILayout.LabelField(m_target.name + "/" + item.Path);
 
-                if (CurrentClip != null && GUILayout.Button("Apply"))
-                {
-                    string maxWeightString;
-                    CurrentClip.Values = GetBindings(out maxWeightString);
-                    EditorUtility.SetDirty(CurrentClip);
-                }
-                EditorGUILayout.EndHorizontal();
-
-                // sliders
-                bool changed = false;
-                int foldIndex = 0;
-                if (PreviewSceneManager != null)
-                {
-                    foreach (var item in PreviewSceneManager.EnumRenderItems.Where(x => x.SkinnedMeshRenderer != null))
+                    if (foldIndex >= m_meshFolds.Count)
                     {
-                        var mesh = item.SkinnedMeshRenderer.sharedMesh;
-                        if (mesh != null && mesh.blendShapeCount > 0)
+                        m_meshFolds.Add(false);
+                    }
+                    m_meshFolds[foldIndex] = EditorGUILayout.Foldout(m_meshFolds[foldIndex], item.SkinnedMeshRenderer.name);
+                    if (m_meshFolds[foldIndex])
+                    {
+                        //EditorGUI.indentLevel += 1;
+                        for (int i = 0; i < mesh.blendShapeCount; ++i)
                         {
-                            //var relativePath = UniGLTF.UnityExtensions.RelativePathFrom(renderer.transform, m_target.transform);
-                            //EditorGUILayout.LabelField(m_target.name + "/" + item.Path);
-
-                            if (foldIndex >= m_meshFolds.Count)
+                            var src = item.SkinnedMeshRenderer.GetBlendShapeWeight(i);
+                            var dst = EditorGUILayout.Slider(mesh.GetBlendShapeName(i), src, 0, 100.0f);
+                            if (dst != src)
                             {
-                                m_meshFolds.Add(false);
+                                item.SkinnedMeshRenderer.SetBlendShapeWeight(i, dst);
+                                changed = true;
                             }
-                            m_meshFolds[foldIndex] = EditorGUILayout.Foldout(m_meshFolds[foldIndex], item.SkinnedMeshRenderer.name);
-                            if (m_meshFolds[foldIndex])
-                            {
-                                //EditorGUI.indentLevel += 1;
-                                for (int i = 0; i < mesh.blendShapeCount; ++i)
-                                {
-                                    var src = item.SkinnedMeshRenderer.GetBlendShapeWeight(i);
-                                    var dst = EditorGUILayout.Slider(mesh.GetBlendShapeName(i), src, 0, 100.0f);
-                                    if (dst != src)
-                                    {
-                                        item.SkinnedMeshRenderer.SetBlendShapeWeight(i, dst);
-                                        changed = true;
-                                    }
-                                }
-                                //EditorGUI.indentLevel -= 1;
-                            }
-                            ++foldIndex;
                         }
+                        //EditorGUI.indentLevel -= 1;
                     }
-
-                    if (changed)
-                    {
-                        PreviewSceneManager.Bake();
-                    }
+                    ++foldIndex;
                 }
             }
+            return changed;
         }
 
         BlendShapeBinding[] GetBindings(out string _maxWeightName)
@@ -190,7 +149,7 @@ namespace VRM
             var maxWeightName = "";
             // weightのついたblendShapeを集める
             var values = PreviewSceneManager.EnumRenderItems
-                .Where(x => x.SkinnedMeshRenderer!=null)
+                .Where(x => x.SkinnedMeshRenderer != null)
                 .SelectMany(x =>
             {
                 var mesh = x.SkinnedMeshRenderer.sharedMesh;
@@ -230,7 +189,7 @@ namespace VRM
 
         private void ClearBlendShape()
         {
-            foreach (var item in PreviewSceneManager.EnumRenderItems.Where(x => x.SkinnedMeshRenderer!=null))
+            foreach (var item in PreviewSceneManager.EnumRenderItems.Where(x => x.SkinnedMeshRenderer != null))
             {
                 var renderer = item.SkinnedMeshRenderer;
                 var mesh = renderer.sharedMesh;

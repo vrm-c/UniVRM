@@ -89,6 +89,11 @@ namespace VRM
             }
         }
 
+        protected void Bake(BlendShapeClip clip, float weight)
+        {
+            Bake(clip.Values, clip.MaterialValues, weight);
+        }
+
         protected virtual GameObject GetPrefab()
         {
             var assetPath = AssetDatabase.GetAssetPath(target);
@@ -155,7 +160,7 @@ namespace VRM
             {
                 if (Event.current.type == EventType.Repaint)
                 {
-                    EditorGUI.DropShadowLabel(new Rect(r.x, r.y, r.width, 40f), 
+                    EditorGUI.DropShadowLabel(new Rect(r.x, r.y, r.width, 40f),
                         "Mesh preview requires\nrender texture support");
                 }
                 return;
@@ -196,7 +201,8 @@ namespace VRM
 
                     case EventType.ScrollWheel:
                         //Debug.LogFormat("wheel: {0}", current.delta);
-                        if (r.Contains(current.mousePosition)){
+                        if (r.Contains(current.mousePosition))
+                        {
                             if (current.delta.y > 0)
                             {
                                 m_distance *= 1.1f;
