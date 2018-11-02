@@ -53,7 +53,7 @@ namespace VRM
             var result = m_serializedEditor.Draw();
             if (result.Changed && PreviewSceneManager != null)
             {
-                PreviewSceneManager.Bake(m_target.Values, m_target.MaterialValues, result.Weight);
+                PreviewSceneManager.Bake(result.BlendShapeBindings, result.MaterialValueBindings, result.Weight);
             }
         }
 

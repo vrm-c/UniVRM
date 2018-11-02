@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
@@ -7,54 +8,75 @@ namespace VRM
 {
     public class SerializedBlendShapeEditor
     {
-        public static int BlendShapeBindingHeight = 60;
-        const int MaterialValueBindingHeight = 90;
+        BlendShapeClip m_targetObject;
 
-        SerializedObject serializedObject;
+        SerializedObject m_serializedObject;
 
+        #region  Properties
         SerializedProperty m_BlendShapeNameProp;
         SerializedProperty m_PresetProp;
-        SerializedProperty m_ValuesProp;
-        ReorderableList m_ValuesList;
-        SerializedProperty m_MaterialValuesProp;
-        ReorderableList m_MaterialValuesList;
+        #endregion
 
+        #region BlendShapeBind
+        public static int BlendShapeBindingHeight = 60;
+        ReorderableList m_ValuesList;
+        #endregion
+
+        #region  MaterialValueBind
+        const int MaterialValueBindingHeight = 90;
+        ReorderableList m_MaterialValuesList;
+        #endregion
+
+        #region  Editor values
         float m_previewSlider = 1.0f;
 
         bool m_changed;
+        #endregion
 
-        public SerializedBlendShapeEditor(SerializedObject serializedObject, PreviewSceneManager PreviewSceneManager)
+        public SerializedBlendShapeEditor(SerializedObject serializedObject,
+            PreviewSceneManager previewSceneManager) : this(
+                serializedObject, (BlendShapeClip)serializedObject.targetObject, previewSceneManager)
+        { }
+
+        public SerializedBlendShapeEditor(BlendShapeClip blendShapeClip,
+            PreviewSceneManager previewSceneManager) : this(
+                new SerializedObject(blendShapeClip), blendShapeClip, previewSceneManager)
+        { }
+
+        public SerializedBlendShapeEditor(SerializedObject serializedObject, BlendShapeClip targetObject,
+            PreviewSceneManager previewSceneManager)
         {
-            this.serializedObject = serializedObject;
+            this.m_serializedObject = serializedObject;
+            this.m_targetObject = targetObject;
 
             m_BlendShapeNameProp = serializedObject.FindProperty("BlendShapeName");
             m_PresetProp = serializedObject.FindProperty("Preset");
-            m_ValuesProp = serializedObject.FindProperty("Values");
+            var valuesProp = serializedObject.FindProperty("Values");
 
-            m_ValuesList = new ReorderableList(serializedObject, m_ValuesProp);
+            m_ValuesList = new ReorderableList(serializedObject, valuesProp);
             m_ValuesList.elementHeight = BlendShapeBindingHeight;
             m_ValuesList.drawElementCallback =
               (rect, index, isActive, isFocused) =>
               {
-                  var element = m_ValuesProp.GetArrayElementAtIndex(index);
+                  var element = valuesProp.GetArrayElementAtIndex(index);
                   rect.height -= 4;
                   rect.y += 2;
-                  if (DrawBlendShapeBinding(rect, element, PreviewSceneManager))
+                  if (DrawBlendShapeBinding(rect, element, previewSceneManager))
                   {
                       m_changed = true;
                   }
               };
 
-            m_MaterialValuesProp = serializedObject.FindProperty("MaterialValues");
-            m_MaterialValuesList = new ReorderableList(serializedObject, m_MaterialValuesProp);
+            var materialValuesProp = serializedObject.FindProperty("MaterialValues");
+            m_MaterialValuesList = new ReorderableList(serializedObject, materialValuesProp);
             m_MaterialValuesList.elementHeight = MaterialValueBindingHeight;
             m_MaterialValuesList.drawElementCallback =
               (rect, index, isActive, isFocused) =>
               {
-                  var element = m_MaterialValuesProp.GetArrayElementAtIndex(index);
+                  var element = materialValuesProp.GetArrayElementAtIndex(index);
                   rect.height -= 4;
                   rect.y += 2;
-                  if (DrawMaterialValueBinding(rect, element, PreviewSceneManager))
+                  if (DrawMaterialValueBinding(rect, element, previewSceneManager))
                   {
                       m_changed = true;
                   }
@@ -174,6 +196,10 @@ namespace VRM
         {
             public bool Changed;
             public float Weight;
+
+            public BlendShapeBinding[] BlendShapeBindings;
+
+            public MaterialValueBinding[] MaterialValueBindings;
         }
 
         public DrawResult Draw()
@@ -191,7 +217,7 @@ namespace VRM
 
             EditorGUILayout.Space();
 
-            serializedObject.Update();
+            m_serializedObject.Update();
 
             EditorGUILayout.PropertyField(m_BlendShapeNameProp, true);
             EditorGUILayout.PropertyField(m_PresetProp, true);
@@ -202,12 +228,17 @@ namespace VRM
             EditorGUILayout.LabelField("MaterialValueBindings", EditorStyles.boldLabel);
             m_MaterialValuesList.DoLayoutList();
 
-            serializedObject.ApplyModifiedProperties();
+            if (m_changed)
+            {
+                m_serializedObject.ApplyModifiedProperties();
+            }
 
             return new DrawResult
             {
                 Changed = m_changed,
-                Weight = m_previewSlider
+                Weight = m_previewSlider,
+                BlendShapeBindings = m_targetObject.Values,
+                MaterialValueBindings = m_targetObject.MaterialValues
             };
         }
 
