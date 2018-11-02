@@ -115,7 +115,7 @@ namespace VRM
             return changed;
         }
 
-
+        #region Private
         static bool StringPopup(Rect rect, SerializedProperty prop, string[] options, out int newIndex)
         {
             if (options == null)
@@ -188,10 +188,43 @@ namespace VRM
             }
         }
 
+        static Rect AdvanceRect(ref float x, float y, float w, float h)
+        {
+            var rect = new Rect(x, y, w, h);
+            x += w;
+            return rect;
+        }
+
+        static Vector4 TilingOffset(Rect rect, string label, Vector4 src)
+        {
+            var style = new GUIStyle()
+            {
+                alignment = TextAnchor.MiddleRight,
+            };
+
+            var quad = rect.width / 10;
+            var x = rect.x;
+
+            EditorGUI.LabelField(AdvanceRect(ref x, rect.y, quad * 2, rect.height), "Tiling X", style);
+            src.x = EditorGUI.FloatField(AdvanceRect(ref x, rect.y, quad, rect.height), src.x);
+
+            EditorGUI.LabelField(AdvanceRect(ref x, rect.y, quad, rect.height), "Y", style);
+            src.y = EditorGUI.FloatField(AdvanceRect(ref x, rect.y, quad, rect.height), src.y);
+
+            EditorGUI.LabelField(AdvanceRect(ref x, rect.y, quad * 2, rect.height), "Offset X", style);
+            src.z = EditorGUI.FloatField(AdvanceRect(ref x, rect.y, quad, rect.height), src.z);
+
+            EditorGUI.LabelField(AdvanceRect(ref x, rect.y, quad, rect.height), "Y", style);
+            src.w = EditorGUI.FloatField(AdvanceRect(ref x, rect.y, quad, rect.height), src.w);
+
+            return src;
+        }
+
         static bool OffsetProp(Rect rect, SerializedProperty prop)
         {
             var oldValue = prop.vector4Value;
-            var newValue = EditorGUI.Vector4Field(rect, prop.displayName, oldValue);
+            //var newValue = EditorGUI.Vector4Field(rect, prop.displayName, oldValue);
+            var newValue = TilingOffset(rect, prop.displayName, oldValue);
             if (newValue != oldValue)
             {
                 prop.vector4Value = newValue;
@@ -202,6 +235,6 @@ namespace VRM
                 return false;
             }
         }
-
+        #endregion
     }
 }
