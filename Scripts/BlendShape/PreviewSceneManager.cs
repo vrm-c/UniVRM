@@ -263,7 +263,7 @@ namespace VRM
         /// カメラパラメーターを決める
         /// </summary>
         /// <param name="camera"></param>
-        public void SetupCamera(Camera camera, Vector3 target, float yaw, float pitch, float distance)
+        public void SetupCamera(Camera camera, Vector3 target, float yaw, float pitch, Vector3 position)
         {
             camera.backgroundColor = Color.gray;
             camera.clearFlags = CameraClearFlags.Color;
@@ -275,16 +275,16 @@ namespace VRM
 
             camera.fieldOfView = 27f;
             camera.nearClipPlane = 0.3f;
-            camera.farClipPlane = distance /*+ magnitude*/ * 2.1f;
+            camera.farClipPlane = -position.z /*+ magnitude*/ * 2.1f;
 
-#if false
-            // this used to be "-Vector3.forward * num" but I hardcoded my camera position instead
-            camera.transform.position = new Vector3(0f, 1.4f, distance);
-            camera.transform.rotation = Quaternion.Euler(0, 180f, 0);
-#else
-            camera.transform.position = target + Quaternion.Euler(pitch, yaw, 0) * Vector3.forward * distance;
-            camera.transform.LookAt(target);
-#endif
+            var t = Matrix4x4.Translate(position);
+            var r = Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(pitch, yaw, 0), Vector3.one);
+            // 回転してから移動
+            var m = r * t;
+
+            camera.transform.position = target + m.ExtractPosition();
+            camera.transform.rotation = m.ExtractRotation();
+            //camera.transform.LookAt(target);
 
             //previewLayer のみ表示する
             //camera.cullingMask = 1 << PreviewLayer;

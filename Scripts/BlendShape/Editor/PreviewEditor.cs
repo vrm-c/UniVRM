@@ -160,8 +160,9 @@ namespace VRM
         }
 
         private static int sliderHash = "Slider".GetHashCode();
-        Vector2 m_previewDir;
-        float m_distance = 1.0f;
+        float m_yaw = 180.0f;
+        float m_pitch;
+        Vector3 m_position = new Vector3(0, 0, -1f);
 
         // very important to override this, it tells Unity to render an ObjectPreview at the bottom of the inspector
         public override bool HasPreviewGUI() { return true; }
@@ -183,14 +184,14 @@ namespace VRM
             //previewDir = Drag2D(previewDir, r);
             {
                 int controlId = GUIUtility.GetControlID(sliderHash, FocusType.Passive);
-                Event current = Event.current;
-                switch (current.GetTypeForControl(controlId))
+                Event e = Event.current;
+                switch (e.GetTypeForControl(controlId))
                 {
                     case EventType.MouseDown:
-                        if (r.Contains(current.mousePosition) && (double)r.width > 50.0)
+                        if (r.Contains(e.mousePosition) && (double)r.width > 50.0)
                         {
                             GUIUtility.hotControl = controlId;
-                            current.Use();
+                            e.Use();
                             EditorGUIUtility.SetWantsMouseJumping(1);
                             break;
                         }
@@ -205,26 +206,41 @@ namespace VRM
                     case EventType.MouseDrag:
                         if (GUIUtility.hotControl == controlId)
                         {
-                            m_previewDir -= current.delta * (!current.shift ? 1f : 3f) / Mathf.Min(r.width, r.height) * 140f;
-                            m_previewDir.y = Mathf.Clamp(m_previewDir.y, -90f, 90f);
-                            current.Use();
-                            GUI.changed = true;
+                            if (e.button == 2)
+                            {
+                                var shift = e.delta * (!e.shift ? 1f : 3f) / Mathf.Min(r.width, r.height);
+                                m_position.x -= shift.x;
+                                m_position.y += shift.y;
+                                e.Use();
+                                GUI.changed = true;
+                            }
+                            else if (
+                                e.button == 0 ||
+                                e.button == 1)
+                            {
+                                var shift = e.delta * (!e.shift ? 1f : 3f) / Mathf.Min(r.width, r.height) * 140f;
+                                m_yaw += shift.x;
+                                m_pitch += shift.y;
+                                m_pitch = Mathf.Clamp(m_pitch, -90f, 90f);
+                                e.Use();
+                                GUI.changed = true;
+                            }
                             break;
                         }
                         break;
 
                     case EventType.ScrollWheel:
                         //Debug.LogFormat("wheel: {0}", current.delta);
-                        if (r.Contains(current.mousePosition))
+                        if (r.Contains(e.mousePosition))
                         {
-                            if (current.delta.y > 0)
+                            if (e.delta.y > 0)
                             {
-                                m_distance *= 1.1f;
+                                m_position.z *= 1.1f;
                                 Repaint();
                             }
-                            else if (current.delta.y < 0)
+                            else if (e.delta.y < 0)
                             {
-                                m_distance *= 0.9f;
+                                m_position.z *= 0.9f;
                                 Repaint();
                             }
                         }
@@ -242,7 +258,7 @@ namespace VRM
 
             if (m_renderer != null && m_scene != null)
             {
-                var texture = m_renderer.Render(r, background, m_scene, m_previewDir, m_distance);
+                var texture = m_renderer.Render(r, background, m_scene, m_yaw, m_pitch, m_position);
                 if (texture != null)
                 {
                     // draw the RenderTexture in the ObjectPreview pane
