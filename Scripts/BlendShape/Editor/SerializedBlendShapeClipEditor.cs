@@ -14,8 +14,10 @@ namespace VRM
         SerializedObject m_serializedObject;
 
         #region  Properties
-        SerializedProperty m_BlendShapeNameProp;
-        SerializedProperty m_PresetProp;
+        SerializedProperty m_blendShapeNameProp;
+        SerializedProperty m_presetProp;
+
+        SerializedProperty m_isBinaryProp;
         #endregion
 
         #region BlendShapeBind
@@ -61,8 +63,10 @@ namespace VRM
             this.m_serializedObject = serializedObject;
             this.m_targetObject = targetObject;
 
-            m_BlendShapeNameProp = serializedObject.FindProperty("BlendShapeName");
-            m_PresetProp = serializedObject.FindProperty("Preset");
+            m_blendShapeNameProp = serializedObject.FindProperty("BlendShapeName");
+            m_presetProp = serializedObject.FindProperty("Preset");
+            m_isBinaryProp = serializedObject.FindProperty("IsBinary");
+
             m_valuesProp = serializedObject.FindProperty("Values");
 
             m_ValuesList = new ReorderableList(serializedObject, m_valuesProp);
@@ -116,11 +120,6 @@ namespace VRM
             //EditorGUILayout.Space();
 
             var previewSlider = EditorGUILayout.Slider("Preview Weight", m_previewSlider, 0, 1.0f);
-            if (previewSlider != m_previewSlider)
-            {
-                m_previewSlider = previewSlider;
-                m_changed = true;
-            }
 
             m_serializedObject.Update();
 
@@ -132,8 +131,20 @@ namespace VRM
                 m_targetObject, typeof(BlendShapeClip), false);
             GUI.enabled = true;
 
-            EditorGUILayout.PropertyField(m_BlendShapeNameProp, true);
-            EditorGUILayout.PropertyField(m_PresetProp, true);
+            EditorGUILayout.PropertyField(m_blendShapeNameProp, true);
+            EditorGUILayout.PropertyField(m_presetProp, true);
+
+            // v0.45 Added. Binary flag
+            EditorGUILayout.PropertyField(m_isBinaryProp, true);
+            if (m_isBinaryProp.boolValue)
+            {
+                previewSlider = Mathf.Round(previewSlider);
+            }
+            if (previewSlider != m_previewSlider)
+            {
+                m_previewSlider = previewSlider;
+                m_changed = true;
+            }
 
             EditorGUILayout.Space();
             //m_mode = EditorGUILayout.Popup("SourceType", m_mode, MODES);
@@ -161,10 +172,7 @@ namespace VRM
                     break;
             }
 
-            if (m_changed)
-            {
-                m_serializedObject.ApplyModifiedProperties();
-            }
+            m_serializedObject.ApplyModifiedProperties();
 
             return new DrawResult
             {
