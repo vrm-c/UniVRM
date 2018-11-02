@@ -12,15 +12,43 @@ namespace VRM
     /// </summary>
     class BlendShapeMerger
     {
+        /// <summary>
+        /// KeyからBlendShapeClipを得る
+        /// </summary>
         Dictionary<BlendShapeKey, BlendShapeClip> m_clipMap;
+
+        /// <summary>
+        /// BlendShapeのWeightを蓄積する
+        /// </summary>
         Dictionary<BlendShapeKey, float> m_valueMap;
 
+        /// <summary>
+        /// 名前とmaterialのマッピング
+        /// </summary>
         Dictionary<string, Material> m_materialMap;
 
+        /// <summary>
+        /// BlendShapeの適用値を蓄積する
+        /// </summary>
+        /// <typeparam name="BlendShapeBinding"></typeparam>
+        /// <typeparam name="float"></typeparam>
+        /// <returns></returns>
         Dictionary<BlendShapeBinding, float> m_blendShapeValueMap = new Dictionary<BlendShapeBinding, float>();
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         Dictionary<BlendShapeBinding, Action<float>> m_blendShapeSetterMap = new Dictionary<BlendShapeBinding, Action<float>>();
 
+        /// <summary>
+        /// MaterialValueの適用値を蓄積する
+        /// </summary>
+        /// <typeparam name="MaterialValueBinding"></typeparam>
+        /// <typeparam name="float"></typeparam>
+        /// <returns></returns>
         Dictionary<MaterialValueBinding, float> m_materialValueMap = new Dictionary<MaterialValueBinding, float>();
+
         Dictionary<MaterialValueBinding, Action<float>> m_materialSetterMap = new Dictionary<MaterialValueBinding, Action<float>>();
 
         public BlendShapeMerger(IEnumerable<BlendShapeClip> clips, Transform root)
@@ -102,7 +130,7 @@ namespace VRM
                                 };
                                 m_materialSetterMap.Add(binding, setter);
                             }
-                            else if(binding.ValueName.EndsWith("_ST_T"))
+                            else if (binding.ValueName.EndsWith("_ST_T"))
                             {
                                 var valueName = binding.ValueName.Substring(0, binding.ValueName.Length - 2);
                                 Action<float> setter = value =>
@@ -143,6 +171,9 @@ namespace VRM
             Apply();
         }
 
+        /// <summary>
+        /// 蓄積した値を適用する
+        /// </summary>
         public void Apply()
         {
             foreach (var kv in m_blendShapeValueMap)
@@ -166,16 +197,25 @@ namespace VRM
             m_materialValueMap.Clear();
         }
 
+        /// <summary>
+        /// まとめて反映する。1フレームに1回呼び出されることを想定
+        /// </summary>
+        /// <param name="values"></param>
         public void SetValues(IEnumerable<KeyValuePair<BlendShapeKey, float>> values)
         {
             foreach (var kv in values)
             {
-                SetValue(kv.Key, kv.Value, false);
+                AccumulateValue(kv.Key, kv.Value);
             }
             Apply();
         }
 
-        public void SetValue(BlendShapeKey key, float value, bool replace)
+        /// <summary>
+        /// 即時に反映しない。後にApplyによって反映する
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        public void AccumulateValue(BlendShapeKey key, float value)
         {
             m_valueMap[key] = value;
 
@@ -185,57 +225,88 @@ namespace VRM
                 return;
             }
 
+            if (clip.IsBinary)
+            {
+                value = Mathf.Round(value);
+            }
+
             foreach (var binding in clip.Values)
             {
-                if (replace)
+                // 積算
+                float acc;
+                if (m_blendShapeValueMap.TryGetValue(binding, out acc))
                 {
-                    // 値置き換え
-                    Action<float> setter;
-                    if (m_blendShapeSetterMap.TryGetValue(binding, out setter))
-                    {
-                        setter(binding.Weight * value);
-                    }
+                    m_blendShapeValueMap[binding] = acc + binding.Weight * value;
                 }
                 else
                 {
-                    // 積算
-                    float acc;
-                    if (m_blendShapeValueMap.TryGetValue(binding, out acc))
-                    {
-                        m_blendShapeValueMap[binding] = acc + binding.Weight * value;
-                    }
-                    else
-                    {
-                        m_blendShapeValueMap[binding] = binding.Weight * value;
-                    }
+                    m_blendShapeValueMap[binding] = binding.Weight * value;
                 }
             }
 
-            // materialの更新
             foreach (var binding in clip.MaterialValues)
             {
-                if (replace)
+                // 積算
+                float acc;
+                if (m_materialValueMap.TryGetValue(binding, out acc))
                 {
-                    // 値置き換え
-                    Action<float> setter;
-                    if (m_materialSetterMap.TryGetValue(binding, out setter))
-                    {
-                        setter(value);
-                    }
+                    m_materialValueMap[binding] = acc + value;
                 }
                 else
                 {
-                    // 積算
-                    float acc;
-                    if (m_materialValueMap.TryGetValue(binding, out acc))
-                    {
-                        m_materialValueMap[binding] = acc + value;
-                    }
-                    else
-                    {
-                        m_materialValueMap[binding] = value;
-                    }
+                    m_materialValueMap[binding] = value;
                 }
+            }
+        }
+
+        /// <summary>
+        /// 即時に反映する
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        public void ImmediatelySetValue(BlendShapeKey key, float value)
+        {
+            m_valueMap[key] = value;
+
+            BlendShapeClip clip;
+            if (!m_clipMap.TryGetValue(key, out clip))
+            {
+                return;
+            }
+
+            if (clip.IsBinary)
+            {
+                value = Mathf.Round(value);
+            }
+
+            foreach (var binding in clip.Values)
+            {
+                Action<float> setter;
+                if (m_blendShapeSetterMap.TryGetValue(binding, out setter))
+                {
+                    setter(binding.Weight * value);
+                }
+            }
+
+            foreach (var binding in clip.MaterialValues)
+            {
+                Action<float> setter;
+                if (m_materialSetterMap.TryGetValue(binding, out setter))
+                {
+                    setter(value);
+                }
+            }
+        }
+
+        public void SetValue(BlendShapeKey key, float value, bool replace)
+        {
+            if (replace)
+            {
+                ImmediatelySetValue(key, value);
+            }
+            else
+            {
+                AccumulateValue(key, value);
             }
         }
 
@@ -259,7 +330,7 @@ namespace VRM
                     {
                         // restore values
                         Material material;
-                        if(m_materialMap.TryGetValue(y.MaterialName, out material))
+                        if (m_materialMap.TryGetValue(y.MaterialName, out material))
                         {
                             material.SetColor(y.ValueName, y.BaseValue);
                         }
