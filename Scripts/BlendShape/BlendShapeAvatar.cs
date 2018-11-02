@@ -60,29 +60,17 @@ namespace VRM
             Clips = Clips.OrderBy(x => BlendShapeKey.CreateFrom(x)).ToList();
         }
 
-        public void AddBlendShapeClip()
+        static public BlendShapeClip CreateBlendShapeClip(string path)
         {
-            var dir = Path.GetDirectoryName(AssetDatabase.GetAssetPath(this));
-            var path = EditorUtility.SaveFilePanel(
-                           "Create BlendShapeClip",
-                           dir,
-                           string.Format("BlendShapeClip#{0}.asset", Clips.Count),
-                           "asset");
-            if (string.IsNullOrEmpty(path))
-            {
-                return;
-            }
-            path = path.ToUnityRelativePath();
             //Debug.LogFormat("{0}", path);
             var clip = ScriptableObject.CreateInstance<BlendShapeClip>();
             clip.BlendShapeName = Path.GetFileNameWithoutExtension(path);
-            clip.Prefab = AssetDatabase.LoadAssetAtPath<GameObject>(AssetDatabase.GetAssetPath(this));
             AssetDatabase.CreateAsset(clip, path);
             AssetDatabase.ImportAsset(path);
-
-            Clips.Add(clip);
-            EditorUtility.SetDirty(this);
-            AssetDatabase.SaveAssets();
+            return clip;
+            //Clips.Add(clip);
+            //EditorUtility.SetDirty(this);
+            //AssetDatabase.SaveAssets();
         }
 #endif
 

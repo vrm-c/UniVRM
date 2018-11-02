@@ -14,6 +14,7 @@ namespace VRM
         SerializedObject m_serializedObject;
 
         #region  Properties
+        SerializedProperty m_thumbnail;
         SerializedProperty m_blendShapeNameProp;
         SerializedProperty m_presetProp;
 
@@ -63,6 +64,7 @@ namespace VRM
             this.m_serializedObject = serializedObject;
             this.m_targetObject = targetObject;
 
+            m_thumbnail = serializedObject.FindProperty("Thumbnail");
             m_blendShapeNameProp = serializedObject.FindProperty("BlendShapeName");
             m_presetProp = serializedObject.FindProperty("Preset");
             m_isBinaryProp = serializedObject.FindProperty("IsBinary");
@@ -131,6 +133,8 @@ namespace VRM
                 m_targetObject, typeof(BlendShapeClip), false);
             GUI.enabled = true;
 
+            m_thumbnail.objectReferenceValue = EditorGUILayout.ObjectField(m_thumbnail.objectReferenceValue, typeof(Texture), false);
+            EditorGUILayout.PropertyField(m_thumbnail, true);
             EditorGUILayout.PropertyField(m_blendShapeNameProp, true);
             EditorGUILayout.PropertyField(m_presetProp, true);
 

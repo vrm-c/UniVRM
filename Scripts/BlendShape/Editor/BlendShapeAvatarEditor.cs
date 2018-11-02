@@ -4,74 +4,71 @@ using System.IO;
 using System.Linq;
 using UniGLTF;
 using UnityEditor;
+using UnityEditorInternal;
 using UnityEngine;
 
 
 namespace VRM
 {
     [CustomEditor(typeof(BlendShapeAvatar))]
-    public class BlendShapeAvatarEditor : PreviewEditor
+    public class BlendShapeAvatarEditor : Editor
     {
-        static String[] Presets = ((BlendShapePreset[])Enum.GetValues(typeof(BlendShapePreset)))
-            .Select(x => x.ToString()).ToArray();
+        ReorderableList m_clipList;
 
-        BlendShapeClipSelector m_selector;
-
-        SerializedBlendShapeEditor m_clipEditor;
-
-        void OnPrefabChanged()
+        void OnEnable()
         {
-            if (m_selector != null)
+            var prop = serializedObject.FindProperty("Clips");
+            m_clipList = new ReorderableList(serializedObject, prop);
+
+            m_clipList.drawHeaderCallback = (rect) =>
+                                 EditorGUI.LabelField(rect, "BlendShapeClips");
+
+            m_clipList.elementHeight = BlendShapeClipDrawer.Height;
+            m_clipList.drawElementCallback = (rect, index, isActive, isFocused) =>
             {
-                Bake(m_selector.Selected, 1.0f);
-            }
+                var element = prop.GetArrayElementAtIndex(index);
+                rect.height -= 4;
+                rect.y += 2;
+                EditorGUI.PropertyField(rect, element);
+            };
+
+            m_clipList.onAddCallback += (list) =>
+            {
+                // Add slot
+                prop.arraySize++;
+                // select last item
+                list.index = prop.arraySize - 1;
+                // get last item
+                var element = prop.GetArrayElementAtIndex(list.index);
+                element.objectReferenceValue = null;
+
+                var dir = Path.GetDirectoryName(AssetDatabase.GetAssetPath(target));
+                var path = EditorUtility.SaveFilePanel(
+                               "Create BlendShapeClip",
+                               dir,
+                               string.Format("BlendShapeClip#{0}.asset", list.count),
+                               "asset");
+                if (!string.IsNullOrEmpty(path))
+                {
+                    var clip = BlendShapeAvatar.CreateBlendShapeClip(path.ToUnityRelativePath());
+                    //clip.Prefab = AssetDatabase.LoadAssetAtPath<GameObject>(AssetDatabase.GetAssetPath(target));
+
+                    element.objectReferenceValue = clip;
+                }
+            };
+
+            m_clipList.onCanRemoveCallback += list => true;
         }
 
-        void OnSelected(BlendShapeClip clip)
+        void OnDisable()
         {
-            Bake(clip, 1.0f);
-            if (clip != null)
-            {
-                m_clipEditor = new SerializedBlendShapeEditor(clip, PreviewSceneManager);
-            }
-            else
-            {
-                m_clipEditor = null;
-            }
-        }
-
-        protected override void OnEnable()
-        {
-            PrefabChanged += OnPrefabChanged;
-            base.OnEnable();
-
-            m_selector = new BlendShapeClipSelector((BlendShapeAvatar)target, OnSelected);
-        }
-
-        protected override void OnDisable()
-        {
-            base.OnDisable();
-            PrefabChanged -= OnPrefabChanged;
         }
 
         public override void OnInspectorGUI()
         {
-            base.OnInspectorGUI();
-
-            m_selector.SelectGUI();
-
-            if (m_clipEditor != null)
-            {
-                Separator();
-
-                m_selector.DuplicateWarn();
-
-                var result = m_clipEditor.Draw();
-                if (result.Changed)
-                {
-                    Bake(result.BlendShapeBindings, result.MaterialValueBindings, result.Weight);
-                }
-            }
+            serializedObject.Update();
+            m_clipList.DoLayoutList();
+            serializedObject.ApplyModifiedProperties();
         }
     }
 }

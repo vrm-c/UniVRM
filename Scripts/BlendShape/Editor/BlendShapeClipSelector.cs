@@ -69,7 +69,7 @@ namespace VRM
 
             if (GUILayout.Button("Add BlendShapeClip"))
             {
-                m_avatar.AddBlendShapeClip();
+                //m_avatar.AddBlendShapeClip();
             }
         }
 

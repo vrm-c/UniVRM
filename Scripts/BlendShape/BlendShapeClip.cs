@@ -73,7 +73,7 @@ namespace VRM
         public BlendShapePreset Preset;
 
         /// <summary>
-        /// BlendShapeに対する参照(indexベース)
+        /// BlendShapeに対する参照(index ベース)
         /// </summary>
         /// <value></value>
         [SerializeField]
@@ -91,5 +91,8 @@ namespace VRM
         /// </summary>
         [SerializeField]
         public bool IsBinary;
+
+        [SerializeField]
+        public Texture2D Thumbnail;
     }
 }
