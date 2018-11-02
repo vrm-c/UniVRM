@@ -31,6 +31,12 @@ namespace VRM
         float m_previewSlider = 1.0f;
 
         bool m_changed;
+
+        int m_mode;
+        static string[] MODES = new[]{
+            "BlendShape",
+            "Material"
+        };
         #endregion
 
         public SerializedBlendShapeEditor(SerializedObject serializedObject,
@@ -215,18 +221,31 @@ namespace VRM
                 m_changed = true;
             }
 
-            EditorGUILayout.Space();
-
             m_serializedObject.Update();
 
+            EditorGUILayout.Space();
             EditorGUILayout.PropertyField(m_BlendShapeNameProp, true);
             EditorGUILayout.PropertyField(m_PresetProp, true);
 
-            EditorGUILayout.LabelField("BlendShapeBindings", EditorStyles.boldLabel);
-            m_ValuesList.DoLayoutList();
+            EditorGUILayout.Space();
+            //m_mode = EditorGUILayout.Popup("SourceType", m_mode, MODES);
+            m_mode = GUILayout.Toolbar(m_mode, MODES);
+            switch (m_mode)
+            {
+                case 0:
+                    {
+                        //EditorGUILayout.LabelField("BlendShapeBindings", EditorStyles.boldLabel);
+                        m_ValuesList.DoLayoutList();
+                    }
+                    break;
 
-            EditorGUILayout.LabelField("MaterialValueBindings", EditorStyles.boldLabel);
-            m_MaterialValuesList.DoLayoutList();
+                case 1:
+                    {
+                        //EditorGUILayout.LabelField("MaterialValueBindings", EditorStyles.boldLabel);
+                        m_MaterialValuesList.DoLayoutList();
+                    }
+                    break;
+            }
 
             if (m_changed)
             {
