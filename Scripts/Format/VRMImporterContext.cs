@@ -152,6 +152,7 @@ namespace VRM
             {
                 asset.BlendShapeName = groupName;
                 asset.Preset = EnumUtil.TryParseOrDefault<BlendShapePreset>(group.presetName);
+                asset.IsBinary = group.isBinary;
                 if (asset.Preset == BlendShapePreset.Unknown)
                 {
                     // fallback
@@ -250,7 +251,7 @@ namespace VRM
             AvatarDescription = GLTF.extensions.VRM.humanoid.ToDescription(Nodes);
             AvatarDescription.name = "AvatarDescription";
             HumanoidAvatar = AvatarDescription.CreateAvatar(Root.transform);
-            if(!HumanoidAvatar.isValid || !HumanoidAvatar.isHuman)
+            if (!HumanoidAvatar.isValid || !HumanoidAvatar.isHuman)
             {
                 throw new Exception("fail to create avatar");
             }
@@ -289,7 +290,7 @@ namespace VRM
             meta.Title = gltfMeta.title;
 
             var thumbnail = GetTexture(gltfMeta.texture);
-            if (thumbnail!=null)
+            if (thumbnail != null)
             {
                 // ロード済み
                 meta.Thumbnail = thumbnail.Texture;
