@@ -16,30 +16,6 @@ namespace VRM
             .Select(x => x.ToString()).ToArray();
 
         BlendShapeAvatar m_target;
-        void AddBlendShapeClip()
-        {
-            var dir = Path.GetDirectoryName(AssetDatabase.GetAssetPath(m_target));
-            var path = EditorUtility.SaveFilePanel(
-                           "Create BlendShapeClip",
-                           dir,
-                           string.Format("BlendShapeClip#{0}.asset", m_target.Clips.Count),
-                           "asset");
-            if (string.IsNullOrEmpty(path))
-            {
-                return;
-            }
-            path = path.ToUnityRelativePath();
-            //Debug.LogFormat("{0}", path);
-            var clip = ScriptableObject.CreateInstance<BlendShapeClip>();
-            clip.BlendShapeName = Path.GetFileNameWithoutExtension(path);
-            clip.Prefab = AssetDatabase.LoadAssetAtPath<GameObject>(AssetDatabase.GetAssetPath(m_target));
-            AssetDatabase.CreateAsset(clip, path);
-            AssetDatabase.ImportAsset(path);
-
-            m_target.Clips.Add(clip);
-            EditorUtility.SetDirty(m_target);
-            AssetDatabase.SaveAssets();
-        }
 
         BlendShapeClip m_currentClip;
         BlendShapeClip CurrentClip
@@ -119,7 +95,7 @@ namespace VRM
             // Add
             if (GUILayout.Button("Add BlendShapeClip"))
             {
-                AddBlendShapeClip();
+                m_target.AddBlendShapeClip();
             }
 
             if (CurrentClip != null)
