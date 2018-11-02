@@ -46,6 +46,8 @@ namespace VRM
             private set
             {
                 if (m_prefab == value) return;
+
+                //Debug.LogFormat("Prefab = {0}", value);
                 m_prefab = value;
 
                 if (m_scene != null)
@@ -138,11 +140,23 @@ namespace VRM
             }
         }
 
+        protected static void Separator()
+        {
+            EditorGUILayout.Space();
+            EditorGUILayout.BeginHorizontal();
+            //GUILayout.Space();
+            GUILayout.Box("", GUILayout.ExpandWidth(true), GUILayout.Height(1));
+            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.Space();
+        }
+
         public override void OnInspectorGUI()
         {
             //base.OnInspectorGUI();
 
-            Prefab = (GameObject)EditorGUILayout.ObjectField("prefab", Prefab, typeof(GameObject), false);
+            Prefab = (GameObject)EditorGUILayout.ObjectField("prefab for preview", Prefab, typeof(GameObject), false);
+
+            Separator();
         }
 
         private static int sliderHash = "Slider".GetHashCode();

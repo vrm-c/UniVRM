@@ -89,7 +89,182 @@ namespace VRM
               };
         }
 
-        public static bool DrawBlendShapeBinding(Rect position, SerializedProperty property,
+        public struct DrawResult
+        {
+            public bool Changed;
+            public float Weight;
+
+            public BlendShapeBinding[] BlendShapeBindings;
+
+            public MaterialValueBinding[] MaterialValueBindings;
+        }
+
+        public DrawResult Draw()
+        {
+            m_changed = false;
+
+            //EditorGUILayout.Space();
+
+            var previewSlider = EditorGUILayout.Slider("Preview Weight", m_previewSlider, 0, 1.0f);
+            if (previewSlider != m_previewSlider)
+            {
+                m_previewSlider = previewSlider;
+                m_changed = true;
+            }
+
+            m_serializedObject.Update();
+
+            EditorGUILayout.Space();
+            EditorGUILayout.PropertyField(m_BlendShapeNameProp, true);
+            EditorGUILayout.PropertyField(m_PresetProp, true);
+
+            EditorGUILayout.Space();
+            //m_mode = EditorGUILayout.Popup("SourceType", m_mode, MODES);
+            m_mode = GUILayout.Toolbar(m_mode, MODES);
+            switch (m_mode)
+            {
+                case 0:
+                    {
+                        //EditorGUILayout.LabelField("BlendShapeBindings", EditorStyles.boldLabel);
+                        m_ValuesList.DoLayoutList();
+                    }
+                    break;
+
+                case 1:
+                    {
+                        //EditorGUILayout.LabelField("MaterialValueBindings", EditorStyles.boldLabel);
+                        m_MaterialValuesList.DoLayoutList();
+                    }
+                    break;
+            }
+
+            if (m_changed)
+            {
+                m_serializedObject.ApplyModifiedProperties();
+            }
+
+            return new DrawResult
+            {
+                Changed = m_changed,
+                Weight = m_previewSlider,
+                BlendShapeBindings = m_targetObject.Values,
+                MaterialValueBindings = m_targetObject.MaterialValues
+            };
+        }
+
+#if false
+        void ClipGUI(BlendShapeClip clip)
+        {
+            if (clip == null)
+            {
+                Debug.LogWarning("no clip");
+                return;
+            }
+
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("CurrentClip", EditorStyles.boldLabel);
+
+            // ReadonlyのBlendShapeClip参照
+            GUI.enabled = false;
+            EditorGUILayout.ObjectField("Current clip",
+                clip, typeof(BlendShapeClip), false);
+            GUI.enabled = true;
+
+            // Preset選択
+            clip.Preset = (BlendShapePreset)EditorGUILayout.Popup("Preset", (int)clip.Preset, Presets);
+
+            // Readonlyの名前入力
+            GUI.enabled = false;
+            EditorGUILayout.TextField("BlendShapeName", clip.BlendShapeName);
+            GUI.enabled = true;
+
+            // Key重複の警告
+            m_selector.DuplicateWarn();
+
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("BlendShapeValues", EditorStyles.boldLabel);
+
+            EditorGUILayout.BeginHorizontal();
+            if (GUILayout.Button("Clear"))
+            {
+                ClearBlendShape();
+            }
+
+            if (clip != null && GUILayout.Button("Apply"))
+            {
+                string maxWeightString;
+                clip.Values = GetBindings(out maxWeightString);
+                EditorUtility.SetDirty(clip);
+            }
+            EditorGUILayout.EndHorizontal();
+
+            if (PreviewSceneManager != null)
+            {
+                if (BlendShapeBindsGUI(clip))
+                {
+                    PreviewSceneManager.Bake();
+                }
+            }
+        }
+
+        List<bool> m_meshFolds = new List<bool>();
+        bool BlendShapeBindsGUI(BlendShapeClip clip)
+        {
+            bool changed = false;
+            int foldIndex = 0;
+            // すべてのSkinnedMeshRendererを列挙する
+            foreach (var item in PreviewSceneManager.EnumRenderItems.Where(x => x.SkinnedMeshRenderer != null))
+            {
+                var mesh = item.SkinnedMeshRenderer.sharedMesh;
+                if (mesh != null && mesh.blendShapeCount > 0)
+                {
+                    //var relativePath = UniGLTF.UnityExtensions.RelativePathFrom(renderer.transform, m_target.transform);
+                    //EditorGUILayout.LabelField(m_target.name + "/" + item.Path);
+
+                    if (foldIndex >= m_meshFolds.Count)
+                    {
+                        m_meshFolds.Add(false);
+                    }
+                    m_meshFolds[foldIndex] = EditorGUILayout.Foldout(m_meshFolds[foldIndex], item.SkinnedMeshRenderer.name);
+                    if (m_meshFolds[foldIndex])
+                    {
+                        //EditorGUI.indentLevel += 1;
+                        for (int i = 0; i < mesh.blendShapeCount; ++i)
+                        {
+                            var src = item.SkinnedMeshRenderer.GetBlendShapeWeight(i);
+                            var dst = EditorGUILayout.Slider(mesh.GetBlendShapeName(i), src, 0, 100.0f);
+                            if (dst != src)
+                            {
+                                item.SkinnedMeshRenderer.SetBlendShapeWeight(i, dst);
+                                changed = true;
+                            }
+                        }
+                        //EditorGUI.indentLevel -= 1;
+                    }
+                    ++foldIndex;
+                }
+            }
+            return changed;
+        }
+        private void ClearBlendShape()
+        {
+            foreach (var item in PreviewSceneManager.EnumRenderItems.Where(x => x.SkinnedMeshRenderer != null))
+            {
+                var renderer = item.SkinnedMeshRenderer;
+                var mesh = renderer.sharedMesh;
+                if (mesh != null)
+                {
+                    for (int i = 0; i < mesh.blendShapeCount; ++i)
+                    {
+                        renderer.SetBlendShapeWeight(i, 0);
+                    }
+                }
+            }
+        }
+#endif
+
+        #region private
+        static bool DrawBlendShapeBinding(Rect position, SerializedProperty property,
             PreviewSceneManager scene)
         {
             bool changed = false;
@@ -123,7 +298,7 @@ namespace VRM
             return changed;
         }
 
-        public static bool DrawMaterialValueBinding(Rect position, SerializedProperty property,
+        static bool DrawMaterialValueBinding(Rect position, SerializedProperty property,
             PreviewSceneManager scene)
         {
             bool changed = false;
@@ -197,69 +372,6 @@ namespace VRM
             return changed;
         }
 
-
-        public struct DrawResult
-        {
-            public bool Changed;
-            public float Weight;
-
-            public BlendShapeBinding[] BlendShapeBindings;
-
-            public MaterialValueBinding[] MaterialValueBindings;
-        }
-
-        public DrawResult Draw()
-        {
-            m_changed = false;
-
-            //EditorGUILayout.Space();
-
-            var previewSlider = EditorGUILayout.Slider("Preview Weight", m_previewSlider, 0, 1.0f);
-            if (previewSlider != m_previewSlider)
-            {
-                m_previewSlider = previewSlider;
-                m_changed = true;
-            }
-
-            m_serializedObject.Update();
-
-            EditorGUILayout.Space();
-            EditorGUILayout.PropertyField(m_BlendShapeNameProp, true);
-            EditorGUILayout.PropertyField(m_PresetProp, true);
-
-            EditorGUILayout.Space();
-            //m_mode = EditorGUILayout.Popup("SourceType", m_mode, MODES);
-            m_mode = GUILayout.Toolbar(m_mode, MODES);
-            switch (m_mode)
-            {
-                case 0:
-                    {
-                        //EditorGUILayout.LabelField("BlendShapeBindings", EditorStyles.boldLabel);
-                        m_ValuesList.DoLayoutList();
-                    }
-                    break;
-
-                case 1:
-                    {
-                        //EditorGUILayout.LabelField("MaterialValueBindings", EditorStyles.boldLabel);
-                        m_MaterialValuesList.DoLayoutList();
-                    }
-                    break;
-            }
-
-            if (m_changed)
-            {
-                m_serializedObject.ApplyModifiedProperties();
-            }
-
-            return new DrawResult
-            {
-                Changed = m_changed,
-                Weight = m_previewSlider,
-                BlendShapeBindings = m_targetObject.Values,
-                MaterialValueBindings = m_targetObject.MaterialValues
-            };
-        }
 
         static bool StringPopup(Rect rect, SerializedProperty prop, string[] options, out int newIndex)
         {
@@ -347,5 +459,6 @@ namespace VRM
                 return false;
             }
         }
+        #endregion
     }
 }

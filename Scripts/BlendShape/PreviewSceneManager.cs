@@ -80,6 +80,7 @@ namespace VRM
 
         private void Initialize(GameObject prefab)
         {
+            //Debug.LogFormat("[PreviewSceneManager.Initialize] {0}", prefab);
             Prefab = prefab;
 
             var materialNames = new List<string>();
@@ -90,7 +91,7 @@ namespace VRM
                 if (string.IsNullOrEmpty(src.name)) return null; // !
 
                 Material dst;
-                if(!map.TryGetValue(src, out dst))
+                if (!map.TryGetValue(src, out dst))
                 {
                     dst = new Material(src);
                     map.Add(src, dst);
@@ -111,7 +112,7 @@ namespace VRM
 
             m_blendShapeMeshes = m_meshes
                 .Where(x => x.SkinnedMeshRenderer != null
-                && x.SkinnedMeshRenderer.sharedMesh.blendShapeCount>0)
+                && x.SkinnedMeshRenderer.sharedMesh.blendShapeCount > 0)
                 .ToArray();
 
             //Bake(values, materialValues);
@@ -183,7 +184,8 @@ namespace VRM
         public MaterialItem GetMaterialItem(string materialName)
         {
             MaterialItem item;
-            if(!m_materialMap.TryGetValue(materialName, out item)){
+            if (!m_materialMap.TryGetValue(materialName, out item))
+            {
                 return null;
             }
 
@@ -205,7 +207,7 @@ namespace VRM
 
 #if UNITY_EDITOR
         Bounds m_bounds;
-        public void Bake(BlendShapeBinding[] values=null, MaterialValueBinding[] materialValues=null, float weight=1.0f)
+        public void Bake(BlendShapeBinding[] values = null, MaterialValueBinding[] materialValues = null, float weight = 1.0f)
         {
             //Debug.LogFormat("Bake");
             m_bounds = default(Bounds);

@@ -6,7 +6,7 @@ using UnityEditor;
 
 namespace VRM
 {
-    class BlendShapeClipSelect
+    class BlendShapeClipSelector
     {
         BlendShapeAvatar m_avatar;
 
@@ -43,7 +43,7 @@ namespace VRM
 
         Action<BlendShapeClip> m_onSelected;
 
-        public BlendShapeClipSelect(BlendShapeAvatar avatar, Action<BlendShapeClip> onSelected)
+        public BlendShapeClipSelector(BlendShapeAvatar avatar, Action<BlendShapeClip> onSelected)
         {
             avatar.RemoveNullClip();
 
