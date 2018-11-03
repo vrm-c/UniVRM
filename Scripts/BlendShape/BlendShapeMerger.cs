@@ -119,9 +119,9 @@ namespace VRM
             m_materialValueBindingMerger.ImmediatelySetValue(clip, value);
         }
 
-        public void SetValue(BlendShapeKey key, float value, bool replace)
+        public void SetValue(BlendShapeKey key, float value, bool immediately)
         {
-            if (replace)
+            if (immediately)
             {
                 ImmediatelySetValue(key, value);
             }
