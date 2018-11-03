@@ -119,7 +119,16 @@ namespace VRM
                     if (m_clipEditor != null)
                     {
                         Separator();
-                        m_clipEditor.Draw();
+                        var result = m_clipEditor.Draw();
+                        if (result.Changed)
+                        {
+                            PreviewSceneManager.Bake(new PreviewSceneManager.BakeValue
+                            {
+                                BlendShapeBindings = result.BlendShapeBindings,
+                                MaterialValueBindings = result.MaterialValueBindings,
+                                Weight = 1.0f,
+                            });
+                        }
                     }
                     break;
 

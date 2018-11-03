@@ -2,7 +2,8 @@
 using System.Linq;
 using UnityEngine;
 using UnityEditor;
-
+using System.IO;
+using UniGLTF;
 
 namespace VRM
 {
@@ -67,12 +68,22 @@ namespace VRM
                 SelectedIndex = GUILayout.SelectionGrid(SelectedIndex, array, 4);
             }
 
-            /*
             if (GUILayout.Button("Add BlendShapeClip"))
             {
-                m_avatar.AddBlendShapeClip();
+                var dir = Path.GetDirectoryName(AssetDatabase.GetAssetPath(m_avatar));
+                var path = EditorUtility.SaveFilePanel(
+                               "Create BlendShapeClip",
+                               dir,
+                               string.Format("BlendShapeClip#{0}.asset", m_avatar.Clips.Count),
+                               "asset");
+                if (!string.IsNullOrEmpty(path))
+                {
+                    var clip = BlendShapeAvatar.CreateBlendShapeClip(path.ToUnityRelativePath());
+                    //clip.Prefab = AssetDatabase.LoadAssetAtPath<GameObject>(AssetDatabase.GetAssetPath(target));
+
+                    m_avatar.Clips.Add(clip);
+                }
             }
-            */
         }
 
         public void DuplicateWarn()

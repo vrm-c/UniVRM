@@ -86,6 +86,7 @@ namespace VRM
             {
                 return;
             }
+            serializedObject.Update();
 
             if (m_serializedEditor == null)
             {
@@ -96,8 +97,13 @@ namespace VRM
 
             int thumbnailSize = 96;
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.ObjectField(m_thumbnailProp.objectReferenceValue, typeof(Texture), false,
+            var objectReferenceValue = EditorGUILayout.ObjectField(m_thumbnailProp.objectReferenceValue, typeof(Texture), false,
                 GUILayout.Width(thumbnailSize), GUILayout.Height(thumbnailSize));
+            if (m_thumbnailProp.objectReferenceValue != objectReferenceValue)
+            {
+                m_thumbnailProp.objectReferenceValue = objectReferenceValue;
+                serializedObject.ApplyModifiedProperties();
+            }
 
             var changed = false;
             EditorGUILayout.BeginVertical();
