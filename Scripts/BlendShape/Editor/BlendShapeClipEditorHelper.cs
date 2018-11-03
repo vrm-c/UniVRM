@@ -7,6 +7,9 @@ namespace VRM
 {
     public static class BlendShapeClipEditorHelper
     {
+        ///
+        /// BlendShape List のElement描画
+        ///
         public static bool DrawBlendShapeBinding(Rect position, SerializedProperty property,
             PreviewSceneManager scene)
         {
@@ -41,6 +44,9 @@ namespace VRM
             return changed;
         }
 
+        ///
+        /// Material List のElement描画
+        ///
         public static bool DrawMaterialValueBinding(Rect position, SerializedProperty property,
             PreviewSceneManager scene)
         {
