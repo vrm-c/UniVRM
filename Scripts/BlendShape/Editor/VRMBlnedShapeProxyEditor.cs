@@ -23,22 +23,14 @@ namespace VRM
                 m_key = key;
             }
 
-            public void Slider()
+            public KeyValuePair<BlendShapeKey, float> Slider()
             {
-                if (m_target.BlendShapeAvatar == null)
-                {
-                    return;
-                }
-
                 var oldValue = m_target.GetValue(m_key);
                 var enable = GUI.enabled;
                 GUI.enabled = Application.isPlaying;
                 var newValue = EditorGUILayout.Slider(m_key.ToString(), oldValue, 0, 1.0f);
                 GUI.enabled = enable;
-                if (Application.isPlaying && oldValue != newValue)
-                {
-                    m_target.SetValue(m_key, newValue);
-                }
+                return new KeyValuePair<BlendShapeKey, float>(m_key, newValue);
             }
         }
         List<BlendShapeSlider> m_sliders;
@@ -65,12 +57,14 @@ namespace VRM
                 EditorGUILayout.HelpBox("Enable when playing", MessageType.Info);
             }
 
+            if (m_target.BlendShapeAvatar == null)
+            {
+                return;
+            }
+
             if (m_sliders != null)
             {
-                foreach (var slider in m_sliders)
-                {
-                    slider.Slider();
-                }
+                m_target.SetValues(m_sliders.Select(x => x.Slider()));
             }
         }
     }

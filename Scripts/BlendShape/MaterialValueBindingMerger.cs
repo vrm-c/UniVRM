@@ -14,7 +14,9 @@ namespace VRM
         /// <summary>
         /// 名前とmaterialのマッピング
         /// </summary>
-        Dictionary<string, Material> m_materialMap;
+        Dictionary<string, Material> m_materialMap = new Dictionary<string, Material>();
+
+        delegate void Setter(float value, bool firstValue);
 
         /// <summary>
         /// MaterialValueの適用値を蓄積する
@@ -24,11 +26,10 @@ namespace VRM
         /// <returns></returns>
         Dictionary<MaterialValueBinding, float> m_materialValueMap = new Dictionary<MaterialValueBinding, float>();
 
-        Dictionary<MaterialValueBinding, Action<float>> m_materialSetterMap = new Dictionary<MaterialValueBinding, Action<float>>();
+        Dictionary<MaterialValueBinding, Setter> m_materialSetterMap = new Dictionary<MaterialValueBinding, Setter>();
 
         public MaterialValueBindingMerger(Dictionary<BlendShapeKey, BlendShapeClip> clipMap, Transform root)
         {
-            m_materialMap = new Dictionary<string, Material>();
             foreach (var x in root.Traverse())
             {
                 var renderer = x.GetComponent<Renderer>();
@@ -59,9 +60,12 @@ namespace VRM
                             if (binding.ValueName.EndsWith("_ST_S"))
                             {
                                 var valueName = binding.ValueName.Substring(0, binding.ValueName.Length - 2);
-                                Action<float> setter = value =>
+                                Setter setter = (value, firstValue) =>
                                 {
-                                    var propValue = binding.BaseValue + (binding.TargetValue - binding.BaseValue) * value;
+                                    var propValue = firstValue
+                                        ? (binding.BaseValue + (binding.TargetValue - binding.BaseValue) * value)
+                                        : (target.GetVector(binding.ValueName) + (binding.TargetValue - binding.BaseValue) * value)
+                                        ;
                                     var src = target.GetVector(valueName);
                                     src.x = propValue.x; // horizontal only
                                     src.z = propValue.z; // horizontal only
@@ -72,9 +76,12 @@ namespace VRM
                             else if (binding.ValueName.EndsWith("_ST_T"))
                             {
                                 var valueName = binding.ValueName.Substring(0, binding.ValueName.Length - 2);
-                                Action<float> setter = value =>
+                                Setter setter = (value, firstValue) =>
                                 {
-                                    var propValue = binding.BaseValue + (binding.TargetValue - binding.BaseValue) * value;
+                                    var propValue = firstValue
+                                        ? (binding.BaseValue + (binding.TargetValue - binding.BaseValue) * value)
+                                        : (target.GetVector(binding.ValueName) + (binding.TargetValue - binding.BaseValue) * value)
+                                        ;
                                     var src = target.GetVector(valueName);
                                     src.y = propValue.y; // vertical only
                                     src.w = propValue.w; // vertical only
@@ -84,9 +91,12 @@ namespace VRM
                             }
                             else
                             {
-                                Action<float> vec4Setter = x =>
+                                Setter vec4Setter = (value, firstValue) =>
                                 {
-                                    var propValue = binding.BaseValue + (binding.TargetValue - binding.BaseValue) * x;
+                                    var propValue = firstValue
+                                        ? (binding.BaseValue + (binding.TargetValue - binding.BaseValue) * value)
+                                        : (target.GetVector(binding.ValueName) + (binding.TargetValue - binding.BaseValue) * value)
+                                        ;
                                     target.SetColor(binding.ValueName, propValue);
                                 };
                                 m_materialSetterMap.Add(binding, vec4Setter);
@@ -128,10 +138,10 @@ namespace VRM
         {
             foreach (var binding in clip.MaterialValues)
             {
-                Action<float> setter;
+                Setter setter;
                 if (m_materialSetterMap.TryGetValue(binding, out setter))
                 {
-                    setter(value);
+                    setter(value, true);
                 }
             }
         }
@@ -153,14 +163,29 @@ namespace VRM
             }
         }
 
+        Dictionary<string, int> m_used = new Dictionary<string, int>();
+
         public void Apply()
         {
+            m_used.Clear();
+
+            // (binding.Value-Base) * weight を足す
             foreach (var kv in m_materialValueMap)
             {
-                Action<float> setter;
+                Setter setter;
                 if (m_materialSetterMap.TryGetValue(kv.Key, out setter))
                 {
-                    setter(kv.Value);
+                    int count;
+                    if (m_used.TryGetValue(kv.Key.MaterialName, out count))
+                    {
+                        m_used[kv.Key.MaterialName] += 1;
+                    }
+                    else
+                    {
+                        m_used.Add(kv.Key.MaterialName, 1);
+                    }
+
+                    setter(kv.Value, count == 0);
                 }
             }
             m_materialValueMap.Clear();
