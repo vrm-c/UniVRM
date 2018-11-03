@@ -70,12 +70,12 @@ namespace VRM
         }
 
         bool m_foldoutInfo = true;
-        bool m_foldoutPersmission=true;
-        bool m_foldoutDistribution=true;
+        bool m_foldoutPersmission = true;
+        bool m_foldoutDistribution = true;
         void VRMMetaObjectGUI(SerializedObject so)
         {
             InitMap(so);
-            if (m_propMap == null || m_propMap.Count==0) return;
+            if (m_propMap == null || m_propMap.Count == 0) return;
 
             so.Update();
 
@@ -95,8 +95,8 @@ namespace VRM
                 EditorGUILayout.PropertyField(m_propMap["Author"]);
                 EditorGUILayout.PropertyField(m_propMap["ContactInformation"]);
                 EditorGUILayout.PropertyField(m_propMap["Reference"]);
-                var thumbnail = m_propMap["Thumbnail"];
-                thumbnail.objectReferenceValue = TextureField("", (Texture2D)thumbnail.objectReferenceValue, 100);
+                //var thumbnail = m_propMap["Thumbnail"];
+                //thumbnail.objectReferenceValue = TextureField("", (Texture2D)thumbnail.objectReferenceValue, 100);
             }
 
             EditorGUILayout.LabelField("License ", EditorStyles.boldLabel);
@@ -121,7 +121,7 @@ namespace VRM
                     EditorGUILayout.PropertyField(m_propMap["OtherLicenseUrl"]);
                 }
             }
-           
+
             so.ApplyModifiedProperties();
         }
 

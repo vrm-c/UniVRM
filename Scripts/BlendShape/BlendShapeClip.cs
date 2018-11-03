@@ -92,7 +92,7 @@ namespace VRM
         [SerializeField]
         public bool IsBinary;
 
-        [SerializeField]
-        public Texture2D Thumbnail;
+        // [SerializeField]
+        // public Texture2D Thumbnail;
     }
 }

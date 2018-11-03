@@ -66,7 +66,7 @@ namespace VRM
             this.m_serializedObject = serializedObject;
             this.m_targetObject = targetObject;
 
-            m_thumbnail = serializedObject.FindProperty("Thumbnail");
+            //m_thumbnail = serializedObject.FindProperty("Thumbnail");
             m_blendShapeNameProp = serializedObject.FindProperty("BlendShapeName");
             m_presetProp = serializedObject.FindProperty("Preset");
             m_isBinaryProp = serializedObject.FindProperty("IsBinary");

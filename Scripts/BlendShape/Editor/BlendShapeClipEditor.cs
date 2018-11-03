@@ -24,7 +24,7 @@ namespace VRM
             };
         }
 
-        SerializedProperty m_thumbnailProp;
+        //SerializedProperty m_thumbnailProp;
         SerializedProperty m_isBinaryProp;
 
         protected override GameObject GetPrefab()
@@ -91,12 +91,13 @@ namespace VRM
             if (m_serializedEditor == null)
             {
                 m_serializedEditor = new SerializedBlendShapeEditor(serializedObject, PreviewSceneManager);
-                m_thumbnailProp = serializedObject.FindProperty("Thumbnail");
+                //m_thumbnailProp = serializedObject.FindProperty("Thumbnail");
                 m_isBinaryProp = serializedObject.FindProperty("IsBinary");
             }
 
             int thumbnailSize = 96;
             EditorGUILayout.BeginHorizontal();
+            /*
             var objectReferenceValue = EditorGUILayout.ObjectField(m_thumbnailProp.objectReferenceValue, typeof(Texture), false,
                 GUILayout.Width(thumbnailSize), GUILayout.Height(thumbnailSize));
             if (m_thumbnailProp.objectReferenceValue != objectReferenceValue)
@@ -104,6 +105,7 @@ namespace VRM
                 m_thumbnailProp.objectReferenceValue = objectReferenceValue;
                 serializedObject.ApplyModifiedProperties();
             }
+            */
 
             var changed = false;
             EditorGUILayout.BeginVertical();
@@ -111,6 +113,7 @@ namespace VRM
             EditorGUILayout.LabelField("Preview Weight");
             var previewSlider = EditorGUILayout.Slider(m_previewSlider, 0, 1.0f);
             GUI.enabled = PreviewTexture != null;
+            /*
             if (GUILayout.Button("save thumbnail"))
             {
                 //var ext = "jpg";
@@ -129,6 +132,7 @@ namespace VRM
                     serializedObject.ApplyModifiedProperties();
                 }
             }
+            */
             GUI.enabled = true;
             EditorGUILayout.EndVertical();
 

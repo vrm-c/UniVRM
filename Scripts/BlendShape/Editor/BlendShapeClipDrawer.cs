@@ -10,9 +10,12 @@ namespace VRM
     [CustomPropertyDrawer(typeof(BlendShapeClip))]
     public class BlendShapeClipDrawer : PropertyDrawer
     {
-        public const int Height = 132;
+        //public const int Height = 132;
 
-        public const int ThumbnailSize = 128;
+        //public const int ThumbnailSize = 128;
+
+        public const int Height = 80;
+        public const int ThumbnailSize = 0;
 
         public override void OnGUI(Rect position,
           SerializedProperty property, GUIContent label)
@@ -32,16 +35,18 @@ namespace VRM
                 if (clip != null)
                 {
                     var clipObj = new SerializedObject(clip);
-                    var thumbnail = clipObj.FindProperty("Thumbnail");
+                    //var thumbnail = clipObj.FindProperty("Thumbnail");
                     var blendShapeName = clipObj.FindProperty("BlendShapeName");
                     var preset = clipObj.FindProperty("Preset");
                     var isBinary = clipObj.FindProperty("IsBinary");
 
+                    /*
                     EditorGUI.ObjectField(new Rect(position)
                     {
                         width = ThumbnailSize,
                         height = ThumbnailSize
                     }, thumbnail.objectReferenceValue, typeof(Texture), false);
+                    */
 
                     rect.y += (EditorGUIUtility.singleLineHeight + 2);
                     EditorGUI.PropertyField(rect, blendShapeName);
