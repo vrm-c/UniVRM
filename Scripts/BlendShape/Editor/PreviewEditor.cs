@@ -164,10 +164,12 @@ namespace VRM
         private static int sliderHash = "Slider".GetHashCode();
         float m_yaw = 180.0f;
         float m_pitch;
-        Vector3 m_position = new Vector3(0, 0, -1f);
+        Vector3 m_position = new Vector3(0, 0, -0.8f);
 
         // very important to override this, it tells Unity to render an ObjectPreview at the bottom of the inspector
         public override bool HasPreviewGUI() { return true; }
+
+        public RenderTexture PreviewTexture;
 
         // the main ObjectPreview function... it's called constantly, like other IMGUI On*GUI() functions
         public override void OnPreviewGUI(Rect r, GUIStyle background)
@@ -182,6 +184,14 @@ namespace VRM
                 }
                 return;
             }
+
+            var src = r;
+
+            var min = Mathf.Min(r.width, r.height);
+            r.width = min;
+            r.height = min;
+            r.x = src.x + (src.width - min) / 2;
+            r.y = src.y + (src.height - min) / 2;
 
             //previewDir = Drag2D(previewDir, r);
             {
@@ -260,11 +270,11 @@ namespace VRM
 
             if (m_renderer != null && m_scene != null)
             {
-                var texture = m_renderer.Render(r, background, m_scene, m_yaw, m_pitch, m_position);
-                if (texture != null)
+                PreviewTexture = m_renderer.Render(r, background, m_scene, m_yaw, m_pitch, m_position) as RenderTexture;
+                if (PreviewTexture != null)
                 {
                     // draw the RenderTexture in the ObjectPreview pane
-                    GUI.DrawTexture(r, texture, ScaleMode.StretchToFill, false);
+                    GUI.DrawTexture(r, PreviewTexture, ScaleMode.StretchToFill, false);
                 }
             }
         }

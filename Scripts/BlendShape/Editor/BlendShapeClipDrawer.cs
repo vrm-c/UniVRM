@@ -10,7 +10,9 @@ namespace VRM
     [CustomPropertyDrawer(typeof(BlendShapeClip))]
     public class BlendShapeClipDrawer : PropertyDrawer
     {
-        public const int Height = 72;
+        public const int Height = 132;
+
+        public const int ThumbnailSize = 128;
 
         public override void OnGUI(Rect position,
           SerializedProperty property, GUIContent label)
@@ -23,7 +25,7 @@ namespace VRM
 
                 var halfWidth = position.width * 0.5f;
 
-                var rect = new Rect(position.x + 64, position.y, position.width - 64, position.height);
+                var rect = new Rect(position.x + ThumbnailSize, position.y, position.width - ThumbnailSize, position.height);
                 EditorGUI.PropertyField(rect, property);
 
                 var clip = property.objectReferenceValue as BlendShapeClip;
@@ -37,8 +39,8 @@ namespace VRM
 
                     EditorGUI.ObjectField(new Rect(position)
                     {
-                        width = 64,
-                        height = 64
+                        width = ThumbnailSize,
+                        height = ThumbnailSize
                     }, thumbnail.objectReferenceValue, typeof(Texture), false);
 
                     rect.y += (EditorGUIUtility.singleLineHeight + 2);

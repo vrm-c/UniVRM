@@ -108,7 +108,6 @@ namespace VRM
         public struct DrawResult
         {
             public bool Changed;
-            public float Weight;
 
             public BlendShapeBinding[] BlendShapeBindings;
 
@@ -119,13 +118,7 @@ namespace VRM
         {
             m_changed = false;
 
-            //EditorGUILayout.Space();
-
-            var previewSlider = EditorGUILayout.Slider("Preview Weight", m_previewSlider, 0, 1.0f);
-
             m_serializedObject.Update();
-
-            EditorGUILayout.Space();
 
             // ReadonlyのBlendShapeClip参照
             GUI.enabled = false;
@@ -133,22 +126,11 @@ namespace VRM
                 m_targetObject, typeof(BlendShapeClip), false);
             GUI.enabled = true;
 
-            m_thumbnail.objectReferenceValue = EditorGUILayout.ObjectField(m_thumbnail.objectReferenceValue, typeof(Texture), false);
-            EditorGUILayout.PropertyField(m_thumbnail, true);
             EditorGUILayout.PropertyField(m_blendShapeNameProp, true);
             EditorGUILayout.PropertyField(m_presetProp, true);
 
             // v0.45 Added. Binary flag
             EditorGUILayout.PropertyField(m_isBinaryProp, true);
-            if (m_isBinaryProp.boolValue)
-            {
-                previewSlider = Mathf.Round(previewSlider);
-            }
-            if (previewSlider != m_previewSlider)
-            {
-                m_previewSlider = previewSlider;
-                m_changed = true;
-            }
 
             EditorGUILayout.Space();
             //m_mode = EditorGUILayout.Popup("SourceType", m_mode, MODES);
@@ -181,7 +163,6 @@ namespace VRM
             return new DrawResult
             {
                 Changed = m_changed,
-                Weight = m_previewSlider,
                 BlendShapeBindings = m_targetObject.Values,
                 MaterialValueBindings = m_targetObject.MaterialValues
             };
