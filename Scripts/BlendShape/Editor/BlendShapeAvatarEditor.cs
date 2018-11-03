@@ -41,12 +41,18 @@ namespace VRM
             else if (clip != null)
             {
                 m_clipEditor = new SerializedBlendShapeEditor(clip, PreviewSceneManager);
+                PreviewSceneManager.Bake(new PreviewSceneManager.BakeValue
+                {
+                    BlendShapeBindings = clip.Values,
+                    MaterialValueBindings = clip.MaterialValues,
+                    Weight = 1.0f
+                });
             }
             else
             {
                 m_clipEditor = null;
+                PreviewSceneManager.Bake(new PreviewSceneManager.BakeValue());
             }
-            Bake();
         }
 
         protected override void OnEnable()
@@ -91,6 +97,13 @@ namespace VRM
 
                     element.objectReferenceValue = clip;
                 }
+            };
+
+            m_clipList.onSelectCallback += (list) =>
+            {
+                var a = list.serializedProperty;
+                var selected = a.GetArrayElementAtIndex(list.index);
+                OnSelected((BlendShapeClip)selected.objectReferenceValue);
             };
 
             //m_clipList.onCanRemoveCallback += list => true;
