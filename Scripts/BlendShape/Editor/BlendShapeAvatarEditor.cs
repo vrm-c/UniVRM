@@ -57,7 +57,7 @@ namespace VRM
                 }
             };
 
-            m_clipList.onCanRemoveCallback += list => true;
+            //m_clipList.onCanRemoveCallback += list => true;
         }
 
         void OnDisable()

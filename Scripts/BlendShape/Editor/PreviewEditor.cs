@@ -156,9 +156,9 @@ namespace VRM
         {
             //base.OnInspectorGUI();
 
-            Prefab = (GameObject)EditorGUILayout.ObjectField("prefab for preview", Prefab, typeof(GameObject), false);
+            Prefab = (GameObject)EditorGUILayout.ObjectField("Preview Prefab", Prefab, typeof(GameObject), false);
 
-            Separator();
+            //Separator();
         }
 
         private static int sliderHash = "Slider".GetHashCode();

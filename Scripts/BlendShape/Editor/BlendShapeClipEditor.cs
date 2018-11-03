@@ -91,7 +91,10 @@ namespace VRM
 
         public override void OnInspectorGUI()
         {
-            base.OnInspectorGUI();
+            if (PreviewSceneManager == null)
+            {
+                return;
+            }
 
             if (m_serializedEditor == null)
             {
@@ -100,12 +103,14 @@ namespace VRM
                 m_isBinaryProp = serializedObject.FindProperty("IsBinary");
             }
 
+            int thumbnailSize = 96;
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.ObjectField(m_thumbnailProp.objectReferenceValue, typeof(Texture), false,
-                GUILayout.Width(64), GUILayout.Height(64));
+                GUILayout.Width(thumbnailSize), GUILayout.Height(thumbnailSize));
 
             var changed = false;
             EditorGUILayout.BeginVertical();
+            base.OnInspectorGUI();
             EditorGUILayout.LabelField("Preview Weight");
             var previewSlider = EditorGUILayout.Slider(m_previewSlider, 0, 1.0f);
             GUI.enabled = PreviewTexture != null;
@@ -141,6 +146,7 @@ namespace VRM
             }
 
             EditorGUILayout.EndHorizontal();
+            Separator();
             EditorGUILayout.Space();
 
             var result = m_serializedEditor.Draw();
