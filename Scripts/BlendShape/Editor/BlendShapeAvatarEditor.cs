@@ -11,12 +11,48 @@ using UnityEngine;
 namespace VRM
 {
     [CustomEditor(typeof(BlendShapeAvatar))]
-    public class BlendShapeAvatarEditor : Editor
+    public class BlendShapeAvatarEditor : PreviewEditor
     {
         ReorderableList m_clipList;
 
-        void OnEnable()
+        BlendShapeClipSelector m_selector;
+
+        SerializedBlendShapeEditor m_clipEditor;
+
+        protected override PreviewSceneManager.BakeValue GetBakeValue()
         {
+            var clip = m_selector.Selected;
+            var value = new PreviewSceneManager.BakeValue();
+            if (clip != null)
+            {
+                value.BlendShapeBindings = clip.Values;
+                value.MaterialValueBindings = clip.MaterialValues;
+                value.Weight = 1.0f;
+            }
+            return value;
+        }
+
+        void OnSelected(BlendShapeClip clip)
+        {
+            if (PreviewSceneManager == null)
+            {
+                m_clipEditor = null;
+            }
+            else if (clip != null)
+            {
+                m_clipEditor = new SerializedBlendShapeEditor(clip, PreviewSceneManager);
+            }
+            else
+            {
+                m_clipEditor = null;
+            }
+            Bake();
+        }
+
+        protected override void OnEnable()
+        {
+            m_selector = new BlendShapeClipSelector((BlendShapeAvatar)target, OnSelected);
+
             var prop = serializedObject.FindProperty("Clips");
             m_clipList = new ReorderableList(serializedObject, prop);
 
@@ -58,16 +94,43 @@ namespace VRM
             };
 
             //m_clipList.onCanRemoveCallback += list => true;
+            base.OnEnable();
+
+            OnSelected(m_selector.Selected);
         }
 
-        void OnDisable()
-        {
-        }
+        int m_mode;
+        static readonly string[] MODES = new string[]{
+            "Editor",
+            "List"
+        };
 
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
-            m_clipList.DoLayoutList();
+
+            base.OnInspectorGUI();
+
+            m_mode = GUILayout.Toolbar(m_mode, MODES);
+            switch (m_mode)
+            {
+                case 0:
+                    m_selector.SelectGUI();
+                    if (m_clipEditor != null)
+                    {
+                        Separator();
+                        m_clipEditor.Draw();
+                    }
+                    break;
+
+                case 1:
+                    m_clipList.DoLayoutList();
+                    break;
+
+                default:
+                    throw new NotImplementedException();
+            }
+
             serializedObject.ApplyModifiedProperties();
         }
     }

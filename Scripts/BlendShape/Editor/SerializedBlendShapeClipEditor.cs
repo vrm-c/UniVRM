@@ -31,6 +31,8 @@ namespace VRM
         #region  MaterialValueBind
         const int MaterialValueBindingHeight = 90;
         ReorderableList m_MaterialValuesList;
+
+        SerializedProperty m_materialsProp;
         #endregion
 
         #region  Editor values
@@ -85,13 +87,13 @@ namespace VRM
                   }
               };
 
-            var materialValuesProp = serializedObject.FindProperty("MaterialValues");
-            m_MaterialValuesList = new ReorderableList(serializedObject, materialValuesProp);
+            m_materialsProp = serializedObject.FindProperty("MaterialValues");
+            m_MaterialValuesList = new ReorderableList(serializedObject, m_materialsProp);
             m_MaterialValuesList.elementHeight = MaterialValueBindingHeight;
             m_MaterialValuesList.drawElementCallback =
               (rect, index, isActive, isFocused) =>
               {
-                  var element = materialValuesProp.GetArrayElementAtIndex(index);
+                  var element = m_materialsProp.GetArrayElementAtIndex(index);
                   rect.height -= 4;
                   rect.y += 2;
                   if (BlendShapeClipEditorHelper.DrawMaterialValueBinding(rect, element, previewSceneManager))
@@ -120,7 +122,7 @@ namespace VRM
 
             m_serializedObject.Update();
 
-            // ReadonlyのBlendShapeClip参照
+            // Readonly のBlendShapeClip参照
             GUI.enabled = false;
             EditorGUILayout.ObjectField("Current clip",
                 m_targetObject, typeof(BlendShapeClip), false);
@@ -145,14 +147,22 @@ namespace VRM
 
                 case 1:
                     {
-                        //EditorGUILayout.LabelField("BlendShapeBindings", EditorStyles.boldLabel);
+                        if (GUILayout.Button("Clear"))
+                        {
+                            m_changed = true;
+                            m_valuesProp.arraySize = 0;
+                        }
                         m_ValuesList.DoLayoutList();
                     }
                     break;
 
                 case 2:
                     {
-                        //EditorGUILayout.LabelField("MaterialValueBindings", EditorStyles.boldLabel);
+                        if (GUILayout.Button("Clear"))
+                        {
+                            m_changed = true;
+                            m_materialsProp.arraySize = 0;
+                        }
                         m_MaterialValuesList.DoLayoutList();
                     }
                     break;
@@ -170,24 +180,6 @@ namespace VRM
 
         void ClipGUI()
         {
-            // Key重複の警告
-
-            /*
-            EditorGUILayout.BeginHorizontal();
-            if (GUILayout.Button("Clear"))
-            {
-                ClearBlendShape();
-            }
-
-            if (clip != null && GUILayout.Button("Apply"))
-            {
-                string maxWeightString;
-                clip.Values = GetBindings(out maxWeightString);
-                EditorUtility.SetDirty(clip);
-            }
-            EditorGUILayout.EndHorizontal();
-            */
-
             var changed = BlendShapeBindsGUI();
             if (changed)
             {

@@ -14,6 +14,15 @@ namespace VRM
         SerializedBlendShapeEditor m_serializedEditor;
 
         BlendShapeClip m_target;
+        protected override PreviewSceneManager.BakeValue GetBakeValue()
+        {
+            return new PreviewSceneManager.BakeValue
+            {
+                BlendShapeBindings = m_target.Values,
+                MaterialValueBindings = m_target.MaterialValues,
+                Weight = 1.0f,
+            };
+        }
 
         SerializedProperty m_thumbnailProp;
         SerializedProperty m_isBinaryProp;
@@ -23,32 +32,14 @@ namespace VRM
             return m_target.Prefab;
         }
 
-        void OnPrefabChanged()
-        {
-            m_target.Prefab = Prefab;
-            Bake(m_target.Values, m_target.MaterialValues, 1.0f);
-        }
-
         protected override void OnEnable()
         {
             m_target = (BlendShapeClip)target;
-            PrefabChanged += OnPrefabChanged;
 
             base.OnEnable();
-
-            Bake(m_target.Values, m_target.MaterialValues, 1.0f);
-
-        }
-
-        protected override void OnDisable()
-        {
-            base.OnDisable();
-            PrefabChanged -= OnPrefabChanged;
         }
 
         float m_previewSlider = 1.0f;
-
-
 
         static Texture2D SaveResizedImage(RenderTexture rt, UnityPath path, int size)
         {
@@ -152,7 +143,12 @@ namespace VRM
             var result = m_serializedEditor.Draw();
             if ((changed || result.Changed) && PreviewSceneManager != null)
             {
-                PreviewSceneManager.Bake(result.BlendShapeBindings, result.MaterialValueBindings, m_previewSlider);
+                PreviewSceneManager.Bake(new PreviewSceneManager.BakeValue
+                {
+                    BlendShapeBindings = result.BlendShapeBindings,
+                    MaterialValueBindings = result.MaterialValueBindings,
+                    Weight = m_previewSlider
+                });
             }
         }
 

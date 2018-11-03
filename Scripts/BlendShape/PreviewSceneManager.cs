@@ -206,25 +206,34 @@ namespace VRM
         }
 
 #if UNITY_EDITOR
-        Bounds m_bounds;
-        public void Bake(
-            IEnumerable<BlendShapeBinding> values = null,
-            IEnumerable<MaterialValueBinding> materialValues = null,
-            float weight = 1.0f)
+
+        public struct BakeValue
         {
-            //Debug.LogFormat("Bake");
+            public IEnumerable<BlendShapeBinding> BlendShapeBindings;
+            public IEnumerable<MaterialValueBinding> MaterialValueBindings;
+            public float Weight;
+        }
+
+        Bounds m_bounds;
+        public void Bake(BakeValue bake)
+        {
+            //
+            // Bake BlendShape
+            //
             m_bounds = default(Bounds);
             if (m_meshes != null)
             {
                 foreach (var x in m_meshes)
                 {
-                    x.Bake(values, weight);
+                    x.Bake(bake.BlendShapeBindings, bake.Weight);
                     m_bounds.Expand(x.Mesh.bounds.size);
                 }
             }
 
-            // Udpate Material
-            if (materialValues != null && m_materialMap != null)
+            //
+            // Update Material
+            //
+            if (bake.MaterialValueBindings != null && m_materialMap != null)
             {
                 // clear
                 //Debug.LogFormat("clear material");
@@ -236,7 +245,7 @@ namespace VRM
                     }
                 }
 
-                foreach (var x in materialValues)
+                foreach (var x in bake.MaterialValueBindings)
                 {
                     MaterialItem item;
                     if (m_materialMap.TryGetValue(x.MaterialName, out item))
@@ -245,13 +254,12 @@ namespace VRM
                         PropItem prop;
                         if (item.PropMap.TryGetValue(x.ValueName, out prop))
                         {
-                            var value = x.BaseValue + (x.TargetValue - x.BaseValue) * weight;
+                            var value = x.BaseValue + (x.TargetValue - x.BaseValue) * bake.Weight;
                             item.Material.SetColor(x.ValueName, value);
                         }
                     }
                 }
             }
-
         }
 #endif
 

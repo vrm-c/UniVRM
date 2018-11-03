@@ -13,7 +13,7 @@ namespace VRM
     /// * https://github.com/Unity-Technologies/UnityCsReference/blob/11bcfd801fccd2a52b09bb6fd636c1ddcc9f1705/Editor/Mono/Inspector/ModelInspector.cs
     /// 
     /// </summary>
-    public class PreviewEditor : Editor
+    public abstract class PreviewEditor : Editor
     {
         /// <summary>
         /// PreviewRenderUtilityを管理する。
@@ -66,36 +66,24 @@ namespace VRM
                     {
                         m_scene.gameObject.SetActive(false);
                     }
-                    RaisePrefabChanged();
+
+                    Bake();
                 }
             }
         }
-        protected event Action PrefabChanged;
-        void RaisePrefabChanged()
-        {
-            var handler = PrefabChanged;
-            if (handler == null) return;
-            handler();
-        }
+
+        protected abstract PreviewSceneManager.BakeValue GetBakeValue();
 
         /// <summary>
-        /// シーンにBlendShapeとMaterialMorphを適用する
+        /// Preview シーンに BlendShape と MaterialValue を適用する
         /// </summary>
-        /// <param name="values"></param>
-        /// <param name="materialValues"></param>
-        /// <param name="weight"></param>
-        protected void Bake(IEnumerable<BlendShapeBinding> values, IEnumerable<MaterialValueBinding> materialValues, float weight)
+        protected void Bake()
         {
             if (m_scene != null)
             {
                 //Debug.Log("Bake");
-                m_scene.Bake(values, materialValues, weight);
+                m_scene.Bake(GetBakeValue());
             }
-        }
-
-        protected void Bake(BlendShapeClip clip, float weight)
-        {
-            Bake(Enumerable.Empty<BlendShapeBinding>(), Enumerable.Empty<MaterialValueBinding>(), weight);
         }
 
         protected virtual GameObject GetPrefab()
@@ -119,6 +107,7 @@ namespace VRM
         protected virtual void OnEnable()
         {
             m_renderer = new PreviewFaceRenderer();
+
             Prefab = GetPrefab();
         }
 

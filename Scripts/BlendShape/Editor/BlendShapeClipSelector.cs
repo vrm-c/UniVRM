@@ -67,10 +67,12 @@ namespace VRM
                 SelectedIndex = GUILayout.SelectionGrid(SelectedIndex, array, 4);
             }
 
+            /*
             if (GUILayout.Button("Add BlendShapeClip"))
             {
-                //m_avatar.AddBlendShapeClip();
+                m_avatar.AddBlendShapeClip();
             }
+            */
         }
 
         public void DuplicateWarn()
