@@ -81,7 +81,8 @@ namespace VRM
 
         //const float FACTOR = 0.1f;
 
-        public Texture Render(Rect r, GUIStyle background, PreviewSceneManager scene, Vector2 drag, float distance)
+        public Texture Render(Rect r, GUIStyle background, PreviewSceneManager scene,
+        float yaw, float pitch, Vector3 position)
         {
             if (scene == null) return null;
 
@@ -90,7 +91,7 @@ namespace VRM
                 m_previewUtility.BeginPreview(r, background); // set up the PreviewRenderUtility's mini internal scene
 
                 // setup the ObjectPreview's camera
-                scene.SetupCamera(PreviewCamera, scene.TargetPosition, -drag.x, drag.y, distance);
+                scene.SetupCamera(PreviewCamera, scene.TargetPosition, yaw, pitch, position);
 
                 foreach (var item in scene.EnumRenderItems)
                 {
@@ -115,7 +116,7 @@ namespace VRM
             }
         }
 
-#region IDisposable Support
+        #region IDisposable Support
         private bool disposedValue = false; // 重複する呼び出しを検出するには
 
         protected virtual void Dispose(bool disposing)
@@ -153,6 +154,6 @@ namespace VRM
             // TODO: 上のファイナライザーがオーバーライドされる場合は、次の行のコメントを解除してください。
             // GC.SuppressFinalize(this);
         }
-#endregion
+        #endregion
     }
 }

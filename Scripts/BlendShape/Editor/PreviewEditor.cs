@@ -2,6 +2,8 @@
 using UnityEngine;
 using UnityEditorInternal;
 using System;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace VRM
 {
@@ -11,7 +13,7 @@ namespace VRM
     /// * https://github.com/Unity-Technologies/UnityCsReference/blob/11bcfd801fccd2a52b09bb6fd636c1ddcc9f1705/Editor/Mono/Inspector/ModelInspector.cs
     /// 
     /// </summary>
-    public class PreviewEditor : Editor
+    public abstract class PreviewEditor : Editor
     {
         /// <summary>
         /// PreviewRenderUtilityを管理する。
@@ -46,6 +48,8 @@ namespace VRM
             private set
             {
                 if (m_prefab == value) return;
+
+                //Debug.LogFormat("Prefab = {0}", value);
                 m_prefab = value;
 
                 if (m_scene != null)
@@ -62,30 +66,23 @@ namespace VRM
                     {
                         m_scene.gameObject.SetActive(false);
                     }
-                    RaisePrefabChanged();
+
+                    Bake();
                 }
             }
         }
-        protected event Action PrefabChanged;
-        void RaisePrefabChanged()
-        {
-            var handler = PrefabChanged;
-            if (handler == null) return;
-            handler();
-        }
+
+        protected abstract PreviewSceneManager.BakeValue GetBakeValue();
 
         /// <summary>
-        /// シーンにBlendShapeとMaterialMorphを適用する
+        /// Preview シーンに BlendShape と MaterialValue を適用する
         /// </summary>
-        /// <param name="values"></param>
-        /// <param name="materialValues"></param>
-        /// <param name="weight"></param>
-        protected void Bake(BlendShapeBinding[] values, MaterialValueBinding[] materialValues, float weight)
+        protected void Bake()
         {
             if (m_scene != null)
             {
                 //Debug.Log("Bake");
-                m_scene.Bake(values, materialValues, weight);
+                m_scene.Bake(GetBakeValue());
             }
         }
 
@@ -110,6 +107,7 @@ namespace VRM
         protected virtual void OnEnable()
         {
             m_renderer = new PreviewFaceRenderer();
+
             Prefab = GetPrefab();
         }
 
@@ -133,19 +131,34 @@ namespace VRM
             }
         }
 
+        protected static void Separator()
+        {
+            EditorGUILayout.Space();
+            EditorGUILayout.BeginHorizontal();
+            //GUILayout.Space();
+            GUILayout.Box("", GUILayout.ExpandWidth(true), GUILayout.Height(1));
+            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.Space();
+        }
+
         public override void OnInspectorGUI()
         {
             //base.OnInspectorGUI();
 
-            Prefab = (GameObject)EditorGUILayout.ObjectField("prefab", Prefab, typeof(GameObject), false);
+            Prefab = (GameObject)EditorGUILayout.ObjectField("Preview Prefab", Prefab, typeof(GameObject), false);
+
+            //Separator();
         }
 
         private static int sliderHash = "Slider".GetHashCode();
-        Vector2 m_previewDir;
-        float m_distance = 1.0f;
+        float m_yaw = 180.0f;
+        float m_pitch;
+        Vector3 m_position = new Vector3(0, 0, -0.8f);
 
         // very important to override this, it tells Unity to render an ObjectPreview at the bottom of the inspector
         public override bool HasPreviewGUI() { return true; }
+
+        public RenderTexture PreviewTexture;
 
         // the main ObjectPreview function... it's called constantly, like other IMGUI On*GUI() functions
         public override void OnPreviewGUI(Rect r, GUIStyle background)
@@ -155,23 +168,31 @@ namespace VRM
             {
                 if (Event.current.type == EventType.Repaint)
                 {
-                    EditorGUI.DropShadowLabel(new Rect(r.x, r.y, r.width, 40f), 
+                    EditorGUI.DropShadowLabel(new Rect(r.x, r.y, r.width, 40f),
                         "Mesh preview requires\nrender texture support");
                 }
                 return;
             }
 
+            var src = r;
+
+            var min = Mathf.Min(r.width, r.height);
+            r.width = min;
+            r.height = min;
+            r.x = src.x + (src.width - min) / 2;
+            r.y = src.y + (src.height - min) / 2;
+
             //previewDir = Drag2D(previewDir, r);
             {
                 int controlId = GUIUtility.GetControlID(sliderHash, FocusType.Passive);
-                Event current = Event.current;
-                switch (current.GetTypeForControl(controlId))
+                Event e = Event.current;
+                switch (e.GetTypeForControl(controlId))
                 {
                     case EventType.MouseDown:
-                        if (r.Contains(current.mousePosition) && (double)r.width > 50.0)
+                        if (r.Contains(e.mousePosition) && (double)r.width > 50.0)
                         {
                             GUIUtility.hotControl = controlId;
-                            current.Use();
+                            e.Use();
                             EditorGUIUtility.SetWantsMouseJumping(1);
                             break;
                         }
@@ -186,25 +207,41 @@ namespace VRM
                     case EventType.MouseDrag:
                         if (GUIUtility.hotControl == controlId)
                         {
-                            m_previewDir -= current.delta * (!current.shift ? 1f : 3f) / Mathf.Min(r.width, r.height) * 140f;
-                            m_previewDir.y = Mathf.Clamp(m_previewDir.y, -90f, 90f);
-                            current.Use();
-                            GUI.changed = true;
+                            if (e.button == 2)
+                            {
+                                var shift = e.delta * (!e.shift ? 1f : 3f) / Mathf.Min(r.width, r.height);
+                                m_position.x -= shift.x;
+                                m_position.y += shift.y;
+                                e.Use();
+                                GUI.changed = true;
+                            }
+                            else if (
+                                e.button == 0 ||
+                                e.button == 1)
+                            {
+                                var shift = e.delta * (!e.shift ? 1f : 3f) / Mathf.Min(r.width, r.height) * 140f;
+                                m_yaw += shift.x;
+                                m_pitch += shift.y;
+                                m_pitch = Mathf.Clamp(m_pitch, -90f, 90f);
+                                e.Use();
+                                GUI.changed = true;
+                            }
                             break;
                         }
                         break;
 
                     case EventType.ScrollWheel:
                         //Debug.LogFormat("wheel: {0}", current.delta);
-                        if (r.Contains(current.mousePosition)){
-                            if (current.delta.y > 0)
+                        if (r.Contains(e.mousePosition))
+                        {
+                            if (e.delta.y > 0)
                             {
-                                m_distance *= 1.1f;
+                                m_position.z *= 1.1f;
                                 Repaint();
                             }
-                            else if (current.delta.y < 0)
+                            else if (e.delta.y < 0)
                             {
-                                m_distance *= 0.9f;
+                                m_position.z *= 0.9f;
                                 Repaint();
                             }
                         }
@@ -222,11 +259,11 @@ namespace VRM
 
             if (m_renderer != null && m_scene != null)
             {
-                var texture = m_renderer.Render(r, background, m_scene, m_previewDir, m_distance);
-                if (texture != null)
+                PreviewTexture = m_renderer.Render(r, background, m_scene, m_yaw, m_pitch, m_position) as RenderTexture;
+                if (PreviewTexture != null)
                 {
                     // draw the RenderTexture in the ObjectPreview pane
-                    GUI.DrawTexture(r, texture, ScaleMode.StretchToFill, false);
+                    GUI.DrawTexture(r, PreviewTexture, ScaleMode.StretchToFill, false);
                 }
             }
         }

@@ -159,6 +159,7 @@ namespace VRM
             }
         }
 
+        /*
         /// <summary>
         /// Clear all blendShape values
         /// </summary>
@@ -169,6 +170,7 @@ namespace VRM
                 m_merger.Clear();
             }
         }
+        */
 
         /// <summary>
         /// Apply blendShape values that use SetValue apply=false

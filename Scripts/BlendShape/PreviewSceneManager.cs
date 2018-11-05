@@ -80,6 +80,7 @@ namespace VRM
 
         private void Initialize(GameObject prefab)
         {
+            //Debug.LogFormat("[PreviewSceneManager.Initialize] {0}", prefab);
             Prefab = prefab;
 
             var materialNames = new List<string>();
@@ -90,7 +91,7 @@ namespace VRM
                 if (string.IsNullOrEmpty(src.name)) return null; // !
 
                 Material dst;
-                if(!map.TryGetValue(src, out dst))
+                if (!map.TryGetValue(src, out dst))
                 {
                     dst = new Material(src);
                     map.Add(src, dst);
@@ -111,7 +112,7 @@ namespace VRM
 
             m_blendShapeMeshes = m_meshes
                 .Where(x => x.SkinnedMeshRenderer != null
-                && x.SkinnedMeshRenderer.sharedMesh.blendShapeCount>0)
+                && x.SkinnedMeshRenderer.sharedMesh.blendShapeCount > 0)
                 .ToArray();
 
             //Bake(values, materialValues);
@@ -183,7 +184,8 @@ namespace VRM
         public MaterialItem GetMaterialItem(string materialName)
         {
             MaterialItem item;
-            if(!m_materialMap.TryGetValue(materialName, out item)){
+            if (!m_materialMap.TryGetValue(materialName, out item))
+            {
                 return null;
             }
 
@@ -204,22 +206,34 @@ namespace VRM
         }
 
 #if UNITY_EDITOR
-        Bounds m_bounds;
-        public void Bake(BlendShapeBinding[] values=null, MaterialValueBinding[] materialValues=null, float weight=1.0f)
+
+        public struct BakeValue
         {
-            //Debug.LogFormat("Bake");
+            public IEnumerable<BlendShapeBinding> BlendShapeBindings;
+            public IEnumerable<MaterialValueBinding> MaterialValueBindings;
+            public float Weight;
+        }
+
+        Bounds m_bounds;
+        public void Bake(BakeValue bake)
+        {
+            //
+            // Bake BlendShape
+            //
             m_bounds = default(Bounds);
             if (m_meshes != null)
             {
                 foreach (var x in m_meshes)
                 {
-                    x.Bake(values, weight);
+                    x.Bake(bake.BlendShapeBindings, bake.Weight);
                     m_bounds.Expand(x.Mesh.bounds.size);
                 }
             }
 
-            // Udpate Material
-            if (materialValues != null && m_materialMap != null)
+            //
+            // Update Material
+            //
+            if (bake.MaterialValueBindings != null && m_materialMap != null)
             {
                 // clear
                 //Debug.LogFormat("clear material");
@@ -231,7 +245,7 @@ namespace VRM
                     }
                 }
 
-                foreach (var x in materialValues)
+                foreach (var x in bake.MaterialValueBindings)
                 {
                     MaterialItem item;
                     if (m_materialMap.TryGetValue(x.MaterialName, out item))
@@ -240,28 +254,29 @@ namespace VRM
                         PropItem prop;
                         if (item.PropMap.TryGetValue(x.ValueName, out prop))
                         {
-                            var value = x.BaseValue + (x.TargetValue - x.BaseValue) * weight;
-                            item.Material.SetColor(x.ValueName, value);
+                            var valueName = x.ValueName;
+                            if (valueName.EndsWith("_ST_S")
+                            || valueName.EndsWith("_ST_T"))
+                            {
+                                valueName = valueName.Substring(0, valueName.Length - 2);
+                            }
+
+                            var value = item.Material.GetVector(valueName);
+                            Debug.LogFormat("{0} => {1}", valueName, x.TargetValue);
+                            value += ((x.TargetValue - x.BaseValue) * bake.Weight);
+                            item.Material.SetColor(valueName, value);
                         }
                     }
                 }
             }
-
         }
 #endif
-        /*
-        int PreviewLayer
-        {
-            get;
-            set;
-        }
-        */
 
         /// <summary>
         /// カメラパラメーターを決める
         /// </summary>
         /// <param name="camera"></param>
-        public void SetupCamera(Camera camera, Vector3 target, float yaw, float pitch, float distance)
+        public void SetupCamera(Camera camera, Vector3 target, float yaw, float pitch, Vector3 position)
         {
             camera.backgroundColor = Color.gray;
             camera.clearFlags = CameraClearFlags.Color;
@@ -273,16 +288,16 @@ namespace VRM
 
             camera.fieldOfView = 27f;
             camera.nearClipPlane = 0.3f;
-            camera.farClipPlane = distance /*+ magnitude*/ * 2.1f;
+            camera.farClipPlane = -position.z /*+ magnitude*/ * 2.1f;
 
-#if false
-            // this used to be "-Vector3.forward * num" but I hardcoded my camera position instead
-            camera.transform.position = new Vector3(0f, 1.4f, distance);
-            camera.transform.rotation = Quaternion.Euler(0, 180f, 0);
-#else
-            camera.transform.position = target + Quaternion.Euler(pitch, yaw, 0) * Vector3.forward * distance;
-            camera.transform.LookAt(target);
-#endif
+            var t = Matrix4x4.Translate(position);
+            var r = Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(pitch, yaw, 0), Vector3.one);
+            // 回転してから移動
+            var m = r * t;
+
+            camera.transform.position = target + m.ExtractPosition();
+            camera.transform.rotation = m.ExtractRotation();
+            //camera.transform.LookAt(target);
 
             //previewLayer のみ表示する
             //camera.cullingMask = 1 << PreviewLayer;

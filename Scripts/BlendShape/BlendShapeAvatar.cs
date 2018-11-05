@@ -3,6 +3,10 @@ using System.Linq;
 using System;
 using System.Collections.Generic;
 using UniGLTF;
+using System.IO;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace VRM
 {
@@ -11,6 +15,24 @@ namespace VRM
     {
         [SerializeField]
         public List<BlendShapeClip> Clips = new List<BlendShapeClip>();
+
+        /// <summary>
+        /// NullのClipを削除して詰める
+        /// </summary>
+        public void RemoveNullClip()
+        {
+            if (Clips == null)
+            {
+                return;
+            }
+            for (int i = Clips.Count - 1; i >= 0; --i)
+            {
+                if (Clips[i] == null)
+                {
+                    Clips.RemoveAt(i);
+                }
+            }
+        }
 
 #if UNITY_EDITOR
         [ContextMenu("Restore")]
@@ -36,6 +58,19 @@ namespace VRM
                 Debug.LogFormat("{0}", clip.name);
             }
             Clips = Clips.OrderBy(x => BlendShapeKey.CreateFrom(x)).ToList();
+        }
+
+        static public BlendShapeClip CreateBlendShapeClip(string path)
+        {
+            //Debug.LogFormat("{0}", path);
+            var clip = ScriptableObject.CreateInstance<BlendShapeClip>();
+            clip.BlendShapeName = Path.GetFileNameWithoutExtension(path);
+            AssetDatabase.CreateAsset(clip, path);
+            AssetDatabase.ImportAsset(path);
+            return clip;
+            //Clips.Add(clip);
+            //EditorUtility.SetDirty(this);
+            //AssetDatabase.SaveAssets();
         }
 #endif
 

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using UniGLTF;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
@@ -9,316 +11,160 @@ namespace VRM
     [CustomEditor(typeof(BlendShapeClip))]
     public class BlendShapeClipEditor : PreviewEditor
     {
-        float m_previewSlider;
-
-        #region for Editor
-        SerializedProperty m_BlendShapeNameProp;
-        SerializedProperty m_PresetProp;
-        SerializedProperty m_ValuesProp;
-        ReorderableList m_ValuesList;
-        SerializedProperty m_MaterialValuesProp;
-        ReorderableList m_MaterialValuesList;
-        #endregion
+        SerializedBlendShapeEditor m_serializedEditor;
 
         BlendShapeClip m_target;
-        bool m_changed;
+        protected override PreviewSceneManager.BakeValue GetBakeValue()
+        {
+            return new PreviewSceneManager.BakeValue
+            {
+                BlendShapeBindings = m_target.Values,
+                MaterialValueBindings = m_target.MaterialValues,
+                Weight = 1.0f,
+            };
+        }
+
+        //SerializedProperty m_thumbnailProp;
+        SerializedProperty m_isBinaryProp;
 
         protected override GameObject GetPrefab()
         {
             return m_target.Prefab;
         }
 
-        void OnPrefabChanged()
-        {
-            m_target.Prefab = Prefab;
-            Bake(m_target.Values, m_target.MaterialValues, 1.0f);
-        }
-
         protected override void OnEnable()
         {
             m_target = (BlendShapeClip)target;
-            PrefabChanged += OnPrefabChanged;
 
             base.OnEnable();
-
-            m_previewSlider = 1.0f;
-
-            Bake(m_target.Values, m_target.MaterialValues, m_previewSlider);
-
-            m_BlendShapeNameProp = serializedObject.FindProperty("BlendShapeName");
-            m_PresetProp = serializedObject.FindProperty("Preset");
-            m_ValuesProp = serializedObject.FindProperty("Values");
-
-            m_ValuesList = new ReorderableList(serializedObject, m_ValuesProp);
-            m_ValuesList.elementHeight = BlendShapeBindingHeight;
-            m_ValuesList.drawElementCallback =
-              (rect, index, isActive, isFocused) =>
-              {
-                  var element = m_ValuesProp.GetArrayElementAtIndex(index);
-                  rect.height -= 4;
-                  rect.y += 2;
-                  if (DrawBlendShapeBinding(rect, element, PreviewSceneManager))
-                  {
-                      m_changed = true;
-                  }
-              };
-
-            m_MaterialValuesProp = serializedObject.FindProperty("MaterialValues");
-            m_MaterialValuesList = new ReorderableList(serializedObject, m_MaterialValuesProp);
-            m_MaterialValuesList.elementHeight = MaterialValueBindingHeight;
-            m_MaterialValuesList.drawElementCallback =
-              (rect, index, isActive, isFocused) =>
-              {
-                  var element = m_MaterialValuesProp.GetArrayElementAtIndex(index);
-                  rect.height -= 4;
-                  rect.y += 2;
-                  if (DrawMaterialValueBinding(rect, element, PreviewSceneManager))
-                  {
-                      m_changed = true;
-                  }
-              };
         }
 
-        protected override void OnDisable()
+        float m_previewSlider = 1.0f;
+
+        static Texture2D SaveResizedImage(RenderTexture rt, UnityPath path, int size)
         {
-            base.OnDisable();
-            PrefabChanged -= OnPrefabChanged;
+            var tex = new Texture2D(rt.width, rt.height, TextureFormat.RGB24, false);
+            RenderTexture.active = rt;
+            tex.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
+            tex.Apply();
+
+            //TextureScale.Scale(tex, size, size);
+            tex = TextureScale.GetResized(tex, size, size);
+
+            byte[] bytes;
+            switch (path.Extension.ToLower())
+            {
+                case ".png":
+                    bytes = tex.EncodeToPNG();
+                    break;
+
+                case ".jpg":
+                    bytes = tex.EncodeToJPG();
+                    break;
+
+                default:
+                    throw new Exception();
+            }
+
+            if (Application.isPlaying)
+            {
+                UnityEngine.Object.Destroy(tex);
+            }
+            else
+            {
+                UnityEngine.Object.DestroyImmediate(tex);
+            }
+            File.WriteAllBytes(path.FullPath, bytes);
+
+            path.ImportAsset();
+            return path.LoadAsset<Texture2D>();
         }
 
         public override void OnInspectorGUI()
         {
-            base.OnInspectorGUI();
-            m_changed = false;
+            if (PreviewSceneManager == null)
+            {
+                return;
+            }
+            serializedObject.Update();
 
-            EditorGUILayout.Space();
-            var previewSlider = EditorGUILayout.Slider("Preview Weight", m_previewSlider, 0, 1.0f);
+            if (m_serializedEditor == null)
+            {
+                m_serializedEditor = new SerializedBlendShapeEditor(serializedObject, PreviewSceneManager);
+                //m_thumbnailProp = serializedObject.FindProperty("Thumbnail");
+                m_isBinaryProp = serializedObject.FindProperty("IsBinary");
+            }
+
+            int thumbnailSize = 96;
+            EditorGUILayout.BeginHorizontal();
+            /*
+            var objectReferenceValue = EditorGUILayout.ObjectField(m_thumbnailProp.objectReferenceValue, typeof(Texture), false,
+                GUILayout.Width(thumbnailSize), GUILayout.Height(thumbnailSize));
+            if (m_thumbnailProp.objectReferenceValue != objectReferenceValue)
+            {
+                m_thumbnailProp.objectReferenceValue = objectReferenceValue;
+                serializedObject.ApplyModifiedProperties();
+            }
+            */
+
+            var changed = false;
+            EditorGUILayout.BeginVertical();
+            base.OnInspectorGUI();
+            EditorGUILayout.LabelField("Preview Weight");
+            var previewSlider = EditorGUILayout.Slider(m_previewSlider, 0, 1.0f);
+            GUI.enabled = PreviewTexture != null;
+            /*
+            if (GUILayout.Button("save thumbnail"))
+            {
+                //var ext = "jpg";
+                var ext = "png";
+                var asset = UnityPath.FromAsset(target);
+                var path = EditorUtility.SaveFilePanel(
+                               "save thumbnail",
+                               asset.Parent.FullPath,
+                               string.Format("{0}.{1}", asset.FileNameWithoutExtension, ext),
+                               ext);
+                if (!string.IsNullOrEmpty(path))
+                {
+                    var thumbnail = SaveResizedImage(PreviewTexture, UnityPath.FromFullpath(path),
+                    BlendShapeClipDrawer.ThumbnailSize);
+                    m_thumbnailProp.objectReferenceValue = thumbnail;
+                    serializedObject.ApplyModifiedProperties();
+                }
+            }
+            */
+            GUI.enabled = true;
+            EditorGUILayout.EndVertical();
+
+            if (m_isBinaryProp.boolValue)
+            {
+                previewSlider = Mathf.Round(previewSlider);
+            }
             if (previewSlider != m_previewSlider)
             {
                 m_previewSlider = previewSlider;
-                m_changed = true;
+                changed = true;
             }
 
+            EditorGUILayout.EndHorizontal();
+            Separator();
             EditorGUILayout.Space();
 
-            serializedObject.Update();
-
-            EditorGUILayout.PropertyField(m_BlendShapeNameProp, true);
-            EditorGUILayout.PropertyField(m_PresetProp, true);
-
-            EditorGUILayout.LabelField("BlendShapeBindings", EditorStyles.boldLabel);
-            m_ValuesList.DoLayoutList();
-
-            EditorGUILayout.LabelField("MaterialValueBindings", EditorStyles.boldLabel);
-            m_MaterialValuesList.DoLayoutList();
-
-            serializedObject.ApplyModifiedProperties();
-
-            if (m_changed && PreviewSceneManager != null)
+            var result = m_serializedEditor.Draw();
+            if ((changed || result.Changed) && PreviewSceneManager != null)
             {
-                PreviewSceneManager.Bake(m_target.Values, m_target.MaterialValues, m_previewSlider);
+                PreviewSceneManager.Bake(new PreviewSceneManager.BakeValue
+                {
+                    BlendShapeBindings = result.BlendShapeBindings,
+                    MaterialValueBindings = result.MaterialValueBindings,
+                    Weight = m_previewSlider
+                });
             }
         }
 
         public override string GetInfoString()
         {
             return BlendShapeKey.CreateFrom((BlendShapeClip)target).ToString();
-        }
-
-        public static int BlendShapeBindingHeight = 60;
-        public static bool DrawBlendShapeBinding(Rect position, SerializedProperty property,
-            PreviewSceneManager scene)
-        {
-            bool changed = false;
-            if (scene != null)
-            {
-                var height = 16;
-
-                var y = position.y;
-                var rect = new Rect(position.x, y, position.width, height);
-                int pathIndex;
-                if (StringPopup(rect, property.FindPropertyRelative("RelativePath"), scene.SkinnedMeshRendererPathList, out pathIndex))
-                {
-                    changed = true;
-                }
-
-                y += height;
-                rect = new Rect(position.x, y, position.width, height);
-                int blendShapeIndex;
-                if (IntPopup(rect, property.FindPropertyRelative("Index"), scene.GetBlendShapeNames(pathIndex), out blendShapeIndex))
-                {
-                    changed = true;
-                }
-
-                y += height;
-                rect = new Rect(position.x, y, position.width, height);
-                if (FloatSlider(rect, property.FindPropertyRelative("Weight"), 100))
-                {
-                    changed = true;
-                }
-            }
-            return changed;
-        }
-
-        public static int MaterialValueBindingHeight = 90;
-        public static bool DrawMaterialValueBinding(Rect position, SerializedProperty property,
-            PreviewSceneManager scene)
-        {
-            bool changed = false;
-            if (scene != null)
-            {
-                var height = 16;
-
-                var y = position.y;
-                var rect = new Rect(position.x, y, position.width, height);
-                int materialIndex;
-                if (StringPopup(rect, property.FindPropertyRelative("MaterialName"), scene.MaterialNames, out materialIndex))
-                {
-                    changed = true;
-                }
-
-                if (materialIndex >= 0)
-                {
-                    var materialItem = scene.GetMaterialItem(scene.MaterialNames[materialIndex]);
-                    if (materialItem != null)
-                    {
-                        y += height;
-                        rect = new Rect(position.x, y, position.width, height);
-
-                        // プロパティ名のポップアップ
-                        int propIndex;
-                        if (StringPopup(rect, property.FindPropertyRelative("ValueName"), materialItem.PropNames, out propIndex))
-                        {
-                            changed = true;
-                        }
-
-                        if (propIndex >= 0)
-                        {
-                            // 有効なプロパティ名が選択された
-                            var propItem = materialItem.PropMap[materialItem.PropNames[propIndex]];
-                            {
-                                switch (propItem.PropertyType)
-                                {
-                                    case ShaderUtil.ShaderPropertyType.Color:
-                                        {
-                                            property.FindPropertyRelative("BaseValue").vector4Value = propItem.DefaultValues;
-
-                                            // max
-                                            y += height;
-                                            rect = new Rect(position.x, y, position.width, height);
-                                            if (ColorProp(rect, property.FindPropertyRelative("TargetValue")))
-                                            {
-                                                changed = true;
-                                            }
-                                        }
-                                        break;
-
-                                    case ShaderUtil.ShaderPropertyType.TexEnv:
-                                        {
-                                            property.FindPropertyRelative("BaseValue").vector4Value = propItem.DefaultValues;
-
-                                            // max
-                                            y += height;
-                                            rect = new Rect(position.x, y, position.width, height);
-                                            if (OffsetProp(rect, property.FindPropertyRelative("TargetValue")))
-                                            {
-                                                changed = true;
-                                            }
-                                        }
-                                        break;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            return changed;
-        }
-
-        static bool StringPopup(Rect rect, SerializedProperty prop, string[] options, out int newIndex)
-        {
-            if (options == null)
-            {
-                newIndex = -1;
-                return false;
-            }
-
-            var oldIndex = Array.IndexOf(options, prop.stringValue);
-            newIndex = EditorGUI.Popup(rect, oldIndex, options);
-            if (newIndex != oldIndex && newIndex >= 0 && newIndex < options.Length)
-            {
-                prop.stringValue = options[newIndex];
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        static bool IntPopup(Rect rect, SerializedProperty prop, string[] options, out int newIndex)
-        {
-            if (options == null)
-            {
-                newIndex = -1;
-                return false;
-            }
-
-            var oldIndex = prop.intValue;
-            newIndex = EditorGUI.Popup(rect, oldIndex, options);
-            if (newIndex != oldIndex && newIndex >= 0 && newIndex < options.Length)
-            {
-                prop.intValue = newIndex;
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        static bool FloatSlider(Rect rect, SerializedProperty prop, float maxValue)
-        {
-            var oldValue = prop.floatValue;
-            var newValue = EditorGUI.Slider(rect, prop.floatValue, 0, 100f);
-            if (newValue != oldValue)
-            {
-                prop.floatValue = newValue;
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        static bool ColorProp(Rect rect, SerializedProperty prop)
-        {
-            var oldValue = (Color)prop.vector4Value;
-            var newValue = EditorGUI.ColorField(rect, prop.displayName, oldValue);
-            if (newValue != oldValue)
-            {
-                prop.vector4Value = newValue;
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        static bool OffsetProp(Rect rect, SerializedProperty prop)
-        {
-            var oldValue = prop.vector4Value;
-            var newValue = EditorGUI.Vector4Field(rect, prop.displayName, oldValue);
-            if (newValue != oldValue)
-            {
-                prop.vector4Value = newValue;
-                return true;
-            }
-            else
-            {
-                return false;
-            }
         }
     }
 }

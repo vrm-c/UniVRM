@@ -50,6 +50,7 @@ namespace VRM
                 switch (propType)
                 {
                     case ShaderUtil.ShaderPropertyType.Color:
+                        // 色
                         item.PropMap.Add(name, new PropItem
                         {
                             PropertyType = propType,
@@ -59,13 +60,35 @@ namespace VRM
                         break;
 
                     case ShaderUtil.ShaderPropertyType.TexEnv:
-                        name += "_ST";
-                        item.PropMap.Add(name, new PropItem
+                        // テクスチャ
                         {
-                            PropertyType = propType,
-                            DefaultValues = material.GetVector(name),
-                        });
-                        propNames.Add(name);
+                            name += "_ST";
+                            item.PropMap.Add(name, new PropItem
+                            {
+                                PropertyType = propType,
+                                DefaultValues = material.GetVector(name),
+                            });
+                            propNames.Add(name);
+                        }
+                        // 縦横分離用
+                        {
+                            var st_name = name + "_S";
+                            item.PropMap.Add(st_name, new PropItem
+                            {
+                                PropertyType = propType,
+                                DefaultValues = material.GetVector(name),
+                            });
+                            propNames.Add(st_name);
+                        }
+                        {
+                            var st_name = name + "_T";
+                            item.PropMap.Add(st_name, new PropItem
+                            {
+                                PropertyType = propType,
+                                DefaultValues = material.GetVector(name),
+                            });
+                            propNames.Add(st_name);
+                        }
                         break;
                 }
             }
@@ -130,7 +153,7 @@ namespace VRM
             Materials = materials;
         }
 
-        public void Bake(BlendShapeBinding[] values, float weight)
+        public void Bake(IEnumerable<BlendShapeBinding> values, float weight)
         {
             if (SkinnedMeshRenderer == null) return;
 
@@ -147,15 +170,15 @@ namespace VRM
                 {
                     if (x.RelativePath == Path)
                     {
-                        if(x.Index>=0 && x.Index < SkinnedMeshRenderer.sharedMesh.blendShapeCount)
+                        if (x.Index >= 0 && x.Index < SkinnedMeshRenderer.sharedMesh.blendShapeCount)
                         {
                             SkinnedMeshRenderer.SetBlendShapeWeight(x.Index, x.Weight * weight);
                         }
                         else
                         {
-                            Debug.LogWarningFormat("Out of range {0}: 0 <= {1} < {2}", 
-                                SkinnedMeshRenderer.name, 
-                                x.Index, 
+                            Debug.LogWarningFormat("Out of range {0}: 0 <= {1} < {2}",
+                                SkinnedMeshRenderer.name,
+                                x.Index,
                                 SkinnedMeshRenderer.sharedMesh.blendShapeCount);
                         }
                     }

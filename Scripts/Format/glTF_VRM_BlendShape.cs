@@ -91,7 +91,7 @@ namespace VRM
         [JsonSchema(Description = "Expression name")]
         public string name;
 
-        [JsonSchema(Description = "Predefined Expression name", EnumValues =new object[] {
+        [JsonSchema(Description = "Predefined Expression name", EnumValues = new object[] {
             "unknown",
             "neutral",
             "a",
@@ -119,10 +119,14 @@ namespace VRM
         [JsonSchema(Description = "Material animation references.")]
         public List<glTF_VRM_MaterialValueBind> materialValues = new List<glTF_VRM_MaterialValueBind>();
 
+        [JsonSchema(Description = "0 or 1. Do not allow an intermediate value. Value should rounded")]
+        public bool isBinary;
+
         protected override void SerializeMembers(GLTFJsonFormatter f)
         {
             f.KeyValue(() => name);
             f.KeyValue(() => presetName);
+            f.KeyValue(() => isBinary);
             f.KeyValue(() => binds);
             f.KeyValue(() => materialValues);
         }
@@ -157,6 +161,7 @@ namespace VRM
             {
                 name = clip.BlendShapeName,
                 presetName = clip.Preset.ToString().ToLower(),
+                isBinary = clip.IsBinary,
                 binds = list,
                 materialValues = materialList,
             };

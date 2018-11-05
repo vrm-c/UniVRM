@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using UniGLTF;
 using UnityEditor;
+using UnityEditorInternal;
 using UnityEngine;
 
 
@@ -12,260 +13,147 @@ namespace VRM
     [CustomEditor(typeof(BlendShapeAvatar))]
     public class BlendShapeAvatarEditor : PreviewEditor
     {
-        static String[] Presets = ((BlendShapePreset[])Enum.GetValues(typeof(BlendShapePreset)))
-            .Select(x => x.ToString()).ToArray();
+        ReorderableList m_clipList;
 
-        BlendShapeAvatar m_target;
-        void AddBlendShapeClip()
+        BlendShapeClipSelector m_selector;
+
+        SerializedBlendShapeEditor m_clipEditor;
+
+        protected override PreviewSceneManager.BakeValue GetBakeValue()
         {
-            var dir = Path.GetDirectoryName(AssetDatabase.GetAssetPath(m_target));
-            var path = EditorUtility.SaveFilePanel(
-                           "Create BlendShapeClip",
-                           dir,
-                           string.Format("BlendShapeClip#{0}.asset", m_target.Clips.Count),
-                           "asset");
-            if (string.IsNullOrEmpty(path))
+            var clip = m_selector.Selected;
+            var value = new PreviewSceneManager.BakeValue();
+            if (clip != null)
             {
-                return;
+                value.BlendShapeBindings = clip.Values;
+                value.MaterialValueBindings = clip.MaterialValues;
+                value.Weight = 1.0f;
             }
-            path = path.ToUnityRelativePath();
-            //Debug.LogFormat("{0}", path);
-            var clip = ScriptableObject.CreateInstance<BlendShapeClip>();
-            clip.BlendShapeName = Path.GetFileNameWithoutExtension(path);
-            clip.Prefab = AssetDatabase.LoadAssetAtPath<GameObject>(AssetDatabase.GetAssetPath(m_target));
-            AssetDatabase.CreateAsset(clip, path);
-            AssetDatabase.ImportAsset(path);
-
-            m_target.Clips.Add(clip);
-            EditorUtility.SetDirty(m_target);
-            AssetDatabase.SaveAssets();
+            return value;
         }
 
-        BlendShapeClip m_currentClip;
-        BlendShapeClip CurrentClip
+        void OnSelected(BlendShapeClip clip)
         {
-            get { return m_currentClip; }
-            set
+            if (PreviewSceneManager == null)
             {
-                if (m_currentClip == value) return;
-
-                m_currentClip = value;
-                //ClearBlendShape();
-                if (m_currentClip != null)
+                m_clipEditor = null;
+            }
+            else if (clip != null)
+            {
+                m_clipEditor = new SerializedBlendShapeEditor(clip, PreviewSceneManager);
+                PreviewSceneManager.Bake(new PreviewSceneManager.BakeValue
                 {
-                    Bake(m_currentClip.Values, m_currentClip.MaterialValues, 1.0f);
-                }
+                    BlendShapeBindings = clip.Values,
+                    MaterialValueBindings = clip.MaterialValues,
+                    Weight = 1.0f
+                });
             }
-        }
-
-        void OnPrefabChanged()
-        {
-            if (m_currentClip != null)
+            else
             {
-                Bake(m_currentClip.Values, m_currentClip.MaterialValues, 1.0f);
+                m_clipEditor = null;
+                PreviewSceneManager.Bake(new PreviewSceneManager.BakeValue());
             }
         }
 
         protected override void OnEnable()
         {
-            PrefabChanged += OnPrefabChanged;
+            m_selector = new BlendShapeClipSelector((BlendShapeAvatar)target, OnSelected);
 
+            var prop = serializedObject.FindProperty("Clips");
+            m_clipList = new ReorderableList(serializedObject, prop);
+
+            m_clipList.drawHeaderCallback = (rect) =>
+                                 EditorGUI.LabelField(rect, "BlendShapeClips");
+
+            m_clipList.elementHeight = BlendShapeClipDrawer.Height;
+            m_clipList.drawElementCallback = (rect, index, isActive, isFocused) =>
+            {
+                var element = prop.GetArrayElementAtIndex(index);
+                rect.height -= 4;
+                rect.y += 2;
+                EditorGUI.PropertyField(rect, element);
+            };
+
+            m_clipList.onAddCallback += (list) =>
+            {
+                // Add slot
+                prop.arraySize++;
+                // select last item
+                list.index = prop.arraySize - 1;
+                // get last item
+                var element = prop.GetArrayElementAtIndex(list.index);
+                element.objectReferenceValue = null;
+
+                var dir = Path.GetDirectoryName(AssetDatabase.GetAssetPath(target));
+                var path = EditorUtility.SaveFilePanel(
+                               "Create BlendShapeClip",
+                               dir,
+                               string.Format("BlendShapeClip#{0}.asset", list.count),
+                               "asset");
+                if (!string.IsNullOrEmpty(path))
+                {
+                    var clip = BlendShapeAvatar.CreateBlendShapeClip(path.ToUnityRelativePath());
+                    //clip.Prefab = AssetDatabase.LoadAssetAtPath<GameObject>(AssetDatabase.GetAssetPath(target));
+
+                    element.objectReferenceValue = clip;
+                }
+            };
+
+            m_clipList.onSelectCallback += (list) =>
+            {
+                var a = list.serializedProperty;
+                var selected = a.GetArrayElementAtIndex(list.index);
+                OnSelected((BlendShapeClip)selected.objectReferenceValue);
+            };
+
+            //m_clipList.onCanRemoveCallback += list => true;
             base.OnEnable();
-            m_target = (BlendShapeAvatar)target;
 
-            // remove missing values
-            foreach(var x in  m_target.Clips.Select((x, i) => new { i, x }).Where(x => x.x == null).Reverse())
-            {
-                m_target.Clips.RemoveAt(x.i);
-            }
-
-
-            if(m_target.Clips.Count > 0)
-            {
-                CurrentClip = m_target.Clips[0];
-            }
+            OnSelected(m_selector.Selected);
         }
 
-        protected override void OnDisable()
-        {
-            base.OnDisable();
-            PrefabChanged -= OnPrefabChanged;
-        }
+        int m_mode;
+        static readonly string[] MODES = new string[]{
+            "Editor",
+            "List"
+        };
 
-        List<bool> m_meshFolds = new List<bool>();
-        int m_preset;
         public override void OnInspectorGUI()
         {
+            serializedObject.Update();
+
             base.OnInspectorGUI();
 
-            // buttons
-            if (m_target.Clips != null)
+            m_mode = GUILayout.Toolbar(m_mode, MODES);
+            switch (m_mode)
             {
-                EditorGUILayout.Space();
-                EditorGUILayout.LabelField("Select BlendShapeClip", EditorStyles.boldLabel);
-                var array = m_target.Clips
-                    .Select(x => x != null
-                        ? BlendShapeKey.CreateFrom(x).ToString()
-                        : "null"
-                        ).ToArray();
-                var preset = GUILayout.SelectionGrid(m_preset, array, 4);
-                if (preset != m_preset)
-                {
-                    CurrentClip = m_target.Clips[preset];
-                    m_preset = preset;
-                }
-            }
-
-            // Add
-            if (GUILayout.Button("Add BlendShapeClip"))
-            {
-                AddBlendShapeClip();
-            }
-
-            if (CurrentClip != null)
-            {
-                // clip
-                EditorGUILayout.Space();
-                EditorGUILayout.LabelField("CurrentClip", EditorStyles.boldLabel);
-
-                /*var loadClip = (BlendShapeClip)*/
-                GUI.enabled = false;
-                EditorGUILayout.ObjectField("Current clip",
-                    CurrentClip, typeof(BlendShapeClip), false);
-                GUI.enabled = true;
-
-                CurrentClip.Preset = (BlendShapePreset)EditorGUILayout.Popup("Preset", (int)CurrentClip.Preset, Presets);
-
-                GUI.enabled = false;
-                CurrentClip.BlendShapeName = EditorGUILayout.TextField("BlendShapeName", CurrentClip.BlendShapeName);
-                GUI.enabled = true;
-
-                var key = BlendShapeKey.CreateFrom(CurrentClip);
-                if (m_target.Clips.Where(x => key.Match(x)).Count() > 1)
-                {
-                    EditorGUILayout.HelpBox("duplicate clip", MessageType.Error);
-                }
-
-                EditorGUILayout.Space();
-                EditorGUILayout.LabelField("BlendShapeValues", EditorStyles.boldLabel);
-
-                EditorGUILayout.BeginHorizontal();
-                if (GUILayout.Button("Clear"))
-                {
-                    ClearBlendShape();
-                }
-
-                if (CurrentClip != null && GUILayout.Button("Apply"))
-                {
-                    string maxWeightString;
-                    CurrentClip.Values = GetBindings(out maxWeightString);
-                    EditorUtility.SetDirty(CurrentClip);
-                }
-                EditorGUILayout.EndHorizontal();
-
-                // sliders
-                bool changed = false;
-                int foldIndex = 0;
-                if (PreviewSceneManager != null)
-                {
-                    foreach (var item in PreviewSceneManager.EnumRenderItems.Where(x => x.SkinnedMeshRenderer != null))
+                case 0:
+                    m_selector.SelectGUI();
+                    if (m_clipEditor != null)
                     {
-                        var mesh = item.SkinnedMeshRenderer.sharedMesh;
-                        if (mesh != null && mesh.blendShapeCount > 0)
+                        Separator();
+                        var result = m_clipEditor.Draw();
+                        if (result.Changed)
                         {
-                            //var relativePath = UniGLTF.UnityExtensions.RelativePathFrom(renderer.transform, m_target.transform);
-                            //EditorGUILayout.LabelField(m_target.name + "/" + item.Path);
-
-                            if (foldIndex >= m_meshFolds.Count)
+                            PreviewSceneManager.Bake(new PreviewSceneManager.BakeValue
                             {
-                                m_meshFolds.Add(false);
-                            }
-                            m_meshFolds[foldIndex] = EditorGUILayout.Foldout(m_meshFolds[foldIndex], item.SkinnedMeshRenderer.name);
-                            if (m_meshFolds[foldIndex])
-                            {
-                                //EditorGUI.indentLevel += 1;
-                                for (int i = 0; i < mesh.blendShapeCount; ++i)
-                                {
-                                    var src = item.SkinnedMeshRenderer.GetBlendShapeWeight(i);
-                                    var dst = EditorGUILayout.Slider(mesh.GetBlendShapeName(i), src, 0, 100.0f);
-                                    if (dst != src)
-                                    {
-                                        item.SkinnedMeshRenderer.SetBlendShapeWeight(i, dst);
-                                        changed = true;
-                                    }
-                                }
-                                //EditorGUI.indentLevel -= 1;
-                            }
-                            ++foldIndex;
+                                BlendShapeBindings = result.BlendShapeBindings,
+                                MaterialValueBindings = result.MaterialValueBindings,
+                                Weight = 1.0f,
+                            });
                         }
                     }
+                    break;
 
-                    if (changed)
-                    {
-                        PreviewSceneManager.Bake();
-                    }
-                }
+                case 1:
+                    m_clipList.DoLayoutList();
+                    break;
+
+                default:
+                    throw new NotImplementedException();
             }
-        }
 
-        BlendShapeBinding[] GetBindings(out string _maxWeightName)
-        {
-            var maxWeight = 0.0f;
-            var maxWeightName = "";
-            // weightのついたblendShapeを集める
-            var values = PreviewSceneManager.EnumRenderItems
-                .Where(x => x.SkinnedMeshRenderer!=null)
-                .SelectMany(x =>
-            {
-                var mesh = x.SkinnedMeshRenderer.sharedMesh;
-
-                var relativePath = x.Path;
-
-                var list = new List<BlendShapeBinding>();
-                if (mesh != null)
-                {
-                    for (int i = 0; i < mesh.blendShapeCount; ++i)
-                    {
-                        var weight = x.SkinnedMeshRenderer.GetBlendShapeWeight(i);
-                        if (weight == 0)
-                        {
-                            continue;
-                        }
-                        var name = mesh.GetBlendShapeName(i);
-                        if (weight > maxWeight)
-                        {
-                            maxWeightName = name;
-                            maxWeight = weight;
-                        }
-                        list.Add(new BlendShapeBinding
-                        {
-                            Index = i,
-                            RelativePath = relativePath,
-                            Weight = weight
-                        });
-                    }
-                }
-                return list;
-            }).ToArray()
-            ;
-            _maxWeightName = maxWeightName;
-            return values;
-        }
-
-        private void ClearBlendShape()
-        {
-            foreach (var item in PreviewSceneManager.EnumRenderItems.Where(x => x.SkinnedMeshRenderer!=null))
-            {
-                var renderer = item.SkinnedMeshRenderer;
-                var mesh = renderer.sharedMesh;
-                if (mesh != null)
-                {
-                    for (int i = 0; i < mesh.blendShapeCount; ++i)
-                    {
-                        renderer.SetBlendShapeWeight(i, 0);
-                    }
-                }
-            }
+            serializedObject.ApplyModifiedProperties();
         }
     }
 }
