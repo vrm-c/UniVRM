@@ -201,27 +201,48 @@ namespace VRM
             return rect;
         }
 
+        static float[] v2 = new float[2];
+        static GUIContent[] l2 = new GUIContent[]{
+            new GUIContent("x"),
+            new GUIContent("y")
+        };
         static Vector4 TilingOffset(Rect rect, string label, Vector4 src)
         {
+            /*
             var style = new GUIStyle()
             {
                 alignment = TextAnchor.MiddleRight,
             };
+            */
 
-            var quad = rect.width / 10;
+            var quad = (rect.width - 56);
             var x = rect.x;
+            //EditorGUIUtility.labelWidth = 18;
 
-            EditorGUI.LabelField(AdvanceRect(ref x, rect.y, quad * 2, rect.height), "Tiling X", style);
-            src.x = EditorGUI.FloatField(AdvanceRect(ref x, rect.y, quad, rect.height), src.x);
+            EditorGUI.LabelField(AdvanceRect(ref x, rect.y, 40, rect.height), "Tiling");
+            v2[0] = src.x;
+            v2[1] = src.y;
+            EditorGUI.MultiFloatField(AdvanceRect(ref x, rect.y, quad, rect.height), l2, v2);
+            src.x = v2[0];
+            src.y = v2[1];
 
-            EditorGUI.LabelField(AdvanceRect(ref x, rect.y, quad, rect.height), "Y", style);
-            src.y = EditorGUI.FloatField(AdvanceRect(ref x, rect.y, quad, rect.height), src.y);
+            //EditorGUI.LabelField(AdvanceRect(ref x, rect.y, quad, rect.height), "Y", style);
+            //src.y = EditorGUI.FloatField(AdvanceRect(ref x, rect.y, quad, rect.height), "Y", src.y);
 
-            EditorGUI.LabelField(AdvanceRect(ref x, rect.y, quad * 2, rect.height), "Offset X", style);
-            src.z = EditorGUI.FloatField(AdvanceRect(ref x, rect.y, quad, rect.height), src.z);
+            rect.y += EditorGUIUtility.singleLineHeight;
+            x = rect.x;
+            EditorGUI.LabelField(AdvanceRect(ref x, rect.y, 40, rect.height), "Offset");
+            v2[0] = src.z;
+            v2[1] = src.w;
+            EditorGUI.MultiFloatField(AdvanceRect(ref x, rect.y, quad, rect.height), l2, v2);
+            src.z = v2[0];
+            src.w = v2[1];
 
-            EditorGUI.LabelField(AdvanceRect(ref x, rect.y, quad, rect.height), "Y", style);
-            src.w = EditorGUI.FloatField(AdvanceRect(ref x, rect.y, quad, rect.height), src.w);
+            //EditorGUI.LabelField(AdvanceRect(ref x, rect.y, quad * 2, rect.height), "Offset X", style);
+            //src.z = EditorGUI.FloatField(AdvanceRect(ref x, rect.y, quad, rect.height), "X", src.z);
+
+            //EditorGUI.LabelField(AdvanceRect(ref x, rect.y, quad, rect.height), "Y", style);
+            //src.w = EditorGUI.FloatField(AdvanceRect(ref x, rect.y, quad, rect.height), "Y", src.w);
 
             return src;
         }

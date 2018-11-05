@@ -22,7 +22,7 @@ namespace VRM
         {
             using (new EditorGUI.PropertyScope(position, label, property))
             {
-                EditorGUIUtility.labelWidth = 80;
+                //EditorGUIUtility.labelWidth = 80;
 
                 position.height = EditorGUIUtility.singleLineHeight;
 

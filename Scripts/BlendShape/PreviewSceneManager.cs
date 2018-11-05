@@ -254,8 +254,17 @@ namespace VRM
                         PropItem prop;
                         if (item.PropMap.TryGetValue(x.ValueName, out prop))
                         {
-                            var value = x.BaseValue + (x.TargetValue - x.BaseValue) * bake.Weight;
-                            item.Material.SetColor(x.ValueName, value);
+                            var valueName = x.ValueName;
+                            if (valueName.EndsWith("_ST_S")
+                            || valueName.EndsWith("_ST_T"))
+                            {
+                                valueName = valueName.Substring(0, valueName.Length - 2);
+                            }
+
+                            var value = item.Material.GetVector(valueName);
+                            Debug.LogFormat("{0} => {1}", valueName, x.TargetValue);
+                            value += ((x.TargetValue - x.BaseValue) * bake.Weight);
+                            item.Material.SetColor(valueName, value);
                         }
                     }
                 }
