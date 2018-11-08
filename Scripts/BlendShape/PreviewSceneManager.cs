@@ -262,7 +262,7 @@ namespace VRM
                             }
 
                             var value = item.Material.GetVector(valueName);
-                            Debug.LogFormat("{0} => {1}", valueName, x.TargetValue);
+                            //Debug.LogFormat("{0} => {1}", valueName, x.TargetValue);
                             value += ((x.TargetValue - x.BaseValue) * bake.Weight);
                             item.Material.SetColor(valueName, value);
                         }

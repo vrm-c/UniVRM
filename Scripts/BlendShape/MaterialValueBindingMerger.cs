@@ -64,7 +64,7 @@ namespace VRM
                                 {
                                     var propValue = firstValue
                                         ? (binding.BaseValue + (binding.TargetValue - binding.BaseValue) * value)
-                                        : (target.GetVector(binding.ValueName) + (binding.TargetValue - binding.BaseValue) * value)
+                                        : (target.GetVector(valueName) + (binding.TargetValue - binding.BaseValue) * value)
                                         ;
                                     var src = target.GetVector(valueName);
                                     src.x = propValue.x; // horizontal only
@@ -80,7 +80,7 @@ namespace VRM
                                 {
                                     var propValue = firstValue
                                         ? (binding.BaseValue + (binding.TargetValue - binding.BaseValue) * value)
-                                        : (target.GetVector(binding.ValueName) + (binding.TargetValue - binding.BaseValue) * value)
+                                        : (target.GetVector(valueName) + (binding.TargetValue - binding.BaseValue) * value)
                                         ;
                                     var src = target.GetVector(valueName);
                                     src.y = propValue.y; // vertical only
