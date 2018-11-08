@@ -9,13 +9,26 @@ namespace VRM
     ///
     class BlendShapeBindingMerger
     {
+        class BlendShapeBindingComparer : IEqualityComparer<BlendShapeBinding>
+        {
+            public bool Equals(BlendShapeBinding x, BlendShapeBinding y)
+            {
+                return x.RelativePath == y.RelativePath
+                && x.Index == y.Index;
+            }
+
+            public int GetHashCode(BlendShapeBinding obj)
+            {
+                return obj.RelativePath.GetHashCode() + obj.Index;
+            }
+        }
         /// <summary>
         /// BlendShapeの適用値を蓄積する
         /// </summary>
         /// <typeparam name="BlendShapeBinding"></typeparam>
         /// <typeparam name="float"></typeparam>
         /// <returns></returns>
-        Dictionary<BlendShapeBinding, float> m_blendShapeValueMap = new Dictionary<BlendShapeBinding, float>();
+        Dictionary<BlendShapeBinding, float> m_blendShapeValueMap = new Dictionary<BlendShapeBinding, float>(new BlendShapeBindingComparer());
 
         /// <summary>
         /// 
