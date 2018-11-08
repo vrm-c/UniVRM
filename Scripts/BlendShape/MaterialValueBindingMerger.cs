@@ -28,8 +28,12 @@ namespace VRM
 
         Dictionary<MaterialValueBinding, Setter> m_materialSetterMap = new Dictionary<MaterialValueBinding, Setter>();
 
+        BlendShapeClip[] m_clips;
+
         public MaterialValueBindingMerger(Dictionary<BlendShapeKey, BlendShapeClip> clipMap, Transform root)
         {
+            m_clips = clipMap.Values.ToArray();
+
             foreach (var x in root.Traverse())
             {
                 var renderer = x.GetComponent<Renderer>();
@@ -154,6 +158,7 @@ namespace VRM
 
         public void AccumulateValue(BlendShapeClip clip, float value)
         {
+            Debug.LogFormat("{0}:{1}", clip, value);
             foreach (var binding in clip.MaterialValues)
             {
                 // 積算
@@ -169,11 +174,10 @@ namespace VRM
             }
         }
 
-        Dictionary<string, int> m_used = new Dictionary<string, int>();
-
         public void Apply()
         {
-            m_used.Clear();
+            // clear
+            RestoreMaterialInitialValues(m_clips);
 
             // (binding.Value-Base) * weight を足す
             foreach (var kv in m_materialValueMap)
@@ -181,17 +185,7 @@ namespace VRM
                 Setter setter;
                 if (m_materialSetterMap.TryGetValue(kv.Key, out setter))
                 {
-                    int count;
-                    if (m_used.TryGetValue(kv.Key.MaterialName, out count))
-                    {
-                        m_used[kv.Key.MaterialName] += 1;
-                    }
-                    else
-                    {
-                        m_used.Add(kv.Key.MaterialName, 1);
-                    }
-
-                    setter(kv.Value, count == 0);
+                    setter(kv.Value, false);
                 }
             }
             m_materialValueMap.Clear();
