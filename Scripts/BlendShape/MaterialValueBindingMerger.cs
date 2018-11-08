@@ -123,7 +123,13 @@ namespace VRM
                         Material material;
                         if (m_materialMap.TryGetValue(y.MaterialName, out material))
                         {
-                            material.SetColor(y.ValueName, y.BaseValue);
+                            var valueName = y.ValueName;
+                            if (valueName.EndsWith("_ST_S")
+                            || valueName.EndsWith("_ST_T"))
+                            {
+                                valueName = valueName.Substring(0, valueName.Length - 2);
+                            }
+                            material.SetColor(valueName, y.BaseValue);
                         }
                         else
                         {
