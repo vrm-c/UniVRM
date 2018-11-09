@@ -158,7 +158,6 @@ namespace VRM
 
         public void AccumulateValue(BlendShapeClip clip, float value)
         {
-            Debug.LogFormat("{0}:{1}", clip, value);
             foreach (var binding in clip.MaterialValues)
             {
                 // 積算
