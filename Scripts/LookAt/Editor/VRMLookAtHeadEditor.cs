@@ -142,23 +142,24 @@ namespace VRM
 
         void OnSceneGUI()
         {
-            //if (!Application.isPlaying) return;
-            if (!m_target.DrawGizmo) return;
-            if (m_target.Target == null) return;
             if (m_target.Head == null) return;
+            if (!m_target.DrawGizmo) return;
 
+            if (m_target.Target != null)
             {
-                EditorGUI.BeginChangeCheck();
-                var newTargetPosition = Handles.PositionHandle(m_target.Target.position, Quaternion.identity);
-                if (EditorGUI.EndChangeCheck())
                 {
-                    Undo.RecordObject(m_target.Target, "Change Look At Target Position");
-                    m_target.Target.position = newTargetPosition;
+                    EditorGUI.BeginChangeCheck();
+                    var newTargetPosition = Handles.PositionHandle(m_target.Target.position, Quaternion.identity);
+                    if (EditorGUI.EndChangeCheck())
+                    {
+                        Undo.RecordObject(m_target.Target, "Change Look At Target Position");
+                        m_target.Target.position = newTargetPosition;
+                    }
                 }
-            }
 
-            Handles.color = new Color(1, 1, 1, 0.6f);
-            Handles.DrawDottedLine(m_target.Head.position, m_target.Target.position, 4.0f);
+                Handles.color = new Color(1, 1, 1, 0.6f);
+                Handles.DrawDottedLine(m_target.Head.position, m_target.Target.position, 4.0f);
+            }
 
             Handles.matrix = m_target.Head.localToWorldMatrix;
             Handles.Label(Vector3.zero, string.Format("Yaw: {0:0.}degree\nPitch: {1:0.}degree",
