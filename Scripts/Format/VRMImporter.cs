@@ -2,7 +2,7 @@
 using System.IO;
 using UniGLTF;
 using UnityEngine;
-#if (NET_4_6 && UNITY_2017_1_OR_NEWER)
+#if ((NET_4_6 || NET_STANDARD_2_0) && UNITY_2017_1_OR_NEWER)
 using System.Threading.Tasks;
 #endif
 
@@ -82,7 +82,7 @@ namespace VRM
         }
         #endregion
 
-#if (NET_4_6 && UNITY_2017_1_OR_NEWER)
+#if ((NET_4_6 || NET_STANDARD_2_0) && UNITY_2017_1_OR_NEWER)
 
         [Obsolete("use VRMImporterContext.LoadAsync()")]
         public static Task<GameObject> LoadVrmAsync(string path, bool show = true)
