@@ -173,14 +173,77 @@ namespace VRM
             }
         }
 
+        struct MaterialTarget : IEquatable<MaterialTarget>
+        {
+            public string MaterialName;
+            public string ValueName;
+
+            public bool Equals(MaterialTarget other)
+            {
+                return MaterialName == other.MaterialName
+                    && ValueName == other.ValueName;
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (obj is MaterialTarget)
+                {
+                    return Equals((MaterialTarget)obj);
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            public override int GetHashCode()
+            {
+                if (MaterialName == null || ValueName == null)
+                {
+                    return 0;
+                }
+                return MaterialName.GetHashCode() + ValueName.GetHashCode();
+            }
+
+            public static MaterialTarget Create(MaterialValueBinding binding)
+            {
+                return new MaterialTarget
+                {
+                    MaterialName=binding.MaterialName,
+                    ValueName=binding.ValueName
+                };
+            }
+        }
+
+        HashSet<MaterialTarget> m_used = new HashSet<MaterialTarget>();
+
         public void Apply()
         {
             // clear
-            RestoreMaterialInitialValues(m_clips);
+            //RestoreMaterialInitialValues(m_clips);
+            m_used.Clear();
 
             // (binding.Value-Base) * weight を足す
             foreach (var kv in m_materialValueMap)
             {
+                var key = MaterialTarget.Create(kv.Key);
+                if (!m_used.Contains(key))
+                {
+                    // restore value
+                    Material material;
+                    if (m_materialMap.TryGetValue(key.MaterialName, out material))
+                    {
+                        var valueName = key.ValueName;
+                        if (valueName.EndsWith("_ST_S")
+                        || valueName.EndsWith("_ST_T"))
+                        {
+                            valueName = valueName.Substring(0, valueName.Length - 2);
+                        }
+                        material.SetColor(valueName, kv.Key.BaseValue);
+                    }
+                    m_used.Add(key);
+                }
+
                 Setter setter;
                 if (m_materialSetterMap.TryGetValue(kv.Key, out setter))
                 {
