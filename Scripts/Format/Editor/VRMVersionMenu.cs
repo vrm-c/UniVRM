@@ -82,7 +82,7 @@ namespace VRM
                     var subFormatter = new JsonFormatter(4);
 
                     subFormatter.BeginMap();
-                    foreach (var _kv in node.ObjectItems)
+                    foreach (var _kv in node.ObjectItemsRaw)
                     {
                         subFormatter.Key(_kv.Key);
                         Traverse(_kv.Value, subFormatter, dir);
@@ -102,7 +102,7 @@ namespace VRM
             {
                 case JsonValueType.Array:
                     f.BeginList();
-                    foreach(var x in node.ArrayItems)
+                    foreach(var x in node.ArrayItemsRaw)
                     {
                         TraverseItem(x, f, dir);
                     }
@@ -113,7 +113,7 @@ namespace VRM
                     //Debug.LogFormat("title: {0}", title);
                     {
                         f.BeginMap();
-                        foreach (var kv in node.ObjectItems)
+                        foreach (var kv in node.ObjectItemsRaw)
                         {
                             f.Key(kv.Key);
                             TraverseItem(kv.Value, f, dir);

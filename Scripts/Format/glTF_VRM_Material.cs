@@ -91,15 +91,15 @@ namespace VRM
         public static List<glTF_VRM_Material> Parse(JsonNode json)
         {
             var materials = json.DeserializeList<glTF_VRM_Material>();
-            var jsonItems = json.ArrayItems.ToArray();
+            var jsonItems = json.ArrayItemsRaw.ToArray();
             for (int i = 0; i < materials.Count; ++i)
             {
                 materials[i].floatProperties =
-                    jsonItems[i]["floatProperties"].ObjectItems.ToDictionary(x => x.Key, x => x.Value.Value.GetSingle());
+                    jsonItems[i]["floatProperties"].ObjectItems.ToDictionary(x => x.Key, x => x.Value.GetSingle());
                 materials[i].vectorProperties =
                     jsonItems[i]["vectorProperties"].ObjectItems.ToDictionary(x => x.Key, x =>
                     {
-                        return x.Value.ArrayItems.Select(y => y.Value.GetSingle()).ToArray();
+                        return x.Value.ArrayItems.Select(y => y.GetSingle()).ToArray();
                     });
                 materials[i].keywordMap =
                     jsonItems[i]["keywordMap"].ObjectItems.ToDictionary(x => x.Key, x => x.Value.GetBoolean());
