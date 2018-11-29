@@ -50,9 +50,9 @@ namespace VRM
             try
             {
                 var titleNode = node["title"];
-                if (titleNode.Value.ValueType == JsonValueType.String)
+                if (titleNode.IsString)
                 {
-                    return titleNode.Value.GetString();
+                    return titleNode.GetString();
                 }
             }
             catch(Exception)
@@ -98,33 +98,28 @@ namespace VRM
 
         static void Traverse(JsonNode node, JsonFormatter f, UnityPath dir)
         {
-            switch(node.Value.ValueType)
+            if (node.IsArray)
             {
-                case JsonValueType.Array:
-                    f.BeginList();
-                    foreach(var x in node.ArrayItemsRaw)
-                    {
-                        TraverseItem(x, f, dir);
-                    }
-                    f.EndList();
-                    break;
-
-                case JsonValueType.Object:
-                    //Debug.LogFormat("title: {0}", title);
-                    {
-                        f.BeginMap();
-                        foreach (var kv in node.ObjectItemsRaw)
-                        {
-                            f.Key(kv.Key);
-                            TraverseItem(kv.Value, f, dir);
-                        }
-                        f.EndMap();
-                    }
-                    break;
-
-                default:
-                    f.Value(node);
-                    break;
+                f.BeginList();
+                foreach (var x in node.ArrayItemsRaw)
+                {
+                    TraverseItem(x, f, dir);
+                }
+                f.EndList();
+            }
+            else if (node.IsMap)
+            {
+                f.BeginMap();
+                foreach (var kv in node.ObjectItemsRaw)
+                {
+                    f.Key(kv.Key);
+                    TraverseItem(kv.Value, f, dir);
+                }
+                f.EndMap();
+            }
+            else
+            {
+                f.Value(node);
             }
         }
 
