@@ -95,18 +95,18 @@ namespace VRM
             for (int i = 0; i < materials.Count; ++i)
             {
                 materials[i].floatProperties =
-                    jsonItems[i]["floatProperties"].ObjectItems.ToDictionary(x => x.Key, x => x.Value.GetSingle());
+                    jsonItems[i]["floatProperties"].ObjectItems.ToDictionary(x => x.Key.ToString(), x => x.Value.GetSingle());
                 materials[i].vectorProperties =
-                    jsonItems[i]["vectorProperties"].ObjectItems.ToDictionary(x => x.Key, x =>
+                    jsonItems[i]["vectorProperties"].ObjectItems.ToDictionary(x => x.Key.ToString(), x =>
                     {
                         return x.Value.ArrayItems.Select(y => y.GetSingle()).ToArray();
                     });
                 materials[i].keywordMap =
-                    jsonItems[i]["keywordMap"].ObjectItems.ToDictionary(x => x.Key, x => x.Value.GetBoolean());
+                    jsonItems[i]["keywordMap"].ObjectItems.ToDictionary(x => x.Key.ToString(), x => x.Value.GetBoolean());
                 materials[i].tagMap =
-                    jsonItems[i]["tagMap"].ObjectItems.ToDictionary(x => x.Key, x => x.Value.GetString());
+                    jsonItems[i]["tagMap"].ObjectItems.ToDictionary(x => x.Key.ToString(), x => x.Value.GetString());
                 materials[i].textureProperties =
-                    jsonItems[i]["textureProperties"].ObjectItems.ToDictionary(x => x.Key, x => x.Value.GetInt32());
+                    jsonItems[i]["textureProperties"].ObjectItems.ToDictionary(x => x.Key.ToString(), x => x.Value.GetInt32());
             }
             return materials;
         }
