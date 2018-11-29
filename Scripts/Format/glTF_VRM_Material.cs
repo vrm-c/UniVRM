@@ -52,7 +52,7 @@ namespace VRM
                 f.Key("vectorProperties"); f.BeginMap();
                 foreach (var kv in vectorProperties)
                 {
-                    f.Key(kv.Key); f.Value(kv.Value.ToArray());
+                    f.Key(kv.Key); f.Serialize(kv.Value.ToArray());
                 }
                 f.EndMap();
             }
