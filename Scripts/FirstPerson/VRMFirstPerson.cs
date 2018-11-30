@@ -9,8 +9,11 @@ namespace VRM
 {
     public class VRMFirstPerson : MonoBehaviour
     {
-        public const int FIRSTPERSON_ONLY_LAYER = 9;
-        public const int THIRDPERSON_ONLY_LAYER = 10;
+        // If no layer names are set, use the default layer IDs.
+        // Otherwise use the two Unity layers called "VRMFirstPersonOnly" and "VRMThirdPersonOnly".
+        public static bool TriedSetupLayer = false;
+        public static int FIRSTPERSON_ONLY_LAYER = 9;
+        public static int THIRDPERSON_ONLY_LAYER = 10;
 
         [SerializeField]
         public Transform FirstPersonBone;
@@ -155,12 +158,24 @@ namespace VRM
 
             // ここには来ない
         }
+		
+        public static void SetupLayers()
+        {
+            if (!TriedSetupLayer) {
+                TriedSetupLayer = true;
+                int layer = LayerMask.NameToLayer("VRMFirstPersonOnly");
+                FIRSTPERSON_ONLY_LAYER = (layer == -1) ? FIRSTPERSON_ONLY_LAYER : layer;
+                layer = LayerMask.NameToLayer("VRMThirdPersonOnly");
+                THIRDPERSON_ONLY_LAYER = (layer == -1) ? THIRDPERSON_ONLY_LAYER : layer;
+            }
+        }
 
         private static void CreateHeadlessModelForMeshRenderer(MeshRenderer renderer, Transform eraseRoot)
         {
             if (renderer.transform.Ancestors().Any(x => x == eraseRoot))
             {
                 // 祖先に削除ボーンが居る
+                SetupLayers();
                 renderer.gameObject.layer = THIRDPERSON_ONLY_LAYER;
             }
             else
@@ -171,6 +186,7 @@ namespace VRM
 
         private static void CreateHeadlessModelForSkinnedMeshRenderer(SkinnedMeshRenderer renderer, Transform eraseRoot)
         {
+            SetupLayers();
             renderer.gameObject.layer = THIRDPERSON_ONLY_LAYER;
 
             var go = new GameObject("_headless_" + renderer.name);
@@ -220,6 +236,7 @@ namespace VRM
         /// </summary>
         public void Setup()
         {
+            SetupLayers();
             if (m_done) return;
             m_done = true;
             foreach (var x in Renderers)
