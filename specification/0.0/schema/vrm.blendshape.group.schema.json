@@ -24,6 +24,10 @@
             "items": {
                 "$ref": "vrm.blendshape.materialbind.schema.json"
             }
+        },
+        "isBinary": {
+            "description": "0 or 1. Do not allow an intermediate value. Value should rounded",
+            "type": "boolean"
         }
     }
 }

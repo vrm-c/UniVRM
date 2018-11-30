@@ -3,13 +3,18 @@
     "type": "object",
     "properties": {
         "mesh": {
-            "type": "integer"
+            "type": "integer",
+            "minimum": 0
         },
         "index": {
-            "type": "integer"
+            "type": "integer",
+            "minimum": 0
         },
         "weight": {
-            "type": "number"
+            "description": "SkinnedMeshRenderer.SetBlendShapeWeight",
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100
         }
     }
 }

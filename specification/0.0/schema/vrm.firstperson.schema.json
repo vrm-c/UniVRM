@@ -3,7 +3,7 @@
     "type": "object",
     "properties": {
         "firstPersonBone": {
-            "description": "Specify a bone whose rendering mode should be switched in first-person view. Usually Head is specified.",
+            "description": "The bone whose rendering should be turned off in first-person view. Usually Head is specified.",
             "type": "integer"
         },
         "firstPersonBoneOffset": {
