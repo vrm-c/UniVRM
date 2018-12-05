@@ -50,7 +50,7 @@ namespace VRM
             try
             {
                 var titleNode = node["title"];
-                if (titleNode.IsString)
+                if (titleNode.IsString())
                 {
                     return titleNode.GetString();
                 }
@@ -98,7 +98,7 @@ namespace VRM
 
         static void Traverse(JsonNode node, JsonFormatter f, UnityPath dir)
         {
-            if (node.IsArray)
+            if (node.IsArray())
             {
                 f.BeginList();
                 foreach (var x in node.ArrayItemsRaw)
@@ -107,7 +107,7 @@ namespace VRM
                 }
                 f.EndList();
             }
-            else if (node.IsMap)
+            else if (node.IsMap())
             {
                 f.BeginMap();
                 foreach (var kv in node.ObjectItemsRaw)
