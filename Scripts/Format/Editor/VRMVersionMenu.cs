@@ -119,7 +119,7 @@ namespace VRM
             }
             else
             {
-                f.Dump(node.Bytes);
+                f.Value(node);
             }
         }
 
