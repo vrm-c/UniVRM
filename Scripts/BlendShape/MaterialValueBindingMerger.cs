@@ -233,13 +233,23 @@ namespace VRM
                     Material material;
                     if (m_materialMap.TryGetValue(key.MaterialName, out material))
                     {
+                        var value = kv.Key.BaseValue;
                         var valueName = key.ValueName;
-                        if (valueName.EndsWith("_ST_S")
-                        || valueName.EndsWith("_ST_T"))
+                        if (valueName.EndsWith("_ST_S"))
                         {
                             valueName = valueName.Substring(0, valueName.Length - 2);
+                            var v=material.GetVector(valueName);
+                            value.y = v.y;
+                            value.w = v.w;
                         }
-                        material.SetColor(valueName, kv.Key.BaseValue);
+                        else if (valueName.EndsWith("_ST_T"))
+                        {
+                            valueName = valueName.Substring(0, valueName.Length - 2);
+                            var v = material.GetVector(valueName);
+                            value.x = v.x;
+                            value.z = v.z;
+                        }
+                        material.SetColor(valueName, value);
                     }
                     m_used.Add(key);
                 }
