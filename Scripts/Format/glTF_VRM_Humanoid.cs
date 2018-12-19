@@ -148,7 +148,7 @@ namespace VRM
             "rightLittleIntermediate",
             "rightLittleDistal",
             "upperChest",
-        })]
+        }, EnumSerializationType =EnumSerializationType.AsString)]
         public string bone;
         public VRMBone vrmBone
         {

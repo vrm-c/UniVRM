@@ -85,7 +85,7 @@ namespace VRM
         [JsonSchema(Description = "Eye controller mode.", EnumValues = new object[] {
             "Bone",
             "BlendShape",
-        })]
+        }, EnumSerializationType = EnumSerializationType.AsString)]
         public string lookAtTypeName = "Bone";
         public LookAtType lookAtType
         {

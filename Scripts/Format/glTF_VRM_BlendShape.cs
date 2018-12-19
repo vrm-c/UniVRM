@@ -115,7 +115,7 @@ namespace VRM
             "lookright",
             "blink_l",
             "blink_r",
-        })]
+        }, EnumSerializationType = EnumSerializationType.AsString)]
         public string presetName;
 
         [JsonSchema(Description = "Low level blendshape references. ")]
