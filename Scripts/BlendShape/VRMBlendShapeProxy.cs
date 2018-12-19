@@ -38,98 +38,28 @@ namespace VRM
         }
 
         /// <summary>
-        /// Set a blendShape value immediate
+        /// Immediately SetValue
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        public void SetValue(BlendShapePreset key, float value)
-        {
-#pragma warning disable 0618
-            SetValue(new BlendShapeKey(key), value, true);
-#pragma warning restore 0618
-        }
-
-        /// <summary>
-        /// Set a blendShape value immediate or delayed.
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <param name="apply">immediate if true</param>
-        [Obsolete("Use SetValues")]
-        public void SetValue(BlendShapePreset key, float value, bool apply)
-        {
-            SetValue(new BlendShapeKey(key), value, apply);
-        }
-
-        /// <summary>
-        /// Get a blendShape value
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public float GetValue(BlendShapePreset key)
-        {
-            return GetValue(new BlendShapeKey(key));
-        }
-
-        /// <summary>
-        /// Set a blendShape value immediate
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        public void SetValue(String key, float value)
-        {
-#pragma warning disable 0618
-            SetValue(new BlendShapeKey(key), value, true);
-#pragma warning restore 0618
-        }
-
-        /// <summary>
-        /// Set a blendShape value immediate or delayed.
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <param name="apply">immediate if true</param>
-        [Obsolete("Use SetValues")]
-        public void SetValue(String key, float value, bool apply)
-        {
-            SetValue(new BlendShapeKey(key), value, apply);
-        }
-
-        /// <summary>
-        /// Get a blendShape value
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public float GetValue(String key)
-        {
-            return GetValue(new BlendShapeKey(key));
-        }
-
-        /// <summary>
-        /// Set a blendShape value immediate or delayed.
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <param name="apply">immediate if true</param>
-        [Obsolete("Use SetValues")]
-        public void SetValue(BlendShapeKey key, float value, bool apply)
+        public void ImmediatelySetValue(BlendShapeKey key, float value)
         {
             if (m_merger != null)
             {
-                m_merger.SetValue(key, value, apply);
+                m_merger.ImmediatelySetValue(key, value);
             }
         }
 
         /// <summary>
-        /// Set a blendShape value immediate
+        /// AccumulateValue. After, Should call Apply
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        public void SetValue(BlendShapeKey key, float value)
+        public void AccumulateValue(BlendShapeKey key, float value)
         {
             if (m_merger != null)
             {
-                m_merger.SetValue(key, value, true);
+                m_merger.AccumulateValue(key, value);
             }
         }
 
@@ -147,6 +77,18 @@ namespace VRM
             return m_merger.GetValue(key);
         }
 
+        public IEnumerable<KeyValuePair<BlendShapeKey, float>> GetValues()
+        {
+            if (m_merger != null && BlendShapeAvatar != null)
+            {
+                foreach (var clip in BlendShapeAvatar.Clips)
+                {
+                    var key = BlendShapeKey.CreateFrom(clip);
+                    yield return new KeyValuePair<BlendShapeKey, float>(key, m_merger.GetValue(key));
+                }
+            }
+        }
+
         /// <summary>
         /// Set blendShape values immediate.
         /// </summary>
@@ -159,19 +101,6 @@ namespace VRM
             }
         }
 
-        /*
-        /// <summary>
-        /// Clear all blendShape values
-        /// </summary>
-        public void ClearKeys()
-        {
-            if (m_merger != null)
-            {
-                m_merger.Clear();
-            }
-        }
-        */
-
         /// <summary>
         /// Apply blendShape values that use SetValue apply=false
         /// </summary>
@@ -180,6 +109,92 @@ namespace VRM
             if (m_merger != null)
             {
                 m_merger.Apply();
+            }
+        }
+    }
+
+    public static class VRMBlendShapeProxyExtensions
+    {
+        public static float GetValue(this VRMBlendShapeProxy proxy, BlendShapePreset key)
+        {
+            return proxy.GetValue(new BlendShapeKey(key));
+        }
+
+        public static float GetValue(this VRMBlendShapeProxy proxy, String key)
+        {
+            return proxy.GetValue(new BlendShapeKey(key));
+        }
+
+        [Obsolete("Use ImmediatelySetValue")]
+        public static void SetValue(this VRMBlendShapeProxy proxy, BlendShapePreset key, float value)
+        {
+            proxy.ImmediatelySetValue(new BlendShapeKey(key), value);
+        }
+        public static void ImmediatelySetValue(this VRMBlendShapeProxy proxy, BlendShapePreset key, float value)
+        {
+            proxy.ImmediatelySetValue(new BlendShapeKey(key), value);
+        }
+        public static void AccumulateValue(this VRMBlendShapeProxy proxy, BlendShapePreset key, float value)
+        {
+            proxy.AccumulateValue(new BlendShapeKey(key), value);
+        }
+
+        [Obsolete("Use ImmediatelySetValue")]
+        public static void SetValue(this VRMBlendShapeProxy proxy, String key, float value)
+        {
+            proxy.ImmediatelySetValue(new BlendShapeKey(key), value);
+        }
+        public static void ImmediatelySetValue(this VRMBlendShapeProxy proxy, String key, float value)
+        {
+            proxy.ImmediatelySetValue(new BlendShapeKey(key), value);
+        }
+        public static void AccumulateValue(this VRMBlendShapeProxy proxy, String key, float value)
+        {
+            proxy.AccumulateValue(new BlendShapeKey(key), value);
+        }
+
+        [Obsolete("Use ImmediatelySetValue")]
+        public static void SetValue(this VRMBlendShapeProxy proxy, BlendShapeKey key, float value)
+        {
+            proxy.ImmediatelySetValue(key, value);
+        }
+
+        [Obsolete("Use ImmediatelySetValue or AccumulateValue")]
+        public static void SetValue(this VRMBlendShapeProxy proxy, BlendShapePreset key, float value, bool apply)
+        {
+            if (apply)
+            {
+                proxy.ImmediatelySetValue(new BlendShapeKey(key), value);
+            }
+            else
+            {
+                proxy.AccumulateValue(new BlendShapeKey(key), value);
+            }
+        }
+
+        [Obsolete("Use ImmediatelySetValue or AccumulateValue")]
+        public static void SetValue(this VRMBlendShapeProxy proxy, String key, float value, bool apply)
+        {
+            if (apply)
+            {
+                proxy.ImmediatelySetValue(new BlendShapeKey(key), value);
+            }
+            else
+            {
+                proxy.AccumulateValue(new BlendShapeKey(key), value);
+            }
+        }
+
+        [Obsolete("Use ImmediatelySetValue or AccumulateValue")]
+        public static void SetValue(this VRMBlendShapeProxy proxy, BlendShapeKey key, float value, bool apply)
+        {
+            if (apply)
+            {
+                proxy.ImmediatelySetValue(key, value);
+            }
+            else
+            {
+                proxy.AccumulateValue(key, value);
             }
         }
     }

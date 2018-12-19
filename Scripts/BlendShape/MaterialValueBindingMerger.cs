@@ -28,11 +28,11 @@ namespace VRM
 
         Dictionary<MaterialValueBinding, Setter> m_materialSetterMap = new Dictionary<MaterialValueBinding, Setter>();
 
-        BlendShapeClip[] m_clips;
+        //BlendShapeClip[] m_clips;
 
         public MaterialValueBindingMerger(Dictionary<BlendShapeKey, BlendShapeClip> clipMap, Transform root)
         {
-            m_clips = clipMap.Values.ToArray();
+            //m_clips = clipMap.Values.ToArray();
 
             foreach (var x in root.Traverse())
             {
