@@ -95,8 +95,10 @@ namespace VRM
                 EditorGUILayout.PropertyField(m_propMap["Author"]);
                 EditorGUILayout.PropertyField(m_propMap["ContactInformation"]);
                 EditorGUILayout.PropertyField(m_propMap["Reference"]);
-                //var thumbnail = m_propMap["Thumbnail"];
-                //thumbnail.objectReferenceValue = TextureField("", (Texture2D)thumbnail.objectReferenceValue, 100);
+
+                var thumbnail = m_propMap["Thumbnail"];
+                EditorGUILayout.PropertyField(thumbnail);
+                thumbnail.objectReferenceValue = TextureField("", (Texture2D)thumbnail.objectReferenceValue, 100);
             }
 
             EditorGUILayout.LabelField("License ", EditorStyles.boldLabel);
