@@ -20,8 +20,9 @@ namespace VRM
             }
         }
 
-        static IEnumerable<int> ExcludeTriangles(int[] triangles, BoneWeight[] bws, int[] exclude)
+        static int ExcludeTriangles(int[] triangles, BoneWeight[] bws, int[] exclude)
         {
+            int count = 0;
             if (bws != null && bws.Length>0)
             {
                 for (int i = 0; i < triangles.Length; i += 3)
@@ -52,12 +53,12 @@ namespace VRM
                         if (bw.weight3 > 0 && exclude.Contains(bw.boneIndex3)) continue;
                     }
 
-
-                    yield return a;
-                    yield return b;
-                    yield return c;
+                    triangles[count++] = a;
+                    triangles[count++] = b;
+                    triangles[count++] = c;
                 }
             }
+            return count;
         }
 
         public static Mesh CreateErasedMesh(Mesh src, int[] eraseBoneIndices)
@@ -84,8 +85,11 @@ namespace VRM
             mesh.subMeshCount = src.subMeshCount;
             for (int i = 0; i < src.subMeshCount; ++i)
             {
-                mesh.SetIndices(ExcludeTriangles(src.GetIndices(i), mesh.boneWeights, eraseBoneIndices).ToArray(),
-                    MeshTopology.Triangles, i);
+                var indices = src.GetIndices(i);
+                var count = ExcludeTriangles(indices, mesh.boneWeights, eraseBoneIndices);
+                var dst = new int[count];
+                Array.Copy(indices, 0, dst, 0, count);
+                mesh.SetIndices(dst, MeshTopology.Triangles, i);
             }
 
             return mesh;
