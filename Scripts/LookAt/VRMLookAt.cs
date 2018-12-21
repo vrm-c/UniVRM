@@ -8,6 +8,7 @@ using UnityEngine;
 
 namespace VRM
 {
+    [Obsolete("Use VRMLookAtHead")]
     public class VRMLookAt : MonoBehaviour
     {
         public bool DrawGizmo = true;
