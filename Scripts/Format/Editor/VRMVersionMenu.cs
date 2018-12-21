@@ -84,7 +84,7 @@ namespace VRM
                     subFormatter.BeginMap();
                     foreach (var _kv in node.ObjectItemsRaw)
                     {
-                        subFormatter.Key(_kv.Key);
+                        subFormatter.Key(_kv.Key.GetUtf8String());
                         Traverse(_kv.Value, subFormatter, dir);
                     }
                     subFormatter.EndMap();
@@ -112,7 +112,7 @@ namespace VRM
                 f.BeginMap();
                 foreach (var kv in node.ObjectItemsRaw)
                 {
-                    f.Key(kv.Key);
+                    f.Key(kv.Key.GetUtf8String());
                     TraverseItem(kv.Value, f, dir);
                 }
                 f.EndMap();
