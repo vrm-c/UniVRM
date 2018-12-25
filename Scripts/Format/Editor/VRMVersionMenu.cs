@@ -45,7 +45,7 @@ namespace VRM
             AssetDatabase.Refresh();
         }
 
-        static string GetTitle(JsonNode node)
+        static string GetTitle(ListTreeNode<JsonValue> node)
         {
             try
             {
@@ -61,7 +61,7 @@ namespace VRM
             return "";
         }
 
-        static void TraverseItem(JsonNode node, JsonFormatter f, UnityPath dir)
+        static void TraverseItem(ListTreeNode<JsonValue> node, JsonFormatter f, UnityPath dir)
         {
             var title = GetTitle(node);
             if (string.IsNullOrEmpty(title))
@@ -82,7 +82,7 @@ namespace VRM
                     var subFormatter = new JsonFormatter(4);
 
                     subFormatter.BeginMap();
-                    foreach (var _kv in node.ObjectItemsRaw)
+                    foreach (var _kv in node.ObjectItems())
                     {
                         subFormatter.Key(_kv.Key.GetUtf8String());
                         Traverse(_kv.Value, subFormatter, dir);
@@ -96,12 +96,12 @@ namespace VRM
             }
         }
 
-        static void Traverse(JsonNode node, JsonFormatter f, UnityPath dir)
+        static void Traverse(ListTreeNode<JsonValue> node, JsonFormatter f, UnityPath dir)
         {
             if (node.IsArray())
             {
                 f.BeginList();
-                foreach (var x in node.ArrayItemsRaw)
+                foreach (var x in node.ArrayItems())
                 {
                     TraverseItem(x, f, dir);
                 }
@@ -110,7 +110,7 @@ namespace VRM
             else if (node.IsMap())
             {
                 f.BeginMap();
-                foreach (var kv in node.ObjectItemsRaw)
+                foreach (var kv in node.ObjectItems())
                 {
                     f.Key(kv.Key.GetUtf8String());
                     TraverseItem(kv.Value, f, dir);
@@ -123,7 +123,7 @@ namespace VRM
             }
         }
 
-        static UnityPath SplitAndWriteJson(JsonNode parsed, UnityPath dir)
+        static UnityPath SplitAndWriteJson(ListTreeNode<JsonValue> parsed, UnityPath dir)
         {
             var f = new JsonFormatter(4);
             Traverse(parsed, f, dir);
