@@ -43,7 +43,7 @@ namespace VRM
                 //
                 context.Load();
                 context.SaveAsAsset(prefabPath);
-                context.Destroy(false);
+                context.EditorDestroyRoot();
             };
         }
     }
