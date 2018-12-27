@@ -17,6 +17,20 @@ namespace VRM
         {
         }
 
+        public override bool IsOverwrite(UnityEngine.Object o)
+        {
+            if(o is BlendShapeAvatar)
+            {
+                return false;
+            }
+            if(o is BlendShapeClip)
+            {
+                return false;
+            }
+
+            return base.IsOverwrite(o);
+        }
+
         public override void Parse(string path, byte[] bytes)
         {
             var ext = Path.GetExtension(path).ToLower();
