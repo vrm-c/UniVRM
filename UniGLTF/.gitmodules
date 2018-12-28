@@ -1,6 +1,3 @@
-[submodule "UniJSON"]
-	path = UniJSON
-	url = https://github.com/ousttrue/UniJSON.git
 [submodule "UniHumanoid"]
 	path = UniHumanoid
 	url = https://github.com/ousttrue/UniHumanoid.git
