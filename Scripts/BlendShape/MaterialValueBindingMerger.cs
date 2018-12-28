@@ -11,6 +11,22 @@ namespace VRM
     ///
     class MaterialValueBindingMerger
     {
+
+        struct DictionaryKeyMaterialValueBindingComparer : IEqualityComparer<MaterialValueBinding>
+        {
+            public bool Equals(MaterialValueBinding x, MaterialValueBinding y)
+            {
+                return x.TargetValue == y.TargetValue && x.BaseValue == y.BaseValue && x.MaterialName == y.MaterialName && x.ValueName == y.ValueName;
+            }
+
+            public int GetHashCode(MaterialValueBinding obj)
+            {
+                return obj.GetHashCode();
+            }
+        }
+
+        static DictionaryKeyMaterialValueBindingComparer comparer = new DictionaryKeyMaterialValueBindingComparer();
+
         /// <summary>
         /// 名前とmaterialのマッピング
         /// </summary>
@@ -24,9 +40,9 @@ namespace VRM
         /// <typeparam name="MaterialValueBinding"></typeparam>
         /// <typeparam name="float"></typeparam>
         /// <returns></returns>
-        Dictionary<MaterialValueBinding, float> m_materialValueMap = new Dictionary<MaterialValueBinding, float>();
+        Dictionary<MaterialValueBinding, float> m_materialValueMap = new Dictionary<MaterialValueBinding, float>(comparer);
 
-        Dictionary<MaterialValueBinding, Setter> m_materialSetterMap = new Dictionary<MaterialValueBinding, Setter>();
+        Dictionary<MaterialValueBinding, Setter> m_materialSetterMap = new Dictionary<MaterialValueBinding, Setter>(comparer);
 
         //BlendShapeClip[] m_clips;
 

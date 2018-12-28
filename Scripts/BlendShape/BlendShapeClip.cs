@@ -4,8 +4,8 @@ using UnityEngine;
 
 namespace VRM
 {
-    [Serializable]
-    public struct BlendShapeBinding
+   [Serializable]
+    public struct BlendShapeBinding : IEquatable<BlendShapeBinding>
     {
         public String RelativePath;
         public int Index;
@@ -15,15 +15,60 @@ namespace VRM
         {
             return string.Format("{0}[{1}]=>{2}", RelativePath, Index, Weight);
         }
+
+        public bool Equals(BlendShapeBinding other)
+        {
+            return string.Equals(RelativePath, other.RelativePath) && Index == other.Index && Weight.Equals(other.Weight);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            return obj is BlendShapeBinding && Equals((BlendShapeBinding)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = (RelativePath != null ? RelativePath.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ Index;
+                hashCode = (hashCode * 397) ^ Weight.GetHashCode();
+                return hashCode;
+            }
+        }
     }
 
     [Serializable]
-    public struct MaterialValueBinding
+    public struct MaterialValueBinding : IEquatable<MaterialValueBinding>
     {
         public String MaterialName;
         public String ValueName;
         public Vector4 TargetValue;
         public Vector4 BaseValue;
+
+        public bool Equals(MaterialValueBinding other)
+        {
+            return string.Equals(MaterialName, other.MaterialName) && string.Equals(ValueName, other.ValueName) && TargetValue.Equals(other.TargetValue) && BaseValue.Equals(other.BaseValue);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            return obj is MaterialValueBinding && Equals((MaterialValueBinding)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = (MaterialName != null ? MaterialName.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (ValueName != null ? ValueName.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ TargetValue.GetHashCode();
+                hashCode = (hashCode * 397) ^ BaseValue.GetHashCode();
+                return hashCode;
+            }
+        }
     }
 
     [CreateAssetMenu(menuName = "VRM/BlendShapeClip")]
