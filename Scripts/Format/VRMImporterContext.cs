@@ -17,20 +17,6 @@ namespace VRM
         {
         }
 
-        public override bool IsOverwrite(UnityEngine.Object o)
-        {
-            if(o is BlendShapeAvatar)
-            {
-                return false;
-            }
-            if(o is BlendShapeClip)
-            {
-                return false;
-            }
-
-            return base.IsOverwrite(o);
-        }
-
         public override void Parse(string path, byte[] bytes)
         {
             var ext = Path.GetExtension(path).ToLower();
@@ -332,7 +318,6 @@ namespace VRM
             return meta;
         }
 
-#if UNITY_EDITOR
         protected override IEnumerable<UnityEngine.Object> ObjectsForSubAsset()
         {
             foreach (var x in base.ObjectsForSubAsset())
@@ -353,6 +338,21 @@ namespace VRM
             yield return BlendShapeAvatar;
 
             yield return Meta;
+        }
+
+#if UNITY_EDITOR
+        public override bool IsOverwrite(UnityEngine.Object o)
+        {
+            if (o is BlendShapeAvatar)
+            {
+                return false;
+            }
+            if (o is BlendShapeClip)
+            {
+                return false;
+            }
+
+            return base.IsOverwrite(o);
         }
 
         protected override UnityPath GetAssetPath(UnityPath prefabPath, UnityEngine.Object o)
