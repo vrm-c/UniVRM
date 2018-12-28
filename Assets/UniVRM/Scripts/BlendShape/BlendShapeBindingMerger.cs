@@ -22,7 +22,7 @@ namespace VRM
                 return obj.RelativePath.GetHashCode() + obj.Index;
             }
         }
-        
+
         private static DictionaryKeyBlendShapeBindingComparer comparer = new DictionaryKeyBlendShapeBindingComparer();
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace VRM
         Dictionary<BlendShapeBinding, float> m_blendShapeValueMap = new Dictionary<BlendShapeBinding, float>(comparer);
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <returns></returns>
         Dictionary<BlendShapeBinding, Action<float>> m_blendShapeSetterMap = new Dictionary<BlendShapeBinding, Action<float>>(comparer);
