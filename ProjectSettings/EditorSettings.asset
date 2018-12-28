@@ -9,6 +9,6 @@ EditorSettings:
   m_DefaultBehaviorMode: 0
   m_SpritePackerMode: 0
   m_SpritePackerPaddingPower: 1
-  m_ProjectGenerationIncludedExtensions: txt;xml;fnt;cd
+  m_ProjectGenerationIncludedExtensions: txt;xml;fnt;cd;asmdef
   m_ProjectGenerationRootNamespace: 
   m_UserGeneratedProjectSuffix: 
