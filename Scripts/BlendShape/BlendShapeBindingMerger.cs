@@ -9,7 +9,7 @@ namespace VRM
     ///
     class BlendShapeBindingMerger
     {
-        class BlendShapeBindingComparer : IEqualityComparer<BlendShapeBinding>
+        class DictionaryKeyBlendShapeBindingComparer : IEqualityComparer<BlendShapeBinding>
         {
             public bool Equals(BlendShapeBinding x, BlendShapeBinding y)
             {
@@ -22,19 +22,22 @@ namespace VRM
                 return obj.RelativePath.GetHashCode() + obj.Index;
             }
         }
+        
+        private static DictionaryKeyBlendShapeBindingComparer comparer = new DictionaryKeyBlendShapeBindingComparer();
+
         /// <summary>
         /// BlendShapeの適用値を蓄積する
         /// </summary>
         /// <typeparam name="BlendShapeBinding"></typeparam>
         /// <typeparam name="float"></typeparam>
         /// <returns></returns>
-        Dictionary<BlendShapeBinding, float> m_blendShapeValueMap = new Dictionary<BlendShapeBinding, float>(new BlendShapeBindingComparer());
+        Dictionary<BlendShapeBinding, float> m_blendShapeValueMap = new Dictionary<BlendShapeBinding, float>(comparer);
 
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
-        Dictionary<BlendShapeBinding, Action<float>> m_blendShapeSetterMap = new Dictionary<BlendShapeBinding, Action<float>>();
+        Dictionary<BlendShapeBinding, Action<float>> m_blendShapeSetterMap = new Dictionary<BlendShapeBinding, Action<float>>(comparer);
 
         public BlendShapeBindingMerger(Dictionary<BlendShapeKey, BlendShapeClip> clipMap, Transform root)
         {
