@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Text;
 using UniGLTF;
 using UniJSON;
 using UnityEditor;
@@ -11,7 +10,7 @@ namespace VRM
 {
     public static class VRMVersionMenu
     {
-        const string path = "Assets/VRM/Scripts/Format/VRMVersion.cs";
+        const string path = "Assets/VRM/UniVRM/Scripts/Format/VRMVersion.cs";
         const string template = @"
 namespace VRM
 {{
