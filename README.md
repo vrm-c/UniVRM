@@ -1,8 +1,83 @@
 # UniVRM
 
+ToDo: 英文バージョンとファイルを分ける
+
 ## License
 
 * [MIT License](./LICENSE.txt)
+
+## 0.47から MToon 以外の submodule をやめて一体化します
+
+submodule の更新を、上流に反映するのがつらかったので。
+
+## 内包するサブライブラリ
+
+`Assets/VRM` のフォルダがサブライブラリに対応します。
+
+### MToon
+
+VRM 向け ToonShader です。
+`submodule` 運用を続けます。
+
+* https://github.com/Santarh/MToon
+
+### UniJSON
+
+JSON の読み書きなど。
+importerは、まだ主に UnityEngine.JsonUtility を使っています。
+
+依存
+
+* .Net3.5(Unity とは独立して動作することができます)
+
+### DepthFirstScheduler
+
+`Task` の無い `.Net3.5` での `Task` 代用プラスアルファ。
+
+処理を細かい単位に分けることでメインスレッドのブロックを最小限にすることを目的にしています。処理単位ごとに、`MainThread`, `Coroutine`, `スレッド実行` を調整します。
+高速化や並列化は目的ではないです。
+RuntimeImporter の非同期実行の部品です。
+
+依存
+
+* Unity-5.6
+
+### UniUnlit
+
+GLTFで記述できて、UnityのデフォルトのUnlitシェーダーで表現できないところをカバーするための Unlit 統合シェーダーです。
+
+依存
+
+* Unity-5.6
+
+### UniHumanoid
+
+UnityのHumanoidアバター作成ユーティリティです。
+BVHローダーなども入っています。
+
+依存
+
+* Unity-5.6
+
+### UniGLTF
+
+拡張無しのGLTF読み書きを実装しています。
+実際には、 MorphTarget の名前を extras に保存したり、 `KHR_material_unlit` 対応するなど少し拡張もあります。
+
+依存
+
+* UniJSON
+* DepthFirstScheduler
+
+### UniVRM
+
+VRM拡張の読み書きと実行時に必要なコンポーネント群の実装など。
+
+依存
+
+* MToon
+* UniGLTF
+* UniHumanoid
 
 ## [VRM](https://dwango.github.io/vrm/)
 ###
