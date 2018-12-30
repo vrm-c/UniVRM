@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using UnityEngine;
 
 
 namespace UniGLTF
@@ -175,6 +176,18 @@ namespace UniGLTF
                 });
                 Assert.AreEqual("Standard", material.shader.name);
             }
+        }
+
+        [Test]
+        public void MaterialExportTest()
+        {
+            var material = new Material(Shader.Find("Standard"));
+            material.SetColor("_EmissionColor", new Color(0, 1, 2, 1));
+            var materialExporter = new MaterialExporter();
+            var textureExportManager = new TextureExportManager(new Texture[] { });
+            var gltfMaterial = materialExporter.ExportMaterial(material, textureExportManager);
+
+            Assert.AreEqual(gltfMaterial.emissiveFactor, new float[] { 0, 0.5f, 1 });
         }
     }
 }
