@@ -10,7 +10,7 @@ namespace UniGLTF
 {
     public class UniGLTFTests
     {
-        static GameObject CreateSimpelScene()
+        static GameObject CreateSimpleScene()
         {
             var root = new GameObject("gltfRoot").transform;
 
@@ -45,7 +45,7 @@ namespace UniGLTF
         [Test]
         public void UniGLTFSimpleSceneTest()
         {
-            var go = CreateSimpelScene();
+            var go = CreateSimpleScene();
             var context = new ImporterContext();
 
             try
