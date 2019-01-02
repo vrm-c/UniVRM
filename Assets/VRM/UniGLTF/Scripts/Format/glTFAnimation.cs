@@ -122,7 +122,7 @@ namespace UniGLTF
         protected override void SerializeMembers(GLTFJsonFormatter f)
         {
             f.KeyValue(() => sampler);
-            f.KeyValue(() => target);
+            f.Key("target"); f.GLTFValue(target);
         }
     }
 
@@ -175,8 +175,8 @@ namespace UniGLTF
                 f.KeyValue(() => name);
             }
 
-            f.KeyValue(() => channels);
-            f.KeyValue(() => samplers);
+            f.Key("channels"); f.GLTFValue(channels);
+            f.Key("samplers"); f.GLTFValue(samplers);
         }
 
         public int AddChannelAndGetSampler(int nodeIndex, glTFAnimationTarget.AnimationPropertys property)

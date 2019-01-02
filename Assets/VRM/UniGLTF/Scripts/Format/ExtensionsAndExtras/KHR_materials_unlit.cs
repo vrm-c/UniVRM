@@ -48,7 +48,7 @@ namespace UniGLTF
         {
             if (KHR_materials_unlit != null)
             {
-                f.KeyValue(() => KHR_materials_unlit);
+                f.Key("KHR_materials_unlit"); f.GLTFValue(KHR_materials_unlit);
             }
         }
     }

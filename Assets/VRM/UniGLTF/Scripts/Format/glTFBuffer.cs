@@ -169,8 +169,8 @@ namespace UniGLTF
         protected override void SerializeMembers(GLTFJsonFormatter f)
         {
             f.KeyValue(() => count);
-            f.KeyValue(() => indices);
-            f.KeyValue(() => values);
+            f.Key("indices"); f.GLTFValue(indices);
+            f.Key("values"); f.GLTFValue(values);
         }
     }
 
@@ -251,7 +251,7 @@ namespace UniGLTF
 
             if (sparse != null && sparse.count > 0)
             {
-                f.KeyValue(() => sparse);
+                f.Key("sparse"); f.GLTFValue(sparse);
             }
 
             f.KeyValue(() => normalized);

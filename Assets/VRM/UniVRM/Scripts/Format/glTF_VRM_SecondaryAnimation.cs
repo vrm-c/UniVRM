@@ -36,7 +36,7 @@ namespace VRM
         protected override void SerializeMembers(GLTFJsonFormatter f)
         {
             f.KeyValue(() => node);
-            f.KeyValue(() => colliders);
+            f.Key("colliders"); f.GLTFValue(colliders);
         }
     }
 
@@ -95,8 +95,8 @@ namespace VRM
 
         protected override void SerializeMembers(GLTFJsonFormatter f)
         {
-            f.KeyValue(() => boneGroups);
-            f.KeyValue(() => colliderGroups);
+            f.Key("boneGroups"); f.GLTFValue(boneGroups);
+            f.Key("colliderGroups"); f.GLTFValue(colliderGroups);
         }
     }
 }

@@ -246,7 +246,7 @@ namespace VRM
 
         protected override void SerializeMembers(GLTFJsonFormatter f)
         {
-            f.KeyValue(() => humanBones);
+            f.Key("humanBones"); f.GLTFValue(humanBones);
             f.KeyValue(() => armStretch);
             f.KeyValue(() => legStretch);
             f.KeyValue(() => upperArmTwist);

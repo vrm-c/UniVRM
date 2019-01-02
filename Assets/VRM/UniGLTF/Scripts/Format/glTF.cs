@@ -345,23 +345,23 @@ namespace UniGLTF
         {
             if (extensionsUsed.Count > 0)
             {
-                f.KeyValue(() => extensionsUsed);
+                f.Key("extensionsUsed"); f.GLTFValue(extensionsUsed);
             }
             if (extensions.__count > 0)
             {
-                f.KeyValue(() => extensions);
+                f.Key("extensions"); f.GLTFValue(extensions);
             }
             if (extras.__count > 0)
             {
-                f.KeyValue(() => extras);
+                f.Key("extras"); f.GLTFValue(extras);
             }
 
-            f.KeyValue(() => asset);
+            f.Key("asset"); f.GLTFValue(asset);
 
             // buffer
             if (buffers.Any())
             {
-                f.KeyValue(() => buffers);
+                f.Key("buffers"); f.GLTFValue(buffers);
             }
             if (bufferViews.Any())
             {
@@ -399,21 +399,21 @@ namespace UniGLTF
             // meshes
             if (meshes.Any())
             {
-                f.KeyValue(() => meshes);
+                f.Key("meshes"); f.GLTFValue(meshes);
             }
             if (skins.Any())
             {
-                f.KeyValue(() => skins);
+                f.Key("skins"); f.GLTFValue(skins);
             }
 
             // scene
             if (nodes.Any())
             {
-                f.KeyValue(() => nodes);
+                f.Key("nodes"); f.GLTFValue(nodes);
             }
             if (scenes.Any())
             {
-                f.KeyValue(() => scenes);
+                f.Key("scenes"); f.GLTFValue(scenes);
                 if (scene >= 0)
                 {
                     f.KeyValue(() => scene);

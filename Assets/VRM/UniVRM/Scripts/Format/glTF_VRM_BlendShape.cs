@@ -132,8 +132,8 @@ namespace VRM
             f.KeyValue(() => name);
             f.KeyValue(() => presetName);
             f.KeyValue(() => isBinary);
-            f.KeyValue(() => binds);
-            f.KeyValue(() => materialValues);
+            f.Key("binds"); f.GLTFValue(binds);
+            f.Key("materialValues"); f.GLTFValue(materialValues);
         }
     }
 
@@ -175,7 +175,7 @@ namespace VRM
 
         protected override void SerializeMembers(GLTFJsonFormatter f)
         {
-            f.KeyValue(() => blendShapeGroups);
+            f.Key("blendShapeGroups"); f.GLTFValue(blendShapeGroups);
         }
     }
 }

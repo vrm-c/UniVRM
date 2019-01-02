@@ -112,13 +112,13 @@ namespace VRM
         {
             f.KeyValue(() => firstPersonBone);
             f.KeyValue(() => firstPersonBoneOffset);
-            f.KeyValue(() => meshAnnotations);
+            f.Key("meshAnnotations"); f.GLTFValue(meshAnnotations);
 
             f.KeyValue(() => lookAtTypeName);
-            f.KeyValue(() => lookAtHorizontalInner);
-            f.KeyValue(() => lookAtHorizontalOuter);
-            f.KeyValue(() => lookAtVerticalDown);
-            f.KeyValue(() => lookAtVerticalUp);
+            f.Key("lookAtHorizontalInner"); f.GLTFValue(lookAtHorizontalInner);
+            f.Key("lookAtHorizontalOuter"); f.GLTFValue(lookAtHorizontalOuter);
+            f.Key("lookAtVerticalDown"); f.GLTFValue(lookAtVerticalDown);
+            f.Key("lookAtVerticalUp"); f.GLTFValue(lookAtVerticalUp);
         }
     }
 }
