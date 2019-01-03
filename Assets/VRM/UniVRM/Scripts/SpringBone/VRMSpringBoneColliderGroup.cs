@@ -35,9 +35,12 @@ namespace VRM
                 1.0f / transform.lossyScale.y,
                 1.0f / transform.lossyScale.z
                 ));
+            var globalScale = Mathf.Max(Mathf.Max(transform.lossyScale.x,
+                                                  transform.lossyScale.y),
+                                        transform.lossyScale.z);                
             foreach (var y in Colliders)
             {
-                Gizmos.DrawWireSphere(y.Offset, y.Radius);
+                Gizmos.DrawWireSphere(y.Offset, y.Radius * globalScale);
             }
         }
     }
