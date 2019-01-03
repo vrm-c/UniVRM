@@ -286,6 +286,9 @@ namespace VRM
             {
                 foreach (var group in ColliderGroups)
                 {
+                    var globalScale = Mathf.Max(Mathf.Max(group.transform.lossyScale.x,
+                                                          group.transform.lossyScale.y),
+                                                transform.lossyScale.z);                
                     if (group != null)
                     {
                         foreach (var collider in group.Colliders)
@@ -293,7 +296,7 @@ namespace VRM
                             m_colliderList.Add(new SphereCollider
                             {
                                 Position = group.transform.TransformPoint(collider.Offset),
-                                Radius = collider.Radius,
+                                Radius = collider.Radius * globalScale,
                             });
                         }
                     }
