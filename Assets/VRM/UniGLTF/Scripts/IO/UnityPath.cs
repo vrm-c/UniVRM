@@ -171,7 +171,7 @@ namespace UniGLTF
                 ));
         }
 
-        UnityPath(string value)
+        UnityPath(string value) : this()
         {
             Value = value.Replace("\\", "/");
         }
@@ -239,7 +239,7 @@ namespace UniGLTF
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="fullPath">C:/path/to/file</param>
         /// <returns></returns>
