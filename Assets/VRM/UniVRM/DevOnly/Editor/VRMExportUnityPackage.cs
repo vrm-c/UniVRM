@@ -159,9 +159,9 @@ namespace VRM.DevOnly.PackageExporter
                 var basePath = "Assets/VRM";
                 var packages = new Dictionary<string, string[]> () {
                     {"UniVRM", null}, // All
-                    {"UniJSON", new string[] {"UniJSON"}},
-                    {"UniHumanoid", new string[] {"UniHumanoid"}},
-                    {"UniGLTF", new string[] {"UniGLTF", "UniHumanoid", "UniJSON", "UniUnlit", "DepthFirstScheduler"}},
+                    {"UniJSON-standalone", new string[] {"UniJSON"}},
+                    {"UniHumanoid-standalone", new string[] {"UniHumanoid"}},
+                    {"UniGLTF-standalone", new string[] {"UniGLTF", "UniHumanoid", "UniJSON", "UniUnlit", "DepthFirstScheduler"}},
                 };
 
                 var fileNames = GrobFiles(basePath).ToArray();
