@@ -127,12 +127,16 @@ namespace VRM.DevOnly.PackageExporter
                 Directory.CreateDirectory(folder);
             }
 
-            CreateUnityPackages(folder, true);
+            if (!BuildTestScene())
+            {
+                Debug.LogError("Failed to build test scenes");
+            }
+            CreateUnityPackages(folder);
         }
 
         public static void CreateUnityPackage()
         {
-            CreateUnityPackages(Path.GetFullPath(Path.Combine(Application.dataPath, "..")), false);
+            CreateUnityPackages(Path.GetFullPath(Path.Combine(Application.dataPath, "..")));
         }
 
         static bool EndsWith(string path, params string[] exts)
@@ -152,7 +156,7 @@ namespace VRM.DevOnly.PackageExporter
             return false;
         }
 
-        public static void CreateUnityPackages(string outputDir, bool build)
+        public static void CreateUnityPackages(string outputDir)
         {
             // UniVRM and sub packages
             {
@@ -194,6 +198,29 @@ namespace VRM.DevOnly.PackageExporter
 
             var path = MakePackagePathName(outputDir, name);
             AssetDatabase.ExportPackage(targetFileNames, path, ExportPackageOptions.Default);
+        }
+
+        public static bool BuildTestScene()
+        {
+            var levels = new string[] { "Assets/VRM.Samples/Scenes/VRMRuntimeLoaderSample.unity" };
+            return Build(levels);
+        }
+
+        public static bool Build(string[] levels)
+        {
+            var buildPath = Path.GetFullPath(Application.dataPath + "/../build/build.exe");
+            Debug.LogFormat("BuildPath: {0}", buildPath);
+            var build = BuildPipeline.BuildPlayer(levels,
+                buildPath,
+                BuildTarget.StandaloneWindows,
+                BuildOptions.None
+            );
+#if UNITY_2018_1_OR_NEWER
+            var isSuccess = build.summary.result != BuildResult.Succeeded;
+#else
+            var isSuccess = !string.IsNullOrEmpty(build);
+#endif
+            return isSuccess;
         }
     }
 }
