@@ -4,7 +4,7 @@ using System.Text;
 
 namespace UniGLTF
 {
-    public enum GlbChunkType : UInt32
+    public enum GlbChunkType : uint
     {
         JSON = 0x4E4F534A,
         BIN = 0x004E4942,
