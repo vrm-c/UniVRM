@@ -631,7 +631,7 @@ namespace UniJSON
                         if (GetExtType() == -1)
                         {
                             var unixtime = EndianConverter.NetworkByteDWordToUnsignedNativeByteOrder(GetBody());
-                            var dt = new DateTimeOffset(unixtime * DateTimeOffsetExtensions.TicksPerSecond + DateTimeOffsetExtensions.EpocTime.Ticks, TimeSpan.Zero);
+                            var dt = new DateTimeOffset(unixtime * DateTimeOffsetExtensions.TicksPerSecond + DateTimeOffsetExtensions.EpochTime.Ticks, TimeSpan.Zero);
                             return GenericCast<DateTimeOffset, T>.Cast(dt);
                         }
                         break;
