@@ -205,7 +205,7 @@ namespace VRM
             m_open.onClick.AddListener(OnOpenClicked);
 
             // load initial bvh
-            LoadMotion(Application.streamingAssetsPath + "/test.txt");
+            LoadMotion(Application.streamingAssetsPath + "/VRM.Samples/Motions/test.txt");
 
             string[] cmds = System.Environment.GetCommandLineArgs();
             if (cmds.Length > 1)

@@ -23,9 +23,9 @@ namespace VRM
         [Test]
         public void ImportExportTest()
         {
-            var path = UniGLTF.UnityPath.FromUnityPath("Assets/VRM.Samples/Resources/Models/Alicia_vrm-0.40/AliciaSolid_vrm-0.40.vrm");
+            var path = Application.streamingAssetsPath + "/VRM.Samples/Models/Alicia_vrm-0.40/AliciaSolid_vrm-0.40.vrm";
             var context = new VRMImporterContext();
-            context.ParseGlb(File.ReadAllBytes(path.FullPath));
+            context.ParseGlb(File.ReadAllBytes(path));
             context.Load();
             context.ShowMeshes();
             context.EnableUpdateWhenOffscreen();
@@ -88,9 +88,9 @@ namespace VRM
         [Test]
         public void MeshCopyTest()
         {
-            var path = UniGLTF.UnityPath.FromUnityPath("Assets/VRM.Samples/Resources/Models/Alicia_vrm-0.40/AliciaSolid_vrm-0.40.vrm");
+            var path = Application.streamingAssetsPath + "/VRM.Samples/Models/Alicia_vrm-0.40/AliciaSolid_vrm-0.40.vrm";
             var context = new VRMImporterContext();
-            context.ParseGlb(File.ReadAllBytes(path.FullPath));
+            context.ParseGlb(File.ReadAllBytes(path));
             context.Load();
             context.ShowMeshes();
             context.EnableUpdateWhenOffscreen();
