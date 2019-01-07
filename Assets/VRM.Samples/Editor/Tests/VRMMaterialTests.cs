@@ -2,7 +2,7 @@
 using UnityEngine;
 
 
-namespace VRM
+namespace VRM.Samples
 {
     public class VRMMaterialTests
     {

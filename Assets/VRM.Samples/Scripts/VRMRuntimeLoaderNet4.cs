@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 #endif
 
 
-namespace VRM
+namespace VRM.Samples
 {
     public class VRMRuntimeLoaderNet4 : MonoBehaviour
     {
@@ -104,7 +104,7 @@ namespace VRM
                 return;
             }
 
-          
+
             var context = new VRMImporterContext();
 
             var bytes = await ReadBytesAsync(path);
@@ -123,7 +123,7 @@ namespace VRM
             var delta = Time.time - now;
             Debug.LogFormat("LoadVrmAsync {0:0.0} seconds", delta);
             OnLoaded(context);
-          
+
         }
 
         void LoadBVHClicked()
@@ -160,11 +160,11 @@ namespace VRM
         void LoadBvh(string path)
         {
             Debug.LogFormat("ImportBvh: {0}", path);
-          
+
             var context = new UniHumanoid.BvhImporterContext();
 
             context.Parse(path);
-          
+
             context.Load();
 
             if (m_source != null)

@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 
-namespace VRM
+namespace VRM.Samples
 {
     public class CanvasManager : MonoBehaviour
     {

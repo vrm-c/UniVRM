@@ -4,7 +4,7 @@ using UniJSON;
 using UnityEngine;
 
 
-namespace VRM
+namespace VRM.Samples
 {
     public static class JsonExtensions
     {

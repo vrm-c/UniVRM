@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using UnityEngine;
 
 
-namespace VRM
+namespace VRM.Samples
 {
     public class VRMRuntimeLoader : MonoBehaviour
     {
@@ -195,7 +195,7 @@ namespace VRM
 
             //メッシュを表示します
             context.ShowMeshes();
-            
+
             // add motion
             var humanPoseTransfer = root.AddComponent<UniHumanoid.HumanPoseTransfer>();
             if (m_target != null)
