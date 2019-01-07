@@ -86,7 +86,7 @@ namespace VRM
         }
 
         [Test]
-        public void MeshCoyTest()
+        public void MeshCopyTest()
         {
             var path = UniGLTF.UnityPath.FromUnityPath("Assets/VRM.Samples/Resources/Models/Alicia_vrm-0.40/AliciaSolid_vrm-0.40.vrm");
             var context = new VRMImporterContext();
