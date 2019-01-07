@@ -158,7 +158,7 @@ namespace VRM.DevOnly.PackageExporter
             {
                 var basePath = "Assets/VRM";
                 var packages = new Dictionary<string, string[]> () {
-                    {"UniVRM", new string[] {""}}, // All
+                    {"UniVRM", null}, // All
                     {"UniJSON", new string[] {"UniJSON"}},
                     {"UniHumanoid", new string[] {"UniHumanoid"}},
                     {"UniGLTF", new string[] {"UniGLTF", "UniHumanoid", "UniJSON", "UniUnlit", "DepthFirstScheduler"}},
@@ -169,13 +169,25 @@ namespace VRM.DevOnly.PackageExporter
                     CreateUnityPackage(outputDir, packagePair.Key, packagePair.Value, basePath, fileNames);
                 }
             }
+
+            // UniVRM Samples
+            {
+                var fileNames = GrobFiles("Assets/VRM.Samples")
+                    .Concat(GrobFiles("Assets/StreamingAssets/VRM.Samples"))
+                    .ToArray();
+                CreateUnityPackage(outputDir, "UniVRM-Samples", null /*All*/, "", fileNames);
+            }
         }
 
         public static void CreateUnityPackage(string outputDir, string name, string[] containsPath, string basePath, string[] fileNames) {
-            var containsPathWithBase = containsPath.Select(c => string.Format("{0}/{1}", basePath, c)).ToArray();
-            var targetFileNames = fileNames
-                .Where(fileName => containsPathWithBase.Any(c => fileName.StartsWith(c)))
-                .ToArray();
+            var targetFileNames = fileNames;
+            if (containsPath != null)
+            {
+                var containsPathWithBase = containsPath.Select(c => string.Format("{0}/{1}", basePath, c)).ToArray();
+                targetFileNames = targetFileNames
+                    .Where(fileName => containsPathWithBase.Any(c => fileName.StartsWith(c)))
+                    .ToArray();
+            }
 
             Debug.LogFormat("Package '{0}' will include {1} files...", name, targetFileNames.Count());
             Debug.LogFormat("{0}", string.Join("", targetFileNames.Select((x, i) => string.Format("[{0:##0}] {1}\n", i, x)).ToArray()));
