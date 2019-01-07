@@ -179,7 +179,7 @@ namespace VRM.DevOnly.PackageExporter
                 var fileNames = GrobFiles("Assets/VRM.Samples")
                     .Concat(GrobFiles("Assets/StreamingAssets/VRM.Samples"))
                     .ToArray();
-                CreateUnityPackage(outputDir, "UniVRM-Samples", null /*All*/, "", fileNames);
+                CreateUnityPackage(outputDir, "UniVRM-samples", null /*All*/, "", fileNames);
             }
         }
 
