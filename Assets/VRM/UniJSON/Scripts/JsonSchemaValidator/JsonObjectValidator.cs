@@ -361,7 +361,7 @@ namespace UniJSON
                         FieldValidator fv;
                         if (m_validators.TryGetValue(fieldName, out fv))
                         {
-                            var isRequired = required.Contains(fieldName);
+                            var isRequired = required != null && required.Contains(fieldName);
                             var ex = fv(schema, c, o, isRequired);
                             if (ex != null)
                             {
