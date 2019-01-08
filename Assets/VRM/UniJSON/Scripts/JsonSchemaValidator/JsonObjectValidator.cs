@@ -4,7 +4,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
-
 namespace UniJSON
 {
     /// <summary>
@@ -302,18 +301,26 @@ namespace UniJSON
         {
             class ObjectValidator
             {
-                delegate JsonSchemaValidationException FieldValidator(IJsonSchemaValidator v,
-                    JsonSchemaValidationContext c, T o);
+                delegate JsonSchemaValidationException FieldValidator(
+                    JsonSchema s, JsonSchemaValidationContext c, T o, bool isRequired);
 
                 Dictionary<string, FieldValidator> m_validators = new Dictionary<string, FieldValidator>();
 
                 static FieldValidator CreteFieldValidator<U>(Func<T, U> getter, string name)
                 {
-                    return (v, c, o) =>
+                    return (s, c, o, isRequired) =>
                     {
+                        var v = s.Validator;
                         using (c.Push(name))
                         {
-                            return v.Validate(c, getter(o));
+                            var field = getter(o);
+                            var ex = v.Validate(c, field);
+                            if (ex != null && !isRequired && s.IsExplicitlyIgnorableValue(field))
+                            {
+                                return null;
+                            }
+
+                            return ex;
                         }
                     };
                 }
@@ -354,11 +361,12 @@ namespace UniJSON
                         FieldValidator fv;
                         if (m_validators.TryGetValue(fieldName, out fv))
                         {
-                            var ex = fv(schema.Validator, c, o);
+                            var isRequired = required.Contains(fieldName);
+                            var ex = fv(schema, c, o, isRequired);
                             if (ex != null)
                             {
-                                if (required.Contains(fieldName) // required fields must be checked
-                                || c.EnableDiagnosisForNotRequiredFields)
+                                if (isRequired // required fields must be checked
+                                    || c.EnableDiagnosisForNotRequiredFields)
                                 {
                                     return ex;
                                 }

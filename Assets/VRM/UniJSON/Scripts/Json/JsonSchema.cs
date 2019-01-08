@@ -57,6 +57,8 @@ namespace UniJSON
         /// </summary>
         public bool SkipComparison { get; set; }
 
+        public object ExplicitIgnorableValue { private get; set; }
+
         public override string ToString()
         {
             return string.Format("<{0}>", Title);
@@ -175,7 +177,8 @@ namespace UniJSON
                 Title = a.Title,
                 Description = a.Description,
                 Validator = validator,
-                SkipComparison = skipComparison
+                SkipComparison = skipComparison,
+                ExplicitIgnorableValue = a.ExplicitIgnorableValue,
             };
 
             return schema;
@@ -403,6 +406,16 @@ namespace UniJSON
             if (!string.IsNullOrEmpty(Description)) { f.Key("description"); f.Value(Description); }
             Validator.ToJsonScheama(f);
             f.EndMap();
+        }
+
+        public bool IsExplicitlyIgnorableValue<T>(T obj)
+        {
+            if (obj == null)
+            {
+                return ExplicitIgnorableValue == null;
+            }
+
+            return obj.Equals(ExplicitIgnorableValue);
         }
     }
 

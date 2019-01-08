@@ -34,5 +34,48 @@ namespace UniJSON
 
             Assert.AreEqual(expected, actual);
         }
+
+        [JsonSchema(Title="ObjectNestedTest")]
+        public class ObjectNestedTest
+        {
+            public CheckConstraintsTest C;
+        }
+
+        [Test]
+        public void TestObjectNested()
+        {
+            var obj = new ObjectNestedTest()
+            {
+                C = new CheckConstraintsTest(),
+            };
+
+            var s = JsonSchema.FromType<ObjectNestedTest>();
+            {
+                var c = new JsonSchemaValidationContext(obj);
+                Assert.Null(s.Validator.Validate(c, s));
+            }
+            var actual = s.Serialize(obj);
+
+            var expected = @"{""C"":{""X"":0}}";
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public void TestObjectNestedWithNull()
+        {
+            var obj = new ObjectNestedTest();
+
+            var s = JsonSchema.FromType<ObjectNestedTest>();
+            {
+                var c = new JsonSchemaValidationContext(obj);
+                Assert.Null(s.Validator.Validate(c, s));
+            }
+            var actual = s.Serialize(obj);
+
+            var expected = @"{}";
+
+            Assert.AreEqual(expected, actual);
+        }
     }
 }

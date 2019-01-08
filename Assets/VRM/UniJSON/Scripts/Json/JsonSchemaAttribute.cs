@@ -55,6 +55,12 @@ namespace UniJSON
         /// </summary>
         public bool SkipSchemaComparison;
 
+        /// <summary>
+        /// Suppress errors if a value of the field which is not required by a schema is matched to this value.
+        /// This feature will be useful to ignore invalid value which is known.
+        /// </summary>
+        public object ExplicitIgnorableValue;
+
         public void Merge(BaseJsonSchemaAttribute rhs)
         {
             if (rhs == null) return;

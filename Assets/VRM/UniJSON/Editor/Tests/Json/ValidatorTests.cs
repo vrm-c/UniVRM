@@ -216,7 +216,7 @@ namespace UniJSON
 
                 var s = JsonSchema.FromType<NotRequired>();
                 // An error is not returned because Value is not 'Required' and the diagnosis is not enabled
-                Assert.Null(s.Validator.Validate(c, new Hoge { Value = 0 }));
+                Assert.Null(s.Validator.Validate(c, new NotRequired { Value = 0 }));
 
                 Assert.True(c.IsEmpty());
             }
@@ -228,7 +228,55 @@ namespace UniJSON
                 };
 
                 var s = JsonSchema.FromType<NotRequired>();
-                Assert.NotNull(s.Validator.Validate(c, new Hoge { Value = 0 }));
+                Assert.NotNull(s.Validator.Validate(c, new NotRequired { Value = 0 }));
+
+                Assert.True(c.IsEmpty());
+            }
+        }
+
+        class NotRequiredWithIgnorable
+        {
+            [JsonSchema(Minimum = 2, ExplicitIgnorableValue = -1)]
+            public int Value;
+        }
+
+        [Test]
+        public void ObjectValidatorForNotRequiredWithIgnorable()
+        {
+            {
+                var c = new JsonSchemaValidationContext("test")
+                {
+                    EnableDiagnosisForNotRequiredFields = false, // Default behaviour
+                };
+
+                var s = JsonSchema.FromType<NotRequiredWithIgnorable>();
+                // An error is not returned because Value is not 'Required' and the diagnosis is not enabled
+                Assert.Null(s.Validator.Validate(c, new NotRequiredWithIgnorable { Value = 0 }));
+
+                Assert.True(c.IsEmpty());
+            }
+
+            {
+                var c = new JsonSchemaValidationContext("test")
+                {
+                    EnableDiagnosisForNotRequiredFields = true,
+                };
+
+                var s = JsonSchema.FromType<NotRequiredWithIgnorable>();
+                Assert.NotNull(s.Validator.Validate(c, new NotRequiredWithIgnorable { Value = 0 }));
+
+                Assert.True(c.IsEmpty());
+            }
+
+            {
+                var c = new JsonSchemaValidationContext("test")
+                {
+                    EnableDiagnosisForNotRequiredFields = true,
+                };
+
+                var s = JsonSchema.FromType<NotRequiredWithIgnorable>();
+                // An error is NOT returned even though diagnosis is enabled because of an ignorable value is matched
+                Assert.Null(s.Validator.Validate(c, new NotRequiredWithIgnorable { Value = -1 }));
 
                 Assert.True(c.IsEmpty());
             }

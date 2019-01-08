@@ -28,7 +28,7 @@ namespace UniJSON
         }
 
         struct EnumTest
-        { 
+        {
             public HogeFuga EnumDefault;
 
             [JsonSchema(EnumSerializationType =EnumSerializationType.AsInt)]
@@ -104,6 +104,7 @@ namespace UniJSON
             Assert.AreEqual(1, json.GetObjectCount());
             Assert.AreEqual(1, json["Vector"][0].GetInt32());
         }
+
         #endregion
 
         #region Deserialize
