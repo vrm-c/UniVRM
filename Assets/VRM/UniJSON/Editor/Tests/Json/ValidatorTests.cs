@@ -199,6 +199,41 @@ namespace UniJSON
             Assert.True(c.IsEmpty());
         }
 
+        class NotRequired
+        {
+            [JsonSchema(Minimum = 1)]
+            public int Value;
+        }
+
+        [Test]
+        public void ObjectValidatorForNotRequired()
+        {
+            {
+                var c = new JsonSchemaValidationContext("test")
+                {
+                    EnableDiagnosisForNotRequiredFields = false, // Default behaviour
+                };
+
+                var s = JsonSchema.FromType<NotRequired>();
+                // An error is not returned because Value is not 'Required' and the diagnosis is not enabled
+                Assert.Null(s.Validator.Validate(c, new Hoge { Value = 0 }));
+
+                Assert.True(c.IsEmpty());
+            }
+
+            {
+                var c = new JsonSchemaValidationContext("test")
+                {
+                    EnableDiagnosisForNotRequiredFields = true,
+                };
+
+                var s = JsonSchema.FromType<NotRequired>();
+                Assert.NotNull(s.Validator.Validate(c, new Hoge { Value = 0 }));
+
+                Assert.True(c.IsEmpty());
+            }
+        }
+
         [Test]
         public void DictionaryValidator()
         {
