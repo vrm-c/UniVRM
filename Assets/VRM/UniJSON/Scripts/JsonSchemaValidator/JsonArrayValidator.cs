@@ -163,6 +163,11 @@ namespace UniJSON
                 return new JsonSchemaValidationException(context, "minItems");
             }
 
+            if (Items == null)
+            {
+                return null; // There are no json schema for items, success
+            }
+
             var v = Items.Validator;
             var t = o.GetType();
             IEnumerable iter = null;
