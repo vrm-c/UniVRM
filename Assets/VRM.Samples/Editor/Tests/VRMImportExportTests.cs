@@ -20,10 +20,19 @@ namespace VRM.Samples
 
     public class VRMImportExportTests
     {
+        static string AliciaPath
+        {
+            get
+            {
+                return Path.GetFullPath(Application.dataPath + "/../Tests/Models/Alicia_vrm-0.40/AliciaSolid_vrm-0.40.vrm")
+                    .Replace("\\", "/");
+            }
+        }
+
         [Test]
         public void ImportExportTest()
         {
-            var path = Application.streamingAssetsPath + "/VRM.Samples/Models/Alicia_vrm-0.40/AliciaSolid_vrm-0.40.vrm";
+            var path = AliciaPath;
             var context = new VRMImporterContext();
             context.ParseGlb(File.ReadAllBytes(path));
             context.Load();
@@ -88,7 +97,7 @@ namespace VRM.Samples
         [Test]
         public void MeshCopyTest()
         {
-            var path = Application.streamingAssetsPath + "/VRM.Samples/Models/Alicia_vrm-0.40/AliciaSolid_vrm-0.40.vrm";
+            var path = AliciaPath;
             var context = new VRMImporterContext();
             context.ParseGlb(File.ReadAllBytes(path));
             context.Load();
