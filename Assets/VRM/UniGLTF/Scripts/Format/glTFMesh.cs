@@ -125,11 +125,11 @@ namespace UniGLTF
             }
             if (extensions.KHR_draco_mesh_compression != null)
             {
-                f.KeyValue(() => extensions);
+                f.Key("extensions"); f.GLTFValue(extensions);
             }
             if (extras.targetNames.Count > 0)
             {
-                f.KeyValue(() => extras);
+                f.Key("extras"); f.GLTFValue(extras);
             }
         }
     }

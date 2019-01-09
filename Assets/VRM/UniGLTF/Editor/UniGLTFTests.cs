@@ -191,5 +191,81 @@ namespace UniGLTF
             Debug.Log(json);
         }
 
+        [Test]
+        public void GlTFToJsonTest()
+        {
+            var gltf = new glTF();
+            using (var exporter = new gltfExporter(gltf))
+            {
+                exporter.Prepare(CreateSimpleScene());
+                exporter.Export();
+            }
+
+            var expected = gltf.ToJson().ParseAsJson();
+            expected.AddKey(Utf8String.From("meshes"));
+            expected.AddValue(default(ArraySegment<byte>), ValueNodeType.Array);
+            expected["meshes"].AddValue(default(ArraySegment<byte>), ValueNodeType.Object);
+
+            var mesh = expected["meshes"][0];
+            mesh.AddKey(Utf8String.From("name"));
+            mesh.AddValue(Utf8String.From(JsonString.Quote("test")).Bytes, ValueNodeType.String);
+            mesh.AddKey(Utf8String.From("primitives"));
+            mesh.AddValue(default(ArraySegment<byte>), ValueNodeType.Array);
+            mesh["primitives"].AddValue(default(ArraySegment<byte>), ValueNodeType.Object);
+
+            var primitive = mesh["primitives"][0];
+            primitive.AddKey(Utf8String.From("mode"));
+            primitive.AddValue(Utf8String.From("0").Bytes, ValueNodeType.Integer);
+            primitive.AddKey(Utf8String.From("indices"));
+            primitive.AddValue(Utf8String.From("0").Bytes, ValueNodeType.Integer);
+            primitive.AddKey(Utf8String.From("material"));
+            primitive.AddValue(Utf8String.From("0").Bytes, ValueNodeType.Integer);
+            primitive.AddKey(Utf8String.From("attributes"));
+            primitive.AddValue(default(ArraySegment<byte>), ValueNodeType.Object);
+            primitive["attributes"].AddKey(Utf8String.From("POSITION"));
+            primitive["attributes"].AddValue(Utf8String.From("0").Bytes, ValueNodeType.Integer);
+            primitive.AddKey(Utf8String.From("targets"));
+            primitive.AddValue(default(ArraySegment<byte>), ValueNodeType.Array);
+            primitive["targets"].AddValue(default(ArraySegment<byte>), ValueNodeType.Object);
+            primitive["targets"][0].AddKey(Utf8String.From("POSITION"));
+            primitive["targets"][0].AddValue(Utf8String.From("1").Bytes, ValueNodeType.Integer);
+            primitive["targets"].AddValue(default(ArraySegment<byte>), ValueNodeType.Object);
+            primitive["targets"][1].AddKey(Utf8String.From("POSITION"));
+            primitive["targets"][1].AddValue(Utf8String.From("2").Bytes, ValueNodeType.Integer);
+            primitive["targets"][1].AddKey(Utf8String.From("TANGENT"));
+            primitive["targets"][1].AddValue(Utf8String.From("0").Bytes, ValueNodeType.Integer);
+
+            gltf.meshes.Add(new glTFMesh("test")
+            {
+                primitives = new List<glTFPrimitives>
+                {
+                    new glTFPrimitives
+                    {
+                        indices = 0,
+                        attributes = new glTFAttributes
+                        {
+                            POSITION = 0,
+                            TANGENT = -1 // should be removed
+                        },
+                        targets = new List<gltfMorphTarget>
+                        {
+                            new gltfMorphTarget
+                            {
+                                POSITION = 1,
+                                TANGENT = -1 // should be removed
+                            },
+                            new gltfMorphTarget
+                            {
+                                POSITION = 2,
+                                TANGENT = 0
+                            }
+                        }
+                    }
+                }
+            });
+            var actual = gltf.ToJson().ParseAsJson();
+
+            Assert.AreEqual(expected, actual);
+        }
     }
 }

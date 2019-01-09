@@ -128,7 +128,7 @@ namespace UniGLTF
         {
             if (baseColorTexture != null)
             {
-                f.KeyValue(() => baseColorTexture);
+                f.Key("baseColorTexture"); f.GLTFValue(baseColorTexture);
             }
             if (baseColorFactor != null)
             {
@@ -136,7 +136,7 @@ namespace UniGLTF
             }
             if (metallicRoughnessTexture != null)
             {
-                f.KeyValue(() => metallicRoughnessTexture);
+                f.Key("metallicRoughnessTexture"); f.GLTFValue(metallicRoughnessTexture);
             }
             f.KeyValue(() => metallicFactor);
             f.KeyValue(() => roughnessFactor);
@@ -206,7 +206,7 @@ namespace UniGLTF
 
             if (extensions != null)
             {
-                f.KeyValue(() => extensions);
+                f.Key("extensions"); f.GLTFValue(extensions);
             }
         }
 

@@ -68,7 +68,7 @@ namespace UniGLTF
 
                 if (extras.__count > 0)
                 {
-                    f.KeyValue(() => extras);
+                    f.Key("extras"); f.GLTFValue(extras);
                 }
             }
         }

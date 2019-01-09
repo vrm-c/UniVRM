@@ -12,7 +12,7 @@ namespace UniGLTF
         [JsonSerializeMembers]
         void VRMSerializeMembers(GLTFJsonFormatter f)
         {
-            f.KeyValue(() => VRM);
+            f.Key("VRM"); f.GLTFValue(VRM);
         }
     }
 }
@@ -47,12 +47,12 @@ VRM extension is for 3d humanoid avatars (and models) in VR applications.
         protected override void SerializeMembers(GLTFJsonFormatter f)
         {
             f.KeyValue(() => exporterVersion);
-            f.KeyValue(() => meta);
-            f.KeyValue(() => humanoid);
-            f.KeyValue(() => firstPerson);
-            f.KeyValue(() => blendShapeMaster);
-            f.KeyValue(() => secondaryAnimation);
-            f.KeyValue(() => materialProperties);
+            f.Key("meta"); f.GLTFValue(meta);
+            f.Key("humanoid"); f.GLTFValue(humanoid);
+            f.Key("firstPerson"); f.GLTFValue(firstPerson);
+            f.Key("blendShapeMaster"); f.GLTFValue(blendShapeMaster);
+            f.Key("secondaryAnimation"); f.GLTFValue(secondaryAnimation);
+            f.Key("materialProperties"); f.GLTFValue(materialProperties);
         }
     }
 }
