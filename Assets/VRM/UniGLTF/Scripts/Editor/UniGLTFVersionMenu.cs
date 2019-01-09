@@ -1,4 +1,4 @@
-﻿#if UNIGLTF_DEVELOP
+﻿#if VRM_DEVELOP
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;

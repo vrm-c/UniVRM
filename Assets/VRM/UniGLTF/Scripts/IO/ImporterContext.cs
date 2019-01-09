@@ -23,7 +23,7 @@ namespace UniGLTF
     {
         #region MeasureTime
         bool m_showSpeedLog
-#if UNIGLTF_DEVELOP
+#if VRM_DEVELOP
             = true
 #endif
             ;
