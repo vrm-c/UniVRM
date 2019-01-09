@@ -418,6 +418,11 @@ namespace UniJSON
 
         public void TimeStamp32(DateTimeOffset time)
         {
+            // https://github.com/ousttrue/UniJSON/blob/1.2/Scripts/Extensions/DateTimeOffsetExtensions.cs#L13-L16
+            if (time < DateTimeOffsetExtensions.EpochTime)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
             m_store.Write((Byte)MsgPackType.FIX_EXT_4);
             m_store.Write((SByte)(-1));
             m_store.WriteBigEndian((uint)time.ToUnixTimeSeconds());
