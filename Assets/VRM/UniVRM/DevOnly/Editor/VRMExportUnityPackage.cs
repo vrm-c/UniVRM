@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.IO;
@@ -29,6 +29,11 @@ namespace VRM.DevOnly.PackageExporter
         static string GetDesktop()
         {
             return Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "/VRM";
+        }
+
+        static string GetProjectRoot()
+        {
+            return Path.GetFullPath(Application.dataPath + "/..");
         }
 
         static string System(string workingDir, string fileName, string args)
@@ -121,7 +126,8 @@ namespace VRM.DevOnly.PackageExporter
         [MenuItem(VRMVersion.VRM_VERSION + "/Export unitypackage")]
         public static void CreateUnityPackageWithBuild()
         {
-            var folder = GetDesktop();
+            //var folder = GetDesktop();
+            var folder = GetProjectRoot();
             if (!Directory.Exists(folder))
             {
                 Directory.CreateDirectory(folder);
