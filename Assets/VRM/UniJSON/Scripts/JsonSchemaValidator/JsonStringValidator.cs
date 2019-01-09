@@ -111,10 +111,6 @@ namespace UniJSON
             }
 
             var value = o as string;
-            if (value.All(x => Char.IsWhiteSpace(x)))
-            {
-                return new JsonSchemaValidationException(c, "whitespace");
-            }
 
             if (MinLength.HasValue && value.Length < MinLength)
             {

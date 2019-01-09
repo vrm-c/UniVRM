@@ -102,6 +102,12 @@ namespace UniJSON
 
             {
                 var v = new JsonStringValidator();
+                Assert.Null(v.Validate(c, ""));
+                Assert.Null(v.Validate(c, "a"));
+            }
+
+            {
+                var v = new JsonStringValidator();
                 v.MinLength = 1;
                 Assert.Null(v.Validate(c, "a"));
                 Assert.NotNull(v.Validate(c, ""));
