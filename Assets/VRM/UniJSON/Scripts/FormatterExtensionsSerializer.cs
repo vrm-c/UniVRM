@@ -47,7 +47,8 @@ namespace UniJSON
             }
             else
             {
-                typeof(FormatterExtensionsSerializer).GetMethod("Serialize").MakeGenericMethod(value.GetType()).Invoke(null, new object[] { f, value });
+                typeof(FormatterExtensionsSerializer).GetMethod("Serialize")
+                    .MakeGenericMethod(value.GetType()).Invoke(null, new object[] { f, value });
             }
         }
 
@@ -92,7 +93,7 @@ namespace UniJSON
                 var mi = typeof(IFormatter).GetMethod("Value", new Type[] { t });
                 if (mi != null)
                 {
-                    // premitives
+                    // primitives
                     var self = Expression.Parameter(typeof(IFormatter), "f");
                     var arg = Expression.Parameter(t, "value");
                     var call = Expression.Call(self, mi, arg);
@@ -163,6 +164,7 @@ namespace UniJSON
                 var schema = JsonSchema.FromType<T>();
                 return (IFormatter f, T value) => schema.Serialize(f, value);
             }
+
 
             //throw new NotImplementedException();
         }
