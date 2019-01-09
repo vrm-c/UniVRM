@@ -330,5 +330,55 @@ namespace UniJSON
 
             Assert.True(c.IsEmpty());
         }
+
+        class HasArrayOBject
+        {
+            [ItemJsonSchema(Minimum = 0.0, Maximum = 1.0)]
+            public float[] xs;
+        }
+
+        [Test]
+        public void HasArrayObjectValidator()
+        {
+            {
+                var c = new JsonSchemaValidationContext("test")
+                {
+                    EnableDiagnosisForNotRequiredFields = true,
+                };
+
+                var s = JsonSchema.FromType<HasArrayOBject>();
+
+                Assert.Null(s.Validator.Validate(c, new HasArrayOBject { xs = new float[] {} }));
+                Assert.Null(s.Validator.Validate(c, new HasArrayOBject { xs = new float[] { 0.5f } }));
+                Assert.NotNull(s.Validator.Validate(c, new HasArrayOBject { xs = new float[] { 1.5f } }));
+
+                Assert.True(c.IsEmpty());
+            }
+        }
+
+        class HasListObject
+        {
+            [ItemJsonSchema(Minimum = 0.0, Maximum = 1.0)]
+            public List<float> xs;
+        }
+
+        [Test]
+        public void HasListObjectValidator()
+        {
+            {
+                var c = new JsonSchemaValidationContext("test")
+                {
+                    EnableDiagnosisForNotRequiredFields = true,
+                };
+
+                var s = JsonSchema.FromType<HasListObject>();
+
+                Assert.Null(s.Validator.Validate(c, new HasListObject { xs = new List<float> {} }));
+                Assert.Null(s.Validator.Validate(c, new HasListObject { xs = new List<float> { 0.5f } }));
+                Assert.NotNull(s.Validator.Validate(c, new HasListObject { xs = new List<float> { 1.5f } }));
+
+                Assert.True(c.IsEmpty());
+            }
+        }
     }
 }
