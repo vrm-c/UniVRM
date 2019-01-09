@@ -135,6 +135,10 @@ namespace UniGLTF
             if (m.HasProperty("_EmissionColor"))
             {
                 var color = m.GetColor("_EmissionColor");
+                if (color.maxColorComponent > 1)
+                {
+                    color /= color.maxColorComponent;
+                }
                 material.emissiveFactor = new float[] { color.r, color.g, color.b };
             }
 
