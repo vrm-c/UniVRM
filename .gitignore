@@ -50,3 +50,6 @@ Assets/StreamingAssets/crashlytics-build.properties
 # Manually appended
 #
 .idea/
+
+Assets/StreamingAssets/VRM.Samples/Models/Alicia_vrm-0.40
+
