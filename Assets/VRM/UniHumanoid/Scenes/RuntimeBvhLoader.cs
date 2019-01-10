@@ -49,7 +49,6 @@ namespace UniHumanoid
             m_lastDir = Path.GetDirectoryName(path);
 #else
             string path=null;
-            throw new NotImplementedException();
 #endif
 
 #pragma warning disable 4014

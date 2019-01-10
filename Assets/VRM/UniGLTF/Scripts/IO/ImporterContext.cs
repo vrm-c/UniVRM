@@ -375,10 +375,10 @@ namespace UniGLTF
 
             for (int i = 0; i < GLTF.textures.Count; ++i)
             {
-                var image = GLTF.GetImageFromTextureIndex(i);
 
                 TextureItem item = null;
 #if UNITY_EDITOR
+                var image = GLTF.GetImageFromTextureIndex(i);
                 if (imageBaseDir.IsUnderAssetsFolder
                     && !string.IsNullOrEmpty(image.uri)
                     && !image.uri.StartsWith("data:")
