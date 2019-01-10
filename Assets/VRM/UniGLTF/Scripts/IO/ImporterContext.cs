@@ -667,7 +667,10 @@ namespace UniGLTF
                 }
 
                 // connect root
-                Root = new GameObject("_root_");
+                if (Root != null)
+                {
+                    Root = new GameObject("_root_");
+                }
                 foreach (var x in GLTF.rootnodes)
                 {
                     var t = nodes[x].Transform;
