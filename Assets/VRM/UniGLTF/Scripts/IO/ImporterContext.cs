@@ -667,7 +667,7 @@ namespace UniGLTF
                 }
 
                 // connect root
-                if (Root != null)
+                if (Root == null)
                 {
                     Root = new GameObject("_root_");
                 }
