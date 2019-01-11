@@ -232,7 +232,7 @@ namespace UniGLTF
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="bytes"></param>
         public void ParseGlb(Byte[] bytes)
@@ -503,12 +503,14 @@ namespace UniGLTF
                 .ContinueWithCoroutine(Scheduler.MainThread, LoadMaterials)
                 .OnExecute(Scheduler.ThreadPool, parent =>
                 {
+                    /*
                     if (GLTF.meshes
                         .SelectMany(x => x.primitives)
                         .Any(x => x.extensions.KHR_draco_mesh_compression != null))
                     {
                         throw new UniGLTFNotSupportedException("draco is not supported");
                     }
+                    */
 
                     // meshes
                     var meshImporter = new MeshImporter();
@@ -958,7 +960,7 @@ namespace UniGLTF
         /// Destroy resources that created ImporterContext for runtime load.
         /// </summary>
         public void DestroyRootAndResources()
-        { 
+        {
             if (!Application.isPlaying)
             {
                 Debug.LogWarningFormat("Dispose called in editor mode. This function is for runtime");

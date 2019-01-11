@@ -6,14 +6,14 @@ namespace UniGLTF
     [Serializable]
     public class glTFSkin : JsonSerializableBase
     {
-        [JsonSchema(Minimum = 0)]
+        [JsonSchema(Minimum = 0, ExplicitIgnorableValue = -1)]
         public int inverseBindMatrices = -1;
 
         [JsonSchema(Required = true, MinItems = 1)]
         [ItemJsonSchema(Minimum = 0)]
         public int[] joints;
 
-        [JsonSchema(Minimum = 0)]
+        [JsonSchema(Minimum = 0, ExplicitIgnorableValue = -1)]
         public int skeleton = -1;
 
         // empty schemas

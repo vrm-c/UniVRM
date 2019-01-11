@@ -20,7 +20,6 @@ namespace UniGLTF
     [Serializable]
     public partial class glTFPrimitives_extensions : ExtensionsBase<glTFPrimitives_extensions>
     {
-        [JsonSchema(Required = true)]
         public glTF_KHR_draco_mesh_compression KHR_draco_mesh_compression;
 
         [JsonSerializeMembers]
