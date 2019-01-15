@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -145,10 +146,12 @@ namespace UniJSON
             }
 
             var count = GenericCounter<T>.Count(o);
-            if (count == 0)
+
+            // Empty array is valid
+            /*if (count == 0)
             {
                 return new JsonSchemaValidationException(context, "empty");
-            }
+            }*/
 
             if (MaxItems.HasValue && count > MaxItems.Value)
             {
@@ -159,6 +162,36 @@ namespace UniJSON
             {
                 return new JsonSchemaValidationException(context, "minItems");
             }
+
+            if (Items == null)
+            {
+                return null; // There are no json schema for items, success
+            }
+
+            var v = Items.Validator;
+            var t = o.GetType();
+            IEnumerable iter = null;
+            if (t.IsArray)
+            {
+                iter = o as Array;
+            }
+            else if (t.GetIsGenericList())
+            {
+                iter = o as IList;
+            }
+            else
+            {
+                return new JsonSchemaValidationException(context, "non iterable object");
+            }
+
+            foreach(var e in iter)
+            {
+                var ex = v.Validate(context, e);
+                if (ex != null)
+                {
+                    return ex;
+                }
+            };
 
             return null;
         }
@@ -252,7 +285,7 @@ namespace UniJSON
             }
         }
 
-        public void Deserialize<T, U>(ListTreeNode<T> src, ref U dst) 
+        public void Deserialize<T, U>(ListTreeNode<T> src, ref U dst)
             where T : IListTreeItem, IValue<T>
         {
             src.Deserialize(ref dst);

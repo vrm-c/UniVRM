@@ -1,7 +1,6 @@
 ﻿#pragma warning disable 0649
 using NUnit.Framework;
 
-
 namespace UniJSON
 {
     public class SchemaTests
@@ -40,6 +39,24 @@ namespace UniJSON
             Assert.AreEqual(0, parsed["properties"]["age"]["minimum"].GetInt32());
         }
 
+        [JsonSchema(Title="MultipleConstraints")]
+        public class MultipleConstraints
+        {
+            [JsonSchema(Required = true, Minimum = 0, Maximum = 100)]
+            public int ranged;
+        }
+
+        [Test]
+        public void CreateFromClassWithMultipleConstraints()
+        {
+            var s = JsonSchema.FromType<MultipleConstraints>();
+
+            var v = s.Validator as JsonObjectValidator;
+            var rangedV = v.Properties["ranged"].Validator as JsonIntValidator;
+            Assert.AreEqual(0, rangedV.Minimum);
+            Assert.AreEqual(100, rangedV.Maximum);
+        }
+
         public enum ProjectionType
         {
             Perspective,
@@ -48,7 +65,7 @@ namespace UniJSON
 
         class EnumStringTest
         {
-            [JsonSchema(EnumSerializationType =EnumSerializationType.AsLowerString)]
+            [JsonSchema(EnumSerializationType = EnumSerializationType.AsLowerString)]
             public ProjectionType type;
         }
 
@@ -81,7 +98,7 @@ namespace UniJSON
             ]
 
         }
-        
+
     }
 }
 ";
@@ -117,7 +134,7 @@ namespace UniJSON
             ]
 
         }
-        
+
     }
 }
 ";
@@ -129,6 +146,5 @@ namespace UniJSON
 
             Assert.AreEqual(fromJson, fromType);
         }
-
     }
 }

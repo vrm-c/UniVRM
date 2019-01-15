@@ -7,6 +7,8 @@ namespace UniJSON
     {
         Stack<string> m_stack = new Stack<string>();
 
+        public bool EnableDiagnosisForNotRequiredFields = false;
+
         public JsonSchemaValidationContext(object o)
         {
             Push(o.GetType().Name);

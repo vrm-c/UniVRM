@@ -4,7 +4,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
-
 namespace UniJSON
 {
     /// <summary>
@@ -28,11 +27,11 @@ namespace UniJSON
             get; set;
         }
 
-        List<string> m_required = new List<string>();
+        HashSet<string> m_required = new HashSet<string>();
         /// <summary>
         /// http://json-schema.org/latest/json-schema-validation.html#rfc.section.6.5.3
         /// </summary>
-        public List<string> Required
+        public HashSet<string> Required
         {
             get { return m_required; }
         }
@@ -302,18 +301,26 @@ namespace UniJSON
         {
             class ObjectValidator
             {
-                delegate JsonSchemaValidationException FieldValidator(IJsonSchemaValidator v, 
-                    JsonSchemaValidationContext c, T o);
+                delegate JsonSchemaValidationException FieldValidator(
+                    JsonSchema s, JsonSchemaValidationContext c, T o, bool isRequired);
 
                 Dictionary<string, FieldValidator> m_validators = new Dictionary<string, FieldValidator>();
 
                 static FieldValidator CreteFieldValidator<U>(Func<T, U> getter, string name)
                 {
-                    return (v, c, o) =>
+                    return (s, c, o, isRequired) =>
                     {
+                        var v = s.Validator;
                         using (c.Push(name))
                         {
-                            return v.Validate(c, getter(o));
+                            var field = getter(o);
+                            var ex = v.Validate(c, field);
+                            if (ex != null && !isRequired && s.IsExplicitlyIgnorableValue(field))
+                            {
+                                return null;
+                            }
+
+                            return ex;
                         }
                     };
                 }
@@ -341,32 +348,39 @@ namespace UniJSON
                     }
                 }
 
-                public JsonSchemaValidationException Validate(List<string> required, Dictionary<string, JsonSchema> properties,
+                public JsonSchemaValidationException Validate(
+                    HashSet<string> required,
+                    Dictionary<string, JsonSchema> properties,
                     JsonSchemaValidationContext c, T o)
                 {
-                    foreach (var x in required)
+                    foreach (var kv in properties)
                     {
-                        JsonSchema s;
-                        if(properties.TryGetValue(x, out s))
+                        var fieldName = kv.Key;
+                        var schema = kv.Value;
+
+                        FieldValidator fv;
+                        if (m_validators.TryGetValue(fieldName, out fv))
                         {
-                            FieldValidator fv;
-                            if (m_validators.TryGetValue(x, out fv))
+                            var isRequired = required != null && required.Contains(fieldName);
+                            var ex = fv(schema, c, o, isRequired);
+                            if (ex != null)
                             {
-                                var ex = fv(s.Validator, c, o);
-                                if (ex != null)
+                                if (isRequired // required fields must be checked
+                                    || c.EnableDiagnosisForNotRequiredFields)
                                 {
                                     return ex;
                                 }
                             }
                         }
                     }
+
                     return null;
                 }
             }
 
             static ObjectValidator s_validator;
 
-            public static JsonSchemaValidationException Validate(List<string> required,
+            public static JsonSchemaValidationException Validate(HashSet<string> required,
                 Dictionary<string, JsonSchema> properties,
                 JsonSchemaValidationContext c, T o)
             {
@@ -390,16 +404,7 @@ namespace UniJSON
                 return new JsonSchemaValidationException(c, "no properties");
             }
 
-            if (Required != null)
-            {
-                var ex = GenericValidator<T>.Validate(Required, Properties, c, o);
-                if (ex != null)
-                {
-                    return ex;
-                }
-            }
-
-            return null;
+            return GenericValidator<T>.Validate(Required, Properties, c, o);
         }
 
         static class GenericSerializer<T>
@@ -511,7 +516,7 @@ namespace UniJSON
             GenericSerializer<T>.Serialize(this, f, c, value);
         }
 
-        static class GenericDeserializer<S, T> 
+        static class GenericDeserializer<S, T>
             where S : IListTreeItem, IValue<S>
         {
             delegate T Deserializer(ListTreeNode<S> src);
@@ -596,7 +601,7 @@ namespace UniJSON
             }
         }
 
-        public void Deserialize<T, U>(ListTreeNode<T> src, ref U dst) 
+        public void Deserialize<T, U>(ListTreeNode<T> src, ref U dst)
             where T : IListTreeItem, IValue<T>
         {
             GenericDeserializer<T, U>.Deserialize(src, ref dst, Properties);

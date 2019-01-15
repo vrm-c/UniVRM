@@ -57,6 +57,9 @@ namespace UniJSON
         /// </summary>
         public bool SkipComparison { get; set; }
 
+        public object ExplicitIgnorableValue { private get; set; }
+        public int ExplicitIgnorableItemLength { private get; set; }
+
         public override string ToString()
         {
             return string.Format("<{0}>", Title);
@@ -175,7 +178,9 @@ namespace UniJSON
                 Title = a.Title,
                 Description = a.Description,
                 Validator = validator,
-                SkipComparison = skipComparison
+                SkipComparison = skipComparison,
+                ExplicitIgnorableValue = a.ExplicitIgnorableValue,
+                ExplicitIgnorableItemLength = a.ExplicitIgnorableItemLength,
             };
 
             return schema;
@@ -383,9 +388,12 @@ namespace UniJSON
         }
         #endregion
 
-        public void Serialize<T>(IFormatter f, T o)
+        public void Serialize<T>(IFormatter f, T o, JsonSchemaValidationContext c = null)
         {
-            var c = new JsonSchemaValidationContext(o);
+            if (c == null)
+            {
+                c = new JsonSchemaValidationContext(o);
+            }
 
             var ex = Validator.Validate(c, o);
             if (ex != null)
@@ -404,14 +412,30 @@ namespace UniJSON
             Validator.ToJsonScheama(f);
             f.EndMap();
         }
+
+        public bool IsExplicitlyIgnorableValue<T>(T obj)
+        {
+            if (obj == null)
+            {
+                return ExplicitIgnorableValue == null;
+            }
+
+            var iter = obj as System.Collections.ICollection;
+            if (ExplicitIgnorableItemLength != -1 && iter != null)
+            {
+                return iter.Count == ExplicitIgnorableItemLength;
+            }
+
+            return obj.Equals(ExplicitIgnorableValue);
+        }
     }
 
     public static class JsonSchemaExtensions
     {
-        public static string Serialize<T>(this JsonSchema s, T o)
+        public static string Serialize<T>(this JsonSchema s, T o, JsonSchemaValidationContext c = null)
         {
             var f = new JsonFormatter();
-            s.Serialize(f, o);
+            s.Serialize(f, o, c);
             return f.ToString();
         }
     }

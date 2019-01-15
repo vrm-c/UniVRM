@@ -102,6 +102,12 @@ namespace UniJSON
 
             {
                 var v = new JsonStringValidator();
+                Assert.Null(v.Validate(c, ""));
+                Assert.Null(v.Validate(c, "a"));
+            }
+
+            {
+                var v = new JsonStringValidator();
                 v.MinLength = 1;
                 Assert.Null(v.Validate(c, "a"));
                 Assert.NotNull(v.Validate(c, ""));
@@ -199,6 +205,89 @@ namespace UniJSON
             Assert.True(c.IsEmpty());
         }
 
+        class NotRequired
+        {
+            [JsonSchema(Minimum = 1)]
+            public int Value;
+        }
+
+        [Test]
+        public void ObjectValidatorForNotRequired()
+        {
+            {
+                var c = new JsonSchemaValidationContext("test")
+                {
+                    EnableDiagnosisForNotRequiredFields = false, // Default behaviour
+                };
+
+                var s = JsonSchema.FromType<NotRequired>();
+                // An error is not returned because Value is not 'Required' and the diagnosis is not enabled
+                Assert.Null(s.Validator.Validate(c, new NotRequired { Value = 0 }));
+
+                Assert.True(c.IsEmpty());
+            }
+
+            {
+                var c = new JsonSchemaValidationContext("test")
+                {
+                    EnableDiagnosisForNotRequiredFields = true,
+                };
+
+                var s = JsonSchema.FromType<NotRequired>();
+                Assert.NotNull(s.Validator.Validate(c, new NotRequired { Value = 0 }));
+
+                Assert.True(c.IsEmpty());
+            }
+        }
+
+        class NotRequiredWithIgnorable
+        {
+            [JsonSchema(Minimum = 2, ExplicitIgnorableValue = -1)]
+            public int Value;
+        }
+
+        [Test]
+        public void ObjectValidatorForNotRequiredWithIgnorable()
+        {
+            {
+                var c = new JsonSchemaValidationContext("test")
+                {
+                    EnableDiagnosisForNotRequiredFields = false, // Default behaviour
+                };
+
+                var s = JsonSchema.FromType<NotRequiredWithIgnorable>();
+                // An error is not returned because Value is not 'Required' and the diagnosis is not enabled
+                Assert.Null(s.Validator.Validate(c, new NotRequiredWithIgnorable { Value = 0 }));
+
+                Assert.True(c.IsEmpty());
+            }
+
+            {
+                var c = new JsonSchemaValidationContext("test")
+                {
+                    EnableDiagnosisForNotRequiredFields = true,
+                };
+
+                var s = JsonSchema.FromType<NotRequiredWithIgnorable>();
+                Assert.NotNull(s.Validator.Validate(c, new NotRequiredWithIgnorable { Value = 0 }));
+
+                Assert.True(c.IsEmpty());
+            }
+
+            {
+                var c = new JsonSchemaValidationContext("test")
+                {
+                    EnableDiagnosisForNotRequiredFields = true,
+                };
+
+                var s = JsonSchema.FromType<NotRequiredWithIgnorable>();
+                // An error is NOT returned even though diagnosis is enabled because of an ignorable value is matched
+                Assert.Null(s.Validator.Validate(c, new NotRequiredWithIgnorable { Value = -1 }));
+
+                Assert.True(c.IsEmpty());
+            }
+        }
+
         [Test]
         public void DictionaryValidator()
         {
@@ -246,6 +335,56 @@ namespace UniJSON
             }
 
             Assert.True(c.IsEmpty());
+        }
+
+        class HasArrayOBject
+        {
+            [ItemJsonSchema(Minimum = 0.0, Maximum = 1.0)]
+            public float[] xs;
+        }
+
+        [Test]
+        public void HasArrayObjectValidator()
+        {
+            {
+                var c = new JsonSchemaValidationContext("test")
+                {
+                    EnableDiagnosisForNotRequiredFields = true,
+                };
+
+                var s = JsonSchema.FromType<HasArrayOBject>();
+
+                Assert.Null(s.Validator.Validate(c, new HasArrayOBject { xs = new float[] {} }));
+                Assert.Null(s.Validator.Validate(c, new HasArrayOBject { xs = new float[] { 0.5f } }));
+                Assert.NotNull(s.Validator.Validate(c, new HasArrayOBject { xs = new float[] { 1.5f } }));
+
+                Assert.True(c.IsEmpty());
+            }
+        }
+
+        class HasListObject
+        {
+            [ItemJsonSchema(Minimum = 0.0, Maximum = 1.0)]
+            public List<float> xs;
+        }
+
+        [Test]
+        public void HasListObjectValidator()
+        {
+            {
+                var c = new JsonSchemaValidationContext("test")
+                {
+                    EnableDiagnosisForNotRequiredFields = true,
+                };
+
+                var s = JsonSchema.FromType<HasListObject>();
+
+                Assert.Null(s.Validator.Validate(c, new HasListObject { xs = new List<float> {} }));
+                Assert.Null(s.Validator.Validate(c, new HasListObject { xs = new List<float> { 0.5f } }));
+                Assert.NotNull(s.Validator.Validate(c, new HasListObject { xs = new List<float> { 1.5f } }));
+
+                Assert.True(c.IsEmpty());
+            }
         }
     }
 }
