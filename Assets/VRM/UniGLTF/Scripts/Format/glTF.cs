@@ -503,7 +503,8 @@ namespace UniGLTF
             string json;
             if (UseUniJSONSerializer)
             {
-                json = JsonSchema.FromType(GetType()).Serialize(this);
+                var c = new JsonSchemaValidationContext(this);
+                json = JsonSchema.FromType(GetType()).Serialize(this, c);
             }
             else
             {
