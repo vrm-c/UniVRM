@@ -150,7 +150,7 @@ namespace UniGLTF
         [Test]
         public void MeshTest()
         {
-            var mesh = new glTFMesh("mesh")
+            var model = new glTFMesh("mesh")
             {
                 primitives = new List<glTFPrimitives>
                 {
@@ -164,25 +164,22 @@ namespace UniGLTF
                 },
             };
 
-            var f = new JsonFormatter();
-            f.Serialize(mesh);
-
-            var json = new Utf8String(f.GetStoreBytes()).ToString();
-            Assert.AreEqual(@"{""name"":""mesh"",""primitives"":[{""mode"":0,""attributes"":{""POSITION"":0},""material"":0,""extensions"":{}}]}", json);
+            var json = model.ToJson();
+            Assert.AreEqual(@"{""name"":""mesh"",""primitives"":[{""mode"":0,""indices"":-1,""attributes"":{""POSITION"":0},""material"":0}]}", json);
             Debug.Log(json);
 
             var c = new JsonSchemaValidationContext("")
             {
                 EnableDiagnosisForNotRequiredFields = true,
             };
-            var json2 = JsonSchema.FromType<glTFMesh>().Serialize(mesh, c);
-            Assert.AreEqual(json, json2);
+            var json2 = JsonSchema.FromType<glTFMesh>().Serialize(model, c);
+            Assert.AreEqual(@"{""name"":""mesh"",""primitives"":[{""mode"":0,""attributes"":{""POSITION"":0},""material"":0,""extensions"":{}}]}", json2);
         }
 
         [Test]
         public void PrimitiveTest()
         {
-            var prim = new glTFPrimitives
+            var model = new glTFPrimitives
             {
                 attributes = new glTFAttributes
                 {
@@ -197,33 +194,27 @@ namespace UniGLTF
                 }
             };
 
-            var f = new JsonFormatter();
-            f.Serialize(prim);
-
-            var json = new Utf8String(f.GetStoreBytes()).ToString();
-            Assert.AreEqual(@"{""mode"":0,""attributes"":{""POSITION"":0},""material"":0,""extras"":{""targetNames"":[""aaa""]},""extensions"":{}}", json);
+            var json = model.ToJson();
+            Assert.AreEqual(@"{""mode"":0,""indices"":-1,""attributes"":{""POSITION"":0},""material"":0,""extras"":{""targetNames"":[""aaa""]}}", json);
             Debug.Log(json);
 
             var c = new JsonSchemaValidationContext("")
             {
                 EnableDiagnosisForNotRequiredFields = true,
             };
-            var json2 = JsonSchema.FromType<glTFPrimitives>().Serialize(prim, c);
-            Assert.AreEqual(json, json2);
+            var json2 = JsonSchema.FromType<glTFPrimitives>().Serialize(model, c);
+            Assert.AreEqual(@"{""mode"":0,""attributes"":{""POSITION"":0},""material"":0,""extras"":{""targetNames"":[""aaa""]},""extensions"":{}}", json2);
         }
 
         [Test]
         public void AttributesTest()
         {
-            var attrs = new glTFAttributes
+            var model = new glTFAttributes
             {
                 POSITION = 0,
             };
 
-            var f = new JsonFormatter();
-            f.Serialize(attrs);
-
-            var json = new Utf8String(f.GetStoreBytes()).ToString();
+            var json = model.ToJson();
             Assert.AreEqual(@"{""POSITION"":0}", json);
             Debug.Log(json);
 
@@ -231,22 +222,19 @@ namespace UniGLTF
             {
                 EnableDiagnosisForNotRequiredFields = true,
             };
-            var json2 = JsonSchema.FromType<glTFAttributes>().Serialize(attrs, c);
+            var json2 = JsonSchema.FromType<glTFAttributes>().Serialize(model, c);
             Assert.AreEqual(json, json2);
         }
 
         [Test]
         public void TextureInfoTest()
         {
-            var texi = new glTFMaterialBaseColorTextureInfo()
+            var model = new glTFMaterialBaseColorTextureInfo()
             {
                 index = 1,
             };
 
-            var f = new JsonFormatter();
-            f.Serialize(texi);
-
-            var json = new Utf8String(f.GetStoreBytes()).ToString();
+            var json = model.ToJson();
             Assert.AreEqual(@"{""index"":1,""texCoord"":0}", json);
             Debug.Log(json);
 
@@ -254,21 +242,21 @@ namespace UniGLTF
             {
                 EnableDiagnosisForNotRequiredFields = true,
             };
-            var json2 = JsonSchema.FromType<glTFMaterialBaseColorTextureInfo>().Serialize(texi, c);
+            var json2 = JsonSchema.FromType<glTFMaterialBaseColorTextureInfo>().Serialize(model, c);
             Assert.AreEqual(json, json2);
         }
 
         [Test]
         public void TextureInfoTestError()
         {
-            var texi = new glTFMaterialBaseColorTextureInfo();
+            var model = new glTFMaterialBaseColorTextureInfo();
 
             var c = new JsonSchemaValidationContext("")
             {
                 EnableDiagnosisForNotRequiredFields = true,
             };
             var ex = Assert.Throws<JsonSchemaValidationException>(
-                () => JsonSchema.FromType<glTFMaterialBaseColorTextureInfo>().Serialize(texi, c)
+                () => JsonSchema.FromType<glTFMaterialBaseColorTextureInfo>().Serialize(model, c)
             );
             Assert.AreEqual("[index.String] minimum: ! -1>=0", ex.Message);
         }
@@ -276,25 +264,40 @@ namespace UniGLTF
         [Test]
         public void MaterialTest()
         {
-            var texi = new glTFMaterial()
+            var model = new glTFMaterial()
             {
                 name = "a",
                 emissiveFactor = new float[] { 0.5f, 0.5f, 0.5f },
             };
 
-            var f = new JsonFormatter();
-            f.Serialize(texi);
-
-            var json = new Utf8String(f.GetStoreBytes()).ToString();
-            Assert.AreEqual(@"{""name"":""a"",""emissiveFactor"":[0.5,0.5,0.5],""alphaCutoff"":0.5,""doubleSided"":false}", json);
+            var json = model.ToJson();
+            Assert.AreEqual(@"{""name"":""a"",""emissiveFactor"":[0.5,0.5,0.5],""doubleSided"":false}", json);
             Debug.Log(json);
 
             var c = new JsonSchemaValidationContext("")
             {
                 EnableDiagnosisForNotRequiredFields = true,
             };
-            var json2 = JsonSchema.FromType<glTFMaterial>().Serialize(texi, c);
-            Assert.AreEqual(json, json2);
+            var json2 = JsonSchema.FromType<glTFMaterial>().Serialize(model, c);
+            Assert.AreEqual(@"{""name"":""a"",""emissiveFactor"":[0.5,0.5,0.5],""doubleSided"":false}", json2);
+        }
+
+        [Test]
+        public void MaterialAlphaTest()
+        {
+            var model = new glTFMaterial()
+            {
+                name = "a",
+                emissiveFactor = new float[] { 0.5f, 0.5f, 0.5f },
+                alphaMode = "MASK",
+            };
+
+            var c = new JsonSchemaValidationContext("")
+            {
+                EnableDiagnosisForNotRequiredFields = true,
+            };
+            var json = JsonSchema.FromType<glTFMaterial>().Serialize(model, c);
+            Assert.AreEqual(@"{""name"":""a"",""emissiveFactor"":[0.5,0.5,0.5],""alphaMode"":""MASK"",""alphaCutoff"":0.5,""doubleSided"":false}", json);
         }
 
         [Test]
@@ -376,7 +379,7 @@ namespace UniGLTF
 
         public void MaterialTestError()
         {
-            var texi = new glTFMaterial()
+            var model = new glTFMaterial()
             {
                 name = "b",
                 emissiveFactor = new float[] { 1.5f, 0.5f, 0.5f },
@@ -387,7 +390,7 @@ namespace UniGLTF
                 EnableDiagnosisForNotRequiredFields = true,
             };
             var ex = Assert.Throws<JsonSchemaValidationException>(
-                () => JsonSchema.FromType<glTFMaterial>().Serialize(texi, c)
+                () => JsonSchema.FromType<glTFMaterial>().Serialize(model, c)
             );
             Assert.AreEqual("[emissiveFactor.String] maximum: ! 1.5<=1", ex.Message);
         }
@@ -395,32 +398,48 @@ namespace UniGLTF
         [Test]
         public void NodeTest()
         {
-            var texi = new glTFNode()
+            var model = new glTFNode()
             {
                 name = "a",
                 skin = 0,
                 camera = -1,
             };
 
-            var f = new JsonFormatter();
-            f.Serialize(texi);
-
-            var json = new Utf8String(f.GetStoreBytes()).ToString();
-            Assert.AreEqual(@"{""name"":""a"",""skin"":0,""extras"":{}}", json);
+            var json = model.ToJson();
+            Assert.AreEqual(@"{""name"":""a"",""skin"":0}", json);
             Debug.Log(json);
 
             var c = new JsonSchemaValidationContext("")
             {
                 EnableDiagnosisForNotRequiredFields = true,
             };
-            var json2 = JsonSchema.FromType<glTFNode>().Serialize(texi, c);
-            Assert.AreEqual(json, json2);
+            var json2 = JsonSchema.FromType<glTFNode>().Serialize(model, c);
+            Assert.AreEqual(@"{""name"":""a"",""extras"":{}}", json2);
+        }
+
+        [Test]
+        public void NodeMeshTest()
+        {
+            var model = new glTFNode()
+            {
+                name = "a",
+                mesh = 2,
+                skin = 0,
+                camera = -1,
+            };
+
+            var c = new JsonSchemaValidationContext("")
+            {
+                EnableDiagnosisForNotRequiredFields = true,
+            };
+            var json = JsonSchema.FromType<glTFNode>().Serialize(model, c);
+            Assert.AreEqual(@"{""name"":""a"",""mesh"":2,""skin"":0,""extras"":{}}", json);
         }
 
         [Test]
         public void NodeTestError()
         {
-            var texi = new glTFNode()
+            var model = new glTFNode()
             {
                 name = "a",
                 camera = -2,
@@ -431,7 +450,7 @@ namespace UniGLTF
                 EnableDiagnosisForNotRequiredFields = true,
             };
             var ex = Assert.Throws<JsonSchemaValidationException>(
-                () => JsonSchema.FromType<glTFNode>().Serialize(texi, c)
+                () => JsonSchema.FromType<glTFNode>().Serialize(model, c)
             );
             Assert.AreEqual("[camera.String] minimum: ! -2>=0", ex.Message);
         }
@@ -439,56 +458,50 @@ namespace UniGLTF
         [Test]
         public void SkinTest()
         {
-            var texi = new glTFSkin()
+            var model = new glTFSkin()
             {
                 name = "b",
                 joints = new int[] {1},
             };
 
-            var f = new JsonFormatter();
-            f.Serialize(texi);
-
-            var json = new Utf8String(f.GetStoreBytes()).ToString();
-            Assert.AreEqual(@"{""joints"":[1],""name"":""b""}", json);
+            var json = model.ToJson(); 
+            Assert.AreEqual(@"{""inverseBindMatrices"":-1,""joints"":[1]}", json);
             Debug.Log(json);
 
             var c = new JsonSchemaValidationContext("")
             {
                 EnableDiagnosisForNotRequiredFields = true,
             };
-            var json2 = JsonSchema.FromType<glTFSkin>().Serialize(texi, c);
-            Assert.AreEqual(json, json2);
+            var json2 = JsonSchema.FromType<glTFSkin>().Serialize(model, c);
+            Assert.AreEqual(@"{""joints"":[1],""name"":""b""}", json2);
         }
 
         [Test]
         public void SkinTestEmptyName()
         {
-            var texi = new glTFSkin()
+            var model = new glTFSkin()
             {
                 name = "",
                 joints = new int[] {1},
             };
 
-            var f = new JsonFormatter();
-            f.Serialize(texi);
-
-            var json = new Utf8String(f.GetStoreBytes()).ToString();
+            var json = model.ToJson();
             // "name" = "", not excluded
-            Assert.AreEqual(@"{""joints"":[1],""name"":""""}", json);
+            Assert.AreEqual(@"{""inverseBindMatrices"":-1,""joints"":[1]}", json);
             Debug.Log(json);
 
             var c = new JsonSchemaValidationContext("")
             {
                 EnableDiagnosisForNotRequiredFields = true,
             };
-            var json2 = JsonSchema.FromType<glTFSkin>().Serialize(texi, c);
-            Assert.AreEqual(json, json2);
+            var json2 = JsonSchema.FromType<glTFSkin>().Serialize(model, c);
+            Assert.AreEqual(@"{""joints"":[1],""name"":""""}", json2);
         }
 
         [Test]
         public void SkinTestErrorNull()
         {
-            var texi = new glTFSkin()
+            var model = new glTFSkin()
             {
                 name = "b",
                 joints = null,
@@ -499,7 +512,7 @@ namespace UniGLTF
                 EnableDiagnosisForNotRequiredFields = true,
             };
             var ex = Assert.Throws<JsonSchemaValidationException>(
-                () => JsonSchema.FromType<glTFSkin>().Serialize(texi, c)
+                () => JsonSchema.FromType<glTFSkin>().Serialize(model, c)
             );
             Assert.AreEqual("[joints.String] null", ex.Message);
         }
@@ -507,7 +520,7 @@ namespace UniGLTF
         [Test]
         public void SkinTestError()
         {
-            var texi = new glTFSkin()
+            var model = new glTFSkin()
             {
                 name = "b",
                 joints = new int[] {},
@@ -518,7 +531,7 @@ namespace UniGLTF
                 EnableDiagnosisForNotRequiredFields = true,
             };
             var ex = Assert.Throws<JsonSchemaValidationException>(
-                () => JsonSchema.FromType<glTFSkin>().Serialize(texi, c)
+                () => JsonSchema.FromType<glTFSkin>().Serialize(model, c)
             );
             Assert.AreEqual("[joints.String] minItems", ex.Message);
         }

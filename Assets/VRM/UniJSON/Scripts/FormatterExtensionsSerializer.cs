@@ -162,7 +162,14 @@ namespace UniJSON
             {
                 // reflection
                 var schema = JsonSchema.FromType<T>();
-                return (IFormatter f, T value) => schema.Serialize(f, value);
+                return (IFormatter f, T value) =>
+                {
+                    var c = new JsonSchemaValidationContext(value)
+                    {
+                        EnableDiagnosisForNotRequiredFields = true
+                    };
+                    schema.Serialize(f, value, c);
+                };
             }
 
 

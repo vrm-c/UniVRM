@@ -10,7 +10,7 @@ namespace UniJSON
             [JsonSchema(Minimum = 0)]
             public int X;
 
-            [JsonSchema(Minimum = 10)] // Not required, thus ignored when the value violates the constraints
+            [JsonSchema(Minimum = 10, ExplicitIgnorableValue = 0)] // Not required, thus ignored when the value violates the constraints
             public int Y;
         }
 
@@ -67,6 +67,52 @@ namespace UniJSON
             var obj = new ObjectNestedTest();
 
             var s = JsonSchema.FromType<ObjectNestedTest>();
+            {
+                var c = new JsonSchemaValidationContext(obj);
+                Assert.Null(s.Validator.Validate(c, s));
+            }
+            var actual = s.Serialize(obj);
+
+            var expected = @"{}";
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        public class HasDepsTest
+        {
+            [JsonSchema(Minimum = 0, ExplicitIgnorableValue = -1)]
+            public int X;
+
+            [JsonSchema(Dependencies = new string[] {"X"})]
+            public int Y;
+        }
+
+        [Test]
+        public void TestHasDeps()
+        {
+            var obj = new HasDepsTest();
+
+            var s = JsonSchema.FromType<HasDepsTest>();
+            {
+                var c = new JsonSchemaValidationContext(obj);
+                Assert.Null(s.Validator.Validate(c, s));
+            }
+            var actual = s.Serialize(obj);
+
+            var expected = @"{""X"":0,""Y"":0}";
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public void TestHasDepsHasViolation()
+        {
+            var obj = new HasDepsTest()
+            {
+                X = -1,
+            };
+
+            var s = JsonSchema.FromType<HasDepsTest>();
             {
                 var c = new JsonSchemaValidationContext(obj);
                 Assert.Null(s.Validator.Validate(c, s));
