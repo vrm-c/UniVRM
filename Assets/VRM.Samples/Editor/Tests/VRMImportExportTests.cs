@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using System.IO;
+using UniGLTF;
 using UniJSON;
 using UnityEngine;
 
@@ -41,15 +42,15 @@ namespace VRM.Samples
 
             using (new ActionDisposer(() => { GameObject.DestroyImmediate(context.Root); }))
             {
-                var importJson = JsonParser.Parse(context.Json);
-                importJson.SetValue("/extensions/VRM/exporterVersion", VRMVersion.VRM_VERSION);
-                importJson.SetValue("/asset/generator", UniGLTF.UniGLTFVersion.UNIGLTF_VERSION);
-                importJson.SetValue("/scene", 0);
-                importJson.SetValue("/materials/*/doubleSided", false);
+                var importedJson = JsonParser.Parse(context.Json);
+                importedJson.SetValue("/extensions/VRM/exporterVersion", VRMVersion.VRM_VERSION);
+                importedJson.SetValue("/asset/generator", UniGLTF.UniGLTFVersion.UNIGLTF_VERSION);
+                importedJson.SetValue("/scene", 0);
+                importedJson.SetValue("/materials/*/doubleSided", false);
                 //importJson.SetValue("/materials/*/pbrMetallicRoughness/roughnessFactor", 0);
                 //importJson.SetValue("/materials/*/pbrMetallicRoughness/baseColorFactor", new float[] { 1, 1, 1, 1 });
-                importJson.SetValue("/accessors/*/normalized", false);
-                importJson.RemoveValue(Utf8String.From("/nodes/*/extras"));
+                importedJson.SetValue("/accessors/*/normalized", false);
+                importedJson.RemoveValue(Utf8String.From("/nodes/*/extras"));
                 /*
                 importJson.SetValue("/bufferViews/12/byteStride", 4);
                 importJson.SetValue("/bufferViews/13/byteStride", 4);
@@ -78,10 +79,13 @@ namespace VRM.Samples
                 importJson.SetValue("/bufferViews/252/byteStride", 64);
                 importJson.SetValue("/bufferViews/253/byteStride", 64);
                 */
-                importJson.RemoveValue(Utf8String.From("/bufferViews/*/byteStride"));
+                importedJson.RemoveValue(Utf8String.From("/bufferViews/*/byteStride"));
 
                 var vrm = VRMExporter.Export(context.Root);
+
                 var exportJson = JsonParser.Parse(vrm.ToJson());
+
+                var newExportedJson = JsonParser.Parse(JsonSchema.FromType<glTF>().Serialize(vrm));
 
                 /*
                 foreach (var kv in importJson.Diff(exportJson))
