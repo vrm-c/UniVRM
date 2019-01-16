@@ -346,7 +346,7 @@ namespace UniJSON
 
                 Dictionary<string, FieldValidator> m_validators;
 
-                static FieldValidator CreteFieldValidator<U>(Func<T, U> getter, string name)
+                static FieldValidator CreateFieldValidator<U>(Func<T, U> getter, string name)
                 {
                     return (JsonSchema s, JsonSchemaValidationContext c, T o, out bool isIgnorable) =>
                     {
@@ -367,7 +367,7 @@ namespace UniJSON
                 {
                     var validators = new Dictionary<string, FieldValidator>();
                     GenericFieldView<T>.CreateFieldProcessors<ObjectValidator, FieldValidator>(
-                        "CreteFieldValidator", validators);
+                        "CreateFieldValidator", validators);
 
                     m_validators = validators;
                 }
@@ -496,7 +496,7 @@ namespace UniJSON
 
                 Dictionary<string, FieldSerializer> m_serializers;
 
-                static FieldSerializer CreteFieldSerializer<U>(Func<T, U> getter, string name)
+                static FieldSerializer CreateFieldSerializer<U>(Func<T, U> getter, string name)
                 {
                     return (s, c, f, o, vRes, deps) =>
                     {
@@ -528,7 +528,7 @@ namespace UniJSON
                 {
                     var serializers = new Dictionary<string, FieldSerializer>();
                     GenericFieldView<T>.CreateFieldProcessors<Serializer, FieldSerializer>(
-                        "CreteFieldSerializer", serializers);
+                        "CreateFieldSerializer", serializers);
 
                     m_serializers = serializers;
                 }
