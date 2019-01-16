@@ -165,5 +165,36 @@ namespace UniJSON
 
             Assert.AreEqual(expected, actual);
         }
+
+        public class NestedRequiredTestParent
+        {
+            [JsonSchema(Required = true)]
+            public NestedRequiredTestChild C;
+        }
+
+        public class NestedRequiredTestChild
+        {
+            public string X;
+        }
+
+        [Test]
+        public void TestNestedRequired()
+        {
+            var obj = new NestedRequiredTestParent()
+            {
+                C = new NestedRequiredTestChild(),
+            };
+
+            var s = JsonSchema.FromType<NestedRequiredTestParent>();
+            {
+                var c = new JsonSchemaValidationContext(obj);
+                Assert.Null(s.Validator.Validate(c, s));
+            }
+            var actual = s.Serialize(obj);
+
+            var expected = @"{""C"":{}}";
+
+            Assert.AreEqual(expected, actual);
+        }
     }
 }
