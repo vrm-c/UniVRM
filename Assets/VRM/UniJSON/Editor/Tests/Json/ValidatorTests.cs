@@ -413,5 +413,29 @@ namespace UniJSON
                 Assert.True(c.IsEmpty());
             }
         }
+
+        class HasRequiredStringObject
+        {
+            [JsonSchema(Required = true)]
+            public string s;
+        }
+
+        [Test]
+        public void HasRequiredStringObjectValidator()
+        {
+            {
+                var c = new JsonSchemaValidationContext("test")
+                {
+                    EnableDiagnosisForNotRequiredFields = true,
+                };
+
+                var s = JsonSchema.FromType<HasRequiredStringObject>();
+
+                Assert.NotNull(s.Validator.Validate(c, new HasRequiredStringObject()));
+                Assert.Null(s.Validator.Validate(c, new HasRequiredStringObject { s = "" }));
+
+                Assert.True(c.IsEmpty());
+            }
+        }
     }
 }

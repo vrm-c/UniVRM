@@ -464,7 +464,7 @@ namespace UniGLTF
                 joints = new int[] {1},
             };
 
-            var json = model.ToJson(); 
+            var json = model.ToJson();
             Assert.AreEqual(@"{""inverseBindMatrices"":-1,""joints"":[1]}", json);
             Debug.Log(json);
 
@@ -534,6 +534,45 @@ namespace UniGLTF
                 () => JsonSchema.FromType<glTFSkin>().Serialize(model, c)
             );
             Assert.AreEqual("[joints.String] minItems", ex.Message);
+        }
+
+        [Test]
+        public void AssetsTest()
+        {
+            var model = new glTFAssets()
+            {
+                version = "0.49",
+            };
+
+            //var json = model.ToJson();
+            //Assert.AreEqual(@"{""inverseBindMatrices"":-1,""joints"":[1]}", json);
+            //Debug.Log(json);
+
+            var c = new JsonSchemaValidationContext("")
+            {
+                EnableDiagnosisForNotRequiredFields = true,
+            };
+            var json2 = JsonSchema.FromType<glTFAssets>().Serialize(model, c);
+            Assert.AreEqual(@"{""version"":""0.49""}", json2);
+        }
+
+        [Test]
+        public void AssetsTestError()
+        {
+            var model = new glTFAssets();
+
+            //var json = model.ToJson();
+            //Assert.AreEqual(@"{""inverseBindMatrices"":-1,""joints"":[1]}", json);
+            //Debug.Log(json);
+
+            var c = new JsonSchemaValidationContext("")
+            {
+                EnableDiagnosisForNotRequiredFields = true,
+            };
+            var ex = Assert.Throws<JsonSchemaValidationException>(
+                () => JsonSchema.FromType<glTFAssets>().Serialize(model, c)
+            );
+            Assert.AreEqual("[version.String] null", ex.Message);
         }
     }
 }

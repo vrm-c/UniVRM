@@ -123,5 +123,47 @@ namespace UniJSON
 
             Assert.AreEqual(expected, actual);
         }
+
+        public class HasStringTest
+        {
+            public string X;
+        }
+
+        [Test]
+        public void TestHasString()
+        {
+            var obj = new HasStringTest()
+            {
+                X = "a",
+            };
+
+            var s = JsonSchema.FromType<HasStringTest>();
+            {
+                var c = new JsonSchemaValidationContext(obj);
+                Assert.Null(s.Validator.Validate(c, s));
+            }
+            var actual = s.Serialize(obj);
+
+            var expected = @"{""X"":""a""}";
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public void TestHasStringWithNull()
+        {
+            var obj = new HasStringTest();
+
+            var s = JsonSchema.FromType<HasStringTest>();
+            {
+                var c = new JsonSchemaValidationContext(obj);
+                Assert.Null(s.Validator.Validate(c, s));
+            }
+            var actual = s.Serialize(obj);
+
+            var expected = @"{}";
+
+            Assert.AreEqual(expected, actual);
+        }
     }
 }
