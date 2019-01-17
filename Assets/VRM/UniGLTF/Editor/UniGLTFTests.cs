@@ -173,7 +173,7 @@ namespace UniGLTF
                 EnableDiagnosisForNotRequiredFields = true,
             };
             var json2 = JsonSchema.FromType<glTFMesh>().Serialize(model, c);
-            Assert.AreEqual(@"{""name"":""mesh"",""primitives"":[{""mode"":0,""attributes"":{""POSITION"":0},""material"":0,""extensions"":{}}]}", json2);
+            Assert.AreEqual(@"{""name"":""mesh"",""primitives"":[{""mode"":0,""attributes"":{""POSITION"":0},""material"":0}]}", json2);
         }
 
         [Test]
@@ -203,7 +203,7 @@ namespace UniGLTF
                 EnableDiagnosisForNotRequiredFields = true,
             };
             var json2 = JsonSchema.FromType<glTFPrimitives>().Serialize(model, c);
-            Assert.AreEqual(@"{""mode"":0,""attributes"":{""POSITION"":0},""material"":0,""extras"":{""targetNames"":[""aaa""]},""extensions"":{}}", json2);
+            Assert.AreEqual(@"{""mode"":0,""attributes"":{""POSITION"":0},""material"":0,""extras"":{""targetNames"":[""aaa""]}}", json2);
         }
 
         [Test]

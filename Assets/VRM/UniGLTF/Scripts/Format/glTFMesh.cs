@@ -116,7 +116,7 @@ namespace UniGLTF
         public glTFPrimitives_extras extras = new glTFPrimitives_extras();
 
         [JsonSchema(SkipSchemaComparison = true)]
-        public glTFPrimitives_extensions extensions = new glTFPrimitives_extensions();
+        public glTFPrimitives_extensions extensions = null;
 
         protected override void SerializeMembers(GLTFJsonFormatter f)
         {
@@ -127,10 +127,6 @@ namespace UniGLTF
             if (targets != null && targets.Count > 0)
             {
                 f.Key("targets"); f.GLTFValue(targets);
-            }
-            if (extensions.KHR_draco_mesh_compression != null)
-            {
-                f.Key("extensions"); f.GLTFValue(extensions);
             }
             if (extras.targetNames.Count > 0)
             {
