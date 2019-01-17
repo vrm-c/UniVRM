@@ -232,5 +232,81 @@ namespace VRM
             // NOTE: New serializer outputs values which will not be used...
             Assert.AreEqual(json,json2);
         }
+
+        [Test]
+        public void SecondaryAnimationColliderTest()
+        {
+            var model = new glTF_VRM_SecondaryAnimationCollider()
+            {
+                offset = new Vector3(1, 2, 3),
+                radius = 42,
+            };
+
+            var json = model.ToJson();
+            Assert.AreEqual(@"{""offset"":{""x"":1,""y"":2,""z"":3},""radius"":42}", json);
+            Debug.Log(json);
+
+            var c = new JsonSchemaValidationContext("")
+            {
+                EnableDiagnosisForNotRequiredFields = true,
+            };
+            var json2 = JsonSchema.FromType<glTF_VRM_SecondaryAnimationCollider>().Serialize(model, c);
+            // NOTE: New serializer outputs values which will not be used...
+            Assert.AreEqual(json,json2);
+        }
+
+        [Test]
+        public void SecondaryAnimationColliderGroupTest()
+        {
+            var model = new glTF_VRM_SecondaryAnimationColliderGroup();
+
+            var json = model.ToJson();
+            Assert.AreEqual(@"{""node"":0,""colliders"":[]}", json);
+            Debug.Log(json);
+
+            var c = new JsonSchemaValidationContext("")
+            {
+                EnableDiagnosisForNotRequiredFields = true,
+            };
+            var json2 = JsonSchema.FromType<glTF_VRM_SecondaryAnimationColliderGroup>().Serialize(model, c);
+            // NOTE: New serializer outputs values which will not be used...
+            Assert.AreEqual(json,json2);
+        }
+
+        [Test]
+        public void SecondaryAnimationGroupTest()
+        {
+            var model = new glTF_VRM_SecondaryAnimationGroup();
+
+            var json = model.ToJson();
+            Assert.AreEqual(@"{""stiffiness"":0,""gravityPower"":0,""gravityDir"":{""x"":0,""y"":0,""z"":0},""dragForce"":0,""center"":0,""hitRadius"":0,""bones"":[],""colliderGroups"":[]}", json);
+            Debug.Log(json);
+
+            var c = new JsonSchemaValidationContext("")
+            {
+                EnableDiagnosisForNotRequiredFields = true,
+            };
+            var json2 = JsonSchema.FromType<glTF_VRM_SecondaryAnimationGroup>().Serialize(model, c);
+            // NOTE: New serializer outputs values which will not be used...
+            Assert.AreEqual(json,json2);
+        }
+
+        [Test]
+        public void SecondaryAnimationTest()
+        {
+            var model = new glTF_VRM_SecondaryAnimation();
+
+            var json = model.ToJson();
+            Assert.AreEqual(@"{""boneGroups"":[],""colliderGroups"":[]}", json);
+            Debug.Log(json);
+
+            var c = new JsonSchemaValidationContext("")
+            {
+                EnableDiagnosisForNotRequiredFields = true,
+            };
+            var json2 = JsonSchema.FromType<glTF_VRM_SecondaryAnimation>().Serialize(model, c);
+            // NOTE: New serializer outputs values which will not be used...
+            Assert.AreEqual(json,json2);
+        }
     }
 }
