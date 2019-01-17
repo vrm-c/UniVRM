@@ -155,5 +155,46 @@ namespace VRM
                 @"{""firstPersonBone"":-1,""firstPersonBoneOffset"":{""x"":0,""y"":0,""z"":0},""meshAnnotations"":[],""lookAtTypeName"":""Bone"",""lookAtHorizontalInner"":{""xRange"":90,""yRange"":10},""lookAtHorizontalOuter"":{""xRange"":90,""yRange"":10},""lookAtVerticalDown"":{""xRange"":90,""yRange"":10},""lookAtVerticalUp"":{""xRange"":90,""yRange"":10}}",
                 json2);
         }
+
+        [Test]
+        public void HumanoidBoneTest()
+        {
+            var model = new glTF_VRM_HumanoidBone()
+            {
+                bone = "hips", // NOTE: This field must not be null?
+            };
+
+            var json = model.ToJson();
+            Assert.AreEqual(@"{""bone"":""hips"",""node"":-1,""useDefaultValues"":true}", json);
+            Debug.Log(json);
+
+            var c = new JsonSchemaValidationContext("")
+            {
+                EnableDiagnosisForNotRequiredFields = true,
+            };
+            var json2 = JsonSchema.FromType<glTF_VRM_HumanoidBone>().Serialize(model, c);
+            // NOTE: New serializer outputs values which will not be used...
+            Assert.AreEqual(
+                @"{""bone"":""hips"",""node"":-1,""useDefaultValues"":true,""min"":{""x"":0,""y"":0,""z"":0},""max"":{""x"":0,""y"":0,""z"":0},""center"":{""x"":0,""y"":0,""z"":0},""axisLength"":0}",
+                json2);
+        }
+
+        [Test]
+        public void HumanoidTest()
+        {
+            var model = new glTF_VRM_Humanoid();
+
+            var json = model.ToJson();
+            Assert.AreEqual(@"{""humanBones"":[],""armStretch"":0.05,""legStretch"":0.05,""upperArmTwist"":0.5,""lowerArmTwist"":0.5,""upperLegTwist"":0.5,""lowerLegTwist"":0.5,""feetSpacing"":0,""hasTranslationDoF"":false}", json);
+            Debug.Log(json);
+
+            var c = new JsonSchemaValidationContext("")
+            {
+                EnableDiagnosisForNotRequiredFields = true,
+            };
+            var json2 = JsonSchema.FromType<glTF_VRM_Humanoid>().Serialize(model, c);
+            // NOTE: New serializer outputs values which will not be used...
+            Assert.AreEqual(json,json2);
+        }
     }
 }
