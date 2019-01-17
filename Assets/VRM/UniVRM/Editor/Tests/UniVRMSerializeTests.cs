@@ -214,5 +214,23 @@ namespace VRM
             // NOTE: New serializer outputs values which will not be used...
             Assert.AreEqual(json,json2);
         }
+
+        [Test]
+        public void MetaTest()
+        {
+            var model = new glTF_VRM_Meta();
+
+            var json = model.ToJson();
+            Assert.AreEqual(@"{""texture"":-1}", json);
+            Debug.Log(json);
+
+            var c = new JsonSchemaValidationContext("")
+            {
+                EnableDiagnosisForNotRequiredFields = true,
+            };
+            var json2 = JsonSchema.FromType<glTF_VRM_Meta>().Serialize(model, c);
+            // NOTE: New serializer outputs values which will not be used...
+            Assert.AreEqual(json,json2);
+        }
     }
 }
