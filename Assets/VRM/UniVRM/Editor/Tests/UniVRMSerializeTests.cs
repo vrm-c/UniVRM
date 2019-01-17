@@ -196,5 +196,23 @@ namespace VRM
             // NOTE: New serializer outputs values which will not be used...
             Assert.AreEqual(json,json2);
         }
+
+        [Test]
+        public void MaterialTest()
+        {
+            var model = new glTF_VRM_Material();
+
+            var json = model.ToJson();
+            Assert.AreEqual(@"{""renderQueue"":-1,""floatProperties"":{},""vectorProperties"":{},""textureProperties"":{},""keywordMap"":{},""tagMap"":{}}", json);
+            Debug.Log(json);
+
+            var c = new JsonSchemaValidationContext("")
+            {
+                EnableDiagnosisForNotRequiredFields = true,
+            };
+            var json2 = JsonSchema.FromType<glTF_VRM_Material>().Serialize(model, c);
+            // NOTE: New serializer outputs values which will not be used...
+            Assert.AreEqual(json,json2);
+        }
     }
 }
