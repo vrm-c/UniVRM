@@ -100,5 +100,56 @@ namespace VRM
             );
             Assert.AreEqual("[presetName.String] aaaaaaaaaaaa_not_exists_ is not valid enum", ex.Message);
         }
+
+        [Test]
+        public void DegreeMapTest()
+        {
+            var model = new glTF_VRM_DegreeMap();
+
+            var json = model.ToJson();
+            Assert.AreEqual(@"{""xRange"":90,""yRange"":10}", json);
+            Debug.Log(json);
+
+            var c = new JsonSchemaValidationContext("")
+            {
+                EnableDiagnosisForNotRequiredFields = true,
+            };
+            var json2 = JsonSchema.FromType<glTF_VRM_DegreeMap>().Serialize(model, c);
+            Assert.AreEqual(json, json2);
+        }
+
+        [Test]
+        public void MeshAnnotationTest()
+        {
+            var model = new glTF_VRM_MeshAnnotation();
+
+            var json = model.ToJson();
+            Assert.AreEqual(@"{""mesh"":0}", json);
+            Debug.Log(json);
+
+            var c = new JsonSchemaValidationContext("")
+            {
+                EnableDiagnosisForNotRequiredFields = true,
+            };
+            var json2 = JsonSchema.FromType<glTF_VRM_MeshAnnotation>().Serialize(model, c);
+            Assert.AreEqual(json, json2);
+        }
+
+        [Test]
+        public void FirstPersonTest()
+        {
+            var model = new glTF_VRM_Firstperson();
+
+            var json = model.ToJson();
+            Assert.AreEqual(@"{""firstPersonBone"":-1,""firstPersonBoneOffset"":{""x"":0,""y"":0,""z"":0},""meshAnnotations"":[],""lookAtTypeName"":""Bone"",""lookAtHorizontalInner"":{""xRange"":90,""yRange"":10},""lookAtHorizontalOuter"":{""xRange"":90,""yRange"":10},""lookAtVerticalDown"":{""xRange"":90,""yRange"":10},""lookAtVerticalUp"":{""xRange"":90,""yRange"":10}}", json);
+            Debug.Log(json);
+
+            var c = new JsonSchemaValidationContext("")
+            {
+                EnableDiagnosisForNotRequiredFields = true,
+            };
+            var json2 = JsonSchema.FromType<glTF_VRM_Firstperson>().Serialize(model, c);
+            Assert.AreEqual(@"{""firstPersonBone"":-1,""firstPersonBoneOffset"":{""x"":0,""y"":0,""z"":0},""meshAnnotations"":[],""lookAtTypeName"":""Bone"",""lookAtHorizontalInner"":{""xRange"":90,""yRange"":10},""lookAtHorizontalOuter"":{""xRange"":90,""yRange"":10},""lookAtVerticalDown"":{""xRange"":90,""yRange"":10},""lookAtVerticalUp"":{""xRange"":90,""yRange"":10}}", json2);
+      }
     }
 }
