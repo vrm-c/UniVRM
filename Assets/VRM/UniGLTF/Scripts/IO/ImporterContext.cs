@@ -503,14 +503,12 @@ namespace UniGLTF
                 .ContinueWithCoroutine(Scheduler.MainThread, LoadMaterials)
                 .OnExecute(Scheduler.ThreadPool, parent =>
                 {
-                    /*
-                    if (GLTF.meshes
-                        .SelectMany(x => x.primitives)
-                        .Any(x => x.extensions.KHR_draco_mesh_compression != null))
+                    // UniGLTF does not support draco
+                    // https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Khronos/KHR_draco_mesh_compression/README.md#conformance
+                    if (GLTF.extensionsRequired.Contains("KHR_draco_mesh_compression"))
                     {
                         throw new UniGLTFNotSupportedException("draco is not supported");
                     }
-                    */
 
                     // meshes
                     var meshImporter = new MeshImporter();
