@@ -7,7 +7,11 @@ namespace VRM
 {
     /// <summary>
     /// The base algorithm is http://rocketjump.skr.jp/unity3d/109/ of @ricopin416
+    /// DefaultExecutionOrder(11000) means calclate springbone after FinaiIK( VRIK )
     /// </summary>
+    #if UNITY_5_5_OR_NEWER
+    [DefaultExecutionOrder(11000)]
+    #endif
     public class VRMSpringBone : MonoBehaviour
     {
         [SerializeField]

@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace VRM
 {
+    #if UNITY_5_5_OR_NEWER
+    [DefaultExecutionOrder(11001)]
+    #endif
     public class VRMSpringBoneColliderGroup : MonoBehaviour
     {
         [Serializable]
