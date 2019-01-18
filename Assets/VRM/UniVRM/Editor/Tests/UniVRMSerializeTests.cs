@@ -152,7 +152,7 @@ namespace VRM
             };
             var json2 = JsonSchema.FromType<glTF_VRM_Firstperson>().Serialize(model, c);
             Assert.AreEqual(
-                @"{""firstPersonBone"":-1,""firstPersonBoneOffset"":{""x"":0,""y"":0,""z"":0},""meshAnnotations"":[],""lookAtTypeName"":""Bone"",""lookAtHorizontalInner"":{""xRange"":90,""yRange"":10},""lookAtHorizontalOuter"":{""xRange"":90,""yRange"":10},""lookAtVerticalDown"":{""xRange"":90,""yRange"":10},""lookAtVerticalUp"":{""xRange"":90,""yRange"":10}}",
+                @"{""firstPersonBoneOffset"":{""x"":0,""y"":0,""z"":0},""meshAnnotations"":[],""lookAtTypeName"":""Bone"",""lookAtHorizontalInner"":{""xRange"":90,""yRange"":10},""lookAtHorizontalOuter"":{""xRange"":90,""yRange"":10},""lookAtVerticalDown"":{""xRange"":90,""yRange"":10},""lookAtVerticalUp"":{""xRange"":90,""yRange"":10}}",
                 json2);
         }
 
@@ -162,10 +162,11 @@ namespace VRM
             var model = new glTF_VRM_HumanoidBone()
             {
                 bone = "hips", // NOTE: This field must not be null?
+                node = 0,
             };
 
             var json = model.ToJson();
-            Assert.AreEqual(@"{""bone"":""hips"",""node"":-1,""useDefaultValues"":true}", json);
+            Assert.AreEqual(@"{""bone"":""hips"",""node"":0,""useDefaultValues"":true}", json);
             Debug.Log(json);
 
             var c = new JsonSchemaValidationContext("")
@@ -175,8 +176,26 @@ namespace VRM
             var json2 = JsonSchema.FromType<glTF_VRM_HumanoidBone>().Serialize(model, c);
             // NOTE: New serializer outputs values which will not be used...
             Assert.AreEqual(
-                @"{""bone"":""hips"",""node"":-1,""useDefaultValues"":true,""min"":{""x"":0,""y"":0,""z"":0},""max"":{""x"":0,""y"":0,""z"":0},""center"":{""x"":0,""y"":0,""z"":0},""axisLength"":0}",
+                @"{""bone"":""hips"",""node"":0,""useDefaultValues"":true,""min"":{""x"":0,""y"":0,""z"":0},""max"":{""x"":0,""y"":0,""z"":0},""center"":{""x"":0,""y"":0,""z"":0},""axisLength"":0}",
                 json2);
+        }
+
+        [Test]
+        public void HumanoidBoneTestError()
+        {
+            var model = new glTF_VRM_HumanoidBone()
+            {
+                bone = "hips", // NOTE: This field must not be null?
+            };
+
+            var c = new JsonSchemaValidationContext("")
+            {
+                EnableDiagnosisForNotRequiredFields = true,
+            };
+            var ex = Assert.Throws<JsonSchemaValidationException>(
+                () => JsonSchema.FromType<glTF_VRM_HumanoidBone>().Serialize(model, c)
+            );
+            Assert.AreEqual("[node.String] minimum: ! -1>=0", ex.Message);
         }
 
         [Test]
@@ -230,7 +249,18 @@ namespace VRM
             };
             var json2 = JsonSchema.FromType<glTF_VRM_Meta>().Serialize(model, c);
             // NOTE: New serializer outputs values which will not be used...
-            Assert.AreEqual(json,json2);
+            Assert.AreEqual(@"{}",json2);
+        }
+
+        // TODO: Move to another suitable location
+        [Test]
+        public void MetaDeserializeTest()
+        {
+            var json = @"{}";
+
+            var model = deserialize<glTF_VRM_Meta>(json);
+
+            Assert.AreEqual(-1, model.texture);
         }
 
         [Test]
@@ -274,6 +304,24 @@ namespace VRM
         }
 
         [Test]
+        public void SecondaryAnimationColliderGroupTestError()
+        {
+            var model = new glTF_VRM_SecondaryAnimationColliderGroup()
+            {
+                node = -1,
+            };
+
+            var c = new JsonSchemaValidationContext("")
+            {
+                EnableDiagnosisForNotRequiredFields = true,
+            };
+            var ex = Assert.Throws<JsonSchemaValidationException>(
+                () => JsonSchema.FromType<glTF_VRM_SecondaryAnimationColliderGroup>().Serialize(model, c)
+            );
+            Assert.AreEqual("[node.String] minimum: ! -1>=0", ex.Message);
+        }
+
+        [Test]
         public void SecondaryAnimationGroupTest()
         {
             var model = new glTF_VRM_SecondaryAnimationGroup();
@@ -292,6 +340,42 @@ namespace VRM
         }
 
         [Test]
+        public void SecondaryAnimationGroupTestErrorBones()
+        {
+            var model = new glTF_VRM_SecondaryAnimationGroup()
+            {
+                bones = new int[] { -1 }
+            };
+
+            var c = new JsonSchemaValidationContext("")
+            {
+                EnableDiagnosisForNotRequiredFields = true,
+            };
+            var ex = Assert.Throws<JsonSchemaValidationException>(
+                () => JsonSchema.FromType<glTF_VRM_SecondaryAnimationGroup>().Serialize(model, c)
+            );
+            Assert.AreEqual("[bones.String] minimum: ! -1>=0", ex.Message);
+        }
+
+        [Test]
+        public void SecondaryAnimationGroupTestErrorColliderGroups()
+        {
+            var model = new glTF_VRM_SecondaryAnimationGroup()
+            {
+                colliderGroups = new int[] { -1 }
+            };
+
+            var c = new JsonSchemaValidationContext("")
+            {
+                EnableDiagnosisForNotRequiredFields = true,
+            };
+            var ex = Assert.Throws<JsonSchemaValidationException>(
+                () => JsonSchema.FromType<glTF_VRM_SecondaryAnimationGroup>().Serialize(model, c)
+            );
+            Assert.AreEqual("[colliderGroups.String] minimum: ! -1>=0", ex.Message);
+        }
+
+        [Test]
         public void SecondaryAnimationTest()
         {
             var model = new glTF_VRM_SecondaryAnimation();
@@ -307,6 +391,12 @@ namespace VRM
             var json2 = JsonSchema.FromType<glTF_VRM_SecondaryAnimation>().Serialize(model, c);
             // NOTE: New serializer outputs values which will not be used...
             Assert.AreEqual(json,json2);
+        }
+
+        // TODO: Move to another suitable location
+        T deserialize<T>(string json)
+        {
+            return JsonUtility.FromJson<T>(json);
         }
     }
 }

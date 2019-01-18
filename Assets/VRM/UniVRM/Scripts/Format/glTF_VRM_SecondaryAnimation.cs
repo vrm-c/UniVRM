@@ -28,7 +28,7 @@ namespace VRM
     [JsonSchema(Title = "vrm.secondaryanimation.collidergroup", Description = @"Set sphere balls for colliders used for collision detections with swaying objects.")]
     public class glTF_VRM_SecondaryAnimationColliderGroup : JsonSerializableBase
     {
-        [JsonSchema(Description = "The node of the collider group for setting up collision detections.")]
+        [JsonSchema(Description = "The node of the collider group for setting up collision detections.", Minimum = 0)]
         public int node;
 
         public List<glTF_VRM_SecondaryAnimationCollider> colliders = new List<glTF_VRM_SecondaryAnimationCollider>();
@@ -60,6 +60,9 @@ namespace VRM
         [JsonSchema(Description = "The resistance (deceleration) of automatic animation.")]
         public float dragForce;
 
+        // NOTE: This value denotes index but may contain -1 as a value.
+        // When the value is -1, it means that center node is not specified.
+        // This is a historical issue and a compromise for forward compatibility.
         [JsonSchema(Description = @"The reference point of a swaying object can be set at any location except the origin. When implementing UI moving with warp, the parent node to move with warp can be specified if you don't want to make the object swaying with warp movement.")]
         public int center;
 
@@ -67,9 +70,11 @@ namespace VRM
         public float hitRadius;
 
         [JsonSchema(Description = "Specify the node index of the root bone of the swaying object.")]
+        [ItemJsonSchema(Minimum = 0)]
         public int[] bones = new int[] { };
 
         [JsonSchema(Description = "Specify the index of the collider group for collisions with swaying objects.")]
+        [ItemJsonSchema(Minimum = 0)]
         public int[] colliderGroups = new int[] { };
 
         protected override void SerializeMembers(GLTFJsonFormatter f)

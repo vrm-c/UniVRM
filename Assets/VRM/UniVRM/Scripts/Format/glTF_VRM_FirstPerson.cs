@@ -50,6 +50,8 @@ namespace VRM
     [JsonSchema(Title = "vrm.firstperson.meshannotation")]
     public class glTF_VRM_MeshAnnotation : JsonSerializableBase
     {
+        // When the value is -1, it means that no target mesh is found.
+        [JsonSchema(Minimum = 0)]
         public int mesh;
 
         public string firstPersonFlag;
@@ -72,7 +74,8 @@ namespace VRM
     [JsonSchema(Title = "vrm.firstperson")]
     public class glTF_VRM_Firstperson : UniGLTF.JsonSerializableBase
     {
-        [JsonSchema(Description = "The bone whose rendering should be turned off in first-person view. Usually Head is specified.")]
+        // When the value is -1, it means that no bone for first person is found.
+        [JsonSchema(Description = "The bone whose rendering should be turned off in first-person view. Usually Head is specified.", Minimum = 0, ExplicitIgnorableValue = -1)]
         public int firstPersonBone = -1;
 
         [JsonSchema(Description = @"The target position of the VR headset in first-person view. It is assumed that an offset from the head bone to the VR headset is added.")]
