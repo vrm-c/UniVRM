@@ -297,28 +297,66 @@ namespace UniJSON
             }
         }
 
+        static class GenericFieldView<T>
+        {
+            public static FieldInfo[] GetFields()
+            {
+                var t = typeof(T);
+                return t.GetFields(BindingFlags.Instance | BindingFlags.Public);
+            }
+
+            public static void CreateFieldProcessors<G, D>(
+                string methodName,
+                Dictionary<string, D> processors
+                )
+            {
+                var mi = typeof(G).GetMethod(methodName, BindingFlags.Static | BindingFlags.NonPublic);
+
+                var t = typeof(T);
+                foreach (var fi in GetFields())
+                {
+                    var value = Expression.Parameter(t, "value");
+                    var fieldValue = Expression.Field(value, fi);
+                    var compileld = Expression.Lambda(fieldValue, value).Compile();
+
+                    var getter = Expression.Constant(compileld);
+                    var name = Expression.Constant(fi.Name);
+
+                    var g = mi.MakeGenericMethod(fi.FieldType);
+                    var call = Expression.Call(g, getter, name);
+                    var lambda = (Func<D>)Expression.Lambda(call).Compile();
+
+                    processors.Add(fi.Name, lambda());
+                }
+            }
+        }
+
+        internal class ValidationResult
+        {
+            public bool IsIgnorable;
+            public JsonSchemaValidationException Ex;
+        }
+
         public static class GenericValidator<T>
         {
             class ObjectValidator
             {
                 delegate JsonSchemaValidationException FieldValidator(
-                    JsonSchema s, JsonSchemaValidationContext c, T o, bool isRequired);
+                    JsonSchema s, JsonSchemaValidationContext c, T o, out bool isIgnorable);
 
-                Dictionary<string, FieldValidator> m_validators = new Dictionary<string, FieldValidator>();
+                Dictionary<string, FieldValidator> m_validators;
 
-                static FieldValidator CreteFieldValidator<U>(Func<T, U> getter, string name)
+                static FieldValidator CreateFieldValidator<U>(Func<T, U> getter, string name)
                 {
-                    return (s, c, o, isRequired) =>
+                    return (JsonSchema s, JsonSchemaValidationContext c, T o, out bool isIgnorable) =>
                     {
                         var v = s.Validator;
                         using (c.Push(name))
                         {
                             var field = getter(o);
                             var ex = v.Validate(c, field);
-                            if (ex != null && !isRequired && s.IsExplicitlyIgnorableValue(field))
-                            {
-                                return null;
-                            }
+
+                            isIgnorable = ex != null && s.IsExplicitlyIgnorableValue(field);
 
                             return ex;
                         }
@@ -327,25 +365,46 @@ namespace UniJSON
 
                 public ObjectValidator()
                 {
-                    var mi = typeof(ObjectValidator).GetMethod("CreteFieldValidator",
-                        BindingFlags.Static|BindingFlags.NonPublic);
+                    var validators = new Dictionary<string, FieldValidator>();
+                    GenericFieldView<T>.CreateFieldProcessors<ObjectValidator, FieldValidator>(
+                        "CreateFieldValidator", validators);
 
-                    var t = typeof(T);
-                    foreach(var fi in t.GetFields(
-                        BindingFlags.Instance|BindingFlags.Public))
+                    m_validators = validators;
+                }
+
+                public JsonSchemaValidationException ValidateProperty(
+                    HashSet<string> required,
+                    KeyValuePair<string, JsonSchema> property,
+                    JsonSchemaValidationContext c,
+                    T o,
+                    out bool isIgnorable
+                    )
+                {
+                    var fieldName = property.Key;
+                    var schema = property.Value;
+
+                    isIgnorable = false;
+
+                    FieldValidator fv;
+                    if (m_validators.TryGetValue(fieldName, out fv))
                     {
-                        var value = Expression.Parameter(typeof(T), "value");
-                        var fieldValue = Expression.Field(value, fi);
-                        var compileld = Expression.Lambda(fieldValue, value).Compile();
+                        var isRequired = required != null && required.Contains(fieldName);
 
-                        var getter = Expression.Constant(compileld);
-                        var name = Expression.Constant(fi.Name);
-                        var g = mi.MakeGenericMethod(fi.FieldType);
-                        var call = Expression.Call(g, getter, name);
-                        var lambda = (Func<FieldValidator>)Expression.Lambda(call).Compile();
+                        bool isMemberIgnorable;
+                        var ex = fv(schema, c, o, out isMemberIgnorable);
+                        if (ex != null)
+                        {
+                            isIgnorable = !isRequired && isMemberIgnorable;
 
-                        m_validators.Add(fi.Name, lambda());
+                            if (isRequired // required fields must be checked
+                                || c.EnableDiagnosisForNotRequiredFields)
+                            {
+                                return ex;
+                            }
+                        }
                     }
+
+                    return null;
                 }
 
                 public JsonSchemaValidationException Validate(
@@ -355,40 +414,61 @@ namespace UniJSON
                 {
                     foreach (var kv in properties)
                     {
-                        var fieldName = kv.Key;
-                        var schema = kv.Value;
-
-                        FieldValidator fv;
-                        if (m_validators.TryGetValue(fieldName, out fv))
+                        bool isIgnorable;
+                        var ex = ValidateProperty(required, kv, c, o, out isIgnorable);
+                        if (ex != null && !isIgnorable)
                         {
-                            var isRequired = required != null && required.Contains(fieldName);
-                            var ex = fv(schema, c, o, isRequired);
-                            if (ex != null)
-                            {
-                                if (isRequired // required fields must be checked
-                                    || c.EnableDiagnosisForNotRequiredFields)
-                                {
-                                    return ex;
-                                }
-                            }
+                            return ex;
                         }
                     }
 
                     return null;
                 }
+
+                public void ValidationResults
+                    (HashSet<string> required,
+                    Dictionary<string, JsonSchema> properties,
+                    JsonSchemaValidationContext c, T o,
+                    Dictionary<string, ValidationResult> results)
+                {
+                    foreach (var kv in properties)
+                    {
+                        bool isIgnorable;
+                        var ex = ValidateProperty(required, kv, c, o, out isIgnorable);
+
+                        results.Add(kv.Key, new ValidationResult {
+                            IsIgnorable = isIgnorable,
+                            Ex = ex,
+                        });
+                    }
+                }
             }
 
             static ObjectValidator s_validator;
 
-            public static JsonSchemaValidationException Validate(HashSet<string> required,
-                Dictionary<string, JsonSchema> properties,
-                JsonSchemaValidationContext c, T o)
+            static void prepareValidator()
             {
                 if (s_validator == null)
                 {
                     s_validator = new ObjectValidator();
                 }
+            }
+
+            public static JsonSchemaValidationException Validate(HashSet<string> required,
+                Dictionary<string, JsonSchema> properties,
+                JsonSchemaValidationContext c, T o)
+            {
+                prepareValidator();
                 return s_validator.Validate(required, properties, c, o);
+            }
+
+            internal static void ValidationResults(HashSet<string> required,
+                Dictionary<string, JsonSchema> properties,
+                JsonSchemaValidationContext c, T o,
+                Dictionary<string, ValidationResult> results)
+            {
+                prepareValidator();
+                s_validator.ValidationResults(required, properties, c, o, results);
             }
         }
 
@@ -411,103 +491,89 @@ namespace UniJSON
         {
             class Serializer
             {
-                delegate void FieldSerializer(JsonObjectValidator v, IFormatter f, JsonSchemaValidationContext c, T src);
+                delegate void FieldSerializer(JsonSchema s, JsonSchemaValidationContext c, IFormatter f, T o,
+                    Dictionary<string, ValidationResult> vRes, string[] deps);
 
-                List<FieldSerializer> m_fieldSerializers = new List<FieldSerializer>();
+                Dictionary<string, FieldSerializer> m_serializers;
 
-                static FieldSerializer CreateSerializer<U>(FieldInfo fi)
+                static FieldSerializer CreateFieldSerializer<U>(Func<T, U> getter, string name)
                 {
-                    var src = Expression.Parameter(typeof(T), "src");
-                    var getter = Expression.Field(src, fi);
-                    var compiled = (Func<T, U>)Expression.Lambda(getter, src).Compile();
-                    var name = fi.Name;
-                    return (v, f, c, s) =>
+                    return (s, c, f, o, vRes, deps) =>
                     {
-                        //c.Push(name);
+                        var v = s.Validator;
+                        var field = getter(o);
 
-                        var validator = v.Properties[name].Validator;
-
-                        var value = compiled(s);
-
-                        // validate
-                        if (validator.Validate(c, value) != null)
+                        if (vRes[name].Ex != null)
                         {
                             return;
                         }
 
-                        /*
-                        // depencencies
-                        string[] dependencies;
-                        if (validator.Dependencies.TryGetValue(name, out dependencies))
+                        if (deps != null)
                         {
-                            // check dependencies
-                            bool hasDependencies = true;
-                            foreach (var x in dependencies)
+                            foreach(var dep in deps)
                             {
-                                if (!map.ContainsKey(x))
+                                if (vRes[dep].Ex != null)
                                 {
-                                    hasDependencies = false;
-                                    break;
+                                    return;
                                 }
                             }
-                            if (!hasDependencies)
-                            {
-                                continue;
-                            }
                         }
-                        */
 
                         f.Key(name);
-                        validator.Serialize(f, c, value);
-                        //f.Serialize(value);
-
-                        //c.Pop();
+                        v.Serialize(f, c, field);
                     };
                 }
 
-                public void AddField(FieldInfo fi)
+                public Serializer()
                 {
-                    var mi = typeof(Serializer).GetMethod("CreateSerializer",
-                        BindingFlags.Static | BindingFlags.NonPublic);
-                    var g = mi.MakeGenericMethod(fi.FieldType);
-                    var f = Expression.Constant(fi);
-                    var call = Expression.Call(g, f);
-                    var compiled = (Func<FieldSerializer>)Expression.Lambda(call).Compile();
-                    m_fieldSerializers.Add(compiled());
+                    var serializers = new Dictionary<string, FieldSerializer>();
+                    GenericFieldView<T>.CreateFieldProcessors<Serializer, FieldSerializer>(
+                        "CreateFieldSerializer", serializers);
+
+                    m_serializers = serializers;
                 }
 
-                public void Serialize(JsonObjectValidator v, IFormatter f, JsonSchemaValidationContext c, T value)
+                public void Serialize(JsonObjectValidator objectValidator,
+                    IFormatter f, JsonSchemaValidationContext c, T o)
                 {
-                    f.BeginMap(m_fieldSerializers.Count);
-                    foreach (var s in m_fieldSerializers)
+                    // Validates fields
+                    var validationResults = new Dictionary<string, ValidationResult>();
+                    GenericValidator<T>.ValidationResults(
+                        objectValidator.Required, objectValidator.Properties,
+                        c, o, validationResults);
+
+                    // Serialize fields
+                    f.BeginMap(objectValidator.Properties.Count());
+                    foreach (var property in objectValidator.Properties)
                     {
-                        s(v, f, c, value);
+                        var fieldName = property.Key;
+                        var schema = property.Value;
+
+                        string[] deps = null;
+                        objectValidator.Dependencies.TryGetValue(fieldName, out deps);
+
+                        FieldSerializer fs;
+                        if (m_serializers.TryGetValue(fieldName, out fs))
+                        {
+                            fs(schema, c, f, o, validationResults, deps);
+                        }
                     }
                     f.EndMap();
                 }
             }
 
+            static FieldInfo[] s_fields;
             static Serializer s_serializer;
 
-            public static void Serialize(JsonObjectValidator validator,
+            public static void Serialize(JsonObjectValidator objectValidator,
                     IFormatter f, JsonSchemaValidationContext c, T value)
             {
                 if (s_serializer == null)
                 {
-                    var t = typeof(T);
-                    if (t == typeof(object))
-                    {
-                        throw new ArgumentException("object cannot serialize");
-                    }
-                    var serializer = new Serializer();
-                    var fields = t.GetFields(BindingFlags.Instance | BindingFlags.Public);
-                    foreach (var fi in fields)
-                    {
-                        serializer.AddField(fi);
-                    }
-                    s_serializer = serializer;
+                    s_serializer = new Serializer();
                 }
-                s_serializer.Serialize(validator, f, c, value);
+
+                s_serializer.Serialize(objectValidator, f, c, value);
             }
         }
 

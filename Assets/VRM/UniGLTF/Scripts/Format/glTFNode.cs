@@ -7,7 +7,8 @@ namespace UniGLTF
     [Serializable]
     public class glTFNode : JsonSerializableBase
     {
-        public string name = "";
+        // TODO: need an empty string?
+        public string name;
 
         [JsonSchema(MinItems = 1)]
         [ItemJsonSchema(Minimum = 0)]
@@ -26,20 +27,21 @@ namespace UniGLTF
         [JsonSchema(MinItems = 3, MaxItems = 3)]
         public float[] scale;
 
-        [JsonSchema(Minimum = 0)]
+        [JsonSchema(Minimum = 0, ExplicitIgnorableValue = -1)]
         public int mesh = -1;
 
-        [JsonSchema(Dependencies = new string[] { "mesh" }, Minimum = 0)]
+        [JsonSchema(Dependencies = new string[] { "mesh" }, Minimum = 0, ExplicitIgnorableValue = -1)]
         public int skin = -1;
 
         [JsonSchema(Dependencies = new string[] { "mesh" }, MinItems = 1)]
         public float[] weights;
 
-        [JsonSchema(Minimum = 0)]
+        [JsonSchema(Minimum = 0, ExplicitIgnorableValue = -1)]
         public int camera = -1;
 
         // empty schemas
         public glTFNode_extensions extensions;
+
         public glTFNode_extra extras = new glTFNode_extra();
 
         protected override void SerializeMembers(GLTFJsonFormatter f)

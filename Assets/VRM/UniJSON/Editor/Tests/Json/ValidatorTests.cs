@@ -354,7 +354,7 @@ namespace UniJSON
 
                 var s = JsonSchema.FromType<HasArrayOBject>();
 
-                Assert.Null(s.Validator.Validate(c, new HasArrayOBject { xs = new float[] {} }));
+                Assert.Null(s.Validator.Validate(c, new HasArrayOBject { xs = new float[] { } }));
                 Assert.Null(s.Validator.Validate(c, new HasArrayOBject { xs = new float[] { 0.5f } }));
                 Assert.NotNull(s.Validator.Validate(c, new HasArrayOBject { xs = new float[] { 1.5f } }));
 
@@ -379,9 +379,60 @@ namespace UniJSON
 
                 var s = JsonSchema.FromType<HasListObject>();
 
-                Assert.Null(s.Validator.Validate(c, new HasListObject { xs = new List<float> {} }));
+                Assert.Null(s.Validator.Validate(c, new HasListObject { xs = new List<float> { } }));
                 Assert.Null(s.Validator.Validate(c, new HasListObject { xs = new List<float> { 0.5f } }));
                 Assert.NotNull(s.Validator.Validate(c, new HasListObject { xs = new List<float> { 1.5f } }));
+
+                Assert.True(c.IsEmpty());
+            }
+        }
+
+        class HasRequiredListObject
+        {
+            [JsonSchema(Required = true, MinItems = 1)]
+            [ItemJsonSchema(Minimum = 0)]
+            public int[] xs;
+        }
+
+        [Test]
+        public void HasRequiredListObjecttValidator()
+        {
+            {
+                var c = new JsonSchemaValidationContext("test")
+                {
+                    EnableDiagnosisForNotRequiredFields = true,
+                };
+
+                var s = JsonSchema.FromType<HasRequiredListObject>();
+
+                Assert.NotNull(s.Validator.Validate(c, new HasRequiredListObject()));
+                Assert.NotNull(s.Validator.Validate(c, new HasRequiredListObject { xs = new int[] {} }));
+                Assert.NotNull(s.Validator.Validate(c, new HasRequiredListObject { xs = new int[] { -1 } }));
+                Assert.Null(s.Validator.Validate(c, new HasRequiredListObject { xs = new int[] { 0 } }));
+
+                Assert.True(c.IsEmpty());
+            }
+        }
+
+        class HasRequiredStringObject
+        {
+            [JsonSchema(Required = true)]
+            public string s;
+        }
+
+        [Test]
+        public void HasRequiredStringObjectValidator()
+        {
+            {
+                var c = new JsonSchemaValidationContext("test")
+                {
+                    EnableDiagnosisForNotRequiredFields = true,
+                };
+
+                var s = JsonSchema.FromType<HasRequiredStringObject>();
+
+                Assert.NotNull(s.Validator.Validate(c, new HasRequiredStringObject()));
+                Assert.Null(s.Validator.Validate(c, new HasRequiredStringObject { s = "" }));
 
                 Assert.True(c.IsEmpty());
             }

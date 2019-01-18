@@ -392,7 +392,10 @@ namespace UniJSON
         {
             if (c == null)
             {
-                c = new JsonSchemaValidationContext(o);
+                c = new JsonSchemaValidationContext(o)
+                {
+                    EnableDiagnosisForNotRequiredFields = true,
+                };
             }
 
             var ex = Validator.Validate(c, o);

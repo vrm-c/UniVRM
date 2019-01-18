@@ -7,25 +7,25 @@ namespace UniGLTF
     [Serializable]
     public class glTFAttributes : JsonSerializableBase
     {
-        [JsonSchema(Minimum = 0)]
+        [JsonSchema(Minimum = 0, ExplicitIgnorableValue = -1)]
         public int POSITION = -1;
 
-        [JsonSchema(Minimum = 0)]
+        [JsonSchema(Minimum = 0, ExplicitIgnorableValue = -1)]
         public int NORMAL = -1;
 
-        [JsonSchema(Minimum = 0)]
+        [JsonSchema(Minimum = 0, ExplicitIgnorableValue = -1)]
         public int TANGENT = -1;
 
-        [JsonSchema(Minimum = 0)]
+        [JsonSchema(Minimum = 0, ExplicitIgnorableValue = -1)]
         public int TEXCOORD_0 = -1;
 
-        [JsonSchema(Minimum = 0)]
+        [JsonSchema(Minimum = 0, ExplicitIgnorableValue = -1)]
         public int COLOR_0 = -1;
 
-        [JsonSchema(Minimum = 0)]
+        [JsonSchema(Minimum = 0, ExplicitIgnorableValue = -1)]
         public int JOINTS_0 = -1;
 
-        [JsonSchema(Minimum = 0)]
+        [JsonSchema(Minimum = 0, ExplicitIgnorableValue = -1)]
         public int WEIGHTS_0 = -1;
 
         public override int GetHashCode()
@@ -66,8 +66,13 @@ namespace UniGLTF
     [Serializable]
     public class gltfMorphTarget : JsonSerializableBase
     {
+        [JsonSchema(Minimum = 0, ExplicitIgnorableValue = -1)]
         public int POSITION = -1;
+
+        [JsonSchema(Minimum = 0, ExplicitIgnorableValue = -1)]
         public int NORMAL = -1;
+
+        [JsonSchema(Minimum = 0, ExplicitIgnorableValue = -1)]
         public int TANGENT = -1;
 
         protected override void SerializeMembers(GLTFJsonFormatter f)
@@ -87,7 +92,7 @@ namespace UniGLTF
         [JsonSchema(EnumValues = new object[] { 0, 1, 2, 3, 4, 5, 6 })]
         public int mode;
 
-        [JsonSchema(Minimum = 0)]
+        [JsonSchema(Minimum = 0, ExplicitIgnorableValue = -1)]
         public int indices = -1;
 
         [JsonSchema(Required = true, SkipSchemaComparison = true)]
@@ -104,14 +109,14 @@ namespace UniGLTF
         [JsonSchema(Minimum = 0)]
         public int material;
 
-        [JsonSchema(MinItems = 1)]
+        [JsonSchema(MinItems = 1, ExplicitIgnorableItemLength = 0)]
         [ItemJsonSchema(SkipSchemaComparison = true)]
         public List<gltfMorphTarget> targets = new List<gltfMorphTarget>();
 
         public glTFPrimitives_extras extras = new glTFPrimitives_extras();
 
         [JsonSchema(SkipSchemaComparison = true)]
-        public glTFPrimitives_extensions extensions = new glTFPrimitives_extensions();
+        public glTFPrimitives_extensions extensions = null;
 
         protected override void SerializeMembers(GLTFJsonFormatter f)
         {
@@ -122,10 +127,6 @@ namespace UniGLTF
             if (targets != null && targets.Count > 0)
             {
                 f.Key("targets"); f.GLTFValue(targets);
-            }
-            if (extensions.KHR_draco_mesh_compression != null)
-            {
-                f.Key("extensions"); f.GLTFValue(extensions);
             }
             if (extras.targetNames.Count > 0)
             {

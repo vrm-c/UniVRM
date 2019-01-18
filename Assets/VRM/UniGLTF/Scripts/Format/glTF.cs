@@ -30,7 +30,7 @@ namespace UniGLTF
         [JsonSchema(Required = true)]
         public glTFAssets asset = new glTFAssets();
 
-        #region Buffer      
+        #region Buffer
         [JsonSchema(MinItems = 1)]
         public List<glTFBuffer> buffers = new List<glTFBuffer>();
         public int AddBuffer(IBytesBuffer bytesBuffer)
@@ -197,10 +197,10 @@ namespace UniGLTF
         }
         #endregion
 
-        [JsonSchema(MinItems = 1)]
+        [JsonSchema(MinItems = 1, ExplicitIgnorableItemLength = 0)]
         public List<glTFTexture> textures = new List<glTFTexture>();
 
-        [JsonSchema(MinItems = 1)]
+        [JsonSchema(MinItems = 1, ExplicitIgnorableItemLength = 0)]
         public List<glTFTextureSampler> samplers = new List<glTFTextureSampler>();
         public glTFTextureSampler GetSampler(int index)
         {
@@ -257,7 +257,7 @@ namespace UniGLTF
             }
         }
 
-        [JsonSchema(MinItems = 1)]
+        [JsonSchema(MinItems = 1, ExplicitIgnorableItemLength = 0)]
         public List<glTFMaterial> materials = new List<glTFMaterial>();
         public string GetUniqueMaterialName(int index)
         {
@@ -288,7 +288,7 @@ namespace UniGLTF
             return MaterialHasVertexColor(materialIndex);
         }
 
-        [JsonSchema(MinItems = 1)]
+        [JsonSchema(MinItems = 1, ExplicitIgnorableItemLength = 0)]
         public List<glTFMesh> meshes = new List<glTFMesh>();
 
         public bool MaterialHasVertexColor(int materialIndex)
@@ -302,16 +302,16 @@ namespace UniGLTF
             return hasVertexColor;
         }
 
-        [JsonSchema(MinItems = 1)]
+        [JsonSchema(MinItems = 1, ExplicitIgnorableItemLength = 0)]
         public List<glTFNode> nodes = new List<glTFNode>();
 
-        [JsonSchema(MinItems = 1)]
+        [JsonSchema(MinItems = 1, ExplicitIgnorableItemLength = 0)]
         public List<glTFSkin> skins = new List<glTFSkin>();
 
         [JsonSchema(Dependencies = new string[] { "scenes" }, Minimum = 0)]
         public int scene;
 
-        [JsonSchema(MinItems = 1)]
+        [JsonSchema(MinItems = 1, ExplicitIgnorableItemLength = 0)]
         public List<gltfScene> scenes = new List<gltfScene>();
         public int[] rootnodes
         {
@@ -321,16 +321,16 @@ namespace UniGLTF
             }
         }
 
-        [JsonSchema(MinItems = 1)]
+        [JsonSchema(MinItems = 1, ExplicitIgnorableItemLength = 0)]
         public List<glTFAnimation> animations = new List<glTFAnimation>();
 
-        [JsonSchema(MinItems = 1)]
+        [JsonSchema(MinItems = 1, ExplicitIgnorableItemLength = 0)]
         public List<glTFCamera> cameras = new List<glTFCamera>();
 
-        [JsonSchema(MinItems = 1)]
+        [JsonSchema(MinItems = 1, ExplicitIgnorableItemLength = 0)]
         public List<string> extensionsUsed = new List<string>();
 
-        [JsonSchema(MinItems = 1)]
+        [JsonSchema(MinItems = 1, ExplicitIgnorableItemLength = 0)]
         public List<string> extensionsRequired = new List<string>();
 
         public glTF_extensions extensions = new glTF_extensions();
@@ -503,7 +503,11 @@ namespace UniGLTF
             string json;
             if (UseUniJSONSerializer)
             {
-                json = JsonSchema.FromType(GetType()).Serialize(this);
+                var c = new JsonSchemaValidationContext(this)
+                {
+                    EnableDiagnosisForNotRequiredFields = true,
+                };
+                json = JsonSchema.FromType(GetType()).Serialize(this, c);
             }
             else
             {
