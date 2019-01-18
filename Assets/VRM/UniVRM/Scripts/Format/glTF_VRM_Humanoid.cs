@@ -162,7 +162,8 @@ namespace VRM
             }
         }
 
-        [JsonSchema(Description = "Reference node index")]
+        // When the value is -1, it means that no node is found.
+        [JsonSchema(Description = "Reference node index", Minimum = 0)]
         public int node = -1;
 
         [JsonSchema(Description = "Unity's HumanLimit.useDefaultValues")]

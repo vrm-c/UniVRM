@@ -54,7 +54,8 @@ namespace VRM
         [JsonSchema(Description = "Reference of VRM model")]
         public string reference;
 
-        [JsonSchema(Description = "Thumbnail of VRM model")]
+        // When the value is -1, it means that texture is not specified.
+        [JsonSchema(Description = "Thumbnail of VRM model", Minimum = 0, ExplicitIgnorableValue = -1)]
         public int texture = -1;
 
         #region Ussage Permission
