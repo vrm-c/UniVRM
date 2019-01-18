@@ -252,6 +252,17 @@ namespace VRM
             Assert.AreEqual(@"{}",json2);
         }
 
+        // TODO: Move to another suitable location
+        [Test]
+        public void MetaDeserializeTest()
+        {
+            var json = @"{}";
+
+            var model = deserialize<glTF_VRM_Meta>(json);
+
+            Assert.AreEqual(-1, model.texture);
+        }
+
         [Test]
         public void SecondaryAnimationColliderTest()
         {
@@ -380,6 +391,12 @@ namespace VRM
             var json2 = JsonSchema.FromType<glTF_VRM_SecondaryAnimation>().Serialize(model, c);
             // NOTE: New serializer outputs values which will not be used...
             Assert.AreEqual(json,json2);
+        }
+
+        // TODO: Move to another suitable location
+        T deserialize<T>(string json)
+        {
+            return JsonUtility.FromJson<T>(json);
         }
     }
 }
