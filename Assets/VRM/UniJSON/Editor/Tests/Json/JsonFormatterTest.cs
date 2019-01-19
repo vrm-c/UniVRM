@@ -43,5 +43,16 @@ namespace UniJSON
                 Assert.True(json.GetStoreBytes().ToEnumerable().SequenceEqual(bytes));
             }
         }
+
+        [Test]
+        public void ReUseFormatter()
+        {
+            IFormatter f = new JsonFormatter();
+            f.Value(1);
+
+            f.Clear();
+            // fail
+            f.Value(2);
+        }
     }
 }

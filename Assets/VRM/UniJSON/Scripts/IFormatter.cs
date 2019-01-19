@@ -6,6 +6,7 @@ namespace UniJSON
     public interface IFormatter
     {
         IStore GetStore();
+        void Clear();
 
         void BeginList(int n);
         void EndList();
