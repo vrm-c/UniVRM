@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text;
 
 
 namespace UniJSON
@@ -14,6 +13,11 @@ namespace UniJSON
 
         public MsgPackFormatter() : this(new BytesStore())
         {
+        }
+
+        public void Clear()
+        {
+            m_store.Clear();
         }
 
 #if false

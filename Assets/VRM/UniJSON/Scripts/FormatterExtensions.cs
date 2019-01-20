@@ -9,11 +9,6 @@ namespace UniJSON
 {
     public static partial class FormatterExtensions
     {
-        public static void Clear(this IFormatter f)
-        {
-            f.GetStore().Clear();
-        }
-
         public static ArraySegment<Byte> GetStoreBytes(this IFormatter f)
         {
             return f.GetStore().Bytes;
