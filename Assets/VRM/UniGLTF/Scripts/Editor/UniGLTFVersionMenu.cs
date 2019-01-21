@@ -25,7 +25,7 @@ namespace UniGLTF
 }}
 ";
 
-        [MenuItem(UniGLTFVersion.UNIGLTF_VERSION + "/Increment", priority = MENU_PRIORITY)]
+        [MenuItem(UniGLTFVersion.MENU + "/Increment", priority = MENU_PRIORITY)]
         public static void IncrementVersion()
         {
             var source = string.Format(template, UniGLTFVersion.MAJOR, UniGLTFVersion.MINOR + 1);
@@ -33,7 +33,7 @@ namespace UniGLTF
             AssetDatabase.Refresh();
         }
 
-        [MenuItem(UniGLTFVersion.UNIGLTF_VERSION + "/Decrement", priority = MENU_PRIORITY)]
+        [MenuItem(UniGLTFVersion.MENU + "/Decrement", priority = MENU_PRIORITY)]
         public static void DecrementVersion()
         {
             var source = string.Format(template, UniGLTFVersion.MAJOR, UniGLTFVersion.MINOR - 1);

@@ -8,7 +8,7 @@ namespace VRM
 {
     public static class VRMHumanoidNorimalizerMenu
     {
-        const string MENU_KEY = VRMVersion.VRM_VERSION + "/Freeze T-Pose";
+        const string MENU_KEY = VRMVersion.MENU + "/Freeze T-Pose";
         [MenuItem(MENU_KEY, true, 1)]
         private static bool ExportValidate()
         {

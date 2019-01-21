@@ -12,7 +12,7 @@ namespace UniGLTF
 {
     public class gltfExporter : IDisposable
     {
-        const string CONVERT_HUMANOID_KEY = UniGLTFVersion.UNIGLTF_VERSION + "/Export";
+        const string CONVERT_HUMANOID_KEY = UniGLTFVersion.MENU + "/Export";
 
 #if UNITY_EDITOR
         [MenuItem(CONVERT_HUMANOID_KEY, true, 1)]

@@ -119,13 +119,13 @@ namespace UniGLTF
         }
 
 #if UNITY_EDITOR
-        [MenuItem(UniGLTFVersion.UNIGLTF_VERSION + "/Integrate static mesh", validate = true)]
+        [MenuItem(UniGLTFVersion.MENU + "/Integrate static mesh", validate = true)]
         public static bool CanIntegrateSelected()
         {
             return Selection.activeObject != null && Selection.activeObject is GameObject;
         }
 
-        [MenuItem(UniGLTFVersion.UNIGLTF_VERSION + "/Integrate static mesh")]
+        [MenuItem(UniGLTFVersion.MENU + "/Integrate static mesh")]
         public static void IntegrateSelected()
         {
             var go = Selection.activeObject as GameObject;

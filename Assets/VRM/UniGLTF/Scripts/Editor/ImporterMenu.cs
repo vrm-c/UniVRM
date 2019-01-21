@@ -7,7 +7,7 @@ namespace UniGLTF
 {
     public static class ImporterMenu
     {
-        [MenuItem(UniGLTFVersion.UNIGLTF_VERSION + "/Import", priority = 1)]
+        [MenuItem(UniGLTFVersion.MENU + "/Import", priority = 1)]
         public static void ImportMenu()
         {
             var path = EditorUtility.OpenFilePanel("open gltf", "", "gltf,glb,zip");

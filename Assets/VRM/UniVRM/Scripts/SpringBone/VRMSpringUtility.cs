@@ -16,7 +16,7 @@ namespace VRM
     {
 #if UNITY_EDITOR
         #region save
-        [MenuItem(VRMVersion.VRM_VERSION + "/SaveSpringBoneToJSON", validate = true)]
+        [MenuItem(VRMVersion.MENU + "/SaveSpringBoneToJSON", validate = true)]
         static bool SaveSpringBoneToJSONIsEnable()
         {
             var root = Selection.activeObject as GameObject;
@@ -34,7 +34,7 @@ namespace VRM
             return true;
         }
 
-        [MenuItem(VRMVersion.VRM_VERSION + "/SaveSpringBoneToJSON")]
+        [MenuItem(VRMVersion.MENU + "/SaveSpringBoneToJSON")]
         static void SaveSpringBoneToJSON()
         {
             var path = EditorUtility.SaveFilePanel(
@@ -62,7 +62,7 @@ namespace VRM
         #endregion
 
         #region load
-        [MenuItem(VRMVersion.VRM_VERSION + "/LoadSpringBoneFromJSON", true)]
+        [MenuItem(VRMVersion.MENU + "/LoadSpringBoneFromJSON", true)]
         static bool LoadSpringBoneFromJSONIsEnable()
         {
             var root = Selection.activeObject as GameObject;
@@ -80,7 +80,7 @@ namespace VRM
             return true;
         }
 
-        [MenuItem(VRMVersion.VRM_VERSION + "/LoadSpringBoneFromJSON")]
+        [MenuItem(VRMVersion.MENU + "/LoadSpringBoneFromJSON")]
         static void LoadSpringBoneFromJSON()
         {
             var path = EditorUtility.OpenFilePanel(

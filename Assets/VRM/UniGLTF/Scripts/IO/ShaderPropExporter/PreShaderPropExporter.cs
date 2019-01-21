@@ -44,7 +44,7 @@ namespace UniGLTF.ShaderPropExporter
 #pragma warning restore 414
 
 #if UNITY_EDITOR
-        [MenuItem(UniGLTFVersion.UNIGLTF_VERSION + "/PreExport ShaderProps")]
+        [MenuItem(UniGLTFVersion.MENU + "/PreExport ShaderProps")]
         public static void PreExport()
         {
             foreach (var fi in typeof(PreShaderPropExporter).GetFields(
