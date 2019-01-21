@@ -25,7 +25,7 @@ namespace VRM
 ";
 
 #if VRM_DEVELOP
-        [MenuItem(VRMVersion.VRM_VERSION + "/Increment")]
+        [MenuItem(VRMVersion.MENU + "/Increment")]
 #endif
         static void IncrementVersion()
         {
@@ -35,7 +35,7 @@ namespace VRM
         }
 
 #if VRM_DEVELOP
-        [MenuItem(VRMVersion.VRM_VERSION + "/Decrement")]
+        [MenuItem(VRMVersion.MENU + "/Decrement")]
 #endif
         static void DecrementVersion()
         {
@@ -135,7 +135,7 @@ namespace VRM
         }
 
 #if VRM_DEVELOP
-        [MenuItem(VRMVersion.VRM_VERSION + "/Export JsonSchema")]
+        [MenuItem(VRMVersion.MENU + "/Export JsonSchema")]
 #endif
         static void ExportJsonSchema()
         {

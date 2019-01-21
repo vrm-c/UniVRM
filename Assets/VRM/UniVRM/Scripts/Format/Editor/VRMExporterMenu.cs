@@ -61,7 +61,7 @@ namespace VRM
 
     public static class VRMExporterMenu
     {
-        const string CONVERT_HUMANOID_KEY = VRMVersion.VRM_VERSION + "/Export humanoid";
+        const string CONVERT_HUMANOID_KEY = VRMVersion.MENU + "/Export humanoid";
 
         [MenuItem(CONVERT_HUMANOID_KEY, true, 1)]
         private static bool ExportValidate()

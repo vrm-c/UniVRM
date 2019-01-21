@@ -123,7 +123,7 @@ namespace VRM.DevOnly.PackageExporter
             }
         }
 
-        [MenuItem(VRMVersion.VRM_VERSION + "/Export unitypackage")]
+        [MenuItem(VRMVersion.MENU + "/Export unitypackage")]
         public static void CreateUnityPackageWithBuild()
         {
             //var folder = GetDesktop();
