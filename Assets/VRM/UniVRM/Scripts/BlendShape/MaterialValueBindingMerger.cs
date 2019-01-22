@@ -149,7 +149,13 @@ namespace VRM
                             {
                                 valueName = valueName.Substring(0, valueName.Length - 2);
                             }
-                            material.SetColor(valueName, y.BaseValue);
+#if UNITY_EDITOR
+                            // restore only material with asset
+                            if (!string.IsNullOrEmpty(UnityEditor.AssetDatabase.GetAssetPath(material)))
+                            {
+                                material.SetColor(valueName, y.BaseValue);
+                            }
+#endif
                         }
                         else
                         {
