@@ -187,15 +187,6 @@ namespace VRM
             }
 
             {
-                // lookAt
-                var src = go.GetComponent<VRMLookAt>();
-                if (src != null)
-                {
-                    src.CopyTo(root, map);
-                }
-            }
-
-            {
                 // humanoid
                 var dst = root.AddComponent<VRMHumanoidDescription>();
                 var src = go.GetComponent<VRMHumanoidDescription>();

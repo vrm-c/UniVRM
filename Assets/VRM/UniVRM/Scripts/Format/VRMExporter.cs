@@ -176,7 +176,6 @@ namespace VRM
                 // lookAt
                 {
                     var lookAtHead = exporter.Copy.GetComponent<VRMLookAtHead>();
-                    var lookAt = exporter.Copy.GetComponent<VRMLookAt>();
                     if (lookAtHead != null)
                     {
                         var boneApplyer = exporter.Copy.GetComponent<VRMLookAtBoneApplyer>();
@@ -196,13 +195,6 @@ namespace VRM
                             gltf.extensions.VRM.firstPerson.lookAtVerticalDown.Apply(blendShapeApplyer.VerticalDown);
                             gltf.extensions.VRM.firstPerson.lookAtVerticalUp.Apply(blendShapeApplyer.VerticalUp);
                         }
-                    }
-                    else if (lookAt != null)
-                    {
-                        gltf.extensions.VRM.firstPerson.lookAtHorizontalInner.Apply(lookAt.HorizontalInner);
-                        gltf.extensions.VRM.firstPerson.lookAtHorizontalOuter.Apply(lookAt.HorizontalOuter);
-                        gltf.extensions.VRM.firstPerson.lookAtVerticalDown.Apply(lookAt.VerticalDown);
-                        gltf.extensions.VRM.firstPerson.lookAtVerticalUp.Apply(lookAt.VerticalUp);
                     }
                 }
             }
