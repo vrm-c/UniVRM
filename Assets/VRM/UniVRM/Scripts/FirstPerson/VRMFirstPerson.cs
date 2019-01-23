@@ -227,6 +227,7 @@ namespace VRM
             erased.sharedMaterials = renderer.sharedMaterials;
             erased.bones = renderer.bones;
             erased.rootBone = renderer.rootBone;
+            erased.updateWhenOffscreen = true;
         }
 
         bool m_done;
