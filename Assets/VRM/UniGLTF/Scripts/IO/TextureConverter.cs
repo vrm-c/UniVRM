@@ -111,6 +111,8 @@ namespace UniGLTF
             return m_encoder;
         }
 
+        // GLTF data to Unity texture
+        // ConvertToNormalValueFromRawColorWhenCompressionIsRequired
         public Texture2D GetImportTexture(Texture2D texture)
         {
             var mat = GetEncoder();
@@ -119,6 +121,8 @@ namespace UniGLTF
             return converted;
         }
 
+        // Unity texture to GLTF data
+        // ConvertToRawColorWhenNormalValueIsCompressed
         public Texture2D GetExportTexture(Texture2D texture)
         {
             var mat = GetDecoder();
