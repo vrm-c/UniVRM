@@ -22,7 +22,8 @@ glTF2.0をベースとしており、誰でも自由に利用することがで�
 1. 本リポジトリの[リリースページ](https://github.com/dwango/UniVRM/releases)へ移動してください。
 1. 最新の``UniVRM-0.xx.unitypackage``をダウンロードしてください。
 1. ``UniVRM-0.xx.unitypackage``をUnityのプロジェクトにインポートしてください。
-
+    1. [UniVRMのインストール](https://dwango.github.io/vrm/univrm/univrm_install/)も参照してください。
+    
 ## Script Samples
 
 * [UniVRMTest(テストとサンプル)](https://github.com/dwango/UniVRMTest)
