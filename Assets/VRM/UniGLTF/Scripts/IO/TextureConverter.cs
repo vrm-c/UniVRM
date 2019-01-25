@@ -111,22 +111,20 @@ namespace UniGLTF
             return m_encoder;
         }
 
+        // GLTF data to Unity texture
+        // ConvertToNormalValueFromRawColorWhenCompressionIsRequired
         public Texture2D GetImportTexture(Texture2D texture)
         {
-#if UNITY_WEBGL && !UNITY_EDITOR
-            return texture;
-#endif
             var mat = GetEncoder();
             var converted = TextureConverter.Convert(texture, glTFTextureTypes.Normal, null, mat);
             TextureConverter.AppendTextureExtension(converted, m_extension);
             return converted;
         }
 
+        // Unity texture to GLTF data
+        // ConvertToRawColorWhenNormalValueIsCompressed
         public Texture2D GetExportTexture(Texture2D texture)
         {
-#if UNITY_WEBGL && !UNITY_EDITOR
-            return texture;
-#endif
             var mat = GetDecoder();
             var converted = TextureConverter.Convert(texture, glTFTextureTypes.Normal, null, mat);
             TextureConverter.RemoveTextureExtension(converted, m_extension);
