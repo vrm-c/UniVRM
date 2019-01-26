@@ -615,7 +615,7 @@ namespace UniGLTF
                 Assert.AreEqual(new float[] { 1, 0, 0, 1 }, red.pbrMetallicRoughness.baseColorFactor);
 
                 var blue = gltf.materials[gltf.meshes[1].primitives[0].material];
-                Assert.AreEqual(new float[] { 0, 0, 1, 1 }, red.pbrMetallicRoughness.baseColorFactor);
+                Assert.AreEqual(new float[] { 0, 0, 1, 1 }, blue.pbrMetallicRoughness.baseColorFactor);
             }
             finally
             {
