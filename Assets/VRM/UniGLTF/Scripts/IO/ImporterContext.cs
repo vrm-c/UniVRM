@@ -802,29 +802,13 @@ namespace UniGLTF
             }
         }
 
-        public virtual bool IsOverwrite(UnityEngine.Object o)
-        {
-
-            return true;
-        }
-
-        public virtual bool LoadAsset(UnityPath assetPath, UnityEngine.Object o)
+        public virtual bool AvoidOverwriteAndLoad(UnityPath assetPath, UnityEngine.Object o)
         {
             if (o is Material)
             {
                 var loaded = assetPath.LoadAsset<Material>();
 
-                // replace member
-                for(int i=0; i< m_materials.Count; ++i)
-                {
-                    if (m_materials[i] == o)
-                    {
-                        m_materials[i] = loaded;
-                        break;
-                    }
-                }
-
-                // replace renderers.material
+                // replace component reference
                 foreach(var mesh in Meshes)
                 {
                     foreach(var r in mesh.Renderers)
@@ -874,7 +858,7 @@ namespace UniGLTF
                 {
                     if (assetPath.IsFileExists)
                     {
-                        if (LoadAsset(assetPath, o))
+                        if (AvoidOverwriteAndLoad(assetPath, o))
                         {
                             // 上書きせずに既存のアセットからロードして置き換えた
                             continue;

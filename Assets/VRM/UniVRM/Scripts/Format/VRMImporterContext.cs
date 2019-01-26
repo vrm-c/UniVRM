@@ -341,18 +341,23 @@ namespace VRM
         }
 
 #if UNITY_EDITOR
-        public override bool IsOverwrite(UnityEngine.Object o)
+        public override bool AvoidOverwriteAndLoad(UnityPath assetPath, UnityEngine.Object o)
         {
             if (o is BlendShapeAvatar)
             {
-                return false;
-            }
-            if (o is BlendShapeClip)
-            {
-                return false;
+                var loaded = assetPath.LoadAsset<BlendShapeAvatar>();
+                var proxy = Root.GetComponent<VRMBlendShapeProxy>();
+                proxy.BlendShapeAvatar = loaded;
+
+                return true;
             }
 
-            return base.IsOverwrite(o);
+            if (o is BlendShapeClip)
+            {
+                return true;
+            }
+
+            return base.AvoidOverwriteAndLoad(assetPath, o);
         }
 
         protected override UnityPath GetAssetPath(UnityPath prefabPath, UnityEngine.Object o)
