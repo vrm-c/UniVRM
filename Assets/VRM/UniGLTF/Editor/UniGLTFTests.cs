@@ -587,6 +587,7 @@ namespace UniGLTF
                 {
                     cubeA.transform.SetParent(go.transform);
                     var material = new Material(shader);
+                    material.name = "red";
                     material.color = Color.red;
                     cubeA.GetComponent<Renderer>().sharedMaterial = material;
                 }
@@ -596,6 +597,7 @@ namespace UniGLTF
                     cubeB.transform.SetParent(go.transform);
                     var material = new Material(shader);
                     material.color = Color.blue;
+                    material.name = "blue";
                     cubeB.GetComponent<Renderer>().sharedMaterial = material;
 
                     Assert.AreEqual(cubeB.GetComponent<MeshFilter>().sharedMesh, cubeA.GetComponent<MeshFilter>().sharedMesh);
@@ -620,6 +622,10 @@ namespace UniGLTF
                 var blue = gltf.materials[gltf.meshes[1].primitives[0].material];
                 Assert.AreEqual(new float[] { 0, 0, 1, 1 }, blue.pbrMetallicRoughness.baseColorFactor);
 
+                Assert.AreEqual(2, gltf.nodes.Count);
+
+                Assert.AreNotEqual(gltf.nodes[0].mesh, gltf.nodes[1].mesh);
+
                 // import
                 var context = new ImporterContext();
                 context.ParseJson(json, new SimpleStorage(new ArraySegment<byte>(new byte[1024 * 1024])));
@@ -627,10 +633,14 @@ namespace UniGLTF
                 context.Load();
 
                 var importedRed = context.Root.transform.GetChild(0);
-                Assert.AreEqual(Color.red, importedRed.GetComponent<Renderer>().sharedMaterial.color);
+                var importedRedMaterial = importedRed.GetComponent<Renderer>().sharedMaterial;
+                Assert.AreEqual("red", importedRedMaterial.name);
+                Assert.AreEqual(Color.red, importedRedMaterial.color);
 
                 var importedBlue = context.Root.transform.GetChild(1);
-                Assert.AreEqual(Color.blue, importedBlue.GetComponent<Renderer>().sharedMaterial.color);
+                var importedBlueMaterial = importedBlue.GetComponent<Renderer>().sharedMaterial;
+                Assert.AreEqual("blue", importedBlueMaterial.name);
+                Assert.AreEqual(Color.blue, importedBlueMaterial.color);
             }
             finally
             {
