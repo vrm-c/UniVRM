@@ -603,10 +603,13 @@ namespace UniGLTF
 
                 // export
                 var gltf = new glTF();
+                var json = default(string);
                 using (var exporter = new gltfExporter(gltf))
                 {
                     exporter.Prepare(go);
                     exporter.Export();
+
+                    json = gltf.ToJson();
                 }
 
                 Assert.AreEqual(2, gltf.meshes.Count);
@@ -616,6 +619,18 @@ namespace UniGLTF
 
                 var blue = gltf.materials[gltf.meshes[1].primitives[0].material];
                 Assert.AreEqual(new float[] { 0, 0, 1, 1 }, blue.pbrMetallicRoughness.baseColorFactor);
+
+                // import
+                var context = new ImporterContext();
+                context.ParseJson(json, new SimpleStorage(new ArraySegment<byte>(new byte[1024 * 1024])));
+                //Debug.LogFormat("{0}", context.Json);
+                context.Load();
+
+                var importedRed = context.Root.transform.GetChild(0);
+                Assert.AreEqual(Color.red, importedRed.GetComponent<Renderer>().sharedMaterial.color);
+
+                var importedBlue = context.Root.transform.GetChild(1);
+                Assert.AreEqual(Color.blue, importedBlue.GetComponent<Renderer>().sharedMaterial.color);
             }
             finally
             {
