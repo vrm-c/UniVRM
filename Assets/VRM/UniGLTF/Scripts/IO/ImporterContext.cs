@@ -804,12 +804,45 @@ namespace UniGLTF
 
         public virtual bool IsOverwrite(UnityEngine.Object o)
         {
-            if(o is Material)
-            {
-                return false;
-            }
 
             return true;
+        }
+
+        public virtual bool LoadAsset(UnityPath assetPath, UnityEngine.Object o)
+        {
+            if (o is Material)
+            {
+                var loaded = assetPath.LoadAsset<Material>();
+
+                // replace member
+                for(int i=0; i< m_materials.Count; ++i)
+                {
+                    if (m_materials[i] == o)
+                    {
+                        m_materials[i] = loaded;
+                        break;
+                    }
+                }
+
+                // replace renderers.material
+                foreach(var mesh in Meshes)
+                {
+                    foreach(var r in mesh.Renderers)
+                    {
+                        for(int i=0; i<r.sharedMaterials.Length; ++i)
+                        {
+                            if (r.sharedMaterials.Contains(o))
+                            {
+                                r.sharedMaterials = r.sharedMaterials.Select(x => x == o ? loaded : x).ToArray();
+                            }
+                        }
+                    }
+                }
+
+                return true;
+            }
+
+            return false;
         }
 
         public void SaveAsAsset(UnityPath prefabPath)
@@ -841,13 +874,14 @@ namespace UniGLTF
                 {
                     if (assetPath.IsFileExists)
                     {
-                        if (!IsOverwrite(o))
+                        if (LoadAsset(assetPath, o))
                         {
-                            // 上書きしない
-                            Debug.LogWarningFormat("already exists. skip {0}", assetPath);
+                            // 上書きせずに既存のアセットからロードして置き換えた
                             continue;
                         }
                     }
+
+                    // アセットとして書き込む
                     assetPath.Parent.EnsureFolder();
                     assetPath.CreateAsset(o);
                     paths.Add(assetPath);
