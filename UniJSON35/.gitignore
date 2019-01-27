@@ -12,4 +12,4 @@ obj.meta
 *.vspx
 *.vspx.meta
 App.config.meta
-
+packages
