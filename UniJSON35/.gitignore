@@ -1,8 +1,8 @@
-/.vs
-/bin
-/bin.meta
-/obj
-/obj.meta
+.vs
+bin
+bin.meta
+obj
+obj.meta
 *.csproj.user
 *.csproj.user.meta
 *.psess
