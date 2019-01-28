@@ -151,7 +151,7 @@ namespace UniGLTF
         }
 
         #region Export
-        static glTFNode ExportNode(Transform x, List<Transform> nodes, List<Mesh> meshes, List<SkinnedMeshRenderer> skins)
+        static glTFNode ExportNode(Transform x, List<Transform> nodes, List<Renderer> renderers, List<SkinnedMeshRenderer> skins)
         {
             var node = new glTFNode
             {
@@ -164,16 +164,16 @@ namespace UniGLTF
 
             if (x.gameObject.activeInHierarchy)
             {
-                var meshFilter = x.GetComponent<MeshFilter>();
-                if (meshFilter != null)
+                var meshRenderer = x.GetComponent<MeshRenderer>();
+                if (meshRenderer != null)
                 {
-                    node.mesh = meshes.IndexOf(meshFilter.sharedMesh);
+                    node.mesh = renderers.IndexOf(meshRenderer);
                 }
 
                 var skinnredMeshRenderer = x.GetComponent<SkinnedMeshRenderer>();
                 if (skinnredMeshRenderer != null)
                 {
-                    node.mesh = meshes.IndexOf(skinnredMeshRenderer.sharedMesh);
+                    node.mesh = renderers.IndexOf(skinnredMeshRenderer);
                     node.skin = skins.IndexOf(skinnredMeshRenderer);
                 }
             }
@@ -244,14 +244,14 @@ namespace UniGLTF
                 Meshes = unityMeshes.Select(x => x.Mesh).ToList();
                 #endregion
 
-                #region Skins
+                #region Nodes and Skins
                 var unitySkins = Nodes
                     .Select(x => x.GetComponent<SkinnedMeshRenderer>()).Where(x =>
                         x != null
                         && x.bones != null
                         && x.bones.Length > 0)
                     .ToList();
-                gltf.nodes = Nodes.Select(x => ExportNode(x, Nodes, unityMeshes.Select(y => y.Mesh).ToList(), unitySkins)).ToList();
+                gltf.nodes = Nodes.Select(x => ExportNode(x, Nodes, unityMeshes.Select(y => y.Rendererer).ToList(), unitySkins)).ToList();
                 gltf.scenes = new List<gltfScene>
                 {
                     new gltfScene

@@ -461,7 +461,7 @@ namespace UniGLTF
             var model = new glTFSkin()
             {
                 name = "b",
-                joints = new int[] {1},
+                joints = new int[] { 1 },
             };
 
             var json = model.ToJson();
@@ -482,7 +482,7 @@ namespace UniGLTF
             var model = new glTFSkin()
             {
                 name = "",
-                joints = new int[] {1},
+                joints = new int[] { 1 },
             };
 
             var json = model.ToJson();
@@ -523,7 +523,7 @@ namespace UniGLTF
             var model = new glTFSkin()
             {
                 name = "b",
-                joints = new int[] {},
+                joints = new int[] { },
             };
 
             var c = new JsonSchemaValidationContext("")
@@ -573,6 +573,79 @@ namespace UniGLTF
                 () => JsonSchema.FromType<glTFAssets>().Serialize(model, c)
             );
             Assert.AreEqual("[version.String] null", ex.Message);
+        }
+
+        [Test]
+        public void SameMeshButDifferentMaterialExport()
+        {
+            var go = new GameObject("same_mesh");
+            try
+            {
+                var shader = Shader.Find("Unlit/Color");
+
+                var cubeA = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                {
+                    cubeA.transform.SetParent(go.transform);
+                    var material = new Material(shader);
+                    material.name = "red";
+                    material.color = Color.red;
+                    cubeA.GetComponent<Renderer>().sharedMaterial = material;
+                }
+
+                {
+                    var cubeB = GameObject.Instantiate(cubeA);
+                    cubeB.transform.SetParent(go.transform);
+                    var material = new Material(shader);
+                    material.color = Color.blue;
+                    material.name = "blue";
+                    cubeB.GetComponent<Renderer>().sharedMaterial = material;
+
+                    Assert.AreEqual(cubeB.GetComponent<MeshFilter>().sharedMesh, cubeA.GetComponent<MeshFilter>().sharedMesh);
+                }
+
+                // export
+                var gltf = new glTF();
+                var json = default(string);
+                using (var exporter = new gltfExporter(gltf))
+                {
+                    exporter.Prepare(go);
+                    exporter.Export();
+
+                    json = gltf.ToJson();
+                }
+
+                Assert.AreEqual(2, gltf.meshes.Count);
+
+                var red = gltf.materials[gltf.meshes[0].primitives[0].material];
+                Assert.AreEqual(new float[] { 1, 0, 0, 1 }, red.pbrMetallicRoughness.baseColorFactor);
+
+                var blue = gltf.materials[gltf.meshes[1].primitives[0].material];
+                Assert.AreEqual(new float[] { 0, 0, 1, 1 }, blue.pbrMetallicRoughness.baseColorFactor);
+
+                Assert.AreEqual(2, gltf.nodes.Count);
+
+                Assert.AreNotEqual(gltf.nodes[0].mesh, gltf.nodes[1].mesh);
+
+                // import
+                var context = new ImporterContext();
+                context.ParseJson(json, new SimpleStorage(new ArraySegment<byte>(new byte[1024 * 1024])));
+                //Debug.LogFormat("{0}", context.Json);
+                context.Load();
+
+                var importedRed = context.Root.transform.GetChild(0);
+                var importedRedMaterial = importedRed.GetComponent<Renderer>().sharedMaterial;
+                Assert.AreEqual("red", importedRedMaterial.name);
+                Assert.AreEqual(Color.red, importedRedMaterial.color);
+
+                var importedBlue = context.Root.transform.GetChild(1);
+                var importedBlueMaterial = importedBlue.GetComponent<Renderer>().sharedMaterial;
+                Assert.AreEqual("blue", importedBlueMaterial.name);
+                Assert.AreEqual(Color.blue, importedBlueMaterial.color);
+            }
+            finally
+            {
+                GameObject.DestroyImmediate(go);
+            }
         }
     }
 }
