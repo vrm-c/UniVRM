@@ -13,6 +13,7 @@ namespace UniJSON
     public static partial class GenericInvokeCallFactory
     {
 #if UNITY_EDITOR && VRM_DEVELOP
+        const int NET35MAX = 4;
         const int ARGS = 6;
         const string GENERATE_PATH = "Assets/VRM/UniJSON/Scripts/GenericCallUtility/GenericInvokeCallFactory.g.cs";
 
@@ -45,23 +46,15 @@ namespace UniJSON
                 w.WriteLine("//////////// Create");
 
                 // Create
-                for (int i = 1; i <= ARGS; ++i)
+                for (int i = 1; i <= ARGS && i< NET35MAX; ++i)
                 {
                     var g = String.Join(", ", GetArgs("A", i).ToArray());
                     var a = String.Join(", ", GetArgs("a", i).ToArray());
 
-                    if (i >= 4) w.WriteLine(@"
-#if UNITY_5
-#else
-");
 
 
                     var source = @"
-#if UNITY_5
         public static Delegate Create<S, $0>(MethodInfo m)
-#else
-        public static Action<S, $0> Create<S, $0>(MethodInfo m)
-#endif
         {
             Action<S, $0> callback=
             (s, $1) =>
@@ -74,30 +67,18 @@ namespace UniJSON
 
                     w.WriteLine(source);
 
-                    if (i >= 4) w.WriteLine(@"
-#endif
-");
                 }
 
 
                 // CreateWithThis
                 w.WriteLine("//////////// CreateWithThis");
-                for (int i = 1; i <= ARGS; ++i)
+                for (int i = 1; i <= ARGS && i<= NET35MAX; ++i)
                 {
                     var g = String.Join(", ", GetArgs("A", i).ToArray());
                     var a = String.Join(", ", GetArgs("a", i).ToArray());
 
-                    if (i > 4) w.WriteLine(@"
-#if UNITY_5
-#else
-");
-
                     var source = @"
-#if UNITY_5
         public static Delegate CreateWithThis<S, $0>(MethodInfo m, S instance)
-#else
-        public static Action<$0> CreateWithThis<S, $0>(MethodInfo m, S instance)
-#endif
         {
             if (m.IsStatic)
             {
@@ -124,10 +105,6 @@ namespace UniJSON
 ".Replace("$0", g).Replace("$1", a);
 
                     w.WriteLine(source);
-
-                    if (i > 4) w.WriteLine(@"
-#endif
-");
                 }
 
 
