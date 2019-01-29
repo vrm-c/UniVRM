@@ -1,0 +1,12 @@
+{
+    "name": "UniVRM.Editor",
+    "references": [
+        "VRM"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false
+}

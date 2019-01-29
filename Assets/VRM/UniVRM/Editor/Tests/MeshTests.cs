@@ -2,7 +2,6 @@
 using UnityEngine;
 using System.Linq;
 
-
 namespace VRM
 {
     public class MeshTests

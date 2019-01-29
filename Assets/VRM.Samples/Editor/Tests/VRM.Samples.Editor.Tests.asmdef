@@ -1,0 +1,16 @@
+{
+    "name": "VRM.Samples.Editor.Tests",
+    "references": [
+        "VRM",
+        "VRM.Samples",
+        "UniVRM.Editor.Tests"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false
+}

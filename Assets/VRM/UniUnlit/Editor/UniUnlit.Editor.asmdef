@@ -1,0 +1,12 @@
+{
+    "name": "UniUnlit.Editor",
+    "references": [
+        "UniUnlit"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false
+}

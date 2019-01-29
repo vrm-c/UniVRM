@@ -1,0 +1,12 @@
+{
+    "name": "UniGLTF.Editor",
+    "references": [
+        "VRM"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false
+}
