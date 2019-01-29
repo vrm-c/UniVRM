@@ -95,9 +95,10 @@ namespace VRM
                 m_isBinaryProp = serializedObject.FindProperty("IsBinary");
             }
 
-            int thumbnailSize = 96;
             EditorGUILayout.BeginHorizontal();
+
             /*
+            int thumbnailSize = 96;
             var objectReferenceValue = EditorGUILayout.ObjectField(m_thumbnailProp.objectReferenceValue, typeof(Texture), false,
                 GUILayout.Width(thumbnailSize), GUILayout.Height(thumbnailSize));
             if (m_thumbnailProp.objectReferenceValue != objectReferenceValue)

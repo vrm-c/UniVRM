@@ -26,7 +26,7 @@ namespace VRM
 
                 position.height = EditorGUIUtility.singleLineHeight;
 
-                var halfWidth = position.width * 0.5f;
+                //var halfWidth = position.width * 0.5f;
 
                 var rect = new Rect(position.x + ThumbnailSize, position.y, position.width - ThumbnailSize, position.height);
                 EditorGUI.PropertyField(rect, property);
