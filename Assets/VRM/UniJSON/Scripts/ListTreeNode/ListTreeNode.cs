@@ -68,9 +68,9 @@ namespace UniJSON
             if (this.IsArray())
             {
                 var sb = new StringBuilder();
-                bool isFirst = true;
                 sb.Append("[");
                 /*
+                bool isFirst = true;
                 foreach (var x in this.ArrayItems())
                 {
                     if (isFirst)
@@ -90,9 +90,9 @@ namespace UniJSON
             else if (this.IsMap())
             {
                 var sb = new StringBuilder();
-                bool isFirst = true;
                 sb.Append("{");
                 /*
+                bool isFirst = true;
                 foreach (var kv in this.ObjectItems())
                 {
                     if (isFirst)

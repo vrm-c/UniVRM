@@ -163,7 +163,7 @@ namespace VRM.Samples
         {
 #if true
             var now = Time.time;
-            context.LoadAsync(_ =>
+            context.LoadAsync(() =>
             {
                 var delta = Time.time - now;
                 Debug.LogFormat("LoadAsync {0:0.0} seconds", delta);

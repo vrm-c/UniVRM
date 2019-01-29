@@ -36,7 +36,7 @@ namespace VRM
         #endregion
 
         #region  Editor values
-        float m_previewSlider = 1.0f;
+        //float m_previewSlider = 1.0f;
 
         bool m_changed;
 

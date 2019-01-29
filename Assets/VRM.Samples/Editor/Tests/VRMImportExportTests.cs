@@ -83,9 +83,11 @@ namespace VRM.Samples
 
                 var vrm = VRMExporter.Export(context.Root);
 
-                var exportJson = JsonParser.Parse(vrm.ToJson());
+                // TODO: Check contents in JSON
+                /*var exportJson = */JsonParser.Parse(vrm.ToJson());
 
-                var newExportedJson = JsonParser.Parse(JsonSchema.FromType<glTF>().Serialize(vrm));
+                // TODO: Check contents in JSON
+                /*var newExportedJson = */JsonParser.Parse(JsonSchema.FromType<glTF>().Serialize(vrm));
 
                 /*
                 foreach (var kv in importJson.Diff(exportJson))
