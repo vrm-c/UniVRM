@@ -1,7 +1,7 @@
 {
     "name": "UniJSON.Editor.Tests",
     "references": [
-        "VRM"
+        "UniJSON"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

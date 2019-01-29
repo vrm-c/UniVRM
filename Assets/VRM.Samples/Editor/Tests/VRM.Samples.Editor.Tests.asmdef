@@ -3,7 +3,8 @@
     "references": [
         "VRM",
         "VRM.Samples",
-        "UniVRM.Editor.Tests"
+        "UniVRM.Editor.Tests",
+        "UniJSON"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

@@ -4,7 +4,8 @@
         "MToon",
         "DepthFirstScheduler",
         "UniUnlit",
-        "UniHumanoid"
+        "UniHumanoid",
+        "UniJSON"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],
