@@ -10,7 +10,7 @@ namespace UniJSON
 
 //////////// Create
 
-        public static Delegate Create<S, A0>(MethodInfo m)
+        public static Action<S, A0> Create<S, A0>(MethodInfo m)
         {
             Action<S, A0> callback=
             (s, a0) =>
@@ -21,7 +21,7 @@ namespace UniJSON
         }
 
 
-        public static Delegate Create<S, A0, A1>(MethodInfo m)
+        public static Action<S, A0, A1> Create<S, A0, A1>(MethodInfo m)
         {
             Action<S, A0, A1> callback=
             (s, a0, a1) =>
@@ -32,7 +32,7 @@ namespace UniJSON
         }
 
 
-        public static Delegate Create<S, A0, A1, A2>(MethodInfo m)
+        public static Action<S, A0, A1, A2> Create<S, A0, A1, A2>(MethodInfo m)
         {
             Action<S, A0, A1, A2> callback=
             (s, a0, a1, a2) =>
@@ -44,7 +44,7 @@ namespace UniJSON
 
 //////////// CreateWithThis
 
-        public static Delegate CreateWithThis<S, A0>(MethodInfo m, S instance)
+        public static Action<A0> CreateWithThis<S, A0>(MethodInfo m, S instance)
         {
             if (m.IsStatic)
             {
@@ -70,7 +70,7 @@ namespace UniJSON
         }
 
 
-        public static Delegate CreateWithThis<S, A0, A1>(MethodInfo m, S instance)
+        public static Action<A0, A1> CreateWithThis<S, A0, A1>(MethodInfo m, S instance)
         {
             if (m.IsStatic)
             {
@@ -96,7 +96,7 @@ namespace UniJSON
         }
 
 
-        public static Delegate CreateWithThis<S, A0, A1, A2>(MethodInfo m, S instance)
+        public static Action<A0, A1, A2> CreateWithThis<S, A0, A1, A2>(MethodInfo m, S instance)
         {
             if (m.IsStatic)
             {
@@ -122,7 +122,7 @@ namespace UniJSON
         }
 
 
-        public static Delegate CreateWithThis<S, A0, A1, A2, A3>(MethodInfo m, S instance)
+        public static Action<A0, A1, A2, A3> CreateWithThis<S, A0, A1, A2, A3>(MethodInfo m, S instance)
         {
             if (m.IsStatic)
             {
