@@ -576,6 +576,26 @@ namespace UniGLTF
         }
 
         [Test]
+        public void GLTFTest()
+        {
+            var model = new glTF()
+            {
+                asset = new glTFAssets()
+                {
+                    version = "0.49",
+                },
+                extensions = null,
+            };
+
+            var c = new JsonSchemaValidationContext("")
+            {
+                EnableDiagnosisForNotRequiredFields = true,
+            };
+            var json2 = JsonSchema.FromType<glTF>().Serialize(model, c);
+            Assert.AreEqual(@"{""asset"":{""version"":""0.49""},""extras"":{}}", json2);
+        }
+
+        [Test]
         public void SameMeshButDifferentMaterialExport()
         {
             var go = new GameObject("same_mesh");
