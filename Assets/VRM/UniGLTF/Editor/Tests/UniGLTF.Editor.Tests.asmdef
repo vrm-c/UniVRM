@@ -1,0 +1,15 @@
+{
+    "name": "UniGLTF.Editor.Tests",
+    "references": [
+        "VRM",
+        "UniJSON"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false
+}

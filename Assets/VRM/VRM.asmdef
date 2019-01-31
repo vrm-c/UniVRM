@@ -1,0 +1,14 @@
+{
+    "name": "VRM",
+    "references": [
+        "MToon",
+        "DepthFirstScheduler",
+        "UniUnlit",
+        "UniHumanoid",
+        "UniJSON"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false
+}

@@ -1,0 +1,11 @@
+{
+    "name": "VRM.Samples",
+    "references": [
+        "VRM",
+        "UniHumanoid"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false
+}

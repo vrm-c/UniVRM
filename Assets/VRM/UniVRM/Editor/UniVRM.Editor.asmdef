@@ -1,0 +1,13 @@
+{
+    "name": "UniVRM.Editor",
+    "references": [
+        "VRM",
+        "UniJSON"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false
+}
