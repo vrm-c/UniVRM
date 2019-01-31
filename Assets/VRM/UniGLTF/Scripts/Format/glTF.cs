@@ -31,7 +31,7 @@ namespace UniGLTF
         public glTFAssets asset = new glTFAssets();
 
         #region Buffer
-        [JsonSchema(MinItems = 1)]
+        [JsonSchema(MinItems = 1, ExplicitIgnorableItemLength = 0)]
         public List<glTFBuffer> buffers = new List<glTFBuffer>();
         public int AddBuffer(IBytesBuffer bytesBuffer)
         {
@@ -40,7 +40,7 @@ namespace UniGLTF
             return index;
         }
 
-        [JsonSchema(MinItems = 1)]
+        [JsonSchema(MinItems = 1, ExplicitIgnorableItemLength = 0)]
         public List<glTFBufferView> bufferViews = new List<glTFBufferView>();
         public int AddBufferView(glTFBufferView view)
         {
@@ -49,7 +49,7 @@ namespace UniGLTF
             return index;
         }
 
-        [JsonSchema(MinItems = 1)]
+        [JsonSchema(MinItems = 1, ExplicitIgnorableItemLength = 0)]
         public List<glTFAccessor> accessors = new List<glTFAccessor>();
 
         T[] GetAttrib<T>(glTFAccessor accessor, glTFBufferView view) where T : struct
@@ -212,7 +212,7 @@ namespace UniGLTF
             return samplers[index];
         }
 
-        [JsonSchema(MinItems = 1)]
+        [JsonSchema(MinItems = 1, ExplicitIgnorableItemLength = 0)]
         public List<glTFImage> images = new List<glTFImage>();
 
         public int GetImageIndexFromTextureIndex(int textureIndex)
