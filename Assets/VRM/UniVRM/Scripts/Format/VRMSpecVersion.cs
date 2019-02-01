@@ -2,7 +2,7 @@ using System;
 
 namespace VRM
 {
-    public class VRMSchemaVersion
+    public class VRMSpecVersion
     {
         public const int Major = 0;
         public const int Minor = 0;
