@@ -237,10 +237,13 @@ namespace VRM
         [Test]
         public void MetaTest()
         {
-            var model = new glTF_VRM_Meta();
+            var model = new glTF_VRM_Meta()
+            {
+                licenseName = "CC0",
+            };
 
-            var json = model.ToJson();
-            Assert.AreEqual(@"{""texture"":-1}", json);
+        var json = model.ToJson();
+            Assert.AreEqual(@"{""texture"":-1,""licenseName"":""CC0""}", json);
             Debug.Log(json);
 
             var c = new JsonSchemaValidationContext("")
@@ -249,7 +252,22 @@ namespace VRM
             };
             var json2 = JsonSchema.FromType<glTF_VRM_Meta>().Serialize(model, c);
             // NOTE: New serializer outputs values which will not be used...
-            Assert.AreEqual(@"{}",json2);
+            Assert.AreEqual(@"{""licenseName"":""CC0""}",json2);
+        }
+
+        [Test]
+        public void MetaTestError()
+        {
+            var model = new glTF_VRM_Meta();
+
+            var c = new JsonSchemaValidationContext("")
+            {
+                EnableDiagnosisForNotRequiredFields = true,
+            };
+            var ex = Assert.Throws<JsonSchemaValidationException>(
+                () => JsonSchema.FromType<glTF_VRM_Meta>().Serialize(model, c)
+            );
+            Assert.AreEqual("[licenseName.String] null", ex.Message);
         }
 
         // TODO: Move to another suitable location

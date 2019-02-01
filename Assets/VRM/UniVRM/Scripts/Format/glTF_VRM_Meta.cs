@@ -118,7 +118,7 @@ namespace VRM
         #endregion
 
         #region Distribution License
-        [JsonSchema(Description = "License type", EnumValues = new object[]
+        [JsonSchema(Required = true, Description = "License type", EnumValues = new object[]
         {
             "Redistribution_Prohibited",
             "CC0",
