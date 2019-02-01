@@ -101,7 +101,7 @@ namespace VRM
             set { sexualUssageName = value.ToString(); }
         }
 
-        [JsonSchema(Description = "For commercial use", EnumValues = new object[]
+        [JsonSchema(Required = true, Description = "For commercial use", EnumValues = new object[]
         {
         "Disallow",
         "Allow",

@@ -242,11 +242,12 @@ namespace VRM
                 allowedUserName = "OnlyAuthor",
                 violentUssageName = "Disallow",
                 sexualUssageName = "Disallow",
+                commercialUssageName = "Disallow",
                 licenseName = "CC0",
             };
 
             var json = model.ToJson();
-            Assert.AreEqual(@"{""texture"":-1,""allowedUserName"":""OnlyAuthor"",""violentUssageName"":""Disallow"",""sexualUssageName"":""Disallow"",""licenseName"":""CC0""}", json);
+            Assert.AreEqual(@"{""texture"":-1,""allowedUserName"":""OnlyAuthor"",""violentUssageName"":""Disallow"",""sexualUssageName"":""Disallow"",""commercialUssageName"":""Disallow"",""licenseName"":""CC0""}", json);
             Debug.Log(json);
 
             var c = new JsonSchemaValidationContext("")
@@ -255,7 +256,7 @@ namespace VRM
             };
             var json2 = JsonSchema.FromType<glTF_VRM_Meta>().Serialize(model, c);
             // NOTE: New serializer outputs values which will not be used...
-            Assert.AreEqual(@"{""allowedUserName"":""OnlyAuthor"",""violentUssageName"":""Disallow"",""sexualUssageName"":""Disallow"",""licenseName"":""CC0""}",json2);
+            Assert.AreEqual(@"{""allowedUserName"":""OnlyAuthor"",""violentUssageName"":""Disallow"",""sexualUssageName"":""Disallow"",""commercialUssageName"":""Disallow"",""licenseName"":""CC0""}",json2);
         }
 
         [Test]
@@ -280,6 +281,7 @@ namespace VRM
                     allowedUserName = "OnlyAuthor",
                     violentUssageName = "Disallow",
                     sexualUssageName = "Disallow",
+                    commercialUssageName = "Disallow",
                     //licenseName = "CC0",
                 };
 
@@ -299,6 +301,7 @@ namespace VRM
                     allowedUserName = "OnlyAuthor",
                     violentUssageName = "Disallow",
                     sexualUssageName = "Disallow",
+                    commercialUssageName = "Disallow",
                     licenseName = "_INVALID_SOME_THING_",
                 };
 
@@ -318,6 +321,7 @@ namespace VRM
                     // allowedUserName = "OnlyAuthor",
                     violentUssageName = "Disallow",
                     sexualUssageName = "Disallow",
+                    commercialUssageName = "Disallow",
                     licenseName = "CC0",
                 };
 
@@ -337,6 +341,7 @@ namespace VRM
                     allowedUserName = "_INVALID_SOME_THING_",
                     violentUssageName = "Disallow",
                     sexualUssageName = "Disallow",
+                    commercialUssageName = "Disallow",
                     licenseName = "CC0",
                 };
 
@@ -356,6 +361,7 @@ namespace VRM
                     allowedUserName = "OnlyAuthor",
                     //violentUssageName = "Disallow",
                     sexualUssageName = "Disallow",
+                    commercialUssageName = "Disallow",
                     licenseName = "CC0",
                 };
 
@@ -375,6 +381,7 @@ namespace VRM
                     allowedUserName = "OnlyAuthor",
                     violentUssageName = "_INVALID_SOME_THING_",
                     sexualUssageName = "Disallow",
+                    commercialUssageName = "Disallow",
                     licenseName = "CC0",
                 };
 
@@ -394,6 +401,7 @@ namespace VRM
                     allowedUserName = "OnlyAuthor",
                     violentUssageName = "Disallow",
                     //sexualUssageName = "Disallow",
+                    commercialUssageName = "Disallow",
                     licenseName = "CC0",
                 };
 
@@ -413,6 +421,7 @@ namespace VRM
                     allowedUserName = "OnlyAuthor",
                     violentUssageName = "Disallow",
                     sexualUssageName = "_INVALID_SOME_THING_",
+                    commercialUssageName = "Disallow",
                     licenseName = "CC0",
                 };
 
@@ -424,6 +433,46 @@ namespace VRM
                     () => JsonSchema.FromType<glTF_VRM_Meta>().Serialize(model, c)
                 );
                 Assert.AreEqual("[sexualUssageName.String] _INVALID_SOME_THING_ is not valid enum", ex.Message);
+            }
+
+            {
+                var model = new glTF_VRM_Meta()
+                {
+                    allowedUserName = "OnlyAuthor",
+                    violentUssageName = "Disallow",
+                    sexualUssageName = "Disallow",
+                    //commercialUssageName = "Disallow",
+                    licenseName = "CC0",
+                };
+
+                var c = new JsonSchemaValidationContext("")
+                {
+                    EnableDiagnosisForNotRequiredFields = true,
+                };
+                var ex = Assert.Throws<JsonSchemaValidationException>(
+                    () => JsonSchema.FromType<glTF_VRM_Meta>().Serialize(model, c)
+                );
+                Assert.AreEqual("[commercialUssageName.String] null", ex.Message);
+            }
+
+            {
+                var model = new glTF_VRM_Meta()
+                {
+                    allowedUserName = "OnlyAuthor",
+                    violentUssageName = "Disallow",
+                    sexualUssageName = "Disallow",
+                    commercialUssageName = "_INVALID_SOME_THING_",
+                    licenseName = "CC0",
+                };
+
+                var c = new JsonSchemaValidationContext("")
+                {
+                    EnableDiagnosisForNotRequiredFields = true,
+                };
+                var ex = Assert.Throws<JsonSchemaValidationException>(
+                    () => JsonSchema.FromType<glTF_VRM_Meta>().Serialize(model, c)
+                );
+                Assert.AreEqual("[commercialUssageName.String] _INVALID_SOME_THING_ is not valid enum", ex.Message);
             }
         }
 
