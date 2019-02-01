@@ -239,10 +239,10 @@ namespace VRM
         {
             var model = new glTF_VRM_Meta()
             {
-                licenseName = "CC0",
                 allowedUserName = "OnlyAuthor",
                 violentUssageName = "Disallow",
                 sexualUssageName = "Disallow",
+                licenseName = "CC0",
             };
 
             var json = model.ToJson();
@@ -279,8 +279,27 @@ namespace VRM
                 {
                     allowedUserName = "OnlyAuthor",
                     violentUssageName = "Disallow",
-                    licenseName = "_INVALID_SOME_THING_",
                     sexualUssageName = "Disallow",
+                    //licenseName = "CC0",
+                };
+
+                var c = new JsonSchemaValidationContext("")
+                {
+                    EnableDiagnosisForNotRequiredFields = true,
+                };
+                var ex = Assert.Throws<JsonSchemaValidationException>(
+                    () => JsonSchema.FromType<glTF_VRM_Meta>().Serialize(model, c)
+                );
+                Assert.AreEqual("[licenseName.String] null", ex.Message);
+            }
+
+            {
+                var model = new glTF_VRM_Meta()
+                {
+                    allowedUserName = "OnlyAuthor",
+                    violentUssageName = "Disallow",
+                    sexualUssageName = "Disallow",
+                    licenseName = "_INVALID_SOME_THING_",
                 };
 
                 var c = new JsonSchemaValidationContext("")
@@ -297,9 +316,9 @@ namespace VRM
                 var model = new glTF_VRM_Meta()
                 {
                     // allowedUserName = "OnlyAuthor",
-                    licenseName = "CC0",
                     violentUssageName = "Disallow",
                     sexualUssageName = "Disallow",
+                    licenseName = "CC0",
                 };
 
                 var c = new JsonSchemaValidationContext("")
