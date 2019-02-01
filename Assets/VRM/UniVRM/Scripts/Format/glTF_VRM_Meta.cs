@@ -59,7 +59,7 @@ namespace VRM
         public int texture = -1;
 
         #region Ussage Permission
-        [JsonSchema(Description = "A person who can perform with this avatar ", EnumValues = new object[] {
+        [JsonSchema(Required = true, Description = "A person who can perform with this avatar ", EnumValues = new object[] {
             "OnlyAuthor",
             "ExplicitlyLicensedPerson",
             "Everyone",
