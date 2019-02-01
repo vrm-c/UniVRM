@@ -89,7 +89,7 @@ namespace VRM
             set { violentUssageName = value.ToString(); }
         }
 
-        [JsonSchema(Description = "Permission to perform sexual acts with this avatar", EnumValues = new object[]
+        [JsonSchema(Required = true, Description = "Permission to perform sexual acts with this avatar", EnumValues = new object[]
         {
         "Disallow",
         "Allow",
