@@ -45,6 +45,7 @@ namespace UniJSON
             return method.MakeGenericMethod(typeof(T));
         }
 
+        [Obsolete("error when AOT. use Key, Value")]
         public static void KeyValue<T>(this IFormatter f, Expression<Func<T>> expression)
         {
             var func = expression.Compile();
