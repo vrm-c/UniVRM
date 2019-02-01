@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
+
 
 namespace UniJSON
 {
@@ -304,8 +304,8 @@ namespace UniJSON
             GenericSerializer<T>.Serialize(this, f, c, o);
         }
 
-        static class GenericDeserializer<T, U> 
-            where T: IListTreeItem, IValue<T>
+        static class GenericDeserializer<T, U>
+            where T : IListTreeItem, IValue<T>
         {
             delegate U Deserializer(ListTreeNode<T> src);
             static Deserializer s_d;
@@ -319,13 +319,11 @@ namespace UniJSON
                         var mi = typeof(Enum).GetMethods(BindingFlags.Static | BindingFlags.Public).First(
                             x => x.Name == "Parse" && x.GetParameters().Length == 3
                             );
-                        var type = Expression.Constant(typeof(U));
-                        var value = Expression.Parameter(typeof(string), "value");
-                        var ic = Expression.Constant(true);
-                        var call = Expression.Call(mi, type, value, ic);
-                        var lambda = Expression.Lambda(call, value);
-                        var func = (Func<string, object>)lambda.Compile();
-                        s_d = x => GenericCast<object, U>.Cast(func(x.GetString()));
+                        s_d = x =>
+                        {
+                            var enumValue = mi.Invoke(null, new object[] { typeof(U), x.GetString(), true });
+                            return GenericCast<object, U>.Cast(enumValue);
+                        };
                     }
                     else
                     {
@@ -336,7 +334,7 @@ namespace UniJSON
             }
         }
 
-        public void Deserialize<T, U>(ListTreeNode<T> src, ref U dst) 
+        public void Deserialize<T, U>(ListTreeNode<T> src, ref U dst)
             where T : IListTreeItem, IValue<T>
         {
             GenericDeserializer<T, U>.Deserialize(src, ref dst);
@@ -414,7 +412,7 @@ namespace UniJSON
             f.Serialize(GenericCast<T, int>.Cast(o));
         }
 
-        static class GenericDeserializer<T, U> 
+        static class GenericDeserializer<T, U>
             where T : IListTreeItem, IValue<T>
         {
             delegate U Deserializer(ListTreeNode<T> src);
@@ -426,17 +424,13 @@ namespace UniJSON
                 if (s_d == null)
                 {
                     // enum from int
-                    var value = Expression.Parameter(typeof(int), "value");
-                    var cast = Expression.Convert(value, typeof(U));
-                    var lambda = Expression.Lambda(cast, value);
-                    var func = (Func<int, U>)lambda.Compile();
-                    s_d = s => func(s.GetInt32());
+                    s_d = s => GenericCast<int, U>.Cast(s.GetInt32());
                 }
                 dst = s_d(src);
             }
         }
 
-        public void Deserialize<T, U>(ListTreeNode<T> src, ref U dst) 
+        public void Deserialize<T, U>(ListTreeNode<T> src, ref U dst)
             where T : IListTreeItem, IValue<T>
         {
             GenericDeserializer<T, U>.Deserialize(src, ref dst);
