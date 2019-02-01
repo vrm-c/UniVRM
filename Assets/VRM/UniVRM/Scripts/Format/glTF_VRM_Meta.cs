@@ -77,7 +77,7 @@ namespace VRM
             }
         }
 
-        [JsonSchema(Description = "Permission to perform violent acts with this avatar", EnumValues = new object[]
+        [JsonSchema(Required = true, Description = "Permission to perform violent acts with this avatar", EnumValues = new object[]
         {
         "Disallow",
         "Allow",
