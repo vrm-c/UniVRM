@@ -59,7 +59,7 @@ namespace VRM
         public int texture = -1;
 
         #region Ussage Permission
-        [JsonSchema(Description = "A person who can perform with this avatar ", EnumValues = new object[] {
+        [JsonSchema(Required = true, Description = "A person who can perform with this avatar ", EnumValues = new object[] {
             "OnlyAuthor",
             "ExplicitlyLicensedPerson",
             "Everyone",
@@ -77,7 +77,7 @@ namespace VRM
             }
         }
 
-        [JsonSchema(Description = "Permission to perform violent acts with this avatar", EnumValues = new object[]
+        [JsonSchema(Required = true, Description = "Permission to perform violent acts with this avatar", EnumValues = new object[]
         {
         "Disallow",
         "Allow",
@@ -89,7 +89,7 @@ namespace VRM
             set { violentUssageName = value.ToString(); }
         }
 
-        [JsonSchema(Description = "Permission to perform sexual acts with this avatar", EnumValues = new object[]
+        [JsonSchema(Required = true, Description = "Permission to perform sexual acts with this avatar", EnumValues = new object[]
         {
         "Disallow",
         "Allow",
@@ -101,7 +101,7 @@ namespace VRM
             set { sexualUssageName = value.ToString(); }
         }
 
-        [JsonSchema(Description = "For commercial use", EnumValues = new object[]
+        [JsonSchema(Required = true, Description = "For commercial use", EnumValues = new object[]
         {
         "Disallow",
         "Allow",
@@ -118,7 +118,7 @@ namespace VRM
         #endregion
 
         #region Distribution License
-        [JsonSchema(Description = "License type", EnumValues = new object[]
+        [JsonSchema(Required = true, Description = "License type", EnumValues = new object[]
         {
             "Redistribution_Prohibited",
             "CC0",
