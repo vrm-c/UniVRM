@@ -617,6 +617,27 @@ namespace VRM
             Assert.AreEqual(json,json2);
         }
 
+        [Test]
+        public void ExtensionsTest()
+        {
+            var model = new glTF_VRM_extensions()
+            {
+                meta = null,
+                humanoid = null,
+                firstPerson = null,
+                blendShapeMaster = null,
+                secondaryAnimation = null,
+                materialProperties = null,
+            };
+
+            var c = new JsonSchemaValidationContext("")
+            {
+                EnableDiagnosisForNotRequiredFields = true,
+            };
+            var json2 = JsonSchema.FromType<glTF_VRM_extensions>().Serialize(model, c);
+            Assert.AreEqual(@"{""exporterVersion"":""UniVRM-0.50"",""specVersion"":""0.0""}",json2);
+        }
+
         // TODO: Move to another suitable location
         T deserialize<T>(string json)
         {
