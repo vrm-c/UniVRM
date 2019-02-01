@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text;
 using UnityEngine;
+using System.Reflection;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -11,6 +12,19 @@ namespace UniJSON
 {
     public static partial class ConcreteCast
     {
+        public static string GetMethodName(Type src, Type dst)
+        {
+            return string.Format("Cast{0}To{1}", src.Name, dst.Name);
+        }
+
+        public static MethodInfo GetMethod(Type src, Type dst)
+        {
+            var name = GetMethodName(src, dst);
+            var mi = typeof(ConcreteCast).GetMethod(name, 
+                BindingFlags.Static | BindingFlags.Public);
+            return mi;
+        }
+
 #if UNITY_EDITOR
 
         static Type[] s_castTypes = new Type[]
@@ -47,11 +61,11 @@ namespace UniJSON {
                     foreach (var y in s_castTypes)
                     {
                         w.WriteLine(@"
-        public static $1 Cast$0To$1($0 src)
+        public static $1 $2($0 src)
         {
             return ($1)src;
         }
-".Replace("$0", x.Name).Replace("$1", y.Name));
+".Replace("$0", x.Name).Replace("$1", y.Name).Replace("$2", GetMethodName(x, y)));
                     }
                 }
                 w.WriteLine(@"

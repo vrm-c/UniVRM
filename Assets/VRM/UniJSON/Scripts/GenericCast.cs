@@ -1,11 +1,4 @@
 ﻿using System;
-using System.IO;
-using System.Linq.Expressions;
-using System.Text;
-#if UNITY_EDITOR
-using UnityEditor;
-using UnityEngine;
-#endif
 
 
 namespace UniJSON
@@ -53,33 +46,30 @@ namespace UniJSON
     {
         public static Func<S, T> CreateCast<S, T>()
         {
-            if (typeof(S) == typeof(T))
+            var mi = ConcreteCast.GetMethod(typeof(S), typeof(T));
+            if (mi == null)
             {
-                // through
-                var src = Expression.Parameter(typeof(S), "src");
-                var lambda = Expression.Lambda(src, src);
-                return (Func<S, T>)lambda.Compile();
+                return (Func<S, T>)((S s) =>
+                {
+                    return (T)(object)s;
+                });
             }
             else
             {
-                // cast
-                var src = Expression.Parameter(typeof(S), "src");
-                var cast = Expression.Convert(src, typeof(T));
-                var lambda = Expression.Lambda(cast, src);
-                return (Func<S, T>)lambda.Compile();
+                return (Func<S, T>)((S s) =>
+                {
+                    return (T)mi.Invoke(null, new object[] { s });
+                });
             }
         }
 
         public static Func<S, Func<T>> CreateConst<S, T>()
         {
-            var src = Expression.Parameter(typeof(S), "src");
-            var convert = Expression.Convert(src, typeof(T));
-            var lambda = (Func<S, T>)Expression.Lambda(convert, src).Compile();
-            return s =>
+            var cast = CreateCast<S, T>();
+            return (Func<S, Func<T>>)((S s) =>
             {
-                var t = lambda(s);
-                return () => t;
-            };
+                return (Func<T>)(() => cast(s));
+            });
         }
     }
 }
