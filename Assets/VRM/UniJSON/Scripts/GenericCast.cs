@@ -1,5 +1,11 @@
 ﻿using System;
+using System.IO;
 using System.Linq.Expressions;
+using System.Text;
+#if UNITY_EDITOR
+using UnityEditor;
+using UnityEngine;
+#endif
 
 
 namespace UniJSON
@@ -43,7 +49,7 @@ namespace UniJSON
         }
     }
 
-    static class GenericCast
+    static partial class GenericCast
     {
         public static Func<S, T> CreateCast<S, T>()
         {
