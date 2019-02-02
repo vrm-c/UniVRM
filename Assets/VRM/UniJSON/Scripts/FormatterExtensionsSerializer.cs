@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
+
 
 namespace UniJSON
 {
@@ -67,6 +67,11 @@ namespace UniJSON
         {
             GenericSerializer<T>.Set(serializer);
         }
+
+        public static MethodInfo GetMethod(string name)
+        {
+            return typeof(FormatterExtensionsSerializer).GetMethod(name);
+        }
     }
 
     static class GenericSerializer<T>
@@ -78,13 +83,8 @@ namespace UniJSON
             // object
             if (typeof(T) == typeof(object) && t.GetType() != typeof(object))
             {
-                var self = Expression.Parameter(typeof(IFormatter), "f");
-                var arg = Expression.Parameter(t, "value");
-                var call = Expression.Call(typeof(FormatterExtensionsSerializer), "SerializeObject",
-                    new Type[] { },
-                    self, arg);
-                var lambda = Expression.Lambda(call, self, arg);
-                return (Action<IFormatter, T>)lambda.Compile();
+                var mi = FormatterExtensionsSerializer.GetMethod("SerializeObject");
+                return GenericInvokeCallFactory.Create<IFormatter, T>(mi);
             }
 
             try
@@ -93,13 +93,7 @@ namespace UniJSON
                 var mi = typeof(IFormatter).GetMethod("Value", new Type[] { t });
                 if (mi != null)
                 {
-                    // primitives
-                    var self = Expression.Parameter(typeof(IFormatter), "f");
-                    var arg = Expression.Parameter(t, "value");
-                    var call = Expression.Call(self, mi, arg);
-
-                    var lambda = Expression.Lambda(call, self, arg);
-                    return (Action<IFormatter, T>)lambda.Compile();
+                    return GenericInvokeCallFactory.Create<IFormatter, T>(mi);
                 }
             }
             catch (AmbiguousMatchException)
@@ -116,14 +110,8 @@ namespace UniJSON
                 );
                 if (idictionary != null)
                 {
-                    //var mi = typeof(IFormatter).GetMethod("SerializeDictionary", new Type[] { t });
-                    var self = Expression.Parameter(typeof(IFormatter), "f");
-                    var arg = Expression.Parameter(t, "value");
-                    var call = Expression.Call(typeof(FormatterExtensionsSerializer), "SerializeDictionary",
-                        new Type[] { },
-                        self, arg);
-                    var lambda = Expression.Lambda(call, self, arg);
-                    return (Action<IFormatter, T>)lambda.Compile();
+                    var mi = FormatterExtensionsSerializer.GetMethod("SerializeDictionary");
+                    return GenericInvokeCallFactory.Create<IFormatter, T>(mi);
                 }
             }
 
@@ -131,13 +119,8 @@ namespace UniJSON
                 // object[]
                 if (t == typeof(object[]))
                 {
-                    var self = Expression.Parameter(typeof(IFormatter), "f");
-                    var arg = Expression.Parameter(t, "value");
-                    var call = Expression.Call(typeof(FormatterExtensionsSerializer), "SerializeObjectArray",
-                        new Type[] { },
-                        self, arg);
-                    var lambda = Expression.Lambda(call, self, arg);
-                    return (Action<IFormatter, T>)lambda.Compile();
+                    var mi = FormatterExtensionsSerializer.GetMethod("SerializeObjectArray");
+                    return GenericInvokeCallFactory.Create<IFormatter, T>(mi);
                 }
             }
 
@@ -149,13 +132,9 @@ namespace UniJSON
                 );
                 if (ienumerable != null)
                 {
-                    var self = Expression.Parameter(typeof(IFormatter), "f");
-                    var arg = Expression.Parameter(t, "value");
-                    var call = Expression.Call(typeof(FormatterExtensionsSerializer), "SerializeArray",
-                        ienumerable.GetGenericArguments(),
-                        self, arg);
-                    var lambda = Expression.Lambda(call, self, arg);
-                    return (Action<IFormatter, T>)lambda.Compile();
+                    var g = FormatterExtensionsSerializer.GetMethod("SerializeArray");
+                    var mi = g.MakeGenericMethod(ienumerable.GetGenericArguments());
+                    return GenericInvokeCallFactory.Create<IFormatter, T>(mi);
                 }
             }
 

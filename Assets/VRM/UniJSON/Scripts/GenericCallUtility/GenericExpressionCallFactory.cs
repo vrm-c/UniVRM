@@ -49,13 +49,13 @@ namespace UniJSON
                     var a = String.Join(", ", GetArgs("a", i).ToArray());
 
                     var source = @"
-        public static Delegate Create<S, $0>(MethodInfo m)
+        public static Action<S, $0> Create<S, $0>(MethodInfo m)
         {
             var self = Expression.Parameter(m.DeclaringType, m.Name);
             var args = m.GetParameters().Select(x => Expression.Parameter(x.ParameterType, x.Name)).ToArray();
             var call = Expression.Call(self, m, args);
             return 
-                Expression.Lambda(call, new[] { self }.Concat(args).ToArray()).Compile();
+                (Action<S, $0>)Expression.Lambda(call, new[] { self }.Concat(args).ToArray()).Compile();
         }
 ".Replace("$0", g).Replace("$1", a);
 
@@ -68,7 +68,7 @@ namespace UniJSON
                     var g = String.Join(", ", GetArgs("A", i).ToArray());
 
                     var source = @"
-        public static Delegate CreateWithThis<S, $0>(MethodInfo m, S instance)
+        public static Action<$0> CreateWithThis<S, $0>(MethodInfo m, S instance)
         {
             if (m.IsStatic)
             {
@@ -97,7 +97,7 @@ namespace UniJSON
                 call = Expression.Call(self, m, args);
             }
             return 
-                Expression.Lambda(call, args).Compile();
+                (Action<$0>)Expression.Lambda(call, args).Compile();
         }
 ".Replace("$0", g);
 

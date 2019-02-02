@@ -11,37 +11,37 @@ namespace UniJSON
     {
 
 
-        public static Delegate Create<S, A0>(MethodInfo m)
+        public static Action<S, A0> Create<S, A0>(MethodInfo m)
         {
             var self = Expression.Parameter(m.DeclaringType, m.Name);
             var args = m.GetParameters().Select(x => Expression.Parameter(x.ParameterType, x.Name)).ToArray();
             var call = Expression.Call(self, m, args);
             return 
-                Expression.Lambda(call, new[] { self }.Concat(args).ToArray()).Compile();
+                (Action<S, A0>)Expression.Lambda(call, new[] { self }.Concat(args).ToArray()).Compile();
         }
 
 
-        public static Delegate Create<S, A0, A1>(MethodInfo m)
+        public static Action<S, A0, A1> Create<S, A0, A1>(MethodInfo m)
         {
             var self = Expression.Parameter(m.DeclaringType, m.Name);
             var args = m.GetParameters().Select(x => Expression.Parameter(x.ParameterType, x.Name)).ToArray();
             var call = Expression.Call(self, m, args);
             return 
-                Expression.Lambda(call, new[] { self }.Concat(args).ToArray()).Compile();
+                (Action<S, A0, A1>)Expression.Lambda(call, new[] { self }.Concat(args).ToArray()).Compile();
         }
 
 
-        public static Delegate Create<S, A0, A1, A2>(MethodInfo m)
+        public static Action<S, A0, A1, A2> Create<S, A0, A1, A2>(MethodInfo m)
         {
             var self = Expression.Parameter(m.DeclaringType, m.Name);
             var args = m.GetParameters().Select(x => Expression.Parameter(x.ParameterType, x.Name)).ToArray();
             var call = Expression.Call(self, m, args);
             return 
-                Expression.Lambda(call, new[] { self }.Concat(args).ToArray()).Compile();
+                (Action<S, A0, A1, A2>)Expression.Lambda(call, new[] { self }.Concat(args).ToArray()).Compile();
         }
 
 
-        public static Delegate CreateWithThis<S, A0>(MethodInfo m, S instance)
+        public static Action<A0> CreateWithThis<S, A0>(MethodInfo m, S instance)
         {
             if (m.IsStatic)
             {
@@ -70,11 +70,11 @@ namespace UniJSON
                 call = Expression.Call(self, m, args);
             }
             return 
-                Expression.Lambda(call, args).Compile();
+                (Action<A0>)Expression.Lambda(call, args).Compile();
         }
 
 
-        public static Delegate CreateWithThis<S, A0, A1>(MethodInfo m, S instance)
+        public static Action<A0, A1> CreateWithThis<S, A0, A1>(MethodInfo m, S instance)
         {
             if (m.IsStatic)
             {
@@ -103,11 +103,11 @@ namespace UniJSON
                 call = Expression.Call(self, m, args);
             }
             return 
-                Expression.Lambda(call, args).Compile();
+                (Action<A0, A1>)Expression.Lambda(call, args).Compile();
         }
 
 
-        public static Delegate CreateWithThis<S, A0, A1, A2>(MethodInfo m, S instance)
+        public static Action<A0, A1, A2> CreateWithThis<S, A0, A1, A2>(MethodInfo m, S instance)
         {
             if (m.IsStatic)
             {
@@ -136,11 +136,11 @@ namespace UniJSON
                 call = Expression.Call(self, m, args);
             }
             return 
-                Expression.Lambda(call, args).Compile();
+                (Action<A0, A1, A2>)Expression.Lambda(call, args).Compile();
         }
 
 
-        public static Delegate CreateWithThis<S, A0, A1, A2, A3>(MethodInfo m, S instance)
+        public static Action<A0, A1, A2, A3> CreateWithThis<S, A0, A1, A2, A3>(MethodInfo m, S instance)
         {
             if (m.IsStatic)
             {
@@ -169,7 +169,7 @@ namespace UniJSON
                 call = Expression.Call(self, m, args);
             }
             return 
-                Expression.Lambda(call, args).Compile();
+                (Action<A0, A1, A2, A3>)Expression.Lambda(call, args).Compile();
         }
 
 

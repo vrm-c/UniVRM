@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq.Expressions;
 using System.Reflection;
 
 
@@ -116,17 +115,19 @@ namespace UniJSON
                     if (t.IsArray)
                     {
                         var pi = t.GetProperty("Length");
-                        var v = Expression.Parameter(t, "value");
-                        var call = Expression.Property(v, pi);
-                        var compiled = (Func<T, int>)Expression.Lambda(call, v).Compile();
+                        var compiled = (Func<T, int>)((T array) =>
+                        {
+                            return (int)pi.GetValue(array, null);
+                        });
                         s_counter = new Counter(compiled);
                     }
                     else if (t.GetIsGenericList())
                     {
                         var pi = t.GetProperty("Count");
-                        var v = Expression.Parameter(t, "value");
-                        var call = Expression.Property(v, pi);
-                        var compiled = (Func<T, int>)Expression.Lambda(call, v).Compile();
+                        var compiled = (Func<T, int>)((T list) =>
+                        {
+                            return (int)pi.GetValue(list, null);
+                        });
                         s_counter = new Counter(compiled);
                     }
                     else
@@ -257,12 +258,17 @@ namespace UniJSON
                     {
                         throw new NotImplementedException();
                     }
-                    var vv = Expression.Parameter(typeof(IJsonSchemaValidator), "v");
-                    var ff = Expression.Parameter(typeof(IFormatter), "f");
-                    var cc = Expression.Parameter(typeof(JsonSchemaValidationContext), "c");
-                    var oo = Expression.Parameter(typeof(T), "o");
-                    var call = Expression.Call(g, vv, ff, cc, oo);
-                    var compiled = (Action<IJsonSchemaValidator, IFormatter, JsonSchemaValidationContext, T>)Expression.Lambda(call, vv, ff, cc, oo).Compile();
+
+                    var compiled = (Action<
+                        IJsonSchemaValidator, 
+                        IFormatter, 
+                        JsonSchemaValidationContext, 
+                        T>)
+                        GenericInvokeCallFactory.Create<
+                            IJsonSchemaValidator, 
+                            IFormatter, 
+                            JsonSchemaValidationContext, 
+                            T>(g);
                     s_serializer = new Serializer(compiled);
                 }
                 s_serializer(v, f, c, o);

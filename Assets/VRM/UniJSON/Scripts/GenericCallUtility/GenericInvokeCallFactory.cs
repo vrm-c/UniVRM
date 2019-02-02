@@ -54,13 +54,23 @@ namespace UniJSON
 
 
                     var source = @"
-        public static Delegate Create<S, $0>(MethodInfo m)
+        public static Action<S, $0> Create<S, $0>(MethodInfo m)
         {
-            Action<S, $0> callback=
-            (s, $1) =>
+            Action<S, $0> callback = null;
+            if (m.IsStatic)
             {
-                m.Invoke(s, new object[] { $1 });
-            };
+                callback = (s, $1) =>
+                {
+                    m.Invoke(null, new object[] { s, $1 });
+                };
+            }
+            else
+            {
+                callback = (s, $1) =>
+                {
+                    m.Invoke(s, new object[] { $1 });
+                };
+            }
             return callback;
         }
 ".Replace("$0", g).Replace("$1", a);
@@ -78,7 +88,7 @@ namespace UniJSON
                     var a = String.Join(", ", GetArgs("a", i).ToArray());
 
                     var source = @"
-        public static Delegate CreateWithThis<S, $0>(MethodInfo m, S instance)
+        public static Action<$0> CreateWithThis<S, $0>(MethodInfo m, S instance)
         {
             if (m.IsStatic)
             {
