@@ -56,10 +56,7 @@ namespace UniJSON
             }
             else
             {
-                return (Func<S, T>)((S s) =>
-                {
-                    return (T)mi.Invoke(null, new object[] { s });
-                });
+                return GenericInvokeCallFactory.StaticFunc<S, T>(mi);
             }
         }
 

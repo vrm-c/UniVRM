@@ -338,7 +338,7 @@ namespace UniJSON
                         BindingFlags.Static | BindingFlags.NonPublic)
                         ;
                     var g = mi.MakeGenericMethod(fi.FieldType);
-                    return (FieldValidator)g.Invoke(null, new object[] { fi });
+                    return GenericInvokeCallFactory.StaticFunc<FieldInfo, FieldValidator>(g)(fi);
                 }
 
                 static FieldValidator _CreateFieldValidator<U>(FieldInfo fi)
@@ -498,7 +498,7 @@ namespace UniJSON
                     var mi = typeof(Serializer).GetMethod("_CreateFieldSerializer",
                         BindingFlags.Static | BindingFlags.NonPublic);
                     var g = mi.MakeGenericMethod(fi.FieldType);
-                    return (FieldSerializer)g.Invoke(null, new object[] { fi });
+                    return GenericInvokeCallFactory.StaticFunc<FieldInfo, FieldSerializer>(g)(fi);
                 }
 
                 static FieldSerializer _CreateFieldSerializer<U>(FieldInfo fi)
