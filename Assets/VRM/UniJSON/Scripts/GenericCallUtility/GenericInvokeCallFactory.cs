@@ -43,7 +43,7 @@ namespace UniJSON
 ");
 
                 // CreateWithThis
-                w.WriteLine("//////////// Create");
+                w.WriteLine("//////////// CreateAction");
 
                 // Create
                 for (int i = 1; i <= ARGS && i< NET35MAX; ++i)
@@ -54,7 +54,7 @@ namespace UniJSON
 
 
                     var source = @"
-        public static Action<S, $0> Create<S, $0>(MethodInfo m)
+        public static Action<S, $0> CreateAction<S, $0>(MethodInfo m)
         {
             Action<S, $0> callback = null;
             if (m.IsStatic)
@@ -88,7 +88,7 @@ namespace UniJSON
                     var a = String.Join(", ", GetArgs("a", i).ToArray());
 
                     var source = @"
-        public static Action<$0> CreateWithThis<S, $0>(MethodInfo m, S instance)
+        public static Action<$0> CreateActionBindThis<S, $0>(MethodInfo m, S instance)
         {
             if (m.IsStatic)
             {
@@ -130,8 +130,8 @@ namespace UniJSON
         }
 #endif
 
-        #region no arguments
-        public static Action<S> Create<S>(MethodInfo m)
+        #region zero arguments
+        public static Action<S> CreateAction<S>(MethodInfo m)
         {
             return (s) =>
             {
@@ -139,7 +139,15 @@ namespace UniJSON
             };
         }
 
-        public static Action CreateWithThis<S>(MethodInfo m, S instance)
+        public static Func<S, T> CreateFunc<S, T>(MethodInfo m)
+        {
+            return (s) =>
+            {
+                return (T)m.Invoke(s, new object[] { });
+            };
+        }
+
+        public static Action CreateActionBindThis<S>(MethodInfo m, S instance)
         {
             return () =>
             {

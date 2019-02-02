@@ -31,11 +31,11 @@ namespace UniJSON
 
             var mi = s.GetType().GetMethod("Set");
 
-            var invoke = (Action<Sample, int>)GenericInvokeCallFactory.Create<Sample, int>(mi);
+            var invoke = GenericInvokeCallFactory.CreateAction<Sample, int>(mi);
             invoke(s, 1);
             Assert.AreEqual(1, s.Value);
 
-            var exp = (Action<Sample, int>)GenericExpressionCallFactory.Create<Sample, int>(mi);
+            var exp = GenericExpressionCallFactory.Create<Sample, int>(mi);
             exp(s, 2);
             Assert.AreEqual(2, s.Value);
         }

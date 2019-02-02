@@ -8,9 +8,9 @@ namespace UniJSON
     public static partial class GenericInvokeCallFactory
     {
 
-//////////// Create
+//////////// CreateAction
 
-        public static Action<S, A0> Create<S, A0>(MethodInfo m)
+        public static Action<S, A0> CreateAction<S, A0>(MethodInfo m)
         {
             Action<S, A0> callback = null;
             if (m.IsStatic)
@@ -31,7 +31,7 @@ namespace UniJSON
         }
 
 
-        public static Action<S, A0, A1> Create<S, A0, A1>(MethodInfo m)
+        public static Action<S, A0, A1> CreateAction<S, A0, A1>(MethodInfo m)
         {
             Action<S, A0, A1> callback = null;
             if (m.IsStatic)
@@ -52,7 +52,7 @@ namespace UniJSON
         }
 
 
-        public static Action<S, A0, A1, A2> Create<S, A0, A1, A2>(MethodInfo m)
+        public static Action<S, A0, A1, A2> CreateAction<S, A0, A1, A2>(MethodInfo m)
         {
             Action<S, A0, A1, A2> callback = null;
             if (m.IsStatic)
@@ -74,7 +74,7 @@ namespace UniJSON
 
 //////////// CreateWithThis
 
-        public static Action<A0> CreateWithThis<S, A0>(MethodInfo m, S instance)
+        public static Action<A0> CreateActionBindThis<S, A0>(MethodInfo m, S instance)
         {
             if (m.IsStatic)
             {
@@ -100,7 +100,7 @@ namespace UniJSON
         }
 
 
-        public static Action<A0, A1> CreateWithThis<S, A0, A1>(MethodInfo m, S instance)
+        public static Action<A0, A1> CreateActionBindThis<S, A0, A1>(MethodInfo m, S instance)
         {
             if (m.IsStatic)
             {
@@ -126,7 +126,7 @@ namespace UniJSON
         }
 
 
-        public static Action<A0, A1, A2> CreateWithThis<S, A0, A1, A2>(MethodInfo m, S instance)
+        public static Action<A0, A1, A2> CreateActionBindThis<S, A0, A1, A2>(MethodInfo m, S instance)
         {
             if (m.IsStatic)
             {
@@ -152,7 +152,7 @@ namespace UniJSON
         }
 
 
-        public static Action<A0, A1, A2, A3> CreateWithThis<S, A0, A1, A2, A3>(MethodInfo m, S instance)
+        public static Action<A0, A1, A2, A3> CreateActionBindThis<S, A0, A1, A2, A3>(MethodInfo m, S instance)
         {
             if (m.IsStatic)
             {
