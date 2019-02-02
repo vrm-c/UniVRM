@@ -84,7 +84,7 @@ namespace UniJSON
             if (typeof(T) == typeof(object) && t.GetType() != typeof(object))
             {
                 var mi = FormatterExtensionsSerializer.GetMethod("SerializeObject");
-                return GenericInvokeCallFactory.CreateAction<IFormatter, T>(mi);
+                return GenericInvokeCallFactory.StaticAction<IFormatter, T>(mi);
             }
 
             try
@@ -93,7 +93,7 @@ namespace UniJSON
                 var mi = typeof(IFormatter).GetMethod("Value", new Type[] { t });
                 if (mi != null)
                 {
-                    return GenericInvokeCallFactory.CreateAction<IFormatter, T>(mi);
+                    return GenericInvokeCallFactory.OpenAction<IFormatter, T>(mi);
                 }
             }
             catch (AmbiguousMatchException)
@@ -111,7 +111,7 @@ namespace UniJSON
                 if (idictionary != null)
                 {
                     var mi = FormatterExtensionsSerializer.GetMethod("SerializeDictionary");
-                    return GenericInvokeCallFactory.CreateAction<IFormatter, T>(mi);
+                    return GenericInvokeCallFactory.StaticAction<IFormatter, T>(mi);
                 }
             }
 
@@ -120,7 +120,7 @@ namespace UniJSON
                 if (t == typeof(object[]))
                 {
                     var mi = FormatterExtensionsSerializer.GetMethod("SerializeObjectArray");
-                    return GenericInvokeCallFactory.CreateAction<IFormatter, T>(mi);
+                    return GenericInvokeCallFactory.StaticAction<IFormatter, T>(mi);
                 }
             }
 
@@ -134,7 +134,7 @@ namespace UniJSON
                 {
                     var g = FormatterExtensionsSerializer.GetMethod("SerializeArray");
                     var mi = g.MakeGenericMethod(ienumerable.GetGenericArguments());
-                    return GenericInvokeCallFactory.CreateAction<IFormatter, T>(mi);
+                    return GenericInvokeCallFactory.StaticAction<IFormatter, T>(mi);
                 }
             }
 

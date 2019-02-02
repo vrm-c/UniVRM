@@ -20,6 +20,11 @@ namespace UniJSON
             {
                 Value = value;
             }
+
+            public int Get(int _)
+            {
+                return Value;
+            }
         }
 
 
@@ -29,15 +34,27 @@ namespace UniJSON
         {
             var s = new Sample();
 
-            var mi = s.GetType().GetMethod("Set");
 
-            var invoke = GenericInvokeCallFactory.CreateAction<Sample, int>(mi);
-            invoke(s, 1);
-            Assert.AreEqual(1, s.Value);
+            {
+                var mi = s.GetType().GetMethod("Set");
+                var action = GenericInvokeCallFactory.OpenAction<Sample, int>(mi);
+                action(s, 1);
+                Assert.AreEqual(1, s.Value);
+            }
 
-            var exp = GenericExpressionCallFactory.Create<Sample, int>(mi);
-            exp(s, 2);
-            Assert.AreEqual(2, s.Value);
+            {
+                var mi = s.GetType().GetMethod("Get");
+                var func = GenericInvokeCallFactory.OpenFunc<Sample, int, int>(mi);
+                var value = func(s, 1);
+                Assert.AreEqual(1, s.Value);
+            }
+
+            {
+                var mi = s.GetType().GetMethod("Set");
+                var action = GenericExpressionCallFactory.Create<Sample, int>(mi);
+                action(s, 2);
+                Assert.AreEqual(2, s.Value);
+            }
         }
     }
 }
