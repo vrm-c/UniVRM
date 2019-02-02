@@ -17,10 +17,7 @@ namespace UniJSON
                 throw new ArgumentException(string.Format("{0} is not static", m));
             }
 
-            return (a0) =>
-            {
-                m.Invoke(null, new object[] { a0 });
-            };
+            return (Action<A0>)Delegate.CreateDelegate(typeof(Action<A0>), null, m);
         }
 
 
@@ -31,10 +28,7 @@ namespace UniJSON
                 throw new ArgumentException(string.Format("{0} is not static", m));
             }
 
-            return (a0, a1) =>
-            {
-                m.Invoke(null, new object[] { a0, a1 });
-            };
+            return (Action<A0, A1>)Delegate.CreateDelegate(typeof(Action<A0, A1>), null, m);
         }
 
 
@@ -45,10 +39,7 @@ namespace UniJSON
                 throw new ArgumentException(string.Format("{0} is not static", m));
             }
 
-            return (a0, a1, a2) =>
-            {
-                m.Invoke(null, new object[] { a0, a1, a2 });
-            };
+            return (Action<A0, A1, A2>)Delegate.CreateDelegate(typeof(Action<A0, A1, A2>), null, m);
         }
 
 
@@ -59,10 +50,7 @@ namespace UniJSON
                 throw new ArgumentException(string.Format("{0} is not static", m));
             }
 
-            return (a0, a1, a2, a3) =>
-            {
-                m.Invoke(null, new object[] { a0, a1, a2, a3 });
-            };
+            return (Action<A0, A1, A2, A3>)Delegate.CreateDelegate(typeof(Action<A0, A1, A2, A3>), null, m);
         }
 
 //////////// OpenAction
@@ -74,10 +62,7 @@ namespace UniJSON
                 throw new ArgumentException(string.Format("{0} is static", m));
             }
 
-            return (s, a0) =>
-            {
-                m.Invoke(s, new object[] { a0 });
-            };
+            return (Action<S, A0>)Delegate.CreateDelegate(typeof(Action<S, A0>), m);
         }
 
 
@@ -88,10 +73,7 @@ namespace UniJSON
                 throw new ArgumentException(string.Format("{0} is static", m));
             }
 
-            return (s, a0, a1) =>
-            {
-                m.Invoke(s, new object[] { a0, a1 });
-            };
+            return (Action<S, A0, A1>)Delegate.CreateDelegate(typeof(Action<S, A0, A1>), m);
         }
 
 
@@ -102,10 +84,7 @@ namespace UniJSON
                 throw new ArgumentException(string.Format("{0} is static", m));
             }
 
-            return (s, a0, a1, a2) =>
-            {
-                m.Invoke(s, new object[] { a0, a1, a2 });
-            };
+            return (Action<S, A0, A1, A2>)Delegate.CreateDelegate(typeof(Action<S, A0, A1, A2>), m);
         }
 
 //////////// BindAction
@@ -117,10 +96,7 @@ namespace UniJSON
                 throw new ArgumentException(string.Format("{0} is static", m));
             }
 
-            return (a0) =>
-            {
-                m.Invoke(instance, new object[] { a0 });
-            };
+            return (Action<A0>)Delegate.CreateDelegate(typeof(Action<A0>), instance, m);
         }
 
 
@@ -131,10 +107,7 @@ namespace UniJSON
                 throw new ArgumentException(string.Format("{0} is static", m));
             }
 
-            return (a0, a1) =>
-            {
-                m.Invoke(instance, new object[] { a0, a1 });
-            };
+            return (Action<A0, A1>)Delegate.CreateDelegate(typeof(Action<A0, A1>), instance, m);
         }
 
 
@@ -145,10 +118,7 @@ namespace UniJSON
                 throw new ArgumentException(string.Format("{0} is static", m));
             }
 
-            return (a0, a1, a2) =>
-            {
-                m.Invoke(instance, new object[] { a0, a1, a2 });
-            };
+            return (Action<A0, A1, A2>)Delegate.CreateDelegate(typeof(Action<A0, A1, A2>), instance, m);
         }
 
 
@@ -159,10 +129,7 @@ namespace UniJSON
                 throw new ArgumentException(string.Format("{0} is static", m));
             }
 
-            return (a0, a1, a2, a3) =>
-            {
-                m.Invoke(instance, new object[] { a0, a1, a2, a3 });
-            };
+            return (Action<A0, A1, A2, A3>)Delegate.CreateDelegate(typeof(Action<A0, A1, A2, A3>), instance, m);
         }
 
 //////////// StaticFunc

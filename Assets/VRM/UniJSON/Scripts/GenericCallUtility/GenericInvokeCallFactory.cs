@@ -65,10 +65,7 @@ namespace UniJSON
                 throw new ArgumentException(string.Format(""{0} is not static"", m));
             }
 
-            return ($1) =>
-            {
-                m.Invoke(null, new object[] { $1 });
-            };
+            return (Action<$0>)Delegate.CreateDelegate(typeof(Action<$0>), null, m);
         }
 ".Replace("$0", g).Replace("$1", a);
 
@@ -91,10 +88,7 @@ namespace UniJSON
                 throw new ArgumentException(string.Format(""{0} is static"", m));
             }
 
-            return (s, $1) =>
-            {
-                m.Invoke(s, new object[] { $1 });
-            };
+            return (Action<S, $0>)Delegate.CreateDelegate(typeof(Action<S, $0>), m);
         }
 ".Replace("$0", g).Replace("$1", a);
 
@@ -117,10 +111,7 @@ namespace UniJSON
                 throw new ArgumentException(string.Format(""{0} is static"", m));
             }
 
-            return ($1) =>
-            {
-                m.Invoke(instance, new object[] { $1 });
-            };
+            return (Action<$0>)Delegate.CreateDelegate(typeof(Action<$0>), instance, m);
         }
 ".Replace("$0", g).Replace("$1", a);
 
@@ -143,7 +134,7 @@ namespace UniJSON
                 throw new ArgumentException(string.Format(""{0} is not static"", m));
             }
 
-            return ($1) => (T)m.Invoke(null, new object[] { $1 });
+            return (Func<$0, T>)Delegate.CreateDelegate(typeof(Func<$0, T>), null, m);
         }
 ".Replace("$0", g).Replace("$1", a);
 
@@ -166,7 +157,7 @@ namespace UniJSON
                 throw new ArgumentException(string.Format(""{0} is static"", m));
             }
 
-            return (s, $1) => (T)m.Invoke(s, new object[] { $1 });
+            return (Func<S, $0, T>)Delegate.CreateDelegate(typeof(Func<S, $0, T>), m);
         }
 ".Replace("$0", g).Replace("$1", a);
 
@@ -189,7 +180,7 @@ namespace UniJSON
                 throw new ArgumentException(string.Format(""{0} is static"", m));
             }
 
-            return ($1) => (T)m.Invoke(instance, new object[] { $1 });
+            return (Func<$0, T>)Delegate.CreateDelegate(typeof(Func<$0, T>), instance, m);
         }
 ".Replace("$0", g).Replace("$1", a);
 
@@ -218,10 +209,7 @@ namespace UniJSON
                 throw new ArgumentException(string.Format("{0} is not static", m));
             }
 
-            return () =>
-            {
-                m.Invoke(null, new object[] { });
-            };
+            return (Action)Delegate.CreateDelegate(typeof(Action), null, m);
         }
 
         public static Action<S> OpenAction<S>(MethodInfo m)
