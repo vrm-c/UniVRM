@@ -45,23 +45,20 @@ namespace UniJSON
             return method.MakeGenericMethod(typeof(T));
         }
 
-        [Obsolete("error when AOT. use Key, Value")]
+        //
+        // https://stackoverflow.com/questions/238765/given-a-type-expressiontype-memberaccess-how-do-i-get-the-field-value
+        //
         public static void KeyValue<T>(this IFormatter f, Expression<Func<T>> expression)
         {
-            var func = expression.Compile();
-            var value = func();
-            if (value != null)
-            {
-                var body = expression.Body as MemberExpression;
-                if (body == null)
-                {
-                    body = ((UnaryExpression)expression.Body).Operand as MemberExpression;
-                }
-                f.Key(body.Member.Name);
-                f.Serialize(expression.Compile()());
-                //var method = GetMethod(expression);
-                //method.Invoke(this, new object[] { value });
-            }
+            MemberExpression outerMember = (MemberExpression)expression.Body;
+            var outerProp = (FieldInfo)outerMember.Member;
+            MemberExpression innerMember = (MemberExpression)outerMember.Expression;
+            var innerField = (FieldInfo)innerMember.Member;
+            ConstantExpression ce = (ConstantExpression)innerMember.Expression;
+            object innerObj = ce.Value;
+            object outerObj = innerField.GetValue(innerObj);
+            f.Key(outerProp.Name);
+            f.Serialize(outerProp.GetValue(outerObj));
         }
     }
 }
