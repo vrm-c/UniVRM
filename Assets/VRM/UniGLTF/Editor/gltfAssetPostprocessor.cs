@@ -15,6 +15,12 @@ namespace UniGLTF
         {
             foreach (string path in importedAssets)
             {
+                if (UnityPath.FromUnityPath(path).IsStreamingAsset)
+                {
+                    Debug.LogFormat("Skip StreamingAssets: {0}", path);
+                    continue;
+                }
+
                 var ext = Path.GetExtension(path).ToLower();
                 switch (ext)
                 {

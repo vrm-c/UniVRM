@@ -44,6 +44,19 @@ namespace UniGLTF
             }
         }
 
+        public bool IsStreamingAsset
+        {
+            get
+            {
+                if (IsNull)
+                {
+                    return false;
+                }
+
+                return FullPath.StartsWith(Application.streamingAssetsPath + "/");
+            }
+        }
+
         public string FileNameWithoutExtension
         {
             get { return Path.GetFileNameWithoutExtension(Value); }

@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using UniGLTF;
 using UnityEditor;
+using UnityEngine;
 
 
 namespace VRM
@@ -14,6 +15,12 @@ namespace VRM
         {
             foreach (string path in importedAssets)
             {
+                if (UnityPath.FromUnityPath(path).IsStreamingAsset)
+                {
+                    Debug.LogFormat("Skip StreamingAssets: {0}", path);
+                    continue;
+                }
+
                 var ext = Path.GetExtension(path).ToLower();
                 if (ext == ".vrm")
                 {
