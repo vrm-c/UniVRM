@@ -264,7 +264,7 @@ namespace UniJSON
                         IFormatter, 
                         JsonSchemaValidationContext, 
                         T>)
-                        GenericInvokeCallFactory.Create<
+                        GenericInvokeCallFactory.StaticAction<
                             IJsonSchemaValidator, 
                             IFormatter, 
                             JsonSchemaValidationContext, 

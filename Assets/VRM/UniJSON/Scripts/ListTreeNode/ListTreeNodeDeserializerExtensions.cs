@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
 
 
@@ -30,10 +29,7 @@ namespace UniJSON
                     var mi = typeof(GenericCreator<T, U>).GetMethod("ArrayCreator",
                         BindingFlags.NonPublic | BindingFlags.Static);
                     var g = mi.MakeGenericMethod(t.GetElementType());
-                    var src = Expression.Parameter(typeof(T), "src");
-                    var call = Expression.Call(g, src);
-                    var func = Expression.Lambda(call, src);
-                    return (Func<ListTreeNode<T>, U>)func.Compile();
+                    return GenericInvokeCallFactory.StaticFunc<ListTreeNode<T>, U>(g);
                 }
 
                 {
@@ -180,10 +176,7 @@ namespace UniJSON
 
                 if (mi != null)
                 {
-                    var self = Expression.Parameter(typeof(ListTreeNode<T>), "self");
-                    var call = Expression.Call(self, mi);
-                    var func = Expression.Lambda(call, self);
-                    return (Func<ListTreeNode<T>, U>)func.Compile();
+                    return GenericInvokeCallFactory.StaticFunc<ListTreeNode<T>, U>(mi);
                 }
             }
 
@@ -194,10 +187,7 @@ namespace UniJSON
                 var mi = typeof(GenericDeserializer<T, U>).GetMethod("GenericArrayDeserializer",
                     BindingFlags.Static | BindingFlags.NonPublic);
                 var g = mi.MakeGenericMethod(target.GetElementType());
-                var self = Expression.Parameter(typeof(ListTreeNode<T>), "self");
-                var call = Expression.Call(g, self);
-                var func = Expression.Lambda(call, self);
-                return (Func<ListTreeNode<T>, U>)func.Compile();
+                return GenericInvokeCallFactory.StaticFunc<ListTreeNode<T>, U>(g);
             }
 
             if (target.IsGenericType)
@@ -207,10 +197,7 @@ namespace UniJSON
                     var mi = typeof(GenericDeserializer<T, U>).GetMethod("GenericListDeserializer",
                         BindingFlags.Static | BindingFlags.NonPublic);
                     var g = mi.MakeGenericMethod(target.GetGenericArguments());
-                    var self = Expression.Parameter(typeof(ListTreeNode<T>), "self");
-                    var call = Expression.Call(g, self);
-                    var func = Expression.Lambda(call, self);
-                    return (Func<ListTreeNode<T>, U>)func.Compile();
+                    return GenericInvokeCallFactory.StaticFunc<ListTreeNode<T>, U>(g);
                 }
 
                 if (target.GetGenericTypeDefinition() == typeof(Dictionary<,>) &&
@@ -219,15 +206,7 @@ namespace UniJSON
                     var mi = typeof(ListTreeNodeDeserializerExtensions).GetMethod("DictionaryDeserializer",
                     BindingFlags.Static | BindingFlags.NonPublic);
                     var g = mi.MakeGenericMethod(typeof(T));
-                    var self = Expression.Parameter(typeof(ListTreeNode<T>), "self");
-                    var call = Expression.Call(g, self);
-                    var func = Expression.Lambda(call, self);
-                    var d = (Func<ListTreeNode<T>, object>)func.Compile();
-                    return (ListTreeNode<T> s) =>
-                    {
-                        var x = d(s);
-                        return (U)x;
-                    };
+                    return GenericInvokeCallFactory.StaticFunc<ListTreeNode<T>, U>(g);
                 }
             }
 

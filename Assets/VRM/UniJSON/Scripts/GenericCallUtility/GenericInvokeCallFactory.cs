@@ -1,15 +1,23 @@
 ﻿using System;
+using System.Reflection;
+#if UNITY_EDITOR && VRM_DEVELOP
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text;
-#if UNITY_EDITOR
 using UnityEditor;
 #endif
 
 
 namespace UniJSON
 {
+    /// <summary>
+    /// MethodInfoからDelegateを作成する
+    /// 
+    /// * StaticAction/Func StaticMethod呼び出し
+    /// * OpenAction/Func 第1引数にthisを受けるメソッド呼び出し
+    /// * BindAction/Func thisを内部に保持したメソッド呼び出し
+    /// 
+    /// </summary>
     public static partial class GenericInvokeCallFactory
     {
 #if UNITY_EDITOR && VRM_DEVELOP
@@ -42,36 +50,22 @@ namespace UniJSON
     {
 ");
 
-                // CreateWithThis
-                w.WriteLine("//////////// Create");
-
-                // Create
-                for (int i = 1; i <= ARGS && i< NET35MAX; ++i)
+                // StaticAction
+                w.WriteLine("//////////// StaticAction");
+                for (int i = 1; i <= ARGS && i <= NET35MAX; ++i)
                 {
                     var g = String.Join(", ", GetArgs("A", i).ToArray());
                     var a = String.Join(", ", GetArgs("a", i).ToArray());
 
-
-
                     var source = @"
-        public static Action<S, $0> Create<S, $0>(MethodInfo m)
+        public static Action<$0> StaticAction<$0>(MethodInfo m)
         {
-            Action<S, $0> callback = null;
-            if (m.IsStatic)
+            if (!m.IsStatic)
             {
-                callback = (s, $1) =>
-                {
-                    m.Invoke(null, new object[] { s, $1 });
-                };
+                throw new ArgumentException(string.Format(""{0} is not static"", m));
             }
-            else
-            {
-                callback = (s, $1) =>
-                {
-                    m.Invoke(s, new object[] { $1 });
-                };
-            }
-            return callback;
+
+            return (Action<$0>)Delegate.CreateDelegate(typeof(Action<$0>), null, m);
         }
 ".Replace("$0", g).Replace("$1", a);
 
@@ -79,42 +73,119 @@ namespace UniJSON
 
                 }
 
-
-                // CreateWithThis
-                w.WriteLine("//////////// CreateWithThis");
-                for (int i = 1; i <= ARGS && i<= NET35MAX; ++i)
+                // OpenAction
+                w.WriteLine("//////////// OpenAction");
+                for (int i = 1; i <= ARGS && i < NET35MAX; ++i)
                 {
                     var g = String.Join(", ", GetArgs("A", i).ToArray());
                     var a = String.Join(", ", GetArgs("a", i).ToArray());
 
                     var source = @"
-        public static Action<$0> CreateWithThis<S, $0>(MethodInfo m, S instance)
+        public static Action<S, $0> OpenAction<S, $0>(MethodInfo m)
         {
             if (m.IsStatic)
             {
-                if (instance != null)
-                {
-                    throw new ArgumentException();
-                }
-            }
-            else
-            {
-                if (instance == null)
-                {
-                    throw new ArgumentNullException();
-                }
+                throw new ArgumentException(string.Format(""{0} is static"", m));
             }
 
-            // ToDo: CreateDelegate
-            Action<$0> callback=
-            ($1) => {
-                m.Invoke(instance, new object[]{ $1 });
-            };
-            return callback;
+            return (Action<S, $0>)Delegate.CreateDelegate(typeof(Action<S, $0>), m);
         }
 ".Replace("$0", g).Replace("$1", a);
 
                     w.WriteLine(source);
+
+                }
+
+                // BindAction
+                w.WriteLine("//////////// BindAction");
+                for (int i = 1; i <= ARGS && i <= NET35MAX; ++i)
+                {
+                    var g = String.Join(", ", GetArgs("A", i).ToArray());
+                    var a = String.Join(", ", GetArgs("a", i).ToArray());
+
+                    var source = @"
+        public static Action<$0> BindAction<S, $0>(MethodInfo m, S instance)
+        {
+            if (m.IsStatic)
+            {
+                throw new ArgumentException(string.Format(""{0} is static"", m));
+            }
+
+            return (Action<$0>)Delegate.CreateDelegate(typeof(Action<$0>), instance, m);
+        }
+".Replace("$0", g).Replace("$1", a);
+
+                    w.WriteLine(source);
+
+                }
+
+                // StaticFunc
+                w.WriteLine("//////////// StaticFunc");
+                for (int i = 1; i <= ARGS && i <= NET35MAX; ++i)
+                {
+                    var g = String.Join(", ", GetArgs("A", i).ToArray());
+                    var a = String.Join(", ", GetArgs("a", i).ToArray());
+
+                    var source = @"
+        public static Func<$0, T> StaticFunc<$0, T>(MethodInfo m)
+        {
+            if (!m.IsStatic)
+            {
+                throw new ArgumentException(string.Format(""{0} is not static"", m));
+            }
+
+            return (Func<$0, T>)Delegate.CreateDelegate(typeof(Func<$0, T>), null, m);
+        }
+".Replace("$0", g).Replace("$1", a);
+
+                    w.WriteLine(source);
+
+                }
+
+                // OpenFunc
+                w.WriteLine("//////////// OpenFunc");
+                for (int i = 1; i <= ARGS && i < NET35MAX; ++i)
+                {
+                    var g = String.Join(", ", GetArgs("A", i).ToArray());
+                    var a = String.Join(", ", GetArgs("a", i).ToArray());
+
+                    var source = @"
+        public static Func<S, $0, T> OpenFunc<S, $0, T>(MethodInfo m)
+        {
+            if (m.IsStatic)
+            {
+                throw new ArgumentException(string.Format(""{0} is static"", m));
+            }
+
+            return (Func<S, $0, T>)Delegate.CreateDelegate(typeof(Func<S, $0, T>), m);
+        }
+".Replace("$0", g).Replace("$1", a);
+
+                    w.WriteLine(source);
+
+                }
+
+                // BindFunc
+                w.WriteLine("//////////// BindFunc");
+                for (int i = 1; i <= ARGS && i <= NET35MAX; ++i)
+                {
+                    var g = String.Join(", ", GetArgs("A", i).ToArray());
+                    var a = String.Join(", ", GetArgs("a", i).ToArray());
+
+                    var source = @"
+        public static Func<$0, T> BindFunc<S, $0, T>(MethodInfo m, S instance)
+        {
+            if (m.IsStatic)
+            {
+                throw new ArgumentException(string.Format(""{0} is static"", m));
+            }
+
+            return (Func<$0, T>)Delegate.CreateDelegate(typeof(Func<$0, T>), instance, m);
+        }
+".Replace("$0", g).Replace("$1", a);
+
+                    w.WriteLine(source);
+
                 }
 
 
@@ -130,21 +201,73 @@ namespace UniJSON
         }
 #endif
 
-        #region no arguments
-        public static Action<S> Create<S>(MethodInfo m)
+        #region Action without arguments
+        public static Action StaticAction(MethodInfo m)
         {
+            if (!m.IsStatic)
+            {
+                throw new ArgumentException(string.Format("{0} is not static", m));
+            }
+
+            return (Action)Delegate.CreateDelegate(typeof(Action), null, m);
+        }
+
+        public static Action<S> OpenAction<S>(MethodInfo m)
+        {
+            if (m.IsStatic)
+            {
+                throw new ArgumentException(string.Format("{0} is static", m));
+            }
+
             return (s) =>
             {
                 m.Invoke(s, new object[] { });
             };
         }
 
-        public static Action CreateWithThis<S>(MethodInfo m, S instance)
+        public static Action BindAction<S>(MethodInfo m, S instance)
         {
+            if (m.IsStatic)
+            {
+                throw new ArgumentException(string.Format("{0} is static", m));
+            }
+
             return () =>
             {
                 m.Invoke(instance, new object[] { });
             };
+        }
+        #endregion
+
+        #region Func without arguments
+        public static Func<T> StaticFunc<T>(MethodInfo m)
+        {
+            if (!m.IsStatic)
+            {
+                throw new ArgumentException(string.Format("{0} is not static", m));
+            }
+
+            return () => (T)m.Invoke(null, new object[] { });
+        }
+
+        public static Func<S, T> OpenFunc<S, T>(MethodInfo m)
+        {
+            if (m.IsStatic)
+            {
+                throw new ArgumentException(string.Format("{0} is static", m));
+            }
+
+            return (s) => (T)m.Invoke(s, new object[] { });
+        }
+
+        public static Func<T> BindFunc<S, T>(MethodInfo m, S instance)
+        {
+            if (m.IsStatic)
+            {
+                throw new ArgumentException(string.Format("{0} is static", m));
+            }
+
+            return () => (T)m.Invoke(instance, new object[] { });
         }
         #endregion
     }

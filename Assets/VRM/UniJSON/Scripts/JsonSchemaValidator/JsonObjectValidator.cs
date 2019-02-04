@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
+
 
 namespace UniJSON
 {
@@ -306,27 +306,13 @@ namespace UniJSON
             }
 
             public static void CreateFieldProcessors<G, D>(
-                string methodName,
+                Func<FieldInfo, D> creator,
                 Dictionary<string, D> processors
                 )
             {
-                var mi = typeof(G).GetMethod(methodName, BindingFlags.Static | BindingFlags.NonPublic);
-
-                var t = typeof(T);
                 foreach (var fi in GetFields())
                 {
-                    var value = Expression.Parameter(t, "value");
-                    var fieldValue = Expression.Field(value, fi);
-                    var compileld = Expression.Lambda(fieldValue, value).Compile();
-
-                    var getter = Expression.Constant(compileld);
-                    var name = Expression.Constant(fi.Name);
-
-                    var g = mi.MakeGenericMethod(fi.FieldType);
-                    var call = Expression.Call(g, getter, name);
-                    var lambda = (Func<D>)Expression.Lambda(call).Compile();
-
-                    processors.Add(fi.Name, lambda());
+                    processors.Add(fi.Name, creator(fi));
                 }
             }
         }
@@ -346,12 +332,23 @@ namespace UniJSON
 
                 Dictionary<string, FieldValidator> m_validators;
 
-                static FieldValidator CreateFieldValidator<U>(Func<T, U> getter, string name)
+                static FieldValidator CreateFieldValidator(FieldInfo fi)
                 {
+                    var mi = typeof(ObjectValidator).GetMethod("_CreateFieldValidator",
+                        BindingFlags.Static | BindingFlags.NonPublic)
+                        ;
+                    var g = mi.MakeGenericMethod(fi.FieldType);
+                    return GenericInvokeCallFactory.StaticFunc<FieldInfo, FieldValidator>(g)(fi);
+                }
+
+                static FieldValidator _CreateFieldValidator<U>(FieldInfo fi)
+                {
+                    var getter = (Func<T, U>)((t) => (U)fi.GetValue(t));
+
                     return (JsonSchema s, JsonSchemaValidationContext c, T o, out bool isIgnorable) =>
                     {
                         var v = s.Validator;
-                        using (c.Push(name))
+                        using (c.Push(fi.Name))
                         {
                             var field = getter(o);
                             var ex = v.Validate(c, field);
@@ -367,7 +364,7 @@ namespace UniJSON
                 {
                     var validators = new Dictionary<string, FieldValidator>();
                     GenericFieldView<T>.CreateFieldProcessors<ObjectValidator, FieldValidator>(
-                        "CreateFieldValidator", validators);
+                        CreateFieldValidator, validators);
 
                     m_validators = validators;
                 }
@@ -496,14 +493,27 @@ namespace UniJSON
 
                 Dictionary<string, FieldSerializer> m_serializers;
 
-                static FieldSerializer CreateFieldSerializer<U>(Func<T, U> getter, string name)
+                static FieldSerializer CreateFieldSerializer(FieldInfo fi)
                 {
+                    var mi = typeof(Serializer).GetMethod("_CreateFieldSerializer",
+                        BindingFlags.Static | BindingFlags.NonPublic);
+                    var g = mi.MakeGenericMethod(fi.FieldType);
+                    return GenericInvokeCallFactory.StaticFunc<FieldInfo, FieldSerializer>(g)(fi);
+                }
+
+                static FieldSerializer _CreateFieldSerializer<U>(FieldInfo fi)
+                {
+                    Func<T, U> getter = t =>
+                    {
+                        return (U)fi.GetValue(t);
+                    };
+
                     return (s, c, f, o, vRes, deps) =>
                     {
                         var v = s.Validator;
                         var field = getter(o);
 
-                        if (vRes[name].Ex != null)
+                        if (vRes[fi.Name].Ex != null)
                         {
                             return;
                         }
@@ -519,7 +529,7 @@ namespace UniJSON
                             }
                         }
 
-                        f.Key(name);
+                        f.Key(fi.Name);
                         v.Serialize(f, c, field);
                     };
                 }
@@ -528,7 +538,7 @@ namespace UniJSON
                 {
                     var serializers = new Dictionary<string, FieldSerializer>();
                     GenericFieldView<T>.CreateFieldProcessors<Serializer, FieldSerializer>(
-                        "CreateFieldSerializer", serializers);
+                        CreateFieldSerializer, serializers);
 
                     m_serializers = serializers;
                 }

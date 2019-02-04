@@ -319,9 +319,11 @@ namespace UniJSON
                         var mi = typeof(Enum).GetMethods(BindingFlags.Static | BindingFlags.Public).First(
                             x => x.Name == "Parse" && x.GetParameters().Length == 3
                             );
+
+                        var enumParse = GenericInvokeCallFactory.StaticFunc<Type, string, bool, object>(mi);
                         s_d = x =>
                         {
-                            var enumValue = mi.Invoke(null, new object[] { typeof(U), x.GetString(), true });
+                            var enumValue = enumParse(typeof(U), x.GetString(), true);
                             return GenericCast<object, U>.Cast(enumValue);
                         };
                     }
