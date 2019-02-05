@@ -53,15 +53,19 @@ namespace UniJSON
             // lambda body
             var lambdaBody = (MemberExpression)expression.Body;
 
-            if(lambdaBody.Expression.NodeType==ExpressionType.Constant)
+            if (lambdaBody.Expression.NodeType == ExpressionType.Constant)
             {
                 // 
                 // KeyValue(() => Field);
                 // 
                 var constant = (ConstantExpression)lambdaBody.Expression;
                 var field = (FieldInfo)lambdaBody.Member;
-                f.Key(lambdaBody.Member.Name);
-                f.Serialize(field.GetValue(constant.Value));
+                var value = field.GetValue(constant.Value);
+                if (value != null)
+                {
+                    f.Key(lambdaBody.Member.Name);
+                    f.Serialize(value);
+                }
             }
             else
             {
@@ -77,8 +81,12 @@ namespace UniJSON
 
                 var field = (FieldInfo)lambdaBody.Member;
 
-                f.Key(field.Name);
-                f.Serialize(field.GetValue(captureValue));
+                var value = field.GetValue(captureValue);
+                if (value != null)
+                {
+                    f.Key(field.Name);
+                    f.Serialize(value);
+                }
             }
         }
     }
