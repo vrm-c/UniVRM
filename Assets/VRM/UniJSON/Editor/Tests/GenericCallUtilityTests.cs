@@ -45,7 +45,7 @@ namespace UniJSON
             {
                 var mi = s.GetType().GetMethod("Get");
                 var func = GenericInvokeCallFactory.OpenFunc<Sample, int, int>(mi);
-                var value = func(s, 1);
+                /*var value =*/ func(s, 1);
                 Assert.AreEqual(1, s.Value);
             }
 

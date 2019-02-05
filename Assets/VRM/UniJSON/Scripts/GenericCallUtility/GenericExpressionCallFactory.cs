@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 #if UNITY_EDITOR
 using UnityEditor;
+using UnityEngine;
 #endif
 
 
@@ -14,7 +15,7 @@ namespace UniJSON
 #if UNITY_EDITOR && VRM_DEVELOP
         const int NET35MAX = 4;
         const int ARGS = 6;
-        const string GENERATE_PATH = "Assets/VRM/UniJSON/Scripts/GenericCallUtility/GenericExpressionCallFactory.g.cs";
+        const string GENERATE_PATH = "/VRM/UniJSON/Scripts/GenericCallUtility/GenericExpressionCallFactory.g.cs";
 
         static System.Collections.Generic.IEnumerable<string> GetArgs(string prefix, int n)
         {
@@ -24,7 +25,7 @@ namespace UniJSON
             }
         }
 
-        [MenuItem(VRM.VRMVersion.MENU + "/Generate GenericExpressionCallFactory")]
+        [MenuItem("VRM/UniJSON/Generate GenericExpressionCallFactory")]
         static void Generate()
         {
             var sb = new StringBuilder();
@@ -110,9 +111,8 @@ namespace UniJSON
 ");
             }
 
-            var path = UniGLTF.UnityPath.FromUnityPath(GENERATE_PATH);
-            File.WriteAllText(path.FullPath, sb.ToString().Replace("\r\n", "\n"));
-            path.ImportAsset();
+            var path = Path.GetFullPath(Application.dataPath + GENERATE_PATH).Replace("\\", "/");
+            File.WriteAllText(path, sb.ToString().Replace("\r\n", "\n"));
         }
 #endif
     }
