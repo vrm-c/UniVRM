@@ -164,40 +164,48 @@ namespace UniGLTF
 
                     if (x.SkinIndex.Value < context.GLTF.skins.Count)
                     {
-                        var skin = context.GLTF.skins[x.SkinIndex.Value];
-
+                        // calculate internal values(boudingBox etc...) when sharedMesh assinged ?
                         skinnedMeshRenderer.sharedMesh = null;
 
+                        var skin = context.GLTF.skins[x.SkinIndex.Value];
                         var joints = skin.joints.Select(y => nodes[y].Transform).ToArray();
-                        skinnedMeshRenderer.bones = joints;
+                        if (joints.Any())
+                        {
+                            // have bones
+                            skinnedMeshRenderer.bones = joints;
 
+                            if (skin.inverseBindMatrices != -1)
+                            {
+                                var bindPoses = context.GLTF.GetArrayFromAccessor<Matrix4x4>(skin.inverseBindMatrices)
+                                    .Select(y => y.ReverseZ())
+                                    .ToArray()
+                                    ;
+                                mesh.bindposes = bindPoses;
+                            }
+                            else
+                            {
+                                //
+                                // calc default matrices
+                                // https://docs.unity3d.com/ScriptReference/Mesh-bindposes.html
+                                //
+                                var meshCoords = skinnedMeshRenderer.transform; // ?
+                                var calculatedBindPoses = joints.Select(y => y.worldToLocalMatrix * meshCoords.localToWorldMatrix).ToArray();
+                                mesh.bindposes = calculatedBindPoses;
+                            }
+                        }
+                        else
+                        {
+                            // BlendShape only ?
+                        }
+
+                        skinnedMeshRenderer.sharedMesh = mesh;
                         if (skin.skeleton >= 0 && skin.skeleton < nodes.Count)
                         {
                             skinnedMeshRenderer.rootBone = nodes[skin.skeleton].Transform;
                         }
-
-                        if (skin.inverseBindMatrices != -1)
-                        {
-                            // BlendShape only ?
-#if false
-                            // https://docs.unity3d.com/ScriptReference/Mesh-bindposes.html
-                            var hipsParent = nodes[0].Transform;
-                            var calculatedBindPoses = joints.Select(y => y.worldToLocalMatrix * hipsParent.localToWorldMatrix).ToArray();
-                            mesh.bindposes = calculatedBindPoses;
-#else
-                            var bindPoses = context.GLTF.GetArrayFromAccessor<Matrix4x4>(skin.inverseBindMatrices)
-                                .Select(y => y.ReverseZ())
-                                .ToArray()
-                                ;
-                            mesh.bindposes = bindPoses;
-#endif
-                        }
-
-                        skinnedMeshRenderer.sharedMesh = mesh;
                     }
                 }
             }
         }
-
     }
 }
