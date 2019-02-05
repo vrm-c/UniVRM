@@ -50,15 +50,44 @@ namespace UniJSON
         //
         public static void KeyValue<T>(this IFormatter f, Expression<Func<T>> expression)
         {
-            MemberExpression outerMember = (MemberExpression)expression.Body;
-            var outerProp = (FieldInfo)outerMember.Member;
-            MemberExpression innerMember = (MemberExpression)outerMember.Expression;
-            var innerField = (FieldInfo)innerMember.Member;
-            ConstantExpression ce = (ConstantExpression)innerMember.Expression;
-            object innerObj = ce.Value;
-            object outerObj = innerField.GetValue(innerObj);
-            f.Key(outerProp.Name);
-            f.Serialize(outerProp.GetValue(outerObj));
+            // lambda body
+            var lambdaBody = (MemberExpression)expression.Body;
+
+            if (lambdaBody.Expression.NodeType == ExpressionType.Constant)
+            {
+                // 
+                // KeyValue(() => Field);
+                // 
+                var constant = (ConstantExpression)lambdaBody.Expression;
+                var field = (FieldInfo)lambdaBody.Member;
+                var value = field.GetValue(constant.Value);
+                if (value != null)
+                {
+                    f.Key(lambdaBody.Member.Name);
+                    f.Serialize(value);
+                }
+            }
+            else
+            {
+                // 
+                // KeyValue(() => p.Field);
+                // 
+                var capture = (MemberExpression)lambdaBody.Expression;
+
+                var captureVariable = (ConstantExpression)capture.Expression;
+                var captureObj = captureVariable.Value;
+                var captureField = (FieldInfo)capture.Member;
+                var captureValue = captureField.GetValue(captureObj);
+
+                var field = (FieldInfo)lambdaBody.Member;
+
+                var value = field.GetValue(captureValue);
+                if (value != null)
+                {
+                    f.Key(field.Name);
+                    f.Serialize(value);
+                }
+            }
         }
     }
 }
