@@ -145,23 +145,6 @@ namespace VRM.DevOnly.PackageExporter
             CreateUnityPackages(Path.GetFullPath(Path.Combine(Application.dataPath, "..")));
         }
 
-        static bool EndsWith(string path, params string[] exts)
-        {
-            foreach(var ext in exts)
-            {
-                if (path.EndsWith(ext))
-                {
-                    return true;
-                }
-                if(path.EndsWith(ext + ".meta"))
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
         public static void CreateUnityPackages(string outputDir)
         {
             // UniVRM and sub packages
@@ -189,15 +172,71 @@ namespace VRM.DevOnly.PackageExporter
             }
         }
 
-        public static void CreateUnityPackage(string outputDir, string name, string[] containsPath, string basePath, string[] fileNames) {
-            var targetFileNames = fileNames;
+        public static void CreateUnityPackage(
+            string outputDir,
+            string name,
+            string[] containsPath,
+            string basePath,
+            string[] fileNames
+        )
+        {
+            CreateUnityPackageWithoutAsmDefs(outputDir, name, containsPath, basePath, fileNames);
+            CreateUnityPackageOnlyWithAsmDefs(outputDir, name, containsPath, basePath, fileNames);
+        }
+
+        public static void CreateUnityPackageWithoutAsmDefs(
+            string outputDir,
+            string name,
+            string[] containsPath,
+            string basePath,
+            string[] fileNames
+        )
+        {
+            CreateUnityPackageStandalone(outputDir, name, containsPath, basePath, fileNames, null, new string[] {".asmdef"});
+        }
+
+        public static void CreateUnityPackageOnlyWithAsmDefs(
+            string outputDir,
+            string name,
+            string[] containsPath,
+            string basePath,
+            string[] fileNames
+        )
+        {
+            CreateUnityPackageStandalone(outputDir, name + ".asmdef", containsPath, basePath, fileNames, new string[] {".asmdef"}, null);
+        }
+
+        public static void CreateUnityPackageStandalone(
+            string outputDir,
+            string name,
+            string[] containsPath,
+            string basePath,
+            IEnumerable<string> fileNames,
+            string[] includeSuffix,
+            string[] excludeSuffix
+            )
+        {
+
+            if (includeSuffix != null)
+            {
+                fileNames = fileNames
+                    .Where(fileName => includeSuffix.Any(suffix => fileName.EndsWith(suffix)));
+            }
+
+            if (excludeSuffix != null)
+            {
+                fileNames = fileNames
+                    .Where(fileName => !excludeSuffix.Any(suffix => fileName.EndsWith(suffix)));
+            }
+
             if (containsPath != null)
             {
                 var containsPathWithBase = containsPath.Select(c => string.Format("{0}/{1}", basePath, c)).ToArray();
-                targetFileNames = targetFileNames
-                    .Where(fileName => containsPathWithBase.Any(c => fileName.StartsWith(c)))
-                    .ToArray();
+                fileNames = fileNames
+                    .Where(fileName => containsPathWithBase.Any(c => fileName.StartsWith(c)));
             }
+
+            var targetFileNames = fileNames.ToArray();
 
             Debug.LogFormat("Package '{0}' will include {1} files...", name, targetFileNames.Count());
             Debug.LogFormat("{0}", string.Join("", targetFileNames.Select((x, i) => string.Format("[{0:##0}] {1}\n", i, x)).ToArray()));
