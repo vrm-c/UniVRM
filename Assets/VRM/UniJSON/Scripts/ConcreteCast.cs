@@ -43,7 +43,7 @@ namespace UniJSON
             typeof(double),
         };
 
-        [MenuItem(UniGLTF.UniGLTFVersion.MENU + "/Generate ConcreteCast")]
+        [MenuItem("VRM/UniJSON/Generate ConcreteCast")]
         public static void GenerateGenericCast()
         {
             var s = new StringBuilder();
