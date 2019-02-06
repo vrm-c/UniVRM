@@ -141,7 +141,7 @@ namespace UniGLTF
         public string name;
 
         [JsonSchema(Required = true, MinItems = 1)]
-        public List<glTFPrimitives> primitives;
+        public List<glTFPrimitives> primitives = new List<glTFPrimitives>();
 
         [JsonSchema(MinItems = 1)]
         public float[] weights;
@@ -150,10 +150,13 @@ namespace UniGLTF
         public object extensions;
         public object extras;
 
+        public glTFMesh()
+        {
+        }
+
         public glTFMesh(string _name)
         {
             name = _name;
-            primitives = new List<glTFPrimitives>();
         }
 
         protected override void SerializeMembers(GLTFJsonFormatter f)
