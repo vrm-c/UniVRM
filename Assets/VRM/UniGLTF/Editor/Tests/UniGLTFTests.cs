@@ -667,5 +667,31 @@ namespace UniGLTF
                 GameObject.DestroyImmediate(go);
             }
         }
+
+        [Serializable]
+        class CantConstruct
+        {
+            public bool Value = true;
+
+            public CantConstruct(bool value)
+            {
+                throw new Exception();
+            }
+        }
+
+        [Serializable]
+        class Dummy
+        {
+            public CantConstruct Value;
+        }
+
+
+        [Test]
+        public void JsonUtilityTest()
+        {
+            var dummy = JsonUtility.FromJson<Dummy>("{}");
+            Assert.NotNull(dummy.Value);
+            Assert.False(dummy.Value.Value);
+        }
     }
 }
