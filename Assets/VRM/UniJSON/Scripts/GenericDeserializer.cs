@@ -40,6 +40,60 @@ namespace UniJSON
             return u;
         }
 
+        static object DefaultDictionaryDeserializer(ListTreeNode<T> s)
+        {
+            switch (s.Value.ValueType)
+            {
+                case ValueNodeType.Object:
+                    {
+                        var u = new Dictionary<string, object>();
+                        foreach (var kv in s.ObjectItems())
+                        {
+                            //var e = default(object);
+                            //kv.Value.Deserialize(ref e);
+                            u.Add(kv.Key.GetString(), DefaultDictionaryDeserializer(kv.Value));
+                        }
+                        return u;
+                    }
+
+                case ValueNodeType.Null:
+                    return null;
+
+                case ValueNodeType.Boolean:
+                    return s.GetBoolean();
+
+                case ValueNodeType.Integer:
+                    return s.GetInt32();
+
+                case ValueNodeType.Number:
+                    return s.GetDouble();
+
+                case ValueNodeType.String:
+                    return s.GetString();
+
+                default:
+                    throw new NotImplementedException(s.Value.ValueType.ToString());
+            }
+        }
+
+        /// <summary>
+        /// Deserialize Dictionary only string key
+        /// </summary>
+        /// <typeparam name="V"></typeparam>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        static Dictionary<string, V> DictionaryDeserializer<V>(ListTreeNode<T> s)
+        {
+            var d = new Dictionary<string, V>();
+            foreach (var kv in s.ObjectItems())
+            {
+                var value = default(V);
+                GenericDeserializer<T, V>.Deserialize(kv.Value, ref value);
+                d.Add(kv.Key.GetString(), value);
+            }
+            return d;
+        }
+
         delegate void FieldSetter(ListTreeNode<T> s, object o);
         static FieldSetter GetFieldDeserializer<V>(FieldInfo fi)
         {
@@ -107,12 +161,20 @@ namespace UniJSON
                     return GenericInvokeCallFactory.StaticFunc<ListTreeNode<T>, U>(g);
                 }
 
+                if (target == typeof(Dictionary<string, object>))
+                {
+                    
+                    var mi = typeof(GenericDeserializer<T, U>).GetMethod("DefaultDictionaryDeserializer",
+                    BindingFlags.Static | BindingFlags.NonPublic);
+                    return GenericInvokeCallFactory.StaticFunc<ListTreeNode<T>, U>(mi);
+                }
+                else
                 if (target.GetGenericTypeDefinition() == typeof(Dictionary<,>) &&
                     target.GetGenericArguments()[0] == typeof(string))
                 {
-                    var mi = typeof(ListTreeNodeDeserializerExtensions).GetMethod("DictionaryDeserializer",
+                    var mi = typeof(GenericDeserializer<T, U>).GetMethod("DictionaryDeserializer",
                     BindingFlags.Static | BindingFlags.NonPublic);
-                    var g = mi.MakeGenericMethod(typeof(T));
+                    var g = mi.MakeGenericMethod(target.GetGenericArguments()[1]);
                     return GenericInvokeCallFactory.StaticFunc<ListTreeNode<T>, U>(g);
                 }
             }
