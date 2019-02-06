@@ -138,17 +138,28 @@ namespace UniJSON
             DeserializeValue(new List<int> { 1 }, "[1]");
             //DeserializeValue(new object[] { null, 1, "a" }, "[null,1,\"a\"]");
 
+            DeserializeValue(new Point { X = 1 }, "{\"X\":1,\"Y\":0}");
+
+            DeserializeValue(HogeFuga.Fuga, "1");
+
+            DeserializeValue(new EnumTest(), "{\"EnumDefault\":0,\"EnumAsInt\":0,\"EnumAsString\":\"Hoge\",\"EnumAsLowerString\":\"hoge\"}");
+        }
+
+        class DictionaryValue
+        {
+            public Dictionary<string, object> Dict;
+        }
+
+        [Test]
+        public void JsonDictionaryDeserializerTest()
+        { 
             DeserializeValue(new Dictionary<string, object> { }, "{}");
             DeserializeValue(new Dictionary<string, object> { { "a", 1 } }, "{\"a\":1}");
             DeserializeValue(new Dictionary<string, object> { { "a",
                     new Dictionary<string, object>{
                     } } }, "{\"a\":{}}");
 
-            DeserializeValue(new Point { X = 1 }, "{\"X\":1,\"Y\":0}");
-
-            DeserializeValue(HogeFuga.Fuga, "1");
-
-            DeserializeValue(new EnumTest(), "{\"EnumDefault\":0,\"EnumAsInt\":0,\"EnumAsString\":\"Hoge\",\"EnumAsLowerString\":\"hoge\"}");
+            DeserializeValue(new DictionaryValue(), "{\"Dict\": {}}");
         }
         #endregion
     }
