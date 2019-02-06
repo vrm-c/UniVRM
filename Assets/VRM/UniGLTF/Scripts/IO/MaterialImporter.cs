@@ -211,7 +211,7 @@ namespace UniGLTF
                     material.SetColor("_EmissionColor", new Color(x.emissiveFactor[0], x.emissiveFactor[1], x.emissiveFactor[2]));
                 }
 
-                if (x.emissiveTexture.index != -1)
+                if (x.emissiveTexture != null && x.emissiveTexture.index != -1)
                 {
                     var texture = Context.GetTexture(x.emissiveTexture.index);
                     if (texture != null)
