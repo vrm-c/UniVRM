@@ -89,10 +89,13 @@ namespace UniGLTF
             if (x.extensions != null && x.extensions.KHR_materials_unlit != null)
             {
                 // texture
-                var texture = m_context.GetTexture(x.pbrMetallicRoughness.baseColorTexture.index);
-                if (texture != null)
+                if (x.pbrMetallicRoughness.baseColorTexture != null)
                 {
-                    material.mainTexture = texture.Texture;
+                    var texture = m_context.GetTexture(x.pbrMetallicRoughness.baseColorTexture.index);
+                    if (texture != null)
+                    {
+                        material.mainTexture = texture.Texture;
+                    }
                 }
 
                 // color
