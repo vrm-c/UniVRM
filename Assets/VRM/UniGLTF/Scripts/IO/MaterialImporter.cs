@@ -163,10 +163,15 @@ namespace UniGLTF
                         var prop = "_MetallicGlossMap";
                         material.SetTexture(prop, texture.ConvertTexture(prop));
                     }
+                    
+                    material.SetFloat("_Metallic", 1.0f);
+                    material.SetFloat("_GlossMapScale", 1.0f - x.pbrMetallicRoughness.roughnessFactor);
                 }
-
-                material.SetFloat("_Metallic", x.pbrMetallicRoughness.metallicFactor);
-                material.SetFloat("_Glossiness", 1.0f - x.pbrMetallicRoughness.roughnessFactor);
+                else
+                {
+                    material.SetFloat("_Metallic", x.pbrMetallicRoughness.metallicFactor);
+                    material.SetFloat("_Glossiness", 1.0f - x.pbrMetallicRoughness.roughnessFactor);
+                }
             }
 
             if (x.normalTexture != null && x.normalTexture.index != -1)
