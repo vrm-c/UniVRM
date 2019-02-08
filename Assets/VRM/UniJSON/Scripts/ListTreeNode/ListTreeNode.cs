@@ -338,7 +338,7 @@ namespace UniJSON
         {
             get
             {
-                for (int i = 0; i < m_Values.Count; ++i)
+                for (int i = ValueIndex; i < m_Values.Count; ++i)
                 {
                     if (m_Values[i].ParentIndex == ValueIndex)
                     {
