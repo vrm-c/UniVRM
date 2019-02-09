@@ -4,11 +4,6 @@ using System.Collections.Generic;
 
 namespace UniJSON
 {
-    public class JsonParseResult
-    {
-        public List<JsonValue> Values = new List<JsonValue>();
-    }
-
     public static class JsonParser
     {
         static ValueNodeType GetValueType(Utf8String segment)
