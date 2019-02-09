@@ -7,6 +7,10 @@ namespace UniJSON
     {
         public Utf8String Segment;
         public ArraySegment<Byte> Bytes { get { return Segment.Bytes; } }
+        public void SetBytesCount(int count)
+        {
+            Segment = new Utf8String(new ArraySegment<byte>(Bytes.Array, Bytes.Offset, count));
+        }
 
         public ValueNodeType ValueType
         {
@@ -18,6 +22,16 @@ namespace UniJSON
         {
             get;
             private set;
+        }
+
+        int _childCount;
+        public int ChildCount
+        {
+            get { return _childCount; }
+        }
+        public void SetChildCount(int count)
+        {
+            _childCount = count;
         }
 
         public JsonValue(Utf8String segment, ValueNodeType valueType, int parentIndex) : this()

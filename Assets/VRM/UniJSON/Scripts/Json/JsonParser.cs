@@ -154,8 +154,7 @@ namespace UniJSON
 
             // fix array range
             var count = current.Bytes.Offset + 1 - segment.Bytes.Offset;
-            var arraySegment = segment.Subbytes(0, count);
-            array.SetValue(new JsonValue(arraySegment, ValueNodeType.Array, array.Value.ParentIndex));
+            array.SetValueBytesCount(count);
             
             return array;
         }
@@ -244,8 +243,7 @@ namespace UniJSON
 
             // fix obj range
             var count = current.Bytes.Offset + 1 - segment.Bytes.Offset;
-            var objSegment = segment.Subbytes(0, count);
-            obj.SetValue(new JsonValue(objSegment, ValueNodeType.Object, obj.Value.ParentIndex));
+            obj.SetValueBytesCount(count);
 
             return obj;
         }

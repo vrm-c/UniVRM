@@ -357,65 +357,60 @@ namespace UniJSON
             }
         }
 
-        static ArraySegment<Byte> _Parse(ArraySegment<Byte> bytes, List<MsgPackValue> values, int parentIndex)
+        static ListTreeNode<MsgPackValue> _Parse(ListTreeNode<MsgPackValue> tree, ArraySegment<Byte> bytes)
         {
             MsgPackType formatType = GetFormat(bytes);
             if (formatType.IsArray())
             {
-                var index = values.Count;
-                var offset = bytes.Offset;
-                values.Add(new MsgPackValue(bytes, parentIndex));
+                var array = tree.AddValue(bytes, ValueNodeType.Array);
 
                 uint count;
                 bytes = GetItemCount(bytes, formatType, out count);
                 for (var i = 0; i < count; ++i)
                 {
-                    bytes = _Parse(bytes, values, index);
+                    var child = _Parse(array, bytes);
+                    bytes = bytes.Advance(child.Value.Bytes.Count);
                 }
 
-                values[index] = new MsgPackValue(
-                    new ArraySegment<byte>(bytes.Array,
-                        offset, bytes.Offset - offset),
-                        parentIndex);
+                array.SetValueBytesCount(bytes.Offset - array.Value.Bytes.Offset);
+
+                return array;
             }
             else if (formatType.IsMap())
             {
-                var index = values.Count;
-                var offset = bytes.Offset;
-                values.Add(new MsgPackValue(bytes, parentIndex));
+                var obj = tree.AddValue(bytes, ValueNodeType.Object);
 
                 uint count;
                 bytes = GetItemCount(bytes, formatType, out count);
                 for (var i = 0; i < count; ++i)
                 {
                     // key
-                    bytes = _Parse(bytes, values, index);
+                    var key = _Parse(obj, bytes);
+                    bytes = bytes.Advance(key.Value.Bytes.Count);
 
                     // value
-                    bytes = _Parse(bytes, values, index);
+                    var value = _Parse(obj, bytes);
+                    bytes = bytes.Advance(value.Value.Bytes.Count);
                 }
 
-                values[index] = new MsgPackValue(
-                    new ArraySegment<byte>(bytes.Array,
-                        offset, bytes.Offset - offset),
-                        parentIndex);
+                obj.SetValueBytesCount(bytes.Offset - obj.Value.Bytes.Offset);
+
+                return obj;
             }
             else
             {
                 var body = GetBody(bytes, formatType);
                 var headerSize = body.Offset - bytes.Offset;
                 var size = headerSize + body.Count;
-                values.Add(new MsgPackValue(bytes.Take(size), parentIndex));
-                bytes = bytes.Advance(size);
+
+                var value = tree.AddValue(bytes.Take(size), ValueNodeType.Null);
+                return value;
             }
-            return bytes;
         }
 
         public static ListTreeNode<MsgPackValue> Parse(ArraySegment<Byte> bytes)
         {
-            var values = new List<MsgPackValue>();
-            _Parse(bytes, values, -1);
-            return new ListTreeNode<MsgPackValue>(values);
+            return _Parse(default(ListTreeNode<MsgPackValue>), bytes);
         }
     }
 }

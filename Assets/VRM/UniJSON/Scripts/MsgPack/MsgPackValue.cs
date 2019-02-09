@@ -16,6 +16,10 @@ namespace UniJSON
             get;
             private set;
         }
+        public void SetBytesCount(int count)
+        {
+            Bytes = new ArraySegment<byte>(Bytes.Array, Bytes.Offset, count);
+        }
 
         public MsgPackType Format
         {
@@ -71,6 +75,16 @@ namespace UniJSON
             }
         }
 
+        int _childCount;
+        public int ChildCount
+        {
+            get { return _childCount; }
+        }
+        public void SetChildCount(int count)
+        {
+            _childCount = count;
+        }
+
         public MsgPackValue(ArraySegment<Byte> segment, int parentIndex) : this()
         {
             Bytes = segment;
@@ -79,7 +93,7 @@ namespace UniJSON
 
         public MsgPackValue New(ArraySegment<byte> bytes, ValueNodeType valueType, int parentIndex)
         {
-            throw new NotImplementedException();
+            return new MsgPackValue(bytes, parentIndex);
         }
 
         public MsgPackValue Key(Utf8String key, int parentIndex)
