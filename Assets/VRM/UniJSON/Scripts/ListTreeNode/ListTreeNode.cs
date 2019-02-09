@@ -408,9 +408,17 @@ namespace UniJSON
             m_Values.Add(default(T).Key(key, ValueIndex));
         }
 
-        public void AddValue(ArraySegment<byte> bytes, ValueNodeType valueType)
+        public ListTreeNode<T> AddValue(ArraySegment<byte> bytes, ValueNodeType valueType)
         {
+            if (m_Values == null)
+            {
+                // initialize empty tree
+                m_Values = new List<T>();
+                ValueIndex = -1;
+            }
+            var index = m_Values.Count;
             m_Values.Add(default(T).New(bytes, valueType, ValueIndex));
+            return new ListTreeNode<T>(m_Values, index);
         }
         #endregion
     }
