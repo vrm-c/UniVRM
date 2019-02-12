@@ -189,6 +189,7 @@ namespace UniJSON
                     new Dictionary<string, object>{
                     } } }, "{\"a\":{}}");
 
+            // fix dictionary member deserialization
             DeserializeValue(new DictionaryValue(), "{\"Dict\": {}}");
         }
         #endregion
