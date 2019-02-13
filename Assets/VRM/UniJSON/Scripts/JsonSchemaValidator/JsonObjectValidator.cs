@@ -484,7 +484,7 @@ namespace UniJSON
             return GenericValidator<T>.Validate(Required, Properties, c, o);
         }
 
-        static class GenericSerializer<T>
+        static class GenericObjectSerializer<T>
         {
             class Serializer
             {
@@ -589,7 +589,7 @@ namespace UniJSON
 
         public void Serialize<T>(IFormatter f, JsonSchemaValidationContext c, T value)
         {
-            GenericSerializer<T>.Serialize(this, f, c, value);
+            GenericObjectSerializer<T>.Serialize(this, f, c, value);
         }
 
         public void Deserialize<T, U>(ListTreeNode<T> src, ref U dst)
