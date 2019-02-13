@@ -592,7 +592,7 @@ namespace UniJSON
             GenericSerializer<T>.Serialize(this, f, c, value);
         }
 
-        static class GenericDeserializer<S, T>
+        static class GenericObjectDeserializer<S, T>
             where S : IListTreeItem, IValue<S>
         {
             delegate T Deserializer(ListTreeNode<S> src);
@@ -638,7 +638,7 @@ namespace UniJSON
                             return null;
                         }
 
-                        var mi = typeof(GenericDeserializer<S, T>).GetMethod("DeserializeField",
+                        var mi = typeof(GenericObjectDeserializer<S, T>).GetMethod("DeserializeField",
                             BindingFlags.Static | BindingFlags.NonPublic);
                         var g = mi.MakeGenericMethod(x.FieldType);
 
@@ -680,7 +680,7 @@ namespace UniJSON
         public void Deserialize<T, U>(ListTreeNode<T> src, ref U dst)
             where T : IListTreeItem, IValue<T>
         {
-            GenericDeserializer<T, U>.Deserialize(src, ref dst, Properties);
+            GenericObjectDeserializer<T, U>.Deserialize(src, ref dst, Properties);
         }
     }
 }
