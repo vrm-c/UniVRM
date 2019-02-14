@@ -64,7 +64,7 @@ namespace VRM
             "ExplicitlyLicensedPerson",
             "Everyone",
         }, EnumSerializationType = EnumSerializationType.AsString)]
-        public string allowedUserName;
+        public string allowedUserName = "OnlyAuthor";
         public AllowedUser allowedUser
         {
             get
@@ -82,7 +82,7 @@ namespace VRM
         "Disallow",
         "Allow",
         }, EnumSerializationType = EnumSerializationType.AsString)]
-        public string violentUssageName;
+        public string violentUssageName = "Disallow";
         public UssageLicense violentUssage
         {
             get { return FromString(violentUssageName); }
@@ -94,7 +94,7 @@ namespace VRM
         "Disallow",
         "Allow",
         }, EnumSerializationType = EnumSerializationType.AsString)]
-        public string sexualUssageName;
+        public string sexualUssageName = "Disallow";
         public UssageLicense sexualUssage
         {
             get { return FromString(sexualUssageName); }
@@ -106,7 +106,7 @@ namespace VRM
         "Disallow",
         "Allow",
         }, EnumSerializationType = EnumSerializationType.AsString)]
-        public string commercialUssageName;
+        public string commercialUssageName = "Disallow";
         public UssageLicense commercialUssage
         {
             get { return FromString(commercialUssageName); }
@@ -130,7 +130,7 @@ namespace VRM
             "CC_BY_NC_ND",
             "Other"
         }, EnumSerializationType = EnumSerializationType.AsString)]
-        public string licenseName;
+        public string licenseName = "Redistribution_Prohibited";
         public LicenseType licenseType
         {
             get
