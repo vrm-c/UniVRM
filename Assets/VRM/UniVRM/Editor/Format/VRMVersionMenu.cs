@@ -18,8 +18,10 @@ namespace VRM
     {{
         public const int MAJOR = {0};
         public const int MINOR = {1};
+        public const int PATCH = {2};
+        public const string PRE_ID = {3};
 
-        public const string VERSION = ""{0}.{1}"";
+        public const string VERSION = ""{0}.{1}.{2}{4}"";
     }}
 }}
 ";
@@ -29,7 +31,14 @@ namespace VRM
 #endif
         static void IncrementVersion()
         {
-            var source = string.Format(template, VRMVersion.MAJOR, VRMVersion.MINOR + 1);
+            var source = string.Format(
+                template,
+                VRMVersion.MAJOR,
+                VRMVersion.MINOR + 1,
+                VRMVersion.PATCH,
+                VRMVersion.PRE_ID,
+                VRMVersion.PRE_ID != "" ? string.Format("-{0}", VRMVersion.PRE_ID) : ""
+                );
             File.WriteAllText(path, source);
             AssetDatabase.Refresh();
         }
@@ -39,7 +48,14 @@ namespace VRM
 #endif
         static void DecrementVersion()
         {
-            var source = string.Format(template, VRMVersion.MAJOR, VRMVersion.MINOR - 1);
+            var source = string.Format(
+                template,
+                VRMVersion.MAJOR,
+                VRMVersion.MINOR - 1,
+                VRMVersion.PATCH,
+                VRMVersion.PRE_ID,
+                VRMVersion.PRE_ID != "" ? string.Format("-{0}", VRMVersion.PRE_ID) : ""
+                );
             File.WriteAllText(path, source);
             AssetDatabase.Refresh();
         }
@@ -127,7 +143,7 @@ namespace VRM
             var f = new JsonFormatter(4);
             Traverse(parsed, f, dir);
             var json = f.ToString();
-                
+
             var path = dir.Child("vrm.schema.json");
             Debug.LogFormat("write JsonSchema: {0}", path.FullPath);
             File.WriteAllText(path.FullPath, json);
