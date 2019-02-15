@@ -646,7 +646,9 @@ namespace VRM
                 EnableDiagnosisForNotRequiredFields = true,
             };
             var json2 = JsonSchema.FromType<glTF_VRM_extensions>().Serialize(model, c);
-            Assert.AreEqual(@"{""exporterVersion"":""UniVRM-0.50"",""specVersion"":""0.0""}",json2);
+            var expected =
+                String.Format(@"{{""exporterVersion"":""{0}"",""specVersion"":""0.0""}}", VRMVersion.VRM_VERSION);
+            Assert.AreEqual(expected,json2);
         }
 
         // TODO: Move to another suitable location
