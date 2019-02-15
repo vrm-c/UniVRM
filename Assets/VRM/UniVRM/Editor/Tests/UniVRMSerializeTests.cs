@@ -263,7 +263,13 @@ namespace VRM
         public void MetaTestError()
         {
             {
-                var model = new glTF_VRM_Meta();
+                var model = new glTF_VRM_Meta()
+                {
+                    allowedUserName = null,
+                    violentUssageName = null,
+                    sexualUssageName = null,
+                    commercialUssageName = null,
+                };
 
                 var c = new JsonSchemaValidationContext("")
                 {
@@ -283,6 +289,7 @@ namespace VRM
                     sexualUssageName = "Disallow",
                     commercialUssageName = "Disallow",
                     //licenseName = "CC0",
+                    licenseName = null,
                 };
 
                 var c = new JsonSchemaValidationContext("")
@@ -319,6 +326,7 @@ namespace VRM
                 var model = new glTF_VRM_Meta()
                 {
                     // allowedUserName = "OnlyAuthor",
+                    allowedUserName = null,
                     violentUssageName = "Disallow",
                     sexualUssageName = "Disallow",
                     commercialUssageName = "Disallow",
@@ -360,6 +368,7 @@ namespace VRM
                 {
                     allowedUserName = "OnlyAuthor",
                     //violentUssageName = "Disallow",
+                    violentUssageName = null,
                     sexualUssageName = "Disallow",
                     commercialUssageName = "Disallow",
                     licenseName = "CC0",
@@ -401,6 +410,7 @@ namespace VRM
                     allowedUserName = "OnlyAuthor",
                     violentUssageName = "Disallow",
                     //sexualUssageName = "Disallow",
+                    sexualUssageName = null,
                     commercialUssageName = "Disallow",
                     licenseName = "CC0",
                 };
@@ -442,6 +452,7 @@ namespace VRM
                     violentUssageName = "Disallow",
                     sexualUssageName = "Disallow",
                     //commercialUssageName = "Disallow",
+                    commercialUssageName = null,
                     licenseName = "CC0",
                 };
 
