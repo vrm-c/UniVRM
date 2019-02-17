@@ -1,0 +1,54 @@
+image: Visual Studio 2017
+
+max_jobs: 1
+
+environment:
+  unity_username: dyob@lunaport.net
+  unity_password:
+    secure: bfiZ9ZLA6U2ue+6tpKwQ4ivRaePwVk/+RM7PoO7K6bQ=
+  unity_serial:
+    secure: cqmfJplindf90Uy/n53b58LNn5LVSxicPEXuFFBnnns=
+  matrix:
+  - unity_version: 5.6.5f1
+    export_unitypackage: true
+  - unity_version: 2017.4.20f1
+  - unity_version: 2018.2.20f1
+
+init:
+  - ps: |
+      Install-Module -Name UnitySetup -RequiredVersion 5.0.105
+      $unity_credential = New-Object Management.Automation.PSCredential ($env:unity_username, ($env:unity_password | ConvertTo-SecureString -AsPlainText -Force))
+
+install:
+  - ps: |
+      git submodule update --init --recursive
+      Install-UnitySetupInstance -Installers (Find-UnitySetupInstaller -Version $env:unity_version -Components 'Windows')
+      $unity = Start-UnityEditor -BatchMode -Latest -PassThru -Quit -Wait -LogFile License.log -Credential $unity_credential -Serial ($env:unity_serial | ConvertTo-SecureString -AsPlainText -Force)
+      type License.log
+      if ($unity.ExitCode) {
+        exit 1
+      }
+
+build_script:
+  - ps: |
+      if (!$env:export_unitypackage) {
+        echo Nothing to build
+        return
+      }
+      echo TODO: Export unitypackage
+
+test_script:
+  - ps: |
+      $unity = Start-UnityEditor -BatchMode -Latest -PassThru -Wait -LogFile Test.log -RunEditorTests
+      type Test.log
+      if ($unity.ExitCode) {
+        exit 1
+      }
+
+on_finish:
+  - ps: |
+      $unity = Start-UnityEditor -BatchMode -Latest -PassThru -Quit -Wait -LogFile ReturnLicense.Log -Credential $unity_credential -ReturnLicense
+      type ReturnLicense.Log
+      if ($unity.ExitCode) {
+        exit 1
+      }
