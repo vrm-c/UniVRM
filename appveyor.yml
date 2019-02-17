@@ -41,6 +41,8 @@ test_script:
   - ps: |
       $unity = Start-UnityEditor -BatchMode -Latest -PassThru -Wait -LogFile Test.log -RunEditorTests
       type Test.log
+      $webclient = New-Object "System.Net.WebClient"
+      $webclient.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (dir TestResults-*.xml).FullName)
       if ($unity.ExitCode) {
         exit 1
       }
