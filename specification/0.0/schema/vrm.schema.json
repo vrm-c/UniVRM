@@ -7,6 +7,10 @@
             "description": "Version of exporter that vrm created. UniVRM-0.46",
             "type": "string"
         },
+        "specVersion": {
+            "description": "Version of VRM specification. 0.0",
+            "type": "string"
+        },
         "meta": {
             "$ref": "vrm.meta.schema.json"
         },
