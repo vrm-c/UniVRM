@@ -24,6 +24,11 @@ namespace UniGLTF
             */
         }
 
+        public glTFBuffer()
+        {
+
+        }
+
         public glTFBuffer(IBytesBuffer storage)
         {
             Storage = storage;

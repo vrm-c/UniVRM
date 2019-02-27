@@ -647,25 +647,81 @@ namespace UniGLTF
                 Assert.AreNotEqual(gltf.nodes[0].mesh, gltf.nodes[1].mesh);
 
                 // import
-                var context = new ImporterContext();
-                context.ParseJson(json, new SimpleStorage(new ArraySegment<byte>(new byte[1024 * 1024])));
-                //Debug.LogFormat("{0}", context.Json);
-                context.Load();
+                {
+                    var context = new ImporterContext();
+                    context.ParseJson(json, new SimpleStorage(new ArraySegment<byte>(new byte[1024 * 1024])));
+                    //Debug.LogFormat("{0}", context.Json);
+                    context.Load();
 
-                var importedRed = context.Root.transform.GetChild(0);
-                var importedRedMaterial = importedRed.GetComponent<Renderer>().sharedMaterial;
-                Assert.AreEqual("red", importedRedMaterial.name);
-                Assert.AreEqual(Color.red, importedRedMaterial.color);
+                    var importedRed = context.Root.transform.GetChild(0);
+                    var importedRedMaterial = importedRed.GetComponent<Renderer>().sharedMaterial;
+                    Assert.AreEqual("red", importedRedMaterial.name);
+                    Assert.AreEqual(Color.red, importedRedMaterial.color);
 
-                var importedBlue = context.Root.transform.GetChild(1);
-                var importedBlueMaterial = importedBlue.GetComponent<Renderer>().sharedMaterial;
-                Assert.AreEqual("blue", importedBlueMaterial.name);
-                Assert.AreEqual(Color.blue, importedBlueMaterial.color);
+                    var importedBlue = context.Root.transform.GetChild(1);
+                    var importedBlueMaterial = importedBlue.GetComponent<Renderer>().sharedMaterial;
+                    Assert.AreEqual("blue", importedBlueMaterial.name);
+                    Assert.AreEqual(Color.blue, importedBlueMaterial.color);
+                }
+
+                // import new version
+                {
+                    var context = new ImporterContext
+                    {
+                        UseUniJSONParser = true
+                    };
+                    context.ParseJson(json, new SimpleStorage(new ArraySegment<byte>(new byte[1024 * 1024])));
+                    //Debug.LogFormat("{0}", context.Json);
+                    context.Load();
+
+                    var importedRed = context.Root.transform.GetChild(0);
+                    var importedRedMaterial = importedRed.GetComponent<Renderer>().sharedMaterial;
+                    Assert.AreEqual("red", importedRedMaterial.name);
+                    Assert.AreEqual(Color.red, importedRedMaterial.color);
+
+                    var importedBlue = context.Root.transform.GetChild(1);
+                    var importedBlueMaterial = importedBlue.GetComponent<Renderer>().sharedMaterial;
+                    Assert.AreEqual("blue", importedBlueMaterial.name);
+                    Assert.AreEqual(Color.blue, importedBlueMaterial.color);
+                }
             }
             finally
             {
                 GameObject.DestroyImmediate(go);
             }
+        }
+
+        [Serializable]
+        class CantConstruct
+        {
+            public bool Value = true;
+
+            public CantConstruct(bool value)
+            {
+                throw new Exception();
+            }
+        }
+
+        [Serializable]
+        class Dummy
+        {
+            public CantConstruct Value;
+        }
+
+        [Test]
+        public void JsonUtilityTest()
+        {
+            var dummy = JsonUtility.FromJson<Dummy>("{}");
+            Assert.NotNull(dummy.Value);
+            Assert.False(dummy.Value.Value);
+        }
+
+        [Test]
+        public void UniJSONTest()
+        {
+            var dummy = default(Dummy);
+            "{}".ParseAsJson().Deserialize(ref dummy);
+            Assert.Null(dummy.Value);
         }
     }
 }
