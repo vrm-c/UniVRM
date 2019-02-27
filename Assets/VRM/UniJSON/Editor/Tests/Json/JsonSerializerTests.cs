@@ -1,5 +1,6 @@
 ﻿#pragma warning disable 0649
 using System;
+using System.Linq;
 using NUnit.Framework;
 using System.Collections.Generic;
 
@@ -138,17 +139,58 @@ namespace UniJSON
             DeserializeValue(new List<int> { 1 }, "[1]");
             //DeserializeValue(new object[] { null, 1, "a" }, "[null,1,\"a\"]");
 
+            DeserializeValue(new Point { X = 1 }, "{\"X\":1,\"Y\":0}");
+
+            DeserializeValue(HogeFuga.Fuga, "1");
+
+            DeserializeValue(new EnumTest(), "{\"EnumDefault\":0,\"EnumAsInt\":0,\"EnumAsString\":\"Hoge\",\"EnumAsLowerString\":\"hoge\"}");
+        }
+
+        class DictionaryValue: IEquatable<DictionaryValue>
+        {
+            public Dictionary<string, object> Dict = new Dictionary<string, object>();
+
+            public override bool Equals(object obj)
+            {
+                var rhs = obj as DictionaryValue;
+                if (rhs != null)
+                {
+                    return Equals(rhs);
+                }
+                else
+                {
+                    return base.Equals(obj);
+                }
+            }
+
+            public bool Equals(DictionaryValue other)
+            {
+                if(Dict==null && other.Dict == null)
+                {
+                    return true;
+                }
+                else if(Dict==null || other.Dict==null)
+                {
+                    return false;
+                }
+                else
+                {
+                    return Dict.OrderBy(x => x.Key).SequenceEqual(other.Dict.OrderBy(x => x.Key));
+                }
+            }
+        }
+
+        [Test]
+        public void JsonDictionaryDeserializerTest()
+        { 
             DeserializeValue(new Dictionary<string, object> { }, "{}");
             DeserializeValue(new Dictionary<string, object> { { "a", 1 } }, "{\"a\":1}");
             DeserializeValue(new Dictionary<string, object> { { "a",
                     new Dictionary<string, object>{
                     } } }, "{\"a\":{}}");
 
-            DeserializeValue(new Point { X = 1 }, "{\"X\":1,\"Y\":0}");
-
-            DeserializeValue(HogeFuga.Fuga, "1");
-
-            DeserializeValue(new EnumTest(), "{\"EnumDefault\":0,\"EnumAsInt\":0,\"EnumAsString\":\"Hoge\",\"EnumAsLowerString\":\"hoge\"}");
+            // fix dictionary member deserialization
+            DeserializeValue(new DictionaryValue(), "{\"Dict\": {}}");
         }
         #endregion
     }

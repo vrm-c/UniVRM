@@ -276,7 +276,7 @@ namespace UniJSON
         public void Deserialize<U, V>(ListTreeNode<U> src, ref V dst)
             where U : IListTreeItem, IValue<U>
         {
-            throw new NotImplementedException();
+            src.Deserialize(ref dst);
         }
     }
 

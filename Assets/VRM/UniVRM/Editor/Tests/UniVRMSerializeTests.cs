@@ -219,10 +219,32 @@ namespace VRM
         [Test]
         public void MaterialTest()
         {
-            var model = new glTF_VRM_Material();
+            var model = new glTF_VRM_Material
+            {
+                floatProperties = new Dictionary<string, float>
+                {
+                    {"float", 1.0f}
+                },
+                vectorProperties = new Dictionary<string, float[]>
+                {
+                    {"vector", new float[]{0, 1, 2, 3 }}
+                },
+                textureProperties = new Dictionary<string, int>
+                {
+                    {"texture", 0}
+                },
+                keywordMap = new Dictionary<string, bool>
+                {
+                    {"keyword", true}
+                },
+                tagMap = new Dictionary<string, string>
+                {
+                    {"tag", "map"}
+                },
+            };
 
             var json = model.ToJson();
-            Assert.AreEqual(@"{""renderQueue"":-1,""floatProperties"":{},""vectorProperties"":{},""textureProperties"":{},""keywordMap"":{},""tagMap"":{}}", json);
+            Assert.AreEqual(@"{""renderQueue"":-1,""floatProperties"":{""float"":1},""vectorProperties"":{""vector"":[0,1,2,3]},""textureProperties"":{""texture"":0},""keywordMap"":{""keyword"":true},""tagMap"":{""tag"":""map""}}", json);
             Debug.Log(json);
 
             var c = new JsonSchemaValidationContext("")
@@ -231,7 +253,12 @@ namespace VRM
             };
             var json2 = JsonSchema.FromType<glTF_VRM_Material>().Serialize(model, c);
             // NOTE: New serializer outputs values which will not be used...
-            Assert.AreEqual(json,json2);
+            Assert.AreEqual(json, json2);
+
+            // deserialize
+            var deserialized = default(glTF_VRM_Material);
+            json.ParseAsJson().Deserialize(ref deserialized);
+            Assert.AreEqual(1, deserialized.floatProperties.Count);
         }
 
         [Test]
