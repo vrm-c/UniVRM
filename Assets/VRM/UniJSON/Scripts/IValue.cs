@@ -24,6 +24,7 @@ namespace UniJSON
         T Key(Utf8String key, int parentIndex);
         ValueNodeType ValueType { get; }
         ArraySegment<Byte> Bytes { get; }
+        void SetBytesCount(int count);
         Boolean GetBoolean();
         String GetString();
         Utf8String GetUtf8String();

@@ -62,7 +62,24 @@ namespace UniJSON
         }
 
         Utf8String m_segment;
+
         public ArraySegment<byte> Bytes { get { return m_segment.Bytes; } }
+        public void SetBytesCount(int count)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int ChildCount
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+        public void SetChildCount(int count)
+        {
+            throw new NotImplementedException();
+        }
 
         public TomlValue(Utf8String segment, TomlValueType valueType, int parentIndex) : this()
         {

@@ -303,10 +303,14 @@ namespace UniJSON
         /// <summary>
         /// This node index
         /// </summary>
+        int _valueIndex;
         public int ValueIndex
         {
-            get;
-            private set;
+            get
+            {
+                if (m_Values == null) return -1;
+                return _valueIndex;
+            }
         }
 
         public ListTreeNode<T> Prev
@@ -334,14 +338,21 @@ namespace UniJSON
         }
 
         #region Children
+        public int ChildCount
+        {
+            get { return Value.ChildCount; }
+        }
+
         public IEnumerable<ListTreeNode<T>> Children
         {
             get
             {
-                for (int i = 0; i < m_Values.Count; ++i)
+                int count = 0;
+                for (int i = ValueIndex; count < ChildCount && i < m_Values.Count; ++i)
                 {
                     if (m_Values[i].ParentIndex == ValueIndex)
                     {
+                        ++count;
                         yield return new ListTreeNode<T>(m_Values, i);
                     }
                 }
@@ -372,7 +383,6 @@ namespace UniJSON
             }
         }
         #endregion
-
         public bool HasParent
         {
             get
@@ -399,18 +409,49 @@ namespace UniJSON
         public ListTreeNode(List<T> values, int index = 0) : this()
         {
             m_Values = values;
-            ValueIndex = index;
+            _valueIndex = index;
         }
 
         #region JsonPointer
-        public void AddKey(Utf8String key)
+        public ListTreeNode<T> AddKey(Utf8String key)
         {
-            m_Values.Add(default(T).Key(key, ValueIndex));
+            return AddValue(default(T).Key(key, ValueIndex));
         }
 
-        public void AddValue(ArraySegment<byte> bytes, ValueNodeType valueType)
+        public ListTreeNode<T> AddValue(ArraySegment<byte> bytes, ValueNodeType valueType)
         {
-            m_Values.Add(default(T).New(bytes, valueType, ValueIndex));
+            return AddValue(default(T).New(bytes, valueType, ValueIndex));
+        }
+
+        public ListTreeNode<T> AddValue(T value)
+        {
+            if (m_Values == null)
+            {
+                // initialize empty tree
+                m_Values = new List<T>();
+                _valueIndex = -1;
+            }
+            else
+            {
+                IncrementChildCount();
+            }
+            var index = m_Values.Count;
+            m_Values.Add(value);
+            return new ListTreeNode<T>(m_Values, index);
+        }
+
+        void IncrementChildCount()
+        {
+            var value = Value;
+            value.SetChildCount(value.ChildCount + 1);
+            SetValue(value);
+        }
+
+        public void SetValueBytesCount(int count)
+        {
+            var value = Value;
+            value.SetBytesCount(count);
+            SetValue(value);
         }
         #endregion
     }

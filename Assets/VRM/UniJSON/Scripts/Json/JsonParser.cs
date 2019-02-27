@@ -1,14 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 
 
 namespace UniJSON
 {
-    public class JsonParseResult
-    {
-        public List<JsonValue> Values = new List<JsonValue>();
-    }
-
     public static class JsonParser
     {
         static ValueNodeType GetValueType(Utf8String segment)
@@ -21,7 +15,7 @@ namespace UniJSON
                 case 't': return ValueNodeType.Boolean;
                 case 'f': return ValueNodeType.Boolean;
                 case 'n':
-                    if (segment.ByteLength >= 2 && Char.ToLower((char) segment[1]) == 'a')
+                    if (segment.ByteLength >= 2 && Char.ToLower((char)segment[1]) == 'a')
                     {
                         return ValueNodeType.NaN;
                     }
@@ -32,7 +26,7 @@ namespace UniJSON
                     return ValueNodeType.Infinity;
 
                 case '-':
-                    if (segment.ByteLength >= 2 && Char.ToLower((char) segment[1]) == 'i')
+                    if (segment.ByteLength >= 2 && Char.ToLower((char)segment[1]) == 'i')
                     {
                         return ValueNodeType.MinusInfinity;
                     }
@@ -70,7 +64,7 @@ namespace UniJSON
         /// <param name="valueType"></param>
         /// <param name="parentIndex"></param>
         /// <returns></returns>
-        static JsonValue ParsePrimitive(Utf8String segment, ValueNodeType valueType, int parentIndex)
+        static ListTreeNode<JsonValue> ParsePrimitive(ListTreeNode<JsonValue> tree, Utf8String segment, ValueNodeType valueType)
         {
             int i = 1;
             for (; i < segment.ByteLength; ++i)
@@ -85,15 +79,15 @@ namespace UniJSON
                     break;
                 }
             }
-            return new JsonValue(segment.Subbytes(0, i), valueType, parentIndex);
+            return tree.AddValue(segment.Subbytes(0, i).Bytes, valueType);
         }
 
-        static JsonValue ParseString(Utf8String segment, int parentIndex)
+        static ListTreeNode<JsonValue> ParseString(ListTreeNode<JsonValue> tree, Utf8String segment)
         {
             int pos;
             if (segment.TrySearchAscii((Byte)'"', 1, out pos))
             {
-                return new JsonValue(segment.Subbytes(0, pos + 1), ValueNodeType.String, parentIndex);
+                return tree.AddValue(segment.Subbytes(0, pos + 1).Bytes, ValueNodeType.String);
             }
             else
             {
@@ -101,8 +95,10 @@ namespace UniJSON
             }
         }
 
-        static Utf8String ParseArray(Utf8String segment, List<JsonValue> values, int parentIndex)
+        static ListTreeNode<JsonValue> ParseArray(ListTreeNode<JsonValue> tree, Utf8String segment)
         {
+            var array = tree.AddValue(segment.Bytes, ValueNodeType.Array);
+
             var closeChar = ']';
             bool isFirst = true;
             var current = segment.Subbytes(1);
@@ -152,15 +148,21 @@ namespace UniJSON
                 }
 
                 // value
-                var value = Parse(current, values, parentIndex);
-                current = current.Subbytes(value.Segment.ByteLength);
+                var child = Parse(array, current);
+                current = current.Subbytes(child.Value.Segment.ByteLength);
             }
 
-            return current;
+            // fix array range
+            var count = current.Bytes.Offset + 1 - segment.Bytes.Offset;
+            array.SetValueBytesCount(count);
+            
+            return array;
         }
 
-        static Utf8String ParseObject(Utf8String segment, List<JsonValue> values, int parentIndex)
+        static ListTreeNode<JsonValue> ParseObject(ListTreeNode<JsonValue> tree, Utf8String segment)
         {
+            var obj = tree.AddValue(segment.Bytes, ValueNodeType.Object);
+
             var closeChar = '}';
             bool isFirst = true;
             var current = segment.Subbytes(1);
@@ -209,12 +211,12 @@ namespace UniJSON
                 }
 
                 // key
-                var key = Parse(current, values, parentIndex);
-                if (key.ValueType != ValueNodeType.String)
+                var key = Parse(obj, current);
+                if (!key.IsString())
                 {
-                    throw new ParserException("object key must string: " + key.Segment);
+                    throw new ParserException("object key must string: " + key.Value.Segment);
                 }
-                current = current.Subbytes(key.Segment.ByteLength);
+                current = current.Subbytes(key.Value.Segment.ByteLength);
 
                 // search ':'
                 int valuePos;
@@ -235,14 +237,18 @@ namespace UniJSON
                 }
 
                 // value
-                var value = Parse(current, values, parentIndex);
-                current = current.Subbytes(value.Segment.ByteLength);
+                var value = Parse(obj, current);
+                current = current.Subbytes(value.Value.Segment.ByteLength);
             }
 
-            return current;
+            // fix obj range
+            var count = current.Bytes.Offset + 1 - segment.Bytes.Offset;
+            obj.SetValueBytesCount(count);
+
+            return obj;
         }
 
-        static JsonValue Parse(Utf8String segment, List<JsonValue> values, int parentIndex)
+        public static ListTreeNode<JsonValue> Parse(ListTreeNode<JsonValue> tree, Utf8String segment)
         {
             // skip white space
             int pos;
@@ -262,38 +268,16 @@ namespace UniJSON
                 case ValueNodeType.NaN:
                 case ValueNodeType.Infinity:
                 case ValueNodeType.MinusInfinity:
-                    {
-                        var value= ParsePrimitive(segment, valueType, parentIndex);
-                        values.Add(value);
-                        return value;
-                    }
+                    return ParsePrimitive(tree, segment, valueType);
 
                 case ValueNodeType.String:
-                    {
-                        var value= ParseString(segment, parentIndex);
-                        values.Add(value);
-                        return value;
-                    }
+                    return ParseString(tree, segment);
 
                 case ValueNodeType.Array: // fall through
-                    {
-                        var index = values.Count;
-                        values.Add(new JsonValue()); // placeholder
-                        var current = ParseArray(segment, values, index);
-                        values[index] = new JsonValue(segment.Subbytes(0, current.Bytes.Offset + 1 - segment.Bytes.Offset),
-                            ValueNodeType.Array, parentIndex);
-                        return values[index];
-                    }
+                    return ParseArray(tree, segment);
 
                 case ValueNodeType.Object: // fall through
-                    {
-                        var index = values.Count;
-                        values.Add(new JsonValue()); // placeholder
-                        var current=ParseObject(segment, values, index);
-                        values[index] = new JsonValue(segment.Subbytes(0, current.Bytes.Offset + 1 - segment.Bytes.Offset),
-                            ValueNodeType.Object, parentIndex);
-                        return values[index];
-                    }
+                    return ParseObject(tree, segment);
 
                 default:
                     throw new NotImplementedException();
@@ -307,17 +291,7 @@ namespace UniJSON
 
         public static ListTreeNode<JsonValue> Parse(Utf8String json)
         {
-            var result = new List<JsonValue>();
-            var value = Parse(json, result, -1);
-            if (value.ValueType != ValueNodeType.Array && value.ValueType != ValueNodeType.Object)
-            {
-                result.Add(value);
-                return new ListTreeNode<JsonValue>(result);
-            }
-            else
-            {
-                return new ListTreeNode<JsonValue>(result);
-            }
+            return Parse(default(ListTreeNode<JsonValue>), json);
         }
     }
 }
