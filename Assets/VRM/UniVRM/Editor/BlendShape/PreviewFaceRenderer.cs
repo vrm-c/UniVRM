@@ -55,11 +55,20 @@ namespace VRM
         {
             m_previewUtility = new PreviewRenderUtility();
 
-            PreviewLights[0].intensity = 1.4f;
-            PreviewLights[0].transform.rotation = Quaternion.Euler(40f, 190f, 0);
-            PreviewLights[1].intensity = 1.4f;
+            foreach (var light in PreviewLights)
+            {
+                if (light == null) continue;
+                light.intensity = 0f;
+            }
 
-            SetAmbientColor(new Color(.1f, .1f, .1f, 0));
+            if (PreviewLights.Length > 0 && PreviewLights[0] != null)
+            {
+                PreviewLights[0].intensity = 1f;
+                PreviewLights[0].transform.rotation = Quaternion.Euler(20f, 200f, 0);
+                PreviewLights[0].color = new Color(1f, 1f, 1f, 1f);
+            }
+
+            SetAmbientColor(new Color(0.1f, 0.1f, 0.1f, 1f));
         }
 
         class FogScope : IDisposable
