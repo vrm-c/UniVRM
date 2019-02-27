@@ -86,6 +86,10 @@
                     clip(col.a - _Cutoff);
                 #endif
                 
+                #if !defined(_ALPHATEST_ON) && !defined(_ALPHABLEND_ON)
+                    col.a = 1.0;
+                #endif
+                
                 UNITY_APPLY_FOG(i.fogCoord, col);
                 return col;
             }
