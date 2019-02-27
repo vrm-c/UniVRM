@@ -7,12 +7,15 @@ namespace UniGLTF
 {
     public partial class glTF_extensions : ExtensionsBase<glTF_extensions>
     {
-        public VRM.glTF_VRM_extensions VRM = new VRM.glTF_VRM_extensions();
+        public VRM.glTF_VRM_extensions VRM;
 
         [JsonSerializeMembers]
         void VRMSerializeMembers(GLTFJsonFormatter f)
         {
-            f.Key("VRM"); f.GLTFValue(VRM);
+            if (VRM != null)
+            {
+                f.Key("VRM"); f.GLTFValue(VRM);
+            }
         }
     }
 }
