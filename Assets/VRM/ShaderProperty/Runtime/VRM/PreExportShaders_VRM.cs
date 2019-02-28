@@ -1,8 +1,8 @@
 ﻿namespace UniGLTF.ShaderPropExporter
 {
-    public static partial class PreShaderPropExporter
+    public static partial class PreExportShaders
     {
-        const string VRM_TARGET_FOLDER = "VRM/Scripts";
+        const string VRM_TARGET_FOLDER = "VRM";
         [PreExportShaders]
         public static SupportedShader[] VRMSupportedShaders = new SupportedShader[]
         {

@@ -62,50 +62,6 @@ namespace UniGLTF.ShaderPropExporter
                 Properties = properties.ToArray(),
             };
         }
-
-        static string EscapeShaderName(string name)
-        {
-            return name.Replace("/", "_").Replace(" ", "_");
-        }
-
-        public string ToString(string shaderName)
-        {
-            var list = new List<string>();
-            foreach (var prop in Properties)
-            {
-                list.Add(string.Format("new ShaderProperty(\"{0}\", ShaderPropertyType.{1})\r\n", prop.Key, prop.ShaderPropertyType));
-            }
-
-            return string.Format(@"using System.Collections.Generic;
-
-
-namespace UniGLTF.ShaderPropExporter
-{{
-    public static partial class PreShaderPropExporter
-    {{
-        [PreExportShader]
-        static KeyValuePair<string, ShaderProps> {0} 
-        {{
-            get 
-            {{
-                return new KeyValuePair<string, ShaderProps>(
-                    ""{1}"",
-                    new ShaderProps
-                    {{
-                        Properties = new ShaderProperty[]{{
-{2}
-                        }}
-                    }}
-                );
-            }}
-        }}
-    }}
-}}
-"
-, EscapeShaderName(shaderName)
-, shaderName
-, String.Join(",", list.ToArray()));
-        }
 #endif
     }
 }
