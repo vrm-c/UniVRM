@@ -1,4 +1,4 @@
-﻿#pragma warning disable 0649
+#pragma warning disable 0649
 using System;
 using System.Linq;
 using NUnit.Framework;
@@ -149,6 +149,11 @@ namespace UniJSON
         class DictionaryValue: IEquatable<DictionaryValue>
         {
             public Dictionary<string, object> Dict = new Dictionary<string, object>();
+
+            public override int GetHashCode()
+            {
+                return base.GetHashCode();
+            }
 
             public override bool Equals(object obj)
             {

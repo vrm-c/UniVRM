@@ -78,8 +78,10 @@ namespace UniJSON
     {
         delegate void Serializer(IFormatter f, T t);
 
-        static Action<IFormatter, T> GetSerializer(Type t)
+        static Action<IFormatter, T> GetSerializer()
         {
+            var t = typeof(T);
+
             // object
             if (typeof(T) == typeof(object) && t.GetType() != typeof(object))
             {
@@ -166,7 +168,7 @@ namespace UniJSON
         {
             if (s_serializer == null)
             {
-                s_serializer = new Serializer(GetSerializer(typeof(T)));
+                s_serializer = new Serializer(GetSerializer());
             }
             s_serializer(f, t);
         }

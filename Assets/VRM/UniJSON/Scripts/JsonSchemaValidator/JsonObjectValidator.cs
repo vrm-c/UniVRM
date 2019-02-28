@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -592,7 +592,7 @@ namespace UniJSON
             GenericSerializer<T>.Serialize(this, f, c, value);
         }
 
-        static class GenericDeserializer<S, T>
+        public static class GenericDeserializer<S, T>
             where S : IListTreeItem, IValue<S>
         {
             delegate T Deserializer(ListTreeNode<S> src);
@@ -610,7 +610,7 @@ namespace UniJSON
                 };
             }
 
-            static U DeserializeField<U>(JsonSchema prop, ListTreeNode<S> s)
+            public static U DeserializeField<U>(JsonSchema prop, ListTreeNode<S> s)
             {
                 var u = default(U);
                 prop.Validator.Deserialize(s, ref u);
@@ -639,7 +639,7 @@ namespace UniJSON
                         }
 
                         var mi = typeof(GenericDeserializer<S, T>).GetMethod("DeserializeField",
-                            BindingFlags.Static | BindingFlags.NonPublic);
+                            BindingFlags.Static | BindingFlags.Public);
                         var g = mi.MakeGenericMethod(x.FieldType);
 
                         return (FieldSetter)((s, o) =>
