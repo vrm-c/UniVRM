@@ -29,6 +29,15 @@ namespace UniJSON
             f.Value(new ArraySegment<Byte>(bytes));
         }
 
+        public static void Value(this IFormatter f, UnityEngine.Vector2 v)
+        {
+            //CommaCheck();
+            f.BeginMap(2);
+            f.Key("x"); f.Value(v.x);
+            f.Key("y"); f.Value(v.y);
+            f.EndMap();
+        }
+
         public static void Value(this IFormatter f, UnityEngine.Vector3 v)
         {
             //CommaCheck();
@@ -36,6 +45,17 @@ namespace UniJSON
             f.Key("x"); f.Value(v.x);
             f.Key("y"); f.Value(v.y);
             f.Key("z"); f.Value(v.z);
+            f.EndMap();
+        }
+
+        public static void Value(this IFormatter f, UnityEngine.Vector4 v)
+        {
+            //CommaCheck();
+            f.BeginMap(4);
+            f.Key("x"); f.Value(v.x);
+            f.Key("y"); f.Value(v.y);
+            f.Key("z"); f.Value(v.z);
+            f.Key("w"); f.Value(v.w);
             f.EndMap();
         }
 

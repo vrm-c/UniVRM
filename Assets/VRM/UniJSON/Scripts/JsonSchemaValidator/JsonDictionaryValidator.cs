@@ -286,5 +286,22 @@ namespace UniJSON
         {
             return new JsonDictionaryValidator<T>();
         }
+
+        #region AOT
+        public static JsonDictionaryValidator<Single> CreateSingle()
+        {
+            return Create<Single>();
+        }
+
+        public static JsonDictionaryValidator<Int32> CreateInt32()
+        {
+            return Create<Int32>();
+        }
+
+        public static JsonDictionaryValidator<Boolean> CreateBoolean()
+        {
+            return Create<Boolean>();
+        }
+        #endregion
     }
 }

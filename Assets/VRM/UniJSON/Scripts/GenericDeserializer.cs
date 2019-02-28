@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -9,7 +9,7 @@ namespace UniJSON
     public static class GenericDeserializer<T, U>
         where T : IListTreeItem, IValue<T>
     {
-        static V[] GenericArrayDeserializer<V>(ListTreeNode<T> s)
+        public static V[] GenericArrayDeserializer<V>(ListTreeNode<T> s)
         {
             if (!s.IsArray())
             {
@@ -24,7 +24,7 @@ namespace UniJSON
             return u;
         }
 
-        static List<V> GenericListDeserializer<V>(ListTreeNode<T> s)
+        public static List<V> GenericListDeserializer<V>(ListTreeNode<T> s)
         {
             if (!s.IsArray())
             {
@@ -40,7 +40,7 @@ namespace UniJSON
             return u;
         }
 
-        static object DefaultDictionaryDeserializer(ListTreeNode<T> s)
+        public static object DefaultDictionaryDeserializer(ListTreeNode<T> s)
         {
             switch (s.Value.ValueType)
             {
@@ -82,7 +82,7 @@ namespace UniJSON
         /// <typeparam name="V"></typeparam>
         /// <param name="s"></param>
         /// <returns></returns>
-        static Dictionary<string, V> DictionaryDeserializer<V>(ListTreeNode<T> s)
+        public static Dictionary<string, V> DictionaryDeserializer<V>(ListTreeNode<T> s)
         {
             var d = new Dictionary<string, V>();
             foreach (var kv in s.ObjectItems())
@@ -146,7 +146,7 @@ namespace UniJSON
             if (target.IsArray)
             {
                 var mi = typeof(GenericDeserializer<T, U>).GetMethod("GenericArrayDeserializer",
-                    BindingFlags.Static | BindingFlags.NonPublic);
+                    BindingFlags.Static | BindingFlags.Public);
                 var g = mi.MakeGenericMethod(target.GetElementType());
                 return GenericInvokeCallFactory.StaticFunc<ListTreeNode<T>, U>(g);
             }
@@ -156,7 +156,7 @@ namespace UniJSON
                 if (target.GetGenericTypeDefinition() == typeof(List<>))
                 {
                     var mi = typeof(GenericDeserializer<T, U>).GetMethod("GenericListDeserializer",
-                        BindingFlags.Static | BindingFlags.NonPublic);
+                        BindingFlags.Static | BindingFlags.Public);
                     var g = mi.MakeGenericMethod(target.GetGenericArguments());
                     return GenericInvokeCallFactory.StaticFunc<ListTreeNode<T>, U>(g);
                 }
@@ -165,7 +165,7 @@ namespace UniJSON
                 {
                     
                     var mi = typeof(GenericDeserializer<T, U>).GetMethod("DefaultDictionaryDeserializer",
-                    BindingFlags.Static | BindingFlags.NonPublic);
+                    BindingFlags.Static | BindingFlags.Public);
                     return GenericInvokeCallFactory.StaticFunc<ListTreeNode<T>, U>(mi);
                 }
                 else
@@ -173,7 +173,7 @@ namespace UniJSON
                     target.GetGenericArguments()[0] == typeof(string))
                 {
                     var mi = typeof(GenericDeserializer<T, U>).GetMethod("DictionaryDeserializer",
-                    BindingFlags.Static | BindingFlags.NonPublic);
+                    BindingFlags.Static | BindingFlags.Public);
                     var g = mi.MakeGenericMethod(target.GetGenericArguments()[1]);
                     return GenericInvokeCallFactory.StaticFunc<ListTreeNode<T>, U>(g);
                 }
