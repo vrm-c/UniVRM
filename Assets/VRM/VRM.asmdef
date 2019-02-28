@@ -5,7 +5,8 @@
         "DepthFirstScheduler",
         "UniUnlit",
         "UniHumanoid",
-        "UniJSON"
+        "UniJSON",
+        "ShaderProperty.Runtime"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],
