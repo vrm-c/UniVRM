@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
 using UniGLTF;
 using UnityEngine;
 using UniJSON;
+
 
 namespace VRM
 {
@@ -28,13 +28,6 @@ namespace VRM
             }
             f.KeyValue(() => xRange);
             f.KeyValue(() => yRange);
-        }
-
-        public void Apply(CurveMapper mapper)
-        {
-            curve = mapper.Curve.keys.SelectMany(x => new float[] { x.time, x.value, x.inTangent, x.outTangent }).ToArray();
-            xRange = mapper.CurveXRangeDegree;
-            yRange = mapper.CurveYRangeDegree;
         }
     }
 

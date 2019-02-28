@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
 using UniGLTF;
-using UnityEngine;
 using UniJSON;
+
 
 namespace VRM
 {
@@ -41,21 +40,6 @@ namespace VRM
             f.KeyValue(() => mesh);
             f.KeyValue(() => index);
             f.KeyValue(() => weight);
-        }
-
-        public static glTF_VRM_BlendShapeBind Cerate(Transform root, List<Mesh> meshes, BlendShapeBinding binding)
-        {
-            var transform = UniGLTF.UnityExtensions.GetFromPath(root.transform, binding.RelativePath);
-            var renderer = transform.GetComponent<SkinnedMeshRenderer>();
-            var mesh = renderer.sharedMesh;
-            var meshIndex = meshes.IndexOf(mesh);
-
-            return new glTF_VRM_BlendShapeBind
-            {
-                mesh = meshIndex,
-                index = binding.Index,
-                weight = binding.Weight,
-            };
         }
     }
 
@@ -143,35 +127,6 @@ namespace VRM
     {
         public List<glTF_VRM_BlendShapeGroup> blendShapeGroups = new List<glTF_VRM_BlendShapeGroup>();
 
-        public void Add(BlendShapeClip clip, Transform transform, List<Mesh> meshes)
-        {
-            var list = new List<glTF_VRM_BlendShapeBind>();
-            if (clip.Values != null)
-            {
-                list.AddRange(clip.Values.Select(y => glTF_VRM_BlendShapeBind.Cerate(transform, meshes.ToList(), y)));
-            }
-
-            var materialList = new List<glTF_VRM_MaterialValueBind>();
-            if (clip.MaterialValues != null)
-            {
-                materialList.AddRange(clip.MaterialValues.Select(y => new glTF_VRM_MaterialValueBind
-                {
-                    materialName = y.MaterialName,
-                    propertyName = y.ValueName,
-                    targetValue = y.TargetValue.ToArray(),
-                }));
-            }
-
-            var group = new glTF_VRM_BlendShapeGroup
-            {
-                name = clip.BlendShapeName,
-                presetName = clip.Preset.ToString().ToLower(),
-                isBinary = clip.IsBinary,
-                binds = list,
-                materialValues = materialList,
-            };
-            blendShapeGroups.Add(group);
-        }
 
         protected override void SerializeMembers(GLTFJsonFormatter f)
         {

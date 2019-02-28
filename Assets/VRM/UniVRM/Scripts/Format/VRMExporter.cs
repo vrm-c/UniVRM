@@ -204,7 +204,7 @@ namespace VRM
             // materials
             foreach (var m in exporter.Materials)
             {
-                gltf.extensions.VRM.materialProperties.Add(glTF_VRM_Material.CreateFromMaterial(m, exporter.TextureManager.Textures));
+                gltf.extensions.VRM.materialProperties.Add(VRMMaterialExporter.CreateFromMaterial(m, exporter.TextureManager.Textures));
             }
         }
     }
