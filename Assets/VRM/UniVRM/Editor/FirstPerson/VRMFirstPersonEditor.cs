@@ -1,4 +1,5 @@
 ﻿using UnityEditor;
+using UnityEngine;
 
 
 namespace VRM
@@ -16,12 +17,17 @@ namespace VRM
                 return;
             }
 
+            EditorGUI.BeginChangeCheck();
 
             var worldOffset = head.localToWorldMatrix.MultiplyPoint(component.FirstPersonOffset);
             worldOffset = Handles.PositionHandle(worldOffset, head.rotation);
 
             Handles.Label(worldOffset, "FirstPersonOffset");
 
+            if (EditorGUI.EndChangeCheck())
+            {
+                Undo.RecordObject(component, "Changed FirstPerson");
+            }
             component.FirstPersonOffset = head.worldToLocalMatrix.MultiplyPoint(worldOffset);
         }
     }
