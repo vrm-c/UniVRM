@@ -225,6 +225,7 @@ namespace UniGLTF
                 case TextureWrapMode.Clamp:
                     return glWrap.CLAMP_TO_EDGE;
 
+                case (TextureWrapMode)(-1):
                 case TextureWrapMode.Repeat:
                     return glWrap.REPEAT;
 
