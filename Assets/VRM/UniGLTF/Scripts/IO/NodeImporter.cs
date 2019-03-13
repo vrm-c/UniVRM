@@ -8,48 +8,60 @@ namespace UniGLTF
 {
     public static class NodeImporter
     {
-        public static GameObject ImportNode(glTFNode node)
+        public static GameObject ImportNode(VGltf.Types.Node node)
         {
-            var nodeName = node.name;
+            var nodeName = node.Name;
             if (!string.IsNullOrEmpty(nodeName) && nodeName.Contains("/"))
             {
-                Debug.LogWarningFormat("node {0} contains /. replace _", node.name);
+                Debug.LogWarningFormat("node {0} contains /. replace _", node.Name);
                 nodeName = nodeName.Replace("/", "_");
             }
             var go = new GameObject(nodeName);
 
+            var useTRS = false;
+
             //
             // transform
             //
-            if (node.translation != null && node.translation.Length > 0)
+            if (node.Translation != null && node.Translation.Length >= 3)
             {
                 go.transform.localPosition = new Vector3(
-                    node.translation[0],
-                    node.translation[1],
-                    node.translation[2]);
+                    node.Translation[0],
+                    node.Translation[1],
+                    node.Translation[2]);
+
+                useTRS = true;
             }
-            if (node.rotation != null && node.rotation.Length > 0)
+
+            if (node.Rotation != null && node.Rotation.Length >= 4)
             {
                 go.transform.localRotation = new Quaternion(
-                    node.rotation[0],
-                    node.rotation[1],
-                    node.rotation[2],
-                    node.rotation[3]);
+                    node.Rotation[0],
+                    node.Rotation[1],
+                    node.Rotation[2],
+                    node.Rotation[3]);
+
+                useTRS = true;
             }
-            if (node.scale != null && node.scale.Length > 0)
+
+            if (node.Scale != null && node.Scale.Length >= 3)
             {
                 go.transform.localScale = new Vector3(
-                    node.scale[0],
-                    node.scale[1],
-                    node.scale[2]);
+                    node.Scale[0],
+                    node.Scale[1],
+                    node.Scale[2]);
+
+                useTRS = true;
             }
-            if (node.matrix != null && node.matrix.Length > 0)
+
+            if (!useTRS && node.Matrix != null && node.Matrix.Length >= 16)
             {
-                var m = UnityExtensions.MatrixFromArray(node.matrix);
+                var m = UnityExtensions.MatrixFromArray(node.Matrix);
                 go.transform.localRotation = m.ExtractRotation();
                 go.transform.localPosition = m.ExtractPosition();
                 go.transform.localScale = m.ExtractScale();
             }
+
             return go;
         }
 
@@ -76,10 +88,10 @@ namespace UniGLTF
             //
             // build hierachy
             //
-            var node = context.GLTF.nodes[i];
-            if (node.children != null)
+            var node = context.GLTF2.Nodes[i];
+            if (node.Children != null)
             {
-                foreach (var child in node.children)
+                foreach (var child in node.Children)
                 {
                     context.Nodes[child].transform.SetParent(context.Nodes[i].transform,
                         false // node has local transform
@@ -90,10 +102,11 @@ namespace UniGLTF
             //
             // attach mesh
             //
-            if (node.mesh != -1)
+            if (node.Mesh != null)
             {
-                var mesh = context.Meshes[node.mesh];
-                if (mesh.Mesh.blendShapeCount == 0 && node.skin == -1)
+                var mesh = context.Meshes[node.Mesh.Value];
+
+                if (mesh.Mesh.blendShapeCount == 0 && node.Skin == null)
                 {
                     // without blendshape and bone skinning
                     var filter = go.AddComponent<MeshFilter>();
@@ -108,9 +121,9 @@ namespace UniGLTF
                 {
                     var renderer = go.AddComponent<SkinnedMeshRenderer>();
 
-                    if (node.skin != -1)
+                    if (node.Skin != null)
                     {
-                        nodeWithSkin.SkinIndex = node.skin;
+                        nodeWithSkin.SkinIndex = node.Skin.Value;
                     }
 
                     renderer.sharedMesh = mesh.Mesh;
@@ -134,11 +147,12 @@ namespace UniGLTF
                 Position = x.Transform.position,
                 Rotation = x.Transform.rotation,
             });
-            foreach (var x in context.GLTF.rootnodes)
+
+            foreach (var i in context.GLTF2.RootNodesIndices)
             {
                 // fix nodes coordinate
                 // reverse Z in global
-                var t = nodes[x].Transform;
+                var t = nodes[i].Transform;
                 //t.SetParent(root.transform, false);
 
                 foreach (var transform in t.Traverse())
@@ -162,21 +176,22 @@ namespace UniGLTF
                     if (mesh == null) throw new Exception();
                     if (skinnedMeshRenderer == null) throw new Exception();
 
-                    if (x.SkinIndex.Value < context.GLTF.skins.Count)
+                    if (x.SkinIndex.Value < context.GLTF2.Skins.Count)
                     {
                         // calculate internal values(boudingBox etc...) when sharedMesh assinged ?
                         skinnedMeshRenderer.sharedMesh = null;
 
-                        var skin = context.GLTF.skins[x.SkinIndex.Value];
-                        var joints = skin.joints.Select(y => nodes[y].Transform).ToArray();
+                        var skin = context.GLTF2.Skins[x.SkinIndex.Value];
+                        var joints = skin.Joints.Select(y => nodes[y].Transform).ToArray();
                         if (joints.Any())
                         {
                             // have bones
                             skinnedMeshRenderer.bones = joints;
 
-                            if (skin.inverseBindMatrices != -1)
+                            if (skin.InverseBindMatrices != null)
                             {
-                                var bindPoses = context.GLTF.GetArrayFromAccessor<Matrix4x4>(skin.inverseBindMatrices)
+                                var bindMat = context.Store.GetOrLoadTypedBufferByAccessorIndex(skin.InverseBindMatrices.Value);
+                                var bindPoses = bindMat.GetEntity<Matrix4x4>().GetEnumerable()
                                     .Select(y => y.ReverseZ())
                                     .ToArray()
                                     ;
@@ -199,9 +214,9 @@ namespace UniGLTF
                         }
 
                         skinnedMeshRenderer.sharedMesh = mesh;
-                        if (skin.skeleton >= 0 && skin.skeleton < nodes.Count)
+                        if (skin.Skeleton != null && skin.Skeleton.Value >= 0 && skin.Skeleton.Value < nodes.Count)
                         {
-                            skinnedMeshRenderer.rootBone = nodes[skin.skeleton].Transform;
+                            skinnedMeshRenderer.rootBone = nodes[skin.Skeleton.Value].Transform;
                         }
                     }
                 }

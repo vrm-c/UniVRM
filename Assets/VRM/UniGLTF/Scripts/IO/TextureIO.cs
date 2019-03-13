@@ -59,6 +59,40 @@ namespace UniGLTF
             return glTFTextureTypes.Unknown;
         }
 
+        public static glTFTextureTypes GetglTFTextureType(VGltf.Types.Gltf gltf, int textureIndex)
+        {
+            if (gltf.Materials == null) {
+                return glTFTextureTypes.Unknown;
+            }
+
+            foreach (var material in gltf.Materials)
+            {
+                var textureInfo = VGltf.Types.MaterialExtensions.GetTextures(material).FirstOrDefault(x => (x!=null) && x.Index == textureIndex);
+                if (textureInfo != null)
+                {
+                    switch(textureInfo.Kind)
+                    {
+                        case VGltf.Types.TextureInfoKind.BaseColor:
+                            return glTFTextureTypes.BaseColor;
+
+                        case VGltf.Types.TextureInfoKind.MetallicRoughness:
+                            return glTFTextureTypes.Metallic;
+
+                        case VGltf.Types.TextureInfoKind.Normal:
+                            return glTFTextureTypes.Normal;
+
+                        case VGltf.Types.TextureInfoKind.Occlusion:
+                            return glTFTextureTypes.Occlusion;
+
+                        case VGltf.Types.TextureInfoKind.Emissive:
+                            return glTFTextureTypes.Emissive;
+                    }
+                }
+            }
+
+            return glTFTextureTypes.Unknown;
+        }
+
 #if UNITY_EDITOR
         public static void MarkTextureAssetAsNormalMap(string assetPath)
         {
@@ -129,7 +163,7 @@ namespace UniGLTF
                         Bytes = System.IO.File.ReadAllBytes(path.FullPath),
                         Mime = "image/png",
                     };
-                }                    
+                }
             }
 #endif
 

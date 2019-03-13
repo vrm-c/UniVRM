@@ -26,7 +26,7 @@ namespace VRM
             "VRM/UnlitTransparentZWrite",
         };
 
-        public override Material CreateMaterial(int i, glTFMaterial src)
+        public override Material CreateMaterial(int i, VGltf.Types.Material src)
         {
             if(i==0 && m_materials.Count == 0)
             {

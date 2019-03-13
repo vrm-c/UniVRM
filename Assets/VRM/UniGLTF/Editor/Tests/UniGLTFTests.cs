@@ -174,6 +174,29 @@ namespace UniGLTF
             };
             var json2 = JsonSchema.FromType<glTFMesh>().Serialize(model, c);
             Assert.AreEqual(@"{""name"":""mesh"",""primitives"":[{""mode"":0,""attributes"":{""POSITION"":0},""material"":0}]}", json2);
+
+
+            // New models
+            {
+                var m = new VGltf.Types.Mesh {
+                    Name = "mesh",
+                    Primitives = new List<VGltf.Types.Mesh.PrimitiveType>
+                    {
+                        new VGltf.Types.Mesh.PrimitiveType
+                        {
+                            Attributes = new Dictionary<string, int> {
+                                {"POSITION", 0},
+                            },
+                        }
+                    },
+                };
+                var schema = VJson.Schema.JsonSchemaAttribute.CreateFromType(m.GetType());
+                Assert.Null(VJson.Schema.JsonSchemaExtensions.Validate(schema, m));
+
+                var serializer = new VJson.JsonSerializer(m.GetType());
+                var jsonOfM = serializer.Serialize(m);
+                Assert.AreEqual(@"{""name"":""mesh"",""primitives"":[{""attributes"":{""POSITION"":0},""mode"":4}]}", jsonOfM);
+            }
         }
 
         [Test]
@@ -554,6 +577,19 @@ namespace UniGLTF
             };
             var json2 = JsonSchema.FromType<glTFAssets>().Serialize(model, c);
             Assert.AreEqual(@"{""version"":""0.49""}", json2);
+
+            // New models
+            {
+                var m = new VGltf.Types.Asset {
+                    Version = "0.49",
+                };
+                var schema = VJson.Schema.JsonSchemaAttribute.CreateFromType(m.GetType());
+                Assert.Null(VJson.Schema.JsonSchemaExtensions.Validate(schema, m));
+
+                var serializer = new VJson.JsonSerializer(m.GetType());
+                var jsonOfM = serializer.Serialize(m);
+                Assert.AreEqual(json2, jsonOfM);
+            }
         }
 
         [Test]

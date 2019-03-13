@@ -19,7 +19,7 @@ namespace UniGLTF
         /// </summary>
         /// <param name="gltf"></param>
         /// <param name="storage"></param>
-        void ProcessOnAnyThread(glTF gltf, IStorage storage);
+        void ProcessOnAnyThread(VGltf.ResourcesStore store, IStorage storage);
 
         /// <summary>
         /// Call from unity main thread
@@ -49,7 +49,7 @@ namespace UniGLTF
         {
         }
 
-        public void ProcessOnAnyThread(glTF gltf, IStorage storage)
+        public void ProcessOnAnyThread(VGltf.ResourcesStore store, IStorage storage)
         {
         }
 
@@ -117,11 +117,17 @@ namespace UniGLTF
 
         Byte[] m_imageBytes;
         string m_textureName;
-        public void ProcessOnAnyThread(glTF gltf, IStorage storage)
+        public void ProcessOnAnyThread(VGltf.ResourcesStore store, IStorage storage)
         {
-            var imageIndex = gltf.GetImageIndexFromTextureIndex(m_textureIndex);
-            var segments = gltf.GetImageBytes(storage, imageIndex, out m_textureName);
-            m_imageBytes = ToArray(segments);
+            var texture = store.Gltf.Textures[m_textureIndex];
+            var imageIndex = texture.Source.Value;
+
+            var resource = store.GetOrLoadImageResourceAt(imageIndex);
+
+            var image = store.Gltf.Images[imageIndex];
+            m_textureName = TmpUtil.PrepareTextureName(image, imageIndex);
+
+            m_imageBytes = ToArray(resource.Data); // TODO: Why ToArray?
         }
 
         public IEnumerator ProcessOnMainThread(bool isLinear)
@@ -166,10 +172,17 @@ namespace UniGLTF
 
         ArraySegment<Byte> m_segments;
         string m_textureName;
-        public void ProcessOnAnyThread(glTF gltf, IStorage storage)
+        public void ProcessOnAnyThread(VGltf.ResourcesStore store, IStorage storage)
         {
-            var imageIndex = gltf.GetImageIndexFromTextureIndex(m_textureIndex);
-            m_segments = gltf.GetImageBytes(storage, imageIndex, out m_textureName);
+            var texture = store.Gltf.Textures[m_textureIndex];
+            var imageIndex = texture.Source.Value;
+
+            var resource = store.GetOrLoadImageResourceAt(imageIndex);
+
+            var image = store.Gltf.Images[imageIndex];
+            m_textureName = TmpUtil.PrepareTextureName(image, imageIndex);
+
+            m_segments = resource.Data;
         }
 
 #if false
@@ -292,6 +305,36 @@ namespace UniGLTF
                     Texture.name = m_textureName;
                 }
             }
+        }
+    }
+
+
+    static class TmpUtil
+    {
+        public static string PrepareTextureName(VGltf.Types.Image image, int imageIndex)
+        {
+            var textureName = image.Name;
+
+            if (string.IsNullOrEmpty(textureName))
+            {
+                if (string.IsNullOrEmpty(image.Uri))
+                {
+                    textureName = string.Format("{0:00}#GLB", imageIndex);
+                }
+                else
+                {
+                    if (image.Uri.StartsWith("data:"))
+                    {
+                        textureName = string.Format("{0:00}#Base64Embeded", imageIndex);
+                    }
+                    else
+                    {
+                        textureName = Path.GetFileNameWithoutExtension(image.Uri);
+                    }
+                }
+            }
+
+            return textureName;
         }
     }
 }

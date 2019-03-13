@@ -15,8 +15,7 @@ namespace VRM
         public static GameObject LoadFromPath(string path)
         {
             var context = new VRMImporterContext();
-            context.Parse(path, File.ReadAllBytes(path));
-            context.Load();
+            context.Load(path);
             context.ShowMeshes();
             context.EnableUpdateWhenOffscreen();
             return context.Root;
@@ -27,6 +26,11 @@ namespace VRM
         {
             var context = new VRMImporterContext();
             context.ParseGlb(bytes);
+            using(var s = new MemoryStream(bytes))
+            {
+                var c = VGltf.GltfContainer.FromGlb(s);
+                context.SetupGltf(c, null);
+            }
             context.Load();
             context.ShowMeshes();
             context.EnableUpdateWhenOffscreen();
@@ -63,7 +67,7 @@ namespace VRM
                     context.ShowMeshes();
                 }
                 onLoaded(context.Root);
-            }, 
+            },
             onError);
         }
 

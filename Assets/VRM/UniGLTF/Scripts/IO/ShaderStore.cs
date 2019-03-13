@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
-
+using System.Collections.Generic;
 
 namespace UniGLTF
 {
     public interface IShaderStore
     {
         Shader GetShader(glTFMaterial material);
+        Shader GetShader(VGltf.Types.Material material);
     }
 
     public class ShaderStore : IShaderStore
@@ -112,6 +113,23 @@ namespace UniGLTF
             }
 
             if (material.extensions != null && material.extensions.KHR_materials_unlit != null)
+            {
+                return UniUnlit;
+            }
+
+            // standard
+            return Default;
+        }
+
+        public Shader GetShader(VGltf.Types.Material material)
+        {
+            if (material == null)
+            {
+                return Default;
+            }
+
+            var extensions = material.Extensions as Dictionary<string, object>;
+            if (extensions != null && extensions.ContainsKey("KHR_materials_unlit"))
             {
                 return UniUnlit;
             }

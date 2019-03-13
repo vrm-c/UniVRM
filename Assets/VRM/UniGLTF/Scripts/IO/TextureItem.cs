@@ -138,32 +138,36 @@ namespace UniGLTF
         #region Process
         ITextureLoader m_textureLoader;
 
-        public void Process(glTF gltf, IStorage storage)
+        public void Process(VGltf.ResourcesStore store, IStorage storage)
         {
-            ProcessOnAnyThread(gltf, storage);
-            ProcessOnMainThreadCoroutine(gltf).CoroutinetoEnd();
+            ProcessOnAnyThread(store, storage);
+            ProcessOnMainThreadCoroutine(store).CoroutinetoEnd();
         }
 
-        public IEnumerator ProcessCoroutine(glTF gltf, IStorage storage)
+        public IEnumerator ProcessCoroutine(VGltf.ResourcesStore store, IStorage storage)
         {
-            ProcessOnAnyThread(gltf, storage);
-            yield return ProcessOnMainThreadCoroutine(gltf);
+            ProcessOnAnyThread(store, storage);
+            yield return ProcessOnMainThreadCoroutine(store);
         }
 
-        public void ProcessOnAnyThread(glTF gltf, IStorage storage)
+        public void ProcessOnAnyThread(VGltf.ResourcesStore store, IStorage storage)
         {
-            m_textureLoader.ProcessOnAnyThread(gltf, storage);
+            m_textureLoader.ProcessOnAnyThread(store, storage);
         }
 
-        public IEnumerator ProcessOnMainThreadCoroutine(glTF gltf)
+        public IEnumerator ProcessOnMainThreadCoroutine(VGltf.ResourcesStore store)
         {
+            var gltf = store.Gltf;
+
             using (m_textureLoader)
             {
                 var textureType = TextureIO.GetglTFTextureType(gltf, m_textureIndex);
                 var colorSpace = TextureIO.GetColorSpace(textureType);
                 var isLinear = colorSpace == RenderTextureReadWrite.Linear;
                 yield return m_textureLoader.ProcessOnMainThread(isLinear);
-                TextureSamplerUtil.SetSampler(Texture, gltf.GetSamplerFromTextureIndex(m_textureIndex));
+
+                var sampler = VGltf.Types.GltfExtensions.GetSamplerByTextureIndex(gltf, m_textureIndex);
+                TextureSamplerUtil.SetSampler(Texture, sampler);
             }
         }
         #endregion

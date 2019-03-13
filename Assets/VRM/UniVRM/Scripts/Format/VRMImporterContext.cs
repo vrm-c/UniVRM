@@ -32,9 +32,8 @@ namespace VRM
             }
         }
 
-        public override void ParseJson(string json, IStorage storage)
+        public override void AfterSetupHook()
         {
-            base.ParseJson(json, storage);
             SetMaterialImporter(new VRMMaterialImporter(this, glTF_VRM_Material.Parse(Json)));
         }
 
@@ -301,7 +300,7 @@ namespace VRM
                 if (gltfMeta.texture >= 0 && gltfMeta.texture < GLTF.textures.Count)
                 {
                     var t = new TextureItem(gltfMeta.texture);
-                    t.Process(GLTF, Storage);
+                    t.Process(Store, Storage);
                     meta.Thumbnail = t.Texture;
                 }
             }

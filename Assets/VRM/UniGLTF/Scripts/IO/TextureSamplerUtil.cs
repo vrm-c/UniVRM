@@ -23,128 +23,103 @@ namespace UniGLTF
             return new KeyValuePair<TextureWrapType, TextureWrapMode>(type, mode);
         }
 
-        public static IEnumerable<KeyValuePair<TextureWrapType, TextureWrapMode>> GetUnityWrapMode(glTFTextureSampler sampler)
+        public static IEnumerable<KeyValuePair<TextureWrapType, TextureWrapMode>> GetUnityWrapMode(VGltf.Types.Sampler sampler)
         {
 #if UNITY_2017_1_OR_NEWER
-            if (sampler.wrapS == sampler.wrapT)
+            if (sampler.WrapS == sampler.WrapT)
             {
-                switch (sampler.wrapS)
+                switch (sampler.WrapS)
                 {
-                    case glWrap.NONE: // default
-                        yield return TypeWithMode(TextureWrapType.All, TextureWrapMode.Repeat);
-                        break;
-
-                    case glWrap.CLAMP_TO_EDGE:
+                    case VGltf.Types.Sampler.WrapEnum.ClampToEdge:
                         yield return TypeWithMode(TextureWrapType.All, TextureWrapMode.Clamp);
                         break;
 
-                    case glWrap.REPEAT:
-                        yield return TypeWithMode(TextureWrapType.All, TextureWrapMode.Repeat);
-                        break;
-
-                    case glWrap.MIRRORED_REPEAT:
+                    case VGltf.Types.Sampler.WrapEnum.MirroredRepeat:
                         yield return TypeWithMode(TextureWrapType.All, TextureWrapMode.Mirror);
                         break;
 
+                    case VGltf.Types.Sampler.WrapEnum.Repeat:
                     default:
-                        throw new NotImplementedException();
+                        yield return TypeWithMode(TextureWrapType.All, TextureWrapMode.Repeat);
+                        break;
                 }
             }
             else
             {
-                switch (sampler.wrapS)
+                switch (sampler.WrapS)
                 {
-                    case glWrap.NONE: // default
-                        yield return TypeWithMode(TextureWrapType.U, TextureWrapMode.Repeat);
-                        break;
-
-                    case glWrap.CLAMP_TO_EDGE:
+                    case VGltf.Types.Sampler.WrapEnum.ClampToEdge:
                         yield return TypeWithMode(TextureWrapType.U, TextureWrapMode.Clamp);
                         break;
 
-                    case glWrap.REPEAT:
-                        yield return TypeWithMode(TextureWrapType.U, TextureWrapMode.Repeat);
-                        break;
-
-                    case glWrap.MIRRORED_REPEAT:
+                    case VGltf.Types.Sampler.WrapEnum.MirroredRepeat:
                         yield return TypeWithMode(TextureWrapType.U, TextureWrapMode.Mirror);
                         break;
 
+                    case VGltf.Types.Sampler.WrapEnum.Repeat:
                     default:
-                        throw new NotImplementedException();
-                }
-                switch (sampler.wrapT)
-                {
-                    case glWrap.NONE: // default
-                        yield return TypeWithMode(TextureWrapType.V, TextureWrapMode.Repeat);
+                        yield return TypeWithMode(TextureWrapType.U, TextureWrapMode.Repeat);
                         break;
-
-                    case glWrap.CLAMP_TO_EDGE:
+                }
+                switch (sampler.WrapT)
+                {
+                    case VGltf.Types.Sampler.WrapEnum.ClampToEdge:
                         yield return TypeWithMode(TextureWrapType.V, TextureWrapMode.Clamp);
                         break;
 
-                    case glWrap.REPEAT:
-                        yield return TypeWithMode(TextureWrapType.V, TextureWrapMode.Repeat);
-                        break;
-
-                    case glWrap.MIRRORED_REPEAT:
+                    case VGltf.Types.Sampler.WrapEnum.MirroredRepeat:
                         yield return TypeWithMode(TextureWrapType.V, TextureWrapMode.Mirror);
                         break;
 
+                    case VGltf.Types.Sampler.WrapEnum.Repeat:
                     default:
-                        throw new NotImplementedException();
+                        yield return TypeWithMode(TextureWrapType.V, TextureWrapMode.Repeat);
+                        break;
                 }
 #else
             // Unity2017.1より前
             // * wrapSとwrapTの区別が無くてwrapしかない
             // * Mirrorが無い
 
-            switch (sampler.wrapS)
+            switch (sampler.WrapS)
             {
-                case glWrap.NONE: // default
-                    yield return TypeWithMode(TextureWrapType.All, TextureWrapMode.Repeat);
-                    break;
-
-                case glWrap.CLAMP_TO_EDGE:
-                case glWrap.MIRRORED_REPEAT:
+                case VGltf.Types.Sampler.WrapEnum.ClampToEdge:
+                case VGltf.Types.Sampler.WrapEnum.MirroredRepeat:
                     yield return TypeWithMode(TextureWrapType.All, TextureWrapMode.Clamp);
                     break;
 
-                case glWrap.REPEAT:
+                case VGltf.Types.Sampler.WrapEnum.Repeat:
+                default:
                     yield return TypeWithMode(TextureWrapType.All, TextureWrapMode.Repeat);
                     break;
-
-                default:
-                    throw new NotImplementedException();
 #endif
             }
         }
         #endregion
 
-        public static FilterMode ImportFilterMode(glFilter filterMode)
+        public static FilterMode ImportFilterMode(VGltf.Types.Sampler.MinFilterEnum filterMode)
         {
             switch (filterMode)
             {
-                case glFilter.NEAREST:
-                case glFilter.NEAREST_MIPMAP_LINEAR:
-                case glFilter.NEAREST_MIPMAP_NEAREST:
+                case VGltf.Types.Sampler.MinFilterEnum.NEAREST:
+                case VGltf.Types.Sampler.MinFilterEnum.NEAREST_MIPMAP_NEAREST:
+                case VGltf.Types.Sampler.MinFilterEnum.NEAREST_MIPMAP_LINEAR:
                     return FilterMode.Point;
 
-                case glFilter.NONE:
-                case glFilter.LINEAR:
-                case glFilter.LINEAR_MIPMAP_NEAREST:
+
+                case VGltf.Types.Sampler.MinFilterEnum.LINEAR:
+                case VGltf.Types.Sampler.MinFilterEnum.LINEAR_MIPMAP_NEAREST:
                     return FilterMode.Bilinear;
 
-                case glFilter.LINEAR_MIPMAP_LINEAR:
+                case VGltf.Types.Sampler.MinFilterEnum.LINEAR_MIPMAP_LINEAR:
                     return FilterMode.Trilinear;
 
                 default:
                     throw new NotImplementedException();
-
             }
         }
 
-        public static void SetSampler(Texture2D texture, glTFTextureSampler sampler)
+        public static void SetSampler(Texture2D texture, VGltf.Types.Sampler sampler)
         {
             if (texture == null)
             {
@@ -178,7 +153,7 @@ namespace UniGLTF
                 }
             }
 
-            texture.filterMode = ImportFilterMode(sampler.minFilter);
+            texture.filterMode = ImportFilterMode(sampler.MinFilter);
         }
 
         #region Export
