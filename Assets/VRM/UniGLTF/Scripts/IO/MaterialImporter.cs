@@ -240,7 +240,7 @@ namespace UniGLTF
                     material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
                     material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
                     material.SetInt("_ZWrite", 1);
-                    material.SetFloat("_Cutoff ", x.alphaCutoff);
+                    material.SetFloat("_Cutoff", x.alphaCutoff);
                     material.EnableKeyword("_ALPHATEST_ON");
                     material.DisableKeyword("_ALPHABLEND_ON");
                     material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
