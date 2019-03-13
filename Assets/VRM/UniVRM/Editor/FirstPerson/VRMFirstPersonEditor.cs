@@ -27,8 +27,9 @@ namespace VRM
             if (EditorGUI.EndChangeCheck())
             {
                 Undo.RecordObject(component, "Changed FirstPerson");
+
+                component.FirstPersonOffset = head.worldToLocalMatrix.MultiplyPoint(worldOffset);
             }
-            component.FirstPersonOffset = head.worldToLocalMatrix.MultiplyPoint(worldOffset);
         }
     }
 }
