@@ -38,7 +38,7 @@ namespace UniGLTF
         }
 
         /// StandardShader vaiables
-        /// 
+        ///
         /// _Color
         /// _MainTex
         /// _Cutoff
@@ -166,7 +166,7 @@ namespace UniGLTF
                         var prop = "_MetallicGlossMap";
                         material.SetTexture(prop, texture.ConvertTexture(prop));
                     }
-                    
+
                     material.SetFloat("_Metallic", 1.0f);
                     material.SetFloat("_GlossMapScale", 1.0f - x.pbrMetallicRoughness.roughnessFactor);
                 }
@@ -243,11 +243,12 @@ namespace UniGLTF
                     material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
                     material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
                     material.SetInt("_ZWrite", 1);
+                    material.SetFloat("_Cutoff", x.alphaCutoff);
                     material.EnableKeyword("_ALPHATEST_ON");
                     material.DisableKeyword("_ALPHABLEND_ON");
                     material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
                     material.renderQueue = 2450;
-                        
+
                     break;
 
                 default: // OPAQUE
