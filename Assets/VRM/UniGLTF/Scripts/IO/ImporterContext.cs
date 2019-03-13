@@ -189,7 +189,7 @@ namespace UniGLTF
         /// <summary>
         /// URI access
         /// </summary>
-        public IStorage Storage;
+        //public IStorage Storage;
         #endregion
 
         // 1. Parse
@@ -250,42 +250,50 @@ namespace UniGLTF
             }
         }
 
+        [Obsolete]
         public void ParseJson(string json, IStorage storage)
         {
-            Json = json;
-
-            // parepare byte buffer
-            //GLTF.baseDir = System.IO.Path.GetDirectoryName(Path);
-
             var bytes = Encoding.UTF8.GetBytes(json);
-            using(var s = new MemoryStream(bytes))
-            {
-                var c = VGltf.GltfContainer.FromGltf(s);
-                SetupGltf(c, storage);
-            }
-        }
-
-        public void ParseAsGltf(string path, Stream ss)
-        {
-            // TODO: Remove Json string loader
-            var bytes = new byte[ss.Length];
-            ss.Read(bytes, 0, bytes.Length);
-
-            Json = Encoding.UTF8.GetString(bytes);
-            using(var s = new MemoryStream(bytes))
-            {
-                var c = VGltf.GltfContainer.FromGltf(s);
-                SetupGltf(c, new FileSystemStorage(Path.GetDirectoryName(path)));
-            }
+            ParseAsGltf(bytes, new VGltf.ResourceLoaderFromEmbedOnly()); // Ignore storage...
         }
 
         /// <summary>
         ///
         /// </summary>
         /// <param name="bytes"></param>
+        [Obsolete]
         public void ParseGlb(Byte[] bytes)
         {
             ParseAsGlb(bytes);
+        }
+
+        public void ParseAsGltf(string path, Stream s)
+        {
+            var loader = new VGltf.ResourceLoaderFromFileStorage(Path.GetDirectoryName(path));
+            ParseAsGltf(s, loader);
+        }
+
+        public void ParseAsGltf(byte[] bytes, VGltf.IResourceLoader loader)
+        {
+            using(var s = new MemoryStream(bytes))
+            {
+                ParseAsGltf(s, loader);
+            }
+        }
+
+        public void ParseAsGltf(Stream ss, VGltf.IResourceLoader loader)
+        {
+            // TODO: Remove Json string loader
+            var bytes = new byte[ss.Length];
+            ss.Read(bytes, 0, bytes.Length);
+
+            Json = Encoding.UTF8.GetString(bytes);
+
+            using(var s = new MemoryStream(bytes))
+            {
+                var c = VGltf.GltfContainer.FromGltf(s);
+                SetupGltf(c, loader);
+            }
         }
 
         public void ParseAsGlb(Byte[] bytes)
@@ -325,14 +333,13 @@ namespace UniGLTF
             using(var s = new MemoryStream(bytes))
             {
                 var c = VGltf.GltfContainer.FromGlb(s);
-                SetupGltf(c, new SimpleStorage(chunks[1].Bytes));
+                SetupGltf(c, new VGltf.ResourceLoaderFromEmbedOnly());
             }
         }
 
         public bool UseUniJSONParser;
 
-        public virtual void SetupGltf(VGltf.GltfContainer c, IStorage storage)
-
+        public virtual void SetupGltf(VGltf.GltfContainer c, VGltf.IResourceLoader loader)
         {
             var schema = VJson.Schema.JsonSchemaAttribute.CreateFromClass<VGltf.Types.Gltf>();
             var ex = VJson.Schema.JsonSchemaExtensions.Validate(schema, c.Gltf);
@@ -341,7 +348,7 @@ namespace UniGLTF
                 Debug.LogWarning("Maybe this model data contains an invalid glTF2.0 format: " + ex);
             }
 
-            Storage = storage;
+//            Storage = storage;
 
             // Use new Json deserializer (TODO: fix performance)
             if (c.Gltf.Asset.Version != "2.0")
@@ -349,7 +356,7 @@ namespace UniGLTF
                 throw new UniGLTFException("unknown gltf version {0}", GLTF2.Asset.Version);
             }
 
-            Store = new VGltf.ResourcesStore(c.Gltf, c.Buffer, new VGltf.ResourceLoaderFromStorage());
+            Store = new VGltf.ResourcesStore(c.Gltf, c.Buffer, loader);
             GLTF2 = c.Gltf;
 
             // Compatibility
@@ -630,7 +637,7 @@ namespace UniGLTF
             {
                 foreach (var x in GetTextures())
                 {
-                    x.ProcessOnAnyThread(Store, Storage);
+                    x.ProcessOnAnyThread(Store);
                     yield return null;
                 }
             }
@@ -970,7 +977,7 @@ namespace UniGLTF
 
                 if (!string.IsNullOrEmpty(image.Uri))
                 {
-                    var src = Storage.GetPath(image.Uri);
+                    var src = Store.Loader.FullPathOf(image.Uri);
                     if (UnityPath.FromFullpath(src).IsUnderAssetsFolder)
                     {
                         // asset is exists.

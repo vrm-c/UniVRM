@@ -19,7 +19,7 @@ namespace UniGLTF
         /// </summary>
         /// <param name="gltf"></param>
         /// <param name="storage"></param>
-        void ProcessOnAnyThread(VGltf.ResourcesStore store, IStorage storage);
+        void ProcessOnAnyThread(VGltf.ResourcesStore store);
 
         /// <summary>
         /// Call from unity main thread
@@ -49,7 +49,7 @@ namespace UniGLTF
         {
         }
 
-        public void ProcessOnAnyThread(VGltf.ResourcesStore store, IStorage storage)
+        public void ProcessOnAnyThread(VGltf.ResourcesStore store)
         {
         }
 
@@ -117,7 +117,7 @@ namespace UniGLTF
 
         Byte[] m_imageBytes;
         string m_textureName;
-        public void ProcessOnAnyThread(VGltf.ResourcesStore store, IStorage storage)
+        public void ProcessOnAnyThread(VGltf.ResourcesStore store)
         {
             var texture = store.Gltf.Textures[m_textureIndex];
             var imageIndex = texture.Source.Value;
@@ -172,7 +172,7 @@ namespace UniGLTF
 
         ArraySegment<Byte> m_segments;
         string m_textureName;
-        public void ProcessOnAnyThread(VGltf.ResourcesStore store, IStorage storage)
+        public void ProcessOnAnyThread(VGltf.ResourcesStore store)
         {
             var texture = store.Gltf.Textures[m_textureIndex];
             var imageIndex = texture.Source.Value;

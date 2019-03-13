@@ -138,21 +138,21 @@ namespace UniGLTF
         #region Process
         ITextureLoader m_textureLoader;
 
-        public void Process(VGltf.ResourcesStore store, IStorage storage)
+        public void Process(VGltf.ResourcesStore store)
         {
-            ProcessOnAnyThread(store, storage);
+            ProcessOnAnyThread(store);
             ProcessOnMainThreadCoroutine(store).CoroutinetoEnd();
         }
 
-        public IEnumerator ProcessCoroutine(VGltf.ResourcesStore store, IStorage storage)
+        public IEnumerator ProcessCoroutine(VGltf.ResourcesStore store)
         {
-            ProcessOnAnyThread(store, storage);
+            ProcessOnAnyThread(store);
             yield return ProcessOnMainThreadCoroutine(store);
         }
 
-        public void ProcessOnAnyThread(VGltf.ResourcesStore store, IStorage storage)
+        public void ProcessOnAnyThread(VGltf.ResourcesStore store)
         {
-            m_textureLoader.ProcessOnAnyThread(store, storage);
+            m_textureLoader.ProcessOnAnyThread(store);
         }
 
         public IEnumerator ProcessOnMainThreadCoroutine(VGltf.ResourcesStore store)

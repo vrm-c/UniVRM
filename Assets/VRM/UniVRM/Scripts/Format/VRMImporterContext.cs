@@ -300,7 +300,7 @@ namespace VRM
                 if (gltfMeta.texture >= 0 && gltfMeta.texture < GLTF.textures.Count)
                 {
                     var t = new TextureItem(gltfMeta.texture);
-                    t.Process(Store, Storage);
+                    t.Process(Store);
                     meta.Thumbnail = t.Texture;
                 }
             }
