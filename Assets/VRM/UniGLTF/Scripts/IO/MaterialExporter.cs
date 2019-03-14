@@ -86,7 +86,8 @@ namespace UniGLTF
                 // Set 1.0f as hard-coded. See: https://github.com/dwango/UniVRM/issues/212.
                 material.pbrMetallicRoughness.roughnessFactor = 1.0f;
             }
-            else {
+            else
+            {
                 if (m.HasProperty("_Metallic"))
                 {
                     material.pbrMetallicRoughness.metallicFactor = m.GetFloat("_Metallic");
@@ -97,8 +98,6 @@ namespace UniGLTF
                     material.pbrMetallicRoughness.roughnessFactor = 1.0f - m.GetFloat("_Glossiness");
                 }
             }
-
-
         }
 
         static void Export_Normal(Material m, TextureExportManager textureManager, glTFMaterial material)
