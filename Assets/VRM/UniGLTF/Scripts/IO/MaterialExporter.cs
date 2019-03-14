@@ -61,33 +61,44 @@ namespace UniGLTF
             int index = -1;
             if (m.HasProperty("_MetallicGlossMap"))
             {
-                index = textureManager.ConvertAndGetIndex(m.GetTexture("_MetallicGlossMap"), new MetallicRoughnessConverter());
+                float smoothness = 0.0f;
+                if (m.HasProperty("_GlossMapScale"))
+                {
+                    smoothness = m.GetFloat("_GlossMapScale");
+                }
+
+                // Bake smoothness values into a texture.
+                var converter = new MetallicRoughnessConverter(smoothness);
+                index = textureManager.ConvertAndGetIndex(m.GetTexture("_MetallicGlossMap"), converter);
                 if (index != -1)
                 {
-                    material.pbrMetallicRoughness.metallicRoughnessTexture = new glTFMaterialMetallicRoughnessTextureInfo()
-                    {
-                        index = index,
-                    };
+                    material.pbrMetallicRoughness.metallicRoughnessTexture =
+                        new glTFMaterialMetallicRoughnessTextureInfo()
+                        {
+                            index = index,
+                        };
                 }
             }
 
-            if (index != -1 && m.HasProperty("_GlossMapScale"))
+            if (index != -1)
             {
                 material.pbrMetallicRoughness.metallicFactor = 1.0f;
-                material.pbrMetallicRoughness.roughnessFactor = 1.0f - m.GetFloat("_GlossMapScale");
+                // Set 1.0f as hard-coded. See: https://github.com/dwango/UniVRM/issues/212.
+                material.pbrMetallicRoughness.roughnessFactor = 1.0f;
             }
-            else
-            {
+            else {
                 if (m.HasProperty("_Metallic"))
                 {
                     material.pbrMetallicRoughness.metallicFactor = m.GetFloat("_Metallic");
                 }
+
                 if (m.HasProperty("_Glossiness"))
                 {
                     material.pbrMetallicRoughness.roughnessFactor = 1.0f - m.GetFloat("_Glossiness");
                 }
-
             }
+
+
         }
 
         static void Export_Normal(Material m, TextureExportManager textureManager, glTFMaterial material)

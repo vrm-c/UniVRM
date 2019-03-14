@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using UnityEngine;
 #if UNITY_EDITOR
@@ -50,6 +51,13 @@ namespace UniGLTF
     {
         private const string m_extension = ".metallicRoughness";
 
+        private float _smoothness;
+
+        public MetallicRoughnessConverter(float smoothness)
+        {
+            _smoothness = smoothness;
+        }
+
         public Texture2D GetImportTexture(Texture2D texture)
         {
             var converted = TextureConverter.Convert(texture, glTFTextureTypes.Metallic, Import, null);
@@ -66,21 +74,29 @@ namespace UniGLTF
 
         public Color32 Import(Color32 src)
         {
+            // Roughness(glTF): dst.g -> Smoothness(Unity): src.a (with conversion)
+            // Metallic(glTF) : dst.b -> Metallic(Unity)  : src.r
             return new Color32
             {
                 r = src.b,
                 g = 0,
                 b = 0,
-                a = (byte)(255 - src.g),
+                // Bake roughness values into a texture.
+                // See: https://github.com/dwango/UniVRM/issues/212.
+                a = (byte)(255 - Math.Min(src.g * (1.0f - _smoothness), 255)),
             };
         }
 
         public Color32 Export(Color32 src)
         {
+            // Smoothness(Unity): src.a -> Roughness(glTF): dst.g (with conversion)
+            // Metallic(Unity)  : src.r -> Metallic(glTF) : dst.b
             return new Color32
             {
                 r = 0,
-                g = (byte)(255 - src.a),
+                // Bake smoothness values into a texture.
+                // See: https://github.com/dwango/UniVRM/issues/212.
+                g = (byte)(255 - Math.Min(src.a * _smoothness, 255)),
                 b = src.r,
                 a = 255,
             };

@@ -164,11 +164,14 @@ namespace UniGLTF
                     if (texture != null)
                     {
                         var prop = "_MetallicGlossMap";
-                        material.SetTexture(prop, texture.ConvertTexture(prop));
+                        var smoothness = 1.0f - x.pbrMetallicRoughness.roughnessFactor;
+                        // Bake smoothness values into a texture.
+                        material.SetTexture(prop, texture.ConvertTexture(prop, smoothness));
                     }
 
                     material.SetFloat("_Metallic", 1.0f);
-                    material.SetFloat("_GlossMapScale", 1.0f - x.pbrMetallicRoughness.roughnessFactor);
+                    // Set 1.0f as hard-coded. See: https://github.com/dwango/UniVRM/issues/212.
+                    material.SetFloat("_GlossMapScale", 1.0f);
                 }
                 else
                 {
