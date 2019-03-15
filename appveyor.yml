@@ -9,10 +9,10 @@ environment:
   unity_serial:
     secure: cqmfJplindf90Uy/n53b58LNn5LVSxicPEXuFFBnnns=
   matrix:
-  - unity_version: 5.6.5f1
+  - unity_version: 5.6.7f1
     export_unitypackage: true
-  - unity_version: 2017.4.20f1
-  - unity_version: 2018.2.20f1
+  - unity_version: 2017.4.23f1
+  - unity_version: 2018.3.8f1
 
 init:
   - ps: |
