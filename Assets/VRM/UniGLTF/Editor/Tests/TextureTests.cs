@@ -43,7 +43,7 @@ namespace UniGLTF
                 Assert.That(
                     conv.Export(new Color32(255, 255, 255, 255)),
                     // r <- 0   : (Unused)
-                    // g <- 0   : ((1 - s.a(as float) * smoothness) ^ 2)(as int8)
+                    // g <- 0   : ((1 - src.a(as float) * smoothness) ^ 2)(as uint8)
                     // b <- 255 : Same metallic (src.r)
                     // a <- 255 : (Unused)
                     Is.EqualTo(new Color32(0, 0, 255, 255)));
@@ -55,7 +55,7 @@ namespace UniGLTF
                 Assert.That(
                     conv.Export(new Color32(255, 255, 255, 255)),
                     // r <- 0   : (Unused)
-                    // g <- 63  : ((1 - s.a(as float) * smoothness) ^ 2)(as int8)
+                    // g <- 63  : ((1 - src.a(as float) * smoothness) ^ 2)(as uint8)
                     // b <- 255 : Same metallic (src.r)
                     // a <- 255 : (Unused)
                     Is.EqualTo(new Color32(0, 63, 255, 255)));
@@ -67,7 +67,7 @@ namespace UniGLTF
                 Assert.That(
                     conv.Export(new Color32(255, 255, 255, 255)),
                     // r <- 0   : (Unused)
-                    // g <- 255 : ((1 - s.a(as float) * smoothness) ^ 2)(as int8)
+                    // g <- 255 : ((1 - src.a(as float) * smoothness) ^ 2)(as uint8)
                     // b <- 255 : Same metallic (src.r)
                     // a <- 255 : (Unused)
                     Is.EqualTo(new Color32(0, 255, 255, 255)));
@@ -85,7 +85,7 @@ namespace UniGLTF
                     // r <- 255 : Same metallic (src.r)
                     // g <- 0   : (Unused)
                     // b <- 0   : (Unused)
-                    // a <- 255 : ((1 - sqrt(s.g(as float) * roughnessFactor)))(as int8)
+                    // a <- 0   : ((1 - sqrt(src.g(as float) * roughnessFactor)))(as uint8)
                     Is.EqualTo(new Color32(255, 0, 0, 0)));
             }
 
@@ -97,7 +97,7 @@ namespace UniGLTF
                     // r <- 255 : Same metallic (src.r)
                     // g <- 0   : (Unused)
                     // b <- 0   : (Unused)
-                    // a <- 255 : ((1 - sqrt(s.g(as float) * roughnessFactor)))(as int8)
+                    // a <- 128 : ((1 - sqrt(src.g(as float) * roughnessFactor)))(as uint8)
                     Is.EqualTo(new Color32(255, 0, 0, 128))); // smoothness 0.5 * src.a 1.0
             }
 
@@ -109,7 +109,7 @@ namespace UniGLTF
                     // r <- 255 : Same metallic (src.r)
                     // g <- 0   : (Unused)
                     // b <- 0   : (Unused)
-                    // a <- 255 : ((1 - sqrt(s.g(as float) * roughnessFactor)))(as int8)
+                    // a <- 74 : ((1 - sqrt(src.g(as float) * roughnessFactor)))(as uint8)
                     Is.EqualTo(new Color32(255, 0, 0, 74)));
             }
 
@@ -121,7 +121,7 @@ namespace UniGLTF
                     // r <- 255 : Same metallic (src.r)
                     // g <- 0   : (Unused)
                     // b <- 0   : (Unused)
-                    // a <- 255 : ((1 - sqrt(s.g(as float) * roughnessFactor)))(as int8)
+                    // a <- 255 : ((1 - sqrt(src.g(as float) * roughnessFactor)))(as uint8)
                     Is.EqualTo(new Color32(255, 0, 0, 255)));
             }
         }
