@@ -47,7 +47,7 @@ namespace UniGLTF
         }
     }
 
-    class MetallicRoughnessConverter : ITextureConverter
+    public class MetallicRoughnessConverter : ITextureConverter
     {
         private const string m_extension = ".metallicRoughness";
 
@@ -77,7 +77,7 @@ namespace UniGLTF
             // Roughness(glTF): dst.g -> Smoothness(Unity): src.a (with conversion)
             // Metallic(glTF) : dst.b -> Metallic(Unity)  : src.r
 
-            var pixelRoughnessFactor = src.g * _smoothnessOrRoughness; // roughness
+            var pixelRoughnessFactor = (src.g * _smoothnessOrRoughness) / 255.0f; // roughness
             var pixelSmoothness = 1.0f - Mathf.Sqrt(pixelRoughnessFactor);
 
             return new Color32
@@ -96,9 +96,10 @@ namespace UniGLTF
             // Smoothness(Unity): src.a -> Roughness(glTF): dst.g (with conversion)
             // Metallic(Unity)  : src.r -> Metallic(glTF) : dst.b
 
-            var pixelSmoothness = src.a * _smoothnessOrRoughness; // smoothness
+            var pixelSmoothness = (src.a * _smoothnessOrRoughness) / 255.0f; // smoothness
             // https://blogs.unity3d.com/jp/2016/01/25/ggx-in-unity-5-3/
-            var pixelRoughnessFactor = (1.0f - pixelSmoothness) * (1.0f - pixelSmoothness);
+            var pixelRoughnessFactorSqrt = (1.0f - pixelSmoothness);
+            var pixelRoughnessFactor = pixelRoughnessFactorSqrt * pixelRoughnessFactorSqrt;
 
             return new Color32
             {
@@ -112,7 +113,7 @@ namespace UniGLTF
         }
     }
 
-    class NormalConverter : ITextureConverter
+    public class NormalConverter : ITextureConverter
     {
         private const string m_extension = ".normal";
 
@@ -157,7 +158,7 @@ namespace UniGLTF
         }
     }
 
-    class OcclusionConverter : ITextureConverter
+    public class OcclusionConverter : ITextureConverter
     {
         private const string m_extension = ".occlusion";
 
