@@ -30,7 +30,13 @@ namespace UniGLTF
             get { return m_converts; }
         }
 
-        public Texture2D ConvertTexture(string prop)
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="prop"></param>
+        /// <param name="smoothness">used only when converting MetallicRoughness maps</param>
+        /// <returns></returns>
+        public Texture2D ConvertTexture(string prop, float smoothnessOrRoughness = 1.0f)
         {
             var convertedTexture = Converts.FirstOrDefault(x => x.Key == prop);
             if (convertedTexture.Value != null)
@@ -63,7 +69,7 @@ namespace UniGLTF
 
             if (prop == "_MetallicGlossMap")
             {
-                var converted = new MetallicRoughnessConverter().GetImportTexture(Texture);
+                var converted = new MetallicRoughnessConverter(smoothnessOrRoughness).GetImportTexture(Texture);
                 m_converts.Add(prop, converted);
                 return converted;
             }
