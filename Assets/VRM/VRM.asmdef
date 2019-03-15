@@ -6,7 +6,9 @@
         "UniUnlit",
         "UniHumanoid",
         "UniJSON",
-        "ShaderProperty.Runtime"
+        "ShaderProperty.Runtime",
+        "VJson",
+        "VGltf"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],
