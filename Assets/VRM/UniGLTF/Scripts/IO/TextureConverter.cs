@@ -51,11 +51,11 @@ namespace UniGLTF
     {
         private const string m_extension = ".metallicRoughness";
 
-        private float _smoothness;
+        private float _smoothnessOrRoughness;
 
-        public MetallicRoughnessConverter(float smoothness)
+        public MetallicRoughnessConverter(float smoothnessOrRoughness)
         {
-            _smoothness = smoothness;
+            _smoothnessOrRoughness = smoothnessOrRoughness;
         }
 
         public Texture2D GetImportTexture(Texture2D texture)
@@ -76,6 +76,10 @@ namespace UniGLTF
         {
             // Roughness(glTF): dst.g -> Smoothness(Unity): src.a (with conversion)
             // Metallic(glTF) : dst.b -> Metallic(Unity)  : src.r
+
+            var pixelRoughnessFactor = src.g * _smoothnessOrRoughness; // roughness
+            var pixelSmoothness = 1.0f - Mathf.Sqrt(pixelRoughnessFactor);
+
             return new Color32
             {
                 r = src.b,
@@ -83,7 +87,7 @@ namespace UniGLTF
                 b = 0,
                 // Bake roughness values into a texture.
                 // See: https://github.com/dwango/UniVRM/issues/212.
-                a = (byte)(255 - Math.Min(src.g * (1.0f - _smoothness), 255)),
+                a = (byte)Mathf.Clamp(pixelSmoothness * 255, 0, 255),
             };
         }
 
@@ -91,12 +95,17 @@ namespace UniGLTF
         {
             // Smoothness(Unity): src.a -> Roughness(glTF): dst.g (with conversion)
             // Metallic(Unity)  : src.r -> Metallic(glTF) : dst.b
+
+            var pixelSmoothness = src.a * _smoothnessOrRoughness; // smoothness
+            // https://blogs.unity3d.com/jp/2016/01/25/ggx-in-unity-5-3/
+            var pixelRoughnessFactor = (1.0f - pixelSmoothness) * (1.0f - pixelSmoothness);
+
             return new Color32
             {
                 r = 0,
                 // Bake smoothness values into a texture.
                 // See: https://github.com/dwango/UniVRM/issues/212.
-                g = (byte)(255 - Math.Min(src.a * _smoothness, 255)),
+                g = (byte)Mathf.Clamp(pixelRoughnessFactor * 255, 0, 255),
                 b = src.r,
                 a = 255,
             };

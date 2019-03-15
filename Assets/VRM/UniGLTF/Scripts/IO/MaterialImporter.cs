@@ -164,9 +164,8 @@ namespace UniGLTF
                     if (texture != null)
                     {
                         var prop = "_MetallicGlossMap";
-                        var smoothness = 1.0f - x.pbrMetallicRoughness.roughnessFactor;
-                        // Bake smoothness values into a texture.
-                        material.SetTexture(prop, texture.ConvertTexture(prop, smoothness));
+                        // Bake roughnessFactor values into a texture.
+                        material.SetTexture(prop, texture.ConvertTexture(prop, x.pbrMetallicRoughness.roughnessFactor));
                     }
 
                     material.SetFloat("_Metallic", 1.0f);
