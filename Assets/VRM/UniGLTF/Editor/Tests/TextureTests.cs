@@ -31,4 +31,99 @@ namespace UniGLTF
             Assert.AreEqual(glFilter.LINEAR_MIPMAP_LINEAR, sampler.magFilter);
         }
     }
+
+    public class MetallicRoughnessConverterTests
+    {
+        [Test]
+        public void ExportingColorTest()
+        {
+            {
+                var smoothness = 1.0f;
+                var conv = new MetallicRoughnessConverter(smoothness);
+                Assert.That(
+                    conv.Export(new Color32(255, 255, 255, 255)),
+                    // r <- 0   : (Unused)
+                    // g <- 0   : ((1 - s.a(as float) * smoothness) ^ 2)(as int8)
+                    // b <- 255 : Same metallic (src.r)
+                    // a <- 255 : (Unused)
+                    Is.EqualTo(new Color32(0, 0, 255, 255)));
+            }
+
+            {
+                var smoothness = 0.5f;
+                var conv = new MetallicRoughnessConverter(smoothness);
+                Assert.That(
+                    conv.Export(new Color32(255, 255, 255, 255)),
+                    // r <- 0   : (Unused)
+                    // g <- 63  : ((1 - s.a(as float) * smoothness) ^ 2)(as int8)
+                    // b <- 255 : Same metallic (src.r)
+                    // a <- 255 : (Unused)
+                    Is.EqualTo(new Color32(0, 63, 255, 255)));
+            }
+
+            {
+                var smoothness = 0.0f;
+                var conv = new MetallicRoughnessConverter(smoothness);
+                Assert.That(
+                    conv.Export(new Color32(255, 255, 255, 255)),
+                    // r <- 0   : (Unused)
+                    // g <- 255 : ((1 - s.a(as float) * smoothness) ^ 2)(as int8)
+                    // b <- 255 : Same metallic (src.r)
+                    // a <- 255 : (Unused)
+                    Is.EqualTo(new Color32(0, 255, 255, 255)));
+            }
+        }
+
+        [Test]
+        public void ImportingColorTest()
+        {
+            {
+                var roughnessFactor = 1.0f;
+                var conv = new MetallicRoughnessConverter(roughnessFactor);
+                Assert.That(
+                    conv.Import(new Color32(255, 255, 255, 255)),
+                    // r <- 255 : Same metallic (src.r)
+                    // g <- 0   : (Unused)
+                    // b <- 0   : (Unused)
+                    // a <- 255 : ((1 - sqrt(s.g(as float) * roughnessFactor)))(as int8)
+                    Is.EqualTo(new Color32(255, 0, 0, 0)));
+            }
+
+            {
+                var roughnessFactor = 1.0f;
+                var conv = new MetallicRoughnessConverter(roughnessFactor);
+                Assert.That(
+                    conv.Import(new Color32(255, 63, 255, 255)),
+                    // r <- 255 : Same metallic (src.r)
+                    // g <- 0   : (Unused)
+                    // b <- 0   : (Unused)
+                    // a <- 255 : ((1 - sqrt(s.g(as float) * roughnessFactor)))(as int8)
+                    Is.EqualTo(new Color32(255, 0, 0, 128))); // smoothness 0.5 * src.a 1.0
+            }
+
+            {
+                var roughnessFactor = 0.5f;
+                var conv = new MetallicRoughnessConverter(roughnessFactor);
+                Assert.That(
+                    conv.Import(new Color32(255, 255, 255, 255)),
+                    // r <- 255 : Same metallic (src.r)
+                    // g <- 0   : (Unused)
+                    // b <- 0   : (Unused)
+                    // a <- 255 : ((1 - sqrt(s.g(as float) * roughnessFactor)))(as int8)
+                    Is.EqualTo(new Color32(255, 0, 0, 74)));
+            }
+
+            {
+                var roughnessFactor = 0.0f;
+                var conv = new MetallicRoughnessConverter(roughnessFactor);
+                Assert.That(
+                    conv.Import(new Color32(255, 255, 255, 255)),
+                    // r <- 255 : Same metallic (src.r)
+                    // g <- 0   : (Unused)
+                    // b <- 0   : (Unused)
+                    // a <- 255 : ((1 - sqrt(s.g(as float) * roughnessFactor)))(as int8)
+                    Is.EqualTo(new Color32(255, 0, 0, 255)));
+            }
+        }
+    }
 }
