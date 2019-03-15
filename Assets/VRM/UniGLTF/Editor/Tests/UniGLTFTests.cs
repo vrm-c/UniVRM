@@ -685,7 +685,9 @@ namespace UniGLTF
                 // import
                 {
                     var context = new ImporterContext();
-                    context.ParseJson(json, new SimpleStorage(new ArraySegment<byte>(new byte[1024 * 1024])));
+                    context.ParseJson(json, new VGltf.Glb.StoredBuffer {
+                            Payload = new ArraySegment<byte>(new byte[1024 * 1024]),
+                    });
                     //Debug.LogFormat("{0}", context.Json);
                     context.Load();
 
@@ -706,7 +708,9 @@ namespace UniGLTF
                     {
                         UseUniJSONParser = true
                     };
-                    context.ParseJson(json, new SimpleStorage(new ArraySegment<byte>(new byte[1024 * 1024])));
+                    context.ParseJson(json, new VGltf.Glb.StoredBuffer {
+                            Payload = new ArraySegment<byte>(new byte[1024 * 1024]),
+                    });
                     //Debug.LogFormat("{0}", context.Json);
                     context.Load();
 

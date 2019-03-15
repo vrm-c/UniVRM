@@ -253,8 +253,14 @@ namespace UniGLTF
         [Obsolete]
         public void ParseJson(string json, IStorage storage)
         {
+            ParseJson(json); // Discard storage...
+        }
+
+        [Obsolete]
+        public void ParseJson(string json, VGltf.Glb.StoredBuffer buffer = null)
+        {
             var bytes = Encoding.UTF8.GetBytes(json);
-            ParseAsGltf(bytes, new VGltf.ResourceLoaderFromEmbedOnly()); // Ignore storage...
+            ParseAsGltf(bytes, new VGltf.ResourceLoaderFromEmbedOnly(), buffer);
         }
 
         /// <summary>
@@ -267,21 +273,21 @@ namespace UniGLTF
             ParseAsGlb(bytes);
         }
 
-        public void ParseAsGltf(string path, Stream s)
+        public void ParseAsGltf(string path, Stream s, VGltf.Glb.StoredBuffer buffer = null)
         {
             var loader = new VGltf.ResourceLoaderFromFileStorage(Path.GetDirectoryName(path));
-            ParseAsGltf(s, loader);
+            ParseAsGltf(s, loader, buffer);
         }
 
-        public void ParseAsGltf(byte[] bytes, VGltf.IResourceLoader loader)
+        public void ParseAsGltf(byte[] bytes, VGltf.IResourceLoader loader, VGltf.Glb.StoredBuffer buffer = null)
         {
             using(var s = new MemoryStream(bytes))
             {
-                ParseAsGltf(s, loader);
+                ParseAsGltf(s, loader, buffer);
             }
         }
 
-        public void ParseAsGltf(Stream ss, VGltf.IResourceLoader loader)
+        public void ParseAsGltf(Stream ss, VGltf.IResourceLoader loader, VGltf.Glb.StoredBuffer buffer = null)
         {
             // TODO: Remove Json string loader
             var bytes = new byte[ss.Length];
@@ -291,7 +297,7 @@ namespace UniGLTF
 
             using(var s = new MemoryStream(bytes))
             {
-                var c = VGltf.GltfContainer.FromGltf(s);
+                var c = VGltf.GltfContainer.FromGltf(s, buffer);
                 SetupGltf(c, loader);
             }
         }
