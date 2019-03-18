@@ -28,13 +28,17 @@ namespace UniGLTF
         public int texCoord;
 
         // empty schemas
-        public object extensions;
+        public glTFTextureInfo_extensions extensions;
         public object extras;
 
         protected override void SerializeMembers(GLTFJsonFormatter f)
         {
             f.KeyValue(() => index);
             f.KeyValue(() => texCoord);
+            if (extensions != null)
+            {
+                f.KeyValue(() => extensions);
+            }
         }
 
         public abstract glTFTextureTypes TextreType { get; }
