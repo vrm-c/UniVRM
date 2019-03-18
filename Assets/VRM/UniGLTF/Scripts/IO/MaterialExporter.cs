@@ -142,6 +142,9 @@ namespace UniGLTF
 
         static void Export_Emission(Material m, TextureExportManager textureManager, glTFMaterial material)
         {
+            if (m.IsKeywordEnabled("_EMISSION") == false)
+                return;
+
             if (m.HasProperty("_EmissionColor"))
             {
                 var color = m.GetColor("_EmissionColor");
