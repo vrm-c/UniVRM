@@ -99,6 +99,7 @@ namespace UniGLTF
             get
             {
                 yield return glTF_KHR_materials_unlit.ExtensionName;
+                yield return glTF_KHR_texture_transform.ExtensionName;
             }
         }
 

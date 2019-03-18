@@ -52,6 +52,8 @@ namespace UniGLTF
                     {
                         index = index,
                     };
+
+                    Export_TextureTransform(m, material.pbrMetallicRoughness.baseColorTexture, "_MainTex");
                 }
             }
         }
@@ -77,6 +79,8 @@ namespace UniGLTF
                         {
                             index = index,
                         };
+
+                    Export_TextureTransform(m, material.pbrMetallicRoughness.metallicRoughnessTexture, "_MetallicGlossMap");
                 }
             }
 
@@ -111,6 +115,8 @@ namespace UniGLTF
                     {
                         index = index,
                     };
+
+                    Export_TextureTransform(m, material.normalTexture, "_BumpMap");
                 }
 
                 if (index != -1 && m.HasProperty("_BumpScale"))
@@ -131,6 +137,8 @@ namespace UniGLTF
                     {
                         index = index,
                     };
+
+                    Export_TextureTransform(m, material.occlusionTexture, "_OcclusionMap");
                 }
 
                 if (index != -1 && m.HasProperty("_OcclusionStrength"))
@@ -161,7 +169,24 @@ namespace UniGLTF
                     {
                         index = index,
                     };
+
+                    Export_TextureTransform(m, material.emissiveTexture, "_EmissionMap");
                 }
+            }
+        }
+
+        static void Export_TextureTransform(Material m, glTFTextureInfo textureInfo, string propertyName)
+        {
+            if( textureInfo != null && m.HasProperty(propertyName))
+            {
+                textureInfo.extensions = new glTFTextureInfo_extensions
+                {
+                    KHR_texture_transform = new glTF_KHR_texture_transform()
+                    {
+                        offset = new float[] { m.GetTextureOffset(propertyName).x, m.GetTextureOffset(propertyName).y },
+                        scale = new float[] { m.GetTextureScale(propertyName).x, m.GetTextureScale(propertyName).y },
+                    }
+                };
             }
         }
 
