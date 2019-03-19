@@ -29,12 +29,15 @@ namespace UniGLTF
             var materialExporter = new MaterialExporter();
             var gltfMaterial = materialExporter.ExportMaterial(srcMaterial, textureManager);
 
-            var shaderStore = new ShaderStore(null);
-            var materialImporter = new MaterialImporter(shaderStore, null);
-            var dstMaterial = materialImporter.CreateMaterial(0, gltfMaterial);
+            // ToDo: Add ImportTest
+            //var shaderStore = new ShaderStore(null);
+            //var materialImporter = new MaterialImporter(shaderStore, null);
+            //var dstMaterial = materialImporter.CreateMaterial(0, gltfMaterial);
 
-            Assert.AreEqual(dstMaterial.mainTextureOffset, offset);
-            Assert.AreEqual(dstMaterial.mainTextureScale, scale);
+            Assert.AreEqual(gltfMaterial.pbrMetallicRoughness.baseColorTexture.extensions.KHR_texture_transform.offset,
+                new float[] { offset.x, offset.y });
+            Assert.AreEqual(gltfMaterial.pbrMetallicRoughness.baseColorTexture.extensions.KHR_texture_transform.scale,
+                new float[] { scale.x, scale.y });
         }
 
         [Test]
