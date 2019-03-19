@@ -42,8 +42,12 @@ namespace UniGLTF
         [JsonSchema(Required = true)]
         public glTF_KHR_texture_transform KHR_texture_transform;
 
+        /// <summary>
+        /// リフレクションでシリアライズする時は使われない
+        /// </summary>
+        /// <param name="f"></param>
         [JsonSerializeMembers]
-        void SerializeMembers_unlit(GLTFJsonFormatter f)
+        void SerializeMembers_textureInfo(GLTFJsonFormatter f)
         {
             if (KHR_texture_transform != null)
             {
