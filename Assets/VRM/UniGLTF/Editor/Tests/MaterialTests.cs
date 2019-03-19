@@ -6,6 +6,37 @@ namespace UniGLTF
 {
     public class MaterialTests
     {
+
+        [Test]
+        public void TextureTransformTest()
+        {
+            var tex0 = new Texture2D(128, 128)
+            {
+                wrapMode = TextureWrapMode.Repeat,
+                filterMode = FilterMode.Bilinear,
+            };
+
+            var textureManager = new TextureExportManager(new Texture[] { tex0 });
+            var srcMaterial = new Material(Shader.Find("Standard"));
+
+            var offset = new Vector2(0.3f, 0.2f);
+            var scale = new Vector2(0.5f, 0.6f);
+
+            srcMaterial.mainTexture = tex0;
+            srcMaterial.mainTextureOffset = offset;
+            srcMaterial.mainTextureScale = scale;
+
+            var materialExporter = new MaterialExporter();
+            var gltfMaterial = materialExporter.ExportMaterial(srcMaterial, textureManager);
+
+            var shaderStore = new ShaderStore(null);
+            var materialImporter = new MaterialImporter(shaderStore, null);
+            var dstMaterial = materialImporter.CreateMaterial(0, gltfMaterial);
+
+            Assert.AreEqual(dstMaterial.mainTextureOffset, offset);
+            Assert.AreEqual(dstMaterial.mainTextureScale, scale);
+        }
+
         [Test]
         public void UnlitShaderImportTest()
         {
