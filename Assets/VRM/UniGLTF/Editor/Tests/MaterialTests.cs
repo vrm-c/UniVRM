@@ -183,6 +183,7 @@ namespace UniGLTF
         {
             var material = new Material(Shader.Find("Standard"));
             material.SetColor("_EmissionColor", new Color(0, 1, 2, 1));
+            material.EnableKeyword("_EMISSION");
             var materialExporter = new MaterialExporter();
             var textureExportManager = new TextureExportManager(new Texture[] { });
             var gltfMaterial = materialExporter.ExportMaterial(material, textureExportManager);
