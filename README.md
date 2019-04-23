@@ -6,12 +6,12 @@
 
 * [MIT License](./LICENSE.txt)
 
-## [VRM](https://dwango.github.io/vrm/)
+## [VRM](https://vrm.dev/)
 
 "VRM" is a file format for using 3d humanoid avatars (and models) in VR applications.  
 VRM is based on glTF2.0. If you comply with the MIT license, you are free to use it.  
 
-## [UniVRM](https://github.com/dwango/UniVRM)
+## [UniVRM](https://github.com/vrm-c/UniVRM)
 
 "UniVRM" is a Unity implementation of VRM. It can create, import and export VRM models.
 
@@ -19,17 +19,17 @@ VRM is based on glTF2.0. If you comply with the MIT license, you are free to use
 
 ## Download
 
-1. Go to the [releases page](https://github.com/dwango/UniVRM/releases)
+1. Go to the [releases page](https://github.com/vrm-c/UniVRM/releases)
 1. Download the latest ``UniVRM-0.xx.unitypackage``
 1. Import the downloaded package into the Unity project.
-    1. See also [UniVRM installation](https://dwango.github.io/en/vrm/univrm/univrm_install/)
+    1. See also [UniVRM installation](https://vrm.dev/en/vrm/univrm/univrm_install/)
 
 ## Script Samples
 
-* [UniVRMTest](https://github.com/dwango/UniVRMTest)
+* [UniVRMTest](https://github.com/vrm-c/UniVRMTest)
 
 ## Documents
 
-* https://dwango.github.io/vrm/
-* https://dwango.github.io/en/vrm/
-* https://github.com/dwango/UniVRM/wiki
+* https://vrm.dev/
+* https://vrm.dev/en/
+* https://github.com/vrm-c/UniVRM/wiki
