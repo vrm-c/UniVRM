@@ -22,7 +22,7 @@ VRM is based on glTF2.0. If you comply with the MIT license, you are free to use
 1. Go to the [releases page](https://github.com/vrm-c/UniVRM/releases)
 1. Download the latest ``UniVRM-0.xx.unitypackage``
 1. Import the downloaded package into the Unity project.
-    1. See also [UniVRM installation](https://vrm.dev/en/vrm/univrm/univrm_install/)
+    1. See also [UniVRM installation](https://vrm.dev/en/univrm/univrm_install/)
 
 ## Script Samples
 
