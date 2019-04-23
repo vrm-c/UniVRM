@@ -6,12 +6,12 @@
 
 * [MIT License](./LICENSE.txt)
 
-## [VRM](https://dwango.github.io/vrm/)
+## [VRM](https://vrm.dev/)
 
 「VRM」はVRアプリケーション向けの人型3Dアバター（3Dモデル）データを扱うためのファイルフォーマットです。
 glTF2.0をベースとしており、誰でも自由に利用することができます。
 
-## [UniVRM](https://github.com/dwango/UniVRM)
+## [UniVRM](https://github.com/vrm-c/UniVRM)
 
 「UniVRM」は VRM の Unity 実装で、VRMモデルの作成・インポート・エクスポートができます。  
 
@@ -19,16 +19,16 @@ glTF2.0をベースとしており、誰でも自由に利用することがで�
 
 ## Download
 
-1. 本リポジトリの[リリースページ](https://github.com/dwango/UniVRM/releases)へ移動してください。
+1. 本リポジトリの[リリースページ](https://github.com/vrm-c/UniVRM/releases)へ移動してください。
 1. 最新の``UniVRM-0.xx.unitypackage``をダウンロードしてください。
 1. ``UniVRM-0.xx.unitypackage``をUnityのプロジェクトにインポートしてください。
-    1. [UniVRMのインストール](https://dwango.github.io/vrm/univrm/univrm_install/)も参照してください。
+    1. [UniVRMのインストール](https://vrm.dev/univrm/univrm_install/)も参照してください。
     
 ## Script Samples
 
-* [UniVRMTest(テストとサンプル)](https://github.com/dwango/UniVRMTest)
+* [UniVRMTest(テストとサンプル)](https://github.com/vrm-c/UniVRMTest)
 
 ## Documents
 
-* https://dwango.github.io/vrm/
-* https://github.com/dwango/UniVRM/wiki
+* https://vrm.dev/
+* https://github.com/vrm-c/UniVRM/wiki
