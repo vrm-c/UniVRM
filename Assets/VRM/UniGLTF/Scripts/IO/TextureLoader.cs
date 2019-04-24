@@ -308,6 +308,8 @@ namespace UniGLTF
                     Texture = m_uwr.textureNonReadable;
                     Texture.name = m_textureName;
                 }
+#else
+                Debug.LogError("Unsupported Unity version");
 #endif
             }
         }
