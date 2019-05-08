@@ -293,16 +293,21 @@ namespace UniGLTF
             if (textureInfo.extensions != null && textureInfo.extensions.KHR_texture_transform != null)
             {
                 var textureTransform = textureInfo.extensions.KHR_texture_transform;
+                Vector2 offset = new Vector2(0, 0);
+                Vector2 scale = new Vector2(1, 1);
                 if (textureTransform.offset != null && textureTransform.offset.Length == 2)
                 {
-                    material.SetTextureOffset(propertyName,
-                        new Vector2(textureTransform.offset[0], textureTransform.offset[1]));
+                    offset = new Vector2(textureTransform.offset[0], textureTransform.offset[1]);
                 }
                 if (textureTransform.scale != null && textureTransform.scale.Length == 2)
                 {
-                    material.SetTextureScale(propertyName,
-                        new Vector2(textureTransform.scale[0], textureTransform.scale[1]));
+                    scale = new Vector2(textureTransform.scale[0], textureTransform.scale[1]);
                 }
+
+                offset.y = (offset.y + scale.y - 1.0f) * -1.0f;
+
+                material.SetTextureOffset(propertyName, offset);
+                material.SetTextureScale(propertyName, scale);
             }
         }
     }

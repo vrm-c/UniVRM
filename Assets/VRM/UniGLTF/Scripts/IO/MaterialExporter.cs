@@ -182,12 +182,16 @@ namespace UniGLTF
         {
             if( textureInfo != null && m.HasProperty(propertyName))
             {
+                var offset = m.GetTextureOffset(propertyName);
+                var scale = m.GetTextureScale(propertyName);
+                offset.y = (offset.y + scale.y - 1) * -1.0f;
+
                 textureInfo.extensions = new glTFTextureInfo_extensions
                 {
                     KHR_texture_transform = new glTF_KHR_texture_transform()
                     {
-                        offset = new float[] { m.GetTextureOffset(propertyName).x, m.GetTextureOffset(propertyName).y },
-                        scale = new float[] { m.GetTextureScale(propertyName).x, m.GetTextureScale(propertyName).y },
+                        offset = new float[] { offset.x, offset.y },
+                        scale = new float[] { scale.x, scale.y },
                     }
                 };
             }
