@@ -141,14 +141,19 @@ namespace VRM
 
                 foreach (var src in go.transform.Traverse().SelectMany(x => x.GetComponents<VRMSpringBone>()))
                 {
-                    // Copy VRMSprngBone
+                    // Copy VRMSpringBone
                     var dst = dstSecondary.gameObject.AddComponent<VRMSpringBone>();
                     dst.m_comment = src.m_comment;
                     dst.m_stiffnessForce = src.m_stiffnessForce;
                     dst.m_gravityPower = src.m_gravityPower;
                     dst.m_gravityDir = src.m_gravityDir;
                     dst.m_dragForce = src.m_dragForce;
+                    if (src.m_center != null)
+                    {
+                        dst.m_center = map[src.m_center];
+                    }
                     dst.RootBones = src.RootBones.Select(x => map[x]).ToList();
+                    dst.m_hitRadius = src.m_hitRadius;
                     if (src.ColliderGroups != null)
                     {
                         dst.ColliderGroups = src.ColliderGroups.Select(x => map[x.transform].GetComponent<VRMSpringBoneColliderGroup>()).ToArray();
