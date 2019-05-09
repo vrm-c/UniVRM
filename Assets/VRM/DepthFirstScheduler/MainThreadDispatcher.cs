@@ -111,7 +111,7 @@ namespace DepthFirstScheduler
         {
             if (instance == null)
             {
-                Debug.Log("Initialize UniTask.MainThredDispatcher");
+                Debug.Log("Initialize UniTask.MainThreadDispatcher");
 
                 instance = this;
                 mainThreadToken = new object();
