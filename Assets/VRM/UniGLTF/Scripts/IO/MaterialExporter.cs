@@ -53,7 +53,7 @@ namespace UniGLTF
                         index = index,
                     };
 
-                    Export_TextureTransform(m, material.pbrMetallicRoughness.baseColorTexture, "_MainTex");
+                    Export_MainTextureTransform(m, material.pbrMetallicRoughness.baseColorTexture);
                 }
             }
         }
@@ -80,7 +80,7 @@ namespace UniGLTF
                             index = index,
                         };
 
-                    Export_TextureTransform(m, material.pbrMetallicRoughness.metallicRoughnessTexture, "_MetallicGlossMap");
+                    Export_MainTextureTransform(m, material.pbrMetallicRoughness.metallicRoughnessTexture);
                 }
             }
 
@@ -116,7 +116,7 @@ namespace UniGLTF
                         index = index,
                     };
 
-                    Export_TextureTransform(m, material.normalTexture, "_BumpMap");
+                    Export_MainTextureTransform(m, material.normalTexture);
                 }
 
                 if (index != -1 && m.HasProperty("_BumpScale"))
@@ -138,7 +138,7 @@ namespace UniGLTF
                         index = index,
                     };
 
-                    Export_TextureTransform(m, material.occlusionTexture, "_OcclusionMap");
+                    Export_MainTextureTransform(m, material.occlusionTexture);
                 }
 
                 if (index != -1 && m.HasProperty("_OcclusionStrength"))
@@ -173,9 +173,14 @@ namespace UniGLTF
                         index = index,
                     };
 
-                    Export_TextureTransform(m, material.emissiveTexture, "_EmissionMap");
+                    Export_MainTextureTransform(m, material.emissiveTexture);
                 }
             }
+        }
+
+        static void Export_MainTextureTransform(Material m, glTFTextureInfo textureInfo)
+        {
+            Export_TextureTransform(m, textureInfo, "_MainTex");
         }
 
         static void Export_TextureTransform(Material m, glTFTextureInfo textureInfo, string propertyName)
