@@ -123,7 +123,7 @@ namespace UniGLTF
             };
 
 #if UNITY_5_6_OR_NEWER
-            List<AnimationCurveData> curveDatas = new List<AnimationCurveData>();
+            List<AnimationCurveData> curveDatum = new List<AnimationCurveData>();
 
             foreach (var binding in AnimationUtility.GetCurveBindings(clip))
             {
@@ -155,11 +155,11 @@ namespace UniGLTF
                 }
 
                 // 同一のsamplerIndexが割り当てられているcurveDataがある場合はそれを使用し、無ければ作る
-                    var curveData = curveDatas.FirstOrDefault(x => x.SamplerIndex == samplerIndex);
+                    var curveData = curveDatum.FirstOrDefault(x => x.SamplerIndex == samplerIndex);
                 if (curveData == null)
                 {
                     curveData = new AnimationCurveData(AnimationUtility.GetKeyRightTangentMode(curve, 0), property, samplerIndex, elementCount);
-                    curveDatas.Add(curveData);
+                    curveDatum.Add(curveData);
                 }
 
                 // 全てのキーフレームを回収
@@ -187,7 +187,7 @@ namespace UniGLTF
             }
 
             //キー挿入
-            foreach (var curve in curveDatas)
+            foreach (var curve in curveDatum)
             {
                 if (curve.Keyframes.Count == 0)
                     continue;

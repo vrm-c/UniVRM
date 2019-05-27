@@ -157,7 +157,7 @@ namespace UniGLTF
 
         public static List<AnimationClip> ImportAnimationClip(ImporterContext ctx)
         {
-            List<AnimationClip> animasionClips = new List<AnimationClip>();
+            List<AnimationClip> animationClips = new List<AnimationClip>();
             for (int i = 0; i < ctx.GLTF.animations.Count; ++i)
             {
                 var clip = new AnimationClip();
@@ -302,10 +302,10 @@ namespace UniGLTF
                             break;
                     }
                 }
-                animasionClips.Add(clip);
+                animationClips.Add(clip);
             }
 
-            return animasionClips;
+            return animationClips;
         }
 
         public static void ImportAnimation(ImporterContext ctx)

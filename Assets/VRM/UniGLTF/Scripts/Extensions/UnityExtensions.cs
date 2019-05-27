@@ -189,9 +189,9 @@ namespace UniGLTF
         {
             var current = self;
 
-            var splited = path.Split('/');
+            var split = path.Split('/');
 
-            foreach (var childName in splited)
+            foreach (var childName in split)
             {
                 current = current.GetChildByName(childName);
             }

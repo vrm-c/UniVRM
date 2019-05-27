@@ -58,8 +58,8 @@ namespace UniJSON
                 throw new ArgumentException();
             }
 
-            var splited = pointer.Split((Byte)'/').ToArray();
-            Path = new ArraySegment<Utf8String>(splited, 1, splited.Length - 1);
+            var split = pointer.Split((Byte)'/').ToArray();
+            Path = new ArraySegment<Utf8String>(split, 1, split.Length - 1);
         }
 
         public override string ToString()
