@@ -14,7 +14,7 @@ namespace VRM
 		[TestCase("0.99", true)]
 		[TestCase("0.99.0", true)]
 		[TestCase("1.0.0", true)]
-		public void IsNewweTest(string newer, bool isNewer)
+		public void IsNewerTest(string newer, bool isNewer)
 		{
 			Assert.AreEqual(isNewer, VRMVersion.IsNewer(newer));
 		}
@@ -29,7 +29,7 @@ namespace VRM
 		[TestCase("0.51.0-b", "0.51.0-a", true)]
 		[TestCase("1.0.0-a", "0.51.0", true)]
 		[TestCase("1.0.0", "0.51.0", true)]
-		public void IsNewweTest(string newer, string older, bool isNewer)
+		public void IsNewerTest(string newer, string older, bool isNewer)
 		{
 			Assert.AreEqual(isNewer, VRMVersion.IsNewer(newer, older));
 		}

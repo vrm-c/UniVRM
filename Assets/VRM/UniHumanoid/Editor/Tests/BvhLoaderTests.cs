@@ -1048,8 +1048,8 @@ ROOT reference
         }
     #endregion
 
-    #region daz_friendry
-        const string daz_friendry_herarchy = @"HIERARCHY
+    #region daz_friendly
+        const string daz_friendly_hierarchy = @"HIERARCHY
 ROOT hip
 {
   OFFSET 0 0 0
@@ -1323,9 +1323,9 @@ ROOT hip
 }";
 
         [Test]
-        public void GuessBoneMapping_daz_friendry()
+        public void GuessBoneMapping_daz_friendly()
         {
-            var bvh = Bvh.Parse(daz_friendry_herarchy);
+            var bvh = Bvh.Parse(daz_friendly_hierarchy);
             var detector = new BvhSkeletonEstimator();
             var skeleton = detector.Detect(bvh);
 
