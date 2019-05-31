@@ -271,6 +271,23 @@ namespace UniGLTF
             {
                 var url = "file:///" + tmp.Replace("\\", "/");
                 Debug.LogFormat("UnityWebRequest: {0}", url);
+#if UNITY_2017_1_OR_NEWER
+                using (var m_uwr = UnityWebRequestTexture.GetTexture(url, true))
+                {
+                    yield return m_uwr.SendWebRequest();
+
+                    if (m_uwr.isNetworkError || m_uwr.isHttpError)
+                    {
+                        Debug.LogWarning(m_uwr.error);
+                    }
+                    else
+                    {
+                        // Get downloaded asset bundle
+                        Texture = ((DownloadHandlerTexture)m_uwr.downloadHandler).texture;
+                        Texture.name = m_textureName;
+                    }
+                }
+#elif UNITY_5
                 using (var m_uwr = new WWW(url))
                 {
                     yield return m_uwr;
@@ -291,6 +308,9 @@ namespace UniGLTF
                     Texture = m_uwr.textureNonReadable;
                     Texture.name = m_textureName;
                 }
+#else
+                Debug.LogError("Unsupported Unity version");
+#endif
             }
         }
     }
