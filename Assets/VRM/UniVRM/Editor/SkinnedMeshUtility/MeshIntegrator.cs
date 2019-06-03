@@ -14,18 +14,17 @@ namespace VRM
     [DisallowMultipleComponent]
     public static class MeshIntegrator
     {
-        const string MENU_KEY = "GameObject/UnityEditorScripts/MeshIntegrator";
-        const int MENU_PRIORITY = 0;
+        const string MENU_KEY = SkinnedMeshUtility.MENU_KEY + "MeshIntegrator";
         const string ASSET_SUFFIX = ".mesh.asset";
         const string ASSET_WITH_BLENDSHAPE_SUFFIX = ".blendshape.asset";
 
-        [MenuItem(MENU_KEY, true, MENU_PRIORITY)]
+        [MenuItem(MENU_KEY, true, SkinnedMeshUtility.MENU_PRIORITY)]
         private static bool ExportValidate()
         {
             return Selection.activeObject != null && Selection.activeObject is GameObject;
         }
 
-        [MenuItem(MENU_KEY, false, MENU_PRIORITY)]
+        [MenuItem(MENU_KEY, false, SkinnedMeshUtility.MENU_PRIORITY)]
         private static void ExportFromMenu()
         {
             var go = Selection.activeObject as GameObject;

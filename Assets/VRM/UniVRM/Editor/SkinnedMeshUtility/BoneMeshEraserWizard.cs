@@ -51,7 +51,7 @@ namespace VRM
         [SerializeField]
         BoneMeshEraser.EraseBone[] m_eraseBones;
 
-        [MenuItem("GameObject/UnityEditorScripts/BoneMeshEraser Wizard")]
+        [MenuItem(SkinnedMeshUtility.MENU_KEY + "BoneMeshEraser Wizard", priority = SkinnedMeshUtility.MENU_PRIORITY)]
         static void CreateWizard()
         {
             ScriptableWizard.DisplayWizard<BoneMeshEraserWizard>("BoneMeshEraser", "Erase triangles by bone", "Erase");

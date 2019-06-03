@@ -58,7 +58,7 @@ namespace VRM
         [Header("Result")]
         public Mesh integrated;
 
-        [MenuItem("GameObject/UnityEditorScripts/MeshInregrator Wizard")]
+        [MenuItem(SkinnedMeshUtility.MENU_KEY + "MeshInregrator Wizard", priority = SkinnedMeshUtility.MENU_PRIORITY)]
         static void CreateWizard()
         {
             ScriptableWizard.DisplayWizard<MeshIntegratorWizard>("MeshIntegrator", "Integrate and close window", "Integrate");
