@@ -26,7 +26,7 @@ namespace VRM.Samples
         [SerializeField, Header("runtime")]
         VRMFirstPerson m_firstPerson;
 
-#if (NET_4_6 && UNITY_2017_1_OR_NEWER)
+#if (NET_4_6 && UNITY_2017_1_OR_NEWER && !UNITY_WEBGL)
         VRMBlendShapeProxy m_blendShape;
 
         void SetupTarget()
