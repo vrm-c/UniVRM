@@ -480,7 +480,7 @@ namespace UniGLTF
                 );
         }
 
-#if ((NET_4_6 || NET_STANDARD_2_0) && UNITY_2017_1_OR_NEWER)
+#if ((NET_4_6 || NET_STANDARD_2_0) && UNITY_2017_1_OR_NEWER && !UNITY_WEBGL)
         public async Task<GameObject> LoadAsyncTask()
         {
             await LoadAsync().ToTask();
