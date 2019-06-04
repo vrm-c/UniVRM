@@ -14,5 +14,7 @@ namespace VRM
                 return String.Format("{0}.{1}", Major, Minor);
             }
         }
+
+        public const string VERSION = "0.0";
     }
 }

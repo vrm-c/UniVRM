@@ -9,7 +9,8 @@
         },
         "node": {
             "description": "Reference node index",
-            "type": "integer"
+            "type": "integer",
+            "minimum": 0
         },
         "useDefaultValues": {
             "description": "Unity's HumanLimit.useDefaultValues",

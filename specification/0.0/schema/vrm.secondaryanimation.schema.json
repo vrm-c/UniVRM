@@ -1,5 +1,6 @@
 {
     "title": "vrm.secondaryanimation",
+    "description": "The setting of automatic animation of string-like objects such as tails and hairs.",
     "type": "object",
     "properties": {
         "boneGroups": {
