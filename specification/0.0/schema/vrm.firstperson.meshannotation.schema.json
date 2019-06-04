@@ -3,7 +3,8 @@
     "type": "object",
     "properties": {
         "mesh": {
-            "type": "integer"
+            "type": "integer",
+            "minimum": 0
         },
         "firstPersonFlag": {
             "type": "string"

@@ -1,5 +1,6 @@
 {
     "title": "vrm.blendshape",
+    "description": "BlendShapeAvatar of UniVRM",
     "type": "object",
     "properties": {
         "blendShapeGroups": {
