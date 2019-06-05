@@ -156,7 +156,7 @@ namespace UniJSON
 
             if (MaxItems.HasValue && count > MaxItems.Value)
             {
-                return new JsonSchemaValidationException(context, "maxOtems");
+                return new JsonSchemaValidationException(context, "maxItems");
             }
 
             if (MinItems.HasValue && count < MinItems.Value)

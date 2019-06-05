@@ -23,7 +23,7 @@ namespace UniGLTF
             {
                 if (!gltfMesh.primitives[i].targets.SequenceEqual(targets))
                 {
-                    throw new NotImplementedException(string.Format("diffirent targets: {0} with {1}",
+                    throw new NotImplementedException(string.Format("different targets: {0} with {1}",
                         gltfMesh.primitives[i],
                         targets));
                 }
@@ -456,7 +456,7 @@ namespace UniGLTF
                         }
                         else
                         {
-                            Debug.LogWarningFormat("May be partial primitive has blendShape. Rquire separete mesh or extend blend shape, but not implemented: {0}", blendShape.Name);
+                            Debug.LogWarningFormat("May be partial primitive has blendShape. Require separate mesh or extend blend shape, but not implemented: {0}", blendShape.Name);
                         }
                     }
                     else
