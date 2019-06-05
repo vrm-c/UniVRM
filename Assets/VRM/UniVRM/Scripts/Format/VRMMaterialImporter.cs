@@ -111,6 +111,13 @@ namespace VRM
                 material.SetOverrideTag(kv.Key, kv.Value);
             }
 
+            if (shaderName == MToon.Utils.ShaderName)
+            {
+                // TODO: Material拡張にMToonの項目が追加されたら旧バージョンのshaderPropから変換をかける
+                // インポート時にUniVRMに含まれるMToonのバージョンに上書きする
+                material.SetFloat(MToon.Utils.PropVersion, MToon.Utils.VersionNumber);
+            }
+
             return material;
         }
     }
