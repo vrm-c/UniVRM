@@ -412,7 +412,7 @@ namespace UniJSON
             f.BeginMap(2);
             if (!string.IsNullOrEmpty(Title)) { f.Key("title"); f.Value(Title); }
             if (!string.IsNullOrEmpty(Description)) { f.Key("description"); f.Value(Description); }
-            Validator.ToJsonScheama(f);
+            Validator.ToJsonSchema(f);
             f.EndMap();
         }
 

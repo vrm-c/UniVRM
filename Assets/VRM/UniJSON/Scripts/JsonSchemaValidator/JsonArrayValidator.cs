@@ -280,7 +280,7 @@ namespace UniJSON
             GenericSerializer<T>.Serialize(Items.Validator, f, c, o);
         }
 
-        public void ToJsonScheama(IFormatter f)
+        public void ToJsonSchema(IFormatter f)
         {
             f.Key("type"); f.Value("array");
 
