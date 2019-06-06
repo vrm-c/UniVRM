@@ -887,7 +887,7 @@ namespace UniGLTF
                 }
             }
 
-            // Create or upate Main Asset
+            // Create or update Main Asset
             if (prefabPath.IsFileExists)
             {
                 Debug.LogFormat("replace prefab: {0}", prefabPath);
@@ -1012,7 +1012,7 @@ namespace UniGLTF
         }
 
         /// <summary>
-        /// Destroy assets that created ImporterContext. This function is clean up for imoprter error.
+        /// Destroy assets that created ImporterContext. This function is clean up for importer error.
         /// </summary>
         public void EditorDestroyRootAndAssets()
         {

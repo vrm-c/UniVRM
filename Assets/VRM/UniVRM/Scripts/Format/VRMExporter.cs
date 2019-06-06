@@ -144,7 +144,7 @@ namespace VRM
                         gltf.extensions.VRM.meta.texture = TextureIO.ExportTexture(gltf, gltf.buffers.Count - 1, meta.Thumbnail, glTFTextureTypes.Unknown);
                     }
 
-                    // ussage pemission
+                    // ussage permission
                     gltf.extensions.VRM.meta.allowedUser = meta.AllowedUser;
                     gltf.extensions.VRM.meta.violentUssage = meta.ViolentUssage;
                     gltf.extensions.VRM.meta.sexualUssage = meta.SexualUssage;

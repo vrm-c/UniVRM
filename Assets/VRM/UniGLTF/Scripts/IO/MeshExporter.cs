@@ -81,7 +81,7 @@ namespace UniGLTF
                 {
                     attributes = attributes,
                     indices = indicesAccessorIndex,
-                    mode = 4, // triangels ?
+                    mode = 4, // triangles ?
                     material = unityMaterials.IndexOf(materials[j])
                 });
             }

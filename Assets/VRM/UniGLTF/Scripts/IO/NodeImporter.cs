@@ -74,7 +74,7 @@ namespace UniGLTF
             };
 
             //
-            // build hierachy
+            // build hierarchy
             //
             var node = context.GLTF.nodes[i];
             if (node.children != null)
@@ -164,7 +164,7 @@ namespace UniGLTF
 
                     if (x.SkinIndex.Value < context.GLTF.skins.Count)
                     {
-                        // calculate internal values(boudingBox etc...) when sharedMesh assinged ?
+                        // calculate internal values(boundingBox etc...) when sharedMesh assigned ?
                         skinnedMeshRenderer.sharedMesh = null;
 
                         var skin = context.GLTF.skins[x.SkinIndex.Value];
