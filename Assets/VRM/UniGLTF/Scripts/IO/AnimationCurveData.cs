@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 #if UNITY_EDITOR
@@ -12,12 +13,18 @@ namespace UniGLTF
     {
 #if UNITY_EDITOR
         public AnimationUtility.TangentMode TangentMode { get; private set; }
-        public glTFAnimationTarget.AnimationPropertys AnimationProperty { get; private set; }
+        public glTFAnimationTarget.AnimationProperties AnimationProperty { get; private set; }
         public int SamplerIndex { get; private set; }
         public int ElementCount { get; private set; }
         public readonly List<AnimationKeyframeData> Keyframes = new List<AnimationKeyframeData>();
 
+        [Obsolete]
         public AnimationCurveData(AnimationUtility.TangentMode tangentMode, glTFAnimationTarget.AnimationPropertys property, int samplerIndex, int elementCount)
+            : this(tangentMode, glTFAnimationTarget.AnimationPropertysToAnimationProperties(property), samplerIndex, elementCount)
+        {
+        }
+
+        public AnimationCurveData(AnimationUtility.TangentMode tangentMode, glTFAnimationTarget.AnimationProperties property, int samplerIndex, int elementCount)
         {
             TangentMode = tangentMode;
             AnimationProperty = property;
@@ -92,25 +99,37 @@ namespace UniGLTF
         /// </summary>
         /// <param name="property"></param>
         /// <returns></returns>
-        private static AnimationKeyframeData GetKeyframeData(glTFAnimationTarget.AnimationPropertys property, int elementCount)
+        [Obsolete]
+        private static AnimationKeyframeData GetKeyframeData(glTFAnimationTarget.AnimationPropertys property,
+            int elementCount)
+        {
+            return GetKeyframeData(glTFAnimationTarget.AnimationPropertysToAnimationProperties(property), elementCount);
+        }
+
+        /// <summary>
+        /// アニメーションプロパティに対応したキーフレームを挿入する
+        /// </summary>
+        /// <param name="property"></param>
+        /// <returns></returns>
+        private static AnimationKeyframeData GetKeyframeData(glTFAnimationTarget.AnimationProperties property, int elementCount)
         {
             switch (property)
             {
-                case glTFAnimationTarget.AnimationPropertys.Translation:
+                case glTFAnimationTarget.AnimationProperties.Translation:
                     return new AnimationKeyframeData(elementCount, (values) =>
                     {
                         var temp = new Vector3(values[0], values[1], values[2]);
                         return temp.ReverseZ().ToArray();
                     });
-                case glTFAnimationTarget.AnimationPropertys.Rotation:
+                case glTFAnimationTarget.AnimationProperties.Rotation:
                     return new AnimationKeyframeData(elementCount, (values) =>
                     {
                         var temp = new Quaternion(values[0], values[1], values[2], values[3]);
                         return temp.ReverseZ().ToArray();
                     });
-                case glTFAnimationTarget.AnimationPropertys.Scale:
+                case glTFAnimationTarget.AnimationProperties.Scale:
                     return new AnimationKeyframeData(elementCount, null);
-                case glTFAnimationTarget.AnimationPropertys.BlendShape:
+                case glTFAnimationTarget.AnimationProperties.BlendShape:
                     return new AnimationKeyframeData(elementCount, null);
                 default:
                     return null;
