@@ -141,7 +141,7 @@ namespace UniGLTF
         public void Process(glTF gltf, IStorage storage)
         {
             ProcessOnAnyThread(gltf, storage);
-            ProcessOnMainThreadCoroutine(gltf).CoroutinetoEnd();
+            ProcessOnMainThreadCoroutine(gltf).CoroutineToEnd();
         }
 
         public IEnumerator ProcessCoroutine(glTF gltf, IStorage storage)

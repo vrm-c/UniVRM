@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.Rendering;
 
 namespace UniGLTF.UniUnlit
@@ -30,7 +31,9 @@ namespace UniGLTF.UniUnlit
         public const string PropNameCutoff = "_Cutoff";
         public const string PropNameBlendMode = "_BlendMode";
         public const string PropNameCullMode = "_CullMode";
-        public const string PropeNameVColBlendMode = "_VColBlendMode";
+        [Obsolete("Use PropNameVColBlendMode")]
+        public const string PropeNameVColBlendMode = PropNameVColBlendMode;
+        public const string PropNameVColBlendMode = "_VColBlendMode";
         public const string PropNameSrcBlend = "_SrcBlend";
         public const string PropNameDstBlend = "_DstBlend";
         public const string PropNameZWrite = "_ZWrite";
@@ -77,7 +80,7 @@ namespace UniGLTF.UniUnlit
         {
             SetupBlendMode(material, (UniUnlitRenderMode)material.GetFloat(PropNameBlendMode),
                 isRenderModeChangedByUser);
-            SetupVertexColorBlendOp(material, (UniUnlitVertexColorBlendOp)material.GetFloat(PropeNameVColBlendMode));
+            SetupVertexColorBlendOp(material, (UniUnlitVertexColorBlendOp)material.GetFloat(PropNameVColBlendMode));
         }
 
         private static void SetupBlendMode(Material material, UniUnlitRenderMode renderMode,

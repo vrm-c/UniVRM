@@ -53,7 +53,7 @@ namespace UniGLTF
         {
             var bytes =
                 (url.StartsWith("data:"))
-                ? UriByteBuffer.ReadEmbeded(url)
+                ? UriByteBuffer.ReadEmbedded(url)
                 : File.ReadAllBytes(Path.Combine(m_root, url))
                 ;
             return new ArraySegment<byte>(bytes);

@@ -223,7 +223,7 @@ namespace UniGLTF
                     .Select(x => new MeshWithRenderer
                     {
                         Mesh = x.GetSharedMesh(),
-                        Rendererer = x.GetComponent<Renderer>(),
+                        Renderer = x.GetComponent<Renderer>(),
                     })
                     .Where(x =>
                     {
@@ -231,8 +231,8 @@ namespace UniGLTF
                         {
                             return false;
                         }
-                        if (x.Rendererer.sharedMaterials == null
-                        || x.Rendererer.sharedMaterials.Length == 0)
+                        if (x.Renderer.sharedMaterials == null
+                        || x.Renderer.sharedMaterials.Length == 0)
                         {
                             return false;
                         }
@@ -251,7 +251,7 @@ namespace UniGLTF
                         && x.bones != null
                         && x.bones.Length > 0)
                     .ToList();
-                gltf.nodes = Nodes.Select(x => ExportNode(x, Nodes, unityMeshes.Select(y => y.Rendererer).ToList(), unitySkins)).ToList();
+                gltf.nodes = Nodes.Select(x => ExportNode(x, Nodes, unityMeshes.Select(y => y.Renderer).ToList(), unitySkins)).ToList();
                 gltf.scenes = new List<gltfScene>
                 {
                     new gltfScene
