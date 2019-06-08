@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace VRM
 {
-    public class VRMLookAtBoneApplyer : MonoBehaviour, IVRMComponent
+    public class VRMLookAtBoneApplier : MonoBehaviour, IVRMComponent
     {
         public bool DrawGizmo = false;
 
@@ -59,7 +59,7 @@ namespace VRM
             if (m_head == null)
             {
                 enabled = false;
-                Debug.LogError("[VRMLookAtBoneApplyer]VRMLookAtHead not found");
+                Debug.LogError("[VRMLookAtBoneApplier]VRMLookAtHead not found");
                 return;
             }
             m_head.YawPitchChanged += ApplyRotations;

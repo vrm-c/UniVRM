@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace VRM
 {
-    public class VRMLookAtBlendShapeApplyer : MonoBehaviour, IVRMComponent
+    public class VRMLookAtBlendShapeApplier : MonoBehaviour, IVRMComponent
     {
         public bool DrawGizmo = true;
 

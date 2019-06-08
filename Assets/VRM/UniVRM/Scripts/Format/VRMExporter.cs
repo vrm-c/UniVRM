@@ -180,22 +180,22 @@ namespace VRM
                     var lookAtHead = exporter.Copy.GetComponent<VRMLookAtHead>();
                     if (lookAtHead != null)
                     {
-                        var boneApplyer = exporter.Copy.GetComponent<VRMLookAtBoneApplyer>();
-                        var blendShapeApplyer = exporter.Copy.GetComponent<VRMLookAtBlendShapeApplyer>();
-                        if (boneApplyer != null)
+                        var boneApplier = exporter.Copy.GetComponent<VRMLookAtBoneApplier>();
+                        var blendShapeApplier = exporter.Copy.GetComponent<VRMLookAtBlendShapeApplier>();
+                        if (boneApplier != null)
                         {
                             gltf.extensions.VRM.firstPerson.lookAtType = LookAtType.Bone;
-                            gltf.extensions.VRM.firstPerson.lookAtHorizontalInner.Apply(boneApplyer.HorizontalInner);
-                            gltf.extensions.VRM.firstPerson.lookAtHorizontalOuter.Apply(boneApplyer.HorizontalOuter);
-                            gltf.extensions.VRM.firstPerson.lookAtVerticalDown.Apply(boneApplyer.VerticalDown);
-                            gltf.extensions.VRM.firstPerson.lookAtVerticalUp.Apply(boneApplyer.VerticalUp);
+                            gltf.extensions.VRM.firstPerson.lookAtHorizontalInner.Apply(boneApplier.HorizontalInner);
+                            gltf.extensions.VRM.firstPerson.lookAtHorizontalOuter.Apply(boneApplier.HorizontalOuter);
+                            gltf.extensions.VRM.firstPerson.lookAtVerticalDown.Apply(boneApplier.VerticalDown);
+                            gltf.extensions.VRM.firstPerson.lookAtVerticalUp.Apply(boneApplier.VerticalUp);
                         }
-                        else if (blendShapeApplyer != null)
+                        else if (blendShapeApplier != null)
                         {
                             gltf.extensions.VRM.firstPerson.lookAtType = LookAtType.BlendShape;
-                            gltf.extensions.VRM.firstPerson.lookAtHorizontalOuter.Apply(blendShapeApplyer.Horizontal);
-                            gltf.extensions.VRM.firstPerson.lookAtVerticalDown.Apply(blendShapeApplyer.VerticalDown);
-                            gltf.extensions.VRM.firstPerson.lookAtVerticalUp.Apply(blendShapeApplyer.VerticalUp);
+                            gltf.extensions.VRM.firstPerson.lookAtHorizontalOuter.Apply(blendShapeApplier.Horizontal);
+                            gltf.extensions.VRM.firstPerson.lookAtVerticalDown.Apply(blendShapeApplier.VerticalDown);
+                            gltf.extensions.VRM.firstPerson.lookAtVerticalUp.Apply(blendShapeApplier.VerticalUp);
                         }
                     }
                 }

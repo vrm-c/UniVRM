@@ -16,8 +16,8 @@ namespace VRM
     /// <summary>
     /// Headボーンローカルで目標物のYaw, Pitchを求めて目線に適用する
     /// 
-    /// * VRMLookAtBoneApplyer
-    /// * VRMLookAtBlendShapeApplyer
+    /// * VRMLookAtBoneApplier
+    /// * VRMLookAtBlendShapeApplier
     /// 
     /// </summary>
     public class VRMLookAtHead : MonoBehaviour, IVRMComponent
@@ -104,15 +104,15 @@ namespace VRM
             {
                 case LookAtType.Bone:
                     {
-                        var applyer = gameObject.AddComponent<VRMLookAtBoneApplyer>();
-                        applyer.OnImported(context);
+                        var applier = gameObject.AddComponent<VRMLookAtBoneApplier>();
+                        applier.OnImported(context);
                     }
                     break;
 
                 case LookAtType.BlendShape:
                     {
-                        var applyer = gameObject.AddComponent<VRMLookAtBlendShapeApplyer>();
-                        applyer.OnImported(context);
+                        var applier = gameObject.AddComponent<VRMLookAtBlendShapeApplier>();
+                        applier.OnImported(context);
                     }
                     break;
             }
