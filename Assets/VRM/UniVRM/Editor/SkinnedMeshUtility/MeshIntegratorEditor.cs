@@ -16,7 +16,6 @@ namespace VRM
     {
         const string MENU_KEY = SkinnedMeshUtility.MENU_KEY + "MeshIntegrator";
         const string ASSET_SUFFIX = ".mesh.asset";
-        const string ASSET_WITH_BLENDSHAPE_SUFFIX = ".blendshape.asset";
 
         [MenuItem(MENU_KEY, true, SkinnedMeshUtility.MENU_PRIORITY)]
         private static bool ExportValidate()
@@ -34,41 +33,46 @@ namespace VRM
 
         public static SkinnedMeshRenderer Integrate(GameObject go)
         {
-            var without_blendshape = _Integrate(go, false);
-            if (without_blendshape == null)
+            var withoutBlendshape = _Integrate(go, false);
+            if (withoutBlendshape == null)
             {
                 return null;
-
             }
 
-            // save mesh to Assets
-            var assetPath = string.Format("{0}{1}", go.name, ASSET_SUFFIX);
+            SaveMeshAsset(withoutBlendshape.sharedMesh, go, go.name);
+            
+            return withoutBlendshape;
+        }
+
+        private static void SaveMeshAsset(Mesh mesh, GameObject go, string name)
+        {
 #if UNITY_2018_2_OR_NEWER
             var prefab = PrefabUtility.GetCorrespondingObjectFromSource(go);
 #else
             var prefab = PrefabUtility.GetPrefabParent(go);
 #endif
+
+            var assetPath = "";
             if (prefab != null)
             {
                 var prefabPath = AssetDatabase.GetAssetPath(prefab);
                 assetPath = string.Format("{0}/{1}_{2}{3}",
                     Path.GetDirectoryName(prefabPath),
                     Path.GetFileNameWithoutExtension(prefabPath),
-                    go.name,
+                    name,
                     ASSET_SUFFIX
                     );
             }
             else
             {
-                assetPath = string.Format("Assets/{0}{1}", go.name, ASSET_SUFFIX);
+                assetPath = string.Format("Assets/{0}{1}", name, ASSET_SUFFIX);
             }
 
             Debug.LogFormat("CreateAsset: {0}", assetPath);
-            AssetDatabase.CreateAsset(without_blendshape.sharedMesh, assetPath);
-            return without_blendshape;
+            AssetDatabase.CreateAsset(mesh, assetPath);
         }
 
-        static IEnumerable<Transform> Traverse(Transform parent)
+        private static IEnumerable<Transform> Traverse(Transform parent)
         {
             if (parent.gameObject.activeSelf)
             {
@@ -89,52 +93,35 @@ namespace VRM
             foreach (var x in Traverse(root))
             {
                 var renderer = x.GetComponent<SkinnedMeshRenderer>();
-                if (renderer != null)
+                if (renderer != null &&
+                    renderer.gameObject.activeInHierarchy &&
+                    renderer.sharedMesh != null &&
+                    renderer.enabled &&
+                    renderer.sharedMesh.blendShapeCount > 0 == hasBlendShape)
                 {
-                    if (renderer.sharedMesh != null)
-                    {
-                        if (renderer.gameObject.activeSelf)
-                        {
-                            if (renderer.sharedMesh.blendShapeCount > 0 == hasBlendShape)
-                            {
-                                yield return renderer;
-                            }
-                        }
-                    }
+                    yield return renderer;
                 }
             }
         }
 
-        static IEnumerable<MeshRenderer> EnumerateMeshRenderer(Transform root)
+        private static IEnumerable<MeshRenderer> EnumerateMeshRenderer(Transform root)
         {
             foreach (var x in Traverse(root))
             {
                 var renderer = x.GetComponent<MeshRenderer>();
-                if (renderer != null)
+                var filter = x.GetComponent<MeshFilter>();
+                
+                if (renderer != null &&
+                    filter != null &&
+                    renderer.gameObject.activeInHierarchy &&
+                    filter.sharedMesh != null)
                 {
-                    var filter = x.GetComponent<MeshFilter>();
-                    if (filter != null && filter.sharedMesh != null && renderer.gameObject.activeSelf)
-                    {
-                        yield return renderer;
-                    }
+                    yield return renderer;
                 }
             }
         }
 
-        static IEnumerable<Transform> Ancestors(Transform self)
-        {
-            yield return self;
-
-            if (self.parent != null)
-            {
-                foreach (var x in Ancestors(self.parent))
-                {
-                    yield return x;
-                }
-            }
-        }
-
-        static SkinnedMeshRenderer _Integrate(GameObject go, bool hasBlendShape)
+        private static SkinnedMeshRenderer _Integrate(GameObject go, bool hasBlendShape)
         {
             var meshNode = new GameObject();
             if (hasBlendShape)
