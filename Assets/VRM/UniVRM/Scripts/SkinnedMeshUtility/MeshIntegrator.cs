@@ -196,14 +196,21 @@ namespace VRM
             if (mesh.vertexCount == mesh.boneWeights.Length)
             {
                 BoneWeights.AddRange(mesh.boneWeights.Select(x => AddBoneIndexOffset(x, boneIndexOffset)).ToArray());
+                BindPoses.AddRange(mesh.bindposes);
+                Bones.AddRange(renderer.bones);
             }
             else
             {
-                BoneWeights.AddRange(Enumerable.Range(0, mesh.vertexCount).Select(x => new BoneWeight()).ToArray());
+                // Bone Count 0 の SkinnedMeshRenderer
+                var rigidBoneWeight = new BoneWeight
+                {
+                    boneIndex0 = boneIndexOffset,
+                    weight0 = 1f,
+                };
+                BoneWeights.AddRange(Enumerable.Range(0, mesh.vertexCount).Select(x => rigidBoneWeight).ToArray());
+                BindPoses.Add(renderer.transform.localToWorldMatrix);
+                Bones.Add(renderer.transform);
             }
-
-            BindPoses.AddRange(mesh.bindposes);
-            Bones.AddRange(renderer.bones);
 
             for (int i = 0; i < mesh.subMeshCount; ++i)
             {
