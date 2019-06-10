@@ -122,7 +122,7 @@ namespace VRM
                 return;
             }
 
-            m_uniqueMaterials = MeshIntegratorEditor.EnumerateRenderer(m_root.transform, false)
+            m_uniqueMaterials = MeshIntegratorEditor.EnumerateSkinnedMeshRenderer(m_root.transform, false)
                 .SelectMany(x => x.sharedMaterials)
                 .Distinct()
                 .ToArray();

@@ -84,7 +84,7 @@ namespace VRM
             }
         }
 
-        static public IEnumerable<SkinnedMeshRenderer> EnumerateRenderer(Transform root, bool hasBlendShape)
+        public static IEnumerable<SkinnedMeshRenderer> EnumerateSkinnedMeshRenderer(Transform root, bool hasBlendShape)
         {
             foreach (var x in Traverse(root))
             {
@@ -147,11 +147,9 @@ namespace VRM
             }
             meshNode.transform.SetParent(go.transform, false);
 
-            var renderers = EnumerateRenderer(go.transform, hasBlendShape).ToArray();
-
             // レンダラから情報を集める
             var integrator = new MeshIntegrator();
-            foreach(var x in renderers)
+            foreach(var x in EnumerateSkinnedMeshRenderer(go.transform, hasBlendShape))
             {
                 integrator.Push(x);
             }
