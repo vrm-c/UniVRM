@@ -31,17 +31,25 @@ namespace VRM
             Integrate(go);
         }
 
-        public static SkinnedMeshRenderer Integrate(GameObject go)
+        public static List<SkinnedMeshRenderer> Integrate(GameObject go)
         {
-            var withoutBlendshape = _Integrate(go, false);
-            if (withoutBlendshape == null)
+            var result = new List<SkinnedMeshRenderer>();
+            
+            var withoutBlendShape = _Integrate(go, onlyBlendShapeRenderers: false);
+            if (withoutBlendShape != null)
             {
-                return null;
+                SaveMeshAsset(withoutBlendShape.sharedMesh, go, go.name);
+                result.Add(withoutBlendShape);
             }
 
-            SaveMeshAsset(withoutBlendshape.sharedMesh, go, go.name);
-            
-            return withoutBlendshape;
+            var onlyBlendShape = _Integrate(go, onlyBlendShapeRenderers: true);
+            if (onlyBlendShape != null)
+            {
+                SaveMeshAsset(onlyBlendShape.sharedMesh, go, go.name + "(BlendShape)");
+                result.Add(onlyBlendShape);
+            }
+
+            return result;
         }
 
         private static void SaveMeshAsset(Mesh mesh, GameObject go, string name)
@@ -121,10 +129,10 @@ namespace VRM
             }
         }
 
-        private static SkinnedMeshRenderer _Integrate(GameObject go, bool hasBlendShape)
+        private static SkinnedMeshRenderer _Integrate(GameObject go, bool onlyBlendShapeRenderers)
         {
             var meshNode = new GameObject();
-            if (hasBlendShape)
+            if (onlyBlendShapeRenderers)
             {
                 meshNode.name = "MeshIntegrator(BlendShape)";
             }
@@ -136,14 +144,25 @@ namespace VRM
 
             // レンダラから情報を集める
             var integrator = new MeshIntegrator();
-            foreach(var x in EnumerateSkinnedMeshRenderer(go.transform, hasBlendShape))
-            {
-                integrator.Push(x);
-            }
 
-            foreach (var meshRenderer in EnumerateMeshRenderer(go.transform))
+            if (onlyBlendShapeRenderers)
             {
-                integrator.Push(meshRenderer);
+                foreach (var x in EnumerateSkinnedMeshRenderer(go.transform, true))
+                {
+                    integrator.Push(x);
+                }
+            }
+            else
+            {
+                foreach (var x in EnumerateSkinnedMeshRenderer(go.transform, false))
+                {
+                    integrator.Push(x);
+                }
+
+                foreach (var meshRenderer in EnumerateMeshRenderer(go.transform))
+                {
+                    integrator.Push(meshRenderer);
+                }
             }
 
             var mesh = new Mesh();
@@ -171,7 +190,7 @@ namespace VRM
             }
             mesh.bindposes = integrator.BindPoses.ToArray();
 
-            if (hasBlendShape)
+            if (onlyBlendShapeRenderers)
             {
                 integrator.AddBlendShapesToMesh(mesh);
             }
