@@ -56,7 +56,7 @@ namespace VRM
         MaterialList[] m_duplicateMaterials;
 
         [Header("Result")]
-        public Mesh[] integrated;
+        public MeshIntegratorEditor.MeshIntegrationResult[] integrationResults;
 
         [MenuItem(SkinnedMeshUtility.MENU_KEY + "MeshInregrator Wizard", priority = SkinnedMeshUtility.MENU_PRIORITY)]
         static void CreateWizard()
@@ -148,8 +148,7 @@ namespace VRM
                 return;
             }
 
-            var renderers = MeshIntegratorEditor.Integrate(m_root);
-            integrated = renderers.Select(x => x.sharedMesh).ToArray();
+            integrationResults = MeshIntegratorEditor.Integrate(m_root).ToArray();
         }
 
         void OnWizardCreate()

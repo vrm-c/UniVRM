@@ -31,24 +31,52 @@ namespace VRM
             Integrate(go);
         }
 
-        public static List<SkinnedMeshRenderer> Integrate(GameObject go)
+        [Serializable]
+        public class MeshIntegrationResult
         {
-            var result = new List<SkinnedMeshRenderer>();
+            public List<SkinnedMeshRenderer> SourceSkinnedMeshRenderers = new List<SkinnedMeshRenderer>();
+            public List<MeshRenderer> SourceMeshRenderers = new List<MeshRenderer>();
+            public SkinnedMeshRenderer IntegratedRenderer;
+        }
+
+        public static List<MeshIntegrationResult> Integrate(GameObject go)
+        {
+            var result = new List<MeshIntegrationResult>();
             
-            var withoutBlendShape = _Integrate(go, onlyBlendShapeRenderers: false);
-            if (withoutBlendShape != null)
+            Undo.RecordObject(go, "Mesh Integration");
+            
+            var withoutBlendShape = IntegrateInternal(go, onlyBlendShapeRenderers: false);
+            if (withoutBlendShape.IntegratedRenderer != null)
             {
-                SaveMeshAsset(withoutBlendShape.sharedMesh, go, go.name);
+                SaveMeshAsset(withoutBlendShape.IntegratedRenderer.sharedMesh, go, go.name);
                 result.Add(withoutBlendShape);
+                Undo.RegisterCreatedObjectUndo(withoutBlendShape.IntegratedRenderer.gameObject, "Integrate Renderers");
             }
 
-            var onlyBlendShape = _Integrate(go, onlyBlendShapeRenderers: true);
-            if (onlyBlendShape != null)
+            var onlyBlendShape = IntegrateInternal(go, onlyBlendShapeRenderers: true);
+            if (onlyBlendShape.IntegratedRenderer != null)
             {
-                SaveMeshAsset(onlyBlendShape.sharedMesh, go, go.name + "(BlendShape)");
+                SaveMeshAsset(onlyBlendShape.IntegratedRenderer.sharedMesh, go, go.name + "(BlendShape)");
                 result.Add(onlyBlendShape);
+                Undo.RegisterCreatedObjectUndo(onlyBlendShape.IntegratedRenderer.gameObject, "Integrate Renderers without BlendShape");
             }
+            
+            // deactivate source renderers
+            foreach (var res in result)
+            {
+                foreach (var renderer in res.SourceSkinnedMeshRenderers)
+                {
+                    Undo.RecordObject(renderer.gameObject, "Deactivate old renderer");
+                    renderer.gameObject.SetActive(false);
+                }
 
+                foreach (var renderer in res.SourceMeshRenderers)
+                {
+                    Undo.RecordObject(renderer.gameObject, "Deactivate old renderer");
+                    renderer.gameObject.SetActive(false);
+                }
+            }
+            
             return result;
         }
 
@@ -129,8 +157,10 @@ namespace VRM
             }
         }
 
-        private static SkinnedMeshRenderer _Integrate(GameObject go, bool onlyBlendShapeRenderers)
+        private static MeshIntegrationResult IntegrateInternal(GameObject go, bool onlyBlendShapeRenderers)
         {
+            var result = new MeshIntegrationResult();
+            
             var meshNode = new GameObject();
             if (onlyBlendShapeRenderers)
             {
@@ -150,6 +180,7 @@ namespace VRM
                 foreach (var x in EnumerateSkinnedMeshRenderer(go.transform, true))
                 {
                     integrator.Push(x);
+                    result.SourceSkinnedMeshRenderers.Add(x);
                 }
             }
             else
@@ -157,11 +188,13 @@ namespace VRM
                 foreach (var x in EnumerateSkinnedMeshRenderer(go.transform, false))
                 {
                     integrator.Push(x);
+                    result.SourceSkinnedMeshRenderers.Add(x);
                 }
 
-                foreach (var meshRenderer in EnumerateMeshRenderer(go.transform))
+                foreach (var x in EnumerateMeshRenderer(go.transform))
                 {
-                    integrator.Push(meshRenderer);
+                    integrator.Push(x);
+                    result.SourceMeshRenderers.Add(x);
                 }
             }
 
@@ -199,8 +232,9 @@ namespace VRM
             integrated.sharedMesh = mesh;
             integrated.sharedMaterials = integrator.SubMeshes.Select(x => x.Material).ToArray();
             integrated.bones = integrator.Bones.ToArray();
-
-            return integrated;
+            result.IntegratedRenderer = integrated;
+            
+            return result;
         }
     }
 }
