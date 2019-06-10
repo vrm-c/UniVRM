@@ -122,7 +122,7 @@ namespace VRM
                 return;
             }
 
-            m_uniqueMaterials = MeshIntegrator.EnumerateRenderer(m_root.transform, false)
+            m_uniqueMaterials = MeshIntegratorEditor.EnumerateRenderer(m_root.transform, false)
                 .SelectMany(x => x.sharedMaterials)
                 .Distinct()
                 .ToArray();
@@ -148,7 +148,7 @@ namespace VRM
                 return;
             }
 
-            var renderer = MeshIntegrator.Integrate(m_root);
+            var renderer = MeshIntegratorEditor.Integrate(m_root);
             if (renderer == null)
             {
                 return;
