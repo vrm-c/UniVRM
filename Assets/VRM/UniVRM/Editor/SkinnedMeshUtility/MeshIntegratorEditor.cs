@@ -149,25 +149,6 @@ namespace VRM
 
             var renderers = EnumerateRenderer(go.transform, hasBlendShape).ToArray();
 
-            // Root objectを選出する
-            var root = renderers.Select(x => x.rootBone != null ? x.rootBone : x.transform)
-                .Select(x => Ancestors(x).Reverse().ToArray())
-                .Aggregate((a, b) =>
-                {
-                    int i = 0;
-                    for(; i<a.Length && i<b.Length; ++i)
-                    {
-                        if (a[i] != b[i])
-                        {
-                            break;
-                        }
-                    }
-                    return a.Take(i).ToArray();
-                })
-                .Last()
-                ;
-            Debug.LogFormat("root bone: {0}", root.name);
-
             // レンダラから情報を集める
             var integrator = new MeshIntegrator();
             foreach(var x in renderers)
