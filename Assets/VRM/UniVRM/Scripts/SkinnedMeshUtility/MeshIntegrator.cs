@@ -49,9 +49,9 @@ namespace VRM
                 if (!map.TryGetValue(x.Name, out bs))
                 {
                     bs = new BlendShape();
-                    bs.Positions = Positions.ToArray();
-                    bs.Normals = Normals.ToArray();
-                    bs.Tangents = Tangents.Select(y => (Vector3)y).ToArray();
+                    bs.Positions = new Vector3[Positions.Count];
+                    bs.Normals = new Vector3[Normals.Count];
+                    bs.Tangents = new Vector3[Tangents.Count];
                     bs.Name = x.Name;
                     bs.FrameWeight = x.FrameWeight;
                     map.Add(x.Name, bs);
