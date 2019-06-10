@@ -13,8 +13,27 @@ namespace VRM
             public List<MeshRenderer> SourceMeshRenderers = new List<MeshRenderer>();
             public SkinnedMeshRenderer IntegratedRenderer;
         }
-        
-        public static MeshIntegrationResult Integrate(GameObject go, bool onlyBlendShapeRenderers)
+
+        public static List<MeshIntegrationResult> Integrate(GameObject go)
+        {
+            var result = new List<MeshIntegratorUtility.MeshIntegrationResult>();
+            
+            var withoutBlendShape = IntegrateInternal(go, onlyBlendShapeRenderers: false);
+            if (withoutBlendShape.IntegratedRenderer != null)
+            {
+                result.Add(withoutBlendShape);
+            }
+
+            var onlyBlendShape = IntegrateInternal(go, onlyBlendShapeRenderers: true);
+            if (onlyBlendShape.IntegratedRenderer != null)
+            {
+                result.Add(onlyBlendShape);
+            }
+
+            return result;
+        }
+
+        private static MeshIntegrationResult IntegrateInternal(GameObject go, bool onlyBlendShapeRenderers)
         {
             var result = new MeshIntegrationResult();
             

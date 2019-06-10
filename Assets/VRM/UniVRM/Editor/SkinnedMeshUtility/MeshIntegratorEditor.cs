@@ -34,28 +34,20 @@ namespace VRM
 
         public static List<MeshIntegratorUtility.MeshIntegrationResult> Integrate(GameObject go)
         {
-            var result = new List<MeshIntegratorUtility.MeshIntegrationResult>();
-            
             Undo.RecordObject(go, "Mesh Integration");
-            
-            var withoutBlendShape = MeshIntegratorUtility.Integrate(go, onlyBlendShapeRenderers: false);
-            if (withoutBlendShape.IntegratedRenderer != null)
-            {
-                SaveMeshAsset(withoutBlendShape.IntegratedRenderer.sharedMesh, go, go.name);
-                result.Add(withoutBlendShape);
-                Undo.RegisterCreatedObjectUndo(withoutBlendShape.IntegratedRenderer.gameObject, "Integrate Renderers");
-            }
 
-            var onlyBlendShape = MeshIntegratorUtility.Integrate(go, onlyBlendShapeRenderers: true);
-            if (onlyBlendShape.IntegratedRenderer != null)
+            var results = MeshIntegratorUtility.Integrate(go);
+
+            foreach (var res in results)
             {
-                SaveMeshAsset(onlyBlendShape.IntegratedRenderer.sharedMesh, go, go.name + "(BlendShape)");
-                result.Add(onlyBlendShape);
-                Undo.RegisterCreatedObjectUndo(onlyBlendShape.IntegratedRenderer.gameObject, "Integrate Renderers without BlendShape");
+                if (res.IntegratedRenderer == null) continue;
+                
+                SaveMeshAsset(res.IntegratedRenderer.sharedMesh, go, res.IntegratedRenderer.gameObject.name);
+                Undo.RegisterCreatedObjectUndo(res.IntegratedRenderer.gameObject, "Integrate Renderers");
             }
             
             // deactivate source renderers
-            foreach (var res in result)
+            foreach (var res in results)
             {
                 foreach (var renderer in res.SourceSkinnedMeshRenderers)
                 {
@@ -70,7 +62,7 @@ namespace VRM
                 }
             }
             
-            return result;
+            return results;
         }
 
         private static void SaveMeshAsset(Mesh mesh, GameObject go, string name)
