@@ -36,7 +36,18 @@ namespace VRM
         {
             Undo.RecordObject(go, "Mesh Integration");
 
-            var results = MeshIntegratorUtility.Integrate(go);
+            var clips = new List<BlendShapeClip>();
+            var proxy = go.GetComponent<VRMBlendShapeProxy>();
+            if (proxy != null && proxy.BlendShapeAvatar != null)
+            {
+                clips = proxy.BlendShapeAvatar.Clips;
+            }
+            foreach (var clip in clips)
+            {
+                Undo.RecordObject(clip, "Mesh Integration");
+            }
+
+            var results = MeshIntegratorUtility.Integrate(go, clips);
 
             foreach (var res in results)
             {
@@ -61,6 +72,8 @@ namespace VRM
                     renderer.gameObject.SetActive(false);
                 }
             }
+            
+            PrefabUtility.ReplacePrefab(go, PrefabUtility.GetCorrespondingObjectFromSource(go), ReplacePrefabOptions.ConnectToPrefab);
             
             return results;
         }
