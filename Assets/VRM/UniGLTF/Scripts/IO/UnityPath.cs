@@ -57,6 +57,11 @@ namespace UniGLTF
             }
         }
 
+        public string FileName
+        {
+            get { return Path.GetFileName(Value); }
+        }
+
         public string FileNameWithoutExtension
         {
             get { return Path.GetFileNameWithoutExtension(Value); }
