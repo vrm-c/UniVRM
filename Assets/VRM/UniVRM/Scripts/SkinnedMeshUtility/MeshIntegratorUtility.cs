@@ -98,6 +98,11 @@ namespace VRM
         {
             var result = new MeshIntegrationResult();
             
+#if UNITY_2017_3_OR_NEWER
+#else
+            return result;
+#endif
+            
             var meshNode = new GameObject();
             if (onlyBlendShapeRenderers)
             {
