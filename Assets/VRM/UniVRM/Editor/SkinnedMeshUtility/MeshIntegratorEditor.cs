@@ -80,12 +80,7 @@ namespace VRM
 
         private static void SaveMeshAsset(Mesh mesh, GameObject go, string name)
         {
-#if UNITY_2018_2_OR_NEWER
-            var prefab = PrefabUtility.GetCorrespondingObjectFromSource(go);
-#else
-            var prefab = PrefabUtility.GetPrefabParent(go);
-#endif
-
+            var prefab = SkinnedMeshUtility.GetPrefab(go);
             var assetPath = "";
             if (prefab != null)
             {
