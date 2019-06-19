@@ -14,6 +14,34 @@ namespace VRM
             public List<MeshRenderer> SourceMeshRenderers = new List<MeshRenderer>();
             public SkinnedMeshRenderer IntegratedRenderer;
         }
+        
+        public static bool IntegrateRuntime(GameObject vrmRootObject)
+        {
+            if (vrmRootObject == null) return false;
+            var proxy = vrmRootObject.GetComponent<VRMBlendShapeProxy>();
+            if (proxy == null) return false;
+            var avatar = proxy.BlendShapeAvatar;
+            if (avatar == null) return false;
+            var clips = avatar.Clips;
+
+            var results = Integrate(vrmRootObject, clips);
+            if (results.Any(x => x.IntegratedRenderer == null)) return false;
+
+            foreach (var result in results)
+            {
+                foreach (var renderer in result.SourceSkinnedMeshRenderers)
+                {
+                    Object.Destroy(renderer);
+                }
+
+                foreach (var renderer in result.SourceMeshRenderers)
+                {
+                    Object.Destroy(renderer);
+                }
+            }
+
+            return true;
+        }
 
         public static List<MeshIntegrationResult> Integrate(GameObject root, List<BlendShapeClip> blendshapeClips)
         {
