@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using UniGLTF;
 using UnityEditor;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 
 namespace VRM
@@ -14,16 +16,18 @@ namespace VRM
     [DisallowMultipleComponent]
     public static class MeshIntegratorEditor
     {
-        const string MENU_KEY = SkinnedMeshUtility.MENU_KEY + "MeshIntegrator";
+        const string MENU_KEY = "Assets/UnityEditorScripts/MeshIntegrator";
         const string ASSET_SUFFIX = ".mesh.asset";
 
-        [MenuItem(MENU_KEY, true, SkinnedMeshUtility.MENU_PRIORITY)]
+        [MenuItem(MENU_KEY, true)]
         private static bool ExportValidate()
         {
-            return Selection.activeObject != null && Selection.activeObject is GameObject;
+            return Selection.activeObject != null &&
+                   Selection.activeObject is GameObject &&
+                   SkinnedMeshUtility.IsPrefab(Selection.activeObject);
         }
 
-        [MenuItem(MENU_KEY, false, SkinnedMeshUtility.MENU_PRIORITY)]
+        [MenuItem(MENU_KEY, false)]
         private static void ExportFromMenu()
         {
             var go = Selection.activeObject as GameObject;
@@ -31,13 +35,23 @@ namespace VRM
             Integrate(go);
         }
 
-
-        public static List<MeshIntegratorUtility.MeshIntegrationResult> Integrate(GameObject go)
+        [MenuItem("Assets/fooa", false)]
+        private static void Foo()
         {
-            Undo.RecordObject(go, "Mesh Integration");
+            var go = Selection.activeObject as GameObject;
+            
+            Debug.Log(SkinnedMeshUtility.IsPrefab(go));
+        }
+
+
+        public static List<MeshIntegratorUtility.MeshIntegrationResult> Integrate(GameObject prefab)
+        {
+            Undo.RecordObject(prefab, "Mesh Integration");
+            var instance = SkinnedMeshUtility.InstantiatePrefab(prefab);
+
 
             var clips = new List<BlendShapeClip>();
-            var proxy = go.GetComponent<VRMBlendShapeProxy>();
+            var proxy = instance.GetComponent<VRMBlendShapeProxy>();
             if (proxy != null && proxy.BlendShapeAvatar != null)
             {
                 clips = proxy.BlendShapeAvatar.Clips;
@@ -47,17 +61,21 @@ namespace VRM
                 Undo.RecordObject(clip, "Mesh Integration");
             }
 
-            var results = MeshIntegratorUtility.Integrate(go, clips);
+            // Backup Exists
+            BackupVrmPrefab(prefab);
+            
+            // Execute
+            var results = MeshIntegratorUtility.Integrate(instance, clips);
 
             foreach (var res in results)
             {
                 if (res.IntegratedRenderer == null) continue;
                 
-                SaveMeshAsset(res.IntegratedRenderer.sharedMesh, go, res.IntegratedRenderer.gameObject.name);
+                SaveMeshAsset(res.IntegratedRenderer.sharedMesh, instance, res.IntegratedRenderer.gameObject.name);
                 Undo.RegisterCreatedObjectUndo(res.IntegratedRenderer.gameObject, "Integrate Renderers");
             }
             
-            // deactivate source renderers
+            // destroy source renderers
             foreach (var res in results)
             {
                 foreach (var renderer in res.SourceSkinnedMeshRenderers)
@@ -73,29 +91,67 @@ namespace VRM
                 }
             }
             
-            PrefabUtility.ReplacePrefab(go, PrefabUtility.GetCorrespondingObjectFromSource(go), ReplacePrefabOptions.ConnectToPrefab);
+            // Apply to Prefab
+            SkinnedMeshUtility.ApplyChangesToPrefab(instance);
+            Object.DestroyImmediate(instance);
             
             return results;
         }
 
-        private static void SaveMeshAsset(Mesh mesh, GameObject go, string name)
+        private static void BackupVrmPrefab(GameObject rootPrefab)
         {
-            var prefab = SkinnedMeshUtility.GetPrefab(go);
+            var proxy = rootPrefab.GetComponent<VRMBlendShapeProxy>();
+            
+            var srcAvatar = proxy.BlendShapeAvatar;
+            var dstAvatar = (BlendShapeAvatar) BackupAsset(srcAvatar, rootPrefab);
+
+            var clipMapper = srcAvatar.Clips.ToDictionary(x => x, x => (BlendShapeClip) BackupAsset(x, rootPrefab));
+            dstAvatar.Clips = clipMapper.Values.ToList();
+            
+            var dstPrefab = BackupAsset(rootPrefab, rootPrefab);
+            var dstInstance = SkinnedMeshUtility.InstantiatePrefab(dstPrefab);
+            dstInstance.GetComponent<VRMBlendShapeProxy>().BlendShapeAvatar = dstAvatar;
+            SkinnedMeshUtility.ApplyChangesToPrefab(dstInstance);
+            Object.DestroyImmediate(dstInstance);
+        }
+        
+        private static T BackupAsset<T>(T asset, GameObject rootPrefab) where T : UnityEngine.Object
+        {
+            var srcAssetPath = UnityPath.FromAsset(asset);
+            var assetName = srcAssetPath.FileName;
+
+            var backupDir = "MeshIntegratorBackup";
+            var backupPath = UnityPath.FromAsset(rootPrefab).Parent.Child(backupDir);
+            backupPath.EnsureFolder();
+            var dstAssetPath = backupPath.Child(assetName);
+            
+            AssetDatabase.CopyAsset(srcAssetPath.Value, dstAssetPath.Value);
+            return dstAssetPath.LoadAsset<T>();
+        }
+
+        private static string GetRootPrefabPath(GameObject go)
+        {
+            var prefab = SkinnedMeshUtility.IsPrefab(go) ? go : SkinnedMeshUtility.GetPrefab(go);
             var assetPath = "";
             if (prefab != null)
             {
                 var prefabPath = AssetDatabase.GetAssetPath(prefab);
-                assetPath = string.Format("{0}/{1}_{2}{3}",
-                    Path.GetDirectoryName(prefabPath),
-                    Path.GetFileNameWithoutExtension(prefabPath),
-                    name,
-                    ASSET_SUFFIX
-                    );
+                assetPath = string.Format("{0}/", Path.GetDirectoryName(prefabPath));
             }
             else
             {
-                assetPath = string.Format("Assets/{0}{1}", name, ASSET_SUFFIX);
+                assetPath = string.Format("Assets/");
             }
+            assetPath = assetPath.Replace(@"\", @"/");
+            return assetPath;
+        }
+
+        private static void SaveMeshAsset(Mesh mesh, GameObject go, string name)
+        {
+            var assetPath = Path.Combine(GetRootPrefabPath(go), string.Format("{0}{1}",
+                name,
+                ASSET_SUFFIX
+            ));
 
             Debug.LogFormat("CreateAsset: {0}", assetPath);
             AssetDatabase.CreateAsset(mesh, assetPath);

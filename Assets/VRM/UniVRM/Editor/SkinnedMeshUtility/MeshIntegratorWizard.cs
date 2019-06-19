@@ -10,6 +10,8 @@ namespace VRM
 {
     public class MeshIntegratorWizard : ScriptableWizard
     {
+        const string MENU_KEY = "Assets/UnityEditorScripts/MeshIntegratorWizard";
+        
         [SerializeField]
         GameObject m_root;
 
@@ -58,7 +60,7 @@ namespace VRM
         [Header("Result")]
         public MeshIntegratorUtility.MeshIntegrationResult[] integrationResults;
 
-        [MenuItem(SkinnedMeshUtility.MENU_KEY + "MeshInregrator Wizard", priority = SkinnedMeshUtility.MENU_PRIORITY)]
+        [MenuItem(MENU_KEY)]
         static void CreateWizard()
         {
             ScriptableWizard.DisplayWizard<MeshIntegratorWizard>("MeshIntegrator", "Integrate and close window", "Integrate");
