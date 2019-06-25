@@ -85,7 +85,7 @@ namespace VRM.DevOnly.PackageExporter
             return path;
         }
 
-        static readonly string[] ignoredFilesForGrob = new string[] {
+        static readonly string[] ignoredFilesForGlob = new string[] {
             ".git",
             ".circleci",
             "DevOnly",
@@ -93,12 +93,12 @@ namespace VRM.DevOnly.PackageExporter
             "Profiling",
         };
 
-        static IEnumerable<string> GrobFiles(string path)
+        static IEnumerable<string> GlobFiles(string path)
         {
             var fileName = Path.GetFileName(path);
 
             // Domain specific filter logic
-            if (ignoredFilesForGrob.Any(f => fileName.EndsWithAndMeta(f))) {
+            if (ignoredFilesForGlob.Any(f => fileName.EndsWithAndMeta(f))) {
                 yield break;
             }
 
@@ -106,7 +106,7 @@ namespace VRM.DevOnly.PackageExporter
             {
                 foreach (var child in Directory.GetFileSystemEntries(path))
                 {
-                    foreach (var x in GrobFiles(child))
+                    foreach (var x in GlobFiles(child))
                     {
                         yield return x;
                     }
@@ -157,7 +157,7 @@ namespace VRM.DevOnly.PackageExporter
                     {"UniGLTF-standalone", new string[] {"UniGLTF", "UniHumanoid", "UniJSON", "UniUnlit", "DepthFirstScheduler"}},
                 };
 
-                var fileNames = GrobFiles(basePath).ToArray();
+                var fileNames = GlobFiles(basePath).ToArray();
                 foreach(var packagePair in packages) {
                     CreateUnityPackage(outputDir, packagePair.Key, packagePair.Value, basePath, fileNames);
                 }
@@ -165,8 +165,8 @@ namespace VRM.DevOnly.PackageExporter
 
             // UniVRM Samples
             {
-                var fileNames = GrobFiles("Assets/VRM.Samples")
-                    .Concat(GrobFiles("Assets/StreamingAssets/VRM.Samples"))
+                var fileNames = GlobFiles("Assets/VRM.Samples")
+                    .Concat(GlobFiles("Assets/StreamingAssets/VRM.Samples"))
                     .ToArray();
                 CreateUnityPackage(outputDir, "UniVRM-samples", null /*All*/, "", fileNames);
             }
