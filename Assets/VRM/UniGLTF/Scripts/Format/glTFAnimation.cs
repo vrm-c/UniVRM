@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 using UniJSON;
+using UnityEngine;
 
 
 namespace UniGLTF
@@ -42,7 +43,30 @@ namespace UniGLTF
         public const string PATH_WEIGHT = "weights";
         public const string NOT_IMPLEMENTED = "NotImplemented";
 
+        [Obsolete("Use AnimationProperties")]
         public enum AnimationPropertys
+        {
+            Translation = AnimationProperties.Translation,
+            EulerRotation = AnimationProperties.EulerRotation,
+            Rotation = AnimationProperties.Rotation,
+            Scale = AnimationProperties.Scale,
+            Weight = AnimationProperties.Weight,
+            BlendShape = AnimationProperties.BlendShape,
+
+            NotImplemented = AnimationProperties.NotImplemented
+        }
+
+        [Obsolete]
+        internal static AnimationProperties AnimationPropertysToAnimationProperties(AnimationPropertys property)
+        {
+            if (!Enum.IsDefined(typeof(AnimationProperties), property))
+            {
+                throw new InvalidCastException("Failed to convert AnimationPropertys '" + property + "' to AnimationProperties");
+            }
+            return (AnimationProperties)property;
+        }
+
+        public enum AnimationProperties
         {
             Translation,
             EulerRotation,
@@ -54,48 +78,60 @@ namespace UniGLTF
             NotImplemented
         }
 
+        [Obsolete]
         public static string GetPathName(AnimationPropertys property)
+        {
+            return GetPathName(AnimationPropertysToAnimationProperties(property));
+        }
+
+        public static string GetPathName(AnimationProperties property)
         {
             switch (property)
             {
-                case AnimationPropertys.Translation:
+                case AnimationProperties.Translation:
                     return PATH_TRANSLATION;
-                case AnimationPropertys.EulerRotation: 
-                case AnimationPropertys.Rotation:
+                case AnimationProperties.EulerRotation:
+                case AnimationProperties.Rotation:
                     return PATH_ROTATION;
-                case AnimationPropertys.Scale:
+                case AnimationProperties.Scale:
                     return PATH_SCALE;
-                case AnimationPropertys.BlendShape:
+                case AnimationProperties.BlendShape:
                     return PATH_WEIGHT;
                 default: throw new NotImplementedException();
             }
         }
 
-        public static AnimationPropertys GetAnimationProperty(string path)
+        public static AnimationProperties GetAnimationProperty(string path)
         {
             switch (path)
             {
                 case PATH_TRANSLATION:
-                    return AnimationPropertys.Translation;
+                    return AnimationProperties.Translation;
                 case PATH_ROTATION:
-                    return AnimationPropertys.Rotation;
+                    return AnimationProperties.Rotation;
                 case PATH_SCALE:
-                    return AnimationPropertys.Scale;
+                    return AnimationProperties.Scale;
                 case PATH_WEIGHT:
-                    return AnimationPropertys.BlendShape;
+                    return AnimationProperties.BlendShape;
                 default: throw new NotImplementedException();
             }
         }
 
+        [Obsolete]
         public static int GetElementCount(AnimationPropertys property)
+        {
+            return GetElementCount(AnimationPropertysToAnimationProperties(property));
+        }
+
+        public static int GetElementCount(AnimationProperties property)
         {
             switch (property)
             {
-                case AnimationPropertys.Translation: return 3;
-                case AnimationPropertys.EulerRotation: return 3;
-                case AnimationPropertys.Rotation: return 4;
-                case AnimationPropertys.Scale: return 3;
-                case AnimationPropertys.BlendShape: return 1;
+                case AnimationProperties.Translation: return 3;
+                case AnimationProperties.EulerRotation: return 3;
+                case AnimationProperties.Rotation: return 4;
+                case AnimationProperties.Scale: return 3;
+                case AnimationProperties.BlendShape: return 1;
                 default: throw new NotImplementedException();
             }
         }
@@ -179,7 +215,13 @@ namespace UniGLTF
             f.Key("samplers"); f.GLTFValue(samplers);
         }
 
+        [Obsolete]
         public int AddChannelAndGetSampler(int nodeIndex, glTFAnimationTarget.AnimationPropertys property)
+        {
+            return AddChannelAndGetSampler(nodeIndex, glTFAnimationTarget.AnimationPropertysToAnimationProperties(property));
+        }
+
+        public int AddChannelAndGetSampler(int nodeIndex, glTFAnimationTarget.AnimationProperties property)
         {
             // find channel
             var channel = channels.FirstOrDefault(x => x.target.node == nodeIndex && x.target.path == glTFAnimationTarget.GetPathName(property));
