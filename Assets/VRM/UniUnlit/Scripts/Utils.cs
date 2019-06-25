@@ -68,8 +68,8 @@ namespace UniGLTF.UniUnlit
 
         /// <summary>
         /// Validate target material's UniUnlitRenderMode, UniUnlitVertexColorBlendOp.
-        /// Set appropriate hidden properites & keywords.
-        /// This will change RenderQueue independent to UniUnlitRenderMode if isRenderModeChagedByUser is true.
+        /// Set appropriate hidden properties & keywords.
+        /// This will change RenderQueue independent to UniUnlitRenderMode if isRenderModeChangedByUser is true.
         /// </summary>
         /// <param name="material">Target material</param>
         /// <param name="isRenderModeChangedByUser">Is changed by user</param>

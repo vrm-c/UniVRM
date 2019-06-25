@@ -212,7 +212,7 @@ namespace UniHumanoid
                 AssetDatabase.AddObjectToAsset(o, path);
             }
 
-            // Create or upate Main Asset
+            // Create or update Main Asset
             if (File.Exists(path))
             {
                 Debug.LogFormat("replace prefab: {0}", path);

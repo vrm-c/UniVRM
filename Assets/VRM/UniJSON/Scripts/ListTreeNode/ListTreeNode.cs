@@ -247,7 +247,7 @@ namespace UniJSON
 
                 foreach (var kv in r)
                 {
-                    // Addded
+                    // Added
                     yield return JsonDiff.Create(kv.Value, JsonDiffType.KeyAdded, kv.Value.Value.ToString());
                 }
             }

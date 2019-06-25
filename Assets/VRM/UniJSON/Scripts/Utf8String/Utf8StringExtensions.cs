@@ -73,7 +73,7 @@ namespace UniJSON
                                 break;
 
                             default:
-                                // unkonw escape
+                                // unknown escape
                                 throw new ParserException("unknown escape: " + p.Second);
                         }
                     }
