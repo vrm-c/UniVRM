@@ -6,7 +6,7 @@ using UniGLTF;
 
 namespace VRM
 {
-    public static class VRMHumanoidNorimalizerMenu
+    public static class VRMHumanoidNormalizerMenu
     {
         const string MENU_KEY = VRMVersion.MENU + "/Freeze T-Pose";
         [MenuItem(MENU_KEY, true, 1)]
