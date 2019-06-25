@@ -118,7 +118,7 @@ namespace UniJSON
             return false;
         }
 
-        public void ToJsonScheama(IFormatter f)
+        public void ToJsonSchema(IFormatter f)
         {
             f.Key("type"); f.Value("integer");
             if (Minimum.HasValue)
@@ -326,7 +326,7 @@ namespace UniJSON
             return false;
         }
 
-        public void ToJsonScheama(IFormatter f)
+        public void ToJsonSchema(IFormatter f)
         {
             f.Key("type"); f.Value("number");
             if (Minimum.HasValue)
