@@ -122,7 +122,7 @@ namespace VRM.Samples
 
             Toggle m_activeToggleMotion;
 
-            public void UpdateTogle(Action onBvh, Action onTPose)
+            public void UpdateToggle(Action onBvh, Action onTPose)
             {
                 var value = ToggleMotion.ActiveToggles().FirstOrDefault();
                 if (value == m_activeToggleMotion)
@@ -234,7 +234,7 @@ namespace VRM.Samples
                 if (Root != null) Root.SetActive(!Root.activeSelf);
             }
 
-            m_ui.UpdateTogle(EnableBvh, EnableTPose);
+            m_ui.UpdateToggle(EnableBvh, EnableTPose);
         }
 
         void EnableBvh()

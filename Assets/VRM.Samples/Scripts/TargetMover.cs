@@ -11,7 +11,7 @@ namespace VRM.Samples
         float m_radius = 5.0f;
 
         [SerializeField]
-        float m_angluarVelocity = 40.0f;
+        float m_angularVelocity = 40.0f;
 
         [SerializeField]
         float m_y = 1.5f;
@@ -25,7 +25,7 @@ namespace VRM.Samples
 
             while (true)
             {
-                angle += m_angluarVelocity * Time.deltaTime * Mathf.Deg2Rad;
+                angle += m_angularVelocity * Time.deltaTime * Mathf.Deg2Rad;
 
                 var x = Mathf.Cos(angle) * m_radius;
                 var z = Mathf.Sin(angle) * m_radius;
