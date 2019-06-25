@@ -12,7 +12,7 @@ namespace DepthFirstScheduler
         /// <returns>実行が終了したか？Coroutineの実行が一回で終わらない場合がある</returns>
         ExecutionStatus Execute();
         Exception GetError();
-        IScheduler Schedulder { get; }
+        IScheduler Scheduler { get; }
 
         ISchedulable Parent { get; set; }
         void AddChild(ISchedulable child);
@@ -66,7 +66,7 @@ namespace DepthFirstScheduler
             set;
         }
 
-        public IScheduler Schedulder
+        public IScheduler Scheduler
         {
             get;
             private set;
@@ -89,7 +89,7 @@ namespace DepthFirstScheduler
 
         public Schedulable(IScheduler scheduler, IFunctor<T> func)
         {
-            Schedulder = scheduler;
+            Scheduler = scheduler;
             Func = func;
         }
 
