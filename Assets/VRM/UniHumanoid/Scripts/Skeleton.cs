@@ -53,8 +53,8 @@ namespace UniHumanoid
 
         public static Skeleton Estimate(Transform hips)
         {
-            var estimater = new BvhSkeletonEstimator();
-            return estimater.Detect(hips);
+            var estimator = new BvhSkeletonEstimator();
+            return estimator.Detect(hips);
         }
 
         /// <summary>

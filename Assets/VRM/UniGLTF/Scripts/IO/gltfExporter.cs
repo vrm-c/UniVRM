@@ -170,11 +170,11 @@ namespace UniGLTF
                     node.mesh = renderers.IndexOf(meshRenderer);
                 }
 
-                var skinnredMeshRenderer = x.GetComponent<SkinnedMeshRenderer>();
-                if (skinnredMeshRenderer != null)
+                var skinnedMeshRenderer = x.GetComponent<SkinnedMeshRenderer>();
+                if (skinnedMeshRenderer != null)
                 {
-                    node.mesh = renderers.IndexOf(skinnredMeshRenderer);
-                    node.skin = skins.IndexOf(skinnredMeshRenderer);
+                    node.mesh = renderers.IndexOf(skinnedMeshRenderer);
+                    node.skin = skins.IndexOf(skinnedMeshRenderer);
                 }
             }
 
