@@ -128,7 +128,7 @@ namespace UniHumanoid
             var count = int.Parse(split[1]);
             if (count + 2 != split.Length)
             {
-                throw new BvhException("channel count is not match with splited count");
+                throw new BvhException("channel count is not match with split count");
             }
             return split.Skip(2).Select(x => (Channel)Enum.Parse(typeof(Channel), x)).ToArray();
         }
@@ -383,7 +383,7 @@ namespace UniHumanoid
                         return null;
                     }
                 }
-                throw new BvhException(String.Format("splited to {0}({1})", split.Length, firstline));
+                throw new BvhException(String.Format("split to {0}({1})", split.Length, firstline));
             }
 
             BvhNode node = null;
