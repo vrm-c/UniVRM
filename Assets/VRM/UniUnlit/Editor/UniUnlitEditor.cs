@@ -27,7 +27,7 @@ namespace UniGLTF.UniUnlit
             _cutoff = FindProperty(Utils.PropNameCutoff, properties);
             _blendMode = FindProperty(Utils.PropNameBlendMode, properties);
             _cullMode = FindProperty(Utils.PropNameCullMode, properties);
-            _vColBlendMode = FindProperty(Utils.PropeNameVColBlendMode, properties);
+            _vColBlendMode = FindProperty(Utils.PropNameVColBlendMode, properties);
 //            _srcBlend = FindProperty(PropNameSrcBlend, properties);
 //            _dstBlend = FindProperty(PropNameDstBlend, properties);
 //            _zWrite = FindProperty(PropNameZWrite, properties);

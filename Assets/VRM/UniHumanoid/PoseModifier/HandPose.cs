@@ -8,19 +8,29 @@ namespace UniHumanoid
     {
         public class HandPose
         {
-            public float ThumbStrech;
+            [Obsolete("Use ThumbStretch")]
+            public float ThumbStrech { get {  return ThumbStretch; } set { ThumbStretch = value; } }
+            public float ThumbStretch;
             public float ThumbSpread;
 
-            public float IndexStrech;
+            [Obsolete("Use IndexStretch")]
+            public float IndexStrech { get { return IndexStretch; } set { IndexStretch = value; } }
+            public float IndexStretch;
             public float IndexSpread;
 
-            public float MiddleStrech;
+            [Obsolete("Use MiddleStretch")]
+            public float MiddleStrech { get { return MiddleStretch; } set { MiddleStretch = value; } }
+            public float MiddleStretch;
             public float MiddleSpread;
 
-            public float RingStrech;
+            [Obsolete("Use RingStretch")]
+            public float RingStrech { get { return RingStretch; } set { RingStretch = value; } }
+            public float RingStretch;
             public float RingSpread;
 
-            public float LittleStrech;
+            [Obsolete("Use LittleStretch")]
+            public float LittleStrech { get { return LittleStretch; } set { LittleStretch = value; } }
+            public float LittleStretch;
             public float LittleSpread;
         }
         public HandPose LeftHandPose
@@ -125,21 +135,21 @@ namespace UniHumanoid
         {
             if (LeftHandPose != null)
             {
-                pose.muscles[this.LeftThumb1Stretched] = LeftHandPose.ThumbStrech;
-                pose.muscles[this.LeftThumb2Stretched] = LeftHandPose.ThumbStrech;
-                pose.muscles[this.LeftThumb3Stretched] = LeftHandPose.ThumbStrech;
-                pose.muscles[this.LeftIndex1Stretched] = LeftHandPose.IndexStrech;
-                pose.muscles[this.LeftIndex2Stretched] = LeftHandPose.IndexStrech;
-                pose.muscles[this.LeftIndex3Stretched] = LeftHandPose.IndexStrech;
-                pose.muscles[this.LeftMiddle1Stretched] = LeftHandPose.MiddleStrech;
-                pose.muscles[this.LeftMiddle2Stretched] = LeftHandPose.MiddleStrech;
-                pose.muscles[this.LeftMiddle3Stretched] = LeftHandPose.MiddleStrech;
-                pose.muscles[this.LeftRing1Stretched] = LeftHandPose.RingStrech;
-                pose.muscles[this.LeftRing2Stretched] = LeftHandPose.RingStrech;
-                pose.muscles[this.LeftRing3Stretched] = LeftHandPose.RingStrech;
-                pose.muscles[this.LeftLittle1Stretched] = LeftHandPose.LittleStrech;
-                pose.muscles[this.LeftLittle2Stretched] = LeftHandPose.LittleStrech;
-                pose.muscles[this.LeftLittle3Stretched] = LeftHandPose.LittleStrech;
+                pose.muscles[this.LeftThumb1Stretched] = LeftHandPose.ThumbStretch;
+                pose.muscles[this.LeftThumb2Stretched] = LeftHandPose.ThumbStretch;
+                pose.muscles[this.LeftThumb3Stretched] = LeftHandPose.ThumbStretch;
+                pose.muscles[this.LeftIndex1Stretched] = LeftHandPose.IndexStretch;
+                pose.muscles[this.LeftIndex2Stretched] = LeftHandPose.IndexStretch;
+                pose.muscles[this.LeftIndex3Stretched] = LeftHandPose.IndexStretch;
+                pose.muscles[this.LeftMiddle1Stretched] = LeftHandPose.MiddleStretch;
+                pose.muscles[this.LeftMiddle2Stretched] = LeftHandPose.MiddleStretch;
+                pose.muscles[this.LeftMiddle3Stretched] = LeftHandPose.MiddleStretch;
+                pose.muscles[this.LeftRing1Stretched] = LeftHandPose.RingStretch;
+                pose.muscles[this.LeftRing2Stretched] = LeftHandPose.RingStretch;
+                pose.muscles[this.LeftRing3Stretched] = LeftHandPose.RingStretch;
+                pose.muscles[this.LeftLittle1Stretched] = LeftHandPose.LittleStretch;
+                pose.muscles[this.LeftLittle2Stretched] = LeftHandPose.LittleStretch;
+                pose.muscles[this.LeftLittle3Stretched] = LeftHandPose.LittleStretch;
                 pose.muscles[this.LeftThumbSpread] = LeftHandPose.ThumbSpread;
                 pose.muscles[this.LeftIndexSpread] = LeftHandPose.IndexSpread;
                 pose.muscles[this.LeftMiddleSpread] = LeftHandPose.MiddleSpread;
@@ -149,21 +159,21 @@ namespace UniHumanoid
 
             if (RightHandPose != null)
             {
-                pose.muscles[this.RightThumb1Stretched] = RightHandPose.ThumbStrech;
-                pose.muscles[this.RightThumb2Stretched] = RightHandPose.ThumbStrech;
-                pose.muscles[this.RightThumb3Stretched] = RightHandPose.ThumbStrech;
-                pose.muscles[this.RightIndex1Stretched] = RightHandPose.IndexStrech;
-                pose.muscles[this.RightIndex2Stretched] = RightHandPose.IndexStrech;
-                pose.muscles[this.RightIndex3Stretched] = RightHandPose.IndexStrech;
-                pose.muscles[this.RightMiddle1Stretched] = RightHandPose.MiddleStrech;
-                pose.muscles[this.RightMiddle2Stretched] = RightHandPose.MiddleStrech;
-                pose.muscles[this.RightMiddle3Stretched] = RightHandPose.MiddleStrech;
-                pose.muscles[this.RightRing1Stretched] = RightHandPose.RingStrech;
-                pose.muscles[this.RightRing2Stretched] = RightHandPose.RingStrech;
-                pose.muscles[this.RightRing3Stretched] = RightHandPose.RingStrech;
-                pose.muscles[this.RightLittle1Stretched] = RightHandPose.LittleStrech;
-                pose.muscles[this.RightLittle2Stretched] = RightHandPose.LittleStrech;
-                pose.muscles[this.RightLittle3Stretched] = RightHandPose.LittleStrech;
+                pose.muscles[this.RightThumb1Stretched] = RightHandPose.ThumbStretch;
+                pose.muscles[this.RightThumb2Stretched] = RightHandPose.ThumbStretch;
+                pose.muscles[this.RightThumb3Stretched] = RightHandPose.ThumbStretch;
+                pose.muscles[this.RightIndex1Stretched] = RightHandPose.IndexStretch;
+                pose.muscles[this.RightIndex2Stretched] = RightHandPose.IndexStretch;
+                pose.muscles[this.RightIndex3Stretched] = RightHandPose.IndexStretch;
+                pose.muscles[this.RightMiddle1Stretched] = RightHandPose.MiddleStretch;
+                pose.muscles[this.RightMiddle2Stretched] = RightHandPose.MiddleStretch;
+                pose.muscles[this.RightMiddle3Stretched] = RightHandPose.MiddleStretch;
+                pose.muscles[this.RightRing1Stretched] = RightHandPose.RingStretch;
+                pose.muscles[this.RightRing2Stretched] = RightHandPose.RingStretch;
+                pose.muscles[this.RightRing3Stretched] = RightHandPose.RingStretch;
+                pose.muscles[this.RightLittle1Stretched] = RightHandPose.LittleStretch;
+                pose.muscles[this.RightLittle2Stretched] = RightHandPose.LittleStretch;
+                pose.muscles[this.RightLittle3Stretched] = RightHandPose.LittleStretch;
                 pose.muscles[this.RightThumbSpread] = RightHandPose.ThumbSpread;
                 pose.muscles[this.RightIndexSpread] = RightHandPose.IndexSpread;
                 pose.muscles[this.RightMiddleSpread] = RightHandPose.MiddleSpread;

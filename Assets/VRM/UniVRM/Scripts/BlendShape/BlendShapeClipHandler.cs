@@ -8,7 +8,12 @@ namespace VRM
     public class BlendShapeClipHandler
     {
         BlendShapeClip m_clip;
+        [Obsolete("Use Clip")]
         public BlendShapeClip Cilp
+        {
+            get { return Clip; }
+        }
+        public BlendShapeClip Clip
         {
             get { return m_clip; }
         }

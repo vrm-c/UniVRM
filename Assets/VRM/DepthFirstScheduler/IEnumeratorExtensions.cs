@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 
@@ -7,7 +8,13 @@ namespace
 {
     public static class IEnumeratorExtensions
     {
+        [Obsolete("Use CoroutineToEnd")]
         public static void CoroutinetoEnd(this IEnumerator coroutine)
+        {
+            CoroutineToEnd(coroutine);
+        }
+
+        public static void CoroutineToEnd(this IEnumerator coroutine)
         {
             var stack = new Stack<IEnumerator>();
             stack.Push(coroutine);

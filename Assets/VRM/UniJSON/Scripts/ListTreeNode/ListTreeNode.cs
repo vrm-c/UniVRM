@@ -379,7 +379,7 @@ namespace UniJSON
         {
             get
             {
-                return this.GetArrrayItem(index);
+                return this.GetArrayItem(index);
             }
         }
         #endregion

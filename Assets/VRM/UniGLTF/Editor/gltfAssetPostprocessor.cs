@@ -48,7 +48,7 @@ namespace UniGLTF
             context.Parse(src);
 
             // Extract textures to assets folder
-            context.ExtranctImages(prefabPath);
+            context.ExtractImages(prefabPath);
 
             ImportDelayed(src, prefabPath, context);
         }
