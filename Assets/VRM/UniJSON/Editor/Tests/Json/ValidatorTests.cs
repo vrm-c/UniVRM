@@ -337,7 +337,7 @@ namespace UniJSON
             Assert.True(c.IsEmpty());
         }
 
-        class HasArrayOBject
+        class HasArrayObject
         {
             [ItemJsonSchema(Minimum = 0.0, Maximum = 1.0)]
             public float[] xs;
@@ -352,11 +352,11 @@ namespace UniJSON
                     EnableDiagnosisForNotRequiredFields = true,
                 };
 
-                var s = JsonSchema.FromType<HasArrayOBject>();
+                var s = JsonSchema.FromType<HasArrayObject>();
 
-                Assert.Null(s.Validator.Validate(c, new HasArrayOBject { xs = new float[] { } }));
-                Assert.Null(s.Validator.Validate(c, new HasArrayOBject { xs = new float[] { 0.5f } }));
-                Assert.NotNull(s.Validator.Validate(c, new HasArrayOBject { xs = new float[] { 1.5f } }));
+                Assert.Null(s.Validator.Validate(c, new HasArrayObject { xs = new float[] { } }));
+                Assert.Null(s.Validator.Validate(c, new HasArrayObject { xs = new float[] { 0.5f } }));
+                Assert.NotNull(s.Validator.Validate(c, new HasArrayObject { xs = new float[] { 1.5f } }));
 
                 Assert.True(c.IsEmpty());
             }
@@ -395,7 +395,7 @@ namespace UniJSON
         }
 
         [Test]
-        public void HasRequiredListObjecttValidator()
+        public void HasRequiredListObjectValidator()
         {
             {
                 var c = new JsonSchemaValidationContext("test")
