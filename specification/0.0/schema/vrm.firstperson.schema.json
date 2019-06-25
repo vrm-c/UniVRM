@@ -4,8 +4,7 @@
     "properties": {
         "firstPersonBone": {
             "description": "The bone whose rendering should be turned off in first-person view. Usually Head is specified.",
-            "type": "integer",
-            "minimum": 0
+            "type": "integer"
         },
         "firstPersonBoneOffset": {
             "description": "The target position of the VR headset in first-person view. It is assumed that an offset from the head bone to the VR headset is added.",
