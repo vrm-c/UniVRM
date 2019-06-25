@@ -53,7 +53,7 @@ namespace UniGLTF
                 var textureInfo = material.GetTextures().FirstOrDefault(x => (x!=null) && x.index == textureIndex);
                 if (textureInfo != null)
                 {
-                    return textureInfo.TextreType;
+                    return textureInfo.TextureType;
                 }
             }
             return glTFTextureTypes.Unknown;
