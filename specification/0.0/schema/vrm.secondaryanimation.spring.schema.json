@@ -45,16 +45,14 @@
             "description": "Specify the node index of the root bone of the swaying object.",
             "type": "array",
             "items": {
-                "type": "integer",
-                "minimum": 0
+                "type": "integer"
             }
         },
         "colliderGroups": {
             "description": "Specify the index of the collider group for collisions with swaying objects.",
             "type": "array",
             "items": {
-                "type": "integer",
-                "minimum": 0
+                "type": "integer"
             }
         }
     }

@@ -24,8 +24,7 @@
         },
         "texture": {
             "description": "Thumbnail of VRM model",
-            "type": "integer",
-            "minimum": 0
+            "type": "integer"
         },
         "allowedUserName": {
             "description": "A person who can perform with this avatar",
