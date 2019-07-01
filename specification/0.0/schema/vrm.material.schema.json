@@ -6,6 +6,7 @@
             "type": "string"
         },
         "shader": {
+            "description": "Include shader names as VRM/MToon, VRM/UnlitTransparentZWrite, and VRM_USE_GLTFSHADER. If VRM_USE_GLTFSHADER is specified, use same index of gltf's material settings",
             "type": "string"
         },
         "renderQueue": {
