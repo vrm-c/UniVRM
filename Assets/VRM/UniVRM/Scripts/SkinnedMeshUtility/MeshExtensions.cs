@@ -7,6 +7,30 @@ namespace VRM
     public static class MeshExtensions
     {
         public static Mesh Copy(this Mesh src, bool copyBlendShape)
+        {   
+            bool[] list = new bool[src.blendShapeCount];
+            for(int i = 0; i<list.Length; i++) {
+                list[i] = copyBlendShape;
+            }
+            return CopyWithSelectedBlendShape(src, list);
+        }
+
+
+        public static Mesh RemoveBlendShapeByIndex(this Mesh src, int index)
+        {
+            bool[] list = new bool[src.blendShapeCount];
+            for(int i = 0; i<list.Length; i++) {
+              if(i == index) {
+                list[i] = false;
+              }else{
+                list[i] = true;
+              }
+            }
+            return CopyWithSelectedBlendShape(src, null);
+        }
+
+
+        public static Mesh CopyWithSelectedBlendShape(this Mesh src, bool[] clist)
         {
             var dst = new Mesh();
             dst.name = src.name + "(copy)";
@@ -33,7 +57,7 @@ namespace VRM
 
             dst.RecalculateBounds();
 
-            if (copyBlendShape)
+            if (clist != null)
             {
                 var vertices = src.vertices;
                 var normals = src.normals;
@@ -45,14 +69,17 @@ namespace VRM
 
                 for (int i = 0; i < src.blendShapeCount; ++i)
                 {
-                    src.GetBlendShapeFrameVertices(i, 0, vertices, normals, tangents);
-                    dst.AddBlendShapeFrame(
-                        src.GetBlendShapeName(i),
-                        src.GetBlendShapeFrameWeight(i, 0),
-                        vertices,
-                        normals,
-                        tangents
-                        );
+                    if(clist[i])
+                    {
+                        src.GetBlendShapeFrameVertices(i, 0, vertices, normals, tangents);
+                        dst.AddBlendShapeFrame(
+                            src.GetBlendShapeName(i),
+                            src.GetBlendShapeFrameWeight(i, 0),
+                            vertices,
+                            normals,
+                            tangents
+                            );
+                    }
                 }
             }
 
