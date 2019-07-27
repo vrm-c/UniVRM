@@ -271,7 +271,7 @@ namespace VRM
                 }
             }
 
-            // [SPORADIC-E] このあたりでどうにかしたい
+            // BlendShapeを削減するオプションが有効の場合，Meshをブレンドシェイプ削減済みのものに差し替える
             if(RemoveUnusedBlendShapes)
             {
                 // 使っているblendshapeをすべて取得する
@@ -279,56 +279,55 @@ namespace VRM
                 var proxy = target.GetComponent<VRMBlendShapeProxy>();
                 int blendShapeClipSize = proxy.BlendShapeAvatar.Clips.Count();
                 
-                
-                SkinnedMeshRenderer bodyobject = null;
                 foreach(Transform child in target.transform)
                 {
-                    Debug.Log(child.name);
-                    if(child.name=="Body") {bodyobject = child.GetComponent<SkinnedMeshRenderer>();}
-                }
+                    if(child.GetComponent<SkinnedMeshRenderer>() != null)
+                    {
+                        SkinnedMeshRenderer meshobject = child.GetComponent<SkinnedMeshRenderer>();
+                        Mesh mesh = meshobject.sharedMesh;
+                        if(mesh != null)
+                        {
+                            Debug.LogFormat("[SPORADIC-E] exporting mesh object: {0}", child.name);
+                            bool[] isUsedInBlendShape = new bool[mesh.blendShapeCount];
+                            for (int i = 0; i < isUsedInBlendShape.Length; i++)
+                            {
+                                isUsedInBlendShape[i] = false;
+                            }
 
-                Mesh body = bodyobject.sharedMesh;
-                if(body == null)
-                {
-                    Debug.LogWarning("No object \"Body\" found in VRM game object !");
-                    return;
-                }
-
-                bool[] isUsedInBlendShape = new bool[body.blendShapeCount];
-                for (int i = 0; i < isUsedInBlendShape.Length; i++)
-                {
-                    isUsedInBlendShape[i] = false;
-                }
-
-                // それぞれのanimation clipの内容をすべて取得して利用しているものはリストに記録
-                for (int i = 0; i < blendShapeClipSize; i++)
-                {
-                    var clip = proxy.BlendShapeAvatar.Clips[i];
-                    for(int j = 0; j < clip.Values.Length; j++) {
-                        if(clip.Values[j].RelativePath == "Body") isUsedInBlendShape[clip.Values[j].Index] = true;
-                    }
-                }
+                            // それぞれのanimation clipの内容をすべて取得して利用しているものはリストに記録
+                            for (int i = 0; i < blendShapeClipSize; i++)
+                            {
+                                var clip = proxy.BlendShapeAvatar.Clips[i];
+                                Debug.LogFormat("[SPORADIC-E] name {0}:", clip.BlendShapeName);
+                                for(int j = 0; j < clip.Values.Length; j++) {
+                                    if(clip.Values[j].RelativePath == child.name) isUsedInBlendShape[clip.Values[j].Index] = true;
+                                }
+                            }
                 
-                #region showBlendShapeinfo
-                {
-                    //int tsize = 0;
-                    //for (int i = 0; i < isUsedInBlendShape.Length; i++)
-                    //{
-                    //    Debug.LogFormat("{0} is in use:{1}", body.GetBlendShapeName(i), isUsedInBlendShape[i]);
-                    //    if(isUsedInBlendShape[i])
-                    //    {
-                    //        tsize++;
-                    //    }
-                    //}
-                    //Debug.LogFormat("{0} blendshapes in use from all {1} blendshapes", tsize, isUsedInBlendShape.Length);
+                            #region showBlendShapeinfo
+                            {
+                                //int tsize = 0;
+                                //for (int i = 0; i < isUsedInBlendShape.Length; i++)
+                                //{
+                                //    Debug.LogFormat("{0} is in use:{1}", mesh.GetBlendShapeName(i), isUsedInBlendShape[i]);
+                                //    if(isUsedInBlendShape[i])
+                                //    {
+                                //        tsize++;
+                                //    }
+                                //}
+                                //Debug.LogFormat("{0} blendshapes in use from all {1} blendshapes", tsize, isUsedInBlendShape.Length);
+                            }
+                            #endregion
+
+                            // 複製したmeshに対して得られたリストを元に削除処理
+                            var copiedmesh = mesh.CopyWithSelectedBlendShape(isUsedInBlendShape);
+
+                            // ターゲットを挿げ替え
+                            meshobject.sharedMesh = copiedmesh;
+                        }
+                    }
+
                 }
-                #endregion
-
-                // 複製したmeshに対して得られたリストを元に削除処理
-                var copiedmesh = body.CopyWithSelectedBlendShape(isUsedInBlendShape);
-
-                // ターゲットを挿げ替え
-                bodyobject.sharedMesh = copiedmesh;
                 
 
             }
