@@ -26,7 +26,7 @@ namespace VRM
                 list[i] = true;
               }
             }
-            return CopyWithSelectedBlendShape(src, null);
+            return CopyWithSelectedBlendShape(src, list);
         }
 
 
