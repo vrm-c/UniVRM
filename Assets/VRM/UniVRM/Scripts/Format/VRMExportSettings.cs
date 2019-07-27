@@ -298,7 +298,6 @@ namespace VRM
                             for (int i = 0; i < blendShapeClipSize; i++)
                             {
                                 var clip = proxy.BlendShapeAvatar.Clips[i];
-                                Debug.LogFormat("[SPORADIC-E] name {0}:", clip.BlendShapeName);
                                 for(int j = 0; j < clip.Values.Length; j++) {
                                     if(clip.Values[j].RelativePath == child.name) isUsedInBlendShape[clip.Values[j].Index] = true;
                                 }
