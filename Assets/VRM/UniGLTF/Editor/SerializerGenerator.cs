@@ -44,9 +44,26 @@ namespace UniGLTF
             Stream m_s;
             StreamWriter m_w;
 
-            static Dictionary<Type, string> snipets = new Dictionary<Type, string>
+            static Dictionary<string, Func<FieldInfo, string>> s_snipets = new Dictionary<string, Func<FieldInfo, string>>
             {
-
+                {"animations", _ => "if(value.animations!=null && value.animations.Count>0)"},
+                {"cameras", _ => "if(value.cameras!=null && value.cameras.Count>0)"},
+                {"byteStride", _ => "if(false)"},
+                {"target", fi => fi.FieldType.IsClass ? "if(value!=null)" : "if(value.target!=0)" },
+                {"sparse", _ => "if(value.sparse!=null && value.sparse.count>0)"},
+                {"axisLength", _ => "if(value.axisLength>0)"},
+                {"center", fi => fi.FieldType == typeof(Vector3) ? "if(value.center!=Vector3.zero)" : "if(true)"},
+                {"max", fi => fi.FieldType == typeof(Vector3) ? "if(value.max!=Vector3.zero)" : "if(value.max!=null)"},
+                {"min", fi => fi.FieldType == typeof(Vector3) ? "if(value.min!=Vector3.zero)" : "if(value.min!=null)"},
+                {"targets", _ => "if(value.targets.Count>0)" },
+                {"alphaCutoff", _=> "if(false)" },
+                {"COLOR_0", _=> "if(value.COLOR_0!=-1)"},
+                {"extensionsRequired", _=>"if(false)"},
+                {"extras", fi=>fi.FieldType==typeof(glTFPrimitives_extras) ? "if(value.extras!=null && value.extras.targetNames!=null && value.extras.targetNames.Count>0)" : "if(value.extras!=null)"},
+                {"camera", _=> "if(value.camera!=-1)"},
+                {"mesh", _=> "if(value.mesh!=-1)"},
+                {"skin", _=> "if(value.skin!=-1)"},
+                {"skeleton", _=> "if(value.skeleton!=-1)"},
             };
 
             public Generator(string path)
@@ -135,7 +152,6 @@ namespace UniGLTF {
     /// $1
     public static void GenSerialize(this IFormatter f, $0[] value)
     {
-        if (value == null) return;
         f.BeginList(value.Length);
         foreach (var x in value)
         {
@@ -158,7 +174,6 @@ namespace UniGLTF {
     /// $1
     public static void GenSerialize(this IFormatter f, List<$0> value)
     {
-        if (value == null) return;
         f.BeginList(value.Count);
         foreach (var x in value)
         {
@@ -179,7 +194,6 @@ namespace UniGLTF {
     /// $1
     public static void GenSerialize(this IFormatter f, Dictionary<string, $0> value)
     {
-        if (value == null) return;
         f.BeginMap(value.Count);
         foreach (var kv in value)
         {
@@ -223,8 +237,21 @@ namespace UniGLTF {
                         {
                             continue;
                         }
+                        if (fi.FieldType == typeof(string) || fi.FieldType.IsEnum || fi.FieldType.IsArray || fi.FieldType.IsGenericType)
+                        {
+
+                        }
+                        else if (fi.FieldType.IsClass && fi.FieldType.GetFields(FIELD_FLAGS).Length == 0)
+                        {
+                            continue;
+                        }
 
                         var snipet = fi.FieldType.IsClass ? "if(value." + fi.Name + "!=null)" : "";
+                        Func<FieldInfo, string> func = null;
+                        if (s_snipets.TryGetValue(fi.Name, out func))
+                        {
+                            snipet = func(fi);
+                        }
 
                         m_w.Write(@"
         $1
@@ -244,15 +271,6 @@ namespace UniGLTF {
 
                     foreach (var fi in t.GetFields(FIELD_FLAGS))
                     {
-                        if (fi.FieldType == typeof(object))
-                        {
-                            continue;
-                        }
-                        if (fi.IsLiteral && !fi.IsInitOnly)
-                        {
-                            continue;
-                        }
-
                         Generate(fi.FieldType, path + "/" + fi.Name, level + 1);
                     }
                 }

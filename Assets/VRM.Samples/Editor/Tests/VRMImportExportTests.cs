@@ -130,7 +130,7 @@ namespace VRM.Samples
             var oldJson = context.GLTF.ToJson().ParseAsJson().ToString("  ");
 
             var f = new JsonFormatter();
-            // f.GenSerialize(context.GLTF);
+            f.GenSerialize(context.GLTF);
             var newJson = f.ToString().ParseAsJson().ToString("  ");
 
             File.WriteAllText("old.json", oldJson);
