@@ -213,7 +213,7 @@ namespace VRM
             };
             var json2 = JsonSchema.FromType<glTF_VRM_Humanoid>().Serialize(model, c);
             // NOTE: New serializer outputs values which will not be used...
-            Assert.AreEqual(json,json2);
+            Assert.AreEqual(json, json2);
         }
 
         [Test]
@@ -283,7 +283,7 @@ namespace VRM
             };
             var json2 = JsonSchema.FromType<glTF_VRM_Meta>().Serialize(model, c);
             // NOTE: New serializer outputs values which will not be used...
-            Assert.AreEqual(@"{""allowedUserName"":""OnlyAuthor"",""violentUssageName"":""Disallow"",""sexualUssageName"":""Disallow"",""commercialUssageName"":""Disallow"",""licenseName"":""CC0""}",json2);
+            Assert.AreEqual(@"{""allowedUserName"":""OnlyAuthor"",""violentUssageName"":""Disallow"",""sexualUssageName"":""Disallow"",""commercialUssageName"":""Disallow"",""licenseName"":""CC0""}", json2);
         }
 
         [Test]
@@ -544,7 +544,7 @@ namespace VRM
             };
             var json2 = JsonSchema.FromType<glTF_VRM_SecondaryAnimationCollider>().Serialize(model, c);
             // NOTE: New serializer outputs values which will not be used...
-            Assert.AreEqual(json,json2);
+            Assert.AreEqual(json, json2);
         }
 
         [Test]
@@ -562,7 +562,7 @@ namespace VRM
             };
             var json2 = JsonSchema.FromType<glTF_VRM_SecondaryAnimationColliderGroup>().Serialize(model, c);
             // NOTE: New serializer outputs values which will not be used...
-            Assert.AreEqual(json,json2);
+            Assert.AreEqual(json, json2);
         }
 
         [Test]
@@ -598,7 +598,7 @@ namespace VRM
             };
             var json2 = JsonSchema.FromType<glTF_VRM_SecondaryAnimationGroup>().Serialize(model, c);
             // NOTE: New serializer outputs values which will not be used...
-            Assert.AreEqual(json,json2);
+            Assert.AreEqual(json, json2);
         }
 
         [Test]
@@ -652,7 +652,7 @@ namespace VRM
             };
             var json2 = JsonSchema.FromType<glTF_VRM_SecondaryAnimation>().Serialize(model, c);
             // NOTE: New serializer outputs values which will not be used...
-            Assert.AreEqual(json,json2);
+            Assert.AreEqual(json, json2);
         }
 
         [Test]
@@ -675,7 +675,7 @@ namespace VRM
             var json2 = JsonSchema.FromType<glTF_VRM_extensions>().Serialize(model, c);
             var expected =
                 String.Format(@"{{""exporterVersion"":""{0}"",""specVersion"":""0.0""}}", VRMVersion.VRM_VERSION);
-            Assert.AreEqual(expected,json2);
+            Assert.AreEqual(expected, json2);
         }
 
         // TODO: Move to another suitable location

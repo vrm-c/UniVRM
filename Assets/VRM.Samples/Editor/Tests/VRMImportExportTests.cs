@@ -84,10 +84,12 @@ namespace VRM.Samples
                 var vrm = VRMExporter.Export(context.Root);
 
                 // TODO: Check contents in JSON
-                /*var exportJson = */JsonParser.Parse(vrm.ToJson());
+                /*var exportJson = */
+                JsonParser.Parse(vrm.ToJson());
 
                 // TODO: Check contents in JSON
-                /*var newExportedJson = */JsonParser.Parse(JsonSchema.FromType<glTF>().Serialize(vrm));
+                /*var newExportedJson = */
+                JsonParser.Parse(JsonSchema.FromType<glTF>().Serialize(vrm));
 
                 /*
                 foreach (var kv in importJson.Diff(exportJson))
@@ -116,6 +118,25 @@ namespace VRM.Samples
                 var dst = src.Copy(true);
                 MeshTests.MeshEquals(src, dst);
             }
+        }
+
+        [Test]
+        public void SerializerCompare()
+        {
+            var path = AliciaPath;
+            var context = new VRMImporterContext();
+            context.ParseGlb(File.ReadAllBytes(path));
+
+            var oldJson = context.GLTF.ToJson().ParseAsJson().ToString("  ");
+
+            var f = new JsonFormatter();
+            // f.GenSerialize(context.GLTF);
+            var newJson = f.ToString().ParseAsJson().ToString("  ");
+
+            File.WriteAllText("old.json", oldJson);
+            File.WriteAllText("new.json", newJson);
+
+            Assert.AreEqual(oldJson, newJson);
         }
     }
 }

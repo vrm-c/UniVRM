@@ -157,7 +157,7 @@ namespace UniJSON
 
                 var isFirst = true;
                 var childLevel = level + 1;
-                foreach (var kv in this.ObjectItems())
+                foreach (var kv in this.ObjectItems().OrderBy(x => x.Key.ToString()))
                 {
                     if (isFirst)
                     {
