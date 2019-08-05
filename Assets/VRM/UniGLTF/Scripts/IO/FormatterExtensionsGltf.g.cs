@@ -572,7 +572,7 @@ namespace UniGLTF {
             f.Key("alphaMode"); f.GenSerialize(value.alphaMode);
         }
 
-        if(false)
+        if(!string.IsNullOrEmpty(value.alphaMode))
         {
             f.Key("alphaCutoff"); f.GenSerialize(value.alphaCutoff);
         }
@@ -1686,7 +1686,7 @@ namespace UniGLTF {
     {
         f.BeginMap(0); // dummy
 
-        if(value.mesh!=-1)
+        
         {
             f.Key("mesh"); f.GenSerialize(value.mesh);
         }
@@ -1795,7 +1795,7 @@ namespace UniGLTF {
     {
         f.BeginMap(0); // dummy
 
-        if(value.mesh!=-1)
+        
         {
             f.Key("mesh"); f.GenSerialize(value.mesh);
         }
@@ -1906,7 +1906,7 @@ namespace UniGLTF {
             f.Key("dragForce"); f.GenSerialize(value.dragForce);
         }
 
-        if(true)
+        
         {
             f.Key("center"); f.GenSerialize(value.center);
         }

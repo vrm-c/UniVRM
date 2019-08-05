@@ -44,26 +44,27 @@ namespace UniGLTF
             Stream m_s;
             StreamWriter m_w;
 
-            static Dictionary<string, Func<FieldInfo, string>> s_snipets = new Dictionary<string, Func<FieldInfo, string>>
+            static Dictionary<string, string> s_snipets = new Dictionary<string, string>
             {
-                {"animations", _ => "if(value.animations!=null && value.animations.Count>0)"},
-                {"cameras", _ => "if(value.cameras!=null && value.cameras.Count>0)"},
-                {"byteStride", _ => "if(false)"},
-                {"target", fi => fi.FieldType.IsClass ? "if(value!=null)" : "if(value.target!=0)" },
-                {"sparse", _ => "if(value.sparse!=null && value.sparse.count>0)"},
-                {"axisLength", _ => "if(value.axisLength>0)"},
-                {"center", fi => fi.FieldType == typeof(Vector3) ? "if(value.center!=Vector3.zero)" : "if(true)"},
-                {"max", fi => fi.FieldType == typeof(Vector3) ? "if(value.max!=Vector3.zero)" : "if(value.max!=null)"},
-                {"min", fi => fi.FieldType == typeof(Vector3) ? "if(value.min!=Vector3.zero)" : "if(value.min!=null)"},
-                {"targets", _ => "if(value.targets.Count>0)" },
-                {"alphaCutoff", _=> "if(false)" },
-                {"COLOR_0", _=> "if(value.COLOR_0!=-1)"},
-                {"extensionsRequired", _=>"if(false)"},
-                {"extras", fi=>fi.FieldType==typeof(glTFPrimitives_extras) ? "if(value.extras!=null && value.extras.targetNames!=null && value.extras.targetNames.Count>0)" : "if(value.extras!=null)"},
-                {"camera", _=> "if(value.camera!=-1)"},
-                {"mesh", _=> "if(value.mesh!=-1)"},
-                {"skin", _=> "if(value.skin!=-1)"},
-                {"skeleton", _=> "if(value.skeleton!=-1)"},
+                {"gltf/animations", "if(value.animations!=null && value.animations.Count>0)" },
+                {"gltf/cameras", "if(value.cameras!=null && value.cameras.Count>0)" },
+                {"gltf/bufferViews[]/byteStride", "if(false)" },
+                {"gltf/bufferViews[]/target", "if(value.target!=0)" },
+                {"gltf/animations[]/channels[]/target", "if(value!=null)" },
+                {"gltf/accessors[]/sparse", "if(value.sparse!=null && value.sparse.count>0)"},
+                {"gltf/meshes[]/primitives[]/targets", "if(value.targets.Count>0)" },
+                {"gltf/meshes[]/primitives[]/attributes/COLOR_0", "if(value.COLOR_0!=-1)"},
+                {"gltf/meshes[]/primitives[]/extras", "if(value.extras!=null && value.extras.targetNames!=null && value.extras.targetNames.Count>0)"},
+                {"gltf/materials[]/alphaCutoff", "if(!string.IsNullOrEmpty(value.alphaMode))" },
+                {"gltf/nodes[]/camera", "if(value.camera!=-1)"},
+                {"gltf/nodes[]/mesh", "if(value.mesh!=-1)"},
+                {"gltf/nodes[]/skin", "if(value.skin!=-1)"},
+                {"gltf/skins[]/skeleton", "if(value.skeleton!=-1)"},
+                {"gltf/extensionsRequired", "if(false)"},
+                {"gltf/extensions/VRM/humanoid/humanBones[]/axisLength", "if(value.axisLength>0)"},
+                {"gltf/extensions/VRM/humanoid/humanBones[]/center", "if(value.center!=Vector3.zero)"},
+                {"gltf/extensions/VRM/humanoid/humanBones[]/max", "if(value.max!=Vector3.zero)"},
+                {"gltf/extensions/VRM/humanoid/humanBones[]/min", "if(value.min!=Vector3.zero)"},
             };
 
             public Generator(string path)
@@ -247,10 +248,10 @@ namespace UniGLTF {
                         }
 
                         var snipet = fi.FieldType.IsClass ? "if(value." + fi.Name + "!=null)" : "";
-                        Func<FieldInfo, string> func = null;
-                        if (s_snipets.TryGetValue(fi.Name, out func))
+                        var value = default(string);
+                        if (s_snipets.TryGetValue(path + "/" + fi.Name, out value))
                         {
-                            snipet = func(fi);
+                            snipet = value;
                         }
 
                         m_w.Write(@"
