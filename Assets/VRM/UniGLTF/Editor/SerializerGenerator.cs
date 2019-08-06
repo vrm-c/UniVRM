@@ -53,7 +53,19 @@ namespace UniGLTF
                 {"gltf/animations[]/channels[]/target", "if(value!=null)" },
                 {"gltf/accessors[]/sparse", "if(value.sparse!=null && value.sparse.count>0)"},
                 {"gltf/meshes[]/primitives[]/targets", "if(value.targets.Count>0)" },
+
+                {"gltf/meshes[]/primitives[]/targets[]/POSITION", "if(value.POSITION!=-1)" },
+                {"gltf/meshes[]/primitives[]/targets[]/NORMAL", "if(value.NORMAL!=-1)" },
+                {"gltf/meshes[]/primitives[]/targets[]/TANGENT", "if(value.TANGENT!=-1)" },
+
+                {"gltf/meshes[]/primitives[]/attributes/POSITION", "if(value.POSITION!=-1)"},
+                {"gltf/meshes[]/primitives[]/attributes/NORMAL", "if(value.NORMAL!=-1)"},
+                {"gltf/meshes[]/primitives[]/attributes/TANGENT", "if(value.TANGENT!=-1)"},
+                {"gltf/meshes[]/primitives[]/attributes/TEXCOORD_0", "if(value.TEXCOORD_0!=-1)"},
                 {"gltf/meshes[]/primitives[]/attributes/COLOR_0", "if(value.COLOR_0!=-1)"},
+                {"gltf/meshes[]/primitives[]/attributes/JOINTS_0", "if(value.JOINTS_0!=-1)"},
+                {"gltf/meshes[]/primitives[]/attributes/WEIGHTS_0", "if(value.WEIGHTS_0!=-1)"},
+
                 {"gltf/meshes[]/primitives[]/extras", "if(value.extras!=null && value.extras.targetNames!=null && value.extras.targetNames.Count>0)"},
                 {"gltf/materials[]/alphaCutoff", "if(!string.IsNullOrEmpty(value.alphaMode))" },
                 {"gltf/nodes[]/camera", "if(value.camera!=-1)"},

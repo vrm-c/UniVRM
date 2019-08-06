@@ -827,22 +827,22 @@ namespace UniGLTF {
     {
         f.BeginMap(0); // dummy
 
-        
+        if(value.POSITION!=-1)
         {
             f.Key("POSITION"); f.GenSerialize(value.POSITION);
         }
 
-        
+        if(value.NORMAL!=-1)
         {
             f.Key("NORMAL"); f.GenSerialize(value.NORMAL);
         }
 
-        
+        if(value.TANGENT!=-1)
         {
             f.Key("TANGENT"); f.GenSerialize(value.TANGENT);
         }
 
-        
+        if(value.TEXCOORD_0!=-1)
         {
             f.Key("TEXCOORD_0"); f.GenSerialize(value.TEXCOORD_0);
         }
@@ -852,12 +852,12 @@ namespace UniGLTF {
             f.Key("COLOR_0"); f.GenSerialize(value.COLOR_0);
         }
 
-        
+        if(value.JOINTS_0!=-1)
         {
             f.Key("JOINTS_0"); f.GenSerialize(value.JOINTS_0);
         }
 
-        
+        if(value.WEIGHTS_0!=-1)
         {
             f.Key("WEIGHTS_0"); f.GenSerialize(value.WEIGHTS_0);
         }
@@ -881,17 +881,17 @@ namespace UniGLTF {
     {
         f.BeginMap(0); // dummy
 
-        
+        if(value.POSITION!=-1)
         {
             f.Key("POSITION"); f.GenSerialize(value.POSITION);
         }
 
-        
+        if(value.NORMAL!=-1)
         {
             f.Key("NORMAL"); f.GenSerialize(value.NORMAL);
         }
 
-        
+        if(value.TANGENT!=-1)
         {
             f.Key("TANGENT"); f.GenSerialize(value.TANGENT);
         }
