@@ -274,35 +274,72 @@ namespace VRM
             // BlendShapeを削減するオプションが有効の場合，Meshをブレンドシェイプ削減済みのものに差し替える
             if(RemoveUnusedBlendShapes)
             {
-                // 使っているblendshapeをすべて取得する
-                // VRMで使うanimation clipをすべて取得して
+                // ".BlendShape"ディレクトリを複製して作業
+                //  TODO
+
+
                 var proxy = target.GetComponent<VRMBlendShapeProxy>();
                 int blendShapeClipSize = proxy.BlendShapeAvatar.Clips.Count();
                 
                 foreach(Transform child in target.transform)
                 {
+                    // Meshごとに使っているblendshapeをすべて取得して削除コピー処理
                     if(child.GetComponent<SkinnedMeshRenderer>() != null)
                     {
                         SkinnedMeshRenderer meshobject = child.GetComponent<SkinnedMeshRenderer>();
                         Mesh mesh = meshobject.sharedMesh;
                         if(mesh != null)
                         {
-                            Debug.LogFormat("[SPORADIC-E] exporting mesh object: {0}", child.name);
+                            //Debug.LogFormat("[SPORADIC-E] exporting mesh object: {0}", child.name);
                             bool[] isUsedInBlendShape = new bool[mesh.blendShapeCount];
-                            for (int i = 0; i < isUsedInBlendShape.Length; i++)
-                            {
-                                isUsedInBlendShape[i] = false;
-                            }
+                            int[] indexOfNewMesh = new int[mesh.blendShapeCount];
 
-                            // それぞれのanimation clipの内容をすべて取得して利用しているものはリストに記録
+                            // BlendShapeClipを全部見て，自分のMeshで利用されていればリストに記録
                             for (int i = 0; i < blendShapeClipSize; i++)
                             {
                                 var clip = proxy.BlendShapeAvatar.Clips[i];
                                 for(int j = 0; j < clip.Values.Length; j++) {
-                                    if(clip.Values[j].RelativePath == child.name) isUsedInBlendShape[clip.Values[j].Index] = true;
+                                    if(clip.Values[j].RelativePath == child.name)
+                                    {
+                                        isUsedInBlendShape[clip.Values[j].Index] = true;
+                                    }
                                 }
                             }
-                
+                            
+                            // 移行先indexを調査
+                            int refidx=0;
+                            for (int i = 0; i < isUsedInBlendShape.Length; i++)
+                            {
+                                if(isUsedInBlendShape[i])
+                                {
+                                    indexOfNewMesh[i] = refidx;
+                                    refidx++;
+                                }else{
+                                    indexOfNewMesh[i] = -1;
+                                }
+                            }
+                            for (int i= 0; i < blendShapeClipSize; i++)
+                            {
+                                var clip = proxy.BlendShapeAvatar.Clips[i];
+                                for (int j = 0; j < clip.Values.Length; j++)
+                                {
+                                    //clip.Values[j].Index = indexOfNewMesh[clip.Values[j].Index]; // これだと元ファイルを上書きしてしまう
+                                }
+                            }
+
+                            #region showBlendShapeIndexMove
+                            {
+                                //for (int i= 0; i < blendShapeClipSize; i++)
+                                //{
+                                //    var clip = proxy.BlendShapeAvatar.Clips[i];
+                                //    for(int j = 0; j < clip.Values.Length; j++)
+                                //    {
+                                //        Debug.LogFormat("Replacing Blendshape in clip {0}, meshobject:{1}, idx:{2} -> {3}", clip.name, clip.Values[j].RelativePath, clip.Values[j].Index, indexOfNewMesh[clip.Values[j].Index]);
+                                //    }
+                                //}
+                            }
+                            #endregion
+
                             #region showBlendShapeinfo
                             {
                                 //int tsize = 0;
@@ -318,16 +355,15 @@ namespace VRM
                             }
                             #endregion
 
-                            // 複製したmeshに対して得られたリストを元に削除処理
+                            // 得られたリストを元にMeshを複製･BlendShapeを削除
                             var copiedmesh = mesh.CopyWithSelectedBlendShape(isUsedInBlendShape);
 
                             // ターゲットを挿げ替え
                             meshobject.sharedMesh = copiedmesh;
                         }
                     }
-
                 }
-                
+
 
             }
 
