@@ -119,7 +119,7 @@ namespace UniJSON
                 }
                 else if (t.GetGenericTypeDefinition() == typeof(Dictionary<,>))
                 {
-                    return "Dict<" + string.Join(", ", t.GetGenericArguments().Select(x => x.Name).ToArray()) + ">";
+                    return "Dictionary<" + string.Join(", ", t.GetGenericArguments().Select(x => x.Name).ToArray()) + ">";
                 }
             }
 
