@@ -123,20 +123,31 @@ namespace VRM.Samples
         [Test]
         public void SerializerCompare()
         {
+            // Aliciaを古いデシリアライザでロードする
             var path = AliciaPath;
             var context = new VRMImporterContext();
             context.ParseGlb(File.ReadAllBytes(path));
-
             var oldJson = context.GLTF.ToJson().ParseAsJson().ToString("  ");
 
+            // 生成シリアライザでJSON化する
             var f = new JsonFormatter();
             f.GenSerialize(context.GLTF);
-            var newJson = f.ToString().ParseAsJson().ToString("  ");
+            var parsed = f.ToString().ParseAsJson();
+            var newJson = parsed.ToString("  ");
 
             File.WriteAllText("old.json", oldJson);
             File.WriteAllText("new.json", newJson);
 
+            // 比較
             Assert.AreEqual(oldJson, newJson);
+
+            // 生成デシリアライザでロードする
+            var ff = new JsonFormatter();
+            var des = GltfDeserializer.Deserialize(parsed);
+            ff.Clear();
+            ff.GenSerialize(des);
+            var desJson = ff.ToString().ParseAsJson().ToString("  ");
+            Assert.AreEqual(oldJson, desJson);
         }
     }
 }
