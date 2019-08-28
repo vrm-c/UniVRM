@@ -450,7 +450,7 @@ namespace UniGLTF
                         {
                             mesh.AddBlendShapeFrame(blendShape.Name, FRAME_WEIGHT,
                                 blendShape.Positions.ToArray(),
-                                (meshContext.normals != null && meshContext.normals.Length == mesh.vertexCount) ? blendShape.Normals.ToArray() : null,
+                                (meshContext.normals != null && meshContext.normals.Length == mesh.vertexCount && blendShape.Normals.Count() == blendShape.Positions.Count()) ? blendShape.Normals.ToArray() : null,
                                 null
                                 );
                         }

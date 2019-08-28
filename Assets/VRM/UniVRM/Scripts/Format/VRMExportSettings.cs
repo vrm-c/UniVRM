@@ -6,6 +6,7 @@ using UniGLTF;
 using System.IO;
 #if UNITY_EDITOR
 using UnityEditor;
+
 #endif
 
 
@@ -25,6 +26,8 @@ namespace VRM
         public bool PoseFreeze = true;
 
         public bool UseExperimentalExporter = true;
+
+        public bool ReduceBlendshapeSize = false;
 
         public IEnumerable<string> CanExport()
         {
@@ -152,6 +155,7 @@ namespace VRM
                     {
                         dst.m_center = map[src.m_center];
                     }
+
                     dst.RootBones = src.RootBones.Select(x => map[x]).ToList();
                     dst.m_hitRadius = src.m_hitRadius;
                     if (src.ColliderGroups != null)
@@ -271,7 +275,7 @@ namespace VRM
 
             {
                 var sw = System.Diagnostics.Stopwatch.StartNew();
-                var vrm = VRMExporter.Export(target);
+                var vrm = VRMExporter.Export(target, ReduceBlendshapeSize);
                 vrm.extensions.VRM.meta.title = Title;
                 vrm.extensions.VRM.meta.author = Author;
 
