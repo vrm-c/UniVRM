@@ -63,7 +63,7 @@ namespace UniGLTF
 
         public void ReadToArray<T>(T[] dst) where T : struct
         {
-            var size = new ArraySegment<Byte>(m_bytes, m_pos, m_bytes.Length - m_pos).MarshalCoyTo(dst);
+            var size = new ArraySegment<Byte>(m_bytes, m_pos, m_bytes.Length - m_pos).MarshalCopyTo(dst);
             m_pos += size;
         }
 
