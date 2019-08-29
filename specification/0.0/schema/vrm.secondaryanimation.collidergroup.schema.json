@@ -4,8 +4,7 @@
     "properties": {
         "node": {
             "description": "The node of the collider group for setting up collision detections.",
-            "type": "integer",
-            "minimum": 0
+            "type": "integer"
         },
         "colliders": {
             "type": "array",

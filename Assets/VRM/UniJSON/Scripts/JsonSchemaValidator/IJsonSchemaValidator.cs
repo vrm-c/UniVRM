@@ -69,7 +69,7 @@ namespace UniJSON
         /// <returns></returns>
         bool FromJsonSchema(IFileSystemAccessor fs, string key, ListTreeNode<JsonValue> value);
 
-        void ToJsonScheama(IFormatter f);
+        void ToJsonSchema(IFormatter f);
         #endregion
 
         #region Serializer

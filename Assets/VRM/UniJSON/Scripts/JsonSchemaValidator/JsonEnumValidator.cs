@@ -196,7 +196,7 @@ namespace UniJSON
             throw new NotImplementedException();
         }
 
-        public void ToJsonScheama(IFormatter f)
+        public void ToJsonSchema(IFormatter f)
         {
             f.Key("type"); f.Value("string");
             f.Key("enum");
@@ -392,7 +392,7 @@ namespace UniJSON
             throw new NotImplementedException();
         }
 
-        public void ToJsonScheama(IFormatter f)
+        public void ToJsonSchema(IFormatter f)
         {
             f.Key("type"); f.Value("integer");
         }

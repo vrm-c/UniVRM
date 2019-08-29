@@ -8,7 +8,9 @@ namespace UniGLTF
     public struct MeshWithRenderer
     {
         public Mesh Mesh;
-        public Renderer Rendererer;
+        [Obsolete("Use Renderer")]
+        public Renderer Rendererer { get { return Renderer; } set { Renderer = value; } }
+        public Renderer Renderer;
     }
 
     public static class MeshExporter
@@ -81,7 +83,7 @@ namespace UniGLTF
                 {
                     attributes = attributes,
                     indices = indicesAccessorIndex,
-                    mode = 4, // triangels ?
+                    mode = 4, // triangles ?
                     material = unityMaterials.IndexOf(materials[j])
                 });
             }
@@ -232,10 +234,10 @@ namespace UniGLTF
             {
                 var x = unityMeshes[i];
                 var mesh = x.Mesh;
-                var materials = x.Rendererer.sharedMaterials;
+                var materials = x.Renderer.sharedMaterials;
 
                 var gltfMesh = ExportPrimitives(gltf, bufferIndex,
-                    x.Rendererer.name,
+                    x.Renderer.name,
                     mesh, materials, unityMaterials);
 
                 for (int j = 0; j < mesh.blendShapeCount; ++j)

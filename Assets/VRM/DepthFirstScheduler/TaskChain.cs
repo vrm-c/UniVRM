@@ -29,14 +29,14 @@ namespace DepthFirstScheduler
 
             if (item.Enumerator.MoveNext())
             {
-                if (item.Enumerator.Current.Schedulder == null)
+                if (item.Enumerator.Current.Scheduler == null)
                 {
                     // default
                     Scheduler.MainThread.Enqueue(item);
                 }
                 else
                 {
-                    item.Enumerator.Current.Schedulder.Enqueue(item);
+                    item.Enumerator.Current.Scheduler.Enqueue(item);
                 }
             }
 
@@ -77,11 +77,11 @@ namespace DepthFirstScheduler
                 return ExecutionStatus.Done;
             }
 
-            if (Enumerator.Current.Schedulder != null)
+            if (Enumerator.Current.Scheduler != null)
             {
                 // Scheduleして中断
                 ChainStatus = ChainStatus.Continue;
-                Enumerator.Current.Schedulder.Enqueue(this);
+                Enumerator.Current.Scheduler.Enqueue(this);
                 return ExecutionStatus.Done;
             }
 

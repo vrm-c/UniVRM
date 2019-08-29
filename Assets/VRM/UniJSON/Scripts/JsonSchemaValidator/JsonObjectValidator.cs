@@ -68,7 +68,7 @@ namespace UniJSON
             get; set;
         }
 
-        Dictionary<string, string[]> m_depndencies;
+        Dictionary<string, string[]> m_dependencies;
         /// <summary>
         /// http://json-schema.org/latest/json-schema-validation.html#rfc.section.6.5.7
         /// </summary>
@@ -76,11 +76,11 @@ namespace UniJSON
         {
             get
             {
-                if (m_depndencies == null)
+                if (m_dependencies == null)
                 {
-                    m_depndencies = new Dictionary<string, string[]>();
+                    m_dependencies = new Dictionary<string, string[]>();
                 }
-                return m_depndencies;
+                return m_dependencies;
             }
         }
 
@@ -281,7 +281,7 @@ namespace UniJSON
             return false;
         }
 
-        public void ToJsonScheama(IFormatter f)
+        public void ToJsonSchema(IFormatter f)
         {
             f.Key("type"); f.Value("object");
             if (Properties.Count > 0)

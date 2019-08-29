@@ -10,7 +10,7 @@ namespace UniHumanoid
     {
         class MeshBuilder
         {
-            List<Vector3> m_positioins = new List<Vector3>();
+            List<Vector3> m_positions = new List<Vector3>();
             List<int> m_indices = new List<int>();
             List<BoneWeight> m_boneWeights = new List<BoneWeight>();
 
@@ -78,11 +78,11 @@ namespace UniHumanoid
 
             void AddQuad(Vector3 v0, Vector3 v1, Vector3 v2, Vector3 v3, int boneIndex, bool reverse=false)
             {
-                var i = m_positioins.Count;
-                m_positioins.Add(v0);
-                m_positioins.Add(v1);
-                m_positioins.Add(v2);
-                m_positioins.Add(v3);
+                var i = m_positions.Count;
+                m_positions.Add(v0);
+                m_positions.Add(v1);
+                m_positions.Add(v2);
+                m_positions.Add(v3);
 
                 var bw = new BoneWeight
                 {
@@ -119,7 +119,7 @@ namespace UniHumanoid
             public Mesh CreateMesh()
             {
                 var mesh = new Mesh();
-                mesh.SetVertices(m_positioins);
+                mesh.SetVertices(m_positions);
                 mesh.boneWeights = m_boneWeights.ToArray();
                 mesh.triangles = m_indices.ToArray();
                 mesh.RecalculateNormals();

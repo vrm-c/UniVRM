@@ -371,7 +371,7 @@ namespace VRM
                 srcRenderer.BakeMesh(blendShapeMesh);
                 if (blendShapeMesh.vertices.Length != mesh.vertices.Length)
                 {
-                    throw new Exception("diffrent vertex count");
+                    throw new Exception("different vertex count");
                 }
                 srcRenderer.SetBlendShapeWeight(i, 0);
 

@@ -108,29 +108,29 @@ namespace UniHumanoid
 
         static Single3 ParseOffset(string line)
         {
-            var splited = line.Trim().Split();
-            if (splited[0] != "OFFSET")
+            var split = line.Trim().Split();
+            if (split[0] != "OFFSET")
             {
                 throw new BvhException("OFFSET is not found");
             }
 
-            var offset = splited.Skip(1).Where(x => !string.IsNullOrEmpty(x)).Select(x => float.Parse(x)).ToArray();
+            var offset = split.Skip(1).Where(x => !string.IsNullOrEmpty(x)).Select(x => float.Parse(x)).ToArray();
             return new Single3(offset[0], offset[1], offset[2]);
         }
 
         static Channel[] ParseChannel(string line)
         {
-            var splited = line.Trim().Split();
-            if (splited[0] != "CHANNELS")
+            var split = line.Trim().Split();
+            if (split[0] != "CHANNELS")
             {
                 throw new BvhException("CHANNELS is not found");
             }
-            var count = int.Parse(splited[1]);
-            if (count + 2 != splited.Length)
+            var count = int.Parse(split[1]);
+            if (count + 2 != split.Length)
             {
-                throw new BvhException("channel count is not match with splited count");
+                throw new BvhException("channel count is not match with split count");
             }
-            return splited.Skip(2).Select(x => (Channel)Enum.Parse(typeof(Channel), x)).ToArray();
+            return split.Skip(2).Select(x => (Channel)Enum.Parse(typeof(Channel), x)).ToArray();
         }
 
         public IEnumerable<BvhNode> Traverse()
@@ -139,9 +139,9 @@ namespace UniHumanoid
 
             foreach (var child in Children)
             {
-                foreach (var descentant in child.Traverse())
+                foreach (var descendant in child.Traverse())
                 {
-                    yield return descentant;
+                    yield return descendant;
                 }
             }
         }
@@ -313,14 +313,14 @@ namespace UniHumanoid
 
         public void ParseFrame(int frame, string line)
         {
-            var splited = line.Trim().Split().Where(x => !string.IsNullOrEmpty(x)).ToArray();
-            if (splited.Length != Channels.Length)
+            var split = line.Trim().Split().Where(x => !string.IsNullOrEmpty(x)).ToArray();
+            if (split.Length != Channels.Length)
             {
                 throw new BvhException("frame key count is not match channel count");
             }
             for(int i=0; i<Channels.Length; ++i)
             {
-                Channels[i].SetKey(frame, float.Parse(splited[i]));
+                Channels[i].SetKey(frame, float.Parse(split[i]));
             }
         }
 
@@ -343,19 +343,19 @@ namespace UniHumanoid
                 var frameTime = 0.0f;
                 if (r.ReadLine() == "MOTION")
                 {
-                    var frameSplited = r.ReadLine().Split(':');
-                    if (frameSplited[0] != "Frames")
+                    var frameSplit = r.ReadLine().Split(':');
+                    if (frameSplit[0] != "Frames")
                     {
                         throw new BvhException("Frames is not found");
                     }
-                    frames = int.Parse(frameSplited[1]);
+                    frames = int.Parse(frameSplit[1]);
 
-                    var frameTimeSplited = r.ReadLine().Split(':');
-                    if (frameTimeSplited[0] != "Frame Time")
+                    var frameTimeSplit = r.ReadLine().Split(':');
+                    if (frameTimeSplit[0] != "Frame Time")
                     {
                         throw new BvhException("Frame Time is not found");
                     }
-                    frameTime = float.Parse(frameTimeSplited[1]);
+                    frameTime = float.Parse(frameTimeSplit[1]);
                 }
 
                 var bvh = new Bvh(root, frames, frameTime);
@@ -373,37 +373,37 @@ namespace UniHumanoid
         static BvhNode ParseNode(StringReader r, int level = 0)
         {
             var firstline = r.ReadLine().Trim();
-            var splited = firstline.Split();
-            if (splited.Length != 2)
+            var split = firstline.Split();
+            if (split.Length != 2)
             {
-                if (splited.Length == 1)
+                if (split.Length == 1)
                 {
-                    if(splited[0] == "}")
+                    if(split[0] == "}")
                     {
                         return null;
                     }
                 }
-                throw new BvhException(String.Format("splited to {0}({1})", splited.Length, firstline));
+                throw new BvhException(String.Format("split to {0}({1})", split.Length, firstline));
             }
 
             BvhNode node = null;
-            if (splited[0] == "ROOT")
+            if (split[0] == "ROOT")
             {
                 if (level != 0)
                 {
                     throw new BvhException("nested ROOT");
                 }
-                node = new BvhNode(splited[1]);
+                node = new BvhNode(split[1]);
             }
-            else if (splited[0] == "JOINT")
+            else if (split[0] == "JOINT")
             {
                 if (level == 0)
                 {
                     throw new BvhException("should ROOT, but JOINT");
                 }
-                node = new BvhNode(splited[1]);
+                node = new BvhNode(split[1]);
             }
-            else if (splited[0] == "End")
+            else if (split[0] == "End")
             {
                 if (level == 0)
                 {
@@ -413,7 +413,7 @@ namespace UniHumanoid
             }
             else
             {
-                throw new BvhException("unknown type: " + splited[0]);
+                throw new BvhException("unknown type: " + split[0]);
             }
 
             if(r.ReadLine().Trim() != "{")

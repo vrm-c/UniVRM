@@ -65,20 +65,20 @@ namespace UniJSON
         {
             {
                 var value = Utf8String.From("a/５/c");
-                var splited = value.Split((byte)'/').ToArray();
-                Assert.AreEqual(3, splited.Length);
-                Assert.AreEqual(splited[0], Utf8String.From("a"));
-                Assert.AreEqual(splited[1], Utf8String.From("５"));
-                Assert.AreEqual(splited[2], Utf8String.From("c"));
+                var split = value.Split((byte)'/').ToArray();
+                Assert.AreEqual(3, split.Length);
+                Assert.AreEqual(split[0], Utf8String.From("a"));
+                Assert.AreEqual(split[1], Utf8String.From("５"));
+                Assert.AreEqual(split[2], Utf8String.From("c"));
             }
             {
                 var value = Utf8String.From("/a/５/c/");
-                var splited = value.Split((byte)'/').ToArray();
-                Assert.AreEqual(4, splited.Length);
-                Assert.AreEqual(splited[0], Utf8String.From(""));
-                Assert.AreEqual(splited[1], Utf8String.From("a"));
-                Assert.AreEqual(splited[2], Utf8String.From("５"));
-                Assert.AreEqual(splited[3], Utf8String.From("c"));
+                var split = value.Split((byte)'/').ToArray();
+                Assert.AreEqual(4, split.Length);
+                Assert.AreEqual(split[0], Utf8String.From(""));
+                Assert.AreEqual(split[1], Utf8String.From("a"));
+                Assert.AreEqual(split[2], Utf8String.From("５"));
+                Assert.AreEqual(split[3], Utf8String.From("c"));
             }
         }
 

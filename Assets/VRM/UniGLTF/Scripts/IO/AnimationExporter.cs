@@ -63,31 +63,31 @@ namespace UniGLTF
             return nodes.IndexOf(descendant);
         }
 
-        public static glTFAnimationTarget.AnimationPropertys PropertyToTarget(string property)
+        public static glTFAnimationTarget.AnimationProperties PropertyToTarget(string property)
         {
             if (property.StartsWith("m_LocalPosition."))
             {
-                return glTFAnimationTarget.AnimationPropertys.Translation;
+                return glTFAnimationTarget.AnimationProperties.Translation;
             }
             else if (property.StartsWith("localEulerAnglesRaw."))
             {
-                return glTFAnimationTarget.AnimationPropertys.EulerRotation;
+                return glTFAnimationTarget.AnimationProperties.EulerRotation;
             }
             else if (property.StartsWith("m_LocalRotation."))
             {
-                return glTFAnimationTarget.AnimationPropertys.Rotation;
+                return glTFAnimationTarget.AnimationProperties.Rotation;
             }
             else if (property.StartsWith("m_LocalScale."))
             {
-                return glTFAnimationTarget.AnimationPropertys.Scale;
+                return glTFAnimationTarget.AnimationProperties.Scale;
             }
             else if (property.StartsWith("blendShape."))
             {
-                return glTFAnimationTarget.AnimationPropertys.BlendShape;
+                return glTFAnimationTarget.AnimationProperties.BlendShape;
             }
             else
             {
-                return glTFAnimationTarget.AnimationPropertys.NotImplemented;
+                return glTFAnimationTarget.AnimationProperties.NotImplemented;
             }
         }
 
@@ -123,19 +123,19 @@ namespace UniGLTF
             };
 
 #if UNITY_5_6_OR_NEWER
-            List<AnimationCurveData> curveDatas = new List<AnimationCurveData>();
+            List<AnimationCurveData> curveDatum = new List<AnimationCurveData>();
 
             foreach (var binding in AnimationUtility.GetCurveBindings(clip))
             {
                 var curve = AnimationUtility.GetEditorCurve(clip, binding);
 
                 var property = AnimationExporter.PropertyToTarget(binding.propertyName);
-                if (property == glTFAnimationTarget.AnimationPropertys.NotImplemented)
+                if (property == glTFAnimationTarget.AnimationProperties.NotImplemented)
                 {
                     Debug.LogWarning("Not Implemented keyframe property : " + binding.propertyName);
                     continue;
                 }
-                if (property == glTFAnimationTarget.AnimationPropertys.EulerRotation)
+                if (property == glTFAnimationTarget.AnimationProperties.EulerRotation)
                 {
                     Debug.LogWarning("Interpolation setting of AnimationClip should be Quaternion");
                     continue;
@@ -144,7 +144,7 @@ namespace UniGLTF
                 var nodeIndex = GetNodeIndex(root, nodes, binding.path);
                 var samplerIndex = animation.Animation.AddChannelAndGetSampler(nodeIndex, property);
                 var elementCount = 0;
-                if (property == glTFAnimationTarget.AnimationPropertys.BlendShape)
+                if (property == glTFAnimationTarget.AnimationProperties.BlendShape)
                 {
                     var mesh = nodes[nodeIndex].GetComponent<SkinnedMeshRenderer>().sharedMesh;
                     elementCount = mesh.blendShapeCount;
@@ -155,17 +155,17 @@ namespace UniGLTF
                 }
 
                 // 同一のsamplerIndexが割り当てられているcurveDataがある場合はそれを使用し、無ければ作る
-                    var curveData = curveDatas.FirstOrDefault(x => x.SamplerIndex == samplerIndex);
+                    var curveData = curveDatum.FirstOrDefault(x => x.SamplerIndex == samplerIndex);
                 if (curveData == null)
                 {
                     curveData = new AnimationCurveData(AnimationUtility.GetKeyRightTangentMode(curve, 0), property, samplerIndex, elementCount);
-                    curveDatas.Add(curveData);
+                    curveDatum.Add(curveData);
                 }
 
                 // 全てのキーフレームを回収
                 int elementOffset = 0;
                 float valueFactor = 1.0f;
-                if (property == glTFAnimationTarget.AnimationPropertys.BlendShape)
+                if (property == glTFAnimationTarget.AnimationProperties.BlendShape)
                 {
                     var mesh = nodes[nodeIndex].GetComponent<SkinnedMeshRenderer>().sharedMesh;
                     var blendShapeName = binding.propertyName.Replace("blendShape.", "");
@@ -187,7 +187,7 @@ namespace UniGLTF
             }
 
             //キー挿入
-            foreach (var curve in curveDatas)
+            foreach (var curve in curveDatum)
             {
                 if (curve.Keyframes.Count == 0)
                     continue;

@@ -85,7 +85,7 @@ namespace UniHumanoid
             if (GUILayout.Button("Pose to AnimationClip"))
             {
                 var path = EditorUtility.SaveFilePanel(
-                        "Save animnationClip",
+                        "Save animationClip",
                         Application.dataPath,
                         string.Format("{0}.pose.anim", serializedObject.targetObject.name),
                         "anim");

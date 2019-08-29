@@ -34,7 +34,7 @@ namespace UniGLTF
             }
         }
 
-        private static void CalculateTanget(List<Keyframe> keyframes, int current)
+        private static void CalculateTangent(List<Keyframe> keyframes, int current)
         {
             int back = current - 1;
             if (back < 0)
@@ -134,7 +134,7 @@ namespace UniGLTF
                             keyframes[i].Add(new Keyframe(time, reversed[i], 0, 0));
                             if (keyframes[i].Count > 0)
                             {
-                                CalculateTanget(keyframes[i], keyframes[i].Count - 1);
+                                CalculateTangent(keyframes[i], keyframes[i].Count - 1);
                             }
                         }
                         else if (tangentMode == TangentMode.Constant)
@@ -157,7 +157,7 @@ namespace UniGLTF
 
         public static List<AnimationClip> ImportAnimationClip(ImporterContext ctx)
         {
-            List<AnimationClip> animasionClips = new List<AnimationClip>();
+            List<AnimationClip> animationClips = new List<AnimationClip>();
             for (int i = 0; i < ctx.GLTF.animations.Count; ++i)
             {
                 var clip = new AnimationClip();
@@ -302,10 +302,10 @@ namespace UniGLTF
                             break;
                     }
                 }
-                animasionClips.Add(clip);
+                animationClips.Add(clip);
             }
 
-            return animasionClips;
+            return animationClips;
         }
 
         public static void ImportAnimation(ImporterContext ctx)

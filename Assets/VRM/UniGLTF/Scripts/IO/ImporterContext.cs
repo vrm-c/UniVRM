@@ -238,7 +238,7 @@ namespace UniGLTF
         /// <param name="bytes"></param>
         public void ParseGlb(Byte[] bytes)
         {
-            var chunks = glbImporter.ParseGlbChanks(bytes);
+            var chunks = glbImporter.ParseGlbChunks(bytes);
 
             if (chunks.Count != 2)
             {
@@ -887,7 +887,7 @@ namespace UniGLTF
                 }
             }
 
-            // Create or upate Main Asset
+            // Create or update Main Asset
             if (prefabPath.IsFileExists)
             {
                 Debug.LogFormat("replace prefab: {0}", prefabPath);
@@ -905,11 +905,17 @@ namespace UniGLTF
             }
         }
 
+        [Obsolete("Use ExtractImages(prefabPath)")]
+        public void ExtranctImages(UnityPath prefabPath)
+        {
+            ExtractImages(prefabPath);
+        }
+
         /// <summary>
         /// Extract images from glb or gltf out of Assets folder.
         /// </summary>
         /// <param name="prefabPath"></param>
-        public void ExtranctImages(UnityPath prefabPath)
+        public void ExtractImages(UnityPath prefabPath)
         {
             var prefabParentDir = prefabPath.Parent;
 
@@ -1012,7 +1018,7 @@ namespace UniGLTF
         }
 
         /// <summary>
-        /// Destroy assets that created ImporterContext. This function is clean up for imoprter error.
+        /// Destroy assets that created ImporterContext. This function is clean up for importer error.
         /// </summary>
         public void EditorDestroyRootAndAssets()
         {

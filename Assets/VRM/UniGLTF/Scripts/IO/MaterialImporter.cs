@@ -37,7 +37,7 @@ namespace UniGLTF
             Transparent
         }
 
-        /// StandardShader vaiables
+        /// StandardShader variables
         ///
         /// _Color
         /// _MainTex
@@ -70,7 +70,7 @@ namespace UniGLTF
             //Debug.LogFormat("[{0}]{1}", i, shader.name);
             var material = new Material(shader);
 #if UNITY_EDITOR
-            // textureImporter.SaveAndReimport(); may destory this material
+            // textureImporter.SaveAndReimport(); may destroy this material
             material.hideFlags = HideFlags.DontUnloadUnusedAsset;
 #endif
 

@@ -9,7 +9,7 @@ namespace VRM
     /// <summary>
     /// ファーストパーソン向けLayer検討
     /// 
-    /// * Deault LayerをFirstPersonレイヤーとして使う
+    /// * Default LayerをFirstPersonレイヤーとして使う
     /// * 9番にThirdPerson Layerを追加する
     /// 
     /// * FirstPersonCameraはCullingMaskでThirdPerson Layerを除外

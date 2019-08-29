@@ -106,7 +106,7 @@ namespace UniJSON
                     {
                         if (top.Count % 2 == 0)
                         {
-                            if (!isKey) throw new FormatterException("key exptected");
+                            if (!isKey) throw new FormatterException("key expected");
                             if (top.Count != 0)
                             {
                                 m_w.Write(',');
@@ -114,7 +114,7 @@ namespace UniJSON
                         }
                         else
                         {
-                            if (isKey) throw new FormatterException("key not exptected");
+                            if (isKey) throw new FormatterException("key not expected");
                         }
                     }
                     break;
