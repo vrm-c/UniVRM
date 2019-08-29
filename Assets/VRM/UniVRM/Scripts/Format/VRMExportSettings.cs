@@ -133,7 +133,7 @@ namespace VRM
                     var dstColliderGroup = dst.gameObject.AddComponent<VRMSpringBoneColliderGroup>();
                     dstColliderGroup.Colliders = src.Colliders.Select(y =>
                     {
-                        var offset = dst.worldToLocalMatrix.MultiplyPoint(src.transform.localToWorldMatrix.MultiplyPoint(y.Offset));
+                        var offset =dst.worldToLocalMatrix.MultiplyPoint(src.transform.localToWorldMatrix.MultiplyPoint(y.Offset));
                         return new VRMSpringBoneColliderGroup.SphereCollider
                         {
                             Offset = offset,
@@ -279,29 +279,38 @@ namespace VRM
             if (ReduceBlendshapeSize)
             {
                 var proxy = target.GetComponent<VRMBlendShapeProxy>();
-                var blendShapClips = proxy.BlendShapeAvatar.Clips;
 
-                var skinMeshedRenderers = target.GetComponentsInChildren<SkinnedMeshRenderer>();
-                
+                // 元のBlendShapeClipに変更を加えないように複製
+                var copyBlendShapeAvatar = GameObject.Instantiate(proxy.BlendShapeAvatar);
+                var copyBlendShapClips = new List<BlendShapeClip>();
+
+                foreach (var clip in proxy.BlendShapeAvatar.Clips)
+                {
+                    copyBlendShapClips.Add(GameObject.Instantiate(clip));
+                }
+
+                var skinnedMeshRenderers = target.GetComponentsInChildren<SkinnedMeshRenderer>();
+
                 var names = new Dictionary<int, string>();
                 var vs = new Dictionary<int, Vector3[]>();
                 var ns = new Dictionary<int, Vector3[]>();
                 var ts = new Dictionary<int, Vector3[]>();
 
-                foreach (SkinnedMeshRenderer smr in skinMeshedRenderers)
+                foreach (SkinnedMeshRenderer smr in skinnedMeshRenderers)
                 {
                     Mesh mesh = smr.sharedMesh;
                     if (mesh == null) continue;
                     if (mesh.blendShapeCount == 0) continue;
 
                     var copyMesh = mesh.Copy(true);
-                    var vCount = copyMesh.vertexCount;names.Clear();
-                    
+                    var vCount = copyMesh.vertexCount;
+                    names.Clear();
+
                     vs.Clear();
                     ns.Clear();
                     ts.Clear();
 
-                    var usedBlendshapeIndexArray = blendShapClips
+                    var usedBlendshapeIndexArray = copyBlendShapClips
                         .SelectMany(clip => clip.Values)
                         .Where(val => target.transform.Find(val.RelativePath) == smr.transform)
                         .Select(val => val.Index)
@@ -323,7 +332,7 @@ namespace VRM
                     }
 
                     copyMesh.ClearBlendShapes();
-                    
+
                     foreach (var i in usedBlendshapeIndexArray)
                     {
                         copyMesh.AddBlendShapeFrame(names[i], 100f, vs[i], ns[i], ts[i]);
@@ -333,7 +342,7 @@ namespace VRM
                         .Select((x, i) => new {x, i})
                         .ToDictionary(pair => pair.x, pair => pair.i);
 
-                    foreach (var clip in proxy.BlendShapeAvatar.Clips)
+                    foreach (var clip in copyBlendShapClips)
                     {
                         for (var i = 0; i < clip.Values.Length; ++i)
                         {
@@ -343,6 +352,10 @@ namespace VRM
                             clip.Values[i] = value;
                         }
                     }
+
+                    copyBlendShapeAvatar.Clips = copyBlendShapClips;
+
+                    proxy.BlendShapeAvatar = copyBlendShapeAvatar;
 
                     smr.sharedMesh = copyMesh;
                 }
@@ -359,7 +372,7 @@ namespace VRM
                 Debug.LogFormat("Export elapsed {0}", sw.Elapsed);
             }
 
-        //    PrefabUtility.RevertPrefabInstance(target);
+            PrefabUtility.RevertPrefabInstance(target);
 
             if (path.StartsWithUnityAssetPath())
             {
