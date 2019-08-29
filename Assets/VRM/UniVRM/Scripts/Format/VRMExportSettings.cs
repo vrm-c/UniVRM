@@ -27,7 +27,7 @@ namespace VRM
 
         public bool UseExperimentalExporter = true;
 
-        public bool ReduceBlendshapeSize = false;
+        public bool ReduceBlendshapeSize = true;
 
         public IEnumerable<string> CanExport()
         {
@@ -160,7 +160,8 @@ namespace VRM
                     dst.m_hitRadius = src.m_hitRadius;
                     if (src.ColliderGroups != null)
                     {
-                        dst.ColliderGroups = src.ColliderGroups.Select(x => map[x.transform].GetComponent<VRMSpringBoneColliderGroup>()).ToArray();
+                        dst.ColliderGroups = src.ColliderGroups
+                            .Select(x => map[x.transform].GetComponent<VRMSpringBoneColliderGroup>()).ToArray();
                     }
                 }
             }
@@ -262,6 +263,7 @@ namespace VRM
                     destroy.Add(target);
                 }
             }
+
             if (PoseFreeze)
             {
                 using (new RecordDisposer(target.transform.Traverse().ToArray(), "before normalize"))
@@ -270,6 +272,79 @@ namespace VRM
                     CopyVRMComponents(target, normalized.Root, normalized.BoneMap);
                     target = normalized.Root;
                     destroy.Add(target);
+                }
+            }
+
+            // remove unused blendShape
+            if (ReduceBlendshapeSize)
+            {
+                var proxy = target.GetComponent<VRMBlendShapeProxy>();
+                var blendShapClips = proxy.BlendShapeAvatar.Clips;
+
+                var skinMeshedRenderers = target.GetComponentsInChildren<SkinnedMeshRenderer>();
+                
+                var names = new Dictionary<int, string>();
+                var vs = new Dictionary<int, Vector3[]>();
+                var ns = new Dictionary<int, Vector3[]>();
+                var ts = new Dictionary<int, Vector3[]>();
+
+                foreach (SkinnedMeshRenderer smr in skinMeshedRenderers)
+                {
+                    Mesh mesh = smr.sharedMesh;
+                    if (mesh == null) continue;
+                    if (mesh.blendShapeCount == 0) continue;
+
+                    var copyMesh = mesh.Copy(true);
+                    var vCount = copyMesh.vertexCount;names.Clear();
+                    
+                    vs.Clear();
+                    ns.Clear();
+                    ts.Clear();
+
+                    var usedBlendshapeIndexArray = blendShapClips
+                        .SelectMany(clip => clip.Values)
+                        .Where(val => target.transform.Find(val.RelativePath) == smr.transform)
+                        .Select(val => val.Index)
+                        .Distinct()
+                        .ToArray();
+
+                    foreach (var i in usedBlendshapeIndexArray)
+                    {
+                        var name = copyMesh.GetBlendShapeName(i);
+                        var vertices = new Vector3[vCount];
+                        var normals = new Vector3[vCount];
+                        var tangents = new Vector3[vCount];
+                        copyMesh.GetBlendShapeFrameVertices(i, 0, vertices, normals, tangents);
+
+                        names.Add(i, name);
+                        vs.Add(i, vertices);
+                        ns.Add(i, normals);
+                        ts.Add(i, tangents);
+                    }
+
+                    copyMesh.ClearBlendShapes();
+                    
+                    foreach (var i in usedBlendshapeIndexArray)
+                    {
+                        copyMesh.AddBlendShapeFrame(names[i], 100f, vs[i], ns[i], ts[i]);
+                    }
+
+                    var indexMapper = usedBlendshapeIndexArray
+                        .Select((x, i) => new {x, i})
+                        .ToDictionary(pair => pair.x, pair => pair.i);
+
+                    foreach (var clip in proxy.BlendShapeAvatar.Clips)
+                    {
+                        for (var i = 0; i < clip.Values.Length; ++i)
+                        {
+                            var value = clip.Values[i];
+                            if (target.transform.Find(value.RelativePath) != smr.transform) continue;
+                            value.Index = indexMapper[value.Index];
+                            clip.Values[i] = value;
+                        }
+                    }
+
+                    smr.sharedMesh = copyMesh;
                 }
             }
 
@@ -283,6 +358,8 @@ namespace VRM
                 File.WriteAllBytes(path, bytes);
                 Debug.LogFormat("Export elapsed {0}", sw.Elapsed);
             }
+
+        //    PrefabUtility.RevertPrefabInstance(target);
 
             if (path.StartsWithUnityAssetPath())
             {
