@@ -91,6 +91,7 @@ namespace VRM
 
         private void Reset()
         {
+            SetDefault();
             TraverseRenderers();
         }
 
