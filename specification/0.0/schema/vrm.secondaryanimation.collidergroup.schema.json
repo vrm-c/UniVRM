@@ -12,7 +12,7 @@
                 "type": "object",
                 "properties": {
                     "offset": {
-                        "description": "The local coordinate from the node of the collider group.",
+                        "description": "The local coordinate from the node of the collider group in *left-handed* Y-up coordinate.",
                         "type": "object",
                         "properties": {
                             "x": {
