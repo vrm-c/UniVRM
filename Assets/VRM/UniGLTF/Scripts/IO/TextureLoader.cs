@@ -64,16 +64,32 @@ namespace UniGLTF
             {
                 Debug.LogWarningFormat("fail to get TextureImporter: {0}", m_assetPath);
             }
+            importer.maxTextureSize = 8192;
             importer.sRGBTexture = !isLinear;
+
             importer.SaveAndReimport();
 
             Texture = m_assetPath.LoadAsset<Texture2D>();
+
             //Texture.name = m_textureName;
             if (Texture == null)
             {
                 Debug.LogWarningFormat("fail to Load Texture2D: {0}", m_assetPath);
             }
 
+            else
+            {
+                var maxSize = Mathf.Max(Texture.width, Texture.height);
+
+                importer.maxTextureSize
+                    = maxSize > 4096 ? 8192 :
+                    maxSize > 2048 ? 4096 :
+                    maxSize > 1024 ? 2048 :
+                    maxSize > 512 ? 1024 :
+                    512;
+
+                importer.SaveAndReimport();
+            }
             yield break;
         }
     }
