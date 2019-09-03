@@ -372,7 +372,11 @@ namespace VRM
                 Debug.LogFormat("Export elapsed {0}", sw.Elapsed);
             }
 
+#if UNITY_2018_3_OR_NEWER
+            PrefabUtility.RevertPrefabInstance(target, InteractionMode.AutomatedAction);
+#else
             PrefabUtility.RevertPrefabInstance(target);
+#endif
 
             if (path.StartsWithUnityAssetPath())
             {
