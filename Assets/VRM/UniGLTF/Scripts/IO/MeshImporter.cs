@@ -208,7 +208,25 @@ namespace UniGLTF
                 // color
                 if (prim.attributes.COLOR_0 != -1)
                 {
-                    context.colors = ctx.GLTF.GetArrayFromAccessor<Color>(prim.attributes.COLOR_0);
+                    if (ctx.GLTF.accessors[prim.attributes.COLOR_0].TypeCount == 3)
+                    {
+                        var vec3Color = ctx.GLTF.GetArrayFromAccessor<Vector3>(prim.attributes.COLOR_0);
+                        context.colors = new Color[vec3Color.Length];
+
+                        for (int i = 0; i < vec3Color.Length; i++)
+                        {
+                            Vector3 color = vec3Color[i];
+                            context.colors[i] = new Color(color.x, color.y, color.z);
+                        }
+                    }
+                    else if (ctx.GLTF.accessors[prim.attributes.COLOR_0].TypeCount == 4)
+                    {
+                        context.colors = ctx.GLTF.GetArrayFromAccessor<Color>(prim.attributes.COLOR_0);
+                    }
+                    else
+                    {
+                        throw new NotImplementedException(string.Format("unknown color type {0}", ctx.GLTF.accessors[prim.attributes.COLOR_0].type));
+                    }
                 }
 
                 // skin
