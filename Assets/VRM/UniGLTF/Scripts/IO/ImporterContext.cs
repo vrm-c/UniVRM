@@ -649,9 +649,9 @@ namespace UniGLTF
         {
             using (MeasureTime("LoadNodes"))
             {
-                foreach (var x in GLTF.nodes)
+                for (int i = 0; i < GLTF.nodes.Count; i++)
                 {
-                    Nodes.Add(NodeImporter.ImportNode(x).transform);
+                    Nodes.Add(NodeImporter.ImportNode(GLTF.nodes[i], i).transform);
                 }
             }
 

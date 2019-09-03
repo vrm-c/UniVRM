@@ -8,13 +8,17 @@ namespace UniGLTF
 {
     public static class NodeImporter
     {
-        public static GameObject ImportNode(glTFNode node)
+        public static GameObject ImportNode(glTFNode node, int nodeIndex)
         {
             var nodeName = node.name;
             if (!string.IsNullOrEmpty(nodeName) && nodeName.Contains("/"))
             {
                 Debug.LogWarningFormat("node {0} contains /. replace _", node.name);
                 nodeName = nodeName.Replace("/", "_");
+            }
+            if(string.IsNullOrEmpty(nodeName))
+            {
+                nodeName = string.Format("nodeIndex_{0}", nodeIndex);
             }
             var go = new GameObject(nodeName);
 

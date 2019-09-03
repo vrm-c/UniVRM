@@ -186,7 +186,11 @@ namespace UniGLTF
                             {
                                 var sampler = animation.samplers[channel.sampler];
                                 var input = ctx.GLTF.GetArrayFromAccessor<float>(sampler.input);
-                                var output = ctx.GLTF.GetArrayFromAccessorAsFloat(sampler.output);
+                                var outputVector = ctx.GLTF.GetArrayFromAccessor<Vector3>(sampler.output);
+                                var output = new float[outputVector.Count() * 3];
+                                ArrayExtensions.Copy<Vector3, float>(
+                                    new ArraySegment<Vector3>(outputVector),
+                                    new ArraySegment<float>(output));
 
                                 AnimationImporter.SetAnimationCurve(
                                     clip,
@@ -209,7 +213,11 @@ namespace UniGLTF
                             {
                                 var sampler = animation.samplers[channel.sampler];
                                 var input = ctx.GLTF.GetArrayFromAccessor<float>(sampler.input);
-                                var output = ctx.GLTF.GetArrayFromAccessorAsFloat(sampler.output);
+                                var outputVector = ctx.GLTF.GetArrayFromAccessor<Vector4>(sampler.output);
+                                var output = new float[outputVector.Count() * 4];
+                                ArrayExtensions.Copy<Vector4, float>(
+                                    new ArraySegment<Vector4>(outputVector),
+                                    new ArraySegment<float>(output));
 
                                 AnimationImporter.SetAnimationCurve(
                                     clip,
@@ -235,7 +243,11 @@ namespace UniGLTF
                             {
                                 var sampler = animation.samplers[channel.sampler];
                                 var input = ctx.GLTF.GetArrayFromAccessor<float>(sampler.input);
-                                var output = ctx.GLTF.GetArrayFromAccessorAsFloat(sampler.output);
+                                var outputVector = ctx.GLTF.GetArrayFromAccessor<Vector3>(sampler.output);
+                                var output = new float[outputVector.Count() * 3];
+                                ArrayExtensions.Copy<Vector3, float>(
+                                    new ArraySegment<Vector3>(outputVector),
+                                    new ArraySegment<float>(output));
 
                                 AnimationImporter.SetAnimationCurve(
                                     clip,
