@@ -113,7 +113,8 @@ namespace UniGLTF
             var usePosition = blendShapeVertices != null && blendShapeVertices.Length > 0;
 
             var blendShapeNormals = mesh.normals;
-            var useNormal = usePosition && blendShapeNormals != null && blendShapeNormals.Length == blendShapeVertices.Length && !exportOnlyBlendShapePosition;
+            var useNormal = usePosition && blendShapeNormals != null && blendShapeNormals.Length == blendShapeVertices.Length;
+            // var useNormal = usePosition && blendShapeNormals != null && blendShapeNormals.Length == blendShapeVertices.Length && !exportOnlyBlendShapePosition;
 
             var blendShapeTangents = mesh.tangents.Select(y => (Vector3)y).ToArray();
             //var useTangent = usePosition && blendShapeTangents != null && blendShapeTangents.Length == blendShapeVertices.Length;
