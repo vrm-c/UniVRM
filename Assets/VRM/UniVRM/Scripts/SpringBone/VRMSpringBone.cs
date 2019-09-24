@@ -230,6 +230,14 @@ namespace VRM
             }
         }
 
+        public void SetLocalRotationsIdentity()
+        {
+            foreach (var verlet in m_verlet)
+            {
+                verlet.Head.localRotation = Quaternion.identity;
+            }
+        }
+
         static IEnumerable<Transform> GetChildren(Transform parent)
         {
             for(int i=0; i<parent.childCount; ++i)
