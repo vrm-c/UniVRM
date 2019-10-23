@@ -676,6 +676,8 @@ namespace UniGLTF
                     NodeImporter.SetupSkinning(this, nodes, i);
                 }
 
+                MakeAllBoundsEncapsulateWholeSkeleton(nodes);
+
                 // connect root
                 if (Root == null)
                 {
@@ -689,6 +691,33 @@ namespace UniGLTF
             }
 
             yield return null;
+        }
+
+        void MakeAllBoundsEncapsulateWholeSkeleton(List<NodeImporter.TransformWithSkin> nodes)
+        {
+            var rendererGroupsBySkeleton = nodes
+                .Where(node => node.SkinIndex.HasValue)
+                .Select(node => new
+                {
+                    skinnedMeshRenderer = node.Transform.GetComponent<SkinnedMeshRenderer>(),
+                    skin = GLTF.skins[node.SkinIndex.Value],
+                })
+                .Where(x => x.skinnedMeshRenderer != null)
+                .GroupBy(x => x.skin.skeleton);
+
+            foreach (var rendererGroup in rendererGroupsBySkeleton)
+            {
+                var encapsulatingBounds = rendererGroup.First().skinnedMeshRenderer.localBounds;
+                foreach (var renderer in rendererGroup.Skip(1))
+                {
+                    encapsulatingBounds.Encapsulate(renderer.skinnedMeshRenderer.localBounds);
+                }
+
+                foreach (var renderer in rendererGroup)
+                {
+                    renderer.skinnedMeshRenderer.localBounds = encapsulatingBounds;
+                }
+            }
         }
 #endregion
 
