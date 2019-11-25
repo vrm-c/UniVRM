@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 
 namespace VRM
@@ -6,11 +7,20 @@ namespace VRM
     [Serializable]
     public struct BlendShapeKey : IEquatable<BlendShapeKey>, IComparable<BlendShapeKey>
     {
-        public string Name;
+        // Enum.ToString() のGC回避用キャッシュ
+        private static readonly Dictionary<BlendShapePreset, string> m_presetNameDictionary =
+            new Dictionary<BlendShapePreset, string>();
+
+        private string m_name;
+        public string Name
+        {
+            get { return m_name.ToUpper(); }
+        }
+
         public BlendShapePreset Preset;
 
         string m_id;
-        string ID
+        private string ID
         {
             get
             {
@@ -18,13 +28,22 @@ namespace VRM
                 {
                     if (Preset != BlendShapePreset.Unknown)
                     {
-                        m_id = Preset.ToString().ToUpper();
+                        if (m_presetNameDictionary.ContainsKey(Preset))
+                        {
+                            m_id = m_presetNameDictionary[Preset];
+                        }
+                        else
+                        {
+                            m_presetNameDictionary.Add(Preset, Preset.ToString());
+                            m_id = m_presetNameDictionary[Preset];
+                        }
                     }
                     else
                     {
-                        m_id = Name;
+                        m_id = m_name;
                     }
                 }
+
                 return m_id;
             }
         }
@@ -39,33 +58,42 @@ namespace VRM
 
         public BlendShapeKey(string name, BlendShapePreset preset)
         {
-            Name = name.ToUpper();
+            m_name = name;
             Preset = preset;
+
             if (Preset != BlendShapePreset.Unknown)
             {
-                m_id = Preset.ToString().ToUpper();
+                if (m_presetNameDictionary.ContainsKey((Preset)))
+                {
+                    m_id = m_presetNameDictionary[Preset];
+                }
+                else
+                {
+                    m_presetNameDictionary.Add(Preset, Preset.ToString());
+                    m_id = m_presetNameDictionary[Preset];
+                }
             }
             else
             {
-                m_id = Name;
+                m_id = m_name;
             }
         }
 
         public override string ToString()
         {
-            return ID;
+            return ID.ToUpper();
         }
 
         public bool Equals(BlendShapeKey other)
         {
-            return ID == other.ID;
+            return String.Compare(ID, other.ID, StringComparison.OrdinalIgnoreCase) == 0;
         }
 
         public override bool Equals(object obj)
         {
             if (obj is BlendShapeKey)
             {
-                return Equals((BlendShapeKey)obj);
+                return Equals((BlendShapeKey) obj);
             }
             else
             {
@@ -84,6 +112,7 @@ namespace VRM
             {
                 return default(BlendShapeKey);
             }
+
             return new BlendShapeKey(clip.BlendShapeName, clip.Preset);
         }
 
