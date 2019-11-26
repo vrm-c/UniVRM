@@ -12,10 +12,10 @@ namespace VRM
         private static readonly Dictionary<BlendShapePreset, string> m_presetNameDictionary =
             new Dictionary<BlendShapePreset, string>();
 
+        private static readonly string UnknownPresetPrefix = "Unknown_";
+        
         private string m_name;
 
-        private const string UnknownPresetPrefix = "Unknown_";
-        
         public string Name
         {
             get { return m_name.ToUpper(); }
@@ -23,8 +23,8 @@ namespace VRM
 
         public BlendShapePreset Preset;
 
-        public string m_id;
-        public string ID
+        string m_id;
+        string ID
         {
             get
             {
@@ -52,15 +52,11 @@ namespace VRM
             }
         }
 
-        public BlendShapeKey(string name) : this(name, BlendShapePreset.Unknown)
+        public BlendShapeKey(BlendShapePreset preset) : this(preset.ToString(), preset)
         {
         }
 
-        public BlendShapeKey(BlendShapePreset preset) : this(preset.ToString(), BlendShapePreset.Unknown)
-        {
-        }
-
-        public BlendShapeKey(string name, BlendShapePreset preset)
+        public BlendShapeKey(string name, BlendShapePreset preset = BlendShapePreset.Unknown)
         {
             m_name = name;
             Preset = preset;
@@ -85,12 +81,12 @@ namespace VRM
 
         public override string ToString()
         {
-            return ID.ToUpper();
+            return ID.Replace(UnknownPresetPrefix,"").ToUpper();
         }
 
         public bool Equals(BlendShapeKey other)
         {
-            return String.Compare(ID, other.ID, StringComparison.OrdinalIgnoreCase) == 0;
+            return this.ID == other.ID;
         }
 
         public override bool Equals(object obj)
