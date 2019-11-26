@@ -1,19 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-
 
 namespace VRM
 {
     [Serializable]
     public struct BlendShapeKey : IEquatable<BlendShapeKey>, IComparable<BlendShapeKey>
     {
-        // Enum.ToString() のGC回避用キャッシュ
+        /// <summary>
+        /// Enum.ToString() のGC回避用キャッシュ
+        /// </summary>
         private static readonly Dictionary<BlendShapePreset, string> m_presetNameDictionary =
             new Dictionary<BlendShapePreset, string>();
 
+
+        /// <summary>
+        ///  BlendShapePresetと同名の名前を持つ独自に追加したBlendShapeを区別するためのprefix
+        /// </summary>
         private static readonly string UnknownPresetPrefix = "Unknown_";
-        
+
         private string m_name;
 
         public string Name
@@ -24,6 +28,7 @@ namespace VRM
         public BlendShapePreset Preset;
 
         string m_id;
+
         string ID
         {
             get
@@ -81,12 +86,12 @@ namespace VRM
 
         public override string ToString()
         {
-            return ID.Replace(UnknownPresetPrefix,"").ToUpper();
+            return ID.Replace(UnknownPresetPrefix, "").ToUpper();
         }
 
         public bool Equals(BlendShapeKey other)
         {
-            return this.ID == other.ID;
+            return ID == other.ID;
         }
 
         public override bool Equals(object obj)
