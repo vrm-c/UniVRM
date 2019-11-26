@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 
 namespace VRM
@@ -12,6 +13,9 @@ namespace VRM
             new Dictionary<BlendShapePreset, string>();
 
         private string m_name;
+
+        private const string UnknownPresetPrefix = "Unknown_";
+        
         public string Name
         {
             get { return m_name.ToUpper(); }
@@ -19,8 +23,8 @@ namespace VRM
 
         public BlendShapePreset Preset;
 
-        string m_id;
-        private string ID
+        public string m_id;
+        public string ID
         {
             get
             {
@@ -40,7 +44,7 @@ namespace VRM
                     }
                     else
                     {
-                        m_id = m_name;
+                        m_id = UnknownPresetPrefix + m_name;
                     }
                 }
 
@@ -75,7 +79,7 @@ namespace VRM
             }
             else
             {
-                m_id = m_name;
+                m_id = UnknownPresetPrefix + m_name;
             }
         }
 
