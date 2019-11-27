@@ -101,6 +101,7 @@ namespace VRM
             {
                 // fallback
                 firstPerson.SetDefault();
+                firstPerson.FirstPersonOffset = gltfFirstPerson.firstPersonBoneOffset;
             }
             firstPerson.TraverseRenderers(this);
 
