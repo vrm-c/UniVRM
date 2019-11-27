@@ -322,7 +322,14 @@ namespace VRM
             var mesh = srcMesh.Copy(false);
             mesh.name = srcMesh.name + ".baked";
             srcRenderer.BakeMesh(mesh);
-
+           
+            var blendShapeValues = new Dictionary<int,float>();
+            for (int i = 0; i < srcMesh.blendShapeCount; i++)
+            {
+                var val = srcRenderer.GetBlendShapeWeight(i);
+                if (val > 0) blendShapeValues.Add(i, val);
+            }
+        
             mesh.boneWeights = MapBoneWeight(srcMesh.boneWeights, boneMap, srcRenderer.bones, dstBones); // restore weights. clear when BakeMesh
 
             // recalc bindposes
@@ -332,7 +339,7 @@ namespace VRM
             var m = default(Matrix4x4);
             m.SetTRS(Vector3.zero, src.rotation, Vector3.one); // rotation only
             mesh.ApplyMatrix(m);
-
+            
             //
             // BlendShapes
             //
@@ -364,7 +371,7 @@ namespace VRM
                 {
                     name = String.Format("{0}", i);
                 }
-
+               
                 report.SetCount(i, name, hasVertices, hasNormals, hasTangents);
 
                 srcRenderer.SetBlendShapeWeight(i, 100.0f);
@@ -373,34 +380,41 @@ namespace VRM
                 {
                     throw new Exception("different vertex count");
                 }
-                srcRenderer.SetBlendShapeWeight(i, 0);
+
+                var value = blendShapeValues.ContainsKey(i) ? blendShapeValues[i] : 0;
+                srcRenderer.SetBlendShapeWeight(i, value);
 
                 Vector3[] vertices = blendShapeMesh.vertices;
-                for (int j = 0; j < vertices.Length; ++j)
-                {
-                    if (originalBlendShapePositions[j] == Vector3.zero)
+              
+                    Debug.Log(i+" "+name);
+                    
+                    for (int j = 0; j < vertices.Length; ++j)
                     {
-                        vertices[j] = Vector3.zero;
-                    }
-                    else
-                    {
-                        vertices[j] = m.MultiplyPoint(vertices[j]) - meshVertices[j];
-                    }
-                }
-
+                        if (originalBlendShapePositions[j] == Vector3.zero)
+                        {
+                            vertices[j] = Vector3.zero;
+                        }
+                        else
+                        {
+                            vertices[j] = m.MultiplyPoint(vertices[j]) - meshVertices[j];
+                        }
+                    }                    
+               
+             
                 Vector3[] normals = blendShapeMesh.normals;
-                for (int j = 0; j < normals.Length; ++j)
-                {
-                    if (originalBlendShapeNormals[j] == Vector3.zero)
+              
+                    for (int j = 0; j < normals.Length; ++j)
                     {
-                        normals[j] = Vector3.zero;
-                    }
-                    else
-                    {
-                        normals[j] = m.MultiplyVector(normals[j]) - meshNormals[j];
-                    }
-                }
-
+                        if (originalBlendShapeNormals[j] == Vector3.zero)
+                        {
+                            normals[j] = Vector3.zero;
+                        }
+                        else
+                        {
+                            normals[j] = m.MultiplyVector(normals[j]) - meshNormals[j];
+                        }
+                    } 
+         
                 Vector3[] tangents = blendShapeMesh.tangents.Select(x => (Vector3)x).ToArray();
 #if VRM_NORMALIZE_BLENDSHAPE_TANGENT
                 for (int j = 0; j < tangents.Length; ++j)
