@@ -339,7 +339,7 @@ namespace VRM
             var m = default(Matrix4x4);
             m.SetTRS(Vector3.zero, src.rotation, Vector3.one); // rotation only
             mesh.ApplyMatrix(m);
-            
+
             //
             // BlendShapes
             //
@@ -371,7 +371,7 @@ namespace VRM
                 {
                     name = String.Format("{0}", i);
                 }
-               
+
                 report.SetCount(i, name, hasVertices, hasNormals, hasTangents);
 
                 srcRenderer.SetBlendShapeWeight(i, 100.0f);
@@ -385,36 +385,33 @@ namespace VRM
                 srcRenderer.SetBlendShapeWeight(i, value);
 
                 Vector3[] vertices = blendShapeMesh.vertices;
-              
-                    Debug.Log(i+" "+name);
-                    
-                    for (int j = 0; j < vertices.Length; ++j)
+                
+                for (int j = 0; j < vertices.Length; ++j)
+                {
+                    if (originalBlendShapePositions[j] == Vector3.zero)
                     {
-                        if (originalBlendShapePositions[j] == Vector3.zero)
-                        {
-                            vertices[j] = Vector3.zero;
-                        }
-                        else
-                        {
-                            vertices[j] = m.MultiplyPoint(vertices[j]) - meshVertices[j];
-                        }
-                    }                    
-               
-             
+                        vertices[j] = Vector3.zero;
+                    }
+                    else
+                    {
+                        vertices[j] = m.MultiplyPoint(vertices[j]) - meshVertices[j];
+                    }
+                }
+
                 Vector3[] normals = blendShapeMesh.normals;
-              
-                    for (int j = 0; j < normals.Length; ++j)
+                for (int j = 0; j < normals.Length; ++j)
+                {
+                    if (originalBlendShapeNormals[j] == Vector3.zero)
                     {
-                        if (originalBlendShapeNormals[j] == Vector3.zero)
-                        {
-                            normals[j] = Vector3.zero;
-                        }
-                        else
-                        {
-                            normals[j] = m.MultiplyVector(normals[j]) - meshNormals[j];
-                        }
-                    } 
-         
+                        normals[j] = Vector3.zero;
+                        
+                    }
+                    else
+                    {
+                        normals[j] = m.MultiplyVector(normals[j]) - meshNormals[j];
+                    }
+                }
+
                 Vector3[] tangents = blendShapeMesh.tangents.Select(x => (Vector3)x).ToArray();
 #if VRM_NORMALIZE_BLENDSHAPE_TANGENT
                 for (int j = 0; j < tangents.Length; ++j)
