@@ -370,6 +370,24 @@ namespace VRM
                 var assetPath = dir.Child(o.name.EscapeFilePath() + ".asset");
                 return assetPath;
             }
+            else if (o is Avatar)
+            {
+                var dir = prefabPath.GetAssetFolder(".Avatar");
+                var assetPath = dir.Child(o.name.EscapeFilePath() + ".asset");
+                return assetPath;
+            }
+            else if (o is VRMMetaObject)
+            {
+                var dir = prefabPath.GetAssetFolder(".MetaObject");
+                var assetPath = dir.Child(o.name.EscapeFilePath() + ".asset");
+                return assetPath;
+            }
+            else if (o is UniHumanoid.AvatarDescription)
+            {
+                var dir = prefabPath.GetAssetFolder(".AvatarDescription");
+                var assetPath = dir.Child(o.name.EscapeFilePath() + ".asset");
+                return assetPath;
+            }
             else
             {
                 return base.GetAssetPath(prefabPath, o);

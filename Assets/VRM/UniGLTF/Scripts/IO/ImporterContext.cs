@@ -892,12 +892,21 @@ namespace UniGLTF
             {
                 Debug.LogFormat("replace prefab: {0}", prefabPath);
                 var prefab = prefabPath.LoadAsset<GameObject>();
+#if UNITY_2018_3_OR_NEWER
+                PrefabUtility.SaveAsPrefabAssetAndConnect(Root, prefabPath.Value, InteractionMode.AutomatedAction);
+#else
                 PrefabUtility.ReplacePrefab(Root, prefab, ReplacePrefabOptions.ReplaceNameBased);
+#endif
+
             }
             else
             {
                 Debug.LogFormat("create prefab: {0}", prefabPath);
+#if UNITY_2018_3_OR_NEWER
+                PrefabUtility.SaveAsPrefabAssetAndConnect(Root, prefabPath.Value, InteractionMode.AutomatedAction);
+#else
                 PrefabUtility.CreatePrefab(prefabPath.Value, Root);
+#endif
             }
             foreach (var x in paths)
             {
