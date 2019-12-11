@@ -18,7 +18,13 @@ namespace VRM
 
         public string Title;
 
+        public string Version;
+
         public string Author;
+
+        public string ContactInformation;
+
+        public string Reference;
 
         public bool ForceTPose = true;
 
@@ -56,7 +62,10 @@ namespace VRM
             {
                 yield return "Require Title. ";
             }
-
+            if (string.IsNullOrEmpty(Version))
+            {
+                yield return "Require Version. ";
+            }
             if (string.IsNullOrEmpty(Author))
             {
                 yield return "Require Author. ";
@@ -84,12 +93,15 @@ namespace VRM
             if (meta != null && meta.Meta != null)
             {
                 Title = meta.Meta.Title;
+                Version = string.IsNullOrEmpty(meta.Meta.Version)? "0.0" : meta.Meta.Version;
                 Author = meta.Meta.Author;
+                ContactInformation = meta.Meta.ContactInformation;
+                Reference = meta.Meta.Reference;
             }
             else
             {
                 Title = go.name;
-                //Author = "";
+                Version = "0.0";
             }
         }
 
@@ -273,7 +285,11 @@ namespace VRM
                 var sw = System.Diagnostics.Stopwatch.StartNew();
                 var vrm = VRMExporter.Export(target);
                 vrm.extensions.VRM.meta.title = Title;
+                vrm.extensions.VRM.meta.version = Version;
                 vrm.extensions.VRM.meta.author = Author;
+                vrm.extensions.VRM.meta.contactInformation = ContactInformation;
+                vrm.extensions.VRM.meta.reference = Reference;
+
 
                 var bytes = vrm.ToGlbBytes(UseExperimentalExporter);
                 File.WriteAllBytes(path, bytes);
