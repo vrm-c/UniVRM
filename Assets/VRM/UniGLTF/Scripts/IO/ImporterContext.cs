@@ -255,9 +255,20 @@ namespace UniGLTF
                 throw new Exception("chunk 1 is not BIN");
             }
 
-            var jsonBytes = chunks[0].Bytes;
-            ParseJson(Encoding.UTF8.GetString(jsonBytes.Array, jsonBytes.Offset, jsonBytes.Count),
-                new SimpleStorage(chunks[1].Bytes));
+            try
+            {
+                var jsonBytes = chunks[0].Bytes;
+                ParseJson(Encoding.UTF8.GetString(jsonBytes.Array, jsonBytes.Offset, jsonBytes.Count),
+                    new SimpleStorage(chunks[1].Bytes));
+            }
+            catch(StackOverflowException ex)
+            {
+                Debug.LogError("[UniVRM Import Error] json parsing failed, nesting is too deep.\n" + ex);
+            }
+            catch
+            {
+                throw;
+            }
         }
 
         public bool UseUniJSONParser;
