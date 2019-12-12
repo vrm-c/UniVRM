@@ -263,7 +263,7 @@ namespace UniGLTF
             }
             catch(StackOverflowException ex)
             {
-                Debug.LogError("[UniVRM Import Error] json parsing failed, nesting is too deep.\n" + ex);
+                throw new Exception("[UniVRM Import Error] json parsing failed, nesting is too deep.\n" + ex);
             }
             catch
             {
