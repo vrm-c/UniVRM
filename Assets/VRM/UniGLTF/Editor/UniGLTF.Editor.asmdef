@@ -2,12 +2,17 @@
     "name": "UniGLTF.Editor",
     "references": [
         "VRM",
-        "ShaderProperty.Runtime"
+        "ShaderProperty.Runtime",
+        "UniJSON"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [
         "Editor"
     ],
     "excludePlatforms": [],
-    "allowUnsafeCode": false
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": []
 }

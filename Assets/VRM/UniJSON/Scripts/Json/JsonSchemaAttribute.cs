@@ -1,5 +1,8 @@
 ﻿using System;
-
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Text;
 
 namespace UniJSON
 {
@@ -76,9 +79,109 @@ namespace UniJSON
                 Title = rhs.Title;
             }
         }
+
+        public virtual string GetInfo(FieldInfo fi)
+        {
+            return "";
+        }
+
+        public static bool IsNumber(Type t)
+        {
+            if (t == typeof(sbyte)
+            || t == typeof(short)
+            || t == typeof(int)
+            || t == typeof(long)
+            || t == typeof(byte)
+            || t == typeof(ushort)
+            || t == typeof(uint)
+            || t == typeof(ulong)
+            || t == typeof(float)
+            || t == typeof(double)
+            )
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public static string GetTypeName(Type t)
+        {
+            if (t.IsArray)
+            {
+                return t.GetElementType().Name + "[]";
+            }
+            else if (t.IsGenericType)
+            {
+                if (t.GetGenericTypeDefinition() == typeof(List<>))
+                {
+                    return "List<" + t.GetGenericArguments()[0] + ">";
+                }
+                else if (t.GetGenericTypeDefinition() == typeof(Dictionary<,>))
+                {
+                    return "Dictionary<" + string.Join(", ", t.GetGenericArguments().Select(x => x.Name).ToArray()) + ">";
+                }
+            }
+
+            return t.Name;
+        }
+
     }
 
-    public class JsonSchemaAttribute : BaseJsonSchemaAttribute { }
+    public class JsonSchemaAttribute : BaseJsonSchemaAttribute
+    {
+        public override string GetInfo(FieldInfo fi)
+        {
+            if (IsNumber(fi.FieldType))
+            {
+                var sb = new StringBuilder();
+                if (!double.IsNaN(Minimum) && !double.IsNaN(Maximum))
+                {
+                    sb.Append(string.Format("{0} <= N <= {1}", Minimum, Maximum));
+                }
+                else if (!double.IsNaN(Minimum))
+                {
+                    sb.Append(string.Format("{0} <= N", Minimum));
+                }
+                else if (!double.IsNaN(Maximum))
+                {
+                    sb.Append(string.Format("N <= {0}", Maximum));
+                }
+                return sb.ToString();
+            }
+            else
+            {
+                if (EnumValues != null)
+                {
+                    return string.Join(", ", EnumValues.Select(x => x.ToString()).ToArray());
+                }
+                else
+                {
+                    return GetTypeName(fi.FieldType);
+                }
+            }
+        }
+    }
 
-    public class ItemJsonSchemaAttribute : BaseJsonSchemaAttribute { }
+    public class ItemJsonSchemaAttribute : BaseJsonSchemaAttribute
+    {
+        public override string GetInfo(FieldInfo fi)
+        {
+            var sb = new StringBuilder();
+            sb.Append(GetTypeName(fi.FieldType));
+            if (!double.IsNaN(MinItems) && !double.IsNaN(MaxItems))
+            {
+                sb.Append(string.Format("{0} < N < {1}", MinItems, MaxItems));
+            }
+            else if (!double.IsNaN(MinItems))
+            {
+                sb.Append(string.Format("{0}< N", MinItems));
+            }
+            else if (!double.IsNaN(MaxItems))
+            {
+
+            }
+            return sb.ToString();
+        }
+    }
 }
