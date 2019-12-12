@@ -102,7 +102,7 @@ namespace UniGLTF
                 if (x.pbrMetallicRoughness.baseColorFactor != null && x.pbrMetallicRoughness.baseColorFactor.Length == 4)
                 {
                     var color = x.pbrMetallicRoughness.baseColorFactor;
-                    material.color = new Color(color[0], color[1], color[2], color[3]);
+                    material.color = (new Color(color[0], color[1], color[2], color[3])).gamma;
                 }
 
                 //renderMode
@@ -145,7 +145,7 @@ namespace UniGLTF
                 if (x.pbrMetallicRoughness.baseColorFactor != null && x.pbrMetallicRoughness.baseColorFactor.Length == 4)
                 {
                     var color = x.pbrMetallicRoughness.baseColorFactor;
-                    material.color = new Color(color[0], color[1], color[2], color[3]);
+                    material.color = (new Color(color[0], color[1], color[2], color[3])).gamma;
                 }
 
                 if (x.pbrMetallicRoughness.baseColorTexture != null && x.pbrMetallicRoughness.baseColorTexture.index != -1)

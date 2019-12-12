@@ -40,7 +40,7 @@ namespace UniGLTF
         {
             if (m.HasProperty("_Color"))
             {
-                material.pbrMetallicRoughness.baseColorFactor = m.color.ToArray();
+                material.pbrMetallicRoughness.baseColorFactor = m.color.linear.ToArray();
             }
 
             if (m.HasProperty("_MainTex"))
