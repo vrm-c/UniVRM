@@ -2,7 +2,7 @@
 {
     public enum SerializerTypes
     {
-        JsonSerializable, // manual
+        JsonSerializable, // manual, Obsolete
         UniJSON, // reflection
         Generated, // generated, experimental for mobile
     }

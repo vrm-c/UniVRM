@@ -468,7 +468,7 @@ namespace UniGLTF
             return f.ToString();
         }
 
-        public byte[] ToGlbBytes(SerializerTypes serializer = SerializerTypes.JsonSerializable)
+        public byte[] ToGlbBytes(SerializerTypes serializer = SerializerTypes.UniJSON)
         {
             string json;
             if (serializer == SerializerTypes.UniJSON)
@@ -487,6 +487,7 @@ namespace UniGLTF
             }
             else if(serializer == SerializerTypes.JsonSerializable)
             {
+                // Obsolete
                 json = ToJson();
             }
             else

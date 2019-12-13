@@ -260,23 +260,25 @@ namespace UniGLTF
                 new SimpleStorage(chunks[1].Bytes));
         }
 
-        public SerializerTypes SerializerType { get; set; }
+        private SerializerTypes _serializerType = SerializerTypes.UniJSON;
+        public SerializerTypes SerializerType { get { return _serializerType; } set { _serializerType = value; } }
 
         public virtual void ParseJson(string json, IStorage storage)
         {
             Json = json;
             Storage = storage;
 
-            if (SerializerType == SerializerTypes.UniJSON)
+            if (_serializerType == SerializerTypes.UniJSON)
             {
                 Json.ParseAsJson().Deserialize(ref GLTF);
             }
-            else if (SerializerType == SerializerTypes.Generated)
+            else if (_serializerType == SerializerTypes.Generated)
             {
                 GLTF = GltfDeserializer.Deserialize(json.ParseAsJson());
             }
-            else if (SerializerType == SerializerTypes.JsonSerializable)
+            else if (_serializerType == SerializerTypes.JsonSerializable)
             {
+                // Obsolete
                 GLTF = JsonUtility.FromJson<glTF>(Json);
             }
 
