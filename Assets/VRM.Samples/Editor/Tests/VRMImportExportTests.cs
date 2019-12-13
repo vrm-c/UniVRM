@@ -25,7 +25,7 @@ namespace VRM.Samples
         {
             get
             {
-                return Path.GetFullPath(Application.dataPath + "/../Tests/Models/Alicia_vrm-0.40/AliciaSolid_vrm-0.40.vrm")
+                return Path.GetFullPath(Application.dataPath + "/../Tests/Models/Alicia_vrm-0.51/AliciaSolid_vrm-0.51.vrm")
                     .Replace("\\", "/");
             }
         }
@@ -139,7 +139,7 @@ namespace VRM.Samples
             File.WriteAllText("new.json", newJson);
 
             // 比較
-            Assert.AreEqual(oldJson, newJson);
+            Assert.AreEqual(oldJson.ParseAsJson().ToString(), newJson.ParseAsJson().ToString());
 
             // 生成デシリアライザでロードする
             var ff = new JsonFormatter();
@@ -147,7 +147,7 @@ namespace VRM.Samples
             ff.Clear();
             ff.GenSerialize(des);
             var desJson = ff.ToString().ParseAsJson().ToString("  ");
-            Assert.AreEqual(oldJson, desJson);
+            Assert.AreEqual(oldJson.ParseAsJson().ToString(), desJson.ParseAsJson().ToString());
         }
     }
 }

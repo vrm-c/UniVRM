@@ -668,7 +668,7 @@ namespace UniGLTF
                 {
                     var context = new ImporterContext
                     {
-                        UseUniJSONParser = true
+                        SerializerType = SerializerTypes.UniJSON
                     };
                     context.ParseJson(json, new SimpleStorage(new ArraySegment<byte>(new byte[1024 * 1024])));
                     //Debug.LogFormat("{0}", context.Json);
