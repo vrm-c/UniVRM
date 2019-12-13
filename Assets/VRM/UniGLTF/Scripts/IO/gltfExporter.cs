@@ -60,6 +60,12 @@ namespace UniGLTF
             set;
         }
 
+        public bool ExportOnlyBlendShapePosition
+        {
+            get;
+            set;
+        }
+
         public GameObject Copy
         {
             get;
@@ -240,7 +246,7 @@ namespace UniGLTF
                         return true;
                     })
                     .ToList();
-                MeshExporter.ExportMeshes(gltf, bufferIndex, unityMeshes, Materials, useSparseAccessorForMorphTarget);
+                MeshExporter.ExportMeshes(gltf, bufferIndex, unityMeshes, Materials, useSparseAccessorForMorphTarget, ExportOnlyBlendShapePosition);
                 Meshes = unityMeshes.Select(x => x.Mesh).ToList();
                 #endregion
 

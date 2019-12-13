@@ -106,13 +106,15 @@ namespace UniGLTF
 
         static gltfMorphTarget ExportMorphTarget(glTF gltf, int bufferIndex,
             Mesh mesh, int j,
-            bool useSparseAccessorForMorphTarget)
+            bool useSparseAccessorForMorphTarget,
+            bool exportOnlyBlendShapePosition)
         {
             var blendShapeVertices = mesh.vertices;
             var usePosition = blendShapeVertices != null && blendShapeVertices.Length > 0;
 
             var blendShapeNormals = mesh.normals;
             var useNormal = usePosition && blendShapeNormals != null && blendShapeNormals.Length == blendShapeVertices.Length;
+            // var useNormal = usePosition && blendShapeNormals != null && blendShapeNormals.Length == blendShapeVertices.Length && !exportOnlyBlendShapePosition;
 
             var blendShapeTangents = mesh.tangents.Select(y => (Vector3)y).ToArray();
             //var useTangent = usePosition && blendShapeTangents != null && blendShapeTangents.Length == blendShapeVertices.Length;
@@ -228,7 +230,8 @@ namespace UniGLTF
 
         public static void ExportMeshes(glTF gltf, int bufferIndex,
             List<MeshWithRenderer> unityMeshes, List<Material> unityMaterials,
-            bool useSparseAccessorForMorphTarget)
+            bool useSparseAccessorForMorphTarget,
+            bool exportOnlyBlendShapePosition)
         {
             for (int i = 0; i < unityMeshes.Count; ++i)
             {
@@ -244,7 +247,8 @@ namespace UniGLTF
                 {
                     var morphTarget = ExportMorphTarget(gltf, bufferIndex,
                         mesh, j,
-                        useSparseAccessorForMorphTarget);
+                        useSparseAccessorForMorphTarget,
+                        exportOnlyBlendShapePosition);
 
                     //
                     // all primitive has same blendShape
