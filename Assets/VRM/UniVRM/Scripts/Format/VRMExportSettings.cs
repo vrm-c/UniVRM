@@ -275,7 +275,7 @@ namespace VRM
                 vrm.extensions.VRM.meta.title = Title;
                 vrm.extensions.VRM.meta.author = Author;
 
-                var bytes = vrm.ToGlbBytes(UseExperimentalExporter?SerializerTypes.UniJSON:SerializerTypes.JsonSerializable);
+                var bytes = vrm.ToGlbBytes(UseExperimentalExporter?SerializerTypes.Generated:SerializerTypes.UniJSON);
                 File.WriteAllBytes(path, bytes);
                 Debug.LogFormat("Export elapsed {0}", sw.Elapsed);
             }
