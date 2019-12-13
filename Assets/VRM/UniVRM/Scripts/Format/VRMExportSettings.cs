@@ -33,7 +33,7 @@ namespace VRM
 
         public bool UseExperimentalExporter = true;
 
-        public bool ReduceBlendshapeSize = true;
+        public bool ReduceBlendshapeSize = false;
 
         public IEnumerable<string> CanExport()
         {
