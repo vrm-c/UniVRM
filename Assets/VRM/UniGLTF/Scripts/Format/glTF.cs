@@ -217,7 +217,7 @@ namespace UniGLTF
             {
                 if (image.uri.StartsWith("data:"))
                 {
-                    textureName = !string.IsNullOrEmpty(image.name) ? image.name : string.Format("{0:00}#Base64Embeded", imageIndex);
+                    textureName = !string.IsNullOrEmpty(image.name) ? image.name : string.Format("{0:00}#Base64Embedded", imageIndex);
                 }
                 else
                 {
