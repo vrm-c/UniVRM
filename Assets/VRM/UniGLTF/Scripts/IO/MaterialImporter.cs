@@ -10,7 +10,7 @@ namespace UniGLTF
 {
     public interface IMaterialImporter
     {
-        Material CreateMaterial(int i, glTFMaterial src);
+        Material CreateMaterial(int i, glTFMaterial src, bool hasVertexColor);
     }
 
     public class MaterialImporter : IMaterialImporter
@@ -64,7 +64,7 @@ namespace UniGLTF
         /// _SrcBlend
         /// _DstBlend
         /// _ZWrite
-        public virtual Material CreateMaterial(int i, glTFMaterial x)
+        public virtual Material CreateMaterial(int i, glTFMaterial x, bool hasVertexColor)
         {
             var shader = m_shaderStore.GetShader(x);
             //Debug.LogFormat("[{0}]{1}", i, shader.name);
@@ -132,6 +132,12 @@ namespace UniGLTF
                 else
                 {
                     UniUnlit.Utils.SetCullMode(material, UniUnlit.UniUnlitCullMode.Back);
+                }
+
+                // VColor
+                if (hasVertexColor)
+                {
+                    UniUnlit.Utils.SetVColBlendMode(material, UniUnlit.UniUnlitVertexColorBlendOp.Multiply);
                 }
 
                 UniUnlit.Utils.ValidateProperties(material, true);

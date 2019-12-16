@@ -26,7 +26,7 @@ namespace VRM
             "VRM/UnlitTransparentZWrite",
         };
 
-        public override Material CreateMaterial(int i, glTFMaterial src)
+        public override Material CreateMaterial(int i, glTFMaterial src, bool hasVertexColor)
         {
             if(i==0 && m_materials.Count == 0)
             {
@@ -50,7 +50,7 @@ namespace VRM
                 {
                     Debug.LogWarningFormat("unknown shader {0}.", shaderName);
                 }
-                return base.CreateMaterial(i, src);
+                return base.CreateMaterial(i, src, hasVertexColor);
             }
 
             //
