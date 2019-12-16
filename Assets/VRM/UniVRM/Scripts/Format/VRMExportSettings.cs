@@ -383,7 +383,7 @@ namespace VRM
                 vrm.extensions.VRM.meta.reference = Reference;
 
 
-                var bytes = vrm.ToGlbBytes(UseExperimentalExporter);
+                var bytes = vrm.ToGlbBytes(UseExperimentalExporter?SerializerTypes.Generated:SerializerTypes.UniJSON);
                 File.WriteAllBytes(path, bytes);
                 Debug.LogFormat("Export elapsed {0}", sw.Elapsed);
             }
