@@ -119,7 +119,7 @@ namespace UniGLTF
             where TFrom: struct
             where TTo : struct
         {
-            var bytes = new byte[src.Count() * Marshal.SizeOf(typeof(TFrom))];
+            var bytes = new byte[src.Count * Marshal.SizeOf(typeof(TFrom))];
             using (var pin = Pin.Create(src))
             {
                 Marshal.Copy(pin.Ptr, bytes, 0, bytes.Length);
