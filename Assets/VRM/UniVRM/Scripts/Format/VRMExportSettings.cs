@@ -394,12 +394,15 @@ namespace VRM
                 File.WriteAllBytes(path, bytes);
                 Debug.LogFormat("Export elapsed {0}", sw.Elapsed);
             }
-
+            if (IsPrefab(Source))
+            {
 #if UNITY_2018_3_OR_NEWER
-            PrefabUtility.RevertPrefabInstance(Source, InteractionMode.AutomatedAction);
+                PrefabUtility.RevertPrefabInstance(Source, InteractionMode.AutomatedAction);
 #else
-            PrefabUtility.RevertPrefabInstance(target);
+                PrefabUtility.RevertPrefabInstance(target);
 #endif
+            }
+
             if (path.StartsWithUnityAssetPath())
             {
                 AssetDatabase.ImportAsset(path.ToUnityRelativePath());
