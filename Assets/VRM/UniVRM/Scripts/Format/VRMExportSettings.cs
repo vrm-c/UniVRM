@@ -236,14 +236,21 @@ namespace VRM
 #if UNITY_EDITOR
         public struct RecordDisposer : IDisposable
         {
+            int _group;
             public RecordDisposer(UnityEngine.Object[] objects, string msg)
             {
+                Debug.Log("[Record] Undo.GetCurrentGroup() = " + Undo.GetCurrentGroup());
+                Undo.IncrementCurrentGroup();
+                _group = Undo.GetCurrentGroup();
+                Debug.Log("[Record] Undo.GetCurrentGroup() = " + Undo.GetCurrentGroup());
                 Undo.RecordObjects(objects, msg);
             }
 
             public void Dispose()
             {
-                Undo.PerformUndo();
+                Debug.Log("[Dispose] Undo.GetCurrentGroup() = " + Undo.GetCurrentGroup());
+                Undo.RevertAllDownToGroup(_group);
+                Debug.Log("[Dispose] Undo.GetCurrentGroup() = " + Undo.GetCurrentGroup());
             }
         }
 
@@ -287,7 +294,7 @@ namespace VRM
                 }
             }
 
-            // remove unused blendShape
+             // remove unused blendShape
             if (ReduceBlendshapeSize)
             {
                 var proxy = target.GetComponent<VRMBlendShapeProxy>();
@@ -389,11 +396,10 @@ namespace VRM
             }
 
 #if UNITY_2018_3_OR_NEWER
-            PrefabUtility.RevertPrefabInstance(target, InteractionMode.AutomatedAction);
+            PrefabUtility.RevertPrefabInstance(Source, InteractionMode.AutomatedAction);
 #else
             PrefabUtility.RevertPrefabInstance(target);
 #endif
-
             if (path.StartsWithUnityAssetPath())
             {
                 AssetDatabase.ImportAsset(path.ToUnityRelativePath());
