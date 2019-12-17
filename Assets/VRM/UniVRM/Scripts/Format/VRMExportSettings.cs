@@ -239,18 +239,14 @@ namespace VRM
             int _group;
             public RecordDisposer(UnityEngine.Object[] objects, string msg)
             {
-                Debug.Log("[Record] Undo.GetCurrentGroup() = " + Undo.GetCurrentGroup());
                 Undo.IncrementCurrentGroup();
                 _group = Undo.GetCurrentGroup();
-                Debug.Log("[Record] Undo.GetCurrentGroup() = " + Undo.GetCurrentGroup());
                 Undo.RecordObjects(objects, msg);
             }
 
             public void Dispose()
             {
-                Debug.Log("[Dispose] Undo.GetCurrentGroup() = " + Undo.GetCurrentGroup());
                 Undo.RevertAllDownToGroup(_group);
-                Debug.Log("[Dispose] Undo.GetCurrentGroup() = " + Undo.GetCurrentGroup());
             }
         }
 
