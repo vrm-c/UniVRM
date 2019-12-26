@@ -728,6 +728,11 @@ namespace UniGLTF {
     {
         f.BeginMap(0); // dummy
 
+        if(value.KHR_materials_unlit!=null)
+        {
+            f.Key("KHR_materials_unlit"); f.GenSerialize(value.KHR_materials_unlit);
+        }
+
         f.EndMap();
     }
 

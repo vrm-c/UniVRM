@@ -254,6 +254,10 @@ namespace UniGLTF {
                         {
 
                         }
+                        else if(fi.FieldType == typeof(glTF_KHR_materials_unlit))
+                        {
+
+                        }
                         else if (fi.FieldType.IsClass && fi.FieldType.GetFields(FIELD_FLAGS).Length == 0)
                         {
                             continue;
