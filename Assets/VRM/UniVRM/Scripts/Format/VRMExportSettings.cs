@@ -31,7 +31,7 @@ namespace VRM
 
         public bool PoseFreeze = true;
 
-        public bool UseExperimentalExporter = true;
+        public bool UseExperimentalExporter = false;
 
         public bool ReduceBlendshapeSize = false;
 
