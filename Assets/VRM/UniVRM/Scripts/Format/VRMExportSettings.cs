@@ -73,6 +73,11 @@ namespace VRM
             {
                 yield return "Require Author. ";
             }
+
+            if(ReduceBlendshapeSize && Source.GetComponent<VRMBlendShapeProxy>() == null)
+            {
+                yield return "ReduceBlendshapeSize is need VRMBlendShapeProxy, you need to convert to VRM once.";
+            }
         }
 
         public void InitializeFrom(GameObject go)
