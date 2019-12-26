@@ -168,6 +168,10 @@ namespace UniGLTF
                 scale = x.transform.localScale.ToArray(),
             };
 
+            if (node.children.Length == 0) {
+                node.children = null;
+            }
+
             if (x.gameObject.activeInHierarchy)
             {
                 var meshRenderer = x.GetComponent<MeshRenderer>();
