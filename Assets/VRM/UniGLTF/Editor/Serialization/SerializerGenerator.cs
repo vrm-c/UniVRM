@@ -52,7 +52,7 @@ namespace UniGLTF
                 {"gltf/bufferViews[]/target", "if(value.target!=0)" },
                 {"gltf/animations[]/channels[]/target", "if(value!=null)" },
                 {"gltf/accessors[]/sparse", "if(value.sparse!=null && value.sparse.count>0)"},
-                {"gltf/meshes[]/primitives[]/targets", "if(value.targets.Count>0)" },
+                {"gltf/meshes[]/primitives[]/targets", "if(value.targets!=null && value.targets.Count>0)" },
 
                 {"gltf/meshes[]/primitives[]/targets[]/POSITION", "if(value.POSITION!=-1)" },
                 {"gltf/meshes[]/primitives[]/targets[]/NORMAL", "if(value.NORMAL!=-1)" },

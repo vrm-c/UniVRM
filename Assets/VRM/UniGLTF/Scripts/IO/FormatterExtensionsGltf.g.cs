@@ -814,7 +814,7 @@ namespace UniGLTF {
             f.Key("material"); f.GenSerialize(value.material);
         }
 
-        if(value.targets.Count>0)
+        if(value.targets!=null && value.targets.Count>0)
         {
             f.Key("targets"); f.GenSerialize(value.targets);
         }
