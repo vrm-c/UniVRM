@@ -957,7 +957,7 @@ namespace UniGLTF {
             f.Key("name"); f.GenSerialize(value.name);
         }
 
-        if(value.children.Length>0)
+        if(value.children != null && value.children.Length>0)
         {
             f.Key("children"); f.GenSerialize(value.children);
         }

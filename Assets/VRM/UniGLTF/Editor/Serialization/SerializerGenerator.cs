@@ -71,7 +71,7 @@ namespace UniGLTF
                 {"gltf/nodes[]/camera", "if(value.camera!=-1)"},
                 {"gltf/nodes[]/mesh", "if(value.mesh!=-1)"},
                 {"gltf/nodes[]/skin", "if(value.skin!=-1)"},
-                {"gltf/nodes[]/children", "if(value.children.Length>0)"},
+                {"gltf/nodes[]/children", "if(value.children != null && value.children.Length>0)"},
                 {"gltf/skins[]/skeleton", "if(value.skeleton!=-1)"},
                 {"gltf/extensionsRequired", "if(false)"},
                 {"gltf/extensions/VRM/humanoid/humanBones[]/axisLength", "if(value.axisLength>0)"},
