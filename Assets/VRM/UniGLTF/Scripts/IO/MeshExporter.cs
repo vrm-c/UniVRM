@@ -18,7 +18,8 @@ namespace UniGLTF
         static glTFMesh ExportPrimitives(glTF gltf, int bufferIndex,
             string rendererName,
             Mesh mesh, Material[] materials,
-            List<Material> unityMaterials)
+            List<Material> unityMaterials,
+            bool useVertexColor)
         {
             var positions = mesh.vertices.Select(y => y.ReverseZ()).ToArray();
             var positionAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, positions, glBufferTarget.ARRAY_BUFFER);
@@ -30,7 +31,12 @@ namespace UniGLTF
             var tangentAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, mesh.tangents.Select(y => y.ReverseZ()).ToArray(), glBufferTarget.ARRAY_BUFFER);
 #endif
             var uvAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, mesh.uv.Select(y => y.ReverseUV()).ToArray(), glBufferTarget.ARRAY_BUFFER);
-            var colorAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, mesh.colors, glBufferTarget.ARRAY_BUFFER);
+
+            var colorAccessorIndex = -1;
+            if(useVertexColor)
+            {
+                colorAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, mesh.colors, glBufferTarget.ARRAY_BUFFER);
+            }
 
             var boneweights = mesh.boneWeights;
             var weightAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, boneweights.Select(y => new Vector4(y.weight0, y.weight1, y.weight2, y.weight3)).ToArray(), glBufferTarget.ARRAY_BUFFER);
@@ -235,13 +241,17 @@ namespace UniGLTF
         {
             for (int i = 0; i < unityMeshes.Count; ++i)
             {
-                var x = unityMeshes[i];
-                var mesh = x.Mesh;
-                var materials = x.Renderer.sharedMaterials;
+                var unityMeshe = unityMeshes[i];
+                var mesh = unityMeshe.Mesh;
+                var materials = unityMeshe.Renderer.sharedMaterials;
+                bool useVertexColor = UseVertexColor(unityMeshe.Renderer.sharedMaterials);
 
                 var gltfMesh = ExportPrimitives(gltf, bufferIndex,
-                    x.Renderer.name,
-                    mesh, materials, unityMaterials);
+                    unityMeshe.Renderer.name,
+                    mesh, materials, 
+                    unityMaterials,
+                    useVertexColor
+                    );
 
                 for (int j = 0; j < mesh.blendShapeCount; ++j)
                 {
@@ -261,6 +271,26 @@ namespace UniGLTF
                 }
 
                 gltf.meshes.Add(gltfMesh);
+            }
+        }
+
+        private static bool UseVertexColor(Material[] materials)
+        {
+            var unlitMaterials = materials.Where(x => x.shader.name == "UniGLTF/UniUnlit");
+            if(unlitMaterials.Any())
+            {
+                if (unlitMaterials.Any(x => UniUnlit.Utils.GetVColBlendMode(x) == UniUnlit.UniUnlitVertexColorBlendOp.Multiply))
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return true;
             }
         }
     }
