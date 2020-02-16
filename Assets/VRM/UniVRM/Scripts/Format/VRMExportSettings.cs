@@ -60,7 +60,12 @@ namespace VRM
             {
                 yield return "Animator.avatar is not humanoid. Please change model's AnimationType to humanoid. ";
             }
-
+            
+            if (DuplicateBoneNameExists())
+            {
+                yield return "Find duplicate Bone names. Please check model's bone names. ";
+            }
+            
             if (string.IsNullOrEmpty(Title))
             {
                 yield return "Require Title. ";
@@ -401,6 +406,18 @@ namespace VRM
             {
                 AssetDatabase.ImportAsset(path.ToUnityRelativePath());
             }
+        }
+
+        //ここで重複ボーン名のチェックをする
+        bool DuplicateBoneNameExists()
+        {
+            var bones = Source.transform.Traverse().ToArray();
+            var duplicates = bones
+                .GroupBy(p => p.name)
+                .Where(g => g.Count() > 1)
+                .Select(g => g.Key);
+            
+            return (duplicates.Any());
         }
 #endif
     }
