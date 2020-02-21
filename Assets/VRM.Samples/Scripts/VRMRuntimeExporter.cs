@@ -32,6 +32,8 @@ namespace VRM.Samples
         {
 #if UNITY_STANDALONE_WIN
             var path = FileDialogForWindows.FileDialog("open VRM", ".vrm");
+#elif UNITY_EDITOR
+            var path = UnityEditor.EditorUtility.OpenFilePanel("Open VRM", "", "vrm");
 #else
         var path = Application.dataPath + "/default.vrm";
 #endif
