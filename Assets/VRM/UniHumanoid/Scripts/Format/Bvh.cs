@@ -114,7 +114,7 @@ namespace UniHumanoid
                 throw new BvhException("OFFSET is not found");
             }
 
-            var offset = split.Skip(1).Where(x => !string.IsNullOrEmpty(x)).Select(x => float.Parse(x)).ToArray();
+            var offset = split.Skip(1).Where(x => !string.IsNullOrEmpty(x)).Select(x => float.Parse(x, System.Globalization.CultureInfo.InvariantCulture)).ToArray();
             return new Single3(offset[0], offset[1], offset[2]);
         }
 
@@ -320,7 +320,7 @@ namespace UniHumanoid
             }
             for(int i=0; i<Channels.Length; ++i)
             {
-                Channels[i].SetKey(frame, float.Parse(split[i]));
+                Channels[i].SetKey(frame, float.Parse(split[i], System.Globalization.CultureInfo.InvariantCulture));
             }
         }
 
@@ -355,7 +355,7 @@ namespace UniHumanoid
                     {
                         throw new BvhException("Frame Time is not found");
                     }
-                    frameTime = float.Parse(frameTimeSplit[1]);
+                    frameTime = float.Parse(frameTimeSplit[1], System.Globalization.CultureInfo.InvariantCulture);
                 }
 
                 var bvh = new Bvh(root, frames, frameTime);
