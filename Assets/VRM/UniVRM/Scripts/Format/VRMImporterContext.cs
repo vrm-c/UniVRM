@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UniGLTF;
 using UnityEngine;
 using System.IO;
-
+using System.Collections;
 
 namespace VRM
 {
@@ -39,7 +39,7 @@ namespace VRM
         }
 
         #region OnLoad
-        protected override void OnLoadModel()
+        protected override IEnumerator OnLoadModel()
         {
             Root.name = "VRM";
 
@@ -47,21 +47,27 @@ namespace VRM
             {
                 LoadMeta();
             }
+            yield return null;
 
             using (MeasureTime("VRM LoadHumanoid"))
             {
                 LoadHumanoid();
             }
+            yield return null;
 
             using (MeasureTime("VRM LoadBlendShapeMaster"))
             {
                 LoadBlendShapeMaster();
             }
+            yield return null;
+
             using (MeasureTime("VRM LoadSecondary"))
             {
                 VRMSpringUtility.LoadSecondary(Root.transform, Nodes,
                 GLTF.extensions.VRM.secondaryAnimation);
             }
+            yield return null;
+
             using (MeasureTime("VRM LoadFirstPerson"))
             {
                 LoadFirstPerson();

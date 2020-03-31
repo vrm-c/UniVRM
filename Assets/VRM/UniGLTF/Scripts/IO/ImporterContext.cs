@@ -586,10 +586,10 @@ namespace UniGLTF
                         AnimationImporter.ImportAnimation(this);
                     }
                 })
+                .ContinueWithCoroutine(Scheduler.MainThread, OnLoadModel)
                 .ContinueWith(Scheduler.CurrentThread,
                     _ =>
                     {
-                        OnLoadModel();
                         if (m_showSpeedLog)
                         {
                             Debug.Log(GetSpeedLog());
@@ -598,9 +598,10 @@ namespace UniGLTF
                     });
         }
 
-        protected virtual void OnLoadModel()
+        protected virtual IEnumerator OnLoadModel()
         {
             Root.name = "GLTF";
+            yield break;
         }
 
         IEnumerator TexturesProcessOnAnyThread()
