@@ -1,0 +1,9 @@
+{
+  "name"        : "com.vrmc.univrm",
+  "version"     : "0.55.0",
+  "displayName" : "VRM",
+  "description" : "VRM importer",
+  "unity"       : "2017.1",
+  "keywords"    : [ "vrm", "importer", "avatar", "vr" ],
+  "author"      : { "name": "VRM Consortium" }
+}
