@@ -22,7 +22,7 @@ namespace VRM
 
         public string Name
         {
-            get { return m_name.ToUpper(); }
+            get { return m_name; }
         }
 
         public BlendShapePreset Preset;
