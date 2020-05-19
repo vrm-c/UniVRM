@@ -55,7 +55,7 @@ namespace VRM
                     var bind = Create(transform, meshes, value);
                     if (bind == null)
                     {
-                        Debug.LogFormat("{0}: skip blendshapebind", clip.name);
+                        // Debug.LogFormat("{0}: skip blendshapebind", clip.name);
                         continue;
                     }
                     list.Add(bind);
