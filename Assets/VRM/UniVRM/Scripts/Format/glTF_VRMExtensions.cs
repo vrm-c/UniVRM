@@ -19,8 +19,22 @@ namespace VRM
         {
             var transform = UniGLTF.UnityExtensions.GetFromPath(root.transform, binding.RelativePath);
             var renderer = transform.GetComponent<SkinnedMeshRenderer>();
+            if (renderer == null)
+            {
+                return null;
+            }
+
+            if(!renderer.gameObject.activeInHierarchy)
+            {
+                return null;
+            }
+
             var mesh = renderer.sharedMesh;
             var meshIndex = meshes.IndexOf(mesh);
+            if (meshIndex == -1)
+            {
+                return null;
+            }
 
             return new glTF_VRM_BlendShapeBind
             {
@@ -36,7 +50,16 @@ namespace VRM
             var list = new List<glTF_VRM_BlendShapeBind>();
             if (clip.Values != null)
             {
-                list.AddRange(clip.Values.Select(y => Create(transform, meshes.ToList(), y)));
+                foreach (var value in clip.Values)
+                {
+                    var bind = Create(transform, meshes, value);
+                    if (bind == null)
+                    {
+                        // Debug.LogFormat("{0}: skip blendshapebind", clip.name);
+                        continue;
+                    }
+                    list.Add(bind);
+                }
             }
 
             var materialList = new List<glTF_VRM_MaterialValueBind>();

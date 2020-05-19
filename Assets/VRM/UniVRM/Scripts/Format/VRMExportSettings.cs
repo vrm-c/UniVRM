@@ -83,6 +83,11 @@ namespace VRM
             {
                 yield return "ReduceBlendshapeSize is need VRMBlendShapeProxy, you need to convert to VRM once.";
             }
+
+            if(Source.GetComponentsInChildren<Renderer>().All(x => !x.gameObject.activeInHierarchy))
+            {
+                yield return "No active mesh";
+            }
         }
 
         public void InitializeFrom(GameObject go)
