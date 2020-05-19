@@ -25,6 +25,18 @@ namespace VRM
             wiz.OnWizardUpdate();
         }
 
+        void OnEnable()
+        {
+            // Debug.Log("OnEnable");
+            EditorApplication.hierarchyWindowChanged += OnWizardUpdate;
+        }
+
+        void OnDisable()
+        {
+            // Debug.Log("OnDisable");
+            EditorApplication.hierarchyWindowChanged -= OnWizardUpdate;
+        }
+
         void OnWizardCreate()
         {
             // save dialog
