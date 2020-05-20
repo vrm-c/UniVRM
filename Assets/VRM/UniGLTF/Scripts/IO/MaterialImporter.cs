@@ -96,6 +96,9 @@ namespace UniGLTF
                     {
                         material.mainTexture = texture.Texture;
                     }
+
+                    // Texture Offset and Scale
+                    SetTextureOffsetAndScale(material, x.pbrMetallicRoughness.baseColorTexture, "_MainTex");
                 }
 
                 // color
@@ -161,6 +164,9 @@ namespace UniGLTF
                     {
                         material.mainTexture = texture.Texture;
                     }
+
+                    // Texture Offset and Scale
+                    SetTextureOffsetAndScale(material, x.pbrMetallicRoughness.baseColorTexture, "_MainTex");
                 }
 
                 if (x.pbrMetallicRoughness.metallicRoughnessTexture != null && x.pbrMetallicRoughness.metallicRoughnessTexture.index != -1)
@@ -177,6 +183,9 @@ namespace UniGLTF
                     material.SetFloat("_Metallic", 1.0f);
                     // Set 1.0f as hard-coded. See: https://github.com/dwango/UniVRM/issues/212.
                     material.SetFloat("_GlossMapScale", 1.0f);
+
+                    // Texture Offset and Scale
+                    SetTextureOffsetAndScale(material, x.pbrMetallicRoughness.metallicRoughnessTexture, "_MetallicGlossMap");
                 }
                 else
                 {
@@ -195,6 +204,9 @@ namespace UniGLTF
                     material.SetTexture(prop, texture.ConvertTexture(prop));
                     material.SetFloat("_BumpScale", x.normalTexture.scale);
                 }
+
+                // Texture Offset and Scale
+                SetTextureOffsetAndScale(material, x.normalTexture, "_BumpMap");
             }
 
             if (x.occlusionTexture != null && x.occlusionTexture.index != -1)
@@ -206,6 +218,9 @@ namespace UniGLTF
                     material.SetTexture(prop, texture.ConvertTexture(prop));
                     material.SetFloat("_OcclusionStrength", x.occlusionTexture.strength);
                 }
+
+                // Texture Offset and Scale
+                SetTextureOffsetAndScale(material, x.occlusionTexture, "_OcclusionMap");
             }
 
             if (x.emissiveFactor != null
@@ -226,6 +241,9 @@ namespace UniGLTF
                     {
                         material.SetTexture("_EmissionMap", texture.Texture);
                     }
+
+                    // Texture Offset and Scale
+                    SetTextureOffsetAndScale(material, x.emissiveTexture, "_EmissionMap");
                 }
             }
 
@@ -274,6 +292,29 @@ namespace UniGLTF
 
             material.SetFloat("_Mode", (float)blendMode);
             return material;
+        }
+
+        private static void SetTextureOffsetAndScale(Material material, glTFTextureInfo textureInfo, string propertyName)
+        {
+            if (textureInfo.extensions != null && textureInfo.extensions.KHR_texture_transform != null)
+            {
+                var textureTransform = textureInfo.extensions.KHR_texture_transform;
+                Vector2 offset = new Vector2(0, 0);
+                Vector2 scale = new Vector2(1, 1);
+                if (textureTransform.offset != null && textureTransform.offset.Length == 2)
+                {
+                    offset = new Vector2(textureTransform.offset[0], textureTransform.offset[1]);
+                }
+                if (textureTransform.scale != null && textureTransform.scale.Length == 2)
+                {
+                    scale = new Vector2(textureTransform.scale[0], textureTransform.scale[1]);
+                }
+
+                offset.y = (offset.y + scale.y - 1.0f) * -1.0f;
+
+                material.SetTextureOffset(propertyName, offset);
+                material.SetTextureScale(propertyName, scale);
+            }
         }
     }
 }
