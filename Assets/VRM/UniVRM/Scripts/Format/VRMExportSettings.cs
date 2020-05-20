@@ -112,9 +112,34 @@ namespace VRM
                 yield return Validation.Error("ReduceBlendshapeSize is need VRMBlendShapeProxy, you need to convert to VRM once.");
             }
 
-            if (Source.GetComponentsInChildren<Renderer>().All(x => !x.gameObject.activeInHierarchy))
+            var renderers = Source.GetComponentsInChildren<Renderer>();
+            if (renderers.All(x => !x.gameObject.activeInHierarchy))
             {
                 yield return Validation.Error("No active mesh");
+            }
+
+            var materials = renderers.SelectMany(x => x.sharedMaterials).Distinct();
+            foreach (var material in materials)
+            {
+                if (material.shader.name == "Standard")
+                {
+                    // standard
+                    continue;
+                }
+
+                if (MaterialExporter.UseUnlit(material.shader.name))
+                {
+                    // unlit
+                    continue;
+                }
+
+                if (VRMMaterialExporter.VRMExtensionShaders.Contains(material.shader.name))
+                {
+                    // VRM supported
+                    continue;
+                }
+
+                yield return Validation.Warning(string.Format("unknown material '{0}' is used. this will export as `Standard` fallback", material.shader.name));
             }
         }
 
