@@ -28,13 +28,13 @@ namespace VRM
         void OnEnable()
         {
             // Debug.Log("OnEnable");
-            EditorApplication.hierarchyWindowChanged += OnWizardUpdate;
+            Undo.willFlushUndoRecord += OnWizardUpdate;
         }
 
         void OnDisable()
         {
             // Debug.Log("OnDisable");
-            EditorApplication.hierarchyWindowChanged -= OnWizardUpdate;
+            Undo.willFlushUndoRecord -= OnWizardUpdate;
         }
 
         void OnWizardCreate()
@@ -60,10 +60,17 @@ namespace VRM
             var helpBuilder = new StringBuilder();
             var errorBuilder = new StringBuilder();
 
-            foreach(var msg in m_settings.CanExport())
+            foreach (var validation in m_settings.CanExport())
             {
-                isValid = false;
-                errorBuilder.Append(msg);
+                if (!validation.CanExport)
+                {
+                    isValid = false;
+                    errorBuilder.Append(validation.Message);
+                }
+                else
+                {
+                    helpBuilder.AppendLine(validation.Message);
+                }
             }
 
             helpString = helpBuilder.ToString();

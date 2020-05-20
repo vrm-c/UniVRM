@@ -101,7 +101,7 @@ namespace VRM
         }
 
         #region CreateFromMaterial
-        private static readonly string[] VRMExtensionShaders = new string[]
+        public static readonly string[] VRMExtensionShaders = new string[]
         {
             "VRM/UnlitTransparentZWrite",
             "VRM/MToon"

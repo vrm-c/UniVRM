@@ -39,10 +39,13 @@ namespace VRM
             }
 
             bool canExport = m_target.Settings.Source != null;
-            foreach (var msg in m_target.Settings.CanExport())
+            foreach (var validation in m_target.Settings.CanExport())
             {
-                canExport = false;
-                EditorGUILayout.HelpBox(msg, MessageType.Error);
+                if (!validation.CanExport)
+                {
+                    canExport = false;
+                }
+                EditorGUILayout.HelpBox(validation.Message, validation.CanExport ? MessageType.Warning : MessageType.Error);
             }
 
             if (canExport)

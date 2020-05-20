@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using UniGLTF.UniUnlit;
+﻿using UniGLTF.UniUnlit;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 
 namespace UniGLTF
@@ -185,7 +182,7 @@ namespace UniGLTF
 
         static void Export_TextureTransform(Material m, glTFTextureInfo textureInfo, string propertyName)
         {
-            if( textureInfo != null && m.HasProperty(propertyName))
+            if (textureInfo != null && m.HasProperty(propertyName))
             {
                 var offset = m.GetTextureOffset(propertyName);
                 var scale = m.GetTextureScale(propertyName);
@@ -200,6 +197,21 @@ namespace UniGLTF
                     }
                 };
             }
+        }
+
+        public static bool UseUnlit(string shaderName)
+        {
+            switch (shaderName)
+            {
+                case "Unlit/Color":
+                case "Unlit/Texture":
+                case "Unlit/Transparent":
+                case "Unlit/Transparent Cutout":
+                case "UniGLTF/UniUnlit":
+                    return true;
+            }
+            return false;
+
         }
 
         protected virtual glTFMaterial CreateMaterial(Material m)
