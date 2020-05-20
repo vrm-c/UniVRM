@@ -35,58 +35,75 @@ namespace VRM
 
         public bool ReduceBlendshapeSize = false;
 
-        public IEnumerable<string> CanExport()
+        public struct Validation
+        {
+            public readonly bool CanExport;
+            public readonly String Message;
+
+            Validation(bool canExport, string message)
+            {
+                CanExport = canExport;
+                Message = message;
+            }
+
+            public static Validation Error(string msg)
+            {
+                return new Validation(false, msg);
+            }
+        }
+
+        public IEnumerable<Validation> CanExport()
         {
             if (Source == null)
             {
-                yield return "Require source";
+                yield return Validation.Error("Require source");
                 yield break;
             }
 
             var animator = Source.GetComponent<Animator>();
             if (animator == null)
             {
-                yield return "Require animator. ";
+                yield return Validation.Error("Require animator. ");
             }
             else if (animator.avatar == null)
             {
-                yield return "Require animator.avatar. ";
+                yield return Validation.Error("Require animator.avatar. ");
             }
             else if (!animator.avatar.isValid)
             {
-                yield return "Animator.avatar is not valid. ";
+                yield return Validation.Error("Animator.avatar is not valid. ");
             }
             else if (!animator.avatar.isHuman)
             {
-                yield return "Animator.avatar is not humanoid. Please change model's AnimationType to humanoid. ";
+                yield return Validation.Error("Animator.avatar is not humanoid. Please change model's AnimationType to humanoid. ");
             }
-            
+
             if (DuplicateBoneNameExists())
             {
-                yield return "Find duplicate Bone names. Please check model's bone names. ";
+                yield return Validation.Error("Find duplicate Bone names. Please check model's bone names. ");
             }
-            
+
             if (string.IsNullOrEmpty(Title))
             {
-                yield return "Require Title. ";
+                yield return Validation.Error("Require Title. ");
             }
             if (string.IsNullOrEmpty(Version))
             {
-                yield return "Require Version. ";
+                yield return Validation.Error("Require Version. ");
             }
             if (string.IsNullOrEmpty(Author))
             {
-                yield return "Require Author. ";
+                yield return Validation.Error("Require Author. ");
             }
 
-            if(ReduceBlendshapeSize && Source.GetComponent<VRMBlendShapeProxy>() == null)
+            if (ReduceBlendshapeSize && Source.GetComponent<VRMBlendShapeProxy>() == null)
             {
-                yield return "ReduceBlendshapeSize is need VRMBlendShapeProxy, you need to convert to VRM once.";
+                yield return Validation.Error("ReduceBlendshapeSize is need VRMBlendShapeProxy, you need to convert to VRM once.");
             }
 
-            if(Source.GetComponentsInChildren<Renderer>().All(x => !x.gameObject.activeInHierarchy))
+            if (Source.GetComponentsInChildren<Renderer>().All(x => !x.gameObject.activeInHierarchy))
             {
-                yield return "No active mesh";
+                yield return Validation.Error("No active mesh");
             }
         }
 
@@ -111,7 +128,7 @@ namespace VRM
             if (meta != null && meta.Meta != null)
             {
                 Title = meta.Meta.Title;
-                Version = string.IsNullOrEmpty(meta.Meta.Version)? "0.0" : meta.Meta.Version;
+                Version = string.IsNullOrEmpty(meta.Meta.Version) ? "0.0" : meta.Meta.Version;
                 Author = meta.Meta.Author;
                 ContactInformation = meta.Meta.ContactInformation;
                 Reference = meta.Meta.Reference;
@@ -160,7 +177,7 @@ namespace VRM
                     var dstColliderGroup = dst.gameObject.AddComponent<VRMSpringBoneColliderGroup>();
                     dstColliderGroup.Colliders = src.Colliders.Select(y =>
                     {
-                        var offset =dst.worldToLocalMatrix.MultiplyPoint(src.transform.localToWorldMatrix.MultiplyPoint(y.Offset));
+                        var offset = dst.worldToLocalMatrix.MultiplyPoint(src.transform.localToWorldMatrix.MultiplyPoint(y.Offset));
                         return new VRMSpringBoneColliderGroup.SphereCollider
                         {
                             Offset = offset,
@@ -305,7 +322,7 @@ namespace VRM
                 }
             }
 
-             // remove unused blendShape
+            // remove unused blendShape
             if (ReduceBlendshapeSize)
             {
                 var proxy = target.GetComponent<VRMBlendShapeProxy>();
@@ -369,7 +386,7 @@ namespace VRM
                     }
 
                     var indexMapper = usedBlendshapeIndexArray
-                        .Select((x, i) => new {x, i})
+                        .Select((x, i) => new { x, i })
                         .ToDictionary(pair => pair.x, pair => pair.i);
 
                     foreach (var clip in copyBlendShapClips)
@@ -401,7 +418,7 @@ namespace VRM
                 vrm.extensions.VRM.meta.reference = Reference;
 
 
-                var bytes = vrm.ToGlbBytes(UseExperimentalExporter?SerializerTypes.Generated:SerializerTypes.UniJSON);
+                var bytes = vrm.ToGlbBytes(UseExperimentalExporter ? SerializerTypes.Generated : SerializerTypes.UniJSON);
                 File.WriteAllBytes(path, bytes);
                 Debug.LogFormat("Export elapsed {0}", sw.Elapsed);
             }
@@ -421,7 +438,7 @@ namespace VRM
                 .GroupBy(p => p.name)
                 .Where(g => g.Count() > 1)
                 .Select(g => g.Key);
-            
+
             return (duplicates.Any());
         }
 #endif
