@@ -271,7 +271,7 @@ namespace UniGLTF
             };
 
             var json = model.ToJson();
-            Assert.AreEqual(@"{""name"":""a"",""emissiveFactor"":[0.5,0.5,0.5],""doubleSided"":false}", json);
+            Assert.AreEqual(@"{""name"":""a"",""pbrMetallicRoughness"":{""baseColorFactor"":[1,1,1,1],""metallicFactor"":1,""roughnessFactor"":1},""emissiveFactor"":[0.5,0.5,0.5],""doubleSided"":false}", json);
             Debug.Log(json);
 
             var c = new JsonSchemaValidationContext("")
@@ -279,7 +279,7 @@ namespace UniGLTF
                 EnableDiagnosisForNotRequiredFields = true,
             };
             var json2 = JsonSchema.FromType<glTFMaterial>().Serialize(model, c);
-            Assert.AreEqual(@"{""name"":""a"",""emissiveFactor"":[0.5,0.5,0.5],""doubleSided"":false}", json2);
+            Assert.AreEqual(@"{""name"":""a"",""pbrMetallicRoughness"":{""baseColorFactor"":[1,1,1,1],""metallicFactor"":1,""roughnessFactor"":1},""emissiveFactor"":[0.5,0.5,0.5],""doubleSided"":false}", json2);
         }
 
         [Test]
@@ -297,7 +297,7 @@ namespace UniGLTF
                 EnableDiagnosisForNotRequiredFields = true,
             };
             var json = JsonSchema.FromType<glTFMaterial>().Serialize(model, c);
-            Assert.AreEqual(@"{""name"":""a"",""emissiveFactor"":[0.5,0.5,0.5],""alphaMode"":""MASK"",""alphaCutoff"":0.5,""doubleSided"":false}", json);
+            Assert.AreEqual(@"{""name"":""a"",""pbrMetallicRoughness"":{""baseColorFactor"":[1,1,1,1],""metallicFactor"":1,""roughnessFactor"":1},""emissiveFactor"":[0.5,0.5,0.5],""alphaMode"":""MASK"",""alphaCutoff"":0.5,""doubleSided"":false}", json);
         }
 
         [Test]
