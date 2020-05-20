@@ -465,6 +465,7 @@ namespace VRM
                 AssetDatabase.ImportAsset(path.ToUnityRelativePath());
             }
         }
+#endif
 
         //ここで重複ボーン名のチェックをする
         bool DuplicateBoneNameExists()
@@ -477,6 +478,5 @@ namespace VRM
 
             return (duplicates.Any());
         }
-#endif
     }
 }
