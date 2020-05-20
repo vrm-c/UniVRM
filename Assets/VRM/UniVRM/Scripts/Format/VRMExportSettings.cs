@@ -50,6 +50,11 @@ namespace VRM
             {
                 return new Validation(false, msg);
             }
+
+            public static Validation Warning(string msg)
+            {
+                return new Validation(true, msg);
+            }
         }
 
         public IEnumerable<Validation> CanExport()
@@ -76,6 +81,12 @@ namespace VRM
             else if (!animator.avatar.isHuman)
             {
                 yield return Validation.Error("Animator.avatar is not humanoid. Please change model's AnimationType to humanoid. ");
+            }
+
+            var jaw = animator.GetBoneTransform(HumanBodyBones.Jaw);
+            if (jaw != null)
+            {
+                yield return Validation.Warning("Jaw bone is included. It may not be what you intended. Please check the humanoid avatar setting screen");
             }
 
             if (DuplicateBoneNameExists())

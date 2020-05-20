@@ -60,10 +60,17 @@ namespace VRM
             var helpBuilder = new StringBuilder();
             var errorBuilder = new StringBuilder();
 
-            foreach(var msg in m_settings.CanExport())
+            foreach (var validation in m_settings.CanExport())
             {
-                isValid = false;
-                errorBuilder.Append(msg);
+                if (!validation.CanExport)
+                {
+                    isValid = false;
+                    errorBuilder.Append(validation.Message);
+                }
+                else
+                {
+                    helpBuilder.Append(validation.Message);
+                }
             }
 
             helpString = helpBuilder.ToString();
