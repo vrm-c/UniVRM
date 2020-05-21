@@ -180,30 +180,7 @@ namespace VRM.DevOnly.PackageExporter
             string[] fileNames
         )
         {
-            CreateUnityPackageWithoutAsmDefs(outputDir, name, containsPath, basePath, fileNames);
-            CreateUnityPackageOnlyWithAsmDefs(outputDir, name, containsPath, basePath, fileNames);
-        }
-
-        public static void CreateUnityPackageWithoutAsmDefs(
-            string outputDir,
-            string name,
-            string[] containsPath,
-            string basePath,
-            string[] fileNames
-        )
-        {
-            CreateUnityPackageStandalone(outputDir, name, containsPath, basePath, fileNames, null, new string[] {".asmdef"});
-        }
-
-        public static void CreateUnityPackageOnlyWithAsmDefs(
-            string outputDir,
-            string name,
-            string[] containsPath,
-            string basePath,
-            string[] fileNames
-        )
-        {
-            CreateUnityPackageStandalone(outputDir, name + ".asmdef", containsPath, basePath, fileNames, new string[] {".asmdef"}, null);
+            CreateUnityPackageStandalone(outputDir, name, containsPath, basePath, fileNames, null, null);
         }
 
         public static void CreateUnityPackageStandalone(
