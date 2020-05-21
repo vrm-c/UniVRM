@@ -1,7 +1,6 @@
 MIT License
 
-Copyright (c) 2018 DWANGO Co., Ltd. for UniVRM
-Copyright (c) 2018 ousttrue for UniGLTF, UniHumanoid
+Copyright (c) 2020 VRM Consortium
 Copyright (c) 2018 Masataka SUMI for MToon
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
