@@ -427,24 +427,29 @@ namespace VRM
                 }
 #endif
 
-                var weight = srcMesh.GetBlendShapeFrameWeight(i, 0);
+                var frameCount = srcMesh.GetBlendShapeFrameCount(i);
+                for(int f=0; f<frameCount; f++)
+                {
 
-                try
-                {
-                    mesh.AddBlendShapeFrame(name,
-                        weight,
-                        vertices,
-                        hasNormals > 0 ? normals : null,
-                        hasTangents > 0 ? tangents : null
-                        );
-                }
-                catch (Exception)
-                {
-                    Debug.LogErrorFormat("fail to mesh.AddBlendShapeFrame {0}.{1}",
-                        mesh.name,
-                        srcMesh.GetBlendShapeName(i)
-                        );
-                    throw;
+                    var weight = srcMesh.GetBlendShapeFrameWeight(i, f);
+
+                    try
+                    {
+                        mesh.AddBlendShapeFrame(name,
+                            weight,
+                            vertices,
+                            hasNormals > 0 ? normals : null,
+                            hasTangents > 0 ? tangents : null
+                            );
+                    }
+                    catch (Exception)
+                    {
+                        Debug.LogErrorFormat("fail to mesh.AddBlendShapeFrame {0}.{1}",
+                            mesh.name,
+                            srcMesh.GetBlendShapeName(i)
+                            );
+                        throw;
+                    }
                 }
             }
 
