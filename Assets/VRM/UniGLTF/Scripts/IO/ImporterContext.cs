@@ -394,7 +394,7 @@ namespace UniGLTF
             Root.name = Path.GetFileNameWithoutExtension(path);
         }
 
-        public void CreateTextureItems(UnityPath imageBaseDir = default(UnityPath))
+        public virtual void CreateTextureItems(UnityPath imageBaseDir = default(UnityPath))
         {
             if (m_textures.Any())
             {

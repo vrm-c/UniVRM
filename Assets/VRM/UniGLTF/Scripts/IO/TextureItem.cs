@@ -110,13 +110,25 @@ namespace UniGLTF
         /// Texture from buffer
         /// </summary>
         /// <param name="index"></param>
-        public TextureItem(int index)
+        public TextureItem(int index, ITextureLoader textureLoader = null)
         {
             m_textureIndex = index;
+            if(textureLoader == null)
+            {
+                m_textureLoader = CreateTextureLoader(index);
+            }
+            else
+            {
+                m_textureLoader = textureLoader;
+            }
+        }
+
+        private static ITextureLoader CreateTextureLoader(int index)
+        {
 #if UNIGLTF_USE_WEBREQUEST_TEXTURELOADER
-            m_textureLoader = new UnityWebRequestTextureLoader(m_textureIndex);
+            return new UnityWebRequestTextureLoader(index);
 #else
-            m_textureLoader = new TextureLoader(m_textureIndex);
+            return new TextureLoader(index);
 #endif
         }
 
