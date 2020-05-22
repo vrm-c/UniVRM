@@ -110,10 +110,15 @@ namespace UniGLTF
         /// Texture from buffer
         /// </summary>
         /// <param name="index"></param>
-        public TextureItem(int index, Func<int, ITextureLoader> textureLoaderFactrory)
+        public TextureItem(int index, ITextureLoader textureLoader)
         {
             m_textureIndex = index;
-            m_textureLoader = textureLoaderFactrory(index);
+            m_textureLoader = textureLoader;
+
+            if(m_textureLoader == null)
+            {
+                throw new Exception("ITextureLoader is null.");
+            }
         }
 
 #if UNITY_EDITOR
