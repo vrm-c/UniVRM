@@ -394,7 +394,16 @@ namespace UniGLTF
             Root.name = Path.GetFileNameWithoutExtension(path);
         }
 
-        public virtual void CreateTextureItems(UnityPath imageBaseDir = default(UnityPath))
+        public virtual ITextureLoader CreateTextureLoader(int index)
+        {
+#if UNIGLTF_USE_WEBREQUEST_TEXTURELOADER
+            return new UnityWebRequestTextureLoader(index);
+#else
+            return new TextureLoader(index);
+#endif
+        }
+
+        public void CreateTextureItems(UnityPath imageBaseDir = default(UnityPath))
         {
             if (m_textures.Any())
             {
@@ -422,7 +431,7 @@ namespace UniGLTF
                 else
 #endif
                 {
-                    item = new TextureItem(i);
+                    item = new TextureItem(i, CreateTextureLoader(i));
                 }
 
                 AddTexture(item);
