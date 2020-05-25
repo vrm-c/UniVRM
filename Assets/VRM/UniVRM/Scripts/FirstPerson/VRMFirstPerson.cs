@@ -136,14 +136,16 @@ namespace VRM
             return FirstPersonFlag.Auto;
         }
 
-        void CreateHeadlessModel(Renderer _renderer, Transform EraseRoot)
+        /// <summary>
+        /// ヘッドレスモデルを作成した場合に返す
+        /// </summary>
+        Mesh CreateHeadlessModel(Renderer _renderer, Transform EraseRoot)
         {
             {
                 var renderer = _renderer as SkinnedMeshRenderer;
                 if (renderer != null)
                 {
-                    CreateHeadlessModelForSkinnedMeshRenderer(renderer, EraseRoot);
-                    return;
+                    return CreateHeadlessModelForSkinnedMeshRenderer(renderer, EraseRoot);
                 }
             }
 
@@ -153,11 +155,12 @@ namespace VRM
                 if (renderer != null)
                 {
                     CreateHeadlessModelForMeshRenderer(renderer, EraseRoot);
-                    return;
+                    return null;
                 }
             }
 
             // ここには来ない
+            return null;
         }
 
         public static void SetupLayers()
@@ -186,7 +189,16 @@ namespace VRM
             }
         }
 
-        private static void CreateHeadlessModelForSkinnedMeshRenderer(SkinnedMeshRenderer renderer, Transform eraseRoot)
+        /// <summary>
+        /// ヘッドレスモデルを作成する。
+        ///
+        /// 以下の場合は作成しない。
+        ///
+        /// * 削除対象が無い場合
+        /// * 全部削除対象の場合
+        ///
+        /// </summary>
+        private static Mesh CreateHeadlessModelForSkinnedMeshRenderer(SkinnedMeshRenderer renderer, Transform eraseRoot)
         {
             SetupLayers();
             var bones = renderer.bones;
@@ -208,7 +220,7 @@ namespace VRM
             if (eraseBones.Length == 0)
             {
                 // 削除対象が存在しない
-                return;
+                return null;
             }
 
             // 元のメッシュを三人称に変更(自分からは見えない)
@@ -218,9 +230,9 @@ namespace VRM
             var headlessMesh = BoneMeshEraser.CreateErasedMesh(renderer.sharedMesh, eraseBones);
             if (headlessMesh.triangles.Length == 0)
             {
-                UnityEngine.Object.Destroy(headlessMesh);
                 // 一人称用のmeshには描画すべき部分が無い(全部削除された)
-                return;
+                UnityEngine.Object.Destroy(headlessMesh);
+                return null;
             }
 
             // 一人称用のモデルのセットアップ
@@ -233,9 +245,12 @@ namespace VRM
             erased.bones = bones;
             erased.rootBone = renderer.rootBone;
             erased.updateWhenOffscreen = true;
+            return headlessMesh;
         }
 
         bool m_done;
+
+        List<Mesh> m_headlessMeshes = new List<Mesh>();
 
         /// <summary>
         /// 配下のモデルのレイヤー設定など
@@ -250,7 +265,13 @@ namespace VRM
                 switch (x.FirstPersonFlag)
                 {
                     case FirstPersonFlag.Auto:
-                        CreateHeadlessModel(x.Renderer, FirstPersonBone);
+                        {
+                            var headlessMesh = CreateHeadlessModel(x.Renderer, FirstPersonBone);
+                            if (headlessMesh != null)
+                            {
+                                m_headlessMeshes.Add(headlessMesh);
+                            }
+                        }
                         break;
 
                     case FirstPersonFlag.FirstPersonOnly:
@@ -266,6 +287,19 @@ namespace VRM
                         break;
                 }
             }
+        }
+
+        void OnDestroy()
+        {
+            foreach (var mesh in m_headlessMeshes)
+            {
+                if (mesh != null)
+                {
+                    // Debug.LogFormat("[VRMFirstPerson] OnDestroy: {0}", mesh);
+                    UnityEngine.Object.Destroy(mesh);
+                }
+            }
+            m_headlessMeshes.Clear();
         }
     }
 }
