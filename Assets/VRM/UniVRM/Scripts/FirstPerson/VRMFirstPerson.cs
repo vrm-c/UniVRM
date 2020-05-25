@@ -125,7 +125,7 @@ namespace VRM
                 return FirstPersonFlag.Auto;
             }
 
-            foreach(var x in context.GLTF.extensions.VRM.firstPerson.meshAnnotations)
+            foreach (var x in context.GLTF.extensions.VRM.firstPerson.meshAnnotations)
             {
                 if (x.mesh == index)
                 {
@@ -159,10 +159,11 @@ namespace VRM
 
             // ここには来ない
         }
-		
+
         public static void SetupLayers()
         {
-            if (!TriedSetupLayer) {
+            if (!TriedSetupLayer)
+            {
                 TriedSetupLayer = true;
                 int layer = LayerMask.NameToLayer("VRMFirstPersonOnly");
                 FIRSTPERSON_ONLY_LAYER = (layer == -1) ? FIRSTPERSON_ONLY_LAYER : layer;
@@ -188,45 +189,39 @@ namespace VRM
         private static void CreateHeadlessModelForSkinnedMeshRenderer(SkinnedMeshRenderer renderer, Transform eraseRoot)
         {
             SetupLayers();
+            var bones = renderer.bones;
+
+            var eraseBones = bones.Select((x, i) =>
+            {
+                // 祖先に削除対象が存在するか
+                bool erase = x.Ancestor().Any(y => y == eraseRoot);
+                return new
+                {
+                    i,
+                    erase,
+                };
+            })
+            .Where(x => x.erase)
+            .Select(x => x.i)
+            .ToArray()
+            ;
+            if (eraseBones.Length == 0)
+            {
+                // 削除対象が存在しない
+                return;
+            }
+
+            // 元のメッシュを三人称に変更(自分からは見えない)
             renderer.gameObject.layer = THIRDPERSON_ONLY_LAYER;
 
+            // 新規に一人称用のモデルを複製する
             var go = new GameObject("_headless_" + renderer.name);
             go.layer = FIRSTPERSON_ONLY_LAYER;
             go.transform.SetParent(renderer.transform, false);
-
-            var m_eraseBones = renderer.bones.Select(x =>
-            {
-                var eb = new BoneMeshEraser.EraseBone
-                {
-                    Bone = x,
-                };
-
-                if (eraseRoot != null)
-                {
-                    // 首の子孫を消去
-                    if (eb.Bone.Ancestor().Any(y => y == eraseRoot))
-                    {
-                        //Debug.LogFormat("erase {0}", x);
-                        eb.Erase = true;
-                    }
-                }
-
-                return eb;
-            })
-            .ToArray();
-
-            var bones = renderer.bones;
-            var eraseBones = m_eraseBones
-                .Where(x => x.Erase)
-                .Select(x => bones.IndexOf(x.Bone))
-                .ToArray();
-
-            var mesh = BoneMeshEraser.CreateErasedMesh(renderer.sharedMesh, eraseBones);
-
             var erased = go.AddComponent<SkinnedMeshRenderer>();
-            erased.sharedMesh = mesh;
+            erased.sharedMesh = BoneMeshEraser.CreateErasedMesh(renderer.sharedMesh, eraseBones);
             erased.sharedMaterials = renderer.sharedMaterials;
-            erased.bones = renderer.bones;
+            erased.bones = bones;
             erased.rootBone = renderer.rootBone;
             erased.updateWhenOffscreen = true;
         }
