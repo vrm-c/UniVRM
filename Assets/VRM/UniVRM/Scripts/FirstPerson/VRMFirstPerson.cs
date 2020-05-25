@@ -214,12 +214,21 @@ namespace VRM
             // 元のメッシュを三人称に変更(自分からは見えない)
             renderer.gameObject.layer = THIRDPERSON_ONLY_LAYER;
 
-            // 新規に一人称用のモデルを複製する
+            // 削除対象のボーンに対するウェイトを保持する三角形を除外して、一人称用のモデルを複製する
+            var headlessMesh = BoneMeshEraser.CreateErasedMesh(renderer.sharedMesh, eraseBones);
+            if (headlessMesh.triangles.Length == 0)
+            {
+                UnityEngine.Object.Destroy(headlessMesh);
+                // 一人称用のmeshには描画すべき部分が無い(全部削除された)
+                return;
+            }
+
+            // 一人称用のモデルのセットアップ
             var go = new GameObject("_headless_" + renderer.name);
             go.layer = FIRSTPERSON_ONLY_LAYER;
             go.transform.SetParent(renderer.transform, false);
             var erased = go.AddComponent<SkinnedMeshRenderer>();
-            erased.sharedMesh = BoneMeshEraser.CreateErasedMesh(renderer.sharedMesh, eraseBones);
+            erased.sharedMesh = headlessMesh;
             erased.sharedMaterials = renderer.sharedMaterials;
             erased.bones = bones;
             erased.rootBone = renderer.rootBone;
