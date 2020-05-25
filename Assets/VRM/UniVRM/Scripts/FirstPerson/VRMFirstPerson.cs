@@ -125,7 +125,7 @@ namespace VRM
                 return FirstPersonFlag.Auto;
             }
 
-            foreach(var x in context.GLTF.extensions.VRM.firstPerson.meshAnnotations)
+            foreach (var x in context.GLTF.extensions.VRM.firstPerson.meshAnnotations)
             {
                 if (x.mesh == index)
                 {
@@ -136,14 +136,16 @@ namespace VRM
             return FirstPersonFlag.Auto;
         }
 
-        void CreateHeadlessModel(Renderer _renderer, Transform EraseRoot)
+        /// <summary>
+        /// ヘッドレスモデルを作成した場合に返す
+        /// </summary>
+        Mesh CreateHeadlessModel(Renderer _renderer, Transform EraseRoot)
         {
             {
                 var renderer = _renderer as SkinnedMeshRenderer;
                 if (renderer != null)
                 {
-                    CreateHeadlessModelForSkinnedMeshRenderer(renderer, EraseRoot);
-                    return;
+                    return CreateHeadlessModelForSkinnedMeshRenderer(renderer, EraseRoot);
                 }
             }
 
@@ -153,16 +155,18 @@ namespace VRM
                 if (renderer != null)
                 {
                     CreateHeadlessModelForMeshRenderer(renderer, EraseRoot);
-                    return;
+                    return null;
                 }
             }
 
             // ここには来ない
+            return null;
         }
-		
+
         public static void SetupLayers()
         {
-            if (!TriedSetupLayer) {
+            if (!TriedSetupLayer)
+            {
                 TriedSetupLayer = true;
                 int layer = LayerMask.NameToLayer("VRMFirstPersonOnly");
                 FIRSTPERSON_ONLY_LAYER = (layer == -1) ? FIRSTPERSON_ONLY_LAYER : layer;
@@ -185,53 +189,68 @@ namespace VRM
             }
         }
 
-        private static void CreateHeadlessModelForSkinnedMeshRenderer(SkinnedMeshRenderer renderer, Transform eraseRoot)
+        /// <summary>
+        /// ヘッドレスモデルを作成する。
+        ///
+        /// 以下の場合は作成しない。
+        ///
+        /// * 削除対象が無い場合
+        /// * 全部削除対象の場合
+        ///
+        /// </summary>
+        private static Mesh CreateHeadlessModelForSkinnedMeshRenderer(SkinnedMeshRenderer renderer, Transform eraseRoot)
         {
             SetupLayers();
+            var bones = renderer.bones;
+
+            var eraseBones = bones.Select((x, i) =>
+            {
+                // 祖先に削除対象が存在するか
+                bool erase = x.Ancestor().Any(y => y == eraseRoot);
+                return new
+                {
+                    i,
+                    erase,
+                };
+            })
+            .Where(x => x.erase)
+            .Select(x => x.i)
+            .ToArray()
+            ;
+            if (eraseBones.Length == 0)
+            {
+                // 削除対象が存在しない
+                return null;
+            }
+
+            // 元のメッシュを三人称に変更(自分からは見えない)
             renderer.gameObject.layer = THIRDPERSON_ONLY_LAYER;
 
+            // 削除対象のボーンに対するウェイトを保持する三角形を除外して、一人称用のモデルを複製する
+            var headlessMesh = BoneMeshEraser.CreateErasedMesh(renderer.sharedMesh, eraseBones);
+            if (headlessMesh.triangles.Length == 0)
+            {
+                // 一人称用のmeshには描画すべき部分が無い(全部削除された)
+                UnityEngine.Object.Destroy(headlessMesh);
+                return null;
+            }
+
+            // 一人称用のモデルのセットアップ
             var go = new GameObject("_headless_" + renderer.name);
             go.layer = FIRSTPERSON_ONLY_LAYER;
             go.transform.SetParent(renderer.transform, false);
-
-            var m_eraseBones = renderer.bones.Select(x =>
-            {
-                var eb = new BoneMeshEraser.EraseBone
-                {
-                    Bone = x,
-                };
-
-                if (eraseRoot != null)
-                {
-                    // 首の子孫を消去
-                    if (eb.Bone.Ancestor().Any(y => y == eraseRoot))
-                    {
-                        //Debug.LogFormat("erase {0}", x);
-                        eb.Erase = true;
-                    }
-                }
-
-                return eb;
-            })
-            .ToArray();
-
-            var bones = renderer.bones;
-            var eraseBones = m_eraseBones
-                .Where(x => x.Erase)
-                .Select(x => bones.IndexOf(x.Bone))
-                .ToArray();
-
-            var mesh = BoneMeshEraser.CreateErasedMesh(renderer.sharedMesh, eraseBones);
-
             var erased = go.AddComponent<SkinnedMeshRenderer>();
-            erased.sharedMesh = mesh;
+            erased.sharedMesh = headlessMesh;
             erased.sharedMaterials = renderer.sharedMaterials;
-            erased.bones = renderer.bones;
+            erased.bones = bones;
             erased.rootBone = renderer.rootBone;
             erased.updateWhenOffscreen = true;
+            return headlessMesh;
         }
 
         bool m_done;
+
+        List<Mesh> m_headlessMeshes = new List<Mesh>();
 
         /// <summary>
         /// 配下のモデルのレイヤー設定など
@@ -246,7 +265,13 @@ namespace VRM
                 switch (x.FirstPersonFlag)
                 {
                     case FirstPersonFlag.Auto:
-                        CreateHeadlessModel(x.Renderer, FirstPersonBone);
+                        {
+                            var headlessMesh = CreateHeadlessModel(x.Renderer, FirstPersonBone);
+                            if (headlessMesh != null)
+                            {
+                                m_headlessMeshes.Add(headlessMesh);
+                            }
+                        }
                         break;
 
                     case FirstPersonFlag.FirstPersonOnly:
@@ -262,6 +287,19 @@ namespace VRM
                         break;
                 }
             }
+        }
+
+        void OnDestroy()
+        {
+            foreach (var mesh in m_headlessMeshes)
+            {
+                if (mesh != null)
+                {
+                    // Debug.LogFormat("[VRMFirstPerson] OnDestroy: {0}", mesh);
+                    UnityEngine.Object.Destroy(mesh);
+                }
+            }
+            m_headlessMeshes.Clear();
         }
     }
 }
