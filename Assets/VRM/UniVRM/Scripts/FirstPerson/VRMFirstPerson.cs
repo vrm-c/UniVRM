@@ -97,18 +97,17 @@ namespace VRM
 
         public void TraverseRenderers(VRMImporterContext context = null)
         {
-            Renderers = Traverse(transform)
-                .Select(x => x.GetComponent<Renderer>())
-                .Where(x => x != null)
-                .Select(x => new RendererFirstPersonFlags
+            var rendererComponents = transform.GetComponentsInChildren<Renderer>();
+            foreach (var renderer in rendererComponents)
+            {
+                Renderers.Add(new RendererFirstPersonFlags
                 {
-                    Renderer = x,
+                    Renderer = renderer,
                     FirstPersonFlag = context == null
                         ? FirstPersonFlag.Auto
-                        : GetFirstPersonFlag(context, x)
-                })
-                .ToList()
-                ;
+                        : GetFirstPersonFlag(context, renderer)
+                });
+            }
         }
 
         static FirstPersonFlag GetFirstPersonFlag(VRMImporterContext context, Renderer r)
