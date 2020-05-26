@@ -19,12 +19,13 @@ namespace UniHumanoid
         public Vector3 max;
         public Vector3 center;
         public float axisLength;
+        private static string[] cashedHumanTraitBoneName = null;
 
         public static BoneLimit From(HumanBone bone)
         {
             return new BoneLimit
             {
-                humanBone = (HumanBodyBones)Enum.Parse(typeof(HumanBodyBones), bone.humanName.Replace(" ", ""), true),
+                humanBone = (HumanBodyBones) Enum.Parse(typeof(HumanBodyBones), bone.humanName.Replace(" ", ""), true),
                 boneName = bone.boneName,
                 useDefaultValues = bone.limit.useDefaultValues,
                 min = bone.limit.min,
@@ -36,7 +37,13 @@ namespace UniHumanoid
 
         public static String ToHumanBoneName(HumanBodyBones b)
         {
-            foreach (var x in HumanTrait.BoneName)
+            // 呼び出し毎にGCが発生するのでキャッシュする
+            if (cashedHumanTraitBoneName == null)
+            {
+                cashedHumanTraitBoneName = HumanTrait.BoneName;
+            }
+
+            foreach (var x in cashedHumanTraitBoneName)
             {
                 if (x.Replace(" ", "") == b.ToString())
                 {
@@ -80,10 +87,28 @@ namespace UniHumanoid
 
         public HumanDescription ToHumanDescription(Transform root)
         {
+            var transforms = root.GetComponentsInChildren<Transform>();
+            var skeletonBones = new SkeletonBone[transforms.Length];
+            var index = 0;
+            foreach (var t in transforms)
+            {
+                skeletonBones[index] = t.ToSkeletonBone();
+                index++;
+            }
+
+            var humanBones = new HumanBone[human.Length];
+            index = 0;
+            foreach (var bonelimit in human)
+            {
+                humanBones[index] = bonelimit.ToHumanBone();
+                index++;
+            }
+
+
             return new HumanDescription
             {
-                skeleton = root.Traverse().Select(x => x.ToSkeletonBone()).ToArray(),
-                human = human.Select(x => x.ToHumanBone()).ToArray(),
+                skeleton = skeletonBones,
+                human = humanBones,
                 armStretch = armStretch,
                 legStretch = legStretch,
                 upperArmTwist = upperArmTwist,
@@ -154,7 +179,7 @@ namespace UniHumanoid
             return avatarDescription;
         }
 
-        public static AvatarDescription Create(AvatarDescription src=null)
+        public static AvatarDescription Create(AvatarDescription src = null)
         {
             var avatarDescription = ScriptableObject.CreateInstance<AvatarDescription>();
             avatarDescription.name = "AvatarDescription";
@@ -178,6 +203,7 @@ namespace UniHumanoid
                 avatarDescription.upperLegTwist = 0.5f;
                 avatarDescription.lowerLegTwist = 0.5f;
             }
+
             return avatarDescription;
         }
 
@@ -235,6 +261,7 @@ namespace UniHumanoid
                     }
                 }
             }
+
             return false;
         }
 #endif
