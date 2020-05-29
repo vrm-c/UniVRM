@@ -73,7 +73,7 @@ namespace VRM
     {
         public static VRMBone FromHumanBodyBone(this HumanBodyBones human)
         {
-            return EnumUtil.TryParseOrDefault<VRMBone>(human.ToString(), VRMBone.unknown);
+            return human.ToVrmBone();
         }
 
         public static HumanBodyBones ToHumanBodyBone(this VRMBone bone)
@@ -85,7 +85,7 @@ namespace VRM
                 return HumanBodyBones.LastBone;
             }
 #endif
-            return EnumUtil.TryParseOrDefault<HumanBodyBones>(bone.ToString(), HumanBodyBones.LastBone);
+            return bone.ToUnityBone();
         }
     }
 
@@ -161,7 +161,7 @@ namespace VRM
             }
             get
             {
-                return EnumUtil.TryParseOrDefault<VRMBone>(bone);
+                return CacheEnum.Parse<VRMBone>(bone, true);
             }
         }
 
