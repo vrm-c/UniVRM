@@ -79,17 +79,29 @@ namespace VRM
         /// </summary>
         public void CreateDefaultPreset()
         {
-            foreach (var preset in ((BlendShapePreset[])Enum.GetValues(typeof(BlendShapePreset)))
-                .Where(x => x != BlendShapePreset.Unknown))
+            var presets = CacheEnum.GetValues<BlendShapePreset>();
+
+            foreach (var preset in presets)
             {
+                if (preset == BlendShapePreset.Unknown) continue;
                 CreateDefaultPreset(preset);
             }
         }
 
         void CreateDefaultPreset(BlendShapePreset preset)
         {
-            var clip = GetClip(preset);
+            BlendShapeClip clip = null;
+
+            foreach (var c in Clips)
+            {
+                if (c.Preset == preset)
+                {
+                    clip = c;
+                    break;
+                }
+            }
             if (clip != null) return;
+
             clip = ScriptableObject.CreateInstance<BlendShapeClip>();
             clip.name = preset.ToString();
             clip.BlendShapeName = preset.ToString();
