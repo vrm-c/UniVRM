@@ -9,7 +9,7 @@ namespace VRM
     public class VRMMaterialImporter : MaterialImporter
     {
         List<glTF_VRM_Material> m_materials;
-        public VRMMaterialImporter(ImporterContext context, List<glTF_VRM_Material> materials) : base(new ShaderStore(context), context)
+        public VRMMaterialImporter(ImporterContext context, List<glTF_VRM_Material> materials) : base(new ShaderStore(context), (int index) => context.GetTexture(index))
         {
             m_materials = materials;
         }
@@ -81,7 +81,7 @@ namespace VRM
             }
             foreach (var kv in item.textureProperties)
             {
-                var texture = Context.GetTexture(kv.Value);
+                var texture = base.GetTextureFunc(kv.Value);
                 if (texture != null)
                 {
                     var converted = texture.ConvertTexture(kv.Key);

@@ -109,7 +109,7 @@ namespace UniGLTF
             {
                 if (m_materialImporter == null)
                 {
-                    m_materialImporter = new MaterialImporter(ShaderStore, this);
+                    m_materialImporter = new MaterialImporter(ShaderStore, (int index) => this.GetTexture(index));
                 }
                 return m_materialImporter;
             }
