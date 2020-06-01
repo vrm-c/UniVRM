@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.IO;
+using System.Text;
 using UnityEditor;
 using UnityEngine;
 
@@ -10,6 +11,8 @@ namespace VRM
         const string EXTENSION = ".vrm";
 
         VRMMeta m_meta;
+       
+        private static string m_lastExportDir;
 
         public VRMExportSettings m_settings = new VRMExportSettings();
 
@@ -39,16 +42,23 @@ namespace VRM
 
         void OnWizardCreate()
         {
+            string directory;
+            if (string.IsNullOrEmpty(m_lastExportDir))
+                directory = Directory.GetParent(Application.dataPath).ToString();
+            else
+                directory = m_lastExportDir;
+
             // save dialog
             var path = EditorUtility.SaveFilePanel(
                     "Save vrm",
-                    null,
+                    directory,
                     m_settings.Source.name + EXTENSION,
                     EXTENSION.Substring(1));
             if (string.IsNullOrEmpty(path))
             {
                 return;
             }
+            m_lastExportDir = Path.GetDirectoryName(path).Replace("\\", "/");
 
             // export
             m_settings.Export(path);
