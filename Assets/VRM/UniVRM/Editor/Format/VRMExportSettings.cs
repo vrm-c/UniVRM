@@ -46,11 +46,13 @@ namespace VRM
         /// <summary>
         /// エクスポート時に強制的にT-Pose化する
         /// </summary>
-        public bool ForceTPose = true;
+        [Tooltip("Option")]
+        public bool ForceTPose = false;
 
         /// <summary>
         /// エクスポート時にヒエラルキーの正規化を実施する
         /// </summary>
+        [Tooltip("Require only first time")]
         public bool PoseFreeze = true;
 
         /// <summary>
@@ -62,7 +64,8 @@ namespace VRM
         /// <summary>
         /// BlendShapeのシリアライズにSparseAccessorを使う
         /// </summary>
-        public bool UseSparseAccessorForBlendShape = true;
+        [Tooltip("Use sparse accessor for blendshape. This may reduce vrm size")]
+        public bool UseSparseAccessor = true;
 
         /// <summary>
         /// BlendShapeのPositionのみをエクスポートする
@@ -231,7 +234,7 @@ namespace VRM
             if (desc == null)
             {
                 // 初回のVRMエクスポートとみなす
-                ForceTPose = true;
+                ForceTPose = false; // option
                 PoseFreeze = true;
             }
             else
