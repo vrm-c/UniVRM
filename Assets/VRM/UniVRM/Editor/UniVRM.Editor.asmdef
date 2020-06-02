@@ -2,12 +2,17 @@
     "name": "UniVRM.Editor",
     "references": [
         "VRM",
-        "UniJSON"
+        "UniJSON",
+        "UniHumanoid"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [
         "Editor"
     ],
     "excludePlatforms": [],
-    "allowUnsafeCode": false
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": []
 }

@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
-using UniGLTF;
 using System.IO;
-#if UNITY_EDITOR
+using UniGLTF;
+using UnityEngine;
 using UnityEditor;
-
-#endif
 
 
 namespace VRM
