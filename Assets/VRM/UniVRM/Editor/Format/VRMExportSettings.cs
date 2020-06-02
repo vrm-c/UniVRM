@@ -59,7 +59,7 @@ namespace VRM
         public bool UseExperimentalExporter = false;
 
         /// <summary>
-        /// エクスポート時にBlendShapeを削減する
+        /// エクスポート時にBlendShapeClipから参照されないBlendShapeを削除する
         /// </summary>
         public bool ReduceBlendshapeSize = false;
         #endregion

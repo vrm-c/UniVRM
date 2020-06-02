@@ -10,6 +10,11 @@ namespace VRM
 {
     public static class VRMEditorExporter
     {
+        /// <summary>
+        /// Editor向けのエクスポート処理
+        /// </summary>
+        /// <param name="path">出力先</param>
+        /// <param name="settings">エクスポート設定</param>
         public static void Export(string path, VRMExportSettings settings)
         {
             List<GameObject> destroy = new List<GameObject>();
@@ -48,6 +53,57 @@ namespace VRM
             return avatar;
         }
 
+        /// <summary>
+        /// 使用されない BlendShape を間引いた Mesh を作成して置き換える
+        /// </summary>
+        /// <param name="mesh"></param>
+        /// <returns></returns>
+        static void ReplaceMesh(GameObject target, SkinnedMeshRenderer smr, BlendShapeAvatar copyBlendShapeAvatar)
+        {
+            Mesh mesh = smr.sharedMesh;
+            if (mesh == null) return;
+            if (mesh.blendShapeCount == 0) return;
+
+            // Mesh から BlendShapeClip からの参照がある blendShape の index を集める
+            var usedBlendshapeIndexArray = copyBlendShapeAvatar.Clips
+                .SelectMany(clip => clip.Values)
+                .Where(val => target.transform.Find(val.RelativePath) == smr.transform)
+                .Select(val => val.Index)
+                .Distinct()
+                .ToArray();
+
+            var copyMesh = mesh.Copy(copyBlendShape: false);
+            // 使われている BlendShape だけをコピーする
+            foreach (var i in usedBlendshapeIndexArray)
+            {
+                var name = copyMesh.GetBlendShapeName(i);
+                var vCount = copyMesh.vertexCount;
+                var vertices = new Vector3[vCount];
+                var normals = new Vector3[vCount];
+                var tangents = new Vector3[vCount];
+                mesh.GetBlendShapeFrameVertices(i, 0, vertices, normals, tangents);
+                copyMesh.AddBlendShapeFrame(name, 100f, vertices, normals, tangents);
+            }
+
+            // BlendShapeClip の BlendShapeIndex を更新する(前に詰める)
+            var indexMapper = usedBlendshapeIndexArray
+                .Select((x, i) => new { x, i })
+                .ToDictionary(pair => pair.x, pair => pair.i);
+            foreach (var clip in copyBlendShapeAvatar.Clips)
+            {
+                for (var i = 0; i < clip.Values.Length; ++i)
+                {
+                    var value = clip.Values[i];
+                    if (target.transform.Find(value.RelativePath) != smr.transform) continue;
+                    value.Index = indexMapper[value.Index];
+                    clip.Values[i] = value;
+                }
+            }
+
+            // mesh を置き換える
+            smr.sharedMesh = copyMesh;
+        }
+
         static void Export(string path, VRMExportSettings settings, List<GameObject> destroy)
         {
             var target = settings.Source;
@@ -60,6 +116,7 @@ namespace VRM
                 }
             }
 
+            // 正規化
             if (settings.PoseFreeze)
             {
                 using (new RecordDisposer(target.transform.Traverse().ToArray(), "before normalize"))
@@ -71,84 +128,24 @@ namespace VRM
                 }
             }
 
-            // remove unused blendShape
+            // BlendShape削減
             if (settings.ReduceBlendshapeSize)
             {
+                // remove unused blendShape
                 var proxy = target.GetComponent<VRMBlendShapeProxy>();
 
                 // 元のBlendShapeClipに変更を加えないように複製
                 var copyBlendShapeAvatar = CopyBlendShapeAvatar(proxy.BlendShapeAvatar);
+                proxy.BlendShapeAvatar = copyBlendShapeAvatar;
 
-                var skinnedMeshRenderers = target.GetComponentsInChildren<SkinnedMeshRenderer>();
-
-                var names = new Dictionary<int, string>();
-                var vs = new Dictionary<int, Vector3[]>();
-                var ns = new Dictionary<int, Vector3[]>();
-                var ts = new Dictionary<int, Vector3[]>();
-
-                foreach (SkinnedMeshRenderer smr in skinnedMeshRenderers)
+                foreach (SkinnedMeshRenderer smr in target.GetComponentsInChildren<SkinnedMeshRenderer>())
                 {
-                    Mesh mesh = smr.sharedMesh;
-                    if (mesh == null) continue;
-                    if (mesh.blendShapeCount == 0) continue;
-
-                    var copyMesh = mesh.Copy(true);
-                    var vCount = copyMesh.vertexCount;
-                    names.Clear();
-
-                    vs.Clear();
-                    ns.Clear();
-                    ts.Clear();
-
-                    var usedBlendshapeIndexArray = copyBlendShapeAvatar.Clips
-                        .SelectMany(clip => clip.Values)
-                        .Where(val => target.transform.Find(val.RelativePath) == smr.transform)
-                        .Select(val => val.Index)
-                        .Distinct()
-                        .ToArray();
-
-                    foreach (var i in usedBlendshapeIndexArray)
-                    {
-                        var name = copyMesh.GetBlendShapeName(i);
-                        var vertices = new Vector3[vCount];
-                        var normals = new Vector3[vCount];
-                        var tangents = new Vector3[vCount];
-                        copyMesh.GetBlendShapeFrameVertices(i, 0, vertices, normals, tangents);
-
-                        names.Add(i, name);
-                        vs.Add(i, vertices);
-                        ns.Add(i, normals);
-                        ts.Add(i, tangents);
-                    }
-
-                    copyMesh.ClearBlendShapes();
-
-                    foreach (var i in usedBlendshapeIndexArray)
-                    {
-                        copyMesh.AddBlendShapeFrame(names[i], 100f, vs[i], ns[i], ts[i]);
-                    }
-
-                    var indexMapper = usedBlendshapeIndexArray
-                        .Select((x, i) => new { x, i })
-                        .ToDictionary(pair => pair.x, pair => pair.i);
-
-                    foreach (var clip in copyBlendShapeAvatar.Clips)
-                    {
-                        for (var i = 0; i < clip.Values.Length; ++i)
-                        {
-                            var value = clip.Values[i];
-                            if (target.transform.Find(value.RelativePath) != smr.transform) continue;
-                            value.Index = indexMapper[value.Index];
-                            clip.Values[i] = value;
-                        }
-                    }
-
-                    proxy.BlendShapeAvatar = copyBlendShapeAvatar;
-
-                    smr.sharedMesh = copyMesh;
+                    // 未使用のBlendShapeを間引く
+                    ReplaceMesh(target, smr, copyBlendShapeAvatar);
                 }
             }
 
+            // 出力
             {
                 var sw = System.Diagnostics.Stopwatch.StartNew();
                 var vrm = VRMExporter.Export(target, settings.ReduceBlendshapeSize);
@@ -165,6 +162,7 @@ namespace VRM
 
             if (path.StartsWithUnityAssetPath())
             {
+                // 出力ファイルのインポートを発動
                 AssetDatabase.ImportAsset(path.ToUnityRelativePath());
             }
         }
