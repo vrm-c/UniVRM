@@ -32,6 +32,21 @@ namespace VRM
             return !go.scene.IsValid();
         }
 
+        /// <summary>
+        /// DeepCopy
+        /// </summary>
+        /// <param name="src"></param>
+        /// <returns></returns>
+        static BlendShapeAvatar CopyBlendShapeAvatar(BlendShapeAvatar src)
+        {
+            var avatar = GameObject.Instantiate(src);
+            avatar.Clips = new List<BlendShapeClip>();
+            foreach (var clip in src.Clips)
+            {
+                avatar.Clips.Add(GameObject.Instantiate(clip));
+            }
+            return avatar;
+        }
 
         static void Export(string path, VRMExportSettings settings, List<GameObject> destroy)
         {
@@ -62,13 +77,7 @@ namespace VRM
                 var proxy = target.GetComponent<VRMBlendShapeProxy>();
 
                 // 元のBlendShapeClipに変更を加えないように複製
-                var copyBlendShapeAvatar = GameObject.Instantiate(proxy.BlendShapeAvatar);
-                var copyBlendShapClips = new List<BlendShapeClip>();
-
-                foreach (var clip in proxy.BlendShapeAvatar.Clips)
-                {
-                    copyBlendShapClips.Add(GameObject.Instantiate(clip));
-                }
+                var copyBlendShapeAvatar = CopyBlendShapeAvatar(proxy.BlendShapeAvatar);
 
                 var skinnedMeshRenderers = target.GetComponentsInChildren<SkinnedMeshRenderer>();
 
@@ -91,7 +100,7 @@ namespace VRM
                     ns.Clear();
                     ts.Clear();
 
-                    var usedBlendshapeIndexArray = copyBlendShapClips
+                    var usedBlendshapeIndexArray = copyBlendShapeAvatar.Clips
                         .SelectMany(clip => clip.Values)
                         .Where(val => target.transform.Find(val.RelativePath) == smr.transform)
                         .Select(val => val.Index)
@@ -123,7 +132,7 @@ namespace VRM
                         .Select((x, i) => new { x, i })
                         .ToDictionary(pair => pair.x, pair => pair.i);
 
-                    foreach (var clip in copyBlendShapClips)
+                    foreach (var clip in copyBlendShapeAvatar.Clips)
                     {
                         for (var i = 0; i < clip.Values.Length; ++i)
                         {
@@ -133,8 +142,6 @@ namespace VRM
                             clip.Values[i] = value;
                         }
                     }
-
-                    copyBlendShapeAvatar.Clips = copyBlendShapClips;
 
                     proxy.BlendShapeAvatar = copyBlendShapeAvatar;
 
