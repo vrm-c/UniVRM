@@ -61,7 +61,7 @@ namespace VRM
             m_lastExportDir = Path.GetDirectoryName(path).Replace("\\", "/");
 
             // export
-            m_settings.Export(path);
+            VRMEditorExporter.Export(path, m_settings);
         }
 
         void OnWizardUpdate()
@@ -70,7 +70,7 @@ namespace VRM
             var helpBuilder = new StringBuilder();
             var errorBuilder = new StringBuilder();
 
-            foreach (var validation in m_settings.CanExport())
+            foreach (var validation in m_settings.Validate())
             {
                 if (!validation.CanExport)
                 {
