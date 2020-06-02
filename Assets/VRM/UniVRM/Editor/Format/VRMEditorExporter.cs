@@ -150,7 +150,11 @@ namespace VRM
             // 出力
             {
                 var sw = System.Diagnostics.Stopwatch.StartNew();
-                var vrm = VRMExporter.Export(target, settings.ReduceBlendshape);
+                var vrm = VRMExporter.Export(target, new VRMExporterConfiguration
+                {
+                    UseSparseAccessorForBlendShape = settings.UseSparseAccessorForBlendShape,
+                    ExportOnlyBlendShapePosition = settings.OnlyBlendshapePosition
+                });
                 vrm.extensions.VRM.meta.title = settings.Title;
                 vrm.extensions.VRM.meta.version = settings.Version;
                 vrm.extensions.VRM.meta.author = settings.Author;

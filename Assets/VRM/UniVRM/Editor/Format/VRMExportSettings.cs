@@ -60,6 +60,17 @@ namespace VRM
         public bool UseExperimentalExporter = false;
 
         /// <summary>
+        /// BlendShapeのシリアライズにSparseAccessorを使う
+        /// </summary>
+        public bool UseSparseAccessorForBlendShape = true;
+
+        /// <summary>
+        /// BlendShapeのPositionのみをエクスポートする
+        /// </summary>
+        [Tooltip("UniVRM-0.54 or later can load it. Otherwise fail to load")]
+        public bool OnlyBlendshapePosition = false;
+
+        /// <summary>
         /// エクスポート時にBlendShapeClipから参照されないBlendShapeを削除する
         /// </summary>
         [Tooltip("Remove blendshape that is not used from BlendShapeClip")]
