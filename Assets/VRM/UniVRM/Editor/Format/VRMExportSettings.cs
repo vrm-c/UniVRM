@@ -10,28 +10,67 @@ namespace VRM
     [Serializable]
     public class VRMExportSettings
     {
+        /// <summary>
+        /// エクスポート対象
+        /// </summary>
         public GameObject Source;
 
+        #region Meta
+        /// <summary>
+        /// エクスポート名
+        /// </summary>
         public string Title;
 
+        /// <summary>
+        /// エクスポートバージョン(エクスポートするModelのバージョン)
+        /// </summary>
         public string Version;
 
+        /// <summary>
+        /// 作者
+        /// </summary>
         public string Author;
 
+        /// <summary>
+        /// 作者連絡先
+        /// </summary>
         public string ContactInformation;
 
+        /// <summary>
+        /// 作品引用
+        /// </summary>
         public string Reference;
+        #endregion
 
+        #region Settings
+        /// <summary>
+        /// エクスポート時に強制的にT-Pose化する
+        /// </summary>
         public bool ForceTPose = true;
 
+        /// <summary>
+        /// エクスポート時にヒエラルキーの正規化を実施する
+        /// </summary>
         public bool PoseFreeze = true;
 
+        /// <summary>
+        /// エクスポート時に新しいJsonSerializerを使う
+        /// </summary>
         public bool UseExperimentalExporter = false;
 
+        /// <summary>
+        /// エクスポート時にBlendShapeを削減する
+        /// </summary>
         public bool ReduceBlendshapeSize = false;
+        #endregion
 
         public struct Validation
         {
+            /// <summary>
+            /// エクスポート可能か否か。
+            /// true のメッセージは警告
+            /// false のメッセージはエラー
+            /// </summary>
             public readonly bool CanExport;
             public readonly String Message;
 
@@ -52,7 +91,10 @@ namespace VRM
             }
         }
 
-        //ここで重複ボーン名のチェックをする
+        /// <summary>
+        /// ボーン名の重複を確認
+        /// </summary>
+        /// <returns></returns>
         bool DuplicateBoneNameExists()
         {
             var bones = Source.transform.Traverse().ToArray();
@@ -64,6 +106,10 @@ namespace VRM
             return (duplicates.Any());
         }
 
+        /// <summary>
+        /// エクスポート可能か検証する
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<Validation> Validate()
         {
             if (Source == null)
@@ -150,23 +196,35 @@ namespace VRM
             }
         }
 
+        /// <summary>
+        /// 対象のモデルからMeta情報を取得し、エクスポート設定を初期する
+        /// </summary>
+        /// <param name="go"></param>
         public void InitializeFrom(GameObject go)
         {
             if (Source == go) return;
             Source = go;
 
+            //
+            // initialize
+            //
             var desc = Source == null ? null : go.GetComponent<VRMHumanoidDescription>();
             if (desc == null)
             {
+                // 初回のVRMエクスポートとみなす
                 ForceTPose = true;
                 PoseFreeze = true;
             }
             else
             {
+                // すでに正規化済みとみなす
                 ForceTPose = false;
                 PoseFreeze = false;
             }
 
+            //
+            // Meta
+            //
             var meta = Source == null ? null : go.GetComponent<VRMMeta>();
             if (meta != null && meta.Meta != null)
             {
