@@ -56,12 +56,20 @@ namespace VRM
         /// <summary>
         /// エクスポート時に新しいJsonSerializerを使う
         /// </summary>
+        [Tooltip("Use new JSON serializer")]
         public bool UseExperimentalExporter = false;
 
         /// <summary>
         /// エクスポート時にBlendShapeClipから参照されないBlendShapeを削除する
         /// </summary>
-        public bool ReduceBlendshapeSize = false;
+        [Tooltip("Remove blendshape that is not used from BlendShapeClip")]
+        public bool ReduceBlendshape = false;
+
+        /// <summary>
+        /// skip if BlendShapeClip.Preset == Unknown
+        /// </summary>
+        [Tooltip("Remove blendShapeClip that preset is Unknown")]
+        public bool ReduceBlendshapeClip = false;
         #endregion
 
         public struct Validation
@@ -160,7 +168,7 @@ namespace VRM
                 yield return Validation.Error("Require Author. ");
             }
 
-            if (ReduceBlendshapeSize && Source.GetComponent<VRMBlendShapeProxy>() == null)
+            if (ReduceBlendshape && Source.GetComponent<VRMBlendShapeProxy>() == null)
             {
                 yield return Validation.Error("ReduceBlendshapeSize is need VRMBlendShapeProxy, you need to convert to VRM once.");
             }

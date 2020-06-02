@@ -42,12 +42,16 @@ namespace VRM
         /// </summary>
         /// <param name="src"></param>
         /// <returns></returns>
-        static BlendShapeAvatar CopyBlendShapeAvatar(BlendShapeAvatar src)
+        static BlendShapeAvatar CopyBlendShapeAvatar(BlendShapeAvatar src, bool removeUnknown)
         {
             var avatar = GameObject.Instantiate(src);
             avatar.Clips = new List<BlendShapeClip>();
             foreach (var clip in src.Clips)
             {
+                if (removeUnknown && clip.Preset == BlendShapePreset.Unknown)
+                {
+                    continue;
+                }
                 avatar.Clips.Add(GameObject.Instantiate(clip));
             }
             return avatar;
@@ -128,16 +132,14 @@ namespace VRM
                 }
             }
 
+            // 元のBlendShapeClipに変更を加えないように複製
+            var proxy = target.GetComponent<VRMBlendShapeProxy>();
+            var copyBlendShapeAvatar = CopyBlendShapeAvatar(proxy.BlendShapeAvatar, settings.ReduceBlendshapeClip);
+            proxy.BlendShapeAvatar = copyBlendShapeAvatar;
+
             // BlendShape削減
-            if (settings.ReduceBlendshapeSize)
+            if (settings.ReduceBlendshape)
             {
-                // remove unused blendShape
-                var proxy = target.GetComponent<VRMBlendShapeProxy>();
-
-                // 元のBlendShapeClipに変更を加えないように複製
-                var copyBlendShapeAvatar = CopyBlendShapeAvatar(proxy.BlendShapeAvatar);
-                proxy.BlendShapeAvatar = copyBlendShapeAvatar;
-
                 foreach (SkinnedMeshRenderer smr in target.GetComponentsInChildren<SkinnedMeshRenderer>())
                 {
                     // 未使用のBlendShapeを間引く
@@ -148,7 +150,7 @@ namespace VRM
             // 出力
             {
                 var sw = System.Diagnostics.Stopwatch.StartNew();
-                var vrm = VRMExporter.Export(target, settings.ReduceBlendshapeSize);
+                var vrm = VRMExporter.Export(target, settings.ReduceBlendshape);
                 vrm.extensions.VRM.meta.title = settings.Title;
                 vrm.extensions.VRM.meta.version = settings.Version;
                 vrm.extensions.VRM.meta.author = settings.Author;
