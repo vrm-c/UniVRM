@@ -152,7 +152,7 @@ namespace VRM
                 var sw = System.Diagnostics.Stopwatch.StartNew();
                 var vrm = VRMExporter.Export(target, new VRMExporterConfiguration
                 {
-                    UseSparseAccessorForBlendShape = settings.UseSparseAccessorForBlendShape,
+                    UseSparseAccessorForBlendShape = settings.UseSparseAccessor,
                     ExportOnlyBlendShapePosition = settings.OnlyBlendshapePosition
                 });
                 vrm.extensions.VRM.meta.title = settings.Title;
