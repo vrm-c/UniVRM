@@ -80,12 +80,13 @@ namespace VRM
             // 使われている BlendShape だけをコピーする
             foreach (var i in usedBlendshapeIndexArray)
             {
-                var name = copyMesh.GetBlendShapeName(i);
-                var vCount = copyMesh.vertexCount;
+                var name = mesh.GetBlendShapeName(i);
+                var vCount = mesh.vertexCount;
                 var vertices = new Vector3[vCount];
                 var normals = new Vector3[vCount];
                 var tangents = new Vector3[vCount];
                 mesh.GetBlendShapeFrameVertices(i, 0, vertices, normals, tangents);
+                
                 copyMesh.AddBlendShapeFrame(name, 100f, vertices, normals, tangents);
             }
 
