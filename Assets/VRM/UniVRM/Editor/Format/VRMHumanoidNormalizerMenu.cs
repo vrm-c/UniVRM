@@ -48,14 +48,8 @@ namespace VRM
         {
             var go = Selection.activeObject as GameObject;
 
-            GameObject normalizedRoot = null;
-            using (new RecordDisposer(go.transform.Traverse().ToArray(), "before normalize"))
-            {
-                var normalized = BoneNormalizer.Execute(go, true, false);
-                RecordDisposer.CopyVRMComponents(go, normalized.Root, normalized.BoneMap);
-                normalizedRoot = normalized.Root;
-            }
-            Selection.activeGameObject = normalizedRoot;
+            // BoneNormalizer.Execute はコピーを正規化する。UNDO無用
+            Selection.activeGameObject = BoneNormalizer.Execute(go, true, false);
         }
     }
 }

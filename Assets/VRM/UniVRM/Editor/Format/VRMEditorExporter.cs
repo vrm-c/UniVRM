@@ -86,7 +86,7 @@ namespace VRM
                 var normals = new Vector3[vCount];
                 var tangents = new Vector3[vCount];
                 mesh.GetBlendShapeFrameVertices(i, 0, vertices, normals, tangents);
-                
+
                 copyMesh.AddBlendShapeFrame(name, 100f, vertices, normals, tangents);
             }
 
@@ -109,28 +109,26 @@ namespace VRM
             smr.sharedMesh = copyMesh;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="settings"></param>
+        /// <param name="destroy">作業が終わったらDestoryするべき一時オブジェクト</param>
         static void Export(string path, VRMExportSettings settings, List<GameObject> destroy)
         {
             var target = settings.Source;
-            if (IsPrefab(target))
-            {
-                using (new RecordDisposer(settings.Source.transform.Traverse().ToArray(), "before normalize"))
-                {
-                    target = GameObject.Instantiate(target);
-                    destroy.Add(target);
-                }
-            }
+
+            // 常にコピーする。シーンを変化させない
+            target = GameObject.Instantiate(target);
+            destroy.Add(target);
 
             // 正規化
             if (settings.PoseFreeze)
             {
-                using (new RecordDisposer(target.transform.Traverse().ToArray(), "before normalize"))
-                {
-                    var normalized = BoneNormalizer.Execute(target, settings.ForceTPose, false);
-                    RecordDisposer.CopyVRMComponents(target, normalized.Root, normalized.BoneMap);
-                    target = normalized.Root;
-                    destroy.Add(target);
-                }
+                // BoneNormalizer.Execute は Copy を作って正規化する。UNDO無用
+                target = BoneNormalizer.Execute(target, settings.ForceTPose, false);                
+                destroy.Add(target);
             }
 
             // 元のBlendShapeClipに変更を加えないように複製
