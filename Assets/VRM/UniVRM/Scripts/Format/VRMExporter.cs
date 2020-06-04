@@ -19,17 +19,21 @@ namespace VRM
             gltf.extensions.VRM = new glTF_VRM_extensions();
         }
 
-        public new static glTF Export(GameObject go, bool exportOnlyBlendShapePosition = false)
+        public static glTF Export(GameObject go, bool exportOnlyBlendShapePosition = false)
+        {
+            var config = VRMExporterConfiguration.Default;
+            config.ExportOnlyBlendShapePosition = exportOnlyBlendShapePosition;
+            return Export(go, config);
+        }
+
+        public static glTF Export(GameObject go, VRMExporterConfiguration configuration)
         {
             var gltf = new glTF();
 
             using (var exporter = new VRMExporter(gltf)
             {
-#if VRM_EXPORTER_USE_SPARSE
-                // experimental
-                UseSparseAccessorForBlendShape = true
-#endif
-                ExportOnlyBlendShapePosition = exportOnlyBlendShapePosition
+                UseSparseAccessorForBlendShape = configuration.UseSparseAccessorForBlendShape,
+                ExportOnlyBlendShapePosition = configuration.ExportOnlyBlendShapePosition
             })
             {
                 _Export(gltf, exporter, go);

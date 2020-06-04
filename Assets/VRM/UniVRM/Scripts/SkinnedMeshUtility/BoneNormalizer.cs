@@ -181,9 +181,10 @@ namespace VRM
             var indexMap =
             srcBones
                 .Select((x, i) => new { i, x })
-                .Select(x => {
+                .Select(x =>
+                {
                     Transform dstBone;
-                    if(boneMap.TryGetValue(x.x, out dstBone))
+                    if (boneMap.TryGetValue(x.x, out dstBone))
                     {
                         return dstBones.IndexOf(dstBone);
                     }
@@ -191,7 +192,7 @@ namespace VRM
                     {
                         return -1;
                     }
-                 })
+                })
                 .ToArray();
 
             for (int i = 0; i < srcBones.Length; ++i)
@@ -322,14 +323,14 @@ namespace VRM
             var mesh = srcMesh.Copy(false);
             mesh.name = srcMesh.name + ".baked";
             srcRenderer.BakeMesh(mesh);
-           
-            var blendShapeValues = new Dictionary<int,float>();
+
+            var blendShapeValues = new Dictionary<int, float>();
             for (int i = 0; i < srcMesh.blendShapeCount; i++)
             {
                 var val = srcRenderer.GetBlendShapeWeight(i);
                 if (val > 0) blendShapeValues.Add(i, val);
             }
-        
+
             mesh.boneWeights = MapBoneWeight(srcMesh.boneWeights, boneMap, srcRenderer.bones, dstBones); // restore weights. clear when BakeMesh
 
             // recalc bindposes
@@ -385,7 +386,7 @@ namespace VRM
                 srcRenderer.SetBlendShapeWeight(i, value);
 
                 Vector3[] vertices = blendShapeMesh.vertices;
-                
+
                 for (int j = 0; j < vertices.Length; ++j)
                 {
                     if (originalBlendShapePositions[j] == Vector3.zero)
@@ -404,7 +405,7 @@ namespace VRM
                     if (originalBlendShapeNormals[j] == Vector3.zero)
                     {
                         normals[j] = Vector3.zero;
-                        
+
                     }
                     else
                     {
@@ -428,7 +429,7 @@ namespace VRM
 #endif
 
                 var frameCount = srcMesh.GetBlendShapeFrameCount(i);
-                for(int f=0; f<frameCount; f++)
+                for (int f = 0; f < frameCount; f++)
                 {
 
                     var weight = srcMesh.GetBlendShapeFrameWeight(i, f);
@@ -520,7 +521,7 @@ namespace VRM
         /// <param name="go">対象モデルのルート</param>
         /// <param name="forceTPose">強制的にT-Pose化するか</param>
         /// <returns>正規化済みのモデル</returns>
-        public static NormalizedResult Execute(GameObject go, bool forceTPose, bool clearBlendShapeBeforeNormalize)
+        public static GameObject Execute(GameObject go, bool forceTPose, bool clearBlendShapeBeforeNormalize)
         {
             Dictionary<Transform, Transform> boneMap = new Dictionary<Transform, Transform>();
 
@@ -564,11 +565,137 @@ namespace VRM
                 NormalizeNoneSkinnedMesh(src, dst);
             }
 
-            return new NormalizedResult
+            CopyVRMComponents(go, normalized, boneMap);
+
+            // return new NormalizedResult
+            // {
+            //     Root = normalized,
+            //     BoneMap = boneMap
+            // };
+            return normalized;
+        }
+
+        /// <summary>
+        /// VRMを構成するコンポーネントをコピーする。
+        /// </summary>
+        /// <param name="go">コピー元</param>
+        /// <param name="root">コピー先</param>
+        /// <param name="map">コピー元とコピー先の対応関係</param>
+        static void CopyVRMComponents(GameObject go, GameObject root,
+            Dictionary<Transform, Transform> map)
+        {
             {
-                Root = normalized,
-                BoneMap = boneMap
-            };
+                // blendshape
+                var src = go.GetComponent<VRMBlendShapeProxy>();
+                if (src != null)
+                {
+                    var dst = root.AddComponent<VRMBlendShapeProxy>();
+                    dst.BlendShapeAvatar = src.BlendShapeAvatar;
+                }
+            }
+
+            {
+                var secondary = go.transform.Find("secondary");
+                if (secondary == null)
+                {
+                    secondary = go.transform;
+                }
+
+                var dstSecondary = root.transform.Find("secondary");
+                if (dstSecondary == null)
+                {
+                    dstSecondary = new GameObject("secondary").transform;
+                    dstSecondary.SetParent(root.transform, false);
+                }
+
+                // 揺れモノ
+                foreach (var src in go.transform.GetComponentsInChildren<VRMSpringBoneColliderGroup>())
+                {
+                    var dst = map[src.transform];
+                    var dstColliderGroup = dst.gameObject.AddComponent<VRMSpringBoneColliderGroup>();
+                    dstColliderGroup.Colliders = src.Colliders.Select(y =>
+                    {
+                        var offset = dst.worldToLocalMatrix.MultiplyPoint(src.transform.localToWorldMatrix.MultiplyPoint(y.Offset));
+                        return new VRMSpringBoneColliderGroup.SphereCollider
+                        {
+                            Offset = offset,
+                            Radius = y.Radius
+                        };
+                    }).ToArray();
+                }
+
+                foreach (var src in go.transform.GetComponentsInChildren<VRMSpringBone>())
+                {
+                    // Copy VRMSpringBone
+                    var dst = dstSecondary.gameObject.AddComponent<VRMSpringBone>();
+                    dst.m_comment = src.m_comment;
+                    dst.m_stiffnessForce = src.m_stiffnessForce;
+                    dst.m_gravityPower = src.m_gravityPower;
+                    dst.m_gravityDir = src.m_gravityDir;
+                    dst.m_dragForce = src.m_dragForce;
+                    if (src.m_center != null)
+                    {
+                        dst.m_center = map[src.m_center];
+                    }
+
+                    dst.RootBones = src.RootBones.Select(x => map[x]).ToList();
+                    dst.m_hitRadius = src.m_hitRadius;
+                    if (src.ColliderGroups != null)
+                    {
+                        dst.ColliderGroups = src.ColliderGroups
+                            .Select(x => map[x.transform].GetComponent<VRMSpringBoneColliderGroup>()).ToArray();
+                    }
+                }
+            }
+
+#pragma warning disable 0618
+            {
+                // meta(obsolete)
+                var src = go.GetComponent<VRMMetaInformation>();
+                if (src != null)
+                {
+                    src.CopyTo(root);
+                }
+            }
+#pragma warning restore 0618
+
+            {
+                // meta
+                var src = go.GetComponent<VRMMeta>();
+                if (src != null)
+                {
+                    var dst = root.AddComponent<VRMMeta>();
+                    dst.Meta = src.Meta;
+                }
+            }
+
+            {
+                // firstPerson
+                var src = go.GetComponent<VRMFirstPerson>();
+                if (src != null)
+                {
+                    src.CopyTo(root, map);
+                }
+            }
+
+            {
+                // humanoid
+                var dst = root.AddComponent<VRMHumanoidDescription>();
+                var src = go.GetComponent<VRMHumanoidDescription>();
+                if (src != null)
+                {
+                    dst.Avatar = src.Avatar;
+                    dst.Description = src.Description;
+                }
+                else
+                {
+                    var animator = go.GetComponent<Animator>();
+                    if (animator != null)
+                    {
+                        dst.Avatar = animator.avatar;
+                    }
+                }
+            }
         }
     }
 }
