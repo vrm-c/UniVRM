@@ -33,6 +33,7 @@ assignees: ''
 **環境情報**
 
  - OS: [e.g. `Windows 10`]
+ - Unity version: [e.g. `Unity-2018.4`]
  - UniVRM version: [e.g. `0.52.0`]
 
 **追加の状況・背景**
