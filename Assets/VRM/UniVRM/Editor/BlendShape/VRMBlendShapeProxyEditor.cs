@@ -42,7 +42,7 @@ namespace VRM
             {
                 m_sliders = m_target.BlendShapeAvatar.Clips
                     .Where(x => x != null)
-                    .Select(x => new BlendShapeSlider(m_target, BlendShapeKey.CreateFrom(x)))
+                    .Select(x => new BlendShapeSlider(m_target, BlendShapeKey.CreateFromClip(x)))
                     .ToList()
                     ;
             }

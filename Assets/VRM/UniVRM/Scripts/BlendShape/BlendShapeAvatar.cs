@@ -57,7 +57,7 @@ namespace VRM
 
                 Debug.LogFormat("{0}", clip.name);
             }
-            Clips = Clips.OrderBy(x => BlendShapeKey.CreateFrom(x)).ToList();
+            Clips = Clips.OrderBy(x => BlendShapeKey.CreateFromClip(x)).ToList();
         }
 
         static public BlendShapeClip CreateBlendShapeClip(string path)
@@ -138,12 +138,12 @@ namespace VRM
 
         public BlendShapeClip GetClip(BlendShapePreset preset)
         {
-            return GetClip(new BlendShapeKey(preset));
+            return GetClip(BlendShapeKey.CreateFromPreset(preset));
         }
 
         public BlendShapeClip GetClip(String name)
         {
-            return GetClip(new BlendShapeKey(name));
+            return GetClip(BlendShapeKey.CreateUnknown(name));
         }
     }
 }

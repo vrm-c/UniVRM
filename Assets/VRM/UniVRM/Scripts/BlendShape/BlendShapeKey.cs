@@ -18,14 +18,14 @@ namespace VRM
         /// </summary>
         private static readonly string UnknownPresetPrefix = "Unknown_";
 
-        private string m_name;
+        private readonly string m_name;
 
         public string Name
         {
             get { return m_name; }
         }
 
-        public BlendShapePreset Preset;
+        public readonly BlendShapePreset Preset;
 
         string m_id;
 
@@ -57,11 +57,25 @@ namespace VRM
             }
         }
 
-        public BlendShapeKey(BlendShapePreset preset) : this(preset.ToString(), preset)
-        {
-        }
-
-        public BlendShapeKey(string name, BlendShapePreset preset = BlendShapePreset.Unknown)
+        /// <summary>
+        /// name と preset のペアからBlendShapeKeyを生成するが、
+        /// BlendShapePreset.Unknown のときと、それ以外のときで挙動が異なることを知っている必要があって、わかりにくいので private に変更。
+        /// v0.56
+        /// 
+        /// 代わりに、public static 関数を使って生成します
+        /// 
+        /// CreateFromPreset(BlendShapePreset)
+        /// CreateFromClip(BlendShapeClip)
+        /// CreateUnknown(string)
+        /// 
+        /// TODO ?
+        /// 旧仕様(GC発生などでパフォーマンスは、あまりよろしくない)
+        /// CreateLegacyFromString(string);
+        /// 
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="preset"></param>
+        private BlendShapeKey(string name, BlendShapePreset preset)
         {
             m_name = name;
             Preset = preset;
@@ -84,6 +98,41 @@ namespace VRM
             }
         }
 
+        /// <summary>
+        /// PresetからBlendShapeKeyを生成
+        /// </summary>
+        /// <param name="preset"></param>
+        /// <returns></returns>
+        public static BlendShapeKey CreateFromPreset(BlendShapePreset preset)
+        {
+            return new BlendShapeKey(preset.ToString(), preset);
+        }
+
+        /// <summary>
+        /// BlendShapeClipからBlendShapeKeyを生成
+        /// </summary>
+        /// <param name="clip"></param>
+        /// <returns></returns>
+        public static BlendShapeKey CreateFromClip(BlendShapeClip clip)
+        {
+            if (clip == null)
+            {
+                return default(BlendShapeKey);
+            }
+
+            return new BlendShapeKey(clip.BlendShapeName, clip.Preset);
+        }
+
+        /// <summary>
+        /// BlendShapePreset.Unknown である BlendShapeKey を name から作成する
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static BlendShapeKey CreateUnknown(string name)
+        {
+            return new BlendShapeKey(name, BlendShapePreset.Unknown);
+        }
+
         public override string ToString()
         {
             return ID.Replace(UnknownPresetPrefix, "").ToUpper();
@@ -98,7 +147,7 @@ namespace VRM
         {
             if (obj is BlendShapeKey)
             {
-                return Equals((BlendShapeKey) obj);
+                return Equals((BlendShapeKey)obj);
             }
             else
             {
@@ -111,19 +160,9 @@ namespace VRM
             return ID.GetHashCode();
         }
 
-        public static BlendShapeKey CreateFrom(BlendShapeClip clip)
-        {
-            if (clip == null)
-            {
-                return default(BlendShapeKey);
-            }
-
-            return new BlendShapeKey(clip.BlendShapeName, clip.Preset);
-        }
-
         public bool Match(BlendShapeClip clip)
         {
-            return this.Equals(CreateFrom(clip));
+            return this.Equals(CreateFromClip(clip));
         }
 
         public int CompareTo(BlendShapeKey other)

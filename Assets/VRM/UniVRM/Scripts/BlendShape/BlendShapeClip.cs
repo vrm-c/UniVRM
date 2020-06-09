@@ -118,6 +118,12 @@ namespace VRM
         public BlendShapePreset Preset;
 
         /// <summary>
+        /// BlendShapeClipに対応するBlendShapeKey
+        /// </summary>
+        /// <returns></returns>
+        public BlendShapeKey Key => BlendShapeKey.CreateFromClip(this);
+
+        /// <summary>
         /// BlendShapeに対する参照(index ベース)
         /// </summary>
         /// <value></value>
