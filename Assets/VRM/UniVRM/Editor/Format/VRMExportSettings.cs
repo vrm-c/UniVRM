@@ -84,6 +84,12 @@ namespace VRM
         /// </summary>
         [Tooltip("Remove blendShapeClip that preset is Unknown")]
         public bool ReduceBlendshapeClip = false;
+
+        /// <summary>
+        /// 頂点カラーを削除する
+        /// </summary>
+        [Tooltip("Remove vertex color")]
+        public bool RemoveVertexColor = false;
         #endregion
 
         public struct Validation
@@ -185,6 +191,12 @@ namespace VRM
             if (ReduceBlendshape && Source.GetComponent<VRMBlendShapeProxy>() == null)
             {
                 yield return Validation.Error("ReduceBlendshapeSize is need VRMBlendShapeProxy, you need to convert to VRM once.");
+            }
+            
+            var vertexColor = Source.GetComponentsInChildren<SkinnedMeshRenderer>().ToList().Any(x => x.sharedMesh.colors.Length > 0);
+            if (vertexColor)
+            {
+                yield return Validation.Warning("This model contains vertex color");
             }
 
             var renderers = Source.GetComponentsInChildren<Renderer>();
