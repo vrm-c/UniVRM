@@ -1,5 +1,5 @@
 ---
-name: Bug report (バグ報告(en))
+name: Bug report
 about: Create a report to help us improve
 title: ''
 labels: ''
@@ -33,6 +33,7 @@ If applicable, add screenshots to help explain your problem.
 **Environments (please complete the following information):**
 
  - OS: [e.g. `Windows 10`]
+ - Unity version: [e.g. `Unity-2018.4`]
  - UniVRM version: [e.g. `0.52.0`]
 
 **Additional context**
