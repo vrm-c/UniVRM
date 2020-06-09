@@ -33,7 +33,8 @@ namespace VRM
             using (var exporter = new VRMExporter(gltf)
             {
                 UseSparseAccessorForBlendShape = configuration.UseSparseAccessorForBlendShape,
-                ExportOnlyBlendShapePosition = configuration.ExportOnlyBlendShapePosition
+                ExportOnlyBlendShapePosition = configuration.ExportOnlyBlendShapePosition,
+                RemoveVertexColor = configuration.RemoveVertexColor,
             })
             {
                 _Export(gltf, exporter, go);
