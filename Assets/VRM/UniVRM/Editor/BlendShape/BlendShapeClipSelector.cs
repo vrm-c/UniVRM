@@ -62,7 +62,7 @@ namespace VRM
                 EditorGUILayout.LabelField("Select BlendShapeClip", EditorStyles.boldLabel);
                 var array = m_avatar.Clips
                     .Select(x => x != null
-                        ? BlendShapeKey.CreateFrom(x).ToString()
+                        ? BlendShapeKey.CreateFromClip(x).ToString()
                         : "null"
                         ).ToArray();
                 SelectedIndex = GUILayout.SelectionGrid(SelectedIndex, array, 4);
@@ -88,7 +88,7 @@ namespace VRM
 
         public void DuplicateWarn()
         {
-            var key = BlendShapeKey.CreateFrom(Selected);
+            var key = BlendShapeKey.CreateFromClip(Selected);
             if (m_avatar.Clips.Where(x => key.Match(x)).Count() > 1)
             {
                 EditorGUILayout.HelpBox("duplicate clip: " + key, MessageType.Error);

@@ -30,7 +30,7 @@ namespace VRM
 
         public BlendShapeMerger(IEnumerable<BlendShapeClip> clips, Transform root)
         {
-            m_clipMap = clips.ToDictionary(x => BlendShapeKey.CreateFrom(x), x => x);
+            m_clipMap = clips.ToDictionary(x => BlendShapeKey.CreateFromClip(x), x => x);
 
             m_valueMap = new Dictionary<BlendShapeKey, float>();
 
