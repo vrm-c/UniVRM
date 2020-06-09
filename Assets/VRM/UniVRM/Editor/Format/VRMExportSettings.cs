@@ -193,7 +193,7 @@ namespace VRM
                 yield return Validation.Error("ReduceBlendshapeSize is need VRMBlendShapeProxy, you need to convert to VRM once.");
             }
             
-            var vertexColor = Source.GetComponentsInChildren<SkinnedMeshRenderer>().ToList().Any(x => x.sharedMesh.colors.Length > 0);
+            var vertexColor = Source.GetComponentsInChildren<SkinnedMeshRenderer>().Any(x => x.sharedMesh.colors.Length > 0);
             if (vertexColor)
             {
                 yield return Validation.Warning("This model contains vertex color");
