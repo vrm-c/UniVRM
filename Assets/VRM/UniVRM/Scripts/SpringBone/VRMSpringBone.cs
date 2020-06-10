@@ -281,7 +281,7 @@ namespace VRM
         }
 
         List<SphereCollider> m_colliderList = new List<SphereCollider>();
-        void LateUpdate()
+        void FixedUpdate()
         {
             if (m_verlet == null || m_verlet.Count == 0)
             {
@@ -312,8 +312,8 @@ namespace VRM
                 }
             }
 
-            var stiffness = m_stiffnessForce * Time.deltaTime;
-            var external = m_gravityDir * (m_gravityPower * Time.deltaTime);
+            var stiffness = m_stiffnessForce * Time.fixedDeltaTime;
+            var external = m_gravityDir * (m_gravityPower * Time.fixedDeltaTime);
 
             foreach (var verlet in m_verlet)
             {
