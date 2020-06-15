@@ -1,4 +1,3 @@
-﻿using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UniGLTF;
@@ -115,8 +114,9 @@ namespace VRM
                     target.position + new Vector3(0, 0.1f, 0),
                     target.forward
                     );
-                foreach(var x in m_items)
+                for(int j=0; j<m_items.Length; ++j)
                 {
+                    ref var x = ref m_items[j];
                     var mesh = x.Baked();
                     for(int i=0; i<x.Materials.Length; ++i)
                     {
