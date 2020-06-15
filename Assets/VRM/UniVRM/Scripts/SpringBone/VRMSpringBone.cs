@@ -48,6 +48,14 @@ namespace VRM
         [SerializeField]
         public VRMSpringBoneColliderGroup[] ColliderGroups;
 
+        public enum SpringBoneUpdateType
+        {
+            LateUpdate,
+            FixedUpdate,
+        }
+        [SerializeField]
+        public SpringBoneUpdateType m_updateType = SpringBoneUpdateType.LateUpdate;
+
         /// <summary>
         /// 
         /// original from
@@ -274,6 +282,22 @@ namespace VRM
             }
         }
 
+        void LateUpdate()
+        {
+            if (m_updateType == SpringBoneUpdateType.LateUpdate)
+            {
+                UpdateProcess(Time.deltaTime);
+            }
+        }
+        
+        void FixedUpdate()
+        {
+            if (m_updateType == SpringBoneUpdateType.FixedUpdate)
+            {
+                UpdateProcess(Time.fixedDeltaTime);
+            }
+        }
+
         public struct SphereCollider
         {
             public Vector3 Position;
@@ -281,7 +305,7 @@ namespace VRM
         }
 
         List<SphereCollider> m_colliderList = new List<SphereCollider>();
-        void FixedUpdate()
+        private void UpdateProcess(float deltaTime)
         {
             if (m_verlet == null || m_verlet.Count == 0)
             {
@@ -312,8 +336,8 @@ namespace VRM
                 }
             }
 
-            var stiffness = m_stiffnessForce * Time.fixedDeltaTime;
-            var external = m_gravityDir * (m_gravityPower * Time.fixedDeltaTime);
+            var stiffness = m_stiffnessForce * deltaTime;
+            var external = m_gravityDir * (m_gravityPower * deltaTime);
 
             foreach (var verlet in m_verlet)
             {
