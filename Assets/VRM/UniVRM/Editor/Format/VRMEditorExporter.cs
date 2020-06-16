@@ -127,22 +127,25 @@ namespace VRM
             if (settings.PoseFreeze)
             {
                 // BoneNormalizer.Execute は Copy を作って正規化する。UNDO無用
-                target = BoneNormalizer.Execute(target, settings.ForceTPose, false);                
+                target = BoneNormalizer.Execute(target, settings.ForceTPose, false);
                 destroy.Add(target);
             }
 
             // 元のBlendShapeClipに変更を加えないように複製
             var proxy = target.GetComponent<VRMBlendShapeProxy>();
-            var copyBlendShapeAvatar = CopyBlendShapeAvatar(proxy.BlendShapeAvatar, settings.ReduceBlendshapeClip);
-            proxy.BlendShapeAvatar = copyBlendShapeAvatar;
-
-            // BlendShape削減
-            if (settings.ReduceBlendshape)
+            if (proxy != null)
             {
-                foreach (SkinnedMeshRenderer smr in target.GetComponentsInChildren<SkinnedMeshRenderer>())
+                var copyBlendShapeAvatar = CopyBlendShapeAvatar(proxy.BlendShapeAvatar, settings.ReduceBlendshapeClip);
+                proxy.BlendShapeAvatar = copyBlendShapeAvatar;
+
+                // BlendShape削減
+                if (settings.ReduceBlendshape)
                 {
-                    // 未使用のBlendShapeを間引く
-                    ReplaceMesh(target, smr, copyBlendShapeAvatar);
+                    foreach (SkinnedMeshRenderer smr in target.GetComponentsInChildren<SkinnedMeshRenderer>())
+                    {
+                        // 未使用のBlendShapeを間引く
+                        ReplaceMesh(target, smr, copyBlendShapeAvatar);
+                    }
                 }
             }
 
