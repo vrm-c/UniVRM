@@ -129,7 +129,15 @@ namespace UniGLTF
                         Bytes = System.IO.File.ReadAllBytes(path.FullPath),
                         Mime = "image/png",
                     };
-                }                    
+                }
+                if (path.Extension == ".jpg")
+                {
+                    return new BytesWithMime
+                    {
+                        Bytes = System.IO.File.ReadAllBytes(path.FullPath),
+                        Mime = "image/jpeg",
+                    };
+                }
             }
 #endif
 

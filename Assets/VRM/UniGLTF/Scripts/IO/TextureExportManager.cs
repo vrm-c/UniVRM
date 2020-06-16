@@ -57,6 +57,14 @@ namespace UniGLTF
                 return -1;
             }
 
+#if UNITY_EDITOR
+            if (!string.IsNullOrEmpty(UnityEditor.AssetDatabase.GetAssetPath(texture)))
+            {
+                m_exportTextures[index] = texture;
+                return index;
+            }
+#endif
+
             // ToDo: may already exists
             m_exportTextures[index] = TextureItem.CopyTexture(texture, readWrite, null);
 
