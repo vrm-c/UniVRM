@@ -1,0 +1,9 @@
+{
+    "name"        : "com.vrmc.meshutility",
+    "displayName" : "MeshUtility",
+    "version"     : "1.0.0",
+    "unity"       : "2018.4",
+    "description" : "mesh utility",
+    "keywords"    : [ "mesh" ],
+    "author"      : { "name": "VRM Consortium" }
+}
