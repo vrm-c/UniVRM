@@ -8,7 +8,8 @@ namespace MeshUtility
 {
     public class MeshUtility : MonoBehaviour
     {
-        const string ASSET_SUFFIX = ".mesh.asset";
+        private const string ASSET_SUFFIX = ".mesh.asset";
+        private static readonly Vector3 Zero_Movement = Vector3.zero;
 
         private enum BlendShapeLogic
         {
@@ -16,14 +17,14 @@ namespace MeshUtility
             WithoutBlendShape,
         }
 
-        [MenuItem("Mesh Utility/Extract BlendShape Mesh")]
-        static void CreateGameObjectWithBlendShapeMeshSeparate()
+        [MenuItem("Mesh Utility/Separate Skinned Meshes Contained BlendShape")]
+        public static void SeparateSkinnedMeshContainedBlendShape()
         {
             var go = Selection.activeTransform.gameObject;
 
             if (go.GetComponentsInChildren<SkinnedMeshRenderer>().Length > 0)
             {
-                ExtractBlendShapeMeshFromSkinnedMesh(go);
+                SeparationProcessing(go);
                 go.SetActive(false);
             }
             else
@@ -32,7 +33,7 @@ namespace MeshUtility
             }
         }
 
-        private static void ExtractBlendShapeMeshFromSkinnedMesh(GameObject go)
+        private static void SeparationProcessing(GameObject go)
         {
             var outputObject = Instantiate(go);
             var skinnedMeshRenderers = outputObject.GetComponentsInChildren<SkinnedMeshRenderer>();
@@ -40,16 +41,15 @@ namespace MeshUtility
             {
                 if (skinnedMeshRenderer.sharedMesh.blendShapeCount > 0)
                 {
-                    BlendShapeDivide(skinnedMeshRenderer);
+                    SeparatePolyWithBlendShape(skinnedMeshRenderer);
                 }
             }
         }
 
-        private static void BlendShapeDivide(SkinnedMeshRenderer skinnedMeshRendererInput)
+        private static void SeparatePolyWithBlendShape(SkinnedMeshRenderer skinnedMeshRendererInput)
         {
             var indicesUsedByBlendShape = new Dictionary<int, int>();
             var mesh = skinnedMeshRendererInput.sharedMesh;
-            var zeroMovement = new Vector3(0, 0, 0);
 
             // retrieve the original BlendShape data
             for (int i = 0; i < mesh.blendShapeCount; ++i)
@@ -61,7 +61,7 @@ namespace MeshUtility
 
                 for (int j = 0; j < deltaVertices.Length; j++)
                 {
-                    if (!deltaVertices[j].Equals(zeroMovement))
+                    if (!deltaVertices[j].Equals(Zero_Movement))
                     {
                         if (!indicesUsedByBlendShape.Values.Contains(j))
                         {
@@ -72,8 +72,8 @@ namespace MeshUtility
             }
 
             var subMeshCount = mesh.subMeshCount;
-            var submeshesWithoutBlendShape = new int[subMeshCount][];
-            var submeshesWithBlendShape = new int[subMeshCount][];
+            var submeshesWithBlendShape = new Dictionary<int, int[]>();
+            var submeshesWithoutBlendShape = new Dictionary<int, int[]>();
             var vertexIndexWithBlendShape = new Dictionary<int, int>();
             var vertexCounterWithBlendShape = 0;
             var vertexIndexWithoutBlendShape = new Dictionary<int, int>();
@@ -84,7 +84,7 @@ namespace MeshUtility
             {
                 var triangle = mesh.GetTriangles(i);
                 var submeshWithBlendShape = new List<int>();
-                var meshWithoutBlendShape = new List<int>();
+                var submeshWithoutBlendShape = new List<int>();
 
                 for (int j = 0; j < triangle.Length; j += 3)
                 {
@@ -96,15 +96,17 @@ namespace MeshUtility
                     }
                     else
                     {
-                        BuildNewTriangleList(vertexIndexWithoutBlendShape, triangle, j, meshWithoutBlendShape, ref vertexCounterWithoutBlendShape);
+                        BuildNewTriangleList(vertexIndexWithoutBlendShape, triangle, j, submeshWithoutBlendShape, ref vertexCounterWithoutBlendShape);
                     }
                 }
-                submeshesWithBlendShape[i] = submeshWithBlendShape.ToArray();
-                submeshesWithoutBlendShape[i] = meshWithoutBlendShape.ToArray();
+                if (submeshWithBlendShape.Count > 0)
+                    submeshesWithBlendShape.Add(i, submeshWithBlendShape.ToArray());
+                if (submeshWithoutBlendShape.Count > 0)
+                    submeshesWithoutBlendShape.Add(i, submeshWithoutBlendShape.ToArray()); ;
             }
 
             // check if any BlendShape exists
-            if (submeshesWithoutBlendShape.Any(x => x.Length != 0))
+            if (submeshesWithoutBlendShape.Count > 0)
             {
                 // put the mesh without BlendShape in a new SkinnedMeshRenderer
                 var srcGameObject = skinnedMeshRendererInput.gameObject;
@@ -121,15 +123,15 @@ namespace MeshUtility
         }
 
         private static void BuildNewTriangleList(Dictionary<int, int> newVerticesListLookUp, int[] triangleList, int index,
-                                                 List<int> newTriangleList, ref int lookupCounter)
+                                                 List<int> newTriangleList, ref int vertexCounter)
         {
             // build new vertex list and triangle list
             // vertex 1
             if (!newVerticesListLookUp.Keys.Contains(triangleList[index]))
             {
-                newVerticesListLookUp.Add(triangleList[index], lookupCounter);
-                newTriangleList.Add(lookupCounter);
-                lookupCounter++;
+                newVerticesListLookUp.Add(triangleList[index], vertexCounter);
+                newTriangleList.Add(vertexCounter);
+                vertexCounter++;
             }
             else
             {
@@ -139,9 +141,9 @@ namespace MeshUtility
             // vertex 2
             if (!newVerticesListLookUp.Keys.Contains(triangleList[index + 1]))
             {
-                newVerticesListLookUp.Add(triangleList[index + 1], lookupCounter);
-                newTriangleList.Add(lookupCounter);
-                lookupCounter++;
+                newVerticesListLookUp.Add(triangleList[index + 1], vertexCounter);
+                newTriangleList.Add(vertexCounter);
+                vertexCounter++;
             }
             else
             {
@@ -151,9 +153,9 @@ namespace MeshUtility
             // vertex 3
             if (!newVerticesListLookUp.Keys.Contains(triangleList[index + 2]))
             {
-                newVerticesListLookUp.Add(triangleList[index + 2], lookupCounter);
-                newTriangleList.Add(lookupCounter);
-                lookupCounter++;
+                newVerticesListLookUp.Add(triangleList[index + 2], vertexCounter);
+                newTriangleList.Add(vertexCounter);
+                vertexCounter++;
             }
             else
             {
@@ -163,7 +165,7 @@ namespace MeshUtility
         }
 
         private static void BuildNewMesh(SkinnedMeshRenderer skinnedMeshRenderer, Dictionary<int, int> newIndexLookUpDict,
-                                         int[][] subMeshes, BlendShapeLogic blendShapeLabel)
+                                         Dictionary<int, int[]> subMeshes, BlendShapeLogic blendShapeLabel)
         {
             // get original mesh data
             var materialList = new List<Material>();
@@ -192,12 +194,13 @@ namespace MeshUtility
 
             var newDataLength = newIndexLookUpDict.Count;
             var newIndexLookUp = newIndexLookUpDict.Keys.ToArray();
+
             newMesh.vertices = newIndexLookUp.Select(x => meshVertices[x]).ToArray();
-            newMesh.normals = newIndexLookUp.Select(x => meshNormals[x]).ToArray();
+            if (meshNormals.Length > 0) newMesh.normals = newIndexLookUp.Select(x => meshNormals[x]).ToArray();
             if (meshTangents.Length > 0) newMesh.tangents = newIndexLookUp.Select(x => meshTangents[x]).ToArray();
             if (meshColors.Length > 0) newMesh.colors = newIndexLookUp.Select(x => meshColors[x]).ToArray();
-            newMesh.boneWeights = newIndexLookUp.Select(x => meshBoneWeights[x]).ToArray();
-            newMesh.uv = newIndexLookUp.Select(x => meshUVs[x]).ToArray();
+            if (meshBoneWeights.Length > 0) newMesh.boneWeights = newIndexLookUp.Select(x => meshBoneWeights[x]).ToArray();
+            if (meshUVs.Length > 0) newMesh.uv = newIndexLookUp.Select(x => meshUVs[x]).ToArray();
             newMesh.bindposes = mesh.bindposes;
 
             // add BlendShape data
@@ -224,20 +227,15 @@ namespace MeshUtility
                 }
             }
 
-            // build material list
-            var subMeshCounter = 0;
-            for (int i = 0; i < subMeshes.Length; i++)
-            {
-                if (subMeshes[i].Length > 0)
-                {
-                    newMesh.SetTriangles(subMeshes[i], subMeshCounter);
-                    materialListNew.Add(materialList[i]);
-                    subMeshCounter++;
-                    newMesh.subMeshCount++;
-                }
-            }
+            newMesh.subMeshCount = subMeshes.Count;
+            var cosMaterialIndex = subMeshes.Keys.ToArray();
 
-            newMesh.subMeshCount = subMeshCounter;
+            // build material list
+            for (int i = 0; i < subMeshes.Count; i++)
+            {
+                newMesh.SetTriangles(subMeshes[cosMaterialIndex[i]], i);
+                materialListNew.Add(materialList[cosMaterialIndex[i]]);
+            }
             skinnedMeshRenderer.sharedMaterials = materialListNew.ToArray();
             skinnedMeshRenderer.sharedMesh = newMesh;
 
