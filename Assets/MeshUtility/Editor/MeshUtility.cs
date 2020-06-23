@@ -9,7 +9,8 @@ namespace MeshUtility
     public class MeshUtility : MonoBehaviour
     {
         private const string ASSET_SUFFIX = ".mesh.asset";
-        private static readonly Vector3 Zero_Movement = Vector3.zero;
+        private const string MENU_NAME = "Mesh Utility/Separate Skinned Meshes Contained BlendShape";
+        private static readonly Vector3 ZERO_MOVEMENT = Vector3.zero;
 
         private enum BlendShapeLogic
         {
@@ -17,7 +18,16 @@ namespace MeshUtility
             WithoutBlendShape,
         }
 
-        [MenuItem("Mesh Utility/Separate Skinned Meshes Contained BlendShape")]
+        [MenuItem(MENU_NAME, validate = true)]
+        private static bool ShowLogValidation()
+        {
+            if (Selection.activeTransform == null)
+                return false;
+            else
+                return true;
+        }
+
+        [MenuItem(MENU_NAME)]
         public static void SeparateSkinnedMeshContainedBlendShape()
         {
             var go = Selection.activeTransform.gameObject;
@@ -67,7 +77,7 @@ namespace MeshUtility
 
                 for (int j = 0; j < deltaVertices.Length; j++)
                 {
-                    if (!deltaVertices[j].Equals(Zero_Movement))
+                    if (!deltaVertices[j].Equals(ZERO_MOVEMENT))
                     {
                         if (!indicesUsedByBlendShape.Values.Contains(j))
                         {
