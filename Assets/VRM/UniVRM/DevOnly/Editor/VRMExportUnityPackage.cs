@@ -238,7 +238,7 @@ namespace VRM.DevOnly.PackageExporter
                 BuildOptions.None
             );
 #if UNITY_2018_1_OR_NEWER
-            var isSuccess = build.summary.result != BuildResult.Succeeded;
+            var isSuccess = build.summary.result == BuildResult.Succeeded;
 #else
             var isSuccess = !string.IsNullOrEmpty(build);
 #endif
