@@ -6,7 +6,7 @@ Mesh processing tool in Unity platform.
 
 Separate the target mesh into different categories based on given conditions.
 
-Currently support separation of mesh contained BlendShape. See [documentation](Documentation/MeshUtility.md) for more details.
+Currently support BlendShape mesh separation. See [documentation](Documentation/notes/MeshSeparator.md) for more details.
 
 <img src="Documentation/images/blendshape_separator.jpg" width="300">
 

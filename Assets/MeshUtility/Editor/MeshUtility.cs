@@ -33,6 +33,12 @@ namespace MeshUtility
             }
         }
 
+        [MenuItem("Mesh Utility/MeshSeparator Docs")]
+        public static void LinkToMeshSeparatorDocs()
+        {
+            Application.OpenURL("https://github.com/vrm-c/UniVRM/tree/master/Assets/MeshUtility");
+        }
+
         private static void SeparationProcessing(GameObject go)
         {
             var outputObject = Instantiate(go);
