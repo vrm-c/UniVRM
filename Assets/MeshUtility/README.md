@@ -20,7 +20,7 @@ You can add MeshUtility package via `UPM`. First click `Window` from menu on top
 
 <img src="Documentation/images/installation_1.jpg" width="200">
 
-In `Package Manager`, click `Add package from git URL` and paste `https://github.com/UniVRM/UniVRM.git?path=/Assets/MeshUtility`.
+In `Package Manager`, click `Add package from git URL` and paste `https://github.com/vrm-c/UniVRM.git?path=/Assets/MeshUtility`.
 
 <img src="Documentation/images/installation_2.jpg" width="200">
 
@@ -33,7 +33,7 @@ Another way of importing MeshUtility is manually adding necessary information in
 ```json
 {
   "dependencies": {
-    "com.vrmc.meshutility": "https://github.com/UniVRM/UniVRM.git?path=/Assets/MeshUtility",
+    "com.vrmc.meshutility": "https://github.com/vrm-c/UniVRM.git?path=/Assets/MeshUtility",
   }
 }
 ```
