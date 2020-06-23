@@ -39,7 +39,8 @@ namespace VRM.DevOnly.PackageExporter
         static string System(string workingDir, string fileName, string args)
         {
             // Start the child process.
-            using(var p = new System.Diagnostics.Process()) {
+            using (var p = new System.Diagnostics.Process())
+            {
                 // Redirect the output stream of the child process.
                 p.StartInfo.UseShellExecute = false;
                 p.StartInfo.RedirectStandardOutput = true;
@@ -58,7 +59,8 @@ namespace VRM.DevOnly.PackageExporter
                 string err = p.StandardError.ReadToEnd();
                 p.WaitForExit();
 
-                if (p.ExitCode != 0 || string.IsNullOrEmpty(output)) {
+                if (p.ExitCode != 0 || string.IsNullOrEmpty(output))
+                {
                     throw new Exception(err);
                 }
 
@@ -98,7 +100,8 @@ namespace VRM.DevOnly.PackageExporter
             var fileName = Path.GetFileName(path);
 
             // Domain specific filter logic
-            if (ignoredFilesForGlob.Any(f => fileName.EndsWithAndMeta(f))) {
+            if (ignoredFilesForGlob.Any(f => fileName.EndsWithAndMeta(f)))
+            {
                 yield break;
             }
 
@@ -145,80 +148,97 @@ namespace VRM.DevOnly.PackageExporter
             CreateUnityPackages(Path.GetFullPath(Path.Combine(Application.dataPath, "..")));
         }
 
+        public class GlobList
+        {
+            public readonly string[] Files;
+
+            public GlobList(string root, params string[] filters)
+            {
+                var files = GlobFiles(root);
+                if (filters.Any())
+                {
+                    var filtersWithRoot = filters.Select(x => $"{root}/{x}").ToArray();
+                    Files = files.Where(x => filtersWithRoot.Any(y => x.StartsWith(y))).ToArray();
+                }
+                else
+                {
+                    Files = files.ToArray();
+                }
+            }
+        }
+
+        public class PackageInfo
+        {
+            public readonly string Name;
+            public GlobList[] List;
+
+            public PackageInfo(string name)
+            {
+                Name = name;
+            }
+        }
+
         public static void CreateUnityPackages(string outputDir)
         {
             // UniVRM and sub packages
             {
-                var basePath = "Assets/VRM";
-                var packages = new Dictionary<string, string[]> () {
-                    {"UniVRM", null}, // All
-                    {"UniJSON-standalone", new string[] {"UniJSON"}},
-                    {"UniHumanoid-standalone", new string[] {"UniHumanoid"}},
-                    {"UniGLTF-standalone", new string[] {"UniGLTF", "UniHumanoid", "UniJSON", "UniUnlit", "DepthFirstScheduler"}},
+                var packages = new[]{
+                    new PackageInfo("UniVRM")
+                    {
+                        List = new []{
+                            new GlobList("Assets/VRM"),
+                            new GlobList("Assets/VRMShaders"),
+                        }
+                    },
+                    // new PackageInfo("UniJSON-standalone")
+                    // {
+                    //     List = new [] {
+                    //         new GlobList("Assets/VRM", "UniJSON"),
+                    //     }
+                    // },
+                    // new PackageInfo("UniHumanoid-standalone")
+                    // {
+                    //     List = new []{
+                    //         new GlobList("Assets/VRM", "UniHumanoid"),
+                    //     }
+                    // },
+                    // new PackageInfo("UniGLTF-standalone")
+                    // {
+                    //     List = new []{
+                    //         new GlobList("Assets/VRM", "UniGLTF", "UniHumanoid", "UniJSON", "Assets/VRM/DepthFirstScheduler"),
+                    //         new GlobList("Assets/VRMShaders", "UniUnlit"),
+                    //     }
+                    // }
                 };
-
-                var fileNames = GlobFiles(basePath).ToArray();
-                foreach(var packagePair in packages) {
-                    CreateUnityPackage(outputDir, packagePair.Key, packagePair.Value, basePath, fileNames);
+                foreach (var package in packages)
+                {
+                    CreateUnityPackage(outputDir, package);
                 }
             }
 
             // UniVRM Samples
             {
-                var fileNames = GlobFiles("Assets/VRM.Samples")
-                    .Concat(GlobFiles("Assets/StreamingAssets/VRM.Samples"))
-                    .ToArray();
-                CreateUnityPackage(outputDir, "UniVRM-samples", null /*All*/, "", fileNames);
+                CreateUnityPackage(outputDir, new PackageInfo("UniVRM-samples")
+                {
+                    List = new[]{
+                        new GlobList("Assets/VRM.Samples"),
+                        new GlobList("Assets/StreamingAssets/VRM.Samples"),
+                    }
+                });
             }
         }
 
         public static void CreateUnityPackage(
             string outputDir,
-            string name,
-            string[] containsPath,
-            string basePath,
-            string[] fileNames
-        )
-        {
-            CreateUnityPackageStandalone(outputDir, name, containsPath, basePath, fileNames, null, null);
-        }
-
-        public static void CreateUnityPackageStandalone(
-            string outputDir,
-            string name,
-            string[] containsPath,
-            string basePath,
-            IEnumerable<string> fileNames,
-            string[] includeSuffix,
-            string[] excludeSuffix
+            PackageInfo package
             )
         {
+            var targetFileNames = package.List.SelectMany(x => x.Files).ToArray();
 
-            if (includeSuffix != null)
-            {
-                fileNames = fileNames
-                    .Where(fileName => includeSuffix.Any(suffix => fileName.EndsWith(suffix)));
-            }
-
-            if (excludeSuffix != null)
-            {
-                fileNames = fileNames
-                    .Where(fileName => !excludeSuffix.Any(suffix => fileName.EndsWith(suffix)));
-            }
-
-            if (containsPath != null)
-            {
-                var containsPathWithBase = containsPath.Select(c => string.Format("{0}/{1}", basePath, c)).ToArray();
-                fileNames = fileNames
-                    .Where(fileName => containsPathWithBase.Any(c => fileName.StartsWith(c)));
-            }
-
-            var targetFileNames = fileNames.ToArray();
-
-            Debug.LogFormat("Package '{0}' will include {1} files...", name, targetFileNames.Count());
+            Debug.LogFormat("Package '{0}' will include {1} files...", package.Name, targetFileNames.Count());
             Debug.LogFormat("{0}", string.Join("", targetFileNames.Select((x, i) => string.Format("[{0:##0}] {1}\n", i, x)).ToArray()));
 
-            var path = MakePackagePathName(outputDir, name);
+            var path = MakePackagePathName(outputDir, package.Name);
             AssetDatabase.ExportPackage(targetFileNames, path, ExportPackageOptions.Default);
         }
 
