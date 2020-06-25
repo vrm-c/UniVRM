@@ -2,7 +2,8 @@
     "name": "UniVRM.Editor.Tests",
     "references": [
         "VRM",
-        "UniJSON"
+        "UniJSON",
+        "UniVRM.Editor"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"
@@ -11,5 +12,9 @@
         "Editor"
     ],
     "excludePlatforms": [],
-    "allowUnsafeCode": false
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": []
 }

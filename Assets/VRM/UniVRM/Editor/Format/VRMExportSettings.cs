@@ -93,7 +93,10 @@ namespace VRM
         public bool RemoveVertexColor = false;
         #endregion
 
-        private const int MAX_LENGTH = 64;
+        public static bool IsFileNameLengthTooLong(string fileName)
+        {
+            return fileName.Length > 64;
+        }
 
         public struct Validation
         {
@@ -234,7 +237,7 @@ namespace VRM
 
             foreach (var material in materials)
             {
-                if (material.name.Length > MAX_LENGTH)
+                if (IsFileNameLengthTooLong(material.name))
                     yield return Validation.Error(string.Format("FileName '{0}' is too long. ", material.name));
             }
 
@@ -259,29 +262,23 @@ namespace VRM
 
             foreach (var textureName in textureNameList)
             {
-                if (textureName.Length > MAX_LENGTH)
+                if (IsFileNameLengthTooLong(textureName))
                     yield return Validation.Error(string.Format("FileName '{0}' is too long. ", textureName));
             }
 
             var vrmMeta = Source.GetComponent<VRMMeta>();
-            if (vrmMeta != null)
+            if (vrmMeta != null && vrmMeta.Meta != null && vrmMeta.Meta.Thumbnail != null)
             {
-                if (vrmMeta.Meta != null)
-                {
-                    if (vrmMeta.Meta.Thumbnail != null)
-                    {
-                        var thumbnailName = vrmMeta.Meta.Thumbnail.name;
-                        if (thumbnailName.Length > MAX_LENGTH)
-                            yield return Validation.Error(string.Format("FileName '{0}' is too long. ", thumbnailName));
-                    }
-                }
+                var thumbnailName = vrmMeta.Meta.Thumbnail.name;
+                if (IsFileNameLengthTooLong(thumbnailName))
+                    yield return Validation.Error(string.Format("FileName '{0}' is too long. ", thumbnailName));
             }
 
             var meshFilters = Source.GetComponentsInChildren<MeshFilter>();
             var meshesName = meshFilters.Select(x => x.sharedMesh.name).Distinct();
             foreach (var meshName in meshesName)
             {
-                if (meshName.Length > MAX_LENGTH)
+                if (IsFileNameLengthTooLong(meshName))
                     yield return Validation.Error(string.Format("FileName '{0}' is too long. ", meshName));
             }
 
@@ -289,7 +286,7 @@ namespace VRM
             var skinnedmeshesName = skinnedmeshRenderers.Select(x => x.sharedMesh.name).Distinct();
             foreach (var skinnedmeshName in skinnedmeshesName)
             {
-                if (skinnedmeshName.Length > MAX_LENGTH)
+                if (IsFileNameLengthTooLong(skinnedmeshName))
                     yield return Validation.Error(string.Format("FileName '{0}' is too long. ", skinnedmeshName));
             }
         }
