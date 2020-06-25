@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UniGLTF;
+using UnityEditor;
 using UnityEngine;
 
 
@@ -91,6 +92,11 @@ namespace VRM
         [Tooltip("Remove vertex color")]
         public bool RemoveVertexColor = false;
         #endregion
+
+        public static bool IsFileNameLengthTooLong(string fileName)
+        {
+            return fileName.Length > 64;
+        }
 
         public struct Validation
         {
@@ -190,7 +196,7 @@ namespace VRM
 
             if (ReduceBlendshape && Source.GetComponent<VRMBlendShapeProxy>() == null)
             {
-                yield return Validation.Error("ReduceBlendshapeSize is need VRMBlendShapeProxy, you need to convert to VRM once.");
+                yield return Validation.Error("ReduceBlendshapeSize needs VRMBlendShapeProxy. You need to convert to VRM once.");
             }
             
             var vertexColor = Source.GetComponentsInChildren<SkinnedMeshRenderer>().Any(x => x.sharedMesh.colors.Length > 0);
@@ -227,6 +233,61 @@ namespace VRM
                 }
 
                 yield return Validation.Warning(string.Format("unknown material '{0}' is used. this will export as `Standard` fallback", material.shader.name));
+            }
+
+            foreach (var material in materials)
+            {
+                if (IsFileNameLengthTooLong(material.name))
+                    yield return Validation.Error(string.Format("FileName '{0}' is too long. ", material.name));
+            }
+
+            var textureNameList = new List<string>();
+            foreach (var material in materials)
+            {
+                var shader = material.shader;
+                int propertyCount = ShaderUtil.GetPropertyCount(shader);
+                for (int i = 0; i < propertyCount; i++)
+                {
+                    if (ShaderUtil.GetPropertyType(shader, i) == ShaderUtil.ShaderPropertyType.TexEnv)
+                    {
+                        if ((material.GetTexture(ShaderUtil.GetPropertyName(shader, i)) != null))
+                        {
+                            var textureName = material.GetTexture(ShaderUtil.GetPropertyName(shader, i)).name;
+                            if (!textureNameList.Contains(textureName))
+                                textureNameList.Add(textureName);
+                        }
+                    }
+                }
+            }
+
+            foreach (var textureName in textureNameList)
+            {
+                if (IsFileNameLengthTooLong(textureName))
+                    yield return Validation.Error(string.Format("FileName '{0}' is too long. ", textureName));
+            }
+
+            var vrmMeta = Source.GetComponent<VRMMeta>();
+            if (vrmMeta != null && vrmMeta.Meta != null && vrmMeta.Meta.Thumbnail != null)
+            {
+                var thumbnailName = vrmMeta.Meta.Thumbnail.name;
+                if (IsFileNameLengthTooLong(thumbnailName))
+                    yield return Validation.Error(string.Format("FileName '{0}' is too long. ", thumbnailName));
+            }
+
+            var meshFilters = Source.GetComponentsInChildren<MeshFilter>();
+            var meshesName = meshFilters.Select(x => x.sharedMesh.name).Distinct();
+            foreach (var meshName in meshesName)
+            {
+                if (IsFileNameLengthTooLong(meshName))
+                    yield return Validation.Error(string.Format("FileName '{0}' is too long. ", meshName));
+            }
+
+            var skinnedmeshRenderers = Source.GetComponentsInChildren<SkinnedMeshRenderer>();
+            var skinnedmeshesName = skinnedmeshRenderers.Select(x => x.sharedMesh.name).Distinct();
+            foreach (var skinnedmeshName in skinnedmeshesName)
+            {
+                if (IsFileNameLengthTooLong(skinnedmeshName))
+                    yield return Validation.Error(string.Format("FileName '{0}' is too long. ", skinnedmeshName));
             }
         }
 
