@@ -156,7 +156,8 @@ namespace VRM
                 Source.transform.rotation != Quaternion.identity ||
                 Source.transform.localScale != Vector3.one)
             {
-                yield return Validation.Error("Root's Position, Rotation and Scale need to be Default values.");
+                EditorUtility.DisplayDialog("Error", "The Root transform should have Default translation, rotation and scale.", "ok");
+                yield return Validation.Error("The Root transform should have Default translation, rotation and scale.");
             }
 
             var animator = Source.GetComponent<Animator>();

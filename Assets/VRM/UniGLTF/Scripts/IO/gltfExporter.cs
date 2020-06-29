@@ -54,7 +54,7 @@ namespace UniGLTF
             }
             else
             {
-                EditorUtility.DisplayDialog("Error", "Root's Position, Rotation and Scale need to be Default values.", "ok");
+                EditorUtility.DisplayDialog("Error", "The Root transform should have Default translation, rotation and scale.", "ok");
             }
         }
 #endif
