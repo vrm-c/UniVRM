@@ -152,6 +152,14 @@ namespace VRM
                 yield break;
             }
 
+            if (Source.transform.position != Vector3.zero ||
+                Source.transform.rotation != Quaternion.identity ||
+                Source.transform.localScale != Vector3.one)
+            {
+                EditorUtility.DisplayDialog("Error", "The Root transform should have Default translation, rotation and scale.", "ok");
+                yield return Validation.Error("The Root transform should have Default translation, rotation and scale.");
+            }
+
             var animator = Source.GetComponent<Animator>();
             if (animator == null)
             {
