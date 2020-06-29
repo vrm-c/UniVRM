@@ -25,29 +25,36 @@ namespace UniGLTF
         private static void ExportFromMenu()
         {
             var go = Selection.activeObject as GameObject;
-            var path = EditorUtility.SaveFilePanel(
-                    "Save glb",
-                    "",
-                    go.name + ".glb",
-                    "glb");
-            if (string.IsNullOrEmpty(path))
-            {
-                return;
-            }
 
-            var gltf = new glTF();
-            using (var exporter = new gltfExporter(gltf))
+            if (go.transform.position == Vector3.zero &&
+                go.transform.rotation == Quaternion.identity && 
+                go.transform.localScale == Vector3.one)
             {
-                exporter.Prepare(go);
-                exporter.Export();
-            }
-            var bytes = gltf.ToGlbBytes();
-            File.WriteAllBytes(path, bytes);
+                var path = EditorUtility.SaveFilePanel(
+                    "Save glb", "", go.name + ".glb", "glb");
+                if (string.IsNullOrEmpty(path))
+                {
+                    return;
+                }
 
-            if (path.StartsWithUnityAssetPath())
+                var gltf = new glTF();
+                using (var exporter = new gltfExporter(gltf))
+                {
+                    exporter.Prepare(go);
+                    exporter.Export();
+                }
+                var bytes = gltf.ToGlbBytes();
+                File.WriteAllBytes(path, bytes);
+
+                if (path.StartsWithUnityAssetPath())
+                {
+                    AssetDatabase.ImportAsset(path.ToUnityRelativePath());
+                    AssetDatabase.Refresh();
+                }
+            }
+            else
             {
-                AssetDatabase.ImportAsset(path.ToUnityRelativePath());
-                AssetDatabase.Refresh();
+                EditorUtility.DisplayDialog("Error", "Root's Position, Rotation and Scale need to be Default values.", "ok");
             }
         }
 #endif

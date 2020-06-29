@@ -152,6 +152,13 @@ namespace VRM
                 yield break;
             }
 
+            if (Source.transform.position != Vector3.zero ||
+                Source.transform.rotation != Quaternion.identity ||
+                Source.transform.localScale != Vector3.one)
+            {
+                yield return Validation.Error("Root's Position, Rotation and Scale need to be Default values.");
+            }
+
             var animator = Source.GetComponent<Animator>();
             if (animator == null)
             {
