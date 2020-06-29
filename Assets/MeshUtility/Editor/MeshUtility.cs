@@ -256,8 +256,17 @@ namespace MeshUtility
             skinnedMeshRenderer.sharedMesh = newMesh;
 
             // save mesh as asset
-            var directory = Path.GetDirectoryName(AssetDatabase.GetAssetPath(mesh)).Replace("\\", "/");
-            var assetPath = directory + "/" + Path.GetFileNameWithoutExtension(mesh.name) + "_" + blendShapeLabel.ToString() + ASSET_SUFFIX;
+            var assetPath = string.Format("{0}{1}", Path.GetFileNameWithoutExtension(mesh.name), ASSET_SUFFIX);
+            Debug.Log(assetPath);
+            if (!string.IsNullOrEmpty((AssetDatabase.GetAssetPath(mesh))))
+            {
+                var directory = Path.GetDirectoryName(AssetDatabase.GetAssetPath(mesh)).Replace("\\", "/");
+                assetPath = string.Format("{0}/{1}{2}", directory, Path.GetFileNameWithoutExtension(mesh.name) + "_" + blendShapeLabel.ToString(), ASSET_SUFFIX);
+            }
+            else
+            {
+                assetPath = string.Format("Assets/{0}{1}", Path.GetFileNameWithoutExtension(mesh.name) + "_" + blendShapeLabel.ToString(), ASSET_SUFFIX);
+            }
             Debug.LogFormat("CreateAsset: {0}", assetPath);
             AssetDatabase.CreateAsset(newMesh, assetPath);
         }
