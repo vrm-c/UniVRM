@@ -75,10 +75,18 @@ namespace DepthFirstScheduler
     #region CoroutineFunctor
     public class CoroutineFunctor<T> : IFunctor<T>
     {
-        T m_result;
         public T GetResult()
         {
-            return m_result;
+            if (m_last?.Current == null) return default;
+            
+            try
+            {
+                return (T)m_last.Current;
+            }
+            catch
+            {
+                return default;
+            }
         }
 
         Exception m_error;
@@ -87,12 +95,11 @@ namespace DepthFirstScheduler
             return m_error;
         }
 
-        Func<T> m_arg;
-        Func<T, IEnumerator> m_starter;
+        Func<IEnumerator> m_starter;
         Stack<IEnumerator> m_it;
-        public CoroutineFunctor(Func<T> arg, Func<T, IEnumerator> starter)
+        private IEnumerator m_last;
+        public CoroutineFunctor(Func<IEnumerator> starter)
         {
-            m_arg = arg;
             m_starter = starter;
         }
 
@@ -100,9 +107,8 @@ namespace DepthFirstScheduler
         {
             if (m_it == null)
             {
-                m_result = m_arg();
                 m_it = new Stack<IEnumerator>();
-                m_it.Push(m_starter(m_result));
+                m_it.Push(m_starter());
             }
 
             try
@@ -119,7 +125,7 @@ namespace DepthFirstScheduler
                     }
                     else
                     {
-                        m_it.Pop();
+                        m_last = m_it.Pop();
                     }
                     return ExecutionStatus.Continue;
                 }
@@ -139,9 +145,11 @@ namespace DepthFirstScheduler
 
     public static class CoroutineFunctor
     {
-        public static CoroutineFunctor<T> Create<T>(Func<T> arg, Func<T, IEnumerator> starter)
+        /// <typeparam name="S">引数の型</typeparam>
+        /// <typeparam name="T">結果の型</typeparam>
+        public static CoroutineFunctor<T> Create<S, T>(Func<S> arg, Func<S, IEnumerator> starter)
         {
-            return new CoroutineFunctor<T>(arg, starter);
+            return new CoroutineFunctor<T>(() => starter(arg()));
         }
     }
     #endregion
