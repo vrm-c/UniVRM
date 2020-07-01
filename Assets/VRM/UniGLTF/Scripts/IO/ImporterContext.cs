@@ -372,6 +372,9 @@ namespace UniGLTF
         #endregion
 
         #region Load. Build unity objects
+
+        public bool EnableLoadBalancing;
+        
         /// <summary>
         /// ReadAllBytes, Parse, Create GameObject
         /// </summary>
@@ -560,28 +563,7 @@ namespace UniGLTF
                                         return meshImporter.ReadMesh(this, index);
                                     }
                                 })
-                        .ContinueWith(Scheduler.MainThread, x =>
-                        {
-                            using (MeasureTime("BuildMesh"))
-                            {
-                                var meshWithMaterials = MeshImporter.BuildMesh(this, x);
-
-                                var mesh = meshWithMaterials.Mesh;
-
-                                // mesh name
-                                if (string.IsNullOrEmpty(mesh.name))
-                                {
-                                    mesh.name = string.Format("UniGLTF import#{0}", i);
-                                }
-                                var originalName = mesh.name;
-                                for (int j = 1; Meshes.Any(y => y.Mesh.name == mesh.name); ++j)
-                                {
-                                    mesh.name = string.Format("{0}({1})", originalName, j);
-                                }
-
-                                return meshWithMaterials;
-                            }
-                        })
+                        .ContinueWithCoroutine<MeshWithMaterials>(Scheduler.MainThread, x => BuildMesh(x, index))
                         .ContinueWith(Scheduler.ThreadPool, x => Meshes.Add(x))
                         ;
                     }
@@ -653,6 +635,39 @@ namespace UniGLTF
                 }
             }
             yield return null;
+        }
+        
+        IEnumerator BuildMesh(MeshImporter.MeshContext x, int i)
+        {
+            using (MeasureTime("BuildMesh"))
+            {
+                MeshWithMaterials meshWithMaterials;
+                if (EnableLoadBalancing)
+                {
+                    var buildMesh =  MeshImporter.BuildMeshCoroutine(this, x);
+                    yield return buildMesh;
+                    meshWithMaterials = buildMesh.Current as MeshWithMaterials;
+                }
+                else
+                {
+                    meshWithMaterials = MeshImporter.BuildMesh(this, x);
+                }
+
+                var mesh = meshWithMaterials.Mesh;
+
+                // mesh name
+                if (string.IsNullOrEmpty(mesh.name))
+                {
+                    mesh.name = string.Format("UniGLTF import#{0}", i);
+                }
+                var originalName = mesh.name;
+                for (int j = 1; Meshes.Any(y => y.Mesh.name == mesh.name); ++j)
+                {
+                    mesh.name = string.Format("{0}({1})", originalName, j);
+                }
+
+                yield return meshWithMaterials;
+            }
         }
 
         IEnumerator LoadMeshes()

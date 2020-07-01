@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -655,6 +656,134 @@ namespace UniGLTF
             }
 
             return result;
+        }
+        
+        public static IEnumerator BuildMeshCoroutine(ImporterContext ctx, MeshImporter.MeshContext meshContext)
+        {
+            if (!meshContext.materialIndices.Any())
+            {
+                meshContext.materialIndices.Add(0);
+            }
+
+            var mesh = new Mesh();
+            mesh.name = meshContext.name;
+
+            if (meshContext.positions.Length > UInt16.MaxValue)
+            {
+#if UNITY_2017_3_OR_NEWER
+                mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
+#else
+                Debug.LogWarningFormat("vertices {0} exceed 65535. not implemented. Unity2017.3 supports large mesh",
+                    meshContext.positions.Length);
+#endif
+            }
+
+            
+            mesh.vertices = meshContext.positions;
+            bool recalculateNormals = false;
+            if (meshContext.normals != null && meshContext.normals.Length > 0)
+            {
+                
+                mesh.normals = meshContext.normals;
+            }
+            else
+            {
+                recalculateNormals = true;
+            }
+
+            if (meshContext.uv != null && meshContext.uv.Length > 0)
+            {
+                
+                mesh.uv = meshContext.uv;
+            }
+
+            bool recalculateTangents = true;
+#if UNIGLTF_IMPORT_TANGENTS
+            if (meshContext.tangents != null && meshContext.tangents.Length > 0)
+            {
+                mesh.tangents = meshContext.tangents;
+                recalculateTangents = false;
+            }
+#endif
+
+            if (meshContext.colors != null && meshContext.colors.Length > 0)
+            {
+                
+                mesh.colors = meshContext.colors;
+            }
+            if (meshContext.boneWeights != null && meshContext.boneWeights.Count > 0)
+            {
+                mesh.boneWeights = meshContext.boneWeights.ToArray();
+            }
+            mesh.subMeshCount = meshContext.subMeshes.Count;
+            for (int i = 0; i < meshContext.subMeshes.Count; ++i)
+            {
+                mesh.SetTriangles(meshContext.subMeshes[i], i);
+            }
+
+            if (recalculateNormals)
+            {
+                mesh.RecalculateNormals();
+            }
+            if (recalculateTangents)
+            {
+#if UNITY_5_6_OR_NEWER
+                yield return null;
+                mesh.RecalculateTangents();
+                yield return null;
+#else
+                CalcTangents(mesh);
+#endif
+            }
+
+            var result = new MeshWithMaterials
+            {
+                Mesh = mesh,
+                Materials = meshContext.materialIndices.Select(x => ctx.GetMaterial(x)).ToArray()
+            };
+
+            yield return null;
+            if (meshContext.blendShapes != null)
+            {
+                Vector3[] emptyVertices = null;
+                
+                foreach (var blendShape in meshContext.blendShapes)
+                {
+                    if (blendShape.Positions.Count > 0)
+                    {
+                        if (blendShape.Positions.Count == mesh.vertexCount)
+                        {
+                            mesh.AddBlendShapeFrame(blendShape.Name, FRAME_WEIGHT,
+                                blendShape.Positions.ToArray(),
+                                (meshContext.normals != null && meshContext.normals.Length == mesh.vertexCount && blendShape.Normals.Count() == blendShape.Positions.Count()) ? blendShape.Normals.ToArray() : null,
+                                null
+                            );
+                            yield return null;
+                        }
+                        else
+                        {
+                            Debug.LogWarningFormat("May be partial primitive has blendShape. Require separate mesh or extend blend shape, but not implemented: {0}", blendShape.Name);
+                        }
+                    }
+                    else
+                    {
+                        if (emptyVertices == null)
+                        {
+                            emptyVertices = new Vector3[mesh.vertexCount];
+                        }
+                        // Debug.LogFormat("empty blendshape: {0}.{1}", mesh.name, blendShape.Name);
+                        // add empty blend shape for keep blend shape index
+                        mesh.AddBlendShapeFrame(blendShape.Name, FRAME_WEIGHT,
+                            emptyVertices,
+                            null,
+                            null
+                        );
+                        yield return null;
+                    }
+                }
+            }
+
+            yield return result;
         }
 
         /// <summary>
