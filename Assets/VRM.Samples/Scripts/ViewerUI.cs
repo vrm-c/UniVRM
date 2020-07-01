@@ -167,6 +167,7 @@ namespace VRM.Samples
         }
 
         HumanPoseTransfer m_loaded;
+        VRMBlendShapeProxy m_proxy;
 
         AIUEO m_lipSync;
         bool m_enableLipSyncValue;
@@ -235,6 +236,11 @@ namespace VRM.Samples
             }
 
             m_ui.UpdateToggle(EnableBvh, EnableTPose);
+
+            if (m_proxy != null)
+            {
+                m_proxy.Apply();
+            }
         }
 
         void EnableBvh()
@@ -361,6 +367,8 @@ namespace VRM.Samples
                 {
                     animation.Play(animation.clip.name);
                 }
+
+                m_proxy = go.GetComponent<VRMBlendShapeProxy>();
             }
         }
 
