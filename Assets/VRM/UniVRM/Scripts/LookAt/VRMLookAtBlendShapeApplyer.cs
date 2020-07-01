@@ -17,8 +17,21 @@ namespace VRM
         [SerializeField]
         public CurveMapper VerticalUp = new CurveMapper(90.0f, 1.0f);
 
+        /// <summary>
+        /// v0.56 からデフォルト値を true に変更
+        /// 
+        /// true の場合: BlendShapeProxy.AccumulateValue を使う(推奨)
+        ///     別途 BlendShapeProxy.Apply を別の場所で呼び出す必要があります
+        /// false の場合: BlendShapeProxy.ImmediatelySetValueを使う
+        ///     目をテクスチャUVのOffset値の変更で表現するモデルの場合に、
+        ///     Material.SetVector("_MainTex_ST", new Vector4(1, 1, 横の移動値, 0))
+        ///     Material.SetVector("_MainTex_ST", new Vector4(1, 1, 0, 縦の移動値))
+        ///     と連続で呼ばれることで、横の移動値が打ち消されてしまいます。
+        ///     BlendShapeProxy.AccumulateValue はこの値を加算して new Vector4(1, 1, 横の移動値, 縦の移動値) 
+        ///     となるように扱えます。
+        /// </summary>
         [SerializeField]
-        public bool m_notSetValueApply;
+        public bool m_notSetValueApply = true;
 
         public void OnImported(VRMImporterContext context)
         {
