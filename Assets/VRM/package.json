@@ -1,12 +1,12 @@
 {
   "name"        : "com.vrmc.univrm",
-  "version"     : "0.55.0",
+  "version"     : "0.56.1",
   "displayName" : "VRM",
   "description" : "VRM importer",
   "unity"       : "2017.1",
   "keywords"    : [ "vrm", "importer", "avatar", "vr" ],
   "author"      : { "name": "VRM Consortium" },
   "dependencies": {
-    "com.vrmc.vrmshaders": "0.56.0"
+    "com.vrmc.vrmshaders": "0.56.1"
   }
 }

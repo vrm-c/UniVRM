@@ -1,6 +1,6 @@
 {
   "name"        : "com.vrmc.vrmshaders",
-  "version"     : "0.56.0",
+  "version"     : "0.56.1",
   "displayName" : "VRM Shaders",
   "description" : "VRM Shaders",
   "unity"       : "2017.1",
