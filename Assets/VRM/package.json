@@ -3,7 +3,7 @@
   "version"     : "0.56.1",
   "displayName" : "VRM",
   "description" : "VRM importer",
-  "unity"       : "2017.1",
+  "unity"       : "2018.4",
   "keywords"    : [ "vrm", "importer", "avatar", "vr" ],
   "author"      : { "name": "VRM Consortium" },
   "dependencies": {
