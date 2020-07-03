@@ -3,7 +3,7 @@
   "version"     : "0.56.1",
   "displayName" : "VRM Shaders",
   "description" : "VRM Shaders",
-  "unity"       : "2017.1",
+  "unity"       : "2018.4",
   "keywords"    : [ "vrm", "shader" ],
   "author"      : { "name": "VRM Consortium" }
 }
