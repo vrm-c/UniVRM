@@ -1,9 +1,14 @@
 {
-  "name"        : "com.vrmc.vrmshaders",
-  "version"     : "0.56.1",
-  "displayName" : "VRM Shaders",
-  "description" : "VRM Shaders",
-  "unity"       : "2018.4",
-  "keywords"    : [ "vrm", "shader" ],
-  "author"      : { "name": "VRM Consortium" }
+  "name": "com.vrmc.vrmshaders",
+  "version": "0.56.2",
+  "displayName": "VRM Shaders",
+  "description": "VRM Shaders",
+  "unity": "2018.4",
+  "keywords": [
+    "vrm",
+    "shader"
+  ],
+  "author": {
+    "name": "VRM Consortium"
+  }
 }
