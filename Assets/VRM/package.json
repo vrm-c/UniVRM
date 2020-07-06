@@ -1,12 +1,19 @@
 {
-  "name"        : "com.vrmc.univrm",
-  "version"     : "0.56.1",
-  "displayName" : "VRM",
-  "description" : "VRM importer",
-  "unity"       : "2018.4",
-  "keywords"    : [ "vrm", "importer", "avatar", "vr" ],
-  "author"      : { "name": "VRM Consortium" },
+  "name": "com.vrmc.univrm",
+  "version": "0.56.2",
+  "displayName": "VRM",
+  "description": "VRM importer",
+  "unity": "2018.4",
+  "keywords": [
+    "vrm",
+    "importer",
+    "avatar",
+    "vr"
+  ],
+  "author": {
+    "name": "VRM Consortium"
+  },
   "dependencies": {
-    "com.vrmc.vrmshaders": "0.56.1"
+    "com.vrmc.vrmshaders": "0.56.2"
   }
 }
