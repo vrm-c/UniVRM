@@ -241,14 +241,12 @@ namespace VRM
 
                     if (boneGroup.colliderGroups != null && boneGroup.colliderGroups.Any())
                     {
-                        var colliderGroups = new VRMSpringBoneColliderGroup[boneGroup.colliderGroups.Length];
-                        int i = 0;
-                        foreach (var colliderGroup in boneGroup.colliderGroups)
+                        vrmBoneGroup.ColliderGroups = new VRMSpringBoneColliderGroup[boneGroup.colliderGroups.Length];
+                        for (int i = 0; i < boneGroup.colliderGroups.Length; ++i)
                         {
-                            colliderGroups[i] = colliders[colliderGroup];
+                            var colliderGroup = boneGroup.colliderGroups[i];
+                            vrmBoneGroup.ColliderGroups[i] = colliders[colliderGroup];
                         }
-
-                        vrmBoneGroup.ColliderGroups = colliderGroups;
                     }
 
                     var boneList = new List<Transform>();
