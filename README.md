@@ -15,7 +15,7 @@ VRM is based on glTF2.0. If you comply with the MIT license, you are free to use
 
 "UniVRM" is a Unity implementation of VRM. It can create, import and export VRM models.
 
-* Currently UniVRM supports Unity 5.6+  
+* Currently UniVRM supports `Unity-2018.4LTS+` `.Net4.x`
 
 ## Download
 
