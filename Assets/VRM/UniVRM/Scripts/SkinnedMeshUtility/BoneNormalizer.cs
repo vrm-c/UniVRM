@@ -184,7 +184,7 @@ namespace VRM
                 .Select(x =>
                 {
                     Transform dstBone;
-                    if (boneMap.TryGetValue(x.x, out dstBone))
+                    if (x.x != null && boneMap.TryGetValue(x.x, out dstBone))
                     {
                         return dstBones.IndexOf(dstBone);
                     }
@@ -199,7 +199,15 @@ namespace VRM
             {
                 if (indexMap[i] < 0)
                 {
-                    Debug.LogWarningFormat("{0} is removed", srcBones[i].name);
+                    var srcBone = srcBones[i];
+                    if (srcBone == null)
+                    {
+                        Debug.LogWarningFormat("bones[{0}] is null", i);
+                    }
+                    else
+                    {
+                        Debug.LogWarningFormat("{0} is removed", srcBone.name);
+                    }
                 }
             }
 
@@ -289,9 +297,10 @@ namespace VRM
             }
 
             var dstBones = srcRenderer.bones
-                .Where(x => boneMap.ContainsKey(x))
+                .Where(x => x != null && boneMap.ContainsKey(x))
                 .Select(x => boneMap[x])
                 .ToArray();
+
             var hasBoneWeight = srcRenderer.bones != null && srcRenderer.bones.Length > 0;
             if (!hasBoneWeight)
             {
