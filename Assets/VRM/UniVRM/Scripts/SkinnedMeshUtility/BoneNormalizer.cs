@@ -172,98 +172,110 @@ namespace VRM
             }
         }
 
+        /// <summary>
+        /// index が 有効であれば、setter に weight を渡す。無効であれば setter に 0 を渡す。
+        /// </summary>
+        /// <param name="indexMap"></param>
+        /// <param name="srcIndex"></param>
+        /// <param name="weight"></param>
+        /// <param name="setter"></param>
+        static bool CopyOrDropWeight(int[] indexMap, int srcIndex, float weight, Action<int, float> setter)
+        {
+            var dstIndex = indexMap[srcIndex];
+            if (dstIndex != -1)
+            {
+                // 有効なindex。weightをコピーする
+                setter(dstIndex, weight);
+                return true;
+            }
+            else
+            {
+                // 無効なindex。0でクリアする
+                setter(0, 0);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// BoneWeight[] src から新しいボーンウェイトを作成する。
+        /// </summary>
+        /// <param name="src">変更前のBoneWeight[]</param>
+        /// <param name="boneMap">新旧のボーンの対応表。新しい方は無効なボーンが除去されてnullの部分がある</param>
+        /// <param name="srcBones">変更前のボーン配列</param>
+        /// <param name="dstBones">変更後のボーン配列。除去されたボーンがある場合、変更前より短い</param>
+        /// <returns></returns>
         static BoneWeight[] MapBoneWeight(BoneWeight[] src,
             Dictionary<Transform, Transform> boneMap,
             Transform[] srcBones,
             Transform[] dstBones
             )
         {
-            var indexMap =
-            srcBones
-                .Select((x, i) => new { i, x })
-                .Select(x =>
-                {
-                    Transform dstBone;
-                    if (x.x != null && boneMap.TryGetValue(x.x, out dstBone))
-                    {
-                        return dstBones.IndexOf(dstBone);
-                    }
-                    else
-                    {
-                        return -1;
-                    }
-                })
-                .ToArray();
-
+            // 処理前後の index の対応表を作成する
+            var indexMap = new int[srcBones.Length];
             for (int i = 0; i < srcBones.Length; ++i)
             {
-                if (indexMap[i] < 0)
+                var srcBone = srcBones[i];
+                if (srcBone == null)
                 {
-                    var srcBone = srcBones[i];
-                    if (srcBone == null)
+                    // 元のボーンが無い
+                    indexMap[i] = -1;
+                    Debug.LogWarningFormat("bones[{0}] is null", i);
+                }
+                else
+                {
+                    if (boneMap.TryGetValue(srcBone, out Transform dstBone))
                     {
-                        Debug.LogWarningFormat("bones[{0}] is null", i);
+                        // 対応するボーンが存在する
+                        var dstIndex = dstBones.IndexOf(dstBone);
+                        if (dstIndex == -1)
+                        {
+                            // ありえない。バグ
+                            throw new Exception();
+                        }
+                        indexMap[i] = dstIndex;
                     }
                     else
                     {
+                        // 先のボーンが無い
+                        indexMap[i] = -1;
                         Debug.LogWarningFormat("{0} is removed", srcBone.name);
                     }
                 }
             }
 
-            var dst = new BoneWeight[src.Length];
-            Array.Copy(src, dst, src.Length);
-
+            // 新しいBoneWeightを作成する
+            var newBoneWeights = new BoneWeight[src.Length];
             for (int i = 0; i < src.Length; ++i)
             {
-                var x = src[i];
+                BoneWeight srcBoneWeight = src[i];
 
-                if (indexMap[x.boneIndex0] != -1)
+                // 0
+                CopyOrDropWeight(indexMap, srcBoneWeight.boneIndex0, srcBoneWeight.weight0, (newIndex, newWeight) =>
                 {
-                    dst[i].boneIndex0 = indexMap[x.boneIndex0];
-                    dst[i].weight0 = x.weight0;
-                }
-                else if (x.weight0 > 0)
+                    newBoneWeights[i].boneIndex0 = newIndex;
+                    newBoneWeights[i].weight0 = newWeight;
+                });
+                // 1
+                CopyOrDropWeight(indexMap, srcBoneWeight.boneIndex1, srcBoneWeight.weight1, (newIndex, newWeight) =>
                 {
-                    Debug.LogWarningFormat("{0} weight0 to {1} is lost", i, srcBones[x.boneIndex0].name);
-                    dst[i].weight0 = 0;
-                }
-
-                if (indexMap[x.boneIndex1] != -1)
+                    newBoneWeights[i].boneIndex1 = newIndex;
+                    newBoneWeights[i].weight1 = newWeight;
+                });
+                // 2
+                CopyOrDropWeight(indexMap, srcBoneWeight.boneIndex2, srcBoneWeight.weight2, (newIndex, newWeight) =>
                 {
-                    dst[i].boneIndex1 = indexMap[x.boneIndex1];
-                    dst[i].weight1 = x.weight1;
-                }
-                else if (x.weight1 > 0)
+                    newBoneWeights[i].boneIndex2 = newIndex;
+                    newBoneWeights[i].weight2 = newWeight;
+                });
+                // 3
+                CopyOrDropWeight(indexMap, srcBoneWeight.boneIndex3, srcBoneWeight.weight3, (newIndex, newWeight) =>
                 {
-                    Debug.LogWarningFormat("{0} weight0 to {1} is lost", i, srcBones[x.boneIndex1].name);
-                    dst[i].weight1 = 0;
-                }
-
-                if (indexMap[x.boneIndex2] != -1)
-                {
-                    dst[i].boneIndex2 = indexMap[x.boneIndex2];
-                    dst[i].weight2 = x.weight2;
-                }
-                else if (x.weight2 > 0)
-                {
-                    Debug.LogWarningFormat("{0} weight0 to {1} is lost", i, srcBones[x.boneIndex2].name);
-                    dst[i].weight2 = 0;
-                }
-
-                if (indexMap[x.boneIndex3] != -1)
-                {
-                    dst[i].boneIndex3 = indexMap[x.boneIndex3];
-                    dst[i].weight3 = x.weight3;
-                }
-                else if (x.weight3 > 0)
-                {
-                    Debug.LogWarningFormat("{0} weight0 to {1} is lost", i, srcBones[x.boneIndex3].name);
-                    dst[i].weight3 = 0;
-                }
+                    newBoneWeights[i].boneIndex3 = newIndex;
+                    newBoneWeights[i].weight3 = newWeight;
+                });
             }
 
-            return dst;
+            return newBoneWeights;
         }
 
         /// <summary>
@@ -296,6 +308,7 @@ namespace VRM
                 }
             }
 
+            // 元の Transform[] bones から、無効なboneを取り除いて前に詰めた配列を作る
             var dstBones = srcRenderer.bones
                 .Where(x => x != null && boneMap.ContainsKey(x))
                 .Select(x => boneMap[x])
@@ -340,7 +353,8 @@ namespace VRM
                 if (val > 0) blendShapeValues.Add(i, val);
             }
 
-            mesh.boneWeights = MapBoneWeight(srcMesh.boneWeights, boneMap, srcRenderer.bones, dstBones); // restore weights. clear when BakeMesh
+            // 新しい骨格のボーンウェイトを作成する
+            mesh.boneWeights = MapBoneWeight(srcMesh.boneWeights, boneMap, srcRenderer.bones, dstBones);
 
             // recalc bindposes
             mesh.bindposes = dstBones.Select(x => x.worldToLocalMatrix * dst.transform.localToWorldMatrix).ToArray();
