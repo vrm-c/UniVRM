@@ -181,6 +181,13 @@ namespace VRM
         /// <param name="setter"></param>
         static bool CopyOrDropWeight(int[] indexMap, int srcIndex, float weight, Action<int, float> setter)
         {
+            if (srcIndex < 0 || srcIndex >= indexMap.Length)
+            {
+                // ありえるかどうかわからないが BoneWeight.boneIndexN に変な値が入っている. 
+                setter(0, 0);
+                return false;
+            }
+
             var dstIndex = indexMap[srcIndex];
             if (dstIndex != -1)
             {
@@ -204,7 +211,7 @@ namespace VRM
         /// <param name="srcBones">変更前のボーン配列</param>
         /// <param name="dstBones">変更後のボーン配列。除去されたボーンがある場合、変更前より短い</param>
         /// <returns></returns>
-        static BoneWeight[] MapBoneWeight(BoneWeight[] src,
+        public static BoneWeight[] MapBoneWeight(BoneWeight[] src,
             Dictionary<Transform, Transform> boneMap,
             Transform[] srcBones,
             Transform[] dstBones
