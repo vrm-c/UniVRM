@@ -186,7 +186,7 @@ namespace VRM
 
             if (DuplicateBoneNameExists())
             {
-                yield return Validation.Error("Find duplicate Bone names. Please check model's bone names. ");
+                yield return Validation.Warning("Find duplicate Bone names. Please check model's bone names. ");
             }
 
             if (string.IsNullOrEmpty(Title))

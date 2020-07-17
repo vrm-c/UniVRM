@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using UniGLTF;
 using UnityEditor;
 using UnityEngine;
@@ -109,6 +110,26 @@ namespace VRM
             smr.sharedMesh = copyMesh;
         }
 
+        static void ForceUniqueName(Transform transform, Dictionary<string, int> nameCount)
+        {
+            for (int i = 2; i < 5000; ++i)
+            {
+                var sb = new StringBuilder();
+                sb.Append(transform.name);
+                sb.Append('_');
+                sb.Append(i);
+                var newName = sb.ToString();
+                if (!nameCount.ContainsKey(newName))
+                {
+                    Debug.LogWarningFormat("force rename {0} => {1}", transform.name, newName);
+                    transform.name = newName;
+                    nameCount.Add(newName, 1);
+                    return;
+                }
+            }
+            throw new Exception("?");
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -122,6 +143,40 @@ namespace VRM
             // 常にコピーする。シーンを変化させない
             target = GameObject.Instantiate(target);
             destroy.Add(target);
+
+            {
+                // copy元
+                var animator = settings.Source.GetComponent<Animator>();
+                var beforeTransforms = settings.Source.GetComponentsInChildren<Transform>();
+                // copy先
+                var afterTransforms = target.GetComponentsInChildren<Transform>();
+                // copy先のhumanoidBoneのリストを得る
+                var bones = (HumanBodyBones[])Enum.GetValues(typeof(HumanBodyBones));
+                var humanTransforms = bones
+                    .Where(x => x != HumanBodyBones.LastBone)
+                    .Select(x => animator.GetBoneTransform(x))
+                    .Where(x => x != null)
+                    .Select(x => afterTransforms[Array.IndexOf(beforeTransforms, x)]) // copy 先を得る
+                    .ToArray();
+
+                var nameCount = target.GetComponentsInChildren<Transform>()
+                    .GroupBy(x => x.name)
+                    .ToDictionary(x => x.Key, x => x.Count());
+                foreach (var t in target.GetComponentsInChildren<Transform>())
+                {
+                    if (humanTransforms.Contains(t))
+                    {
+                        // keep original name
+                        continue;
+                    }
+
+                    if (nameCount[t.name] > 1)
+                    {
+                        // 重複するボーン名をリネームする
+                        ForceUniqueName(t, nameCount);
+                    }
+                }
+            }
 
             // 正規化
             if (settings.PoseFreeze)
