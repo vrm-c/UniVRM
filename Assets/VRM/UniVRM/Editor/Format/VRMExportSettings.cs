@@ -156,8 +156,8 @@ namespace VRM
                 Source.transform.rotation != Quaternion.identity ||
                 Source.transform.localScale != Vector3.one)
             {
-                EditorUtility.DisplayDialog("Error", "The Root transform should have Default translation, rotation and scale.", "ok");
-                yield return Validation.Error("The Root transform should have Default translation, rotation and scale.");
+                // EditorUtility.DisplayDialog("Error", "The Root transform should have Default translation, rotation and scale.", "ok");
+                yield return Validation.Warning("The Root translation, rotation and scale will be dropped.");
             }
 
             var animator = Source.GetComponent<Animator>();
@@ -206,7 +206,7 @@ namespace VRM
             {
                 yield return Validation.Error("ReduceBlendshapeSize needs VRMBlendShapeProxy. You need to convert to VRM once.");
             }
-            
+
             var vertexColor = Source.GetComponentsInChildren<SkinnedMeshRenderer>().Any(x => x.sharedMesh.colors.Length > 0);
             if (vertexColor)
             {
