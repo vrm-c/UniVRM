@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace VRM
 {
-    public class VRMExporterWizard : ScriptableWizard
+    public class VRMExporterWizard : CustomScriptableWizard
     {
         const string EXTENSION = ".vrm";
 
@@ -18,7 +18,7 @@ namespace VRM
 
         public static void CreateWizard()
         {
-            var wiz = ScriptableWizard.DisplayWizard<VRMExporterWizard>(
+            var wiz = CustomScriptableWizard.DisplayWizard<VRMExporterWizard>(
                 "VRM Exporter", "Export");
             var go = Selection.activeObject as GameObject;
 
