@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Text;
 using UnityEditor;
 using UnityEngine;
 
@@ -6,8 +7,8 @@ namespace VRM
 {
     public class VRMVersionMenu : EditorWindow
     {
-        const string path = "Assets/VRM/UniVRM/Scripts/Format/VRMVersion.cs";
-        const string template = @"
+        const string VersionPath = "Assets/VRM/UniVRM/Scripts/Format/VRMVersion.cs";
+        const string VersionTemplate = @"
 namespace VRM
 {{
     public static partial class VRMVersion
@@ -17,6 +18,44 @@ namespace VRM
         public const int PATCH = {2};
         public const string VERSION = ""{0}.{1}.{2}"";
     }}
+}}
+";
+
+        const string VRMShadersPackagePath = "Assets/VRMShaders/package.json";
+        const string VRMShadersPackageTemplate = @"{{
+  ""name"": ""com.vrmc.vrmshaders"",
+  ""version"": ""{0}.{1}.{2}"",
+  ""displayName"": ""VRM Shaders"",
+  ""description"": ""VRM Shaders"",
+  ""unity"": ""2018.4"",
+  ""keywords"": [
+    ""vrm"",
+    ""shader""
+  ],
+  ""author"": {{
+    ""name"": ""VRM Consortium""
+  }}
+}}
+";
+        const string VRMPackagePath = "Assets/VRM/package.json";
+        const string VRMPackageTemplate = @"{{
+  ""name"": ""com.vrmc.univrm"",
+  ""version"": ""{0}.{1}.{2}"",
+  ""displayName"": ""VRM"",
+  ""description"": ""VRM importer"",
+  ""unity"": ""2018.4"",
+  ""keywords"": [
+    ""vrm"",
+    ""importer"",
+    ""avatar"",
+    ""vr""
+  ],
+  ""author"": {{
+    ""name"": ""VRM Consortium""
+  }},
+  ""dependencies"": {{
+    ""com.vrmc.vrmshaders"": ""{0}.{1}.{2}""
+  }}
 }}
 ";
 
@@ -47,14 +86,20 @@ namespace VRM
                     values[i] = int.Parse(splitted[i]);
                 }
 
-                // generate new VRMVersion.cs
-                var source = string.Format(
-                    template,
+                // generate
+                var utf8 = new UTF8Encoding(false);
+                File.WriteAllText(VersionPath, string.Format(VersionTemplate,
                     values[0],
                     values[1],
-                    values[2]
-                    );
-                File.WriteAllText(path, source);
+                    values[2]), utf8);
+                File.WriteAllText(VRMShadersPackagePath, string.Format(VRMShadersPackageTemplate,
+                    values[0],
+                    values[1],
+                    values[2]), utf8);
+                File.WriteAllText(VRMPackagePath, string.Format(VRMPackageTemplate,
+                    values[0],
+                    values[1],
+                    values[2]), utf8);
                 AssetDatabase.Refresh();
             }
 
