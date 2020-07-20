@@ -1,10 +1,10 @@
 ﻿using System.IO;
 using UnityEditor;
-
+using UnityEngine;
 
 namespace VRM
 {
-    public static class VRMVersionMenu
+    public class VRMVersionMenu : EditorWindow
     {
         const string path = "Assets/VRM/UniVRM/Scripts/Format/VRMVersion.cs";
         const string template = @"
@@ -15,45 +15,63 @@ namespace VRM
         public const int MAJOR = {0};
         public const int MINOR = {1};
         public const int PATCH = {2};
-        public const string PRE_ID = ""{3}"";
-
-        public const string VERSION = ""{0}.{1}.{2}{4}"";
+        public const string VERSION = ""{0}.{1}.{2}"";
     }}
 }}
 ";
 
-#if VRM_DEVELOP
-        [MenuItem(VRMVersion.MENU + "/Increment")]
-#endif
-        static void IncrementVersion()
+        [SerializeField]
+        string m_version;
+
+        void OnGUI()
         {
-            var source = string.Format(
-                template,
-                VRMVersion.MAJOR,
-                VRMVersion.MINOR + 1,
-                VRMVersion.PATCH,
-                VRMVersion.PRE_ID,
-                VRMVersion.PRE_ID != "" ? string.Format("-{0}", VRMVersion.PRE_ID) : ""
-                );
-            File.WriteAllText(path, source);
-            AssetDatabase.Refresh();
+            GUILayout.Label($"Current version: {VRMVersion.VERSION}");
+
+            m_version = EditorGUILayout.TextField("Major.Minor.Patch", m_version);
+
+            if (GUILayout.Button("Apply"))
+            {
+                if (string.IsNullOrEmpty(m_version))
+                {
+                    return;
+                }
+                var splitted = m_version.Split('.');
+                if (splitted.Length != 3)
+                {
+                    Debug.LogWarning($"InvalidFormat: {m_version}");
+                    return;
+                }
+                var values = new int[3];
+                for (int i = 0; i < 3; ++i)
+                {
+                    values[i] = int.Parse(splitted[i]);
+                }
+
+                // generate new VRMVersion.cs
+                var source = string.Format(
+                    template,
+                    values[0],
+                    values[1],
+                    values[2]
+                    );
+                File.WriteAllText(path, source);
+                AssetDatabase.Refresh();
+            }
+
+            if (GUILayout.Button("Close"))
+            {
+                Close();
+            }
         }
 
 #if VRM_DEVELOP
-        [MenuItem(VRMVersion.MENU + "/Decrement")]
+        [MenuItem(VRMVersion.MENU + "/VersionDialog")]
 #endif
-        static void DecrementVersion()
+        static void ShowVersionDialog()
         {
-            var source = string.Format(
-                template,
-                VRMVersion.MAJOR,
-                VRMVersion.MINOR - 1,
-                VRMVersion.PATCH,
-                VRMVersion.PRE_ID,
-                VRMVersion.PRE_ID != "" ? string.Format("-{0}", VRMVersion.PRE_ID) : ""
-                );
-            File.WriteAllText(path, source);
-            AssetDatabase.Refresh();
+            var window = ScriptableObject.CreateInstance<VRMVersionMenu>();
+            window.m_version = VRMVersion.VERSION;
+            window.ShowUtility();
         }
     }
 }
