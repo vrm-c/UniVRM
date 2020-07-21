@@ -2,7 +2,7 @@
   "name": "com.vrmc.univrm",
   "version": "0.56.3",
   "displayName": "VRM",
-  "description": "VRM importer",
+  "description": "VRM importer and exporter",
   "unity": "2018.4",
   "keywords": [
     "vrm",
