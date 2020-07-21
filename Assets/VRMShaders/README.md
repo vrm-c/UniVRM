@@ -6,7 +6,7 @@ VRM model's supported shaders in Unity.
 
 `Window` -> `Package Manager` -> `Add package from git URL` and paste `https://github.com/vrm-c/UniVRM.git?path=/Assets/VRMShaders`.
 
-or add git URL in `Packages/manifest.json`
+or add the package name and git URL in `Packages/manifest.json`:
 
 ```json
 {
