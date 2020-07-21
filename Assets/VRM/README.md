@@ -6,7 +6,7 @@ The core library for UniVRM-0.XX.
 
 `Window` -> `Package Manager` -> `Add package from git URL` and paste `https://github.com/vrm-c/UniVRM.git?path=/Assets/VRM`.
 
-or add git URL in `/UniVRM/Packages/manifest.json`
+or add git URL in `Packages/manifest.json`
 
 ```json
 {
