@@ -11,9 +11,7 @@ or add git URL in `/UniVRM/Packages/manifest.json`
 ```json
 {
   "dependencies": {
-    // ...
     "com.vrmc.univrm": "https://github.com/vrm-c/UniVRM.git?path=/Assets/VRM",
-    // ...
   }
 }
 ```
