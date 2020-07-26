@@ -254,6 +254,10 @@ namespace UniGLTF
                         mesh, j,
                         useSparseAccessorForMorphTarget,
                         exportOnlyBlendShapePosition);
+                    if (morphTarget.POSITION < 0 && morphTarget.NORMAL < 0 && morphTarget.TANGENT < 0)
+                    {
+                        continue;
+                    }
 
                     //
                     // all primitive has same blendShape
