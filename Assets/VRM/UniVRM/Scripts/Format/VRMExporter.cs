@@ -100,10 +100,9 @@ namespace VRM
                 var avatar = master.BlendShapeAvatar;
                 if (avatar != null)
                 {
-                    var meshes = exporter.Meshes;
                     foreach (var x in avatar.Clips)
                     {
-                        gltf.extensions.VRM.blendShapeMaster.Add(x, exporter.Copy.transform, meshes);
+                        gltf.extensions.VRM.blendShapeMaster.Add(x, exporter);
                     }
                 }
             }
