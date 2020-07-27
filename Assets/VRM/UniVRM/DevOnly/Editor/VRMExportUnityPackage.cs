@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.IO;
@@ -107,6 +107,9 @@ namespace VRM.DevOnly.PackageExporter
 
             if (Directory.Exists(path))
             {
+                // folder
+                yield return path.Replace("\\", "/");
+
                 foreach (var child in Directory.GetFileSystemEntries(path))
                 {
                     foreach (var x in GlobFiles(child))
@@ -117,6 +120,7 @@ namespace VRM.DevOnly.PackageExporter
             }
             else
             {
+                // file
                 if (Path.GetExtension(path).ToLower() == ".meta")
                 {
                     yield break;
