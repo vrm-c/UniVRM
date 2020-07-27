@@ -107,6 +107,9 @@ namespace VRM.DevOnly.PackageExporter
 
             if (Directory.Exists(path))
             {
+                // folder
+                yield return path.Replace("\\", "/");
+
                 foreach (var child in Directory.GetFileSystemEntries(path))
                 {
                     foreach (var x in GlobFiles(child))
@@ -117,6 +120,7 @@ namespace VRM.DevOnly.PackageExporter
             }
             else
             {
+                // file
                 if (Path.GetExtension(path).ToLower() == ".meta")
                 {
                     yield break;
@@ -158,10 +162,12 @@ namespace VRM.DevOnly.PackageExporter
                 if (filters.Any())
                 {
                     var filtersWithRoot = filters.Select(x => $"{root}/{x}").ToArray();
+                    // filtering
                     Files = files.Where(x => filtersWithRoot.Any(y => x.StartsWith(y))).ToArray();
                 }
                 else
                 {
+                    // no filter. all files
                     Files = files.ToArray();
                 }
             }
@@ -190,41 +196,18 @@ namespace VRM.DevOnly.PackageExporter
                             new GlobList("Assets/VRMShaders"),
                         }
                     },
-                    // new PackageInfo("UniJSON-standalone")
-                    // {
-                    //     List = new [] {
-                    //         new GlobList("Assets/VRM", "UniJSON"),
-                    //     }
-                    // },
-                    // new PackageInfo("UniHumanoid-standalone")
-                    // {
-                    //     List = new []{
-                    //         new GlobList("Assets/VRM", "UniHumanoid"),
-                    //     }
-                    // },
-                    // new PackageInfo("UniGLTF-standalone")
-                    // {
-                    //     List = new []{
-                    //         new GlobList("Assets/VRM", "UniGLTF", "UniHumanoid", "UniJSON", "Assets/VRM/DepthFirstScheduler"),
-                    //         new GlobList("Assets/VRMShaders", "UniUnlit"),
-                    //     }
-                    // }
+                    new PackageInfo("UniVRM-samples")
+                    {
+                        List = new[]{
+                            new GlobList("Assets/VRM.Samples"),
+                            new GlobList("Assets/StreamingAssets/VRM.Samples"),
+                        }
+                    }
                 };
                 foreach (var package in packages)
                 {
                     CreateUnityPackage(outputDir, package);
                 }
-            }
-
-            // UniVRM Samples
-            {
-                CreateUnityPackage(outputDir, new PackageInfo("UniVRM-samples")
-                {
-                    List = new[]{
-                        new GlobList("Assets/VRM.Samples"),
-                        new GlobList("Assets/StreamingAssets/VRM.Samples"),
-                    }
-                });
             }
         }
 
