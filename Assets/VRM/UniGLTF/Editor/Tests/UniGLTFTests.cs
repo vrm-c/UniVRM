@@ -705,7 +705,7 @@ namespace UniGLTF
         [Serializable]
         class Dummy
         {
-            public CantConstruct Value;
+            public CantConstruct Value = default;
         }
 
         [Test]
