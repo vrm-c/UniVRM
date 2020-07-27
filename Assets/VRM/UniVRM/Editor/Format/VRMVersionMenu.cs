@@ -1,17 +1,14 @@
-﻿using System;
-using System.IO;
-using UniGLTF;
-using UniJSON;
+﻿using System.IO;
+using System.Text;
 using UnityEditor;
 using UnityEngine;
 
-
 namespace VRM
 {
-    public static class VRMVersionMenu
+    public class VRMVersionMenu : EditorWindow
     {
-        const string path = "Assets/VRM/UniVRM/Scripts/Format/VRMVersion.cs";
-        const string template = @"
+        const string VersionPath = "Assets/VRM/UniVRM/Scripts/Format/VRMVersion.cs";
+        const string VersionTemplate = @"
 namespace VRM
 {{
     public static partial class VRMVersion
@@ -19,153 +16,107 @@ namespace VRM
         public const int MAJOR = {0};
         public const int MINOR = {1};
         public const int PATCH = {2};
-        public const string PRE_ID = ""{3}"";
-
-        public const string VERSION = ""{0}.{1}.{2}{4}"";
+        public const string VERSION = ""{0}.{1}.{2}"";
     }}
 }}
 ";
 
-#if VRM_DEVELOP
-        [MenuItem(VRMVersion.MENU + "/Increment")]
-#endif
-        static void IncrementVersion()
-        {
-            var source = string.Format(
-                template,
-                VRMVersion.MAJOR,
-                VRMVersion.MINOR + 1,
-                VRMVersion.PATCH,
-                VRMVersion.PRE_ID,
-                VRMVersion.PRE_ID != "" ? string.Format("-{0}", VRMVersion.PRE_ID) : ""
-                );
-            File.WriteAllText(path, source);
-            AssetDatabase.Refresh();
-        }
+        const string VRMShadersPackagePath = "Assets/VRMShaders/package.json";
+        const string VRMShadersPackageTemplate = @"{{
+  ""name"": ""com.vrmc.vrmshaders"",
+  ""version"": ""{0}.{1}.{2}"",
+  ""displayName"": ""VRM Shaders"",
+  ""description"": ""VRM Shaders"",
+  ""unity"": ""2018.4"",
+  ""keywords"": [
+    ""vrm"",
+    ""shader""
+  ],
+  ""author"": {{
+    ""name"": ""VRM Consortium""
+  }}
+}}
+";
+        const string VRMPackagePath = "Assets/VRM/package.json";
+        const string VRMPackageTemplate = @"{{
+  ""name"": ""com.vrmc.univrm"",
+  ""version"": ""{0}.{1}.{2}"",
+  ""displayName"": ""VRM"",
+  ""description"": ""VRM importer"",
+  ""unity"": ""2018.4"",
+  ""keywords"": [
+    ""vrm"",
+    ""importer"",
+    ""avatar"",
+    ""vr""
+  ],
+  ""author"": {{
+    ""name"": ""VRM Consortium""
+  }},
+  ""dependencies"": {{
+    ""com.vrmc.vrmshaders"": ""{0}.{1}.{2}""
+  }}
+}}
+";
 
-#if VRM_DEVELOP
-        [MenuItem(VRMVersion.MENU + "/Decrement")]
-#endif
-        static void DecrementVersion()
-        {
-            var source = string.Format(
-                template,
-                VRMVersion.MAJOR,
-                VRMVersion.MINOR - 1,
-                VRMVersion.PATCH,
-                VRMVersion.PRE_ID,
-                VRMVersion.PRE_ID != "" ? string.Format("-{0}", VRMVersion.PRE_ID) : ""
-                );
-            File.WriteAllText(path, source);
-            AssetDatabase.Refresh();
-        }
+        [SerializeField]
+        string m_version;
 
-        static string GetTitle(ListTreeNode<JsonValue> node)
+        void OnGUI()
         {
-            try
+            GUILayout.Label($"Current version: {VRMVersion.VERSION}");
+
+            m_version = EditorGUILayout.TextField("Major.Minor.Patch", m_version);
+
+            if (GUILayout.Button("Apply"))
             {
-                var titleNode = node["title"];
-                if (titleNode.IsString())
+                if (string.IsNullOrEmpty(m_version))
                 {
-                    return titleNode.GetString();
+                    return;
                 }
-            }
-            catch(Exception)
-            {
-            }
-            return "";
-        }
-
-        static void TraverseItem(ListTreeNode<JsonValue> node, JsonFormatter f, UnityPath dir)
-        {
-            var title = GetTitle(node);
-            if (string.IsNullOrEmpty(title))
-            {
-                Traverse(node, f, dir);
-            }
-            else
-            {
-                // ref
-                f.BeginMap();
-                f.Key("$ref");
-                var fileName = string.Format("{0}.schema.json", title);
-                f.Value(fileName);
-                f.EndMap();
-
-                // new formatter
+                var splitted = m_version.Split('.');
+                if (splitted.Length != 3)
                 {
-                    var subFormatter = new JsonFormatter(4);
-
-                    subFormatter.BeginMap();
-                    foreach (var _kv in node.ObjectItems())
-                    {
-                        subFormatter.Key(_kv.Key.GetUtf8String());
-                        Traverse(_kv.Value, subFormatter, dir);
-                    }
-                    subFormatter.EndMap();
-
-                    var subJson = subFormatter.ToString();
-                    var path = dir.Child(fileName);
-                    File.WriteAllText(path.FullPath, subJson);
+                    Debug.LogWarning($"InvalidFormat: {m_version}");
+                    return;
                 }
-            }
-        }
-
-        static void Traverse(ListTreeNode<JsonValue> node, JsonFormatter f, UnityPath dir)
-        {
-            if (node.IsArray())
-            {
-                f.BeginList();
-                foreach (var x in node.ArrayItems())
+                var values = new int[3];
+                for (int i = 0; i < 3; ++i)
                 {
-                    TraverseItem(x, f, dir);
+                    values[i] = int.Parse(splitted[i]);
                 }
-                f.EndList();
-            }
-            else if (node.IsMap())
-            {
-                f.BeginMap();
-                foreach (var kv in node.ObjectItems())
-                {
-                    f.Key(kv.Key.GetUtf8String());
-                    TraverseItem(kv.Value, f, dir);
-                }
-                f.EndMap();
-            }
-            else
-            {
-                f.Value(node);
-            }
-        }
 
-        static UnityPath SplitAndWriteJson(ListTreeNode<JsonValue> parsed, UnityPath dir)
-        {
-            var f = new JsonFormatter(4);
-            Traverse(parsed, f, dir);
-            var json = f.ToString();
+                // generate
+                var utf8 = new UTF8Encoding(false);
+                File.WriteAllText(VersionPath, string.Format(VersionTemplate,
+                    values[0],
+                    values[1],
+                    values[2]), utf8);
+                File.WriteAllText(VRMShadersPackagePath, string.Format(VRMShadersPackageTemplate,
+                    values[0],
+                    values[1],
+                    values[2]), utf8);
+                File.WriteAllText(VRMPackagePath, string.Format(VRMPackageTemplate,
+                    values[0],
+                    values[1],
+                    values[2]), utf8);
+                AssetDatabase.Refresh();
+            }
 
-            var path = dir.Child("vrm.schema.json");
-            Debug.LogFormat("write JsonSchema: {0}", path.FullPath);
-            File.WriteAllText(path.FullPath, json);
-            return path;
+            if (GUILayout.Button("Close"))
+            {
+                Close();
+            }
         }
 
 #if VRM_DEVELOP
-        [MenuItem(VRMVersion.MENU + "/Export JsonSchema")]
+        [MenuItem(VRMVersion.MENU + "/VersionDialog")]
 #endif
-        static void ExportJsonSchema()
+        static void ShowVersionDialog()
         {
-            var schema = JsonSchema.FromType<glTF_VRM_extensions>();
-            var f = new JsonFormatter(2);
-            schema.ToJson(f);
-            var json = f.ToString();
-
-            var dir = UnityPath.FromFullpath(Application.dataPath + "/VRM/specification/0.0/schema");
-            dir.EnsureFolder();
-
-            var path = SplitAndWriteJson(JsonParser.Parse(json), dir);
-
-            Selection.activeObject = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(path.Value);
+            var window = ScriptableObject.CreateInstance<VRMVersionMenu>();
+            window.m_version = VRMVersion.VERSION;
+            window.ShowUtility();
         }
     }
 }
