@@ -232,7 +232,7 @@ namespace UniGLTF
             };
         }
 
-        public static void ExportMeshes(glTF gltf, int bufferIndex,
+        public static IEnumerable<(Mesh, glTFMesh, Dictionary<int, int>)> ExportMeshes(glTF gltf, int bufferIndex,
             List<MeshWithRenderer> unityMeshes, List<Material> unityMaterials,
             bool useSparseAccessorForMorphTarget,
             bool exportOnlyBlendShapePosition,
@@ -248,12 +248,18 @@ namespace UniGLTF
                     x.Renderer.name,
                     mesh, materials, unityMaterials, removeVertexColor);
 
+                var blendShapeIndexMap = new Dictionary<int, int>();
+                int exportBlendShapes = 0;
                 for (int j = 0; j < mesh.blendShapeCount; ++j)
                 {
                     var morphTarget = ExportMorphTarget(gltf, bufferIndex,
                         mesh, j,
                         useSparseAccessorForMorphTarget,
                         exportOnlyBlendShapePosition);
+
+                    // maybe skip
+
+                    blendShapeIndexMap.Add(j, exportBlendShapes++);
 
                     //
                     // all primitive has same blendShape
@@ -265,7 +271,7 @@ namespace UniGLTF
                     }
                 }
 
-                gltf.meshes.Add(gltfMesh);
+                yield return (mesh, gltfMesh, blendShapeIndexMap);
             }
         }
     }

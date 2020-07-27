@@ -27,7 +27,7 @@ namespace UniGLTF
             var go = Selection.activeObject as GameObject;
 
             if (go.transform.position == Vector3.zero &&
-                go.transform.rotation == Quaternion.identity && 
+                go.transform.rotation == Quaternion.identity &&
                 go.transform.localScale == Vector3.one)
             {
                 var path = EditorUtility.SaveFilePanel(
@@ -86,6 +86,18 @@ namespace UniGLTF
         }
 
         public List<Mesh> Meshes
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Mesh毎に、元のBlendShapeIndex => ExportされたBlendShapeIndex の対応を記録する
+        /// 
+        /// BlendShape が空の場合にスキップするので
+        /// </summary>
+        /// <value></value>
+        public Dictionary<Mesh, Dictionary<int, int>> MeshBlendShapeIndexMap
         {
             get;
             private set;
@@ -261,8 +273,15 @@ namespace UniGLTF
                         return true;
                     })
                     .ToList();
-                MeshExporter.ExportMeshes(gltf, bufferIndex, unityMeshes, Materials, useSparseAccessorForMorphTarget,
-                                          ExportOnlyBlendShapePosition, removeVertexColor);
+
+                MeshBlendShapeIndexMap = new Dictionary<Mesh, Dictionary<int, int>>();
+                foreach (var (mesh, gltfMesh, blendShapeIndexMap) in MeshExporter.ExportMeshes(
+                        gltf, bufferIndex, unityMeshes, Materials, useSparseAccessorForMorphTarget,
+                        ExportOnlyBlendShapePosition, removeVertexColor))
+                {
+                    gltf.meshes.Add(gltfMesh);
+                    MeshBlendShapeIndexMap.Add(mesh, blendShapeIndexMap);
+                }
                 Meshes = unityMeshes.Select(x => x.Mesh).ToList();
                 #endregion
 
