@@ -71,10 +71,10 @@ namespace VRM
                         break;
                     }
 
-                    BlendShapes.ImmediatelySetValue(BlendShapePreset.Blink, value);
+                    BlendShapes.ImmediatelySetValue(BlendShapeKey.CreateFromPreset(BlendShapePreset.Blink), value);
                     yield return null;
                 }
-                BlendShapes.ImmediatelySetValue(BlendShapePreset.Blink, 1.0f);
+                BlendShapes.ImmediatelySetValue(BlendShapeKey.CreateFromPreset(BlendShapePreset.Blink), 1.0f);
 
                 // wait...
                 yield return new WaitForSeconds(m_closingTime);
@@ -90,10 +90,10 @@ namespace VRM
                         break;
                     }
 
-                    BlendShapes.ImmediatelySetValue(BlendShapePreset.Blink, value);
+                    BlendShapes.ImmediatelySetValue(BlendShapeKey.CreateFromPreset(BlendShapePreset.Blink), value);
                     yield return null;
                 }
-                BlendShapes.ImmediatelySetValue(BlendShapePreset.Blink, 0);
+                BlendShapes.ImmediatelySetValue(BlendShapeKey.CreateFromPreset(BlendShapePreset.Blink), 0);
             }
         }
 

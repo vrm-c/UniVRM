@@ -30,17 +30,17 @@ namespace VRM.Samples
         {
             for (var value = 0.0f; value <= 1.0f; value += velocity)
             {
-                BlendShapes.ImmediatelySetValue(preset, value);
+                BlendShapes.ImmediatelySetValue(BlendShapeKey.CreateFromPreset(preset), value);
                 yield return null;
             }
-            BlendShapes.ImmediatelySetValue(preset, 1.0f);
+            BlendShapes.ImmediatelySetValue(BlendShapeKey.CreateFromPreset(preset), 1.0f);
             yield return new WaitForSeconds(wait);
             for (var value = 1.0f; value >= 0; value -= velocity)
             {
-                BlendShapes.ImmediatelySetValue(preset, value);
+                BlendShapes.ImmediatelySetValue(BlendShapeKey.CreateFromPreset(preset), value);
                 yield return null;
             }
-            BlendShapes.ImmediatelySetValue(preset, 0);
+            BlendShapes.ImmediatelySetValue(BlendShapeKey.CreateFromPreset(preset), 0);
             yield return new WaitForSeconds(wait * 2);
         }
 
