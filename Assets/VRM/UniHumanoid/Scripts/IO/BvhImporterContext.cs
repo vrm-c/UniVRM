@@ -210,17 +210,8 @@ namespace UniHumanoid
             }
 
             // Create or update Main Asset
-            if (File.Exists(path))
-            {
-                Debug.LogFormat("replace prefab: {0}", path);
-                var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
-                PrefabUtility.ReplacePrefab(Root, prefab, ReplacePrefabOptions.ReplaceNameBased);
-            }
-            else
-            {
-                Debug.LogFormat("create prefab: {0}", path);
-                PrefabUtility.CreatePrefab(path, Root);
-            }
+            Debug.LogFormat("create prefab: {0}", path);
+            PrefabUtility.SaveAsPrefabAssetAndConnect(Root, path, InteractionMode.AutomatedAction);
 
             AssetDatabase.ImportAsset(path);
         }

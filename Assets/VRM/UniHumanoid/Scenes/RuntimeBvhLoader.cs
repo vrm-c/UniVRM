@@ -14,10 +14,10 @@ namespace UniHumanoid
     public class RuntimeBvhLoader : MonoBehaviour
     {
         [SerializeField]
-        Button m_openButton;
+        Button m_openButton = default;
 
         [SerializeField]
-        HumanPoseTransfer m_dst;
+        HumanPoseTransfer m_dst = default;
 
         UnityAction m_onClick;
 

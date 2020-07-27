@@ -8,9 +8,9 @@ namespace VRM.Samples
 
     public class VRMRuntimeExporter : MonoBehaviour
     {
-        [SerializeField] Button m_loadButton;
+        [SerializeField] Button m_loadButton = default;
 
-        [SerializeField] Button m_exportButton;
+        [SerializeField] Button m_exportButton = default;
 
         GameObject m_model;
 

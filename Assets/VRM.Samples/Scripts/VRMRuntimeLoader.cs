@@ -10,13 +10,13 @@ namespace VRM.Samples
     public class VRMRuntimeLoader : MonoBehaviour
     {
         [SerializeField]
-        bool m_loadAsync;
+        bool m_loadAsync = default;
 
         [SerializeField, Header("GUI")]
-        CanvasManager m_canvas;
+        CanvasManager m_canvas = default;
 
         [SerializeField]
-        LookTarget m_faceCamera;
+        LookTarget m_faceCamera = default;
 
         [SerializeField, Header("loader")]
         UniHumanoid.HumanPoseTransfer m_source;
