@@ -48,10 +48,21 @@ namespace UniGLTF
             {
                 {"gltf/animations", "if(value.animations!=null && value.animations.Count>0)" },
                 {"gltf/cameras", "if(value.cameras!=null && value.cameras.Count>0)" },
+                {"gltf/buffers", "if(value.buffers!=null && value.buffers.Count>0)" },
+                {"gltf/bufferViews", "if(value.bufferViews!=null && value.bufferViews.Count>0)" },
                 {"gltf/bufferViews[]/byteStride", "if(false)" },
                 {"gltf/bufferViews[]/target", "if(value.target!=0)" },
+                {"gltf/animations[]/channels", "if(value.channels!=null && value.channels.Count>0)" },
                 {"gltf/animations[]/channels[]/target", "if(value!=null)" },
+                {"gltf/animations[]/samplers", "if(value.samplers!=null && value.samplers.Count>0)" },
+                {"gltf/accessors", "if(value.accessors!=null && value.accessors.Count>0)" },
+                {"gltf/accessors[]/max", "if(value.max!=null && value.max.Length>0)"},
+                {"gltf/accessors[]/min", "if(value.min!=null && value.min.Length>0)"},
                 {"gltf/accessors[]/sparse", "if(value.sparse!=null && value.sparse.count>0)"},
+                {"gltf/images", "if(value.images!=null && value.images.Count>0)" },
+
+                {"gltf/meshes", "if(value.meshes!=null && value.meshes.Count>0)" },
+                {"gltf/meshes[]/primitives", "if(value.primitives!=null && value.primitives.Count>0)" },
                 {"gltf/meshes[]/primitives[]/targets", "if(value.targets!=null && value.targets.Count>0)" },
 
                 {"gltf/meshes[]/primitives[]/targets[]/POSITION", "if(value.POSITION!=-1)" },
@@ -67,17 +78,27 @@ namespace UniGLTF
                 {"gltf/meshes[]/primitives[]/attributes/WEIGHTS_0", "if(value.WEIGHTS_0!=-1)"},
 
                 {"gltf/meshes[]/primitives[]/extras", "if(value.extras!=null && value.extras.targetNames!=null && value.extras.targetNames.Count>0)"},
+                {"gltf/meshes[]/weights", "if(value.weights!=null && value.weights.Length>0)" },
+                {"gltf/materials", "if(value.materials!=null && value.materials.Count>0)" },
                 {"gltf/materials[]/alphaCutoff", "if(!string.IsNullOrEmpty(value.alphaMode))" },
+                {"gltf/nodes", "if(value.nodes!=null && value.nodes.Count>0)" },
                 {"gltf/nodes[]/camera", "if(value.camera!=-1)"},
                 {"gltf/nodes[]/mesh", "if(value.mesh!=-1)"},
                 {"gltf/nodes[]/skin", "if(value.skin!=-1)"},
                 {"gltf/nodes[]/children", "if(value.children != null && value.children.Length>0)"},
+                {"gltf/samplers", "if(value.samplers!=null && value.samplers.Count>0)" },
+                {"gltf/scenes", "if(value.scenes!=null && value.scenes.Count>0)" },
+                {"gltf/scenes[]/nodes", "if(value.nodes!=null && value.nodes.Length>0)" },
+                {"gltf/skins", "if(value.skins!=null && value.skins.Count>0)" },
                 {"gltf/skins[]/skeleton", "if(value.skeleton!=-1)"},
-                {"gltf/extensionsRequired", "if(false)"},
+                {"gltf/skins[]/joints", "if(value.joints!=null && value.joints.Length>0)"},
+                {"gltf/extensionsUsed", "if(value.extensionsUsed!=null && value.extensionsUsed.Count>0)"}, // dummy
+                {"gltf/extensionsRequired", "if(false && value.extensionsRequired!=null && value.extensionsRequired.Count>0)"},
                 {"gltf/extensions/VRM/humanoid/humanBones[]/axisLength", "if(value.axisLength>0)"},
                 {"gltf/extensions/VRM/humanoid/humanBones[]/center", "if(value.center!=Vector3.zero)"},
                 {"gltf/extensions/VRM/humanoid/humanBones[]/max", "if(value.max!=Vector3.zero)"},
                 {"gltf/extensions/VRM/humanoid/humanBones[]/min", "if(value.min!=Vector3.zero)"},
+                {"gltf/textures", "if(value.textures!=null && value.textures.Count>0)" },
             };
 
             public Generator(string path)
