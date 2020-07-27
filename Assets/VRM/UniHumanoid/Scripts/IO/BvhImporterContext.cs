@@ -117,9 +117,6 @@ namespace UniHumanoid
             renderer.sharedMaterial = Material;
             Mesh = renderer.sharedMesh;
             Mesh.name = "box-man";
-
-            Root.AddComponent<BoneMapping>();
-
         }
 
         static Transform BuildHierarchy(Transform parent, BvhNode node, float toMeter)
