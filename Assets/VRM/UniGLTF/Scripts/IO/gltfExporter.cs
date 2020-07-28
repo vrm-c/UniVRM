@@ -27,7 +27,7 @@ namespace UniGLTF
             var go = Selection.activeObject as GameObject;
 
             if (go.transform.position == Vector3.zero &&
-                go.transform.rotation == Quaternion.identity && 
+                go.transform.rotation == Quaternion.identity &&
                 go.transform.localScale == Vector3.one)
             {
                 var path = EditorUtility.SaveFilePanel(

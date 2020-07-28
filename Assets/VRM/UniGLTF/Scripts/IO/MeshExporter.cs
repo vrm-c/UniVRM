@@ -265,6 +265,10 @@ namespace UniGLTF
 
                     blendShapeIndexMap.Add(j, exportBlendShapes++);
 
+                    // maybe skip
+
+                    blendShapeIndexMap.Add(j, exportBlendShapes++);
+
                     //
                     // all primitive has same blendShape
                     //
