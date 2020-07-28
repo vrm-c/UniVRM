@@ -262,11 +262,6 @@ namespace UniGLTF
                     }
 
                     // maybe skip
-
-                    blendShapeIndexMap.Add(j, exportBlendShapes++);
-
-                    // maybe skip
-
                     blendShapeIndexMap.Add(j, exportBlendShapes++);
 
                     //
