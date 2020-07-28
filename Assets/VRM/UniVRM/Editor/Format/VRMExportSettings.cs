@@ -66,7 +66,7 @@ namespace VRM
         /// BlendShapeのシリアライズにSparseAccessorを使う
         /// </summary>
         [Tooltip("Use sparse accessor for blendshape. This may reduce vrm size")]
-        public bool UseSparseAccessor = true;
+        public bool UseSparseAccessor = false;
 
         /// <summary>
         /// BlendShapeのPositionのみをエクスポートする
