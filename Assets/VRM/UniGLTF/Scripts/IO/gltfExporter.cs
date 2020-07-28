@@ -280,7 +280,11 @@ namespace UniGLTF
                         ExportOnlyBlendShapePosition, removeVertexColor))
                 {
                     gltf.meshes.Add(gltfMesh);
-                    MeshBlendShapeIndexMap.Add(mesh, blendShapeIndexMap);
+                    if (!MeshBlendShapeIndexMap.ContainsKey(mesh))
+                    {
+                        // 同じmeshが複数回現れた
+                        MeshBlendShapeIndexMap.Add(mesh, blendShapeIndexMap);
+                    }
                 }
                 Meshes = unityMeshes.Select(x => x.Mesh).ToList();
                 #endregion
