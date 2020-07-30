@@ -96,7 +96,8 @@ namespace VRM
                 float acc;
                 if (m_blendShapeValueMap.TryGetValue(binding, out acc))
                 {
-                    m_blendShapeValueMap[binding] = acc + binding.Weight * value;
+                    var accumulatedSum = acc + binding.Weight * value;
+                    m_blendShapeValueMap[binding] = Mathf.Clamp(accumulatedSum, 0.0f, 100.0f);
                 }
                 else
                 {
