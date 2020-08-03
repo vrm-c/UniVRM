@@ -199,21 +199,6 @@ namespace UniGLTF
             }
         }
 
-        public static bool UseUnlit(string shaderName)
-        {
-            switch (shaderName)
-            {
-                case "Unlit/Color":
-                case "Unlit/Texture":
-                case "Unlit/Transparent":
-                case "Unlit/Transparent Cutout":
-                case "UniGLTF/UniUnlit":
-                    return true;
-            }
-            return false;
-
-        }
-
         protected virtual glTFMaterial CreateMaterial(Material m)
         {
             switch (m.shader.name)
