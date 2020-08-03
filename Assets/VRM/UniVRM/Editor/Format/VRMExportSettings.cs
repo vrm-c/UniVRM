@@ -240,7 +240,9 @@ namespace VRM
                     continue;
                 }
 
-                yield return Validation.Warning(string.Format("unknown material '{0}' is used. this will export as `Standard` fallback", material.shader.name));
+                yield return Validation.Warning(string.Format("{0}: unknown material '{0}' is used. this will export as `Standard` fallback",
+                    material.name,
+                    material.shader.name));
             }
 
             foreach (var material in materials)
