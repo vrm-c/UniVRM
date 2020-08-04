@@ -53,8 +53,8 @@ namespace VRM
                 }
                 else
                 {
-                    var n = m_id = Name = Preset.ToString();
-                    PresetNameCacheDictionary.Add(Preset, n);
+                    m_id = Name = Preset.ToString();
+                    PresetNameCacheDictionary.Add(Preset, Name);
                 }
             }
             else
