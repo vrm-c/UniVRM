@@ -49,17 +49,21 @@ namespace VRM
             {
                 if (PresetNameCacheDictionary.TryGetValue(Preset, out var presetName))
                 {
-                    m_id = Name = presetName;
+                    m_id = presetName;
                 }
                 else
                 {
-                    m_id = Name = Preset.ToString();
-                    PresetNameCacheDictionary.Add(Preset, Name);
+                    presetName = Preset.ToString();
+                    m_id = presetName;
+
+                    PresetNameCacheDictionary.Add(Preset, presetName);
                 }
+
+                Name = !string.IsNullOrEmpty(name) ? name : presetName;
             }
             else
             {
-                Name = name;
+                Name = !string.IsNullOrEmpty(name) ? name : "";
                 m_id = UnknownPresetPrefix + Name;
             }
         }
