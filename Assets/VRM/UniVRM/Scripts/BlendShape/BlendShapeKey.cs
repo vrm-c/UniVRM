@@ -49,17 +49,15 @@ namespace VRM
             {
                 if (PresetNameCacheDictionary.TryGetValue(Preset, out var presetName))
                 {
-                    m_id = presetName;
+                    m_id = Name = presetName;
                 }
                 else
                 {
-                    presetName = Preset.ToString();
-                    m_id = presetName;
+                    // BlendShapePreset.Unknown 以外の場合、 name は捨てられる
+                    m_id = Name = Preset.ToString();
 
-                    PresetNameCacheDictionary.Add(Preset, presetName);
+                    PresetNameCacheDictionary.Add(Preset, Name);
                 }
-
-                Name = !string.IsNullOrEmpty(name) ? name : presetName;
             }
             else
             {
