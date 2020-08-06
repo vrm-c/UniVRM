@@ -103,7 +103,7 @@ namespace VRM
 
         public override string ToString()
         {
-            return m_id.Replace(UnknownPresetPrefix, "").ToUpper();
+            return m_id.Replace(UnknownPresetPrefix, "");
         }
 
         public bool Equals(BlendShapeKey other)
