@@ -87,10 +87,7 @@ namespace VRM
         private void OnEnable()
         {
             // m_ScriptProp = serializedObject.FindProperty("m_Script");
-            if (serializedObject != null)
-            {
-                InitMap(serializedObject);
-            }
+            InitMap(serializedObject);
         }
 
         public override void OnInspectorGUI()
@@ -115,6 +112,7 @@ namespace VRM
             so.Update();
 
             GUI.enabled = false;
+
             EditorGUILayout.PropertyField(m_propMap["ExporterVersion"]);
             if (VRMVersion.IsNewer(m_propMap["ExporterVersion"].stringValue))
             {
@@ -125,14 +123,15 @@ namespace VRM
             m_foldoutInfo = EditorGUILayout.Foldout(m_foldoutInfo, "Information");
             if (m_foldoutInfo)
             {
+                // texture
+                var thumbnail = m_propMap["Thumbnail"];
+                EditorGUILayout.PropertyField(thumbnail);
+                thumbnail.objectReferenceValue = TextureField("", (Texture2D)thumbnail.objectReferenceValue, 100);
+
                 foreach (var kv in m_customPropMap)
                 {
                     kv.Value.OnGUI();
                 }
-
-                var thumbnail = m_propMap["Thumbnail"];
-                EditorGUILayout.PropertyField(thumbnail);
-                thumbnail.objectReferenceValue = TextureField("", (Texture2D)thumbnail.objectReferenceValue, 100);
             }
 
             EditorGUILayout.LabelField("License ", EditorStyles.boldLabel);

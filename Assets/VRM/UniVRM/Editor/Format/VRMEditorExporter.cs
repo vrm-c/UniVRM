@@ -16,12 +16,12 @@ namespace VRM
         /// </summary>
         /// <param name="path">出力先</param>
         /// <param name="settings">エクスポート設定</param>
-        public static void Export(string path, VRMExportSettings settings)
+        public static void Export(string path, GameObject exportRoot, VRMExportSettings settings)
         {
             List<GameObject> destroy = new List<GameObject>();
             try
             {
-                Export(path, settings, destroy);
+                Export(path, exportRoot, settings, destroy);
             }
             finally
             {
@@ -136,9 +136,9 @@ namespace VRM
         /// <param name="path"></param>
         /// <param name="settings"></param>
         /// <param name="destroy">作業が終わったらDestoryするべき一時オブジェクト</param>
-        static void Export(string path, VRMExportSettings settings, List<GameObject> destroy)
+        static void Export(string path, GameObject exportRoot, VRMExportSettings settings, List<GameObject> destroy)
         {
-            var target = settings.Source;
+            var target = exportRoot;
 
             // 常にコピーする。シーンを変化させない
             target = GameObject.Instantiate(target);
@@ -146,8 +146,8 @@ namespace VRM
 
             {
                 // copy元
-                var animator = settings.Source.GetComponent<Animator>();
-                var beforeTransforms = settings.Source.GetComponentsInChildren<Transform>();
+                var animator = exportRoot.GetComponent<Animator>();
+                var beforeTransforms = exportRoot.GetComponentsInChildren<Transform>();
                 // copy先
                 var afterTransforms = target.GetComponentsInChildren<Transform>();
                 // copy先のhumanoidBoneのリストを得る

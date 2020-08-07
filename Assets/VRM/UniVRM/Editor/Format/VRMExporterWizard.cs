@@ -15,7 +15,12 @@ namespace VRM
     public class VRMExporterWizard : EditorWindow
     {
         [SerializeField]
-        public VRMExportSettings m_settings = new VRMExportSettings();
+        public GameObject ExportRoot;
+
+        SerializedProperty m_exportRoot;
+
+        [SerializeField]
+        public VRMExportSettings m_settings;
 
         VRMMetaObject m_meta;
         VRMMetaObject Meta
@@ -24,16 +29,37 @@ namespace VRM
             set
             {
                 if (m_meta == value) return;
-                if (m_meta != null)
+                if (m_metaEditor != null)
                 {
                     UnityEditor.Editor.DestroyImmediate(m_metaEditor);
+                    m_metaEditor = null;
                 }
                 m_meta = value;
-                if (m_meta == null)
+            }
+        }
+
+        void UpdateRoot(GameObject root)
+        {
+            if (root == ExportRoot)
+            {
+                return;
+            }
+            ExportRoot = root;
+            if (ExportRoot == null)
+            {
+                Meta = null;
+            }
+            else
+            {
+                var meta = ExportRoot.GetComponent<VRMMeta>();
+                if (meta != null)
                 {
-                    m_meta = TmpMeta;
+                    Meta = meta.Meta;
                 }
-                // m_metaEditor = Editor.CreateEditor(m_meta);
+                else
+                {
+                    Meta = null;
+                }
             }
         }
 
@@ -66,6 +92,7 @@ namespace VRM
             UnityEditor.Editor.DestroyImmediate(m_Inspector);
             Meta = null;
             ScriptableObject.DestroyImmediate(m_tmpMeta);
+            ScriptableObject.DestroyImmediate(m_settings);
         }
 
         private void InvokeWizardUpdate()
@@ -103,6 +130,10 @@ namespace VRM
         private void OnGUI()
         {
             EditorGUIUtility.labelWidth = 150;
+
+            EditorGUILayout.LabelField("ExportRoot");
+            var root = (GameObject)EditorGUILayout.ObjectField(ExportRoot, typeof(GameObject), true);
+            UpdateRoot(root);
 
             // Render contents using Generic Inspector GUI
             m_ScrollPosition = BeginVerticalScrollView(m_ScrollPosition, false, GUI.skin.verticalScrollbar, "OL Box");
@@ -162,19 +193,32 @@ namespace VRM
 
         protected virtual bool DrawWizardGUI()
         {
-            if (Meta != null)
             {
                 if (m_metaEditor == null)
                 {
-                    m_metaEditor = Editor.CreateEditor(Meta);
+                    if (Meta != null)
+                    {
+                        m_metaEditor = Editor.CreateEditor(Meta);
+                    }
+                    else
+                    {
+                        m_metaEditor = Editor.CreateEditor(TmpMeta);
+                    }
                 }
+                EditorGUILayout.LabelField("Meta ", EditorStyles.boldLabel);
                 m_metaEditor.OnInspectorGUI();
             }
             {
                 if (m_Inspector == null)
                 {
-                    m_Inspector = Editor.CreateEditor(this);
+                    if (m_settings == null)
+                    {
+                        m_settings = ScriptableObject.CreateInstance<VRMExportSettings>();
+                    }
+                    m_Inspector = Editor.CreateEditor(m_settings);
                 }
+                EditorGUILayout.Space();
+                EditorGUILayout.LabelField("Export Settings ", EditorStyles.boldLabel);
                 m_Inspector.OnInspectorGUI();
             }
             return true;
@@ -284,7 +328,7 @@ namespace VRM
             var go = Selection.activeObject as GameObject;
 
             // update checkbox
-            wiz.m_settings.InitializeFrom(go);
+            wiz.UpdateRoot(go);
 
             wiz.OnWizardUpdate();
         }
@@ -315,7 +359,7 @@ namespace VRM
             var path = EditorUtility.SaveFilePanel(
                     "Save vrm",
                     directory,
-                    m_settings.Source.name + EXTENSION,
+                    ExportRoot.name + EXTENSION,
                     EXTENSION.Substring(1));
             if (string.IsNullOrEmpty(path))
             {
@@ -324,41 +368,26 @@ namespace VRM
             m_lastExportDir = Path.GetDirectoryName(path).Replace("\\", "/");
 
             // export
-            VRMEditorExporter.Export(path, m_settings);
+            VRMEditorExporter.Export(path, ExportRoot, m_settings);
         }
 
         void OnWizardUpdate()
         {
-            m_validations.Clear();
-            m_validations.AddRange(m_settings.Validate());
-            if (Meta != null)
-            {
-                m_validations.AddRange(Meta.Validate());
-            }
-            else
-            {
-                m_validations.Add(Validation.Error("meta がありません"));
-            }
+            // m_validations.Clear();
+            // m_validations.AddRange(m_settings.Validate());
+            // if (Meta != null)
+            // {
+            //     m_validations.AddRange(Meta.Validate());
+            // }
+            // else
+            // {
+            //     m_validations.Add(Validation.Error("meta がありません"));
+            // }
 
-            var hasError = m_validations.Any(x => !x.CanExport);
-            m_IsValid = !hasError;
+            // var hasError = m_validations.Any(x => !x.CanExport);
+            // m_IsValid = !hasError;
 
-            if (m_settings.Source == null)
-            {
-                Meta = null;
-            }
-            else
-            {
-                var meta = m_settings.Source.GetComponent<VRMMeta>();
-                if (meta != null)
-                {
-                    Meta = meta.Meta;
-                }
-                else
-                {
-                    Meta = null;
-                }
-            }
+            UpdateRoot(ExportRoot);
 
             Repaint();
             // GUIUtility.ExitGUI();
