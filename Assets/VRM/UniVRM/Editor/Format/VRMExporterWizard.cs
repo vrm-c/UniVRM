@@ -191,8 +191,46 @@ namespace VRM
             GUILayout.Space(8);
         }
 
+        // Style定義
+        enum Tabs
+        {
+            Meta,
+            ExportSettings,
+        }
+
+        static class TabStyles
+        {
+            private static GUIContent[] _tabToggles = null;
+            public static GUIContent[] TabToggles
+            {
+                get
+                {
+                    if (_tabToggles == null)
+                    {
+                        _tabToggles = System.Enum.GetNames(typeof(Tabs)).Select(x => new GUIContent(x)).ToArray();
+                    }
+                    return _tabToggles;
+                }
+            }
+
+            public static readonly GUIStyle TabButtonStyle = "LargeButton";
+
+            // GUI.ToolbarButtonSize.FitToContentsも設定できる
+            public static readonly GUI.ToolbarButtonSize TabButtonSize = GUI.ToolbarButtonSize.Fixed;
+        }
+
+        Tabs _tab;
+
         protected virtual bool DrawWizardGUI()
         {
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                GUILayout.FlexibleSpace();
+                // タブを描画する
+                _tab = (Tabs)GUILayout.Toolbar((int)_tab, TabStyles.TabToggles, TabStyles.TabButtonStyle, TabStyles.TabButtonSize);
+                GUILayout.FlexibleSpace();
+            }
+
             {
                 if (m_metaEditor == null)
                 {
@@ -205,8 +243,6 @@ namespace VRM
                         m_metaEditor = Editor.CreateEditor(TmpMeta);
                     }
                 }
-                EditorGUILayout.LabelField("Meta ", EditorStyles.boldLabel);
-                m_metaEditor.OnInspectorGUI();
             }
             {
                 if (m_Inspector == null)
@@ -217,10 +253,19 @@ namespace VRM
                     }
                     m_Inspector = Editor.CreateEditor(m_settings);
                 }
-                EditorGUILayout.Space();
-                EditorGUILayout.LabelField("Export Settings ", EditorStyles.boldLabel);
-                m_Inspector.OnInspectorGUI();
             }
+
+            switch (_tab)
+            {
+                case Tabs.Meta:
+                    m_metaEditor.OnInspectorGUI();
+                    break;
+
+                case Tabs.ExportSettings:
+                    m_Inspector.OnInspectorGUI();
+                    break;
+            }
+
             return true;
         }
 
@@ -393,4 +438,5 @@ namespace VRM
             // GUIUtility.ExitGUI();
         }
     }
+
 }
