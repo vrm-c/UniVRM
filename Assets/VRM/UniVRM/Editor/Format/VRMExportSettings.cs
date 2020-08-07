@@ -5,7 +5,6 @@ using UniGLTF;
 using UnityEditor;
 using UnityEngine;
 
-
 namespace VRM
 {
     [Serializable]
@@ -98,32 +97,6 @@ namespace VRM
             return fileName.Length > 64;
         }
 
-        public struct Validation
-        {
-            /// <summary>
-            /// エクスポート可能か否か。
-            /// true のメッセージは警告
-            /// false のメッセージはエラー
-            /// </summary>
-            public readonly bool CanExport;
-            public readonly String Message;
-
-            Validation(bool canExport, string message)
-            {
-                CanExport = canExport;
-                Message = message;
-            }
-
-            public static Validation Error(string msg)
-            {
-                return new Validation(false, msg);
-            }
-
-            public static Validation Warning(string msg)
-            {
-                return new Validation(true, msg);
-            }
-        }
 
         /// <summary>
         /// ボーン名の重複を確認
@@ -165,42 +138,32 @@ namespace VRM
             {
                 yield return Validation.Error("Require animator. ");
             }
-            else if (animator.avatar == null)
+            else
             {
-                yield return Validation.Error("Require animator.avatar. ");
-            }
-            else if (!animator.avatar.isValid)
-            {
-                yield return Validation.Error("Animator.avatar is not valid. ");
-            }
-            else if (!animator.avatar.isHuman)
-            {
-                yield return Validation.Error("Animator.avatar is not humanoid. Please change model's AnimationType to humanoid. ");
-            }
+                if (animator.avatar == null)
+                {
+                    yield return Validation.Error("Require animator.avatar. ");
+                }
+                else if (!animator.avatar.isValid)
+                {
+                    yield return Validation.Error("Animator.avatar is not valid. ");
+                }
+                else if (!animator.avatar.isHuman)
+                {
+                    yield return Validation.Error("Animator.avatar is not humanoid. Please change model's AnimationType to humanoid. ");
+                }
 
-            var jaw = animator.GetBoneTransform(HumanBodyBones.Jaw);
-            if (jaw != null)
-            {
-                yield return Validation.Warning("Jaw bone is included. It may not be what you intended. Please check the humanoid avatar setting screen");
+                var jaw = animator.GetBoneTransform(HumanBodyBones.Jaw);
+                if (jaw != null)
+                {
+                    yield return Validation.Warning("Jaw bone is included. It may not be what you intended. Please check the humanoid avatar setting screen");
+                }
             }
 
             if (DuplicateBoneNameExists())
             {
                 yield return Validation.Warning("There is a bone with the same name in the hierarchy. If exported, these bones will be automatically renamed.");
             }
-
-            // if (string.IsNullOrEmpty(Title))
-            // {
-            //     yield return Validation.Error("Require Title. ");
-            // }
-            // if (string.IsNullOrEmpty(Version))
-            // {
-            //     yield return Validation.Error("Require Version. ");
-            // }
-            // if (string.IsNullOrEmpty(Author))
-            // {
-            //     yield return Validation.Error("Require Author. ");
-            // }
 
             if (ReduceBlendshape && Source.GetComponent<VRMBlendShapeProxy>() == null)
             {

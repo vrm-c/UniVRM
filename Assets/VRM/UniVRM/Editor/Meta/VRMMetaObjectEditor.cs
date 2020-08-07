@@ -8,7 +8,7 @@ namespace VRM
     [CustomEditor(typeof(VRMMetaObject))]
     public class VRMMetaObjectEditor : Editor
     {
-        SerializedProperty m_ScriptProp;
+        // SerializedProperty m_ScriptProp;
 
         class CustomProperty
         {
@@ -42,6 +42,10 @@ namespace VRM
         {
             m_propMap.Clear();
             m_customPropMap.Clear();
+            if (so == null)
+            {
+                return;
+            }
 
             for (var it = so.GetIterator(); it.NextVisible(true);)
             {
@@ -82,16 +86,19 @@ namespace VRM
 
         private void OnEnable()
         {
-            m_ScriptProp = serializedObject.FindProperty("m_Script");
-            InitMap(serializedObject);
+            // m_ScriptProp = serializedObject.FindProperty("m_Script");
+            if (serializedObject != null)
+            {
+                InitMap(serializedObject);
+            }
         }
 
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
-            GUI.enabled = false;
-            EditorGUILayout.PropertyField(m_ScriptProp, true);
-            GUI.enabled = true;
+            // GUI.enabled = false;
+            // EditorGUILayout.PropertyField(m_ScriptProp, true);
+            // GUI.enabled = true;
 
             EditorGUILayout.Space();
             VRMMetaObjectGUI(serializedObject);

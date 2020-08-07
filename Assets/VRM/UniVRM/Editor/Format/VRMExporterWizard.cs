@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using UnityEditor;
 using UnityEngine;
 using uei = UnityEngine.Internal;
@@ -29,19 +29,34 @@ namespace VRM
                     UnityEditor.Editor.DestroyImmediate(m_metaEditor);
                 }
                 m_meta = value;
-                if (m_meta != null)
+                if (m_meta == null)
                 {
-                    m_metaEditor = Editor.CreateEditor(m_meta);
+                    m_meta = TmpMeta;
                 }
+                // m_metaEditor = Editor.CreateEditor(m_meta);
+            }
+        }
+
+        VRMMetaObject m_tmpMeta;
+        VRMMetaObject TmpMeta
+        {
+            get
+            {
+                if (m_tmpMeta == null)
+                {
+                    m_tmpMeta = ScriptableObject.CreateInstance<VRMMetaObject>();
+                }
+                return m_tmpMeta;
             }
         }
 
         Editor m_metaEditor;
         Editor m_Inspector;
 
-        private string m_HelpString = "";
-        private string m_ErrorString = "";
         private bool m_IsValid = true;
+
+        List<Validation> m_validations = new List<Validation>();
+
         private Vector2 m_ScrollPosition;
         private string m_CreateButton = "Create";
         private string m_OtherButton = "";
@@ -50,6 +65,7 @@ namespace VRM
         {
             UnityEditor.Editor.DestroyImmediate(m_Inspector);
             Meta = null;
+            ScriptableObject.DestroyImmediate(m_tmpMeta);
         }
 
         private void InvokeWizardUpdate()
@@ -87,7 +103,6 @@ namespace VRM
         private void OnGUI()
         {
             EditorGUIUtility.labelWidth = 150;
-            GUILayout.Label(m_HelpString, EditorStyles.wordWrappedLabel, GUILayout.ExpandHeight(true));
 
             // Render contents using Generic Inspector GUI
             m_ScrollPosition = BeginVerticalScrollView(m_ScrollPosition, false, GUI.skin.verticalScrollbar, "OL Box");
@@ -96,44 +111,49 @@ namespace VRM
             EditorGUILayout.EndScrollView();
 
             // Create and Other Buttons
-            GUILayout.BeginVertical();
-            if (m_ErrorString != string.Empty)
-                GUILayout.Label(m_ErrorString, Styles.errorText, GUILayout.MinHeight(32));
-            else
-                GUILayout.Label(string.Empty, GUILayout.MinHeight(32));
-            GUILayout.FlexibleSpace();
-
-            GUILayout.BeginHorizontal();
-            GUILayout.FlexibleSpace();
-            GUI.enabled = m_IsValid;
-
-            const BindingFlags kInstanceInvokeFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy;
-            if (m_OtherButton != "" && GUILayout.Button(m_OtherButton, GUILayout.MinWidth(100)))
             {
-                MethodInfo method = GetType().GetMethod("OnWizardOtherButton", kInstanceInvokeFlags);
-                if (method != null)
+                // errors            
+                GUILayout.BeginVertical();
+                // foreach (var v in m_validations)
+                // {
+                //     v.DrawGUI();
+                // }
+                GUILayout.FlexibleSpace();
+
                 {
-                    method.Invoke(this, null);
-                    GUIUtility.ExitGUI();
+                    GUILayout.BeginHorizontal();
+                    GUILayout.FlexibleSpace();
+                    GUI.enabled = m_IsValid;
+
+                    const BindingFlags kInstanceInvokeFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy;
+                    if (m_OtherButton != "" && GUILayout.Button(m_OtherButton, GUILayout.MinWidth(100)))
+                    {
+                        MethodInfo method = GetType().GetMethod("OnWizardOtherButton", kInstanceInvokeFlags);
+                        if (method != null)
+                        {
+                            method.Invoke(this, null);
+                            GUIUtility.ExitGUI();
+                        }
+                        else
+                            Debug.LogError("OnWizardOtherButton has not been implemented in script");
+                    }
+
+                    if (m_CreateButton != "" && GUILayout.Button(m_CreateButton, GUILayout.MinWidth(100)))
+                    {
+                        MethodInfo method = GetType().GetMethod("OnWizardCreate", kInstanceInvokeFlags);
+                        if (method != null)
+                            method.Invoke(this, null);
+                        else
+                            Debug.LogError("OnWizardCreate has not been implemented in script");
+                        Close();
+                        GUIUtility.ExitGUI();
+                    }
+                    GUI.enabled = true;
+
+                    GUILayout.EndHorizontal();
                 }
-                else
-                    Debug.LogError("OnWizardOtherButton has not been implemented in script");
+                GUILayout.EndVertical();
             }
-
-            if (m_CreateButton != "" && GUILayout.Button(m_CreateButton, GUILayout.MinWidth(100)))
-            {
-                MethodInfo method = GetType().GetMethod("OnWizardCreate", kInstanceInvokeFlags);
-                if (method != null)
-                    method.Invoke(this, null);
-                else
-                    Debug.LogError("OnWizardCreate has not been implemented in script");
-                Close();
-                GUIUtility.ExitGUI();
-            }
-            GUI.enabled = true;
-
-            GUILayout.EndHorizontal();
-            GUILayout.EndVertical();
             if (modified)
                 InvokeWizardUpdate();
 
@@ -142,8 +162,12 @@ namespace VRM
 
         protected virtual bool DrawWizardGUI()
         {
-            if (m_metaEditor != null)
+            if (Meta != null)
             {
+                if (m_metaEditor == null)
+                {
+                    m_metaEditor = Editor.CreateEditor(Meta);
+                }
                 m_metaEditor.OnInspectorGUI();
             }
             {
@@ -212,36 +236,6 @@ namespace VRM
         // // This is called when the user clicks on the Create button.
         // void OnWizardCreate();
 
-        // Allows you to set the help text of the wizard.
-        public string helpString
-        {
-            get { return m_HelpString; }
-            set
-            {
-                var newString = value ?? string.Empty;
-                if (m_HelpString != newString)
-                {
-                    m_HelpString = newString;
-                    Repaint();
-                }
-            }
-        }
-
-        // Allows you to set the error text of the wizard.
-        public string errorString
-        {
-            get { return m_ErrorString; }
-            set
-            {
-                var newString = value ?? string.Empty;
-                if (m_ErrorString != newString)
-                {
-                    m_ErrorString = newString;
-                    Repaint();
-                }
-            }
-        }
-
         // Allows you to set the create button text of the wizard.
         public string createButtonName
         {
@@ -299,11 +293,13 @@ namespace VRM
         {
             // Debug.Log("OnEnable");
             Undo.willFlushUndoRecord += OnWizardUpdate;
+            Selection.selectionChanged += OnWizardUpdate;
         }
 
         void OnDisable()
         {
             // Debug.Log("OnDisable");
+            Selection.selectionChanged -= OnWizardUpdate;
             Undo.willFlushUndoRecord -= OnWizardUpdate;
         }
 
@@ -333,25 +329,19 @@ namespace VRM
 
         void OnWizardUpdate()
         {
-            isValid = true;
-            var helpBuilder = new StringBuilder();
-            var errorBuilder = new StringBuilder();
-
-            foreach (var validation in m_settings.Validate())
+            m_validations.Clear();
+            m_validations.AddRange(m_settings.Validate());
+            if (Meta != null)
             {
-                if (!validation.CanExport)
-                {
-                    isValid = false;
-                    errorBuilder.Append(validation.Message);
-                }
-                else
-                {
-                    helpBuilder.AppendLine(validation.Message);
-                }
+                m_validations.AddRange(Meta.Validate());
+            }
+            else
+            {
+                m_validations.Add(Validation.Error("meta がありません"));
             }
 
-            helpString = helpBuilder.ToString();
-            errorString = errorBuilder.ToString();
+            var hasError = m_validations.Any(x => !x.CanExport);
+            m_IsValid = !hasError;
 
             if (m_settings.Source == null)
             {
@@ -364,9 +354,14 @@ namespace VRM
                 {
                     Meta = meta.Meta;
                 }
+                else
+                {
+                    Meta = null;
+                }
             }
 
             Repaint();
+            // GUIUtility.ExitGUI();
         }
     }
 }
