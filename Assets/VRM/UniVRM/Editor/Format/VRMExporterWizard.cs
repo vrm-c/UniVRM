@@ -14,6 +14,29 @@ namespace VRM
     /// </summary>
     public class VRMExporterWizard : EditorWindow
     {
+        [SerializeField]
+        public VRMExportSettings m_settings = new VRMExportSettings();
+
+        VRMMetaObject m_meta;
+        VRMMetaObject Meta
+        {
+            get { return m_meta; }
+            set
+            {
+                if (m_meta == value) return;
+                if (m_meta != null)
+                {
+                    UnityEditor.Editor.DestroyImmediate(m_metaEditor);
+                }
+                m_meta = value;
+                if (m_meta != null)
+                {
+                    m_metaEditor = Editor.CreateEditor(m_meta);
+                }
+            }
+        }
+
+        Editor m_metaEditor;
         Editor m_Inspector;
 
         private string m_HelpString = "";
@@ -26,6 +49,7 @@ namespace VRM
         private void OnDestroy()
         {
             UnityEditor.Editor.DestroyImmediate(m_Inspector);
+            Meta = null;
         }
 
         private void InvokeWizardUpdate()
@@ -118,11 +142,17 @@ namespace VRM
 
         protected virtual bool DrawWizardGUI()
         {
-            if (m_Inspector == null)
+            if (m_metaEditor != null)
             {
-                m_Inspector = Editor.CreateEditor(this);
+                m_metaEditor.OnInspectorGUI();
             }
-            m_Inspector.OnInspectorGUI();
+            {
+                if (m_Inspector == null)
+                {
+                    m_Inspector = Editor.CreateEditor(this);
+                }
+                m_Inspector.OnInspectorGUI();
+            }
             return true;
         }
 
@@ -251,11 +281,7 @@ namespace VRM
 
         const string EXTENSION = ".vrm";
 
-        VRMMeta m_meta;
-
         private static string m_lastExportDir;
-
-        public VRMExportSettings m_settings = new VRMExportSettings();
 
         public static void CreateWizard()
         {
@@ -326,6 +352,21 @@ namespace VRM
 
             helpString = helpBuilder.ToString();
             errorString = errorBuilder.ToString();
+
+            if (m_settings.Source == null)
+            {
+                Meta = null;
+            }
+            else
+            {
+                var meta = m_settings.Source.GetComponent<VRMMeta>();
+                if (meta != null)
+                {
+                    Meta = meta.Meta;
+                }
+            }
+
+            Repaint();
         }
     }
 }

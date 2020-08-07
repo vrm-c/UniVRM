@@ -16,32 +16,32 @@ namespace VRM
         /// </summary>
         public GameObject Source;
 
-        #region Meta
-        /// <summary>
-        /// エクスポート名
-        /// </summary>
-        public string Title;
+        // #region Meta
+        // /// <summary>
+        // /// エクスポート名
+        // /// </summary>
+        // public string Title;
 
-        /// <summary>
-        /// エクスポートバージョン(エクスポートするModelのバージョン)
-        /// </summary>
-        public string Version;
+        // /// <summary>
+        // /// エクスポートバージョン(エクスポートするModelのバージョン)
+        // /// </summary>
+        // public string Version;
 
-        /// <summary>
-        /// 作者
-        /// </summary>
-        public string Author;
+        // /// <summary>
+        // /// 作者
+        // /// </summary>
+        // public string Author;
 
-        /// <summary>
-        /// 作者連絡先
-        /// </summary>
-        public string ContactInformation;
+        // /// <summary>
+        // /// 作者連絡先
+        // /// </summary>
+        // public string ContactInformation;
 
-        /// <summary>
-        /// 作品引用
-        /// </summary>
-        public string Reference;
-        #endregion
+        // /// <summary>
+        // /// 作品引用
+        // /// </summary>
+        // public string Reference;
+        // #endregion
 
         #region Settings
         /// <summary>
@@ -189,18 +189,18 @@ namespace VRM
                 yield return Validation.Warning("There is a bone with the same name in the hierarchy. If exported, these bones will be automatically renamed.");
             }
 
-            if (string.IsNullOrEmpty(Title))
-            {
-                yield return Validation.Error("Require Title. ");
-            }
-            if (string.IsNullOrEmpty(Version))
-            {
-                yield return Validation.Error("Require Version. ");
-            }
-            if (string.IsNullOrEmpty(Author))
-            {
-                yield return Validation.Error("Require Author. ");
-            }
+            // if (string.IsNullOrEmpty(Title))
+            // {
+            //     yield return Validation.Error("Require Title. ");
+            // }
+            // if (string.IsNullOrEmpty(Version))
+            // {
+            //     yield return Validation.Error("Require Version. ");
+            // }
+            // if (string.IsNullOrEmpty(Author))
+            // {
+            //     yield return Validation.Error("Require Author. ");
+            // }
 
             if (ReduceBlendshape && Source.GetComponent<VRMBlendShapeProxy>() == null)
             {
@@ -331,19 +331,19 @@ namespace VRM
             // Meta
             //
             var meta = Source == null ? null : go.GetComponent<VRMMeta>();
-            if (meta != null && meta.Meta != null)
-            {
-                Title = meta.Meta.Title;
-                Version = string.IsNullOrEmpty(meta.Meta.Version) ? "0.0" : meta.Meta.Version;
-                Author = meta.Meta.Author;
-                ContactInformation = meta.Meta.ContactInformation;
-                Reference = meta.Meta.Reference;
-            }
-            else
-            {
-                Title = go.name;
-                Version = "0.0";
-            }
+            // if (meta != null && meta.Meta != null)
+            // {
+            //     Title = meta.Meta.Title;
+            //     Version = string.IsNullOrEmpty(meta.Meta.Version) ? "0.0" : meta.Meta.Version;
+            //     Author = meta.Meta.Author;
+            //     ContactInformation = meta.Meta.ContactInformation;
+            //     Reference = meta.Meta.Reference;
+            // }
+            // else
+            // {
+            //     Title = go.name;
+            //     Version = "0.0";
+            // }
         }
     }
 }

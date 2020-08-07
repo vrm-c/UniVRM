@@ -213,11 +213,11 @@ namespace VRM
                     ExportOnlyBlendShapePosition = settings.OnlyBlendshapePosition,
                     RemoveVertexColor = settings.RemoveVertexColor
                 });
-                vrm.extensions.VRM.meta.title = settings.Title;
-                vrm.extensions.VRM.meta.version = settings.Version;
-                vrm.extensions.VRM.meta.author = settings.Author;
-                vrm.extensions.VRM.meta.contactInformation = settings.ContactInformation;
-                vrm.extensions.VRM.meta.reference = settings.Reference;
+                // vrm.extensions.VRM.meta.title = settings.Title;
+                // vrm.extensions.VRM.meta.version = settings.Version;
+                // vrm.extensions.VRM.meta.author = settings.Author;
+                // vrm.extensions.VRM.meta.contactInformation = settings.ContactInformation;
+                // vrm.extensions.VRM.meta.reference = settings.Reference;
 
                 var bytes = vrm.ToGlbBytes(settings.UseExperimentalExporter ? SerializerTypes.Generated : SerializerTypes.UniJSON);
                 File.WriteAllBytes(path, bytes);
