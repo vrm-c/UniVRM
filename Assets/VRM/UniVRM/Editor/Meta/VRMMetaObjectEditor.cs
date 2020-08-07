@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -8,18 +9,74 @@ namespace VRM
     public class VRMMetaObjectEditor : Editor
     {
         SerializedProperty m_ScriptProp;
+
+        class CustomProperty
+        {
+            public SerializedProperty m_prop;
+
+            public delegate (string, MessageType) Validator(SerializedProperty prop);
+            Validator m_validator;
+
+            public CustomProperty(SerializedProperty prop, Validator validator)
+            {
+                m_prop = prop;
+                m_validator = validator;
+            }
+
+            public void OnGUI()
+            {
+                // var old = m_prop.stringValue;
+                EditorGUILayout.PropertyField(m_prop);
+                var (msg, msgType) = m_validator(m_prop);
+                if (!string.IsNullOrEmpty(msg))
+                {
+                    EditorGUILayout.HelpBox(msg, msgType);
+                }
+                // return old != m_prop.stringValue;
+            }
+        }
+        List<KeyValuePair<string, CustomProperty>> m_customPropMap = new List<KeyValuePair<string, CustomProperty>>();
+
         Dictionary<string, SerializedProperty> m_propMap = new Dictionary<string, SerializedProperty>();
         void InitMap(SerializedObject so)
         {
-            // if (VRMMetaObjectProp == null) return;
-            //if (m_propMap.Count > 0) return;
             m_propMap.Clear();
+            m_customPropMap.Clear();
 
             for (var it = so.GetIterator(); it.NextVisible(true);)
             {
-                if (it.name == "m_Script") continue;
+                switch (it.name)
+                {
+                    case "m_Script":
+                        break;
+
+                    case "Title":
+                    case "Version":
+                    case "Author":
+                        m_customPropMap.Add(new KeyValuePair<string, CustomProperty>(it.name, new CustomProperty(so.FindProperty(it.name), prop =>
+                        {
+                            if (string.IsNullOrEmpty(prop.stringValue))
+                            {
+                                return ($"必須項目。{prop.name} を入力してください", MessageType.Error);
+                            }
+                            return ("", MessageType.None);
+                        })));
+                        break;
+
+                    case "ContactInformation":
+                    case "Reference":
+                        m_customPropMap.Add(new KeyValuePair<string, CustomProperty>(it.name,
+                        new CustomProperty(so.FindProperty(it.name), prop =>
+                        {
+                            return ("", MessageType.None);
+                        })));
+                        break;
+
+                    default:
+                        m_propMap.Add(it.name, so.FindProperty(it.name));
+                        break;
+                }
                 //Debug.LogFormat("{0}", it.name);
-                m_propMap.Add(it.name, so.FindProperty(it.name));
             }
         }
 
@@ -35,7 +92,6 @@ namespace VRM
             GUI.enabled = false;
             EditorGUILayout.PropertyField(m_ScriptProp, true);
             GUI.enabled = true;
-            serializedObject.ApplyModifiedProperties();
 
             EditorGUILayout.Space();
             VRMMetaObjectGUI(serializedObject);
@@ -62,11 +118,10 @@ namespace VRM
             m_foldoutInfo = EditorGUILayout.Foldout(m_foldoutInfo, "Information");
             if (m_foldoutInfo)
             {
-                EditorGUILayout.PropertyField(m_propMap["Title"]);
-                EditorGUILayout.PropertyField(m_propMap["Version"]);
-                EditorGUILayout.PropertyField(m_propMap["Author"]);
-                EditorGUILayout.PropertyField(m_propMap["ContactInformation"]);
-                EditorGUILayout.PropertyField(m_propMap["Reference"]);
+                foreach (var kv in m_customPropMap)
+                {
+                    kv.Value.OnGUI();
+                }
 
                 var thumbnail = m_propMap["Thumbnail"];
                 EditorGUILayout.PropertyField(thumbnail);
