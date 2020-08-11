@@ -88,7 +88,7 @@ namespace VRM
         {
             // m_ScriptProp = serializedObject.FindProperty("m_Script");
             InitMap(serializedObject);
-        }
+        }        
 
         public override void OnInspectorGUI()
         {

@@ -63,6 +63,181 @@ namespace VRM
             }
         }
 
+        /// <summary>
+        /// ボーン名の重複を確認
+        /// </summary>
+        /// <returns></returns>
+        bool DuplicateBoneNameExists()
+        {
+            if (ExportRoot == null)
+            {
+                return false;
+            }
+            var bones = ExportRoot.transform.GetComponentsInChildren<Transform>();
+            var duplicates = bones
+                .GroupBy(p => p.name)
+                .Where(g => g.Count() > 1)
+                .Select(g => g.Key);
+
+            return (duplicates.Any());
+        }
+
+        public static bool IsFileNameLengthTooLong(string fileName)
+        {
+            return fileName.Length > 64;
+        }
+
+        static bool HasRotationOrScale(GameObject root)
+        {
+            foreach (var t in root.GetComponentsInChildren<Transform>())
+            {
+                if (t.localRotation != Quaternion.identity)
+                {
+                    return true;
+                }
+                if (t.localScale != Vector3.one)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        static Vector3 GetForward(Transform l, Transform r)
+        {
+            if (l is null || r is null)
+            {
+                return Vector3.zero;
+            }
+            var lr = (r.position - l.position).normalized;
+            return Vector3.Cross(lr, Vector3.up);
+        }
+
+        /// <summary>
+        /// エクスポート可能か検証する
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<Validation> Validate()
+        {
+            if (ExportRoot == null)
+            {
+                yield break;
+            }
+
+            if (DuplicateBoneNameExists())
+            {
+                yield return Validation.Warning("There is a bone with the same name in the hierarchy. If exported, these bones will be automatically renamed.");
+            }
+
+            // if (ReduceBlendshape && ExportRoot.GetComponent<VRMBlendShapeProxy>() == null)
+            // {
+            //     yield return Validation.Error("ReduceBlendshapeSize needs VRMBlendShapeProxy. You need to convert to VRM once.");
+            // }
+
+            var vertexColor = ExportRoot.GetComponentsInChildren<SkinnedMeshRenderer>().Any(x => x.sharedMesh.colors.Length > 0);
+            if (vertexColor)
+            {
+                yield return Validation.Warning("This model contains vertex color");
+            }
+
+            var renderers = ExportRoot.GetComponentsInChildren<Renderer>();
+            if (renderers.All(x => !x.gameObject.activeInHierarchy))
+            {
+                yield return Validation.Error("No active mesh");
+            }
+
+            var materials = renderers.SelectMany(x => x.sharedMaterials).Distinct();
+            foreach (var material in materials)
+            {
+                if (material.shader.name == "Standard")
+                {
+                    // standard
+                    continue;
+                }
+
+                if (VRMMaterialExporter.UseUnlit(material.shader.name))
+                {
+                    // unlit
+                    continue;
+                }
+
+                if (VRMMaterialExporter.VRMExtensionShaders.Contains(material.shader.name))
+                {
+                    // VRM supported
+                    continue;
+                }
+
+                yield return Validation.Warning(string.Format("{0}: unknown shader '{1}' is used. this will export as `Standard` fallback",
+                    material.name,
+                    material.shader.name));
+            }
+
+            foreach (var material in materials)
+            {
+                if (IsFileNameLengthTooLong(material.name))
+                    yield return Validation.Error(string.Format("FileName '{0}' is too long. ", material.name));
+            }
+
+            var textureNameList = new List<string>();
+            foreach (var material in materials)
+            {
+                var shader = material.shader;
+                int propertyCount = ShaderUtil.GetPropertyCount(shader);
+                for (int i = 0; i < propertyCount; i++)
+                {
+                    if (ShaderUtil.GetPropertyType(shader, i) == ShaderUtil.ShaderPropertyType.TexEnv)
+                    {
+                        if ((material.GetTexture(ShaderUtil.GetPropertyName(shader, i)) != null))
+                        {
+                            var textureName = material.GetTexture(ShaderUtil.GetPropertyName(shader, i)).name;
+                            if (!textureNameList.Contains(textureName))
+                                textureNameList.Add(textureName);
+                        }
+                    }
+                }
+            }
+
+            foreach (var textureName in textureNameList)
+            {
+                if (IsFileNameLengthTooLong(textureName))
+                    yield return Validation.Error(string.Format("FileName '{0}' is too long. ", textureName));
+            }
+
+            var vrmMeta = ExportRoot.GetComponent<VRMMeta>();
+            if (vrmMeta != null && vrmMeta.Meta != null && vrmMeta.Meta.Thumbnail != null)
+            {
+                var thumbnailName = vrmMeta.Meta.Thumbnail.name;
+                if (IsFileNameLengthTooLong(thumbnailName))
+                    yield return Validation.Error(string.Format("FileName '{0}' is too long. ", thumbnailName));
+            }
+
+            var meshFilters = ExportRoot.GetComponentsInChildren<MeshFilter>();
+            var meshesName = meshFilters.Select(x => x.sharedMesh.name).Distinct();
+            foreach (var meshName in meshesName)
+            {
+                if (IsFileNameLengthTooLong(meshName))
+                    yield return Validation.Error(string.Format("FileName '{0}' is too long. ", meshName));
+            }
+
+            var skinnedmeshRenderers = ExportRoot.GetComponentsInChildren<SkinnedMeshRenderer>();
+            var skinnedmeshesName = skinnedmeshRenderers.Select(x => x.sharedMesh.name).Distinct();
+            foreach (var skinnedmeshName in skinnedmeshesName)
+            {
+                if (IsFileNameLengthTooLong(skinnedmeshName))
+                    yield return Validation.Error(string.Format("FileName '{0}' is too long. ", skinnedmeshName));
+            }
+
+            var animator = ExportRoot.GetComponent<Animator>();
+            var l = animator.GetBoneTransform(HumanBodyBones.LeftUpperLeg);
+            var r = animator.GetBoneTransform(HumanBodyBones.RightUpperLeg);
+            var f = GetForward(l, r);
+            if (Vector3.Dot(f, Vector3.forward) < 0.8f)
+            {
+                yield return Validation.Error("Z+ 向きにしてください");
+            }
+        }
+
         VRMMetaObject m_tmpMeta;
 
         Editor m_metaEditor;
@@ -132,15 +307,88 @@ namespace VRM
             }
         }
 
-
         //@TODO: Force repaint if scripts recompile
         private void OnGUI()
         {
+            if(m_tmpMeta==null)
+            {
+                // OnDisable
+                return;
+            }
+
             EditorGUIUtility.labelWidth = 150;
 
             EditorGUILayout.LabelField("ExportRoot");
             var root = (GameObject)EditorGUILayout.ObjectField(ExportRoot, typeof(GameObject), true);
             UpdateRoot(root);
+
+            //
+            // root
+            //
+            if (root == null)
+            {
+                Validation.Error("ExportRootをセットしてください").DrawGUI();
+                return;
+            }
+            if (root.transform.parent != null)
+            {
+                Validation.Error("ExportRootに親はオブジェクトは持てません").DrawGUI();
+                return;
+            }
+            if (root.transform.localRotation != Quaternion.identity || root.transform.localScale != Vector3.one)
+            {
+                Validation.Error("ExportRootに回転・拡大縮小は持てません。子階層で回転・拡大縮小してください").DrawGUI();
+                return;
+            }
+            if (HasRotationOrScale(ExportRoot))
+            {
+                Validation.Warning("回転・拡大縮小を持つノードが含まれています。正規化が必用です").DrawGUI();
+            }
+            else
+            {
+                EditorGUILayout.HelpBox("Root OK", MessageType.Info);
+            }
+
+            //
+            // animator
+            //
+            var animator = root.GetComponent<Animator>();
+            if (animator == null)
+            {
+                Validation.Error("ExportRootに Animator がありません").DrawGUI();
+                return;
+            }
+            var avatar = animator.avatar;
+            if (avatar == null)
+            {
+                Validation.Error("ExportRootの Animator に Avatar がありません").DrawGUI();
+                return;
+            }
+            if (!avatar.isValid)
+            {
+                Validation.Error("ExportRootの Animator.Avatar が不正です").DrawGUI();
+                return;
+            }
+            if (!avatar.isHuman)
+            {
+                Validation.Error("ExportRootの Animator.Avatar がヒューマノイドではありません。FBX importer の Rig で設定してください").DrawGUI();
+                return;
+            }
+            var jaw = animator.GetBoneTransform(HumanBodyBones.Jaw);
+            if (jaw != null)
+            {
+                Validation.Warning("Jaw bone is included. It may not be what you intended. Please check the humanoid avatar setting screen").DrawGUI();
+            }
+            else
+            {
+                EditorGUILayout.HelpBox("Animator OK", MessageType.Info);
+            }
+
+            // validation
+            foreach (var v in m_validations)
+            {
+                v.DrawGUI();
+            }
 
             // Render contents using Generic Inspector GUI
             m_ScrollPosition = BeginVerticalScrollView(m_ScrollPosition, false, GUI.skin.verticalScrollbar, "OL Box");
@@ -152,11 +400,7 @@ namespace VRM
             {
                 // errors            
                 GUILayout.BeginVertical();
-                // foreach (var v in m_validations)
-                // {
-                //     v.DrawGUI();
-                // }
-                GUILayout.FlexibleSpace();
+                // GUILayout.FlexibleSpace();
 
                 {
                     GUILayout.BeginHorizontal();
@@ -198,50 +442,28 @@ namespace VRM
             GUILayout.Space(8);
         }
 
-        // Style定義
         enum Tabs
         {
             Meta,
             ExportSettings,
         }
-
-        static class TabStyles
-        {
-            private static GUIContent[] _tabToggles = null;
-            public static GUIContent[] TabToggles
-            {
-                get
-                {
-                    if (_tabToggles == null)
-                    {
-                        _tabToggles = System.Enum.GetNames(typeof(Tabs)).Select(x => new GUIContent(x)).ToArray();
-                    }
-                    return _tabToggles;
-                }
-            }
-
-            public static readonly GUIStyle TabButtonStyle = "LargeButton";
-
-            // GUI.ToolbarButtonSize.FitToContentsも設定できる
-            public static readonly GUI.ToolbarButtonSize TabButtonSize = GUI.ToolbarButtonSize.Fixed;
-        }
-
         Tabs _tab;
 
-        protected virtual bool DrawWizardGUI()
+        GUIStyle TabButtonStyle => "LargeButton";
+
+        // GUI.ToolbarButtonSize.FitToContentsも設定できる
+        GUI.ToolbarButtonSize TabButtonSize => GUI.ToolbarButtonSize.Fixed;
+
+        bool DrawWizardGUI()
         {
-            if(m_tmpMeta == null)
+            if (m_tmpMeta == null)
             {
+                // disabled
                 return false;
             }
 
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                GUILayout.FlexibleSpace();
-                // タブを描画する
-                _tab = (Tabs)GUILayout.Toolbar((int)_tab, TabStyles.TabToggles, TabStyles.TabButtonStyle, TabStyles.TabButtonSize);
-                GUILayout.FlexibleSpace();
-            }
+            // tabbar
+            _tab = TabBar.OnGUI(_tab, TabButtonStyle, TabButtonSize);
 
             {
                 if (m_metaEditor == null)
@@ -411,29 +633,41 @@ namespace VRM
             m_lastExportDir = Path.GetDirectoryName(path).Replace("\\", "/");
 
             // export
+            if (Meta == null)
+            {
+                var metaB = ExportRoot.GetComponent<VRMMeta>();
+                if (metaB == null)
+                {
+                    metaB = ExportRoot.AddComponent<VRMMeta>();
+                }
+                metaB.Meta = m_tmpMeta;
+            }
             VRMEditorExporter.Export(path, ExportRoot, m_settings);
+            if (Meta == null)
+            {
+                UnityEngine.GameObject.DestroyImmediate(ExportRoot.GetComponent<VRMMeta>());
+            }
         }
 
         void OnWizardUpdate()
         {
-            // m_validations.Clear();
-            // m_validations.AddRange(m_settings.Validate());
+            UpdateRoot(ExportRoot);
+
+            m_validations.Clear();
+            m_validations.AddRange(Validate());
             // if (Meta != null)
             // {
             //     m_validations.AddRange(Meta.Validate());
             // }
             // else
             // {
-            //     m_validations.Add(Validation.Error("meta がありません"));
+            //     //  m_validations.Add(Validation.Error("meta がありません"));
             // }
 
-            // var hasError = m_validations.Any(x => !x.CanExport);
-            // m_IsValid = !hasError;
-
-            UpdateRoot(ExportRoot);
+            var hasError = m_validations.Any(x => !x.CanExport);
+            m_IsValid = !hasError;
 
             Repaint();
-            // GUIUtility.ExitGUI();
         }
     }
 }
