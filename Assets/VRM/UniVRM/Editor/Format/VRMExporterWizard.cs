@@ -148,10 +148,10 @@ namespace VRM
                 yield return Validation.Warning("There is a bone with the same name in the hierarchy. If exported, these bones will be automatically renamed.");
             }
 
-            // if (ReduceBlendshape && ExportRoot.GetComponent<VRMBlendShapeProxy>() == null)
-            // {
-            //     yield return Validation.Error("ReduceBlendshapeSize needs VRMBlendShapeProxy. You need to convert to VRM once.");
-            // }
+            if (m_settings.ReduceBlendshape && ExportRoot.GetComponent<VRMBlendShapeProxy>() == null)
+            {
+                yield return Validation.Error("ReduceBlendshapeSize needs VRMBlendShapeProxy. You need to convert to VRM once.");
+            }
 
             var vertexColor = ExportRoot.GetComponentsInChildren<SkinnedMeshRenderer>().Any(x => x.sharedMesh.colors.Length > 0);
             if (vertexColor)
