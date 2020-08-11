@@ -69,6 +69,9 @@ namespace VRM
             }
             else
             {
+                // default setting
+                m_settings.PoseFreeze = HasRotationOrScale(ExportRoot);
+
                 var meta = ExportRoot.GetComponent<VRMMeta>();
                 if (meta != null)
                 {
@@ -105,7 +108,7 @@ namespace VRM
             return fileName.Length > 64;
         }
 
-        static bool HasRotationOrScale(GameObject root)
+        public static bool HasRotationOrScale(GameObject root)
         {
             foreach (var t in root.GetComponentsInChildren<Transform>())
             {
@@ -630,6 +633,11 @@ namespace VRM
 
             // update checkbox
             wiz.UpdateRoot(go);
+
+            if (go != null)
+            {
+                wiz.m_settings.PoseFreeze = HasRotationOrScale(go);
+            }
 
             wiz.OnWizardUpdate();
         }
