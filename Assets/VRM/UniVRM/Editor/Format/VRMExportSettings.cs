@@ -6,7 +6,6 @@ namespace VRM
     [Serializable]
     public class VRMExportSettings : ScriptableObject
     {
-        #region Settings
         /// <summary>
         /// エクスポート時に強制的にT-Pose化する
         /// </summary>
@@ -54,6 +53,5 @@ namespace VRM
         /// </summary>
         [Tooltip("Remove vertex color")]
         public bool RemoveVertexColor = false;
-        #endregion
    }
 }

@@ -38,6 +38,21 @@ namespace VRM
             }
         }
 
+        bool MetaHasError
+        {
+            get
+            {
+                if (Meta != null)
+                {
+                    return Meta.Validate().Any();
+                }
+                else
+                {
+                    return m_tmpMeta.Validate().Any();
+                }
+            }
+        }
+
         void UpdateRoot(GameObject root)
         {
             if (root == ExportRoot)
@@ -45,6 +60,9 @@ namespace VRM
                 return;
             }
             ExportRoot = root;
+            UnityEditor.Editor.DestroyImmediate(m_metaEditor);
+            m_metaEditor = null;
+
             if (ExportRoot == null)
             {
                 Meta = null;
@@ -227,15 +245,6 @@ namespace VRM
                 if (IsFileNameLengthTooLong(skinnedmeshName))
                     yield return Validation.Error(string.Format("FileName '{0}' is too long. ", skinnedmeshName));
             }
-
-            var animator = ExportRoot.GetComponent<Animator>();
-            var l = animator.GetBoneTransform(HumanBodyBones.LeftUpperLeg);
-            var r = animator.GetBoneTransform(HumanBodyBones.RightUpperLeg);
-            var f = GetForward(l, r);
-            if (Vector3.Dot(f, Vector3.forward) < 0.8f)
-            {
-                yield return Validation.Error("Z+ 向きにしてください");
-            }
         }
 
         VRMMetaObject m_tmpMeta;
@@ -258,10 +267,21 @@ namespace VRM
             Selection.selectionChanged += OnWizardUpdate;
 
             m_tmpMeta = ScriptableObject.CreateInstance<VRMMetaObject>();
+
+            if (m_settings == null)
+            {
+                m_settings = ScriptableObject.CreateInstance<VRMExportSettings>();
+            }
+            if (m_Inspector == null)
+            {
+                m_Inspector = Editor.CreateEditor(m_settings);
+            }
         }
 
         void OnDisable()
         {
+            ExportRoot = null;
+
             // Debug.Log("OnDisable");
             Selection.selectionChanged -= OnWizardUpdate;
             Undo.willFlushUndoRecord -= OnWizardUpdate;
@@ -310,7 +330,7 @@ namespace VRM
         //@TODO: Force repaint if scripts recompile
         private void OnGUI()
         {
-            if(m_tmpMeta==null)
+            if (m_tmpMeta == null)
             {
                 // OnDisable
                 return;
@@ -342,11 +362,25 @@ namespace VRM
             }
             if (HasRotationOrScale(ExportRoot))
             {
-                Validation.Warning("回転・拡大縮小を持つノードが含まれています。正規化が必用です").DrawGUI();
+                if (m_settings.PoseFreeze)
+                {
+                    EditorGUILayout.HelpBox("Root OK", MessageType.Info);
+                }
+                else
+                {
+                    Validation.Warning("回転・拡大縮小を持つノードが含まれています。正規化が必用です。Setting の PoseFreeze を有効にしてください").DrawGUI();
+                }
             }
             else
             {
-                EditorGUILayout.HelpBox("Root OK", MessageType.Info);
+                if (m_settings.PoseFreeze)
+                {
+                    Validation.Warning("正規化済みです。Setting の PoseFreeze は不要です").DrawGUI();
+                }
+                else
+                {
+                    EditorGUILayout.HelpBox("Root OK", MessageType.Info);
+                }
             }
 
             //
@@ -358,6 +392,16 @@ namespace VRM
                 Validation.Error("ExportRootに Animator がありません").DrawGUI();
                 return;
             }
+
+            var l = animator.GetBoneTransform(HumanBodyBones.LeftUpperLeg);
+            var r = animator.GetBoneTransform(HumanBodyBones.RightUpperLeg);
+            var f = GetForward(l, r);
+            if (Vector3.Dot(f, Vector3.forward) < 0.8f)
+            {
+                Validation.Error("Z+ 向きにしてください").DrawGUI();
+                return;
+            }
+
             var avatar = animator.avatar;
             if (avatar == null)
             {
@@ -464,34 +508,20 @@ namespace VRM
 
             // tabbar
             _tab = TabBar.OnGUI(_tab, TabButtonStyle, TabButtonSize);
-
-            {
-                if (m_metaEditor == null)
-                {
-                    if (Meta != null)
-                    {
-                        m_metaEditor = Editor.CreateEditor(Meta);
-                    }
-                    else
-                    {
-                        m_metaEditor = Editor.CreateEditor(m_tmpMeta);
-                    }
-                }
-            }
-            {
-                if (m_Inspector == null)
-                {
-                    if (m_settings == null)
-                    {
-                        m_settings = ScriptableObject.CreateInstance<VRMExportSettings>();
-                    }
-                    m_Inspector = Editor.CreateEditor(m_settings);
-                }
-            }
-
             switch (_tab)
             {
                 case Tabs.Meta:
+                    if (m_metaEditor == null)
+                    {
+                        if (m_meta != null)
+                        {
+                            m_metaEditor = Editor.CreateEditor(Meta);
+                        }
+                        else
+                        {
+                            m_metaEditor = Editor.CreateEditor(m_tmpMeta);
+                        }
+                    }
                     m_metaEditor.OnInspectorGUI();
                     break;
 
@@ -655,17 +685,8 @@ namespace VRM
 
             m_validations.Clear();
             m_validations.AddRange(Validate());
-            // if (Meta != null)
-            // {
-            //     m_validations.AddRange(Meta.Validate());
-            // }
-            // else
-            // {
-            //     //  m_validations.Add(Validation.Error("meta がありません"));
-            // }
-
             var hasError = m_validations.Any(x => !x.CanExport);
-            m_IsValid = !hasError;
+            m_IsValid = !hasError && !MetaHasError;
 
             Repaint();
         }
