@@ -581,14 +581,6 @@ namespace VRM
             return wizard;
         }
 
-        // // Magic Methods
-
-        // // This is called when the wizard is opened or whenever the user changes something in the wizard.
-        // void OnWizardUpdate();
-
-        // // This is called when the user clicks on the Create button.
-        // void OnWizardCreate();
-
         // Allows you to set the create button text of the wizard.
         public string createButtonName
         {
