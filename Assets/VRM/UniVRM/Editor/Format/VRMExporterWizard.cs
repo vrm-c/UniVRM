@@ -64,17 +64,6 @@ namespace VRM
         }
 
         VRMMetaObject m_tmpMeta;
-        VRMMetaObject TmpMeta
-        {
-            get
-            {
-                if (m_tmpMeta == null)
-                {
-                    m_tmpMeta = ScriptableObject.CreateInstance<VRMMetaObject>();
-                }
-                return m_tmpMeta;
-            }
-        }
 
         Editor m_metaEditor;
         Editor m_Inspector;
@@ -87,12 +76,30 @@ namespace VRM
         private string m_CreateButton = "Create";
         private string m_OtherButton = "";
 
-        private void OnDestroy()
+        void OnEnable()
         {
+            // Debug.Log("OnEnable");
+            Undo.willFlushUndoRecord += OnWizardUpdate;
+            Selection.selectionChanged += OnWizardUpdate;
+
+            m_tmpMeta = ScriptableObject.CreateInstance<VRMMetaObject>();
+        }
+
+        void OnDisable()
+        {
+            // Debug.Log("OnDisable");
+            Selection.selectionChanged -= OnWizardUpdate;
+            Undo.willFlushUndoRecord -= OnWizardUpdate;
+
+            UnityEditor.Editor.DestroyImmediate(m_metaEditor);
+            m_metaEditor = null;
             UnityEditor.Editor.DestroyImmediate(m_Inspector);
+            m_Inspector = null;
             Meta = null;
             ScriptableObject.DestroyImmediate(m_tmpMeta);
+            m_tmpMeta = null;
             ScriptableObject.DestroyImmediate(m_settings);
+            m_settings = null;
         }
 
         private void InvokeWizardUpdate()
@@ -223,6 +230,11 @@ namespace VRM
 
         protected virtual bool DrawWizardGUI()
         {
+            if(m_tmpMeta == null)
+            {
+                return false;
+            }
+
             using (new EditorGUILayout.HorizontalScope())
             {
                 GUILayout.FlexibleSpace();
@@ -240,7 +252,7 @@ namespace VRM
                     }
                     else
                     {
-                        m_metaEditor = Editor.CreateEditor(TmpMeta);
+                        m_metaEditor = Editor.CreateEditor(m_tmpMeta);
                     }
                 }
             }
@@ -378,20 +390,6 @@ namespace VRM
             wiz.OnWizardUpdate();
         }
 
-        void OnEnable()
-        {
-            // Debug.Log("OnEnable");
-            Undo.willFlushUndoRecord += OnWizardUpdate;
-            Selection.selectionChanged += OnWizardUpdate;
-        }
-
-        void OnDisable()
-        {
-            // Debug.Log("OnDisable");
-            Selection.selectionChanged -= OnWizardUpdate;
-            Undo.willFlushUndoRecord -= OnWizardUpdate;
-        }
-
         void OnWizardCreate()
         {
             string directory;
@@ -438,5 +436,4 @@ namespace VRM
             // GUIUtility.ExitGUI();
         }
     }
-
 }
