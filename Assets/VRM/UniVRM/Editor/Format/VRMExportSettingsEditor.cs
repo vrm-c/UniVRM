@@ -18,12 +18,11 @@ namespace VRM
                 Description = desc;
             }
 
-            public bool Draw()
+            public void Draw()
             {
+                EditorGUILayout.PropertyField(Property);
                 EditorGUILayout.HelpBox(Description, MessageType.None);
-                var modified = EditorGUILayout.PropertyField(Property);
                 EditorGUILayout.Space();
-                return modified;
             }
         }
 
