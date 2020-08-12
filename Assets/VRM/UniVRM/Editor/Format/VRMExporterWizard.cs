@@ -14,6 +14,7 @@ namespace VRM
     /// </summary>
     public class VRMExporterWizard : EditorWindow
     {
+
         const string CONVERT_HUMANOID_KEY = VRMVersion.MENU + "/Export humanoid";
 
         [MenuItem(CONVERT_HUMANOID_KEY, false, 1)]
@@ -283,7 +284,10 @@ namespace VRM
             {
                 m_Inspector = Editor.CreateEditor(m_settings);
             }
+
+            m_lang = EnumUtil.TryParseOrDefault<VRMExporterWizardMessages.Languages>(EditorPrefs.GetString(LANG_KEY, default(VRMExporterWizardMessages.Languages).ToString()));
         }
+        const string LANG_KEY = "VRM_LANG";
 
         void OnDisable()
         {
@@ -334,7 +338,11 @@ namespace VRM
             }
         }
 
+        VRMExporterWizardMessages.Languages m_lang;
+        VRMExporterWizardMessages.LangMessages Msg => VRMExporterWizardMessages.M17N[m_lang];
+
         //@TODO: Force repaint if scripts recompile
+
         private void OnGUI()
         {
             if (m_tmpMeta == null)
@@ -344,6 +352,14 @@ namespace VRM
             }
 
             EditorGUIUtility.labelWidth = 150;
+
+            // lang
+            var lang = (VRMExporterWizardMessages.Languages)EditorGUILayout.EnumPopup("lang", m_lang);
+            if (lang != m_lang)
+            {
+                m_lang = lang;
+                EditorPrefs.SetString(LANG_KEY, m_lang.ToString());
+            }
 
             EditorGUILayout.LabelField("ExportRoot");
             var root = (GameObject)EditorGUILayout.ObjectField(ExportRoot, typeof(GameObject), true);
@@ -358,23 +374,23 @@ namespace VRM
             //
             if (root == null)
             {
-                Validation.Error("ExportRootをセットしてください").DrawGUI();
+                Validation.Error(Msg.ROOT_EXISTS).DrawGUI();
                 return;
             }
             if (root.transform.parent != null)
             {
-                Validation.Error("ExportRootに親はオブジェクトは持てません").DrawGUI();
+                Validation.Error(Msg.NO_PARENT).DrawGUI();
                 return;
             }
             if (root.transform.localRotation != Quaternion.identity || root.transform.localScale != Vector3.one)
             {
-                Validation.Error("ExportRootに回転・拡大縮小は持てません。子階層で回転・拡大縮小してください").DrawGUI();
+                Validation.Error(Msg.ROOT_WITHOUT_ROTATION_AND_SCALING).DrawGUI();
                 return;
             }
             if (AssetDatabase.GetAssetPath(root) != null)
             {
                 // is prefab
-                Validation.Error("シーンに出していない Prefab はエクスポートできません(細かい挙動が違い、想定外の動作をところがあるため)。シーンに展開してからエクスポートしてください").DrawGUI();
+                Validation.Error(Msg.PREFAV_CANNOT_EXPORT).DrawGUI();
                 return;
             }
             if (HasRotationOrScale(ExportRoot))
