@@ -3,6 +3,7 @@ using System.Collections;
 using System.IO;
 using UnityEngine;
 using UnityEngine.Networking;
+using System.Threading.Tasks;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -26,7 +27,7 @@ namespace UniGLTF
         /// </summary>
         /// <param name="isLinear"></param>
         /// <returns></returns>
-        IEnumerator ProcessOnMainThread(bool isLinear);
+        Task ProcessOnMainThreadAsync(bool isLinear);
     }
 
 #if UNITY_EDITOR
@@ -53,7 +54,7 @@ namespace UniGLTF
         {
         }
 
-        public IEnumerator ProcessOnMainThread(bool isLinear)
+        public async Task ProcessOnMainThreadAsync(bool isLinear)
         {
             //
             // texture from assets
@@ -90,7 +91,6 @@ namespace UniGLTF
 
                 importer.SaveAndReimport();
             }
-            yield break;
         }
     }
 #endif
@@ -140,7 +140,7 @@ namespace UniGLTF
             m_imageBytes = ToArray(segments);
         }
 
-        public IEnumerator ProcessOnMainThread(bool isLinear)
+        public async Task ProcessOnMainThreadAsync(bool isLinear)
         {
             //
             // texture from image(png etc) bytes
@@ -151,7 +151,6 @@ namespace UniGLTF
             {
                 Texture.LoadImage(m_imageBytes);
             }
-            yield break;
         }
     }
 
@@ -274,60 +273,37 @@ namespace UniGLTF
             }
         }
 
-        public IEnumerator ProcessOnMainThread(bool isLinear)
+        public async Task ProcessOnMainThreadAsync(bool isLinear)
         {
+            // Coroutine not implemented
+            throw new NotImplementedException();
             // tmp file
-            var tmp = Path.GetTempFileName();
-            using (var f = new FileStream(tmp, FileMode.Create))
-            {
-                f.Write(m_segments.Array, m_segments.Offset, m_segments.Count);
-            }
+            // var tmp = Path.GetTempFileName();
+            // using (var f = new FileStream(tmp, FileMode.Create))
+            // {
+            //     f.Write(m_segments.Array, m_segments.Offset, m_segments.Count);
+            // }
 
-            using (var d = new Deleter(tmp))
-            {
-                var url = "file:///" + tmp.Replace("\\", "/");
-                Debug.LogFormat("UnityWebRequest: {0}", url);
-#if UNITY_2017_1_OR_NEWER
-                using (var m_uwr = UnityWebRequestTexture.GetTexture(url, true))
-                {
-                    yield return m_uwr.SendWebRequest();
+            // using (var d = new Deleter(tmp))
+            // {
+            //     var url = "file:///" + tmp.Replace("\\", "/");
+            //     Debug.LogFormat("UnityWebRequest: {0}", url);
+            //     using (var m_uwr = UnityWebRequestTexture.GetTexture(url, true))
+            //     {
+            //         yield return m_uwr.SendWebRequest();
 
-                    if (m_uwr.isNetworkError || m_uwr.isHttpError)
-                    {
-                        Debug.LogWarning(m_uwr.error);
-                    }
-                    else
-                    {
-                        // Get downloaded asset bundle
-                        Texture = ((DownloadHandlerTexture)m_uwr.downloadHandler).texture;
-                        Texture.name = m_textureName;
-                    }
-                }
-#elif UNITY_5
-                using (var m_uwr = new WWW(url))
-                {
-                    yield return m_uwr;
-
-                    // wait for request
-                    while (!m_uwr.isDone)
-                    {
-                        yield return null;
-                    }
-
-                    if (!string.IsNullOrEmpty(m_uwr.error))
-                    {
-                        Debug.Log(m_uwr.error);
-                        yield break;
-                    }
-
-                    // Get downloaded asset bundle
-                    Texture = m_uwr.textureNonReadable;
-                    Texture.name = m_textureName;
-                }
-#else
-#error Unsupported Unity version
-#endif
-            }
+            //         if (m_uwr.isNetworkError || m_uwr.isHttpError)
+            //         {
+            //             Debug.LogWarning(m_uwr.error);
+            //         }
+            //         else
+            //         {
+            //             // Get downloaded asset bundle
+            //             Texture = ((DownloadHandlerTexture)m_uwr.downloadHandler).texture;
+            //             Texture.name = m_textureName;
+            //         }
+            //     }
+            // }
         }
     }
 }

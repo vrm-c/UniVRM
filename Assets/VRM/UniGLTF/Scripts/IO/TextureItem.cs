@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using System.Collections;
 using System.IO;
 using System;
-using DepthFirstScheduler;
+using System.Threading.Tasks;
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -115,7 +116,7 @@ namespace UniGLTF
             m_textureIndex = index;
             m_textureLoader = textureLoader;
 
-            if(m_textureLoader == null)
+            if (m_textureLoader == null)
             {
                 throw new Exception("ITextureLoader is null.");
             }
@@ -139,16 +140,16 @@ namespace UniGLTF
         #region Process
         ITextureLoader m_textureLoader;
 
-        public void Process(glTF gltf, IStorage storage)
+        public async Task Process(glTF gltf, IStorage storage)
         {
-            ProcessOnAnyThread(gltf, storage);
-            ProcessOnMainThreadCoroutine(gltf).CoroutineToEnd();
+            await Task.Run(() => ProcessOnAnyThread(gltf, storage));
+            await ProcessOnMainThreadAsync(gltf);
         }
 
-        public IEnumerator ProcessCoroutine(glTF gltf, IStorage storage)
+        public async Task ProcessAsync(glTF gltf, IStorage storage)
         {
-            ProcessOnAnyThread(gltf, storage);
-            yield return ProcessOnMainThreadCoroutine(gltf);
+            await Task.Run(() => ProcessOnAnyThread(gltf, storage));
+            await ProcessOnMainThreadAsync(gltf);
         }
 
         public void ProcessOnAnyThread(glTF gltf, IStorage storage)
@@ -156,14 +157,14 @@ namespace UniGLTF
             m_textureLoader.ProcessOnAnyThread(gltf, storage);
         }
 
-        public IEnumerator ProcessOnMainThreadCoroutine(glTF gltf)
+        public async Task ProcessOnMainThreadAsync(glTF gltf)
         {
             using (m_textureLoader)
             {
                 var textureType = TextureIO.GetglTFTextureType(gltf, m_textureIndex);
                 var colorSpace = TextureIO.GetColorSpace(textureType);
                 var isLinear = colorSpace == RenderTextureReadWrite.Linear;
-                yield return m_textureLoader.ProcessOnMainThread(isLinear);
+                await m_textureLoader.ProcessOnMainThreadAsync(isLinear);
                 TextureSamplerUtil.SetSampler(Texture, gltf.GetSamplerFromTextureIndex(m_textureIndex));
             }
         }

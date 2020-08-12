@@ -5,7 +5,7 @@ using UnityEngine;
 using System.IO;
 using System.Text;
 using System.Collections;
-using DepthFirstScheduler;
+
 using UniJSON;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -20,7 +20,7 @@ namespace UniGLTF
     /// <summary>
     /// GLTF importer
     /// </summary>
-    public class ImporterContext: IDisposable
+    public class ImporterContext : IDisposable
     {
         #region MeasureTime
         bool m_showSpeedLog
@@ -261,7 +261,7 @@ namespace UniGLTF
                 ParseJson(Encoding.UTF8.GetString(jsonBytes.Array, jsonBytes.Offset, jsonBytes.Count),
                     new SimpleStorage(chunks[1].Bytes));
             }
-            catch(StackOverflowException ex)
+            catch (StackOverflowException ex)
             {
                 throw new Exception("[UniVRM Import Error] json parsing failed, nesting is too deep.\n" + ex);
             }
@@ -374,7 +374,7 @@ namespace UniGLTF
         #region Load. Build unity objects
 
         public bool EnableLoadBalancing;
-        
+
         /// <summary>
         /// ReadAllBytes, Parse, Create GameObject
         /// </summary>
@@ -393,7 +393,7 @@ namespace UniGLTF
         public void Load(string path, byte[] bytes)
         {
             Parse(path, bytes);
-            Load();
+            LoadAsync().Wait();
             Root.name = Path.GetFileNameWithoutExtension(path);
         }
 
@@ -441,212 +441,114 @@ namespace UniGLTF
             }
         }
 
-        /// <summary>
-        /// Build unity objects from parsed gltf
-        /// </summary>
-        public void Load()
+        public async Task<GameObject> LoadAsync()
         {
-            var schedulable = LoadAsync();
-            schedulable.ExecuteAll();
-        }
-
-        [Obsolete("Action<Unit> to Action")]
-        public IEnumerator LoadCoroutine(Action<Unit> onLoaded, Action<Exception> onError = null)
-        {
-            return LoadCoroutine(() => onLoaded(Unit.Default), onError);
-        }
-
-        public IEnumerator LoadCoroutine(Action<Exception> onError = null)
-        {
-            return LoadCoroutine(() => { }, onError);
-        }
-
-        public IEnumerator LoadCoroutine(Action onLoaded, Action<Exception> onError = null)
-        {
-            if (onLoaded == null)
+            if (m_textures.Count == 0)
             {
-                onLoaded = () => { };
+                // Runtime import reaches here
+                CreateTextureItems();
             }
 
-            if (onError == null)
-            {
-                onError = Debug.LogError;
-            }
+            await TexturesProcessOnAnyThreadAsync();
 
-            var schedulable = LoadAsync();
-            foreach (var x in schedulable.GetRoot().Traverse())
+            await TexturesProcessOnMainThreadAsync();
+
+            using (MeasureTime("LoadMaterials"))
             {
-                while (true)
+                if (GLTF.materials == null || !GLTF.materials.Any())
                 {
-                    var status = x.Execute();
-                    if (status != ExecutionStatus.Continue)
+                    var material = MaterialImporter.CreateMaterial(0, null, false);
+                    AddMaterial(material);
+                }
+                else
+                {
+                    for (int i = 0; i < GLTF.materials.Count; ++i)
                     {
-                        break;
+                        var material = MaterialImporter.CreateMaterial(i, GLTF.materials[i], GLTF.MaterialHasVertexColor(i));
+                        AddMaterial(material);
                     }
-                    yield return null;
                 }
             }
 
-            onLoaded();
-        }
-
-        [Obsolete("Action<Unit> to Action")]
-        public void LoadAsync(Action<Unit> onLoaded, Action<Exception> onError = null)
-        {
-            LoadAsync(() => onLoaded(Unit.Default), onError);
-        }
-
-        public void LoadAsync(Action onLoaded, Action<Exception> onError = null)
-        {
-            if (onError == null)
+            // UniGLTF does not support draco
+            // https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Khronos/KHR_draco_mesh_compression/README.md#conformance
+            if (GLTF.extensionsRequired.Contains("KHR_draco_mesh_compression"))
             {
-                onError = Debug.LogError;
+                throw new UniGLTFNotSupportedException("draco is not supported");
             }
 
-            LoadAsync()
-                .Subscribe(Scheduler.MainThread,
-                _ => onLoaded(),
-                onError
-                );
-        }
+            // meshes
+            var meshImporter = new MeshImporter();
+            for (int i = 0; i < GLTF.meshes.Count; ++i)
+            {
+                var index = i;
+                using (MeasureTime("ReadMesh"))
+                {
+                    var x = meshImporter.ReadMesh(this, index);
+                    var mesh = await BuildMeshAsync(x, index);
+                    Meshes.Add(mesh);
+                }
+            }
 
-#if ((NET_4_6 || NET_STANDARD_2_0) && UNITY_2017_1_OR_NEWER && !UNITY_WEBGL)
-        public async Task<GameObject> LoadAsyncTask()
-        {
-            await LoadAsync().ToTask();
+            LoadNodes();
+            await Task.Delay(0);
+
+            BuildHierarchy();
+            await Task.Delay(0);
+
+            using (MeasureTime("AnimationImporter"))
+            {
+                AnimationImporter.ImportAnimation(this);
+                await Task.Delay(0);
+            }
+
+            await OnLoadModelAsync();
+
+            if (m_showSpeedLog)
+            {
+                Debug.Log(GetSpeedLog());
+            }
+
             return Root;
         }
-#endif
 
-        protected virtual Schedulable<Unit> LoadAsync()
-        {
-            return
-            Schedulable.Create()
-                .AddTask(Scheduler.ThreadPool, () =>
-                {
-                    if (m_textures.Count == 0)
-                    {
-                        //
-                        // runtime
-                        //
-                        CreateTextureItems();
-                    }
-                    else
-                    {
-                        //
-                        // already CreateTextures(by assetPostProcessor or editor menu)
-                        //
-                    }
-                })
-                .ContinueWithCoroutine(Scheduler.ThreadPool, TexturesProcessOnAnyThread)
-                .ContinueWithCoroutine(Scheduler.MainThread, TexturesProcessOnMainThread)
-                .ContinueWithCoroutine(Scheduler.MainThread, LoadMaterials)
-                .OnExecute(Scheduler.ThreadPool, parent =>
-                {
-                    // UniGLTF does not support draco
-                    // https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Khronos/KHR_draco_mesh_compression/README.md#conformance
-                    if (GLTF.extensionsRequired.Contains("KHR_draco_mesh_compression"))
-                    {
-                        throw new UniGLTFNotSupportedException("draco is not supported");
-                    }
-
-                    // meshes
-                    var meshImporter = new MeshImporter();
-                    for (int i = 0; i < GLTF.meshes.Count; ++i)
-                    {
-                        var index = i;
-                        parent.AddTask(Scheduler.ThreadPool,
-                                () =>
-                                {
-                                    using (MeasureTime("ReadMesh"))
-                                    {
-                                        return meshImporter.ReadMesh(this, index);
-                                    }
-                                })
-                        .ContinueWithCoroutine<MeshWithMaterials>(Scheduler.MainThread, x => BuildMesh(x, index))
-                        .ContinueWith(Scheduler.ThreadPool, x => Meshes.Add(x))
-                        ;
-                    }
-                })
-                .ContinueWithCoroutine(Scheduler.MainThread, LoadNodes)
-                .ContinueWithCoroutine(Scheduler.MainThread, BuildHierarchy)
-                .ContinueWith(Scheduler.MainThread, _ =>
-                {
-                    using (MeasureTime("AnimationImporter"))
-                    {
-                        AnimationImporter.ImportAnimation(this);
-                    }
-                })
-                .ContinueWithCoroutine(Scheduler.MainThread, OnLoadModel)
-                .ContinueWith(Scheduler.CurrentThread,
-                    _ =>
-                    {
-                        if (m_showSpeedLog)
-                        {
-                            Debug.Log(GetSpeedLog());
-                        }
-                        return Unit.Default;
-                    });
-        }
-
-        protected virtual IEnumerator OnLoadModel()
+        protected virtual async Task OnLoadModelAsync()
         {
             Root.name = "GLTF";
-            yield break;
+            await Task.Delay(0);
         }
 
-        IEnumerator TexturesProcessOnAnyThread()
+        async Task TexturesProcessOnAnyThreadAsync()
         {
             using (MeasureTime("TexturesProcessOnAnyThread"))
             {
                 foreach (var x in GetTextures())
                 {
                     x.ProcessOnAnyThread(GLTF, Storage);
-                    yield return null;
+                    await Task.Delay(0);
                 }
             }
         }
 
-        IEnumerator TexturesProcessOnMainThread()
+        async Task TexturesProcessOnMainThreadAsync()
         {
             using (MeasureTime("TexturesProcessOnMainThread"))
             {
                 foreach (var x in GetTextures())
                 {
-                    yield return x.ProcessOnMainThreadCoroutine(GLTF);
+                    await x.ProcessOnMainThreadAsync(GLTF);
                 }
             }
         }
 
-        IEnumerator LoadMaterials()
-        {
-            using (MeasureTime("LoadMaterials"))
-            {
-                if (GLTF.materials == null || !GLTF.materials.Any())
-                {
-                    AddMaterial(MaterialImporter.CreateMaterial(0, null, false));
-                }
-                else
-                {
-                    for (int i = 0; i < GLTF.materials.Count; ++i)
-                    {
-                        AddMaterial(MaterialImporter.CreateMaterial(i, GLTF.materials[i], GLTF.MaterialHasVertexColor(i)));
-                    }
-                }
-            }
-            yield return null;
-        }
-        
-        IEnumerator BuildMesh(MeshImporter.MeshContext x, int i)
+        async Task<MeshWithMaterials> BuildMeshAsync(MeshImporter.MeshContext x, int i)
         {
             using (MeasureTime("BuildMesh"))
             {
                 MeshWithMaterials meshWithMaterials;
                 if (EnableLoadBalancing)
                 {
-                    var buildMesh =  MeshImporter.BuildMeshCoroutine(this, x);
-                    yield return buildMesh;
-                    meshWithMaterials = buildMesh.Current as MeshWithMaterials;
+                    meshWithMaterials = await MeshImporter.BuildMeshAsync(this, x);
                 }
                 else
                 {
@@ -666,7 +568,7 @@ namespace UniGLTF
                     mesh.name = string.Format("{0}({1})", originalName, j);
                 }
 
-                yield return meshWithMaterials;
+                return meshWithMaterials;
             }
         }
 
@@ -688,7 +590,7 @@ namespace UniGLTF
             }
         }
 
-        IEnumerator LoadNodes()
+        void LoadNodes()
         {
             using (MeasureTime("LoadNodes"))
             {
@@ -697,11 +599,9 @@ namespace UniGLTF
                     Nodes.Add(NodeImporter.ImportNode(GLTF.nodes[i], i).transform);
                 }
             }
-
-            yield return null;
         }
 
-        IEnumerator BuildHierarchy()
+        void BuildHierarchy()
         {
             using (MeasureTime("BuildHierarchy"))
             {
@@ -730,12 +630,10 @@ namespace UniGLTF
                     t.SetParent(Root.transform, false);
                 }
             }
-
-            yield return null;
         }
-#endregion
+        #endregion
 
-#region Imported
+        #region Imported
         public GameObject Root;
         public List<Transform> Nodes = new List<Transform>();
 
@@ -784,7 +682,7 @@ namespace UniGLTF
         {
             foreach (var x in Meshes)
             {
-                foreach(var y in x.Renderers)
+                foreach (var y in x.Renderers)
                 {
                     y.enabled = true;
                 }
@@ -862,11 +760,11 @@ namespace UniGLTF
                 var loaded = assetPath.LoadAsset<Material>();
 
                 // replace component reference
-                foreach(var mesh in Meshes)
+                foreach (var mesh in Meshes)
                 {
-                    foreach(var r in mesh.Renderers)
+                    foreach (var r in mesh.Renderers)
                     {
-                        for(int i=0; i<r.sharedMaterials.Length; ++i)
+                        for (int i = 0; i < r.sharedMaterials.Length; ++i)
                         {
                             if (r.sharedMaterials.Contains(o))
                             {

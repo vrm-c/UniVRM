@@ -68,7 +68,7 @@ namespace UniGLTF
                 // import
                 context.ParseJson(json, new SimpleStorage(new ArraySegment<byte>()));
                 //Debug.LogFormat("{0}", context.Json);
-                context.Load();
+                context.LoadAsync().Wait();
 
                 AssertAreEqual(go.transform, context.Root.transform);
             }
@@ -651,7 +651,7 @@ namespace UniGLTF
                     var context = new ImporterContext();
                     context.ParseJson(json, new SimpleStorage(new ArraySegment<byte>(new byte[1024 * 1024])));
                     //Debug.LogFormat("{0}", context.Json);
-                    context.Load();
+                    context.LoadAsync().Wait();
 
                     var importedRed = context.Root.transform.GetChild(0);
                     var importedRedMaterial = importedRed.GetComponent<Renderer>().sharedMaterial;
@@ -672,7 +672,7 @@ namespace UniGLTF
                     };
                     context.ParseJson(json, new SimpleStorage(new ArraySegment<byte>(new byte[1024 * 1024])));
                     //Debug.LogFormat("{0}", context.Json);
-                    context.Load();
+                    context.LoadAsync().Wait();
 
                     var importedRed = context.Root.transform.GetChild(0);
                     var importedRedMaterial = importedRed.GetComponent<Renderer>().sharedMaterial;

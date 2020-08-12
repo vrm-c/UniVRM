@@ -28,7 +28,7 @@ namespace VRM.Samples
 
         #region Load
 
-        void OnLoadClicked()
+        async void OnLoadClicked()
         {
 #if UNITY_STANDALONE_WIN
             var path = FileDialogForWindows.FileDialog("open VRM", ".vrm");
@@ -56,7 +56,9 @@ namespace VRM.Samples
             Debug.LogFormat("meta: title:{0}", meta.Title);
 
             // ParseしたJSONをシーンオブジェクトに変換していく
-            context.LoadAsync(() => OnLoaded(context));
+            await context.LoadAsync();
+
+            OnLoaded(context);
         }
 
         void OnLoaded(VRMImporterContext context)

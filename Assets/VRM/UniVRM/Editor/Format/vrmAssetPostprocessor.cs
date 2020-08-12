@@ -48,7 +48,7 @@ namespace VRM
                 //
                 // after textures imported
                 //
-                context.Load();
+                context.LoadAsync().Wait();
                 context.SaveAsAsset(prefabPath);
                 context.EditorDestroyRoot();
             };

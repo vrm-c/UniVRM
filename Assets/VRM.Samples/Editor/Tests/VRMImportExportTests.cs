@@ -36,7 +36,7 @@ namespace VRM.Samples
             var path = AliciaPath;
             var context = new VRMImporterContext();
             context.ParseGlb(File.ReadAllBytes(path));
-            context.Load();
+            context.LoadAsync().Wait();
             context.ShowMeshes();
             context.EnableUpdateWhenOffscreen();
 
@@ -108,7 +108,7 @@ namespace VRM.Samples
             var path = AliciaPath;
             var context = new VRMImporterContext();
             context.ParseGlb(File.ReadAllBytes(path));
-            context.Load();
+            context.LoadAsync().Wait();
             context.ShowMeshes();
             context.EnableUpdateWhenOffscreen();
 

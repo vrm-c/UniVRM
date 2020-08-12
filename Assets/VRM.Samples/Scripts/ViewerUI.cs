@@ -307,7 +307,7 @@ namespace VRM.Samples
                         var file = File.ReadAllBytes(path);
                         context.ParseGlb(file);
                         m_texts.UpdateMeta(context);
-                        context.Load();
+                        context.LoadAsync().Wait();
                         context.ShowMeshes();
                         context.EnableUpdateWhenOffscreen();
                         context.ShowMeshes();
@@ -320,7 +320,7 @@ namespace VRM.Samples
                         var context = new UniGLTF.ImporterContext();
                         var file = File.ReadAllBytes(path);
                         context.ParseGlb(file);
-                        context.Load();
+                        context.LoadAsync().Wait();
                         context.ShowMeshes();
                         context.EnableUpdateWhenOffscreen();
                         context.ShowMeshes();

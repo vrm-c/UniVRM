@@ -113,7 +113,7 @@ namespace UniGLTF
                 {
                     UniUnlit.Utils.SetRenderMode(material, UniUnlit.UniUnlitRenderMode.Transparent);
                 }
-                else if(x.alphaMode == "MASK")
+                else if (x.alphaMode == "MASK")
                 {
                     UniUnlit.Utils.SetRenderMode(material, UniUnlit.UniUnlitRenderMode.Cutout);
                 }

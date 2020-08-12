@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using UnityEngine;
 
 
@@ -23,7 +23,7 @@ namespace UniGLTF
             var colors = new List<Color>();
             var blendShapes = new List<BlendShape>();
             var meshContext = new MeshContext();
-            
+
             // blendshapes
             var targetNames = gltfMesh.extras.targetNames;
             for (int i = 1; i < gltfMesh.primitives.Count; ++i)
@@ -39,7 +39,7 @@ namespace UniGLTF
                 var blendShape = new BlendShape(!string.IsNullOrEmpty(targetNames[i]) ? targetNames[i] : i.ToString());
                 blendShapes.Add(blendShape);
             }
-            
+
             foreach (var prim in gltfMesh.primitives)
             {
                 var indexOffset = positions.Count;
@@ -112,7 +112,7 @@ namespace UniGLTF
                         meshContext.boneWeights.Add(bw);
                     }
                 }
-                
+
                 // blendshape
                 if (prim.targets != null && prim.targets.Count > 0)
                 {
@@ -657,8 +657,8 @@ namespace UniGLTF
 
             return result;
         }
-        
-        public static IEnumerator BuildMeshCoroutine(ImporterContext ctx, MeshImporter.MeshContext meshContext)
+
+        public static async Task<MeshWithMaterials> BuildMeshAsync(ImporterContext ctx, MeshImporter.MeshContext meshContext)
         {
             if (!meshContext.materialIndices.Any())
             {
@@ -678,12 +678,12 @@ namespace UniGLTF
 #endif
             }
 
-            
+
             mesh.vertices = meshContext.positions;
             bool recalculateNormals = false;
             if (meshContext.normals != null && meshContext.normals.Length > 0)
             {
-                
+
                 mesh.normals = meshContext.normals;
             }
             else
@@ -693,7 +693,7 @@ namespace UniGLTF
 
             if (meshContext.uv != null && meshContext.uv.Length > 0)
             {
-                
+
                 mesh.uv = meshContext.uv;
             }
 
@@ -708,7 +708,7 @@ namespace UniGLTF
 
             if (meshContext.colors != null && meshContext.colors.Length > 0)
             {
-                
+
                 mesh.colors = meshContext.colors;
             }
             if (meshContext.boneWeights != null && meshContext.boneWeights.Count > 0)
@@ -727,13 +727,9 @@ namespace UniGLTF
             }
             if (recalculateTangents)
             {
-#if UNITY_5_6_OR_NEWER
-                yield return null;
+                await Task.Delay(0);
                 mesh.RecalculateTangents();
-                yield return null;
-#else
-                CalcTangents(mesh);
-#endif
+                await Task.Delay(0);
             }
 
             var result = new MeshWithMaterials
@@ -742,11 +738,11 @@ namespace UniGLTF
                 Materials = meshContext.materialIndices.Select(x => ctx.GetMaterial(x)).ToArray()
             };
 
-            yield return null;
+            await Task.Delay(0);
             if (meshContext.blendShapes != null)
             {
                 Vector3[] emptyVertices = null;
-                
+
                 foreach (var blendShape in meshContext.blendShapes)
                 {
                     if (blendShape.Positions.Count > 0)
@@ -758,7 +754,7 @@ namespace UniGLTF
                                 (meshContext.normals != null && meshContext.normals.Length == mesh.vertexCount && blendShape.Normals.Count() == blendShape.Positions.Count()) ? blendShape.Normals.ToArray() : null,
                                 null
                             );
-                            yield return null;
+                            await Task.Delay(0);
                         }
                         else
                         {
@@ -778,12 +774,12 @@ namespace UniGLTF
                             null,
                             null
                         );
-                        yield return null;
+                        await Task.Delay(0);
                     }
                 }
             }
 
-            yield return result;
+            return result;
         }
 
         /// <summary>

@@ -9,9 +9,10 @@ namespace VRM
         Editor m_Inspector;
         SerializedProperty m_VRMMetaObjectProp;
 
-        private void OnDestroy()
+        private void OnDisable()
         {
             UnityEditor.Editor.DestroyImmediate(m_Inspector);
+            m_Inspector = null;
         }
 
         private void OnEnable()
@@ -23,7 +24,10 @@ namespace VRM
         public override void OnInspectorGUI()
         {
             EditorGUILayout.PropertyField(m_VRMMetaObjectProp);
-            m_Inspector.OnInspectorGUI();
+            if (m_Inspector != null)
+            {
+                m_Inspector.OnInspectorGUI();
+            }
         }
     }
 }

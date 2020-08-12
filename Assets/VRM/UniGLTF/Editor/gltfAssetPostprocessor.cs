@@ -62,7 +62,7 @@ namespace UniGLTF
                     //
                     try
                     {
-                        context.Load();
+                        context.LoadAsync().Wait();
                         context.SaveAsAsset(prefabPath);
                         context.EditorDestroyRoot();
                     }
