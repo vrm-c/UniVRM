@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 
 namespace VRM
@@ -63,5 +64,21 @@ namespace VRM
             ;
         }
         */
+
+        public IEnumerable<Validation> Validate()
+        {
+            if (string.IsNullOrEmpty(Title))
+            {
+                yield return Validation.Error("Require Title. ");
+            }
+            if (string.IsNullOrEmpty(Version))
+            {
+                yield return Validation.Error("Require Version. ");
+            }
+            if (string.IsNullOrEmpty(Author))
+            {
+                yield return Validation.Error("Require Author. ");
+            }
+        }
     }
 }
