@@ -350,6 +350,10 @@ namespace VRM
             UpdateRoot(root);
 
             //
+            // ここでも validate している。ここで失敗して return した場合は Export UI を表示しない
+            //
+
+            //
             // root
             //
             if (root == null)
@@ -365,6 +369,12 @@ namespace VRM
             if (root.transform.localRotation != Quaternion.identity || root.transform.localScale != Vector3.one)
             {
                 Validation.Error("ExportRootに回転・拡大縮小は持てません。子階層で回転・拡大縮小してください").DrawGUI();
+                return;
+            }
+            if (AssetDatabase.GetAssetPath(root) != null)
+            {
+                // is prefab
+                Validation.Error("シーンに出していない Prefab はエクスポートできません(細かい挙動が違い、想定外の動作をところがあるため)。シーンに展開してからエクスポートしてください").DrawGUI();
                 return;
             }
             if (HasRotationOrScale(ExportRoot))
@@ -696,3 +706,4 @@ namespace VRM
         }
     }
 }
+
