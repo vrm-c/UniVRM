@@ -14,13 +14,17 @@ namespace VRM
     /// </summary>
     public class VRMExporterWizard : EditorWindow
     {
-        [SerializeField]
-        public GameObject ExportRoot;
+        const string CONVERT_HUMANOID_KEY = VRMVersion.MENU + "/Export humanoid";
 
-        SerializedProperty m_exportRoot;
+        [MenuItem(CONVERT_HUMANOID_KEY, false, 1)]
+        private static void ExportFromMenu()
+        {
+            VRMExporterWizard.CreateWizard();
+        }
 
-        [SerializeField]
-        public VRMExportSettings m_settings;
+        GameObject ExportRoot;
+
+        VRMExportSettings m_settings;
 
         VRMMetaObject m_meta;
         VRMMetaObject Meta
