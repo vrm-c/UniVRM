@@ -371,9 +371,10 @@ namespace VRM
                 Validation.Error("ExportRootに回転・拡大縮小は持てません。子階層で回転・拡大縮小してください").DrawGUI();
                 return;
             }
-            if (AssetDatabase.GetAssetPath(root) != null)
+            if (!root.scene.IsValid())
             {
-                // is prefab
+                // Prefab でシーンに出していないものを判定したい
+                // FIXME: もっと適切な判定があればそれに
                 Validation.Error("シーンに出していない Prefab はエクスポートできません(細かい挙動が違い、想定外の動作をところがあるため)。シーンに展開してからエクスポートしてください").DrawGUI();
                 return;
             }
