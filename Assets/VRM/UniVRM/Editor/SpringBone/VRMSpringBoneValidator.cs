@@ -35,7 +35,7 @@ namespace VRM
                 {
                     // * GameObjectが複数回ルートとして指定されてる(SpringBoneが同じでも別でも)
                     var list = string.Join(", ", kv.Value.Select(x => string.IsNullOrEmpty(x.m_comment) ? x.name : x.m_comment));
-                    yield return Validation.Error($"{kv.Key} found multiple. {list}");
+                    yield return Validation.Warning($"{kv.Key} found multiple. {list}");
                 }
 
                 var rootInRootMap = new Dictionary<Transform, List<Transform>>();
@@ -62,7 +62,7 @@ namespace VRM
                 foreach (var rootList in rootInRootMap)
                 {
                     var list = string.Join(", ", rootList.Value.Select(x => x.name));
-                    yield return Validation.Error($"{rootList.Key} hierarchy contains other root: {list}");
+                    yield return Validation.Warning($"{rootList.Key} hierarchy contains other root: {list}");
                 }
             }
         }
