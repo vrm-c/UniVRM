@@ -700,6 +700,7 @@ namespace VRM
 
             m_validations.Clear();
             m_validations.AddRange(Validate());
+            m_validations.AddRange(VRMSpringBoneValidator.Validate(ExportRoot));
             var hasError = m_validations.Any(x => !x.CanExport);
             m_IsValid = !hasError && !MetaHasError;
 
