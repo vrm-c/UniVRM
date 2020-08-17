@@ -398,13 +398,6 @@ namespace VRM
                 Validation.Error(Msg.ROOT_WITHOUT_ROTATION_AND_SCALING_CHANGED).DrawGUI();
                 return;
             }
-            // if (!root.scene.IsValid())
-            // {
-            //     // Prefab でシーンに出していないものを判定したい
-            //     // FIXME: もっと適切な判定があればそれに
-            //     Validation.Error(Msg.PREFAB_CANNOT_EXPORT).DrawGUI();
-            //     return;
-            // }
             if (HasRotationOrScale(ExportRoot))
             {
                 if (m_settings.PoseFreeze)
