@@ -139,6 +139,20 @@ namespace VRM
             return Vector3.Cross(lr, Vector3.up);
         }
 
+        static bool EnableRenderer(Renderer renderer)
+        {
+            if (renderer.transform.Ancestor().Any(x => !x.gameObject.activeSelf))
+            {
+                // 自分か祖先に !activeSelf がいる
+                return false;
+            }
+            if (!renderer.enabled)
+            {
+                return false;
+            }
+            return true;
+        }
+
         /// <summary>
         /// エクスポート可能か検証する
         /// </summary>
@@ -167,11 +181,6 @@ namespace VRM
             }
 
             var renderers = ExportRoot.GetComponentsInChildren<Renderer>();
-            if (renderers.All(x => !x.gameObject.activeInHierarchy))
-            {
-                yield return Validation.Error(Msg.NO_ACTIVE_MESH);
-            }
-
             var materials = renderers.SelectMany(x => x.sharedMaterials).Distinct();
             foreach (var material in materials)
             {
@@ -359,8 +368,10 @@ namespace VRM
             }
 
             EditorGUILayout.LabelField("ExportRoot");
-            var root = (GameObject)EditorGUILayout.ObjectField(ExportRoot, typeof(GameObject), true);
-            UpdateRoot(root);
+            {
+                var root = (GameObject)EditorGUILayout.ObjectField(ExportRoot, typeof(GameObject), true);
+                UpdateRoot(root);
+            }
 
             //
             // ここでも validate している。ここで失敗して return した場合は Export UI を表示しない
@@ -369,28 +380,29 @@ namespace VRM
             //
             // root
             //
-            if (root == null)
+            if (ExportRoot == null)
             {
                 Validation.Error(Msg.ROOT_EXISTS).DrawGUI();
                 return;
             }
-            if (root.transform.parent != null)
+            if (ExportRoot.transform.parent != null)
             {
                 Validation.Error(Msg.NO_PARENT).DrawGUI();
                 return;
             }
-            if (root.transform.localRotation != Quaternion.identity || root.transform.localScale != Vector3.one)
+            if (ExportRoot.transform.localRotation != Quaternion.identity || ExportRoot.transform.localScale != Vector3.one)
             {
                 Validation.Error(Msg.ROOT_WITHOUT_ROTATION_AND_SCALING_CHANGED).DrawGUI();
                 return;
             }
-            if (!root.scene.IsValid())
+
+            var renderers = ExportRoot.GetComponentsInChildren<Renderer>();
+            if (renderers.All(x => !EnableRenderer(x)))
             {
-                // Prefab でシーンに出していないものを判定したい
-                // FIXME: もっと適切な判定があればそれに
-                Validation.Error(Msg.PREFAB_CANNOT_EXPORT).DrawGUI();
+                Validation.Error(Msg.NO_ACTIVE_MESH).DrawGUI();
                 return;
             }
+
             if (HasRotationOrScale(ExportRoot))
             {
                 if (m_settings.PoseFreeze)
@@ -417,7 +429,7 @@ namespace VRM
             //
             // animator
             //
-            var animator = root.GetComponent<Animator>();
+            var animator = ExportRoot.GetComponent<Animator>();
             if (animator == null)
             {
                 Validation.Error(Msg.NO_ANIMATOR).DrawGUI();
