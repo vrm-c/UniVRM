@@ -152,24 +152,24 @@ namespace VRM
 
             if (DuplicateBoneNameExists())
             {
-                yield return Validation.Warning("There is a bone with the same name in the hierarchy. If exported, these bones will be automatically renamed.");
+                yield return Validation.Warning(Msg.DUPLICATE_BONE_NAME_EXISTS);
             }
 
             if (m_settings.ReduceBlendshape && ExportRoot.GetComponent<VRMBlendShapeProxy>() == null)
             {
-                yield return Validation.Error("ReduceBlendshapeSize needs VRMBlendShapeProxy. You need to convert to VRM once.");
+                yield return Validation.Error(Msg.NEEDS_VRM_BLENDSHAPE_PROXY);
             }
 
             var vertexColor = ExportRoot.GetComponentsInChildren<SkinnedMeshRenderer>().Any(x => x.sharedMesh.colors.Length > 0);
             if (vertexColor)
             {
-                yield return Validation.Warning("This model contains vertex color");
+                yield return Validation.Warning(Msg.VERTEX_COLOR_IS_INCLUDED);
             }
 
             var renderers = ExportRoot.GetComponentsInChildren<Renderer>();
             if (renderers.All(x => !x.gameObject.activeInHierarchy))
             {
-                yield return Validation.Error("No active mesh");
+                yield return Validation.Error(Msg.NO_ACTIVE_MESH);
             }
 
             var materials = renderers.SelectMany(x => x.sharedMaterials).Distinct();
@@ -193,15 +193,13 @@ namespace VRM
                     continue;
                 }
 
-                yield return Validation.Warning(string.Format("{0}: unknown shader '{1}' is used. this will export as `Standard` fallback",
-                    material.name,
-                    material.shader.name));
+                yield return Validation.Warning($"Material: {material.name}. Unknown Shader: \"{material.shader.name}\" is used. {Msg.UNKNOWN_SHADER}");
             }
 
             foreach (var material in materials)
             {
                 if (IsFileNameLengthTooLong(material.name))
-                    yield return Validation.Error(string.Format("FileName '{0}' is too long. ", material.name));
+                    yield return Validation.Error(Msg.FILENAME_TOO_LONG + material.name);
             }
 
             var textureNameList = new List<string>();
@@ -226,7 +224,7 @@ namespace VRM
             foreach (var textureName in textureNameList)
             {
                 if (IsFileNameLengthTooLong(textureName))
-                    yield return Validation.Error(string.Format("FileName '{0}' is too long. ", textureName));
+                    yield return Validation.Error(Msg.FILENAME_TOO_LONG + textureName);
             }
 
             var vrmMeta = ExportRoot.GetComponent<VRMMeta>();
@@ -234,7 +232,7 @@ namespace VRM
             {
                 var thumbnailName = vrmMeta.Meta.Thumbnail.name;
                 if (IsFileNameLengthTooLong(thumbnailName))
-                    yield return Validation.Error(string.Format("FileName '{0}' is too long. ", thumbnailName));
+                    yield return Validation.Error(Msg.FILENAME_TOO_LONG + thumbnailName);
             }
 
             var meshFilters = ExportRoot.GetComponentsInChildren<MeshFilter>();
@@ -242,7 +240,7 @@ namespace VRM
             foreach (var meshName in meshesName)
             {
                 if (IsFileNameLengthTooLong(meshName))
-                    yield return Validation.Error(string.Format("FileName '{0}' is too long. ", meshName));
+                    yield return Validation.Error(Msg.FILENAME_TOO_LONG + meshName);
             }
 
             var skinnedmeshRenderers = ExportRoot.GetComponentsInChildren<SkinnedMeshRenderer>();
@@ -250,7 +248,7 @@ namespace VRM
             foreach (var skinnedmeshName in skinnedmeshesName)
             {
                 if (IsFileNameLengthTooLong(skinnedmeshName))
-                    yield return Validation.Error(string.Format("FileName '{0}' is too long. ", skinnedmeshName));
+                    yield return Validation.Error(Msg.FILENAME_TOO_LONG + skinnedmeshName);
             }
         }
 
@@ -283,7 +281,10 @@ namespace VRM
             {
                 m_Inspector = Editor.CreateEditor(m_settings);
             }
+
+            m_lang = EnumUtil.TryParseOrDefault<VRMExporterWizardMessages.Languages>(EditorPrefs.GetString(LANG_KEY, default(VRMExporterWizardMessages.Languages).ToString()));
         }
+        const string LANG_KEY = "VRM_LANG";
 
         void OnDisable()
         {
@@ -334,7 +335,11 @@ namespace VRM
             }
         }
 
+        VRMExporterWizardMessages.Languages m_lang;
+        VRMExporterWizardMessages.LangMessages Msg => VRMExporterWizardMessages.M17N[m_lang];
+
         //@TODO: Force repaint if scripts recompile
+
         private void OnGUI()
         {
             if (m_tmpMeta == null)
@@ -344,6 +349,14 @@ namespace VRM
             }
 
             EditorGUIUtility.labelWidth = 150;
+
+            // lang
+            var lang = (VRMExporterWizardMessages.Languages)EditorGUILayout.EnumPopup("lang", m_lang);
+            if (lang != m_lang)
+            {
+                m_lang = lang;
+                EditorPrefs.SetString(LANG_KEY, m_lang.ToString());
+            }
 
             EditorGUILayout.LabelField("ExportRoot");
             var root = (GameObject)EditorGUILayout.ObjectField(ExportRoot, typeof(GameObject), true);
@@ -358,24 +371,24 @@ namespace VRM
             //
             if (root == null)
             {
-                Validation.Error("ExportRootをセットしてください").DrawGUI();
+                Validation.Error(Msg.ROOT_EXISTS).DrawGUI();
                 return;
             }
             if (root.transform.parent != null)
             {
-                Validation.Error("ExportRootに親はオブジェクトは持てません").DrawGUI();
+                Validation.Error(Msg.NO_PARENT).DrawGUI();
                 return;
             }
             if (root.transform.localRotation != Quaternion.identity || root.transform.localScale != Vector3.one)
             {
-                Validation.Error("ExportRootに回転・拡大縮小は持てません。子階層で回転・拡大縮小してください").DrawGUI();
+                Validation.Error(Msg.ROOT_WITHOUT_ROTATION_AND_SCALING_CHANGED).DrawGUI();
                 return;
             }
             if (!root.scene.IsValid())
             {
                 // Prefab でシーンに出していないものを判定したい
                 // FIXME: もっと適切な判定があればそれに
-                Validation.Error("シーンに出していない Prefab はエクスポートできません(細かい挙動が違い、想定外の動作をところがあるため)。シーンに展開してからエクスポートしてください").DrawGUI();
+                Validation.Error(Msg.PREFAB_CANNOT_EXPORT).DrawGUI();
                 return;
             }
             if (HasRotationOrScale(ExportRoot))
@@ -386,14 +399,14 @@ namespace VRM
                 }
                 else
                 {
-                    Validation.Warning("回転・拡大縮小を持つノードが含まれています。正規化が必用です。Setting の PoseFreeze を有効にしてください").DrawGUI();
+                    Validation.Warning(Msg.ROTATION_OR_SCALEING_INCLUDED_IN_NODE).DrawGUI();
                 }
             }
             else
             {
                 if (m_settings.PoseFreeze)
                 {
-                    Validation.Warning("正規化済みです。Setting の PoseFreeze は不要です").DrawGUI();
+                    Validation.Warning(Msg.IS_POSE_FREEZE_DONE).DrawGUI();
                 }
                 else
                 {
@@ -407,7 +420,7 @@ namespace VRM
             var animator = root.GetComponent<Animator>();
             if (animator == null)
             {
-                Validation.Error("ExportRootに Animator がありません").DrawGUI();
+                Validation.Error(Msg.NO_ANIMATOR).DrawGUI();
                 return;
             }
 
@@ -416,30 +429,30 @@ namespace VRM
             var f = GetForward(l, r);
             if (Vector3.Dot(f, Vector3.forward) < 0.8f)
             {
-                Validation.Error("Z+ 向きにしてください").DrawGUI();
+                Validation.Error(Msg.FACE_Z_POSITIVE_DIRECTION).DrawGUI();
                 return;
             }
 
             var avatar = animator.avatar;
             if (avatar == null)
             {
-                Validation.Error("ExportRootの Animator に Avatar がありません").DrawGUI();
+                Validation.Error(Msg.NO_AVATAR_IN_ANIMATOR).DrawGUI();
                 return;
             }
             if (!avatar.isValid)
             {
-                Validation.Error("ExportRootの Animator.Avatar が不正です").DrawGUI();
+                Validation.Error(Msg.AVATAR_IS_NOT_VALID).DrawGUI();
                 return;
             }
             if (!avatar.isHuman)
             {
-                Validation.Error("ExportRootの Animator.Avatar がヒューマノイドではありません。FBX importer の Rig で設定してください").DrawGUI();
+                Validation.Error(Msg.AVATAR_IS_NOT_HUMANOID).DrawGUI();
                 return;
             }
             var jaw = animator.GetBoneTransform(HumanBodyBones.Jaw);
             if (jaw != null)
             {
-                Validation.Warning("Jaw bone is included. It may not be what you intended. Please check the humanoid avatar setting screen").DrawGUI();
+                Validation.Warning(Msg.JAW_BONE_IS_INCLUDED).DrawGUI();
             }
             else
             {
