@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 #if UNITY_EDITOR
+using System.Reflection;
 using UnityEditor;
 #endif
 
@@ -122,6 +123,29 @@ namespace UniGLTF
             var path = UnityPath.FromAsset(texture);
             if (path.IsUnderAssetsFolder)
             {
+                var textureImporter = (TextureImporter) AssetImporter.GetAtPath(path.Value);
+                var getSizeMethod = typeof(TextureImporter).GetMethod("GetWidthAndHeight", BindingFlags.NonPublic | BindingFlags.Instance);
+                if (textureImporter != null && getSizeMethod != null)
+                {
+                    var args = new object[2] {0, 0};
+                    getSizeMethod.Invoke(textureImporter, args);
+                    var originalWidth = (int) args[0];
+                    var originalHeight = (int) args[1];
+
+                    var originalSize = Mathf.Max(originalWidth, originalHeight);
+                    var requiredMaxSize = textureImporter.maxTextureSize;
+
+                    // Resized exporting if MaxSize setting value is smaller than original image size.
+                    if (originalSize > requiredMaxSize)
+                    {
+                        return new BytesWithMime
+                        {
+                            Bytes = TextureItem.CopyTexture(texture, GetColorSpace(textureType), null).EncodeToPNG(),
+                            Mime = "image/png",
+                        };
+                    }
+                }
+                
                 if (path.Extension == ".png")
                 {
                     return new BytesWithMime
