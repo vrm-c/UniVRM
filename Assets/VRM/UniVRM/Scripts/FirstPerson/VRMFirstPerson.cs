@@ -97,16 +97,19 @@ namespace VRM
 
         public void TraverseRenderers(VRMImporterContext context = null)
         {
+            Renderers.Clear();
+
             var rendererComponents = transform.GetComponentsInChildren<Renderer>();
             foreach (var renderer in rendererComponents)
             {
-                Renderers.Add(new RendererFirstPersonFlags
+                var flags = new RendererFirstPersonFlags
                 {
                     Renderer = renderer,
                     FirstPersonFlag = context == null
                         ? FirstPersonFlag.Auto
                         : GetFirstPersonFlag(context, renderer)
-                });
+                };
+                Renderers.Add(flags);
             }
         }
 
