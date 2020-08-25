@@ -115,7 +115,7 @@ namespace VRM
             meshNode.transform.SetParent(go.transform, false);
 
             // レンダラから情報を集める
-            var integrator = new MeshIntegrator();
+            var integrator = new MeshUtility.MeshIntegrator();
 
             if (onlyBlendShapeRenderers)
             {
