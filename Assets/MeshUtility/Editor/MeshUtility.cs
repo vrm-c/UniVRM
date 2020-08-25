@@ -6,7 +6,7 @@ using UnityEditor;
 
 namespace MeshUtility
 {
-    public class MeshUtility : MonoBehaviour
+    public class MeshUtility
     {
         private const string ASSET_SUFFIX = ".mesh.asset";
         private const string MENU_NAME = "Mesh Utility/Separate Skinned Meshes Contained BlendShape";
@@ -51,7 +51,7 @@ namespace MeshUtility
 
         private static void SeparationProcessing(GameObject go)
         {
-            var outputObject = Instantiate(go);
+            var outputObject = GameObject.Instantiate(go);
             var skinnedMeshRenderers = outputObject.GetComponentsInChildren<SkinnedMeshRenderer>();
             foreach (var skinnedMeshRenderer in skinnedMeshRenderers)
             {
@@ -127,7 +127,7 @@ namespace MeshUtility
                 // put the mesh without BlendShape in a new SkinnedMeshRenderer
                 var srcGameObject = skinnedMeshRendererInput.gameObject;
                 var srcTransform = skinnedMeshRendererInput.transform.parent;
-                var targetObjectForMeshWithoutBS = Instantiate(srcGameObject);
+                var targetObjectForMeshWithoutBS = GameObject.Instantiate(srcGameObject);
                 targetObjectForMeshWithoutBS.name = srcGameObject.name + "_WithoutBlendShape";
                 targetObjectForMeshWithoutBS.transform.SetParent(srcTransform);
                 var skinnedMeshRendererWithoutBS = targetObjectForMeshWithoutBS.GetComponent<SkinnedMeshRenderer>();
