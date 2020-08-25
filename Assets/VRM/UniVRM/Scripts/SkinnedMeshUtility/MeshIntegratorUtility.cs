@@ -14,7 +14,7 @@ namespace VRM
             public List<MeshRenderer> SourceMeshRenderers = new List<MeshRenderer>();
             public SkinnedMeshRenderer IntegratedRenderer;
         }
-        
+
         public static bool IntegrateRuntime(GameObject vrmRootObject)
         {
             if (vrmRootObject == null) return false;
@@ -46,7 +46,7 @@ namespace VRM
         public static List<MeshIntegrationResult> Integrate(GameObject root, List<BlendShapeClip> blendshapeClips)
         {
             var result = new List<MeshIntegratorUtility.MeshIntegrationResult>();
-            
+
             var withoutBlendShape = IntegrateInternal(root, onlyBlendShapeRenderers: false);
             if (withoutBlendShape.IntegratedRenderer != null)
             {
@@ -66,7 +66,7 @@ namespace VRM
         private static void FollowBlendshapeRendererChange(List<BlendShapeClip> clips, MeshIntegrationResult result, GameObject root)
         {
             if (clips == null || result == null || result.IntegratedRenderer == null || root == null) return;
-            
+
             var rendererDict = result.SourceSkinnedMeshRenderers
                 .ToDictionary(x => x.transform.RelativePathFrom(root.transform), x => x);
 
@@ -75,7 +75,7 @@ namespace VRM
             foreach (var clip in clips)
             {
                 if (clip == null) continue;
-                
+
                 for (var i = 0; i < clip.Values.Length; ++i)
                 {
                     var val = clip.Values[i];
@@ -84,7 +84,7 @@ namespace VRM
                         var srcRenderer = rendererDict[val.RelativePath];
                         var name = srcRenderer.sharedMesh.GetBlendShapeName(val.Index);
                         var newIndex = result.IntegratedRenderer.sharedMesh.GetBlendShapeIndex(name);
-                        
+
                         val.RelativePath = dstPath;
                         val.Index = newIndex;
                     }
@@ -93,16 +93,11 @@ namespace VRM
                 }
             }
         }
-        
+
         private static MeshIntegrationResult IntegrateInternal(GameObject go, bool onlyBlendShapeRenderers)
         {
             var result = new MeshIntegrationResult();
-            
-#if UNITY_2017_3_OR_NEWER
-#else
-            return result;
-#endif
-            
+
             var meshNode = new GameObject();
             if (onlyBlendShapeRenderers)
             {
@@ -145,12 +140,8 @@ namespace VRM
 
             if (integrator.Positions.Count > ushort.MaxValue)
             {
-#if UNITY_2017_3_OR_NEWER
                 Debug.LogFormat("exceed 65535 vertices: {0}", integrator.Positions.Count);
                 mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
-#else
-                throw new NotImplementedException(String.Format("exceed 65535 vertices: {0}", integrator.Positions.Count.ToString()));
-#endif
             }
 
             mesh.vertices = integrator.Positions.ToArray();
@@ -175,10 +166,10 @@ namespace VRM
             integrated.sharedMaterials = integrator.SubMeshes.Select(x => x.Material).ToArray();
             integrated.bones = integrator.Bones.ToArray();
             result.IntegratedRenderer = integrated;
-            
+
             return result;
         }
-        
+
         public static IEnumerable<SkinnedMeshRenderer> EnumerateSkinnedMeshRenderer(Transform root, bool hasBlendShape)
         {
             foreach (var x in Traverse(root))
@@ -201,7 +192,7 @@ namespace VRM
             {
                 var renderer = x.GetComponent<MeshRenderer>();
                 var filter = x.GetComponent<MeshFilter>();
-                
+
                 if (renderer != null &&
                     filter != null &&
                     renderer.gameObject.activeInHierarchy &&
