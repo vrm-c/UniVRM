@@ -168,11 +168,7 @@ namespace VRM
 
             // save mesh to Assets
             var assetPath = string.Format("{0}{1}", go.name, ASSET_SUFFIX);
-#if UNITY_2018_2_OR_NEWER
-            var prefab = PrefabUtility.GetCorrespondingObjectFromSource(go);
-#else
-            var prefab = PrefabUtility.GetPrefabParent(go);
-#endif
+            var prefab = SkinnedMeshUtility.GetPrefab(go);
             if (prefab != null)
             {
                 var prefabPath = AssetDatabase.GetAssetPath(prefab);
