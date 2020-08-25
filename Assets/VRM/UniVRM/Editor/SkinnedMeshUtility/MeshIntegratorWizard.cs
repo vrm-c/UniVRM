@@ -58,7 +58,7 @@ namespace VRM
         MaterialList[] m_duplicateMaterials;
 
         [Header("Result")]
-        public MeshIntegratorUtility.MeshIntegrationResult[] integrationResults;
+        public MeshUtility.MeshIntegrationResult[] integrationResults;
 
         [MenuItem(MENU_KEY)]
         static void CreateWizard()
@@ -124,7 +124,7 @@ namespace VRM
                 return;
             }
 
-            m_uniqueMaterials = MeshIntegratorUtility.EnumerateSkinnedMeshRenderer(m_root.transform, false)
+            m_uniqueMaterials = MeshUtility.MeshIntegratorUtility.EnumerateSkinnedMeshRenderer(m_root.transform, false)
                 .SelectMany(x => x.sharedMaterials)
                 .Distinct()
                 .ToArray();

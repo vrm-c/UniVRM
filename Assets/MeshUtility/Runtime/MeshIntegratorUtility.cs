@@ -6,14 +6,6 @@ namespace MeshUtility
 {
     public static class MeshIntegratorUtility
     {
-        [System.Serializable]
-        public class MeshIntegrationResult
-        {
-            public List<SkinnedMeshRenderer> SourceSkinnedMeshRenderers = new List<SkinnedMeshRenderer>();
-            public List<MeshRenderer> SourceMeshRenderers = new List<MeshRenderer>();
-            public SkinnedMeshRenderer IntegratedRenderer;
-        }
-
         /// <summary>
         /// go を root としたヒエラルキーから Renderer を集めて、統合された Mesh 作成する
         /// </summary>
