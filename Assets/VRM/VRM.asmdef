@@ -6,10 +6,15 @@
         "UniUnlit",
         "UniHumanoid",
         "UniJSON",
-        "ShaderProperty.Runtime"
+        "ShaderProperty.Runtime",
+        "MeshUtility"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],
     "excludePlatforms": [],
-    "allowUnsafeCode": false
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": []
 }

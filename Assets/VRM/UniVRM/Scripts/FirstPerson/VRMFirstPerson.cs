@@ -208,7 +208,7 @@ namespace VRM
             var eraseBones = bones.Select((x, i) =>
             {
                 // 祖先に削除対象が存在するか
-                bool erase = x.Ancestor().Any(y => y == eraseRoot);
+                bool erase = x.GetComponentsInParent<Transform>().Any(y => y == eraseRoot);
                 return new
                 {
                     i,
@@ -229,7 +229,7 @@ namespace VRM
             renderer.gameObject.layer = THIRDPERSON_ONLY_LAYER;
 
             // 削除対象のボーンに対するウェイトを保持する三角形を除外して、一人称用のモデルを複製する
-            var headlessMesh = BoneMeshEraser.CreateErasedMesh(renderer.sharedMesh, eraseBones);
+            var headlessMesh = MeshUtility.BoneMeshEraser.CreateErasedMesh(renderer.sharedMesh, eraseBones);
             if (headlessMesh.triangles.Length == 0)
             {
                 // 一人称用のmeshには描画すべき部分が無い(全部削除された)

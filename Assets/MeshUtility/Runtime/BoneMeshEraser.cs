@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 
-namespace VRM
+namespace MeshUtility
 {
     public static class BoneMeshEraser
     {
@@ -149,18 +148,6 @@ namespace VRM
             }
 
             return mesh;
-        }
-
-        public static int IndexOf(this Transform[] list, Transform target)
-        {
-            for (int i = 0; i < list.Length; ++i)
-            {
-                if (list[i] == target)
-                {
-                    return i;
-                }
-            }
-            return -1;
         }
 
         public static IEnumerable<Transform> Ancestor(this Transform t)

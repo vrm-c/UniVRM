@@ -8,9 +8,21 @@ namespace MeshUtility
 {
     public class MeshUtility
     {
+        public const string MENU_PARENT = "Mesh Utility/";
+        public const int MENU_PRIORITY = 11;
+
         private const string ASSET_SUFFIX = ".mesh.asset";
-        private const string MENU_NAME = "Mesh Utility/Separate Skinned Meshes Contained BlendShape";
+        private const string MENU_NAME = MENU_PARENT + "Separate Skinned Meshes Contained BlendShape";
         private static readonly Vector3 ZERO_MOVEMENT = Vector3.zero;
+
+        public static Object GetPrefab(GameObject instance)
+        {
+#if UNITY_2018_2_OR_NEWER
+            return PrefabUtility.GetCorrespondingObjectFromSource(instance);
+#else
+            return PrefabUtility.GetPrefabParent(go);
+#endif
+        }
 
         private enum BlendShapeLogic
         {

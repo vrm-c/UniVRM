@@ -233,7 +233,7 @@ namespace VRM
                     if (boneMap.TryGetValue(srcBone, out Transform dstBone))
                     {
                         // 対応するボーンが存在する
-                        var dstIndex = dstBones.IndexOf(dstBone);
+                        var dstIndex = Array.IndexOf(dstBones, dstBone);
                         if (dstIndex == -1)
                         {
                             // ありえない。バグ
