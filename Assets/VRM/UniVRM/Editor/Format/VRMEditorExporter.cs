@@ -77,7 +77,7 @@ namespace VRM
                 .Distinct()
                 .ToArray();
 
-            var copyMesh = mesh.Copy(copyBlendShape: false);
+            var copyMesh = MeshUtility.MeshExtensions.Copy(mesh, copyBlendShape: false);
             // 使われている BlendShape だけをコピーする
             foreach (var i in usedBlendshapeIndexArray)
             {
@@ -182,7 +182,7 @@ namespace VRM
             if (settings.PoseFreeze)
             {
                 // BoneNormalizer.Execute は Copy を作って正規化する。UNDO無用
-                target = BoneNormalizer.Execute(target, settings.ForceTPose, false);
+                target = VRMBoneNormalizer.Execute(target, settings.ForceTPose, false);
                 destroy.Add(target);
             }
 

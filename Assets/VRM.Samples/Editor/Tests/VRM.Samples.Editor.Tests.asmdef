@@ -4,7 +4,8 @@
         "VRM",
         "VRM.Samples",
         "UniVRM.Editor.Tests",
-        "UniJSON"
+        "UniJSON",
+        "MeshUtility"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"
@@ -13,5 +14,9 @@
         "Editor"
     ],
     "excludePlatforms": [],
-    "allowUnsafeCode": false
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": []
 }

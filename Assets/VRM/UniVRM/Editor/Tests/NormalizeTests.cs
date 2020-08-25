@@ -58,7 +58,7 @@ namespace VRM
                 map.Add(null, new GameObject("null"));
                 // map.Add(new GameObject("c"), null); // ありえないので Exception にしてある
                 var boneWeights = map.CreateBoneWeight(64).ToArray();
-                var newBoneWeight = BoneNormalizer.MapBoneWeight(boneWeights, map.Map,
+                var newBoneWeight = MeshUtility.BoneNormalizer.MapBoneWeight(boneWeights, map.Map,
                     map.SrcBones.ToArray(), map.DstBones.ToArray());
 
                 // 正常系
@@ -74,7 +74,7 @@ namespace VRM
                 map.Add(null, new GameObject("null"));
                 // map.Add(new GameObject("c"), null); // ありえないので Exception にしてある
                 var boneWeights = map.CreateBoneWeight(64).ToArray();
-                var newBoneWeight = BoneNormalizer.MapBoneWeight(boneWeights, map.Map,
+                var newBoneWeight = MeshUtility.BoneNormalizer.MapBoneWeight(boneWeights, map.Map,
                     map.SrcBones.ToArray(), map.DstBones.ToArray());
 
                 // 4 つめが 0 になる

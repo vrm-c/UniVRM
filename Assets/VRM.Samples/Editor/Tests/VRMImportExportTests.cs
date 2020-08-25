@@ -3,7 +3,7 @@ using System.IO;
 using UniGLTF;
 using UniJSON;
 using UnityEngine;
-
+using MeshUtility;
 
 namespace VRM.Samples
 {
