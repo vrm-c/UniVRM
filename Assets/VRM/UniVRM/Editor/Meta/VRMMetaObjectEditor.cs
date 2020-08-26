@@ -1,5 +1,6 @@
 using UnityEditor;
 using UnityEngine;
+using VRM.M17N;
 
 namespace VRM
 {
@@ -127,6 +128,41 @@ namespace VRM
             VRMMetaObjectGUI(serializedObject);
         }
 
+        enum MessageKeys
+        {
+            [LangMsg(Languages.ja, "アバターの人格に関する許諾範囲")]
+            [LangMsg(Languages.en, "Personation / Characterization Permission")]
+            PERSONATION,
+
+            [LangMsg(Languages.ja, "アバターに人格を与えることの許諾範囲")]
+            [LangMsg(Languages.en, "A person who can perform with this avatar")]
+            ALLOWED_USER,
+
+            [LangMsg(Languages.ja, "このアバターを用いて暴力表現を演じることの許可")]
+            [LangMsg(Languages.en, "Violent acts using this avatar")]
+            VIOLENT_USAGE,
+
+            [LangMsg(Languages.ja, "このアバターを用いて性的表現を演じることの許可")]
+            [LangMsg(Languages.en, "Sexuality acts using this avatar")]
+            SEXUAL_USAGE,
+
+            [LangMsg(Languages.ja, "商用利用の許可")]
+            [LangMsg(Languages.en, "For commercial use")]
+            COMMERCIAL_USAGE,
+
+            [LangMsg(Languages.ja, "再配布・改変に関する許諾範囲")]
+            [LangMsg(Languages.en, "Redistribution / Modifications License")]
+            REDISTRIBUTION_MODIFICATIONS,
+
+            // [LangMsg(Languages.ja, "")]
+            // [LangMsg(Languages.en, "")]
+        }
+
+        static string Msg(MessageKeys key)
+        {
+            return M17N.Getter.Msg(key);
+        }
+
         bool m_foldoutInfo = true;
         bool m_foldoutPermission = true;
         bool m_foldoutDistribution = true;
@@ -164,17 +200,19 @@ namespace VRM
                 m_reference.OnGUI();
             }
             // EditorGUILayout.LabelField("License ", EditorStyles.boldLabel);
-            m_foldoutPermission = EditorGUILayout.Foldout(m_foldoutPermission, "Personation / Characterization Permission");
+            m_foldoutPermission = EditorGUILayout.Foldout(m_foldoutPermission, Msg(MessageKeys.PERSONATION));
             if (m_foldoutPermission)
             {
-                EditorGUILayout.PropertyField(m_AllowedUser, new GUIContent("A person who can perform with this avatar"), false);
-                EditorGUILayout.PropertyField(m_ViolentUssage, new GUIContent("Violent acts using this avatar"));
-                EditorGUILayout.PropertyField(m_SexualUssage, new GUIContent("Sexuality acts using this avatar"));
-                EditorGUILayout.PropertyField(m_CommercialUssage, new GUIContent("For commercial use"));
+                var backup = EditorGUIUtility.labelWidth;
+                RightFixedPropField(m_AllowedUser, Msg(MessageKeys.ALLOWED_USER));
+                RightFixedPropField(m_ViolentUssage, Msg(MessageKeys.VIOLENT_USAGE));
+                RightFixedPropField(m_SexualUssage, Msg(MessageKeys.SEXUAL_USAGE));
+                RightFixedPropField(m_CommercialUssage, Msg(MessageKeys.COMMERCIAL_USAGE));
                 EditorGUILayout.PropertyField(m_OtherPermissionUrl, new GUIContent("Other License Url"));
+                EditorGUIUtility.labelWidth = backup;
             }
 
-            m_foldoutDistribution = EditorGUILayout.Foldout(m_foldoutDistribution, "Redistribution / Modifications License");
+            m_foldoutDistribution = EditorGUILayout.Foldout(m_foldoutDistribution, Msg(MessageKeys.REDISTRIBUTION_MODIFICATIONS));
             if (m_foldoutDistribution)
             {
                 var licenseType = m_LicenseType;
@@ -186,6 +224,27 @@ namespace VRM
             }
 
             so.ApplyModifiedProperties();
+        }
+
+        static (Rect, Rect) FixedRight(Rect r, int width)
+        {
+            if (width > r.width)
+            {
+                width = (int)r.width;
+            }
+            return (
+                new Rect(r.x, r.y, r.width - width, r.height),
+                new Rect(r.x + r.width - width, r.y, width, r.height)
+            );
+        }
+
+        static void RightFixedPropField(SerializedProperty prop, string label)
+        {
+            var r = GUILayoutUtility.GetRect(GUIContent.none, GUIStyle.none, GUILayout.Height(EditorGUIUtility.singleLineHeight));
+            var (left, right) = FixedRight(r, 64);
+            // Debug.Log($"{left}, {right}");
+            EditorGUI.LabelField(left, label);
+            EditorGUI.PropertyField(right, prop, new GUIContent(""), false);
         }
 
         private static Texture2D TextureField(string name, Texture2D texture, int size)
