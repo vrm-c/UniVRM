@@ -1,23 +1,20 @@
-using System;
-using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using VRM.M17N;
 
 namespace VRM
 {
     [CustomEditor(typeof(VRMMetaObject))]
     public class VRMMetaObjectEditor : Editor
     {
-        // SerializedProperty m_ScriptProp;
-
-        class CustomProperty
+        class ValidateProperty
         {
             public SerializedProperty m_prop;
 
             public delegate (string, MessageType) Validator(SerializedProperty prop);
             Validator m_validator;
 
-            public CustomProperty(SerializedProperty prop, Validator validator)
+            public ValidateProperty(SerializedProperty prop, Validator validator)
             {
                 m_prop = prop;
                 m_validator = validator;
@@ -35,129 +32,207 @@ namespace VRM
                 // return old != m_prop.stringValue;
             }
         }
-        List<KeyValuePair<string, CustomProperty>> m_customPropMap = new List<KeyValuePair<string, CustomProperty>>();
 
-        Dictionary<string, SerializedProperty> m_propMap = new Dictionary<string, SerializedProperty>();
-        void InitMap(SerializedObject so)
+        VRMMetaObject m_target;
+        SerializedProperty m_Script;
+        SerializedProperty m_exporterVersion;
+        SerializedProperty m_thumbnail;
+        ValidateProperty m_title;
+        ValidateProperty m_version;
+        ValidateProperty m_author;
+        ValidateProperty m_contact;
+        ValidateProperty m_reference;
+
+        SerializedProperty m_AllowedUser;
+        SerializedProperty m_ViolentUssage;
+        SerializedProperty m_SexualUssage;
+        SerializedProperty m_CommercialUssage;
+        SerializedProperty m_OtherPermissionUrl;
+
+        SerializedProperty m_LicenseType;
+        SerializedProperty m_OtherLicenseUrl;
+
+        static string RequiredMessage(string name)
         {
-            m_propMap.Clear();
-            m_customPropMap.Clear();
-            if (so == null)
+            switch (M17N.Getter.Lang)
             {
-                return;
-            }
+                case M17N.Languages.ja:
+                    return $"必須項目。{name} を入力してください";
 
-            for (var it = so.GetIterator(); it.NextVisible(true);)
-            {
-                switch (it.name)
-                {
-                    case "m_Script":
-                        break;
+                case M17N.Languages.en:
+                    return $"{name} is required";
 
-                    case "Title":
-                    case "Version":
-                    case "Author":
-                        m_customPropMap.Add(new KeyValuePair<string, CustomProperty>(it.name, new CustomProperty(so.FindProperty(it.name), prop =>
-                        {
-                            if (string.IsNullOrEmpty(prop.stringValue))
-                            {
-                                return ($"必須項目。{prop.name} を入力してください", MessageType.Error);
-                            }
-                            return ("", MessageType.None);
-                        })));
-                        break;
-
-                    case "ContactInformation":
-                    case "Reference":
-                        m_customPropMap.Add(new KeyValuePair<string, CustomProperty>(it.name,
-                        new CustomProperty(so.FindProperty(it.name), prop =>
-                        {
-                            return ("", MessageType.None);
-                        })));
-                        break;
-
-                    default:
-                        m_propMap.Add(it.name, so.FindProperty(it.name));
-                        break;
-                }
-                //Debug.LogFormat("{0}", it.name);
+                default:
+                    throw new System.NotImplementedException();
             }
         }
 
         private void OnEnable()
         {
-            // m_ScriptProp = serializedObject.FindProperty("m_Script");
-            InitMap(serializedObject);
-        }        
+            m_target = (VRMMetaObject)target;
 
-        public override void OnInspectorGUI()
+            m_Script = serializedObject.FindProperty("m_Script");
+            m_exporterVersion = serializedObject.FindProperty(nameof(m_target.ExporterVersion));
+            m_thumbnail = serializedObject.FindProperty(nameof(m_target.Thumbnail));
+            m_title = new ValidateProperty(serializedObject.FindProperty(nameof(m_target.Title)), prop =>
+                        {
+                            if (string.IsNullOrEmpty(prop.stringValue))
+                            {
+                                return (RequiredMessage(prop.name), MessageType.Error);
+                            }
+                            return ("", MessageType.None);
+                        });
+            m_version = new ValidateProperty(serializedObject.FindProperty(nameof(m_target.Version)), prop =>
+                        {
+                            if (string.IsNullOrEmpty(prop.stringValue))
+                            {
+                                return (RequiredMessage(prop.name), MessageType.Error);
+                            }
+                            return ("", MessageType.None);
+                        });
+            m_author = new ValidateProperty(serializedObject.FindProperty(nameof(m_target.Author)), prop =>
+                        {
+                            if (string.IsNullOrEmpty(prop.stringValue))
+                            {
+                                return (RequiredMessage(prop.name), MessageType.Error);
+                            }
+                            return ("", MessageType.None);
+                        });
+            m_contact = new ValidateProperty(serializedObject.FindProperty(nameof(m_target.ContactInformation)), prop =>
+                        {
+                            return ("", MessageType.None);
+                        });
+            m_reference = new ValidateProperty(serializedObject.FindProperty(nameof(m_target.Reference)), prop =>
+                        {
+                            return ("", MessageType.None);
+                        });
+
+            m_AllowedUser = serializedObject.FindProperty(nameof(m_target.AllowedUser));
+            m_ViolentUssage = serializedObject.FindProperty(nameof(m_target.ViolentUssage));
+            m_SexualUssage = serializedObject.FindProperty(nameof(m_target.SexualUssage));
+            m_CommercialUssage = serializedObject.FindProperty(nameof(m_target.CommercialUssage));
+            m_OtherPermissionUrl = serializedObject.FindProperty(nameof(m_target.OtherLicenseUrl));
+
+            m_LicenseType = serializedObject.FindProperty(nameof(m_target.LicenseType));
+            m_OtherLicenseUrl = serializedObject.FindProperty(nameof(m_target.OtherLicenseUrl));
+        }
+
+        enum MessageKeys
         {
-            serializedObject.Update();
-            // GUI.enabled = false;
-            // EditorGUILayout.PropertyField(m_ScriptProp, true);
-            // GUI.enabled = true;
+            [LangMsg(Languages.ja, "アバターの人格に関する許諾範囲")]
+            [LangMsg(Languages.en, "Personation / Characterization Permission")]
+            PERSONATION,
 
-            EditorGUILayout.Space();
-            VRMMetaObjectGUI(serializedObject);
+            [LangMsg(Languages.ja, "アバターに人格を与えることの許諾範囲")]
+            [LangMsg(Languages.en, "A person who can perform with this avatar")]
+            ALLOWED_USER,
+
+            [LangMsg(Languages.ja, "このアバターを用いて暴力表現を演じることの許可")]
+            [LangMsg(Languages.en, "Violent acts using this avatar")]
+            VIOLENT_USAGE,
+
+            [LangMsg(Languages.ja, "このアバターを用いて性的表現を演じることの許可")]
+            [LangMsg(Languages.en, "Sexuality acts using this avatar")]
+            SEXUAL_USAGE,
+
+            [LangMsg(Languages.ja, "商用利用の許可")]
+            [LangMsg(Languages.en, "For commercial use")]
+            COMMERCIAL_USAGE,
+
+            [LangMsg(Languages.ja, "再配布・改変に関する許諾範囲")]
+            [LangMsg(Languages.en, "Redistribution / Modifications License")]
+            REDISTRIBUTION_MODIFICATIONS,
+
+            // [LangMsg(Languages.ja, "")]
+            // [LangMsg(Languages.en, "")]
+        }
+
+        static string Msg(MessageKeys key)
+        {
+            return M17N.Getter.Msg(key);
         }
 
         bool m_foldoutInfo = true;
         bool m_foldoutPermission = true;
         bool m_foldoutDistribution = true;
-        void VRMMetaObjectGUI(SerializedObject so)
+
+        public override void OnInspectorGUI()
         {
-            InitMap(so);
-            if (m_propMap == null || m_propMap.Count == 0) return;
+            serializedObject.Update();
 
-            so.Update();
-
-            GUI.enabled = false;
-
-            EditorGUILayout.PropertyField(m_propMap["ExporterVersion"]);
-            if (VRMVersion.IsNewer(m_propMap["ExporterVersion"].stringValue))
+            if (VRMVersion.IsNewer(m_exporterVersion.stringValue))
             {
                 EditorGUILayout.HelpBox("Check UniVRM new version. https://github.com/dwango/UniVRM/releases", MessageType.Warning);
             }
-            GUI.enabled = true;
+
+            // texture
+            EditorGUILayout.BeginHorizontal();
+            {
+                EditorGUILayout.BeginVertical();
+                GUI.enabled = false;
+                EditorGUILayout.PropertyField(m_exporterVersion);
+                GUI.enabled = true;
+                EditorGUILayout.PropertyField(m_thumbnail);
+                EditorGUILayout.EndVertical();
+                m_thumbnail.objectReferenceValue = TextureField("", (Texture2D)m_thumbnail.objectReferenceValue, 100);
+            }
+            EditorGUILayout.EndHorizontal();
 
             m_foldoutInfo = EditorGUILayout.Foldout(m_foldoutInfo, "Information");
             if (m_foldoutInfo)
             {
-                // texture
-                var thumbnail = m_propMap["Thumbnail"];
-                EditorGUILayout.PropertyField(thumbnail);
-                thumbnail.objectReferenceValue = TextureField("", (Texture2D)thumbnail.objectReferenceValue, 100);
-
-                foreach (var kv in m_customPropMap)
-                {
-                    kv.Value.OnGUI();
-                }
+                m_title.OnGUI();
+                m_version.OnGUI();
+                m_author.OnGUI();
+                m_contact.OnGUI();
+                m_reference.OnGUI();
             }
-
-            EditorGUILayout.LabelField("License ", EditorStyles.boldLabel);
-
-            m_foldoutPermission = EditorGUILayout.Foldout(m_foldoutPermission, "Personation / Characterization Permission");
+            // EditorGUILayout.LabelField("License ", EditorStyles.boldLabel);
+            m_foldoutPermission = EditorGUILayout.Foldout(m_foldoutPermission, Msg(MessageKeys.PERSONATION));
             if (m_foldoutPermission)
             {
-                EditorGUILayout.PropertyField(m_propMap["AllowedUser"], new GUIContent("A person who can perform with this avatar"), false);
-                EditorGUILayout.PropertyField(m_propMap["ViolentUssage"], new GUIContent("Violent acts using this avatar"));
-                EditorGUILayout.PropertyField(m_propMap["SexualUssage"], new GUIContent("Sexuality acts using this avatar"));
-                EditorGUILayout.PropertyField(m_propMap["CommercialUssage"], new GUIContent("For commercial use"));
-                EditorGUILayout.PropertyField(m_propMap["OtherPermissionUrl"], new GUIContent("Other License Url"));
+                var backup = EditorGUIUtility.labelWidth;
+                RightFixedPropField(m_AllowedUser, Msg(MessageKeys.ALLOWED_USER));
+                RightFixedPropField(m_ViolentUssage, Msg(MessageKeys.VIOLENT_USAGE));
+                RightFixedPropField(m_SexualUssage, Msg(MessageKeys.SEXUAL_USAGE));
+                RightFixedPropField(m_CommercialUssage, Msg(MessageKeys.COMMERCIAL_USAGE));
+                EditorGUILayout.PropertyField(m_OtherPermissionUrl, new GUIContent("Other License Url"));
+                EditorGUIUtility.labelWidth = backup;
             }
 
-            m_foldoutDistribution = EditorGUILayout.Foldout(m_foldoutDistribution, "Redistribution / Modifications License");
+            m_foldoutDistribution = EditorGUILayout.Foldout(m_foldoutDistribution, Msg(MessageKeys.REDISTRIBUTION_MODIFICATIONS));
             if (m_foldoutDistribution)
             {
-                var licenseType = m_propMap["LicenseType"];
+                var licenseType = m_LicenseType;
                 EditorGUILayout.PropertyField(licenseType);
                 if ((LicenseType)licenseType.intValue == LicenseType.Other)
                 {
-                    EditorGUILayout.PropertyField(m_propMap["OtherLicenseUrl"]);
+                    EditorGUILayout.PropertyField(m_OtherLicenseUrl);
                 }
             }
 
-            so.ApplyModifiedProperties();
+            serializedObject.ApplyModifiedProperties();
+        }
+
+        static (Rect, Rect) FixedRight(Rect r, int width)
+        {
+            if (width > r.width)
+            {
+                width = (int)r.width;
+            }
+            return (
+                new Rect(r.x, r.y, r.width - width, r.height),
+                new Rect(r.x + r.width - width, r.y, width, r.height)
+            );
+        }
+
+        static void RightFixedPropField(SerializedProperty prop, string label)
+        {
+            var r = GUILayoutUtility.GetRect(GUIContent.none, GUIStyle.none, GUILayout.Height(EditorGUIUtility.singleLineHeight));
+            var (left, right) = FixedRight(r, 64);
+            // Debug.Log($"{left}, {right}");
+            EditorGUI.LabelField(left, label);
+            EditorGUI.PropertyField(right, prop, new GUIContent(""), false);
         }
 
         private static Texture2D TextureField(string name, Texture2D texture, int size)

@@ -153,6 +153,11 @@ namespace VRM
             return true;
         }
 
+        static string Msg(VRMExporterWizardMessages key)
+        {
+            return M17N.Getter.Msg(key);
+        }
+
         /// <summary>
         /// エクスポート可能か検証する
         /// </summary>
@@ -166,18 +171,18 @@ namespace VRM
 
             if (DuplicateBoneNameExists())
             {
-                yield return Validation.Warning(Msg.DUPLICATE_BONE_NAME_EXISTS);
+                yield return Validation.Warning(Msg(VRMExporterWizardMessages.DUPLICATE_BONE_NAME_EXISTS));
             }
 
             if (m_settings.ReduceBlendshape && ExportRoot.GetComponent<VRMBlendShapeProxy>() == null)
             {
-                yield return Validation.Error(Msg.NEEDS_VRM_BLENDSHAPE_PROXY);
+                yield return Validation.Error(Msg(VRMExporterWizardMessages.NEEDS_VRM_BLENDSHAPE_PROXY));
             }
 
             var vertexColor = ExportRoot.GetComponentsInChildren<SkinnedMeshRenderer>().Any(x => x.sharedMesh.colors.Length > 0);
             if (vertexColor)
             {
-                yield return Validation.Warning(Msg.VERTEX_COLOR_IS_INCLUDED);
+                yield return Validation.Warning(Msg(VRMExporterWizardMessages.VERTEX_COLOR_IS_INCLUDED));
             }
 
             var renderers = ExportRoot.GetComponentsInChildren<Renderer>();
@@ -202,13 +207,13 @@ namespace VRM
                     continue;
                 }
 
-                yield return Validation.Warning($"Material: {material.name}. Unknown Shader: \"{material.shader.name}\" is used. {Msg.UNKNOWN_SHADER}");
+                yield return Validation.Warning($"Material: {material.name}. Unknown Shader: \"{material.shader.name}\" is used. {Msg(VRMExporterWizardMessages.UNKNOWN_SHADER)}");
             }
 
             foreach (var material in materials)
             {
                 if (IsFileNameLengthTooLong(material.name))
-                    yield return Validation.Error(Msg.FILENAME_TOO_LONG + material.name);
+                    yield return Validation.Error(Msg(VRMExporterWizardMessages.FILENAME_TOO_LONG) + material.name);
             }
 
             var textureNameList = new List<string>();
@@ -233,7 +238,7 @@ namespace VRM
             foreach (var textureName in textureNameList)
             {
                 if (IsFileNameLengthTooLong(textureName))
-                    yield return Validation.Error(Msg.FILENAME_TOO_LONG + textureName);
+                    yield return Validation.Error(Msg(VRMExporterWizardMessages.FILENAME_TOO_LONG) + textureName);
             }
 
             var vrmMeta = ExportRoot.GetComponent<VRMMeta>();
@@ -241,7 +246,7 @@ namespace VRM
             {
                 var thumbnailName = vrmMeta.Meta.Thumbnail.name;
                 if (IsFileNameLengthTooLong(thumbnailName))
-                    yield return Validation.Error(Msg.FILENAME_TOO_LONG + thumbnailName);
+                    yield return Validation.Error(Msg(VRMExporterWizardMessages.FILENAME_TOO_LONG) + thumbnailName);
             }
 
             var meshFilters = ExportRoot.GetComponentsInChildren<MeshFilter>();
@@ -249,7 +254,7 @@ namespace VRM
             foreach (var meshName in meshesName)
             {
                 if (IsFileNameLengthTooLong(meshName))
-                    yield return Validation.Error(Msg.FILENAME_TOO_LONG + meshName);
+                    yield return Validation.Error(Msg(VRMExporterWizardMessages.FILENAME_TOO_LONG) + meshName);
             }
 
             var skinnedmeshRenderers = ExportRoot.GetComponentsInChildren<SkinnedMeshRenderer>();
@@ -257,7 +262,7 @@ namespace VRM
             foreach (var skinnedmeshName in skinnedmeshesName)
             {
                 if (IsFileNameLengthTooLong(skinnedmeshName))
-                    yield return Validation.Error(Msg.FILENAME_TOO_LONG + skinnedmeshName);
+                    yield return Validation.Error(Msg(VRMExporterWizardMessages.FILENAME_TOO_LONG) + skinnedmeshName);
             }
         }
 
@@ -291,9 +296,8 @@ namespace VRM
                 m_Inspector = Editor.CreateEditor(m_settings);
             }
 
-            m_lang = EnumUtil.TryParseOrDefault<VRMExporterWizardMessages.Languages>(EditorPrefs.GetString(LANG_KEY, default(VRMExporterWizardMessages.Languages).ToString()));
+            M17N.Getter.OnGuiSelectLang();
         }
-        const string LANG_KEY = "VRM_LANG";
 
         void OnDisable()
         {
@@ -344,11 +348,6 @@ namespace VRM
             }
         }
 
-        VRMExporterWizardMessages.Languages m_lang;
-        VRMExporterWizardMessages.LangMessages Msg => VRMExporterWizardMessages.M17N[m_lang];
-
-        //@TODO: Force repaint if scripts recompile
-
         private void OnGUI()
         {
             if (m_tmpMeta == null)
@@ -360,12 +359,7 @@ namespace VRM
             EditorGUIUtility.labelWidth = 150;
 
             // lang
-            var lang = (VRMExporterWizardMessages.Languages)EditorGUILayout.EnumPopup("lang", m_lang);
-            if (lang != m_lang)
-            {
-                m_lang = lang;
-                EditorPrefs.SetString(LANG_KEY, m_lang.ToString());
-            }
+            M17N.Getter.OnGuiSelectLang();
 
             EditorGUILayout.LabelField("ExportRoot");
             {
@@ -382,24 +376,24 @@ namespace VRM
             //
             if (ExportRoot == null)
             {
-                Validation.Error(Msg.ROOT_EXISTS).DrawGUI();
+                Validation.Error(Msg(VRMExporterWizardMessages.ROOT_EXISTS)).DrawGUI();
                 return;
             }
             if (ExportRoot.transform.parent != null)
             {
-                Validation.Error(Msg.NO_PARENT).DrawGUI();
+                Validation.Error(Msg(VRMExporterWizardMessages.NO_PARENT)).DrawGUI();
                 return;
             }
             if (ExportRoot.transform.localRotation != Quaternion.identity || ExportRoot.transform.localScale != Vector3.one)
             {
-                Validation.Error(Msg.ROOT_WITHOUT_ROTATION_AND_SCALING_CHANGED).DrawGUI();
+                Validation.Error(Msg(VRMExporterWizardMessages.ROOT_WITHOUT_ROTATION_AND_SCALING_CHANGED)).DrawGUI();
                 return;
             }
 
             var renderers = ExportRoot.GetComponentsInChildren<Renderer>();
             if (renderers.All(x => !EnableRenderer(x)))
             {
-                Validation.Error(Msg.NO_ACTIVE_MESH).DrawGUI();
+                Validation.Error(Msg(VRMExporterWizardMessages.NO_ACTIVE_MESH)).DrawGUI();
                 return;
             }
 
@@ -411,14 +405,14 @@ namespace VRM
                 }
                 else
                 {
-                    Validation.Warning(Msg.ROTATION_OR_SCALEING_INCLUDED_IN_NODE).DrawGUI();
+                    Validation.Warning(Msg(VRMExporterWizardMessages.ROTATION_OR_SCALEING_INCLUDED_IN_NODE)).DrawGUI();
                 }
             }
             else
             {
                 if (m_settings.PoseFreeze)
                 {
-                    Validation.Warning(Msg.IS_POSE_FREEZE_DONE).DrawGUI();
+                    Validation.Warning(Msg(VRMExporterWizardMessages.IS_POSE_FREEZE_DONE)).DrawGUI();
                 }
                 else
                 {
@@ -432,7 +426,7 @@ namespace VRM
             var animator = ExportRoot.GetComponent<Animator>();
             if (animator == null)
             {
-                Validation.Error(Msg.NO_ANIMATOR).DrawGUI();
+                Validation.Error(Msg(VRMExporterWizardMessages.NO_ANIMATOR)).DrawGUI();
                 return;
             }
 
@@ -441,30 +435,30 @@ namespace VRM
             var f = GetForward(l, r);
             if (Vector3.Dot(f, Vector3.forward) < 0.8f)
             {
-                Validation.Error(Msg.FACE_Z_POSITIVE_DIRECTION).DrawGUI();
+                Validation.Error(Msg(VRMExporterWizardMessages.FACE_Z_POSITIVE_DIRECTION)).DrawGUI();
                 return;
             }
 
             var avatar = animator.avatar;
             if (avatar == null)
             {
-                Validation.Error(Msg.NO_AVATAR_IN_ANIMATOR).DrawGUI();
+                Validation.Error(Msg(VRMExporterWizardMessages.NO_AVATAR_IN_ANIMATOR)).DrawGUI();
                 return;
             }
             if (!avatar.isValid)
             {
-                Validation.Error(Msg.AVATAR_IS_NOT_VALID).DrawGUI();
+                Validation.Error(Msg(VRMExporterWizardMessages.AVATAR_IS_NOT_VALID)).DrawGUI();
                 return;
             }
             if (!avatar.isHuman)
             {
-                Validation.Error(Msg.AVATAR_IS_NOT_HUMANOID).DrawGUI();
+                Validation.Error(Msg(VRMExporterWizardMessages.AVATAR_IS_NOT_HUMANOID)).DrawGUI();
                 return;
             }
             var jaw = animator.GetBoneTransform(HumanBodyBones.Jaw);
             if (jaw != null)
             {
-                Validation.Warning(Msg.JAW_BONE_IS_INCLUDED).DrawGUI();
+                Validation.Warning(Msg(VRMExporterWizardMessages.JAW_BONE_IS_INCLUDED)).DrawGUI();
             }
             else
             {
