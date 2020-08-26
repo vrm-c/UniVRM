@@ -1,7 +1,31 @@
-﻿using VRM.M17N;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
-namespace VRM
+namespace VRM.M17N
 {
+    /// <summary>
+    /// 多言語対応
+    /// </summary>
+    public enum Languages
+    {
+        ja,
+        en,
+    }
+
+    [System.AttributeUsage(System.AttributeTargets.Field, AllowMultiple = true, Inherited = false)]
+    public class LangMsgAttribute : System.Attribute
+    {
+        public Languages Language;
+        public string Message;
+
+        public LangMsgAttribute(Languages language, string msg)
+        {
+            Language = language;
+            Message = msg;
+        }
+    }
+
     public enum VRMExporterWizardMessages
     {
         [LangMsg(Languages.ja, "ExportRootをセットしてください")]
@@ -76,5 +100,55 @@ namespace VRM
         [LangMsg(Languages.ja, "名前が長すぎる。リネームしてください： ")]
         [LangMsg(Languages.en, "FileName is too long: ")]
         FILENAME_TOO_LONG,
+    }
+
+    static class MsgCache<T> where T : Enum
+    {
+        static Dictionary<Languages, Dictionary<T, string>> s_cache = new Dictionary<Languages, Dictionary<T, string>>();
+
+        static LangMsgAttribute GetAttribute(T value, Languages language)
+        {
+            var t = typeof(T);
+            var memberInfos = t.GetMember(value.ToString());
+            var enumValueMemberInfo = memberInfos.FirstOrDefault(m => m.DeclaringType == t);
+            var attr = enumValueMemberInfo.GetCustomAttributes(typeof(LangMsgAttribute), false).Select(x => (LangMsgAttribute)x).ToArray();
+            if (attr == null || attr.Length == 0)
+            {
+                return null;
+            }
+            var match = attr.FirstOrDefault(x => x.Language == language);
+            if (match != null)
+            {
+                return match;
+            }
+            return attr.First();
+        }
+
+        public static string Get(Languages language, T key)
+        {
+            if (!s_cache.TryGetValue(language, out Dictionary<T, string> map))
+            {
+                map = new Dictionary<T, string>();
+
+                var t = typeof(T);
+                foreach (T value in Enum.GetValues(t))
+                {
+                    var match = GetAttribute(value, language);
+                    map.Add(value, match != null ? match.Message : "");
+                }
+
+                s_cache.Add(language, map);
+            }
+            return map[key];
+        }
+    }
+    public static class Getter
+    {
+        public static M17N.Languages Lang;
+
+        public static string Msg<T>(T key) where T : Enum
+        {
+            return M17N.MsgCache<T>.Get(Lang, key);
+        }
     }
 }
