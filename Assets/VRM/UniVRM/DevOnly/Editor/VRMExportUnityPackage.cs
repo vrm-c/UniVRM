@@ -131,9 +131,18 @@ namespace VRM.DevOnly.PackageExporter
         }
 
         [MenuItem(VRMVersion.MENU + "/Export unitypackage")]
+        static void CreateUnityPackageWithoutBuild()
+        {
+            var folder = GetProjectRoot();
+            if (!Directory.Exists(folder))
+            {
+                Directory.CreateDirectory(folder);
+            }
+            CreateUnityPackages(folder);
+        }
+
         public static void CreateUnityPackageWithBuild()
         {
-            //var folder = GetDesktop();
             var folder = GetProjectRoot();
             if (!Directory.Exists(folder))
             {
@@ -194,6 +203,7 @@ namespace VRM.DevOnly.PackageExporter
                         List = new []{
                             new GlobList("Assets/VRM"),
                             new GlobList("Assets/VRMShaders"),
+                            new GlobList("Assets/MeshUtility"),
                         }
                     },
                     new PackageInfo("UniVRM-samples")
