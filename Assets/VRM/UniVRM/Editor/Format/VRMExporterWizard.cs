@@ -296,9 +296,8 @@ namespace VRM
                 m_Inspector = Editor.CreateEditor(m_settings);
             }
 
-            M17N.Getter.Lang = EnumUtil.TryParseOrDefault<M17N.Languages>(EditorPrefs.GetString(LANG_KEY, default(M17N.Languages).ToString()));
+            M17N.Getter.OnGuiSelectLang();
         }
-        const string LANG_KEY = "VRM_LANG";
 
         void OnDisable()
         {
@@ -360,12 +359,7 @@ namespace VRM
             EditorGUIUtility.labelWidth = 150;
 
             // lang
-            var lang = (M17N.Languages)EditorGUILayout.EnumPopup("lang", M17N.Getter.Lang);
-            if (lang != M17N.Getter.Lang)
-            {
-                M17N.Getter.Lang = lang;
-                EditorPrefs.SetString(LANG_KEY, M17N.Getter.Lang.ToString());
-            }
+            M17N.Getter.OnGuiSelectLang();
 
             EditorGUILayout.LabelField("ExportRoot");
             {

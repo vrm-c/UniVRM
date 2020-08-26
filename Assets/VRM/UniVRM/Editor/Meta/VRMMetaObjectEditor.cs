@@ -51,6 +51,21 @@ namespace VRM
         SerializedProperty m_LicenseType;
         SerializedProperty m_OtherLicenseUrl;
 
+        static string RequiredMessage(string name)
+        {
+            switch (M17N.Getter.Lang)
+            {
+                case M17N.Languages.ja:
+                    return $"必須項目。{name} を入力してください";
+
+                case M17N.Languages.en:
+                    return $"{name} is required";
+
+                default:
+                    throw new System.NotImplementedException();
+            }
+        }
+
         private void OnEnable()
         {
             m_target = (VRMMetaObject)target;
@@ -62,7 +77,7 @@ namespace VRM
                         {
                             if (string.IsNullOrEmpty(prop.stringValue))
                             {
-                                return ($"必須項目。{prop.name} を入力してください", MessageType.Error);
+                                return (RequiredMessage(prop.name), MessageType.Error);
                             }
                             return ("", MessageType.None);
                         });
@@ -70,7 +85,7 @@ namespace VRM
                         {
                             if (string.IsNullOrEmpty(prop.stringValue))
                             {
-                                return ($"必須項目。{prop.name} を入力してください", MessageType.Error);
+                                return (RequiredMessage(prop.name), MessageType.Error);
                             }
                             return ("", MessageType.None);
                         });
@@ -78,7 +93,7 @@ namespace VRM
                         {
                             if (string.IsNullOrEmpty(prop.stringValue))
                             {
-                                return ($"必須項目。{prop.name} を入力してください", MessageType.Error);
+                                return (RequiredMessage(prop.name), MessageType.Error);
                             }
                             return ("", MessageType.None);
                         });
@@ -117,6 +132,8 @@ namespace VRM
         bool m_foldoutDistribution = true;
         void VRMMetaObjectGUI(SerializedObject so)
         {
+            M17N.Getter.OnGuiSelectLang();
+
             so.Update();
 
             if (VRMVersion.IsNewer(m_exporterVersion.stringValue))

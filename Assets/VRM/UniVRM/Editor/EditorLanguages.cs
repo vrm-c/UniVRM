@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 
 namespace VRM.M17N
 {
@@ -143,11 +144,35 @@ namespace VRM.M17N
     }
     public static class Getter
     {
-        public static M17N.Languages Lang;
+        const string LANG_KEY = "VRM_LANG";
+
+        static Languages? m_lang;
+
+        public static Languages Lang
+        {
+            get
+            {
+                if (!m_lang.HasValue)
+                {
+                    m_lang = EnumUtil.TryParseOrDefault<Languages>(EditorPrefs.GetString(LANG_KEY, default(Languages).ToString()));
+                }
+                return m_lang.Value;
+            }
+        }
 
         public static string Msg<T>(T key) where T : Enum
         {
             return M17N.MsgCache<T>.Get(Lang, key);
+        }
+
+        public static void OnGuiSelectLang()
+        {
+            var lang = (M17N.Languages)EditorGUILayout.EnumPopup("lang", Lang);
+            if (lang != Lang)
+            {
+                m_lang = lang;
+                EditorPrefs.SetString(LANG_KEY, M17N.Getter.Lang.ToString());
+            }
         }
     }
 }
