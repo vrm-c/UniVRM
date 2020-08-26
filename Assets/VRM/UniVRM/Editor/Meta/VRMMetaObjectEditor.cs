@@ -117,17 +117,6 @@ namespace VRM
             m_OtherLicenseUrl = serializedObject.FindProperty(nameof(m_target.OtherLicenseUrl));
         }
 
-        public override void OnInspectorGUI()
-        {
-            serializedObject.Update();
-            GUI.enabled = false;
-            EditorGUILayout.PropertyField(m_Script, true);
-            GUI.enabled = true;
-
-            EditorGUILayout.Space();
-            VRMMetaObjectGUI(serializedObject);
-        }
-
         enum MessageKeys
         {
             [LangMsg(Languages.ja, "アバターの人格に関する許諾範囲")]
@@ -166,11 +155,10 @@ namespace VRM
         bool m_foldoutInfo = true;
         bool m_foldoutPermission = true;
         bool m_foldoutDistribution = true;
-        void VRMMetaObjectGUI(SerializedObject so)
-        {
-            M17N.Getter.OnGuiSelectLang();
 
-            so.Update();
+        public override void OnInspectorGUI()
+        {
+            serializedObject.Update();
 
             if (VRMVersion.IsNewer(m_exporterVersion.stringValue))
             {
@@ -223,7 +211,7 @@ namespace VRM
                 }
             }
 
-            so.ApplyModifiedProperties();
+            serializedObject.ApplyModifiedProperties();
         }
 
         static (Rect, Rect) FixedRight(Rect r, int width)

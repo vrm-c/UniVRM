@@ -134,7 +134,8 @@ namespace VRM.M17N
                 foreach (T value in Enum.GetValues(t))
                 {
                     var match = GetAttribute(value, language);
-                    map.Add(value, match != null ? match.Message : "");
+                    // Attribute。無かったら enum の ToString
+                    map.Add(value, match != null ? match.Message : key.ToString());
                 }
 
                 s_cache.Add(language, map);
