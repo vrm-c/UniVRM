@@ -6,7 +6,7 @@ using UnityEditor;
 using UnityEngine;
 
 
-namespace VRM
+namespace MeshUtility
 {
     [CustomPropertyDrawer(typeof(BoneMeshEraser.EraseBone))]
     public class EraseBoneDrawer : PropertyDrawer
@@ -51,7 +51,7 @@ namespace VRM
         [SerializeField]
         BoneMeshEraser.EraseBone[] m_eraseBones;
 
-        [MenuItem(SkinnedMeshUtility.MENU_KEY + "BoneMeshEraser Wizard", priority = SkinnedMeshUtility.MENU_PRIORITY)]
+        [MenuItem(MeshUtility.MENU_PARENT + "BoneMeshEraser Wizard", priority = MeshUtility.MENU_PRIORITY)]
         static void CreateWizard()
         {
             ScriptableWizard.DisplayWizard<BoneMeshEraserWizard>("BoneMeshEraser", "Erase triangles by bone", "Erase");
@@ -143,7 +143,7 @@ namespace VRM
             var bones = m_skinnedMesh.bones;
             var eraseBones = m_eraseBones
                 .Where(x => x.Erase)
-                .Select(x => bones.IndexOf(x.Bone))
+                .Select(x => Array.IndexOf(bones, x.Bone))
                 .ToArray();
 
             var meshNode = new GameObject("BoneMeshEraser");
@@ -168,7 +168,7 @@ namespace VRM
 
             // save mesh to Assets
             var assetPath = string.Format("{0}{1}", go.name, ASSET_SUFFIX);
-            var prefab = SkinnedMeshUtility.GetPrefab(go);
+            var prefab = MeshUtility.GetPrefab(go);
             if (prefab != null)
             {
                 var prefabPath = AssetDatabase.GetAssetPath(prefab);

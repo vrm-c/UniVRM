@@ -2,13 +2,24 @@
 
 Mesh processing tool in Unity platform.
 
-## MeshSeparator
+## Utilities
+
+### MeshSeparator
 
 Separate the target mesh into different categories based on given conditions.
 
 Currently support BlendShape mesh separation. See [documentation](Documentation/notes/MeshSeparator.md) for more details.
 
 <img src="Documentation/images/blendshape_separator.jpg" width="300">
+
+### MeshIntegrator
+
+Integrate all mesh in hierarchy.
+
+### MeshNormalizer
+
+Bake hierarchy. This is VRM normalize backend.
+MeshNormalizer can do blendShape bake.
 
 ## Import MeshUtility
 

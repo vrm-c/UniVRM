@@ -11,7 +11,7 @@ using Object = UnityEngine.Object;
 namespace VRM
 {
     /// <summary>
-    /// 複数のメッシュをまとめる
+    /// 複数のメッシュをまとめて、BlendShapeClipに変更を反映する
     /// </summary>
     [DisallowMultipleComponent]
     public static class MeshIntegratorEditor
@@ -39,12 +39,12 @@ namespace VRM
         private static void Foo()
         {
             var go = Selection.activeObject as GameObject;
-            
+
             Debug.Log(SkinnedMeshUtility.IsPrefab(go));
         }
 
 
-        public static List<MeshIntegratorUtility.MeshIntegrationResult> Integrate(GameObject prefab)
+        public static List<MeshUtility.MeshIntegrationResult> Integrate(GameObject prefab)
         {
             Undo.RecordObject(prefab, "Mesh Integration");
             var instance = SkinnedMeshUtility.InstantiatePrefab(prefab);
@@ -63,18 +63,18 @@ namespace VRM
 
             // Backup Exists
             BackupVrmPrefab(prefab);
-            
+
             // Execute
-            var results = MeshIntegratorUtility.Integrate(instance, clips);
+            var results = VRMMeshIntegratorUtility.Integrate(instance, clips);
 
             foreach (var res in results)
             {
                 if (res.IntegratedRenderer == null) continue;
-                
+
                 SaveMeshAsset(res.IntegratedRenderer.sharedMesh, instance, res.IntegratedRenderer.gameObject.name);
                 Undo.RegisterCreatedObjectUndo(res.IntegratedRenderer.gameObject, "Integrate Renderers");
             }
-            
+
             // destroy source renderers
             foreach (var res in results)
             {
@@ -90,31 +90,31 @@ namespace VRM
                     renderer.gameObject.SetActive(false);
                 }
             }
-            
+
             // Apply to Prefab
             SkinnedMeshUtility.ApplyChangesToPrefab(instance);
             Object.DestroyImmediate(instance);
-            
+
             return results;
         }
 
         private static void BackupVrmPrefab(GameObject rootPrefab)
         {
             var proxy = rootPrefab.GetComponent<VRMBlendShapeProxy>();
-            
-            var srcAvatar = proxy.BlendShapeAvatar;
-            var dstAvatar = (BlendShapeAvatar) BackupAsset(srcAvatar, rootPrefab);
 
-            var clipMapper = srcAvatar.Clips.ToDictionary(x => x, x => (BlendShapeClip) BackupAsset(x, rootPrefab));
+            var srcAvatar = proxy.BlendShapeAvatar;
+            var dstAvatar = (BlendShapeAvatar)BackupAsset(srcAvatar, rootPrefab);
+
+            var clipMapper = srcAvatar.Clips.ToDictionary(x => x, x => (BlendShapeClip)BackupAsset(x, rootPrefab));
             dstAvatar.Clips = clipMapper.Values.ToList();
-            
+
             var dstPrefab = BackupAsset(rootPrefab, rootPrefab);
             var dstInstance = SkinnedMeshUtility.InstantiatePrefab(dstPrefab);
             dstInstance.GetComponent<VRMBlendShapeProxy>().BlendShapeAvatar = dstAvatar;
             SkinnedMeshUtility.ApplyChangesToPrefab(dstInstance);
             Object.DestroyImmediate(dstInstance);
         }
-        
+
         private static T BackupAsset<T>(T asset, GameObject rootPrefab) where T : UnityEngine.Object
         {
             var srcAssetPath = UnityPath.FromAsset(asset);
@@ -124,7 +124,7 @@ namespace VRM
             var backupPath = UnityPath.FromAsset(rootPrefab).Parent.Child(backupDir);
             backupPath.EnsureFolder();
             var dstAssetPath = backupPath.Child(assetName);
-            
+
             AssetDatabase.CopyAsset(srcAssetPath.Value, dstAssetPath.Value);
             return dstAssetPath.LoadAsset<T>();
         }

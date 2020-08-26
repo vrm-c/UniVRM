@@ -141,7 +141,7 @@ namespace VRM
 
         static bool EnableRenderer(Renderer renderer)
         {
-            if (renderer.transform.Ancestor().Any(x => !x.gameObject.activeSelf))
+            if (renderer.transform.GetComponentsInParent<Transform>().Any(x => !x.gameObject.activeSelf))
             {
                 // 自分か祖先に !activeSelf がいる
                 return false;

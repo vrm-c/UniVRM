@@ -1,6 +1,8 @@
 {
-    "name": "MeshUtility",
-    "references": [],
+    "name": "MeshUtility.Editor",
+    "references": [
+        "MeshUtility"
+    ],
     "optionalUnityReferences": [],
     "includePlatforms": [
         "Editor"

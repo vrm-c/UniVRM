@@ -1,108 +1,21 @@
 using System.Collections.Generic;
 using System.Linq;
-using UniGLTF;
 using UnityEngine;
 
-namespace VRM
+namespace MeshUtility
 {
     public static class MeshIntegratorUtility
     {
-        [System.Serializable]
-        public class MeshIntegrationResult
-        {
-            public List<SkinnedMeshRenderer> SourceSkinnedMeshRenderers = new List<SkinnedMeshRenderer>();
-            public List<MeshRenderer> SourceMeshRenderers = new List<MeshRenderer>();
-            public SkinnedMeshRenderer IntegratedRenderer;
-        }
-        
-        public static bool IntegrateRuntime(GameObject vrmRootObject)
-        {
-            if (vrmRootObject == null) return false;
-            var proxy = vrmRootObject.GetComponent<VRMBlendShapeProxy>();
-            if (proxy == null) return false;
-            var avatar = proxy.BlendShapeAvatar;
-            if (avatar == null) return false;
-            var clips = avatar.Clips;
-
-            var results = Integrate(vrmRootObject, clips);
-            if (results.Any(x => x.IntegratedRenderer == null)) return false;
-
-            foreach (var result in results)
-            {
-                foreach (var renderer in result.SourceSkinnedMeshRenderers)
-                {
-                    Object.Destroy(renderer);
-                }
-
-                foreach (var renderer in result.SourceMeshRenderers)
-                {
-                    Object.Destroy(renderer);
-                }
-            }
-
-            return true;
-        }
-
-        public static List<MeshIntegrationResult> Integrate(GameObject root, List<BlendShapeClip> blendshapeClips)
-        {
-            var result = new List<MeshIntegratorUtility.MeshIntegrationResult>();
-            
-            var withoutBlendShape = IntegrateInternal(root, onlyBlendShapeRenderers: false);
-            if (withoutBlendShape.IntegratedRenderer != null)
-            {
-                result.Add(withoutBlendShape);
-            }
-
-            var onlyBlendShape = IntegrateInternal(root, onlyBlendShapeRenderers: true);
-            if (onlyBlendShape.IntegratedRenderer != null)
-            {
-                result.Add(onlyBlendShape);
-                FollowBlendshapeRendererChange(blendshapeClips, onlyBlendShape, root);
-            }
-
-            return result;
-        }
-
-        private static void FollowBlendshapeRendererChange(List<BlendShapeClip> clips, MeshIntegrationResult result, GameObject root)
-        {
-            if (clips == null || result == null || result.IntegratedRenderer == null || root == null) return;
-            
-            var rendererDict = result.SourceSkinnedMeshRenderers
-                .ToDictionary(x => x.transform.RelativePathFrom(root.transform), x => x);
-
-            var dstPath = result.IntegratedRenderer.transform.RelativePathFrom(root.transform);
-
-            foreach (var clip in clips)
-            {
-                if (clip == null) continue;
-                
-                for (var i = 0; i < clip.Values.Length; ++i)
-                {
-                    var val = clip.Values[i];
-                    if (rendererDict.ContainsKey(val.RelativePath))
-                    {
-                        var srcRenderer = rendererDict[val.RelativePath];
-                        var name = srcRenderer.sharedMesh.GetBlendShapeName(val.Index);
-                        var newIndex = result.IntegratedRenderer.sharedMesh.GetBlendShapeIndex(name);
-                        
-                        val.RelativePath = dstPath;
-                        val.Index = newIndex;
-                    }
-
-                    clip.Values[i] = val;
-                }
-            }
-        }
-        
-        private static MeshIntegrationResult IntegrateInternal(GameObject go, bool onlyBlendShapeRenderers)
+        /// <summary>
+        /// go を root としたヒエラルキーから Renderer を集めて、統合された Mesh 作成する
+        /// </summary>
+        /// <param name="go"></param>
+        /// <param name="onlyBlendShapeRenderers">BlendShapeを保持するSkinnedMeshRendererのみ/BlendShapeを保持しないSkinnedMeshRenderer + MeshRenderer</param>
+        /// <returns></returns>
+        public static MeshIntegrationResult Integrate(GameObject go, bool onlyBlendShapeRenderers)
         {
             var result = new MeshIntegrationResult();
-            
-#if UNITY_2017_3_OR_NEWER
-#else
-            return result;
-#endif
-            
+
             var meshNode = new GameObject();
             if (onlyBlendShapeRenderers)
             {
@@ -115,7 +28,7 @@ namespace VRM
             meshNode.transform.SetParent(go.transform, false);
 
             // レンダラから情報を集める
-            var integrator = new MeshIntegrator();
+            var integrator = new MeshUtility.MeshIntegrator();
 
             if (onlyBlendShapeRenderers)
             {
@@ -145,12 +58,8 @@ namespace VRM
 
             if (integrator.Positions.Count > ushort.MaxValue)
             {
-#if UNITY_2017_3_OR_NEWER
                 Debug.LogFormat("exceed 65535 vertices: {0}", integrator.Positions.Count);
                 mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
-#else
-                throw new NotImplementedException(String.Format("exceed 65535 vertices: {0}", integrator.Positions.Count.ToString()));
-#endif
             }
 
             mesh.vertices = integrator.Positions.ToArray();
@@ -175,10 +84,10 @@ namespace VRM
             integrated.sharedMaterials = integrator.SubMeshes.Select(x => x.Material).ToArray();
             integrated.bones = integrator.Bones.ToArray();
             result.IntegratedRenderer = integrated;
-            
+
             return result;
         }
-        
+
         public static IEnumerable<SkinnedMeshRenderer> EnumerateSkinnedMeshRenderer(Transform root, bool hasBlendShape)
         {
             foreach (var x in Traverse(root))
@@ -201,7 +110,7 @@ namespace VRM
             {
                 var renderer = x.GetComponent<MeshRenderer>();
                 var filter = x.GetComponent<MeshFilter>();
-                
+
                 if (renderer != null &&
                     filter != null &&
                     renderer.gameObject.activeInHierarchy &&

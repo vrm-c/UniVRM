@@ -2,7 +2,7 @@
 using System.Linq;
 
 
-namespace VRM
+namespace MeshUtility
 {
     public static class MeshExtensions
     {

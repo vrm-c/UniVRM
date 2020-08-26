@@ -37,6 +37,24 @@ namespace VRM
   }}
 }}
 ";
+
+        const string MeshUtilityPath = "Assets/MeshUtility/package.json";
+        const string MeshUtilityTemplate = @"{{
+{{
+  ""name"": ""com.vrmc.meshutility"",
+  ""version"": ""{0}.{1}.{2}"",
+  ""displayName"": ""MeshUtility"",
+  ""unity"": ""2018.4"",
+  ""description"": ""MeshUtility is a package for mesh separation, etc. \n\nCheck out the latest information here: <https://github.com/vrm-c/UniVRM/tree/master/Assets/MeshUtility>"",
+  ""keywords"": [
+    ""mesh""
+  ],
+  ""author"": {{
+    ""name"": ""VRM Consortium""
+  }}
+}}
+";
+
         const string VRMPackagePath = "Assets/VRM/package.json";
         const string VRMPackageTemplate = @"{{
   ""name"": ""com.vrmc.univrm"",
@@ -54,7 +72,8 @@ namespace VRM
     ""name"": ""VRM Consortium""
   }},
   ""dependencies"": {{
-    ""com.vrmc.vrmshaders"": ""{0}.{1}.{2}""
+    ""com.vrmc.vrmshaders"": ""{0}.{1}.{2}"",
+    ""com.vrmc.meshutility"": ""{0}.{1}.{2}""
   }}
 }}
 ";
@@ -93,6 +112,10 @@ namespace VRM
                     values[1],
                     values[2]), utf8);
                 File.WriteAllText(VRMShadersPackagePath, string.Format(VRMShadersPackageTemplate,
+                    values[0],
+                    values[1],
+                    values[2]), utf8);
+                File.WriteAllText(MeshUtilityPath, string.Format(MeshUtilityTemplate,
                     values[0],
                     values[1],
                     values[2]), utf8);

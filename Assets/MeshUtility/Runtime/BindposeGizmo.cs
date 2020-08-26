@@ -1,16 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UniGLTF;
+// using UniGLTF;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
 
-namespace VRM
+namespace MeshUtility
 {
     [DisallowMultipleComponent]
-    public class VRMBindposeGizmo : MonoBehaviour
+    public class BindposeGizmo : MonoBehaviour
     {
         [SerializeField]
         Mesh m_target;

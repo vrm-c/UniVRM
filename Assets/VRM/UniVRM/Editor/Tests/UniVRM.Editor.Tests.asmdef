@@ -3,7 +3,8 @@
     "references": [
         "VRM",
         "UniJSON",
-        "UniVRM.Editor"
+        "UniVRM.Editor",
+        "MeshUtility"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

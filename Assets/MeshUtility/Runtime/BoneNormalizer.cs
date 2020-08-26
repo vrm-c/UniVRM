@@ -1,16 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using UniHumanoid;
 using UnityEngine;
 
 
-namespace VRM
+namespace MeshUtility
 {
     public static class BoneNormalizer
     {
+        public delegate Avatar CreateAvatarFunc(GameObject original, GameObject normalized, Dictionary<Transform, Transform> boneMap);
+
+        static (GameObject, Dictionary<Transform, Transform>) NormalizeHierarchy(GameObject go, CreateAvatarFunc createAvatar)
+        {
+            var boneMap = new Dictionary<Transform, Transform>();
+
+            //
+            // 回転・スケールの無いヒエラルキーをコピーする
+            //
+            var normalized = new GameObject(go.name + "(normalized)");
+            normalized.transform.position = go.transform.position;
+            CopyAndBuild(go.transform, normalized.transform, boneMap);
+
+            //
+            // 新しいヒエラルキーからAvatarを作る
+            //
+            {
+                var animator = normalized.AddComponent<Animator>();
+                var avatar = createAvatar(go, normalized, boneMap);
+                avatar.name = go.name + ".normalized";
+                animator.avatar = avatar;
+            }
+
+            return (normalized, boneMap);
+        }
+
         /// <summary>
-        /// 回転とスケールを除去したヒエラルキーをコピーする
+        /// 回転とスケールを除去したヒエラルキーをコピーする。
         /// </summary>
         /// <param name="src"></param>
         /// <param name="dst"></param>
@@ -29,100 +54,6 @@ namespace VRM
                     CopyAndBuild(child, dstChild.transform, boneMap);
                 }
             }
-        }
-
-        static IEnumerable<Transform> Traverse(this Transform t)
-        {
-            yield return t;
-            foreach (Transform child in t)
-            {
-                foreach (var x in child.Traverse())
-                {
-                    yield return x;
-                }
-            }
-        }
-
-        static void EnforceTPose(GameObject go)
-        {
-            var animator = go.GetComponent<Animator>();
-            if (animator == null)
-            {
-                throw new ArgumentException("Animator with avatar is required");
-            }
-
-            var avatar = animator.avatar;
-            if (avatar == null)
-            {
-                throw new ArgumentException("avatar is required");
-            }
-
-            if (!avatar.isValid)
-            {
-                throw new ArgumentException("invalid avatar");
-            }
-
-            if (!avatar.isHuman)
-            {
-                throw new ArgumentException("avatar is not human");
-            }
-
-            HumanPoseTransfer.SetTPose(avatar, go.transform);
-        }
-
-        static GameObject NormalizeHierarchy(GameObject go, Dictionary<Transform, Transform> boneMap)
-        {
-            //
-            // 回転・スケールの無いヒエラルキーをコピーする
-            //
-            var normalized = new GameObject(go.name + "(normalized)");
-            normalized.transform.position = go.transform.position;
-            CopyAndBuild(go.transform, normalized.transform, boneMap);
-
-            //
-            // 新しいヒエラルキーからAvatarを作る
-            //
-            {
-                var src = go.GetComponent<Animator>();
-
-                var srcHumanBones = Enum.GetValues(typeof(HumanBodyBones))
-                    .Cast<HumanBodyBones>()
-                    .Where(x => x != HumanBodyBones.LastBone)
-                    .Select(x => new { Key = x, Value = src.GetBoneTransform(x) })
-                    .Where(x => x.Value != null)
-                    ;
-
-                var map =
-                       srcHumanBones
-                       .Where(x => boneMap.ContainsKey(x.Value))
-                       .ToDictionary(x => x.Key, x => boneMap[x.Value])
-                       ;
-
-                var animator = normalized.AddComponent<Animator>();
-                var vrmHuman = go.GetComponent<VRMHumanoidDescription>();
-                var avatarDescription = AvatarDescription.Create();
-                if (vrmHuman != null && vrmHuman.Description != null)
-                {
-                    avatarDescription.armStretch = vrmHuman.Description.armStretch;
-                    avatarDescription.legStretch = vrmHuman.Description.legStretch;
-                    avatarDescription.upperArmTwist = vrmHuman.Description.upperArmTwist;
-                    avatarDescription.lowerArmTwist = vrmHuman.Description.lowerArmTwist;
-                    avatarDescription.upperLegTwist = vrmHuman.Description.upperLegTwist;
-                    avatarDescription.lowerLegTwist = vrmHuman.Description.lowerLegTwist;
-                    avatarDescription.feetSpacing = vrmHuman.Description.feetSpacing;
-                    avatarDescription.hasTranslationDoF = vrmHuman.Description.hasTranslationDoF;
-                }
-                avatarDescription.SetHumanBones(map);
-                var avatar = avatarDescription.CreateAvatar(normalized.transform);
-
-                avatar.name = go.name + ".normalized";
-                animator.avatar = avatar;
-
-                var humanPoseTransfer = normalized.AddComponent<HumanPoseTransfer>();
-                humanPoseTransfer.Avatar = avatar;
-            }
-
-            return normalized;
         }
 
         class BlendShapeReport
@@ -233,7 +164,7 @@ namespace VRM
                     if (boneMap.TryGetValue(srcBone, out Transform dstBone))
                     {
                         // 対応するボーンが存在する
-                        var dstIndex = dstBones.IndexOf(dstBone);
+                        var dstIndex = Array.IndexOf(dstBones, dstBone);
                         if (dstIndex == -1)
                         {
                             // ありえない。バグ
@@ -539,45 +470,20 @@ namespace VRM
             dstRenderer.sharedMaterials = srcRenderer.sharedMaterials;
         }
 
-        public struct NormalizedResult
-        {
-            public GameObject Root;
-            public Dictionary<Transform, Transform> BoneMap;
-        }
-
         /// <summary>
-        /// モデルの正規化を実行する
+        /// 回転とスケールを除去したヒエラルキーのコピーを作成する(MeshをBakeする)
         /// </summary>
-        /// <param name="go">対象モデルのルート</param>
-        /// <param name="forceTPose">強制的にT-Pose化するか</param>
-        /// <returns>正規化済みのモデル</returns>
-        public static GameObject Execute(GameObject go, bool forceTPose, bool clearBlendShapeBeforeNormalize)
+        /// <param name="go">対象のヒエラルキーのルート</param>
+        /// <param name="clearBlendShapeBeforeNormalize">BlendShapeを0クリアするか否か。false の場合 BlendShape の現状を Bake する</param>
+        /// <param name="createAvatar">Avatarを作る関数</param>
+        /// <returns></returns>
+        public static (GameObject, Dictionary<Transform, Transform>) Execute(GameObject go,
+        bool clearBlendShapeBeforeNormalize, CreateAvatarFunc createAvatar)
         {
-            Dictionary<Transform, Transform> boneMap = new Dictionary<Transform, Transform>();
-
-            //
-            // T-Poseにする
-            //
-            if (forceTPose)
-            {
-                var hips = go.GetComponent<Animator>().GetBoneTransform(HumanBodyBones.Hips);
-                var hipsPosition = hips.position;
-                var hipsRotation = hips.rotation;
-                try
-                {
-                    EnforceTPose(go);
-                }
-                finally
-                {
-                    hips.position = hipsPosition; // restore hipsPosition
-                    hips.rotation = hipsRotation;
-                }
-            }
-
             //
             // 正規化されたヒエラルキーを作る
             //
-            var normalized = NormalizeHierarchy(go, boneMap);
+            var (normalized, boneMap) = NormalizeHierarchy(go, createAvatar);
 
             //
             // 各メッシュから回転・スケールを取り除いてBinding行列を再計算する
@@ -595,137 +501,7 @@ namespace VRM
                 NormalizeNoneSkinnedMesh(src, dst);
             }
 
-            CopyVRMComponents(go, normalized, boneMap);
-
-            // return new NormalizedResult
-            // {
-            //     Root = normalized,
-            //     BoneMap = boneMap
-            // };
-            return normalized;
-        }
-
-        /// <summary>
-        /// VRMを構成するコンポーネントをコピーする。
-        /// </summary>
-        /// <param name="go">コピー元</param>
-        /// <param name="root">コピー先</param>
-        /// <param name="map">コピー元とコピー先の対応関係</param>
-        static void CopyVRMComponents(GameObject go, GameObject root,
-            Dictionary<Transform, Transform> map)
-        {
-            {
-                // blendshape
-                var src = go.GetComponent<VRMBlendShapeProxy>();
-                if (src != null)
-                {
-                    var dst = root.AddComponent<VRMBlendShapeProxy>();
-                    dst.BlendShapeAvatar = src.BlendShapeAvatar;
-                }
-            }
-
-            {
-                var secondary = go.transform.Find("secondary");
-                if (secondary == null)
-                {
-                    secondary = go.transform;
-                }
-
-                var dstSecondary = root.transform.Find("secondary");
-                if (dstSecondary == null)
-                {
-                    dstSecondary = new GameObject("secondary").transform;
-                    dstSecondary.SetParent(root.transform, false);
-                }
-
-                // 揺れモノ
-                foreach (var src in go.transform.GetComponentsInChildren<VRMSpringBoneColliderGroup>())
-                {
-                    var dst = map[src.transform];
-                    var dstColliderGroup = dst.gameObject.AddComponent<VRMSpringBoneColliderGroup>();
-                    dstColliderGroup.Colliders = src.Colliders.Select(y =>
-                    {
-                        var offset = dst.worldToLocalMatrix.MultiplyPoint(src.transform.localToWorldMatrix.MultiplyPoint(y.Offset));
-                        return new VRMSpringBoneColliderGroup.SphereCollider
-                        {
-                            Offset = offset,
-                            Radius = y.Radius
-                        };
-                    }).ToArray();
-                }
-
-                foreach (var src in go.transform.GetComponentsInChildren<VRMSpringBone>())
-                {
-                    // Copy VRMSpringBone
-                    var dst = dstSecondary.gameObject.AddComponent<VRMSpringBone>();
-                    dst.m_comment = src.m_comment;
-                    dst.m_stiffnessForce = src.m_stiffnessForce;
-                    dst.m_gravityPower = src.m_gravityPower;
-                    dst.m_gravityDir = src.m_gravityDir;
-                    dst.m_dragForce = src.m_dragForce;
-                    if (src.m_center != null)
-                    {
-                        dst.m_center = map[src.m_center];
-                    }
-
-                    dst.RootBones = src.RootBones.Select(x => map[x]).ToList();
-                    dst.m_hitRadius = src.m_hitRadius;
-                    if (src.ColliderGroups != null)
-                    {
-                        dst.ColliderGroups = src.ColliderGroups
-                            .Select(x => map[x.transform].GetComponent<VRMSpringBoneColliderGroup>()).ToArray();
-                    }
-                }
-            }
-
-#pragma warning disable 0618
-            {
-                // meta(obsolete)
-                var src = go.GetComponent<VRMMetaInformation>();
-                if (src != null)
-                {
-                    src.CopyTo(root);
-                }
-            }
-#pragma warning restore 0618
-
-            {
-                // meta
-                var src = go.GetComponent<VRMMeta>();
-                if (src != null)
-                {
-                    var dst = root.AddComponent<VRMMeta>();
-                    dst.Meta = src.Meta;
-                }
-            }
-
-            {
-                // firstPerson
-                var src = go.GetComponent<VRMFirstPerson>();
-                if (src != null)
-                {
-                    src.CopyTo(root, map);
-                }
-            }
-
-            {
-                // humanoid
-                var dst = root.AddComponent<VRMHumanoidDescription>();
-                var src = go.GetComponent<VRMHumanoidDescription>();
-                if (src != null)
-                {
-                    dst.Avatar = src.Avatar;
-                    dst.Description = src.Description;
-                }
-                else
-                {
-                    var animator = go.GetComponent<Animator>();
-                    if (animator != null)
-                    {
-                        dst.Avatar = animator.avatar;
-                    }
-                }
-            }
+            return (normalized, boneMap);
         }
     }
 }
