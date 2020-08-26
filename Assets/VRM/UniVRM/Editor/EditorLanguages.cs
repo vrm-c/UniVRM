@@ -32,7 +32,6 @@ namespace VRM.M17N
         [LangMsg(Languages.en, "Please set up a ExportRoot for model export")]
         ROOT_EXISTS,
 
-
         [LangMsg(Languages.ja, "ExportRootに親はオブジェクトは持てません")]
         [LangMsg(Languages.en, "ExportRoot must be topmost parent")]
         NO_PARENT,
