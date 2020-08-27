@@ -295,8 +295,6 @@ namespace VRM
             {
                 m_Inspector = Editor.CreateEditor(m_settings);
             }
-
-            M17N.Getter.OnGuiSelectLang();
         }
 
         void OnDisable()
