@@ -49,7 +49,7 @@ namespace VRM
         [LangMsg(Languages.en, "Animator.avatar is not humanoid. Please change model's AnimationType to humanoid")]
         AVATAR_IS_NOT_HUMANOID,
 
-        [LangMsg(Languages.ja, "humanoid設定に顎が含まれている。FBX importer の rig 設定に戻って設定を解除することをおすすめします")]
+        [LangMsg(Languages.ja, "humanoid設定に顎が含まれている。FBX importer の rig 設定で顎ボーンの割り当てを確認できます")]
         [LangMsg(Languages.en, "Jaw bone is included. It may not what you intended. Please check the humanoid avatar setting screen")]
         JAW_BONE_IS_INCLUDED,
 
