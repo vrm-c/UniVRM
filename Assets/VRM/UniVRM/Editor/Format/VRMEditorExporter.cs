@@ -16,12 +16,12 @@ namespace VRM
         /// </summary>
         /// <param name="path">出力先</param>
         /// <param name="settings">エクスポート設定</param>
-        public static void Export(string path, GameObject exportRoot, VRMExportSettings settings)
+        public static void Export(string path, GameObject exportRoot, VRMMetaObject meta, VRMExportSettings settings)
         {
             List<GameObject> destroy = new List<GameObject>();
             try
             {
-                Export(path, exportRoot, settings, destroy);
+                Export(path, exportRoot, meta, settings, destroy);
             }
             finally
             {
@@ -136,13 +136,25 @@ namespace VRM
         /// <param name="path"></param>
         /// <param name="settings"></param>
         /// <param name="destroy">作業が終わったらDestoryするべき一時オブジェクト</param>
-        static void Export(string path, GameObject exportRoot, VRMExportSettings settings, List<GameObject> destroy)
+        static void Export(string path, GameObject exportRoot, VRMMetaObject meta, VRMExportSettings settings, List<GameObject> destroy)
         {
             var target = exportRoot;
 
             // 常にコピーする。シーンを変化させない
             target = GameObject.Instantiate(target);
             destroy.Add(target);
+
+            var metaBehaviour = target.GetComponent<VRMMeta>();
+            if (metaBehaviour == null)
+            {
+                metaBehaviour = target.AddComponent<VRMMeta>();
+                metaBehaviour.Meta = meta;
+            }
+            if (metaBehaviour.Meta == null)
+            {
+                // 来ないはず
+                throw new Exception("meta required");
+            }
 
             {
                 // copy元
