@@ -428,15 +428,6 @@ namespace VRM
                 return;
             }
 
-            var l = animator.GetBoneTransform(HumanBodyBones.LeftUpperLeg);
-            var r = animator.GetBoneTransform(HumanBodyBones.RightUpperLeg);
-            var f = GetForward(l, r);
-            if (Vector3.Dot(f, Vector3.forward) < 0.8f)
-            {
-                Validation.Error(Msg(VRMExporterWizardMessages.FACE_Z_POSITIVE_DIRECTION)).DrawGUI();
-                return;
-            }
-
             var avatar = animator.avatar;
             if (avatar == null)
             {
@@ -452,6 +443,16 @@ namespace VRM
             {
                 Validation.Error(Msg(VRMExporterWizardMessages.AVATAR_IS_NOT_HUMANOID)).DrawGUI();
                 return;
+            }
+            {
+                var l = animator.GetBoneTransform(HumanBodyBones.LeftUpperLeg);
+                var r = animator.GetBoneTransform(HumanBodyBones.RightUpperLeg);
+                var f = GetForward(l, r);
+                if (Vector3.Dot(f, Vector3.forward) < 0.8f)
+                {
+                    Validation.Error(Msg(VRMExporterWizardMessages.FACE_Z_POSITIVE_DIRECTION)).DrawGUI();
+                    return;
+                }
             }
             var jaw = animator.GetBoneTransform(HumanBodyBones.Jaw);
             if (jaw != null)
