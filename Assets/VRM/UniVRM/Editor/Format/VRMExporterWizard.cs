@@ -695,20 +695,7 @@ namespace VRM
             m_lastExportDir = Path.GetDirectoryName(path).Replace("\\", "/");
 
             // export
-            if (Meta == null)
-            {
-                var metaB = ExportRoot.GetComponent<VRMMeta>();
-                if (metaB == null)
-                {
-                    metaB = ExportRoot.AddComponent<VRMMeta>();
-                }
-                metaB.Meta = m_tmpMeta;
-            }
-            VRMEditorExporter.Export(path, ExportRoot, m_settings);
-            if (Meta == null)
-            {
-                UnityEngine.GameObject.DestroyImmediate(ExportRoot.GetComponent<VRMMeta>());
-            }
+            VRMEditorExporter.Export(path, ExportRoot, Meta != null ? Meta : m_tmpMeta, m_settings);
         }
 
         void OnWizardUpdate()
