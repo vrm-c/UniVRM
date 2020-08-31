@@ -16,7 +16,7 @@ namespace VRM
     [DisallowMultipleComponent]
     public static class MeshIntegratorEditor
     {
-        const string MENU_KEY = "Assets/UnityEditorScripts/MeshIntegrator";
+        const string MENU_KEY = "Mesh Utility/MeshIntegrator";
         const string ASSET_SUFFIX = ".mesh.asset";
 
         [MenuItem(MENU_KEY, true)]
@@ -27,7 +27,7 @@ namespace VRM
                    SkinnedMeshUtility.IsPrefab(Selection.activeObject);
         }
 
-        [MenuItem(MENU_KEY, false)]
+        [MenuItem(MENU_KEY, priority = 1)]
         private static void ExportFromMenu()
         {
             var go = Selection.activeObject as GameObject;
@@ -35,13 +35,13 @@ namespace VRM
             Integrate(go);
         }
 
-        [MenuItem("Assets/fooa", false)]
-        private static void Foo()
-        {
-            var go = Selection.activeObject as GameObject;
+        //[MenuItem("Assets/fooa", false)]
+        //private static void Foo()
+        //{
+        //    var go = Selection.activeObject as GameObject;
 
-            Debug.Log(SkinnedMeshUtility.IsPrefab(go));
-        }
+        //    Debug.Log(SkinnedMeshUtility.IsPrefab(go));
+        //}
 
 
         public static List<MeshUtility.MeshIntegrationResult> Integrate(GameObject prefab)

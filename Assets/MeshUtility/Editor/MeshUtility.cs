@@ -12,7 +12,7 @@ namespace MeshUtility
         public const int MENU_PRIORITY = 11;
 
         private const string ASSET_SUFFIX = ".mesh.asset";
-        private const string MENU_NAME = MENU_PARENT + "Separate Skinned Meshes Contained BlendShape";
+        private const string MENU_NAME = MENU_PARENT + "MeshSeparator";
         private static readonly Vector3 ZERO_MOVEMENT = Vector3.zero;
 
         public static Object GetPrefab(GameObject instance)
@@ -39,7 +39,7 @@ namespace MeshUtility
                 return true;
         }
 
-        [MenuItem(MENU_NAME)]
+        [MenuItem(MENU_NAME, priority = 2)]
         public static void SeparateSkinnedMeshContainedBlendShape()
         {
             var go = Selection.activeTransform.gameObject;
@@ -55,7 +55,7 @@ namespace MeshUtility
             }
         }
 
-        [MenuItem("Mesh Utility/MeshSeparator Docs")]
+        [MenuItem("Mesh Utility/MeshSeparator Docs", priority = MeshUtility.MENU_PRIORITY)]
         public static void LinkToMeshSeparatorDocs()
         {
             Application.OpenURL("https://github.com/vrm-c/UniVRM/tree/master/Assets/MeshUtility");
