@@ -139,20 +139,6 @@ namespace VRM
             return Vector3.Cross(lr, Vector3.up);
         }
 
-        static bool EnableRenderer(Renderer renderer)
-        {
-            if (renderer.transform.GetComponentsInParent<Transform>().Any(x => !x.gameObject.activeSelf))
-            {
-                // 自分か祖先に !activeSelf がいる
-                return false;
-            }
-            if (!renderer.enabled)
-            {
-                return false;
-            }
-            return true;
-        }
-
         static string Msg(VRMExporterWizardMessages key)
         {
             return M17N.Getter.Msg(key);
@@ -389,7 +375,7 @@ namespace VRM
             }
 
             var renderers = ExportRoot.GetComponentsInChildren<Renderer>();
-            if (renderers.All(x => !EnableRenderer(x)))
+            if (renderers.All(x => !x.EnableForExport()))
             {
                 Validation.Error(Msg(VRMExporterWizardMessages.NO_ACTIVE_MESH)).DrawGUI();
                 return;
