@@ -40,7 +40,6 @@ namespace VRM
 
         const string MeshUtilityPath = "Assets/MeshUtility/package.json";
         const string MeshUtilityTemplate = @"{{
-{{
   ""name"": ""com.vrmc.meshutility"",
   ""version"": ""{0}.{1}.{2}"",
   ""displayName"": ""MeshUtility"",
