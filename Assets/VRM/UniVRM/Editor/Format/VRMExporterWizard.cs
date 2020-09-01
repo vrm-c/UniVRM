@@ -516,8 +516,6 @@ namespace VRM
                 }
                 GUILayout.EndVertical();
             }
-            if (modified)
-                InvokeWizardUpdate();
 
             GUILayout.Space(8);
         }
@@ -723,4 +721,3 @@ namespace VRM
         }
     }
 }
-
