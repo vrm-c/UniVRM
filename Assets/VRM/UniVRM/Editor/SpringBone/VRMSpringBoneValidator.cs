@@ -14,7 +14,7 @@ namespace VRM
                 yield break;
             }
 
-            var hierarchy = root.GetComponentsInChildren<Transform>();
+            var hierarchy = root.GetComponentsInChildren<Transform>(true);
 
             Dictionary<Transform, List<VRMSpringBone>> rootMap = new Dictionary<Transform, List<VRMSpringBone>>();
 
@@ -25,12 +25,17 @@ namespace VRM
                     var springRoot = sb.RootBones[i];
                     if (springRoot == null)
                     {
-                        yield return Validation.Error($"{sb.name}.RootBones[{i}] is null");
+                        yield return Validation.Error($"[VRMSpringBone]{sb.name}.RootBones[{i}] is null");
                         continue;
                     }
                     if (!hierarchy.Contains(springRoot))
                     {
-                        yield return Validation.Error($"{sb.name}.RootBones[{i}] is out of hierarchy");
+                        yield return Validation.Error($"[VRMSpringBone]{sb.name}.RootBones[{i}] is out of hierarchy");
+                        continue;
+                    }
+                    if (!springRoot.gameObject.activeInHierarchy)
+                    {
+                        yield return Validation.Error($"[VRMSpringBone]{sb.name}.RootBones[{i}] is not active");
                         continue;
                     }
 
