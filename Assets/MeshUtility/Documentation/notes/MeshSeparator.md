@@ -8,7 +8,7 @@ Select a GameObject contained skinned mesh and BlendShape:
 
 <img src="../images/interface_1.jpg" width="200">
 
-Select `Mesh Utility` -> `Separate Skinned Meshes Contained BlendShape`:
+Select `Mesh Utility` -> `MeshSeparator`:
 
 <img src="../images/interface_2.jpg" width="200">
 
