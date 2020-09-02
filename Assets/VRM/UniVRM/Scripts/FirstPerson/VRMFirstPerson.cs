@@ -50,29 +50,6 @@ namespace VRM
         [SerializeField]
         public List<RendererFirstPersonFlags> Renderers = new List<RendererFirstPersonFlags>();
 
-        public IEnumerable<Validation> Validate()
-        {
-            var hierarchy = GetComponentsInChildren<Transform>(true);
-
-            for (int i = 0; i < Renderers.Count; ++i)
-            {
-                var r = Renderers[i];
-                if (r.Renderer == null)
-                {
-                    yield return Validation.Error($"[VRMFirstPerson]{name}.Renderers[{i}].Renderer is null");
-                }
-                if (!hierarchy.Contains(r.Renderer.transform))
-                {
-                    yield return Validation.Error($"[VRMFirstPerson]{name}.Renderers[{i}].Renderer is out of hierarchy");
-                }
-                if (!r.Renderer.gameObject.activeInHierarchy)
-                {
-                    yield return Validation.Error($"[VRMFirstPerson]{name}.Renderers[{i}].Renderer is not active");
-                }
-            }
-            yield break;
-        }
-
         public void CopyTo(GameObject _dst, Dictionary<Transform, Transform> map)
         {
             var dst = _dst.AddComponent<VRMFirstPerson>();

@@ -33,7 +33,7 @@ namespace VRM
                         yield return Validation.Error($"[VRMSpringBone]{sb.name}.RootBones[{i}] is out of hierarchy");
                         continue;
                     }
-                    if (!springRoot.gameObject.activeInHierarchy)
+                    if (!springRoot.transform.EnableForExport())
                     {
                         yield return Validation.Error($"[VRMSpringBone]{sb.name}.RootBones[{i}] is not active");
                         continue;
