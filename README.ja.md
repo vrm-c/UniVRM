@@ -30,6 +30,10 @@ glTF2.0をベースとしており、誰でも自由に利用することがで�
 * [UniVRMサンプル](https://github.com/vrm-c/UniVRM/tree/master/Assets/VRM.Samples)
 * [UniVRMTest(テストとサンプル)](https://github.com/vrm-c/UniVRMTest)
 
+## Contributing to UniVRM
+
+[コントリビューションガイド](https://github.com/vrm-c/UniVRM/wiki/コントリビューションガイド(ja))を参照してください。
+
 ## Documents
 
 * https://vrm.dev/

@@ -30,6 +30,10 @@ VRM is based on glTF2.0. If you comply with the MIT license, you are free to use
 * [UniVRM Samples](https://github.com/vrm-c/UniVRM/tree/master/Assets/VRM.Samples)
 * [UniVRMTest](https://github.com/vrm-c/UniVRMTest)
 
+## Contributing to UniVRM
+
+See [contributing guidelines](https://github.com/vrm-c/UniVRM/wiki/Contributing-Guidelines).
+
 ## Documents
 
 * https://vrm.dev/
