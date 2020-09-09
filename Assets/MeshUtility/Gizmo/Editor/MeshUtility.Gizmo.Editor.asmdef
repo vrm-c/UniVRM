@@ -1,0 +1,19 @@
+{
+    "name": "MeshUtility.Gizmo.Editor",
+    "references": [
+        "GUID:112f7af0d14623748932b46379475acf"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "UNITY_2019"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
