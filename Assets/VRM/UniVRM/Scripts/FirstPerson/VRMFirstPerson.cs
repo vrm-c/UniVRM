@@ -195,7 +195,7 @@ namespace VRM
             var eraseBones = bones.Select((x, i) =>
             {
                 // 祖先に削除対象が存在するか
-                bool erase = x.GetComponentsInParent<Transform>().Any(y => y == eraseRoot);
+                bool erase = x.Ancestors().Any(y => y == eraseRoot);
                 return new
                 {
                     i,
