@@ -193,6 +193,10 @@ namespace VRM
                 return;
             }
 
+            EditorGUILayout.HelpBox($"Mesh size: {m_validator.ExpectedByteSize / 1000000.0f:0.0} MByte", MessageType.Info);
+
+            _tab = TabBar.OnGUI(_tab, TabButtonStyle, TabButtonSize);
+
             // Render contents using Generic Inspector GUI
             m_ScrollPosition = BeginVerticalScrollView(m_ScrollPosition, false, GUI.skin.verticalScrollbar, "OL Box");
             GUIUtility.GetControlID(645789, FocusType.Passive);
@@ -279,7 +283,6 @@ namespace VRM
             }
 
             // tabbar
-            _tab = TabBar.OnGUI(_tab, TabButtonStyle, TabButtonSize);
             switch (_tab)
             {
                 case Tabs.Meta:
