@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -32,7 +31,11 @@ namespace VRM
             get { return m_meta; }
             set
             {
-                if (m_meta == value) return;
+                if (m_meta == value)
+                {
+                    return;
+                }
+                m_requireValidation = true;
                 if (m_metaEditor != null)
                 {
                     UnityEditor.Editor.DestroyImmediate(m_metaEditor);
@@ -42,27 +45,13 @@ namespace VRM
             }
         }
 
-        bool MetaHasError
-        {
-            get
-            {
-                if (Meta != null)
-                {
-                    return Meta.Validate().Any();
-                }
-                else
-                {
-                    return m_tmpMeta.Validate().Any();
-                }
-            }
-        }
-
         void UpdateRoot(GameObject root)
         {
             if (root == ExportRoot)
             {
                 return;
             }
+            m_requireValidation = true;
             ExportRoot = root;
             UnityEditor.Editor.DestroyImmediate(m_metaEditor);
             m_metaEditor = null;
@@ -74,7 +63,7 @@ namespace VRM
             else
             {
                 // default setting
-                m_settings.PoseFreeze = HasRotationOrScale(ExportRoot);
+                m_settings.PoseFreeze = VRMExporterValidator.HasRotationOrScale(ExportRoot);
 
                 var meta = ExportRoot.GetComponent<VRMMeta>();
                 if (meta != null)
@@ -88,178 +77,13 @@ namespace VRM
             }
         }
 
-        /// <summary>
-        /// ボーン名の重複を確認
-        /// </summary>
-        /// <returns></returns>
-        bool DuplicateBoneNameExists()
-        {
-            if (ExportRoot == null)
-            {
-                return false;
-            }
-            var bones = ExportRoot.transform.GetComponentsInChildren<Transform>();
-            var duplicates = bones
-                .GroupBy(p => p.name)
-                .Where(g => g.Count() > 1)
-                .Select(g => g.Key);
-
-            return (duplicates.Any());
-        }
-
-        public static bool IsFileNameLengthTooLong(string fileName)
-        {
-            return fileName.Length > 64;
-        }
-
-        public static bool HasRotationOrScale(GameObject root)
-        {
-            foreach (var t in root.GetComponentsInChildren<Transform>())
-            {
-                if (t.localRotation != Quaternion.identity)
-                {
-                    return true;
-                }
-                if (t.localScale != Vector3.one)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        static Vector3 GetForward(Transform l, Transform r)
-        {
-            if (l == null || r == null)
-            {
-                return Vector3.zero;
-            }
-            var lr = (r.position - l.position).normalized;
-            return Vector3.Cross(lr, Vector3.up);
-        }
-
-        static string Msg(VRMExporterWizardMessages key)
-        {
-            return M17N.Getter.Msg(key);
-        }
-
-        /// <summary>
-        /// エクスポート可能か検証する
-        /// </summary>
-        /// <returns></returns>
-        public IEnumerable<Validation> Validate()
-        {
-            if (ExportRoot == null)
-            {
-                yield break;
-            }
-
-            if (DuplicateBoneNameExists())
-            {
-                yield return Validation.Warning(Msg(VRMExporterWizardMessages.DUPLICATE_BONE_NAME_EXISTS));
-            }
-
-            if (m_settings.ReduceBlendshape && ExportRoot.GetComponent<VRMBlendShapeProxy>() == null)
-            {
-                yield return Validation.Error(Msg(VRMExporterWizardMessages.NEEDS_VRM_BLENDSHAPE_PROXY));
-            }
-
-            var vertexColor = ExportRoot.GetComponentsInChildren<SkinnedMeshRenderer>().Any(x => x.sharedMesh.colors.Length > 0);
-            if (vertexColor)
-            {
-                yield return Validation.Warning(Msg(VRMExporterWizardMessages.VERTEX_COLOR_IS_INCLUDED));
-            }
-
-            var renderers = ExportRoot.GetComponentsInChildren<Renderer>();
-            var materials = renderers.SelectMany(x => x.sharedMaterials).Distinct();
-            foreach (var material in materials)
-            {
-                if (material.shader.name == "Standard")
-                {
-                    // standard
-                    continue;
-                }
-
-                if (VRMMaterialExporter.UseUnlit(material.shader.name))
-                {
-                    // unlit
-                    continue;
-                }
-
-                if (VRMMaterialExporter.VRMExtensionShaders.Contains(material.shader.name))
-                {
-                    // VRM supported
-                    continue;
-                }
-
-                yield return Validation.Warning($"Material: {material.name}. Unknown Shader: \"{material.shader.name}\" is used. {Msg(VRMExporterWizardMessages.UNKNOWN_SHADER)}");
-            }
-
-            foreach (var material in materials)
-            {
-                if (IsFileNameLengthTooLong(material.name))
-                    yield return Validation.Error(Msg(VRMExporterWizardMessages.FILENAME_TOO_LONG) + material.name);
-            }
-
-            var textureNameList = new List<string>();
-            foreach (var material in materials)
-            {
-                var shader = material.shader;
-                int propertyCount = ShaderUtil.GetPropertyCount(shader);
-                for (int i = 0; i < propertyCount; i++)
-                {
-                    if (ShaderUtil.GetPropertyType(shader, i) == ShaderUtil.ShaderPropertyType.TexEnv)
-                    {
-                        if ((material.GetTexture(ShaderUtil.GetPropertyName(shader, i)) != null))
-                        {
-                            var textureName = material.GetTexture(ShaderUtil.GetPropertyName(shader, i)).name;
-                            if (!textureNameList.Contains(textureName))
-                                textureNameList.Add(textureName);
-                        }
-                    }
-                }
-            }
-
-            foreach (var textureName in textureNameList)
-            {
-                if (IsFileNameLengthTooLong(textureName))
-                    yield return Validation.Error(Msg(VRMExporterWizardMessages.FILENAME_TOO_LONG) + textureName);
-            }
-
-            var vrmMeta = ExportRoot.GetComponent<VRMMeta>();
-            if (vrmMeta != null && vrmMeta.Meta != null && vrmMeta.Meta.Thumbnail != null)
-            {
-                var thumbnailName = vrmMeta.Meta.Thumbnail.name;
-                if (IsFileNameLengthTooLong(thumbnailName))
-                    yield return Validation.Error(Msg(VRMExporterWizardMessages.FILENAME_TOO_LONG) + thumbnailName);
-            }
-
-            var meshFilters = ExportRoot.GetComponentsInChildren<MeshFilter>();
-            var meshesName = meshFilters.Select(x => x.sharedMesh.name).Distinct();
-            foreach (var meshName in meshesName)
-            {
-                if (IsFileNameLengthTooLong(meshName))
-                    yield return Validation.Error(Msg(VRMExporterWizardMessages.FILENAME_TOO_LONG) + meshName);
-            }
-
-            var skinnedmeshRenderers = ExportRoot.GetComponentsInChildren<SkinnedMeshRenderer>();
-            var skinnedmeshesName = skinnedmeshRenderers.Select(x => x.sharedMesh.name).Distinct();
-            foreach (var skinnedmeshName in skinnedmeshesName)
-            {
-                if (IsFileNameLengthTooLong(skinnedmeshName))
-                    yield return Validation.Error(Msg(VRMExporterWizardMessages.FILENAME_TOO_LONG) + skinnedmeshName);
-            }
-        }
-
         VRMMetaObject m_tmpMeta;
 
         Editor m_metaEditor;
         Editor m_Inspector;
 
-        private bool m_IsValid = true;
-
-        List<Validation> m_validations = new List<Validation>();
+        VRMExporterValidator m_validator = new VRMExporterValidator();
+        bool m_requireValidation = true;
 
         private Vector2 m_ScrollPosition;
         private string m_CreateButton = "Create";
@@ -351,102 +175,28 @@ namespace VRM
                 UpdateRoot(root);
             }
 
-            //
-            // ここでも validate している。ここで失敗して return した場合は Export UI を表示しない
-            //
-
-            //
-            // root
-            //
-            if (ExportRoot == null)
+            if (Event.current.type == EventType.Layout)
             {
-                Validation.Error(Msg(VRMExporterWizardMessages.ROOT_EXISTS)).DrawGUI();
-                return;
-            }
-            if (ExportRoot.transform.parent != null)
-            {
-                Validation.Error(Msg(VRMExporterWizardMessages.NO_PARENT)).DrawGUI();
-                return;
-            }
-
-            var renderers = ExportRoot.GetComponentsInChildren<Renderer>();
-            if (renderers.All(x => !x.EnableForExport()))
-            {
-                Validation.Error(Msg(VRMExporterWizardMessages.NO_ACTIVE_MESH)).DrawGUI();
-                return;
-            }
-
-            if (HasRotationOrScale(ExportRoot))
-            {
-                if (m_settings.PoseFreeze)
+                // ArgumentException: Getting control 1's position in a group with only 1 controls when doing repaint Aborting
+                if (m_requireValidation)
                 {
-                    EditorGUILayout.HelpBox("Root OK", MessageType.Info);
-                }
-                else
-                {
-                    Validation.Warning(Msg(VRMExporterWizardMessages.ROTATION_OR_SCALEING_INCLUDED_IN_NODE)).DrawGUI();
-                }
-            }
-            else
-            {
-                if (m_settings.PoseFreeze)
-                {
-                    Validation.Warning(Msg(VRMExporterWizardMessages.IS_POSE_FREEZE_DONE)).DrawGUI();
-                }
-                else
-                {
-                    EditorGUILayout.HelpBox("Root OK", MessageType.Info);
+                    m_validator.Validate(ExportRoot, m_settings, Meta != null ? Meta : m_tmpMeta);
+                    m_requireValidation = false;
                 }
             }
 
             //
-            // animator
+            // 事前チェック。ここで失敗する場合は Export UI を表示しない
             //
-            var animator = ExportRoot.GetComponent<Animator>();
-            if (animator == null)
+            if (!m_validator.RootAndHumanoidCheck(ExportRoot, m_settings))
             {
-                Validation.Error(Msg(VRMExporterWizardMessages.NO_ANIMATOR)).DrawGUI();
                 return;
             }
 
-            var avatar = animator.avatar;
-            if (avatar == null)
-            {
-                Validation.Error(Msg(VRMExporterWizardMessages.NO_AVATAR_IN_ANIMATOR)).DrawGUI();
-                return;
-            }
-            if (!avatar.isValid)
-            {
-                Validation.Error(Msg(VRMExporterWizardMessages.AVATAR_IS_NOT_VALID)).DrawGUI();
-                return;
-            }
-            if (!avatar.isHuman)
-            {
-                Validation.Error(Msg(VRMExporterWizardMessages.AVATAR_IS_NOT_HUMANOID)).DrawGUI();
-                return;
-            }
-            {
-                var l = animator.GetBoneTransform(HumanBodyBones.LeftUpperLeg);
-                var r = animator.GetBoneTransform(HumanBodyBones.RightUpperLeg);
-                var f = GetForward(l, r);
-                if (Vector3.Dot(f, Vector3.forward) < 0.8f)
-                {
-                    Validation.Error(Msg(VRMExporterWizardMessages.FACE_Z_POSITIVE_DIRECTION)).DrawGUI();
-                    return;
-                }
-            }
-            var jaw = animator.GetBoneTransform(HumanBodyBones.Jaw);
-            if (jaw != null)
-            {
-                Validation.Warning(Msg(VRMExporterWizardMessages.JAW_BONE_IS_INCLUDED)).DrawGUI();
-            }
-            else
-            {
-                EditorGUILayout.HelpBox("Animator OK", MessageType.Info);
-            }
-
-            // validation
-            foreach (var v in m_validations)
+            //
+            // その他の Validation
+            //
+            foreach (var v in m_validator.Validations)
             {
                 v.DrawGUI();
             }
@@ -466,7 +216,7 @@ namespace VRM
                 {
                     GUILayout.BeginHorizontal();
                     GUILayout.FlexibleSpace();
-                    GUI.enabled = m_IsValid;
+                    GUI.enabled = m_validator.IsValid;
 
                     const BindingFlags kInstanceInvokeFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy;
                     if (m_OtherButton != "" && GUILayout.Button(m_OtherButton, GUILayout.MinWidth(100)))
@@ -499,6 +249,12 @@ namespace VRM
             }
 
             GUILayout.Space(8);
+
+            if (modified)
+            {
+                m_requireValidation = true;
+                Repaint();
+            }
         }
 
         enum Tabs
@@ -626,13 +382,6 @@ namespace VRM
             }
         }
 
-        // Allows you to enable and disable the wizard create button, so that the user can not click it.
-        public bool isValid
-        {
-            get { return m_IsValid; }
-            set { m_IsValid = value; }
-        }
-
         const string EXTENSION = ".vrm";
 
         private static string m_lastExportDir;
@@ -648,7 +397,7 @@ namespace VRM
 
             if (go != null)
             {
-                wiz.m_settings.PoseFreeze = HasRotationOrScale(go);
+                wiz.m_settings.PoseFreeze = VRMExporterValidator.HasRotationOrScale(go);
             }
 
             wiz.OnWizardUpdate();
@@ -681,23 +430,7 @@ namespace VRM
         void OnWizardUpdate()
         {
             UpdateRoot(ExportRoot);
-
-            m_validations.Clear();
-            m_validations.AddRange(Validate());
-
-            if (ExportRoot != null)
-            {
-                m_validations.AddRange(VRMSpringBoneValidator.Validate(ExportRoot));
-                var firstPerson = ExportRoot.GetComponent<VRMFirstPerson>();
-                if (firstPerson != null)
-                {
-                    m_validations.AddRange(firstPerson.Validate());
-                }
-            }
-
-            var hasError = m_validations.Any(x => !x.CanExport);
-            m_IsValid = !hasError && !MetaHasError;
-
+            m_requireValidation = true;
             Repaint();
         }
     }
