@@ -368,11 +368,6 @@ namespace VRM
                 Validation.Error(Msg(VRMExporterWizardMessages.NO_PARENT)).DrawGUI();
                 return;
             }
-            if (ExportRoot.transform.localRotation != Quaternion.identity || ExportRoot.transform.localScale != Vector3.one)
-            {
-                Validation.Error(Msg(VRMExporterWizardMessages.ROOT_WITHOUT_ROTATION_AND_SCALING_CHANGED)).DrawGUI();
-                return;
-            }
 
             var renderers = ExportRoot.GetComponentsInChildren<Renderer>();
             if (renderers.All(x => !x.EnableForExport()))
