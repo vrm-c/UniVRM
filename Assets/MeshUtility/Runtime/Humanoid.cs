@@ -102,7 +102,7 @@ namespace MeshUtility
         {
             foreach (var prop in props)
             {
-                if (prop.Item2 is null)
+                if (prop.Item2 == null)
                 {
                     var name = prop.Item1;
                     if (name.StartsWith("m_"))
@@ -406,12 +406,12 @@ namespace MeshUtility
         public bool AssignBonesFromAnimator()
         {
             var animator = GetComponent<Animator>();
-            if (animator is null)
+            if (animator == null)
             {
                 return false;
             }
             var avatar = animator.avatar;
-            if (avatar is null)
+            if (avatar == null)
             {
                 return false;
             }

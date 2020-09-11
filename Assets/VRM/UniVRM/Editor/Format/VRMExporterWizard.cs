@@ -131,7 +131,7 @@ namespace VRM
 
         static Vector3 GetForward(Transform l, Transform r)
         {
-            if (l is null || r is null)
+            if (l == null || r == null)
             {
                 return Vector3.zero;
             }
@@ -322,7 +322,7 @@ namespace VRM
         {
             get
             {
-                if (s_func is null)
+                if (s_func == null)
                 {
                     var methods = typeof(EditorGUILayout).GetMethods(BindingFlags.Static | BindingFlags.NonPublic).Where(x => x.Name == "BeginVerticalScrollView").ToArray();
                     var method = methods.First(x => x.GetParameters()[1].ParameterType == typeof(bool));

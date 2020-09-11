@@ -200,7 +200,7 @@ namespace MeshUtility
         static string GetDialogDir(UnityEngine.Object obj)
         {
             var prefab = PrefabUtility.GetCorrespondingObjectFromSource(obj);
-            if (prefab is null)
+            if (prefab == null)
             {
                 return null;
             }
