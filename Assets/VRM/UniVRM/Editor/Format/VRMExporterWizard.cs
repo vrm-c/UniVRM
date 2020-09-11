@@ -193,6 +193,10 @@ namespace VRM
                 return;
             }
 
+            // Render contents using Generic Inspector GUI
+            m_ScrollPosition = BeginVerticalScrollView(m_ScrollPosition, false, GUI.skin.verticalScrollbar, "OL Box");
+            GUIUtility.GetControlID(645789, FocusType.Passive);
+
             //
             // その他の Validation
             //
@@ -201,9 +205,6 @@ namespace VRM
                 v.DrawGUI();
             }
 
-            // Render contents using Generic Inspector GUI
-            m_ScrollPosition = BeginVerticalScrollView(m_ScrollPosition, false, GUI.skin.verticalScrollbar, "OL Box");
-            GUIUtility.GetControlID(645789, FocusType.Passive);
             bool modified = DrawWizardGUI();
             EditorGUILayout.EndScrollView();
 
