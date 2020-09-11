@@ -330,6 +330,10 @@ namespace UniGLTF
             var used = new HashSet<string>();
             foreach (var mesh in GLTF.meshes)
             {
+                if (string.IsNullOrEmpty(mesh.name))
+                {
+                    mesh.name = Guid.NewGuid().ToString();
+                }
                 var lname = mesh.name.ToLower();
                 if (used.Contains(lname))
                 {
