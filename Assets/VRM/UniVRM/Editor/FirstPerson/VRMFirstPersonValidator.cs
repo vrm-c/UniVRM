@@ -16,6 +16,7 @@ namespace VRM
                 if (r.Renderer == null)
                 {
                     yield return Validation.Error($"[VRMFirstPerson]{self.name}.Renderers[{i}].Renderer is null");
+                    continue;
                 }
                 if (!hierarchy.Contains(r.Renderer.transform))
                 {
