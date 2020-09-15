@@ -328,9 +328,23 @@ namespace VRM
             }
 
             var renderers = ExportRoot.GetComponentsInChildren<Renderer>();
-            var materials = renderers.SelectMany(x => x.sharedMaterials).Distinct();
+            foreach (var r in renderers)
+            {
+                for(int i=0; i<r.sharedMaterials.Length; ++i)
+                if (r.sharedMaterials[i] == null)
+                {
+                    yield return Validation.Error($"Renderer: {r.name}.Materials[{i}] is null. please fix it");
+                }
+            }
+
+            var materials = renderers.SelectMany(x => x.sharedMaterials).Where(x => x != null).Distinct();
             foreach (var material in materials)
             {
+                if (material == null)
+                {
+                    continue;
+                }
+
                 if (material.shader.name == "Standard")
                 {
                     // standard
