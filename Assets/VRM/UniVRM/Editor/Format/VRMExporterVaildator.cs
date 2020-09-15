@@ -182,7 +182,7 @@ namespace VRM
         }
 
         /// <summary>
-        /// エクスポート可能か検証する
+        /// エクスポート可能か検証する。
         /// </summary>
         /// <returns></returns>
         public void Validate(GameObject ExportRoot, VRMExportSettings m_settings, VRMMetaObject meta)
@@ -192,34 +192,35 @@ namespace VRM
             {
                 return;
             }
+            var proxy = ExportRoot.GetComponent<VRMBlendShapeProxy>();
 
             m_validations.AddRange(_Validate(ExportRoot, m_settings));
-            if (ExportRoot != null)
+            m_validations.AddRange(VRMSpringBoneValidator.Validate(ExportRoot));
+            var firstPerson = ExportRoot.GetComponent<VRMFirstPerson>();
+            if (firstPerson != null)
             {
-                m_validations.AddRange(VRMSpringBoneValidator.Validate(ExportRoot));
-                var firstPerson = ExportRoot.GetComponent<VRMFirstPerson>();
-                if (firstPerson != null)
+                m_validations.AddRange(firstPerson.Validate());
+            }
+            if (proxy != null)
+            {
+                m_validations.AddRange(proxy.Validate());
+
+                // Export サイズ の 計算
+                var clips = new List<BlendShapeClip>();
+                if (proxy.BlendShapeAvatar != null)
                 {
-                    m_validations.AddRange(firstPerson.Validate());
+                    clips.AddRange(proxy.BlendShapeAvatar.Clips);
+                }
+
+                ExpectedByteSize = 0;
+                foreach (var renderer in ExportRoot.GetComponentsInChildren<Renderer>())
+                {
+                    var relativePath = UniGLTF.UnityExtensions.RelativePathFrom(renderer.transform, ExportRoot.transform);
+                    var mesh = GetMesh(renderer);
+                    ExpectedByteSize += CalcMeshSize(relativePath, mesh, m_settings, clips);
                 }
             }
             MetaHasError = meta.Validate().Any();
-
-            // サイズ の 計算
-            var proxy = ExportRoot.GetComponent<VRMBlendShapeProxy>();
-            var clips = new List<BlendShapeClip>();
-            if (proxy != null && proxy.BlendShapeAvatar != null)
-            {
-                clips.AddRange(proxy.BlendShapeAvatar.Clips);
-            }
-
-            ExpectedByteSize = 0;
-            foreach (var renderer in ExportRoot.GetComponentsInChildren<Renderer>())
-            {
-                var relativePath = UniGLTF.UnityExtensions.RelativePathFrom(renderer.transform, ExportRoot.transform);
-                var mesh = GetMesh(renderer);
-                ExpectedByteSize += CalcMeshSize(relativePath, mesh, m_settings, clips);
-            }
         }
 
         static bool ClipsContainsName(List<BlendShapeClip> clips, bool onlyPreset, BlendShapeBinding binding)

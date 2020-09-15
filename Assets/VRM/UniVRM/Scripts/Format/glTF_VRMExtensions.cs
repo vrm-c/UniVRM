@@ -19,8 +19,27 @@ namespace VRM
         public static glTF_VRM_BlendShapeBind Create(Transform root, BlendShapeBinding binding,
             gltfExporter exporter)
         {
-            var transform = UniGLTF.UnityExtensions.GetFromPath(root.transform, binding.RelativePath);
-            var renderer = transform.GetComponent<SkinnedMeshRenderer>();
+            if (string.IsNullOrEmpty((binding.RelativePath)))
+            {
+                Debug.LogWarning("binding.RelativePath is null");
+                return null;
+            }
+            var found = root.transform.Find(binding.RelativePath);
+            if (found == null)
+            {
+                var name = binding.RelativePath.Split('/').Last();
+                found = root.GetComponentsInChildren<Transform>().Where(x => x.name == name).First();
+                if (found == null)
+                {
+                    Debug.LogWarning($"{binding.RelativePath} not found");
+                    return null;
+                }
+                else
+                {
+                    Debug.LogWarning($"fall back '{binding.RelativePath}' => '{found.RelativePathFrom(root)}'");
+                }
+            }
+            var renderer = found.GetComponent<SkinnedMeshRenderer>();
             if (renderer == null)
             {
                 return null;
@@ -38,7 +57,7 @@ namespace VRM
                 return null;
             }
 
-            if(!exporter.MeshBlendShapeIndexMap.TryGetValue(mesh, out Dictionary<int, int> blendShapeIndexMap))
+            if (!exporter.MeshBlendShapeIndexMap.TryGetValue(mesh, out Dictionary<int, int> blendShapeIndexMap))
             {
                 // この Mesh は  エクスポートされていない
                 return null;
