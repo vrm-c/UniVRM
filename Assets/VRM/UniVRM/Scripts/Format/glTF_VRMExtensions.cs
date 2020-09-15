@@ -19,13 +19,27 @@ namespace VRM
         public static glTF_VRM_BlendShapeBind Create(Transform root, BlendShapeBinding binding,
             gltfExporter exporter)
         {
-            var transform = root.transform.Find(binding.RelativePath);
-            if (transform == null)
+            if (string.IsNullOrEmpty((binding.RelativePath)))
             {
-                Debug.LogWarning($"{binding.RelativePath} not found");
+                Debug.LogWarning("binding.RelativePath is null");
                 return null;
             }
-            var renderer = transform.GetComponent<SkinnedMeshRenderer>();
+            var found = root.transform.Find(binding.RelativePath);
+            if (found == null)
+            {
+                var name = binding.RelativePath.Split('/').Last();
+                found = root.GetComponentsInChildren<Transform>().Where(x => x.name == name).First();
+                if (found == null)
+                {
+                    Debug.LogWarning($"{binding.RelativePath} not found");
+                    return null;
+                }
+                else
+                {
+                    Debug.LogWarning($"fall back '{binding.RelativePath}' => '{found.RelativePathFrom(root)}'");
+                }
+            }
+            var renderer = found.GetComponent<SkinnedMeshRenderer>();
             if (renderer == null)
             {
                 return null;
