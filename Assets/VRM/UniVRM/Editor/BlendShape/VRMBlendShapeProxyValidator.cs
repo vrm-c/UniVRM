@@ -26,7 +26,7 @@ namespace VRM
                 var key = c.Key;
                 if (used.Contains(key))
                 {
-                    yield return Validation.Error($"duplicated BlendShapeKey: {c}");
+                    yield return Validation.Error($"duplicated BlendShapeKey: {key}");
                 }
                 else
                 {
@@ -55,7 +55,7 @@ namespace VRM
                     var target = p.transform.Find(v.RelativePath);
                     if (target == null)
                     {
-                        yield return Validation.Error($"{c}.Values[{i}].RelativePath({v.RelativePath} is not found");
+                        yield return Validation.Warning($"{c}.Values[{i}].RelativePath({v.RelativePath} is not found");
                     }
                 }
 
@@ -64,7 +64,7 @@ namespace VRM
                     var v = c.MaterialValues[i];
                     if (!materialNames.Contains(v.MaterialName))
                     {
-                        yield return Validation.Error($"{c}.MaterialValues[{i}].MaterialName({v.MaterialName} is not found");
+                        yield return Validation.Warning($"{c}.MaterialValues[{i}].MaterialName({v.MaterialName} is not found");
                     }
                 }
             }
