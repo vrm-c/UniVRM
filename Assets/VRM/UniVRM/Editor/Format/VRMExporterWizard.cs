@@ -178,6 +178,8 @@ namespace VRM
             if (Event.current.type == EventType.Layout)
             {
                 // ArgumentException: Getting control 1's position in a group with only 1 controls when doing repaint Aborting
+                // Validation により GUI の表示項目が変わる場合があるので、
+                // EventType.Layout と EventType.Repaint 間で内容が変わらないようしている。
                 if (m_requireValidation)
                 {
                     m_validator.Validate(ExportRoot, m_settings, Meta != null ? Meta : m_tmpMeta);
@@ -186,7 +188,7 @@ namespace VRM
             }
 
             //
-            // 事前チェック。ここで失敗する場合は Export UI を表示しない
+            // Humanoid として適正か？ ここで失敗する場合は Export UI を表示しない
             //
             if (!m_validator.RootAndHumanoidCheck(ExportRoot, m_settings))
             {
@@ -202,7 +204,7 @@ namespace VRM
             GUIUtility.GetControlID(645789, FocusType.Passive);
 
             //
-            // その他の Validation
+            // VRM の Validation
             //
             foreach (var v in m_validator.Validations)
             {
