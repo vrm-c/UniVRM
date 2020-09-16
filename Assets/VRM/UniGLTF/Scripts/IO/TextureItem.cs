@@ -163,8 +163,7 @@ namespace UniGLTF
                 var textureType = TextureIO.GetglTFTextureType(gltf, m_textureIndex);
                 var colorSpace = TextureIO.GetColorSpace(textureType);
                 var isLinear = colorSpace == RenderTextureReadWrite.Linear;
-                yield return m_textureLoader.ProcessOnMainThread(isLinear);
-                TextureSamplerUtil.SetSampler(Texture, gltf.GetSamplerFromTextureIndex(m_textureIndex));
+                yield return m_textureLoader.ProcessOnMainThread(isLinear, gltf.GetSamplerFromTextureIndex(m_textureIndex));
             }
         }
         #endregion
