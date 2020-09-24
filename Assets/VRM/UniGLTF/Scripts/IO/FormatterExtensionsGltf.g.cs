@@ -212,11 +212,6 @@ namespace UniGLTF {
             f.Key("byteLength"); f.GenSerialize(value.byteLength);
         }
 
-        if(false)
-        {
-            f.Key("byteStride"); f.GenSerialize(value.byteStride);
-        }
-
         if(value.target!=0)
         {
             f.Key("target"); f.GenSerialize(value.target);
