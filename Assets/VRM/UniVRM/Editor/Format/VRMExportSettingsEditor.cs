@@ -86,7 +86,6 @@ namespace VRM
 
         CheckBoxProp m_forceTPose;
         CheckBoxProp m_poseFreeze;
-        CheckBoxProp m_useExcperimentalExporter;
         CheckBoxProp m_useSparseAccessor;
         CheckBoxProp m_onlyBlendShapePosition;
         CheckBoxProp m_reduceBlendShape;
@@ -137,7 +136,6 @@ namespace VRM
         {
             m_forceTPose = new CheckBoxProp(serializedObject.FindProperty(nameof(ForceTPose)), Options.FORCE_T_POSE);
             m_poseFreeze = new CheckBoxProp(serializedObject.FindProperty(nameof(PoseFreeze)), Options.NORMALIZE);
-            m_useExcperimentalExporter = new CheckBoxProp(serializedObject.FindProperty(nameof(UseExperimentalExporter)), Options.USE_GENERATED_SERIALIZER);
             m_useSparseAccessor = new CheckBoxProp(serializedObject.FindProperty(nameof(UseSparseAccessor)), Options.BLENDSHAPE_USE_SPARSE);
             m_onlyBlendShapePosition = new CheckBoxProp(serializedObject.FindProperty(nameof(OnlyBlendshapePosition)), Options.BLENDSHAPE_EXCLUDE_NORMAL_AND_TANGENT);
             m_reduceBlendShape = new CheckBoxProp(serializedObject.FindProperty(nameof(ReduceBlendshape)), Options.BLENDSHAPE_ONLY_CLIP_USE);
@@ -151,7 +149,6 @@ namespace VRM
             serializedObject.Update();
             m_forceTPose.Draw();
             m_poseFreeze.Draw();
-            m_useExcperimentalExporter.Draw();
             m_useSparseAccessor.Draw();
             m_onlyBlendShapePosition.Draw();
             m_reduceBlendShape.Draw();
