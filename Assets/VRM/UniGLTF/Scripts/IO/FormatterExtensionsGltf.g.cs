@@ -572,7 +572,7 @@ namespace UniGLTF {
             f.Key("alphaMode"); f.GenSerialize(value.alphaMode);
         }
 
-        if(!string.IsNullOrEmpty(value.alphaMode))
+        if(value.alphaMode == "MASK")
         {
             f.Key("alphaCutoff"); f.GenSerialize(value.alphaCutoff);
         }

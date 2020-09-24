@@ -80,7 +80,7 @@ namespace UniGLTF
                 {"gltf/meshes[]/primitives[]/extras", "if(value.extras!=null && value.extras.targetNames!=null && value.extras.targetNames.Count>0)"},
                 {"gltf/meshes[]/weights", "if(value.weights!=null && value.weights.Length>0)" },
                 {"gltf/materials", "if(value.materials!=null && value.materials.Count>0)" },
-                {"gltf/materials[]/alphaCutoff", "if(!string.IsNullOrEmpty(value.alphaMode))" },
+                {"gltf/materials[]/alphaCutoff", "if(value.alphaMode == \"MASK\")" },
                 {"gltf/nodes", "if(value.nodes!=null && value.nodes.Count>0)" },
                 {"gltf/nodes[]/camera", "if(value.camera!=-1)"},
                 {"gltf/nodes[]/mesh", "if(value.mesh!=-1)"},
