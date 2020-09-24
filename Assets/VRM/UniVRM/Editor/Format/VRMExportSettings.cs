@@ -19,12 +19,6 @@ namespace VRM
         public bool PoseFreeze = true;
 
         /// <summary>
-        /// エクスポート時に新しいJsonSerializerを使う
-        /// </summary>
-        [Tooltip("Use new JSON serializer")]
-        public bool UseExperimentalExporter = false;
-
-        /// <summary>
         /// BlendShapeのシリアライズにSparseAccessorを使う
         /// </summary>
         [Tooltip("Use sparse accessor for blendshape. This may reduce vrm size")]

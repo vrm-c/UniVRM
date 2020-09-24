@@ -2,8 +2,8 @@
 {
     public enum SerializerTypes
     {
+        Generated, // generated, No AOT Problem
         JsonSerializable, // manual, Obsolete
-        UniJSON, // reflection
-        Generated, // generated, experimental for mobile
+        UniJSON, // reflection, Obsolete
     }
 }

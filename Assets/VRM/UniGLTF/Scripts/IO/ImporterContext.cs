@@ -271,7 +271,7 @@ namespace UniGLTF
             }
         }
 
-        private SerializerTypes _serializerType = SerializerTypes.UniJSON;
+        private SerializerTypes _serializerType = SerializerTypes.Generated;
         public SerializerTypes SerializerType { get { return _serializerType; } set { _serializerType = value; } }
 
         public virtual void ParseJson(string json, IStorage storage)
@@ -281,6 +281,7 @@ namespace UniGLTF
 
             if (_serializerType == SerializerTypes.UniJSON)
             {
+                // Obsolete
                 Json.ParseAsJson().Deserialize(ref GLTF);
             }
             else if (_serializerType == SerializerTypes.Generated)

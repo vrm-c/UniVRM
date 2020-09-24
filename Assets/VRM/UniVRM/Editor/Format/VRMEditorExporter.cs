@@ -231,7 +231,7 @@ namespace VRM
                 // vrm.extensions.VRM.meta.contactInformation = settings.ContactInformation;
                 // vrm.extensions.VRM.meta.reference = settings.Reference;
 
-                var bytes = vrm.ToGlbBytes(settings.UseExperimentalExporter ? SerializerTypes.Generated : SerializerTypes.UniJSON);
+                var bytes = vrm.ToGlbBytes();
                 File.WriteAllBytes(path, bytes);
                 Debug.LogFormat("Export elapsed {0}", sw.Elapsed);
             }

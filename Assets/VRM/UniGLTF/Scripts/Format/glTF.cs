@@ -427,10 +427,10 @@ namespace UniGLTF
 
         void Traverse(ListTreeNode<JsonValue> node, JsonFormatter f, Utf8String parentKey)
         {
-            if(node.IsMap())
+            if (node.IsMap())
             {
                 f.BeginMap();
-                foreach(var kv in node.ObjectItems())
+                foreach (var kv in node.ObjectItems())
                 {
                     if (parentKey == s_extensions)
                     {
@@ -444,10 +444,10 @@ namespace UniGLTF
                 }
                 f.EndMap();
             }
-            else if(node.IsArray())
+            else if (node.IsArray())
             {
                 f.BeginList();
-                foreach(var x in node.ArrayItems())
+                foreach (var x in node.ArrayItems())
                 {
                     Traverse(x, f, default(Utf8String));
                 }
@@ -468,11 +468,12 @@ namespace UniGLTF
             return f.ToString();
         }
 
-        public byte[] ToGlbBytes(SerializerTypes serializer = SerializerTypes.UniJSON)
+        public byte[] ToGlbBytes(SerializerTypes serializer = SerializerTypes.Generated)
         {
             string json;
             if (serializer == SerializerTypes.UniJSON)
             {
+                // Obsolete
                 var c = new JsonSchemaValidationContext(this)
                 {
                     EnableDiagnosisForNotRequiredFields = true,
@@ -485,7 +486,7 @@ namespace UniGLTF
                 f.GenSerialize(this);
                 json = f.ToString().ParseAsJson().ToString("  ");
             }
-            else if(serializer == SerializerTypes.JsonSerializable)
+            else if (serializer == SerializerTypes.JsonSerializable)
             {
                 // Obsolete
                 json = ToJson();
