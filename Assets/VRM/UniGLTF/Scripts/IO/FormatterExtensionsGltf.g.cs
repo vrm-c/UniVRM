@@ -246,12 +246,12 @@ namespace UniGLTF {
     {
         f.BeginMap(0); // dummy
 
-        
+        if(value.bufferView>=0)
         {
             f.Key("bufferView"); f.GenSerialize(value.bufferView);
         }
 
-        
+        if(value.bufferView>=0)
         {
             f.Key("byteOffset"); f.GenSerialize(value.byteOffset);
         }

@@ -59,6 +59,9 @@ namespace UniGLTF
                 {"gltf/accessors[]/max", "if(value.max!=null && value.max.Length>0)"},
                 {"gltf/accessors[]/min", "if(value.min!=null && value.min.Length>0)"},
                 {"gltf/accessors[]/sparse", "if(value.sparse!=null && value.sparse.count>0)"},
+                {"gltf/accessors[]/bufferView", "if(value.bufferView>=0)"},
+                {"gltf/accessors[]/byteOffset", "if(value.bufferView>=0)"},
+
                 {"gltf/images", "if(value.images!=null && value.images.Count>0)" },
 
                 {"gltf/meshes", "if(value.meshes!=null && value.meshes.Count>0)" },
