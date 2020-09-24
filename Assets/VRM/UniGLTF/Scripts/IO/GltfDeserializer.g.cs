@@ -655,9 +655,85 @@ public static glTFMaterialBaseColorTextureInfo Deserialize_gltf_materials__pbrMe
             continue;
         }
 
+        if(key=="extensions"){
+            value.extensions = Deserialize_gltf_materials__pbrMetallicRoughness_baseColorTexture_extensions(kv.Value);
+            continue;
+        }
+
     }
     return value;
 }
+
+public static glTFTextureInfo_extensions Deserialize_gltf_materials__pbrMetallicRoughness_baseColorTexture_extensions(ListTreeNode<JsonValue> parsed)
+{
+    var value = new glTFTextureInfo_extensions();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="KHR_texture_transform"){
+            value.KHR_texture_transform = Deserialize_gltf_materials__pbrMetallicRoughness_baseColorTexture_extensions_KHR_texture_transform(kv.Value);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static glTF_KHR_texture_transform Deserialize_gltf_materials__pbrMetallicRoughness_baseColorTexture_extensions_KHR_texture_transform(ListTreeNode<JsonValue> parsed)
+{
+    var value = new glTF_KHR_texture_transform();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="offset"){
+            value.offset = Deserialize_gltf_materials__pbrMetallicRoughness_baseColorTexture_extensions_KHR_texture_transform_offset(kv.Value);
+            continue;
+        }
+
+        if(key=="rotation"){
+            value.rotation = kv.Value.GetSingle();
+            continue;
+        }
+
+        if(key=="scale"){
+            value.scale = Deserialize_gltf_materials__pbrMetallicRoughness_baseColorTexture_extensions_KHR_texture_transform_scale(kv.Value);
+            continue;
+        }
+
+        if(key=="texCoord"){
+            value.texCoord = kv.Value.GetInt32();
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static Single[] Deserialize_gltf_materials__pbrMetallicRoughness_baseColorTexture_extensions_KHR_texture_transform_offset(ListTreeNode<JsonValue> parsed)
+{
+    var value = new Single[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static Single[] Deserialize_gltf_materials__pbrMetallicRoughness_baseColorTexture_extensions_KHR_texture_transform_scale(ListTreeNode<JsonValue> parsed)
+{
+    var value = new Single[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
 
 public static Single[] Deserialize_gltf_materials__pbrMetallicRoughness_baseColorFactor(ListTreeNode<JsonValue> parsed)
 {
@@ -688,9 +764,85 @@ public static glTFMaterialMetallicRoughnessTextureInfo Deserialize_gltf_material
             continue;
         }
 
+        if(key=="extensions"){
+            value.extensions = Deserialize_gltf_materials__pbrMetallicRoughness_metallicRoughnessTexture_extensions(kv.Value);
+            continue;
+        }
+
     }
     return value;
 }
+
+public static glTFTextureInfo_extensions Deserialize_gltf_materials__pbrMetallicRoughness_metallicRoughnessTexture_extensions(ListTreeNode<JsonValue> parsed)
+{
+    var value = new glTFTextureInfo_extensions();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="KHR_texture_transform"){
+            value.KHR_texture_transform = Deserialize_gltf_materials__pbrMetallicRoughness_metallicRoughnessTexture_extensions_KHR_texture_transform(kv.Value);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static glTF_KHR_texture_transform Deserialize_gltf_materials__pbrMetallicRoughness_metallicRoughnessTexture_extensions_KHR_texture_transform(ListTreeNode<JsonValue> parsed)
+{
+    var value = new glTF_KHR_texture_transform();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="offset"){
+            value.offset = Deserialize_gltf_materials__pbrMetallicRoughness_metallicRoughnessTexture_extensions_KHR_texture_transform_offset(kv.Value);
+            continue;
+        }
+
+        if(key=="rotation"){
+            value.rotation = kv.Value.GetSingle();
+            continue;
+        }
+
+        if(key=="scale"){
+            value.scale = Deserialize_gltf_materials__pbrMetallicRoughness_metallicRoughnessTexture_extensions_KHR_texture_transform_scale(kv.Value);
+            continue;
+        }
+
+        if(key=="texCoord"){
+            value.texCoord = kv.Value.GetInt32();
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static Single[] Deserialize_gltf_materials__pbrMetallicRoughness_metallicRoughnessTexture_extensions_KHR_texture_transform_offset(ListTreeNode<JsonValue> parsed)
+{
+    var value = new Single[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static Single[] Deserialize_gltf_materials__pbrMetallicRoughness_metallicRoughnessTexture_extensions_KHR_texture_transform_scale(ListTreeNode<JsonValue> parsed)
+{
+    var value = new Single[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
 
 public static glTFMaterialNormalTextureInfo Deserialize_gltf_materials__normalTexture(ListTreeNode<JsonValue> parsed)
 {
@@ -715,9 +867,85 @@ public static glTFMaterialNormalTextureInfo Deserialize_gltf_materials__normalTe
             continue;
         }
 
+        if(key=="extensions"){
+            value.extensions = Deserialize_gltf_materials__normalTexture_extensions(kv.Value);
+            continue;
+        }
+
     }
     return value;
 }
+
+public static glTFTextureInfo_extensions Deserialize_gltf_materials__normalTexture_extensions(ListTreeNode<JsonValue> parsed)
+{
+    var value = new glTFTextureInfo_extensions();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="KHR_texture_transform"){
+            value.KHR_texture_transform = Deserialize_gltf_materials__normalTexture_extensions_KHR_texture_transform(kv.Value);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static glTF_KHR_texture_transform Deserialize_gltf_materials__normalTexture_extensions_KHR_texture_transform(ListTreeNode<JsonValue> parsed)
+{
+    var value = new glTF_KHR_texture_transform();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="offset"){
+            value.offset = Deserialize_gltf_materials__normalTexture_extensions_KHR_texture_transform_offset(kv.Value);
+            continue;
+        }
+
+        if(key=="rotation"){
+            value.rotation = kv.Value.GetSingle();
+            continue;
+        }
+
+        if(key=="scale"){
+            value.scale = Deserialize_gltf_materials__normalTexture_extensions_KHR_texture_transform_scale(kv.Value);
+            continue;
+        }
+
+        if(key=="texCoord"){
+            value.texCoord = kv.Value.GetInt32();
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static Single[] Deserialize_gltf_materials__normalTexture_extensions_KHR_texture_transform_offset(ListTreeNode<JsonValue> parsed)
+{
+    var value = new Single[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static Single[] Deserialize_gltf_materials__normalTexture_extensions_KHR_texture_transform_scale(ListTreeNode<JsonValue> parsed)
+{
+    var value = new Single[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
 
 public static glTFMaterialOcclusionTextureInfo Deserialize_gltf_materials__occlusionTexture(ListTreeNode<JsonValue> parsed)
 {
@@ -742,9 +970,85 @@ public static glTFMaterialOcclusionTextureInfo Deserialize_gltf_materials__occlu
             continue;
         }
 
+        if(key=="extensions"){
+            value.extensions = Deserialize_gltf_materials__occlusionTexture_extensions(kv.Value);
+            continue;
+        }
+
     }
     return value;
 }
+
+public static glTFTextureInfo_extensions Deserialize_gltf_materials__occlusionTexture_extensions(ListTreeNode<JsonValue> parsed)
+{
+    var value = new glTFTextureInfo_extensions();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="KHR_texture_transform"){
+            value.KHR_texture_transform = Deserialize_gltf_materials__occlusionTexture_extensions_KHR_texture_transform(kv.Value);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static glTF_KHR_texture_transform Deserialize_gltf_materials__occlusionTexture_extensions_KHR_texture_transform(ListTreeNode<JsonValue> parsed)
+{
+    var value = new glTF_KHR_texture_transform();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="offset"){
+            value.offset = Deserialize_gltf_materials__occlusionTexture_extensions_KHR_texture_transform_offset(kv.Value);
+            continue;
+        }
+
+        if(key=="rotation"){
+            value.rotation = kv.Value.GetSingle();
+            continue;
+        }
+
+        if(key=="scale"){
+            value.scale = Deserialize_gltf_materials__occlusionTexture_extensions_KHR_texture_transform_scale(kv.Value);
+            continue;
+        }
+
+        if(key=="texCoord"){
+            value.texCoord = kv.Value.GetInt32();
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static Single[] Deserialize_gltf_materials__occlusionTexture_extensions_KHR_texture_transform_offset(ListTreeNode<JsonValue> parsed)
+{
+    var value = new Single[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static Single[] Deserialize_gltf_materials__occlusionTexture_extensions_KHR_texture_transform_scale(ListTreeNode<JsonValue> parsed)
+{
+    var value = new Single[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
 
 public static glTFMaterialEmissiveTextureInfo Deserialize_gltf_materials__emissiveTexture(ListTreeNode<JsonValue> parsed)
 {
@@ -764,9 +1068,85 @@ public static glTFMaterialEmissiveTextureInfo Deserialize_gltf_materials__emissi
             continue;
         }
 
+        if(key=="extensions"){
+            value.extensions = Deserialize_gltf_materials__emissiveTexture_extensions(kv.Value);
+            continue;
+        }
+
     }
     return value;
 }
+
+public static glTFTextureInfo_extensions Deserialize_gltf_materials__emissiveTexture_extensions(ListTreeNode<JsonValue> parsed)
+{
+    var value = new glTFTextureInfo_extensions();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="KHR_texture_transform"){
+            value.KHR_texture_transform = Deserialize_gltf_materials__emissiveTexture_extensions_KHR_texture_transform(kv.Value);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static glTF_KHR_texture_transform Deserialize_gltf_materials__emissiveTexture_extensions_KHR_texture_transform(ListTreeNode<JsonValue> parsed)
+{
+    var value = new glTF_KHR_texture_transform();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="offset"){
+            value.offset = Deserialize_gltf_materials__emissiveTexture_extensions_KHR_texture_transform_offset(kv.Value);
+            continue;
+        }
+
+        if(key=="rotation"){
+            value.rotation = kv.Value.GetSingle();
+            continue;
+        }
+
+        if(key=="scale"){
+            value.scale = Deserialize_gltf_materials__emissiveTexture_extensions_KHR_texture_transform_scale(kv.Value);
+            continue;
+        }
+
+        if(key=="texCoord"){
+            value.texCoord = kv.Value.GetInt32();
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static Single[] Deserialize_gltf_materials__emissiveTexture_extensions_KHR_texture_transform_offset(ListTreeNode<JsonValue> parsed)
+{
+    var value = new Single[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static Single[] Deserialize_gltf_materials__emissiveTexture_extensions_KHR_texture_transform_scale(ListTreeNode<JsonValue> parsed)
+{
+    var value = new Single[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
 
 public static Single[] Deserialize_gltf_materials__emissiveFactor(ListTreeNode<JsonValue> parsed)
 {
@@ -837,6 +1217,11 @@ public static glTFMesh Deserialize_gltf_meshes_LIST(ListTreeNode<JsonValue> pars
 
         if(key=="weights"){
             value.weights = Deserialize_gltf_meshes__weights(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.extras = Deserialize_gltf_meshes__extras(kv.Value);
             continue;
         }
 
@@ -1032,6 +1417,32 @@ public static Single[] Deserialize_gltf_meshes__weights(ListTreeNode<JsonValue> 
 	return value;
 } 
 
+public static glTFMesh_extras Deserialize_gltf_meshes__extras(ListTreeNode<JsonValue> parsed)
+{
+    var value = new glTFMesh_extras();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="targetNames"){
+            value.targetNames = Deserialize_gltf_meshes__extras_targetNames(kv.Value);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static List<System.String> Deserialize_gltf_meshes__extras_targetNames(ListTreeNode<JsonValue> parsed)
+{
+    var value = new List<String>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(x.GetString());
+    }
+	return value;
+}
 public static List<UniGLTF.glTFNode> Deserialize_gltf_nodes(ListTreeNode<JsonValue> parsed)
 {
     var value = new List<glTFNode>();
