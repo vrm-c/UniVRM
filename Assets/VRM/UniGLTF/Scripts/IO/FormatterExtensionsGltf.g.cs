@@ -212,11 +212,6 @@ namespace UniGLTF {
             f.Key("byteLength"); f.GenSerialize(value.byteLength);
         }
 
-        if(false)
-        {
-            f.Key("byteStride"); f.GenSerialize(value.byteStride);
-        }
-
         if(value.target!=0)
         {
             f.Key("target"); f.GenSerialize(value.target);
@@ -251,12 +246,12 @@ namespace UniGLTF {
     {
         f.BeginMap(0); // dummy
 
-        
+        if(value.bufferView>=0)
         {
             f.Key("bufferView"); f.GenSerialize(value.bufferView);
         }
 
-        
+        if(value.bufferView>=0)
         {
             f.Key("byteOffset"); f.GenSerialize(value.byteOffset);
         }
@@ -572,7 +567,7 @@ namespace UniGLTF {
             f.Key("alphaMode"); f.GenSerialize(value.alphaMode);
         }
 
-        if(!string.IsNullOrEmpty(value.alphaMode))
+        if(value.alphaMode == "MASK")
         {
             f.Key("alphaCutoff"); f.GenSerialize(value.alphaCutoff);
         }

@@ -44,13 +44,13 @@ namespace UniGLTF
             Stream m_s;
             StreamWriter m_w;
 
-            static Dictionary<string, string> s_snipets = new Dictionary<string, string>
+            static Dictionary<string, string> s_snippets = new Dictionary<string, string>
             {
                 {"gltf/animations", "if(value.animations!=null && value.animations.Count>0)" },
                 {"gltf/cameras", "if(value.cameras!=null && value.cameras.Count>0)" },
                 {"gltf/buffers", "if(value.buffers!=null && value.buffers.Count>0)" },
                 {"gltf/bufferViews", "if(value.bufferViews!=null && value.bufferViews.Count>0)" },
-                {"gltf/bufferViews[]/byteStride", "if(false)" },
+                {"gltf/bufferViews[]/byteStride", "" },
                 {"gltf/bufferViews[]/target", "if(value.target!=0)" },
                 {"gltf/animations[]/channels", "if(value.channels!=null && value.channels.Count>0)" },
                 {"gltf/animations[]/channels[]/target", "if(value!=null)" },
@@ -59,6 +59,9 @@ namespace UniGLTF
                 {"gltf/accessors[]/max", "if(value.max!=null && value.max.Length>0)"},
                 {"gltf/accessors[]/min", "if(value.min!=null && value.min.Length>0)"},
                 {"gltf/accessors[]/sparse", "if(value.sparse!=null && value.sparse.count>0)"},
+                {"gltf/accessors[]/bufferView", "if(value.bufferView>=0)"},
+                {"gltf/accessors[]/byteOffset", "if(value.bufferView>=0)"},
+
                 {"gltf/images", "if(value.images!=null && value.images.Count>0)" },
 
                 {"gltf/meshes", "if(value.meshes!=null && value.meshes.Count>0)" },
@@ -80,7 +83,7 @@ namespace UniGLTF
                 {"gltf/meshes[]/primitives[]/extras", "if(value.extras!=null && value.extras.targetNames!=null && value.extras.targetNames.Count>0)"},
                 {"gltf/meshes[]/weights", "if(value.weights!=null && value.weights.Length>0)" },
                 {"gltf/materials", "if(value.materials!=null && value.materials.Count>0)" },
-                {"gltf/materials[]/alphaCutoff", "if(!string.IsNullOrEmpty(value.alphaMode))" },
+                {"gltf/materials[]/alphaCutoff", "if(value.alphaMode == \"MASK\")" },
                 {"gltf/nodes", "if(value.nodes!=null && value.nodes.Count>0)" },
                 {"gltf/nodes[]/camera", "if(value.camera!=-1)"},
                 {"gltf/nodes[]/mesh", "if(value.mesh!=-1)"},
@@ -276,7 +279,7 @@ namespace UniGLTF {
                         {
 
                         }
-                        else if(fi.FieldType == typeof(glTF_KHR_materials_unlit))
+                        else if (fi.FieldType == typeof(glTF_KHR_materials_unlit))
                         {
 
                         }
@@ -287,20 +290,27 @@ namespace UniGLTF {
 
                         var snipet = fi.FieldType.IsClass ? "if(value." + fi.Name + "!=null)" : "";
                         var value = default(string);
-                        if (s_snipets.TryGetValue(path + "/" + fi.Name, out value))
+                        if (s_snippets.TryGetValue(path + "/" + fi.Name, out value))
                         {
                             snipet = value;
                         }
 
-                        m_w.Write(@"
+                        if (value == "")
+                        {
+                            // found, but empty
+                        }
+                        else
+                        {
+                            m_w.Write(@"
         $1
         {
             f.Key(""$0""); f.GenSerialize(value.$0);
         }
 "
-.Replace("$0", fi.Name)
-.Replace("$1", snipet)
-);
+    .Replace("$0", fi.Name)
+    .Replace("$1", snipet)
+    );
+                        }
                     }
 
                     m_w.Write(@"
