@@ -9,7 +9,7 @@ namespace VRM
     {
         public const string MENU_KEY = "GameObject/UnityEditorScripts/";
         public const int MENU_PRIORITY = 11;
-        
+
         public static Object GetPrefab(GameObject instance)
         {
 #if UNITY_2018_2_OR_NEWER
@@ -21,22 +21,39 @@ namespace VRM
 
         public static bool IsPrefab(Object instance)
         {
-            return instance != null && PrefabUtility.GetPrefabType(instance) == PrefabType.Prefab;
+            if (instance == null)
+            {
+                return false;
+            }
+            if (PrefabUtility.GetPrefabAssetType(instance) != PrefabAssetType.Regular)
+            {
+                return false;
+            }
+            return true;
         }
 
         public static void ApplyChangesToPrefab(GameObject instance)
         {
             var prefab = GetPrefab(instance);
-            if (prefab == null) return;
+            if (prefab == null)
+            {
+                return;
+            }
 
-            PrefabUtility.ReplacePrefab(instance, prefab, ReplacePrefabOptions.ConnectToPrefab);
+            var path = AssetDatabase.GetAssetPath(prefab);
+            if (string.IsNullOrEmpty(path))
+            {
+                return;
+            }
+
+            PrefabUtility.SaveAsPrefabAssetAndConnect(instance, path, InteractionMode.AutomatedAction);
         }
-        
+
         public static GameObject InstantiatePrefab(GameObject prefab)
         {
             if (!IsPrefab(prefab)) return null;
 
-            return (GameObject) PrefabUtility.InstantiatePrefab(prefab);
+            return (GameObject)PrefabUtility.InstantiatePrefab(prefab);
         }
     }
 }
