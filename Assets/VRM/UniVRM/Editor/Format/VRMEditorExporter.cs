@@ -217,19 +217,16 @@ namespace VRM
             }
 
             // 出力
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+            var gltf = new UniGLTF.glTF();
+            using (var exporter = new VRMExporter(gltf))
             {
-                var sw = System.Diagnostics.Stopwatch.StartNew();
-                var vrm = VRMExporter.Export(target, settings.MeshExportSettings);
-                // vrm.extensions.VRM.meta.title = settings.Title;
-                // vrm.extensions.VRM.meta.version = settings.Version;
-                // vrm.extensions.VRM.meta.author = settings.Author;
-                // vrm.extensions.VRM.meta.contactInformation = settings.ContactInformation;
-                // vrm.extensions.VRM.meta.reference = settings.Reference;
-
-                var bytes = vrm.ToGlbBytes();
-                File.WriteAllBytes(path, bytes);
-                Debug.LogFormat("Export elapsed {0}", sw.Elapsed);
+                exporter.Prepare(target);
+                exporter.Export(settings.MeshExportSettings);
             }
+            var bytes = gltf.ToGlbBytes();
+            File.WriteAllBytes(path, bytes);
+            Debug.LogFormat("Export elapsed {0}", sw.Elapsed);
 
             if (path.StartsWithUnityAssetPath())
             {

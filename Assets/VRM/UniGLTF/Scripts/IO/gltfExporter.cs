@@ -129,27 +129,11 @@ namespace UniGLTF
             };
         }
 
-        public static glTF Export(GameObject go, MeshExportSettings meshExportSettings)
-        {
-            var gltf = new glTF();
-            using (var exporter = new gltfExporter(gltf))
-            {
-                exporter.Prepare(go);
-                exporter.Export(meshExportSettings);
-            }
-            return gltf;
-        }
-
         public virtual void Prepare(GameObject go)
         {
             // コピーを作って、Z軸を反転することで左手系を右手系に変換する
             Copy = GameObject.Instantiate(go);
             Copy.transform.ReverseZRecursive();
-        }
-
-        public void Export(MeshExportSettings meshExportSettings)
-        {
-            FromGameObject(glTF, Copy, meshExportSettings);
         }
 
         public void Dispose()
@@ -195,22 +179,22 @@ namespace UniGLTF
             return node;
         }
 
-        void FromGameObject(glTF gltf, GameObject go, MeshExportSettings meshExportSettings)
+        public virtual void Export(MeshExportSettings meshExportSettings)
         {
             var bytesBuffer = new ArrayByteBuffer(new byte[50 * 1024 * 1024]);
-            var bufferIndex = gltf.AddBuffer(bytesBuffer);
+            var bufferIndex = glTF.AddBuffer(bytesBuffer);
 
             GameObject tmpParent = null;
-            if (go.transform.childCount == 0)
+            if (Copy.transform.childCount == 0)
             {
                 tmpParent = new GameObject("tmpParent");
-                go.transform.SetParent(tmpParent.transform, true);
-                go = tmpParent;
+                Copy.transform.SetParent(tmpParent.transform, true);
+                Copy = tmpParent;
             }
 
             try
             {
-                Nodes = go.transform.Traverse()
+                Nodes = Copy.transform.Traverse()
                     .Skip(1) // exclude root object for the symmetry with the importer
                     .ToList();
 
@@ -221,12 +205,12 @@ namespace UniGLTF
                 TextureManager = new TextureExportManager(unityTextures.Select(x => x.Texture));
 
                 var materialExporter = CreateMaterialExporter();
-                gltf.materials = Materials.Select(x => materialExporter.ExportMaterial(x, TextureManager)).ToList();
+                glTF.materials = Materials.Select(x => materialExporter.ExportMaterial(x, TextureManager)).ToList();
 
                 for (int i = 0; i < unityTextures.Count; ++i)
                 {
                     var unityTexture = unityTextures[i];
-                    TextureIO.ExportTexture(gltf, bufferIndex, TextureManager.GetExportTexture(i), unityTexture.TextureType);
+                    TextureIO.ExportTexture(glTF, bufferIndex, TextureManager.GetExportTexture(i), unityTexture.TextureType);
                 }
                 #endregion
 
@@ -255,9 +239,9 @@ namespace UniGLTF
 
                 MeshBlendShapeIndexMap = new Dictionary<Mesh, Dictionary<int, int>>();
                 foreach (var (mesh, gltfMesh, blendShapeIndexMap) in MeshExporter.ExportMeshes(
-                        gltf, bufferIndex, unityMeshes, Materials, meshExportSettings))
+                        glTF, bufferIndex, unityMeshes, Materials, meshExportSettings))
                 {
-                    gltf.meshes.Add(gltfMesh);
+                    glTF.meshes.Add(gltfMesh);
                     if (!MeshBlendShapeIndexMap.ContainsKey(mesh))
                     {
                         // 同じmeshが複数回現れた
@@ -274,19 +258,19 @@ namespace UniGLTF
                         && x.bones != null
                         && x.bones.Length > 0)
                     .ToList();
-                gltf.nodes = Nodes.Select(x => ExportNode(x, Nodes, unityMeshes.Select(y => y.Renderer).ToList(), unitySkins)).ToList();
-                gltf.scenes = new List<gltfScene>
+                glTF.nodes = Nodes.Select(x => ExportNode(x, Nodes, unityMeshes.Select(y => y.Renderer).ToList(), unitySkins)).ToList();
+                glTF.scenes = new List<gltfScene>
                 {
                     new gltfScene
                     {
-                        nodes = go.transform.GetChildren().Select(x => Nodes.IndexOf(x)).ToArray(),
+                        nodes = Copy.transform.GetChildren().Select(x => Nodes.IndexOf(x)).ToArray(),
                     }
                 };
 
                 foreach (var x in unitySkins)
                 {
                     var matrices = x.sharedMesh.bindposes.Select(y => y.ReverseZ()).ToArray();
-                    var accessor = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, matrices, glBufferTarget.NONE);
+                    var accessor = glTF.ExtendBufferAndGetAccessorIndex(bufferIndex, matrices, glBufferTarget.NONE);
 
                     var skin = new glTFSkin
                     {
@@ -294,13 +278,13 @@ namespace UniGLTF
                         joints = x.bones.Select(y => Nodes.IndexOf(y)).ToArray(),
                         skeleton = Nodes.IndexOf(x.rootBone),
                     };
-                    var skinIndex = gltf.skins.Count;
-                    gltf.skins.Add(skin);
+                    var skinIndex = glTF.skins.Count;
+                    glTF.skins.Add(skin);
 
                     foreach (var z in Nodes.Where(y => y.Has(x)))
                     {
                         var nodeIndex = Nodes.IndexOf(z);
-                        var node = gltf.nodes[nodeIndex];
+                        var node = glTF.nodes[nodeIndex];
                         node.skin = skinIndex;
                     }
                 }
@@ -310,8 +294,8 @@ namespace UniGLTF
                 #region Animations
 
                 var clips = new List<AnimationClip>();
-                var animator = go.GetComponent<Animator>();
-                var animation = go.GetComponent<Animation>();
+                var animator = Copy.GetComponent<Animator>();
+                var animation = Copy.GetComponent<Animation>();
                 if (animator != null)
                 {
                     clips = AnimationExporter.GetAnimationClips(animator);
@@ -325,20 +309,20 @@ namespace UniGLTF
                 {
                     foreach (AnimationClip clip in clips)
                     {
-                        var animationWithCurve = AnimationExporter.Export(clip, go.transform, Nodes);
+                        var animationWithCurve = AnimationExporter.Export(clip, Copy.transform, Nodes);
 
                         foreach (var kv in animationWithCurve.SamplerMap)
                         {
                             var sampler = animationWithCurve.Animation.samplers[kv.Key];
 
-                            var inputAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, kv.Value.Input);
+                            var inputAccessorIndex = glTF.ExtendBufferAndGetAccessorIndex(bufferIndex, kv.Value.Input);
                             sampler.input = inputAccessorIndex;
 
-                            var outputAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, kv.Value.Output);
+                            var outputAccessorIndex = glTF.ExtendBufferAndGetAccessorIndex(bufferIndex, kv.Value.Output);
                             sampler.output = outputAccessorIndex;
 
                             // modify accessors
-                            var outputAccessor = gltf.accessors[outputAccessorIndex];
+                            var outputAccessor = glTF.accessors[outputAccessorIndex];
                             var channel = animationWithCurve.Animation.channels.First(x => x.sampler == kv.Key);
                             switch (glTFAnimationTarget.GetElementCount(channel.target.path))
                             {
@@ -361,7 +345,7 @@ namespace UniGLTF
                             }
                         }
                         animationWithCurve.Animation.name = clip.name;
-                        gltf.animations.Add(animationWithCurve.Animation);
+                        glTF.animations.Add(animationWithCurve.Animation);
                     }
                 }
                 #endregion
