@@ -232,7 +232,7 @@ namespace VRM
             {
                 v.DrawGUI();
             }
-            if (m_meshes.Meshes.Any(x => x.VertexColor != VRMExportMeshes.MeshInfo.VertexColorState.None))
+            if (m_meshes.Meshes.Any(x => x.VertexColor != UniGLTF.MeshExportInfo.VertexColorState.None))
             {
                 Validation.Warning(M17N.Getter.Msg(VRMExporterWizardMessages.VERTEX_COLOR_IS_INCLUDED)).DrawGUI();
             }

@@ -13,6 +13,49 @@ namespace UniGLTF
         public Renderer Renderer;
     }
 
+    [Serializable]
+    public struct MeshExportInfo
+    {
+        public Renderer Renderer;
+        public Mesh Mesh;
+        public bool IsRendererActive;
+        public bool Skinned;
+
+        public enum VertexColorState
+        {
+            // 存在しない
+            None,
+            // 存在して使用している
+            ExistsAndIsUsed,
+            // 存在するが使用していない
+            ExistsButNotUsed,
+        }
+        public VertexColorState VertexColor;
+
+        public int VertexCount;
+
+        /// <summary>
+        /// Position, UV, Normal
+        /// [Color]
+        /// [SkinningWeight]
+        /// </summary>
+        public int ExportVertexSize;
+
+        public int IndexCount;
+
+        // int 決め打ち
+        public int IndicesSize => IndexCount * 4;
+
+        public int ExportBlendShapeVertexSize;
+
+        public int TotalBlendShapeCount;
+
+        public int ExportBlendShapeCount;
+
+        public int ExportByteSize => ExportVertexSize * VertexCount + IndicesSize + ExportBlendShapeCount * ExportBlendShapeVertexSize * VertexCount;
+    }
+
+
     public struct MeshExportSettings
     {
         // MorphTarget に Sparse Accessor を使う

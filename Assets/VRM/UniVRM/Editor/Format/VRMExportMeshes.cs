@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using UnityEngine;
 
 namespace VRM
@@ -55,101 +54,7 @@ namespace VRM
             return false;
         }
 
-        [Serializable]
-        public struct MeshInfo
-        {
-            public Renderer Renderer;
-            public Mesh Mesh;
-            public bool IsRendererActive;
-            public bool Skinned;
-
-            public enum VertexColorState
-            {
-                // 存在しない
-                None,
-                // 存在して使用している
-                ExistsAndIsUsed,
-                // 存在するが使用していない
-                ExistsButNotUsed,
-            }
-            public VertexColorState VertexColor;
-
-            public int VertexCount;
-
-            /// <summary>
-            /// Position, UV, Normal
-            /// [Color]
-            /// [SkinningWeight]
-            /// </summary>
-            public int ExportVertexSize;
-
-            public int IndexCount;
-
-            // int 決め打ち
-            public int IndicesSize => IndexCount * 4;
-
-            public int ExportBlendShapeVertexSize;
-
-            public int TotalBlendShapeCount;
-
-            public int ExportBlendShapeCount;
-
-            public int ExportByteSize => ExportVertexSize * VertexCount + IndicesSize + ExportBlendShapeCount * ExportBlendShapeVertexSize * VertexCount;
-
-            public void CalcMeshSize(string relativePath, VRMExportSettings settings, IReadOnlyList<BlendShapeClip> clips)
-            {
-                VertexCount = Mesh.vertexCount;
-                ExportVertexSize = 0;
-                TotalBlendShapeCount = 0;
-                ExportBlendShapeCount = 0;
-
-                // float4 x 3
-                // vertices
-                if (Mesh.normals != null)
-                {
-                    ExportVertexSize += 4 * 3;
-                }
-                if (Mesh.uv != null)
-                {
-                    ExportVertexSize += 4 * 2;
-                }
-                if (Mesh.colors != null)
-                {
-                    ExportVertexSize += 4 * 4;
-                }
-                if (Mesh.boneWeights != null)
-                {
-                    // short, float x 4 weights
-                    ExportVertexSize += (2 + 4) * 4;
-                }
-                // indices
-                IndexCount = Mesh.triangles.Length;
-
-                // postion + normal ?. always tangent is ignored
-                TotalBlendShapeCount = Mesh.blendShapeCount;
-                ExportBlendShapeVertexSize = settings.OnlyBlendshapePosition ? 4 * 3 : 4 * (3 + 3);
-                for (var i = 0; i < Mesh.blendShapeCount; ++i)
-                {
-                    // var name = Mesh.GetBlendShapeName(i);
-                    if (settings.ReduceBlendshape)
-                    {
-                        if (!ClipsContainsName(clips, settings.ReduceBlendshapeClip, new BlendShapeBinding
-                        {
-                            Index = i,
-                            RelativePath = relativePath,
-                        }))
-                        {
-                            // skip
-                            continue;
-                        }
-                    }
-
-                    ++ExportBlendShapeCount;
-                }
-            }
-        }
-
-        public List<MeshInfo> Meshes = new List<MeshInfo>();
+        public List<UniGLTF.MeshExportInfo> Meshes = new List<UniGLTF.MeshExportInfo>();
 
         public int ExpectedExportByteSize => Meshes.Where(x => x.IsRendererActive).Sum(x => x.ExportByteSize);
 
@@ -161,7 +66,59 @@ namespace VRM
             return UniGLTF.UniUnlit.Utils.GetVColBlendMode(m) == UniGLTF.UniUnlit.UniUnlitVertexColorBlendOp.Multiply;
         }
 
-        bool TryGetMeshInfo(GameObject root, Renderer renderer, IReadOnlyList<BlendShapeClip> clips, VRMExportSettings settings, out MeshInfo info)
+        public static void CalcMeshSize(UniGLTF.MeshExportInfo info, string relativePath, VRMExportSettings settings, IReadOnlyList<BlendShapeClip> clips)
+        {
+            info.VertexCount = info.Mesh.vertexCount;
+            info.ExportVertexSize = 0;
+            info.TotalBlendShapeCount = 0;
+            info.ExportBlendShapeCount = 0;
+
+            // float4 x 3
+            // vertices
+            if (info.Mesh.normals != null)
+            {
+                info.ExportVertexSize += 4 * 3;
+            }
+            if (info.Mesh.uv != null)
+            {
+                info.ExportVertexSize += 4 * 2;
+            }
+            if (info.Mesh.colors != null)
+            {
+                info.ExportVertexSize += 4 * 4;
+            }
+            if (info.Mesh.boneWeights != null)
+            {
+                // short, float x 4 weights
+                info.ExportVertexSize += (2 + 4) * 4;
+            }
+            // indices
+            info.IndexCount = info.Mesh.triangles.Length;
+
+            // postion + normal ?. always tangent is ignored
+            info.TotalBlendShapeCount = info.Mesh.blendShapeCount;
+            info.ExportBlendShapeVertexSize = settings.OnlyBlendshapePosition ? 4 * 3 : 4 * (3 + 3);
+            for (var i = 0; i < info.Mesh.blendShapeCount; ++i)
+            {
+                // var name = Mesh.GetBlendShapeName(i);
+                if (settings.ReduceBlendshape)
+                {
+                    if (!ClipsContainsName(clips, settings.ReduceBlendshapeClip, new BlendShapeBinding
+                    {
+                        Index = i,
+                        RelativePath = relativePath,
+                    }))
+                    {
+                        // skip
+                        continue;
+                    }
+                }
+
+                ++info.ExportBlendShapeCount;
+            }
+        }
+
+        bool TryGetMeshInfo(GameObject root, Renderer renderer, IReadOnlyList<BlendShapeClip> clips, VRMExportSettings settings, out UniGLTF.MeshExportInfo info)
         {
             info = default;
             if (root == null)
@@ -195,17 +152,17 @@ namespace VRM
             }
 
             var relativePath = UniGLTF.UnityExtensions.RelativePathFrom(renderer.transform, root.transform);
-            info.CalcMeshSize(relativePath, settings, clips);
+            CalcMeshSize(info, relativePath, settings, clips);
 
             if (info.Mesh.colors != null && info.Mesh.colors.Length == info.Mesh.vertexCount)
             {
                 if (renderer.sharedMaterials.Any(x => MaterialUseVertexColor(x)))
                 {
-                    info.VertexColor = MeshInfo.VertexColorState.ExistsAndIsUsed;
+                    info.VertexColor = UniGLTF.MeshExportInfo.VertexColorState.ExistsAndIsUsed;
                 }
                 else
                 {
-                    info.VertexColor = MeshInfo.VertexColorState.ExistsButNotUsed;
+                    info.VertexColor = UniGLTF.MeshExportInfo.VertexColorState.ExistsButNotUsed;
                 }
             }
 
@@ -234,7 +191,7 @@ namespace VRM
 
             foreach (var renderer in ExportRoot.GetComponentsInChildren<Renderer>(true))
             {
-                if (TryGetMeshInfo(ExportRoot, renderer, clips, settings, out MeshInfo info))
+                if (TryGetMeshInfo(ExportRoot, renderer, clips, settings, out UniGLTF.MeshExportInfo info))
                 {
                     Meshes.Add(info);
                 }
