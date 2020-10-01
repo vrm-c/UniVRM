@@ -21,6 +21,23 @@ namespace VRM
             VRMExporterWizard.CreateWizard();
         }
 
+        enum Tabs
+        {
+            Meta,
+            Mesh,
+            ExportSettings,
+        }
+        Tabs _tab;
+
+        GUIStyle TabButtonStyle => "LargeButton";
+
+        // GUI.ToolbarButtonSize.FitToContentsも設定できる
+        GUI.ToolbarButtonSize TabButtonSize => GUI.ToolbarButtonSize.Fixed;
+        const string EXTENSION = ".vrm";
+
+        private static string m_lastExportDir;
+
+
         GameObject ExportRoot;
 
         VRMExportSettings m_settings;
@@ -249,19 +266,6 @@ namespace VRM
             }
         }
 
-        enum Tabs
-        {
-            Meta,
-            Mesh,
-            ExportSettings,
-        }
-        Tabs _tab;
-
-        GUIStyle TabButtonStyle => "LargeButton";
-
-        // GUI.ToolbarButtonSize.FitToContentsも設定できる
-        GUI.ToolbarButtonSize TabButtonSize => GUI.ToolbarButtonSize.Fixed;
-
         bool DrawWizardGUI()
         {
             if (m_tmpMeta == null)
@@ -311,10 +315,6 @@ namespace VRM
             }
             return wizard;
         }
-
-        const string EXTENSION = ".vrm";
-
-        private static string m_lastExportDir;
 
         public static void CreateWizard()
         {
