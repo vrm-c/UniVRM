@@ -59,7 +59,7 @@ namespace UniGLTF
         }
 #endif
 
-        glTF glTF;
+        protected glTF glTF;
 
         public GameObject Copy
         {

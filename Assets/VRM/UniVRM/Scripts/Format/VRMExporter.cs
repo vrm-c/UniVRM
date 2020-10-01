@@ -13,36 +13,34 @@ namespace VRM
             return new VRMMaterialExporter();
         }
 
+        public static glTF Export(MeshExportSettings configuration, GameObject go)
+        {
+            var gltf = new glTF();
+            using (var exporter = new VRMExporter(gltf))
+            {
+                exporter.Prepare(go);
+                exporter.Export(configuration);
+            }
+            return gltf;
+        }
+        
         public VRMExporter(glTF gltf) : base(gltf)
         {
             gltf.extensionsUsed.Add(glTF_VRM_extensions.ExtensionName);
             gltf.extensions.VRM = new glTF_VRM_extensions();
         }
 
-        public static glTF Export(MeshExportSettings configuration, GameObject go)
+        public override void Export(MeshExportSettings configuration)
         {
-            var gltf = new glTF();
-
-            using (var exporter = new VRMExporter(gltf))
-            {
-                _Export(gltf, exporter, go, configuration);
-            }
-
-            return gltf;
-        }
-
-        static void _Export(glTF gltf, VRMExporter exporter, GameObject go, MeshExportSettings meshExportSettings)
-        {
-            exporter.Prepare(go);
-            exporter.Export(meshExportSettings);
+            base.Export(configuration);
 
             // avatar
-            var animator = go.GetComponent<Animator>();
+            var animator = Copy.GetComponent<Animator>();
             if (animator != null)
             {
-                var humanoid = go.GetComponent<VRMHumanoidDescription>();
+                var humanoid = Copy.GetComponent<VRMHumanoidDescription>();
                 UniHumanoid.AvatarDescription description = null;
-                var nodes = go.transform.Traverse().Skip(1).ToList();
+                var nodes = Copy.transform.Traverse().Skip(1).ToList();
                 {
                     var isCreated = false;
                     if (humanoid != null)
@@ -53,7 +51,7 @@ namespace VRM
                     if (description != null)
                     {
                         // use description
-                        gltf.extensions.VRM.humanoid.Apply(description, nodes);
+                        glTF.extensions.VRM.humanoid.Apply(description, nodes);
                     }
 
                     if (isCreated)
@@ -75,14 +73,14 @@ namespace VRM
                         var transform = animator.GetBoneTransform(key);
                         if (transform != null)
                         {
-                            gltf.extensions.VRM.humanoid.SetNodeIndex(key, nodes.IndexOf(transform));
+                            glTF.extensions.VRM.humanoid.SetNodeIndex(key, nodes.IndexOf(transform));
                         }
                     }
                 }
             }
 
             // morph
-            var master = go.GetComponent<VRMBlendShapeProxy>();
+            var master = Copy.GetComponent<VRMBlendShapeProxy>();
             if (master != null)
             {
                 var avatar = master.BlendShapeAvatar;
@@ -90,117 +88,117 @@ namespace VRM
                 {
                     foreach (var x in avatar.Clips)
                     {
-                        gltf.extensions.VRM.blendShapeMaster.Add(x, exporter);
+                        glTF.extensions.VRM.blendShapeMaster.Add(x, this);
                     }
                 }
             }
 
             // secondary
-            VRMSpringUtility.ExportSecondary(exporter.Copy.transform, exporter.Nodes,
-                x => gltf.extensions.VRM.secondaryAnimation.colliderGroups.Add(x),
-                x => gltf.extensions.VRM.secondaryAnimation.boneGroups.Add(x)
+            VRMSpringUtility.ExportSecondary(Copy.transform, Nodes,
+                x => glTF.extensions.VRM.secondaryAnimation.colliderGroups.Add(x),
+                x => glTF.extensions.VRM.secondaryAnimation.boneGroups.Add(x)
                 );
 
 #pragma warning disable 0618
             // meta(obsolete)
             {
-                var meta = exporter.Copy.GetComponent<VRMMetaInformation>();
+                var meta = Copy.GetComponent<VRMMetaInformation>();
                 if (meta != null)
                 {
-                    gltf.extensions.VRM.meta.author = meta.Author;
-                    gltf.extensions.VRM.meta.contactInformation = meta.ContactInformation;
-                    gltf.extensions.VRM.meta.title = meta.Title;
+                    glTF.extensions.VRM.meta.author = meta.Author;
+                    glTF.extensions.VRM.meta.contactInformation = meta.ContactInformation;
+                    glTF.extensions.VRM.meta.title = meta.Title;
                     if (meta.Thumbnail != null)
                     {
-                        gltf.extensions.VRM.meta.texture = TextureIO.ExportTexture(gltf, gltf.buffers.Count - 1, meta.Thumbnail, glTFTextureTypes.Unknown);
+                        glTF.extensions.VRM.meta.texture = TextureIO.ExportTexture(glTF, glTF.buffers.Count - 1, meta.Thumbnail, glTFTextureTypes.Unknown);
                     }
 
-                    gltf.extensions.VRM.meta.licenseType = meta.LicenseType;
-                    gltf.extensions.VRM.meta.otherLicenseUrl = meta.OtherLicenseUrl;
-                    gltf.extensions.VRM.meta.reference = meta.Reference;
+                    glTF.extensions.VRM.meta.licenseType = meta.LicenseType;
+                    glTF.extensions.VRM.meta.otherLicenseUrl = meta.OtherLicenseUrl;
+                    glTF.extensions.VRM.meta.reference = meta.Reference;
                 }
             }
 #pragma warning restore 0618
 
             // meta
             {
-                var _meta = exporter.Copy.GetComponent<VRMMeta>();
+                var _meta = Copy.GetComponent<VRMMeta>();
                 if (_meta != null && _meta.Meta != null)
                 {
                     var meta = _meta.Meta;
 
                     // info
-                    gltf.extensions.VRM.meta.version = meta.Version;
-                    gltf.extensions.VRM.meta.author = meta.Author;
-                    gltf.extensions.VRM.meta.contactInformation = meta.ContactInformation;
-                    gltf.extensions.VRM.meta.reference = meta.Reference;
-                    gltf.extensions.VRM.meta.title = meta.Title;
+                    glTF.extensions.VRM.meta.version = meta.Version;
+                    glTF.extensions.VRM.meta.author = meta.Author;
+                    glTF.extensions.VRM.meta.contactInformation = meta.ContactInformation;
+                    glTF.extensions.VRM.meta.reference = meta.Reference;
+                    glTF.extensions.VRM.meta.title = meta.Title;
                     if (meta.Thumbnail != null)
                     {
-                        gltf.extensions.VRM.meta.texture = TextureIO.ExportTexture(gltf, gltf.buffers.Count - 1, meta.Thumbnail, glTFTextureTypes.Unknown);
+                        glTF.extensions.VRM.meta.texture = TextureIO.ExportTexture(glTF, glTF.buffers.Count - 1, meta.Thumbnail, glTFTextureTypes.Unknown);
                     }
 
                     // ussage permission
-                    gltf.extensions.VRM.meta.allowedUser = meta.AllowedUser;
-                    gltf.extensions.VRM.meta.violentUssage = meta.ViolentUssage;
-                    gltf.extensions.VRM.meta.sexualUssage = meta.SexualUssage;
-                    gltf.extensions.VRM.meta.commercialUssage = meta.CommercialUssage;
-                    gltf.extensions.VRM.meta.otherPermissionUrl = meta.OtherPermissionUrl;
+                    glTF.extensions.VRM.meta.allowedUser = meta.AllowedUser;
+                    glTF.extensions.VRM.meta.violentUssage = meta.ViolentUssage;
+                    glTF.extensions.VRM.meta.sexualUssage = meta.SexualUssage;
+                    glTF.extensions.VRM.meta.commercialUssage = meta.CommercialUssage;
+                    glTF.extensions.VRM.meta.otherPermissionUrl = meta.OtherPermissionUrl;
 
                     // distribution license
-                    gltf.extensions.VRM.meta.licenseType = meta.LicenseType;
+                    glTF.extensions.VRM.meta.licenseType = meta.LicenseType;
                     if (meta.LicenseType == LicenseType.Other)
                     {
-                        gltf.extensions.VRM.meta.otherLicenseUrl = meta.OtherLicenseUrl;
+                        glTF.extensions.VRM.meta.otherLicenseUrl = meta.OtherLicenseUrl;
                     }
                 }
             }
 
             // firstPerson
-            var firstPerson = exporter.Copy.GetComponent<VRMFirstPerson>();
+            var firstPerson = Copy.GetComponent<VRMFirstPerson>();
             if (firstPerson != null)
             {
                 if (firstPerson.FirstPersonBone != null)
                 {
-                    gltf.extensions.VRM.firstPerson.firstPersonBone = exporter.Nodes.IndexOf(firstPerson.FirstPersonBone);
-                    gltf.extensions.VRM.firstPerson.firstPersonBoneOffset = firstPerson.FirstPersonOffset;
-                    gltf.extensions.VRM.firstPerson.meshAnnotations = firstPerson.Renderers.Select(x => new glTF_VRM_MeshAnnotation
+                    glTF.extensions.VRM.firstPerson.firstPersonBone = Nodes.IndexOf(firstPerson.FirstPersonBone);
+                    glTF.extensions.VRM.firstPerson.firstPersonBoneOffset = firstPerson.FirstPersonOffset;
+                    glTF.extensions.VRM.firstPerson.meshAnnotations = firstPerson.Renderers.Select(x => new glTF_VRM_MeshAnnotation
                     {
-                        mesh = exporter.Meshes.IndexOf(x.SharedMesh),
+                        mesh = Meshes.IndexOf(x.SharedMesh),
                         firstPersonFlag = x.FirstPersonFlag.ToString(),
                     }).ToList();
                 }
 
                 // lookAt
                 {
-                    var lookAtHead = exporter.Copy.GetComponent<VRMLookAtHead>();
+                    var lookAtHead = Copy.GetComponent<VRMLookAtHead>();
                     if (lookAtHead != null)
                     {
-                        var boneApplyer = exporter.Copy.GetComponent<VRMLookAtBoneApplyer>();
-                        var blendShapeApplyer = exporter.Copy.GetComponent<VRMLookAtBlendShapeApplyer>();
+                        var boneApplyer = Copy.GetComponent<VRMLookAtBoneApplyer>();
+                        var blendShapeApplyer = Copy.GetComponent<VRMLookAtBlendShapeApplyer>();
                         if (boneApplyer != null)
                         {
-                            gltf.extensions.VRM.firstPerson.lookAtType = LookAtType.Bone;
-                            gltf.extensions.VRM.firstPerson.lookAtHorizontalInner.Apply(boneApplyer.HorizontalInner);
-                            gltf.extensions.VRM.firstPerson.lookAtHorizontalOuter.Apply(boneApplyer.HorizontalOuter);
-                            gltf.extensions.VRM.firstPerson.lookAtVerticalDown.Apply(boneApplyer.VerticalDown);
-                            gltf.extensions.VRM.firstPerson.lookAtVerticalUp.Apply(boneApplyer.VerticalUp);
+                            glTF.extensions.VRM.firstPerson.lookAtType = LookAtType.Bone;
+                            glTF.extensions.VRM.firstPerson.lookAtHorizontalInner.Apply(boneApplyer.HorizontalInner);
+                            glTF.extensions.VRM.firstPerson.lookAtHorizontalOuter.Apply(boneApplyer.HorizontalOuter);
+                            glTF.extensions.VRM.firstPerson.lookAtVerticalDown.Apply(boneApplyer.VerticalDown);
+                            glTF.extensions.VRM.firstPerson.lookAtVerticalUp.Apply(boneApplyer.VerticalUp);
                         }
                         else if (blendShapeApplyer != null)
                         {
-                            gltf.extensions.VRM.firstPerson.lookAtType = LookAtType.BlendShape;
-                            gltf.extensions.VRM.firstPerson.lookAtHorizontalOuter.Apply(blendShapeApplyer.Horizontal);
-                            gltf.extensions.VRM.firstPerson.lookAtVerticalDown.Apply(blendShapeApplyer.VerticalDown);
-                            gltf.extensions.VRM.firstPerson.lookAtVerticalUp.Apply(blendShapeApplyer.VerticalUp);
+                            glTF.extensions.VRM.firstPerson.lookAtType = LookAtType.BlendShape;
+                            glTF.extensions.VRM.firstPerson.lookAtHorizontalOuter.Apply(blendShapeApplyer.Horizontal);
+                            glTF.extensions.VRM.firstPerson.lookAtVerticalDown.Apply(blendShapeApplyer.VerticalDown);
+                            glTF.extensions.VRM.firstPerson.lookAtVerticalUp.Apply(blendShapeApplyer.VerticalUp);
                         }
                     }
                 }
             }
 
             // materials
-            foreach (var m in exporter.Materials)
+            foreach (var m in Materials)
             {
-                gltf.extensions.VRM.materialProperties.Add(VRMMaterialExporter.CreateFromMaterial(m, exporter.TextureManager.Textures));
+                glTF.extensions.VRM.materialProperties.Add(VRMMaterialExporter.CreateFromMaterial(m, TextureManager.Textures));
             }
         }
     }
