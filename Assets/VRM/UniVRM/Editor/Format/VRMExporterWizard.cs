@@ -80,7 +80,7 @@ namespace VRM
         VRMMetaObject m_tmpMeta;
 
         Editor m_metaEditor;
-        Editor m_Inspector;
+        Editor m_settingsInspector;
 
         VRMExporterValidator m_validator = new VRMExporterValidator();
         bool m_requireValidation = true;
@@ -101,9 +101,9 @@ namespace VRM
             {
                 m_settings = ScriptableObject.CreateInstance<VRMExportSettings>();
             }
-            if (m_Inspector == null)
+            if (m_settingsInspector == null)
             {
-                m_Inspector = Editor.CreateEditor(m_settings);
+                m_settingsInspector = Editor.CreateEditor(m_settings);
             }
         }
 
@@ -115,13 +115,17 @@ namespace VRM
             Selection.selectionChanged -= OnWizardUpdate;
             Undo.willFlushUndoRecord -= OnWizardUpdate;
 
+            // m_metaEditor
             UnityEditor.Editor.DestroyImmediate(m_metaEditor);
             m_metaEditor = null;
-            UnityEditor.Editor.DestroyImmediate(m_Inspector);
-            m_Inspector = null;
+            // m_settingsInspector
+            UnityEditor.Editor.DestroyImmediate(m_settingsInspector);
+            m_settingsInspector = null;
+            // Meta
             Meta = null;
             ScriptableObject.DestroyImmediate(m_tmpMeta);
             m_tmpMeta = null;
+            // m_settings
             ScriptableObject.DestroyImmediate(m_settings);
             m_settings = null;
         }
@@ -267,6 +271,7 @@ namespace VRM
         enum Tabs
         {
             Meta,
+            Mesh,
             ExportSettings,
         }
         Tabs _tab;
@@ -303,7 +308,10 @@ namespace VRM
                     break;
 
                 case Tabs.ExportSettings:
-                    m_Inspector.OnInspectorGUI();
+                    m_settingsInspector.OnInspectorGUI();
+                    break;
+
+                case Tabs.Mesh:
                     break;
             }
 
