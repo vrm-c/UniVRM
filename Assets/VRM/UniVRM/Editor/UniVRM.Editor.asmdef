@@ -4,7 +4,8 @@
         "VRM",
         "UniJSON",
         "UniHumanoid",
-        "MeshUtility"
+        "MeshUtility",
+        "UniUnlit"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [

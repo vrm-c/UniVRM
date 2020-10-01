@@ -22,8 +22,8 @@ namespace VRM
         enum Tabs
         {
             Meta,
-            Mesh,
             ExportSettings,
+            Mesh,
         }
         Tabs _tab;
 
@@ -206,18 +206,9 @@ namespace VRM
                 {
                     m_validator.Validate(ExportRoot, m_settings, Meta != null ? Meta : m_tmpMeta);
                     m_requireValidation = false;
-
-                    if (ExportRoot != null)
-                    {
-                        m_meshes.Meshes = ExportRoot.GetComponentsInChildren<Renderer>(true).Select(r => new VRMExportMeshes.MeshInfo(r)).ToArray();
-                    }
-                    else
-                    {
-                        m_meshes.Meshes = new VRMExportMeshes.MeshInfo[] { };
-                    }
+                    m_meshes.SetRoot(ExportRoot, m_settings);
                 }
             }
-
 
             //
             // Humanoid として適正か？ ここで失敗する場合は Export UI を表示しない
@@ -227,8 +218,7 @@ namespace VRM
                 return;
             }
 
-            EditorGUILayout.HelpBox($"Mesh size: {m_validator.ExpectedByteSize / 1000000.0f:0.0} MByte", MessageType.Info);
-
+            EditorGUILayout.HelpBox($"Mesh size: {m_meshes.ExpectedExportByteSize / 1000000.0f:0.0} MByte", MessageType.Info);
             _tab = TabBar.OnGUI(_tab, TabButtonStyle, TabButtonSize);
 
             // Render contents using Generic Inspector GUI
@@ -241,6 +231,10 @@ namespace VRM
             foreach (var v in m_validator.Validations)
             {
                 v.DrawGUI();
+            }
+            if (m_meshes.Meshes.Any(x => x.VertexColor != VRMExportMeshes.MeshInfo.VertexColorState.None))
+            {
+                Validation.Warning(M17N.Getter.Msg(VRMExporterWizardMessages.VERTEX_COLOR_IS_INCLUDED)).DrawGUI();
             }
 
             bool modified = DrawWizardGUI();

@@ -22,8 +22,6 @@ namespace VRM
         List<Validation> m_validations = new List<Validation>();
         public IEnumerable<Validation> Validations => m_validations;
 
-        public int ExpectedByteSize = 0;
-
         /// <summary>
         /// ボーン名の重複を確認
         /// </summary>
@@ -204,104 +202,8 @@ namespace VRM
             if (proxy != null)
             {
                 m_validations.AddRange(proxy.Validate());
-
-                // Export サイズ の 計算
-                var clips = new List<BlendShapeClip>();
-                if (proxy.BlendShapeAvatar != null)
-                {
-                    clips.AddRange(proxy.BlendShapeAvatar.Clips);
-                }
-
-                ExpectedByteSize = 0;
-                foreach (var renderer in ExportRoot.GetComponentsInChildren<Renderer>(true))
-                {
-                    var relativePath = UniGLTF.UnityExtensions.RelativePathFrom(renderer.transform, ExportRoot.transform);
-                    var mesh = GetMesh(renderer);
-                    ExpectedByteSize += CalcMeshSize(relativePath, mesh, m_settings, clips);
-                }
             }
             MetaHasError = meta.Validate().Any();
-        }
-
-        static bool ClipsContainsName(List<BlendShapeClip> clips, bool onlyPreset, BlendShapeBinding binding)
-        {
-            foreach (var c in clips)
-            {
-                if (onlyPreset)
-                {
-                    if (c.Preset == BlendShapePreset.Unknown)
-                    {
-                        continue;
-                    }
-                }
-
-                foreach (var b in c.Values)
-                {
-                    if (b.RelativePath == binding.RelativePath && b.Index == binding.Index)
-                    {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-
-        static int CalcMeshSize(string relativePath, Mesh m, VRMExportSettings m_settings, List<BlendShapeClip> clips)
-        {
-            int size = 0;
-            // vertices
-            size += m.vertexCount * 4 * 3; // vector3
-            if (m.normals != null)
-            {
-                size += m.vertexCount * 4 * 3;
-            }
-            if (m.uv != null)
-            {
-                size += m.vertexCount * 4 * 2;
-            }
-            if (m.colors != null)
-            {
-                size += m.vertexCount * 4 * 4;
-            }
-            // indices
-            size += m.triangles.Length * 4; // int ?
-            // blendshapes
-            for (var i = 0; i < m.blendShapeCount; ++i)
-            {
-                // var name = m.GetBlendShapeName(i);
-                if (m_settings.ReduceBlendshape)
-                {
-                    if (!ClipsContainsName(clips, m_settings.ReduceBlendshapeClip, new BlendShapeBinding
-                    {
-                        Index = i,
-                        RelativePath = relativePath,
-                    }))
-                    {
-                        // skip
-                        continue;
-                    }
-                }
-
-                size += m.vertexCount * 4 * (3 + 3);
-            }
-            return size;
-        }
-
-        static Mesh GetMesh(Renderer r)
-        {
-            if (r is SkinnedMeshRenderer smr)
-            {
-                return smr.sharedMesh;
-            }
-            if (r is MeshRenderer)
-            {
-                MeshFilter f = r.GetComponent<MeshFilter>();
-                if (f != null)
-                {
-                    return f.sharedMesh;
-                }
-            }
-            return null;
         }
 
         IEnumerable<Validation> _Validate(GameObject ExportRoot, VRMExportSettings m_settings)
@@ -319,12 +221,6 @@ namespace VRM
             if (m_settings.ReduceBlendshape && ExportRoot.GetComponent<VRMBlendShapeProxy>() == null)
             {
                 yield return Validation.Error(Msg(VRMExporterWizardMessages.NEEDS_VRM_BLENDSHAPE_PROXY));
-            }
-
-            var vertexColor = ExportRoot.GetComponentsInChildren<Renderer>().Select(r => GetMesh(r)).Any(x => x != null && x.colors.Length > 0);
-            if (vertexColor)
-            {
-                yield return Validation.Warning(Msg(VRMExporterWizardMessages.VERTEX_COLOR_IS_INCLUDED));
             }
 
             var renderers = ExportRoot.GetComponentsInChildren<Renderer>();
