@@ -366,36 +366,6 @@ namespace VRM
             return wizard;
         }
 
-        // Allows you to set the create button text of the wizard.
-        public string createButtonName
-        {
-            get { return m_CreateButton; }
-            set
-            {
-                var newString = value ?? string.Empty;
-                if (m_CreateButton != newString)
-                {
-                    m_CreateButton = newString;
-                    Repaint();
-                }
-            }
-        }
-
-        // Allows you to set the other button text of the wizard.
-        public string otherButtonName
-        {
-            get { return m_OtherButton; }
-            set
-            {
-                var newString = value ?? string.Empty;
-                if (m_OtherButton != newString)
-                {
-                    m_OtherButton = newString;
-                    Repaint();
-                }
-            }
-        }
-
         const string EXTENSION = ".vrm";
 
         private static string m_lastExportDir;
