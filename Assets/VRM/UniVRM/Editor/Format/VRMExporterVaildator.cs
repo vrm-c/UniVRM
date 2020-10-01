@@ -321,7 +321,7 @@ namespace VRM
                 yield return Validation.Error(Msg(VRMExporterWizardMessages.NEEDS_VRM_BLENDSHAPE_PROXY));
             }
 
-            var vertexColor = ExportRoot.GetComponentsInChildren<SkinnedMeshRenderer>().Any(x => x.sharedMesh.colors.Length > 0);
+            var vertexColor = ExportRoot.GetComponentsInChildren<Renderer>().Select(r => GetMesh(r)).Any(x => x != null && x.colors.Length > 0);
             if (vertexColor)
             {
                 yield return Validation.Warning(Msg(VRMExporterWizardMessages.VERTEX_COLOR_IS_INCLUDED));
