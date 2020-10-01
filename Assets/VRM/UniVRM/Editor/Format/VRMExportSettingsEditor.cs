@@ -78,19 +78,12 @@ namespace VRM
         [Tooltip("Remove blendShapeClip that preset is Unknown")]
         public bool ReduceBlendshapeClip = false;
 
-        /// <summary>
-        /// 頂点カラーを削除する
-        /// </summary>
-        [Tooltip("Remove vertex color")]
-        public bool RemoveVertexColor = false;
-
         CheckBoxProp m_forceTPose;
         CheckBoxProp m_poseFreeze;
         CheckBoxProp m_useSparseAccessor;
         CheckBoxProp m_onlyBlendShapePosition;
         CheckBoxProp m_reduceBlendShape;
         CheckBoxProp m_reduceBlendShapeClip;
-        CheckBoxProp m_removeVertexColor;
 
         static string Msg(Options key)
         {
@@ -140,7 +133,6 @@ namespace VRM
             m_onlyBlendShapePosition = new CheckBoxProp(serializedObject.FindProperty(nameof(OnlyBlendshapePosition)), Options.BLENDSHAPE_EXCLUDE_NORMAL_AND_TANGENT);
             m_reduceBlendShape = new CheckBoxProp(serializedObject.FindProperty(nameof(ReduceBlendshape)), Options.BLENDSHAPE_ONLY_CLIP_USE);
             m_reduceBlendShapeClip = new CheckBoxProp(serializedObject.FindProperty(nameof(ReduceBlendshapeClip)), Options.BLENDSHAPE_EXCLUDE_UNKNOWN);
-            m_removeVertexColor = new CheckBoxProp(serializedObject.FindProperty(nameof(RemoveVertexColor)), Options.REMOVE_VERTEX_COLOR);
         }
 
         public override void OnInspectorGUI()
@@ -153,7 +145,6 @@ namespace VRM
             m_onlyBlendShapePosition.Draw();
             m_reduceBlendShape.Draw();
             m_reduceBlendShapeClip.Draw();
-            m_removeVertexColor.Draw();
             serializedObject.ApplyModifiedProperties();
         }
     }

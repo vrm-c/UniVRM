@@ -361,7 +361,7 @@ namespace VRM
             m_lastExportDir = Path.GetDirectoryName(path).Replace("\\", "/");
 
             // export
-            VRMEditorExporter.Export(path, ExportRoot, Meta != null ? Meta : m_tmpMeta, m_settings);
+            VRMEditorExporter.Export(path, ExportRoot, Meta != null ? Meta : m_tmpMeta, m_settings, m_meshes.Meshes);
         }
 
         void OnWizardUpdate()

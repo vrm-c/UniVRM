@@ -64,14 +64,10 @@ namespace UniGLTF
         // MorphTarget を Position だけにする(normal とか捨てる)
         public bool ExportOnlyBlendShapePosition;
 
-        // VertexColor が存在していても捨てる
-        public bool RemoveVertexColor;
-
         public static MeshExportSettings Default => new MeshExportSettings
         {
             UseSparseAccessorForMorphTarget = false,
             ExportOnlyBlendShapePosition = false,
-            RemoveVertexColor = false,
         };
     }
 
@@ -80,8 +76,7 @@ namespace UniGLTF
         static glTFMesh ExportPrimitives(glTF gltf, int bufferIndex,
             string rendererName,
             Mesh mesh, Material[] materials,
-            List<Material> unityMaterials,
-            bool removeVertexColor)
+            List<Material> unityMaterials)
         {
             var positions = mesh.vertices.Select(y => y.ReverseZ()).ToArray();
             var positionAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, positions, glBufferTarget.ARRAY_BUFFER);
@@ -95,8 +90,16 @@ namespace UniGLTF
             var uvAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, mesh.uv.Select(y => y.ReverseUV()).ToArray(), glBufferTarget.ARRAY_BUFFER);
 
             var colorAccessorIndex = -1;
-            if (!removeVertexColor)
-                colorAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, mesh.colors, glBufferTarget.ARRAY_BUFFER);
+            if (mesh.colors != null && mesh.colors.Length == mesh.vertexCount)
+            {
+                // この Mesh が 頂点カラーを保持していて
+                if (materials.Any(x => x.shader.name == UniGLTF.UniUnlit.Utils.ShaderName
+                && UniGLTF.UniUnlit.Utils.GetVColBlendMode(x) == UniUnlit.UniUnlitVertexColorBlendOp.Multiply))
+                {
+                    // UniUnlit で Multiply 設定になっている
+                    colorAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, mesh.colors, glBufferTarget.ARRAY_BUFFER);
+                }
+            }
 
             var boneweights = mesh.boneWeights;
             var weightAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, boneweights.Select(y => new Vector4(y.weight0, y.weight1, y.weight2, y.weight3)).ToArray(), glBufferTarget.ARRAY_BUFFER);
@@ -306,7 +309,7 @@ namespace UniGLTF
 
                 var gltfMesh = ExportPrimitives(gltf, bufferIndex,
                     x.Renderer.name,
-                    mesh, materials, unityMaterials, settings.RemoveVertexColor);
+                    mesh, materials, unityMaterials);
 
                 var blendShapeIndexMap = new Dictionary<int, int>();
                 int exportBlendShapes = 0;
