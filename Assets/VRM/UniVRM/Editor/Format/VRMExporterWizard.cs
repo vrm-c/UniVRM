@@ -86,8 +86,6 @@ namespace VRM
         bool m_requireValidation = true;
 
         private Vector2 m_ScrollPosition;
-        private string m_CreateButton = "Create";
-        private string m_OtherButton = "";
 
         void OnEnable()
         {
@@ -229,26 +227,9 @@ namespace VRM
                     GUILayout.FlexibleSpace();
                     GUI.enabled = m_validator.IsValid;
 
-                    const BindingFlags kInstanceInvokeFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy;
-                    if (m_OtherButton != "" && GUILayout.Button(m_OtherButton, GUILayout.MinWidth(100)))
+                    if (GUILayout.Button("Export", GUILayout.MinWidth(100)))
                     {
-                        MethodInfo method = GetType().GetMethod("OnWizardOtherButton", kInstanceInvokeFlags);
-                        if (method != null)
-                        {
-                            method.Invoke(this, null);
-                            GUIUtility.ExitGUI();
-                        }
-                        else
-                            Debug.LogError("OnWizardOtherButton has not been implemented in script");
-                    }
-
-                    if (m_CreateButton != "" && GUILayout.Button(m_CreateButton, GUILayout.MinWidth(100)))
-                    {
-                        MethodInfo method = GetType().GetMethod("OnWizardCreate", kInstanceInvokeFlags);
-                        if (method != null)
-                            method.Invoke(this, null);
-                        else
-                            Debug.LogError("OnWizardCreate has not been implemented in script");
+                        OnWizardCreate();
                         Close();
                         GUIUtility.ExitGUI();
                     }
@@ -319,45 +300,10 @@ namespace VRM
         }
 
         // Creates a wizard.
-        public static T DisplayWizard<T>(string title) where T : VRMExporterWizard
+        public static VRMExporterWizard DisplayWizard()
         {
-            return DisplayWizard<T>(title, "Create", "");
-        }
-
-        ///*listonly*
-        public static T DisplayWizard<T>(string title, string createButtonName) where T : VRMExporterWizard
-        {
-            return DisplayWizard<T>(title, createButtonName, "");
-        }
-
-        ///*listonly*
-        public static T DisplayWizard<T>(string title, string createButtonName, string otherButtonName) where T : VRMExporterWizard
-        {
-            return (T)DisplayWizard(title, typeof(T), createButtonName, otherButtonName);
-        }
-
-        [uei.ExcludeFromDocsAttribute]
-        public static VRMExporterWizard DisplayWizard(string title, Type klass, string createButtonName)
-        {
-            string otherButtonName = "";
-            return DisplayWizard(title, klass, createButtonName, otherButtonName);
-        }
-
-        [uei.ExcludeFromDocsAttribute]
-        public static VRMExporterWizard DisplayWizard(string title, Type klass)
-        {
-            string otherButtonName = "";
-            string createButtonName = "Create";
-            return DisplayWizard(title, klass, createButtonName, otherButtonName);
-        }
-
-        // Creates a wizard.
-        public static VRMExporterWizard DisplayWizard(string title, Type klass, [uei.DefaultValueAttribute("\"Create\"")] string createButtonName, [uei.DefaultValueAttribute("\"\"")] string otherButtonName)
-        {
-            VRMExporterWizard wizard = CreateInstance(klass) as VRMExporterWizard;
-            wizard.m_CreateButton = createButtonName;
-            wizard.m_OtherButton = otherButtonName;
-            wizard.titleContent = new GUIContent(title);
+            VRMExporterWizard wizard = CreateInstance<VRMExporterWizard>();
+            wizard.titleContent = new GUIContent("VRM Exporter");
             if (wizard != null)
             {
                 wizard.InvokeWizardUpdate();
@@ -372,8 +318,7 @@ namespace VRM
 
         public static void CreateWizard()
         {
-            var wiz = VRMExporterWizard.DisplayWizard<VRMExporterWizard>(
-                "VRM Exporter", "Export");
+            var wiz = VRMExporterWizard.DisplayWizard();
             var go = Selection.activeObject as GameObject;
 
             // update checkbox
