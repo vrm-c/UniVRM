@@ -41,7 +41,7 @@ namespace UniGLTF
                 using (var exporter = new gltfExporter(gltf))
                 {
                     exporter.Prepare(go);
-                    exporter.Export();
+                    exporter.Export(MeshExportSettings.Default);
                 }
                 var bytes = gltf.ToGlbBytes();
                 File.WriteAllBytes(path, bytes);
@@ -60,24 +60,6 @@ namespace UniGLTF
 #endif
 
         glTF glTF;
-
-        public bool UseSparseAccessorForBlendShape
-        {
-            get;
-            set;
-        }
-
-        public bool ExportOnlyBlendShapePosition
-        {
-            get;
-            set;
-        }
-
-        public bool RemoveVertexColor
-        {
-            get;
-            set;
-        }
 
         public GameObject Copy
         {
@@ -147,13 +129,13 @@ namespace UniGLTF
             };
         }
 
-        public static glTF Export(GameObject go)
+        public static glTF Export(GameObject go, MeshExportSettings meshExportSettings)
         {
             var gltf = new glTF();
             using (var exporter = new gltfExporter(gltf))
             {
                 exporter.Prepare(go);
-                exporter.Export();
+                exporter.Export(meshExportSettings);
             }
             return gltf;
         }
@@ -165,9 +147,9 @@ namespace UniGLTF
             Copy.transform.ReverseZRecursive();
         }
 
-        public void Export()
+        public void Export(MeshExportSettings meshExportSettings)
         {
-            FromGameObject(glTF, Copy, UseSparseAccessorForBlendShape, RemoveVertexColor);
+            FromGameObject(glTF, Copy, meshExportSettings);
         }
 
         public void Dispose()
@@ -213,8 +195,7 @@ namespace UniGLTF
             return node;
         }
 
-        void FromGameObject(glTF gltf, GameObject go, bool useSparseAccessorForMorphTarget = false,
-                            bool removeVertexColor = false)
+        void FromGameObject(glTF gltf, GameObject go, MeshExportSettings meshExportSettings)
         {
             var bytesBuffer = new ArrayByteBuffer(new byte[50 * 1024 * 1024]);
             var bufferIndex = gltf.AddBuffer(bytesBuffer);
@@ -229,7 +210,6 @@ namespace UniGLTF
 
             try
             {
-
                 Nodes = go.transform.Traverse()
                     .Skip(1) // exclude root object for the symmetry with the importer
                     .ToList();
@@ -249,7 +229,6 @@ namespace UniGLTF
                     TextureIO.ExportTexture(gltf, bufferIndex, TextureManager.GetExportTexture(i), unityTexture.TextureType);
                 }
                 #endregion
-
 
                 #region Meshes
                 var unityMeshes = Nodes
@@ -276,8 +255,7 @@ namespace UniGLTF
 
                 MeshBlendShapeIndexMap = new Dictionary<Mesh, Dictionary<int, int>>();
                 foreach (var (mesh, gltfMesh, blendShapeIndexMap) in MeshExporter.ExportMeshes(
-                        gltf, bufferIndex, unityMeshes, Materials, useSparseAccessorForMorphTarget,
-                        ExportOnlyBlendShapePosition, removeVertexColor))
+                        gltf, bufferIndex, unityMeshes, Materials, meshExportSettings))
                 {
                     gltf.meshes.Add(gltfMesh);
                     if (!MeshBlendShapeIndexMap.ContainsKey(mesh))

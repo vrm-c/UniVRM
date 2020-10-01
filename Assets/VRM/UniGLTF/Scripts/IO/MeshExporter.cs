@@ -13,6 +13,25 @@ namespace UniGLTF
         public Renderer Renderer;
     }
 
+    public struct MeshExportSettings
+    {
+        // MorphTarget に Sparse Accessor を使う
+        public bool UseSparseAccessorForMorphTarget;
+
+        // MorphTarget を Position だけにする(normal とか捨てる)
+        public bool ExportOnlyBlendShapePosition;
+
+        // VertexColor が存在していても捨てる
+        public bool RemoveVertexColor;
+
+        public static MeshExportSettings Default => new MeshExportSettings
+        {
+            UseSparseAccessorForMorphTarget = false,
+            ExportOnlyBlendShapePosition = false,
+            RemoveVertexColor = false,
+        };
+    }
+
     public static class MeshExporter
     {
         static glTFMesh ExportPrimitives(glTF gltf, int bufferIndex,
@@ -234,9 +253,7 @@ namespace UniGLTF
 
         public static IEnumerable<(Mesh, glTFMesh, Dictionary<int, int>)> ExportMeshes(glTF gltf, int bufferIndex,
             List<MeshWithRenderer> unityMeshes, List<Material> unityMaterials,
-            bool useSparseAccessorForMorphTarget,
-            bool exportOnlyBlendShapePosition,
-            bool removeVertexColor)
+            MeshExportSettings settings)
         {
             for (int i = 0; i < unityMeshes.Count; ++i)
             {
@@ -246,7 +263,7 @@ namespace UniGLTF
 
                 var gltfMesh = ExportPrimitives(gltf, bufferIndex,
                     x.Renderer.name,
-                    mesh, materials, unityMaterials, removeVertexColor);
+                    mesh, materials, unityMaterials, settings.RemoveVertexColor);
 
                 var blendShapeIndexMap = new Dictionary<int, int>();
                 int exportBlendShapes = 0;
@@ -254,8 +271,8 @@ namespace UniGLTF
                 {
                     var morphTarget = ExportMorphTarget(gltf, bufferIndex,
                         mesh, j,
-                        useSparseAccessorForMorphTarget,
-                        exportOnlyBlendShapePosition);
+                        settings.UseSparseAccessorForMorphTarget,
+                        settings.ExportOnlyBlendShapePosition);
                     if (morphTarget.POSITION < 0 && morphTarget.NORMAL < 0 && morphTarget.TANGENT < 0)
                     {
                         continue;

@@ -81,7 +81,7 @@ namespace VRM.Samples
                 */
                 importedJson.RemoveValue(Utf8String.From("/bufferViews/*/byteStride"));
 
-                var vrm = VRMExporter.Export(context.Root);
+                var vrm = VRMExporter.Export(UniGLTF.MeshExportSettings.Default, context.Root);
 
                 // TODO: Check contents in JSON
                 /*var exportJson = */

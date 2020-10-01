@@ -219,12 +219,7 @@ namespace VRM
             // 出力
             {
                 var sw = System.Diagnostics.Stopwatch.StartNew();
-                var vrm = VRMExporter.Export(target, new VRMExporterConfiguration
-                {
-                    UseSparseAccessorForBlendShape = settings.UseSparseAccessor,
-                    ExportOnlyBlendShapePosition = settings.OnlyBlendshapePosition,
-                    RemoveVertexColor = settings.RemoveVertexColor
-                });
+                var vrm = VRMExporter.Export(target, settings.MeshExportSettings);
                 // vrm.extensions.VRM.meta.title = settings.Title;
                 // vrm.extensions.VRM.meta.version = settings.Version;
                 // vrm.extensions.VRM.meta.author = settings.Author;

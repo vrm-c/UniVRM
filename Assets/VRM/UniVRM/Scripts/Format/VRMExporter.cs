@@ -19,34 +19,22 @@ namespace VRM
             gltf.extensions.VRM = new glTF_VRM_extensions();
         }
 
-        public static glTF Export(GameObject go, bool exportOnlyBlendShapePosition = false)
-        {
-            var config = VRMExporterConfiguration.Default;
-            config.ExportOnlyBlendShapePosition = exportOnlyBlendShapePosition;
-            return Export(go, config);
-        }
-
-        public static glTF Export(GameObject go, VRMExporterConfiguration configuration)
+        public static glTF Export(MeshExportSettings configuration, GameObject go)
         {
             var gltf = new glTF();
 
-            using (var exporter = new VRMExporter(gltf)
+            using (var exporter = new VRMExporter(gltf))
             {
-                UseSparseAccessorForBlendShape = configuration.UseSparseAccessorForBlendShape,
-                ExportOnlyBlendShapePosition = configuration.ExportOnlyBlendShapePosition,
-                RemoveVertexColor = configuration.RemoveVertexColor,
-            })
-            {
-                _Export(gltf, exporter, go);
+                _Export(gltf, exporter, go, configuration);
             }
 
             return gltf;
         }
 
-        public static void _Export(glTF gltf, VRMExporter exporter, GameObject go)
+        static void _Export(glTF gltf, VRMExporter exporter, GameObject go, MeshExportSettings meshExportSettings)
         {
             exporter.Prepare(go);
-            exporter.Export();
+            exporter.Export(meshExportSettings);
 
             // avatar
             var animator = go.GetComponent<Animator>();

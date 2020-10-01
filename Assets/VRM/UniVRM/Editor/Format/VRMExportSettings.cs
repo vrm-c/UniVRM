@@ -47,5 +47,12 @@ namespace VRM
         /// </summary>
         [Tooltip("Remove vertex color")]
         public bool RemoveVertexColor = false;
-   }
+
+        public UniGLTF.MeshExportSettings MeshExportSettings => new UniGLTF.MeshExportSettings
+        {
+            UseSparseAccessorForMorphTarget = UseSparseAccessor,
+            ExportOnlyBlendShapePosition = OnlyBlendshapePosition,
+            RemoveVertexColor = RemoveVertexColor,
+        };
+    }
 }
