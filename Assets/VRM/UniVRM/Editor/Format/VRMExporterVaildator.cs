@@ -213,7 +213,7 @@ namespace VRM
                 }
 
                 ExpectedByteSize = 0;
-                foreach (var renderer in ExportRoot.GetComponentsInChildren<Renderer>())
+                foreach (var renderer in ExportRoot.GetComponentsInChildren<Renderer>(true))
                 {
                     var relativePath = UniGLTF.UnityExtensions.RelativePathFrom(renderer.transform, ExportRoot.transform);
                     var mesh = GetMesh(renderer);
@@ -330,11 +330,11 @@ namespace VRM
             var renderers = ExportRoot.GetComponentsInChildren<Renderer>();
             foreach (var r in renderers)
             {
-                for(int i=0; i<r.sharedMaterials.Length; ++i)
-                if (r.sharedMaterials[i] == null)
-                {
-                    yield return Validation.Error($"Renderer: {r.name}.Materials[{i}] is null. please fix it");
-                }
+                for (int i = 0; i < r.sharedMaterials.Length; ++i)
+                    if (r.sharedMaterials[i] == null)
+                    {
+                        yield return Validation.Error($"Renderer: {r.name}.Materials[{i}] is null. please fix it");
+                    }
             }
 
             var materials = renderers.SelectMany(x => x.sharedMaterials).Where(x => x != null).Distinct();

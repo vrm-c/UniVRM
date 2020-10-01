@@ -1,10 +1,8 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
-using uei = UnityEngine.Internal;
 
 namespace VRM
 {
@@ -41,6 +39,7 @@ namespace VRM
         GameObject ExportRoot;
 
         VRMExportSettings m_settings;
+        VRMExportMeshes m_meshes;
 
         VRMMetaObject m_meta;
         VRMMetaObject Meta
@@ -98,6 +97,7 @@ namespace VRM
 
         Editor m_metaEditor;
         Editor m_settingsInspector;
+        Editor m_meshesInspector;
 
         VRMExporterValidator m_validator = new VRMExporterValidator();
         bool m_requireValidation = true;
@@ -112,14 +112,11 @@ namespace VRM
 
             m_tmpMeta = ScriptableObject.CreateInstance<VRMMetaObject>();
 
-            if (m_settings == null)
-            {
-                m_settings = ScriptableObject.CreateInstance<VRMExportSettings>();
-            }
-            if (m_settingsInspector == null)
-            {
-                m_settingsInspector = Editor.CreateEditor(m_settings);
-            }
+            m_settings = ScriptableObject.CreateInstance<VRMExportSettings>();
+            m_settingsInspector = Editor.CreateEditor(m_settings);
+
+            m_meshes = ScriptableObject.CreateInstance<VRMExportMeshes>();
+            m_meshesInspector = Editor.CreateEditor(m_meshes);
         }
 
         void OnDisable()
@@ -136,6 +133,9 @@ namespace VRM
             // m_settingsInspector
             UnityEditor.Editor.DestroyImmediate(m_settingsInspector);
             m_settingsInspector = null;
+            // m_meshesInspector
+            UnityEditor.Editor.DestroyImmediate(m_meshesInspector);
+            m_meshesInspector = null;
             // Meta
             Meta = null;
             ScriptableObject.DestroyImmediate(m_tmpMeta);
@@ -143,6 +143,9 @@ namespace VRM
             // m_settings
             ScriptableObject.DestroyImmediate(m_settings);
             m_settings = null;
+            // m_meshes
+            ScriptableObject.DestroyImmediate(m_meshes);
+            m_meshes = null;
         }
 
         private void InvokeWizardUpdate()
@@ -194,17 +197,27 @@ namespace VRM
                 UpdateRoot(root);
             }
 
+            // ArgumentException: Getting control 1's position in a group with only 1 controls when doing repaint Aborting
+            // Validation により GUI の表示項目が変わる場合があるので、
+            // EventType.Layout と EventType.Repaint 間で内容が変わらないようしている。
             if (Event.current.type == EventType.Layout)
             {
-                // ArgumentException: Getting control 1's position in a group with only 1 controls when doing repaint Aborting
-                // Validation により GUI の表示項目が変わる場合があるので、
-                // EventType.Layout と EventType.Repaint 間で内容が変わらないようしている。
                 if (m_requireValidation)
                 {
                     m_validator.Validate(ExportRoot, m_settings, Meta != null ? Meta : m_tmpMeta);
                     m_requireValidation = false;
+
+                    if (ExportRoot != null)
+                    {
+                        m_meshes.Meshes = ExportRoot.GetComponentsInChildren<Renderer>(true).Select(r => new VRMExportMeshes.MeshInfo(r)).ToArray();
+                    }
+                    else
+                    {
+                        m_meshes.Meshes = new VRMExportMeshes.MeshInfo[] { };
+                    }
                 }
             }
+
 
             //
             // Humanoid として適正か？ ここで失敗する場合は Export UI を表示しない
@@ -297,6 +310,7 @@ namespace VRM
                     break;
 
                 case Tabs.Mesh:
+                    m_meshesInspector.OnInspectorGUI();
                     break;
             }
 
