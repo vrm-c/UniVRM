@@ -102,7 +102,8 @@ namespace VRM
                 sb.Append("+UV");
                 info.ExportVertexSize += 4 * 2;
             }
-            if (info.Mesh.colors != null && info.Mesh.colors.Length == info.Mesh.vertexCount)
+            if (info.Mesh.colors != null && info.Mesh.colors.Length == info.Mesh.vertexCount
+            && info.VertexColor == UniGLTF.MeshExportInfo.VertexColorState.ExistsAndIsUsed)
             {
                 sb.Append("+Col");
                 info.ExportVertexSize += 4 * 4;
