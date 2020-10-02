@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using UnityEngine;
 
 namespace VRM
@@ -66,8 +67,15 @@ namespace VRM
             return UniGLTF.UniUnlit.Utils.GetVColBlendMode(m) == UniGLTF.UniUnlit.UniUnlitVertexColorBlendOp.Multiply;
         }
 
-        public static void CalcMeshSize(UniGLTF.MeshExportInfo info, string relativePath, VRMExportSettings settings, IReadOnlyList<BlendShapeClip> clips)
+        public static void CalcMeshSize(ref UniGLTF.MeshExportInfo info,
+                                        string relativePath, VRMExportSettings settings, IReadOnlyList<BlendShapeClip> clips)
         {
+            var sb = new StringBuilder();
+            if (!info.IsRendererActive)
+            {
+                sb.Append("[NotActive]");
+            }
+
             info.VertexCount = info.Mesh.vertexCount;
             info.ExportVertexSize = 0;
             info.TotalBlendShapeCount = 0;
@@ -75,21 +83,26 @@ namespace VRM
 
             // float4 x 3
             // vertices
-            if (info.Mesh.normals != null)
+            sb.Append($"(Pos");
+            if (info.Mesh.normals != null && info.Mesh.normals.Length == info.Mesh.vertexCount)
             {
+                sb.Append("+Nom");
                 info.ExportVertexSize += 4 * 3;
             }
-            if (info.Mesh.uv != null)
+            if (info.Mesh.uv != null && info.Mesh.uv.Length == info.Mesh.vertexCount)
             {
+                sb.Append("+UV");
                 info.ExportVertexSize += 4 * 2;
             }
-            if (info.Mesh.colors != null)
+            if (info.Mesh.colors != null && info.Mesh.colors.Length == info.Mesh.vertexCount)
             {
+                sb.Append("+Col");
                 info.ExportVertexSize += 4 * 4;
             }
-            if (info.Mesh.boneWeights != null)
+            if (info.Mesh.boneWeights != null && info.Mesh.boneWeights.Length == info.Mesh.vertexCount)
             {
                 // short, float x 4 weights
+                sb.Append("+Skin");
                 info.ExportVertexSize += (2 + 4) * 4;
             }
             // indices
@@ -116,6 +129,23 @@ namespace VRM
 
                 ++info.ExportBlendShapeCount;
             }
+
+            if (info.ExportBlendShapeCount > 0)
+            {
+                sb.Append($"+Morph x {info.ExportBlendShapeCount}");
+            }
+            sb.Append($") x {info.Mesh.vertexCount}");
+            switch (info.VertexColor)
+            {
+                case UniGLTF.MeshExportInfo.VertexColorState.ExistsAndIsUsed:
+                    sb.Insert(0, "[use vcolor]");
+                    break;
+                case UniGLTF.MeshExportInfo.VertexColorState.ExistsButNotUsed:
+                    sb.Insert(0, "[remove vcolor]");
+                    break;
+            }
+            sb.Insert(0, $"{info.ExportByteSize:#,0} Bytes = ");
+            info.Summary = sb.ToString();
         }
 
         bool TryGetMeshInfo(GameObject root, Renderer renderer, IReadOnlyList<BlendShapeClip> clips, VRMExportSettings settings, out UniGLTF.MeshExportInfo info)
@@ -123,10 +153,12 @@ namespace VRM
             info = default;
             if (root == null)
             {
+                info.Summary = "";
                 return false;
             }
             if (renderer == null)
             {
+                info.Summary = "no Renderer";
                 return false;
             }
             info.Renderer = renderer;
@@ -148,11 +180,9 @@ namespace VRM
             }
             else
             {
+                info.Summary = "no Mesh";
                 return false;
             }
-
-            var relativePath = UniGLTF.UnityExtensions.RelativePathFrom(renderer.transform, root.transform);
-            CalcMeshSize(info, relativePath, settings, clips);
 
             if (info.Mesh.colors != null && info.Mesh.colors.Length == info.Mesh.vertexCount)
             {
@@ -165,6 +195,9 @@ namespace VRM
                     info.VertexColor = UniGLTF.MeshExportInfo.VertexColorState.ExistsButNotUsed;
                 }
             }
+
+            var relativePath = UniGLTF.UnityExtensions.RelativePathFrom(renderer.transform, root.transform);
+            CalcMeshSize(ref info, relativePath, settings, clips);
 
             return true;
         }

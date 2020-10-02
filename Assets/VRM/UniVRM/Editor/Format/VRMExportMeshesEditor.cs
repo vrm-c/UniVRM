@@ -9,24 +9,45 @@ namespace VRM
     [CustomEditor(typeof(VRMExportMeshes))]
     public class VRMExportMeshesEditor : Editor
     {
-        VRMExportMeshes m_meshes;
+        VRMExportMeshes m_target;
+
         private void OnEnable()
         {
-            m_meshes = target as VRMExportMeshes;
-            // m_forceTPose = new CheckBoxProp(serializedObject.FindProperty(nameof(ForceTPose)), Options.FORCE_T_POSE);
-            // m_poseFreeze = new CheckBoxProp(serializedObject.FindProperty(nameof(PoseFreeze)), Options.NORMALIZE);
-            // m_useSparseAccessor = new CheckBoxProp(serializedObject.FindProperty(nameof(UseSparseAccessor)), Options.BLENDSHAPE_USE_SPARSE);
-            // m_onlyBlendShapePosition = new CheckBoxProp(serializedObject.FindProperty(nameof(OnlyBlendshapePosition)), Options.BLENDSHAPE_EXCLUDE_NORMAL_AND_TANGENT);
-            // m_reduceBlendShape = new CheckBoxProp(serializedObject.FindProperty(nameof(ReduceBlendshape)), Options.BLENDSHAPE_ONLY_CLIP_USE);
-            // m_reduceBlendShapeClip = new CheckBoxProp(serializedObject.FindProperty(nameof(ReduceBlendshapeClip)), Options.BLENDSHAPE_EXCLUDE_UNKNOWN);
-            // m_removeVertexColor = new CheckBoxProp(serializedObject.FindProperty(nameof(RemoveVertexColor)), Options.REMOVE_VERTEX_COLOR);
+            m_target = target as VRMExportMeshes;
         }
 
         public override void OnInspectorGUI()
         {
-            base.OnInspectorGUI();
+            for (int i = 0; i < m_target.Meshes.Count; ++i)
+            {
+                DrawElement(i, m_target.Meshes[i]);
+            }
+        }
 
-            EditorGUILayout.HelpBox($"Mesh size: {m_meshes.ExpectedExportByteSize / 1000000.0f:0.0} MByte", MessageType.Info);
+        static (Rect, Rect) LeftRight(float x, float y, float left, float right, float height)
+        {
+            return (
+                new Rect(x, y, left, height),
+                new Rect(x + left, y, right, height)
+            );
+        }
+
+        void DrawElement(int i, UniGLTF.MeshExportInfo info)
+        {
+            var r = GUILayoutUtility.GetRect(GUIContent.none, GUIStyle.none, GUILayout.Height(EditorGUIUtility.singleLineHeight * 3 + 20));
+            var col0 = 32;
+            var (left, right) = LeftRight(r.x, r.y, col0, r.width - col0, EditorGUIUtility.singleLineHeight);
+            EditorGUI.LabelField(left, $"{i,3}");
+
+            GUI.enabled = false;
+            EditorGUI.ObjectField(right, info.Renderer, info.Renderer.GetType(), true);
+
+            right.y += EditorGUIUtility.singleLineHeight;
+            EditorGUI.ObjectField(right, info.Mesh, info.Renderer.GetType(), true);
+            GUI.enabled = true;
+
+            right.y += EditorGUIUtility.singleLineHeight;
+            EditorGUI.LabelField(right, info.Summary);
         }
     }
 }

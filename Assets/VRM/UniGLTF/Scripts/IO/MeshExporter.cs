@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using UnityEngine;
 
 namespace UniGLTF
@@ -53,8 +54,9 @@ namespace UniGLTF
         public int ExportBlendShapeCount;
 
         public int ExportByteSize => ExportVertexSize * VertexCount + IndicesSize + ExportBlendShapeCount * ExportBlendShapeVertexSize * VertexCount;
-    }
 
+        public string Summary;
+    }
 
     public struct MeshExportSettings
     {
