@@ -64,7 +64,15 @@ namespace VRM
 
         static bool MaterialUseVertexColor(Material m)
         {
-            return UniGLTF.UniUnlit.Utils.GetVColBlendMode(m) == UniGLTF.UniUnlit.UniUnlitVertexColorBlendOp.Multiply;
+            if (m.shader.name != UniGLTF.UniUnlit.Utils.ShaderName)
+            {
+                return false;
+            }
+            if (UniGLTF.UniUnlit.Utils.GetVColBlendMode(m) != UniGLTF.UniUnlit.UniUnlitVertexColorBlendOp.Multiply)
+            {
+                return false;
+            }
+            return true;
         }
 
         public static void CalcMeshSize(ref UniGLTF.MeshExportInfo info,
