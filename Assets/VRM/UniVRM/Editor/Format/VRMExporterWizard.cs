@@ -22,8 +22,8 @@ namespace VRM
         enum Tabs
         {
             Meta,
-            ExportSettings,
             Mesh,
+            ExportSettings,
         }
         Tabs _tab;
 
