@@ -232,9 +232,14 @@ namespace VRM
             {
                 v.DrawGUI();
             }
-            if (m_meshes.Meshes.Any(x => x.VertexColor != UniGLTF.MeshExportInfo.VertexColorState.None))
+            foreach (var meshInfo in m_meshes.Meshes)
             {
-                Validation.Warning(M17N.Getter.Msg(VRMExporterWizardMessages.VERTEX_COLOR_IS_INCLUDED)).DrawGUI();
+                switch (meshInfo.VertexColor)
+                {
+                    case UniGLTF.MeshExportInfo.VertexColorState.ExistsAndMixed:
+                        Validation.Warning($"{meshInfo.Renderer}: Both vcolor.multiply and not multiply unlit materials exist").DrawGUI();
+                        break;
+                }
             }
 
             bool modified = DrawWizardGUI();
