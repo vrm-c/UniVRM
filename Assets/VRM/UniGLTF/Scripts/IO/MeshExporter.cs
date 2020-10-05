@@ -22,16 +22,71 @@ namespace UniGLTF
         public bool IsRendererActive;
         public bool Skinned;
 
+        /// <summary>
+        /// Mesh に頂点カラーが含まれているか。
+        /// 含まれている場合にマテリアルは Unlit.VColorMultiply になっているか？
+        /// </summary>
         public enum VertexColorState
         {
-            // 存在しない
+            // VColorが存在しない
             None,
-            // 存在して使用している
+            // VColorが存在して使用している(UnlitはすべてVColorMultiply)
             ExistsAndIsUsed,
-            // 存在するが使用していない
+            // VColorが存在するが使用していない(UnlitはすべてVColorNone。もしくはUnlitが存在しない)
             ExistsButNotUsed,
+            // VColorが存在して、Unlit.Multiply と Unlit.NotMultiply が混在している。 Unlit.NotMultiply を MToon か Standardに変更した方がよい
+            ExistsAndMixed,
         }
         public VertexColorState VertexColor;
+
+        static bool MaterialUseVertexColor(Material m)
+        {
+            if (m.shader.name != UniGLTF.UniUnlit.Utils.ShaderName)
+            {
+                return false;
+            }
+            if (UniGLTF.UniUnlit.Utils.GetVColBlendMode(m) != UniGLTF.UniUnlit.UniUnlitVertexColorBlendOp.Multiply)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public static VertexColorState DetectVertexColor(Mesh mesh, Material[] materials)
+        {
+            if (mesh != null && mesh.colors != null && mesh.colors.Length == mesh.vertexCount)
+            {
+                // mesh が 頂点カラーを保持している
+                VertexColorState? state = default;
+                if (materials != null)
+                {
+                    foreach (var m in materials)
+                    {
+                        var currentState = MaterialUseVertexColor(m)
+                            ? UniGLTF.MeshExportInfo.VertexColorState.ExistsAndIsUsed
+                            : UniGLTF.MeshExportInfo.VertexColorState.ExistsButNotUsed
+                            ;
+                        if (state.HasValue)
+                        {
+                            if (state.Value != currentState)
+                            {
+                                state = UniGLTF.MeshExportInfo.VertexColorState.ExistsAndMixed;
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            state = currentState;
+                        }
+                    }
+                }
+                return state.GetValueOrDefault(VertexColorState.None);
+            }
+            else
+            {
+                return VertexColorState.None;
+            }
+        }
 
         public int VertexCount;
 
@@ -92,15 +147,14 @@ namespace UniGLTF
             var uvAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, mesh.uv.Select(y => y.ReverseUV()).ToArray(), glBufferTarget.ARRAY_BUFFER);
 
             var colorAccessorIndex = -1;
-            if (mesh.colors != null && mesh.colors.Length == mesh.vertexCount)
+
+            var vColorState = MeshExportInfo.DetectVertexColor(mesh, materials);
+            if (vColorState == MeshExportInfo.VertexColorState.ExistsAndIsUsed // VColor使っている
+            || vColorState == MeshExportInfo.VertexColorState.ExistsAndMixed // VColorを使っているところと使っていないところが混在(とりあえずExportする)
+            )
             {
-                // この Mesh が 頂点カラーを保持していて
-                if (materials.Any(x => x.shader.name == UniGLTF.UniUnlit.Utils.ShaderName
-                && UniGLTF.UniUnlit.Utils.GetVColBlendMode(x) == UniUnlit.UniUnlitVertexColorBlendOp.Multiply))
-                {
-                    // UniUnlit で Multiply 設定になっている
-                    colorAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, mesh.colors, glBufferTarget.ARRAY_BUFFER);
-                }
+                // UniUnlit で Multiply 設定になっている
+                colorAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, mesh.colors, glBufferTarget.ARRAY_BUFFER);
             }
 
             var boneweights = mesh.boneWeights;

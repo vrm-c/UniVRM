@@ -62,19 +62,6 @@ namespace VRM
         List<Validation> m_validations = new List<Validation>();
         public IEnumerable<Validation> Validations => m_validations;
 
-        static bool MaterialUseVertexColor(Material m)
-        {
-            if (m.shader.name != UniGLTF.UniUnlit.Utils.ShaderName)
-            {
-                return false;
-            }
-            if (UniGLTF.UniUnlit.Utils.GetVColBlendMode(m) != UniGLTF.UniUnlit.UniUnlitVertexColorBlendOp.Multiply)
-            {
-                return false;
-            }
-            return true;
-        }
-
         public static void CalcMeshSize(ref UniGLTF.MeshExportInfo info,
                                         string relativePath, VRMExportSettings settings, IReadOnlyList<BlendShapeClip> clips)
         {
@@ -193,17 +180,7 @@ namespace VRM
                 return false;
             }
 
-            if (info.Mesh.colors != null && info.Mesh.colors.Length == info.Mesh.vertexCount)
-            {
-                if (renderer.sharedMaterials.Any(x => MaterialUseVertexColor(x)))
-                {
-                    info.VertexColor = UniGLTF.MeshExportInfo.VertexColorState.ExistsAndIsUsed;
-                }
-                else
-                {
-                    info.VertexColor = UniGLTF.MeshExportInfo.VertexColorState.ExistsButNotUsed;
-                }
-            }
+            info.VertexColor = UniGLTF.MeshExportInfo.DetectVertexColor(info.Mesh, info.Renderer.sharedMaterials);
 
             var relativePath = UniGLTF.UnityExtensions.RelativePathFrom(renderer.transform, root.transform);
             CalcMeshSize(ref info, relativePath, settings, clips);
