@@ -90,7 +90,9 @@ namespace VRM
                 info.ExportVertexSize += 4 * 2;
             }
             if (info.Mesh.colors != null && info.Mesh.colors.Length == info.Mesh.vertexCount
-            && info.VertexColor == UniGLTF.MeshExportInfo.VertexColorState.ExistsAndIsUsed)
+            && info.VertexColor == UniGLTF.MeshExportInfo.VertexColorState.ExistsAndIsUsed
+            || info.VertexColor == UniGLTF.MeshExportInfo.VertexColorState.ExistsAndMixed // Export する
+            )
             {
                 sb.Append("+Col");
                 info.ExportVertexSize += 4 * 4;
@@ -134,6 +136,7 @@ namespace VRM
             switch (info.VertexColor)
             {
                 case UniGLTF.MeshExportInfo.VertexColorState.ExistsAndIsUsed:
+                case UniGLTF.MeshExportInfo.VertexColorState.ExistsAndMixed: // エクスポートする
                     sb.Insert(0, "[use vcolor]");
                     break;
                 case UniGLTF.MeshExportInfo.VertexColorState.ExistsButNotUsed:
