@@ -41,6 +41,10 @@ namespace UniGLTF
 
         static bool MaterialUseVertexColor(Material m)
         {
+            if (m == null)
+            {
+                return false;
+            }
             if (m.shader.name != UniGLTF.UniUnlit.Utils.ShaderName)
             {
                 return false;

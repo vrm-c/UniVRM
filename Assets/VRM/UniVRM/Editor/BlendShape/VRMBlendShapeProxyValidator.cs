@@ -39,9 +39,12 @@ namespace VRM
             {
                 foreach (var m in r.sharedMaterials)
                 {
-                    if (!materialNames.Contains(m.name))
+                    if (m != null)
                     {
-                        materialNames.Add(m.name);
+                        if (!materialNames.Contains(m.name))
+                        {
+                            materialNames.Add(m.name);
+                        }
                     }
                 }
             }
