@@ -22,6 +22,16 @@ namespace UniGLTF
         public bool IsRendererActive;
         public bool Skinned;
 
+        public bool HasNormal => Mesh != null && Mesh.normals != null && Mesh.normals.Length == Mesh.vertexCount;
+        public bool HasUV => Mesh != null && Mesh.uv != null && Mesh.uv.Length == Mesh.vertexCount;
+
+        public bool HasVertexColor => Mesh.colors != null && Mesh.colors.Length == Mesh.vertexCount
+            && VertexColor == VertexColorState.ExistsAndIsUsed
+            || VertexColor == VertexColorState.ExistsAndMixed // Export する
+            ;
+
+        public bool HasSkinning => Mesh.boneWeights != null && Mesh.boneWeights.Length == Mesh.vertexCount;
+
         /// <summary>
         /// Mesh に頂点カラーが含まれているか。
         /// 含まれている場合にマテリアルは Unlit.VColorMultiply になっているか？

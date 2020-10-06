@@ -78,8 +78,14 @@ namespace VRM
             }
             else
             {
+                // do validation
+                Validate();
+
                 // default setting
-                m_settings.PoseFreeze = VRMExporterValidator.HasRotationOrScale(ExportRoot);
+                m_settings.PoseFreeze =
+                VRMExporterValidator.HasRotationOrScale(ExportRoot)
+                || m_meshes.Meshes.Any(x => x.ExportBlendShapeCount > 0 && !x.HasSkinning)
+                ;
 
                 var meta = ExportRoot.GetComponent<VRMMeta>();
                 if (meta != null)
@@ -91,6 +97,17 @@ namespace VRM
                     Meta = null;
                 }
             }
+        }
+
+        void Validate()
+        {
+            if (!m_requireValidation)
+            {
+                return;
+            }
+            m_validator.Validate(ExportRoot, m_settings, Meta != null ? Meta : m_tmpMeta);
+            m_requireValidation = false;
+            m_meshes.SetRoot(ExportRoot, m_settings);
         }
 
         VRMMetaObject m_tmpMeta;
@@ -202,18 +219,13 @@ namespace VRM
             // EventType.Layout と EventType.Repaint 間で内容が変わらないようしている。
             if (Event.current.type == EventType.Layout)
             {
-                if (m_requireValidation)
-                {
-                    m_validator.Validate(ExportRoot, m_settings, Meta != null ? Meta : m_tmpMeta);
-                    m_requireValidation = false;
-                    m_meshes.SetRoot(ExportRoot, m_settings);
-                }
+                Validate();
             }
 
             //
             // Humanoid として適正か？ ここで失敗する場合は Export UI を表示しない
             //
-            if (!m_validator.RootAndHumanoidCheck(ExportRoot, m_settings))
+            if (!m_validator.RootAndHumanoidCheck(ExportRoot, m_settings, m_meshes.Meshes))
             {
                 return;
             }

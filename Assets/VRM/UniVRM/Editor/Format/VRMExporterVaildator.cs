@@ -84,7 +84,7 @@ namespace VRM
         /// <param name="ExportRoot"></param>
         /// <param name="m_settings"></param>
         /// <returns></returns>
-        public bool RootAndHumanoidCheck(GameObject ExportRoot, VRMExportSettings m_settings)
+        public bool RootAndHumanoidCheck(GameObject ExportRoot, VRMExportSettings m_settings, IReadOnlyList<UniGLTF.MeshExportInfo> info)
         {
             //
             // root
@@ -107,25 +107,31 @@ namespace VRM
                 return false;
             }
 
-            if (HasRotationOrScale(ExportRoot))
+            if (HasRotationOrScale(ExportRoot) || info.Any(x => x.ExportBlendShapeCount > 0 && !x.HasSkinning))
             {
+                // 正規化必用
                 if (m_settings.PoseFreeze)
                 {
-                    EditorGUILayout.HelpBox("Root OK", MessageType.Info);
+                    // する
+                    EditorGUILayout.HelpBox("PoseFreeze checked. OK", MessageType.Info);
                 }
                 else
                 {
+                    // しない
                     Validation.Warning(Msg(VRMExporterWizardMessages.ROTATION_OR_SCALEING_INCLUDED_IN_NODE)).DrawGUI();
                 }
             }
             else
             {
+                // 不要
                 if (m_settings.PoseFreeze)
                 {
+                    // する
                     Validation.Warning(Msg(VRMExporterWizardMessages.IS_POSE_FREEZE_DONE)).DrawGUI();
                 }
                 else
                 {
+                    // しない
                     EditorGUILayout.HelpBox("Root OK", MessageType.Info);
                 }
             }

@@ -21,8 +21,8 @@ namespace VRM
         [LangMsg(Languages.en, "Prefab Asset cannot be exported. Prefab Asset has different behaviour with Scene GameObject. Please put the prefab into the scene")]
         PREFAB_CANNOT_EXPORT,
 
-        [LangMsg(Languages.ja, "回転・拡大縮小を持つノードが含まれています。正規化が必用です。Setting の PoseFreeze を有効にしてください")]
-        [LangMsg(Languages.en, " Normalization is required. There are nodes (child GameObject) where rotation and scaling are not default. Please enable PoseFreeze")]
+        [LangMsg(Languages.ja, "回転・拡大縮小もしくはWeightの無いBlendShapeが含まれています。正規化が必用です。Setting の PoseFreeze を有効にしてください")]
+        [LangMsg(Languages.en, " Normalization is required. There are nodes (child GameObject) where rotation and scaling or blendshape without bone weight are not default. Please enable PoseFreeze")]
         ROTATION_OR_SCALEING_INCLUDED_IN_NODE,
 
         [LangMsg(Languages.ja, "正規化済みです。Setting の PoseFreeze は不要です")]
