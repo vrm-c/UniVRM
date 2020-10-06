@@ -16,7 +16,7 @@ namespace VRM
         [SerializeField]
         public string m_comment;
 
-        [SerializeField] [Header("Gizmo")] private bool m_drawGizmo;
+        [SerializeField] [Header("Gizmo")] private bool m_drawGizmo = default;
 
         [SerializeField] private Color m_gizmoColor = Color.yellow;
 
