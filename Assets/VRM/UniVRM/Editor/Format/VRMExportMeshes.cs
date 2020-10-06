@@ -79,25 +79,22 @@ namespace VRM
             // float4 x 3
             // vertices
             sb.Append($"(Pos");
-            if (info.Mesh.normals != null && info.Mesh.normals.Length == info.Mesh.vertexCount)
+            if (info.HasNormal)
             {
                 sb.Append("+Nom");
                 info.ExportVertexSize += 4 * 3;
             }
-            if (info.Mesh.uv != null && info.Mesh.uv.Length == info.Mesh.vertexCount)
+            if (info.HasUV)
             {
                 sb.Append("+UV");
                 info.ExportVertexSize += 4 * 2;
             }
-            if (info.Mesh.colors != null && info.Mesh.colors.Length == info.Mesh.vertexCount
-            && info.VertexColor == UniGLTF.MeshExportInfo.VertexColorState.ExistsAndIsUsed
-            || info.VertexColor == UniGLTF.MeshExportInfo.VertexColorState.ExistsAndMixed // Export する
-            )
+            if (info.HasVertexColor)
             {
                 sb.Append("+Col");
                 info.ExportVertexSize += 4 * 4;
             }
-            if (info.Mesh.boneWeights != null && info.Mesh.boneWeights.Length == info.Mesh.vertexCount)
+            if (info.HasSkinning)
             {
                 // short, float x 4 weights
                 sb.Append("+Skin");
@@ -143,6 +140,12 @@ namespace VRM
                     sb.Insert(0, "[remove vcolor]");
                     break;
             }
+            if (info.ExportBlendShapeCount > 0 && !info.HasSkinning)
+            {
+                sb.Insert(0, "[morph without skin]");
+            }
+
+            // total bytes
             sb.Insert(0, $"{info.ExportByteSize:#,0} Bytes = ");
             info.Summary = sb.ToString();
         }
