@@ -75,6 +75,11 @@ namespace UniGLTF.UniUnlit
             return (UniUnlitCullMode)material.GetInt(PropNameCullMode);
         }
 
+        public static UniUnlitVertexColorBlendOp GetVColBlendMode(Material material)
+        {
+            return (UniUnlitVertexColorBlendOp)material.GetInt(PropNameVColBlendMode);
+        }
+
         /// <summary>
         /// Validate target material's UniUnlitRenderMode, UniUnlitVertexColorBlendOp.
         /// Set appropriate hidden properties & keywords.

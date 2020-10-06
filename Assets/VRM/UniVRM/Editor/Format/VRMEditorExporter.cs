@@ -16,12 +16,12 @@ namespace VRM
         /// </summary>
         /// <param name="path">出力先</param>
         /// <param name="settings">エクスポート設定</param>
-        public static void Export(string path, GameObject exportRoot, VRMMetaObject meta, VRMExportSettings settings)
+        public static void Export(string path, GameObject exportRoot, VRMMetaObject meta, VRMExportSettings settings, IReadOnlyList<MeshExportInfo> info)
         {
             List<GameObject> destroy = new List<GameObject>();
             try
             {
-                Export(path, exportRoot, meta, settings, destroy);
+                Export(path, exportRoot, meta, settings, info, destroy);
             }
             finally
             {
@@ -136,7 +136,9 @@ namespace VRM
         /// <param name="path"></param>
         /// <param name="settings"></param>
         /// <param name="destroy">作業が終わったらDestoryするべき一時オブジェクト</param>
-        static void Export(string path, GameObject exportRoot, VRMMetaObject meta, VRMExportSettings settings, List<GameObject> destroy)
+        static void Export(string path, GameObject exportRoot, VRMMetaObject meta,
+                    VRMExportSettings settings, IReadOnlyList<UniGLTF.MeshExportInfo> info,
+                    List<GameObject> destroy)
         {
             var target = exportRoot;
 
@@ -217,24 +219,16 @@ namespace VRM
             }
 
             // 出力
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+            var gltf = new UniGLTF.glTF();
+            using (var exporter = new VRMExporter(gltf))
             {
-                var sw = System.Diagnostics.Stopwatch.StartNew();
-                var vrm = VRMExporter.Export(target, new VRMExporterConfiguration
-                {
-                    UseSparseAccessorForBlendShape = settings.UseSparseAccessor,
-                    ExportOnlyBlendShapePosition = settings.OnlyBlendshapePosition,
-                    RemoveVertexColor = settings.RemoveVertexColor
-                });
-                // vrm.extensions.VRM.meta.title = settings.Title;
-                // vrm.extensions.VRM.meta.version = settings.Version;
-                // vrm.extensions.VRM.meta.author = settings.Author;
-                // vrm.extensions.VRM.meta.contactInformation = settings.ContactInformation;
-                // vrm.extensions.VRM.meta.reference = settings.Reference;
-
-                var bytes = vrm.ToGlbBytes();
-                File.WriteAllBytes(path, bytes);
-                Debug.LogFormat("Export elapsed {0}", sw.Elapsed);
+                exporter.Prepare(target);
+                exporter.Export(settings.MeshExportSettings);
             }
+            var bytes = gltf.ToGlbBytes();
+            File.WriteAllBytes(path, bytes);
+            Debug.LogFormat("Export elapsed {0}", sw.Elapsed);
 
             if (path.StartsWithUnityAssetPath())
             {

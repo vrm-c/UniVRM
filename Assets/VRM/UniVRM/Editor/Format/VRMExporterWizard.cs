@@ -1,10 +1,8 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
-using uei = UnityEngine.Internal;
 
 namespace VRM
 {
@@ -21,9 +19,27 @@ namespace VRM
             VRMExporterWizard.CreateWizard();
         }
 
+        enum Tabs
+        {
+            Meta,
+            Mesh,
+            ExportSettings,
+        }
+        Tabs _tab;
+
+        GUIStyle TabButtonStyle => "LargeButton";
+
+        // GUI.ToolbarButtonSize.FitToContentsも設定できる
+        GUI.ToolbarButtonSize TabButtonSize => GUI.ToolbarButtonSize.Fixed;
+        const string EXTENSION = ".vrm";
+
+        private static string m_lastExportDir;
+
+
         GameObject ExportRoot;
 
         VRMExportSettings m_settings;
+        VRMExportMeshes m_meshes;
 
         VRMMetaObject m_meta;
         VRMMetaObject Meta
@@ -80,14 +96,13 @@ namespace VRM
         VRMMetaObject m_tmpMeta;
 
         Editor m_metaEditor;
-        Editor m_Inspector;
+        Editor m_settingsInspector;
+        Editor m_meshesInspector;
 
         VRMExporterValidator m_validator = new VRMExporterValidator();
         bool m_requireValidation = true;
 
         private Vector2 m_ScrollPosition;
-        private string m_CreateButton = "Create";
-        private string m_OtherButton = "";
 
         void OnEnable()
         {
@@ -97,14 +112,11 @@ namespace VRM
 
             m_tmpMeta = ScriptableObject.CreateInstance<VRMMetaObject>();
 
-            if (m_settings == null)
-            {
-                m_settings = ScriptableObject.CreateInstance<VRMExportSettings>();
-            }
-            if (m_Inspector == null)
-            {
-                m_Inspector = Editor.CreateEditor(m_settings);
-            }
+            m_settings = ScriptableObject.CreateInstance<VRMExportSettings>();
+            m_settingsInspector = Editor.CreateEditor(m_settings);
+
+            m_meshes = ScriptableObject.CreateInstance<VRMExportMeshes>();
+            m_meshesInspector = Editor.CreateEditor(m_meshes);
         }
 
         void OnDisable()
@@ -115,15 +127,25 @@ namespace VRM
             Selection.selectionChanged -= OnWizardUpdate;
             Undo.willFlushUndoRecord -= OnWizardUpdate;
 
+            // m_metaEditor
             UnityEditor.Editor.DestroyImmediate(m_metaEditor);
             m_metaEditor = null;
-            UnityEditor.Editor.DestroyImmediate(m_Inspector);
-            m_Inspector = null;
+            // m_settingsInspector
+            UnityEditor.Editor.DestroyImmediate(m_settingsInspector);
+            m_settingsInspector = null;
+            // m_meshesInspector
+            UnityEditor.Editor.DestroyImmediate(m_meshesInspector);
+            m_meshesInspector = null;
+            // Meta
             Meta = null;
             ScriptableObject.DestroyImmediate(m_tmpMeta);
             m_tmpMeta = null;
+            // m_settings
             ScriptableObject.DestroyImmediate(m_settings);
             m_settings = null;
+            // m_meshes
+            ScriptableObject.DestroyImmediate(m_meshes);
+            m_meshes = null;
         }
 
         private void InvokeWizardUpdate()
@@ -175,15 +197,16 @@ namespace VRM
                 UpdateRoot(root);
             }
 
+            // ArgumentException: Getting control 1's position in a group with only 1 controls when doing repaint Aborting
+            // Validation により GUI の表示項目が変わる場合があるので、
+            // EventType.Layout と EventType.Repaint 間で内容が変わらないようしている。
             if (Event.current.type == EventType.Layout)
             {
-                // ArgumentException: Getting control 1's position in a group with only 1 controls when doing repaint Aborting
-                // Validation により GUI の表示項目が変わる場合があるので、
-                // EventType.Layout と EventType.Repaint 間で内容が変わらないようしている。
                 if (m_requireValidation)
                 {
                     m_validator.Validate(ExportRoot, m_settings, Meta != null ? Meta : m_tmpMeta);
                     m_requireValidation = false;
+                    m_meshes.SetRoot(ExportRoot, m_settings);
                 }
             }
 
@@ -195,8 +218,7 @@ namespace VRM
                 return;
             }
 
-            EditorGUILayout.HelpBox($"Mesh size: {m_validator.ExpectedByteSize / 1000000.0f:0.0} MByte", MessageType.Info);
-
+            EditorGUILayout.HelpBox($"Mesh size: {m_meshes.ExpectedExportByteSize / 1000000.0f:0.0} MByte", MessageType.Info);
             _tab = TabBar.OnGUI(_tab, TabButtonStyle, TabButtonSize);
 
             // Render contents using Generic Inspector GUI
@@ -209,6 +231,15 @@ namespace VRM
             foreach (var v in m_validator.Validations)
             {
                 v.DrawGUI();
+            }
+            foreach (var meshInfo in m_meshes.Meshes)
+            {
+                switch (meshInfo.VertexColor)
+                {
+                    case UniGLTF.MeshExportInfo.VertexColorState.ExistsAndMixed:
+                        Validation.Warning($"{meshInfo.Renderer}: Both vcolor.multiply and not multiply unlit materials exist").DrawGUI();
+                        break;
+                }
             }
 
             bool modified = DrawWizardGUI();
@@ -225,26 +256,9 @@ namespace VRM
                     GUILayout.FlexibleSpace();
                     GUI.enabled = m_validator.IsValid;
 
-                    const BindingFlags kInstanceInvokeFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy;
-                    if (m_OtherButton != "" && GUILayout.Button(m_OtherButton, GUILayout.MinWidth(100)))
+                    if (GUILayout.Button("Export", GUILayout.MinWidth(100)))
                     {
-                        MethodInfo method = GetType().GetMethod("OnWizardOtherButton", kInstanceInvokeFlags);
-                        if (method != null)
-                        {
-                            method.Invoke(this, null);
-                            GUIUtility.ExitGUI();
-                        }
-                        else
-                            Debug.LogError("OnWizardOtherButton has not been implemented in script");
-                    }
-
-                    if (m_CreateButton != "" && GUILayout.Button(m_CreateButton, GUILayout.MinWidth(100)))
-                    {
-                        MethodInfo method = GetType().GetMethod("OnWizardCreate", kInstanceInvokeFlags);
-                        if (method != null)
-                            method.Invoke(this, null);
-                        else
-                            Debug.LogError("OnWizardCreate has not been implemented in script");
+                        OnWizardCreate();
                         Close();
                         GUIUtility.ExitGUI();
                     }
@@ -263,18 +277,6 @@ namespace VRM
                 Repaint();
             }
         }
-
-        enum Tabs
-        {
-            Meta,
-            ExportSettings,
-        }
-        Tabs _tab;
-
-        GUIStyle TabButtonStyle => "LargeButton";
-
-        // GUI.ToolbarButtonSize.FitToContentsも設定できる
-        GUI.ToolbarButtonSize TabButtonSize => GUI.ToolbarButtonSize.Fixed;
 
         bool DrawWizardGUI()
         {
@@ -303,7 +305,11 @@ namespace VRM
                     break;
 
                 case Tabs.ExportSettings:
-                    m_Inspector.OnInspectorGUI();
+                    m_settingsInspector.OnInspectorGUI();
+                    break;
+
+                case Tabs.Mesh:
+                    m_meshesInspector.OnInspectorGUI();
                     break;
             }
 
@@ -311,45 +317,10 @@ namespace VRM
         }
 
         // Creates a wizard.
-        public static T DisplayWizard<T>(string title) where T : VRMExporterWizard
+        public static VRMExporterWizard DisplayWizard()
         {
-            return DisplayWizard<T>(title, "Create", "");
-        }
-
-        ///*listonly*
-        public static T DisplayWizard<T>(string title, string createButtonName) where T : VRMExporterWizard
-        {
-            return DisplayWizard<T>(title, createButtonName, "");
-        }
-
-        ///*listonly*
-        public static T DisplayWizard<T>(string title, string createButtonName, string otherButtonName) where T : VRMExporterWizard
-        {
-            return (T)DisplayWizard(title, typeof(T), createButtonName, otherButtonName);
-        }
-
-        [uei.ExcludeFromDocsAttribute]
-        public static VRMExporterWizard DisplayWizard(string title, Type klass, string createButtonName)
-        {
-            string otherButtonName = "";
-            return DisplayWizard(title, klass, createButtonName, otherButtonName);
-        }
-
-        [uei.ExcludeFromDocsAttribute]
-        public static VRMExporterWizard DisplayWizard(string title, Type klass)
-        {
-            string otherButtonName = "";
-            string createButtonName = "Create";
-            return DisplayWizard(title, klass, createButtonName, otherButtonName);
-        }
-
-        // Creates a wizard.
-        public static VRMExporterWizard DisplayWizard(string title, Type klass, [uei.DefaultValueAttribute("\"Create\"")] string createButtonName, [uei.DefaultValueAttribute("\"\"")] string otherButtonName)
-        {
-            VRMExporterWizard wizard = CreateInstance(klass) as VRMExporterWizard;
-            wizard.m_CreateButton = createButtonName;
-            wizard.m_OtherButton = otherButtonName;
-            wizard.titleContent = new GUIContent(title);
+            VRMExporterWizard wizard = CreateInstance<VRMExporterWizard>();
+            wizard.titleContent = new GUIContent("VRM Exporter");
             if (wizard != null)
             {
                 wizard.InvokeWizardUpdate();
@@ -358,44 +329,9 @@ namespace VRM
             return wizard;
         }
 
-        // Allows you to set the create button text of the wizard.
-        public string createButtonName
-        {
-            get { return m_CreateButton; }
-            set
-            {
-                var newString = value ?? string.Empty;
-                if (m_CreateButton != newString)
-                {
-                    m_CreateButton = newString;
-                    Repaint();
-                }
-            }
-        }
-
-        // Allows you to set the other button text of the wizard.
-        public string otherButtonName
-        {
-            get { return m_OtherButton; }
-            set
-            {
-                var newString = value ?? string.Empty;
-                if (m_OtherButton != newString)
-                {
-                    m_OtherButton = newString;
-                    Repaint();
-                }
-            }
-        }
-
-        const string EXTENSION = ".vrm";
-
-        private static string m_lastExportDir;
-
         public static void CreateWizard()
         {
-            var wiz = VRMExporterWizard.DisplayWizard<VRMExporterWizard>(
-                "VRM Exporter", "Export");
+            var wiz = VRMExporterWizard.DisplayWizard();
             var go = Selection.activeObject as GameObject;
 
             // update checkbox
@@ -430,7 +366,7 @@ namespace VRM
             m_lastExportDir = Path.GetDirectoryName(path).Replace("\\", "/");
 
             // export
-            VRMEditorExporter.Export(path, ExportRoot, Meta != null ? Meta : m_tmpMeta, m_settings);
+            VRMEditorExporter.Export(path, ExportRoot, Meta != null ? Meta : m_tmpMeta, m_settings, m_meshes.Meshes);
         }
 
         void OnWizardUpdate()

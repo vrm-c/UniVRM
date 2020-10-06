@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace VRM
@@ -42,10 +43,10 @@ namespace VRM
         [Tooltip("Remove blendShapeClip that preset is Unknown")]
         public bool ReduceBlendshapeClip = false;
 
-        /// <summary>
-        /// 頂点カラーを削除する
-        /// </summary>
-        [Tooltip("Remove vertex color")]
-        public bool RemoveVertexColor = false;
-   }
+        public UniGLTF.MeshExportSettings MeshExportSettings => new UniGLTF.MeshExportSettings
+        {
+            UseSparseAccessorForMorphTarget = UseSparseAccessor,
+            ExportOnlyBlendShapePosition = OnlyBlendshapePosition,
+        };
+    }
 }

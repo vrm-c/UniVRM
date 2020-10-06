@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using UnityEngine;
 
 namespace UniGLTF
@@ -13,13 +14,130 @@ namespace UniGLTF
         public Renderer Renderer;
     }
 
+    [Serializable]
+    public struct MeshExportInfo
+    {
+        public Renderer Renderer;
+        public Mesh Mesh;
+        public bool IsRendererActive;
+        public bool Skinned;
+
+        /// <summary>
+        /// Mesh に頂点カラーが含まれているか。
+        /// 含まれている場合にマテリアルは Unlit.VColorMultiply になっているか？
+        /// </summary>
+        public enum VertexColorState
+        {
+            // VColorが存在しない
+            None,
+            // VColorが存在して使用している(UnlitはすべてVColorMultiply)
+            ExistsAndIsUsed,
+            // VColorが存在するが使用していない(UnlitはすべてVColorNone。もしくはUnlitが存在しない)
+            ExistsButNotUsed,
+            // VColorが存在して、Unlit.Multiply と Unlit.NotMultiply が混在している。 Unlit.NotMultiply を MToon か Standardに変更した方がよい
+            ExistsAndMixed,
+        }
+        public VertexColorState VertexColor;
+
+        static bool MaterialUseVertexColor(Material m)
+        {
+            if (m == null)
+            {
+                return false;
+            }
+            if (m.shader.name != UniGLTF.UniUnlit.Utils.ShaderName)
+            {
+                return false;
+            }
+            if (UniGLTF.UniUnlit.Utils.GetVColBlendMode(m) != UniGLTF.UniUnlit.UniUnlitVertexColorBlendOp.Multiply)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public static VertexColorState DetectVertexColor(Mesh mesh, Material[] materials)
+        {
+            if (mesh != null && mesh.colors != null && mesh.colors.Length == mesh.vertexCount)
+            {
+                // mesh が 頂点カラーを保持している
+                VertexColorState? state = default;
+                if (materials != null)
+                {
+                    foreach (var m in materials)
+                    {
+                        var currentState = MaterialUseVertexColor(m)
+                            ? UniGLTF.MeshExportInfo.VertexColorState.ExistsAndIsUsed
+                            : UniGLTF.MeshExportInfo.VertexColorState.ExistsButNotUsed
+                            ;
+                        if (state.HasValue)
+                        {
+                            if (state.Value != currentState)
+                            {
+                                state = UniGLTF.MeshExportInfo.VertexColorState.ExistsAndMixed;
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            state = currentState;
+                        }
+                    }
+                }
+                return state.GetValueOrDefault(VertexColorState.None);
+            }
+            else
+            {
+                return VertexColorState.None;
+            }
+        }
+
+        public int VertexCount;
+
+        /// <summary>
+        /// Position, UV, Normal
+        /// [Color]
+        /// [SkinningWeight]
+        /// </summary>
+        public int ExportVertexSize;
+
+        public int IndexCount;
+
+        // int 決め打ち
+        public int IndicesSize => IndexCount * 4;
+
+        public int ExportBlendShapeVertexSize;
+
+        public int TotalBlendShapeCount;
+
+        public int ExportBlendShapeCount;
+
+        public int ExportByteSize => ExportVertexSize * VertexCount + IndicesSize + ExportBlendShapeCount * ExportBlendShapeVertexSize * VertexCount;
+
+        public string Summary;
+    }
+
+    public struct MeshExportSettings
+    {
+        // MorphTarget に Sparse Accessor を使う
+        public bool UseSparseAccessorForMorphTarget;
+
+        // MorphTarget を Position だけにする(normal とか捨てる)
+        public bool ExportOnlyBlendShapePosition;
+
+        public static MeshExportSettings Default => new MeshExportSettings
+        {
+            UseSparseAccessorForMorphTarget = false,
+            ExportOnlyBlendShapePosition = false,
+        };
+    }
+
     public static class MeshExporter
     {
         static glTFMesh ExportPrimitives(glTF gltf, int bufferIndex,
             string rendererName,
             Mesh mesh, Material[] materials,
-            List<Material> unityMaterials,
-            bool removeVertexColor)
+            List<Material> unityMaterials)
         {
             var positions = mesh.vertices.Select(y => y.ReverseZ()).ToArray();
             var positionAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, positions, glBufferTarget.ARRAY_BUFFER);
@@ -33,8 +151,15 @@ namespace UniGLTF
             var uvAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, mesh.uv.Select(y => y.ReverseUV()).ToArray(), glBufferTarget.ARRAY_BUFFER);
 
             var colorAccessorIndex = -1;
-            if (!removeVertexColor)
+
+            var vColorState = MeshExportInfo.DetectVertexColor(mesh, materials);
+            if (vColorState == MeshExportInfo.VertexColorState.ExistsAndIsUsed // VColor使っている
+            || vColorState == MeshExportInfo.VertexColorState.ExistsAndMixed // VColorを使っているところと使っていないところが混在(とりあえずExportする)
+            )
+            {
+                // UniUnlit で Multiply 設定になっている
                 colorAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, mesh.colors, glBufferTarget.ARRAY_BUFFER);
+            }
 
             var boneweights = mesh.boneWeights;
             var weightAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, boneweights.Select(y => new Vector4(y.weight0, y.weight1, y.weight2, y.weight3)).ToArray(), glBufferTarget.ARRAY_BUFFER);
@@ -234,9 +359,7 @@ namespace UniGLTF
 
         public static IEnumerable<(Mesh, glTFMesh, Dictionary<int, int>)> ExportMeshes(glTF gltf, int bufferIndex,
             List<MeshWithRenderer> unityMeshes, List<Material> unityMaterials,
-            bool useSparseAccessorForMorphTarget,
-            bool exportOnlyBlendShapePosition,
-            bool removeVertexColor)
+            MeshExportSettings settings)
         {
             for (int i = 0; i < unityMeshes.Count; ++i)
             {
@@ -246,7 +369,7 @@ namespace UniGLTF
 
                 var gltfMesh = ExportPrimitives(gltf, bufferIndex,
                     x.Renderer.name,
-                    mesh, materials, unityMaterials, removeVertexColor);
+                    mesh, materials, unityMaterials);
 
                 var blendShapeIndexMap = new Dictionary<int, int>();
                 int exportBlendShapes = 0;
@@ -254,8 +377,8 @@ namespace UniGLTF
                 {
                     var morphTarget = ExportMorphTarget(gltf, bufferIndex,
                         mesh, j,
-                        useSparseAccessorForMorphTarget,
-                        exportOnlyBlendShapePosition);
+                        settings.UseSparseAccessorForMorphTarget,
+                        settings.ExportOnlyBlendShapePosition);
                     if (morphTarget.POSITION < 0 && morphTarget.NORMAL < 0 && morphTarget.TANGENT < 0)
                     {
                         continue;
