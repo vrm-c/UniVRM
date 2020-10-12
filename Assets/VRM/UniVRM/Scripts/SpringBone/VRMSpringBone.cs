@@ -137,26 +137,18 @@ namespace VRM
 
             protected virtual Vector3 Collision(List<SphereCollider> colliders, Vector3 nextTail)
             {
-                var position = m_transform.position;
-
                 foreach (var collider in colliders)
                 {
-                    var ls = collider.transform.lossyScale;
-                    var scale = Mathf.Max(ls.x, ls.y, ls.z);
-
-                    var r = Radius + collider.radius * scale;
-                    var colliderPosition = collider.transform.TransformPoint(collider.center);
-
-                    if (Vector3.SqrMagnitude(nextTail - colliderPosition) > r * r) continue;
-
-                    // ヒット。Colliderの半径方向に押し出す
-                    var normal = (nextTail - colliderPosition).normalized;
-                    var posFromCollider = colliderPosition + normal * (Radius + collider.radius * scale);
-
-                    // 長さをboneLengthに強制
-                    nextTail = position + (posFromCollider - position).normalized * m_length;
+                    var r = Radius + collider.Radius;
+                    if (Vector3.SqrMagnitude(nextTail - collider.Position) <= (r * r))
+                    {
+                        // ヒット。Colliderの半径方向に押し出す
+                        var normal = (nextTail - collider.Position).normalized;
+                        var posFromCollider = collider.Position + normal * (Radius + collider.Radius);
+                        // 長さをboneLengthに強制
+                        nextTail = m_transform.position + (posFromCollider - m_transform.position).normalized * m_length;
+                    }
                 }
-
                 return nextTail;
             }
 
@@ -267,10 +259,19 @@ namespace VRM
 
         public struct SphereCollider
         {
-            public Transform transform;
-            public Vector3 center;
-            public float radius;
+            // public Transform Transform;
+            public readonly Vector3 Position;
+            public readonly float Radius;
+
+            public SphereCollider(Transform transform, VRMSpringBoneColliderGroup.SphereCollider collider)
+            {
+                Position = transform.TransformPoint(collider.Offset);
+                var ls = transform.lossyScale;
+                var scale = Mathf.Max(ls.x, ls.y, ls.z);
+                Radius = scale * collider.Radius;
+            }
         }
+
         private List<SphereCollider> m_colliders = new List<SphereCollider>();
         private void UpdateProcess(float deltaTime)
         {
@@ -290,12 +291,7 @@ namespace VRM
                     {
                         foreach (var collider in group.Colliders)
                         {
-                            m_colliders.Add(new SphereCollider
-                            {
-                                transform = group.transform,
-                                center = group.transform.TransformPoint(collider.Offset),
-                                radius = collider.Radius,
-                            });
+                            m_colliders.Add(new SphereCollider(group.transform, collider));
                         }
                     }
                 }
