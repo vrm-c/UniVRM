@@ -301,8 +301,8 @@ namespace VRM
                 }
             }
 
-            var stiffness = m_stiffnessForce * Time.deltaTime;
-            var external = m_gravityDir * (m_gravityPower * Time.deltaTime);
+            var stiffness = m_stiffnessForce * deltaTime;
+            var external = m_gravityDir * (m_gravityPower * deltaTime);
 
             foreach (var verlet in m_verlet)
             {
