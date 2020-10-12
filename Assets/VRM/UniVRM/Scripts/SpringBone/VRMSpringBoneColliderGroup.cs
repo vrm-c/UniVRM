@@ -4,9 +4,9 @@ using UnityEngine;
 
 namespace VRM
 {
-    #if UNITY_5_5_OR_NEWER
+#if UNITY_5_5_OR_NEWER
     [DefaultExecutionOrder(11001)]
-    #endif
+#endif
     public class VRMSpringBoneColliderGroup : MonoBehaviour
     {
         [Serializable]
@@ -33,10 +33,15 @@ namespace VRM
         {
             Gizmos.color = m_gizmoColor;
             Matrix4x4 mat = transform.localToWorldMatrix;
+            var ls = Mathf.Max(
+                transform.lossyScale.x,
+                transform.lossyScale.y,
+                transform.lossyScale.z
+            );
             Gizmos.matrix = mat * Matrix4x4.Scale(new Vector3(
-                1.0f / transform.lossyScale.x,
-                1.0f / transform.lossyScale.y,
-                1.0f / transform.lossyScale.z
+                1.0f / transform.lossyScale.x * ls,
+                1.0f / transform.lossyScale.y * ls,
+                1.0f / transform.lossyScale.z * ls
                 ));
             foreach (var y in Colliders)
             {
