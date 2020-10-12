@@ -69,6 +69,10 @@ namespace VRM
 
         private void OnEnable()
         {
+            if (target == null)
+            {
+                return;
+            }
             m_target = (VRMMetaObject)target;
 
             m_Script = serializedObject.FindProperty("m_Script");
