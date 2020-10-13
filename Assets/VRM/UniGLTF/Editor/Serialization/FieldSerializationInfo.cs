@@ -51,26 +51,26 @@ namespace UniGLTF
             Path = path + "/" + fi.Name;
             m_attr = fi.GetCustomAttributes(true).FirstOrDefault(x => x.GetType() == typeof(JsonSchemaAttribute)) as JsonSchemaAttribute;
 
-            Serialization = GetSerialization(m_fi.FieldType, Path);
+            Serialization = GetSerialization(m_fi.FieldType, Path, m_attr);
         }
 
-        static IValueSerialization GetSerialization(Type t, string path)
+        static IValueSerialization GetSerialization(Type t, string path, JsonSchemaAttribute attr)
         {
             if (t.IsArray)
             {
                 return new ArraySerialization(t,
-                    GetSerialization(t.GetElementType(), path + "[]"));
+                    GetSerialization(t.GetElementType(), path + "[]", attr));
             }
             else if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(List<>))
             {
                 return new ListSerialization(t,
-                    GetSerialization(t.GetGenericArguments()[0], path + "[]"));
+                    GetSerialization(t.GetGenericArguments()[0], path + "[]", attr));
             }
             else if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Dictionary<,>)
                 && t.GetGenericArguments()[0] == typeof(string))
             {
-                return new StringKeyDictionarySerialization(t, 
-                    GetSerialization(t.GetGenericArguments()[1], path));
+                return new StringKeyDictionarySerialization(t,
+                    GetSerialization(t.GetGenericArguments()[1], path, attr));
             }
 
             // GetCollectionType(fi.FieldType, out suffix, out t);
@@ -124,7 +124,7 @@ namespace UniGLTF
             }
             else if (t.IsEnum)
             {
-                return new EnumIntSerialization(t);
+                return new EnumIntSerialization(t, attr.EnumSerializationType);
             }
 
             return new ObjectSerialization(t, path);
