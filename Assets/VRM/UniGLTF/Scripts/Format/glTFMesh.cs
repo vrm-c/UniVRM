@@ -20,6 +20,9 @@ namespace UniGLTF
         public int TEXCOORD_0 = -1;
 
         [JsonSchema(Minimum = 0, ExplicitIgnorableValue = -1)]
+        public int TEXCOORD_1 = -1;
+
+        [JsonSchema(Minimum = 0, ExplicitIgnorableValue = -1)]
         public int COLOR_0 = -1;
 
         [JsonSchema(Minimum = 0, ExplicitIgnorableValue = -1)]
@@ -45,6 +48,7 @@ namespace UniGLTF
                 && NORMAL == rhs.NORMAL
                 && TANGENT == rhs.TANGENT
                 && TEXCOORD_0 == rhs.TEXCOORD_0
+                && TEXCOORD_1 == rhs.TEXCOORD_1
                 && COLOR_0 == rhs.COLOR_0
                 && JOINTS_0 == rhs.JOINTS_0
                 && WEIGHTS_0 == rhs.WEIGHTS_0
@@ -57,6 +61,7 @@ namespace UniGLTF
             if (NORMAL != -1) f.KeyValue(() => NORMAL);
             if (TANGENT != -1) f.KeyValue(() => TANGENT);
             if (TEXCOORD_0 != -1) f.KeyValue(() => TEXCOORD_0);
+            if (TEXCOORD_1 != -1) f.KeyValue(() => TEXCOORD_1);
             if (COLOR_0 != -1) f.KeyValue(() => COLOR_0);
             if (JOINTS_0 != -1) f.KeyValue(() => JOINTS_0);
             if (WEIGHTS_0 != -1) f.KeyValue(() => WEIGHTS_0);

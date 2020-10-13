@@ -20,10 +20,11 @@ namespace UniGLTF
             var normals = new List<Vector3>();
             var tangents = new List<Vector4>();
             var uv = new List<Vector2>();
+            var uv2 = new List<Vector2>();
             var colors = new List<Color>();
             var blendShapes = new List<BlendShape>();
             var meshContext = new MeshContext();
-            
+
             // blendshapes
             var targetNames = gltfMesh.extras.targetNames;
             for (int i = 1; i < gltfMesh.primitives.Count; ++i)
@@ -39,7 +40,7 @@ namespace UniGLTF
                 var blendShape = new BlendShape(!string.IsNullOrEmpty(targetNames[i]) ? targetNames[i] : i.ToString());
                 blendShapes.Add(blendShape);
             }
-            
+
             foreach (var prim in gltfMesh.primitives)
             {
                 var indexOffset = positions.Count;
@@ -81,6 +82,17 @@ namespace UniGLTF
                     uv.AddRange(new Vector2[positionCount]);
                 }
 
+                // uv1
+                if (prim.attributes.TEXCOORD_1 != -1)
+                {
+                    uv2.AddRange(ctx.GLTF.GetArrayFromAccessor<Vector2>(prim.attributes.TEXCOORD_1).Select(x => x.ReverseUV()));
+                }
+                else
+                {
+                    // for inconsistent attributes in primitives
+                    uv2.AddRange(new Vector2[positionCount]);
+                }
+
                 // color
                 if (prim.attributes.COLOR_0 != -1)
                 {
@@ -112,7 +124,7 @@ namespace UniGLTF
                         meshContext.boneWeights.Add(bw);
                     }
                 }
-                
+
                 // blendshape
                 if (prim.targets != null && prim.targets.Count > 0)
                 {
@@ -183,6 +195,7 @@ namespace UniGLTF
             var normals = new List<Vector3>();
             var tangents = new List<Vector4>();
             var uv = new List<Vector2>();
+            var uv2 = new List<Vector2>();
             var colors = new List<Color>();
             var meshContext = new MeshContext();
             foreach (var prim in gltfMesh.primitives)
@@ -224,6 +237,17 @@ namespace UniGLTF
                 {
                     // for inconsistent attributes in primitives
                     uv.AddRange(new Vector2[positionCount]);
+                }
+
+                // uv2
+                if (prim.attributes.TEXCOORD_1 != -1)
+                {
+                    uv2.AddRange(ctx.GLTF.GetArrayFromAccessor<Vector2>(prim.attributes.TEXCOORD_1).Select(x => x.ReverseUV()));
+                }
+                else
+                {
+                    // for inconsistent attributes in primitives
+                    uv2.AddRange(new Vector2[positionCount]);
                 }
 
                 // color
@@ -353,6 +377,17 @@ namespace UniGLTF
                 {
                     // for inconsistent attributes in primitives
                     context.uv = new Vector2[context.positions.Length];
+                }
+
+                // uv2
+                if (prim.attributes.TEXCOORD_1 != -1)
+                {
+                    context.uv2 = ctx.GLTF.GetArrayFromAccessor<Vector2>(prim.attributes.TEXCOORD_1).SelectInplace(x => x.ReverseUV());
+                }
+                else
+                {
+                    // for inconsistent attributes in primitives
+                    context.uv2 = new Vector2[context.positions.Length];
                 }
 
                 // color
@@ -491,6 +526,7 @@ namespace UniGLTF
             public Vector3[] normals;
             public Vector4[] tangents;
             public Vector2[] uv;
+            public Vector2[] uv2;
             public Color[] colors;
             public List<BoneWeight> boneWeights = new List<BoneWeight>();
             public List<int[]> subMeshes = new List<int[]>();
@@ -575,6 +611,10 @@ namespace UniGLTF
             {
                 mesh.uv = meshContext.uv;
             }
+            if (meshContext.uv2 != null && meshContext.uv2.Length > 0)
+            {
+                mesh.uv2 = meshContext.uv2;
+            }
 
             bool recalculateTangents = true;
 #if UNIGLTF_IMPORT_TANGENTS
@@ -657,7 +697,7 @@ namespace UniGLTF
 
             return result;
         }
-        
+
         public static IEnumerator BuildMeshCoroutine(ImporterContext ctx, MeshImporter.MeshContext meshContext)
         {
             if (!meshContext.materialIndices.Any())
@@ -678,12 +718,12 @@ namespace UniGLTF
 #endif
             }
 
-            
+
             mesh.vertices = meshContext.positions;
             bool recalculateNormals = false;
             if (meshContext.normals != null && meshContext.normals.Length > 0)
             {
-                
+
                 mesh.normals = meshContext.normals;
             }
             else
@@ -693,7 +733,7 @@ namespace UniGLTF
 
             if (meshContext.uv != null && meshContext.uv.Length > 0)
             {
-                
+
                 mesh.uv = meshContext.uv;
             }
 
@@ -708,7 +748,7 @@ namespace UniGLTF
 
             if (meshContext.colors != null && meshContext.colors.Length > 0)
             {
-                
+
                 mesh.colors = meshContext.colors;
             }
             if (meshContext.boneWeights != null && meshContext.boneWeights.Count > 0)
@@ -746,7 +786,7 @@ namespace UniGLTF
             if (meshContext.blendShapes != null)
             {
                 Vector3[] emptyVertices = null;
-                
+
                 foreach (var blendShape in meshContext.blendShapes)
                 {
                     if (blendShape.Positions.Count > 0)
