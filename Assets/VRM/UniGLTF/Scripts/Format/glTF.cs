@@ -500,5 +500,26 @@ namespace UniGLTF
 
             return Glb.ToBytes(json, buffers[0].GetBytes());
         }
+
+        public (string, List<glTFBuffer>) ToGltf(string gltfPath)
+        {
+            var f = new JsonFormatter();
+
+            // fix buffer path
+            if (buffers.Count == 1)
+            {
+                var withoutExt = Path.GetFileNameWithoutExtension(gltfPath);
+                buffers[0].uri = $"{withoutExt}.bin";
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+
+            f.GenSerialize(this);
+            var json = f.ToString().ParseAsJson().ToString("  ");
+            RemoveUnusedExtensions(json);
+            return (json, buffers);
+        }
     }
 }
