@@ -265,23 +265,24 @@ namespace UniGLTF
                             {
                                 var node = ctx.GLTF.nodes[channel.target.node];
                                 var mesh = ctx.GLTF.meshes[node.mesh];
-                                //var primitive = mesh.primitives.FirstOrDefault();
-                                //var targets = primitive.targets;
+                                var primitive = mesh.primitives.FirstOrDefault();
+                                var targets = primitive.targets;
 
-                                List<string> blendShapeNames = new List<string>();
-                                var transform = ctx.Nodes[channel.target.node];
-                                var skinnedMeshRenderer = transform.GetComponent<SkinnedMeshRenderer>();
-                                if (skinnedMeshRenderer == null)
+                                List<string> targetNames;
+                                if(primitive != null && primitive.extras != null && primitive.extras.targetNames != null && primitive.extras.targetNames.Count > 0)
                                 {
-                                    continue;
+                                    targetNames = primitive.extras.targetNames;
+                                }
+                                else if(mesh.extras != null && mesh.extras.targetNames != null && mesh.extras.targetNames.Count > 0)
+                                {
+                                    targetNames = mesh.extras.targetNames;
+                                }
+                                else
+                                {
+                                    throw new Exception("glTF BlendShape Animation. targetNames invalid.");
                                 }
 
-                                for (int j = 0; j < skinnedMeshRenderer.sharedMesh.blendShapeCount; j++)
-                                {
-                                    blendShapeNames.Add(skinnedMeshRenderer.sharedMesh.GetBlendShapeName(j));
-                                }
-
-                                var keyNames = blendShapeNames
+                                var keyNames = targetNames
                                     .Where(x => !string.IsNullOrEmpty(x))
                                     .Select(x => "blendShape." + x)
                                     .ToArray();
