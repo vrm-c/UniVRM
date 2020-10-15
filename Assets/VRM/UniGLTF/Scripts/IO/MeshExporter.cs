@@ -380,6 +380,10 @@ namespace UniGLTF
                 var gltfMesh = ExportPrimitives(gltf, bufferIndex,
                     x.Renderer.name,
                     mesh, materials, unityMaterials);
+                if (gltfMesh.extras == null)
+                {
+                    gltfMesh.extras = new glTFMesh_extras();
+                }
 
                 var blendShapeIndexMap = new Dictionary<int, int>();
                 int exportBlendShapes = 0;
@@ -395,7 +399,9 @@ namespace UniGLTF
                     }
 
                     // maybe skip
+                    var blendShapeName = mesh.GetBlendShapeName(j);
                     blendShapeIndexMap.Add(j, exportBlendShapes++);
+                    gltfMesh.extras.targetNames.Add(blendShapeName);
 
                     //
                     // all primitive has same blendShape
@@ -403,7 +409,7 @@ namespace UniGLTF
                     for (int k = 0; k < gltfMesh.primitives.Count; ++k)
                     {
                         gltfMesh.primitives[k].targets.Add(morphTarget);
-                        gltfMesh.primitives[k].extras.targetNames.Add(mesh.GetBlendShapeName(j));
+                        gltfMesh.primitives[k].extras.targetNames.Add(blendShapeName);
                     }
                 }
 
