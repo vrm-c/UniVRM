@@ -306,7 +306,7 @@ namespace UniGLTF
                     blendShapePositionAccessorIndex = gltf.ExtendSparseBufferAndGetAccessorIndex(bufferIndex, accessorCount,
                         blendShapeVertices,
                         sparseIndices, sparseIndicesViewIndex,
-                        glBufferTarget.ARRAY_BUFFER);
+                        glBufferTarget.NONE);
                 }
 
                 if (useNormal)
@@ -315,7 +315,7 @@ namespace UniGLTF
                     blendShapeNormalAccessorIndex = gltf.ExtendSparseBufferAndGetAccessorIndex(bufferIndex, accessorCount,
                         blendShapeNormals,
                         sparseIndices, sparseIndicesViewIndex,
-                        glBufferTarget.ARRAY_BUFFER);
+                        glBufferTarget.NONE);
                 }
 
                 if (useTangent)
@@ -323,7 +323,7 @@ namespace UniGLTF
                     blendShapeTangents = sparseIndices.Select(x => blendShapeTangents[x].ReverseZ()).ToArray();
                     blendShapeTangentAccessorIndex = gltf.ExtendSparseBufferAndGetAccessorIndex(bufferIndex, accessorCount,
                         blendShapeTangents, sparseIndices, sparseIndicesViewIndex,
-                        glBufferTarget.ARRAY_BUFFER);
+                        glBufferTarget.NONE);
                 }
             }
             else
