@@ -26,16 +26,20 @@ namespace UniGLTF
         [MenuItem(MENU_EXPORT_GLTF_KEY, false, 1)]
         private static void ExportGltfFromMenu()
         {
-            ExportFromMenu(false);
+            ExportFromMenu(false, new MeshExportSettings
+            {
+                ExportOnlyBlendShapePosition = false,
+                UseSparseAccessorForMorphTarget = true,
+            });
         }
 
         [MenuItem(MENU_EXPORT_GLB_KEY, false, 1)]
         private static void ExportGlbFromMenu()
         {
-            ExportFromMenu(true);
+            ExportFromMenu(true, MeshExportSettings.Default);
         }
 
-        private static void ExportFromMenu(bool isGlb)
+        private static void ExportFromMenu(bool isGlb, MeshExportSettings settings)
         {
             var go = Selection.activeObject as GameObject;
 
@@ -56,7 +60,7 @@ namespace UniGLTF
                 using (var exporter = new gltfExporter(gltf))
                 {
                     exporter.Prepare(go);
-                    exporter.Export(MeshExportSettings.Default);
+                    exporter.Export(settings);
                 }
 
                 if (isGlb)
