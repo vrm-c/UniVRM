@@ -12,26 +12,45 @@ namespace UniGLTF
 {
     public class gltfExporter : IDisposable
     {
-        const string CONVERT_HUMANOID_KEY = UniGLTFVersion.MENU + "/Export";
+        const string MENU_EXPORT_GLB_KEY = UniGLTFVersion.MENU + "/Export(glb)";
+        const string MENU_EXPORT_GLTF_KEY = UniGLTFVersion.MENU + "/Export(gltf)";
 
 #if UNITY_EDITOR
-        [MenuItem(CONVERT_HUMANOID_KEY, true, 1)]
+        [MenuItem(MENU_EXPORT_GLTF_KEY, true, 1)]
+        [MenuItem(MENU_EXPORT_GLB_KEY, true, 1)]
         private static bool ExportValidate()
         {
             return Selection.activeObject != null && Selection.activeObject is GameObject;
         }
 
-        [MenuItem(CONVERT_HUMANOID_KEY, false, 1)]
-        private static void ExportFromMenu()
+        [MenuItem(MENU_EXPORT_GLTF_KEY, false, 1)]
+        private static void ExportGltfFromMenu()
+        {
+            ExportFromMenu(false, new MeshExportSettings
+            {
+                ExportOnlyBlendShapePosition = false,
+                UseSparseAccessorForMorphTarget = true,
+            });
+        }
+
+        [MenuItem(MENU_EXPORT_GLB_KEY, false, 1)]
+        private static void ExportGlbFromMenu()
+        {
+            ExportFromMenu(true, MeshExportSettings.Default);
+        }
+
+        private static void ExportFromMenu(bool isGlb, MeshExportSettings settings)
         {
             var go = Selection.activeObject as GameObject;
+
+            var ext = isGlb ? "glb" : "gltf";
 
             if (go.transform.position == Vector3.zero &&
                 go.transform.rotation == Quaternion.identity &&
                 go.transform.localScale == Vector3.one)
             {
                 var path = EditorUtility.SaveFilePanel(
-                    "Save glb", "", go.name + ".glb", "glb");
+                    $"Save {ext}", "", go.name + $".{ext}", $"{ext}");
                 if (string.IsNullOrEmpty(path))
                 {
                     return;
@@ -41,10 +60,28 @@ namespace UniGLTF
                 using (var exporter = new gltfExporter(gltf))
                 {
                     exporter.Prepare(go);
-                    exporter.Export(MeshExportSettings.Default);
+                    exporter.Export(settings);
                 }
-                var bytes = gltf.ToGlbBytes();
-                File.WriteAllBytes(path, bytes);
+
+                if (isGlb)
+                {
+                    var bytes = gltf.ToGlbBytes();
+                    File.WriteAllBytes(path, bytes);
+                }
+                else
+                {
+                    var (json, buffers) = gltf.ToGltf(path);
+                    // without BOM
+                    var encoding = new System.Text.UTF8Encoding(false);
+                    File.WriteAllText(path, json, encoding);
+                    // write to local folder
+                    var dir = Path.GetDirectoryName(path);
+                    foreach (var b in buffers)
+                    {
+                        var bufferPath = Path.Combine(dir, b.uri);
+                        File.WriteAllBytes(bufferPath, b.GetBytes().ToArray());
+                    }
+                }
 
                 if (path.StartsWithUnityAssetPath())
                 {

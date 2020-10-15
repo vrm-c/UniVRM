@@ -306,7 +306,7 @@ namespace UniGLTF
                     blendShapePositionAccessorIndex = gltf.ExtendSparseBufferAndGetAccessorIndex(bufferIndex, accessorCount,
                         blendShapeVertices,
                         sparseIndices, sparseIndicesViewIndex,
-                        glBufferTarget.ARRAY_BUFFER);
+                        glBufferTarget.NONE);
                 }
 
                 if (useNormal)
@@ -315,7 +315,7 @@ namespace UniGLTF
                     blendShapeNormalAccessorIndex = gltf.ExtendSparseBufferAndGetAccessorIndex(bufferIndex, accessorCount,
                         blendShapeNormals,
                         sparseIndices, sparseIndicesViewIndex,
-                        glBufferTarget.ARRAY_BUFFER);
+                        glBufferTarget.NONE);
                 }
 
                 if (useTangent)
@@ -323,7 +323,7 @@ namespace UniGLTF
                     blendShapeTangents = sparseIndices.Select(x => blendShapeTangents[x].ReverseZ()).ToArray();
                     blendShapeTangentAccessorIndex = gltf.ExtendSparseBufferAndGetAccessorIndex(bufferIndex, accessorCount,
                         blendShapeTangents, sparseIndices, sparseIndicesViewIndex,
-                        glBufferTarget.ARRAY_BUFFER);
+                        glBufferTarget.NONE);
                 }
             }
             else
@@ -380,6 +380,10 @@ namespace UniGLTF
                 var gltfMesh = ExportPrimitives(gltf, bufferIndex,
                     x.Renderer.name,
                     mesh, materials, unityMaterials);
+                if (gltfMesh.extras == null)
+                {
+                    gltfMesh.extras = new glTFMesh_extras();
+                }
 
                 var blendShapeIndexMap = new Dictionary<int, int>();
                 int exportBlendShapes = 0;
@@ -395,7 +399,9 @@ namespace UniGLTF
                     }
 
                     // maybe skip
+                    var blendShapeName = mesh.GetBlendShapeName(j);
                     blendShapeIndexMap.Add(j, exportBlendShapes++);
+                    gltfMesh.extras.targetNames.Add(blendShapeName);
 
                     //
                     // all primitive has same blendShape
@@ -403,7 +409,7 @@ namespace UniGLTF
                     for (int k = 0; k < gltfMesh.primitives.Count; ++k)
                     {
                         gltfMesh.primitives[k].targets.Add(morphTarget);
-                        gltfMesh.primitives[k].extras.targetNames.Add(mesh.GetBlendShapeName(j));
+                        gltfMesh.primitives[k].extras.targetNames.Add(blendShapeName);
                     }
                 }
 
