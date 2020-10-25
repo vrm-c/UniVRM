@@ -333,19 +333,23 @@ namespace UniGLTF
             {
                 if (string.IsNullOrEmpty(mesh.name))
                 {
-                    mesh.name = Guid.NewGuid().ToString();
+                    mesh.name = "mesh_" + Guid.NewGuid().ToString("N");
+                    used.Add(mesh.name);
                 }
-                var lname = mesh.name.ToLower();
-                if (used.Contains(lname))
+                else
                 {
-                    // rename
-                    var uname = MakeUniqueName(lname, used);
-                    Debug.LogWarning($"same name: {lname} => {uname}");
-                    mesh.name = uname;
-                    lname = uname;
-                }
+                    var lname = mesh.name.ToLower();
+                    if (used.Contains(lname))
+                    {
+                        // rename
+                        var uname = lname + "_" + Guid.NewGuid().ToString("N");
+                        Debug.LogWarning($"same name: {lname} => {uname}");
+                        mesh.name = uname;
+                        lname = uname;
+                    }
 
-                used.Add(lname);
+                    used.Add(lname);
+                }
             }
         }
 
