@@ -312,20 +312,6 @@ namespace UniGLTF
             }
         }
 
-        static string MakeUniqueName(string name, HashSet<string> used)
-        {
-            for (var i = 0; i < 100; ++i)
-            {
-                name = $"{name}_{i}";
-                if (!used.Contains(name))
-                {
-                    return name;
-                }
-            }
-
-            throw new Exception("hobo arienai");
-        }
-
         void FixUnique()
         {
             var used = new HashSet<string>();
