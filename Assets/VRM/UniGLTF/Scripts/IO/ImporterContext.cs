@@ -312,20 +312,6 @@ namespace UniGLTF
             }
         }
 
-        static string MakeUniqueName(string name, HashSet<string> used)
-        {
-            for (var i = 0; i < 100; ++i)
-            {
-                name = $"{name}_{i}";
-                if (!used.Contains(name))
-                {
-                    return name;
-                }
-            }
-
-            throw new Exception("hobo arienai");
-        }
-
         void FixUnique()
         {
             var used = new HashSet<string>();
@@ -333,19 +319,23 @@ namespace UniGLTF
             {
                 if (string.IsNullOrEmpty(mesh.name))
                 {
-                    mesh.name = Guid.NewGuid().ToString();
+                    mesh.name = "mesh_" + Guid.NewGuid().ToString("N");
+                    used.Add(mesh.name);
                 }
-                var lname = mesh.name.ToLower();
-                if (used.Contains(lname))
+                else
                 {
-                    // rename
-                    var uname = MakeUniqueName(lname, used);
-                    Debug.LogWarning($"same name: {lname} => {uname}");
-                    mesh.name = uname;
-                    lname = uname;
-                }
+                    var lname = mesh.name.ToLower();
+                    if (used.Contains(lname))
+                    {
+                        // rename
+                        var uname = lname + "_" + Guid.NewGuid().ToString("N");
+                        Debug.LogWarning($"same name: {lname} => {uname}");
+                        mesh.name = uname;
+                        lname = uname;
+                    }
 
-                used.Add(lname);
+                    used.Add(lname);
+                }
             }
         }
 
