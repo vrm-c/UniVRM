@@ -179,20 +179,33 @@ namespace UniGLTF
     public class EnumIntSerialization : PrimitiveSerializationBase
     {
         Type m_type;
+        UniJSON.EnumSerializationType m_serializationType;
 
         public override Type ValueType
         {
             get { return m_type; }
         }
 
-        public EnumIntSerialization(Type t)
+        public EnumIntSerialization(Type t, UniJSON.EnumSerializationType serializationType)
         {
             m_type = t;
+            m_serializationType = serializationType;
         }
 
         public override string GenerateDeserializerCall(string callName, string argName)
         {
-            return string.Format("({0}){1}.GetInt32()", m_type.Name, argName);
+            switch (m_serializationType)
+            {
+                case UniJSON.EnumSerializationType.AsInt:
+                    return string.Format("({0}){1}.GetInt32()", m_type.Name, argName);
+
+                case UniJSON.EnumSerializationType.AsLowerString:
+                    // (ProjectionType)Enum.Parse(typeof(ProjectionType), kv.Value.GetString(), true)
+                    return $"({m_type.Name})Enum.Parse(typeof({m_type.Name}), {argName}.GetString(), true)";
+
+                default:
+                    throw new NotImplementedException();
+            }
         }
     }
 }

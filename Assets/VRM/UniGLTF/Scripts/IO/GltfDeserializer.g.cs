@@ -1861,7 +1861,7 @@ public static glTFCamera Deserialize_gltf_cameras_LIST(ListTreeNode<JsonValue> p
         }
 
         if(key=="type"){
-            value.type = (ProjectionType)kv.Value.GetInt32();
+            value.type = (ProjectionType)Enum.Parse(typeof(ProjectionType), kv.Value.GetString(), true);
             continue;
         }
 

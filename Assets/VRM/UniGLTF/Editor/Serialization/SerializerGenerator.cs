@@ -76,6 +76,7 @@ namespace UniGLTF
                 {"gltf/meshes[]/primitives[]/attributes/NORMAL", "if(value.NORMAL!=-1)"},
                 {"gltf/meshes[]/primitives[]/attributes/TANGENT", "if(value.TANGENT!=-1)"},
                 {"gltf/meshes[]/primitives[]/attributes/TEXCOORD_0", "if(value.TEXCOORD_0!=-1)"},
+                {"gltf/meshes[]/primitives[]/attributes/TEXCOORD_1", "if(value.TEXCOORD_1!=-1)"},
                 {"gltf/meshes[]/primitives[]/attributes/COLOR_0", "if(value.COLOR_0!=-1)"},
                 {"gltf/meshes[]/primitives[]/attributes/JOINTS_0", "if(value.JOINTS_0!=-1)"},
                 {"gltf/meshes[]/primitives[]/attributes/WEIGHTS_0", "if(value.WEIGHTS_0!=-1)"},
