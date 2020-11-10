@@ -7,6 +7,7 @@ namespace MeshUtility
     public static class EditorChangeTextureType
     {
         [MenuItem("Assets/SaveAsPng", true)]
+        [MenuItem("Assets/SaveAsPngLinear", true)]
         static bool IsTextureAsset()
         {
             return Selection.activeObject is Texture2D;
@@ -15,31 +16,51 @@ namespace MeshUtility
         [MenuItem("Assets/SaveAsPng")]
         static void SaveAsPng()
         {
+            SaveAsPng(true);
+        }
+
+        [MenuItem("Assets/SaveAsPngLinear")]
+        static void SaveAsPngLinear()
+        {
+            SaveAsPng(false);
+        }
+
+        static void SaveAsPng(bool sRGB)
+        {
             var texture = Selection.activeObject as Texture2D;
-            var path = SaveDialog(texture.name);
+            var path = SaveDialog(AssetsPath.FromAsset(texture));
             if (string.IsNullOrEmpty(path))
             {
                 return;
             }
 
             File.WriteAllBytes(path, texture.EncodeToPNG());
-            Debug.Log($"save: ${path}");
+            Debug.Log($"save: {path}");
+
+            var assetsPath = AssetsPath.FromFullpath(path);
+
+            EditorApplication.delayCall += () =>
+            {
+                assetsPath.ImportAsset();
+                var importer = assetsPath.GetImporter<TextureImporter>();
+                if (importer == null)
+                {
+                    Debug.LogWarningFormat("fail to get TextureImporter: {0}", assetsPath);
+                }
+                importer.sRGBTexture = sRGB;
+                importer.SaveAndReimport();
+                Debug.Log($"sRGB: {sRGB}");
+            };
         }
 
         private static string m_lastExportDir;
-        static string SaveDialog(string name)
+        static string SaveDialog(AssetsPath assetsPath)
         {
-            string directory;
-            if (string.IsNullOrEmpty(m_lastExportDir))
-                directory = Directory.GetParent(Application.dataPath).ToString();
-            else
-                directory = m_lastExportDir;
-
             // save dialog
             var path = EditorUtility.SaveFilePanel(
                     "Save png",
-                    directory,
-                    $"{name}.png",
+                    assetsPath.Parent.FullPath,
+                    $"{assetsPath.FileNameWithoutExtension}.png",
                     "png");
             if (!string.IsNullOrEmpty(path))
             {
