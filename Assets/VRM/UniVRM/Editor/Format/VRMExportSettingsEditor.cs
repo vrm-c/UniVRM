@@ -116,6 +116,18 @@ namespace VRM
             [LangMsg(Languages.ja, "エクスポートに頂点カラーを含めない")]
             [LangMsg(Languages.en, "Vertex color will not be exported")]
             REMOVE_VERTEX_COLOR,
+
+            [LangMsg(Languages.ja, "このボタンで自動で T-Pose にできます。手動で T-Pose にしたり、ボタンの後で手直ししてもOKです。")]
+            [LangMsg(Languages.en, "You can automatically set the T pose with this button. You can change it manually to T-pose or after the button.")]
+            ENALBE_TPOSE_BUTTON,
+
+            [LangMsg(Languages.ja, "このボタンで自動で T-Pose にできます。prefab には実行できません。")]
+            [LangMsg(Languages.en, "You can set the T pose automatically with this button. It cannot be run on prefabs.")]
+            DISABLE_TPOSE_BUTTON,
+
+            [LangMsg(Languages.ja, "T-Pose にする")]
+            [LangMsg(Languages.en, "Make T-Pose")]
+            DO_TPOSE,
         }
 
         private void OnEnable()
@@ -136,13 +148,13 @@ namespace VRM
             GUI.enabled = root.scene.IsValid();
             if (GUI.enabled)
             {
-                EditorGUILayout.HelpBox("このボタンで自動で T-Pose にできます。手動で T-Pose にしたり、ボタンの後で手直ししてもOKです。", MessageType.Info);
+                EditorGUILayout.HelpBox(Options.ENALBE_TPOSE_BUTTON.Msg(), MessageType.Info);
             }
             else
             {
-                EditorGUILayout.HelpBox("このボタンで自動で T-Pose にできます。prefab には実行できません。", MessageType.Warning);
+                EditorGUILayout.HelpBox(Options.DISABLE_TPOSE_BUTTON.Msg(), MessageType.Warning);
             }
-            if (GUILayout.Button("T Pose にする"))
+            if (GUILayout.Button(Options.DO_TPOSE.Msg()))
             {
                 if (settings.Root)
                 {
