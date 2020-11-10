@@ -1,33 +1,34 @@
 ﻿using System.Collections;
 using UnityEngine;
-
+using UnityEngine.Serialization;
 
 namespace VRM
 {
+    /// <summary>
+    /// VRMBlendShapeProxy によるランダムに瞬きするサンプル。
+    /// VRMBlendShapeProxy のある GameObject にアタッチする。
+    /// </summary>
     public class Blinker : MonoBehaviour
     {
+        VRMBlendShapeProxy m_blendShapes;
+
+        [FormerlySerializedAs("m_interVal")]
         [SerializeField]
-        public VRMBlendShapeProxy BlendShapes;
-        private void Reset()
-        {
-            BlendShapes = GetComponent<VRMBlendShapeProxy>();
-        }
+        public float Interval = 5.0f;
 
+        [FormerlySerializedAs("m_closingTime")]
         [SerializeField]
-        float m_interVal = 5.0f;
+        public float ClosingTime = 0.06f;
 
+        [FormerlySerializedAs("m_openingSeconds")]
         [SerializeField]
-        float m_closingTime = 0.06f;
+        public float OpeningSeconds = 0.03f;
 
+        [FormerlySerializedAs("m_closeSeconds")]
         [SerializeField]
-        float m_openingSeconds = 0.03f;
+        public float CloseSeconds = 0.1f;
 
-        [SerializeField]
-        float m_closeSeconds = 0.1f;
-
-        protected Coroutine m_coroutine;
-
-        //static readonly string BLINK_NAME = BlendShapePreset.Blink.ToString();
+        Coroutine m_coroutine;
 
         float m_nextRequest;
         bool m_request;
@@ -45,11 +46,11 @@ namespace VRM
             }
         }
 
-        protected IEnumerator BlinkRoutine()
+        IEnumerator BlinkRoutine()
         {
             while (true)
             {
-                var waitTime = Time.time + Random.value * m_interVal;
+                var waitTime = Time.time + Random.value * Interval;
                 while (waitTime > Time.time)
                 {
                     if (Request)
@@ -62,7 +63,7 @@ namespace VRM
 
                 // close
                 var value = 0.0f;
-                var closeSpeed = 1.0f / m_closeSeconds;
+                var closeSpeed = 1.0f / CloseSeconds;
                 while (true)
                 {
                     value += Time.deltaTime * closeSpeed;
@@ -71,17 +72,17 @@ namespace VRM
                         break;
                     }
 
-                    BlendShapes.ImmediatelySetValue(BlendShapeKey.CreateFromPreset(BlendShapePreset.Blink), value);
+                    m_blendShapes.ImmediatelySetValue(BlendShapeKey.CreateFromPreset(BlendShapePreset.Blink), value);
                     yield return null;
                 }
-                BlendShapes.ImmediatelySetValue(BlendShapeKey.CreateFromPreset(BlendShapePreset.Blink), 1.0f);
+                m_blendShapes.ImmediatelySetValue(BlendShapeKey.CreateFromPreset(BlendShapePreset.Blink), 1.0f);
 
                 // wait...
-                yield return new WaitForSeconds(m_closingTime);
+                yield return new WaitForSeconds(ClosingTime);
 
                 // open
                 value = 1.0f;
-                var openSpeed = 1.0f / m_openingSeconds;
+                var openSpeed = 1.0f / OpeningSeconds;
                 while (true)
                 {
                     value -= Time.deltaTime * openSpeed;
@@ -90,20 +91,16 @@ namespace VRM
                         break;
                     }
 
-                    BlendShapes.ImmediatelySetValue(BlendShapeKey.CreateFromPreset(BlendShapePreset.Blink), value);
+                    m_blendShapes.ImmediatelySetValue(BlendShapeKey.CreateFromPreset(BlendShapePreset.Blink), value);
                     yield return null;
                 }
-                BlendShapes.ImmediatelySetValue(BlendShapeKey.CreateFromPreset(BlendShapePreset.Blink), 0);
+                m_blendShapes.ImmediatelySetValue(BlendShapeKey.CreateFromPreset(BlendShapePreset.Blink), 0);
             }
-        }
-
-        private void Awake()
-        {
-            if (BlendShapes == null) BlendShapes = GetComponent<VRM.VRMBlendShapeProxy>();
         }
 
         private void OnEnable()
         {
+            m_blendShapes = GetComponent<VRM.VRMBlendShapeProxy>();
             m_coroutine = StartCoroutine(BlinkRoutine());
         }
 
