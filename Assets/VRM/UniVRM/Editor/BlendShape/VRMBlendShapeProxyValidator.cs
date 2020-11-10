@@ -1,11 +1,12 @@
 using System.Collections.Generic;
+using MeshUtility;
 using UnityEngine;
 
 namespace VRM
 {
     public static class VRMBlendShapeProxyValidator
     {
-        public static IEnumerable<Validation> Validate(this VRMBlendShapeProxy p)
+        public static IEnumerable<Validation> Validate(this VRMBlendShapeProxy p, GameObject _)
         {
             if (p == null)
             {

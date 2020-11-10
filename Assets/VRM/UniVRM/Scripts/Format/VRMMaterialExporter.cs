@@ -10,23 +10,6 @@ namespace VRM
 {
     public class VRMMaterialExporter : MaterialExporter
     {
-        public static bool UseUnlit(string shaderName)
-        {
-            switch (shaderName)
-            {
-                case "Unlit/Color":
-                case "Unlit/Texture":
-                case "Unlit/Transparent":
-                case "Unlit/Transparent Cutout":
-                case "UniGLTF/UniUnlit":
-                case "VRM/UnlitTexture":
-                case "VRM/UnlitTransparent":
-                case "VRM/UnlitCutout":
-                    return true;
-            }
-            return false;
-        }
-
         protected override glTFMaterial CreateMaterial(Material m)
         {
             switch (m.shader.name)
@@ -118,11 +101,6 @@ namespace VRM
         }
 
         #region CreateFromMaterial
-        public static readonly string[] VRMExtensionShaders = new string[]
-        {
-            "VRM/UnlitTransparentZWrite",
-            "VRM/MToon"
-        };
 
         static readonly string[] TAGS = new string[]{
             "RenderType",
@@ -138,7 +116,7 @@ namespace VRM
                 renderQueue = m.renderQueue,
             };
 
-            if (!VRMExtensionShaders.Contains(m.shader.name))
+            if (!PreShaderPropExporter.VRMExtensionShaders.Contains(m.shader.name))
             {
                 material.shader = glTF_VRM_Material.VRM_USE_GLTFSHADER;
                 return material;

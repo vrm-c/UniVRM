@@ -113,20 +113,6 @@ namespace MeshUtility
             helpString = "select target skinnedMesh and animator";
         }
 
-
-
-        static int IndexOf(Transform[] list, Transform target)
-        {
-            for (int i = 0; i < list.Length; ++i)
-            {
-                if (list[i] == target)
-                {
-                    return i;
-                }
-            }
-            return -1;
-        }
-
         SkinnedMeshRenderer _Erase(GameObject go)
         {
             if (go == null)

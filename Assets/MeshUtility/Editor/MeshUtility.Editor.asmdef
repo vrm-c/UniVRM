@@ -1,7 +1,8 @@
 {
     "name": "MeshUtility.Editor",
     "references": [
-        "MeshUtility"
+        "MeshUtility",
+        "ShaderProperty.Runtime"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [

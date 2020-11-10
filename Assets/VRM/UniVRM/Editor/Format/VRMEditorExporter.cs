@@ -16,7 +16,7 @@ namespace VRM
         /// </summary>
         /// <param name="path">出力先</param>
         /// <param name="settings">エクスポート設定</param>
-        public static void Export(string path, GameObject exportRoot, VRMMetaObject meta, VRMExportSettings settings, IReadOnlyList<MeshExportInfo> info)
+        public static void Export(string path, GameObject exportRoot, VRMMetaObject meta, VRMExportSettings settings, IReadOnlyList<MeshUtility.MeshExportInfo> info)
         {
             List<GameObject> destroy = new List<GameObject>();
             try
@@ -137,7 +137,7 @@ namespace VRM
         /// <param name="settings"></param>
         /// <param name="destroy">作業が終わったらDestoryするべき一時オブジェクト</param>
         static void Export(string path, GameObject exportRoot, VRMMetaObject meta,
-                    VRMExportSettings settings, IReadOnlyList<UniGLTF.MeshExportInfo> info,
+                    VRMExportSettings settings, IReadOnlyList<MeshUtility.MeshExportInfo> info,
                     List<GameObject> destroy)
         {
             var target = exportRoot;
