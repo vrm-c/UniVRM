@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using MeshUtility;
 using UnityEngine;
 
 namespace VRM

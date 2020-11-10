@@ -14,7 +14,7 @@ namespace VRM
         [TestCase("AliciaAliciaAliciaAliciaAliciaAliciaAliciaAliciaAliciaAliciaAliciaAlicia", true)]
         public void DetectFileNameLength(string fileName, bool isIllegal)
         {
-            var result = VRMExporterValidator.IsFileNameLengthTooLong(fileName);
+            var result = MeshUtility.Validators.NameValidator.IsFileNameLengthTooLong(fileName);
             Assert.AreEqual(result, isIllegal);
         }
 

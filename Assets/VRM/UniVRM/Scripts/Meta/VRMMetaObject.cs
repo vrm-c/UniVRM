@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using MeshUtility;
 using UnityEngine;
 
 
@@ -65,7 +66,7 @@ namespace VRM
         }
         */
 
-        public IEnumerable<Validation> Validate()
+        public IEnumerable<Validation> Validate(GameObject _)
         {
             if (string.IsNullOrEmpty(Title))
             {

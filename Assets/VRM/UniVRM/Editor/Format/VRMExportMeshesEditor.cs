@@ -2,7 +2,7 @@
 using System;
 using UnityEditor;
 using UnityEngine;
-using VRM.M17N;
+using MeshUtility.M17N;
 
 namespace VRM
 {
@@ -32,7 +32,7 @@ namespace VRM
             );
         }
 
-        void DrawElement(int i, UniGLTF.MeshExportInfo info)
+        void DrawElement(int i, MeshUtility.MeshExportInfo info)
         {
             var r = GUILayoutUtility.GetRect(GUIContent.none, GUIStyle.none, GUILayout.Height(EditorGUIUtility.singleLineHeight * 3 + 20));
             var col0 = 32;

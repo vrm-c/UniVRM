@@ -5,6 +5,7 @@
         "UniJSON",
         "UniHumanoid",
         "MeshUtility",
+        "MeshUtility.Editor",
         "UniUnlit"
     ],
     "optionalUnityReferences": [],

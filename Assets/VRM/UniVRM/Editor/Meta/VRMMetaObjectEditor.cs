@@ -1,6 +1,6 @@
 using UnityEditor;
 using UnityEngine;
-using VRM.M17N;
+using MeshUtility.M17N;
 
 namespace VRM
 {
@@ -54,12 +54,12 @@ namespace VRM
 
         static string RequiredMessage(string name)
         {
-            switch (M17N.Getter.Lang)
+            switch (MeshUtility.M17N.Getter.Lang)
             {
-                case M17N.Languages.ja:
+                case MeshUtility.M17N.Languages.ja:
                     return $"必須項目。{name} を入力してください";
 
-                case M17N.Languages.en:
+                case MeshUtility.M17N.Languages.en:
                     return $"{name} is required";
 
                 default:
@@ -153,7 +153,7 @@ namespace VRM
 
         static string Msg(MessageKeys key)
         {
-            return M17N.Getter.Msg(key);
+            return MeshUtility.M17N.Getter.Msg(key);
         }
 
         bool m_foldoutInfo = true;

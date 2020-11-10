@@ -2,7 +2,7 @@
 using System;
 using UnityEditor;
 using UnityEngine;
-using VRM.M17N;
+using MeshUtility.M17N;
 
 namespace VRM
 {
@@ -87,7 +87,7 @@ namespace VRM
 
         static string Msg(Options key)
         {
-            return M17N.Getter.Msg(key);
+            return MeshUtility.M17N.Getter.Msg(key);
         }
 
         enum Options

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using MeshUtility;
 using UnityEngine;
 
 namespace VRM
@@ -32,7 +33,7 @@ namespace VRM
             return true;
         }
 
-        public static IEnumerable<Validation> Validate(this VRMFirstPerson self)
+        public static IEnumerable<Validation> Validate(this VRMFirstPerson self, GameObject _)
         {
             Hierarchy = self.GetComponentsInChildren<Transform>(true);
 

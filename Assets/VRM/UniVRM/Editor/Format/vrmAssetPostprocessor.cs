@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UniGLTF;
@@ -36,7 +37,17 @@ namespace VRM
                 throw new Exception();
             }
             var context = new VRMImporterContext();
-            context.ParseGlb(File.ReadAllBytes(path.FullPath));
+
+            try
+            {
+                context.ParseGlb(File.ReadAllBytes(path.FullPath));
+            }
+            catch (KeyNotFoundException)
+            {
+                // invalid VRM-0.X.
+                // maybe VRM-1.0.do nothing
+                return;
+            }
 
             var prefabPath = path.Parent.Child(path.FileNameWithoutExtension + ".prefab");
 

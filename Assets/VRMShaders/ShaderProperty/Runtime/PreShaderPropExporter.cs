@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
@@ -28,6 +27,29 @@ namespace UniGLTF.ShaderPropExporter
 
     public static partial class PreShaderPropExporter
     {
+        public static bool UseUnlit(string shaderName)
+        {
+            switch (shaderName)
+            {
+                case "Unlit/Color":
+                case "Unlit/Texture":
+                case "Unlit/Transparent":
+                case "Unlit/Transparent Cutout":
+                case "UniGLTF/UniUnlit":
+                case "VRM/UnlitTexture":
+                case "VRM/UnlitTransparent":
+                case "VRM/UnlitCutout":
+                    return true;
+            }
+            return false;
+        }
+
+        public static readonly string[] VRMExtensionShaders = new string[]
+        {
+            "VRM/UnlitTransparentZWrite",
+            "VRM/MToon"
+        };
+
         static Dictionary<string, ShaderProps> m_shaderPropMap;
 
         public static ShaderProps GetPropsForSupportedShader(string shaderName)

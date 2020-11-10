@@ -1,8 +1,7 @@
 using System.Linq;
-using MeshUtility;
 using UnityEngine;
 
-namespace VRM
+namespace MeshUtility
 {
     public static class ExporterExtensions
     {
