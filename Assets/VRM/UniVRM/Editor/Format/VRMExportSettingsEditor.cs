@@ -37,12 +37,6 @@ namespace VRM
         }
 
         /// <summary>
-        /// エクスポート時に強制的にT-Pose化する
-        /// </summary>
-        [Tooltip("Option")]
-        public bool ForceTPose = false;
-
-        /// <summary>
         /// エクスポート時にヒエラルキーの正規化を実施する
         /// </summary>
         [Tooltip("Require only first time")]
@@ -78,7 +72,6 @@ namespace VRM
         [Tooltip("Remove blendShapeClip that preset is Unknown")]
         public bool ReduceBlendshapeClip = false;
 
-        CheckBoxProp m_forceTPose;
         CheckBoxProp m_poseFreeze;
         CheckBoxProp m_useSparseAccessor;
         CheckBoxProp m_onlyBlendShapePosition;
@@ -127,7 +120,6 @@ namespace VRM
 
         private void OnEnable()
         {
-            m_forceTPose = new CheckBoxProp(serializedObject.FindProperty(nameof(ForceTPose)), Options.FORCE_T_POSE);
             m_poseFreeze = new CheckBoxProp(serializedObject.FindProperty(nameof(PoseFreeze)), Options.NORMALIZE);
             m_useSparseAccessor = new CheckBoxProp(serializedObject.FindProperty(nameof(UseSparseAccessor)), Options.BLENDSHAPE_USE_SPARSE);
             m_onlyBlendShapePosition = new CheckBoxProp(serializedObject.FindProperty(nameof(OnlyBlendshapePosition)), Options.BLENDSHAPE_EXCLUDE_NORMAL_AND_TANGENT);
@@ -137,9 +129,33 @@ namespace VRM
 
         public override void OnInspectorGUI()
         {
+            GUILayout.Space(20);
+            var settings = (VRMExportSettings)target;
+            var root = settings.Root;
+            var backup = GUI.enabled;
+            GUI.enabled = root.scene.IsValid();
+            if (GUI.enabled)
+            {
+                EditorGUILayout.HelpBox("このボタンで自動で T-Pose にできます。手動で T-Pose にしたり、ボタンの後で手直ししてもOKです。", MessageType.Info);
+            }
+            else
+            {
+                EditorGUILayout.HelpBox("このボタンで自動で T-Pose にできます。prefab には実行できません。", MessageType.Warning);
+            }
+            if (GUILayout.Button("T Pose にする"))
+            {
+                if (settings.Root)
+                {
+                    VRMBoneNormalizer.EnforceTPose(settings.Root);
+                }
+            }
+            GUI.enabled = backup;
+            GUILayout.Space(20);
+
+            // ToDo: 任意の BlendShapeClip を適用する
+
             EditorGUIUtility.labelWidth = 160;
             serializedObject.Update();
-            m_forceTPose.Draw();
             m_poseFreeze.Draw();
             m_useSparseAccessor.Draw();
             m_onlyBlendShapePosition.Draw();

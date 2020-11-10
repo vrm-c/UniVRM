@@ -302,10 +302,11 @@ namespace VRM
                     break;
 
                 case Tabs.ExportSettings:
+                    m_settings.Root = m_state.ExportRoot;
                     m_settingsInspector.OnInspectorGUI();
                     break;
 
-                case Tabs.Mesh:
+                case Tabs.Mesh:                    
                     m_meshesInspector.OnInspectorGUI();
                     break;
             }
