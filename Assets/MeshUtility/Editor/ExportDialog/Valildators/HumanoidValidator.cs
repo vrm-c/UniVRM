@@ -25,6 +25,10 @@ namespace MeshUtility.Validators
             [LangMsg(Languages.en, "The model needs to face the positive Z-axis")]
             FACE_Z_POSITIVE_DIRECTION,
 
+            [LangMsg(Languages.ja, "T-Pose にしてください")]
+            [LangMsg(Languages.en, "Set T-Pose")]
+            NOT_TPOSE,
+
             [LangMsg(Languages.ja, "ExportRootの Animator に Avatar がありません")]
             [LangMsg(Languages.en, "No Avatar in ExportRoot's Animator")]
             NO_AVATAR_IN_ANIMATOR,
@@ -150,6 +154,17 @@ namespace MeshUtility.Validators
                 }
             }
 
+            {
+                var lu = animator.GetBoneTransform(HumanBodyBones.LeftUpperArm);
+                var ll = animator.GetBoneTransform(HumanBodyBones.LeftLowerArm);
+                var ru = animator.GetBoneTransform(HumanBodyBones.RightUpperArm);
+                var rl = animator.GetBoneTransform(HumanBodyBones.RightLowerArm);
+                if (Vector3.Dot((ll.position - lu.position).normalized, Vector3.left) < 0.8f
+                || Vector3.Dot((rl.position - ru.position).normalized, Vector3.right) < 0.8f)
+                {
+                    yield return Validation.Warning(ValidationMessages.NOT_TPOSE.Msg());
+                }
+            }
             var jaw = animator.GetBoneTransform(HumanBodyBones.Jaw);
             if (jaw != null)
             {
