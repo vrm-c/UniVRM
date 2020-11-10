@@ -37,7 +37,7 @@ namespace MeshUtility.Validators
             [LangMsg(Languages.en, "Animator.avatar is not humanoid. Please change model's AnimationType to humanoid")]
             AVATAR_IS_NOT_HUMANOID,
 
-            [LangMsg(Languages.ja, "humanoid設定に顎が含まれている。FBX importer の rig 設定に戻って設定を解除することをおすすめします")]
+            [LangMsg(Languages.ja, "Jaw(顎)ボーンが含まれています。意図していない場合は設定解除をおすすめします。FBX importer の rig 設定から変更できます")]
             [LangMsg(Languages.en, "Jaw bone is included. It may not what you intended. Please check the humanoid avatar setting screen")]
             JAW_BONE_IS_INCLUDED,
         }
