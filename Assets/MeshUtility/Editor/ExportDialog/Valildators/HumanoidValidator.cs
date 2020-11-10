@@ -162,17 +162,14 @@ namespace MeshUtility.Validators
                 if (Vector3.Dot((ll.position - lu.position).normalized, Vector3.left) < 0.8f
                 || Vector3.Dot((rl.position - ru.position).normalized, Vector3.right) < 0.8f)
                 {
-                    yield return Validation.Warning(ValidationMessages.NOT_TPOSE.Msg());
+                    yield return Validation.Error(ValidationMessages.NOT_TPOSE.Msg());
                 }
             }
+
             var jaw = animator.GetBoneTransform(HumanBodyBones.Jaw);
             if (jaw != null)
             {
                 yield return Validation.Warning(ValidationMessages.JAW_BONE_IS_INCLUDED.Msg());
-            }
-            else
-            {
-                yield return Validation.Info("Animator OK");
             }
         }
     }
