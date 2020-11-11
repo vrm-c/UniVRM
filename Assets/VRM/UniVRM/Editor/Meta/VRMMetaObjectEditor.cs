@@ -1,6 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 using MeshUtility.M17N;
+using System.IO;
 
 namespace VRM
 {
@@ -172,12 +173,25 @@ namespace VRM
             // texture
             EditorGUILayout.BeginHorizontal();
             {
+                // 左側
                 EditorGUILayout.BeginVertical();
-                GUI.enabled = false;
-                EditorGUILayout.PropertyField(m_exporterVersion);
-                GUI.enabled = true;
-                EditorGUILayout.PropertyField(m_thumbnail);
+                {
+                    GUI.enabled = false;
+                    EditorGUILayout.PropertyField(m_exporterVersion);
+                    GUI.enabled = true;
+                    EditorGUILayout.PropertyField(m_thumbnail);
+
+                    if (Camera.main)
+                    {
+                        EditorGUILayout.HelpBox("Camera.main で画像を Render します。", MessageType.Info);
+                        if (GUILayout.Button("スクリーンショット"))
+                        {
+                            TakeScreenShot();
+                        }
+                    }
+                }
                 EditorGUILayout.EndVertical();
+                // 右側
                 m_thumbnail.objectReferenceValue = TextureField("", (Texture2D)m_thumbnail.objectReferenceValue, 100);
             }
             EditorGUILayout.EndHorizontal();
@@ -216,6 +230,57 @@ namespace VRM
             }
 
             serializedObject.ApplyModifiedProperties();
+        }
+
+        void TakeScreenShot()
+        {
+            var dst = SaveDialog(m_target, "png");
+            if (string.IsNullOrEmpty(dst))
+            {
+                return;
+            }
+
+            var backup = RenderTexture.active;
+            var backup2 = Camera.main.targetTexture;
+            var rt = new RenderTexture(1024, 1024, 16, RenderTextureFormat.ARGB32);
+            var tex = new Texture2D(rt.width, rt.height, TextureFormat.RGB24, false);
+            try
+            {
+                RenderTexture.active = rt;
+                Camera.main.targetTexture = rt;
+                Camera.main.Render();
+                tex.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
+                tex.Apply();
+                File.WriteAllBytes(dst, tex.EncodeToJPG());
+                var assetPath = MeshUtility.UnityPath.FromFullpath(dst);
+                EditorApplication.delayCall += () =>
+                {
+                    assetPath.ImportAsset();
+                    m_target.Thumbnail = assetPath.LoadAsset<Texture2D>();
+                };
+            }
+            finally
+            {
+                RenderTexture.active = backup;
+                Camera.main.targetTexture = backup2;
+                Texture2D.DestroyImmediate(tex);
+                RenderTexture.DestroyImmediate(rt);
+            }
+        }
+
+        static string SaveDialog(VRMMetaObject meta, string ext)
+        {
+            var directory = Application.dataPath;
+            var assetPath = AssetDatabase.GetAssetPath(meta);
+            if (!string.IsNullOrEmpty(assetPath))
+            {
+                directory = Path.Combine(directory + "/..", Path.GetDirectoryName(assetPath));
+            }
+            return EditorUtility.SaveFilePanel(
+                    "Save thumbnail",
+                    directory,
+                    $"thumbnail.{ext}",
+                    ext);
         }
 
         static (Rect, Rect) FixedRight(Rect r, int width)
