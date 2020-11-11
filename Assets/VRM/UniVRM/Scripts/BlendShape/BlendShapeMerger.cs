@@ -11,7 +11,7 @@ namespace VRM
     /// <summary>
     /// ブレンドシェイプを蓄えてまとめて適用するクラス
     /// </summary>
-    class BlendShapeMerger
+    public class BlendShapeMerger
     {
         /// <summary>
         /// Key からBlendShapeClipを得る

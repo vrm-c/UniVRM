@@ -23,6 +23,7 @@ namespace VRM
         {
             Meta,
             Mesh,
+            BlendShape,
             ExportSettings,
         }
         Tabs _tab;
@@ -301,17 +302,69 @@ namespace VRM
                     m_metaEditor.OnInspectorGUI();
                     break;
 
+                case Tabs.Mesh:
+                    m_meshesInspector.OnInspectorGUI();
+                    break;
+
+                case Tabs.BlendShape:
+                    if (m_state.ExportRoot)
+                    {
+                        OnBlendShapeGUI(m_state.ExportRoot.GetComponent<VRMBlendShapeProxy>());
+                    }
+                    break;
+
                 case Tabs.ExportSettings:
                     m_settings.Root = m_state.ExportRoot;
                     m_settingsInspector.OnInspectorGUI();
                     break;
-
-                case Tabs.Mesh:                    
-                    m_meshesInspector.OnInspectorGUI();
-                    break;
             }
 
             return true;
+        }
+
+        BlendShapeMerger m_merger;
+
+        int m_selected = 0;
+        void OnBlendShapeGUI(VRMBlendShapeProxy proxy)
+        {
+            if (!m_state.ExportRoot.scene.IsValid())
+            {
+                EditorGUILayout.HelpBox("prefab は操作できません", MessageType.Warning);
+                return;
+            }
+
+            if (!proxy)
+            {
+                return;
+            }
+            var avatar = proxy.BlendShapeAvatar;
+            if (!avatar)
+            {
+                return;
+            }
+
+            m_merger = new BlendShapeMerger(avatar.Clips, proxy.transform);
+
+
+            GUILayout.Space(20);
+
+            EditorGUILayout.HelpBox("シーン上のExportRootにBlendShapeを適用します。Exportすると適用された状態がBakeされます。", MessageType.Info);
+
+            var options = avatar.Clips.Select(x => x.ToString()).ToArray();
+            m_selected = EditorGUILayout.Popup("select blendshape", m_selected, options);
+
+            if (GUILayout.Button("選択されたBlendShapeを適用する"))
+            {
+                m_merger.SetValues(avatar.Clips.Select((x, i) => new KeyValuePair<BlendShapeKey, float>(x.Key, i == m_selected ? 1 : 0)));
+                m_merger.Apply();
+                m_settings.PoseFreeze = true;
+            }
+
+            if (GUILayout.Button("BlendShapeをClearする"))
+            {
+                m_merger.SetValues(avatar.Clips.Select(x => new KeyValuePair<BlendShapeKey, float>(x.Key, 0)));
+                m_merger.Apply();
+            }
         }
 
         const string EXTENSION = ".vrm";
