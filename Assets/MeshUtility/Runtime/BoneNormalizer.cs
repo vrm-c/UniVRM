@@ -237,9 +237,9 @@ namespace MeshUtility
             var srcMesh = srcRenderer.sharedMesh;
             var originalSrcMesh = srcMesh;
 
-            // clear blendShape
             if (clearBlendShape)
             {
+                // clear blendShape if not bake current blendshape
                 for (int i = 0; i < srcMesh.blendShapeCount; ++i)
                 {
                     srcRenderer.SetBlendShapeWeight(i, 0);
@@ -305,6 +305,13 @@ namespace MeshUtility
             //
             // BlendShapes
             //
+
+            // clear blendShape always
+            for (int i = 0; i < srcMesh.blendShapeCount; ++i)
+            {
+                srcRenderer.SetBlendShapeWeight(i, 0);
+            }
+
             var meshVertices = mesh.vertices;
             var meshNormals = mesh.normals;
 #if VRM_NORMALIZE_BLENDSHAPE_TANGENT
