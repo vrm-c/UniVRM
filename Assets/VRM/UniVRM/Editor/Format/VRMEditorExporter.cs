@@ -196,7 +196,7 @@ namespace VRM
             if (settings.PoseFreeze)
             {
                 // BoneNormalizer.Execute は Copy を作って正規化する。UNDO無用
-                target = VRMBoneNormalizer.Execute(target, settings.ForceTPose, false);
+                target = VRMBoneNormalizer.Execute(target, settings.ForceTPose);
                 destroy.Add(target);
             }
 

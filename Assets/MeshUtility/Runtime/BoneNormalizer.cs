@@ -222,7 +222,7 @@ namespace MeshUtility
         /// <param name="src">正規化前のSkinnedMeshRendererのTransform</param>
         /// <param name="dst">正規化後のSkinnedMeshRendererのTransform</param>
         /// <param name="boneMap">正規化前のボーンから正規化後のボーンを得る</param>
-        static void NormalizeSkinnedMesh(Transform src, Transform dst, Dictionary<Transform, Transform> boneMap, bool clearBlendShape)
+        static void NormalizeSkinnedMesh(Transform src, Transform dst, Dictionary<Transform, Transform> boneMap)
         {
             var srcRenderer = src.GetComponent<SkinnedMeshRenderer>();
             if (srcRenderer == null
@@ -236,15 +236,6 @@ namespace MeshUtility
 
             var srcMesh = srcRenderer.sharedMesh;
             var originalSrcMesh = srcMesh;
-
-            if (clearBlendShape)
-            {
-                // clear blendShape if not bake current blendshape
-                for (int i = 0; i < srcMesh.blendShapeCount; ++i)
-                {
-                    srcRenderer.SetBlendShapeWeight(i, 0);
-                }
-            }
 
             // 元の Transform[] bones から、無効なboneを取り除いて前に詰めた配列を作る
             var dstBones = srcRenderer.bones
@@ -307,8 +298,10 @@ namespace MeshUtility
             //
 
             // clear blendShape always
+            var backcup = new List<float>();
             for (int i = 0; i < srcMesh.blendShapeCount; ++i)
             {
+                backcup.Add(srcRenderer.GetBlendShapeWeight(i));
                 srcRenderer.SetBlendShapeWeight(i, 0);
             }
 
@@ -442,6 +435,11 @@ namespace MeshUtility
                 srcRenderer.bones = new Transform[] { };
                 srcRenderer.sharedMesh = originalSrcMesh;
             }
+            // restore blendshape weights
+            for (int i = 0; i < backcup.Count; ++i)
+            {
+                srcRenderer.SetBlendShapeWeight(i, backcup[i]);
+            }
         }
 
         /// <summary>
@@ -481,11 +479,10 @@ namespace MeshUtility
         /// 回転とスケールを除去したヒエラルキーのコピーを作成する(MeshをBakeする)
         /// </summary>
         /// <param name="go">対象のヒエラルキーのルート</param>
-        /// <param name="clearBlendShapeBeforeNormalize">BlendShapeを0クリアするか否か。false の場合 BlendShape の現状を Bake する</param>
+        /// <param name="bakeCurrentBlendShape">BlendShapeを0クリアするか否か。false の場合 BlendShape の現状を Bake する</param>
         /// <param name="createAvatar">Avatarを作る関数</param>
         /// <returns></returns>
-        public static (GameObject, Dictionary<Transform, Transform>) Execute(GameObject go,
-        bool clearBlendShapeBeforeNormalize, CreateAvatarFunc createAvatar)
+        public static (GameObject, Dictionary<Transform, Transform>) Execute(GameObject go, CreateAvatarFunc createAvatar)
         {
             //
             // 正規化されたヒエラルキーを作る
@@ -503,7 +500,7 @@ namespace MeshUtility
                     continue;
                 }
 
-                NormalizeSkinnedMesh(src, dst, boneMap, clearBlendShapeBeforeNormalize);
+                NormalizeSkinnedMesh(src, dst, boneMap);
 
                 NormalizeNoneSkinnedMesh(src, dst);
             }

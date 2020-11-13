@@ -42,7 +42,7 @@ namespace VRM
         /// <param name="go">対象モデルのルート</param>
         /// <param name="forceTPose">強制的にT-Pose化するか</param>
         /// <returns>正規化済みのモデル</returns>
-        public static GameObject Execute(GameObject go, bool forceTPose, bool clearBlendShapeBeforeNormalize)
+        public static GameObject Execute(GameObject go, bool forceTPose)
         {
             //
             // T-Poseにする
@@ -66,7 +66,7 @@ namespace VRM
             //
             // 正規化されたヒエラルキーを作る
             //
-            var (normalized, bMap) = MeshUtility.BoneNormalizer.Execute(go, clearBlendShapeBeforeNormalize, (_src, dst, boneMap) =>
+            var (normalized, bMap) = MeshUtility.BoneNormalizer.Execute(go, (_src, dst, boneMap) =>
             {
                 var src = _src.GetComponent<Animator>();
 
