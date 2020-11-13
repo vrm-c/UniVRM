@@ -420,6 +420,43 @@ namespace UniGLTF
                     }
                 }
             }
+
+            static void Truncate<T>(List<T> list, int maxIndex)
+            {
+                if (list == null)
+                {
+                    return;
+                }
+                var count = maxIndex + 1;
+                if (list.Count > count)
+                {
+                    // Debug.LogWarning($"remove {count} to {list.Count}");
+                    list.RemoveRange(count, list.Count - count);
+                }
+            }
+
+            //
+            // https://github.com/vrm-c/UniVRM/issues/610
+            //
+            // VertexBuffer の後ろに未使用頂点がある場合に削除する
+            //
+            public void DropUnusedVertices()
+            {
+                var maxIndex = m_subMeshes.SelectMany(x => x).Max();
+                Truncate(m_positions, maxIndex);
+                Truncate(m_normals, maxIndex);
+                Truncate(m_uv, maxIndex);
+                Truncate(m_uv2, maxIndex);
+                Truncate(m_colors, maxIndex);
+                Truncate(m_boneWeights, maxIndex);
+                Truncate(m_tangents, maxIndex);
+                foreach (var blendshape in m_blendShapes)
+                {
+                    Truncate(blendshape.Positions, maxIndex);
+                    Truncate(blendshape.Normals, maxIndex);
+                    Truncate(blendshape.Tangents, maxIndex);
+                }
+            }
         }
 
         static bool HasSharedVertexBuffer(glTFMesh gltfMesh)
@@ -454,6 +491,8 @@ namespace UniGLTF
             }
 
             meshContext.RenameBlendShape(gltfMesh);
+
+            meshContext.DropUnusedVertices();
 
             return meshContext;
         }
