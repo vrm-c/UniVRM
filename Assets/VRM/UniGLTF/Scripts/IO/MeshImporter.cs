@@ -12,538 +12,518 @@ namespace UniGLTF
     {
         const float FRAME_WEIGHT = 100.0f;
 
-
-        // mesh is sharing morph targets.
-        private static MeshContext _ImportMeshSharingMorphTarget(ImporterContext ctx, glTFMesh gltfMesh)
+        public class MeshContext
         {
-            var positions = new List<Vector3>();
-            var normals = new List<Vector3>();
-            var tangents = new List<Vector4>();
-            var uv = new List<Vector2>();
-            var uv2 = new List<Vector2>();
-            var colors = new List<Color>();
-            var blendShapes = new List<BlendShape>();
-            var meshContext = new MeshContext();
-
-            // blendshapes
-            var targetNames = gltfMesh.extras.targetNames;
-            for (int i = 1; i < gltfMesh.primitives.Count; ++i)
+            [Serializable, StructLayout(LayoutKind.Sequential, Pack = 1)]
+            struct Float4
             {
-                if (gltfMesh.primitives[i].targets.Count != targetNames.Count)
+                public float x;
+                public float y;
+                public float z;
+                public float w;
+
+                public Float4 One()
                 {
-                    throw new FormatException(string.Format("different targets length: {0} with targetNames length.",
-                        gltfMesh.primitives[i]));
-                }
-            }
-            for (var i = 0; i < targetNames.Count; i++)
-            {
-                var blendShape = new BlendShape(!string.IsNullOrEmpty(targetNames[i]) ? targetNames[i] : i.ToString());
-                blendShapes.Add(blendShape);
-            }
-
-            foreach (var prim in gltfMesh.primitives)
-            {
-                var indexOffset = positions.Count;
-                var indexBuffer = prim.indices;
-
-                var positionCount = positions.Count;
-                positions.AddRange(ctx.GLTF.GetArrayFromAccessor<Vector3>(prim.attributes.POSITION).Select(x => x.ReverseZ()));
-                positionCount = positions.Count - positionCount;
-
-                // normal
-                if (prim.attributes.NORMAL != -1)
-                {
-                    normals.AddRange(ctx.GLTF.GetArrayFromAccessor<Vector3>(prim.attributes.NORMAL).Select(x => x.ReverseZ()));
-                }
-
-                if (prim.attributes.TANGENT != -1)
-                {
-                    tangents.AddRange(ctx.GLTF.GetArrayFromAccessor<Vector4>(prim.attributes.TANGENT).Select(x => x.ReverseZ()));
-                }
-
-                // uv
-                if (prim.attributes.TEXCOORD_0 != -1)
-                {
-                    if (ctx.IsGeneratedUniGLTFAndOlder(1, 16))
+                    var sum = x + y + z + w;
+                    var f = 1.0f / sum;
+                    return new Float4
                     {
-#pragma warning disable 0612
-                        // backward compatibility
-                        uv.AddRange(ctx.GLTF.GetArrayFromAccessor<Vector2>(prim.attributes.TEXCOORD_0).Select(x => x.ReverseY()));
-#pragma warning restore 0612
-                    }
-                    else
-                    {
-                        uv.AddRange(ctx.GLTF.GetArrayFromAccessor<Vector2>(prim.attributes.TEXCOORD_0).Select(x => x.ReverseUV()));
-                    }
-                }
-                else
-                {
-                    // for inconsistent attributes in primitives
-                    uv.AddRange(new Vector2[positionCount]);
-                }
-
-                // uv1
-                if (prim.attributes.TEXCOORD_1 != -1)
-                {
-                    uv2.AddRange(ctx.GLTF.GetArrayFromAccessor<Vector2>(prim.attributes.TEXCOORD_1).Select(x => x.ReverseUV()));
-                }
-                else
-                {
-                    // for inconsistent attributes in primitives
-                    uv2.AddRange(new Vector2[positionCount]);
-                }
-
-                // color
-                if (prim.attributes.COLOR_0 != -1)
-                {
-                    colors.AddRange(ctx.GLTF.GetArrayFromAccessor<Color>(prim.attributes.COLOR_0));
-                }
-
-                // skin
-                if (prim.attributes.JOINTS_0 != -1 && prim.attributes.WEIGHTS_0 != -1)
-                {
-                    var joints0 = ctx.GLTF.GetArrayFromAccessor<UShort4>(prim.attributes.JOINTS_0); // uint4
-                    var weights0 = ctx.GLTF.GetArrayFromAccessor<Float4>(prim.attributes.WEIGHTS_0).Select(x => x.One()).ToArray();
-
-                    for (int j = 0; j < joints0.Length; ++j)
-                    {
-                        var bw = new BoneWeight();
-
-                        bw.boneIndex0 = joints0[j].x;
-                        bw.weight0 = weights0[j].x;
-
-                        bw.boneIndex1 = joints0[j].y;
-                        bw.weight1 = weights0[j].y;
-
-                        bw.boneIndex2 = joints0[j].z;
-                        bw.weight2 = weights0[j].z;
-
-                        bw.boneIndex3 = joints0[j].w;
-                        bw.weight3 = weights0[j].w;
-
-                        meshContext.boneWeights.Add(bw);
-                    }
-                }
-
-                // blendshape
-                if (prim.targets != null && prim.targets.Count > 0)
-                {
-                    for (int i = 0; i < prim.targets.Count; ++i)
-                    {
-                        var primTarget = prim.targets[i];
-                        if (primTarget.POSITION != -1)
-                        {
-                            blendShapes[i].Positions.AddRange(
-                                ctx.GLTF.GetArrayFromAccessor<Vector3>(primTarget.POSITION).Select(x => x.ReverseZ()).ToArray());
-                        }
-                        if (primTarget.NORMAL != -1)
-                        {
-                            blendShapes[i].Normals.AddRange(
-                                ctx.GLTF.GetArrayFromAccessor<Vector3>(primTarget.NORMAL).Select(x => x.ReverseZ()).ToArray());
-                        }
-                        if (primTarget.TANGENT != -1)
-                        {
-                            blendShapes[i].Tangents.AddRange(
-                                ctx.GLTF.GetArrayFromAccessor<Vector3>(primTarget.TANGENT).Select(x => x.ReverseZ()).ToArray());
-                        }
-                    }
-                }
-
-                var indices =
-                 (indexBuffer >= 0)
-                 ? ctx.GLTF.GetIndices(indexBuffer)
-                 : TriangleUtil.FlipTriangle(Enumerable.Range(0, meshContext.positions.Length)).ToArray() // without index array
-                 ;
-                for (int i = 0; i < indices.Length; ++i)
-                {
-                    indices[i] += indexOffset;
-                }
-
-                meshContext.subMeshes.Add(indices);
-
-                // material
-                meshContext.materialIndices.Add(prim.material);
-            }
-
-            meshContext.positions = positions.ToArray();
-            meshContext.normals = normals.ToArray();
-            meshContext.tangents = tangents.ToArray();
-            meshContext.uv = uv.ToArray();
-            meshContext.blendShapes = blendShapes;
-
-            return meshContext;
-        }
-
-        // multiple submMesh is not sharing a VertexBuffer.
-        // each subMesh use a independent VertexBuffer.
-        private static MeshContext _ImportMeshIndependentVertexBuffer(ImporterContext ctx, glTFMesh gltfMesh)
-        {
-            //Debug.LogWarning("_ImportMeshIndependentVertexBuffer");
-
-            var targets = gltfMesh.primitives[0].targets;
-            for (int i = 1; i < gltfMesh.primitives.Count; ++i)
-            {
-                if (!gltfMesh.primitives[i].targets.SequenceEqual(targets))
-                {
-                    throw new NotImplementedException(string.Format("different targets: {0} with {1}",
-                        gltfMesh.primitives[i],
-                        targets));
+                        x = x * f,
+                        y = y * f,
+                        z = z * f,
+                        w = w * f,
+                    };
                 }
             }
 
-            var positions = new List<Vector3>();
-            var normals = new List<Vector3>();
-            var tangents = new List<Vector4>();
-            var uv = new List<Vector2>();
-            var uv2 = new List<Vector2>();
-            var colors = new List<Color>();
-            var meshContext = new MeshContext();
-            foreach (var prim in gltfMesh.primitives)
+            string m_name;
+            public string name => m_name;
+
+            public readonly List<Vector3> positions = new List<Vector3>();
+            public readonly List<Vector3> normals = new List<Vector3>();
+
+            [Obsolete]
+            public readonly List<Vector4> tangents = new List<Vector4>();
+
+            public readonly List<Vector2> uv = new List<Vector2>();
+            public readonly List<Vector2> uv2 = new List<Vector2>();
+            public readonly List<Color> colors = new List<Color>();
+            public readonly List<BoneWeight> boneWeights = new List<BoneWeight>();
+            public readonly List<int[]> subMeshes = new List<int[]>();
+            public readonly List<int> materialIndices = new List<int>();
+            public readonly List<BlendShape> blendShapes = new List<BlendShape>();
+
+            public MeshContext(string name, int meshIndex)
             {
-                var indexOffset = positions.Count;
-                var indexBuffer = prim.indices;
-
-                var positionCount = positions.Count;
-                positions.AddRange(ctx.GLTF.GetArrayFromAccessor<Vector3>(prim.attributes.POSITION).Select(x => x.ReverseZ()));
-                positionCount = positions.Count - positionCount;
-
-                // normal
-                if (prim.attributes.NORMAL != -1)
+                if (string.IsNullOrEmpty(name))
                 {
-                    normals.AddRange(ctx.GLTF.GetArrayFromAccessor<Vector3>(prim.attributes.NORMAL).Select(x => x.ReverseZ()));
+                    name = string.Format("UniGLTF import#{0}", meshIndex);
                 }
-
-                if (prim.attributes.TANGENT != -1)
-                {
-                    tangents.AddRange(ctx.GLTF.GetArrayFromAccessor<Vector4>(prim.attributes.TANGENT).Select(x => x.ReverseZ()));
-                }
-
-                // uv
-                if (prim.attributes.TEXCOORD_0 != -1)
-                {
-                    if (ctx.IsGeneratedUniGLTFAndOlder(1, 16))
-                    {
-#pragma warning disable 0612
-                        // backward compatibility
-                        uv.AddRange(ctx.GLTF.GetArrayFromAccessor<Vector2>(prim.attributes.TEXCOORD_0).Select(x => x.ReverseY()));
-#pragma warning restore 0612
-                    }
-                    else
-                    {
-                        uv.AddRange(ctx.GLTF.GetArrayFromAccessor<Vector2>(prim.attributes.TEXCOORD_0).Select(x => x.ReverseUV()));
-                    }
-                }
-                else
-                {
-                    // for inconsistent attributes in primitives
-                    uv.AddRange(new Vector2[positionCount]);
-                }
-
-                // uv2
-                if (prim.attributes.TEXCOORD_1 != -1)
-                {
-                    uv2.AddRange(ctx.GLTF.GetArrayFromAccessor<Vector2>(prim.attributes.TEXCOORD_1).Select(x => x.ReverseUV()));
-                }
-                else
-                {
-                    // for inconsistent attributes in primitives
-                    uv2.AddRange(new Vector2[positionCount]);
-                }
-
-                // color
-                if (prim.attributes.COLOR_0 != -1)
-                {
-                    colors.AddRange(ctx.GLTF.GetArrayFromAccessor<Color>(prim.attributes.COLOR_0));
-                }
-
-                // skin
-                if (prim.attributes.JOINTS_0 != -1 && prim.attributes.WEIGHTS_0 != -1)
-                {
-                    var joints0 = ctx.GLTF.GetArrayFromAccessor<UShort4>(prim.attributes.JOINTS_0); // uint4
-                    var weights0 = ctx.GLTF.GetArrayFromAccessor<Float4>(prim.attributes.WEIGHTS_0).Select(x => x.One()).ToArray();
-
-                    for (int j = 0; j < joints0.Length; ++j)
-                    {
-                        var bw = new BoneWeight();
-
-                        bw.boneIndex0 = joints0[j].x;
-                        bw.weight0 = weights0[j].x;
-
-                        bw.boneIndex1 = joints0[j].y;
-                        bw.weight1 = weights0[j].y;
-
-                        bw.boneIndex2 = joints0[j].z;
-                        bw.weight2 = weights0[j].z;
-
-                        bw.boneIndex3 = joints0[j].w;
-                        bw.weight3 = weights0[j].w;
-
-                        meshContext.boneWeights.Add(bw);
-                    }
-                }
-
-                // blendshape
-                if (prim.targets != null && prim.targets.Count > 0)
-                {
-                    for (int i = 0; i < prim.targets.Count; ++i)
-                    {
-                        //var name = string.Format("target{0}", i++);
-                        var primTarget = prim.targets[i];
-                        var blendShape = new BlendShape(!string.IsNullOrEmpty(prim.extras.targetNames[i])
-                            ? prim.extras.targetNames[i]
-                            : i.ToString())
-                            ;
-                        if (primTarget.POSITION != -1)
-                        {
-                            blendShape.Positions.AddRange(
-                                ctx.GLTF.GetArrayFromAccessor<Vector3>(primTarget.POSITION).Select(x => x.ReverseZ()).ToArray());
-                        }
-                        if (primTarget.NORMAL != -1)
-                        {
-                            blendShape.Normals.AddRange(
-                                ctx.GLTF.GetArrayFromAccessor<Vector3>(primTarget.NORMAL).Select(x => x.ReverseZ()).ToArray());
-                        }
-                        if (primTarget.TANGENT != -1)
-                        {
-                            blendShape.Tangents.AddRange(
-                                ctx.GLTF.GetArrayFromAccessor<Vector3>(primTarget.TANGENT).Select(x => x.ReverseZ()).ToArray());
-                        }
-                        meshContext.blendShapes.Add(blendShape);
-                    }
-                }
-
-                var indices =
-                 (indexBuffer >= 0)
-                 ? ctx.GLTF.GetIndices(indexBuffer)
-                 : TriangleUtil.FlipTriangle(Enumerable.Range(0, meshContext.positions.Length)).ToArray() // without index array
-                 ;
-                for (int i = 0; i < indices.Length; ++i)
-                {
-                    indices[i] += indexOffset;
-                }
-
-                meshContext.subMeshes.Add(indices);
-
-                // material
-                meshContext.materialIndices.Add(prim.material);
+                m_name = name;
             }
 
-            meshContext.positions = positions.ToArray();
-            meshContext.normals = normals.ToArray();
-            meshContext.tangents = tangents.ToArray();
-            meshContext.uv = uv.ToArray();
-
-            return meshContext;
-        }
-
-
-        // multiple submesh sharing same VertexBuffer
-        private static MeshContext _ImportMeshSharingVertexBuffer(ImporterContext ctx, glTFMesh gltfMesh)
-        {
-            var context = new MeshContext();
-
+            /// <summary>
+            /// mesh.extras.targetNames が存在する => UniVRMでエクスポートしたものであると仮定
+            /// 
+            /// * 各primitiveが同じ attribute を共有している
+            /// * 各primitiveが同じ targets を共有している
+            /// * 各primitiveは indices が異なる(submesh)
+            /// 
+            /// を仮定して Mesh をロードする。
+            /// </summary>
+            /// <param name="ctx"></param>
+            /// <param name="gltfMesh"></param>
+            /// <returns></returns>
+            public void ImportMeshSharingMorphTarget(ImporterContext ctx, glTFMesh gltfMesh)
             {
-                var prim = gltfMesh.primitives.First();
-                context.positions = ctx.GLTF.GetArrayFromAccessor<Vector3>(prim.attributes.POSITION).SelectInplace(x => x.ReverseZ());
-
-                // normal
-                if (prim.attributes.NORMAL != -1)
+                // blendshapes
+                var targetNames = gltfMesh.extras.targetNames;
+                for (int i = 1; i < gltfMesh.primitives.Count; ++i)
                 {
-                    context.normals = ctx.GLTF.GetArrayFromAccessor<Vector3>(prim.attributes.NORMAL).SelectInplace(x => x.ReverseZ());
+                    if (gltfMesh.primitives[i].targets.Count != targetNames.Count)
+                    {
+                        throw new FormatException(string.Format("different targets length: {0} with targetNames length.",
+                            gltfMesh.primitives[i]));
+                    }
+                }
+                for (var i = 0; i < targetNames.Count; i++)
+                {
+                    var blendShape = new BlendShape(!string.IsNullOrEmpty(targetNames[i]) ? targetNames[i] : i.ToString());
+                    blendShapes.Add(blendShape);
                 }
 
+                foreach (var prim in gltfMesh.primitives)
+                {
+                    var indexOffset = positions.Count;
+                    var indexBuffer = prim.indices;
+
+                    var positionCount = positions.Count;
+                    positions.AddRange(ctx.GLTF.GetArrayFromAccessor<Vector3>(prim.attributes.POSITION).Select(x => x.ReverseZ()));
+                    positionCount = positions.Count - positionCount;
+
+                    // normal
+                    if (prim.attributes.NORMAL != -1)
+                    {
+                        normals.AddRange(ctx.GLTF.GetArrayFromAccessor<Vector3>(prim.attributes.NORMAL).Select(x => x.ReverseZ()));
+                    }
+
+#if false
                 // tangent
                 if (prim.attributes.TANGENT != -1)
                 {
-                    context.tangents = ctx.GLTF.GetArrayFromAccessor<Vector4>(prim.attributes.TANGENT).SelectInplace(x => x.ReverseZ());
+                    tangents.AddRange(ctx.GLTF.GetArrayFromAccessor<Vector4>(prim.attributes.TANGENT).Select(x => x.ReverseZ()));
                 }
+#endif
 
-                // uv
-                if (prim.attributes.TEXCOORD_0 != -1)
-                {
-                    if (ctx.IsGeneratedUniGLTFAndOlder(1, 16))
+                    // uv
+                    if (prim.attributes.TEXCOORD_0 != -1)
                     {
+                        if (ctx.IsGeneratedUniGLTFAndOlder(1, 16))
+                        {
 #pragma warning disable 0612
-                        // backward compatibility
-                        context.uv = ctx.GLTF.GetArrayFromAccessor<Vector2>(prim.attributes.TEXCOORD_0).SelectInplace(x => x.ReverseY());
+                            // backward compatibility
+                            uv.AddRange(ctx.GLTF.GetArrayFromAccessor<Vector2>(prim.attributes.TEXCOORD_0).Select(x => x.ReverseY()));
 #pragma warning restore 0612
+                        }
+                        else
+                        {
+                            uv.AddRange(ctx.GLTF.GetArrayFromAccessor<Vector2>(prim.attributes.TEXCOORD_0).Select(x => x.ReverseUV()));
+                        }
                     }
                     else
                     {
-                        context.uv = ctx.GLTF.GetArrayFromAccessor<Vector2>(prim.attributes.TEXCOORD_0).SelectInplace(x => x.ReverseUV());
+                        // for inconsistent attributes in primitives
+                        uv.AddRange(new Vector2[positionCount]);
                     }
-                }
-                else
-                {
-                    // for inconsistent attributes in primitives
-                    context.uv = new Vector2[context.positions.Length];
-                }
 
-                // uv2
-                if (prim.attributes.TEXCOORD_1 != -1)
-                {
-                    context.uv2 = ctx.GLTF.GetArrayFromAccessor<Vector2>(prim.attributes.TEXCOORD_1).SelectInplace(x => x.ReverseUV());
-                }
-                else
-                {
-                    // for inconsistent attributes in primitives
-                    context.uv2 = new Vector2[context.positions.Length];
-                }
-
-                // color
-                if (prim.attributes.COLOR_0 != -1)
-                {
-                    if (ctx.GLTF.accessors[prim.attributes.COLOR_0].TypeCount == 3)
+                    // uv1
+                    if (prim.attributes.TEXCOORD_1 != -1)
                     {
-                        var vec3Color = ctx.GLTF.GetArrayFromAccessor<Vector3>(prim.attributes.COLOR_0);
-                        context.colors = new Color[vec3Color.Length];
+                        uv2.AddRange(ctx.GLTF.GetArrayFromAccessor<Vector2>(prim.attributes.TEXCOORD_1).Select(x => x.ReverseUV()));
+                    }
 
-                        for (int i = 0; i < vec3Color.Length; i++)
+                    // color
+                    if (prim.attributes.COLOR_0 != -1)
+                    {
+                        colors.AddRange(ctx.GLTF.GetArrayFromAccessor<Color>(prim.attributes.COLOR_0));
+                    }
+
+                    // skin
+                    if (prim.attributes.JOINTS_0 != -1 && prim.attributes.WEIGHTS_0 != -1)
+                    {
+                        var joints0 = ctx.GLTF.GetArrayFromAccessor<UShort4>(prim.attributes.JOINTS_0); // uint4
+                        var weights0 = ctx.GLTF.GetArrayFromAccessor<Float4>(prim.attributes.WEIGHTS_0).Select(x => x.One()).ToArray();
+
+                        for (int j = 0; j < joints0.Length; ++j)
                         {
-                            Vector3 color = vec3Color[i];
-                            context.colors[i] = new Color(color.x, color.y, color.z);
+                            var bw = new BoneWeight();
+
+                            bw.boneIndex0 = joints0[j].x;
+                            bw.weight0 = weights0[j].x;
+
+                            bw.boneIndex1 = joints0[j].y;
+                            bw.weight1 = weights0[j].y;
+
+                            bw.boneIndex2 = joints0[j].z;
+                            bw.weight2 = weights0[j].z;
+
+                            bw.boneIndex3 = joints0[j].w;
+                            bw.weight3 = weights0[j].w;
+
+                            boneWeights.Add(bw);
                         }
                     }
-                    else if (ctx.GLTF.accessors[prim.attributes.COLOR_0].TypeCount == 4)
+
+                    // blendshape
+                    if (prim.targets != null && prim.targets.Count > 0)
                     {
-                        context.colors = ctx.GLTF.GetArrayFromAccessor<Color>(prim.attributes.COLOR_0);
+                        for (int i = 0; i < prim.targets.Count; ++i)
+                        {
+                            var primTarget = prim.targets[i];
+                            if (primTarget.POSITION != -1)
+                            {
+                                blendShapes[i].Positions.AddRange(
+                                    ctx.GLTF.GetArrayFromAccessor<Vector3>(primTarget.POSITION).Select(x => x.ReverseZ()).ToArray());
+                            }
+                            if (primTarget.NORMAL != -1)
+                            {
+                                blendShapes[i].Normals.AddRange(
+                                    ctx.GLTF.GetArrayFromAccessor<Vector3>(primTarget.NORMAL).Select(x => x.ReverseZ()).ToArray());
+                            }
+                            if (primTarget.TANGENT != -1)
+                            {
+                                blendShapes[i].Tangents.AddRange(
+                                    ctx.GLTF.GetArrayFromAccessor<Vector3>(primTarget.TANGENT).Select(x => x.ReverseZ()).ToArray());
+                            }
+                        }
+                    }
+
+                    var indices =
+                     (indexBuffer >= 0)
+                     ? ctx.GLTF.GetIndices(indexBuffer)
+                     : TriangleUtil.FlipTriangle(Enumerable.Range(0, positions.Count)).ToArray() // without index array
+                     ;
+                    for (int i = 0; i < indices.Length; ++i)
+                    {
+                        indices[i] += indexOffset;
+                    }
+
+                    subMeshes.Add(indices);
+
+                    // material
+                    materialIndices.Add(prim.material);
+                }
+            }
+
+            /// <summary>
+            /// 各 primitive の attribute の要素が同じでない。=> uv が有るものと無いものが混在するなど
+            /// glTF 的にはありうる。
+            /// 
+            /// primitive を独立した(Independent) Mesh として扱いこれを連結する。
+            /// </summary>
+            /// <param name="ctx"></param>
+            /// <param name="gltfMesh"></param>
+            /// <returns></returns>
+            public void ImportMeshIndependentVertexBuffer(ImporterContext ctx, glTFMesh gltfMesh)
+            {
+                var targets = gltfMesh.primitives[0].targets;
+                for (int i = 1; i < gltfMesh.primitives.Count; ++i)
+                {
+                    if (!gltfMesh.primitives[i].targets.SequenceEqual(targets))
+                    {
+                        //
+                        // 各 primitive の morphTarget の内容が違うことは許容しない
+                        //
+                        throw new NotImplementedException(string.Format("different targets: {0} with {1}",
+                            gltfMesh.primitives[i],
+                            targets));
+                    }
+                }
+
+                foreach (var prim in gltfMesh.primitives)
+                {
+                    var indexOffset = positions.Count;
+                    var indexBuffer = prim.indices;
+
+                    var positionCount = positions.Count;
+                    positions.AddRange(ctx.GLTF.GetArrayFromAccessor<Vector3>(prim.attributes.POSITION).Select(x => x.ReverseZ()));
+                    positionCount = positions.Count - positionCount;
+
+                    // normal
+                    if (prim.attributes.NORMAL != -1)
+                    {
+                        normals.AddRange(ctx.GLTF.GetArrayFromAccessor<Vector3>(prim.attributes.NORMAL).Select(x => x.ReverseZ()));
+                    }
+
+#if false
+                if (prim.attributes.TANGENT != -1)
+                {
+                    tangents.AddRange(ctx.GLTF.GetArrayFromAccessor<Vector4>(prim.attributes.TANGENT).Select(x => x.ReverseZ()));
+                }
+#endif
+
+                    // uv
+                    if (prim.attributes.TEXCOORD_0 != -1)
+                    {
+                        if (ctx.IsGeneratedUniGLTFAndOlder(1, 16))
+                        {
+#pragma warning disable 0612
+                            // backward compatibility
+                            uv.AddRange(ctx.GLTF.GetArrayFromAccessor<Vector2>(prim.attributes.TEXCOORD_0).Select(x => x.ReverseY()));
+#pragma warning restore 0612
+                        }
+                        else
+                        {
+                            uv.AddRange(ctx.GLTF.GetArrayFromAccessor<Vector2>(prim.attributes.TEXCOORD_0).Select(x => x.ReverseUV()));
+                        }
                     }
                     else
                     {
-                        throw new NotImplementedException(string.Format("unknown color type {0}", ctx.GLTF.accessors[prim.attributes.COLOR_0].type));
-                    }
-                }
-
-                // skin
-                if (prim.attributes.JOINTS_0 != -1 && prim.attributes.WEIGHTS_0 != -1)
-                {
-                    var joints0 = ctx.GLTF.GetArrayFromAccessor<UShort4>(prim.attributes.JOINTS_0); // uint4
-                    var weights0 = ctx.GLTF.GetArrayFromAccessor<Float4>(prim.attributes.WEIGHTS_0);
-                    for (int i = 0; i < weights0.Length; ++i)
-                    {
-                        weights0[i] = weights0[i].One();
+                        // for inconsistent attributes in primitives
+                        uv.AddRange(new Vector2[positionCount]);
                     }
 
-                    for (int j = 0; j < joints0.Length; ++j)
+                    // uv2
+                    if (prim.attributes.TEXCOORD_1 != -1)
                     {
-                        var bw = new BoneWeight();
-
-                        bw.boneIndex0 = joints0[j].x;
-                        bw.weight0 = weights0[j].x;
-
-                        bw.boneIndex1 = joints0[j].y;
-                        bw.weight1 = weights0[j].y;
-
-                        bw.boneIndex2 = joints0[j].z;
-                        bw.weight2 = weights0[j].z;
-
-                        bw.boneIndex3 = joints0[j].w;
-                        bw.weight3 = weights0[j].w;
-
-                        context.boneWeights.Add(bw);
+                        uv2.AddRange(ctx.GLTF.GetArrayFromAccessor<Vector2>(prim.attributes.TEXCOORD_1).Select(x => x.ReverseUV()));
                     }
-                }
 
-                // blendshape
-                if (prim.targets != null && prim.targets.Count > 0)
-                {
-                    context.blendShapes.AddRange(prim.targets.Select((x, i) => new BlendShape(
-                        i < prim.extras.targetNames.Count && !string.IsNullOrEmpty(prim.extras.targetNames[i])
-                        ? prim.extras.targetNames[i]
-                        : i.ToString())));
-                    for (int i = 0; i < prim.targets.Count; ++i)
+                    // color
+                    if (prim.attributes.COLOR_0 != -1)
                     {
-                        //var name = string.Format("target{0}", i++);
-                        var primTarget = prim.targets[i];
-                        var blendShape = context.blendShapes[i];
+                        colors.AddRange(ctx.GLTF.GetArrayFromAccessor<Color>(prim.attributes.COLOR_0));
+                    }
 
-                        if (primTarget.POSITION != -1)
+                    // skin
+                    if (prim.attributes.JOINTS_0 != -1 && prim.attributes.WEIGHTS_0 != -1)
+                    {
+                        var joints0 = ctx.GLTF.GetArrayFromAccessor<UShort4>(prim.attributes.JOINTS_0); // uint4
+                        var weights0 = ctx.GLTF.GetArrayFromAccessor<Float4>(prim.attributes.WEIGHTS_0).Select(x => x.One()).ToArray();
+
+                        for (int j = 0; j < joints0.Length; ++j)
                         {
-                            blendShape.Positions.Assign(
-                                ctx.GLTF.GetArrayFromAccessor<Vector3>(primTarget.POSITION), x => x.ReverseZ());
-                        }
-                        if (primTarget.NORMAL != -1)
-                        {
-                            blendShape.Normals.Assign(
-                                ctx.GLTF.GetArrayFromAccessor<Vector3>(primTarget.NORMAL), x => x.ReverseZ());
-                        }
-                        if (primTarget.TANGENT != -1)
-                        {
-                            blendShape.Tangents.Assign(
-                                ctx.GLTF.GetArrayFromAccessor<Vector3>(primTarget.TANGENT), x => x.ReverseZ());
+                            var bw = new BoneWeight();
+
+                            bw.boneIndex0 = joints0[j].x;
+                            bw.weight0 = weights0[j].x;
+
+                            bw.boneIndex1 = joints0[j].y;
+                            bw.weight1 = weights0[j].y;
+
+                            bw.boneIndex2 = joints0[j].z;
+                            bw.weight2 = weights0[j].z;
+
+                            bw.boneIndex3 = joints0[j].w;
+                            bw.weight3 = weights0[j].w;
+
+                            boneWeights.Add(bw);
                         }
                     }
+
+                    // blendshape
+                    if (prim.targets != null && prim.targets.Count > 0)
+                    {
+                        for (int i = 0; i < prim.targets.Count; ++i)
+                        {
+                            //var name = string.Format("target{0}", i++);
+                            var primTarget = prim.targets[i];
+                            var blendShape = new BlendShape(!string.IsNullOrEmpty(prim.extras.targetNames[i])
+                                ? prim.extras.targetNames[i]
+                                : i.ToString())
+                                ;
+                            if (primTarget.POSITION != -1)
+                            {
+                                blendShape.Positions.AddRange(
+                                    ctx.GLTF.GetArrayFromAccessor<Vector3>(primTarget.POSITION).Select(x => x.ReverseZ()).ToArray());
+                            }
+                            if (primTarget.NORMAL != -1)
+                            {
+                                blendShape.Normals.AddRange(
+                                    ctx.GLTF.GetArrayFromAccessor<Vector3>(primTarget.NORMAL).Select(x => x.ReverseZ()).ToArray());
+                            }
+                            if (primTarget.TANGENT != -1)
+                            {
+                                blendShape.Tangents.AddRange(
+                                    ctx.GLTF.GetArrayFromAccessor<Vector3>(primTarget.TANGENT).Select(x => x.ReverseZ()).ToArray());
+                            }
+                            blendShapes.Add(blendShape);
+                        }
+                    }
+
+                    var indices =
+                     (indexBuffer >= 0)
+                     ? ctx.GLTF.GetIndices(indexBuffer)
+                     : TriangleUtil.FlipTriangle(Enumerable.Range(0, positions.Count)).ToArray() // without index array
+                     ;
+                    for (int i = 0; i < indices.Length; ++i)
+                    {
+                        indices[i] += indexOffset;
+                    }
+
+                    subMeshes.Add(indices);
+
+                    // material
+                    materialIndices.Add(prim.material);
                 }
             }
 
-            foreach (var prim in gltfMesh.primitives)
+            // multiple submesh sharing same VertexBuffer
+            public void ImportMeshSharingVertexBuffer(ImporterContext ctx, glTFMesh gltfMesh)
             {
-                if (prim.indices == -1)
                 {
-                    context.subMeshes.Add(TriangleUtil.FlipTriangle(Enumerable.Range(0, context.positions.Length)).ToArray());
+                    var prim = gltfMesh.primitives.First();
+                    positions.AddRange(ctx.GLTF.GetArrayFromAccessor<Vector3>(prim.attributes.POSITION).SelectInplace(x => x.ReverseZ()));
+
+                    // normal
+                    if (prim.attributes.NORMAL != -1)
+                    {
+                        normals.AddRange(ctx.GLTF.GetArrayFromAccessor<Vector3>(prim.attributes.NORMAL).SelectInplace(x => x.ReverseZ()));
+                    }
+
+#if false
+                    // tangent
+                    if (prim.attributes.TANGENT != -1)
+                    {
+                        tangents.AddRange(ctx.GLTF.GetArrayFromAccessor<Vector4>(prim.attributes.TANGENT).SelectInplace(x => x.ReverseZ()));
+                    }
+#endif
+
+                    // uv
+                    if (prim.attributes.TEXCOORD_0 != -1)
+                    {
+                        if (ctx.IsGeneratedUniGLTFAndOlder(1, 16))
+                        {
+#pragma warning disable 0612
+                            // backward compatibility
+                            uv.AddRange(ctx.GLTF.GetArrayFromAccessor<Vector2>(prim.attributes.TEXCOORD_0).SelectInplace(x => x.ReverseY()));
+#pragma warning restore 0612
+                        }
+                        else
+                        {
+                            uv.AddRange(ctx.GLTF.GetArrayFromAccessor<Vector2>(prim.attributes.TEXCOORD_0).SelectInplace(x => x.ReverseUV()));
+                        }
+                    }
+
+                    // uv2
+                    if (prim.attributes.TEXCOORD_1 != -1)
+                    {
+                        uv2.AddRange(ctx.GLTF.GetArrayFromAccessor<Vector2>(prim.attributes.TEXCOORD_1).SelectInplace(x => x.ReverseUV()));
+                    }
+
+                    // color
+                    if (prim.attributes.COLOR_0 != -1)
+                    {
+                        if (ctx.GLTF.accessors[prim.attributes.COLOR_0].TypeCount == 3)
+                        {
+                            var vec3Color = ctx.GLTF.GetArrayFromAccessor<Vector3>(prim.attributes.COLOR_0);
+                            colors.AddRange(new Color[vec3Color.Length]);
+
+                            for (int i = 0; i < vec3Color.Length; i++)
+                            {
+                                Vector3 color = vec3Color[i];
+                                colors[i] = new Color(color.x, color.y, color.z);
+                            }
+                        }
+                        else if (ctx.GLTF.accessors[prim.attributes.COLOR_0].TypeCount == 4)
+                        {
+                            colors.AddRange(ctx.GLTF.GetArrayFromAccessor<Color>(prim.attributes.COLOR_0));
+                        }
+                        else
+                        {
+                            throw new NotImplementedException(string.Format("unknown color type {0}", ctx.GLTF.accessors[prim.attributes.COLOR_0].type));
+                        }
+                    }
+
+                    // skin
+                    if (prim.attributes.JOINTS_0 != -1 && prim.attributes.WEIGHTS_0 != -1)
+                    {
+                        var joints0 = ctx.GLTF.GetArrayFromAccessor<UShort4>(prim.attributes.JOINTS_0); // uint4
+                        var weights0 = ctx.GLTF.GetArrayFromAccessor<Float4>(prim.attributes.WEIGHTS_0);
+                        for (int i = 0; i < weights0.Length; ++i)
+                        {
+                            weights0[i] = weights0[i].One();
+                        }
+
+                        for (int j = 0; j < joints0.Length; ++j)
+                        {
+                            var bw = new BoneWeight();
+
+                            bw.boneIndex0 = joints0[j].x;
+                            bw.weight0 = weights0[j].x;
+
+                            bw.boneIndex1 = joints0[j].y;
+                            bw.weight1 = weights0[j].y;
+
+                            bw.boneIndex2 = joints0[j].z;
+                            bw.weight2 = weights0[j].z;
+
+                            bw.boneIndex3 = joints0[j].w;
+                            bw.weight3 = weights0[j].w;
+
+                            boneWeights.Add(bw);
+                        }
+                    }
+
+                    // blendshape
+                    if (prim.targets != null && prim.targets.Count > 0)
+                    {
+                        blendShapes.AddRange(prim.targets.Select((x, i) => new BlendShape(
+                            i < prim.extras.targetNames.Count && !string.IsNullOrEmpty(prim.extras.targetNames[i])
+                            ? prim.extras.targetNames[i]
+                            : i.ToString())));
+                        for (int i = 0; i < prim.targets.Count; ++i)
+                        {
+                            //var name = string.Format("target{0}", i++);
+                            var primTarget = prim.targets[i];
+                            var blendShape = blendShapes[i];
+
+                            if (primTarget.POSITION != -1)
+                            {
+                                blendShape.Positions.Assign(
+                                    ctx.GLTF.GetArrayFromAccessor<Vector3>(primTarget.POSITION), x => x.ReverseZ());
+                            }
+                            if (primTarget.NORMAL != -1)
+                            {
+                                blendShape.Normals.Assign(
+                                    ctx.GLTF.GetArrayFromAccessor<Vector3>(primTarget.NORMAL), x => x.ReverseZ());
+                            }
+                            if (primTarget.TANGENT != -1)
+                            {
+                                blendShape.Tangents.Assign(
+                                    ctx.GLTF.GetArrayFromAccessor<Vector3>(primTarget.TANGENT), x => x.ReverseZ());
+                            }
+                        }
+                    }
                 }
-                else
+
+                foreach (var prim in gltfMesh.primitives)
                 {
-                    var indices = ctx.GLTF.GetIndices(prim.indices);
-                    context.subMeshes.Add(indices);
+                    if (prim.indices == -1)
+                    {
+                        subMeshes.Add(TriangleUtil.FlipTriangle(Enumerable.Range(0, positions.Count)).ToArray());
+                    }
+                    else
+                    {
+                        var indices = ctx.GLTF.GetIndices(prim.indices);
+                        subMeshes.Add(indices);
+                    }
+
+                    // material
+                    materialIndices.Add(prim.material);
                 }
-
-                // material
-                context.materialIndices.Add(prim.material);
-            }
-
-            return context;
-        }
-
-
-        [Serializable, StructLayout(LayoutKind.Sequential, Pack = 1)]
-        struct Float4
-        {
-            public float x;
-            public float y;
-            public float z;
-            public float w;
-
-            public Float4 One()
-            {
-                var sum = x + y + z + w;
-                var f = 1.0f / sum;
-                return new Float4
-                {
-                    x = x * f,
-                    y = y * f,
-                    z = z * f,
-                    w = w * f,
-                };
             }
         }
-
-
-        public class MeshContext
-        {
-            public string name;
-            public Vector3[] positions;
-            public Vector3[] normals;
-            public Vector4[] tangents;
-            public Vector2[] uv;
-            public Vector2[] uv2;
-            public Color[] colors;
-            public List<BoneWeight> boneWeights = new List<BoneWeight>();
-            public List<int[]> subMeshes = new List<int[]>();
-            public List<int> materialIndices = new List<int>();
-            public List<BlendShape> blendShapes = new List<BlendShape>();
-        }
-
 
         public MeshContext ReadMesh(ImporterContext ctx, int meshIndex)
         {
             var gltfMesh = ctx.GLTF.meshes[meshIndex];
 
             bool sharedMorphTarget = gltfMesh.extras != null && gltfMesh.extras.targetNames.Count > 0;
-            MeshContext meshContext;
+            var meshContext = new MeshContext(gltfMesh.name, meshIndex);
             if (sharedMorphTarget)
             {
-                meshContext = _ImportMeshSharingMorphTarget(ctx, gltfMesh);
+                meshContext.ImportMeshSharingMorphTarget(ctx, gltfMesh);
             }
             else
             {
@@ -560,20 +540,18 @@ namespace UniGLTF
                     lastAttributes = prim.attributes;
                 }
 
-                meshContext = sharedAttributes
-                    ? _ImportMeshSharingVertexBuffer(ctx, gltfMesh)
-                    : _ImportMeshIndependentVertexBuffer(ctx, gltfMesh);
-            }
-
-            meshContext.name = gltfMesh.name;
-            if (string.IsNullOrEmpty(meshContext.name))
-            {
-                meshContext.name = string.Format("UniGLTF import#{0}", meshIndex);
+                if (sharedAttributes)
+                {
+                    meshContext.ImportMeshSharingVertexBuffer(ctx, gltfMesh);
+                }
+                else
+                {
+                    meshContext.ImportMeshIndependentVertexBuffer(ctx, gltfMesh);
+                }
             }
 
             return meshContext;
         }
-
 
         public static MeshWithMaterials BuildMesh(ImporterContext ctx, MeshImporter.MeshContext meshContext)
         {
@@ -586,7 +564,7 @@ namespace UniGLTF
             var mesh = new Mesh();
             mesh.name = meshContext.name;
 
-            if (meshContext.positions.Length > UInt16.MaxValue)
+            if (meshContext.positions.Count > UInt16.MaxValue)
             {
 #if UNITY_2017_3_OR_NEWER
                 mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
@@ -596,24 +574,24 @@ namespace UniGLTF
 #endif
             }
 
-            mesh.vertices = meshContext.positions;
+            mesh.vertices = meshContext.positions.ToArray();
             bool recalculateNormals = false;
-            if (meshContext.normals != null && meshContext.normals.Length > 0)
+            if (meshContext.normals != null && meshContext.normals.Count > 0)
             {
-                mesh.normals = meshContext.normals;
+                mesh.normals = meshContext.normals.ToArray();
             }
             else
             {
                 recalculateNormals = true;
             }
 
-            if (meshContext.uv != null && meshContext.uv.Length > 0)
+            if (meshContext.uv != null && meshContext.uv.Count == mesh.vertexCount)
             {
-                mesh.uv = meshContext.uv;
+                mesh.uv = meshContext.uv.ToArray();
             }
-            if (meshContext.uv2 != null && meshContext.uv2.Length > 0)
+            if (meshContext.uv2 != null && meshContext.uv2.Count == mesh.vertexCount)
             {
-                mesh.uv2 = meshContext.uv2;
+                mesh.uv2 = meshContext.uv2.ToArray();
             }
 
             bool recalculateTangents = true;
@@ -625,9 +603,9 @@ namespace UniGLTF
             }
 #endif
 
-            if (meshContext.colors != null && meshContext.colors.Length > 0)
+            if (meshContext.colors != null && meshContext.colors.Count == mesh.vertexCount)
             {
-                mesh.colors = meshContext.colors;
+                mesh.colors = meshContext.colors.ToArray();
             }
             if (meshContext.boneWeights != null && meshContext.boneWeights.Count > 0)
             {
@@ -669,7 +647,7 @@ namespace UniGLTF
                         {
                             mesh.AddBlendShapeFrame(blendShape.Name, FRAME_WEIGHT,
                                 blendShape.Positions.ToArray(),
-                                (meshContext.normals != null && meshContext.normals.Length == mesh.vertexCount && blendShape.Normals.Count() == blendShape.Positions.Count()) ? blendShape.Normals.ToArray() : null,
+                                (meshContext.normals != null && meshContext.normals.Count == mesh.vertexCount && blendShape.Normals.Count() == blendShape.Positions.Count()) ? blendShape.Normals.ToArray() : null,
                                 null
                                 );
                         }
@@ -708,7 +686,7 @@ namespace UniGLTF
             var mesh = new Mesh();
             mesh.name = meshContext.name;
 
-            if (meshContext.positions.Length > UInt16.MaxValue)
+            if (meshContext.positions.Count > UInt16.MaxValue)
             {
 #if UNITY_2017_3_OR_NEWER
                 mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
@@ -719,42 +697,43 @@ namespace UniGLTF
             }
 
 
-            mesh.vertices = meshContext.positions;
+            mesh.vertices = meshContext.positions.ToArray();
             bool recalculateNormals = false;
-            if (meshContext.normals != null && meshContext.normals.Length > 0)
+            if (meshContext.normals != null && meshContext.normals.Count == mesh.vertexCount)
             {
 
-                mesh.normals = meshContext.normals;
+                mesh.normals = meshContext.normals.ToArray();
             }
             else
             {
                 recalculateNormals = true;
             }
 
-            if (meshContext.uv != null && meshContext.uv.Length > 0)
+            if (meshContext.uv != null && meshContext.uv.Count == mesh.vertexCount)
             {
 
-                mesh.uv = meshContext.uv;
+                mesh.uv = meshContext.uv.ToArray();
             }
 
             bool recalculateTangents = true;
 #if UNIGLTF_IMPORT_TANGENTS
-            if (meshContext.tangents != null && meshContext.tangents.Length > 0)
+            if (meshContext.tangents != null && meshContext.tangents.Count == mesh.vertexCount)
             {
-                mesh.tangents = meshContext.tangents;
+                mesh.tangents = meshContext.tangents.ToArray();
                 recalculateTangents = false;
             }
 #endif
 
-            if (meshContext.colors != null && meshContext.colors.Length > 0)
+            if (meshContext.colors != null && meshContext.colors.Count == mesh.vertexCount)
             {
-
-                mesh.colors = meshContext.colors;
+                mesh.colors = meshContext.colors.ToArray();
             }
-            if (meshContext.boneWeights != null && meshContext.boneWeights.Count > 0)
+
+            if (meshContext.boneWeights != null && meshContext.boneWeights.Count == mesh.vertexCount)
             {
                 mesh.boneWeights = meshContext.boneWeights.ToArray();
             }
+
             mesh.subMeshCount = meshContext.subMeshes.Count;
             for (int i = 0; i < meshContext.subMeshes.Count; ++i)
             {
@@ -795,7 +774,7 @@ namespace UniGLTF
                         {
                             mesh.AddBlendShapeFrame(blendShape.Name, FRAME_WEIGHT,
                                 blendShape.Positions.ToArray(),
-                                (meshContext.normals != null && meshContext.normals.Length == mesh.vertexCount && blendShape.Normals.Count() == blendShape.Positions.Count()) ? blendShape.Normals.ToArray() : null,
+                                (meshContext.normals != null && meshContext.normals.Count == mesh.vertexCount && blendShape.Normals.Count() == blendShape.Positions.Count()) ? blendShape.Normals.ToArray() : null,
                                 null
                             );
                             yield return null;
