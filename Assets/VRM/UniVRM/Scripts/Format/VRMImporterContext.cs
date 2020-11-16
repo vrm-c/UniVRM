@@ -275,6 +275,14 @@ namespace VRM
                 animator = Root.AddComponent<Animator>();
             }
             animator.avatar = HumanoidAvatar;
+
+            // default としてとりあえず設定する            
+            // https://docs.unity3d.com/ScriptReference/Renderer-probeAnchor.html
+            var head = animator.GetBoneTransform(HumanBodyBones.Head);
+            foreach (var smr in animator.GetComponentsInChildren<SkinnedMeshRenderer>())
+            {
+                smr.probeAnchor = head;
+            }
         }
         #endregion
 
