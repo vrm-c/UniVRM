@@ -1,6 +1,6 @@
 {
   "name": "com.vrmc.meshutility",
-  "version": "0.61.1",
+  "version": "0.62.0",
   "displayName": "MeshUtility",
   "unity": "2018.4",
   "description": "MeshUtility is a package for mesh separation, etc. \n\nCheck out the latest information here: <https://github.com/vrm-c/UniVRM/tree/master/Assets/MeshUtility>",
