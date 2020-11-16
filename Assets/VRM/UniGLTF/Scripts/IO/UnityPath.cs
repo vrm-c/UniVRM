@@ -142,10 +142,10 @@ namespace UniGLTF
 
         public override bool Equals(object obj)
         {
-            if(obj is UnityPath)
+            if (obj is UnityPath)
             {
                 var rhs = (UnityPath)obj;
-                if(Value==null && rhs.Value == null)
+                if (Value == null && rhs.Value == null)
                 {
                     return true;
                 }
@@ -205,7 +205,7 @@ namespace UniGLTF
             {
                 return new UnityPath
                 {
-                    Value=""
+                    Value = ""
                 };
             }
             return FromFullpath(Path.GetFullPath(unityPath));
@@ -263,19 +263,20 @@ namespace UniGLTF
         /// <returns></returns>
         public static UnityPath FromFullpath(string fullPath)
         {
-            if(fullPath == null)
+            if (fullPath == null)
             {
                 fullPath = "";
             }
             fullPath = fullPath.Replace("\\", "/");
 
-            if (fullPath == BaseFullPath) {
+            if (fullPath == BaseFullPath)
+            {
                 return new UnityPath
                 {
-                    Value=""
+                    Value = ""
                 };
             }
-            else if(fullPath.StartsWith(BaseFullPath + "/"))
+            else if (fullPath.StartsWith(BaseFullPath + "/"))
             {
                 return new UnityPath(fullPath.Substring(BaseFullPath.Length + 1));
             }
@@ -303,9 +304,9 @@ namespace UniGLTF
             {
                 yield return this;
 
-                foreach(var child in ChildDirs)
+                foreach (var child in ChildDirs)
                 {
-                    foreach(var x in child.TraverseDir())
+                    foreach (var x in child.TraverseDir())
                     {
                         yield return x;
                     }
@@ -317,7 +318,7 @@ namespace UniGLTF
         {
             get
             {
-                foreach(var x in Directory.GetDirectories(FullPath))
+                foreach (var x in Directory.GetDirectories(FullPath))
                 {
                     yield return UnityPath.FromFullpath(x);
                 }
@@ -398,7 +399,19 @@ namespace UniGLTF
                 throw new NotImplementedException();
             }
 
-            AssetDatabase.CreateAsset(o, Value);
+            try
+            {
+                AssetDatabase.CreateAsset(o, Value);
+            }
+            catch (UnityException)
+            {
+                // アセットを作ることができないファイル名だったと仮定。
+                // 元のファイル名のどこに問題があるか不明なので Guid で置き換える。
+                var newName = $"{Parent.Value}/{Guid.NewGuid().ToString("N")}{Extension}";
+                Debug.LogWarning($"rename: {Value} => {newName}");
+
+                AssetDatabase.CreateAsset(o, newName);
+            }
         }
 
         public void AddObjectToAsset(UnityEngine.Object o)
@@ -430,6 +443,6 @@ namespace UniGLTF
 
             return new UnityPath(AssetDatabase.GenerateUniqueAssetPath(Value));
         }
-        #endif
+#endif
     }
 }
