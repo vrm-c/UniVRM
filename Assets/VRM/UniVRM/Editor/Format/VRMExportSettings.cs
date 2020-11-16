@@ -48,5 +48,7 @@ namespace VRM
             UseSparseAccessorForMorphTarget = UseSparseAccessor,
             ExportOnlyBlendShapePosition = OnlyBlendshapePosition,
         };
+
+        public GameObject Root { get; set; }
     }
 }

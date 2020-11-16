@@ -25,6 +25,10 @@ namespace MeshUtility.Validators
             [LangMsg(Languages.en, "The model needs to face the positive Z-axis")]
             FACE_Z_POSITIVE_DIRECTION,
 
+            [LangMsg(Languages.ja, "T-Pose にしてください")]
+            [LangMsg(Languages.en, "Set T-Pose")]
+            NOT_TPOSE,
+
             [LangMsg(Languages.ja, "ExportRootの Animator に Avatar がありません")]
             [LangMsg(Languages.en, "No Avatar in ExportRoot's Animator")]
             NO_AVATAR_IN_ANIMATOR,
@@ -37,7 +41,7 @@ namespace MeshUtility.Validators
             [LangMsg(Languages.en, "Animator.avatar is not humanoid. Please change model's AnimationType to humanoid")]
             AVATAR_IS_NOT_HUMANOID,
 
-            [LangMsg(Languages.ja, "humanoid設定に顎が含まれている。FBX importer の rig 設定に戻って設定を解除することをおすすめします")]
+            [LangMsg(Languages.ja, "Jaw(顎)ボーンが含まれています。意図していない場合は設定解除をおすすめします。FBX importer の rig 設定から変更できます")]
             [LangMsg(Languages.en, "Jaw bone is included. It may not what you intended. Please check the humanoid avatar setting screen")]
             JAW_BONE_IS_INCLUDED,
         }
@@ -150,14 +154,22 @@ namespace MeshUtility.Validators
                 }
             }
 
+            {
+                var lu = animator.GetBoneTransform(HumanBodyBones.LeftUpperArm);
+                var ll = animator.GetBoneTransform(HumanBodyBones.LeftLowerArm);
+                var ru = animator.GetBoneTransform(HumanBodyBones.RightUpperArm);
+                var rl = animator.GetBoneTransform(HumanBodyBones.RightLowerArm);
+                if (Vector3.Dot((ll.position - lu.position).normalized, Vector3.left) < 0.8f
+                || Vector3.Dot((rl.position - ru.position).normalized, Vector3.right) < 0.8f)
+                {
+                    yield return Validation.Error(ValidationMessages.NOT_TPOSE.Msg());
+                }
+            }
+
             var jaw = animator.GetBoneTransform(HumanBodyBones.Jaw);
             if (jaw != null)
             {
                 yield return Validation.Warning(ValidationMessages.JAW_BONE_IS_INCLUDED.Msg());
-            }
-            else
-            {
-                yield return Validation.Info("Animator OK");
             }
         }
     }

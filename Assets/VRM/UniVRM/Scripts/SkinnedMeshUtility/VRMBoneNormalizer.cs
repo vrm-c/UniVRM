@@ -9,7 +9,7 @@ namespace VRM
 {
     public static class VRMBoneNormalizer
     {
-        static void EnforceTPose(GameObject go)
+        public static void EnforceTPose(GameObject go)
         {
             var animator = go.GetComponent<Animator>();
             if (animator == null)
