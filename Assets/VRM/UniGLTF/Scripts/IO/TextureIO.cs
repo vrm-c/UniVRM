@@ -123,7 +123,7 @@ namespace UniGLTF
             var path = UnityPath.FromAsset(texture);
             if (path.IsUnderAssetsFolder)
             {
-                var textureImporter = (TextureImporter) AssetImporter.GetAtPath(path.Value);
+                var textureImporter = AssetImporter.GetAtPath(path.Value) as TextureImporter;
                 var getSizeMethod = typeof(TextureImporter).GetMethod("GetWidthAndHeight", BindingFlags.NonPublic | BindingFlags.Instance);
                 if (textureImporter != null && getSizeMethod != null)
                 {
