@@ -116,7 +116,8 @@ namespace DepthFirstScheduler
                     {
                         if (status == ExecutionStatus.Error)
                         {
-                            throw x.GetError();
+                            // throw x.GetError();
+                            UnityEngine.Debug.LogException(x.GetError());
                         }
                         break;
                     }

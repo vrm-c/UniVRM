@@ -405,16 +405,13 @@ namespace UniGLTF
                     if (prim.extras != null && prim.extras.targetNames != null)
                     {
                         var targetNames = prim.extras.targetNames;
-                        for (int i = 1; i < gltfMesh.primitives.Count; ++i)
+                        for (var i = 0; i < BlendShapes.Count; i++)
                         {
-                            if (gltfMesh.primitives[i].targets.Count != targetNames.Count)
+                            if (i >= targetNames.Count)
                             {
-                                throw new FormatException(string.Format("different targets length: {0} with targetNames length.",
-                                    gltfMesh.primitives[i]));
+                                Debug.LogWarning($"invalid primitive.extras.targetNames length");
+                                break;
                             }
-                        }
-                        for (var i = 0; i < targetNames.Count; i++)
-                        {
                             BlendShapes[i].Name = targetNames[i];
                         }
                     }
@@ -449,7 +446,9 @@ namespace UniGLTF
                 Truncate(m_uv2, maxIndex);
                 Truncate(m_colors, maxIndex);
                 Truncate(m_boneWeights, maxIndex);
+#if false                
                 Truncate(m_tangents, maxIndex);
+#endif
                 foreach (var blendshape in m_blendShapes)
                 {
                     Truncate(blendshape.Positions, maxIndex);
