@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using MeshUtility.M17N;
 using UnityEditor;
 using UnityEngine;
 
@@ -322,6 +323,25 @@ namespace VRM
             return true;
         }
 
+        enum BlendShapeTabMessages
+        {
+            [LangMsg(Languages.ja, "prefab は操作できません")]
+            [LangMsg(Languages.en, "cannot manipulate prefab")]
+            CANNOT_MANIPULATE_PREFAB,
+
+            [LangMsg(Languages.ja, "シーン上のExportRootにBlendShapeを適用します。Exportすると適用された状態がBakeされます。")]
+            [LangMsg(Languages.en, "Apply blendshpae to ExportRoot in scene. Bake scene status if Export.")]
+            SCENE_MESSAGE,
+
+            [LangMsg(Languages.ja, "選択された BlendShapeClip を適用する")]
+            [LangMsg(Languages.en, "Apply selected BlendShapeClip")]
+            APPLY_BLENDSHAPECLIP_BUTTON,
+
+            [LangMsg(Languages.ja, "BlendShape を Clear する")]
+            [LangMsg(Languages.en, "Clear BlendShape")]
+            CLEAR_BLENDSHAPE_BUTTON,
+        }
+
         BlendShapeMerger m_merger;
 
         int m_selected = 0;
@@ -329,7 +349,7 @@ namespace VRM
         {
             if (!m_state.ExportRoot.scene.IsValid())
             {
-                EditorGUILayout.HelpBox("prefab は操作できません", MessageType.Warning);
+                EditorGUILayout.HelpBox(BlendShapeTabMessages.CANNOT_MANIPULATE_PREFAB.Msg(), MessageType.Warning);
                 return;
             }
 
@@ -348,19 +368,19 @@ namespace VRM
 
             GUILayout.Space(20);
 
-            EditorGUILayout.HelpBox("シーン上のExportRootにBlendShapeを適用します。Exportすると適用された状態がBakeされます。", MessageType.Info);
+            EditorGUILayout.HelpBox(BlendShapeTabMessages.SCENE_MESSAGE.Msg(), MessageType.Info);
 
             var options = avatar.Clips.Select(x => x.ToString()).ToArray();
             m_selected = EditorGUILayout.Popup("select blendshape", m_selected, options);
 
-            if (GUILayout.Button("選択されたBlendShapeを適用する"))
+            if (GUILayout.Button(BlendShapeTabMessages.APPLY_BLENDSHAPECLIP_BUTTON.Msg()))
             {
                 m_merger.SetValues(avatar.Clips.Select((x, i) => new KeyValuePair<BlendShapeKey, float>(x.Key, i == m_selected ? 1 : 0)));
                 m_merger.Apply();
                 m_settings.PoseFreeze = true;
             }
 
-            if (GUILayout.Button("BlendShapeをClearする"))
+            if (GUILayout.Button(BlendShapeTabMessages.CLEAR_BLENDSHAPE_BUTTON.Msg()))
             {
                 m_merger.SetValues(avatar.Clips.Select(x => new KeyValuePair<BlendShapeKey, float>(x.Key, 0)));
                 m_merger.Apply();
