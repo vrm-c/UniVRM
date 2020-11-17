@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -449,7 +449,9 @@ namespace UniGLTF
                 Truncate(m_uv2, maxIndex);
                 Truncate(m_colors, maxIndex);
                 Truncate(m_boneWeights, maxIndex);
+#if false                
                 Truncate(m_tangents, maxIndex);
+#endif
                 foreach (var blendshape in m_blendShapes)
                 {
                     Truncate(blendshape.Positions, maxIndex);
