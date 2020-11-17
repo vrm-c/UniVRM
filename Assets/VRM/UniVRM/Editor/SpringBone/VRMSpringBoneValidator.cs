@@ -48,18 +48,21 @@ namespace VRM
                     list.Add(sb);
                 }
 
-                for (int i = 0; i < sb.ColliderGroups.Length; ++i)
+                if (sb.ColliderGroups != null)
                 {
-                    var c = sb.ColliderGroups[i];
-                    if (c == null)
+                    for (int i = 0; i < sb.ColliderGroups.Length; ++i)
                     {
-                        yield return Validation.Error($"{sb.name}.ColliderGroups[{i}] is null");
-                        continue;
-                    }
-                    if (!hierarchy.Contains(c.transform))
-                    {
-                        yield return Validation.Error($"{sb.name}.ColliderGroups[{i}] is out of hierarchy");
-                        continue;
+                        var c = sb.ColliderGroups[i];
+                        if (c == null)
+                        {
+                            yield return Validation.Error($"{sb.name}.ColliderGroups[{i}] is null");
+                            continue;
+                        }
+                        if (!hierarchy.Contains(c.transform))
+                        {
+                            yield return Validation.Error($"{sb.name}.ColliderGroups[{i}] is out of hierarchy");
+                            continue;
+                        }
                     }
                 }
             }
