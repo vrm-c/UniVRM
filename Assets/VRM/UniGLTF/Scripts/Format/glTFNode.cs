@@ -40,8 +40,8 @@ namespace UniGLTF
         public int camera = -1;
 
         // empty schemas
-        public glTFNode_extensions extensions;
+        public object extensions;
 
-        public glTFNode_extra extras = new glTFNode_extra();
+        public object extras;
     }
 }

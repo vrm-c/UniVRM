@@ -114,7 +114,7 @@ namespace VRM
                 return FirstPersonFlag.Auto;
             }
 
-            foreach (var x in context.GLTF.extensions.VRM.firstPerson.meshAnnotations)
+            foreach (var x in context.VRM.firstPerson.meshAnnotations)
             {
                 if (x.mesh == index)
                 {

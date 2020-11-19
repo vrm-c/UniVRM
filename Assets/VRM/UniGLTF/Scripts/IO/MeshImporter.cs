@@ -382,40 +382,41 @@ namespace UniGLTF
 
             public void RenameBlendShape(glTFMesh gltfMesh)
             {
-                if (gltfMesh.extras != null && gltfMesh.extras.targetNames != null)
-                {
-                    var targetNames = gltfMesh.extras.targetNames;
-                    for (int i = 1; i < gltfMesh.primitives.Count; ++i)
-                    {
-                        if (gltfMesh.primitives[i].targets.Count != targetNames.Count)
-                        {
-                            throw new FormatException(string.Format("different targets length: {0} with targetNames length.",
-                                gltfMesh.primitives[i]));
-                        }
-                    }
-                    for (var i = 0; i < targetNames.Count; i++)
-                    {
-                        BlendShapes[i].Name = targetNames[i];
-                    }
-                    return;
-                }
+                throw new NotImplementedException();
+                // if (gltfMesh.extras != null && gltfMesh.extras.targetNames != null)
+                // {
+                //     var targetNames = gltfMesh.extras.targetNames;
+                //     for (int i = 1; i < gltfMesh.primitives.Count; ++i)
+                //     {
+                //         if (gltfMesh.primitives[i].targets.Count != targetNames.Count)
+                //         {
+                //             throw new FormatException(string.Format("different targets length: {0} with targetNames length.",
+                //                 gltfMesh.primitives[i]));
+                //         }
+                //     }
+                //     for (var i = 0; i < targetNames.Count; i++)
+                //     {
+                //         BlendShapes[i].Name = targetNames[i];
+                //     }
+                //     return;
+                // }
 
-                var prim = gltfMesh.primitives[0];
-                {
-                    if (prim.extras != null && prim.extras.targetNames != null)
-                    {
-                        var targetNames = prim.extras.targetNames;
-                        for (var i = 0; i < BlendShapes.Count; i++)
-                        {
-                            if (i >= targetNames.Count)
-                            {
-                                Debug.LogWarning($"invalid primitive.extras.targetNames length");
-                                break;
-                            }
-                            BlendShapes[i].Name = targetNames[i];
-                        }
-                    }
-                }
+                // var prim = gltfMesh.primitives[0];
+                // {
+                //     if (prim.extras != null && prim.extras.targetNames != null)
+                //     {
+                //         var targetNames = prim.extras.targetNames;
+                //         for (var i = 0; i < BlendShapes.Count; i++)
+                //         {
+                //             if (i >= targetNames.Count)
+                //             {
+                //                 Debug.LogWarning($"invalid primitive.extras.targetNames length");
+                //                 break;
+                //             }
+                //             BlendShapes[i].Name = targetNames[i];
+                //         }
+                //     }
+                // }
             }
 
             static void Truncate<T>(List<T> list, int maxIndex)

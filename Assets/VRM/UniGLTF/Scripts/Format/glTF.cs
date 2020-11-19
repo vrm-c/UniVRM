@@ -298,8 +298,8 @@ namespace UniGLTF
         [JsonSchema(MinItems = 1, ExplicitIgnorableItemLength = 0)]
         public List<string> extensionsRequired = new List<string>();
 
-        public glTF_extensions extensions = new glTF_extensions();
-        public gltf_extras extras = new gltf_extras();
+        public object extensions;
+        public object extras;
 
         public override string ToString()
         {

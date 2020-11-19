@@ -27,11 +27,4 @@ namespace UniGLTF
         [ItemJsonSchema(Minimum = 0)]
         public int texCoord;
     }
-
-    [Serializable]
-    public class glTFTextureInfo_extensions : ExtensionsBase<glTFTextureInfo_extensions>
-    {
-        [JsonSchema(Required = true)]
-        public glTF_KHR_texture_transform KHR_texture_transform;
-    }
 }

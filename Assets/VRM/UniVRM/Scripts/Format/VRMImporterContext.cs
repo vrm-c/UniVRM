@@ -13,6 +13,14 @@ namespace VRM
         const string HUMANOID_KEY = "humanoid";
         const string MATERIAL_KEY = "materialProperties";
 
+        public VRM.glTF_VRM_extensions VRM
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
         public VRMImporterContext()
         {
         }
@@ -64,7 +72,7 @@ namespace VRM
             using (MeasureTime("VRM LoadSecondary"))
             {
                 VRMSpringUtility.LoadSecondary(Root.transform, Nodes,
-                GLTF.extensions.VRM.secondaryAnimation);
+                VRM.secondaryAnimation);
             }
             yield return null;
 
@@ -97,7 +105,7 @@ namespace VRM
         {
             var firstPerson = Root.AddComponent<VRMFirstPerson>();
 
-            var gltfFirstPerson = GLTF.extensions.VRM.firstPerson;
+            var gltfFirstPerson = VRM.firstPerson;
             if (gltfFirstPerson.firstPersonBone != -1)
             {
                 firstPerson.FirstPersonBone = Nodes[gltfFirstPerson.firstPersonBone];
@@ -130,7 +138,7 @@ namespace VRM
                 }
             }
 
-            var blendShapeList = GLTF.extensions.VRM.blendShapeMaster.blendShapeGroups;
+            var blendShapeList = VRM.blendShapeMaster.blendShapeGroups;
             if (blendShapeList != null && blendShapeList.Count > 0)
             {
                 foreach (var x in blendShapeList)
@@ -255,7 +263,7 @@ namespace VRM
 
         private void LoadHumanoid()
         {
-            AvatarDescription = GLTF.extensions.VRM.humanoid.ToDescription(Nodes);
+            AvatarDescription = VRM.humanoid.ToDescription(Nodes);
             AvatarDescription.name = "AvatarDescription";
             HumanoidAvatar = AvatarDescription.CreateAvatar(Root.transform);
             if (!HumanoidAvatar.isValid || !HumanoidAvatar.isHuman)
@@ -295,9 +303,9 @@ namespace VRM
         {
             var meta = ScriptableObject.CreateInstance<VRMMetaObject>();
             meta.name = "Meta";
-            meta.ExporterVersion = GLTF.extensions.VRM.exporterVersion;
+            meta.ExporterVersion = VRM.exporterVersion;
 
-            var gltfMeta = GLTF.extensions.VRM.meta;
+            var gltfMeta = VRM.meta;
             meta.Version = gltfMeta.version; // model version
             meta.Author = gltfMeta.author;
             meta.ContactInformation = gltfMeta.contactInformation;

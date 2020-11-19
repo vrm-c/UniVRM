@@ -111,10 +111,11 @@ namespace UniGLTF
                 return Default;
             }
 
-            if (material.extensions != null && material.extensions.KHR_materials_unlit != null)
-            {
-                return UniUnlit;
-            }
+            throw new System.NotImplementedException();
+            // if (material.extensions != null && material.extensions.KHR_materials_unlit != null)
+            // {
+            //     return UniUnlit;
+            // }
 
             // standard
             return Default;

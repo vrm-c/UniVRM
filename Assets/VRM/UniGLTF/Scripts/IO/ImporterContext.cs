@@ -356,7 +356,8 @@ namespace UniGLTF
                         {
                             var extraName = parsed["meshes"][i]["primitives"][j]["targets"][k]["extra"]["name"].Value.GetString();
                             //Debug.LogFormat("restore morphName: {0}", extraName);
-                            primitive.extras.targetNames.Add(extraName);
+                            throw new NotImplementedException();
+                            // primitive.extras.targetNames.Add(extraName);
                         }
                     }
                 }

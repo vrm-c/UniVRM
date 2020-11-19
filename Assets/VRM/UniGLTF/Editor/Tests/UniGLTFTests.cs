@@ -237,12 +237,13 @@ namespace UniGLTF
                 {
                     POSITION = 0,
                 },
-                extras = new glTFPrimitives_extras
+                extras = new KeyValuePair<string, object>[]
                 {
-                    targetNames = new List<String>
+                    new KeyValuePair<string, object>(
+                    "targetNames", new List<String>
                     {
                         "aaa",
-                    }
+                    })
                 }
             };
 

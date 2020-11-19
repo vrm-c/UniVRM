@@ -99,10 +99,10 @@ namespace UniGLTF
         [ItemJsonSchema(SkipSchemaComparison = true)]
         public List<gltfMorphTarget> targets = new List<gltfMorphTarget>();
 
-        public glTFPrimitives_extras extras = new glTFPrimitives_extras();
+        public object extras;
 
         [JsonSchema(SkipSchemaComparison = true)]
-        public glTFPrimitives_extensions extensions = null;
+        public object extensions;
     }
 
     [Serializable]
@@ -117,7 +117,7 @@ namespace UniGLTF
         public float[] weights;
 
         [JsonSchema(SkipSchemaComparison = true)]
-        public glTFMesh_extras extras = null;
+        public object extras;
 
         // empty schemas
         public object extensions;

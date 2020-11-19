@@ -82,67 +82,68 @@ namespace UniGLTF
             }
 
             // unlit material
-            if (x.extensions != null && x.extensions.KHR_materials_unlit != null)
-            {
-                // texture
-                if (x.pbrMetallicRoughness.baseColorTexture != null)
-                {
-                    var texture = GetTextureFunc(x.pbrMetallicRoughness.baseColorTexture.index);
-                    if (texture != null)
-                    {
-                        material.mainTexture = texture.Texture;
-                    }
+            throw new NotImplementedException();
+            // if (x.extensions != null && x.extensions.KHR_materials_unlit != null)
+            // {
+            //     // texture
+            //     if (x.pbrMetallicRoughness.baseColorTexture != null)
+            //     {
+            //         var texture = GetTextureFunc(x.pbrMetallicRoughness.baseColorTexture.index);
+            //         if (texture != null)
+            //         {
+            //             material.mainTexture = texture.Texture;
+            //         }
 
-                    // Texture Offset and Scale
-                    SetTextureOffsetAndScale(material, x.pbrMetallicRoughness.baseColorTexture, "_MainTex");
-                }
+            //         // Texture Offset and Scale
+            //         SetTextureOffsetAndScale(material, x.pbrMetallicRoughness.baseColorTexture, "_MainTex");
+            //     }
 
-                // color
-                if (x.pbrMetallicRoughness.baseColorFactor != null && x.pbrMetallicRoughness.baseColorFactor.Length == 4)
-                {
-                    var color = x.pbrMetallicRoughness.baseColorFactor;
-                    material.color = (new Color(color[0], color[1], color[2], color[3])).gamma;
-                }
+            //     // color
+            //     if (x.pbrMetallicRoughness.baseColorFactor != null && x.pbrMetallicRoughness.baseColorFactor.Length == 4)
+            //     {
+            //         var color = x.pbrMetallicRoughness.baseColorFactor;
+            //         material.color = (new Color(color[0], color[1], color[2], color[3])).gamma;
+            //     }
 
-                //renderMode
-                if (x.alphaMode == "OPAQUE")
-                {
-                    UniUnlit.Utils.SetRenderMode(material, UniUnlit.UniUnlitRenderMode.Opaque);
-                }
-                else if (x.alphaMode == "BLEND")
-                {
-                    UniUnlit.Utils.SetRenderMode(material, UniUnlit.UniUnlitRenderMode.Transparent);
-                }
-                else if(x.alphaMode == "MASK")
-                {
-                    UniUnlit.Utils.SetRenderMode(material, UniUnlit.UniUnlitRenderMode.Cutout);
-                }
-                else
-                {
-                    // default OPAQUE
-                    UniUnlit.Utils.SetRenderMode(material, UniUnlit.UniUnlitRenderMode.Opaque);
-                }
+            //     //renderMode
+            //     if (x.alphaMode == "OPAQUE")
+            //     {
+            //         UniUnlit.Utils.SetRenderMode(material, UniUnlit.UniUnlitRenderMode.Opaque);
+            //     }
+            //     else if (x.alphaMode == "BLEND")
+            //     {
+            //         UniUnlit.Utils.SetRenderMode(material, UniUnlit.UniUnlitRenderMode.Transparent);
+            //     }
+            //     else if(x.alphaMode == "MASK")
+            //     {
+            //         UniUnlit.Utils.SetRenderMode(material, UniUnlit.UniUnlitRenderMode.Cutout);
+            //     }
+            //     else
+            //     {
+            //         // default OPAQUE
+            //         UniUnlit.Utils.SetRenderMode(material, UniUnlit.UniUnlitRenderMode.Opaque);
+            //     }
 
-                // culling
-                if (x.doubleSided)
-                {
-                    UniUnlit.Utils.SetCullMode(material, UniUnlit.UniUnlitCullMode.Off);
-                }
-                else
-                {
-                    UniUnlit.Utils.SetCullMode(material, UniUnlit.UniUnlitCullMode.Back);
-                }
+            //     // culling
+            //     if (x.doubleSided)
+            //     {
+            //         UniUnlit.Utils.SetCullMode(material, UniUnlit.UniUnlitCullMode.Off);
+            //     }
+            //     else
+            //     {
+            //         UniUnlit.Utils.SetCullMode(material, UniUnlit.UniUnlitCullMode.Back);
+            //     }
 
-                // VColor
-                if (hasVertexColor)
-                {
-                    UniUnlit.Utils.SetVColBlendMode(material, UniUnlit.UniUnlitVertexColorBlendOp.Multiply);
-                }
+            //     // VColor
+            //     if (hasVertexColor)
+            //     {
+            //         UniUnlit.Utils.SetVColBlendMode(material, UniUnlit.UniUnlitVertexColorBlendOp.Multiply);
+            //     }
 
-                UniUnlit.Utils.ValidateProperties(material, true);
+            //     UniUnlit.Utils.ValidateProperties(material, true);
 
-                return material;
-            }
+            //     return material;
+            // }
 
             // PBR material
             if (x.pbrMetallicRoughness != null)
@@ -292,25 +293,26 @@ namespace UniGLTF
 
         private static void SetTextureOffsetAndScale(Material material, glTFTextureInfo textureInfo, string propertyName)
         {
-            if (textureInfo.extensions != null && textureInfo.extensions.KHR_texture_transform != null)
-            {
-                var textureTransform = textureInfo.extensions.KHR_texture_transform;
-                Vector2 offset = new Vector2(0, 0);
-                Vector2 scale = new Vector2(1, 1);
-                if (textureTransform.offset != null && textureTransform.offset.Length == 2)
-                {
-                    offset = new Vector2(textureTransform.offset[0], textureTransform.offset[1]);
-                }
-                if (textureTransform.scale != null && textureTransform.scale.Length == 2)
-                {
-                    scale = new Vector2(textureTransform.scale[0], textureTransform.scale[1]);
-                }
+            throw new NotImplementedException();
+            // if (textureInfo.extensions != null && textureInfo.extensions.KHR_texture_transform != null)
+            // {
+            //     var textureTransform = textureInfo.extensions.KHR_texture_transform;
+            //     Vector2 offset = new Vector2(0, 0);
+            //     Vector2 scale = new Vector2(1, 1);
+            //     if (textureTransform.offset != null && textureTransform.offset.Length == 2)
+            //     {
+            //         offset = new Vector2(textureTransform.offset[0], textureTransform.offset[1]);
+            //     }
+            //     if (textureTransform.scale != null && textureTransform.scale.Length == 2)
+            //     {
+            //         scale = new Vector2(textureTransform.scale[0], textureTransform.scale[1]);
+            //     }
 
-                offset.y = (offset.y + scale.y - 1.0f) * -1.0f;
+            //     offset.y = (offset.y + scale.y - 1.0f) * -1.0f;
 
-                material.SetTextureOffset(propertyName, offset);
-                material.SetTextureScale(propertyName, scale);
-            }
+            //     material.SetTextureOffset(propertyName, offset);
+            //     material.SetTextureScale(propertyName, scale);
+            // }
         }
     }
 }

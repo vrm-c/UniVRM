@@ -105,12 +105,12 @@ public static glTF Deserialize(ListTreeNode<JsonValue> parsed)
         }
 
         if(key=="extensions"){
-            value.extensions = Deserialize_gltf_extensions(kv.Value);
+            value.extensions = kv.Value;
             continue;
         }
 
         if(key=="extras"){
-            value.extras = Deserialize_gltf_extras(kv.Value);
+            value.extras = kv.Value;
             continue;
         }
 
@@ -592,7 +592,7 @@ public static glTFMaterial Deserialize_gltf_materials_LIST(ListTreeNode<JsonValu
         }
 
         if(key=="extensions"){
-            value.extensions = Deserialize_gltf_materials__extensions(kv.Value);
+            value.extensions = kv.Value;
             continue;
         }
 
@@ -656,7 +656,7 @@ public static glTFMaterialBaseColorTextureInfo Deserialize_gltf_materials__pbrMe
         }
 
         if(key=="extensions"){
-            value.extensions = Deserialize_gltf_materials__pbrMetallicRoughness_baseColorTexture_extensions(kv.Value);
+            value.extensions = kv.Value;
             continue;
         }
 
@@ -664,22 +664,22 @@ public static glTFMaterialBaseColorTextureInfo Deserialize_gltf_materials__pbrMe
     return value;
 }
 
-public static glTFTextureInfo_extensions Deserialize_gltf_materials__pbrMetallicRoughness_baseColorTexture_extensions(ListTreeNode<JsonValue> parsed)
-{
-    var value = new glTFTextureInfo_extensions();
+// public static glTFTextureInfo_extensions Deserialize_gltf_materials__pbrMetallicRoughness_baseColorTexture_extensions(ListTreeNode<JsonValue> parsed)
+// {
+//     var value = new glTFTextureInfo_extensions();
 
-    foreach(var kv in parsed.ObjectItems())
-    {
-        var key = kv.Key.GetString();
+//     foreach(var kv in parsed.ObjectItems())
+//     {
+//         var key = kv.Key.GetString();
 
-        if(key=="KHR_texture_transform"){
-            value.KHR_texture_transform = Deserialize_gltf_materials__pbrMetallicRoughness_baseColorTexture_extensions_KHR_texture_transform(kv.Value);
-            continue;
-        }
+//         if(key=="KHR_texture_transform"){
+//             value.KHR_texture_transform = Deserialize_gltf_materials__pbrMetallicRoughness_baseColorTexture_extensions_KHR_texture_transform(kv.Value);
+//             continue;
+//         }
 
-    }
-    return value;
-}
+//     }
+//     return value;
+// }
 
 public static glTF_KHR_texture_transform Deserialize_gltf_materials__pbrMetallicRoughness_baseColorTexture_extensions_KHR_texture_transform(ListTreeNode<JsonValue> parsed)
 {
@@ -765,7 +765,7 @@ public static glTFMaterialMetallicRoughnessTextureInfo Deserialize_gltf_material
         }
 
         if(key=="extensions"){
-            value.extensions = Deserialize_gltf_materials__pbrMetallicRoughness_metallicRoughnessTexture_extensions(kv.Value);
+            value.extensions = kv.Value;
             continue;
         }
 
@@ -773,22 +773,22 @@ public static glTFMaterialMetallicRoughnessTextureInfo Deserialize_gltf_material
     return value;
 }
 
-public static glTFTextureInfo_extensions Deserialize_gltf_materials__pbrMetallicRoughness_metallicRoughnessTexture_extensions(ListTreeNode<JsonValue> parsed)
-{
-    var value = new glTFTextureInfo_extensions();
+// public static glTFTextureInfo_extensions Deserialize_gltf_materials__pbrMetallicRoughness_metallicRoughnessTexture_extensions(ListTreeNode<JsonValue> parsed)
+// {
+//     var value = new glTFTextureInfo_extensions();
 
-    foreach(var kv in parsed.ObjectItems())
-    {
-        var key = kv.Key.GetString();
+//     foreach(var kv in parsed.ObjectItems())
+//     {
+//         var key = kv.Key.GetString();
 
-        if(key=="KHR_texture_transform"){
-            value.KHR_texture_transform = Deserialize_gltf_materials__pbrMetallicRoughness_metallicRoughnessTexture_extensions_KHR_texture_transform(kv.Value);
-            continue;
-        }
+//         if(key=="KHR_texture_transform"){
+//             value.KHR_texture_transform = Deserialize_gltf_materials__pbrMetallicRoughness_metallicRoughnessTexture_extensions_KHR_texture_transform(kv.Value);
+//             continue;
+//         }
 
-    }
-    return value;
-}
+//     }
+//     return value;
+// }
 
 public static glTF_KHR_texture_transform Deserialize_gltf_materials__pbrMetallicRoughness_metallicRoughnessTexture_extensions_KHR_texture_transform(ListTreeNode<JsonValue> parsed)
 {
@@ -868,7 +868,7 @@ public static glTFMaterialNormalTextureInfo Deserialize_gltf_materials__normalTe
         }
 
         if(key=="extensions"){
-            value.extensions = Deserialize_gltf_materials__normalTexture_extensions(kv.Value);
+            value.extensions = kv.Value;
             continue;
         }
 
@@ -876,22 +876,22 @@ public static glTFMaterialNormalTextureInfo Deserialize_gltf_materials__normalTe
     return value;
 }
 
-public static glTFTextureInfo_extensions Deserialize_gltf_materials__normalTexture_extensions(ListTreeNode<JsonValue> parsed)
-{
-    var value = new glTFTextureInfo_extensions();
+// public static glTFTextureInfo_extensions Deserialize_gltf_materials__normalTexture_extensions(ListTreeNode<JsonValue> parsed)
+// {
+//     var value = new glTFTextureInfo_extensions();
 
-    foreach(var kv in parsed.ObjectItems())
-    {
-        var key = kv.Key.GetString();
+//     foreach(var kv in parsed.ObjectItems())
+//     {
+//         var key = kv.Key.GetString();
 
-        if(key=="KHR_texture_transform"){
-            value.KHR_texture_transform = Deserialize_gltf_materials__normalTexture_extensions_KHR_texture_transform(kv.Value);
-            continue;
-        }
+//         if(key=="KHR_texture_transform"){
+//             value.KHR_texture_transform = Deserialize_gltf_materials__normalTexture_extensions_KHR_texture_transform(kv.Value);
+//             continue;
+//         }
 
-    }
-    return value;
-}
+//     }
+//     return value;
+// }
 
 public static glTF_KHR_texture_transform Deserialize_gltf_materials__normalTexture_extensions_KHR_texture_transform(ListTreeNode<JsonValue> parsed)
 {
@@ -971,7 +971,7 @@ public static glTFMaterialOcclusionTextureInfo Deserialize_gltf_materials__occlu
         }
 
         if(key=="extensions"){
-            value.extensions = Deserialize_gltf_materials__occlusionTexture_extensions(kv.Value);
+            value.extensions = kv.Value;
             continue;
         }
 
@@ -979,22 +979,22 @@ public static glTFMaterialOcclusionTextureInfo Deserialize_gltf_materials__occlu
     return value;
 }
 
-public static glTFTextureInfo_extensions Deserialize_gltf_materials__occlusionTexture_extensions(ListTreeNode<JsonValue> parsed)
-{
-    var value = new glTFTextureInfo_extensions();
+// public static glTFTextureInfo_extensions Deserialize_gltf_materials__occlusionTexture_extensions(ListTreeNode<JsonValue> parsed)
+// {
+//     var value = new glTFTextureInfo_extensions();
 
-    foreach(var kv in parsed.ObjectItems())
-    {
-        var key = kv.Key.GetString();
+//     foreach(var kv in parsed.ObjectItems())
+//     {
+//         var key = kv.Key.GetString();
 
-        if(key=="KHR_texture_transform"){
-            value.KHR_texture_transform = Deserialize_gltf_materials__occlusionTexture_extensions_KHR_texture_transform(kv.Value);
-            continue;
-        }
+//         if(key=="KHR_texture_transform"){
+//             value.KHR_texture_transform = Deserialize_gltf_materials__occlusionTexture_extensions_KHR_texture_transform(kv.Value);
+//             continue;
+//         }
 
-    }
-    return value;
-}
+//     }
+//     return value;
+// }
 
 public static glTF_KHR_texture_transform Deserialize_gltf_materials__occlusionTexture_extensions_KHR_texture_transform(ListTreeNode<JsonValue> parsed)
 {
@@ -1069,7 +1069,7 @@ public static glTFMaterialEmissiveTextureInfo Deserialize_gltf_materials__emissi
         }
 
         if(key=="extensions"){
-            value.extensions = Deserialize_gltf_materials__emissiveTexture_extensions(kv.Value);
+            value.extensions = kv.Value;
             continue;
         }
 
@@ -1077,22 +1077,22 @@ public static glTFMaterialEmissiveTextureInfo Deserialize_gltf_materials__emissi
     return value;
 }
 
-public static glTFTextureInfo_extensions Deserialize_gltf_materials__emissiveTexture_extensions(ListTreeNode<JsonValue> parsed)
-{
-    var value = new glTFTextureInfo_extensions();
+// public static glTFTextureInfo_extensions Deserialize_gltf_materials__emissiveTexture_extensions(ListTreeNode<JsonValue> parsed)
+// {
+//     var value = new glTFTextureInfo_extensions();
 
-    foreach(var kv in parsed.ObjectItems())
-    {
-        var key = kv.Key.GetString();
+//     foreach(var kv in parsed.ObjectItems())
+//     {
+//         var key = kv.Key.GetString();
 
-        if(key=="KHR_texture_transform"){
-            value.KHR_texture_transform = Deserialize_gltf_materials__emissiveTexture_extensions_KHR_texture_transform(kv.Value);
-            continue;
-        }
+//         if(key=="KHR_texture_transform"){
+//             value.KHR_texture_transform = Deserialize_gltf_materials__emissiveTexture_extensions_KHR_texture_transform(kv.Value);
+//             continue;
+//         }
 
-    }
-    return value;
-}
+//     }
+//     return value;
+// }
 
 public static glTF_KHR_texture_transform Deserialize_gltf_materials__emissiveTexture_extensions_KHR_texture_transform(ListTreeNode<JsonValue> parsed)
 {
@@ -1159,22 +1159,22 @@ public static Single[] Deserialize_gltf_materials__emissiveFactor(ListTreeNode<J
 	return value;
 } 
 
-public static glTFMaterial_extensions Deserialize_gltf_materials__extensions(ListTreeNode<JsonValue> parsed)
-{
-    var value = new glTFMaterial_extensions();
+// public static glTFMaterial_extensions Deserialize_gltf_materials__extensions(ListTreeNode<JsonValue> parsed)
+// {
+//     var value = new glTFMaterial_extensions();
 
-    foreach(var kv in parsed.ObjectItems())
-    {
-        var key = kv.Key.GetString();
+//     foreach(var kv in parsed.ObjectItems())
+//     {
+//         var key = kv.Key.GetString();
 
-        if(key=="KHR_materials_unlit"){
-            value.KHR_materials_unlit = Deserialize_gltf_materials__extensions_KHR_materials_unlit(kv.Value);
-            continue;
-        }
+//         if(key=="KHR_materials_unlit"){
+//             value.KHR_materials_unlit = Deserialize_gltf_materials__extensions_KHR_materials_unlit(kv.Value);
+//             continue;
+//         }
 
-    }
-    return value;
-}
+//     }
+//     return value;
+// }
 
 public static glTF_KHR_materials_unlit Deserialize_gltf_materials__extensions_KHR_materials_unlit(ListTreeNode<JsonValue> parsed)
 {
@@ -1221,7 +1221,7 @@ public static glTFMesh Deserialize_gltf_meshes_LIST(ListTreeNode<JsonValue> pars
         }
 
         if(key=="extras"){
-            value.extras = Deserialize_gltf_meshes__extras(kv.Value);
+            value.extras = kv.Value;
             continue;
         }
 
@@ -1272,12 +1272,12 @@ public static glTFPrimitives Deserialize_gltf_meshes__primitives_LIST(ListTreeNo
         }
 
         if(key=="extras"){
-            value.extras = Deserialize_gltf_meshes__primitives__extras(kv.Value);
+            value.extras = kv.Value;
             continue;
         }
 
         if(key=="extensions"){
-            value.extensions = Deserialize_gltf_meshes__primitives__extensions(kv.Value);
+            value.extensions = kv.Value;
             continue;
         }
 
@@ -1368,22 +1368,22 @@ public static gltfMorphTarget Deserialize_gltf_meshes__primitives__targets_LIST(
     return value;
 }
 
-public static glTFPrimitives_extras Deserialize_gltf_meshes__primitives__extras(ListTreeNode<JsonValue> parsed)
-{
-    var value = new glTFPrimitives_extras();
+// public static glTFPrimitives_extras Deserialize_gltf_meshes__primitives__extras(ListTreeNode<JsonValue> parsed)
+// {
+//     var value = new glTFPrimitives_extras();
 
-    foreach(var kv in parsed.ObjectItems())
-    {
-        var key = kv.Key.GetString();
+//     foreach(var kv in parsed.ObjectItems())
+//     {
+//         var key = kv.Key.GetString();
 
-        if(key=="targetNames"){
-            value.targetNames = Deserialize_gltf_meshes__primitives__extras_targetNames(kv.Value);
-            continue;
-        }
+//         if(key=="targetNames"){
+//             value.targetNames = Deserialize_gltf_meshes__primitives__extras_targetNames(kv.Value);
+//             continue;
+//         }
 
-    }
-    return value;
-}
+//     }
+//     return value;
+// }
 
 public static List<System.String> Deserialize_gltf_meshes__primitives__extras_targetNames(ListTreeNode<JsonValue> parsed)
 {
@@ -1394,17 +1394,17 @@ public static List<System.String> Deserialize_gltf_meshes__primitives__extras_ta
     }
 	return value;
 }
-public static glTFPrimitives_extensions Deserialize_gltf_meshes__primitives__extensions(ListTreeNode<JsonValue> parsed)
-{
-    var value = new glTFPrimitives_extensions();
+// public static glTFPrimitives_extensions Deserialize_gltf_meshes__primitives__extensions(ListTreeNode<JsonValue> parsed)
+// {
+//     var value = new glTFPrimitives_extensions();
 
-    foreach(var kv in parsed.ObjectItems())
-    {
-        var key = kv.Key.GetString();
+//     foreach(var kv in parsed.ObjectItems())
+//     {
+//         var key = kv.Key.GetString();
 
-    }
-    return value;
-}
+//     }
+//     return value;
+// }
 
 public static Single[] Deserialize_gltf_meshes__weights(ListTreeNode<JsonValue> parsed)
 {
@@ -1417,22 +1417,22 @@ public static Single[] Deserialize_gltf_meshes__weights(ListTreeNode<JsonValue> 
 	return value;
 } 
 
-public static glTFMesh_extras Deserialize_gltf_meshes__extras(ListTreeNode<JsonValue> parsed)
-{
-    var value = new glTFMesh_extras();
+// public static glTFMesh_extras Deserialize_gltf_meshes__extras(ListTreeNode<JsonValue> parsed)
+// {
+//     var value = new glTFMesh_extras();
 
-    foreach(var kv in parsed.ObjectItems())
-    {
-        var key = kv.Key.GetString();
+//     foreach(var kv in parsed.ObjectItems())
+//     {
+//         var key = kv.Key.GetString();
 
-        if(key=="targetNames"){
-            value.targetNames = Deserialize_gltf_meshes__extras_targetNames(kv.Value);
-            continue;
-        }
+//         if(key=="targetNames"){
+//             value.targetNames = Deserialize_gltf_meshes__extras_targetNames(kv.Value);
+//             continue;
+//         }
 
-    }
-    return value;
-}
+//     }
+//     return value;
+// }
 
 public static List<System.String> Deserialize_gltf_meshes__extras_targetNames(ListTreeNode<JsonValue> parsed)
 {
@@ -1511,12 +1511,12 @@ public static glTFNode Deserialize_gltf_nodes_LIST(ListTreeNode<JsonValue> parse
         }
 
         if(key=="extensions"){
-            value.extensions = Deserialize_gltf_nodes__extensions(kv.Value);
+            value.extensions = kv.Value;
             continue;
         }
 
         if(key=="extras"){
-            value.extras = Deserialize_gltf_nodes__extras(kv.Value);
+            value.extras = kv.Value;
             continue;
         }
 
@@ -1590,29 +1590,29 @@ public static Single[] Deserialize_gltf_nodes__weights(ListTreeNode<JsonValue> p
 	return value;
 } 
 
-public static glTFNode_extensions Deserialize_gltf_nodes__extensions(ListTreeNode<JsonValue> parsed)
-{
-    var value = new glTFNode_extensions();
+// public static glTFNode_extensions Deserialize_gltf_nodes__extensions(ListTreeNode<JsonValue> parsed)
+// {
+//     var value = new glTFNode_extensions();
 
-    foreach(var kv in parsed.ObjectItems())
-    {
-        var key = kv.Key.GetString();
+//     foreach(var kv in parsed.ObjectItems())
+//     {
+//         var key = kv.Key.GetString();
 
-    }
-    return value;
-}
+//     }
+//     return value;
+// }
 
-public static glTFNode_extra Deserialize_gltf_nodes__extras(ListTreeNode<JsonValue> parsed)
-{
-    var value = new glTFNode_extra();
+// public static glTFNode_extra Deserialize_gltf_nodes__extras(ListTreeNode<JsonValue> parsed)
+// {
+//     var value = new glTFNode_extra();
 
-    foreach(var kv in parsed.ObjectItems())
-    {
-        var key = kv.Key.GetString();
+//     foreach(var kv in parsed.ObjectItems())
+//     {
+//         var key = kv.Key.GetString();
 
-    }
-    return value;
-}
+//     }
+//     return value;
+// }
 
 public static List<UniGLTF.glTFSkin> Deserialize_gltf_skins(ListTreeNode<JsonValue> parsed)
 {
@@ -1871,12 +1871,12 @@ public static glTFCamera Deserialize_gltf_cameras_LIST(ListTreeNode<JsonValue> p
         }
 
         if(key=="extensions"){
-            value.extensions = Deserialize_gltf_cameras__extensions(kv.Value);
+            value.extensions = kv.Value;
             continue;
         }
 
         if(key=="extras"){
-            value.extras = Deserialize_gltf_cameras__extras(kv.Value);
+            value.extras = kv.Value;
             continue;
         }
 
@@ -1913,12 +1913,12 @@ public static glTFOrthographic Deserialize_gltf_cameras__orthographic(ListTreeNo
         }
 
         if(key=="extensions"){
-            value.extensions = Deserialize_gltf_cameras__orthographic_extensions(kv.Value);
+            value.extensions = kv.Value;
             continue;
         }
 
         if(key=="extras"){
-            value.extras = Deserialize_gltf_cameras__orthographic_extras(kv.Value);
+            value.extras = kv.Value;
             continue;
         }
 
@@ -1926,29 +1926,29 @@ public static glTFOrthographic Deserialize_gltf_cameras__orthographic(ListTreeNo
     return value;
 }
 
-public static glTFOrthographic_extensions Deserialize_gltf_cameras__orthographic_extensions(ListTreeNode<JsonValue> parsed)
-{
-    var value = new glTFOrthographic_extensions();
+// public static glTFOrthographic_extensions Deserialize_gltf_cameras__orthographic_extensions(ListTreeNode<JsonValue> parsed)
+// {
+//     var value = new glTFOrthographic_extensions();
 
-    foreach(var kv in parsed.ObjectItems())
-    {
-        var key = kv.Key.GetString();
+//     foreach(var kv in parsed.ObjectItems())
+//     {
+//         var key = kv.Key.GetString();
 
-    }
-    return value;
-}
+//     }
+//     return value;
+// }
 
-public static glTFOrthographic_extras Deserialize_gltf_cameras__orthographic_extras(ListTreeNode<JsonValue> parsed)
-{
-    var value = new glTFOrthographic_extras();
+// public static glTFOrthographic_extras Deserialize_gltf_cameras__orthographic_extras(ListTreeNode<JsonValue> parsed)
+// {
+//     var value = new glTFOrthographic_extras();
 
-    foreach(var kv in parsed.ObjectItems())
-    {
-        var key = kv.Key.GetString();
+//     foreach(var kv in parsed.ObjectItems())
+//     {
+//         var key = kv.Key.GetString();
 
-    }
-    return value;
-}
+//     }
+//     return value;
+// }
 
 public static glTFPerspective Deserialize_gltf_cameras__perspective(ListTreeNode<JsonValue> parsed)
 {
@@ -1979,12 +1979,12 @@ public static glTFPerspective Deserialize_gltf_cameras__perspective(ListTreeNode
         }
 
         if(key=="extensions"){
-            value.extensions = Deserialize_gltf_cameras__perspective_extensions(kv.Value);
+            value.extensions = kv.Value;
             continue;
         }
 
         if(key=="extras"){
-            value.extras = Deserialize_gltf_cameras__perspective_extras(kv.Value);
+            value.extras = kv.Value;
             continue;
         }
 
@@ -1992,53 +1992,53 @@ public static glTFPerspective Deserialize_gltf_cameras__perspective(ListTreeNode
     return value;
 }
 
-public static glTFPerspective_extensions Deserialize_gltf_cameras__perspective_extensions(ListTreeNode<JsonValue> parsed)
-{
-    var value = new glTFPerspective_extensions();
+// public static glTFPerspective_extensions Deserialize_gltf_cameras__perspective_extensions(ListTreeNode<JsonValue> parsed)
+// {
+//     var value = new glTFPerspective_extensions();
 
-    foreach(var kv in parsed.ObjectItems())
-    {
-        var key = kv.Key.GetString();
+//     foreach(var kv in parsed.ObjectItems())
+//     {
+//         var key = kv.Key.GetString();
 
-    }
-    return value;
-}
+//     }
+//     return value;
+// }
 
-public static glTFPerspective_extras Deserialize_gltf_cameras__perspective_extras(ListTreeNode<JsonValue> parsed)
-{
-    var value = new glTFPerspective_extras();
+// public static glTFPerspective_extras Deserialize_gltf_cameras__perspective_extras(ListTreeNode<JsonValue> parsed)
+// {
+//     var value = new glTFPerspective_extras();
 
-    foreach(var kv in parsed.ObjectItems())
-    {
-        var key = kv.Key.GetString();
+//     foreach(var kv in parsed.ObjectItems())
+//     {
+//         var key = kv.Key.GetString();
 
-    }
-    return value;
-}
+//     }
+//     return value;
+// }
 
-public static glTFCamera_extensions Deserialize_gltf_cameras__extensions(ListTreeNode<JsonValue> parsed)
-{
-    var value = new glTFCamera_extensions();
+// public static glTFCamera_extensions Deserialize_gltf_cameras__extensions(ListTreeNode<JsonValue> parsed)
+// {
+//     var value = new glTFCamera_extensions();
 
-    foreach(var kv in parsed.ObjectItems())
-    {
-        var key = kv.Key.GetString();
+//     foreach(var kv in parsed.ObjectItems())
+//     {
+//         var key = kv.Key.GetString();
 
-    }
-    return value;
-}
+//     }
+//     return value;
+// }
 
-public static glTFCamera_extras Deserialize_gltf_cameras__extras(ListTreeNode<JsonValue> parsed)
-{
-    var value = new glTFCamera_extras();
+// public static glTFCamera_extras Deserialize_gltf_cameras__extras(ListTreeNode<JsonValue> parsed)
+// {
+//     var value = new glTFCamera_extras();
 
-    foreach(var kv in parsed.ObjectItems())
-    {
-        var key = kv.Key.GetString();
+//     foreach(var kv in parsed.ObjectItems())
+//     {
+//         var key = kv.Key.GetString();
 
-    }
-    return value;
-}
+//     }
+//     return value;
+// }
 
 public static List<System.String> Deserialize_gltf_extensionsUsed(ListTreeNode<JsonValue> parsed)
 {
@@ -2058,22 +2058,22 @@ public static List<System.String> Deserialize_gltf_extensionsRequired(ListTreeNo
     }
 	return value;
 }
-public static glTF_extensions Deserialize_gltf_extensions(ListTreeNode<JsonValue> parsed)
-{
-    var value = new glTF_extensions();
+// public static glTF_extensions Deserialize_gltf_extensions(ListTreeNode<JsonValue> parsed)
+// {
+//     var value = new glTF_extensions();
 
-    foreach(var kv in parsed.ObjectItems())
-    {
-        var key = kv.Key.GetString();
+//     foreach(var kv in parsed.ObjectItems())
+//     {
+//         var key = kv.Key.GetString();
 
-        if(key=="VRM"){
-            value.VRM = Deserialize_gltf_extensions_VRM(kv.Value);
-            continue;
-        }
+//         if(key=="VRM"){
+//             value.VRM = Deserialize_gltf_extensions_VRM(kv.Value);
+//             continue;
+//         }
 
-    }
-    return value;
-}
+//     }
+//     return value;
+// }
 
 public static glTF_VRM_extensions Deserialize_gltf_extensions_VRM(ListTreeNode<JsonValue> parsed)
 {
@@ -3159,17 +3159,17 @@ public static Dictionary<String, String> Deserialize_gltf_extensions_VRM_materia
 	return value;
 }
 
-public static gltf_extras Deserialize_gltf_extras(ListTreeNode<JsonValue> parsed)
-{
-    var value = new gltf_extras();
+// public static gltf_extras Deserialize_gltf_extras(ListTreeNode<JsonValue> parsed)
+// {
+//     var value = new gltf_extras();
 
-    foreach(var kv in parsed.ObjectItems())
-    {
-        var key = kv.Key.GetString();
+//     foreach(var kv in parsed.ObjectItems())
+//     {
+//         var key = kv.Key.GetString();
 
-    }
-    return value;
-}
+//     }
+//     return value;
+// }
 
 } // GltfDeserializer
 } // UniGLTF 

@@ -720,19 +720,19 @@ JsonObjectValidator.GenericDeserializer<JsonValue,UniGLTF.glTFMaterial>.Deserial
 {
 JsonObjectValidator.GenericDeserializer<JsonValue,UniGLTF.glTFMaterial>.DeserializeField<System.Boolean>(default(JsonSchema), default(ListTreeNode<JsonValue>));
 }
-{
-JsonObjectValidator.GenericDeserializer<JsonValue,UniGLTF.glTFMaterial>.DeserializeField<UniGLTF.glTFMaterial_extensions>(default(JsonSchema), default(ListTreeNode<JsonValue>));
-}
+// {
+// JsonObjectValidator.GenericDeserializer<JsonValue,UniGLTF.glTFMaterial>.DeserializeField<UniGLTF.glTFMaterial_extensions>(default(JsonSchema), default(ListTreeNode<JsonValue>));
+// }
 
 // glTFMaterial_extensions
-f.Serialize(default(UniGLTF.glTFMaterial_extensions));
-{
-var value = default(UniGLTF.glTFMaterial_extensions);
-default(ListTreeNode<JsonValue>).Deserialize(ref value);
-}
-{
-JsonObjectValidator.GenericDeserializer<JsonValue,UniGLTF.glTFMaterial_extensions>.DeserializeField<UniGLTF.glTF_KHR_materials_unlit>(default(JsonSchema), default(ListTreeNode<JsonValue>));
-}
+// f.Serialize(default(UniGLTF.glTFMaterial_extensions));
+// {
+// var value = default(UniGLTF.glTFMaterial_extensions);
+// default(ListTreeNode<JsonValue>).Deserialize(ref value);
+// }
+// {
+// JsonObjectValidator.GenericDeserializer<JsonValue,UniGLTF.glTFMaterial_extensions>.DeserializeField<UniGLTF.glTF_KHR_materials_unlit>(default(JsonSchema), default(ListTreeNode<JsonValue>));
+// }
 
 // glTF_KHR_materials_unlit
 f.Serialize(default(UniGLTF.glTF_KHR_materials_unlit));
@@ -849,19 +849,19 @@ JsonObjectValidator.GenericDeserializer<JsonValue,UniGLTF.gltfMorphTarget>.Deser
 {
 JsonObjectValidator.GenericDeserializer<JsonValue,UniGLTF.gltfMorphTarget>.DeserializeField<System.Int32>(default(JsonSchema), default(ListTreeNode<JsonValue>));
 }
-{
-JsonObjectValidator.GenericDeserializer<JsonValue,UniGLTF.glTFPrimitives>.DeserializeField<UniGLTF.glTFPrimitives_extras>(default(JsonSchema), default(ListTreeNode<JsonValue>));
-}
+// {
+// JsonObjectValidator.GenericDeserializer<JsonValue,UniGLTF.glTFPrimitives>.DeserializeField<UniGLTF.glTFPrimitives_extras>(default(JsonSchema), default(ListTreeNode<JsonValue>));
+// }
 
 // glTFPrimitives_extras
-f.Serialize(default(UniGLTF.glTFPrimitives_extras));
-{
-var value = default(UniGLTF.glTFPrimitives_extras);
-default(ListTreeNode<JsonValue>).Deserialize(ref value);
-}
-{
-JsonObjectValidator.GenericDeserializer<JsonValue,UniGLTF.glTFPrimitives_extras>.DeserializeField<System.Collections.Generic.List<String>>(default(JsonSchema), default(ListTreeNode<JsonValue>));
-}
+// f.Serialize(default(UniGLTF.glTFPrimitives_extras));
+// {
+// var value = default(UniGLTF.glTFPrimitives_extras);
+// default(ListTreeNode<JsonValue>).Deserialize(ref value);
+// }
+// {
+// JsonObjectValidator.GenericDeserializer<JsonValue,UniGLTF.glTFPrimitives_extras>.DeserializeField<System.Collections.Generic.List<String>>(default(JsonSchema), default(ListTreeNode<JsonValue>));
+// }
 
 // List`1
 f.Serialize(default(List<System.String>));
@@ -870,16 +870,16 @@ var value = default(List<System.String>);
 default(ListTreeNode<JsonValue>).Deserialize(ref value);
 GenericDeserializer<JsonValue, List<System.String>>.GenericListDeserializer<System.String>(default(ListTreeNode<JsonValue>));
 }
-{
-JsonObjectValidator.GenericDeserializer<JsonValue,UniGLTF.glTFPrimitives>.DeserializeField<UniGLTF.glTFPrimitives_extensions>(default(JsonSchema), default(ListTreeNode<JsonValue>));
-}
+// {
+// JsonObjectValidator.GenericDeserializer<JsonValue,UniGLTF.glTFPrimitives>.DeserializeField<UniGLTF.glTFPrimitives_extensions>(default(JsonSchema), default(ListTreeNode<JsonValue>));
+// }
 
-// glTFPrimitives_extensions
-f.Serialize(default(UniGLTF.glTFPrimitives_extensions));
-{
-var value = default(UniGLTF.glTFPrimitives_extensions);
-default(ListTreeNode<JsonValue>).Deserialize(ref value);
-}
+// // glTFPrimitives_extensions
+// f.Serialize(default(UniGLTF.glTFPrimitives_extensions));
+// {
+// var value = default(UniGLTF.glTFPrimitives_extensions);
+// default(ListTreeNode<JsonValue>).Deserialize(ref value);
+// }
 {
 JsonObjectValidator.GenericDeserializer<JsonValue,UniGLTF.glTFMesh>.DeserializeField<System.Single[]>(default(JsonSchema), default(ListTreeNode<JsonValue>));
 }
@@ -945,26 +945,26 @@ JsonObjectValidator.GenericDeserializer<JsonValue,UniGLTF.glTFNode>.DeserializeF
 {
 JsonObjectValidator.GenericDeserializer<JsonValue,UniGLTF.glTFNode>.DeserializeField<System.Int32>(default(JsonSchema), default(ListTreeNode<JsonValue>));
 }
-{
-JsonObjectValidator.GenericDeserializer<JsonValue,UniGLTF.glTFNode>.DeserializeField<UniGLTF.glTFNode_extensions>(default(JsonSchema), default(ListTreeNode<JsonValue>));
-}
+// {
+// JsonObjectValidator.GenericDeserializer<JsonValue,UniGLTF.glTFNode>.DeserializeField<UniGLTF.glTFNode_extensions>(default(JsonSchema), default(ListTreeNode<JsonValue>));
+// }
 
-// glTFNode_extensions
-f.Serialize(default(UniGLTF.glTFNode_extensions));
-{
-var value = default(UniGLTF.glTFNode_extensions);
-default(ListTreeNode<JsonValue>).Deserialize(ref value);
-}
-{
-JsonObjectValidator.GenericDeserializer<JsonValue,UniGLTF.glTFNode>.DeserializeField<UniGLTF.glTFNode_extra>(default(JsonSchema), default(ListTreeNode<JsonValue>));
-}
+// // glTFNode_extensions
+// f.Serialize(default(UniGLTF.glTFNode_extensions));
+// {
+// var value = default(UniGLTF.glTFNode_extensions);
+// default(ListTreeNode<JsonValue>).Deserialize(ref value);
+// }
+// {
+// JsonObjectValidator.GenericDeserializer<JsonValue,UniGLTF.glTFNode>.DeserializeField<UniGLTF.glTFNode_extra>(default(JsonSchema), default(ListTreeNode<JsonValue>));
+// }
 
-// glTFNode_extra
-f.Serialize(default(UniGLTF.glTFNode_extra));
-{
-var value = default(UniGLTF.glTFNode_extra);
-default(ListTreeNode<JsonValue>).Deserialize(ref value);
-}
+// // glTFNode_extra
+// f.Serialize(default(UniGLTF.glTFNode_extra));
+// {
+// var value = default(UniGLTF.glTFNode_extra);
+// default(ListTreeNode<JsonValue>).Deserialize(ref value);
+// }
 {
 JsonObjectValidator.GenericDeserializer<JsonValue,UniGLTF.glTF>.DeserializeField<System.Collections.Generic.List<glTFSkin>>(default(JsonSchema), default(ListTreeNode<JsonValue>));
 }
@@ -1183,26 +1183,26 @@ JsonObjectValidator.GenericDeserializer<JsonValue,UniGLTF.glTFOrthographic>.Dese
 {
 JsonObjectValidator.GenericDeserializer<JsonValue,UniGLTF.glTFOrthographic>.DeserializeField<System.Single>(default(JsonSchema), default(ListTreeNode<JsonValue>));
 }
-{
-JsonObjectValidator.GenericDeserializer<JsonValue,UniGLTF.glTFOrthographic>.DeserializeField<UniGLTF.glTFOrthographic_extensions>(default(JsonSchema), default(ListTreeNode<JsonValue>));
-}
+// {
+// JsonObjectValidator.GenericDeserializer<JsonValue,UniGLTF.glTFOrthographic>.DeserializeField<UniGLTF.glTFOrthographic_extensions>(default(JsonSchema), default(ListTreeNode<JsonValue>));
+// }
 
-// glTFOrthographic_extensions
-f.Serialize(default(UniGLTF.glTFOrthographic_extensions));
-{
-var value = default(UniGLTF.glTFOrthographic_extensions);
-default(ListTreeNode<JsonValue>).Deserialize(ref value);
-}
-{
-JsonObjectValidator.GenericDeserializer<JsonValue,UniGLTF.glTFOrthographic>.DeserializeField<UniGLTF.glTFOrthographic_extras>(default(JsonSchema), default(ListTreeNode<JsonValue>));
-}
+// // glTFOrthographic_extensions
+// f.Serialize(default(UniGLTF.glTFOrthographic_extensions));
+// {
+// var value = default(UniGLTF.glTFOrthographic_extensions);
+// default(ListTreeNode<JsonValue>).Deserialize(ref value);
+// }
+// {
+// JsonObjectValidator.GenericDeserializer<JsonValue,UniGLTF.glTFOrthographic>.DeserializeField<UniGLTF.glTFOrthographic_extras>(default(JsonSchema), default(ListTreeNode<JsonValue>));
+// }
 
 // glTFOrthographic_extras
-f.Serialize(default(UniGLTF.glTFOrthographic_extras));
-{
-var value = default(UniGLTF.glTFOrthographic_extras);
-default(ListTreeNode<JsonValue>).Deserialize(ref value);
-}
+// f.Serialize(default(UniGLTF.glTFOrthographic_extras));
+// {
+// var value = default(UniGLTF.glTFOrthographic_extras);
+// default(ListTreeNode<JsonValue>).Deserialize(ref value);
+// }
 {
 JsonObjectValidator.GenericDeserializer<JsonValue,UniGLTF.glTFCamera>.DeserializeField<UniGLTF.glTFPerspective>(default(JsonSchema), default(ListTreeNode<JsonValue>));
 }
@@ -1225,26 +1225,26 @@ JsonObjectValidator.GenericDeserializer<JsonValue,UniGLTF.glTFPerspective>.Deser
 {
 JsonObjectValidator.GenericDeserializer<JsonValue,UniGLTF.glTFPerspective>.DeserializeField<System.Single>(default(JsonSchema), default(ListTreeNode<JsonValue>));
 }
-{
-JsonObjectValidator.GenericDeserializer<JsonValue,UniGLTF.glTFPerspective>.DeserializeField<UniGLTF.glTFPerspective_extensions>(default(JsonSchema), default(ListTreeNode<JsonValue>));
-}
+// {
+// JsonObjectValidator.GenericDeserializer<JsonValue,UniGLTF.glTFPerspective>.DeserializeField<UniGLTF.glTFPerspective_extensions>(default(JsonSchema), default(ListTreeNode<JsonValue>));
+// }
 
-// glTFPerspective_extensions
-f.Serialize(default(UniGLTF.glTFPerspective_extensions));
-{
-var value = default(UniGLTF.glTFPerspective_extensions);
-default(ListTreeNode<JsonValue>).Deserialize(ref value);
-}
-{
-JsonObjectValidator.GenericDeserializer<JsonValue,UniGLTF.glTFPerspective>.DeserializeField<UniGLTF.glTFPerspective_extras>(default(JsonSchema), default(ListTreeNode<JsonValue>));
-}
+// // glTFPerspective_extensions
+// f.Serialize(default(UniGLTF.glTFPerspective_extensions));
+// {
+// var value = default(UniGLTF.glTFPerspective_extensions);
+// default(ListTreeNode<JsonValue>).Deserialize(ref value);
+// }
+// {
+// JsonObjectValidator.GenericDeserializer<JsonValue,UniGLTF.glTFPerspective>.DeserializeField<UniGLTF.glTFPerspective_extras>(default(JsonSchema), default(ListTreeNode<JsonValue>));
+// }
 
-// glTFPerspective_extras
-f.Serialize(default(UniGLTF.glTFPerspective_extras));
-{
-var value = default(UniGLTF.glTFPerspective_extras);
-default(ListTreeNode<JsonValue>).Deserialize(ref value);
-}
+// // glTFPerspective_extras
+// f.Serialize(default(UniGLTF.glTFPerspective_extras));
+// {
+// var value = default(UniGLTF.glTFPerspective_extras);
+// default(ListTreeNode<JsonValue>).Deserialize(ref value);
+// }
 {
 JsonObjectValidator.GenericDeserializer<JsonValue,UniGLTF.glTFCamera>.DeserializeField<UniGLTF.ProjectionType>(default(JsonSchema), default(ListTreeNode<JsonValue>));
 }
@@ -1261,45 +1261,45 @@ JsonObjectValidator.GenericDeserializer<JsonValue,UniGLTF.ProjectionType>.Deseri
 {
 JsonObjectValidator.GenericDeserializer<JsonValue,UniGLTF.glTFCamera>.DeserializeField<System.String>(default(JsonSchema), default(ListTreeNode<JsonValue>));
 }
-{
-JsonObjectValidator.GenericDeserializer<JsonValue,UniGLTF.glTFCamera>.DeserializeField<UniGLTF.glTFCamera_extensions>(default(JsonSchema), default(ListTreeNode<JsonValue>));
-}
+// {
+// JsonObjectValidator.GenericDeserializer<JsonValue,UniGLTF.glTFCamera>.DeserializeField<UniGLTF.glTFCamera_extensions>(default(JsonSchema), default(ListTreeNode<JsonValue>));
+// }
 
-// glTFCamera_extensions
-f.Serialize(default(UniGLTF.glTFCamera_extensions));
-{
-var value = default(UniGLTF.glTFCamera_extensions);
-default(ListTreeNode<JsonValue>).Deserialize(ref value);
-}
-{
-JsonObjectValidator.GenericDeserializer<JsonValue,UniGLTF.glTFCamera>.DeserializeField<UniGLTF.glTFCamera_extras>(default(JsonSchema), default(ListTreeNode<JsonValue>));
-}
+// // glTFCamera_extensions
+// f.Serialize(default(UniGLTF.glTFCamera_extensions));
+// {
+// var value = default(UniGLTF.glTFCamera_extensions);
+// default(ListTreeNode<JsonValue>).Deserialize(ref value);
+// }
+// {
+// JsonObjectValidator.GenericDeserializer<JsonValue,UniGLTF.glTFCamera>.DeserializeField<UniGLTF.glTFCamera_extras>(default(JsonSchema), default(ListTreeNode<JsonValue>));
+// }
 
-// glTFCamera_extras
-f.Serialize(default(UniGLTF.glTFCamera_extras));
-{
-var value = default(UniGLTF.glTFCamera_extras);
-default(ListTreeNode<JsonValue>).Deserialize(ref value);
-}
+// // glTFCamera_extras
+// f.Serialize(default(UniGLTF.glTFCamera_extras));
+// {
+// var value = default(UniGLTF.glTFCamera_extras);
+// default(ListTreeNode<JsonValue>).Deserialize(ref value);
+// }
 {
 JsonObjectValidator.GenericDeserializer<JsonValue,UniGLTF.glTF>.DeserializeField<System.Collections.Generic.List<String>>(default(JsonSchema), default(ListTreeNode<JsonValue>));
 }
 {
 JsonObjectValidator.GenericDeserializer<JsonValue,UniGLTF.glTF>.DeserializeField<System.Collections.Generic.List<String>>(default(JsonSchema), default(ListTreeNode<JsonValue>));
 }
-{
-JsonObjectValidator.GenericDeserializer<JsonValue,UniGLTF.glTF>.DeserializeField<UniGLTF.glTF_extensions>(default(JsonSchema), default(ListTreeNode<JsonValue>));
-}
+// {
+// JsonObjectValidator.GenericDeserializer<JsonValue,UniGLTF.glTF>.DeserializeField<UniGLTF.glTF_extensions>(default(JsonSchema), default(ListTreeNode<JsonValue>));
+// }
 
-// glTF_extensions
-f.Serialize(default(UniGLTF.glTF_extensions));
-{
-var value = default(UniGLTF.glTF_extensions);
-default(ListTreeNode<JsonValue>).Deserialize(ref value);
-}
-{
-JsonObjectValidator.GenericDeserializer<JsonValue,UniGLTF.glTF_extensions>.DeserializeField<VRM.glTF_VRM_extensions>(default(JsonSchema), default(ListTreeNode<JsonValue>));
-}
+// // glTF_extensions
+// f.Serialize(default(UniGLTF.glTF_extensions));
+// {
+// var value = default(UniGLTF.glTF_extensions);
+// default(ListTreeNode<JsonValue>).Deserialize(ref value);
+// }
+// {
+// JsonObjectValidator.GenericDeserializer<JsonValue,UniGLTF.glTF_extensions>.DeserializeField<VRM.glTF_VRM_extensions>(default(JsonSchema), default(ListTreeNode<JsonValue>));
+// }
 
 // glTF_VRM_extensions
 f.Serialize(default(VRM.glTF_VRM_extensions));
@@ -1779,16 +1779,16 @@ var value = default(Dictionary<string, System.String>);
 default(ListTreeNode<JsonValue>).Deserialize(ref value);
 GenericDeserializer<JsonValue, Dictionary<string, System.String>>.DictionaryDeserializer<System.String>(default(ListTreeNode<JsonValue>));
 }
-{
-JsonObjectValidator.GenericDeserializer<JsonValue,UniGLTF.glTF>.DeserializeField<UniGLTF.gltf_extras>(default(JsonSchema), default(ListTreeNode<JsonValue>));
-}
+// {
+// JsonObjectValidator.GenericDeserializer<JsonValue,UniGLTF.glTF>.DeserializeField<UniGLTF.gltf_extras>(default(JsonSchema), default(ListTreeNode<JsonValue>));
+// }
 
-// gltf_extras
-f.Serialize(default(UniGLTF.gltf_extras));
-{
-var value = default(UniGLTF.gltf_extras);
-default(ListTreeNode<JsonValue>).Deserialize(ref value);
-}
+// // gltf_extras
+// f.Serialize(default(UniGLTF.gltf_extras));
+// {
+// var value = default(UniGLTF.gltf_extras);
+// default(ListTreeNode<JsonValue>).Deserialize(ref value);
+// }
 }
 
 {

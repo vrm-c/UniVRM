@@ -28,7 +28,7 @@ namespace UniGLTF
         public int texCoord;
 
         // empty schemas
-        public glTFTextureInfo_extensions extensions;
+        public object extensions;
         public object extras;
 
         public abstract glTFTextureTypes TextureType { get; }
@@ -134,7 +134,7 @@ namespace UniGLTF
         public bool doubleSided;
 
         [JsonSchema(SkipSchemaComparison = true)]
-        public glTFMaterial_extensions extensions;
+        public object extensions;
         public object extras;
 
         public glTFTextureInfo[] GetTextures()

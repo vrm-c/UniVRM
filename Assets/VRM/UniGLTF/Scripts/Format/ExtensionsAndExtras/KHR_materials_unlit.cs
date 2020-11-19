@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UniJSON;
 
 namespace UniGLTF
@@ -24,18 +25,11 @@ namespace UniGLTF
                     roughnessFactor = 0.9f,
                     metallicFactor = 0.0f,
                 },
-                extensions = new glTFMaterial_extensions
+                extensions = new KeyValuePair<string, object>[]
                 {
-                    KHR_materials_unlit = new glTF_KHR_materials_unlit(),
+                    new KeyValuePair<string, object>("KHR_materials_unlit", new glTF_KHR_materials_unlit()),
                 },
             };
         }
-    }
-
-    [Serializable]
-    public partial class glTFMaterial_extensions : ExtensionsBase<glTFMaterial_extensions>
-    {
-        [JsonSchema(Required = true)]
-        public glTF_KHR_materials_unlit KHR_materials_unlit;
     }
 }

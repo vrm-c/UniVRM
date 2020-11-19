@@ -99,7 +99,7 @@ namespace VRM
 
         public void OnImported(VRMImporterContext context)
         { 
-            var gltfFirstPerson = context.GLTF.extensions.VRM.firstPerson;
+            var gltfFirstPerson = context.VRM.firstPerson;
             switch (gltfFirstPerson.lookAtType)
             {
                 case LookAtType.Bone:

@@ -642,14 +642,14 @@ namespace UniGLTF {
     }
 
     /// gltf/materials[]/pbrMetallicRoughness/baseColorTexture/extensions
-    public static void GenSerialize(this IFormatter f, glTFTextureInfo_extensions value)
+    public static void GenSerialize(this IFormatter f, object value)
     {
         f.BeginMap(0); // dummy
 
-        if(value.KHR_texture_transform!=null)
-        {
-            f.Key("KHR_texture_transform"); f.GenSerialize(value.KHR_texture_transform);
-        }
+        // if(value.KHR_texture_transform!=null)
+        // {
+        //     f.Key("KHR_texture_transform"); f.GenSerialize(value.KHR_texture_transform);
+        // }
 
         f.EndMap();
     }
@@ -784,19 +784,6 @@ namespace UniGLTF {
         f.EndMap();
     }
 
-    /// gltf/materials[]/extensions
-    public static void GenSerialize(this IFormatter f, glTFMaterial_extensions value)
-    {
-        f.BeginMap(0); // dummy
-
-        if(value.KHR_materials_unlit!=null)
-        {
-            f.Key("KHR_materials_unlit"); f.GenSerialize(value.KHR_materials_unlit);
-        }
-
-        f.EndMap();
-    }
-
     /// gltf/materials[]/extensions/KHR_materials_unlit
     public static void GenSerialize(this IFormatter f, glTF_KHR_materials_unlit value)
     {
@@ -885,10 +872,10 @@ namespace UniGLTF {
             f.Key("targets"); f.GenSerialize(value.targets);
         }
 
-        if(value.extras!=null && value.extras.targetNames!=null && value.extras.targetNames.Count>0)
-        {
-            f.Key("extras"); f.GenSerialize(value.extras);
-        }
+        // if(value.extras!=null && value.extras.targetNames!=null && value.extras.targetNames.Count>0)
+        // {
+        //     f.Key("extras"); f.GenSerialize(value.extras);
+        // }
 
         f.EndMap();
     }
@@ -971,17 +958,17 @@ namespace UniGLTF {
     }
 
     /// gltf/meshes[]/primitives[]/extras
-    public static void GenSerialize(this IFormatter f, glTFPrimitives_extras value)
-    {
-        f.BeginMap(0); // dummy
+    // public static void GenSerialize(this IFormatter f, glTFPrimitives_extras value)
+    // {
+    //     f.BeginMap(0); // dummy
 
-        if(value.targetNames!=null)
-        {
-            f.Key("targetNames"); f.GenSerialize(value.targetNames);
-        }
+    //     if(value.targetNames!=null)
+    //     {
+    //         f.Key("targetNames"); f.GenSerialize(value.targetNames);
+    //     }
 
-        f.EndMap();
-    }
+    //     f.EndMap();
+    // }
 
     /// gltf/meshes[]/primitives[]/extras/targetNames
     public static void GenSerialize(this IFormatter f, List<String> value)
@@ -992,27 +979,6 @@ namespace UniGLTF {
             f.GenSerialize(x);
         }
         f.EndList();
-    }
-
-    /// gltf/meshes[]/primitives[]/extensions
-    public static void GenSerialize(this IFormatter f, glTFPrimitives_extensions value)
-    {
-        f.BeginMap(0); // dummy
-
-        f.EndMap();
-    }
-
-    /// gltf/meshes[]/extras
-    public static void GenSerialize(this IFormatter f, glTFMesh_extras value)
-    {
-        f.BeginMap(0); // dummy
-
-        if(value.targetNames!=null)
-        {
-            f.Key("targetNames"); f.GenSerialize(value.targetNames);
-        }
-
-        f.EndMap();
     }
 
     /// gltf/nodes
@@ -1095,21 +1061,21 @@ namespace UniGLTF {
         f.EndList();
     }
                     
-    /// gltf/nodes[]/extensions
-    public static void GenSerialize(this IFormatter f, glTFNode_extensions value)
-    {
-        f.BeginMap(0); // dummy
+    // /// gltf/nodes[]/extensions
+    // public static void GenSerialize(this IFormatter f, glTFNode_extensions value)
+    // {
+    //     f.BeginMap(0); // dummy
 
-        f.EndMap();
-    }
+    //     f.EndMap();
+    // }
 
-    /// gltf/nodes[]/extras
-    public static void GenSerialize(this IFormatter f, glTFNode_extra value)
-    {
-        f.BeginMap(0); // dummy
+    // /// gltf/nodes[]/extras
+    // public static void GenSerialize(this IFormatter f, glTFNode_extra value)
+    // {
+    //     f.BeginMap(0); // dummy
 
-        f.EndMap();
-    }
+    //     f.EndMap();
+    // }
 
     /// gltf/skins
     public static void GenSerialize(this IFormatter f, List<glTFSkin> value)
@@ -1361,21 +1327,21 @@ namespace UniGLTF {
         f.EndMap();
     }
 
-    /// gltf/cameras[]/orthographic/extensions
-    public static void GenSerialize(this IFormatter f, glTFOrthographic_extensions value)
-    {
-        f.BeginMap(0); // dummy
+    // /// gltf/cameras[]/orthographic/extensions
+    // public static void GenSerialize(this IFormatter f, glTFOrthographic_extensions value)
+    // {
+    //     f.BeginMap(0); // dummy
 
-        f.EndMap();
-    }
+    //     f.EndMap();
+    // }
 
-    /// gltf/cameras[]/orthographic/extras
-    public static void GenSerialize(this IFormatter f, glTFOrthographic_extras value)
-    {
-        f.BeginMap(0); // dummy
+    // /// gltf/cameras[]/orthographic/extras
+    // public static void GenSerialize(this IFormatter f, glTFOrthographic_extras value)
+    // {
+    //     f.BeginMap(0); // dummy
 
-        f.EndMap();
-    }
+    //     f.EndMap();
+    // }
 
     /// gltf/cameras[]/perspective
     public static void GenSerialize(this IFormatter f, glTFPerspective value)
@@ -1405,55 +1371,55 @@ namespace UniGLTF {
         f.EndMap();
     }
 
-    /// gltf/cameras[]/perspective/extensions
-    public static void GenSerialize(this IFormatter f, glTFPerspective_extensions value)
-    {
-        f.BeginMap(0); // dummy
+    // /// gltf/cameras[]/perspective/extensions
+    // public static void GenSerialize(this IFormatter f, glTFPerspective_extensions value)
+    // {
+    //     f.BeginMap(0); // dummy
 
-        f.EndMap();
-    }
+    //     f.EndMap();
+    // }
 
-    /// gltf/cameras[]/perspective/extras
-    public static void GenSerialize(this IFormatter f, glTFPerspective_extras value)
-    {
-        f.BeginMap(0); // dummy
+    // /// gltf/cameras[]/perspective/extras
+    // public static void GenSerialize(this IFormatter f, glTFPerspective_extras value)
+    // {
+    //     f.BeginMap(0); // dummy
 
-        f.EndMap();
-    }
+    //     f.EndMap();
+    // }
 
     public static void GenSerialize(this IFormatter f, ProjectionType value)
     {
         f.Value((int)value);
     }
 
-    /// gltf/cameras[]/extensions
-    public static void GenSerialize(this IFormatter f, glTFCamera_extensions value)
-    {
-        f.BeginMap(0); // dummy
+    // /// gltf/cameras[]/extensions
+    // public static void GenSerialize(this IFormatter f, glTFCamera_extensions value)
+    // {
+    //     f.BeginMap(0); // dummy
 
-        f.EndMap();
-    }
+    //     f.EndMap();
+    // }
 
-    /// gltf/cameras[]/extras
-    public static void GenSerialize(this IFormatter f, glTFCamera_extras value)
-    {
-        f.BeginMap(0); // dummy
+    // /// gltf/cameras[]/extras
+    // public static void GenSerialize(this IFormatter f, glTFCamera_extras value)
+    // {
+    //     f.BeginMap(0); // dummy
 
-        f.EndMap();
-    }
+    //     f.EndMap();
+    // }
 
-    /// gltf/extensions
-    public static void GenSerialize(this IFormatter f, glTF_extensions value)
-    {
-        f.BeginMap(0); // dummy
+    // /// gltf/extensions
+    // public static void GenSerialize(this IFormatter f, glTF_extensions value)
+    // {
+    //     f.BeginMap(0); // dummy
 
-        if(value.VRM!=null)
-        {
-            f.Key("VRM"); f.GenSerialize(value.VRM);
-        }
+    //     if(value.VRM!=null)
+    //     {
+    //         f.Key("VRM"); f.GenSerialize(value.VRM);
+    //     }
 
-        f.EndMap();
-    }
+    //     f.EndMap();
+    // }
 
     /// gltf/extensions/VRM
     public static void GenSerialize(this IFormatter f, glTF_VRM_extensions value)
@@ -2195,13 +2161,13 @@ namespace UniGLTF {
     }
 
 
-    /// gltf/extras
-    public static void GenSerialize(this IFormatter f, gltf_extras value)
-    {
-        f.BeginMap(0); // dummy
+    // /// gltf/extras
+    // public static void GenSerialize(this IFormatter f, gltf_extras value)
+    // {
+    //     f.BeginMap(0); // dummy
 
-        f.EndMap();
-    }
+    //     f.EndMap();
+    // }
 
     } // class
 } // namespace

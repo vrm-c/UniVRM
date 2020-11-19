@@ -1,4 +1,5 @@
-﻿using UniGLTF.UniUnlit;
+﻿using System.Collections.Generic;
+using UniGLTF.UniUnlit;
 using UnityEngine;
 
 
@@ -188,13 +189,13 @@ namespace UniGLTF
                 var scale = m.GetTextureScale(propertyName);
                 offset.y = (offset.y + scale.y - 1) * -1.0f;
 
-                textureInfo.extensions = new glTFTextureInfo_extensions
+                textureInfo.extensions = new KeyValuePair<string, object>[]
                 {
-                    KHR_texture_transform = new glTF_KHR_texture_transform()
+                    new KeyValuePair<string, object>("KHR_texture_transform", new glTF_KHR_texture_transform()
                     {
                         offset = new float[] { offset.x, offset.y },
                         scale = new float[] { scale.x, scale.y },
-                    }
+                    })
                 };
             }
         }

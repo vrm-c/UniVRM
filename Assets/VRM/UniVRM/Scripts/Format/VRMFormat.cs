@@ -1,15 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using UniGLTF;
 using UniJSON;
-
-namespace UniGLTF
-{
-    public partial class glTF_extensions : ExtensionsBase<glTF_extensions>
-    {
-        public VRM.glTF_VRM_extensions VRM;
-    }
-}
 
 
 namespace VRM
