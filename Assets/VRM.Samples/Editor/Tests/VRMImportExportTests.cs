@@ -17,6 +17,13 @@ namespace VRM.Samples
             var bytes = f.GetStoreBytes();
             node.SetValue(p, bytes);
         }
+
+        public static string ToJson(this glTF self)
+        {
+            var f = new JsonFormatter();
+            f.GenSerialize(self);
+            return f.ToString();
+        }
     }
 
     public class VRMImportExportTests

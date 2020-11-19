@@ -19,7 +19,7 @@ namespace UniGLTF
     }
 
     [Serializable]
-    public abstract class glTFTextureInfo : JsonSerializableBase, IglTFTextureinfo
+    public abstract class glTFTextureInfo : IglTFTextureinfo
     {
         [JsonSchema(Required = true, Minimum = 0)]
         public int index = -1;
@@ -30,16 +30,6 @@ namespace UniGLTF
         // empty schemas
         public glTFTextureInfo_extensions extensions;
         public object extras;
-
-        protected override void SerializeMembers(GLTFJsonFormatter f)
-        {
-            f.KeyValue(() => index);
-            f.KeyValue(() => texCoord);
-            if (extensions != null)
-            {
-                f.KeyValue(() => extensions);
-            }
-        }
 
         public abstract glTFTextureTypes TextureType { get; }
     }
@@ -68,12 +58,6 @@ namespace UniGLTF
     {
         public float scale = 1.0f;
 
-        protected override void SerializeMembers(GLTFJsonFormatter f)
-        {
-            f.KeyValue(() => scale);
-            base.SerializeMembers(f);
-        }
-
         public override glTFTextureTypes TextureType
         {
             get { return glTFTextureTypes.Normal; }
@@ -85,12 +69,6 @@ namespace UniGLTF
     {
         [JsonSchema(Minimum = 0.0, Maximum = 1.0)]
         public float strength = 1.0f;
-
-        protected override void SerializeMembers(GLTFJsonFormatter f)
-        {
-            f.KeyValue(() => strength);
-            base.SerializeMembers(f);
-        }
 
         public override glTFTextureTypes TextureType
         {
@@ -108,7 +86,7 @@ namespace UniGLTF
     }
 
     [Serializable]
-    public class glTFPbrMetallicRoughness : JsonSerializableBase
+    public class glTFPbrMetallicRoughness
     {
         public glTFMaterialBaseColorTextureInfo baseColorTexture = null;
 
@@ -127,28 +105,10 @@ namespace UniGLTF
         // empty schemas
         public object extensions;
         public object extras;
-
-        protected override void SerializeMembers(GLTFJsonFormatter f)
-        {
-            if (baseColorTexture != null)
-            {
-                f.Key("baseColorTexture"); f.GLTFValue(baseColorTexture);
-            }
-            if (baseColorFactor != null)
-            {
-                f.KeyValue(() => baseColorFactor);
-            }
-            if (metallicRoughnessTexture != null)
-            {
-                f.Key("metallicRoughnessTexture"); f.GLTFValue(metallicRoughnessTexture);
-            }
-            f.KeyValue(() => metallicFactor);
-            f.KeyValue(() => roughnessFactor);
-        }
     }
 
     [Serializable]
-    public class glTFMaterial : JsonSerializableBase
+    public class glTFMaterial
     {
         public string name;
         public glTFPbrMetallicRoughness pbrMetallicRoughness = new glTFPbrMetallicRoughness
@@ -176,46 +136,6 @@ namespace UniGLTF
         [JsonSchema(SkipSchemaComparison = true)]
         public glTFMaterial_extensions extensions;
         public object extras;
-
-        protected override void SerializeMembers(GLTFJsonFormatter f)
-        {
-            if (!String.IsNullOrEmpty(name))
-            {
-                f.Key("name"); f.Value(name);
-            }
-            if (pbrMetallicRoughness != null)
-            {
-                f.Key("pbrMetallicRoughness"); f.GLTFValue(pbrMetallicRoughness);
-            }
-            if (normalTexture != null)
-            {
-                f.Key("normalTexture"); f.GLTFValue(normalTexture);
-            }
-            if (occlusionTexture != null)
-            {
-                f.Key("occlusionTexture"); f.GLTFValue(occlusionTexture);
-            }
-            if (emissiveTexture != null)
-            {
-                f.Key("emissiveTexture"); f.GLTFValue(emissiveTexture);
-            }
-            if (emissiveFactor != null)
-            {
-                f.Key("emissiveFactor"); f.Serialize(emissiveFactor);
-            }
-
-            f.KeyValue(() => doubleSided);
-
-            if (!string.IsNullOrEmpty(alphaMode))
-            {
-                f.KeyValue(() => alphaMode);
-            }
-
-            if (extensions != null)
-            {
-                f.Key("extensions"); f.GLTFValue(extensions);
-            }
-        }
 
         public glTFTextureInfo[] GetTextures()
         {

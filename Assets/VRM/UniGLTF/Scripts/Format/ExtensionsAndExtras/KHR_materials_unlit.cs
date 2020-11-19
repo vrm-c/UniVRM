@@ -4,7 +4,7 @@ using UniJSON;
 namespace UniGLTF
 {
     [Serializable]
-    public class glTF_KHR_materials_unlit : JsonSerializableBase
+    public class glTF_KHR_materials_unlit
     {
         public static string ExtensionName
         {
@@ -12,11 +12,6 @@ namespace UniGLTF
             {
                 return "KHR_materials_unlit";
             }
-        }
-
-        protected override void SerializeMembers(GLTFJsonFormatter f)
-        {
-            //throw new System.NotImplementedException();
         }
 
         public static glTFMaterial CreateDefault()
@@ -42,14 +37,5 @@ namespace UniGLTF
     {
         [JsonSchema(Required = true)]
         public glTF_KHR_materials_unlit KHR_materials_unlit;
-
-        [JsonSerializeMembers]
-        void SerializeMembers_unlit(GLTFJsonFormatter f)
-        {
-            if (KHR_materials_unlit != null)
-            {
-                f.Key("KHR_materials_unlit"); f.GLTFValue(KHR_materials_unlit);
-            }
-        }
     }
 }

@@ -288,10 +288,9 @@ namespace UniGLTF
             {
                 GLTF = GltfDeserializer.Deserialize(json.ParseAsJson());
             }
-            else if (_serializerType == SerializerTypes.JsonSerializable)
+            else
             {
-                // Obsolete
-                GLTF = JsonUtility.FromJson<glTF>(Json);
+                throw new NotImplementedException();
             }
 
             if (GLTF.asset.version != "2.0")

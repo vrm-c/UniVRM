@@ -91,7 +91,7 @@ namespace VRM
 
     [Serializable]
     [JsonSchema(Title = "vrm.humanoid.bone")]
-    public class glTF_VRM_HumanoidBone : JsonSerializableBase
+    public class glTF_VRM_HumanoidBone
     {
         [JsonSchema(Description = "Human bone name.", EnumValues = new object[]
         {
@@ -183,25 +183,11 @@ namespace VRM
 
         [JsonSchema(Description = "Unity's HumanLimit.axisLength")]
         public float axisLength;
-
-        protected override void SerializeMembers(GLTFJsonFormatter f)
-        {
-            f.Key("bone"); f.Value((string) bone.ToString());
-            f.KeyValue(() => node);
-            f.KeyValue(() => useDefaultValues);
-            if (!useDefaultValues)
-            {
-                f.KeyValue(() => min);
-                f.KeyValue(() => max);
-                f.KeyValue(() => center);
-                f.KeyValue(() => axisLength);
-            }
-        }
     }
 
     [Serializable]
     [JsonSchema(Title = "vrm.humanoid")]
-    public class glTF_VRM_Humanoid : JsonSerializableBase
+    public class glTF_VRM_Humanoid
     {
         public List<glTF_VRM_HumanoidBone> humanBones = new List<glTF_VRM_HumanoidBone>();
 
@@ -246,19 +232,6 @@ namespace VRM
             {
                 humanBones[index].node = node;
             }
-        }
-
-        protected override void SerializeMembers(GLTFJsonFormatter f)
-        {
-            f.Key("humanBones"); f.GLTFValue(humanBones);
-            f.KeyValue(() => armStretch);
-            f.KeyValue(() => legStretch);
-            f.KeyValue(() => upperArmTwist);
-            f.KeyValue(() => lowerArmTwist);
-            f.KeyValue(() => upperLegTwist);
-            f.KeyValue(() => lowerLegTwist);
-            f.KeyValue(() => feetSpacing);
-            f.KeyValue(() => hasTranslationDoF);
         }
 
         public void Apply(UniHumanoid.AvatarDescription desc, List<Transform> nodes)

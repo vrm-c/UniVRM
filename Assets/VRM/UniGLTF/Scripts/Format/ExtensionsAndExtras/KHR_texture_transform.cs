@@ -6,7 +6,7 @@ using UniJSON;
 namespace UniGLTF
 {
     [Serializable]
-    public class glTF_KHR_texture_transform : JsonSerializableBase
+    public class glTF_KHR_texture_transform
     {
         public static string ExtensionName
         {
@@ -26,14 +26,6 @@ namespace UniGLTF
 
         [ItemJsonSchema(Minimum = 0)]
         public int texCoord;
-
-        protected override void SerializeMembers(GLTFJsonFormatter f)
-        {
-            f.KeyValue(() => offset);
-            f.KeyValue(() => rotation);
-            f.KeyValue(() => scale);
-            f.KeyValue(() => texCoord);
-        }
     }
 
     [Serializable]
@@ -41,18 +33,5 @@ namespace UniGLTF
     {
         [JsonSchema(Required = true)]
         public glTF_KHR_texture_transform KHR_texture_transform;
-
-        /// <summary>
-        /// リフレクションでシリアライズする時は使われない
-        /// </summary>
-        /// <param name="f"></param>
-        [JsonSerializeMembers]
-        void SerializeMembers_textureInfo(GLTFJsonFormatter f)
-        {
-            if (KHR_texture_transform != null)
-            {
-                f.KeyValue(() => KHR_texture_transform);
-            }
-        }
     }
 }

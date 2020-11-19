@@ -8,42 +8,30 @@ using UnityEngine;
 namespace VRM
 {
     [Serializable]
-    public class glTF_VRM_SecondaryAnimationCollider : JsonSerializableBase
+    public class glTF_VRM_SecondaryAnimationCollider
     {
         [JsonSchema(Description = "The local coordinate from the node of the collider group.")]
         public Vector3 offset;
 
         [JsonSchema(Description = "The radius of the collider.")]
         public float radius;
-
-        protected override void SerializeMembers(GLTFJsonFormatter f)
-        {
-            f.KeyValue(() => offset);
-            f.KeyValue(() => radius);
-        }
     }
 
 
     [Serializable]
     [JsonSchema(Title = "vrm.secondaryanimation.collidergroup", Description = @"Set sphere balls for colliders used for collision detections with swaying objects.")]
-    public class glTF_VRM_SecondaryAnimationColliderGroup : JsonSerializableBase
+    public class glTF_VRM_SecondaryAnimationColliderGroup
     {
         [JsonSchema(Description = "The node of the collider group for setting up collision detections.", Minimum = 0)]
         public int node;
 
         public List<glTF_VRM_SecondaryAnimationCollider> colliders = new List<glTF_VRM_SecondaryAnimationCollider>();
-
-        protected override void SerializeMembers(GLTFJsonFormatter f)
-        {
-            f.KeyValue(() => node);
-            f.Key("colliders"); f.GLTFValue(colliders);
-        }
     }
 
 
     [Serializable]
     [JsonSchema(Title = "vrm.secondaryanimation.spring")]
-    public class glTF_VRM_SecondaryAnimationGroup : JsonSerializableBase
+    public class glTF_VRM_SecondaryAnimationGroup
     {
         [JsonSchema(Description = "Annotation comment")]
         public string comment;
@@ -76,35 +64,16 @@ namespace VRM
         [JsonSchema(Description = "Specify the index of the collider group for collisions with swaying objects.")]
         [ItemJsonSchema(Minimum = 0)]
         public int[] colliderGroups = new int[] { };
-
-        protected override void SerializeMembers(GLTFJsonFormatter f)
-        {
-            f.KeyValue(() => comment);
-            f.KeyValue(() => stiffiness);
-            f.KeyValue(() => gravityPower);
-            f.KeyValue(() => gravityDir);
-            f.KeyValue(() => dragForce);
-            f.KeyValue(() => center);
-            f.KeyValue(() => hitRadius);
-            f.KeyValue(() => bones);
-            f.KeyValue(() => colliderGroups);
-        }
     }
 
     [Serializable]
     [JsonSchema(Title = "vrm.secondaryanimation", Description = "The setting of automatic animation of string-like objects such as tails and hairs.")]
-    public class glTF_VRM_SecondaryAnimation : JsonSerializableBase
+    public class glTF_VRM_SecondaryAnimation
     {
         [JsonSchema(ExplicitIgnorableItemLength = 0)]
         public List<glTF_VRM_SecondaryAnimationGroup> boneGroups = new List<glTF_VRM_SecondaryAnimationGroup>();
 
         [JsonSchema(ExplicitIgnorableItemLength = 0)]
         public List<glTF_VRM_SecondaryAnimationColliderGroup> colliderGroups = new List<glTF_VRM_SecondaryAnimationColliderGroup>();
-
-        protected override void SerializeMembers(GLTFJsonFormatter f)
-        {
-            f.Key("boneGroups"); f.GLTFValue(boneGroups);
-            f.Key("colliderGroups"); f.GLTFValue(colliderGroups);
-        }
     }
 }

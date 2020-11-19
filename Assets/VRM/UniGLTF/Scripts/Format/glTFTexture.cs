@@ -5,7 +5,7 @@ using UniJSON;
 namespace UniGLTF
 {
     [Serializable]
-    public class glTFTextureSampler : JsonSerializableBase
+    public class glTFTextureSampler
     {
         [JsonSchema(EnumSerializationType = EnumSerializationType.AsInt,
             EnumExcludes = new object[] {
@@ -33,18 +33,10 @@ namespace UniGLTF
         public object extensions;
         public object extras;
         public string name;
-
-        protected override void SerializeMembers(GLTFJsonFormatter f)
-        {
-            f.Key("magFilter"); f.Value((int)magFilter);
-            f.Key("minFilter"); f.Value((int)minFilter);
-            f.Key("wrapS"); f.Value((int)wrapS);
-            f.Key("wrapT"); f.Value((int)wrapT);
-        }
     }
 
     [Serializable]
-    public class glTFImage : JsonSerializableBase
+    public class glTFImage
     {
         public string name;
         public string uri;
@@ -52,7 +44,7 @@ namespace UniGLTF
         [JsonSchema(Dependencies = new string[] { "mimeType" }, Minimum = 0)]
         public int bufferView;
 
-        [JsonSchema(EnumValues = new object[] { "image/jpeg", "image/png" }, EnumSerializationType =EnumSerializationType.AsString)]
+        [JsonSchema(EnumValues = new object[] { "image/jpeg", "image/png" }, EnumSerializationType = EnumSerializationType.AsString)]
         public string mimeType;
 
         public string GetExt()
@@ -84,24 +76,10 @@ namespace UniGLTF
         // empty schemas
         public object extensions;
         public object extras;
-
-        protected override void SerializeMembers(GLTFJsonFormatter f)
-        {
-            f.KeyValue(() => name);
-            if (!string.IsNullOrEmpty(uri))
-            {
-                f.KeyValue(() => uri);
-            }
-            else
-            {
-                f.KeyValue(() => bufferView);
-                f.KeyValue(() => mimeType);
-            }
-        }
     }
 
     [Serializable]
-    public class glTFTexture : JsonSerializableBase
+    public class glTFTexture
     {
         [JsonSchema(Minimum = 0)]
         public int sampler;
@@ -113,11 +91,5 @@ namespace UniGLTF
         public object extensions;
         public object extras;
         public string name;
-
-        protected override void SerializeMembers(GLTFJsonFormatter f)
-        {
-            f.KeyValue(() => sampler);
-            f.KeyValue(() => source);
-        }
     }
 }

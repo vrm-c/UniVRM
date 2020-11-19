@@ -9,7 +9,7 @@ namespace VRM
 {
     [Serializable]
     [JsonSchema(Title = "vrm.firstperson.degreemap")]
-    public class glTF_VRM_DegreeMap : UniGLTF.JsonSerializableBase
+    public class glTF_VRM_DegreeMap
     {
         [JsonSchema(Description = "None linear mapping params. time, value, inTangent, outTangent")]
         public float[] curve;
@@ -19,16 +19,6 @@ namespace VRM
 
         [JsonSchema(Description = "Look at map range degree from xRange.")]
         public float yRange = 10.0f;
-
-        protected override void SerializeMembers(GLTFJsonFormatter f)
-        {
-            if (curve != null)
-            {
-                f.KeyValue(() => curve);
-            }
-            f.KeyValue(() => xRange);
-            f.KeyValue(() => yRange);
-        }
     }
 
     public enum FirstPersonFlag
@@ -41,19 +31,13 @@ namespace VRM
 
     [Serializable]
     [JsonSchema(Title = "vrm.firstperson.meshannotation")]
-    public class glTF_VRM_MeshAnnotation : JsonSerializableBase
+    public class glTF_VRM_MeshAnnotation
     {
         // When the value is -1, it means that no target mesh is found.
         [JsonSchema(Minimum = 0)]
         public int mesh;
 
         public string firstPersonFlag;
-
-        protected override void SerializeMembers(GLTFJsonFormatter f)
-        {
-            f.KeyValue(() => mesh);
-            f.KeyValue(() => firstPersonFlag);
-        }
     }
 
     public enum LookAtType
@@ -65,7 +49,7 @@ namespace VRM
 
     [Serializable]
     [JsonSchema(Title = "vrm.firstperson")]
-    public class glTF_VRM_Firstperson : UniGLTF.JsonSerializableBase
+    public class glTF_VRM_Firstperson
     {
         // When the value is -1, it means that no bone for first person is found.
         [JsonSchema(Description = "The bone whose rendering should be turned off in first-person view. Usually Head is specified.", Minimum = 0, ExplicitIgnorableValue = -1)]
@@ -103,18 +87,5 @@ namespace VRM
 
         [JsonSchema(Description = "Eye controller setting.")]
         public glTF_VRM_DegreeMap lookAtVerticalUp = new glTF_VRM_DegreeMap();
-
-        protected override void SerializeMembers(GLTFJsonFormatter f)
-        {
-            f.KeyValue(() => firstPersonBone);
-            f.KeyValue(() => firstPersonBoneOffset);
-            f.Key("meshAnnotations"); f.GLTFValue(meshAnnotations);
-
-            f.KeyValue(() => lookAtTypeName);
-            f.Key("lookAtHorizontalInner"); f.GLTFValue(lookAtHorizontalInner);
-            f.Key("lookAtHorizontalOuter"); f.GLTFValue(lookAtHorizontalOuter);
-            f.Key("lookAtVerticalDown"); f.GLTFValue(lookAtVerticalDown);
-            f.Key("lookAtVerticalUp"); f.GLTFValue(lookAtVerticalUp);
-        }
     }
 }

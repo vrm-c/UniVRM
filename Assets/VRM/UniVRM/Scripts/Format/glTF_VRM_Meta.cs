@@ -32,7 +32,7 @@ namespace VRM
 
     [Serializable]
     [JsonSchema(Title = "vrm.meta")]
-    public class glTF_VRM_Meta : JsonSerializableBase
+    public class glTF_VRM_Meta
     {
         static UssageLicense FromString(string src)
         {
@@ -146,26 +146,5 @@ namespace VRM
         [JsonSchema(Description = "If “Other” is selected, put the URL link of the license document here.")]
         public string otherLicenseUrl;
         #endregion
-
-        protected override void SerializeMembers(GLTFJsonFormatter f)
-        {
-            f.KeyValue(() => version);
-
-            f.KeyValue(() => author);
-            f.KeyValue(() => contactInformation);
-            f.KeyValue(() => reference);
-
-            f.KeyValue(() => title);
-            f.KeyValue(() => texture);
-
-            f.KeyValue(() => allowedUserName);
-            f.KeyValue(() => violentUssageName);
-            f.KeyValue(() => sexualUssageName);
-            f.KeyValue(() => commercialUssageName);
-            f.KeyValue(() => otherPermissionUrl);
-
-            f.KeyValue(() => licenseName);
-            f.KeyValue(() => otherLicenseUrl);
-        }
     }
 }

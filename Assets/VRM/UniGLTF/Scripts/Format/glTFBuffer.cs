@@ -1,27 +1,16 @@
 ﻿using System;
-using System.Linq;
 using UniJSON;
 
 namespace UniGLTF
 {
     [Serializable]
-    public class glTFBuffer : JsonSerializableBase
+    public class glTFBuffer
     {
         IBytesBuffer Storage;
 
         public void OpenStorage(IStorage storage)
         {
             Storage = new ArraySegmentByteBuffer(storage.Get(uri));
-            /*
-            if (string.IsNullOrEmpty(uri))
-            {
-                Storage = (glbDataBytes);
-            }
-            else
-            {
-                Storage = new UriByteBuffer(baseDir, uri);
-            }
-            */
         }
 
         public glTFBuffer()
@@ -59,19 +48,10 @@ namespace UniGLTF
         {
             return Storage.GetBytes();
         }
-
-        protected override void SerializeMembers(GLTFJsonFormatter f)
-        {
-            if (!string.IsNullOrEmpty(uri))
-            {
-                f.KeyValue(() => uri);
-            }
-            f.KeyValue(() => byteLength);
-        }
     }
 
     [Serializable]
-    public class glTFBufferView : JsonSerializableBase
+    public class glTFBufferView
     {
         [JsonSchema(Required = true, Minimum = 0)]
         public int buffer;
@@ -92,27 +72,10 @@ namespace UniGLTF
         public object extensions;
         public object extras;
         public string name;
-
-        protected override void SerializeMembers(GLTFJsonFormatter f)
-        {
-            f.KeyValue(() => buffer);
-            f.KeyValue(() => byteOffset);
-            f.KeyValue(() => byteLength);
-            if (target != glBufferTarget.NONE)
-            {
-                f.Key("target"); f.Value((int)target);
-            }
-            /* When this is not defined, data is tightly packed. When two or more accessors use the same bufferView, this field must be defined.
-            if (byteStride >= 4)
-            {
-                f.KeyValue(() => byteStride);
-            }
-            */
-        }
     }
 
     [Serializable]
-    public class glTFSparseIndices : JsonSerializableBase
+    public class glTFSparseIndices
     {
         [JsonSchema(Required = true, Minimum = 0)]
         public int bufferView = -1;
@@ -126,17 +89,10 @@ namespace UniGLTF
         // empty schemas
         public object extensions;
         public object extras;
-
-        protected override void SerializeMembers(GLTFJsonFormatter f)
-        {
-            f.KeyValue(() => bufferView);
-            f.KeyValue(() => byteOffset);
-            f.Key("componentType"); f.Value((int)componentType);
-        }
     }
 
     [Serializable]
-    public class glTFSparseValues : JsonSerializableBase
+    public class glTFSparseValues
     {
         [JsonSchema(Required = true, Minimum = 0)]
         public int bufferView = -1;
@@ -147,16 +103,10 @@ namespace UniGLTF
         // empty schemas
         public object extensions;
         public object extras;
-
-        protected override void SerializeMembers(GLTFJsonFormatter f)
-        {
-            f.KeyValue(() => bufferView);
-            f.KeyValue(() => byteOffset);
-        }
     }
 
     [Serializable]
-    public class glTFSparse : JsonSerializableBase
+    public class glTFSparse
     {
         [JsonSchema(Required = true, Minimum = 1)]
         public int count;
@@ -170,17 +120,10 @@ namespace UniGLTF
         // empty schemas
         public object extensions;
         public object extras;
-
-        protected override void SerializeMembers(GLTFJsonFormatter f)
-        {
-            f.KeyValue(() => count);
-            f.Key("indices"); f.GLTFValue(indices);
-            f.Key("values"); f.GLTFValue(values);
-        }
     }
 
     [Serializable]
-    public class glTFAccessor : JsonSerializableBase
+    public class glTFAccessor
     {
         [JsonSchema(Minimum = 0)]
         public int bufferView = -1;
@@ -237,30 +180,5 @@ namespace UniGLTF
         public object extensions;
 
         public object extras;
-
-        protected override void SerializeMembers(GLTFJsonFormatter f)
-        {
-            f.KeyValue(() => bufferView);
-            f.KeyValue(() => byteOffset);
-            f.KeyValue(() => type);
-            f.Key("componentType"); f.Value((int)componentType);
-            f.KeyValue(() => count);
-            if (max != null && max.Any())
-            {
-                f.KeyValue(() => max);
-            }
-            if (min != null && min.Any())
-            {
-                f.KeyValue(() => min);
-            }
-
-            if (sparse != null && sparse.count > 0)
-            {
-                f.Key("sparse"); f.GLTFValue(sparse);
-            }
-
-            f.KeyValue(() => normalized);
-            f.KeyValue(() => name);
-        }
     }
 }

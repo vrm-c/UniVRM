@@ -1,12 +1,151 @@
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using UniGLTF;
 using UniJSON;
 using UnityEngine;
 
 namespace VRM
 {
+    static class ToJsonExtensions
+    {
+        public static string ToJson(this glTF self)
+        {
+            var f = new JsonFormatter();
+            f.GenSerialize(self);
+            return f.ToString();
+        }
+        public static string ToJson(this glTFMesh self)
+        {
+            var f = new JsonFormatter();
+            f.GenSerialize(self);
+            return f.ToString();
+        }
+        public static string ToJson(this glTFPrimitives self)
+        {
+            var f = new JsonFormatter();
+            f.GenSerialize(self);
+            return f.ToString();
+        }
+        public static string ToJson(this glTFAttributes self)
+        {
+            var f = new JsonFormatter();
+            f.GenSerialize(self);
+            return f.ToString();
+        }
+        public static string ToJson(this glTFMaterialBaseColorTextureInfo self)
+        {
+            var f = new JsonFormatter();
+            f.GenSerialize(self);
+            return f.ToString();
+        }
+        public static string ToJson(this glTFMaterial self)
+        {
+            var f = new JsonFormatter();
+            f.GenSerialize(self);
+            return f.ToString();
+        }
+        public static string ToJson(this glTFNode self)
+        {
+            var f = new JsonFormatter();
+            f.GenSerialize(self);
+            return f.ToString();
+        }
+        public static string ToJson(this glTFSkin self)
+        {
+            var f = new JsonFormatter();
+            f.GenSerialize(self);
+            return f.ToString();
+        }
+
+        public static string ToJson(this glTF_VRM_MaterialValueBind self)
+        {
+            var f = new JsonFormatter();
+            f.GenSerialize(self);
+            return f.ToString();
+        }
+        public static string ToJson(this glTF_VRM_BlendShapeBind self)
+        {
+            var f = new JsonFormatter();
+            f.GenSerialize(self);
+            return f.ToString();
+        }
+        public static string ToJson(this glTF_VRM_BlendShapeGroup self)
+        {
+            var f = new JsonFormatter();
+            f.GenSerialize(self);
+            return f.ToString();
+        }
+        public static string ToJson(this glTF_VRM_DegreeMap self)
+        {
+            var f = new JsonFormatter();
+            f.GenSerialize(self);
+            return f.ToString();
+        }
+        public static string ToJson(this glTF_VRM_MeshAnnotation self)
+        {
+            var f = new JsonFormatter();
+            f.GenSerialize(self);
+            return f.ToString();
+        }
+        public static string ToJson(this glTF_VRM_Firstperson self)
+        {
+            var f = new JsonFormatter();
+            f.GenSerialize(self);
+            return f.ToString();
+        }
+        public static string ToJson(this glTF_VRM_HumanoidBone self)
+        {
+            var f = new JsonFormatter();
+            f.GenSerialize(self);
+            return f.ToString();
+        }
+        public static string ToJson(this glTF_VRM_Humanoid self)
+        {
+            var f = new JsonFormatter();
+            f.GenSerialize(self);
+            return f.ToString();
+        }
+        public static string ToJson(this glTF_VRM_Material self)
+        {
+            var f = new JsonFormatter();
+            f.GenSerialize(self);
+            return f.ToString();
+        }
+        public static string ToJson(this glTF_VRM_Meta self)
+        {
+            var f = new JsonFormatter();
+            f.GenSerialize(self);
+            return f.ToString();
+        }
+        public static string ToJson(this glTF_VRM_SecondaryAnimationCollider self)
+        {
+            var f = new JsonFormatter();
+            f.GenSerialize(self);
+            return f.ToString();
+        }
+        public static string ToJson(this glTF_VRM_SecondaryAnimationColliderGroup self)
+        {
+            var f = new JsonFormatter();
+            f.GenSerialize(self);
+            return f.ToString();
+        }
+
+        public static string ToJson(this glTF_VRM_SecondaryAnimationGroup self)
+        {
+            var f = new JsonFormatter();
+            f.GenSerialize(self);
+            return f.ToString();
+        }
+
+        public static string ToJson(this glTF_VRM_SecondaryAnimation self)
+        {
+            var f = new JsonFormatter();
+            f.GenSerialize(self);
+            return f.ToString();
+        }
+    }
+
     public class UniVRMSerializeTests
     {
         [Test]

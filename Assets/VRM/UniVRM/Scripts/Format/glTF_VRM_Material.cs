@@ -9,7 +9,7 @@ namespace VRM
 {
     [Serializable]
     [JsonSchema(Title = "vrm.material")]
-    public class glTF_VRM_Material : JsonSerializableBase
+    public class glTF_VRM_Material
     {
         public string name;
         public string shader;
@@ -22,53 +22,6 @@ namespace VRM
         public Dictionary<string, string> tagMap = new Dictionary<string, string>();
 
         public static readonly string VRM_USE_GLTFSHADER = "VRM_USE_GLTFSHADER";
-
-        protected override void SerializeMembers(GLTFJsonFormatter f)
-        {
-            f.KeyValue(() => name);
-            f.KeyValue(() => renderQueue);
-            f.KeyValue(() => shader);
-            {
-                f.Key("floatProperties"); f.BeginMap();
-                foreach (var kv in floatProperties)
-                {
-                    f.Key(kv.Key); f.Value(kv.Value);
-                }
-                f.EndMap();
-            }
-            {
-                f.Key("vectorProperties"); f.BeginMap();
-                foreach (var kv in vectorProperties)
-                {
-                    f.Key(kv.Key); f.Serialize(kv.Value.ToArray());
-                }
-                f.EndMap();
-            }
-            {
-                f.Key("textureProperties"); f.BeginMap();
-                foreach (var kv in textureProperties)
-                {
-                    f.Key(kv.Key); f.Value(kv.Value);
-                }
-                f.EndMap();
-            }
-            {
-                f.Key("keywordMap"); f.BeginMap();
-                foreach (var kv in keywordMap)
-                {
-                    f.Key(kv.Key); f.Value(kv.Value);
-                }
-                f.EndMap();
-            }
-            {
-                f.Key("tagMap"); f.BeginMap();
-                foreach (var kv in tagMap)
-                {
-                    f.Key(kv.Key); f.Value(kv.Value);
-                }
-                f.EndMap();
-            }
-        }
 
         public static List<glTF_VRM_Material> Parse(string src)
         {

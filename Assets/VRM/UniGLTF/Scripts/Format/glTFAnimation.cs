@@ -2,13 +2,12 @@
 using System.Linq;
 using System.Collections.Generic;
 using UniJSON;
-using UnityEngine;
 
 
 namespace UniGLTF
 {
     [Serializable]
-    public class glTFAnimationTarget : JsonSerializableBase
+    public class glTFAnimationTarget
     {
         [JsonSchema(Minimum = 0)]
         public int node;
@@ -19,15 +18,6 @@ namespace UniGLTF
         // empty schemas
         public object extensions;
         public object extras;
-
-        protected override void SerializeMembers(GLTFJsonFormatter f)
-        {
-            f.KeyValue(() => node);
-            if (!string.IsNullOrEmpty(path))
-            {
-                f.KeyValue(() => path);
-            }
-        }
 
         public enum Interpolations
         {
@@ -143,7 +133,7 @@ namespace UniGLTF
     }
 
     [Serializable]
-    public class glTFAnimationChannel : JsonSerializableBase
+    public class glTFAnimationChannel
     {
         [JsonSchema(Required = true, Minimum = 0)]
         public int sampler = -1;
@@ -154,16 +144,10 @@ namespace UniGLTF
         // empty schemas
         public object extensions;
         public object extras;
-
-        protected override void SerializeMembers(GLTFJsonFormatter f)
-        {
-            f.KeyValue(() => sampler);
-            f.Key("target"); f.GLTFValue(target);
-        }
     }
 
     [Serializable]
-    public class glTFAnimationSampler : JsonSerializableBase
+    public class glTFAnimationSampler
     {
         [JsonSchema(Required = true, Minimum = 0)]
         public int input = -1;
@@ -177,20 +161,10 @@ namespace UniGLTF
         // empty schemas
         public object extensions;
         public object extras;
-
-        protected override void SerializeMembers(GLTFJsonFormatter f)
-        {
-            f.KeyValue(() => input);
-            if (!string.IsNullOrEmpty(interpolation))
-            {
-                f.KeyValue(() => interpolation);
-            }
-            f.KeyValue(() => output);
-        }
     }
 
     [Serializable]
-    public class glTFAnimation : JsonSerializableBase
+    public class glTFAnimation
     {
         public string name = "";
 
@@ -203,17 +177,6 @@ namespace UniGLTF
         // empty schemas
         public object extensions;
         public object extras;
-
-        protected override void SerializeMembers(GLTFJsonFormatter f)
-        {
-            if (!string.IsNullOrEmpty(name))
-            {
-                f.KeyValue(() => name);
-            }
-
-            f.Key("channels"); f.GLTFValue(channels);
-            f.Key("samplers"); f.GLTFValue(samplers);
-        }
 
         [Obsolete]
         public int AddChannelAndGetSampler(int nodeIndex, glTFAnimationTarget.AnimationPropertys property)

@@ -5,7 +5,7 @@ using UniJSON;
 namespace UniGLTF
 {
     [Serializable]
-    public class glTFNode : JsonSerializableBase
+    public class glTFNode
     {
         // TODO: need an empty string?
         public string name;
@@ -43,36 +43,5 @@ namespace UniGLTF
         public glTFNode_extensions extensions;
 
         public glTFNode_extra extras = new glTFNode_extra();
-
-        protected override void SerializeMembers(GLTFJsonFormatter f)
-        {
-            if (children != null && children.Any())
-            {
-                f.Key("children"); f.BeginList();
-                foreach (var child in children)
-                {
-                    f.Value(child);
-                }
-                f.EndList();
-            }
-
-            if (!string.IsNullOrEmpty(name)) f.KeyValue(() => name);
-            if (matrix != null) f.KeyValue(() => matrix);
-            if (translation != null) f.KeyValue(() => translation);
-            if (rotation != null) f.KeyValue(() => rotation);
-            if (scale != null) f.KeyValue(() => scale);
-
-            if (mesh >= 0) f.KeyValue(() => mesh);
-            if (camera >= 0) f.KeyValue(() => camera);
-            if (skin >= 0)
-            {
-                f.KeyValue(() => skin);
-
-                if (extras.__count > 0)
-                {
-                    f.Key("extras"); f.GLTFValue(extras);
-                }
-            }
-        }
     }
 }

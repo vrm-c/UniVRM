@@ -8,6 +8,58 @@ using UnityEngine;
 
 namespace UniGLTF
 {
+    static class ToJsonExtensions
+    {
+        public static string ToJson(this glTF self)
+        {
+            var f = new JsonFormatter();
+            f.GenSerialize(self);
+            return f.ToString();
+        }
+        public static string ToJson(this glTFMesh self)
+        {
+            var f = new JsonFormatter();
+            f.GenSerialize(self);
+            return f.ToString();
+        }
+        public static string ToJson(this glTFPrimitives self)
+        {
+            var f = new JsonFormatter();
+            f.GenSerialize(self);
+            return f.ToString();
+        }
+        public static string ToJson(this glTFAttributes self)
+        {
+            var f = new JsonFormatter();
+            f.GenSerialize(self);
+            return f.ToString();
+        }
+        public static string ToJson(this glTFMaterialBaseColorTextureInfo self)
+        {
+            var f = new JsonFormatter();
+            f.GenSerialize(self);
+            return f.ToString();
+        }
+        public static string ToJson(this glTFMaterial self)
+        {
+            var f = new JsonFormatter();
+            f.GenSerialize(self);
+            return f.ToString();
+        }
+        public static string ToJson(this glTFNode self)
+        {
+            var f = new JsonFormatter();
+            f.GenSerialize(self);
+            return f.ToString();
+        }
+        public static string ToJson(this glTFSkin self)
+        {
+            var f = new JsonFormatter();
+            f.GenSerialize(self);
+            return f.ToString();
+        }
+    }
+
     public class UniGLTFTests
     {
         static GameObject CreateSimpleScene()

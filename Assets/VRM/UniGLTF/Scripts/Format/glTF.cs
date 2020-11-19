@@ -8,7 +8,7 @@ using UniJSON;
 namespace UniGLTF
 {
     [Serializable]
-    public class gltfScene : JsonSerializableBase
+    public class gltfScene
     {
         [JsonSchema(MinItems = 1)]
         [ItemJsonSchema(Minimum = 0)]
@@ -17,15 +17,10 @@ namespace UniGLTF
         public object extensions;
         public object extras;
         public string name;
-
-        protected override void SerializeMembers(GLTFJsonFormatter f)
-        {
-            f.KeyValue(() => nodes);
-        }
     }
 
     [Serializable]
-    public class glTF : JsonSerializableBase, IEquatable<glTF>
+    public class glTF : IEquatable<glTF>
     {
         [JsonSchema(Required = true)]
         public glTFAssets asset = new glTFAssets();
@@ -311,92 +306,6 @@ namespace UniGLTF
             return string.Format("{0}", asset);
         }
 
-        protected override void SerializeMembers(GLTFJsonFormatter f)
-        {
-            if (extensionsUsed.Count > 0)
-            {
-                f.Key("extensionsUsed"); f.GLTFValue(extensionsUsed);
-            }
-            if (extensions.__count > 0)
-            {
-                f.Key("extensions"); f.GLTFValue(extensions);
-            }
-            if (extras.__count > 0)
-            {
-                f.Key("extras"); f.GLTFValue(extras);
-            }
-
-            f.Key("asset"); f.GLTFValue(asset);
-
-            // buffer
-            if (buffers.Any())
-            {
-                f.Key("buffers"); f.GLTFValue(buffers);
-            }
-            if (bufferViews.Any())
-            {
-                f.Key("bufferViews"); f.GLTFValue(bufferViews);
-            }
-            if (accessors.Any())
-            {
-                f.Key("accessors"); f.GLTFValue(accessors);
-            }
-
-            // materials
-            if (images.Any())
-            {
-                f.Key("images"); f.GLTFValue(images);
-                if (samplers.Count == 0)
-                {
-                    samplers.Add(new glTFTextureSampler());
-                }
-            }
-
-            if (samplers.Any())
-            {
-                f.Key("samplers"); f.GLTFValue(samplers);
-            }
-
-            if (textures.Any())
-            {
-                f.Key("textures"); f.GLTFValue(textures);
-            }
-            if (materials.Any())
-            {
-                f.Key("materials"); f.GLTFValue(materials);
-            }
-
-            // meshes
-            if (meshes.Any())
-            {
-                f.Key("meshes"); f.GLTFValue(meshes);
-            }
-            if (skins.Any())
-            {
-                f.Key("skins"); f.GLTFValue(skins);
-            }
-
-            // scene
-            if (nodes.Any())
-            {
-                f.Key("nodes"); f.GLTFValue(nodes);
-            }
-            if (scenes.Any())
-            {
-                f.Key("scenes"); f.GLTFValue(scenes);
-                if (scene >= 0)
-                {
-                    f.KeyValue(() => scene);
-                }
-            }
-
-            // animations
-            if (animations.Any())
-            {
-                f.Key("animations"); f.GLTFValue(animations);
-            }
-        }
-
         public bool Equals(glTF other)
         {
             return
@@ -486,11 +395,6 @@ namespace UniGLTF
                 f.GenSerialize(this);
                 json = f.ToString().ParseAsJson().ToString("  ");
             }
-            else if (serializer == SerializerTypes.JsonSerializable)
-            {
-                // Obsolete
-                json = ToJson();
-            }
             else
             {
                 throw new Exception("[UniVRM Export Error] unknown serializer type");
@@ -522,4 +426,5 @@ namespace UniGLTF
             return (json, buffers);
         }
     }
+
 }
