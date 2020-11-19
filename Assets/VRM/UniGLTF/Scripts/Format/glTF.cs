@@ -377,28 +377,11 @@ namespace UniGLTF
             return f.ToString();
         }
 
-        public byte[] ToGlbBytes(SerializerTypes serializer = SerializerTypes.Generated)
+        public byte[] ToGlbBytes()
         {
-            string json;
-            if (serializer == SerializerTypes.UniJSON)
-            {
-                // Obsolete
-                var c = new JsonSchemaValidationContext(this)
-                {
-                    EnableDiagnosisForNotRequiredFields = true,
-                };
-                json = JsonSchema.FromType(GetType()).Serialize(this, c);
-            }
-            else if (serializer == SerializerTypes.Generated)
-            {
-                var f = new JsonFormatter();
-                f.GenSerialize(this);
-                json = f.ToString().ParseAsJson().ToString("  ");
-            }
-            else
-            {
-                throw new Exception("[UniVRM Export Error] unknown serializer type");
-            }
+            var f = new JsonFormatter();
+            f.GenSerialize(this);
+            var json = f.ToString().ParseAsJson().ToString("  ");
 
             RemoveUnusedExtensions(json);
 

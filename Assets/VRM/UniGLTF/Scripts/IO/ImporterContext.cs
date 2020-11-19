@@ -271,27 +271,11 @@ namespace UniGLTF
             }
         }
 
-        private SerializerTypes _serializerType = SerializerTypes.Generated;
-        public SerializerTypes SerializerType { get { return _serializerType; } set { _serializerType = value; } }
-
         public virtual void ParseJson(string json, IStorage storage)
         {
             Json = json;
             Storage = storage;
-
-            if (_serializerType == SerializerTypes.UniJSON)
-            {
-                // Obsolete
-                Json.ParseAsJson().Deserialize(ref GLTF);
-            }
-            else if (_serializerType == SerializerTypes.Generated)
-            {
-                GLTF = GltfDeserializer.Deserialize(json.ParseAsJson());
-            }
-            else
-            {
-                throw new NotImplementedException();
-            }
+            GLTF = GltfDeserializer.Deserialize(json.ParseAsJson());
 
             if (GLTF.asset.version != "2.0")
             {
