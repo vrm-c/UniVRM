@@ -12,7 +12,7 @@ namespace UniGLTF
     /// * meshes[].extras.targetNames
     /// 
     /// </summary>
-    public class gltf_mesh_extras_targetNames
+    public static class gltf_mesh_extras_targetNames
     {
         public const string ExtraName = "targetNames";
 
@@ -33,43 +33,72 @@ namespace UniGLTF
 
         public static bool TryGet(glTFMesh mesh, out List<string> targetNames)
         {
+            foreach (var kv in mesh.extras.ObjectItems())
             {
-                if (mesh.extras is ListTreeNode<JsonValue> json)
+                if (kv.Key.GetUtf8String() == ExtraNameUtf8)
                 {
-                    if (json.Value.ValueType == ValueNodeType.Object)
-                    {
-                        foreach (var kv in json.ObjectItems())
-                        {
-                            if (kv.Key.GetUtf8String() == ExtraNameUtf8)
-                            {
-                                targetNames = Deserialize(kv.Value);
-                                return true;
-                            }
-                        }
-                    }
+                    targetNames = Deserialize(kv.Value);
+                    return true;
                 }
             }
 
+            // use first primitive
+            if (mesh.primitives.Count > 0)
             {
-                // use first primitive
-                if (mesh.primitives.Count > 0 && mesh.primitives[0].extras is ListTreeNode<JsonValue> json)
+                foreach (var kv in mesh.primitives[0].extras.ObjectItems())
                 {
-                    if (json.Value.ValueType == ValueNodeType.Object)
+                    if (kv.Key.GetUtf8String() == ExtraNameUtf8)
                     {
-                        foreach (var kv in json.ObjectItems())
-                        {
-                            if (kv.Key.GetUtf8String() == ExtraNameUtf8)
-                            {
-                                targetNames = Deserialize(kv.Value);
-                                return true;
-                            }
-                        }
+                        targetNames = Deserialize(kv.Value);
+                        return true;
                     }
                 }
             }
 
             targetNames = default;
             return false;
+        }
+
+        public static glTFExtension Serialize(params string[] args)
+        {
+            var f = new JsonFormatter();
+            f.BeginList();
+            foreach (var arg in args)
+            {
+                // エスケープとかあるし
+                f.Value(arg);
+            }
+            f.EndList();
+
+            return glTFExtension.Create(ExtraName, f.GetStore().ToString());
+        }
+
+        public static void Serialize(glTFMesh gltfMesh, IEnumerable<string> targetNames)
+        {
+            // targetNames
+            var f = new JsonFormatter();
+            f.BeginList();
+            foreach (var n in targetNames)
+            {
+                f.Value(n);
+            }
+            f.EndList();
+            var targetNamesJson = f.GetStore().ToString();
+
+            if (gltfMesh.extras == null)
+            {
+                gltfMesh.extras = new glTFExtension();
+            }
+            gltfMesh.extras.Serialized.Add(ExtraName, targetNamesJson);
+
+            foreach (var prim in gltfMesh.primitives)
+            {
+                if (prim.extras == null)
+                {
+                    prim.extras = new glTFExtension();
+                }
+                prim.extras.Serialized.Add(ExtraName, targetNamesJson);
+            }
         }
     }
 }

@@ -17,8 +17,8 @@ namespace UniGLTF
         public int skeleton = -1;
 
         // empty schemas
-        public object extensions;
-        public object extras;
+        public glTFExtension extensions;
+        public glTFExtension extras;
         public string name;
     }
 }

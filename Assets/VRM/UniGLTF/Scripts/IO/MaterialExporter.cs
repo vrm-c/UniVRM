@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UniGLTF.UniUnlit;
+using UniJSON;
 using UnityEngine;
 
 
@@ -189,14 +190,7 @@ namespace UniGLTF
                 var scale = m.GetTextureScale(propertyName);
                 offset.y = (offset.y + scale.y - 1) * -1.0f;
 
-                textureInfo.extensions = new KeyValuePair<string, object>[]
-                {
-                    new KeyValuePair<string, object>("KHR_texture_transform", new glTF_KHR_texture_transform()
-                    {
-                        offset = new float[] { offset.x, offset.y },
-                        scale = new float[] { scale.x, scale.y },
-                    })
-                };
+                glTF_KHR_texture_transform.Serialize(textureInfo, offset, scale);
             }
         }
 

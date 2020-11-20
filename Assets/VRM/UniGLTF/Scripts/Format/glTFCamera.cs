@@ -22,9 +22,9 @@ namespace UniGLTF
         public float znear;
 
         [JsonSchema(MinProperties = 1)]
-        public object extensions;
+        public glTFExtension extensions;
         [JsonSchema(MinProperties = 1)]
-        public object extras;
+        public glTFExtension extras;
     }
 
     [Serializable]
@@ -39,8 +39,8 @@ namespace UniGLTF
         [JsonSchema(Required = true, Minimum = 0.0f, ExclusiveMinimum = true)]
         public float znear;
 
-        public object extensions;
-        public object extras;
+        public glTFExtension extensions;
+        public glTFExtension extras;
     }
 
     [Serializable]
@@ -54,7 +54,7 @@ namespace UniGLTF
 
         public string name;
 
-        public object extensions;
-        public object extras;
+        public glTFExtension extensions;
+        public glTFExtension extras;
     }
 }

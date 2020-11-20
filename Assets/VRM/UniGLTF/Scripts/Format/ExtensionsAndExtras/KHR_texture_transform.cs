@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UniJSON;
+using UnityEngine;
 
 namespace UniGLTF
 {
@@ -73,23 +74,44 @@ namespace UniGLTF
 
         public static bool TryGet(glTFTextureInfo info, out glTF_KHR_texture_transform t)
         {
-            if (info.extensions is ListTreeNode<JsonValue> json)
+            foreach (var kv in info.extensions.ObjectItems())
             {
-                if (json.Value.ValueType == ValueNodeType.Object)
+                if (kv.Key.GetUtf8String() == ExtensionNameUt8)
                 {
-                    foreach (var kv in json.ObjectItems())
-                    {
-                        if (kv.Key.GetUtf8String() == ExtensionNameUt8)
-                        {
-                            t = Deserialize(kv.Value);
-                            return true;
-                        }
-                    }
+                    t = Deserialize(kv.Value);
+                    return true;
                 }
             }
 
             t = default;
             return false;
+        }
+
+        public static void Serialize(glTFTextureInfo info, Vector2 offset, Vector2 scale)
+        {
+            if (info.extensions == null)
+            {
+                info.extensions = new glTFExtension();
+            }
+
+            var f = new JsonFormatter();
+            f.BeginMap();
+
+            f.Key("offset");
+            f.BeginList();
+            f.Value(offset.x);
+            f.Value(offset.y);
+            f.EndList();
+
+            f.Key("scale");
+            f.BeginList();
+            f.Value(scale.x);
+            f.Value(scale.y);
+            f.EndList();
+
+            f.EndMap();
+
+            info.extensions.Serialized.Add(ExtensionName, f.GetStore().ToString());
         }
     }
 }

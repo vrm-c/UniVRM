@@ -17,8 +17,8 @@ namespace UniGLTF
         public string minVersion;
 
         // empty schemas
-        public object extensions;
-        public object extras;
+        public glTFExtension extensions;
+        public glTFExtension extras;
 
         public override string ToString()
         {

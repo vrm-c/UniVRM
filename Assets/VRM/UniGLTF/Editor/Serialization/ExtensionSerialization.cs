@@ -16,7 +16,7 @@ namespace UniGLTF
 
         public string GenerateDeserializerCall(string callName, string argName)
         {
-            return argName;
+            return $"new glTFExtension({argName})";
         }
     }
 }

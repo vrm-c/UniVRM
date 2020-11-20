@@ -237,14 +237,7 @@ namespace UniGLTF
                 {
                     POSITION = 0,
                 },
-                extras = new KeyValuePair<string, object>[]
-                {
-                    new KeyValuePair<string, object>(
-                    "targetNames", new List<String>
-                    {
-                        "aaa",
-                    })
-                }
+                extras = gltf_mesh_extras_targetNames.Serialize("aaa"),
             };
 
             var json = model.ToJson();

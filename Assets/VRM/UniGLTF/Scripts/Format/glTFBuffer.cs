@@ -29,8 +29,8 @@ namespace UniGLTF
         public int byteLength;
 
         // empty schemas
-        public object extensions;
-        public object extras;
+        public glTFExtension extensions;
+        public glTFExtension extras;
         public string name;
 
         public glTFBufferView Append<T>(T[] array, glBufferTarget target) where T : struct
@@ -69,8 +69,8 @@ namespace UniGLTF
         public glBufferTarget target;
 
         // empty schemas
-        public object extensions;
-        public object extras;
+        public glTFExtension extensions;
+        public glTFExtension extras;
         public string name;
     }
 
@@ -87,8 +87,8 @@ namespace UniGLTF
         public glComponentType componentType;
 
         // empty schemas
-        public object extensions;
-        public object extras;
+        public glTFExtension extensions;
+        public glTFExtension extras;
     }
 
     [Serializable]
@@ -101,8 +101,8 @@ namespace UniGLTF
         public int byteOffset;
 
         // empty schemas
-        public object extensions;
-        public object extras;
+        public glTFExtension extensions;
+        public glTFExtension extras;
     }
 
     [Serializable]
@@ -118,8 +118,8 @@ namespace UniGLTF
         public glTFSparseValues values;
 
         // empty schemas
-        public object extensions;
-        public object extras;
+        public glTFExtension extensions;
+        public glTFExtension extras;
     }
 
     [Serializable]
@@ -177,8 +177,8 @@ namespace UniGLTF
         // empty schemas
         public string name;
 
-        public object extensions;
+        public glTFExtension extensions;
 
-        public object extras;
+        public glTFExtension extras;
     }
 }

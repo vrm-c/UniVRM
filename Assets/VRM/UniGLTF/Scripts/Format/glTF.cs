@@ -14,8 +14,8 @@ namespace UniGLTF
         [ItemJsonSchema(Minimum = 0)]
         public int[] nodes;
 
-        public object extensions;
-        public object extras;
+        public glTFExtension extensions;
+        public glTFExtension extras;
         public string name;
     }
 
@@ -298,8 +298,8 @@ namespace UniGLTF
         [JsonSchema(MinItems = 1, ExplicitIgnorableItemLength = 0)]
         public List<string> extensionsRequired = new List<string>();
 
-        public object extensions;
-        public object extras;
+        public glTFExtension extensions;
+        public glTFExtension extras;
 
         public override string ToString()
         {

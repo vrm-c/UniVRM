@@ -21,10 +21,7 @@ namespace UniGLTF
                     roughnessFactor = 0.9f,
                     metallicFactor = 0.0f,
                 },
-                extensions = new KeyValuePair<string, object>[]
-                {
-                    new KeyValuePair<string, object>(ExtensionName, new glTF_KHR_materials_unlit()),
-                },
+                extensions = glTFExtension.Create(ExtensionName, "{}")
             };
         }
 
@@ -35,21 +32,20 @@ namespace UniGLTF
                 return false;
             }
 
-            if (m.extensions is ListTreeNode<JsonValue> json)
+            foreach (var kv in m.extensions.ObjectItems())
             {
-                if (json.Value.ValueType == ValueNodeType.Object)
+                if (kv.Key.GetUtf8String() == ExtensionNameUtf8)
                 {
-                    foreach (var kv in json.ObjectItems())
-                    {
-                        if (kv.Key.GetUtf8String() == ExtensionNameUtf8)
-                        {
-                            return kv.Value.Value.ValueType == ValueNodeType.Object;
-                        }
-                    }
+                    return kv.Value.Value.ValueType == ValueNodeType.Object;
                 }
             }
 
             return false;
+        }
+
+        public static glTFExtension Serialize()
+        {
+            return glTFExtension.Create(ExtensionName, "{}");
         }
     }
 }

@@ -26,7 +26,7 @@ namespace UniGLTF
         /// <summary>
         /// AOT向けにシリアライザを生成する
         /// </summary>
-        [MenuItem(VRM.VRMVersion.MENU + "/Generate Serializer")]
+        [MenuItem(VRM.VRMVersion.MENU + "/GLTF: Generate Serializer")]
         static void GenerateSerializer()
         {
             var path = OutPath;

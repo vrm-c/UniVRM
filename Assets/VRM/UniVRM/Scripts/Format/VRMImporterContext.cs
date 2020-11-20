@@ -41,18 +41,12 @@ namespace VRM
             base.ParseJson(json, storage);
 
             // parse VRM part
-            if (GLTF.extensions != null && GLTF.extensions is ListTreeNode<JsonValue> vrmJson)
+            foreach (var kv in GLTF.extensions.ObjectItems())
             {
-                if (vrmJson.Value.ValueType == ValueNodeType.Object)
+                if (kv.Key.GetString() == "VRM")
                 {
-                    foreach (var kv in vrmJson.ObjectItems())
-                    {
-                        if (kv.Key.GetString() == "VRM")
-                        {
-                            VRM = VrmDeserializer.Deserialize(kv.Value);
-                            break;
-                        }
-                    }
+                    VRM = VrmDeserializer.Deserialize(kv.Value);
+                    break;
                 }
             }
 

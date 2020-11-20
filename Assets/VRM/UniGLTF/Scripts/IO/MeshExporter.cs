@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using UniJSON;
 using UnityEngine;
 
 namespace UniGLTF
@@ -266,13 +267,6 @@ namespace UniGLTF
 
                 var targetNames = new List<string>();
 
-                if (gltfMesh.extras == null)
-                {
-                    gltfMesh.extras = new KeyValuePair<string, object>[]{
-                        new KeyValuePair<string, object>("targetNames", targetNames),
-                    };
-                }
-
                 var blendShapeIndexMap = new Dictionary<int, int>();
                 int exportBlendShapes = 0;
                 for (int j = 0; j < mesh.blendShapeCount; ++j)
@@ -297,15 +291,10 @@ namespace UniGLTF
                     for (int k = 0; k < gltfMesh.primitives.Count; ++k)
                     {
                         gltfMesh.primitives[k].targets.Add(morphTarget);
-                        if (gltfMesh.primitives[k].extras == null)
-                        {
-                            gltfMesh.primitives[k].extras = new KeyValuePair<string, object>[]
-                            {
-                                new KeyValuePair<string, object>("targetNames", targetNames),
-                            };
-                        }
                     }
                 }
+
+                gltf_mesh_extras_targetNames.Serialize(gltfMesh, targetNames);
 
                 yield return (mesh, gltfMesh, blendShapeIndexMap);
             }

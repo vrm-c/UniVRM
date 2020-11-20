@@ -105,12 +105,12 @@ public static glTF Deserialize(ListTreeNode<JsonValue> parsed)
         }
 
         if(key=="extensions"){
-            value.extensions = kv.Value;
+            value.extensions = new glTFExtension(kv.Value);
             continue;
         }
 
         if(key=="extras"){
-            value.extras = kv.Value;
+            value.extras = new glTFExtension(kv.Value);
             continue;
         }
 
@@ -147,12 +147,12 @@ public static glTFAssets Deserialize_gltf_asset(ListTreeNode<JsonValue> parsed)
         }
 
         if(key=="extensions"){
-            value.extensions = kv.Value;
+            value.extensions = new glTFExtension(kv.Value);
             continue;
         }
 
         if(key=="extras"){
-            value.extras = kv.Value;
+            value.extras = new glTFExtension(kv.Value);
             continue;
         }
 
@@ -188,12 +188,12 @@ public static glTFBuffer Deserialize_gltf_buffers_LIST(ListTreeNode<JsonValue> p
         }
 
         if(key=="extensions"){
-            value.extensions = kv.Value;
+            value.extensions = new glTFExtension(kv.Value);
             continue;
         }
 
         if(key=="extras"){
-            value.extras = kv.Value;
+            value.extras = new glTFExtension(kv.Value);
             continue;
         }
 
@@ -249,12 +249,12 @@ public static glTFBufferView Deserialize_gltf_bufferViews_LIST(ListTreeNode<Json
         }
 
         if(key=="extensions"){
-            value.extensions = kv.Value;
+            value.extensions = new glTFExtension(kv.Value);
             continue;
         }
 
         if(key=="extras"){
-            value.extras = kv.Value;
+            value.extras = new glTFExtension(kv.Value);
             continue;
         }
 
@@ -335,12 +335,12 @@ public static glTFAccessor Deserialize_gltf_accessors_LIST(ListTreeNode<JsonValu
         }
 
         if(key=="extensions"){
-            value.extensions = kv.Value;
+            value.extensions = new glTFExtension(kv.Value);
             continue;
         }
 
         if(key=="extras"){
-            value.extras = kv.Value;
+            value.extras = new glTFExtension(kv.Value);
             continue;
         }
 
@@ -394,12 +394,12 @@ public static glTFSparse Deserialize_gltf_accessors__sparse(ListTreeNode<JsonVal
         }
 
         if(key=="extensions"){
-            value.extensions = kv.Value;
+            value.extensions = new glTFExtension(kv.Value);
             continue;
         }
 
         if(key=="extras"){
-            value.extras = kv.Value;
+            value.extras = new glTFExtension(kv.Value);
             continue;
         }
 
@@ -431,12 +431,12 @@ public static glTFSparseIndices Deserialize_gltf_accessors__sparse_indices(ListT
         }
 
         if(key=="extensions"){
-            value.extensions = kv.Value;
+            value.extensions = new glTFExtension(kv.Value);
             continue;
         }
 
         if(key=="extras"){
-            value.extras = kv.Value;
+            value.extras = new glTFExtension(kv.Value);
             continue;
         }
 
@@ -463,12 +463,12 @@ public static glTFSparseValues Deserialize_gltf_accessors__sparse_values(ListTre
         }
 
         if(key=="extensions"){
-            value.extensions = kv.Value;
+            value.extensions = new glTFExtension(kv.Value);
             continue;
         }
 
         if(key=="extras"){
-            value.extras = kv.Value;
+            value.extras = new glTFExtension(kv.Value);
             continue;
         }
 
@@ -504,12 +504,12 @@ public static glTFTexture Deserialize_gltf_textures_LIST(ListTreeNode<JsonValue>
         }
 
         if(key=="extensions"){
-            value.extensions = kv.Value;
+            value.extensions = new glTFExtension(kv.Value);
             continue;
         }
 
         if(key=="extras"){
-            value.extras = kv.Value;
+            value.extras = new glTFExtension(kv.Value);
             continue;
         }
 
@@ -560,12 +560,12 @@ public static glTFTextureSampler Deserialize_gltf_samplers_LIST(ListTreeNode<Jso
         }
 
         if(key=="extensions"){
-            value.extensions = kv.Value;
+            value.extensions = new glTFExtension(kv.Value);
             continue;
         }
 
         if(key=="extras"){
-            value.extras = kv.Value;
+            value.extras = new glTFExtension(kv.Value);
             continue;
         }
 
@@ -616,12 +616,12 @@ public static glTFImage Deserialize_gltf_images_LIST(ListTreeNode<JsonValue> par
         }
 
         if(key=="extensions"){
-            value.extensions = kv.Value;
+            value.extensions = new glTFExtension(kv.Value);
             continue;
         }
 
         if(key=="extras"){
-            value.extras = kv.Value;
+            value.extras = new glTFExtension(kv.Value);
             continue;
         }
 
@@ -692,12 +692,12 @@ public static glTFMaterial Deserialize_gltf_materials_LIST(ListTreeNode<JsonValu
         }
 
         if(key=="extensions"){
-            value.extensions = kv.Value;
+            value.extensions = new glTFExtension(kv.Value);
             continue;
         }
 
         if(key=="extras"){
-            value.extras = kv.Value;
+            value.extras = new glTFExtension(kv.Value);
             continue;
         }
 
@@ -739,12 +739,12 @@ public static glTFPbrMetallicRoughness Deserialize_gltf_materials__pbrMetallicRo
         }
 
         if(key=="extensions"){
-            value.extensions = kv.Value;
+            value.extensions = new glTFExtension(kv.Value);
             continue;
         }
 
         if(key=="extras"){
-            value.extras = kv.Value;
+            value.extras = new glTFExtension(kv.Value);
             continue;
         }
 
@@ -771,12 +771,12 @@ public static glTFMaterialBaseColorTextureInfo Deserialize_gltf_materials__pbrMe
         }
 
         if(key=="extensions"){
-            value.extensions = kv.Value;
+            value.extensions = new glTFExtension(kv.Value);
             continue;
         }
 
         if(key=="extras"){
-            value.extras = kv.Value;
+            value.extras = new glTFExtension(kv.Value);
             continue;
         }
 
@@ -814,12 +814,12 @@ public static glTFMaterialMetallicRoughnessTextureInfo Deserialize_gltf_material
         }
 
         if(key=="extensions"){
-            value.extensions = kv.Value;
+            value.extensions = new glTFExtension(kv.Value);
             continue;
         }
 
         if(key=="extras"){
-            value.extras = kv.Value;
+            value.extras = new glTFExtension(kv.Value);
             continue;
         }
 
@@ -851,12 +851,12 @@ public static glTFMaterialNormalTextureInfo Deserialize_gltf_materials__normalTe
         }
 
         if(key=="extensions"){
-            value.extensions = kv.Value;
+            value.extensions = new glTFExtension(kv.Value);
             continue;
         }
 
         if(key=="extras"){
-            value.extras = kv.Value;
+            value.extras = new glTFExtension(kv.Value);
             continue;
         }
 
@@ -888,12 +888,12 @@ public static glTFMaterialOcclusionTextureInfo Deserialize_gltf_materials__occlu
         }
 
         if(key=="extensions"){
-            value.extensions = kv.Value;
+            value.extensions = new glTFExtension(kv.Value);
             continue;
         }
 
         if(key=="extras"){
-            value.extras = kv.Value;
+            value.extras = new glTFExtension(kv.Value);
             continue;
         }
 
@@ -920,12 +920,12 @@ public static glTFMaterialEmissiveTextureInfo Deserialize_gltf_materials__emissi
         }
 
         if(key=="extensions"){
-            value.extensions = kv.Value;
+            value.extensions = new glTFExtension(kv.Value);
             continue;
         }
 
         if(key=="extras"){
-            value.extras = kv.Value;
+            value.extras = new glTFExtension(kv.Value);
             continue;
         }
 
@@ -977,12 +977,12 @@ public static glTFMesh Deserialize_gltf_meshes_LIST(ListTreeNode<JsonValue> pars
         }
 
         if(key=="extras"){
-            value.extras = kv.Value;
+            value.extras = new glTFExtension(kv.Value);
             continue;
         }
 
         if(key=="extensions"){
-            value.extensions = kv.Value;
+            value.extensions = new glTFExtension(kv.Value);
             continue;
         }
 
@@ -1033,12 +1033,12 @@ public static glTFPrimitives Deserialize_gltf_meshes__primitives_LIST(ListTreeNo
         }
 
         if(key=="extras"){
-            value.extras = kv.Value;
+            value.extras = new glTFExtension(kv.Value);
             continue;
         }
 
         if(key=="extensions"){
-            value.extensions = kv.Value;
+            value.extensions = new glTFExtension(kv.Value);
             continue;
         }
 
@@ -1213,12 +1213,12 @@ public static glTFNode Deserialize_gltf_nodes_LIST(ListTreeNode<JsonValue> parse
         }
 
         if(key=="extensions"){
-            value.extensions = kv.Value;
+            value.extensions = new glTFExtension(kv.Value);
             continue;
         }
 
         if(key=="extras"){
-            value.extras = kv.Value;
+            value.extras = new glTFExtension(kv.Value);
             continue;
         }
 
@@ -1325,12 +1325,12 @@ public static glTFSkin Deserialize_gltf_skins_LIST(ListTreeNode<JsonValue> parse
         }
 
         if(key=="extensions"){
-            value.extensions = kv.Value;
+            value.extensions = new glTFExtension(kv.Value);
             continue;
         }
 
         if(key=="extras"){
-            value.extras = kv.Value;
+            value.extras = new glTFExtension(kv.Value);
             continue;
         }
 
@@ -1377,12 +1377,12 @@ public static gltfScene Deserialize_gltf_scenes_LIST(ListTreeNode<JsonValue> par
         }
 
         if(key=="extensions"){
-            value.extensions = kv.Value;
+            value.extensions = new glTFExtension(kv.Value);
             continue;
         }
 
         if(key=="extras"){
-            value.extras = kv.Value;
+            value.extras = new glTFExtension(kv.Value);
             continue;
         }
 
@@ -1439,12 +1439,12 @@ public static glTFAnimation Deserialize_gltf_animations_LIST(ListTreeNode<JsonVa
         }
 
         if(key=="extensions"){
-            value.extensions = kv.Value;
+            value.extensions = new glTFExtension(kv.Value);
             continue;
         }
 
         if(key=="extras"){
-            value.extras = kv.Value;
+            value.extras = new glTFExtension(kv.Value);
             continue;
         }
 
@@ -1480,12 +1480,12 @@ public static glTFAnimationChannel Deserialize_gltf_animations__channels_LIST(Li
         }
 
         if(key=="extensions"){
-            value.extensions = kv.Value;
+            value.extensions = new glTFExtension(kv.Value);
             continue;
         }
 
         if(key=="extras"){
-            value.extras = kv.Value;
+            value.extras = new glTFExtension(kv.Value);
             continue;
         }
 
@@ -1512,12 +1512,12 @@ public static glTFAnimationTarget Deserialize_gltf_animations__channels__target(
         }
 
         if(key=="extensions"){
-            value.extensions = kv.Value;
+            value.extensions = new glTFExtension(kv.Value);
             continue;
         }
 
         if(key=="extras"){
-            value.extras = kv.Value;
+            value.extras = new glTFExtension(kv.Value);
             continue;
         }
 
@@ -1558,12 +1558,12 @@ public static glTFAnimationSampler Deserialize_gltf_animations__samplers_LIST(Li
         }
 
         if(key=="extensions"){
-            value.extensions = kv.Value;
+            value.extensions = new glTFExtension(kv.Value);
             continue;
         }
 
         if(key=="extras"){
-            value.extras = kv.Value;
+            value.extras = new glTFExtension(kv.Value);
             continue;
         }
 
@@ -1609,12 +1609,12 @@ public static glTFCamera Deserialize_gltf_cameras_LIST(ListTreeNode<JsonValue> p
         }
 
         if(key=="extensions"){
-            value.extensions = kv.Value;
+            value.extensions = new glTFExtension(kv.Value);
             continue;
         }
 
         if(key=="extras"){
-            value.extras = kv.Value;
+            value.extras = new glTFExtension(kv.Value);
             continue;
         }
 
@@ -1651,12 +1651,12 @@ public static glTFOrthographic Deserialize_gltf_cameras__orthographic(ListTreeNo
         }
 
         if(key=="extensions"){
-            value.extensions = kv.Value;
+            value.extensions = new glTFExtension(kv.Value);
             continue;
         }
 
         if(key=="extras"){
-            value.extras = kv.Value;
+            value.extras = new glTFExtension(kv.Value);
             continue;
         }
 
@@ -1693,12 +1693,12 @@ public static glTFPerspective Deserialize_gltf_cameras__perspective(ListTreeNode
         }
 
         if(key=="extensions"){
-            value.extensions = kv.Value;
+            value.extensions = new glTFExtension(kv.Value);
             continue;
         }
 
         if(key=="extras"){
-            value.extras = kv.Value;
+            value.extras = new glTFExtension(kv.Value);
             continue;
         }
 

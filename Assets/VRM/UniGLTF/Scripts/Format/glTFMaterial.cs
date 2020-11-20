@@ -28,8 +28,8 @@ namespace UniGLTF
         public int texCoord;
 
         // empty schemas
-        public object extensions;
-        public object extras;
+        public glTFExtension extensions;
+        public glTFExtension extras;
 
         public abstract glTFTextureTypes TextureType { get; }
     }
@@ -103,8 +103,8 @@ namespace UniGLTF
         public float roughnessFactor = 1.0f;
 
         // empty schemas
-        public object extensions;
-        public object extras;
+        public glTFExtension extensions;
+        public glTFExtension extras;
     }
 
     [Serializable]
@@ -134,8 +134,8 @@ namespace UniGLTF
         public bool doubleSided;
 
         [JsonSchema(SkipSchemaComparison = true)]
-        public object extensions;
-        public object extras;
+        public glTFExtension extensions;
+        public glTFExtension extras;
 
         public glTFTextureInfo[] GetTextures()
         {

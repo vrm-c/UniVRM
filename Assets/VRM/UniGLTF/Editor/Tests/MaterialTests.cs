@@ -54,10 +54,7 @@ namespace UniGLTF
                     {
                         baseColorFactor = new float[] { 1, 0, 0, 1 },
                     },
-                    extensions = new KeyValuePair<string, object>[]
-                    {
-                        new KeyValuePair<string, object>("KHR_materials_unlit", new glTF_KHR_materials_unlit { }),
-                    }
+                    extensions = glTF_KHR_materials_unlit.Serialize(),
                 });
                 Assert.AreEqual("UniGLTF/UniUnlit", shader.name);
             }
@@ -71,10 +68,7 @@ namespace UniGLTF
                     {
                         baseColorTexture = new glTFMaterialBaseColorTextureInfo(),
                     },
-                    extensions = new KeyValuePair<string, object>[]
-                    {
-                        new KeyValuePair<string, object>("KHR_materials_unlit", new glTF_KHR_materials_unlit { }),
-                    }
+                    extensions = glTF_KHR_materials_unlit.Serialize(),
                 });
                 Assert.AreEqual("UniGLTF/UniUnlit", shader.name);
             }
@@ -89,10 +83,7 @@ namespace UniGLTF
                         baseColorFactor = new float[] { 1, 0, 0, 1 },
                         baseColorTexture = new glTFMaterialBaseColorTextureInfo(),
                     },
-                    extensions = new KeyValuePair<string, object>[]
-                    {
-                        new KeyValuePair<string, object>("KHR_materials_unlit", new glTF_KHR_materials_unlit { }),
-                    }
+                    extensions = glTF_KHR_materials_unlit.Serialize(),
                 });
                 Assert.AreEqual("UniGLTF/UniUnlit", shader.name);
             }
@@ -106,10 +97,7 @@ namespace UniGLTF
                     {
                         baseColorFactor = new float[] { 1, 0, 0, 1 },
                     },
-                    extensions = new KeyValuePair<string, object>[]
-                    {
-                        new KeyValuePair<string, object>("KHR_materials_unlit", new glTF_KHR_materials_unlit { }),
-                    }
+                    extensions = glTF_KHR_materials_unlit.Serialize(),
                 });
                 Assert.AreEqual("UniGLTF/UniUnlit", shader.name);
             }
@@ -123,10 +111,7 @@ namespace UniGLTF
                     {
                         baseColorTexture = new glTFMaterialBaseColorTextureInfo(),
                     },
-                    extensions = new KeyValuePair<string, object>[]
-                    {
-                        new KeyValuePair<string, object>("KHR_materials_unlit", new glTF_KHR_materials_unlit { }),
-                    }
+                    extensions = glTF_KHR_materials_unlit.Serialize(),
                 });
                 Assert.AreEqual("UniGLTF/UniUnlit", shader.name);
             }
@@ -141,10 +126,7 @@ namespace UniGLTF
                         baseColorFactor = new float[] { 1, 0, 0, 1 },
                         baseColorTexture = new glTFMaterialBaseColorTextureInfo(),
                     },
-                    extensions = new KeyValuePair<string, object>[]
-                    {
-                        new KeyValuePair<string, object>("KHR_materials_unlit", new glTF_KHR_materials_unlit { }),
-                    }
+                    extensions = glTF_KHR_materials_unlit.Serialize(),
                 });
                 Assert.AreEqual("UniGLTF/UniUnlit", shader.name);
             }
@@ -158,10 +140,7 @@ namespace UniGLTF
                     {
                         baseColorTexture = new glTFMaterialBaseColorTextureInfo(),
                     },
-                    extensions = new KeyValuePair<string, object>[]
-                    {
-                        new KeyValuePair<string, object>("KHR_materials_unlit", new glTF_KHR_materials_unlit { }),
-                    }
+                    extensions = glTF_KHR_materials_unlit.Serialize(),
                 });
                 Assert.AreEqual("UniGLTF/UniUnlit", shader.name);
             }
@@ -176,10 +155,7 @@ namespace UniGLTF
                         baseColorFactor = new float[] { 1, 0, 0, 1 },
                         baseColorTexture = new glTFMaterialBaseColorTextureInfo(),
                     },
-                    extensions = new KeyValuePair<string, object>[]
-                    {
-                        new KeyValuePair<string, object>("KHR_materials_unlit", new glTF_KHR_materials_unlit { }),
-                    }
+                    extensions = glTF_KHR_materials_unlit.Serialize(),
                 });
                 Assert.AreEqual("UniGLTF/UniUnlit", shader.name);
             }
@@ -188,10 +164,7 @@ namespace UniGLTF
                 // default
                 var shader = shaderStore.GetShader(new glTFMaterial
                 {
-                    extensions = new KeyValuePair<string, object>[]
-                    {
-                        new KeyValuePair<string, object>("KHR_materials_unlit", new glTF_KHR_materials_unlit { }),
-                    }
+                    extensions = glTF_KHR_materials_unlit.Serialize(),
                 });
                 Assert.AreEqual("UniGLTF/UniUnlit", shader.name);
             }

@@ -16,8 +16,8 @@ namespace UniGLTF
         public string path;
 
         // empty schemas
-        public object extensions;
-        public object extras;
+        public glTFExtension extensions;
+        public glTFExtension extras;
 
         public enum Interpolations
         {
@@ -142,8 +142,8 @@ namespace UniGLTF
         public glTFAnimationTarget target;
 
         // empty schemas
-        public object extensions;
-        public object extras;
+        public glTFExtension extensions;
+        public glTFExtension extras;
     }
 
     [Serializable]
@@ -159,8 +159,8 @@ namespace UniGLTF
         public int output = -1;
 
         // empty schemas
-        public object extensions;
-        public object extras;
+        public glTFExtension extensions;
+        public glTFExtension extras;
     }
 
     [Serializable]
@@ -175,8 +175,8 @@ namespace UniGLTF
         public List<glTFAnimationSampler> samplers = new List<glTFAnimationSampler>();
 
         // empty schemas
-        public object extensions;
-        public object extras;
+        public glTFExtension extensions;
+        public glTFExtension extras;
 
         [Obsolete]
         public int AddChannelAndGetSampler(int nodeIndex, glTFAnimationTarget.AnimationPropertys property)

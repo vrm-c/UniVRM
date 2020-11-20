@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UniGLTF;
+using UniJSON;
 using UnityEngine;
 
 
@@ -30,9 +31,6 @@ namespace VRM
         public VRMExporter(glTF gltf) : base(gltf)
         {
             gltf.extensionsUsed.Add(glTF_VRM_extensions.ExtensionName);
-            gltf.extensions = new KeyValuePair<string, object>[]{
-                new KeyValuePair<string, object>("VRM", VRM)
-            };
         }
 
         public override void Export(MeshExportSettings configuration)
@@ -205,6 +203,12 @@ namespace VRM
             {
                 VRM.materialProperties.Add(VRMMaterialExporter.CreateFromMaterial(m, TextureManager.Textures));
             }
+
+            // Serialize VRM
+            var f = new JsonFormatter();
+            f.GenSerialize(VRM);
+            var json = f.ToString();
+            glTF.extensions = glTFExtension.Create("VRM", json);
         }
     }
 }

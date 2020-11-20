@@ -30,8 +30,8 @@ namespace UniGLTF
         public glWrap wrapT = glWrap.REPEAT;
 
         // empty schemas
-        public object extensions;
-        public object extras;
+        public glTFExtension extensions;
+        public glTFExtension extras;
         public string name;
     }
 
@@ -74,8 +74,8 @@ namespace UniGLTF
         }
 
         // empty schemas
-        public object extensions;
-        public object extras;
+        public glTFExtension extensions;
+        public glTFExtension extras;
     }
 
     [Serializable]
@@ -88,8 +88,8 @@ namespace UniGLTF
         public int source;
 
         // empty schemas
-        public object extensions;
-        public object extras;
+        public glTFExtension extensions;
+        public glTFExtension extras;
         public string name;
     }
 }

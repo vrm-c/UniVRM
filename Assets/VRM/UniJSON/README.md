@@ -58,8 +58,8 @@ public class glTFSparseIndices
     public glComponentType componentType;
 
     // empty schemas
-    public object extensions;
-    public object extras;
+    public glTFExtension extensions;
+    public glTFExtension extras;
 }
 
 

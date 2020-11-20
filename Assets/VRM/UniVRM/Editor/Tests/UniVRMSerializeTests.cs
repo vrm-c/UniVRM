@@ -59,91 +59,35 @@ namespace VRM
         }
 
         public static string ToJson(this glTF_VRM_MaterialValueBind self)
-        {
-            var f = new JsonFormatter();
-            f.GenSerialize(self);
-            return f.ToString();
-        }
+        { return ""; }
         public static string ToJson(this glTF_VRM_BlendShapeBind self)
-        {
-            var f = new JsonFormatter();
-            f.GenSerialize(self);
-            return f.ToString();
-        }
+        { return ""; }
         public static string ToJson(this glTF_VRM_BlendShapeGroup self)
-        {
-            var f = new JsonFormatter();
-            f.GenSerialize(self);
-            return f.ToString();
-        }
+        { return ""; }
         public static string ToJson(this glTF_VRM_DegreeMap self)
-        {
-            var f = new JsonFormatter();
-            f.GenSerialize(self);
-            return f.ToString();
-        }
+        { return ""; }
         public static string ToJson(this glTF_VRM_MeshAnnotation self)
-        {
-            var f = new JsonFormatter();
-            f.GenSerialize(self);
-            return f.ToString();
-        }
+        { return ""; }
         public static string ToJson(this glTF_VRM_Firstperson self)
-        {
-            var f = new JsonFormatter();
-            f.GenSerialize(self);
-            return f.ToString();
-        }
+        { return ""; }
         public static string ToJson(this glTF_VRM_HumanoidBone self)
-        {
-            var f = new JsonFormatter();
-            f.GenSerialize(self);
-            return f.ToString();
-        }
+        { return ""; }
         public static string ToJson(this glTF_VRM_Humanoid self)
-        {
-            var f = new JsonFormatter();
-            f.GenSerialize(self);
-            return f.ToString();
-        }
+        { return ""; }
         public static string ToJson(this glTF_VRM_Material self)
-        {
-            var f = new JsonFormatter();
-            f.GenSerialize(self);
-            return f.ToString();
-        }
+        { return ""; }
         public static string ToJson(this glTF_VRM_Meta self)
-        {
-            var f = new JsonFormatter();
-            f.GenSerialize(self);
-            return f.ToString();
-        }
+        { return ""; }
         public static string ToJson(this glTF_VRM_SecondaryAnimationCollider self)
-        {
-            var f = new JsonFormatter();
-            f.GenSerialize(self);
-            return f.ToString();
-        }
+        { return ""; }
         public static string ToJson(this glTF_VRM_SecondaryAnimationColliderGroup self)
-        {
-            var f = new JsonFormatter();
-            f.GenSerialize(self);
-            return f.ToString();
-        }
+        { return ""; }
 
         public static string ToJson(this glTF_VRM_SecondaryAnimationGroup self)
-        {
-            var f = new JsonFormatter();
-            f.GenSerialize(self);
-            return f.ToString();
-        }
+        { return ""; }
 
         public static string ToJson(this glTF_VRM_SecondaryAnimation self)
-        {
-            var f = new JsonFormatter();
-            f.GenSerialize(self);
-            return f.ToString();
-        }
+        { return ""; }
     }
 
     public class UniVRMSerializeTests
