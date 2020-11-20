@@ -126,6 +126,10 @@ namespace UniGLTF
             {
                 return new EnumIntSerialization(t, attr.EnumSerializationType);
             }
+            else if (t == typeof(object))
+            {
+                return new ExtensionSerialization();
+            }
 
             return new ObjectSerialization(t, path);
         }

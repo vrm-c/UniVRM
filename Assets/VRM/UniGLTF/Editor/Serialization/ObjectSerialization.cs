@@ -38,11 +38,6 @@ namespace UniGLTF
             m_fsi = t.GetFields(DeserializerGenerator.FIELD_FLAGS)
             .Where(x =>
             {
-                if (x.FieldType == typeof(object))
-                {
-                    // object. coannot serialize
-                    return false;
-                }
                 if (x.IsLiteral && !x.IsInitOnly)
                 {
                     // const

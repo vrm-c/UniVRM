@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using UniJSON;
 
 namespace UniGLTF
@@ -22,6 +24,17 @@ namespace UniGLTF
         [ItemJsonSchema(Minimum = 0)]
         public int texCoord;
 
+        static IEnumerable<float> DeserializeFloat2(ListTreeNode<JsonValue> json)
+        {
+            if (json.Value.ValueType == ValueNodeType.Array)
+            {
+                foreach (var a in json.ArrayItems())
+                {
+                    yield return a.GetSingle();
+                }
+            }
+        }
+
         static glTF_KHR_texture_transform Deserialize(ListTreeNode<JsonValue> json)
         {
             var t = new glTF_KHR_texture_transform();
@@ -34,22 +47,25 @@ namespace UniGLTF
                     switch (key)
                     {
                         case nameof(offset):
-                            throw new NotImplementedException();
+                            t.offset = DeserializeFloat2(kv.Value).ToArray();
                             break;
+
                         case nameof(rotation):
-                            throw new NotImplementedException();
+                            t.rotation = kv.Value.GetSingle();
                             break;
+
                         case nameof(scale):
-                            throw new NotImplementedException();
+                            t.scale = DeserializeFloat2(kv.Value).ToArray();
                             break;
+
                         case nameof(texCoord):
-                            throw new NotImplementedException();
+                            t.texCoord = kv.Value.GetInt32();
                             break;
+
                         default:
                             throw new NotImplementedException();
                     }
                 }
-
             }
 
             return t;
