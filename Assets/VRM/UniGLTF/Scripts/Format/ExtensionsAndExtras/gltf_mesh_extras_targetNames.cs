@@ -33,17 +33,20 @@ namespace UniGLTF
 
         public static bool TryGet(glTFMesh mesh, out List<string> targetNames)
         {
-            foreach (var kv in mesh.extras.ObjectItems())
+            if (mesh.extras != null)
             {
-                if (kv.Key.GetUtf8String() == ExtraNameUtf8)
+                foreach (var kv in mesh.extras.ObjectItems())
                 {
-                    targetNames = Deserialize(kv.Value);
-                    return true;
+                    if (kv.Key.GetUtf8String() == ExtraNameUtf8)
+                    {
+                        targetNames = Deserialize(kv.Value);
+                        return true;
+                    }
                 }
             }
 
             // use first primitive
-            if (mesh.primitives.Count > 0)
+            if (mesh.primitives.Count > 0 && mesh.primitives[0].extras != null)
             {
                 foreach (var kv in mesh.primitives[0].extras.ObjectItems())
                 {

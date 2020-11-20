@@ -29,6 +29,7 @@ namespace UniGLTF
 
             var materialExporter = new MaterialExporter();
             var gltfMaterial = materialExporter.ExportMaterial(srcMaterial, textureManager);
+            gltfMaterial.pbrMetallicRoughness.baseColorTexture.extensions.Parse();
 
             var shaderStore = new ShaderStore(null);
             var materialImporter = new MaterialImporter(shaderStore, (int index) => { return null; });

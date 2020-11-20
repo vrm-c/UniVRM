@@ -268,20 +268,10 @@ namespace UniGLTF
                                 var primitive = mesh.primitives.FirstOrDefault();
                                 var targets = primitive.targets;
 
-                                List<string> targetNames;
-                                throw new NotImplementedException();
-                                // if(primitive != null && primitive.extras != null && primitive.extras.targetNames != null && primitive.extras.targetNames.Count > 0)
-                                // {
-                                //     targetNames = primitive.extras.targetNames;
-                                // }
-                                // else if(mesh.extras != null && mesh.extras.targetNames != null && mesh.extras.targetNames.Count > 0)
-                                // {
-                                //     targetNames = mesh.extras.targetNames;
-                                // }
-                                // else
-                                // {
-                                //     throw new Exception("glTF BlendShape Animation. targetNames invalid.");
-                                // }
+                                if (!gltf_mesh_extras_targetNames.TryGet(mesh, out List<string> targetNames))
+                                {
+                                    throw new Exception("glTF BlendShape Animation. targetNames invalid.");
+                                }
 
                                 var keyNames = targetNames
                                     .Where(x => !string.IsNullOrEmpty(x))
@@ -307,7 +297,7 @@ namespace UniGLTF
                                         }
                                         return values;
                                     });
-                                
+
                             }
                             break;
 
