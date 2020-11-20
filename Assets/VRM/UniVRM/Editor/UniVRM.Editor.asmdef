@@ -6,7 +6,8 @@
         "UniHumanoid",
         "MeshUtility",
         "MeshUtility.Editor",
-        "UniUnlit"
+        "UniUnlit",
+        "UniGLTF.Editor"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [

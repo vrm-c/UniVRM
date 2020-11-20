@@ -5,6 +5,7 @@ using UniGLTF;
 using UnityEngine;
 using System.IO;
 using System.Collections;
+using UniJSON;
 
 namespace VRM
 {
@@ -13,13 +14,7 @@ namespace VRM
         const string HUMANOID_KEY = "humanoid";
         const string MATERIAL_KEY = "materialProperties";
 
-        public VRM.glTF_VRM_extensions VRM
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
+        public VRM.glTF_VRM_extensions VRM { get; private set; }
 
         public VRMImporterContext()
         {
@@ -42,7 +37,25 @@ namespace VRM
 
         public override void ParseJson(string json, IStorage storage)
         {
+            // parse GLTF part(core + unlit, textureTransform, targetNames)
             base.ParseJson(json, storage);
+
+            // parse VRM part
+            if (GLTF.extensions != null && GLTF.extensions is ListTreeNode<JsonValue> vrmJson)
+            {
+                if (vrmJson.Value.ValueType == ValueNodeType.Object)
+                {
+                    foreach (var kv in vrmJson.ObjectItems())
+                    {
+                        if (kv.Key.GetString() == "VRM")
+                        {
+                            VRM = VrmDeserializer.Deserialize(kv.Value);
+                            break;
+                        }
+                    }
+                }
+            }
+
             SetMaterialImporter(new VRMMaterialImporter(this, glTF_VRM_Material.Parse(Json)));
         }
 

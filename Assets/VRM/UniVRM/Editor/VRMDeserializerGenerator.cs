@@ -4,7 +4,7 @@ using System.Text;
 using UnityEditor;
 using UnityEngine;
 
-namespace UniGLTF
+namespace VRM
 {
     public static class DeserializerGenerator
     {
@@ -15,17 +15,17 @@ namespace UniGLTF
             get
             {
                 return Path.Combine(UnityEngine.Application.dataPath,
-                "VRM/UniGLTF/Scripts/IO/GltfDeserializer.g.cs");
+                "VRM/UniVRM/Scripts/Format/VRMDeserializer.g.cs");
             }
         }
 
         /// <summary>
         /// AOT向けにデシリアライザを生成する
         /// </summary>
-        [MenuItem(VRM.VRMVersion.MENU + "/GLTF: Generate Deserializer")]
+        [MenuItem(VRM.VRMVersion.MENU + "/VRM: Generate Deserializer")]
         static void GenerateSerializer()
         {
-            var info = new ObjectSerialization(typeof(glTF), "gltf");
+            var info = new UniGLTF.ObjectSerialization(typeof(glTF_VRM_extensions), "vrm");
             Debug.Log(info);
 
             using (var s = File.Open(OutPath, FileMode.Create))
@@ -39,9 +39,9 @@ using System.Collections.Generic;
 using VRM;
 using UnityEngine;
 
-namespace UniGLTF {
+namespace VRM {
 
-public static class GltfDeserializer
+public static class VrmDeserializer
 {
 
 ");
@@ -50,8 +50,8 @@ public static class GltfDeserializer
 
                 // footer
                 w.Write(@"
-} // GltfDeserializer
-} // UniGLTF 
+} // VrmfDeserializer
+} // VRM
 ");
 
                 Debug.LogFormat("write: {0}", OutPath);
