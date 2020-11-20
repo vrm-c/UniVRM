@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Text;
 using UniJSON;
 
 namespace UniGLTF
@@ -8,16 +10,19 @@ namespace UniGLTF
     /// </summary>
     public class glTFExtension
     {
+        // NO BOM
+        static Encoding Utf8 = new UTF8Encoding(false);
+
         #region for Export
-        public readonly Dictionary<string, string> Serialized;
+        public readonly Dictionary<string, ArraySegment<byte>> Serialized;
         public glTFExtension()
         {
-            Serialized = new Dictionary<string, string>();
+            Serialized = new Dictionary<string, ArraySegment<byte>>();
         }
         public static glTFExtension Create(string key, string serialized)
         {
             var e = new glTFExtension();
-            e.Serialized.Add(key, serialized);
+            e.Serialized.Add(key, new ArraySegment<byte>(Utf8.GetBytes(serialized)));
             return e;
         }
         #endregion
@@ -40,5 +45,20 @@ namespace UniGLTF
             }
         }
         #endregion
+    }
+
+    public static class GltfExtensionFormatterExtensions
+    {
+        public static void GenSerialize(this JsonFormatter f, glTFExtension v)
+        {
+            //CommaCheck();
+            f.BeginMap();
+            foreach (var kv in v.Serialized)
+            {
+                f.Key(kv.Key);
+                f.Raw(kv.Value);
+            }
+            f.EndMap();
+        }
     }
 }

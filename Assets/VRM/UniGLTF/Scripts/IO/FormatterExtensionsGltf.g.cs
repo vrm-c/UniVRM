@@ -10,13 +10,9 @@ namespace UniGLTF {
     static public class IFormatterExtensionsGltf
     {
 
-    public static void GenSerialize(this IFormatter f, glTF_VRM_extensions value)
-    {
-        
-    }
-    
+
     /// gltf
-    public static void GenSerialize(this IFormatter f, glTF value)
+    public static void GenSerialize(this JsonFormatter f, glTF value)
     {
         f.BeginMap(0); // dummy
 
@@ -105,11 +101,21 @@ namespace UniGLTF {
             f.Key("extensionsRequired"); f.GenSerialize(value.extensionsRequired);
         }
 
+        if(value.extensions!=null)
+        {
+            f.Key("extensions"); f.GenSerialize(value.extensions);
+        }
+
+        if(value.extras!=null)
+        {
+            f.Key("extras"); f.GenSerialize(value.extras);
+        }
+
         f.EndMap();
     }
 
     /// gltf/asset
-    public static void GenSerialize(this IFormatter f, glTFAssets value)
+    public static void GenSerialize(this JsonFormatter f, glTFAssets value)
     {
         f.BeginMap(0); // dummy
 
@@ -133,16 +139,26 @@ namespace UniGLTF {
             f.Key("minVersion"); f.GenSerialize(value.minVersion);
         }
 
+        if(value.extensions!=null)
+        {
+            f.Key("extensions"); f.GenSerialize(value.extensions);
+        }
+
+        if(value.extras!=null)
+        {
+            f.Key("extras"); f.GenSerialize(value.extras);
+        }
+
         f.EndMap();
     }
 
-    public static void GenSerialize(this IFormatter f, String value)
+    public static void GenSerialize(this JsonFormatter f, String value)
     {
         f.Value(value);
     }
 
     /// gltf/buffers
-    public static void GenSerialize(this IFormatter f, List<glTFBuffer> value)
+    public static void GenSerialize(this JsonFormatter f, List<glTFBuffer> value)
     {
         f.BeginList(value.Count);
         foreach (var x in value)
@@ -153,7 +169,7 @@ namespace UniGLTF {
     }
 
     /// gltf/buffers[]
-    public static void GenSerialize(this IFormatter f, glTFBuffer value)
+    public static void GenSerialize(this JsonFormatter f, glTFBuffer value)
     {
         f.BeginMap(0); // dummy
 
@@ -167,6 +183,16 @@ namespace UniGLTF {
             f.Key("byteLength"); f.GenSerialize(value.byteLength);
         }
 
+        if(value.extensions!=null)
+        {
+            f.Key("extensions"); f.GenSerialize(value.extensions);
+        }
+
+        if(value.extras!=null)
+        {
+            f.Key("extras"); f.GenSerialize(value.extras);
+        }
+
         if(value.name!=null)
         {
             f.Key("name"); f.GenSerialize(value.name);
@@ -175,13 +201,13 @@ namespace UniGLTF {
         f.EndMap();
     }
 
-    public static void GenSerialize(this IFormatter f, Int32 value)
+    public static void GenSerialize(this JsonFormatter f, Int32 value)
     {
         f.Value(value);
     }
 
     /// gltf/bufferViews
-    public static void GenSerialize(this IFormatter f, List<glTFBufferView> value)
+    public static void GenSerialize(this JsonFormatter f, List<glTFBufferView> value)
     {
         f.BeginList(value.Count);
         foreach (var x in value)
@@ -192,7 +218,7 @@ namespace UniGLTF {
     }
 
     /// gltf/bufferViews[]
-    public static void GenSerialize(this IFormatter f, glTFBufferView value)
+    public static void GenSerialize(this JsonFormatter f, glTFBufferView value)
     {
         f.BeginMap(0); // dummy
 
@@ -216,6 +242,16 @@ namespace UniGLTF {
             f.Key("target"); f.GenSerialize(value.target);
         }
 
+        if(value.extensions!=null)
+        {
+            f.Key("extensions"); f.GenSerialize(value.extensions);
+        }
+
+        if(value.extras!=null)
+        {
+            f.Key("extras"); f.GenSerialize(value.extras);
+        }
+
         if(value.name!=null)
         {
             f.Key("name"); f.GenSerialize(value.name);
@@ -224,13 +260,13 @@ namespace UniGLTF {
         f.EndMap();
     }
 
-    public static void GenSerialize(this IFormatter f, glBufferTarget value)
+    public static void GenSerialize(this JsonFormatter f, glBufferTarget value)
     {
         f.Value((int)value);
     }
 
     /// gltf/accessors
-    public static void GenSerialize(this IFormatter f, List<glTFAccessor> value)
+    public static void GenSerialize(this JsonFormatter f, List<glTFAccessor> value)
     {
         f.BeginList(value.Count);
         foreach (var x in value)
@@ -241,7 +277,7 @@ namespace UniGLTF {
     }
 
     /// gltf/accessors[]
-    public static void GenSerialize(this IFormatter f, glTFAccessor value)
+    public static void GenSerialize(this JsonFormatter f, glTFAccessor value)
     {
         f.BeginMap(0); // dummy
 
@@ -295,16 +331,26 @@ namespace UniGLTF {
             f.Key("name"); f.GenSerialize(value.name);
         }
 
+        if(value.extensions!=null)
+        {
+            f.Key("extensions"); f.GenSerialize(value.extensions);
+        }
+
+        if(value.extras!=null)
+        {
+            f.Key("extras"); f.GenSerialize(value.extras);
+        }
+
         f.EndMap();
     }
 
-    public static void GenSerialize(this IFormatter f, glComponentType value)
+    public static void GenSerialize(this JsonFormatter f, glComponentType value)
     {
         f.Value((int)value);
     }
 
     /// gltf/accessors[]/max
-    public static void GenSerialize(this IFormatter f, Single[] value)
+    public static void GenSerialize(this JsonFormatter f, Single[] value)
     {
         f.BeginList(value.Length);
         foreach (var x in value)
@@ -314,18 +360,18 @@ namespace UniGLTF {
         f.EndList();
     }
                     
-    public static void GenSerialize(this IFormatter f, Single value)
+    public static void GenSerialize(this JsonFormatter f, Single value)
     {
         f.Value(value);
     }
 
-    public static void GenSerialize(this IFormatter f, Boolean value)
+    public static void GenSerialize(this JsonFormatter f, Boolean value)
     {
         f.Value(value);
     }
 
     /// gltf/accessors[]/sparse
-    public static void GenSerialize(this IFormatter f, glTFSparse value)
+    public static void GenSerialize(this JsonFormatter f, glTFSparse value)
     {
         f.BeginMap(0); // dummy
 
@@ -344,11 +390,21 @@ namespace UniGLTF {
             f.Key("values"); f.GenSerialize(value.values);
         }
 
+        if(value.extensions!=null)
+        {
+            f.Key("extensions"); f.GenSerialize(value.extensions);
+        }
+
+        if(value.extras!=null)
+        {
+            f.Key("extras"); f.GenSerialize(value.extras);
+        }
+
         f.EndMap();
     }
 
     /// gltf/accessors[]/sparse/indices
-    public static void GenSerialize(this IFormatter f, glTFSparseIndices value)
+    public static void GenSerialize(this JsonFormatter f, glTFSparseIndices value)
     {
         f.BeginMap(0); // dummy
 
@@ -367,11 +423,21 @@ namespace UniGLTF {
             f.Key("componentType"); f.GenSerialize(value.componentType);
         }
 
+        if(value.extensions!=null)
+        {
+            f.Key("extensions"); f.GenSerialize(value.extensions);
+        }
+
+        if(value.extras!=null)
+        {
+            f.Key("extras"); f.GenSerialize(value.extras);
+        }
+
         f.EndMap();
     }
 
     /// gltf/accessors[]/sparse/values
-    public static void GenSerialize(this IFormatter f, glTFSparseValues value)
+    public static void GenSerialize(this JsonFormatter f, glTFSparseValues value)
     {
         f.BeginMap(0); // dummy
 
@@ -385,11 +451,21 @@ namespace UniGLTF {
             f.Key("byteOffset"); f.GenSerialize(value.byteOffset);
         }
 
+        if(value.extensions!=null)
+        {
+            f.Key("extensions"); f.GenSerialize(value.extensions);
+        }
+
+        if(value.extras!=null)
+        {
+            f.Key("extras"); f.GenSerialize(value.extras);
+        }
+
         f.EndMap();
     }
 
     /// gltf/textures
-    public static void GenSerialize(this IFormatter f, List<glTFTexture> value)
+    public static void GenSerialize(this JsonFormatter f, List<glTFTexture> value)
     {
         f.BeginList(value.Count);
         foreach (var x in value)
@@ -400,7 +476,7 @@ namespace UniGLTF {
     }
 
     /// gltf/textures[]
-    public static void GenSerialize(this IFormatter f, glTFTexture value)
+    public static void GenSerialize(this JsonFormatter f, glTFTexture value)
     {
         f.BeginMap(0); // dummy
 
@@ -414,6 +490,16 @@ namespace UniGLTF {
             f.Key("source"); f.GenSerialize(value.source);
         }
 
+        if(value.extensions!=null)
+        {
+            f.Key("extensions"); f.GenSerialize(value.extensions);
+        }
+
+        if(value.extras!=null)
+        {
+            f.Key("extras"); f.GenSerialize(value.extras);
+        }
+
         if(value.name!=null)
         {
             f.Key("name"); f.GenSerialize(value.name);
@@ -423,7 +509,7 @@ namespace UniGLTF {
     }
 
     /// gltf/samplers
-    public static void GenSerialize(this IFormatter f, List<glTFTextureSampler> value)
+    public static void GenSerialize(this JsonFormatter f, List<glTFTextureSampler> value)
     {
         f.BeginList(value.Count);
         foreach (var x in value)
@@ -434,7 +520,7 @@ namespace UniGLTF {
     }
 
     /// gltf/samplers[]
-    public static void GenSerialize(this IFormatter f, glTFTextureSampler value)
+    public static void GenSerialize(this JsonFormatter f, glTFTextureSampler value)
     {
         f.BeginMap(0); // dummy
 
@@ -458,6 +544,16 @@ namespace UniGLTF {
             f.Key("wrapT"); f.GenSerialize(value.wrapT);
         }
 
+        if(value.extensions!=null)
+        {
+            f.Key("extensions"); f.GenSerialize(value.extensions);
+        }
+
+        if(value.extras!=null)
+        {
+            f.Key("extras"); f.GenSerialize(value.extras);
+        }
+
         if(value.name!=null)
         {
             f.Key("name"); f.GenSerialize(value.name);
@@ -466,18 +562,18 @@ namespace UniGLTF {
         f.EndMap();
     }
 
-    public static void GenSerialize(this IFormatter f, glFilter value)
+    public static void GenSerialize(this JsonFormatter f, glFilter value)
     {
         f.Value((int)value);
     }
 
-    public static void GenSerialize(this IFormatter f, glWrap value)
+    public static void GenSerialize(this JsonFormatter f, glWrap value)
     {
         f.Value((int)value);
     }
 
     /// gltf/images
-    public static void GenSerialize(this IFormatter f, List<glTFImage> value)
+    public static void GenSerialize(this JsonFormatter f, List<glTFImage> value)
     {
         f.BeginList(value.Count);
         foreach (var x in value)
@@ -488,7 +584,7 @@ namespace UniGLTF {
     }
 
     /// gltf/images[]
-    public static void GenSerialize(this IFormatter f, glTFImage value)
+    public static void GenSerialize(this JsonFormatter f, glTFImage value)
     {
         f.BeginMap(0); // dummy
 
@@ -512,11 +608,21 @@ namespace UniGLTF {
             f.Key("mimeType"); f.GenSerialize(value.mimeType);
         }
 
+        if(value.extensions!=null)
+        {
+            f.Key("extensions"); f.GenSerialize(value.extensions);
+        }
+
+        if(value.extras!=null)
+        {
+            f.Key("extras"); f.GenSerialize(value.extras);
+        }
+
         f.EndMap();
     }
 
     /// gltf/materials
-    public static void GenSerialize(this IFormatter f, List<glTFMaterial> value)
+    public static void GenSerialize(this JsonFormatter f, List<glTFMaterial> value)
     {
         f.BeginList(value.Count);
         foreach (var x in value)
@@ -527,7 +633,7 @@ namespace UniGLTF {
     }
 
     /// gltf/materials[]
-    public static void GenSerialize(this IFormatter f, glTFMaterial value)
+    public static void GenSerialize(this JsonFormatter f, glTFMaterial value)
     {
         f.BeginMap(0); // dummy
 
@@ -576,11 +682,21 @@ namespace UniGLTF {
             f.Key("doubleSided"); f.GenSerialize(value.doubleSided);
         }
 
+        if(value.extensions!=null)
+        {
+            f.Key("extensions"); f.GenSerialize(value.extensions);
+        }
+
+        if(value.extras!=null)
+        {
+            f.Key("extras"); f.GenSerialize(value.extras);
+        }
+
         f.EndMap();
     }
 
     /// gltf/materials[]/pbrMetallicRoughness
-    public static void GenSerialize(this IFormatter f, glTFPbrMetallicRoughness value)
+    public static void GenSerialize(this JsonFormatter f, glTFPbrMetallicRoughness value)
     {
         f.BeginMap(0); // dummy
 
@@ -609,11 +725,21 @@ namespace UniGLTF {
             f.Key("roughnessFactor"); f.GenSerialize(value.roughnessFactor);
         }
 
+        if(value.extensions!=null)
+        {
+            f.Key("extensions"); f.GenSerialize(value.extensions);
+        }
+
+        if(value.extras!=null)
+        {
+            f.Key("extras"); f.GenSerialize(value.extras);
+        }
+
         f.EndMap();
     }
 
     /// gltf/materials[]/pbrMetallicRoughness/baseColorTexture
-    public static void GenSerialize(this IFormatter f, glTFMaterialBaseColorTextureInfo value)
+    public static void GenSerialize(this JsonFormatter f, glTFMaterialBaseColorTextureInfo value)
     {
         f.BeginMap(0); // dummy
 
@@ -625,13 +751,23 @@ namespace UniGLTF {
         
         {
             f.Key("texCoord"); f.GenSerialize(value.texCoord);
+        }
+
+        if(value.extensions!=null)
+        {
+            f.Key("extensions"); f.GenSerialize(value.extensions);
+        }
+
+        if(value.extras!=null)
+        {
+            f.Key("extras"); f.GenSerialize(value.extras);
         }
 
         f.EndMap();
     }
 
     /// gltf/materials[]/pbrMetallicRoughness/metallicRoughnessTexture
-    public static void GenSerialize(this IFormatter f, glTFMaterialMetallicRoughnessTextureInfo value)
+    public static void GenSerialize(this JsonFormatter f, glTFMaterialMetallicRoughnessTextureInfo value)
     {
         f.BeginMap(0); // dummy
 
@@ -645,11 +781,21 @@ namespace UniGLTF {
             f.Key("texCoord"); f.GenSerialize(value.texCoord);
         }
 
+        if(value.extensions!=null)
+        {
+            f.Key("extensions"); f.GenSerialize(value.extensions);
+        }
+
+        if(value.extras!=null)
+        {
+            f.Key("extras"); f.GenSerialize(value.extras);
+        }
+
         f.EndMap();
     }
 
     /// gltf/materials[]/normalTexture
-    public static void GenSerialize(this IFormatter f, glTFMaterialNormalTextureInfo value)
+    public static void GenSerialize(this JsonFormatter f, glTFMaterialNormalTextureInfo value)
     {
         f.BeginMap(0); // dummy
 
@@ -668,11 +814,21 @@ namespace UniGLTF {
             f.Key("texCoord"); f.GenSerialize(value.texCoord);
         }
 
+        if(value.extensions!=null)
+        {
+            f.Key("extensions"); f.GenSerialize(value.extensions);
+        }
+
+        if(value.extras!=null)
+        {
+            f.Key("extras"); f.GenSerialize(value.extras);
+        }
+
         f.EndMap();
     }
 
     /// gltf/materials[]/occlusionTexture
-    public static void GenSerialize(this IFormatter f, glTFMaterialOcclusionTextureInfo value)
+    public static void GenSerialize(this JsonFormatter f, glTFMaterialOcclusionTextureInfo value)
     {
         f.BeginMap(0); // dummy
 
@@ -691,11 +847,21 @@ namespace UniGLTF {
             f.Key("texCoord"); f.GenSerialize(value.texCoord);
         }
 
+        if(value.extensions!=null)
+        {
+            f.Key("extensions"); f.GenSerialize(value.extensions);
+        }
+
+        if(value.extras!=null)
+        {
+            f.Key("extras"); f.GenSerialize(value.extras);
+        }
+
         f.EndMap();
     }
 
     /// gltf/materials[]/emissiveTexture
-    public static void GenSerialize(this IFormatter f, glTFMaterialEmissiveTextureInfo value)
+    public static void GenSerialize(this JsonFormatter f, glTFMaterialEmissiveTextureInfo value)
     {
         f.BeginMap(0); // dummy
 
@@ -709,11 +875,21 @@ namespace UniGLTF {
             f.Key("texCoord"); f.GenSerialize(value.texCoord);
         }
 
+        if(value.extensions!=null)
+        {
+            f.Key("extensions"); f.GenSerialize(value.extensions);
+        }
+
+        if(value.extras!=null)
+        {
+            f.Key("extras"); f.GenSerialize(value.extras);
+        }
+
         f.EndMap();
     }
 
     /// gltf/meshes
-    public static void GenSerialize(this IFormatter f, List<glTFMesh> value)
+    public static void GenSerialize(this JsonFormatter f, List<glTFMesh> value)
     {
         f.BeginList(value.Count);
         foreach (var x in value)
@@ -724,7 +900,7 @@ namespace UniGLTF {
     }
 
     /// gltf/meshes[]
-    public static void GenSerialize(this IFormatter f, glTFMesh value)
+    public static void GenSerialize(this JsonFormatter f, glTFMesh value)
     {
         f.BeginMap(0); // dummy
 
@@ -743,11 +919,21 @@ namespace UniGLTF {
             f.Key("weights"); f.GenSerialize(value.weights);
         }
 
+        if(value.extras!=null)
+        {
+            f.Key("extras"); f.GenSerialize(value.extras);
+        }
+
+        if(value.extensions!=null)
+        {
+            f.Key("extensions"); f.GenSerialize(value.extensions);
+        }
+
         f.EndMap();
     }
 
     /// gltf/meshes[]/primitives
-    public static void GenSerialize(this IFormatter f, List<glTFPrimitives> value)
+    public static void GenSerialize(this JsonFormatter f, List<glTFPrimitives> value)
     {
         f.BeginList(value.Count);
         foreach (var x in value)
@@ -758,7 +944,7 @@ namespace UniGLTF {
     }
 
     /// gltf/meshes[]/primitives[]
-    public static void GenSerialize(this IFormatter f, glTFPrimitives value)
+    public static void GenSerialize(this JsonFormatter f, glTFPrimitives value)
     {
         f.BeginMap(0); // dummy
 
@@ -787,11 +973,21 @@ namespace UniGLTF {
             f.Key("targets"); f.GenSerialize(value.targets);
         }
 
+        if(value.extras!=null)
+        {
+            f.Key("extras"); f.GenSerialize(value.extras);
+        }
+
+        if(value.extensions!=null)
+        {
+            f.Key("extensions"); f.GenSerialize(value.extensions);
+        }
+
         f.EndMap();
     }
 
     /// gltf/meshes[]/primitives[]/attributes
-    public static void GenSerialize(this IFormatter f, glTFAttributes value)
+    public static void GenSerialize(this JsonFormatter f, glTFAttributes value)
     {
         f.BeginMap(0); // dummy
 
@@ -839,7 +1035,7 @@ namespace UniGLTF {
     }
 
     /// gltf/meshes[]/primitives[]/targets
-    public static void GenSerialize(this IFormatter f, List<gltfMorphTarget> value)
+    public static void GenSerialize(this JsonFormatter f, List<gltfMorphTarget> value)
     {
         f.BeginList(value.Count);
         foreach (var x in value)
@@ -850,7 +1046,7 @@ namespace UniGLTF {
     }
 
     /// gltf/meshes[]/primitives[]/targets[]
-    public static void GenSerialize(this IFormatter f, gltfMorphTarget value)
+    public static void GenSerialize(this JsonFormatter f, gltfMorphTarget value)
     {
         f.BeginMap(0); // dummy
 
@@ -873,7 +1069,7 @@ namespace UniGLTF {
     }
 
     /// gltf/nodes
-    public static void GenSerialize(this IFormatter f, List<glTFNode> value)
+    public static void GenSerialize(this JsonFormatter f, List<glTFNode> value)
     {
         f.BeginList(value.Count);
         foreach (var x in value)
@@ -884,7 +1080,7 @@ namespace UniGLTF {
     }
 
     /// gltf/nodes[]
-    public static void GenSerialize(this IFormatter f, glTFNode value)
+    public static void GenSerialize(this JsonFormatter f, glTFNode value)
     {
         f.BeginMap(0); // dummy
 
@@ -938,11 +1134,21 @@ namespace UniGLTF {
             f.Key("camera"); f.GenSerialize(value.camera);
         }
 
+        if(value.extensions!=null)
+        {
+            f.Key("extensions"); f.GenSerialize(value.extensions);
+        }
+
+        if(value.extras!=null)
+        {
+            f.Key("extras"); f.GenSerialize(value.extras);
+        }
+
         f.EndMap();
     }
 
     /// gltf/nodes[]/children
-    public static void GenSerialize(this IFormatter f, Int32[] value)
+    public static void GenSerialize(this JsonFormatter f, Int32[] value)
     {
         f.BeginList(value.Length);
         foreach (var x in value)
@@ -953,7 +1159,7 @@ namespace UniGLTF {
     }
                     
     /// gltf/skins
-    public static void GenSerialize(this IFormatter f, List<glTFSkin> value)
+    public static void GenSerialize(this JsonFormatter f, List<glTFSkin> value)
     {
         f.BeginList(value.Count);
         foreach (var x in value)
@@ -964,7 +1170,7 @@ namespace UniGLTF {
     }
 
     /// gltf/skins[]
-    public static void GenSerialize(this IFormatter f, glTFSkin value)
+    public static void GenSerialize(this JsonFormatter f, glTFSkin value)
     {
         f.BeginMap(0); // dummy
 
@@ -983,6 +1189,16 @@ namespace UniGLTF {
             f.Key("skeleton"); f.GenSerialize(value.skeleton);
         }
 
+        if(value.extensions!=null)
+        {
+            f.Key("extensions"); f.GenSerialize(value.extensions);
+        }
+
+        if(value.extras!=null)
+        {
+            f.Key("extras"); f.GenSerialize(value.extras);
+        }
+
         if(value.name!=null)
         {
             f.Key("name"); f.GenSerialize(value.name);
@@ -992,7 +1208,7 @@ namespace UniGLTF {
     }
 
     /// gltf/scenes
-    public static void GenSerialize(this IFormatter f, List<gltfScene> value)
+    public static void GenSerialize(this JsonFormatter f, List<gltfScene> value)
     {
         f.BeginList(value.Count);
         foreach (var x in value)
@@ -1003,13 +1219,23 @@ namespace UniGLTF {
     }
 
     /// gltf/scenes[]
-    public static void GenSerialize(this IFormatter f, gltfScene value)
+    public static void GenSerialize(this JsonFormatter f, gltfScene value)
     {
         f.BeginMap(0); // dummy
 
         if(value.nodes!=null && value.nodes.Length>0)
         {
             f.Key("nodes"); f.GenSerialize(value.nodes);
+        }
+
+        if(value.extensions!=null)
+        {
+            f.Key("extensions"); f.GenSerialize(value.extensions);
+        }
+
+        if(value.extras!=null)
+        {
+            f.Key("extras"); f.GenSerialize(value.extras);
         }
 
         if(value.name!=null)
@@ -1021,7 +1247,7 @@ namespace UniGLTF {
     }
 
     /// gltf/animations
-    public static void GenSerialize(this IFormatter f, List<glTFAnimation> value)
+    public static void GenSerialize(this JsonFormatter f, List<glTFAnimation> value)
     {
         f.BeginList(value.Count);
         foreach (var x in value)
@@ -1032,7 +1258,7 @@ namespace UniGLTF {
     }
 
     /// gltf/animations[]
-    public static void GenSerialize(this IFormatter f, glTFAnimation value)
+    public static void GenSerialize(this JsonFormatter f, glTFAnimation value)
     {
         f.BeginMap(0); // dummy
 
@@ -1051,11 +1277,21 @@ namespace UniGLTF {
             f.Key("samplers"); f.GenSerialize(value.samplers);
         }
 
+        if(value.extensions!=null)
+        {
+            f.Key("extensions"); f.GenSerialize(value.extensions);
+        }
+
+        if(value.extras!=null)
+        {
+            f.Key("extras"); f.GenSerialize(value.extras);
+        }
+
         f.EndMap();
     }
 
     /// gltf/animations[]/channels
-    public static void GenSerialize(this IFormatter f, List<glTFAnimationChannel> value)
+    public static void GenSerialize(this JsonFormatter f, List<glTFAnimationChannel> value)
     {
         f.BeginList(value.Count);
         foreach (var x in value)
@@ -1066,7 +1302,7 @@ namespace UniGLTF {
     }
 
     /// gltf/animations[]/channels[]
-    public static void GenSerialize(this IFormatter f, glTFAnimationChannel value)
+    public static void GenSerialize(this JsonFormatter f, glTFAnimationChannel value)
     {
         f.BeginMap(0); // dummy
 
@@ -1080,11 +1316,21 @@ namespace UniGLTF {
             f.Key("target"); f.GenSerialize(value.target);
         }
 
+        if(value.extensions!=null)
+        {
+            f.Key("extensions"); f.GenSerialize(value.extensions);
+        }
+
+        if(value.extras!=null)
+        {
+            f.Key("extras"); f.GenSerialize(value.extras);
+        }
+
         f.EndMap();
     }
 
     /// gltf/animations[]/channels[]/target
-    public static void GenSerialize(this IFormatter f, glTFAnimationTarget value)
+    public static void GenSerialize(this JsonFormatter f, glTFAnimationTarget value)
     {
         f.BeginMap(0); // dummy
 
@@ -1098,11 +1344,21 @@ namespace UniGLTF {
             f.Key("path"); f.GenSerialize(value.path);
         }
 
+        if(value.extensions!=null)
+        {
+            f.Key("extensions"); f.GenSerialize(value.extensions);
+        }
+
+        if(value.extras!=null)
+        {
+            f.Key("extras"); f.GenSerialize(value.extras);
+        }
+
         f.EndMap();
     }
 
     /// gltf/animations[]/samplers
-    public static void GenSerialize(this IFormatter f, List<glTFAnimationSampler> value)
+    public static void GenSerialize(this JsonFormatter f, List<glTFAnimationSampler> value)
     {
         f.BeginList(value.Count);
         foreach (var x in value)
@@ -1113,7 +1369,7 @@ namespace UniGLTF {
     }
 
     /// gltf/animations[]/samplers[]
-    public static void GenSerialize(this IFormatter f, glTFAnimationSampler value)
+    public static void GenSerialize(this JsonFormatter f, glTFAnimationSampler value)
     {
         f.BeginMap(0); // dummy
 
@@ -1132,11 +1388,21 @@ namespace UniGLTF {
             f.Key("output"); f.GenSerialize(value.output);
         }
 
+        if(value.extensions!=null)
+        {
+            f.Key("extensions"); f.GenSerialize(value.extensions);
+        }
+
+        if(value.extras!=null)
+        {
+            f.Key("extras"); f.GenSerialize(value.extras);
+        }
+
         f.EndMap();
     }
 
     /// gltf/cameras
-    public static void GenSerialize(this IFormatter f, List<glTFCamera> value)
+    public static void GenSerialize(this JsonFormatter f, List<glTFCamera> value)
     {
         f.BeginList(value.Count);
         foreach (var x in value)
@@ -1147,7 +1413,7 @@ namespace UniGLTF {
     }
 
     /// gltf/cameras[]
-    public static void GenSerialize(this IFormatter f, glTFCamera value)
+    public static void GenSerialize(this JsonFormatter f, glTFCamera value)
     {
         f.BeginMap(0); // dummy
 
@@ -1171,11 +1437,21 @@ namespace UniGLTF {
             f.Key("name"); f.GenSerialize(value.name);
         }
 
+        if(value.extensions!=null)
+        {
+            f.Key("extensions"); f.GenSerialize(value.extensions);
+        }
+
+        if(value.extras!=null)
+        {
+            f.Key("extras"); f.GenSerialize(value.extras);
+        }
+
         f.EndMap();
     }
 
     /// gltf/cameras[]/orthographic
-    public static void GenSerialize(this IFormatter f, glTFOrthographic value)
+    public static void GenSerialize(this JsonFormatter f, glTFOrthographic value)
     {
         f.BeginMap(0); // dummy
 
@@ -1199,11 +1475,21 @@ namespace UniGLTF {
             f.Key("znear"); f.GenSerialize(value.znear);
         }
 
+        if(value.extensions!=null)
+        {
+            f.Key("extensions"); f.GenSerialize(value.extensions);
+        }
+
+        if(value.extras!=null)
+        {
+            f.Key("extras"); f.GenSerialize(value.extras);
+        }
+
         f.EndMap();
     }
 
     /// gltf/cameras[]/perspective
-    public static void GenSerialize(this IFormatter f, glTFPerspective value)
+    public static void GenSerialize(this JsonFormatter f, glTFPerspective value)
     {
         f.BeginMap(0); // dummy
 
@@ -1227,16 +1513,26 @@ namespace UniGLTF {
             f.Key("znear"); f.GenSerialize(value.znear);
         }
 
+        if(value.extensions!=null)
+        {
+            f.Key("extensions"); f.GenSerialize(value.extensions);
+        }
+
+        if(value.extras!=null)
+        {
+            f.Key("extras"); f.GenSerialize(value.extras);
+        }
+
         f.EndMap();
     }
 
-    public static void GenSerialize(this IFormatter f, ProjectionType value)
+    public static void GenSerialize(this JsonFormatter f, ProjectionType value)
     {
         f.Value((int)value);
     }
 
     /// gltf/extensionsUsed
-    public static void GenSerialize(this IFormatter f, List<String> value)
+    public static void GenSerialize(this JsonFormatter f, List<String> value)
     {
         f.BeginList(value.Count);
         foreach (var x in value)

@@ -266,6 +266,12 @@ namespace UniJSON
             m_w.Write('"');
         }
 
+        public void Raw(ArraySegment<Byte> x)
+        {
+            CommaCheck();
+            m_w.Write(x);
+        }
+
         // ISO-8601: YYYY-MM-DD“T”hh:mm:ss“Z”
         public void Value(DateTimeOffset x)
         {

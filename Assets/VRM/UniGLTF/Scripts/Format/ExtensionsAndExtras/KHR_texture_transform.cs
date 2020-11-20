@@ -111,7 +111,7 @@ namespace UniGLTF
 
             f.EndMap();
 
-            info.extensions.Serialized.Add(ExtensionName, f.GetStore().ToString());
+            info.extensions.Serialized.Add(ExtensionName, f.GetStore().Bytes);
         }
     }
 }

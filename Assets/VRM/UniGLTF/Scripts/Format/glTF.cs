@@ -381,6 +381,7 @@ namespace UniGLTF
         {
             var f = new JsonFormatter();
             f.GenSerialize(this);
+
             var json = f.ToString().ParseAsJson().ToString("  ");
 
             RemoveUnusedExtensions(json);

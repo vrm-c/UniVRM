@@ -83,7 +83,7 @@ namespace UniGLTF
                 f.Value(n);
             }
             f.EndList();
-            var targetNamesJson = f.GetStore().ToString();
+            var targetNamesJson = f.GetStore().Bytes;
 
             if (gltfMesh.extras == null)
             {
