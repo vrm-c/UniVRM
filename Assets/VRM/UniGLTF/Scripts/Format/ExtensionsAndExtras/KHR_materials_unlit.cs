@@ -7,13 +7,9 @@ namespace UniGLTF
     [Serializable]
     public class glTF_KHR_materials_unlit
     {
-        public static string ExtensionName
-        {
-            get
-            {
-                return "KHR_materials_unlit";
-            }
-        }
+        public const string ExtensionName = "KHR_materials_unlit";
+
+        public static readonly Utf8String ExtensionNameUtf8 = Utf8String.From(ExtensionName);
 
         public static glTFMaterial CreateDefault()
         {
@@ -27,9 +23,33 @@ namespace UniGLTF
                 },
                 extensions = new KeyValuePair<string, object>[]
                 {
-                    new KeyValuePair<string, object>("KHR_materials_unlit", new glTF_KHR_materials_unlit()),
+                    new KeyValuePair<string, object>(ExtensionName, new glTF_KHR_materials_unlit()),
                 },
             };
+        }
+
+        public static bool IsEnable(glTFMaterial m)
+        {
+            if (m.extensions == null)
+            {
+                return false;
+            }
+
+            if (m.extensions is ListTreeNode<JsonValue> json)
+            {
+                if (json.Value.ValueType == ValueNodeType.Object)
+                {
+                    foreach (var kv in json.ObjectItems())
+                    {
+                        if (kv.Key.GetUtf8String() == ExtensionNameUtf8)
+                        {
+                            return kv.Value.Value.ValueType == ValueNodeType.Object;
+                        }
+                    }
+                }
+            }
+
+            return false;
         }
     }
 }
