@@ -1,9 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
+using MeshUtility;
 using MeshUtility.M17N;
 using UnityEngine;
 
-namespace MeshUtility.Validators
+namespace VRM
 {
     public static class HumanoidValidator
     {
@@ -73,7 +74,7 @@ namespace MeshUtility.Validators
             return Vector3.Cross(lr, Vector3.up);
         }
 
-        public static IReadOnlyList<MeshExportInfo> MeshInformations;
+        public static IReadOnlyList<UniGLTF.MeshExportInfo> MeshInformations;
         public static bool EnableFreeze;
 
         public static IEnumerable<Validation> Validate(GameObject ExportRoot)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using MeshUtility;
+using UniGLTF;
 using UnityEngine;
 
 namespace VRM
@@ -56,14 +57,14 @@ namespace VRM
             return false;
         }
 
-        public List<MeshUtility.MeshExportInfo> Meshes = new List<MeshUtility.MeshExportInfo>();
+        public List<MeshExportInfo> Meshes = new List<MeshExportInfo>();
 
         public int ExpectedExportByteSize => Meshes.Where(x => x.IsRendererActive).Sum(x => x.ExportByteSize);
 
         List<Validation> m_validations = new List<Validation>();
         public IEnumerable<Validation> Validations => m_validations;
 
-        public static void CalcMeshSize(ref MeshUtility.MeshExportInfo info,
+        public static void CalcMeshSize(ref MeshExportInfo info,
                                         string relativePath, VRMExportSettings settings, IReadOnlyList<BlendShapeClip> clips)
         {
             var sb = new StringBuilder();
@@ -133,11 +134,11 @@ namespace VRM
             sb.Append($") x {info.Mesh.vertexCount}");
             switch (info.VertexColor)
             {
-                case MeshUtility.MeshExportInfo.VertexColorState.ExistsAndIsUsed:
-                case MeshUtility.MeshExportInfo.VertexColorState.ExistsAndMixed: // エクスポートする
+                case MeshExportInfo.VertexColorState.ExistsAndIsUsed:
+                case MeshExportInfo.VertexColorState.ExistsAndMixed: // エクスポートする
                     sb.Insert(0, "[use vcolor]");
                     break;
-                case MeshUtility.MeshExportInfo.VertexColorState.ExistsButNotUsed:
+                case MeshExportInfo.VertexColorState.ExistsButNotUsed:
                     sb.Insert(0, "[remove vcolor]");
                     break;
             }
@@ -151,7 +152,7 @@ namespace VRM
             info.Summary = sb.ToString();
         }
 
-        bool TryGetMeshInfo(GameObject root, Renderer renderer, IReadOnlyList<BlendShapeClip> clips, VRMExportSettings settings, out MeshUtility.MeshExportInfo info)
+        bool TryGetMeshInfo(GameObject root, Renderer renderer, IReadOnlyList<BlendShapeClip> clips, VRMExportSettings settings, out MeshExportInfo info)
         {
             info = default;
             if (root == null)
@@ -187,7 +188,7 @@ namespace VRM
                 return false;
             }
 
-            info.VertexColor = MeshUtility.MeshExportInfo.DetectVertexColor(info.Mesh, info.Renderer.sharedMaterials);
+            info.VertexColor = MeshExportInfo.DetectVertexColor(info.Mesh, info.Renderer.sharedMaterials);
 
             var relativePath = UniGLTF.UnityExtensions.RelativePathFrom(renderer.transform, root.transform);
             CalcMeshSize(ref info, relativePath, settings, clips);
@@ -217,7 +218,7 @@ namespace VRM
 
             foreach (var renderer in ExportRoot.GetComponentsInChildren<Renderer>(true))
             {
-                if (TryGetMeshInfo(ExportRoot, renderer, clips, settings, out MeshUtility.MeshExportInfo info))
+                if (TryGetMeshInfo(ExportRoot, renderer, clips, settings, out MeshExportInfo info))
                 {
                     Meshes.Add(info);
                 }

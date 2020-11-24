@@ -32,7 +32,7 @@ namespace VRM
             );
         }
 
-        void DrawElement(int i, MeshUtility.MeshExportInfo info)
+        void DrawElement(int i, UniGLTF.MeshExportInfo info)
         {
             var r = GUILayoutUtility.GetRect(GUIContent.none, GUIStyle.none, GUILayout.Height(EditorGUIUtility.singleLineHeight * 3 + 20));
             var col0 = 32;

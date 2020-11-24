@@ -95,7 +95,7 @@ namespace VRM
 
                     // default setting
                     m_settings.PoseFreeze =
-                    MeshUtility.Validators.HumanoidValidator.HasRotationOrScale(root)
+                    HumanoidValidator.HasRotationOrScale(root)
                     || m_meshes.Meshes.Any(x => x.ExportBlendShapeCount > 0 && !x.HasSkinning)
                     ;
                 }
@@ -153,8 +153,8 @@ namespace VRM
 
         IEnumerable<MeshUtility.Validator> ValidatorFactory()
         {
-            MeshUtility.Validators.HumanoidValidator.MeshInformations = m_meshes.Meshes;
-            MeshUtility.Validators.HumanoidValidator.EnableFreeze = m_settings.PoseFreeze;
+            HumanoidValidator.MeshInformations = m_meshes.Meshes;
+            HumanoidValidator.EnableFreeze = m_settings.PoseFreeze;
             VRMExporterValidator.ReduceBlendshape = m_settings.ReduceBlendshape;
 
             yield return MeshUtility.Validators.HierarchyValidator.Validate;
@@ -163,7 +163,7 @@ namespace VRM
                 yield break;
             }
 
-            yield return MeshUtility.Validators.HumanoidValidator.Validate;
+            yield return HumanoidValidator.Validate;
             yield return VRMExporterValidator.Validate;
             yield return VRMSpringBoneValidator.Validate;
 
@@ -269,7 +269,7 @@ namespace VRM
             {
                 switch (meshInfo.VertexColor)
                 {
-                    case MeshUtility.MeshExportInfo.VertexColorState.ExistsAndMixed:
+                    case UniGLTF.MeshExportInfo.VertexColorState.ExistsAndMixed:
                         MeshUtility.Validation.Warning($"{meshInfo.Renderer}: Both vcolor.multiply and not multiply unlit materials exist").DrawGUI();
                         break;
                 }

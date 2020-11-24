@@ -1,16 +1,8 @@
 using System;
 using UnityEngine;
 
-namespace MeshUtility
+namespace UniGLTF
 {
-    public struct MeshWithRenderer
-    {
-        public Mesh Mesh;
-        [Obsolete("Use Renderer")]
-        public Renderer Rendererer { get { return Renderer; } set { Renderer = value; } }
-        public Renderer Renderer;
-    }
-
     [Serializable]
     public struct MeshExportInfo
     {
@@ -74,14 +66,14 @@ namespace MeshUtility
                     foreach (var m in materials)
                     {
                         var currentState = MaterialUseVertexColor(m)
-                            ? MeshUtility.MeshExportInfo.VertexColorState.ExistsAndIsUsed
-                            : MeshUtility.MeshExportInfo.VertexColorState.ExistsButNotUsed
+                            ? MeshExportInfo.VertexColorState.ExistsAndIsUsed
+                            : MeshExportInfo.VertexColorState.ExistsButNotUsed
                             ;
                         if (state.HasValue)
                         {
                             if (state.Value != currentState)
                             {
-                                state = MeshUtility.MeshExportInfo.VertexColorState.ExistsAndMixed;
+                                state = MeshExportInfo.VertexColorState.ExistsAndMixed;
                                 break;
                             }
                         }

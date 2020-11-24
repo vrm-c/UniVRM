@@ -11,7 +11,6 @@
     "name": "VRM Consortium"
   },
   "dependencies": {
-    "com.vrmc.vrmshaders": "0.62.0",
-    "com.vrmc.meshutility": "0.62.0"
+    "com.vrmc.vrmshaders": "0.62.0"
   }
 }

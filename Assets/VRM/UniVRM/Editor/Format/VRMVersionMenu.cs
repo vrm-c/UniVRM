@@ -129,8 +129,7 @@ namespace VRM
     ""name"": ""VRM Consortium""
   }},
   ""dependencies"": {{
-    ""com.vrmc.vrmshaders"": ""{1}"",
-    ""com.vrmc.meshutility"": ""{1}""
+    ""com.vrmc.vrmshaders"": ""{1}""
   }}
 }}");
 

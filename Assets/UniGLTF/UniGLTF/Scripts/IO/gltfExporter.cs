@@ -253,7 +253,7 @@ namespace UniGLTF
 
                 #region Meshes
                 var unityMeshes = Nodes
-                    .Select(x => new MeshUtility.MeshWithRenderer
+                    .Select(x => new MeshExporter.MeshWithRenderer
                     {
                         Mesh = x.GetSharedMesh(),
                         Renderer = x.GetComponent<Renderer>(),

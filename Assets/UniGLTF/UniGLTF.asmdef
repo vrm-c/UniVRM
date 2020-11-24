@@ -2,8 +2,7 @@
     "name": "UniGLTF",
     "references": [
         "UniUnlit",
-        "ShaderProperty.Runtime",
-        "MeshUtility"
+        "ShaderProperty.Runtime"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],

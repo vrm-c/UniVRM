@@ -42,9 +42,9 @@ namespace UniGLTF
 
             var colorAccessorIndex = -1;
 
-            var vColorState = MeshUtility.MeshExportInfo.DetectVertexColor(mesh, materials);
-            if (vColorState == MeshUtility.MeshExportInfo.VertexColorState.ExistsAndIsUsed // VColor使っている
-            || vColorState == MeshUtility.MeshExportInfo.VertexColorState.ExistsAndMixed // VColorを使っているところと使っていないところが混在(とりあえずExportする)
+            var vColorState = MeshExportInfo.DetectVertexColor(mesh, materials);
+            if (vColorState == MeshExportInfo.VertexColorState.ExistsAndIsUsed // VColor使っている
+            || vColorState == MeshExportInfo.VertexColorState.ExistsAndMixed // VColorを使っているところと使っていないところが混在(とりあえずExportする)
             )
             {
                 // UniUnlit で Multiply 設定になっている
@@ -251,8 +251,16 @@ namespace UniGLTF
             };
         }
 
+        public struct MeshWithRenderer
+        {
+            public Mesh Mesh;
+            [Obsolete("Use Renderer")]
+            public Renderer Rendererer { get { return Renderer; } set { Renderer = value; } }
+            public Renderer Renderer;
+        }
+
         public static IEnumerable<(Mesh, glTFMesh, Dictionary<int, int>)> ExportMeshes(glTF gltf, int bufferIndex,
-            List<MeshUtility.MeshWithRenderer> unityMeshes, List<Material> unityMaterials,
+            List<MeshWithRenderer> unityMeshes, List<Material> unityMaterials,
             MeshExportSettings settings)
         {
             for (int i = 0; i < unityMeshes.Count; ++i)
