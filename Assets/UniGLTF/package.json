@@ -1,6 +1,6 @@
 {
   "name": "com.vrmc.unigltf",
-  "version": "0.62.0",
+  "version": "2.0.0",
   "displayName": "UniGLTF",
   "description": "GLTF importer and exporter",
   "unity": "2018.4",
@@ -12,6 +12,6 @@
   },
   "dependencies": {
     "com.vrmc.vrmshaders": "0.62.0",
-    "com.vrmc.meshutility": "0.62.0"
+    "com.vrmc.meshutility": "0.62.0",
   }
 }
