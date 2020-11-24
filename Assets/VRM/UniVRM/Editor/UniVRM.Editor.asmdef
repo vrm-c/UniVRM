@@ -2,14 +2,16 @@
     "name": "UniVRM.Editor",
     "references": [
         "VRM",
-        "UniJSON",
         "UniHumanoid",
         "MeshUtility",
         "MeshUtility.Editor",
         "UniUnlit",
+        "UniGLTF",
         "UniGLTF.Editor"
     ],
-    "optionalUnityReferences": [],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
     "includePlatforms": [
         "Editor"
     ],

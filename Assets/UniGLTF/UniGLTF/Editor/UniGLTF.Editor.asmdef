@@ -1,15 +1,14 @@
 {
-    "name": "VRM",
+    "name": "UniGLTF.Editor",
     "references": [
-        "MToon",
-        "UniUnlit",
-        "UniHumanoid",
-        "ShaderProperty.Runtime",
-        "MeshUtility",
         "UniGLTF"
     ],
-    "optionalUnityReferences": [],
-    "includePlatforms": [],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,

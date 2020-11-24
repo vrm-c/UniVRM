@@ -1,11 +1,8 @@
 {
-    "name": "VRM.Samples.Editor.Tests",
+    "name": "DepthFirstScheduler.Editor",
     "references": [
-        "VRM",
-        "VRM.Samples",
-        "MeshUtility",
         "UniGLTF",
-        "UniVRM.Editor"
+        "UniGLTF.Editor"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

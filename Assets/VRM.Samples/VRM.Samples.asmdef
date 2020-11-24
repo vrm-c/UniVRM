@@ -3,10 +3,15 @@
     "references": [
         "VRM",
         "DepthFirstScheduler",
-        "UniHumanoid"
+        "UniHumanoid",
+        "UniGLTF"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],
     "excludePlatforms": [],
-    "allowUnsafeCode": false
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": []
 }
