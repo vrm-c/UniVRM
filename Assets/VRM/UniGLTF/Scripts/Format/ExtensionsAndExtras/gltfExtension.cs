@@ -19,10 +19,10 @@ namespace UniGLTF
         {
             Serialized = new Dictionary<string, ArraySegment<byte>>();
         }
-        public static glTFExtension Create(string key, string serialized)
+        public static glTFExtension Create(string key, ArraySegment<byte> raw)
         {
             var e = new glTFExtension();
-            e.Serialized.Add(key, new ArraySegment<byte>(Utf8.GetBytes(serialized)));
+            e.Serialized.Add(key, raw);
             return e;
         }
         #endregion
@@ -74,10 +74,13 @@ namespace UniGLTF
         {
             //CommaCheck();
             f.BeginMap();
-            foreach (var kv in v.Serialized)
+            if (v.Serialized != null)
             {
-                f.Key(kv.Key);
-                f.Raw(kv.Value);
+                foreach (var kv in v.Serialized)
+                {
+                    f.Key(kv.Key);
+                    f.Raw(kv.Value);
+                }
             }
             f.EndMap();
         }

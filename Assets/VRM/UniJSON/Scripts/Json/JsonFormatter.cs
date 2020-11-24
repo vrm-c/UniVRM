@@ -7,7 +7,7 @@ using System.Text;
 
 namespace UniJSON
 {
-    public class JsonFormatter : IFormatter, IRpc
+    public class JsonFormatter : IFormatter
     {
         IStore m_w;
         protected IStore Store

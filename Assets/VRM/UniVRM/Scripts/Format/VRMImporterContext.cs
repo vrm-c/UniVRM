@@ -89,17 +89,6 @@ namespace VRM
         void LoadMeta()
         {
             var meta = ReadMeta();
-            if (meta.Thumbnail == null)
-            {
-                /*
-                // 作る
-                var lookAt = Root.GetComponent<VRMLookAtHead>();
-                var thumbnail = lookAt.CreateThumbnail();
-                thumbnail.name = "thumbnail";
-                meta.Thumbnail = thumbnail;
-                Textures.Add(new TextureItem(thumbnail));
-                */
-            }
             var _meta = Root.AddComponent<VRMMeta>();
             _meta.Meta = meta;
             Meta = meta;

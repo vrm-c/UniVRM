@@ -73,7 +73,7 @@ namespace UniGLTF
             }
             f.EndList();
 
-            return glTFExtension.Create(ExtraName, f.GetStore().ToString());
+            return glTFExtension.Create(ExtraName, f.GetStore().Bytes);
         }
 
         public static void Serialize(glTFMesh gltfMesh, IEnumerable<string> targetNames)

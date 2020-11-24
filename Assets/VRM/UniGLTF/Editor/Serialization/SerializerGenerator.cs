@@ -306,9 +306,18 @@ namespace UniGLTF {
                             continue;
                         }
 
-                        var snipet = fi.FieldType.IsClass ? "if(value." + fi.Name + "!=null)" : "";
+                        var snipet = "";
+                        if (fi.FieldType == typeof(string))
+                        {
+                            snipet = $"if(!string.IsNullOrEmpty(value.{fi.Name}))";
+                        }
+                        else if (fi.FieldType.IsClass)
+                        {
+                            snipet = $"if(value.{fi.Name}!=null)";
+                        }
+
                         var value = default(string);
-                        if (s_snippets.TryGetValue(path + "/" + fi.Name, out value))
+                        if (s_snippets.TryGetValue($"{path}/{fi.Name}", out value))
                         {
                             snipet = value;
                         }

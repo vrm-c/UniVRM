@@ -119,22 +119,22 @@ namespace UniGLTF {
     {
         f.BeginMap(0); // dummy
 
-        if(value.generator!=null)
+        if(!string.IsNullOrEmpty(value.generator))
         {
             f.Key("generator"); f.GenSerialize(value.generator);
         }
 
-        if(value.version!=null)
+        if(!string.IsNullOrEmpty(value.version))
         {
             f.Key("version"); f.GenSerialize(value.version);
         }
 
-        if(value.copyright!=null)
+        if(!string.IsNullOrEmpty(value.copyright))
         {
             f.Key("copyright"); f.GenSerialize(value.copyright);
         }
 
-        if(value.minVersion!=null)
+        if(!string.IsNullOrEmpty(value.minVersion))
         {
             f.Key("minVersion"); f.GenSerialize(value.minVersion);
         }
@@ -173,7 +173,7 @@ namespace UniGLTF {
     {
         f.BeginMap(0); // dummy
 
-        if(value.uri!=null)
+        if(!string.IsNullOrEmpty(value.uri))
         {
             f.Key("uri"); f.GenSerialize(value.uri);
         }
@@ -193,7 +193,7 @@ namespace UniGLTF {
             f.Key("extras"); f.GenSerialize(value.extras);
         }
 
-        if(value.name!=null)
+        if(!string.IsNullOrEmpty(value.name))
         {
             f.Key("name"); f.GenSerialize(value.name);
         }
@@ -252,7 +252,7 @@ namespace UniGLTF {
             f.Key("extras"); f.GenSerialize(value.extras);
         }
 
-        if(value.name!=null)
+        if(!string.IsNullOrEmpty(value.name))
         {
             f.Key("name"); f.GenSerialize(value.name);
         }
@@ -291,7 +291,7 @@ namespace UniGLTF {
             f.Key("byteOffset"); f.GenSerialize(value.byteOffset);
         }
 
-        if(value.type!=null)
+        if(!string.IsNullOrEmpty(value.type))
         {
             f.Key("type"); f.GenSerialize(value.type);
         }
@@ -326,7 +326,7 @@ namespace UniGLTF {
             f.Key("sparse"); f.GenSerialize(value.sparse);
         }
 
-        if(value.name!=null)
+        if(!string.IsNullOrEmpty(value.name))
         {
             f.Key("name"); f.GenSerialize(value.name);
         }
@@ -500,7 +500,7 @@ namespace UniGLTF {
             f.Key("extras"); f.GenSerialize(value.extras);
         }
 
-        if(value.name!=null)
+        if(!string.IsNullOrEmpty(value.name))
         {
             f.Key("name"); f.GenSerialize(value.name);
         }
@@ -554,7 +554,7 @@ namespace UniGLTF {
             f.Key("extras"); f.GenSerialize(value.extras);
         }
 
-        if(value.name!=null)
+        if(!string.IsNullOrEmpty(value.name))
         {
             f.Key("name"); f.GenSerialize(value.name);
         }
@@ -588,12 +588,12 @@ namespace UniGLTF {
     {
         f.BeginMap(0); // dummy
 
-        if(value.name!=null)
+        if(!string.IsNullOrEmpty(value.name))
         {
             f.Key("name"); f.GenSerialize(value.name);
         }
 
-        if(value.uri!=null)
+        if(!string.IsNullOrEmpty(value.uri))
         {
             f.Key("uri"); f.GenSerialize(value.uri);
         }
@@ -603,7 +603,7 @@ namespace UniGLTF {
             f.Key("bufferView"); f.GenSerialize(value.bufferView);
         }
 
-        if(value.mimeType!=null)
+        if(!string.IsNullOrEmpty(value.mimeType))
         {
             f.Key("mimeType"); f.GenSerialize(value.mimeType);
         }
@@ -637,7 +637,7 @@ namespace UniGLTF {
     {
         f.BeginMap(0); // dummy
 
-        if(value.name!=null)
+        if(!string.IsNullOrEmpty(value.name))
         {
             f.Key("name"); f.GenSerialize(value.name);
         }
@@ -667,7 +667,7 @@ namespace UniGLTF {
             f.Key("emissiveFactor"); f.GenSerialize(value.emissiveFactor);
         }
 
-        if(value.alphaMode!=null)
+        if(!string.IsNullOrEmpty(value.alphaMode))
         {
             f.Key("alphaMode"); f.GenSerialize(value.alphaMode);
         }
@@ -904,7 +904,7 @@ namespace UniGLTF {
     {
         f.BeginMap(0); // dummy
 
-        if(value.name!=null)
+        if(!string.IsNullOrEmpty(value.name))
         {
             f.Key("name"); f.GenSerialize(value.name);
         }
@@ -1084,7 +1084,7 @@ namespace UniGLTF {
     {
         f.BeginMap(0); // dummy
 
-        if(value.name!=null)
+        if(!string.IsNullOrEmpty(value.name))
         {
             f.Key("name"); f.GenSerialize(value.name);
         }
@@ -1199,7 +1199,7 @@ namespace UniGLTF {
             f.Key("extras"); f.GenSerialize(value.extras);
         }
 
-        if(value.name!=null)
+        if(!string.IsNullOrEmpty(value.name))
         {
             f.Key("name"); f.GenSerialize(value.name);
         }
@@ -1238,7 +1238,7 @@ namespace UniGLTF {
             f.Key("extras"); f.GenSerialize(value.extras);
         }
 
-        if(value.name!=null)
+        if(!string.IsNullOrEmpty(value.name))
         {
             f.Key("name"); f.GenSerialize(value.name);
         }
@@ -1262,7 +1262,7 @@ namespace UniGLTF {
     {
         f.BeginMap(0); // dummy
 
-        if(value.name!=null)
+        if(!string.IsNullOrEmpty(value.name))
         {
             f.Key("name"); f.GenSerialize(value.name);
         }
@@ -1339,7 +1339,7 @@ namespace UniGLTF {
             f.Key("node"); f.GenSerialize(value.node);
         }
 
-        if(value.path!=null)
+        if(!string.IsNullOrEmpty(value.path))
         {
             f.Key("path"); f.GenSerialize(value.path);
         }
@@ -1378,7 +1378,7 @@ namespace UniGLTF {
             f.Key("input"); f.GenSerialize(value.input);
         }
 
-        if(value.interpolation!=null)
+        if(!string.IsNullOrEmpty(value.interpolation))
         {
             f.Key("interpolation"); f.GenSerialize(value.interpolation);
         }
@@ -1432,7 +1432,7 @@ namespace UniGLTF {
             f.Key("type"); f.GenSerialize(value.type);
         }
 
-        if(value.name!=null)
+        if(!string.IsNullOrEmpty(value.name))
         {
             f.Key("name"); f.GenSerialize(value.name);
         }

@@ -96,7 +96,7 @@ namespace VRM.Samples
 
                 // TODO: Check contents in JSON
                 /*var newExportedJson = */
-                JsonParser.Parse(JsonSchema.FromType<glTF>().Serialize(vrm));
+                // JsonParser.Parse(JsonSchema.FromType<glTF>().Serialize(vrm));
 
                 /*
                 foreach (var kv in importJson.Diff(exportJson))

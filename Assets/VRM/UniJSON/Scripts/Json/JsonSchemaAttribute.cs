@@ -51,7 +51,7 @@ namespace UniJSON
         public object[] EnumExcludes;
         #endregion
 
-        public PropertyExportFlags ExportFlags = PropertyExportFlags.Default;
+        // public PropertyExportFlags ExportFlags = PropertyExportFlags.Default;
 
         /// <summary>
         /// skip validator comparison

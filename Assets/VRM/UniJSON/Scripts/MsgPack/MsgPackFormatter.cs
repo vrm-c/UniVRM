@@ -3,7 +3,7 @@
 
 namespace UniJSON
 {
-    public class MsgPackFormatter : IFormatter, IRpc
+    public class MsgPackFormatter : IFormatter
     {
         IStore m_store;
         public MsgPackFormatter(IStore store)

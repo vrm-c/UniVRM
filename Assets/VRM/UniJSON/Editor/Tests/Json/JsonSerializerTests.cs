@@ -79,13 +79,13 @@ namespace UniJSON
                     new Dictionary<string, object>{
                     } } }, "{\"a\":{}}");
 
-            SerializeValue(new Point { X = 1 }, "{\"X\":1,\"Y\":0}");
+            // SerializeValue(new Point { X = 1 }, "{\"X\":1,\"Y\":0}");
 
-            SerializeValue(HogeFuga.Fuga, "1");
+            // SerializeValue(HogeFuga.Fuga, "1");
 
-            SerializeValue(new EnumTest(), "{\"EnumDefault\":0,\"EnumAsInt\":0,\"EnumAsString\":\"Hoge\",\"EnumAsLowerString\":\"hoge\"}");
+            // SerializeValue(new EnumTest(), "{\"EnumDefault\":0,\"EnumAsInt\":0,\"EnumAsString\":\"Hoge\",\"EnumAsLowerString\":\"hoge\"}");
 
-            SerializeValue((object)new Point { X = 1 }, "{\"X\":1,\"Y\":0}");
+            // SerializeValue((object)new Point { X = 1 }, "{\"X\":1,\"Y\":0}");
         }
 
         [Test]
@@ -111,40 +111,40 @@ namespace UniJSON
         #endregion
 
         #region Deserialize
-        static void DeserializeValue<T>(T value, string json)
-        {
-            var parsed = JsonParser.Parse(json);
+        // static void DeserializeValue<T>(T value, string json)
+        // {
+        //     var parsed = JsonParser.Parse(json);
 
-            var t = default(T);
-            parsed.Deserialize(ref t);
+        //     var t = default(T);
+        //     parsed.Deserialize(ref t);
 
-            Assert.AreEqual(value, t);
-        }
+        //     Assert.AreEqual(value, t);
+        // }
 
-        [Test]
-        public void JsonDeserializerTest()
-        {
-            DeserializeValue(1, "1");
-            DeserializeValue(1.1f, "1.1");
-            DeserializeValue(1.2, "1.2");
-            DeserializeValue(true, "true");
-            DeserializeValue(false, "false");
-            DeserializeValue("ascii", "\"ascii\"");
+        // [Test]
+        // public void JsonDeserializerTest()
+        // {
+        //     DeserializeValue(1, "1");
+        //     DeserializeValue(1.1f, "1.1");
+        //     DeserializeValue(1.2, "1.2");
+        //     DeserializeValue(true, "true");
+        //     DeserializeValue(false, "false");
+        //     DeserializeValue("ascii", "\"ascii\"");
 
-            DeserializeValue(new[] { 1 }, "[1]");
-            DeserializeValue(new[] { 1.1f }, "[1.1]");
-            DeserializeValue(new[] { 1.2 }, "[1.2]");
-            DeserializeValue(new[] { true, false }, "[true,false]");
-            DeserializeValue(new[] { "ascii" }, "[\"ascii\"]");
-            DeserializeValue(new List<int> { 1 }, "[1]");
-            //DeserializeValue(new object[] { null, 1, "a" }, "[null,1,\"a\"]");
+        //     DeserializeValue(new[] { 1 }, "[1]");
+        //     DeserializeValue(new[] { 1.1f }, "[1.1]");
+        //     DeserializeValue(new[] { 1.2 }, "[1.2]");
+        //     DeserializeValue(new[] { true, false }, "[true,false]");
+        //     DeserializeValue(new[] { "ascii" }, "[\"ascii\"]");
+        //     DeserializeValue(new List<int> { 1 }, "[1]");
+        //     //DeserializeValue(new object[] { null, 1, "a" }, "[null,1,\"a\"]");
 
-            DeserializeValue(new Point { X = 1 }, "{\"X\":1,\"Y\":0}");
+        //     DeserializeValue(new Point { X = 1 }, "{\"X\":1,\"Y\":0}");
 
-            DeserializeValue(HogeFuga.Fuga, "1");
+        //     DeserializeValue(HogeFuga.Fuga, "1");
 
-            DeserializeValue(new EnumTest(), "{\"EnumDefault\":0,\"EnumAsInt\":0,\"EnumAsString\":\"Hoge\",\"EnumAsLowerString\":\"hoge\"}");
-        }
+        //     DeserializeValue(new EnumTest(), "{\"EnumDefault\":0,\"EnumAsInt\":0,\"EnumAsString\":\"Hoge\",\"EnumAsLowerString\":\"hoge\"}");
+        // }
 
         class DictionaryValue: IEquatable<DictionaryValue>
         {
@@ -185,18 +185,18 @@ namespace UniJSON
             }
         }
 
-        [Test]
-        public void JsonDictionaryDeserializerTest()
-        { 
-            DeserializeValue(new Dictionary<string, object> { }, "{}");
-            DeserializeValue(new Dictionary<string, object> { { "a", 1 } }, "{\"a\":1}");
-            DeserializeValue(new Dictionary<string, object> { { "a",
-                    new Dictionary<string, object>{
-                    } } }, "{\"a\":{}}");
+        // [Test]
+        // public void JsonDictionaryDeserializerTest()
+        // { 
+        //     DeserializeValue(new Dictionary<string, object> { }, "{}");
+        //     DeserializeValue(new Dictionary<string, object> { { "a", 1 } }, "{\"a\":1}");
+        //     DeserializeValue(new Dictionary<string, object> { { "a",
+        //             new Dictionary<string, object>{
+        //             } } }, "{\"a\":{}}");
 
-            // fix dictionary member deserialization
-            DeserializeValue(new DictionaryValue(), "{\"Dict\": {}}");
-        }
+        //     // fix dictionary member deserialization
+        //     DeserializeValue(new DictionaryValue(), "{\"Dict\": {}}");
+        // }
         #endregion
     }
 }

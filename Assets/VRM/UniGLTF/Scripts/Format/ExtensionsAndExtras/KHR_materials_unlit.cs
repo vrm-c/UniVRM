@@ -11,6 +11,8 @@ namespace UniGLTF
 
         public static readonly Utf8String ExtensionNameUtf8 = Utf8String.From(ExtensionName);
 
+        static readonly byte[] Raw = new byte[] { (byte)'{', (byte)'}' };
+
         public static glTFMaterial CreateDefault()
         {
             return new glTFMaterial
@@ -21,7 +23,7 @@ namespace UniGLTF
                     roughnessFactor = 0.9f,
                     metallicFactor = 0.0f,
                 },
-                extensions = glTFExtension.Create(ExtensionName, "{}")
+                extensions = glTFExtension.Create(ExtensionName, new ArraySegment<byte>(Raw))
             };
         }
 
@@ -45,7 +47,7 @@ namespace UniGLTF
 
         public static glTFExtension Serialize()
         {
-            return glTFExtension.Create(ExtensionName, "{}");
+            return glTFExtension.Create(ExtensionName, new ArraySegment<byte>(Raw));
         }
     }
 }
