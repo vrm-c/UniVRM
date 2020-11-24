@@ -28,7 +28,7 @@ namespace UniGLTF
         #endregion
 
         #region for Import
-        ListTreeNode<JsonValue> m_json;
+        readonly ListTreeNode<JsonValue> m_json;
         public glTFExtension(ListTreeNode<JsonValue> json)
         {
             m_json = json;
@@ -51,7 +51,7 @@ namespace UniGLTF
         /// 
         /// parse exported value
         /// </summary>
-        public void Parse()
+        public glTFExtension Parse()
         {
             var f = new JsonFormatter();
             f.BeginMap();
@@ -64,7 +64,7 @@ namespace UniGLTF
 
             var b = f.GetStoreBytes();
             var json = Encoding.UTF8.GetString(b.Array, b.Offset, b.Count);
-            m_json = json.ParseAsJson();
+            return new glTFExtension(json.ParseAsJson());
         }
     }
 

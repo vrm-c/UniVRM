@@ -11,9 +11,6 @@ namespace VRM
 {
     public class VRMImporterContext : ImporterContext
     {
-        const string HUMANOID_KEY = "humanoid";
-        const string MATERIAL_KEY = "materialProperties";
-
         public VRM.glTF_VRM_extensions VRM { get; private set; }
 
         public VRMImporterContext()
