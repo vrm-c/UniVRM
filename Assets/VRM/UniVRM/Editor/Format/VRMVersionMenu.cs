@@ -109,7 +109,7 @@ namespace VRM
   ""dependencies"": {{
     ""com.vrmc.vrmshaders"": ""{1}"",
     ""com.vrmc.meshutility"": ""{1}"",
-    ""com.vrmc.unigltf"": ""{0}"",
+    ""com.vrmc.unigltf"": ""{0}""
   }}
 }}
 "),
@@ -130,7 +130,7 @@ namespace VRM
   }},
   ""dependencies"": {{
     ""com.vrmc.vrmshaders"": ""{1}"",
-    ""com.vrmc.meshutility"": ""{1}"",
+    ""com.vrmc.meshutility"": ""{1}""
   }}
 }}");
 

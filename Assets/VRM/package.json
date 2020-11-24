@@ -16,6 +16,6 @@
   "dependencies": {
     "com.vrmc.vrmshaders": "0.62.0",
     "com.vrmc.meshutility": "0.62.0",
-    "com.vrmc.unigltf": "2.0.0",
+    "com.vrmc.unigltf": "2.0.0"
   }
 }
