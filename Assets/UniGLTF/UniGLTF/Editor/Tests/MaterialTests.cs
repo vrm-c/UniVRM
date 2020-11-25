@@ -30,16 +30,16 @@ namespace UniGLTF
 
             var materialExporter = new MaterialExporter();
             var gltfMaterial = materialExporter.ExportMaterial(srcMaterial, textureManager);
-            gltfMaterial.pbrMetallicRoughness.baseColorTexture.extensions = gltfMaterial.pbrMetallicRoughness.baseColorTexture.extensions.Parse();
+            gltfMaterial.pbrMetallicRoughness.baseColorTexture.extensions = gltfMaterial.pbrMetallicRoughness.baseColorTexture.extensions.Deserialize();
 
             var shaderStore = new ShaderStore(null);
             var materialImporter = new MaterialImporter(shaderStore, (int index) => { return null; });
             var dstMaterial = materialImporter.CreateMaterial(0, gltfMaterial, false);
 
-            Assert.AreEqual(dstMaterial.mainTextureOffset.x, offset.x, 0.001f);
-            Assert.AreEqual(dstMaterial.mainTextureOffset.y, offset.y, 0.001f);
-            Assert.AreEqual(dstMaterial.mainTextureScale.x, scale.x, 0.001f);
-            Assert.AreEqual(dstMaterial.mainTextureScale.y, scale.y, 0.001f);
+            Assert.AreEqual(dstMaterial.mainTextureOffset.x, offset.x, 0.3f);
+            Assert.AreEqual(dstMaterial.mainTextureOffset.y, offset.y, 0.2f);
+            Assert.AreEqual(dstMaterial.mainTextureScale.x, scale.x, 0.5f);
+            Assert.AreEqual(dstMaterial.mainTextureScale.y, scale.y, 0.6f);
         }
 
         [Test]
@@ -64,7 +64,7 @@ namespace UniGLTF
             }
 
             {
-                var extension = glTF_KHR_materials_unlit.Serialize().Parse();
+                var extension = glTF_KHR_materials_unlit.Serialize().Deserialize();
                 var list = extension.ObjectItems().ToArray();
                 Assert.AreEqual(1, list.Length);
                 Assert.AreEqual(glTF_KHR_materials_unlit.ExtensionNameUtf8, list[0].Key.GetUtf8String());
@@ -102,7 +102,7 @@ namespace UniGLTF
                     {
                         baseColorFactor = new float[] { 1, 0, 0, 1 },
                     },
-                    extensions = glTF_KHR_materials_unlit.Serialize().Parse(),
+                    extensions = glTF_KHR_materials_unlit.Serialize().Deserialize(),
                 });
                 Assert.AreEqual("UniGLTF/UniUnlit", shader.name);
             }
@@ -116,7 +116,7 @@ namespace UniGLTF
                     {
                         baseColorTexture = new glTFMaterialBaseColorTextureInfo(),
                     },
-                    extensions = glTF_KHR_materials_unlit.Serialize().Parse(),
+                    extensions = glTF_KHR_materials_unlit.Serialize().Deserialize(),
                 });
                 Assert.AreEqual("UniGLTF/UniUnlit", shader.name);
             }
@@ -131,7 +131,7 @@ namespace UniGLTF
                         baseColorFactor = new float[] { 1, 0, 0, 1 },
                         baseColorTexture = new glTFMaterialBaseColorTextureInfo(),
                     },
-                    extensions = glTF_KHR_materials_unlit.Serialize().Parse(),
+                    extensions = glTF_KHR_materials_unlit.Serialize().Deserialize(),
                 });
                 Assert.AreEqual("UniGLTF/UniUnlit", shader.name);
             }
@@ -145,7 +145,7 @@ namespace UniGLTF
                     {
                         baseColorFactor = new float[] { 1, 0, 0, 1 },
                     },
-                    extensions = glTF_KHR_materials_unlit.Serialize().Parse(),
+                    extensions = glTF_KHR_materials_unlit.Serialize().Deserialize(),
                 });
                 Assert.AreEqual("UniGLTF/UniUnlit", shader.name);
             }
@@ -159,7 +159,7 @@ namespace UniGLTF
                     {
                         baseColorTexture = new glTFMaterialBaseColorTextureInfo(),
                     },
-                    extensions = glTF_KHR_materials_unlit.Serialize().Parse(),
+                    extensions = glTF_KHR_materials_unlit.Serialize().Deserialize(),
                 });
                 Assert.AreEqual("UniGLTF/UniUnlit", shader.name);
             }
@@ -174,7 +174,7 @@ namespace UniGLTF
                         baseColorFactor = new float[] { 1, 0, 0, 1 },
                         baseColorTexture = new glTFMaterialBaseColorTextureInfo(),
                     },
-                    extensions = glTF_KHR_materials_unlit.Serialize().Parse(),
+                    extensions = glTF_KHR_materials_unlit.Serialize().Deserialize(),
                 });
                 Assert.AreEqual("UniGLTF/UniUnlit", shader.name);
             }
@@ -188,7 +188,7 @@ namespace UniGLTF
                     {
                         baseColorTexture = new glTFMaterialBaseColorTextureInfo(),
                     },
-                    extensions = glTF_KHR_materials_unlit.Serialize().Parse(),
+                    extensions = glTF_KHR_materials_unlit.Serialize().Deserialize(),
                 });
                 Assert.AreEqual("UniGLTF/UniUnlit", shader.name);
             }
@@ -203,7 +203,7 @@ namespace UniGLTF
                         baseColorFactor = new float[] { 1, 0, 0, 1 },
                         baseColorTexture = new glTFMaterialBaseColorTextureInfo(),
                     },
-                    extensions = glTF_KHR_materials_unlit.Serialize().Parse(),
+                    extensions = glTF_KHR_materials_unlit.Serialize().Deserialize(),
                 });
                 Assert.AreEqual("UniGLTF/UniUnlit", shader.name);
             }
@@ -212,7 +212,7 @@ namespace UniGLTF
                 // default
                 var shader = shaderStore.GetShader(new glTFMaterial
                 {
-                    extensions = glTF_KHR_materials_unlit.Serialize().Parse(),
+                    extensions = glTF_KHR_materials_unlit.Serialize().Deserialize(),
                 });
                 Assert.AreEqual("UniGLTF/UniUnlit", shader.name);
             }

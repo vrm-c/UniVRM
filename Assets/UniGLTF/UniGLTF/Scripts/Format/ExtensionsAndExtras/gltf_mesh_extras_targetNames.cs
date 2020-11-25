@@ -33,9 +33,9 @@ namespace UniGLTF
 
         public static bool TryGet(glTFMesh mesh, out List<string> targetNames)
         {
-            if (mesh.extras != null)
+            if (mesh.extras is glTFExtensionImport meshExtras)
             {
-                foreach (var kv in mesh.extras.ObjectItems())
+                foreach (var kv in meshExtras.ObjectItems())
                 {
                     if (kv.Key.GetUtf8String() == ExtraNameUtf8)
                     {
@@ -46,9 +46,9 @@ namespace UniGLTF
             }
 
             // use first primitive
-            if (mesh.primitives.Count > 0 && mesh.primitives[0].extras != null)
+            if (mesh.primitives.Count > 0 && mesh.primitives[0].extras is glTFExtensionImport primExtras)
             {
-                foreach (var kv in mesh.primitives[0].extras.ObjectItems())
+                foreach (var kv in primExtras.ObjectItems())
                 {
                     if (kv.Key.GetUtf8String() == ExtraNameUtf8)
                     {
@@ -73,7 +73,7 @@ namespace UniGLTF
             }
             f.EndList();
 
-            return glTFExtension.Create(ExtraName, f.GetStore().Bytes);
+            return new glTFExtensionExport().Add(ExtraName, f.GetStore().Bytes);
         }
 
         public static void Serialize(glTFMesh gltfMesh, IEnumerable<string> targetNames)
@@ -88,19 +88,13 @@ namespace UniGLTF
             f.EndList();
             var targetNamesJson = f.GetStore().Bytes;
 
-            if (gltfMesh.extras == null)
-            {
-                gltfMesh.extras = new glTFExtension();
-            }
-            gltfMesh.extras.Serialized.Add(ExtraName, targetNamesJson);
+            var meshExtras = glTFExtensionExport.GetOrCreate(ref gltfMesh.extras);
+            meshExtras.Add(ExtraName, targetNamesJson);
 
             foreach (var prim in gltfMesh.primitives)
             {
-                if (prim.extras == null)
-                {
-                    prim.extras = new glTFExtension();
-                }
-                prim.extras.Serialized.Add(ExtraName, targetNamesJson);
+                var primExtras = glTFExtensionExport.GetOrCreate(ref prim.extras);
+                primExtras.Add(ExtraName, targetNamesJson);
             }
         }
     }

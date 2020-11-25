@@ -74,12 +74,15 @@ namespace UniGLTF
 
         public static bool TryGet(glTFTextureInfo info, out glTF_KHR_texture_transform t)
         {
-            foreach (var kv in info.extensions.ObjectItems())
+            if (info.extras is glTFExtensionImport imported)
             {
-                if (kv.Key.GetUtf8String() == ExtensionNameUt8)
+                foreach (var kv in imported.ObjectItems())
                 {
-                    t = Deserialize(kv.Value);
-                    return true;
+                    if (kv.Key.GetUtf8String() == ExtensionNameUt8)
+                    {
+                        t = Deserialize(kv.Value);
+                        return true;
+                    }
                 }
             }
 
@@ -89,11 +92,6 @@ namespace UniGLTF
 
         public static void Serialize(glTFTextureInfo info, Vector2 offset, Vector2 scale)
         {
-            if (info.extensions == null)
-            {
-                info.extensions = new glTFExtension();
-            }
-
             var f = new JsonFormatter();
             f.BeginMap();
 
@@ -111,7 +109,7 @@ namespace UniGLTF
 
             f.EndMap();
 
-            info.extensions.Serialized.Add(ExtensionName, f.GetStore().Bytes);
+            glTFExtensionExport.GetOrCreate(ref info.extensions).Add(ExtensionName, f.GetStore().Bytes);
         }
     }
 }

@@ -36,7 +36,6 @@ namespace UniGLTF
 using UniJSON;
 using System;
 using System.Collections.Generic;
-using VRM;
 using UnityEngine;
 
 namespace UniGLTF {

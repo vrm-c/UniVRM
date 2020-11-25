@@ -23,22 +23,20 @@ namespace UniGLTF
                     roughnessFactor = 0.9f,
                     metallicFactor = 0.0f,
                 },
-                extensions = glTFExtension.Create(ExtensionName, new ArraySegment<byte>(Raw))
+                extensions = new glTFExtensionExport().Add(ExtensionName, new ArraySegment<byte>(Raw))
             };
         }
 
         public static bool IsEnable(glTFMaterial m)
         {
-            if (m.extensions == null)
+            if (m.extensions is glTFExtensionImport imported)
             {
-                return false;
-            }
-
-            foreach (var kv in m.extensions.ObjectItems())
-            {
-                if (kv.Key.GetUtf8String() == ExtensionNameUtf8)
+                foreach (var kv in imported.ObjectItems())
                 {
-                    return kv.Value.Value.ValueType == ValueNodeType.Object;
+                    if (kv.Key.GetUtf8String() == ExtensionNameUtf8)
+                    {
+                        return kv.Value.Value.ValueType == ValueNodeType.Object;
+                    }
                 }
             }
 
@@ -47,7 +45,7 @@ namespace UniGLTF
 
         public static glTFExtension Serialize()
         {
-            return glTFExtension.Create(ExtensionName, new ArraySegment<byte>(Raw));
+            return new glTFExtensionExport().Add(ExtensionName, new ArraySegment<byte>(Raw));
         }
     }
 }

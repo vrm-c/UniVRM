@@ -38,12 +38,15 @@ namespace VRM
             base.ParseJson(json, storage);
 
             // parse VRM part
-            foreach (var kv in GLTF.extensions.ObjectItems())
+            if (GLTF.extensions is glTFExtensionImport imported)
             {
-                if (kv.Key.GetString() == "VRM")
+                foreach (var kv in imported.ObjectItems())
                 {
-                    VRM = VrmDeserializer.Deserialize(kv.Value);
-                    break;
+                    if (kv.Key.GetString() == "VRM")
+                    {
+                        VRM = VrmDeserializer.Deserialize(kv.Value);
+                        break;
+                    }
                 }
             }
 
