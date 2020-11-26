@@ -3,7 +3,7 @@ using System.IO;
 
 namespace UniGLTF
 {
-    public class StringKeyDictionarySerialization : SerializationBase
+    public class StringKeyDictionarySerialization : CollectionSerializationBase
     {
         IValueSerialization m_inner;
 
@@ -12,6 +12,7 @@ namespace UniGLTF
             ValueType = t;
             m_inner = inner;
         }
+
         public override void GenerateDeserializer(StreamWriter writer, string callName)
         {
             var itemCallName = callName + "_ITEM";

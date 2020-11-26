@@ -127,7 +127,7 @@ namespace UniGLTF
             }
             else if (t.IsEnum)
             {
-                return new EnumIntSerialization(t, attr.EnumSerializationType);
+                return new EnumSerialization(t, attr.EnumSerializationType);
             }
             else if (t == typeof(glTFExtension))
             {
@@ -163,6 +163,21 @@ namespace UniGLTF
             sb.Append(string.Format("{0}: {1}", Path, Serialization));
 
             return sb.ToString();
+        }
+
+        /// <summary>
+        /// Runtimeのシリアライズ判定関数を作る
+        /// </summary>
+        /// <param name="t"></param>
+        /// <returns></returns>
+        public string CreateSerializationCondition(Type t, string arg)
+        {
+            if (t.IsClass)
+            {
+                return $"{arg}!=null";
+            }
+
+            return "true";
         }
     }
 }

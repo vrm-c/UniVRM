@@ -19,13 +19,13 @@ namespace UniGLTF
         public static string ToJson(this glTFMesh self)
         {
             var f = new JsonFormatter();
-            GltfSerializer.Serialize_gltf_meshes_LIST(f, self);
+            GltfSerializer.Serialize_gltf_meshes_ITEM(f, self);
             return f.ToString();
         }
         public static string ToJson(this glTFPrimitives self)
         {
             var f = new JsonFormatter();
-            GltfSerializer.Serialize_gltf_meshes__primitives_LIST(f, self);
+            GltfSerializer.Serialize_gltf_meshes__primitives_ITEM(f, self);
             return f.ToString();
         }
         public static string ToJson(this glTFAttributes self)
@@ -43,19 +43,19 @@ namespace UniGLTF
         public static string ToJson(this glTFMaterial self)
         {
             var f = new JsonFormatter();
-            GltfSerializer.Serialize_gltf_materials_LIST(f, self);
+            GltfSerializer.Serialize_gltf_materials_ITEM(f, self);
             return f.ToString();
         }
         public static string ToJson(this glTFNode self)
         {
             var f = new JsonFormatter();
-            GltfSerializer.Serialize_gltf_nodes_LIST(f, self);
+            GltfSerializer.Serialize_gltf_nodes_ITEM(f, self);
             return f.ToString();
         }
         public static string ToJson(this glTFSkin self)
         {
             var f = new JsonFormatter();
-            GltfSerializer.Serialize_gltf_skins_LIST(f, self);
+            GltfSerializer.Serialize_gltf_skins_ITEM(f, self);
             return f.ToString();
         }
     }

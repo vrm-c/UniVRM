@@ -5,35 +5,7 @@ using System.Text;
 
 namespace UniGLTF
 {
-    public abstract class SerializationBase : IValueSerialization
-    {
-        public Type ValueType
-        {
-            get;
-            protected set;
-        }
-
-        public bool IsInline
-        {
-            get { return false; }
-        }
-
-        public abstract void GenerateDeserializer(StreamWriter writer, string callName);
-
-        public string GenerateDeserializerCall(string callName, string argName)
-        {
-            return $"{callName}({argName})";
-        }
-
-        public abstract void GenerateSerializer(StreamWriter writer, string callName);
-
-        public string GenerateSerializerCall(string callName, string argName)
-        {
-            return $"{callName}(f, {argName})";
-        }
-    }
-
-    public class ObjectSerialization : SerializationBase
+    public class ObjectSerialization : CollectionSerializationBase
     {
         string m_path;
         FieldSerializationInfo[] m_fsi;
@@ -111,6 +83,16 @@ public static $0 $2(ListTreeNode<JsonValue> parsed)
             }
         }
 
+        /// <summary>
+        /// シリアライザーのコード生成
+        /// 
+        /// ObjectのFieldのみ値によって、出力するか否かの判定が必用。
+        /// 
+        /// 例: 空文字列は出力しない
+        /// 
+        /// </summary>
+        /// <param name="writer"></param>
+        /// <param name="callName"></param>
         public override void GenerateSerializer(StreamWriter writer, string callName)
         {
             writer.Write($@"
@@ -123,9 +105,13 @@ public static void {callName}(JsonFormatter f, {ValueType.Name} value)
 
             foreach (var f in m_fsi)
             {
-                writer.Write($"    f.Key(\"{f.Name}\");\n");
-                writer.Write($"    {f.Serialization.GenerateSerializerCall(f.FunctionName, $"value.{f.Name}")};\n");
-                writer.Write("\n");
+                var valueName = $"value.{f.Name}";
+                writer.Write($@"
+    if({f.CreateSerializationCondition(f.Serialization.ValueType, valueName)}){{
+        f.Key(""{f.Name}"");                
+        {f.Serialization.GenerateSerializerCall(f.FunctionName, valueName)};
+    }}
+");
             }
 
             writer.Write(@"

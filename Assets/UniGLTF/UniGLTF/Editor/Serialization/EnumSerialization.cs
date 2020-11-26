@@ -3,7 +3,7 @@ using System.IO;
 
 namespace UniGLTF
 {
-    public class EnumIntSerialization : IValueSerialization
+    public class EnumSerialization : IValueSerialization
     {
         Type m_type;
         EnumSerializationType m_serializationType;
@@ -24,7 +24,7 @@ namespace UniGLTF
         }
 
 
-        public EnumIntSerialization(Type t, EnumSerializationType serializationType)
+        public EnumSerialization(Type t, EnumSerializationType serializationType)
         {
             m_type = t;
             m_serializationType = serializationType;

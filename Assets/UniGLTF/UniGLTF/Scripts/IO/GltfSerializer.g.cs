@@ -12,63 +12,101 @@ public static void Serialize(JsonFormatter f, glTF value)
 {
     f.BeginMap();
 
-    f.Key("asset");
-    Serialize_gltf_asset(f, value.asset);
 
-    f.Key("buffers");
-    Serialize_gltf_buffers(f, value.buffers);
+    if(value.asset!=null){
+        f.Key("asset");                
+        Serialize_gltf_asset(f, value.asset);
+    }
 
-    f.Key("bufferViews");
-    Serialize_gltf_bufferViews(f, value.bufferViews);
+    if(value.buffers!=null){
+        f.Key("buffers");                
+        Serialize_gltf_buffers(f, value.buffers);
+    }
 
-    f.Key("accessors");
-    Serialize_gltf_accessors(f, value.accessors);
+    if(value.bufferViews!=null){
+        f.Key("bufferViews");                
+        Serialize_gltf_bufferViews(f, value.bufferViews);
+    }
 
-    f.Key("textures");
-    Serialize_gltf_textures(f, value.textures);
+    if(value.accessors!=null){
+        f.Key("accessors");                
+        Serialize_gltf_accessors(f, value.accessors);
+    }
 
-    f.Key("samplers");
-    Serialize_gltf_samplers(f, value.samplers);
+    if(value.textures!=null){
+        f.Key("textures");                
+        Serialize_gltf_textures(f, value.textures);
+    }
 
-    f.Key("images");
-    Serialize_gltf_images(f, value.images);
+    if(value.samplers!=null){
+        f.Key("samplers");                
+        Serialize_gltf_samplers(f, value.samplers);
+    }
 
-    f.Key("materials");
-    Serialize_gltf_materials(f, value.materials);
+    if(value.images!=null){
+        f.Key("images");                
+        Serialize_gltf_images(f, value.images);
+    }
 
-    f.Key("meshes");
-    Serialize_gltf_meshes(f, value.meshes);
+    if(value.materials!=null){
+        f.Key("materials");                
+        Serialize_gltf_materials(f, value.materials);
+    }
 
-    f.Key("nodes");
-    Serialize_gltf_nodes(f, value.nodes);
+    if(value.meshes!=null){
+        f.Key("meshes");                
+        Serialize_gltf_meshes(f, value.meshes);
+    }
 
-    f.Key("skins");
-    Serialize_gltf_skins(f, value.skins);
+    if(value.nodes!=null){
+        f.Key("nodes");                
+        Serialize_gltf_nodes(f, value.nodes);
+    }
 
-    f.Key("scene");
-    f.Value(value.scene);
+    if(value.skins!=null){
+        f.Key("skins");                
+        Serialize_gltf_skins(f, value.skins);
+    }
 
-    f.Key("scenes");
-    Serialize_gltf_scenes(f, value.scenes);
+    if(true){
+        f.Key("scene");                
+        f.Value(value.scene);
+    }
 
-    f.Key("animations");
-    Serialize_gltf_animations(f, value.animations);
+    if(value.scenes!=null){
+        f.Key("scenes");                
+        Serialize_gltf_scenes(f, value.scenes);
+    }
 
-    f.Key("cameras");
-    Serialize_gltf_cameras(f, value.cameras);
+    if(value.animations!=null){
+        f.Key("animations");                
+        Serialize_gltf_animations(f, value.animations);
+    }
 
-    f.Key("extensionsUsed");
-    Serialize_gltf_extensionsUsed(f, value.extensionsUsed);
+    if(value.cameras!=null){
+        f.Key("cameras");                
+        Serialize_gltf_cameras(f, value.cameras);
+    }
 
-    f.Key("extensionsRequired");
-    Serialize_gltf_extensionsRequired(f, value.extensionsRequired);
+    if(value.extensionsUsed!=null){
+        f.Key("extensionsUsed");                
+        Serialize_gltf_extensionsUsed(f, value.extensionsUsed);
+    }
 
-    f.Key("extensions");
-    value.extras.Serialize(f);
+    if(value.extensionsRequired!=null){
+        f.Key("extensionsRequired");                
+        Serialize_gltf_extensionsRequired(f, value.extensionsRequired);
+    }
 
-    f.Key("extras");
-    value.extras.Serialize(f);
+    if(value.extensions!=null){
+        f.Key("extensions");                
+        value.extras.Serialize(f);
+    }
 
+    if(value.extras!=null){
+        f.Key("extras");                
+        value.extras.Serialize(f);
+    }
 
     f.EndMap();
 }
@@ -77,24 +115,36 @@ public static void Serialize_gltf_asset(JsonFormatter f, glTFAssets value)
 {
     f.BeginMap();
 
-    f.Key("generator");
-    f.Value(value.generator);
 
-    f.Key("version");
-    f.Value(value.version);
+    if(value.generator!=null){
+        f.Key("generator");                
+        f.Value(value.generator);
+    }
 
-    f.Key("copyright");
-    f.Value(value.copyright);
+    if(value.version!=null){
+        f.Key("version");                
+        f.Value(value.version);
+    }
 
-    f.Key("minVersion");
-    f.Value(value.minVersion);
+    if(value.copyright!=null){
+        f.Key("copyright");                
+        f.Value(value.copyright);
+    }
 
-    f.Key("extensions");
-    value.extras.Serialize(f);
+    if(value.minVersion!=null){
+        f.Key("minVersion");                
+        f.Value(value.minVersion);
+    }
 
-    f.Key("extras");
-    value.extras.Serialize(f);
+    if(value.extensions!=null){
+        f.Key("extensions");                
+        value.extras.Serialize(f);
+    }
 
+    if(value.extras!=null){
+        f.Key("extras");                
+        value.extras.Serialize(f);
+    }
 
     f.EndMap();
 }
@@ -105,31 +155,41 @@ public static void Serialize_gltf_buffers(JsonFormatter f, List<glTFBuffer> valu
 
     foreach(var item in value)
     {
-    Serialize_gltf_buffers_LIST(f, item);
+    Serialize_gltf_buffers_ITEM(f, item);
 
     }
     f.EndList();
 }
 
-public static void Serialize_gltf_buffers_LIST(JsonFormatter f, glTFBuffer value)
+public static void Serialize_gltf_buffers_ITEM(JsonFormatter f, glTFBuffer value)
 {
     f.BeginMap();
 
-    f.Key("uri");
-    f.Value(value.uri);
 
-    f.Key("byteLength");
-    f.Value(value.byteLength);
+    if(value.uri!=null){
+        f.Key("uri");                
+        f.Value(value.uri);
+    }
 
-    f.Key("extensions");
-    value.extras.Serialize(f);
+    if(true){
+        f.Key("byteLength");                
+        f.Value(value.byteLength);
+    }
 
-    f.Key("extras");
-    value.extras.Serialize(f);
+    if(value.extensions!=null){
+        f.Key("extensions");                
+        value.extras.Serialize(f);
+    }
 
-    f.Key("name");
-    f.Value(value.name);
+    if(value.extras!=null){
+        f.Key("extras");                
+        value.extras.Serialize(f);
+    }
 
+    if(value.name!=null){
+        f.Key("name");                
+        f.Value(value.name);
+    }
 
     f.EndMap();
 }
@@ -140,40 +200,56 @@ public static void Serialize_gltf_bufferViews(JsonFormatter f, List<glTFBufferVi
 
     foreach(var item in value)
     {
-    Serialize_gltf_bufferViews_LIST(f, item);
+    Serialize_gltf_bufferViews_ITEM(f, item);
 
     }
     f.EndList();
 }
 
-public static void Serialize_gltf_bufferViews_LIST(JsonFormatter f, glTFBufferView value)
+public static void Serialize_gltf_bufferViews_ITEM(JsonFormatter f, glTFBufferView value)
 {
     f.BeginMap();
 
-    f.Key("buffer");
-    f.Value(value.buffer);
 
-    f.Key("byteOffset");
-    f.Value(value.byteOffset);
+    if(true){
+        f.Key("buffer");                
+        f.Value(value.buffer);
+    }
 
-    f.Key("byteLength");
-    f.Value(value.byteLength);
+    if(true){
+        f.Key("byteOffset");                
+        f.Value(value.byteOffset);
+    }
 
-    f.Key("byteStride");
-    f.Value(value.byteStride);
+    if(true){
+        f.Key("byteLength");                
+        f.Value(value.byteLength);
+    }
 
-    f.Key("target");
-    f.Value((int)value.target);
+    if(true){
+        f.Key("byteStride");                
+        f.Value(value.byteStride);
+    }
 
-    f.Key("extensions");
-    value.extras.Serialize(f);
+    if(true){
+        f.Key("target");                
+        f.Value((int)value.target);
+    }
 
-    f.Key("extras");
-    value.extras.Serialize(f);
+    if(value.extensions!=null){
+        f.Key("extensions");                
+        value.extras.Serialize(f);
+    }
 
-    f.Key("name");
-    f.Value(value.name);
+    if(value.extras!=null){
+        f.Key("extras");                
+        value.extras.Serialize(f);
+    }
 
+    if(value.name!=null){
+        f.Key("name");                
+        f.Value(value.name);
+    }
 
     f.EndMap();
 }
@@ -184,52 +260,76 @@ public static void Serialize_gltf_accessors(JsonFormatter f, List<glTFAccessor> 
 
     foreach(var item in value)
     {
-    Serialize_gltf_accessors_LIST(f, item);
+    Serialize_gltf_accessors_ITEM(f, item);
 
     }
     f.EndList();
 }
 
-public static void Serialize_gltf_accessors_LIST(JsonFormatter f, glTFAccessor value)
+public static void Serialize_gltf_accessors_ITEM(JsonFormatter f, glTFAccessor value)
 {
     f.BeginMap();
 
-    f.Key("bufferView");
-    f.Value(value.bufferView);
 
-    f.Key("byteOffset");
-    f.Value(value.byteOffset);
+    if(true){
+        f.Key("bufferView");                
+        f.Value(value.bufferView);
+    }
 
-    f.Key("type");
-    f.Value(value.type);
+    if(true){
+        f.Key("byteOffset");                
+        f.Value(value.byteOffset);
+    }
 
-    f.Key("componentType");
-    f.Value((int)value.componentType);
+    if(value.type!=null){
+        f.Key("type");                
+        f.Value(value.type);
+    }
 
-    f.Key("count");
-    f.Value(value.count);
+    if(true){
+        f.Key("componentType");                
+        f.Value((int)value.componentType);
+    }
 
-    f.Key("max");
-    Serialize_gltf_accessors__max(f, value.max);
+    if(true){
+        f.Key("count");                
+        f.Value(value.count);
+    }
 
-    f.Key("min");
-    Serialize_gltf_accessors__min(f, value.min);
+    if(value.max!=null){
+        f.Key("max");                
+        Serialize_gltf_accessors__max(f, value.max);
+    }
 
-    f.Key("normalized");
-    f.Value(value.normalized);
+    if(value.min!=null){
+        f.Key("min");                
+        Serialize_gltf_accessors__min(f, value.min);
+    }
 
-    f.Key("sparse");
-    Serialize_gltf_accessors__sparse(f, value.sparse);
+    if(true){
+        f.Key("normalized");                
+        f.Value(value.normalized);
+    }
 
-    f.Key("name");
-    f.Value(value.name);
+    if(value.sparse!=null){
+        f.Key("sparse");                
+        Serialize_gltf_accessors__sparse(f, value.sparse);
+    }
 
-    f.Key("extensions");
-    value.extras.Serialize(f);
+    if(value.name!=null){
+        f.Key("name");                
+        f.Value(value.name);
+    }
 
-    f.Key("extras");
-    value.extras.Serialize(f);
+    if(value.extensions!=null){
+        f.Key("extensions");                
+        value.extras.Serialize(f);
+    }
 
+    if(value.extras!=null){
+        f.Key("extras");                
+        value.extras.Serialize(f);
+    }
 
     f.EndMap();
 }
@@ -262,21 +362,31 @@ public static void Serialize_gltf_accessors__sparse(JsonFormatter f, glTFSparse 
 {
     f.BeginMap();
 
-    f.Key("count");
-    f.Value(value.count);
 
-    f.Key("indices");
-    Serialize_gltf_accessors__sparse_indices(f, value.indices);
+    if(true){
+        f.Key("count");                
+        f.Value(value.count);
+    }
 
-    f.Key("values");
-    Serialize_gltf_accessors__sparse_values(f, value.values);
+    if(value.indices!=null){
+        f.Key("indices");                
+        Serialize_gltf_accessors__sparse_indices(f, value.indices);
+    }
 
-    f.Key("extensions");
-    value.extras.Serialize(f);
+    if(value.values!=null){
+        f.Key("values");                
+        Serialize_gltf_accessors__sparse_values(f, value.values);
+    }
 
-    f.Key("extras");
-    value.extras.Serialize(f);
+    if(value.extensions!=null){
+        f.Key("extensions");                
+        value.extras.Serialize(f);
+    }
 
+    if(value.extras!=null){
+        f.Key("extras");                
+        value.extras.Serialize(f);
+    }
 
     f.EndMap();
 }
@@ -285,21 +395,31 @@ public static void Serialize_gltf_accessors__sparse_indices(JsonFormatter f, glT
 {
     f.BeginMap();
 
-    f.Key("bufferView");
-    f.Value(value.bufferView);
 
-    f.Key("byteOffset");
-    f.Value(value.byteOffset);
+    if(true){
+        f.Key("bufferView");                
+        f.Value(value.bufferView);
+    }
 
-    f.Key("componentType");
-    f.Value((int)value.componentType);
+    if(true){
+        f.Key("byteOffset");                
+        f.Value(value.byteOffset);
+    }
 
-    f.Key("extensions");
-    value.extras.Serialize(f);
+    if(true){
+        f.Key("componentType");                
+        f.Value((int)value.componentType);
+    }
 
-    f.Key("extras");
-    value.extras.Serialize(f);
+    if(value.extensions!=null){
+        f.Key("extensions");                
+        value.extras.Serialize(f);
+    }
 
+    if(value.extras!=null){
+        f.Key("extras");                
+        value.extras.Serialize(f);
+    }
 
     f.EndMap();
 }
@@ -308,18 +428,26 @@ public static void Serialize_gltf_accessors__sparse_values(JsonFormatter f, glTF
 {
     f.BeginMap();
 
-    f.Key("bufferView");
-    f.Value(value.bufferView);
 
-    f.Key("byteOffset");
-    f.Value(value.byteOffset);
+    if(true){
+        f.Key("bufferView");                
+        f.Value(value.bufferView);
+    }
 
-    f.Key("extensions");
-    value.extras.Serialize(f);
+    if(true){
+        f.Key("byteOffset");                
+        f.Value(value.byteOffset);
+    }
 
-    f.Key("extras");
-    value.extras.Serialize(f);
+    if(value.extensions!=null){
+        f.Key("extensions");                
+        value.extras.Serialize(f);
+    }
 
+    if(value.extras!=null){
+        f.Key("extras");                
+        value.extras.Serialize(f);
+    }
 
     f.EndMap();
 }
@@ -330,31 +458,41 @@ public static void Serialize_gltf_textures(JsonFormatter f, List<glTFTexture> va
 
     foreach(var item in value)
     {
-    Serialize_gltf_textures_LIST(f, item);
+    Serialize_gltf_textures_ITEM(f, item);
 
     }
     f.EndList();
 }
 
-public static void Serialize_gltf_textures_LIST(JsonFormatter f, glTFTexture value)
+public static void Serialize_gltf_textures_ITEM(JsonFormatter f, glTFTexture value)
 {
     f.BeginMap();
 
-    f.Key("sampler");
-    f.Value(value.sampler);
 
-    f.Key("source");
-    f.Value(value.source);
+    if(true){
+        f.Key("sampler");                
+        f.Value(value.sampler);
+    }
 
-    f.Key("extensions");
-    value.extras.Serialize(f);
+    if(true){
+        f.Key("source");                
+        f.Value(value.source);
+    }
 
-    f.Key("extras");
-    value.extras.Serialize(f);
+    if(value.extensions!=null){
+        f.Key("extensions");                
+        value.extras.Serialize(f);
+    }
 
-    f.Key("name");
-    f.Value(value.name);
+    if(value.extras!=null){
+        f.Key("extras");                
+        value.extras.Serialize(f);
+    }
 
+    if(value.name!=null){
+        f.Key("name");                
+        f.Value(value.name);
+    }
 
     f.EndMap();
 }
@@ -365,37 +503,51 @@ public static void Serialize_gltf_samplers(JsonFormatter f, List<glTFTextureSamp
 
     foreach(var item in value)
     {
-    Serialize_gltf_samplers_LIST(f, item);
+    Serialize_gltf_samplers_ITEM(f, item);
 
     }
     f.EndList();
 }
 
-public static void Serialize_gltf_samplers_LIST(JsonFormatter f, glTFTextureSampler value)
+public static void Serialize_gltf_samplers_ITEM(JsonFormatter f, glTFTextureSampler value)
 {
     f.BeginMap();
 
-    f.Key("magFilter");
-    f.Value((int)value.magFilter);
 
-    f.Key("minFilter");
-    f.Value((int)value.minFilter);
+    if(true){
+        f.Key("magFilter");                
+        f.Value((int)value.magFilter);
+    }
 
-    f.Key("wrapS");
-    f.Value((int)value.wrapS);
+    if(true){
+        f.Key("minFilter");                
+        f.Value((int)value.minFilter);
+    }
 
-    f.Key("wrapT");
-    f.Value((int)value.wrapT);
+    if(true){
+        f.Key("wrapS");                
+        f.Value((int)value.wrapS);
+    }
 
-    f.Key("extensions");
-    value.extras.Serialize(f);
+    if(true){
+        f.Key("wrapT");                
+        f.Value((int)value.wrapT);
+    }
 
-    f.Key("extras");
-    value.extras.Serialize(f);
+    if(value.extensions!=null){
+        f.Key("extensions");                
+        value.extras.Serialize(f);
+    }
 
-    f.Key("name");
-    f.Value(value.name);
+    if(value.extras!=null){
+        f.Key("extras");                
+        value.extras.Serialize(f);
+    }
 
+    if(value.name!=null){
+        f.Key("name");                
+        f.Value(value.name);
+    }
 
     f.EndMap();
 }
@@ -406,34 +558,46 @@ public static void Serialize_gltf_images(JsonFormatter f, List<glTFImage> value)
 
     foreach(var item in value)
     {
-    Serialize_gltf_images_LIST(f, item);
+    Serialize_gltf_images_ITEM(f, item);
 
     }
     f.EndList();
 }
 
-public static void Serialize_gltf_images_LIST(JsonFormatter f, glTFImage value)
+public static void Serialize_gltf_images_ITEM(JsonFormatter f, glTFImage value)
 {
     f.BeginMap();
 
-    f.Key("name");
-    f.Value(value.name);
 
-    f.Key("uri");
-    f.Value(value.uri);
+    if(value.name!=null){
+        f.Key("name");                
+        f.Value(value.name);
+    }
 
-    f.Key("bufferView");
-    f.Value(value.bufferView);
+    if(value.uri!=null){
+        f.Key("uri");                
+        f.Value(value.uri);
+    }
 
-    f.Key("mimeType");
-    f.Value(value.mimeType);
+    if(true){
+        f.Key("bufferView");                
+        f.Value(value.bufferView);
+    }
 
-    f.Key("extensions");
-    value.extras.Serialize(f);
+    if(value.mimeType!=null){
+        f.Key("mimeType");                
+        f.Value(value.mimeType);
+    }
 
-    f.Key("extras");
-    value.extras.Serialize(f);
+    if(value.extensions!=null){
+        f.Key("extensions");                
+        value.extras.Serialize(f);
+    }
 
+    if(value.extras!=null){
+        f.Key("extras");                
+        value.extras.Serialize(f);
+    }
 
     f.EndMap();
 }
@@ -444,49 +608,71 @@ public static void Serialize_gltf_materials(JsonFormatter f, List<glTFMaterial> 
 
     foreach(var item in value)
     {
-    Serialize_gltf_materials_LIST(f, item);
+    Serialize_gltf_materials_ITEM(f, item);
 
     }
     f.EndList();
 }
 
-public static void Serialize_gltf_materials_LIST(JsonFormatter f, glTFMaterial value)
+public static void Serialize_gltf_materials_ITEM(JsonFormatter f, glTFMaterial value)
 {
     f.BeginMap();
 
-    f.Key("name");
-    f.Value(value.name);
 
-    f.Key("pbrMetallicRoughness");
-    Serialize_gltf_materials__pbrMetallicRoughness(f, value.pbrMetallicRoughness);
+    if(value.name!=null){
+        f.Key("name");                
+        f.Value(value.name);
+    }
 
-    f.Key("normalTexture");
-    Serialize_gltf_materials__normalTexture(f, value.normalTexture);
+    if(value.pbrMetallicRoughness!=null){
+        f.Key("pbrMetallicRoughness");                
+        Serialize_gltf_materials__pbrMetallicRoughness(f, value.pbrMetallicRoughness);
+    }
 
-    f.Key("occlusionTexture");
-    Serialize_gltf_materials__occlusionTexture(f, value.occlusionTexture);
+    if(value.normalTexture!=null){
+        f.Key("normalTexture");                
+        Serialize_gltf_materials__normalTexture(f, value.normalTexture);
+    }
 
-    f.Key("emissiveTexture");
-    Serialize_gltf_materials__emissiveTexture(f, value.emissiveTexture);
+    if(value.occlusionTexture!=null){
+        f.Key("occlusionTexture");                
+        Serialize_gltf_materials__occlusionTexture(f, value.occlusionTexture);
+    }
 
-    f.Key("emissiveFactor");
-    Serialize_gltf_materials__emissiveFactor(f, value.emissiveFactor);
+    if(value.emissiveTexture!=null){
+        f.Key("emissiveTexture");                
+        Serialize_gltf_materials__emissiveTexture(f, value.emissiveTexture);
+    }
 
-    f.Key("alphaMode");
-    f.Value(value.alphaMode);
+    if(value.emissiveFactor!=null){
+        f.Key("emissiveFactor");                
+        Serialize_gltf_materials__emissiveFactor(f, value.emissiveFactor);
+    }
 
-    f.Key("alphaCutoff");
-    f.Value(value.alphaCutoff);
+    if(value.alphaMode!=null){
+        f.Key("alphaMode");                
+        f.Value(value.alphaMode);
+    }
 
-    f.Key("doubleSided");
-    f.Value(value.doubleSided);
+    if(true){
+        f.Key("alphaCutoff");                
+        f.Value(value.alphaCutoff);
+    }
 
-    f.Key("extensions");
-    value.extras.Serialize(f);
+    if(true){
+        f.Key("doubleSided");                
+        f.Value(value.doubleSided);
+    }
 
-    f.Key("extras");
-    value.extras.Serialize(f);
+    if(value.extensions!=null){
+        f.Key("extensions");                
+        value.extras.Serialize(f);
+    }
 
+    if(value.extras!=null){
+        f.Key("extras");                
+        value.extras.Serialize(f);
+    }
 
     f.EndMap();
 }
@@ -495,27 +681,41 @@ public static void Serialize_gltf_materials__pbrMetallicRoughness(JsonFormatter 
 {
     f.BeginMap();
 
-    f.Key("baseColorTexture");
-    Serialize_gltf_materials__pbrMetallicRoughness_baseColorTexture(f, value.baseColorTexture);
 
-    f.Key("baseColorFactor");
-    Serialize_gltf_materials__pbrMetallicRoughness_baseColorFactor(f, value.baseColorFactor);
+    if(value.baseColorTexture!=null){
+        f.Key("baseColorTexture");                
+        Serialize_gltf_materials__pbrMetallicRoughness_baseColorTexture(f, value.baseColorTexture);
+    }
 
-    f.Key("metallicRoughnessTexture");
-    Serialize_gltf_materials__pbrMetallicRoughness_metallicRoughnessTexture(f, value.metallicRoughnessTexture);
+    if(value.baseColorFactor!=null){
+        f.Key("baseColorFactor");                
+        Serialize_gltf_materials__pbrMetallicRoughness_baseColorFactor(f, value.baseColorFactor);
+    }
 
-    f.Key("metallicFactor");
-    f.Value(value.metallicFactor);
+    if(value.metallicRoughnessTexture!=null){
+        f.Key("metallicRoughnessTexture");                
+        Serialize_gltf_materials__pbrMetallicRoughness_metallicRoughnessTexture(f, value.metallicRoughnessTexture);
+    }
 
-    f.Key("roughnessFactor");
-    f.Value(value.roughnessFactor);
+    if(true){
+        f.Key("metallicFactor");                
+        f.Value(value.metallicFactor);
+    }
 
-    f.Key("extensions");
-    value.extras.Serialize(f);
+    if(true){
+        f.Key("roughnessFactor");                
+        f.Value(value.roughnessFactor);
+    }
 
-    f.Key("extras");
-    value.extras.Serialize(f);
+    if(value.extensions!=null){
+        f.Key("extensions");                
+        value.extras.Serialize(f);
+    }
 
+    if(value.extras!=null){
+        f.Key("extras");                
+        value.extras.Serialize(f);
+    }
 
     f.EndMap();
 }
@@ -524,18 +724,26 @@ public static void Serialize_gltf_materials__pbrMetallicRoughness_baseColorTextu
 {
     f.BeginMap();
 
-    f.Key("index");
-    f.Value(value.index);
 
-    f.Key("texCoord");
-    f.Value(value.texCoord);
+    if(true){
+        f.Key("index");                
+        f.Value(value.index);
+    }
 
-    f.Key("extensions");
-    value.extras.Serialize(f);
+    if(true){
+        f.Key("texCoord");                
+        f.Value(value.texCoord);
+    }
 
-    f.Key("extras");
-    value.extras.Serialize(f);
+    if(value.extensions!=null){
+        f.Key("extensions");                
+        value.extras.Serialize(f);
+    }
 
+    if(value.extras!=null){
+        f.Key("extras");                
+        value.extras.Serialize(f);
+    }
 
     f.EndMap();
 }
@@ -556,18 +764,26 @@ public static void Serialize_gltf_materials__pbrMetallicRoughness_metallicRoughn
 {
     f.BeginMap();
 
-    f.Key("index");
-    f.Value(value.index);
 
-    f.Key("texCoord");
-    f.Value(value.texCoord);
+    if(true){
+        f.Key("index");                
+        f.Value(value.index);
+    }
 
-    f.Key("extensions");
-    value.extras.Serialize(f);
+    if(true){
+        f.Key("texCoord");                
+        f.Value(value.texCoord);
+    }
 
-    f.Key("extras");
-    value.extras.Serialize(f);
+    if(value.extensions!=null){
+        f.Key("extensions");                
+        value.extras.Serialize(f);
+    }
 
+    if(value.extras!=null){
+        f.Key("extras");                
+        value.extras.Serialize(f);
+    }
 
     f.EndMap();
 }
@@ -576,21 +792,31 @@ public static void Serialize_gltf_materials__normalTexture(JsonFormatter f, glTF
 {
     f.BeginMap();
 
-    f.Key("scale");
-    f.Value(value.scale);
 
-    f.Key("index");
-    f.Value(value.index);
+    if(true){
+        f.Key("scale");                
+        f.Value(value.scale);
+    }
 
-    f.Key("texCoord");
-    f.Value(value.texCoord);
+    if(true){
+        f.Key("index");                
+        f.Value(value.index);
+    }
 
-    f.Key("extensions");
-    value.extras.Serialize(f);
+    if(true){
+        f.Key("texCoord");                
+        f.Value(value.texCoord);
+    }
 
-    f.Key("extras");
-    value.extras.Serialize(f);
+    if(value.extensions!=null){
+        f.Key("extensions");                
+        value.extras.Serialize(f);
+    }
 
+    if(value.extras!=null){
+        f.Key("extras");                
+        value.extras.Serialize(f);
+    }
 
     f.EndMap();
 }
@@ -599,21 +825,31 @@ public static void Serialize_gltf_materials__occlusionTexture(JsonFormatter f, g
 {
     f.BeginMap();
 
-    f.Key("strength");
-    f.Value(value.strength);
 
-    f.Key("index");
-    f.Value(value.index);
+    if(true){
+        f.Key("strength");                
+        f.Value(value.strength);
+    }
 
-    f.Key("texCoord");
-    f.Value(value.texCoord);
+    if(true){
+        f.Key("index");                
+        f.Value(value.index);
+    }
 
-    f.Key("extensions");
-    value.extras.Serialize(f);
+    if(true){
+        f.Key("texCoord");                
+        f.Value(value.texCoord);
+    }
 
-    f.Key("extras");
-    value.extras.Serialize(f);
+    if(value.extensions!=null){
+        f.Key("extensions");                
+        value.extras.Serialize(f);
+    }
 
+    if(value.extras!=null){
+        f.Key("extras");                
+        value.extras.Serialize(f);
+    }
 
     f.EndMap();
 }
@@ -622,18 +858,26 @@ public static void Serialize_gltf_materials__emissiveTexture(JsonFormatter f, gl
 {
     f.BeginMap();
 
-    f.Key("index");
-    f.Value(value.index);
 
-    f.Key("texCoord");
-    f.Value(value.texCoord);
+    if(true){
+        f.Key("index");                
+        f.Value(value.index);
+    }
 
-    f.Key("extensions");
-    value.extras.Serialize(f);
+    if(true){
+        f.Key("texCoord");                
+        f.Value(value.texCoord);
+    }
 
-    f.Key("extras");
-    value.extras.Serialize(f);
+    if(value.extensions!=null){
+        f.Key("extensions");                
+        value.extras.Serialize(f);
+    }
 
+    if(value.extras!=null){
+        f.Key("extras");                
+        value.extras.Serialize(f);
+    }
 
     f.EndMap();
 }
@@ -656,31 +900,41 @@ public static void Serialize_gltf_meshes(JsonFormatter f, List<glTFMesh> value)
 
     foreach(var item in value)
     {
-    Serialize_gltf_meshes_LIST(f, item);
+    Serialize_gltf_meshes_ITEM(f, item);
 
     }
     f.EndList();
 }
 
-public static void Serialize_gltf_meshes_LIST(JsonFormatter f, glTFMesh value)
+public static void Serialize_gltf_meshes_ITEM(JsonFormatter f, glTFMesh value)
 {
     f.BeginMap();
 
-    f.Key("name");
-    f.Value(value.name);
 
-    f.Key("primitives");
-    Serialize_gltf_meshes__primitives(f, value.primitives);
+    if(value.name!=null){
+        f.Key("name");                
+        f.Value(value.name);
+    }
 
-    f.Key("weights");
-    Serialize_gltf_meshes__weights(f, value.weights);
+    if(value.primitives!=null){
+        f.Key("primitives");                
+        Serialize_gltf_meshes__primitives(f, value.primitives);
+    }
 
-    f.Key("extras");
-    value.extras.Serialize(f);
+    if(value.weights!=null){
+        f.Key("weights");                
+        Serialize_gltf_meshes__weights(f, value.weights);
+    }
 
-    f.Key("extensions");
-    value.extras.Serialize(f);
+    if(value.extras!=null){
+        f.Key("extras");                
+        value.extras.Serialize(f);
+    }
 
+    if(value.extensions!=null){
+        f.Key("extensions");                
+        value.extras.Serialize(f);
+    }
 
     f.EndMap();
 }
@@ -691,37 +945,51 @@ public static void Serialize_gltf_meshes__primitives(JsonFormatter f, List<glTFP
 
     foreach(var item in value)
     {
-    Serialize_gltf_meshes__primitives_LIST(f, item);
+    Serialize_gltf_meshes__primitives_ITEM(f, item);
 
     }
     f.EndList();
 }
 
-public static void Serialize_gltf_meshes__primitives_LIST(JsonFormatter f, glTFPrimitives value)
+public static void Serialize_gltf_meshes__primitives_ITEM(JsonFormatter f, glTFPrimitives value)
 {
     f.BeginMap();
 
-    f.Key("mode");
-    f.Value(value.mode);
 
-    f.Key("indices");
-    f.Value(value.indices);
+    if(true){
+        f.Key("mode");                
+        f.Value(value.mode);
+    }
 
-    f.Key("attributes");
-    Serialize_gltf_meshes__primitives__attributes(f, value.attributes);
+    if(true){
+        f.Key("indices");                
+        f.Value(value.indices);
+    }
 
-    f.Key("material");
-    f.Value(value.material);
+    if(value.attributes!=null){
+        f.Key("attributes");                
+        Serialize_gltf_meshes__primitives__attributes(f, value.attributes);
+    }
 
-    f.Key("targets");
-    Serialize_gltf_meshes__primitives__targets(f, value.targets);
+    if(true){
+        f.Key("material");                
+        f.Value(value.material);
+    }
 
-    f.Key("extras");
-    value.extras.Serialize(f);
+    if(value.targets!=null){
+        f.Key("targets");                
+        Serialize_gltf_meshes__primitives__targets(f, value.targets);
+    }
 
-    f.Key("extensions");
-    value.extras.Serialize(f);
+    if(value.extras!=null){
+        f.Key("extras");                
+        value.extras.Serialize(f);
+    }
 
+    if(value.extensions!=null){
+        f.Key("extensions");                
+        value.extras.Serialize(f);
+    }
 
     f.EndMap();
 }
@@ -730,30 +998,46 @@ public static void Serialize_gltf_meshes__primitives__attributes(JsonFormatter f
 {
     f.BeginMap();
 
-    f.Key("POSITION");
-    f.Value(value.POSITION);
 
-    f.Key("NORMAL");
-    f.Value(value.NORMAL);
+    if(true){
+        f.Key("POSITION");                
+        f.Value(value.POSITION);
+    }
 
-    f.Key("TANGENT");
-    f.Value(value.TANGENT);
+    if(true){
+        f.Key("NORMAL");                
+        f.Value(value.NORMAL);
+    }
 
-    f.Key("TEXCOORD_0");
-    f.Value(value.TEXCOORD_0);
+    if(true){
+        f.Key("TANGENT");                
+        f.Value(value.TANGENT);
+    }
 
-    f.Key("TEXCOORD_1");
-    f.Value(value.TEXCOORD_1);
+    if(true){
+        f.Key("TEXCOORD_0");                
+        f.Value(value.TEXCOORD_0);
+    }
 
-    f.Key("COLOR_0");
-    f.Value(value.COLOR_0);
+    if(true){
+        f.Key("TEXCOORD_1");                
+        f.Value(value.TEXCOORD_1);
+    }
 
-    f.Key("JOINTS_0");
-    f.Value(value.JOINTS_0);
+    if(true){
+        f.Key("COLOR_0");                
+        f.Value(value.COLOR_0);
+    }
 
-    f.Key("WEIGHTS_0");
-    f.Value(value.WEIGHTS_0);
+    if(true){
+        f.Key("JOINTS_0");                
+        f.Value(value.JOINTS_0);
+    }
 
+    if(true){
+        f.Key("WEIGHTS_0");                
+        f.Value(value.WEIGHTS_0);
+    }
 
     f.EndMap();
 }
@@ -764,25 +1048,31 @@ public static void Serialize_gltf_meshes__primitives__targets(JsonFormatter f, L
 
     foreach(var item in value)
     {
-    Serialize_gltf_meshes__primitives__targets_LIST(f, item);
+    Serialize_gltf_meshes__primitives__targets_ITEM(f, item);
 
     }
     f.EndList();
 }
 
-public static void Serialize_gltf_meshes__primitives__targets_LIST(JsonFormatter f, gltfMorphTarget value)
+public static void Serialize_gltf_meshes__primitives__targets_ITEM(JsonFormatter f, gltfMorphTarget value)
 {
     f.BeginMap();
 
-    f.Key("POSITION");
-    f.Value(value.POSITION);
 
-    f.Key("NORMAL");
-    f.Value(value.NORMAL);
+    if(true){
+        f.Key("POSITION");                
+        f.Value(value.POSITION);
+    }
 
-    f.Key("TANGENT");
-    f.Value(value.TANGENT);
+    if(true){
+        f.Key("NORMAL");                
+        f.Value(value.NORMAL);
+    }
 
+    if(true){
+        f.Key("TANGENT");                
+        f.Value(value.TANGENT);
+    }
 
     f.EndMap();
 }
@@ -805,52 +1095,76 @@ public static void Serialize_gltf_nodes(JsonFormatter f, List<glTFNode> value)
 
     foreach(var item in value)
     {
-    Serialize_gltf_nodes_LIST(f, item);
+    Serialize_gltf_nodes_ITEM(f, item);
 
     }
     f.EndList();
 }
 
-public static void Serialize_gltf_nodes_LIST(JsonFormatter f, glTFNode value)
+public static void Serialize_gltf_nodes_ITEM(JsonFormatter f, glTFNode value)
 {
     f.BeginMap();
 
-    f.Key("name");
-    f.Value(value.name);
 
-    f.Key("children");
-    Serialize_gltf_nodes__children(f, value.children);
+    if(value.name!=null){
+        f.Key("name");                
+        f.Value(value.name);
+    }
 
-    f.Key("matrix");
-    Serialize_gltf_nodes__matrix(f, value.matrix);
+    if(value.children!=null){
+        f.Key("children");                
+        Serialize_gltf_nodes__children(f, value.children);
+    }
 
-    f.Key("translation");
-    Serialize_gltf_nodes__translation(f, value.translation);
+    if(value.matrix!=null){
+        f.Key("matrix");                
+        Serialize_gltf_nodes__matrix(f, value.matrix);
+    }
 
-    f.Key("rotation");
-    Serialize_gltf_nodes__rotation(f, value.rotation);
+    if(value.translation!=null){
+        f.Key("translation");                
+        Serialize_gltf_nodes__translation(f, value.translation);
+    }
 
-    f.Key("scale");
-    Serialize_gltf_nodes__scale(f, value.scale);
+    if(value.rotation!=null){
+        f.Key("rotation");                
+        Serialize_gltf_nodes__rotation(f, value.rotation);
+    }
 
-    f.Key("mesh");
-    f.Value(value.mesh);
+    if(value.scale!=null){
+        f.Key("scale");                
+        Serialize_gltf_nodes__scale(f, value.scale);
+    }
 
-    f.Key("skin");
-    f.Value(value.skin);
+    if(true){
+        f.Key("mesh");                
+        f.Value(value.mesh);
+    }
 
-    f.Key("weights");
-    Serialize_gltf_nodes__weights(f, value.weights);
+    if(true){
+        f.Key("skin");                
+        f.Value(value.skin);
+    }
 
-    f.Key("camera");
-    f.Value(value.camera);
+    if(value.weights!=null){
+        f.Key("weights");                
+        Serialize_gltf_nodes__weights(f, value.weights);
+    }
 
-    f.Key("extensions");
-    value.extras.Serialize(f);
+    if(true){
+        f.Key("camera");                
+        f.Value(value.camera);
+    }
 
-    f.Key("extras");
-    value.extras.Serialize(f);
+    if(value.extensions!=null){
+        f.Key("extensions");                
+        value.extras.Serialize(f);
+    }
 
+    if(value.extras!=null){
+        f.Key("extras");                
+        value.extras.Serialize(f);
+    }
 
     f.EndMap();
 }
@@ -933,34 +1247,46 @@ public static void Serialize_gltf_skins(JsonFormatter f, List<glTFSkin> value)
 
     foreach(var item in value)
     {
-    Serialize_gltf_skins_LIST(f, item);
+    Serialize_gltf_skins_ITEM(f, item);
 
     }
     f.EndList();
 }
 
-public static void Serialize_gltf_skins_LIST(JsonFormatter f, glTFSkin value)
+public static void Serialize_gltf_skins_ITEM(JsonFormatter f, glTFSkin value)
 {
     f.BeginMap();
 
-    f.Key("inverseBindMatrices");
-    f.Value(value.inverseBindMatrices);
 
-    f.Key("joints");
-    Serialize_gltf_skins__joints(f, value.joints);
+    if(true){
+        f.Key("inverseBindMatrices");                
+        f.Value(value.inverseBindMatrices);
+    }
 
-    f.Key("skeleton");
-    f.Value(value.skeleton);
+    if(value.joints!=null){
+        f.Key("joints");                
+        Serialize_gltf_skins__joints(f, value.joints);
+    }
 
-    f.Key("extensions");
-    value.extras.Serialize(f);
+    if(true){
+        f.Key("skeleton");                
+        f.Value(value.skeleton);
+    }
 
-    f.Key("extras");
-    value.extras.Serialize(f);
+    if(value.extensions!=null){
+        f.Key("extensions");                
+        value.extras.Serialize(f);
+    }
 
-    f.Key("name");
-    f.Value(value.name);
+    if(value.extras!=null){
+        f.Key("extras");                
+        value.extras.Serialize(f);
+    }
 
+    if(value.name!=null){
+        f.Key("name");                
+        f.Value(value.name);
+    }
 
     f.EndMap();
 }
@@ -983,28 +1309,36 @@ public static void Serialize_gltf_scenes(JsonFormatter f, List<gltfScene> value)
 
     foreach(var item in value)
     {
-    Serialize_gltf_scenes_LIST(f, item);
+    Serialize_gltf_scenes_ITEM(f, item);
 
     }
     f.EndList();
 }
 
-public static void Serialize_gltf_scenes_LIST(JsonFormatter f, gltfScene value)
+public static void Serialize_gltf_scenes_ITEM(JsonFormatter f, gltfScene value)
 {
     f.BeginMap();
 
-    f.Key("nodes");
-    Serialize_gltf_scenes__nodes(f, value.nodes);
 
-    f.Key("extensions");
-    value.extras.Serialize(f);
+    if(value.nodes!=null){
+        f.Key("nodes");                
+        Serialize_gltf_scenes__nodes(f, value.nodes);
+    }
 
-    f.Key("extras");
-    value.extras.Serialize(f);
+    if(value.extensions!=null){
+        f.Key("extensions");                
+        value.extras.Serialize(f);
+    }
 
-    f.Key("name");
-    f.Value(value.name);
+    if(value.extras!=null){
+        f.Key("extras");                
+        value.extras.Serialize(f);
+    }
 
+    if(value.name!=null){
+        f.Key("name");                
+        f.Value(value.name);
+    }
 
     f.EndMap();
 }
@@ -1027,31 +1361,41 @@ public static void Serialize_gltf_animations(JsonFormatter f, List<glTFAnimation
 
     foreach(var item in value)
     {
-    Serialize_gltf_animations_LIST(f, item);
+    Serialize_gltf_animations_ITEM(f, item);
 
     }
     f.EndList();
 }
 
-public static void Serialize_gltf_animations_LIST(JsonFormatter f, glTFAnimation value)
+public static void Serialize_gltf_animations_ITEM(JsonFormatter f, glTFAnimation value)
 {
     f.BeginMap();
 
-    f.Key("name");
-    f.Value(value.name);
 
-    f.Key("channels");
-    Serialize_gltf_animations__channels(f, value.channels);
+    if(value.name!=null){
+        f.Key("name");                
+        f.Value(value.name);
+    }
 
-    f.Key("samplers");
-    Serialize_gltf_animations__samplers(f, value.samplers);
+    if(value.channels!=null){
+        f.Key("channels");                
+        Serialize_gltf_animations__channels(f, value.channels);
+    }
 
-    f.Key("extensions");
-    value.extras.Serialize(f);
+    if(value.samplers!=null){
+        f.Key("samplers");                
+        Serialize_gltf_animations__samplers(f, value.samplers);
+    }
 
-    f.Key("extras");
-    value.extras.Serialize(f);
+    if(value.extensions!=null){
+        f.Key("extensions");                
+        value.extras.Serialize(f);
+    }
 
+    if(value.extras!=null){
+        f.Key("extras");                
+        value.extras.Serialize(f);
+    }
 
     f.EndMap();
 }
@@ -1062,28 +1406,36 @@ public static void Serialize_gltf_animations__channels(JsonFormatter f, List<glT
 
     foreach(var item in value)
     {
-    Serialize_gltf_animations__channels_LIST(f, item);
+    Serialize_gltf_animations__channels_ITEM(f, item);
 
     }
     f.EndList();
 }
 
-public static void Serialize_gltf_animations__channels_LIST(JsonFormatter f, glTFAnimationChannel value)
+public static void Serialize_gltf_animations__channels_ITEM(JsonFormatter f, glTFAnimationChannel value)
 {
     f.BeginMap();
 
-    f.Key("sampler");
-    f.Value(value.sampler);
 
-    f.Key("target");
-    Serialize_gltf_animations__channels__target(f, value.target);
+    if(true){
+        f.Key("sampler");                
+        f.Value(value.sampler);
+    }
 
-    f.Key("extensions");
-    value.extras.Serialize(f);
+    if(value.target!=null){
+        f.Key("target");                
+        Serialize_gltf_animations__channels__target(f, value.target);
+    }
 
-    f.Key("extras");
-    value.extras.Serialize(f);
+    if(value.extensions!=null){
+        f.Key("extensions");                
+        value.extras.Serialize(f);
+    }
 
+    if(value.extras!=null){
+        f.Key("extras");                
+        value.extras.Serialize(f);
+    }
 
     f.EndMap();
 }
@@ -1092,18 +1444,26 @@ public static void Serialize_gltf_animations__channels__target(JsonFormatter f, 
 {
     f.BeginMap();
 
-    f.Key("node");
-    f.Value(value.node);
 
-    f.Key("path");
-    f.Value(value.path);
+    if(true){
+        f.Key("node");                
+        f.Value(value.node);
+    }
 
-    f.Key("extensions");
-    value.extras.Serialize(f);
+    if(value.path!=null){
+        f.Key("path");                
+        f.Value(value.path);
+    }
 
-    f.Key("extras");
-    value.extras.Serialize(f);
+    if(value.extensions!=null){
+        f.Key("extensions");                
+        value.extras.Serialize(f);
+    }
 
+    if(value.extras!=null){
+        f.Key("extras");                
+        value.extras.Serialize(f);
+    }
 
     f.EndMap();
 }
@@ -1114,31 +1474,41 @@ public static void Serialize_gltf_animations__samplers(JsonFormatter f, List<glT
 
     foreach(var item in value)
     {
-    Serialize_gltf_animations__samplers_LIST(f, item);
+    Serialize_gltf_animations__samplers_ITEM(f, item);
 
     }
     f.EndList();
 }
 
-public static void Serialize_gltf_animations__samplers_LIST(JsonFormatter f, glTFAnimationSampler value)
+public static void Serialize_gltf_animations__samplers_ITEM(JsonFormatter f, glTFAnimationSampler value)
 {
     f.BeginMap();
 
-    f.Key("input");
-    f.Value(value.input);
 
-    f.Key("interpolation");
-    f.Value(value.interpolation);
+    if(true){
+        f.Key("input");                
+        f.Value(value.input);
+    }
 
-    f.Key("output");
-    f.Value(value.output);
+    if(value.interpolation!=null){
+        f.Key("interpolation");                
+        f.Value(value.interpolation);
+    }
 
-    f.Key("extensions");
-    value.extras.Serialize(f);
+    if(true){
+        f.Key("output");                
+        f.Value(value.output);
+    }
 
-    f.Key("extras");
-    value.extras.Serialize(f);
+    if(value.extensions!=null){
+        f.Key("extensions");                
+        value.extras.Serialize(f);
+    }
 
+    if(value.extras!=null){
+        f.Key("extras");                
+        value.extras.Serialize(f);
+    }
 
     f.EndMap();
 }
@@ -1149,34 +1519,46 @@ public static void Serialize_gltf_cameras(JsonFormatter f, List<glTFCamera> valu
 
     foreach(var item in value)
     {
-    Serialize_gltf_cameras_LIST(f, item);
+    Serialize_gltf_cameras_ITEM(f, item);
 
     }
     f.EndList();
 }
 
-public static void Serialize_gltf_cameras_LIST(JsonFormatter f, glTFCamera value)
+public static void Serialize_gltf_cameras_ITEM(JsonFormatter f, glTFCamera value)
 {
     f.BeginMap();
 
-    f.Key("orthographic");
-    Serialize_gltf_cameras__orthographic(f, value.orthographic);
 
-    f.Key("perspective");
-    Serialize_gltf_cameras__perspective(f, value.perspective);
+    if(value.orthographic!=null){
+        f.Key("orthographic");                
+        Serialize_gltf_cameras__orthographic(f, value.orthographic);
+    }
 
-    f.Key("type");
-    f.Value(value.type.ToString().ToLower());
+    if(value.perspective!=null){
+        f.Key("perspective");                
+        Serialize_gltf_cameras__perspective(f, value.perspective);
+    }
 
-    f.Key("name");
-    f.Value(value.name);
+    if(true){
+        f.Key("type");                
+        f.Value(value.type.ToString().ToLower());
+    }
 
-    f.Key("extensions");
-    value.extras.Serialize(f);
+    if(value.name!=null){
+        f.Key("name");                
+        f.Value(value.name);
+    }
 
-    f.Key("extras");
-    value.extras.Serialize(f);
+    if(value.extensions!=null){
+        f.Key("extensions");                
+        value.extras.Serialize(f);
+    }
 
+    if(value.extras!=null){
+        f.Key("extras");                
+        value.extras.Serialize(f);
+    }
 
     f.EndMap();
 }
@@ -1185,24 +1567,36 @@ public static void Serialize_gltf_cameras__orthographic(JsonFormatter f, glTFOrt
 {
     f.BeginMap();
 
-    f.Key("xmag");
-    f.Value(value.xmag);
 
-    f.Key("ymag");
-    f.Value(value.ymag);
+    if(true){
+        f.Key("xmag");                
+        f.Value(value.xmag);
+    }
 
-    f.Key("zfar");
-    f.Value(value.zfar);
+    if(true){
+        f.Key("ymag");                
+        f.Value(value.ymag);
+    }
 
-    f.Key("znear");
-    f.Value(value.znear);
+    if(true){
+        f.Key("zfar");                
+        f.Value(value.zfar);
+    }
 
-    f.Key("extensions");
-    value.extras.Serialize(f);
+    if(true){
+        f.Key("znear");                
+        f.Value(value.znear);
+    }
 
-    f.Key("extras");
-    value.extras.Serialize(f);
+    if(value.extensions!=null){
+        f.Key("extensions");                
+        value.extras.Serialize(f);
+    }
 
+    if(value.extras!=null){
+        f.Key("extras");                
+        value.extras.Serialize(f);
+    }
 
     f.EndMap();
 }
@@ -1211,24 +1605,36 @@ public static void Serialize_gltf_cameras__perspective(JsonFormatter f, glTFPers
 {
     f.BeginMap();
 
-    f.Key("aspectRatio");
-    f.Value(value.aspectRatio);
 
-    f.Key("yfov");
-    f.Value(value.yfov);
+    if(true){
+        f.Key("aspectRatio");                
+        f.Value(value.aspectRatio);
+    }
 
-    f.Key("zfar");
-    f.Value(value.zfar);
+    if(true){
+        f.Key("yfov");                
+        f.Value(value.yfov);
+    }
 
-    f.Key("znear");
-    f.Value(value.znear);
+    if(true){
+        f.Key("zfar");                
+        f.Value(value.zfar);
+    }
 
-    f.Key("extensions");
-    value.extras.Serialize(f);
+    if(true){
+        f.Key("znear");                
+        f.Value(value.znear);
+    }
 
-    f.Key("extras");
-    value.extras.Serialize(f);
+    if(value.extensions!=null){
+        f.Key("extensions");                
+        value.extras.Serialize(f);
+    }
 
+    if(value.extras!=null){
+        f.Key("extras");                
+        value.extras.Serialize(f);
+    }
 
     f.EndMap();
 }

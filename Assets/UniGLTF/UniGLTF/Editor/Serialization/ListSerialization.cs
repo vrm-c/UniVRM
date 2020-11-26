@@ -3,7 +3,7 @@ using System.IO;
 
 namespace UniGLTF
 {
-    public class ListSerialization : SerializationBase
+    public class ListSerialization : CollectionSerializationBase
     {
         IValueSerialization m_inner;
 
