@@ -51,6 +51,11 @@ namespace UniGLTF
             }
         }
 
+        public string CreateSerializationCondition(string argName, JsonSchemaAttribute t)
+        {
+            return "true";
+        }
+
         public void GenerateSerializer(StreamWriter writer, string callName)
         {
             throw new NotImplementedException();

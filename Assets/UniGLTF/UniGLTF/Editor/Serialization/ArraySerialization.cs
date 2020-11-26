@@ -41,6 +41,17 @@ public static $0 $2(ListTreeNode<JsonValue> parsed)
             }
         }
 
+        public override string CreateSerializationCondition(string argName, JsonSchemaAttribute t)
+        {
+            int min = 0;
+            if (t != null)
+            {
+                min = t.MinItems;
+            }
+
+            return $"{argName}!=null&&{argName}.Length>={min}";
+        }
+
         public override void GenerateSerializer(StreamWriter writer, string callName)
         {
             var itemCallName = callName + "_ITEM";

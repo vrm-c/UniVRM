@@ -23,6 +23,8 @@ namespace UniGLTF
             return $"{callName}({argName})";
         }
 
+        public abstract string CreateSerializationCondition(string argName, JsonSchemaAttribute t);
+
         public abstract void GenerateSerializer(StreamWriter writer, string callName);
 
         public string GenerateSerializerCall(string callName, string argName)

@@ -208,16 +208,17 @@ namespace UniGLTF
                 {
                     new glTFPrimitives
                     {
+                        indices = 0,
                         attributes = new glTFAttributes
                         {
-                            POSITION = 0,
+                            POSITION = 1,
                         }
                     }
                 },
             };
 
             var json = model.ToJson();
-            Assert.AreEqual(@"{""name"":""mesh"",""primitives"":[{""mode"":0,""indices"":-1,""attributes"":{""POSITION"":0},""material"":0}]}", json);
+            Assert.AreEqual(@"{""name"":""mesh"",""primitives"":[{""mode"":0,""indices"":0,""attributes"":{""POSITION"":1},""material"":0}]}", json);
             Debug.Log(json);
         }
 
@@ -226,15 +227,16 @@ namespace UniGLTF
         {
             var model = new glTFPrimitives
             {
+                indices = 0,
                 attributes = new glTFAttributes
                 {
-                    POSITION = 0,
+                    POSITION = 1,
                 },
                 extras = gltf_mesh_extras_targetNames.Serialize("aaa"),
             };
 
             var json = model.ToJson();
-            Assert.AreEqual(@"{""mode"":0,""indices"":-1,""attributes"":{""POSITION"":0},""material"":0,""extras"":{""targetNames"":[""aaa""]}}", json);
+            Assert.AreEqual(@"{""mode"":0,""indices"":0,""attributes"":{""POSITION"":1},""material"":0,""extras"":{""targetNames"":[""aaa""]}}", json);
             Debug.Log(json);
         }
 
@@ -423,12 +425,13 @@ namespace UniGLTF
         {
             var model = new glTFSkin()
             {
+                inverseBindMatrices = 0,
                 name = "b",
                 joints = new int[] { 1 },
             };
 
             var json = model.ToJson();
-            Assert.AreEqual(@"{""inverseBindMatrices"":-1,""joints"":[1],""name"":""b""}", json);
+            Assert.AreEqual(@"{""inverseBindMatrices"":0,""joints"":[1],""name"":""b""}", json);
             Debug.Log(json);
         }
 
@@ -436,14 +439,15 @@ namespace UniGLTF
         public void SkinTestEmptyName()
         {
             var model = new glTFSkin()
-            {
+            {                
                 name = "",
+                inverseBindMatrices = 4,
                 joints = new int[] { 1 },
             };
 
             var json = model.ToJson();
             // "name" = "", not excluded
-            Assert.AreEqual(@"{""inverseBindMatrices"":-1,""joints"":[1]}", json);
+            Assert.AreEqual(@"{""inverseBindMatrices"":4,""joints"":[1]}", json);
             Debug.Log(json);
         }
 

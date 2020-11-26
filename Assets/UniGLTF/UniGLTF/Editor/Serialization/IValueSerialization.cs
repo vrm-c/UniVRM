@@ -14,6 +14,8 @@ namespace UniGLTF
 
         void GenerateDeserializer(StreamWriter writer, string callName);
 
+        string CreateSerializationCondition(string argName, JsonSchemaAttribute t);
+
         string GenerateSerializerCall(string callName, string argName);
 
         void GenerateSerializer(StreamWriter writer, string callName);

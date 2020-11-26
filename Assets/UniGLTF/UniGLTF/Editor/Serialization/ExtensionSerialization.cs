@@ -19,6 +19,11 @@ namespace UniGLTF
             return $"new glTFExtensionImport({argName})";
         }
 
+        public string CreateSerializationCondition(string argName, JsonSchemaAttribute t)
+        {
+            return $"{argName}!=null";
+        }
+
         public void GenerateSerializer(StreamWriter writer, string callName)
         {
             throw new NotImplementedException();
@@ -26,7 +31,7 @@ namespace UniGLTF
 
         public string GenerateSerializerCall(string callName, string argName)
         {
-            return "value.extras.Serialize(f)";
+            return $"{argName}.Serialize(f)";
         }
     }
 }

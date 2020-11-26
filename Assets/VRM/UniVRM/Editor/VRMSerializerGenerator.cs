@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using System.Reflection;
 using System.Text;
 using UniGLTF;
@@ -29,7 +29,7 @@ using VRM;
 
 namespace VRM {
 
-    static public class VrmSerializer
+    static public class VRMSerializer
     {
 
 ";

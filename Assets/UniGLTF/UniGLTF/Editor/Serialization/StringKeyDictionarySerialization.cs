@@ -40,6 +40,11 @@ public static $0 $2(ListTreeNode<JsonValue> parsed)
             }
         }
 
+        public override string CreateSerializationCondition(string argName, JsonSchemaAttribute t)
+        {
+            return $"{argName}!=null&&{argName}.Count>0";
+        }
+
         public override void GenerateSerializer(StreamWriter writer, string callName)
         {
             var itemCallName = callName + "_ITEM";

@@ -62,10 +62,10 @@ namespace UniGLTF
         [JsonSchema(Required = true, Minimum = 1)]
         public int byteLength;
 
-        [JsonSchema(Minimum = 4, Maximum = 252, MultipleOf = 4)]
+        [JsonSchema(Minimum = 4, Maximum = 252, MultipleOf = 4, SerializationConditions = new string[] { "false" })]
         public int byteStride;
 
-        [JsonSchema(EnumSerializationType = EnumSerializationType.AsInt, EnumExcludes = new object[] { glBufferTarget.NONE })]
+        [JsonSchema(EnumSerializationType = EnumSerializationType.AsInt, EnumExcludes = new object[] { glBufferTarget.NONE }, SerializationConditions = new string[] { "value.target!=0" })]
         public glBufferTarget target;
 
         // empty schemas

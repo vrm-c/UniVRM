@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace UniGLTF
@@ -19,6 +20,11 @@ namespace UniGLTF
 
         public abstract string GenerateDeserializerCall(string callName, string argName);
 
+        public virtual string CreateSerializationCondition(string argName, JsonSchemaAttribute t)
+        {
+            return "true";
+        }
+
         public void GenerateSerializer(StreamWriter writer, string callName)
         {
             throw new NotImplementedException();
@@ -35,7 +41,38 @@ namespace UniGLTF
         }
     }
 
-    public class Int8Serialization : PrimitiveSerializationBase
+    public abstract class NumberSerializationBase : PrimitiveSerializationBase
+    {
+        public override string CreateSerializationCondition(string argName, JsonSchemaAttribute attr)
+        {
+            if (attr == null)
+            {
+                return "true";
+            }
+
+            var sb = new List<string>();
+            if (!double.IsNaN(attr.Minimum))
+            {
+                if (attr.ExclusiveMinimum)
+                {
+                    sb.Add($"{argName}>{attr.Minimum}"); // to int
+                }
+                else
+                {
+                    sb.Add($"{argName}>={attr.Minimum}"); // to int
+                }
+            }
+
+            if (sb.Count > 0)
+            {
+                return string.Join("&&", sb);
+            }
+
+            return "true";
+        }
+    }
+
+    public class Int8Serialization : NumberSerializationBase
     {
         public override Type ValueType
         {
@@ -48,7 +85,7 @@ namespace UniGLTF
         }
     }
 
-    public class Int16Serialization : PrimitiveSerializationBase
+    public class Int16Serialization : NumberSerializationBase
     {
         public override Type ValueType
         {
@@ -61,7 +98,7 @@ namespace UniGLTF
         }
     }
 
-    public class Int32Serialization : PrimitiveSerializationBase
+    public class Int32Serialization : NumberSerializationBase
     {
         public override Type ValueType
         {
@@ -74,7 +111,7 @@ namespace UniGLTF
         }
     }
 
-    public class Int64Serialization : PrimitiveSerializationBase
+    public class Int64Serialization : NumberSerializationBase
     {
         public override Type ValueType
         {
@@ -87,7 +124,7 @@ namespace UniGLTF
         }
     }
 
-    public class UInt8Serialization : PrimitiveSerializationBase
+    public class UInt8Serialization : NumberSerializationBase
     {
         public override Type ValueType
         {
@@ -100,7 +137,7 @@ namespace UniGLTF
         }
     }
 
-    public class UInt16Serialization : PrimitiveSerializationBase
+    public class UInt16Serialization : NumberSerializationBase
     {
         public override Type ValueType
         {
@@ -113,7 +150,7 @@ namespace UniGLTF
         }
     }
 
-    public class UInt32Serialization : PrimitiveSerializationBase
+    public class UInt32Serialization : NumberSerializationBase
     {
         public override Type ValueType
         {
@@ -126,7 +163,7 @@ namespace UniGLTF
         }
     }
 
-    public class UInt64Serialization : PrimitiveSerializationBase
+    public class UInt64Serialization : NumberSerializationBase
     {
         public override Type ValueType
         {
@@ -139,7 +176,7 @@ namespace UniGLTF
         }
     }
 
-    public class SingleSerialization : PrimitiveSerializationBase
+    public class SingleSerialization : NumberSerializationBase
     {
         public override Type ValueType
         {
@@ -152,7 +189,7 @@ namespace UniGLTF
         }
     }
 
-    public class DoubleSerialization : PrimitiveSerializationBase
+    public class DoubleSerialization : NumberSerializationBase
     {
         public override Type ValueType
         {
@@ -188,6 +225,11 @@ namespace UniGLTF
         public override string GenerateDeserializerCall(string callName, string argName)
         {
             return argName + ".GetString()";
+        }
+
+        public override string CreateSerializationCondition(string argName, JsonSchemaAttribute t)
+        {
+            return $"!string.IsNullOrEmpty({argName})";
         }
     }
 }

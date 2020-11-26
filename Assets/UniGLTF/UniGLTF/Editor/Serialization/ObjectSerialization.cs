@@ -83,6 +83,11 @@ public static $0 $2(ListTreeNode<JsonValue> parsed)
             }
         }
 
+        public override string CreateSerializationCondition(string argName, JsonSchemaAttribute t)
+        {
+            return $"{argName}!=null";
+        }
+
         /// <summary>
         /// シリアライザーのコード生成
         /// 
@@ -106,8 +111,13 @@ public static void {callName}(JsonFormatter f, {ValueType.Name} value)
             foreach (var f in m_fsi)
             {
                 var valueName = $"value.{f.Name}";
+                var condition = "";
+                if (f.Attribute != null && f.Attribute.SerializationConditions != null)
+                {
+                    condition = "&&" + string.Join("&&", f.Attribute.SerializationConditions);
+                }
                 writer.Write($@"
-    if({f.CreateSerializationCondition(f.Serialization.ValueType, valueName)}){{
+    if({f.Serialization.CreateSerializationCondition(valueName, f.Attribute)}{condition}){{
         f.Key(""{f.Name}"");                
         {f.Serialization.GenerateSerializerCall(f.FunctionName, valueName)};
     }}

@@ -51,6 +51,9 @@ namespace UniGLTF
         public object[] EnumExcludes;
         #endregion
 
+        // シリアライズ時の除外条件をハードコーディングする
+        public string[] SerializationConditions;
+
         // public PropertyExportFlags ExportFlags = PropertyExportFlags.Default;
 
         /// <summary>

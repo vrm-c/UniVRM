@@ -172,16 +172,16 @@ namespace VRM
         [JsonSchema(Description = "Unity's HumanLimit.useDefaultValues")]
         public bool useDefaultValues = true;
 
-        [JsonSchema(Description = "Unity's HumanLimit.min")]
+        [JsonSchema(Description = "Unity's HumanLimit.min", SerializationConditions = new string[] { "value.min!=Vector3.zero" })]
         public Vector3 min;
 
-        [JsonSchema(Description = "Unity's HumanLimit.max")]
+        [JsonSchema(Description = "Unity's HumanLimit.max", SerializationConditions = new string[] { "value.min!=Vector3.zero" })]
         public Vector3 max;
 
-        [JsonSchema(Description = "Unity's HumanLimit.center")]
+        [JsonSchema(Description = "Unity's HumanLimit.center", SerializationConditions = new string[] { "value.min!=Vector3.zero" })]
         public Vector3 center;
 
-        [JsonSchema(Description = "Unity's HumanLimit.axisLength")]
+        [JsonSchema(Description = "Unity's HumanLimit.axisLength", Minimum = 0, ExclusiveMinimum = true)]
         public float axisLength;
     }
 

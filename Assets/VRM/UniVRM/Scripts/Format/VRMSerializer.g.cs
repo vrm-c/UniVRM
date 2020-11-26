@@ -15,30 +15,46 @@ public static void Serialize(JsonFormatter f, glTF_VRM_extensions value)
 {
     f.BeginMap();
 
-    f.Key("exporterVersion");
-    f.Value(value.exporterVersion);
 
-    f.Key("specVersion");
-    f.Value(value.specVersion);
+    if(!string.IsNullOrEmpty(value.exporterVersion)){
+        f.Key("exporterVersion");                
+        f.Value(value.exporterVersion);
+    }
 
-    f.Key("meta");
-    Serialize_vrm_meta(f, value.meta);
+    if(!string.IsNullOrEmpty(value.specVersion)){
+        f.Key("specVersion");                
+        f.Value(value.specVersion);
+    }
 
-    f.Key("humanoid");
-    Serialize_vrm_humanoid(f, value.humanoid);
+    if(value.meta!=null){
+        f.Key("meta");                
+        Serialize_vrm_meta(f, value.meta);
+    }
 
-    f.Key("firstPerson");
-    Serialize_vrm_firstPerson(f, value.firstPerson);
+    if(value.humanoid!=null){
+        f.Key("humanoid");                
+        Serialize_vrm_humanoid(f, value.humanoid);
+    }
 
-    f.Key("blendShapeMaster");
-    Serialize_vrm_blendShapeMaster(f, value.blendShapeMaster);
+    if(value.firstPerson!=null){
+        f.Key("firstPerson");                
+        Serialize_vrm_firstPerson(f, value.firstPerson);
+    }
 
-    f.Key("secondaryAnimation");
-    Serialize_vrm_secondaryAnimation(f, value.secondaryAnimation);
+    if(value.blendShapeMaster!=null){
+        f.Key("blendShapeMaster");                
+        Serialize_vrm_blendShapeMaster(f, value.blendShapeMaster);
+    }
 
-    f.Key("materialProperties");
-    Serialize_vrm_materialProperties(f, value.materialProperties);
+    if(value.secondaryAnimation!=null){
+        f.Key("secondaryAnimation");                
+        Serialize_vrm_secondaryAnimation(f, value.secondaryAnimation);
+    }
 
+    if(value.materialProperties!=null&&value.materialProperties.Count>=0){
+        f.Key("materialProperties");                
+        Serialize_vrm_materialProperties(f, value.materialProperties);
+    }
 
     f.EndMap();
 }
@@ -47,45 +63,71 @@ public static void Serialize_vrm_meta(JsonFormatter f, glTF_VRM_Meta value)
 {
     f.BeginMap();
 
-    f.Key("title");
-    f.Value(value.title);
 
-    f.Key("version");
-    f.Value(value.version);
+    if(!string.IsNullOrEmpty(value.title)){
+        f.Key("title");                
+        f.Value(value.title);
+    }
 
-    f.Key("author");
-    f.Value(value.author);
+    if(!string.IsNullOrEmpty(value.version)){
+        f.Key("version");                
+        f.Value(value.version);
+    }
 
-    f.Key("contactInformation");
-    f.Value(value.contactInformation);
+    if(!string.IsNullOrEmpty(value.author)){
+        f.Key("author");                
+        f.Value(value.author);
+    }
 
-    f.Key("reference");
-    f.Value(value.reference);
+    if(!string.IsNullOrEmpty(value.contactInformation)){
+        f.Key("contactInformation");                
+        f.Value(value.contactInformation);
+    }
 
-    f.Key("texture");
-    f.Value(value.texture);
+    if(!string.IsNullOrEmpty(value.reference)){
+        f.Key("reference");                
+        f.Value(value.reference);
+    }
 
-    f.Key("allowedUserName");
-    f.Value(value.allowedUserName);
+    if(value.texture>=0){
+        f.Key("texture");                
+        f.Value(value.texture);
+    }
 
-    f.Key("violentUssageName");
-    f.Value(value.violentUssageName);
+    if(!string.IsNullOrEmpty(value.allowedUserName)){
+        f.Key("allowedUserName");                
+        f.Value(value.allowedUserName);
+    }
 
-    f.Key("sexualUssageName");
-    f.Value(value.sexualUssageName);
+    if(!string.IsNullOrEmpty(value.violentUssageName)){
+        f.Key("violentUssageName");                
+        f.Value(value.violentUssageName);
+    }
 
-    f.Key("commercialUssageName");
-    f.Value(value.commercialUssageName);
+    if(!string.IsNullOrEmpty(value.sexualUssageName)){
+        f.Key("sexualUssageName");                
+        f.Value(value.sexualUssageName);
+    }
 
-    f.Key("otherPermissionUrl");
-    f.Value(value.otherPermissionUrl);
+    if(!string.IsNullOrEmpty(value.commercialUssageName)){
+        f.Key("commercialUssageName");                
+        f.Value(value.commercialUssageName);
+    }
 
-    f.Key("licenseName");
-    f.Value(value.licenseName);
+    if(!string.IsNullOrEmpty(value.otherPermissionUrl)){
+        f.Key("otherPermissionUrl");                
+        f.Value(value.otherPermissionUrl);
+    }
 
-    f.Key("otherLicenseUrl");
-    f.Value(value.otherLicenseUrl);
+    if(!string.IsNullOrEmpty(value.licenseName)){
+        f.Key("licenseName");                
+        f.Value(value.licenseName);
+    }
 
+    if(!string.IsNullOrEmpty(value.otherLicenseUrl)){
+        f.Key("otherLicenseUrl");                
+        f.Value(value.otherLicenseUrl);
+    }
 
     f.EndMap();
 }
@@ -94,33 +136,51 @@ public static void Serialize_vrm_humanoid(JsonFormatter f, glTF_VRM_Humanoid val
 {
     f.BeginMap();
 
-    f.Key("humanBones");
-    Serialize_vrm_humanoid_humanBones(f, value.humanBones);
 
-    f.Key("armStretch");
-    f.Value(value.armStretch);
+    if(value.humanBones!=null&&value.humanBones.Count>=0){
+        f.Key("humanBones");                
+        Serialize_vrm_humanoid_humanBones(f, value.humanBones);
+    }
 
-    f.Key("legStretch");
-    f.Value(value.legStretch);
+    if(true){
+        f.Key("armStretch");                
+        f.Value(value.armStretch);
+    }
 
-    f.Key("upperArmTwist");
-    f.Value(value.upperArmTwist);
+    if(true){
+        f.Key("legStretch");                
+        f.Value(value.legStretch);
+    }
 
-    f.Key("lowerArmTwist");
-    f.Value(value.lowerArmTwist);
+    if(true){
+        f.Key("upperArmTwist");                
+        f.Value(value.upperArmTwist);
+    }
 
-    f.Key("upperLegTwist");
-    f.Value(value.upperLegTwist);
+    if(true){
+        f.Key("lowerArmTwist");                
+        f.Value(value.lowerArmTwist);
+    }
 
-    f.Key("lowerLegTwist");
-    f.Value(value.lowerLegTwist);
+    if(true){
+        f.Key("upperLegTwist");                
+        f.Value(value.upperLegTwist);
+    }
 
-    f.Key("feetSpacing");
-    f.Value(value.feetSpacing);
+    if(true){
+        f.Key("lowerLegTwist");                
+        f.Value(value.lowerLegTwist);
+    }
 
-    f.Key("hasTranslationDoF");
-    f.Value(value.hasTranslationDoF);
+    if(true){
+        f.Key("feetSpacing");                
+        f.Value(value.feetSpacing);
+    }
 
+    if(true){
+        f.Key("hasTranslationDoF");                
+        f.Value(value.hasTranslationDoF);
+    }
 
     f.EndMap();
 }
@@ -141,27 +201,41 @@ public static void Serialize_vrm_humanoid_humanBones_ITEM(JsonFormatter f, glTF_
 {
     f.BeginMap();
 
-    f.Key("bone");
-    f.Value(value.bone);
 
-    f.Key("node");
-    f.Value(value.node);
+    if(!string.IsNullOrEmpty(value.bone)){
+        f.Key("bone");                
+        f.Value(value.bone);
+    }
 
-    f.Key("useDefaultValues");
-    f.Value(value.useDefaultValues);
+    if(value.node>=0){
+        f.Key("node");                
+        f.Value(value.node);
+    }
 
-    f.Key("min");
-    Serialize_vrm_humanoid_humanBones__min(f, value.min);
+    if(true){
+        f.Key("useDefaultValues");                
+        f.Value(value.useDefaultValues);
+    }
 
-    f.Key("max");
-    Serialize_vrm_humanoid_humanBones__max(f, value.max);
+    if(value.min!=null&&value.min!=Vector3.zero){
+        f.Key("min");                
+        Serialize_vrm_humanoid_humanBones__min(f, value.min);
+    }
 
-    f.Key("center");
-    Serialize_vrm_humanoid_humanBones__center(f, value.center);
+    if(value.max!=null&&value.min!=Vector3.zero){
+        f.Key("max");                
+        Serialize_vrm_humanoid_humanBones__max(f, value.max);
+    }
 
-    f.Key("axisLength");
-    f.Value(value.axisLength);
+    if(value.center!=null&&value.min!=Vector3.zero){
+        f.Key("center");                
+        Serialize_vrm_humanoid_humanBones__center(f, value.center);
+    }
 
+    if(value.axisLength>0){
+        f.Key("axisLength");                
+        f.Value(value.axisLength);
+    }
 
     f.EndMap();
 }
@@ -170,15 +244,21 @@ public static void Serialize_vrm_humanoid_humanBones__min(JsonFormatter f, Vecto
 {
     f.BeginMap();
 
-    f.Key("x");
-    f.Value(value.x);
 
-    f.Key("y");
-    f.Value(value.y);
+    if(true){
+        f.Key("x");                
+        f.Value(value.x);
+    }
 
-    f.Key("z");
-    f.Value(value.z);
+    if(true){
+        f.Key("y");                
+        f.Value(value.y);
+    }
 
+    if(true){
+        f.Key("z");                
+        f.Value(value.z);
+    }
 
     f.EndMap();
 }
@@ -187,15 +267,21 @@ public static void Serialize_vrm_humanoid_humanBones__max(JsonFormatter f, Vecto
 {
     f.BeginMap();
 
-    f.Key("x");
-    f.Value(value.x);
 
-    f.Key("y");
-    f.Value(value.y);
+    if(true){
+        f.Key("x");                
+        f.Value(value.x);
+    }
 
-    f.Key("z");
-    f.Value(value.z);
+    if(true){
+        f.Key("y");                
+        f.Value(value.y);
+    }
 
+    if(true){
+        f.Key("z");                
+        f.Value(value.z);
+    }
 
     f.EndMap();
 }
@@ -204,15 +290,21 @@ public static void Serialize_vrm_humanoid_humanBones__center(JsonFormatter f, Ve
 {
     f.BeginMap();
 
-    f.Key("x");
-    f.Value(value.x);
 
-    f.Key("y");
-    f.Value(value.y);
+    if(true){
+        f.Key("x");                
+        f.Value(value.x);
+    }
 
-    f.Key("z");
-    f.Value(value.z);
+    if(true){
+        f.Key("y");                
+        f.Value(value.y);
+    }
 
+    if(true){
+        f.Key("z");                
+        f.Value(value.z);
+    }
 
     f.EndMap();
 }
@@ -221,30 +313,46 @@ public static void Serialize_vrm_firstPerson(JsonFormatter f, glTF_VRM_Firstpers
 {
     f.BeginMap();
 
-    f.Key("firstPersonBone");
-    f.Value(value.firstPersonBone);
 
-    f.Key("firstPersonBoneOffset");
-    Serialize_vrm_firstPerson_firstPersonBoneOffset(f, value.firstPersonBoneOffset);
+    if(value.firstPersonBone>=0){
+        f.Key("firstPersonBone");                
+        f.Value(value.firstPersonBone);
+    }
 
-    f.Key("meshAnnotations");
-    Serialize_vrm_firstPerson_meshAnnotations(f, value.meshAnnotations);
+    if(value.firstPersonBoneOffset!=null){
+        f.Key("firstPersonBoneOffset");                
+        Serialize_vrm_firstPerson_firstPersonBoneOffset(f, value.firstPersonBoneOffset);
+    }
 
-    f.Key("lookAtTypeName");
-    f.Value(value.lookAtTypeName);
+    if(value.meshAnnotations!=null&&value.meshAnnotations.Count>=0){
+        f.Key("meshAnnotations");                
+        Serialize_vrm_firstPerson_meshAnnotations(f, value.meshAnnotations);
+    }
 
-    f.Key("lookAtHorizontalInner");
-    Serialize_vrm_firstPerson_lookAtHorizontalInner(f, value.lookAtHorizontalInner);
+    if(!string.IsNullOrEmpty(value.lookAtTypeName)){
+        f.Key("lookAtTypeName");                
+        f.Value(value.lookAtTypeName);
+    }
 
-    f.Key("lookAtHorizontalOuter");
-    Serialize_vrm_firstPerson_lookAtHorizontalOuter(f, value.lookAtHorizontalOuter);
+    if(value.lookAtHorizontalInner!=null){
+        f.Key("lookAtHorizontalInner");                
+        Serialize_vrm_firstPerson_lookAtHorizontalInner(f, value.lookAtHorizontalInner);
+    }
 
-    f.Key("lookAtVerticalDown");
-    Serialize_vrm_firstPerson_lookAtVerticalDown(f, value.lookAtVerticalDown);
+    if(value.lookAtHorizontalOuter!=null){
+        f.Key("lookAtHorizontalOuter");                
+        Serialize_vrm_firstPerson_lookAtHorizontalOuter(f, value.lookAtHorizontalOuter);
+    }
 
-    f.Key("lookAtVerticalUp");
-    Serialize_vrm_firstPerson_lookAtVerticalUp(f, value.lookAtVerticalUp);
+    if(value.lookAtVerticalDown!=null){
+        f.Key("lookAtVerticalDown");                
+        Serialize_vrm_firstPerson_lookAtVerticalDown(f, value.lookAtVerticalDown);
+    }
 
+    if(value.lookAtVerticalUp!=null){
+        f.Key("lookAtVerticalUp");                
+        Serialize_vrm_firstPerson_lookAtVerticalUp(f, value.lookAtVerticalUp);
+    }
 
     f.EndMap();
 }
@@ -253,15 +361,21 @@ public static void Serialize_vrm_firstPerson_firstPersonBoneOffset(JsonFormatter
 {
     f.BeginMap();
 
-    f.Key("x");
-    f.Value(value.x);
 
-    f.Key("y");
-    f.Value(value.y);
+    if(true){
+        f.Key("x");                
+        f.Value(value.x);
+    }
 
-    f.Key("z");
-    f.Value(value.z);
+    if(true){
+        f.Key("y");                
+        f.Value(value.y);
+    }
 
+    if(true){
+        f.Key("z");                
+        f.Value(value.z);
+    }
 
     f.EndMap();
 }
@@ -282,12 +396,16 @@ public static void Serialize_vrm_firstPerson_meshAnnotations_ITEM(JsonFormatter 
 {
     f.BeginMap();
 
-    f.Key("mesh");
-    f.Value(value.mesh);
 
-    f.Key("firstPersonFlag");
-    f.Value(value.firstPersonFlag);
+    if(value.mesh>=0){
+        f.Key("mesh");                
+        f.Value(value.mesh);
+    }
 
+    if(!string.IsNullOrEmpty(value.firstPersonFlag)){
+        f.Key("firstPersonFlag");                
+        f.Value(value.firstPersonFlag);
+    }
 
     f.EndMap();
 }
@@ -296,15 +414,21 @@ public static void Serialize_vrm_firstPerson_lookAtHorizontalInner(JsonFormatter
 {
     f.BeginMap();
 
-    f.Key("curve");
-    Serialize_vrm_firstPerson_lookAtHorizontalInner_curve(f, value.curve);
 
-    f.Key("xRange");
-    f.Value(value.xRange);
+    if(value.curve!=null&&value.curve.Length>=0){
+        f.Key("curve");                
+        Serialize_vrm_firstPerson_lookAtHorizontalInner_curve(f, value.curve);
+    }
 
-    f.Key("yRange");
-    f.Value(value.yRange);
+    if(true){
+        f.Key("xRange");                
+        f.Value(value.xRange);
+    }
 
+    if(true){
+        f.Key("yRange");                
+        f.Value(value.yRange);
+    }
 
     f.EndMap();
 }
@@ -325,15 +449,21 @@ public static void Serialize_vrm_firstPerson_lookAtHorizontalOuter(JsonFormatter
 {
     f.BeginMap();
 
-    f.Key("curve");
-    Serialize_vrm_firstPerson_lookAtHorizontalOuter_curve(f, value.curve);
 
-    f.Key("xRange");
-    f.Value(value.xRange);
+    if(value.curve!=null&&value.curve.Length>=0){
+        f.Key("curve");                
+        Serialize_vrm_firstPerson_lookAtHorizontalOuter_curve(f, value.curve);
+    }
 
-    f.Key("yRange");
-    f.Value(value.yRange);
+    if(true){
+        f.Key("xRange");                
+        f.Value(value.xRange);
+    }
 
+    if(true){
+        f.Key("yRange");                
+        f.Value(value.yRange);
+    }
 
     f.EndMap();
 }
@@ -354,15 +484,21 @@ public static void Serialize_vrm_firstPerson_lookAtVerticalDown(JsonFormatter f,
 {
     f.BeginMap();
 
-    f.Key("curve");
-    Serialize_vrm_firstPerson_lookAtVerticalDown_curve(f, value.curve);
 
-    f.Key("xRange");
-    f.Value(value.xRange);
+    if(value.curve!=null&&value.curve.Length>=0){
+        f.Key("curve");                
+        Serialize_vrm_firstPerson_lookAtVerticalDown_curve(f, value.curve);
+    }
 
-    f.Key("yRange");
-    f.Value(value.yRange);
+    if(true){
+        f.Key("xRange");                
+        f.Value(value.xRange);
+    }
 
+    if(true){
+        f.Key("yRange");                
+        f.Value(value.yRange);
+    }
 
     f.EndMap();
 }
@@ -383,15 +519,21 @@ public static void Serialize_vrm_firstPerson_lookAtVerticalUp(JsonFormatter f, g
 {
     f.BeginMap();
 
-    f.Key("curve");
-    Serialize_vrm_firstPerson_lookAtVerticalUp_curve(f, value.curve);
 
-    f.Key("xRange");
-    f.Value(value.xRange);
+    if(value.curve!=null&&value.curve.Length>=0){
+        f.Key("curve");                
+        Serialize_vrm_firstPerson_lookAtVerticalUp_curve(f, value.curve);
+    }
 
-    f.Key("yRange");
-    f.Value(value.yRange);
+    if(true){
+        f.Key("xRange");                
+        f.Value(value.xRange);
+    }
 
+    if(true){
+        f.Key("yRange");                
+        f.Value(value.yRange);
+    }
 
     f.EndMap();
 }
@@ -412,9 +554,11 @@ public static void Serialize_vrm_blendShapeMaster(JsonFormatter f, glTF_VRM_Blen
 {
     f.BeginMap();
 
-    f.Key("blendShapeGroups");
-    Serialize_vrm_blendShapeMaster_blendShapeGroups(f, value.blendShapeGroups);
 
+    if(value.blendShapeGroups!=null&&value.blendShapeGroups.Count>=0){
+        f.Key("blendShapeGroups");                
+        Serialize_vrm_blendShapeMaster_blendShapeGroups(f, value.blendShapeGroups);
+    }
 
     f.EndMap();
 }
@@ -435,21 +579,31 @@ public static void Serialize_vrm_blendShapeMaster_blendShapeGroups_ITEM(JsonForm
 {
     f.BeginMap();
 
-    f.Key("name");
-    f.Value(value.name);
 
-    f.Key("presetName");
-    f.Value(value.presetName);
+    if(!string.IsNullOrEmpty(value.name)){
+        f.Key("name");                
+        f.Value(value.name);
+    }
 
-    f.Key("binds");
-    Serialize_vrm_blendShapeMaster_blendShapeGroups__binds(f, value.binds);
+    if(!string.IsNullOrEmpty(value.presetName)){
+        f.Key("presetName");                
+        f.Value(value.presetName);
+    }
 
-    f.Key("materialValues");
-    Serialize_vrm_blendShapeMaster_blendShapeGroups__materialValues(f, value.materialValues);
+    if(value.binds!=null&&value.binds.Count>=0){
+        f.Key("binds");                
+        Serialize_vrm_blendShapeMaster_blendShapeGroups__binds(f, value.binds);
+    }
 
-    f.Key("isBinary");
-    f.Value(value.isBinary);
+    if(value.materialValues!=null&&value.materialValues.Count>=0){
+        f.Key("materialValues");                
+        Serialize_vrm_blendShapeMaster_blendShapeGroups__materialValues(f, value.materialValues);
+    }
 
+    if(true){
+        f.Key("isBinary");                
+        f.Value(value.isBinary);
+    }
 
     f.EndMap();
 }
@@ -470,15 +624,21 @@ public static void Serialize_vrm_blendShapeMaster_blendShapeGroups__binds_ITEM(J
 {
     f.BeginMap();
 
-    f.Key("mesh");
-    f.Value(value.mesh);
 
-    f.Key("index");
-    f.Value(value.index);
+    if(value.mesh>=0){
+        f.Key("mesh");                
+        f.Value(value.mesh);
+    }
 
-    f.Key("weight");
-    f.Value(value.weight);
+    if(value.index>=0){
+        f.Key("index");                
+        f.Value(value.index);
+    }
 
+    if(value.weight>=0){
+        f.Key("weight");                
+        f.Value(value.weight);
+    }
 
     f.EndMap();
 }
@@ -499,15 +659,21 @@ public static void Serialize_vrm_blendShapeMaster_blendShapeGroups__materialValu
 {
     f.BeginMap();
 
-    f.Key("materialName");
-    f.Value(value.materialName);
 
-    f.Key("propertyName");
-    f.Value(value.propertyName);
+    if(!string.IsNullOrEmpty(value.materialName)){
+        f.Key("materialName");                
+        f.Value(value.materialName);
+    }
 
-    f.Key("targetValue");
-    Serialize_vrm_blendShapeMaster_blendShapeGroups__materialValues__targetValue(f, value.targetValue);
+    if(!string.IsNullOrEmpty(value.propertyName)){
+        f.Key("propertyName");                
+        f.Value(value.propertyName);
+    }
 
+    if(value.targetValue!=null&&value.targetValue.Length>=0){
+        f.Key("targetValue");                
+        Serialize_vrm_blendShapeMaster_blendShapeGroups__materialValues__targetValue(f, value.targetValue);
+    }
 
     f.EndMap();
 }
@@ -528,12 +694,16 @@ public static void Serialize_vrm_secondaryAnimation(JsonFormatter f, glTF_VRM_Se
 {
     f.BeginMap();
 
-    f.Key("boneGroups");
-    Serialize_vrm_secondaryAnimation_boneGroups(f, value.boneGroups);
 
-    f.Key("colliderGroups");
-    Serialize_vrm_secondaryAnimation_colliderGroups(f, value.colliderGroups);
+    if(value.boneGroups!=null&&value.boneGroups.Count>=0){
+        f.Key("boneGroups");                
+        Serialize_vrm_secondaryAnimation_boneGroups(f, value.boneGroups);
+    }
 
+    if(value.colliderGroups!=null&&value.colliderGroups.Count>=0){
+        f.Key("colliderGroups");                
+        Serialize_vrm_secondaryAnimation_colliderGroups(f, value.colliderGroups);
+    }
 
     f.EndMap();
 }
@@ -554,33 +724,51 @@ public static void Serialize_vrm_secondaryAnimation_boneGroups_ITEM(JsonFormatte
 {
     f.BeginMap();
 
-    f.Key("comment");
-    f.Value(value.comment);
 
-    f.Key("stiffiness");
-    f.Value(value.stiffiness);
+    if(!string.IsNullOrEmpty(value.comment)){
+        f.Key("comment");                
+        f.Value(value.comment);
+    }
 
-    f.Key("gravityPower");
-    f.Value(value.gravityPower);
+    if(true){
+        f.Key("stiffiness");                
+        f.Value(value.stiffiness);
+    }
 
-    f.Key("gravityDir");
-    Serialize_vrm_secondaryAnimation_boneGroups__gravityDir(f, value.gravityDir);
+    if(true){
+        f.Key("gravityPower");                
+        f.Value(value.gravityPower);
+    }
 
-    f.Key("dragForce");
-    f.Value(value.dragForce);
+    if(value.gravityDir!=null){
+        f.Key("gravityDir");                
+        Serialize_vrm_secondaryAnimation_boneGroups__gravityDir(f, value.gravityDir);
+    }
 
-    f.Key("center");
-    f.Value(value.center);
+    if(true){
+        f.Key("dragForce");                
+        f.Value(value.dragForce);
+    }
 
-    f.Key("hitRadius");
-    f.Value(value.hitRadius);
+    if(true){
+        f.Key("center");                
+        f.Value(value.center);
+    }
 
-    f.Key("bones");
-    Serialize_vrm_secondaryAnimation_boneGroups__bones(f, value.bones);
+    if(true){
+        f.Key("hitRadius");                
+        f.Value(value.hitRadius);
+    }
 
-    f.Key("colliderGroups");
-    Serialize_vrm_secondaryAnimation_boneGroups__colliderGroups(f, value.colliderGroups);
+    if(value.bones!=null&&value.bones.Length>=0){
+        f.Key("bones");                
+        Serialize_vrm_secondaryAnimation_boneGroups__bones(f, value.bones);
+    }
 
+    if(value.colliderGroups!=null&&value.colliderGroups.Length>=0){
+        f.Key("colliderGroups");                
+        Serialize_vrm_secondaryAnimation_boneGroups__colliderGroups(f, value.colliderGroups);
+    }
 
     f.EndMap();
 }
@@ -589,15 +777,21 @@ public static void Serialize_vrm_secondaryAnimation_boneGroups__gravityDir(JsonF
 {
     f.BeginMap();
 
-    f.Key("x");
-    f.Value(value.x);
 
-    f.Key("y");
-    f.Value(value.y);
+    if(true){
+        f.Key("x");                
+        f.Value(value.x);
+    }
 
-    f.Key("z");
-    f.Value(value.z);
+    if(true){
+        f.Key("y");                
+        f.Value(value.y);
+    }
 
+    if(true){
+        f.Key("z");                
+        f.Value(value.z);
+    }
 
     f.EndMap();
 }
@@ -642,12 +836,16 @@ public static void Serialize_vrm_secondaryAnimation_colliderGroups_ITEM(JsonForm
 {
     f.BeginMap();
 
-    f.Key("node");
-    f.Value(value.node);
 
-    f.Key("colliders");
-    Serialize_vrm_secondaryAnimation_colliderGroups__colliders(f, value.colliders);
+    if(value.node>=0){
+        f.Key("node");                
+        f.Value(value.node);
+    }
 
+    if(value.colliders!=null&&value.colliders.Count>=0){
+        f.Key("colliders");                
+        Serialize_vrm_secondaryAnimation_colliderGroups__colliders(f, value.colliders);
+    }
 
     f.EndMap();
 }
@@ -668,12 +866,16 @@ public static void Serialize_vrm_secondaryAnimation_colliderGroups__colliders_IT
 {
     f.BeginMap();
 
-    f.Key("offset");
-    Serialize_vrm_secondaryAnimation_colliderGroups__colliders__offset(f, value.offset);
 
-    f.Key("radius");
-    f.Value(value.radius);
+    if(value.offset!=null){
+        f.Key("offset");                
+        Serialize_vrm_secondaryAnimation_colliderGroups__colliders__offset(f, value.offset);
+    }
 
+    if(true){
+        f.Key("radius");                
+        f.Value(value.radius);
+    }
 
     f.EndMap();
 }
@@ -682,15 +884,21 @@ public static void Serialize_vrm_secondaryAnimation_colliderGroups__colliders__o
 {
     f.BeginMap();
 
-    f.Key("x");
-    f.Value(value.x);
 
-    f.Key("y");
-    f.Value(value.y);
+    if(true){
+        f.Key("x");                
+        f.Value(value.x);
+    }
 
-    f.Key("z");
-    f.Value(value.z);
+    if(true){
+        f.Key("y");                
+        f.Value(value.y);
+    }
 
+    if(true){
+        f.Key("z");                
+        f.Value(value.z);
+    }
 
     f.EndMap();
 }
@@ -711,30 +919,46 @@ public static void Serialize_vrm_materialProperties_ITEM(JsonFormatter f, glTF_V
 {
     f.BeginMap();
 
-    f.Key("name");
-    f.Value(value.name);
 
-    f.Key("shader");
-    f.Value(value.shader);
+    if(!string.IsNullOrEmpty(value.name)){
+        f.Key("name");                
+        f.Value(value.name);
+    }
 
-    f.Key("renderQueue");
-    f.Value(value.renderQueue);
+    if(!string.IsNullOrEmpty(value.shader)){
+        f.Key("shader");                
+        f.Value(value.shader);
+    }
 
-    f.Key("floatProperties");
-    Serialize_vrm_materialProperties__floatProperties(f, value.floatProperties);
+    if(true){
+        f.Key("renderQueue");                
+        f.Value(value.renderQueue);
+    }
 
-    f.Key("vectorProperties");
-    Serialize_vrm_materialProperties__vectorProperties(f, value.vectorProperties);
+    if(value.floatProperties!=null&&value.floatProperties.Count>0){
+        f.Key("floatProperties");                
+        Serialize_vrm_materialProperties__floatProperties(f, value.floatProperties);
+    }
 
-    f.Key("textureProperties");
-    Serialize_vrm_materialProperties__textureProperties(f, value.textureProperties);
+    if(value.vectorProperties!=null&&value.vectorProperties.Count>0){
+        f.Key("vectorProperties");                
+        Serialize_vrm_materialProperties__vectorProperties(f, value.vectorProperties);
+    }
 
-    f.Key("keywordMap");
-    Serialize_vrm_materialProperties__keywordMap(f, value.keywordMap);
+    if(value.textureProperties!=null&&value.textureProperties.Count>0){
+        f.Key("textureProperties");                
+        Serialize_vrm_materialProperties__textureProperties(f, value.textureProperties);
+    }
 
-    f.Key("tagMap");
-    Serialize_vrm_materialProperties__tagMap(f, value.tagMap);
+    if(value.keywordMap!=null&&value.keywordMap.Count>0){
+        f.Key("keywordMap");                
+        Serialize_vrm_materialProperties__keywordMap(f, value.keywordMap);
+    }
 
+    if(value.tagMap!=null&&value.tagMap.Count>0){
+        f.Key("tagMap");                
+        Serialize_vrm_materialProperties__tagMap(f, value.tagMap);
+    }
 
     f.EndMap();
 }
@@ -756,12 +980,12 @@ public static void Serialize_vrm_materialProperties__vectorProperties(JsonFormat
     foreach(var kv in value)
     {
         f.Key(kv.Key);
-        Serialize_vrm_materialProperties__vectorProperties_DICT(f, kv.Value);
+        Serialize_vrm_materialProperties__vectorProperties_ITEM(f, kv.Value);
     }
     f.EndMap();
 }
 
-public static void Serialize_vrm_materialProperties__vectorProperties_DICT(JsonFormatter f, Single[] value)
+public static void Serialize_vrm_materialProperties__vectorProperties_ITEM(JsonFormatter f, Single[] value)
 {
     f.BeginList();
 

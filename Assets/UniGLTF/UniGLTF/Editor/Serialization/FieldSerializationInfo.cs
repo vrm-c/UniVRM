@@ -39,7 +39,7 @@ namespace UniGLTF
             }
         }
 
-        JsonSchemaAttribute m_attr;
+        public readonly JsonSchemaAttribute Attribute;
 
         public IValueSerialization Serialization
         {
@@ -52,9 +52,9 @@ namespace UniGLTF
             m_prefix = prefix;
             m_fi = fi;
             Path = path + "/" + fi.Name;
-            m_attr = fi.GetCustomAttributes(true).FirstOrDefault(x => x.GetType() == typeof(JsonSchemaAttribute)) as JsonSchemaAttribute;
+            Attribute = fi.GetCustomAttributes(true).FirstOrDefault(x => x.GetType() == typeof(JsonSchemaAttribute)) as JsonSchemaAttribute;
 
-            Serialization = GetSerialization(m_fi.FieldType, Path, m_attr, prefix);
+            Serialization = GetSerialization(m_fi.FieldType, Path, Attribute, prefix);
         }
 
         static IValueSerialization GetSerialization(Type t, string path, JsonSchemaAttribute attr, string prefix)
@@ -163,21 +163,6 @@ namespace UniGLTF
             sb.Append(string.Format("{0}: {1}", Path, Serialization));
 
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// Runtimeのシリアライズ判定関数を作る
-        /// </summary>
-        /// <param name="t"></param>
-        /// <returns></returns>
-        public string CreateSerializationCondition(Type t, string arg)
-        {
-            if (t.IsClass)
-            {
-                return $"{arg}!=null";
-            }
-
-            return "true";
         }
     }
 }

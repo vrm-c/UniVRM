@@ -55,7 +55,8 @@ namespace VRM
         [JsonSchema(Description = "The bone whose rendering should be turned off in first-person view. Usually Head is specified.", Minimum = 0, ExplicitIgnorableValue = -1)]
         public int firstPersonBone = -1;
 
-        [JsonSchema(Description = @"The target position of the VR headset in first-person view. It is assumed that an offset from the head bone to the VR headset is added.")]
+        [JsonSchema(Description = @"The target position of the VR headset in first-person view. It is assumed that an offset from the head bone to the VR headset is added."
+        )]
         public Vector3 firstPersonBoneOffset;
 
         [JsonSchema(Description = "Switch display / undisplay for each mesh in first-person view or the others.")]

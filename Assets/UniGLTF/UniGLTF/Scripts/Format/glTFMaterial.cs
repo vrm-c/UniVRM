@@ -128,7 +128,7 @@ namespace UniGLTF
         [JsonSchema(EnumValues = new object[] { "OPAQUE", "MASK", "BLEND" }, EnumSerializationType = EnumSerializationType.AsUpperString)]
         public string alphaMode;
 
-        [JsonSchema(Dependencies = new string[] { "alphaMode" }, Minimum = 0.0)]
+        [JsonSchema(Dependencies = new string[] { "alphaMode" }, Minimum = 0.0, SerializationConditions = new[] { "value.alphaMode==\"MASK\"" })]
         public float alphaCutoff = 0.5f;
 
         public bool doubleSided;
