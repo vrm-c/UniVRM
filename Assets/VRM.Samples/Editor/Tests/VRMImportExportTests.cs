@@ -21,7 +21,7 @@ namespace VRM.Samples
         public static string ToJson(this glTF self)
         {
             var f = new JsonFormatter();
-            f.GenSerialize(self);
+            GltfSerializer.Serialize(f, self);
             return f.ToString();
         }
     }
@@ -138,7 +138,7 @@ namespace VRM.Samples
 
             // 生成シリアライザでJSON化する
             var f = new JsonFormatter();
-            f.GenSerialize(context.GLTF);
+            GltfSerializer.Serialize(f, context.GLTF);
             var parsed = f.ToString().ParseAsJson();
             var newJson = parsed.ToString("  ");
 
@@ -152,7 +152,7 @@ namespace VRM.Samples
             var ff = new JsonFormatter();
             var des = GltfDeserializer.Deserialize(parsed);
             ff.Clear();
-            ff.GenSerialize(des);
+            GltfSerializer.Serialize(ff, des);
             var desJson = ff.ToString().ParseAsJson().ToString("  ");
             Assert.AreEqual(oldJson.ParseAsJson().ToString(), desJson.ParseAsJson().ToString());
         }

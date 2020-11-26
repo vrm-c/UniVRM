@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using UniJSON;
+using UniGLTF;
 
 
 namespace VRM

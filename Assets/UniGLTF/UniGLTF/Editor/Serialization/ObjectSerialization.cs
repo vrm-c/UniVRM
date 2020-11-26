@@ -5,7 +5,7 @@ using System.Text;
 
 namespace UniGLTF
 {
-    public abstract class FunctionSerializationBase : IValueSerialization
+    public abstract class SerializationBase : IValueSerialization
     {
         public Type ValueType
         {
@@ -22,16 +22,23 @@ namespace UniGLTF
 
         public string GenerateDeserializerCall(string callName, string argName)
         {
-            return string.Format("{0}({1})", callName, argName);
+            return $"{callName}({argName})";
+        }
+
+        public abstract void GenerateSerializer(StreamWriter writer, string callName);
+
+        public string GenerateSerializerCall(string callName, string argName)
+        {
+            return $"{callName}(f, {argName})";
         }
     }
 
-    public class ObjectSerialization : FunctionSerializationBase
+    public class ObjectSerialization : SerializationBase
     {
         string m_path;
         FieldSerializationInfo[] m_fsi;
 
-        public ObjectSerialization(Type t, string path)
+        public ObjectSerialization(Type t, string path, string prefix)
         {
             ValueType = t;
             m_path = path;
@@ -47,7 +54,7 @@ namespace UniGLTF
             })
             .Select(x =>
             {
-                return new FieldSerializationInfo(x, path);
+                return new FieldSerializationInfo(x, path, prefix);
             }).ToArray();
         }
 
@@ -100,6 +107,37 @@ public static $0 $2(ListTreeNode<JsonValue> parsed)
                 if (!f.Serialization.IsInline)
                 {
                     f.Serialization.GenerateDeserializer(writer, f.FunctionName);
+                }
+            }
+        }
+
+        public override void GenerateSerializer(StreamWriter writer, string callName)
+        {
+            writer.Write($@"
+public static void {callName}(JsonFormatter f, {ValueType.Name} value)
+{{
+    f.BeginMap();
+
+"
+);
+
+            foreach (var f in m_fsi)
+            {
+                writer.Write($"    f.Key(\"{f.Name}\");\n");
+                writer.Write($"    {f.Serialization.GenerateSerializerCall(f.FunctionName, $"value.{f.Name}")};\n");
+                writer.Write("\n");
+            }
+
+            writer.Write(@"
+    f.EndMap();
+}
+");
+
+            foreach (var f in m_fsi)
+            {
+                if (!f.Serialization.IsInline)
+                {
+                    f.Serialization.GenerateSerializer(writer, f.FunctionName);
                 }
             }
         }

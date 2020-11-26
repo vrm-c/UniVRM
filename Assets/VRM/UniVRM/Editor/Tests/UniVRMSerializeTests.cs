@@ -12,136 +12,136 @@ namespace VRM
         public static string ToJson(this glTF self)
         {
             var f = new JsonFormatter();
-            f.GenSerialize(self);
+            GltfSerializer.Serialize(f, self);
             return f.ToString();
         }
         public static string ToJson(this glTFMesh self)
         {
             var f = new JsonFormatter();
-            f.GenSerialize(self);
+            GltfSerializer.Serialize_gltf_meshes_LIST(f, self);
             return f.ToString();
         }
         public static string ToJson(this glTFPrimitives self)
         {
             var f = new JsonFormatter();
-            f.GenSerialize(self);
+            GltfSerializer.Serialize_gltf_meshes__primitives_LIST(f, self);
             return f.ToString();
         }
         public static string ToJson(this glTFAttributes self)
         {
             var f = new JsonFormatter();
-            f.GenSerialize(self);
+            GltfSerializer.Serialize_gltf_meshes__primitives__attributes(f, self);
             return f.ToString();
         }
         public static string ToJson(this glTFMaterialBaseColorTextureInfo self)
         {
             var f = new JsonFormatter();
-            f.GenSerialize(self);
+            GltfSerializer.Serialize_gltf_materials__pbrMetallicRoughness_baseColorTexture(f, self);
             return f.ToString();
         }
         public static string ToJson(this glTFMaterial self)
         {
             var f = new JsonFormatter();
-            f.GenSerialize(self);
+            GltfSerializer.Serialize_gltf_materials_LIST(f, self);
             return f.ToString();
         }
         public static string ToJson(this glTFNode self)
         {
             var f = new JsonFormatter();
-            f.GenSerialize(self);
+            GltfSerializer.Serialize_gltf_nodes_LIST(f, self);
             return f.ToString();
         }
         public static string ToJson(this glTFSkin self)
         {
             var f = new JsonFormatter();
-            f.GenSerialize(self);
+            GltfSerializer.Serialize_gltf_skins_LIST(f, self);
             return f.ToString();
         }
 
         public static string ToJson(this glTF_VRM_MaterialValueBind self)
         {
             var f = new JsonFormatter();
-            f.GenSerialize(self);
+            VRMSerializer.Serialize_vrm_blendShapeMaster_blendShapeGroups__materialValues_ITEM(f, self);
             return f.ToString();
         }
         public static string ToJson(this glTF_VRM_BlendShapeBind self)
         {
             var f = new JsonFormatter();
-            f.GenSerialize(self);
+            VRMSerializer.Serialize_vrm_blendShapeMaster_blendShapeGroups__binds_ITEM(f, self);
             return f.ToString();
         }
         public static string ToJson(this glTF_VRM_BlendShapeGroup self)
         {
             var f = new JsonFormatter();
-            f.GenSerialize(self);
+            VRMSerializer.Serialize_vrm_blendShapeMaster_blendShapeGroups_ITEM(f, self);
             return f.ToString();
         }
         public static string ToJson(this glTF_VRM_DegreeMap self)
         {
             var f = new JsonFormatter();
-            f.GenSerialize(self);
+            VRMSerializer.Serialize_vrm_firstPerson_lookAtHorizontalInner(f, self);
             return f.ToString();
         }
         public static string ToJson(this glTF_VRM_MeshAnnotation self)
         {
             var f = new JsonFormatter();
-            f.GenSerialize(self);
+            VRMSerializer.Serialize_vrm_firstPerson_meshAnnotations_ITEM(f, self);
             return f.ToString();
         }
         public static string ToJson(this glTF_VRM_Firstperson self)
         {
             var f = new JsonFormatter();
-            f.GenSerialize(self);
+            VRMSerializer.Serialize_vrm_firstPerson(f, self);
             return f.ToString();
         }
         public static string ToJson(this glTF_VRM_HumanoidBone self)
         {
             var f = new JsonFormatter();
-            f.GenSerialize(self);
+            VRMSerializer.Serialize_vrm_humanoid_humanBones_ITEM(f, self);
             return f.ToString();
         }
         public static string ToJson(this glTF_VRM_Humanoid self)
         {
             var f = new JsonFormatter();
-            f.GenSerialize(self);
+            VRMSerializer.Serialize_vrm_humanoid(f, self);
             return f.ToString();
         }
         public static string ToJson(this glTF_VRM_Material self)
         {
             var f = new JsonFormatter();
-            f.GenSerialize(self);
+            VRMSerializer.Serialize_vrm_materialProperties_ITEM(f, self);
             return f.ToString();
         }
         public static string ToJson(this glTF_VRM_Meta self)
         {
             var f = new JsonFormatter();
-            f.GenSerialize(self);
+            VRMSerializer.Serialize_vrm_meta(f, self);
             return f.ToString();
         }
         public static string ToJson(this glTF_VRM_SecondaryAnimationCollider self)
         {
             var f = new JsonFormatter();
-            f.GenSerialize(self);
+            VRMSerializer.Serialize_vrm_secondaryAnimation_colliderGroups__colliders_ITEM(f, self);
             return f.ToString();
         }
         public static string ToJson(this glTF_VRM_SecondaryAnimationColliderGroup self)
         {
             var f = new JsonFormatter();
-            f.GenSerialize(self);
+            VRMSerializer.Serialize_vrm_secondaryAnimation_colliderGroups_ITEM(f, self);
             return f.ToString();
         }
 
         public static string ToJson(this glTF_VRM_SecondaryAnimationGroup self)
         {
             var f = new JsonFormatter();
-            f.GenSerialize(self);
+            VRMSerializer.Serialize_vrm_secondaryAnimation_boneGroups_ITEM(f, self);
             return f.ToString();
         }
 
         public static string ToJson(this glTF_VRM_SecondaryAnimation self)
         {
             var f = new JsonFormatter();
-            f.GenSerialize(self);
+            VRMSerializer.Serialize_vrm_secondaryAnimation(f, self);
             return f.ToString();
         }
     }

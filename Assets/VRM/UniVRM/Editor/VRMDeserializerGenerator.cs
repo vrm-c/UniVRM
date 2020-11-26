@@ -25,7 +25,7 @@ namespace VRM
         [MenuItem(VRM.VRMVersion.MENU + "/VRM: Generate Deserializer")]
         static void GenerateSerializer()
         {
-            var info = new UniGLTF.ObjectSerialization(typeof(glTF_VRM_extensions), "vrm");
+            var info = new UniGLTF.ObjectSerialization(typeof(glTF_VRM_extensions), "vrm", "_Deserialize");
             Debug.Log(info);
 
             using (var s = File.Open(OutPath, FileMode.Create))

@@ -13,49 +13,49 @@ namespace UniGLTF
         public static string ToJson(this glTF self)
         {
             var f = new JsonFormatter();
-            f.GenSerialize(self);
+            GltfSerializer.Serialize(f, self);
             return f.ToString();
         }
         public static string ToJson(this glTFMesh self)
         {
             var f = new JsonFormatter();
-            f.GenSerialize(self);
+            GltfSerializer.Serialize_gltf_meshes_LIST(f, self);
             return f.ToString();
         }
         public static string ToJson(this glTFPrimitives self)
         {
             var f = new JsonFormatter();
-            f.GenSerialize(self);
+            GltfSerializer.Serialize_gltf_meshes__primitives_LIST(f, self);
             return f.ToString();
         }
         public static string ToJson(this glTFAttributes self)
         {
             var f = new JsonFormatter();
-            f.GenSerialize(self);
+            GltfSerializer.Serialize_gltf_meshes__primitives__attributes(f, self);
             return f.ToString();
         }
         public static string ToJson(this glTFMaterialBaseColorTextureInfo self)
         {
             var f = new JsonFormatter();
-            f.GenSerialize(self);
+            GltfSerializer.Serialize_gltf_materials__pbrMetallicRoughness_baseColorTexture(f, self);
             return f.ToString();
         }
         public static string ToJson(this glTFMaterial self)
         {
             var f = new JsonFormatter();
-            f.GenSerialize(self);
+            GltfSerializer.Serialize_gltf_materials_LIST(f, self);
             return f.ToString();
         }
         public static string ToJson(this glTFNode self)
         {
             var f = new JsonFormatter();
-            f.GenSerialize(self);
+            GltfSerializer.Serialize_gltf_nodes_LIST(f, self);
             return f.ToString();
         }
         public static string ToJson(this glTFSkin self)
         {
             var f = new JsonFormatter();
-            f.GenSerialize(self);
+            GltfSerializer.Serialize_gltf_skins_LIST(f, self);
             return f.ToString();
         }
     }

@@ -19,6 +19,16 @@ namespace UniGLTF
 
         public abstract string GenerateDeserializerCall(string callName, string argName);
 
+        public void GenerateSerializer(StreamWriter writer, string callName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string GenerateSerializerCall(string callName, string argName)
+        {
+            return $"f.Value({argName})";
+        }
+
         public override string ToString()
         {
             return ValueType.ToString();
@@ -178,39 +188,6 @@ namespace UniGLTF
         public override string GenerateDeserializerCall(string callName, string argName)
         {
             return argName + ".GetString()";
-        }
-    }
-
-    public class EnumIntSerialization : PrimitiveSerializationBase
-    {
-        Type m_type;
-        UniJSON.EnumSerializationType m_serializationType;
-
-        public override Type ValueType
-        {
-            get { return m_type; }
-        }
-
-        public EnumIntSerialization(Type t, UniJSON.EnumSerializationType serializationType)
-        {
-            m_type = t;
-            m_serializationType = serializationType;
-        }
-
-        public override string GenerateDeserializerCall(string callName, string argName)
-        {
-            switch (m_serializationType)
-            {
-                case UniJSON.EnumSerializationType.AsInt:
-                    return string.Format("({0}){1}.GetInt32()", m_type.Name, argName);
-
-                case UniJSON.EnumSerializationType.AsLowerString:
-                    // (ProjectionType)Enum.Parse(typeof(ProjectionType), kv.Value.GetString(), true)
-                    return $"({m_type.Name})Enum.Parse(typeof({m_type.Name}), {argName}.GetString(), true)";
-
-                default:
-                    throw new NotImplementedException();
-            }
         }
     }
 }

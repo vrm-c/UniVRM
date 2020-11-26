@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace UniJSON
+namespace UniGLTF
 {
     public enum EnumSerializationType
     {
@@ -39,7 +39,7 @@ namespace UniJSON
         #endregion
 
         #region object
-        public ValueNodeType ValueType;
+        public UniJSON.ValueNodeType ValueType;
         public int MinProperties;
         public bool Required;
         public string[] Dependencies;

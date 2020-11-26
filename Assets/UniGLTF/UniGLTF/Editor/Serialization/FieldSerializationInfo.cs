@@ -26,11 +26,13 @@ namespace UniGLTF
             private set;
         }
 
+        readonly string m_prefix;
+
         public string FunctionName
         {
             get
             {
-                return "Deserialize_" + Path
+                return m_prefix + Path
                 .Replace("/", "_")
                 .Replace("[]", "_")
                 ;
@@ -45,32 +47,33 @@ namespace UniGLTF
             private set;
         }
 
-        public FieldSerializationInfo(FieldInfo fi, string path)
+        public FieldSerializationInfo(FieldInfo fi, string path, string prefix)
         {
+            m_prefix = prefix;
             m_fi = fi;
             Path = path + "/" + fi.Name;
             m_attr = fi.GetCustomAttributes(true).FirstOrDefault(x => x.GetType() == typeof(JsonSchemaAttribute)) as JsonSchemaAttribute;
 
-            Serialization = GetSerialization(m_fi.FieldType, Path, m_attr);
+            Serialization = GetSerialization(m_fi.FieldType, Path, m_attr, prefix);
         }
 
-        static IValueSerialization GetSerialization(Type t, string path, JsonSchemaAttribute attr)
+        static IValueSerialization GetSerialization(Type t, string path, JsonSchemaAttribute attr, string prefix)
         {
             if (t.IsArray)
             {
                 return new ArraySerialization(t,
-                    GetSerialization(t.GetElementType(), path + "[]", attr));
+                    GetSerialization(t.GetElementType(), path + "[]", attr, prefix));
             }
             else if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(List<>))
             {
                 return new ListSerialization(t,
-                    GetSerialization(t.GetGenericArguments()[0], path + "[]", attr));
+                    GetSerialization(t.GetGenericArguments()[0], path + "[]", attr, prefix));
             }
             else if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Dictionary<,>)
                 && t.GetGenericArguments()[0] == typeof(string))
             {
                 return new StringKeyDictionarySerialization(t,
-                    GetSerialization(t.GetGenericArguments()[1], path, attr));
+                    GetSerialization(t.GetGenericArguments()[1], path, attr, prefix));
             }
 
             // GetCollectionType(fi.FieldType, out suffix, out t);
@@ -131,7 +134,7 @@ namespace UniGLTF
                 return new ExtensionSerialization();
             }
 
-            return new ObjectSerialization(t, path);
+            return new ObjectSerialization(t, path, prefix);
         }
 
         public override string ToString()

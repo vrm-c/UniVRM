@@ -3,7 +3,7 @@ using System.IO;
 
 namespace UniGLTF
 {
-    public class ArraySerialization : FunctionSerializationBase
+    public class ArraySerialization : SerializationBase
     {
         IValueSerialization m_inner;
 
@@ -14,7 +14,7 @@ namespace UniGLTF
         }
         public override void GenerateDeserializer(StreamWriter writer, string callName)
         {
-            var itemCallName = callName + "_ARRAY";
+            var itemCallName = callName + "_ITEM";
 
             writer.Write(@"
 public static $0 $2(ListTreeNode<JsonValue> parsed)
@@ -28,7 +28,7 @@ public static $0 $2(ListTreeNode<JsonValue> parsed)
 	return value;
 } 
 "
-.Replace("$0", UniJSON.JsonSchemaAttribute.GetTypeName(ValueType))
+.Replace("$0", JsonSchemaAttribute.GetTypeName(ValueType))
 .Replace("$1", m_inner.ValueType.Name)
 .Replace("$2", callName)
 .Replace("$3", m_inner.GenerateDeserializerCall(itemCallName, "x"))
@@ -37,6 +37,33 @@ public static $0 $2(ListTreeNode<JsonValue> parsed)
             if (!m_inner.IsInline)
             {
                 m_inner.GenerateDeserializer(writer, itemCallName);
+            }
+        }
+
+        public override void GenerateSerializer(StreamWriter writer, string callName)
+        {
+            var itemCallName = callName + "_ITEM";
+            writer.Write($@"
+public static void {callName}(JsonFormatter f, {m_inner.ValueType.Name}[] value)
+{{
+    f.BeginList();
+
+    foreach(var item in value)
+    {{
+    "
+);
+
+            writer.Write($"{m_inner.GenerateSerializerCall(itemCallName, "item")};\n");
+
+            writer.Write(@"
+    }
+    f.EndList();
+}
+");
+
+            if (!m_inner.IsInline)
+            {
+                m_inner.GenerateSerializer(writer, itemCallName);
             }
         }
     }

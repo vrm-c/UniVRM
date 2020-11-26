@@ -3,7 +3,7 @@ using System.IO;
 
 namespace UniGLTF
 {
-    public class StringKeyDictionarySerialization : FunctionSerializationBase
+    public class StringKeyDictionarySerialization : SerializationBase
     {
         IValueSerialization m_inner;
 
@@ -14,7 +14,7 @@ namespace UniGLTF
         }
         public override void GenerateDeserializer(StreamWriter writer, string callName)
         {
-            var itemCallName = callName + "_DICT";
+            var itemCallName = callName + "_ITEM";
             writer.Write(@"
  
 public static $0 $2(ListTreeNode<JsonValue> parsed)
@@ -27,7 +27,7 @@ public static $0 $2(ListTreeNode<JsonValue> parsed)
 	return value;
 }
 "
-.Replace("$0", UniJSON.JsonSchemaAttribute.GetTypeName(ValueType))
+.Replace("$0", JsonSchemaAttribute.GetTypeName(ValueType))
 .Replace("$1", m_inner.ValueType.Name)
 .Replace("$2", callName)
 .Replace("$3", m_inner.GenerateDeserializerCall(itemCallName, "kv.Value"))
@@ -36,6 +36,28 @@ public static $0 $2(ListTreeNode<JsonValue> parsed)
             if (!m_inner.IsInline)
             {
                 m_inner.GenerateDeserializer(writer, itemCallName);
+            }
+        }
+
+        public override void GenerateSerializer(StreamWriter writer, string callName)
+        {
+            var itemCallName = callName + "_ITEM";
+            writer.Write($@"
+public static void {callName}(JsonFormatter f, Dictionary<string, {m_inner.ValueType.Name}> value)
+{{
+    f.BeginMap();
+    foreach(var kv in value)
+    {{
+        f.Key(kv.Key);
+        {m_inner.GenerateSerializerCall(itemCallName, "kv.Value")};
+    }}
+    f.EndMap();
+}}
+");
+
+            if (!m_inner.IsInline)
+            {
+                m_inner.GenerateSerializer(writer, itemCallName);
             }
         }
     }

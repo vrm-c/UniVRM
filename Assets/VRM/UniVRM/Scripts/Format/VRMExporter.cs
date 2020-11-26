@@ -206,7 +206,7 @@ namespace VRM
 
             // Serialize VRM
             var f = new JsonFormatter();
-            f.GenSerialize(VRM);
+            VRMSerializer.Serialize(f, VRM);
             var bytes = f.GetStoreBytes();
             glTFExtensionExport.GetOrCreate(ref glTF.extensions).Add("VRM", bytes);
         }

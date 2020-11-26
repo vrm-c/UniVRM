@@ -380,7 +380,7 @@ namespace UniGLTF
         public byte[] ToGlbBytes()
         {
             var f = new JsonFormatter();
-            f.GenSerialize(this);
+            GltfSerializer.Serialize(f, this);
 
             var json = f.ToString().ParseAsJson().ToString("  ");
 
@@ -404,7 +404,7 @@ namespace UniGLTF
                 throw new NotImplementedException();
             }
 
-            f.GenSerialize(this);
+            GltfSerializer.Serialize(f, this);
             var json = f.ToString().ParseAsJson().ToString("  ");
             RemoveUnusedExtensions(json);
             return (json, buffers);

@@ -13,5 +13,9 @@ namespace UniGLTF
         string GenerateDeserializerCall(string callName, string argName);
 
         void GenerateDeserializer(StreamWriter writer, string callName);
+
+        string GenerateSerializerCall(string callName, string argName);
+
+        void GenerateSerializer(StreamWriter writer, string callName);
     }
 }

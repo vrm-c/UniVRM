@@ -42,7 +42,7 @@ public static class GltfDeserializer
         [MenuItem(UniGLTFVersion.MENU + "/GLTF: Generate Deserializer")]
         static void GenerateSerializer()
         {
-            var info = new ObjectSerialization(typeof(glTF), "gltf");
+            var info = new ObjectSerialization(typeof(glTF), "gltf", "Deserialize_");
             Debug.Log(info);
 
             using (var s = File.Open(OutPath, FileMode.Create))
@@ -54,6 +54,7 @@ public static class GltfDeserializer
             }
 
             Debug.LogFormat("write: {0}", OutPath);
+            UnityPath.FromFullpath(OutPath).ImportAsset();
         }
     }
 }

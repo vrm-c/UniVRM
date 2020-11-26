@@ -18,5 +18,15 @@ namespace UniGLTF
         {
             return $"new glTFExtensionImport({argName})";
         }
+
+        public void GenerateSerializer(StreamWriter writer, string callName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string GenerateSerializerCall(string callName, string argName)
+        {
+            return "value.extras.Serialize(f)";
+        }
     }
 }
