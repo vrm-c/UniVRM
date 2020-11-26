@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 
 namespace UniGLTF
@@ -18,6 +18,11 @@ namespace UniGLTF
         }
 
         public abstract string GenerateDeserializerCall(string callName, string argName);
+
+        public override string ToString()
+        {
+            return ValueType.ToString();
+        }
     }
 
     public class Int8Serialization : PrimitiveSerializationBase

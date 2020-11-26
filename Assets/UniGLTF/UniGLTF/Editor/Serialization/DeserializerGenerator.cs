@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using System.Reflection;
 using System.Text;
 using UnityEditor;
@@ -6,9 +6,29 @@ using UnityEngine;
 
 namespace UniGLTF
 {
+    /// <summary>
+    /// Generate deserializer from ListTreeNode<JsonValue> to glTF using type reflection
+    /// </summary>
     public static class DeserializerGenerator
     {
         public const BindingFlags FIELD_FLAGS = BindingFlags.Instance | BindingFlags.Public;
+
+        const string Begin = @"using UniJSON;
+using System;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace UniGLTF {
+
+public static class GltfDeserializer
+{
+
+";
+
+        const string End = @"
+} // GltfDeserializer
+} // UniGLTF 
+";
 
         static string OutPath
         {
@@ -19,9 +39,6 @@ namespace UniGLTF
             }
         }
 
-        /// <summary>
-        /// AOT向けにデシリアライザを生成する
-        /// </summary>
         [MenuItem(UniGLTFVersion.MENU + "/GLTF: Generate Deserializer")]
         static void GenerateSerializer()
         {
@@ -29,32 +46,14 @@ namespace UniGLTF
             Debug.Log(info);
 
             using (var s = File.Open(OutPath, FileMode.Create))
-            using (var w = new StreamWriter(s, Encoding.UTF8))
+            using (var w = new StreamWriter(s, new UTF8Encoding(false)))
             {
-                // header
-                w.Write(@"
-using UniJSON;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
-
-namespace UniGLTF {
-
-public static class GltfDeserializer
-{
-
-");
-
+                w.Write(Begin);
                 info.GenerateDeserializer(w, "Deserialize");
-
-                // footer
-                w.Write(@"
-} // GltfDeserializer
-} // UniGLTF 
-");
-
-                Debug.LogFormat("write: {0}", OutPath);
+                w.Write(End);
             }
+
+            Debug.LogFormat("write: {0}", OutPath);
         }
     }
 }

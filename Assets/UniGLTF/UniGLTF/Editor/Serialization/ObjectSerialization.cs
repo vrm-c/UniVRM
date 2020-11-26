@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -56,7 +56,7 @@ namespace UniGLTF
             var sb = new StringBuilder();
             foreach (var x in m_fsi)
             {
-                sb.Append(x.ToString());
+                sb.Append(x.ToString() + "\n");
             }
             return sb.ToString();
         }

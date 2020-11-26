@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -140,16 +140,25 @@ namespace UniGLTF
 
             var typeName = BaseJsonSchemaAttribute.GetTypeName(m_fi.FieldType);
 
-            if (m_attr != null)
-            {
-                sb.AppendLine(string.Format("{0}: {1}", Path, m_attr.GetInfo(m_fi)));
-            }
-            else
-            {
-                sb.AppendLine(string.Format("{0}: {1}", Path, typeName));
-            }
+            // if (m_attr != null)
+            // {
+            //     sb.AppendLine(string.Format("{0}: {1}", Path, m_attr.GetInfo(m_fi)));
+            // }
+            // else
+            // {
+            //     sb.AppendLine(string.Format("{0}: {1}", Path, typeName));
+            // }
+            // sb.Append(Serialization.ToString());
+            // if (m_attr != null)
+            // {
+            //     sb.Append(string.Format("{0}: {1}", Path, m_attr.GetInfo(m_fi)));
+            // }
+            // else
+            // {
+            //     sb.Append(string.Format("{0}: {1}", Path, typeName));
+            // }
+            sb.Append(string.Format("{0}: {1}", Path, Serialization));
 
-            sb.Append(Serialization.ToString());
             return sb.ToString();
         }
     }
