@@ -19,7 +19,7 @@ namespace UniGLTF
             get
             {
                 return Path.Combine(UnityEngine.Application.dataPath,
-                "VRM/UniGLTF/Scripts/IO/FormatterExtensionsGltf.g.cs");
+                "UniGLTF/UniGLTF/Scripts/IO/FormatterExtensionsGltf.g.cs");
             }
         }
 
@@ -115,8 +115,6 @@ namespace UniGLTF
 using System;
 using System.Collections.Generic;
 using UniJSON;
-using UnityEngine;
-using VRM;
 
 namespace UniGLTF {
 
@@ -297,7 +295,7 @@ namespace UniGLTF {
                         {
 
                         }
-                        else if (fi.FieldType == typeof(glTF_KHR_materials_unlit))
+                        else if (fi.FieldType == typeof(glTFExtension))
                         {
 
                         }

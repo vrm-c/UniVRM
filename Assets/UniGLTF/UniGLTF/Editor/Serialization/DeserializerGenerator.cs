@@ -15,7 +15,7 @@ namespace UniGLTF
             get
             {
                 return Path.Combine(UnityEngine.Application.dataPath,
-                "VRM/UniGLTF/Scripts/IO/GltfDeserializer.g.cs");
+                "UniGLTF/UniGLTF/Scripts/IO/GltfDeserializer.g.cs");
             }
         }
 
