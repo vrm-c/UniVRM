@@ -9,9 +9,7 @@
         "UniGLTF",
         "UniGLTF.Editor"
     ],
-    "optionalUnityReferences": [
-        "TestAssemblies"
-    ],
+    "optionalUnityReferences": [],
     "includePlatforms": [
         "Editor"
     ],

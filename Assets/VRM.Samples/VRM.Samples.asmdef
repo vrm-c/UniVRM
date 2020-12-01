@@ -2,7 +2,6 @@
     "name": "VRM.Samples",
     "references": [
         "VRM",
-        "DepthFirstScheduler",
         "UniHumanoid",
         "UniGLTF"
     ],

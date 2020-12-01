@@ -1,12 +1,10 @@
 {
-    "name": "VRM.Samples.Editor.Tests",
+    "name": "VRM.Tests",
     "references": [
         "VRM",
-        "VRM.Samples",
-        "MeshUtility",
         "UniGLTF",
-        "UniVRM.Editor",
-        "VRM.Tests"
+        "MeshUtility",
+        "MeshUtility.Editor"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"
