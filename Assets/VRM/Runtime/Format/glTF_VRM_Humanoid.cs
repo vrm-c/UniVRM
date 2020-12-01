@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UniGLTF;
-using UniJSON;
 using UnityEngine;
-
 
 namespace VRM
 {
@@ -67,26 +65,6 @@ namespace VRM
         upperChest,
 
         unknown,
-    }
-
-    public static class VRMBoneExtensions
-    {
-        public static VRMBone FromHumanBodyBone(this HumanBodyBones human)
-        {
-            return human.ToVrmBone();
-        }
-
-        public static HumanBodyBones ToHumanBodyBone(this VRMBone bone)
-        {
-#if UNITY_5_6_OR_NEWER
-#else
-            if (bone == VRMBone.upperChest)
-            {
-                return HumanBodyBones.LastBone;
-            }
-#endif
-            return bone.ToUnityBone();
-        }
     }
 
     [Serializable]
@@ -214,92 +192,5 @@ namespace VRM
 
         [JsonSchema(Description = "Unity's HumanDescription.hasTranslationDoF")]
         public bool hasTranslationDoF = false;
-
-        public void SetNodeIndex(HumanBodyBones _key, int node)
-        {
-            var key = _key.FromHumanBodyBone();
-            var index = humanBones.FindIndex(x => x.vrmBone == key);
-            if (index == -1 || humanBones[index] == null)
-            {
-                // not found
-                humanBones.Add(new glTF_VRM_HumanoidBone
-                {
-                    vrmBone = key,
-                    node = node
-                });
-            }
-            else
-            {
-                humanBones[index].node = node;
-            }
-        }
-
-        public void Apply(UniHumanoid.AvatarDescription desc, List<Transform> nodes)
-        {
-            armStretch = desc.armStretch;
-            legStretch = desc.legStretch;
-            upperArmTwist = desc.upperArmTwist;
-            lowerArmTwist = desc.lowerArmTwist;
-            upperLegTwist = desc.upperLegTwist;
-            lowerLegTwist = desc.lowerArmTwist;
-            feetSpacing = desc.feetSpacing;
-            hasTranslationDoF = desc.hasTranslationDoF;
-
-            foreach (var x in desc.human)
-            {
-                var key = x.humanBone.FromHumanBodyBone();
-                var found = humanBones.FirstOrDefault(y => y.vrmBone == key);
-                if (found == null)
-                {
-                    found = new glTF_VRM_HumanoidBone
-                    {
-                        vrmBone = key
-                    };
-                    humanBones.Add(found);
-                }
-
-                found.node = nodes.FindIndex(y => y.name == x.boneName);
-
-                found.useDefaultValues = x.useDefaultValues;
-                found.axisLength = x.axisLength;
-                found.center = x.center;
-                found.max = x.max;
-                found.min = x.min;
-            }
-        }
-
-        public UniHumanoid.AvatarDescription ToDescription(List<Transform> nodes)
-        {
-            var description = ScriptableObject.CreateInstance<UniHumanoid.AvatarDescription>();
-            description.upperLegTwist = upperLegTwist;
-            description.lowerLegTwist = lowerLegTwist;
-            description.upperArmTwist = upperArmTwist;
-            description.lowerArmTwist = lowerArmTwist;
-            description.armStretch = armStretch;
-            description.legStretch = legStretch;
-            description.hasTranslationDoF = hasTranslationDoF;
-
-            var boneLimits = new UniHumanoid.BoneLimit[humanBones.Count];
-            int index = 0;
-            foreach (var x in humanBones)
-            {
-                if (x.node < 0 || x.node >= nodes.Count) continue;
-                boneLimits[index] = new UniHumanoid.BoneLimit
-                {
-                    boneName = nodes[x.node].name,
-                    useDefaultValues = x.useDefaultValues,
-                    axisLength = x.axisLength,
-                    center = x.center,
-                    min = x.min,
-                    max = x.max,
-                    humanBone = x.vrmBone.ToHumanBodyBone(),
-                };
-                index++;
-            }
-
-            description.human = boneLimits;
-
-            return description;
-        }
     }
 }

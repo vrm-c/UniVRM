@@ -50,7 +50,7 @@ namespace VRM
                 }
             }
 
-            SetMaterialImporter(new VRMMaterialImporter(this, glTF_VRM_Material.Parse(Json)));
+            SetMaterialImporter(new VRMMaterialImporter(this, VRM.materialProperties));
         }
 
         #region OnLoad
