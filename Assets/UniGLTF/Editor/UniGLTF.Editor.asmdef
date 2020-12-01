@@ -1,11 +1,9 @@
 {
-    "name": "UniJSON.Editor",
+    "name": "UniGLTF.Editor",
     "references": [
         "UniGLTF"
     ],
-    "optionalUnityReferences": [
-        "TestAssemblies"
-    ],
+    "optionalUnityReferences": [],
     "includePlatforms": [
         "Editor"
     ],

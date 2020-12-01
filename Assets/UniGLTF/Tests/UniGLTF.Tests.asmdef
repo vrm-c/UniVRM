@@ -1,8 +1,7 @@
 {
-    "name": "DepthFirstScheduler.Editor",
+    "name": "UniGLTF.Tests",
     "references": [
-        "UniGLTF",
-        "UniGLTF.Editor"
+        "UniGLTF"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"
