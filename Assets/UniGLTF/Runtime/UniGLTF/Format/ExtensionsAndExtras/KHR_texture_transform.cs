@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using UniJSON;
-using UnityEngine;
 
 namespace UniGLTF
 {
@@ -90,21 +89,21 @@ namespace UniGLTF
             return false;
         }
 
-        public static void Serialize(glTFTextureInfo info, Vector2 offset, Vector2 scale)
+        public static void Serialize(glTFTextureInfo info, (float, float) offset, (float, float) scale)
         {
             var f = new JsonFormatter();
             f.BeginMap();
 
             f.Key("offset");
             f.BeginList();
-            f.Value(offset.x);
-            f.Value(offset.y);
+            f.Value(offset.Item1);
+            f.Value(offset.Item2);
             f.EndList();
 
             f.Key("scale");
             f.BeginList();
-            f.Value(scale.x);
-            f.Value(scale.y);
+            f.Value(scale.Item1);
+            f.Value(scale.Item2);
             f.EndList();
 
             f.EndMap();

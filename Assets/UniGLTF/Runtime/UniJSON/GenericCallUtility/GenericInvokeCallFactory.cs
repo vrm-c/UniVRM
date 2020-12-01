@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
-using UnityEngine;
 #if UNITY_EDITOR && VRM_DEVELOP
+using UnityEngine;
 using System.IO;
 using System.Linq;
 using System.Text;

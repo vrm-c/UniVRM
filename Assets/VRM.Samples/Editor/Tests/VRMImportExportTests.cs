@@ -142,8 +142,8 @@ namespace VRM.Samples
             var parsed = f.ToString().ParseAsJson();
             var newJson = parsed.ToString("  ");
 
-            File.WriteAllText("old.json", oldJson);
-            File.WriteAllText("new.json", newJson);
+            // File.WriteAllText("old.json", oldJson);
+            // File.WriteAllText("new.json", newJson);
 
             // 比較
             Assert.AreEqual(oldJson.ParseAsJson().ToString(), newJson.ParseAsJson().ToString());

@@ -28,12 +28,6 @@ namespace UniGLTF
         #region Buffer
         [JsonSchema(MinItems = 1, ExplicitIgnorableItemLength = 0)]
         public List<glTFBuffer> buffers = new List<glTFBuffer>();
-        public int AddBuffer(IBytesBuffer bytesBuffer)
-        {
-            var index = buffers.Count;
-            buffers.Add(new glTFBuffer(bytesBuffer));
-            return index;
-        }
 
         [JsonSchema(MinItems = 1, ExplicitIgnorableItemLength = 0)]
         public List<glTFBufferView> bufferViews = new List<glTFBufferView>();
@@ -47,118 +41,11 @@ namespace UniGLTF
         [JsonSchema(MinItems = 1, ExplicitIgnorableItemLength = 0)]
         public List<glTFAccessor> accessors = new List<glTFAccessor>();
 
-        T[] GetAttrib<T>(glTFAccessor accessor, glTFBufferView view) where T : struct
-        {
-            return GetAttrib<T>(accessor.count, accessor.byteOffset, view);
-        }
-        T[] GetAttrib<T>(int count, int byteOffset, glTFBufferView view) where T : struct
-        {
-            var attrib = new T[count];
-            var segment = buffers[view.buffer].GetBytes();
-            var bytes = new ArraySegment<Byte>(segment.Array, segment.Offset + view.byteOffset + byteOffset, count * view.byteStride);
-            bytes.MarshalCopyTo(attrib);
-            return attrib;
-        }
-
         public ArraySegment<Byte> GetViewBytes(int bufferView)
         {
             var view = bufferViews[bufferView];
             var segment = buffers[view.buffer].GetBytes();
             return new ArraySegment<byte>(segment.Array, segment.Offset + view.byteOffset, view.byteLength);
-        }
-
-        IEnumerable<int> _GetIndices(glTFAccessor accessor, out int count)
-        {
-            count = accessor.count;
-            var view = bufferViews[accessor.bufferView];
-            switch ((glComponentType)accessor.componentType)
-            {
-                case glComponentType.UNSIGNED_BYTE:
-                    {
-                        return GetAttrib<Byte>(accessor, view).Select(x => (int)(x));
-                    }
-
-                case glComponentType.UNSIGNED_SHORT:
-                    {
-                        return GetAttrib<UInt16>(accessor, view).Select(x => (int)(x));
-                    }
-
-                case glComponentType.UNSIGNED_INT:
-                    {
-                        return GetAttrib<UInt32>(accessor, view).Select(x => (int)(x));
-                    }
-            }
-            throw new NotImplementedException("GetIndices: unknown componenttype: " + accessor.componentType);
-        }
-
-        IEnumerable<int> _GetIndices(glTFBufferView view, int count, int byteOffset, glComponentType componentType)
-        {
-            switch (componentType)
-            {
-                case glComponentType.UNSIGNED_BYTE:
-                    {
-                        return GetAttrib<Byte>(count, byteOffset, view).Select(x => (int)(x));
-                    }
-
-                case glComponentType.UNSIGNED_SHORT:
-                    {
-                        return GetAttrib<UInt16>(count, byteOffset, view).Select(x => (int)(x));
-                    }
-
-                case glComponentType.UNSIGNED_INT:
-                    {
-                        return GetAttrib<UInt32>(count, byteOffset, view).Select(x => (int)(x));
-                    }
-            }
-            throw new NotImplementedException("GetIndices: unknown componenttype: " + componentType);
-        }
-
-        public int[] GetIndices(int accessorIndex)
-        {
-            int count;
-            var result = _GetIndices(accessors[accessorIndex], out count);
-            var indices = new int[count];
-
-            // flip triangles
-            var it = result.GetEnumerator();
-            {
-                for (int i = 0; i < count; i += 3)
-                {
-                    it.MoveNext(); indices[i + 2] = it.Current;
-                    it.MoveNext(); indices[i + 1] = it.Current;
-                    it.MoveNext(); indices[i] = it.Current;
-                }
-            }
-
-            return indices;
-        }
-
-        public T[] GetArrayFromAccessor<T>(int accessorIndex) where T : struct
-        {
-            var vertexAccessor = accessors[accessorIndex];
-
-            if (vertexAccessor.count <= 0) return new T[] { };
-
-            var result = (vertexAccessor.bufferView != -1)
-                ? GetAttrib<T>(vertexAccessor, bufferViews[vertexAccessor.bufferView])
-                : new T[vertexAccessor.count]
-                ;
-
-            var sparse = vertexAccessor.sparse;
-            if (sparse != null && sparse.count > 0)
-            {
-                // override sparse values
-                var indices = _GetIndices(bufferViews[sparse.indices.bufferView], sparse.count, sparse.indices.byteOffset, sparse.indices.componentType);
-                var values = GetAttrib<T>(sparse.count, sparse.values.byteOffset, bufferViews[sparse.values.bufferView]);
-
-                var it = indices.GetEnumerator();
-                for (int i = 0; i < sparse.count; ++i)
-                {
-                    it.MoveNext();
-                    result[it.Current] = values[i];
-                }
-            }
-            return result;
         }
         #endregion
 
@@ -194,32 +81,6 @@ namespace UniGLTF
         {
             var samplerIndex = textures[textureIndex].sampler;
             return GetSampler(samplerIndex);
-        }
-
-        public ArraySegment<Byte> GetImageBytes(IStorage storage, int imageIndex, out string textureName)
-        {
-            var image = images[imageIndex];
-            if (string.IsNullOrEmpty(image.uri))
-            {
-                //
-                // use buffer view (GLB)
-                //
-                //m_imageBytes = ToArray(byteSegment);
-                textureName = !string.IsNullOrEmpty(image.name) ? image.name : string.Format("{0:00}#GLB", imageIndex);
-                return GetViewBytes(image.bufferView);
-            }
-            else
-            {
-                if (image.uri.StartsWith("data:"))
-                {
-                    textureName = !string.IsNullOrEmpty(image.name) ? image.name : string.Format("{0:00}#Base64Embedded", imageIndex);
-                }
-                else
-                {
-                    textureName = !string.IsNullOrEmpty(image.name) ? image.name : Path.GetFileNameWithoutExtension(image.uri);
-                }
-                return storage.Get(image.uri);
-            }
         }
 
         [JsonSchema(MinItems = 1, ExplicitIgnorableItemLength = 0)]
@@ -321,94 +182,5 @@ namespace UniGLTF
                 && animations.SequenceEqual(other.animations)
                 ;
         }
-
-        bool UsedExtension(string key)
-        {
-            if (extensionsUsed.Contains(key))
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        static Utf8String s_extensions = Utf8String.From("extensions");
-
-        void Traverse(ListTreeNode<JsonValue> node, JsonFormatter f, Utf8String parentKey)
-        {
-            if (node.IsMap())
-            {
-                f.BeginMap();
-                foreach (var kv in node.ObjectItems())
-                {
-                    if (parentKey == s_extensions)
-                    {
-                        if (!UsedExtension(kv.Key.GetString()))
-                        {
-                            continue;
-                        }
-                    }
-                    f.Key(kv.Key.GetUtf8String());
-                    Traverse(kv.Value, f, kv.Key.GetUtf8String());
-                }
-                f.EndMap();
-            }
-            else if (node.IsArray())
-            {
-                f.BeginList();
-                foreach (var x in node.ArrayItems())
-                {
-                    Traverse(x, f, default(Utf8String));
-                }
-                f.EndList();
-            }
-            else
-            {
-                f.Value(node);
-            }
-        }
-
-        string RemoveUnusedExtensions(string json)
-        {
-            var f = new JsonFormatter();
-
-            Traverse(JsonParser.Parse(json), f, default(Utf8String));
-
-            return f.ToString();
-        }
-
-        public byte[] ToGlbBytes()
-        {
-            var f = new JsonFormatter();
-            GltfSerializer.Serialize(f, this);
-
-            var json = f.ToString().ParseAsJson().ToString("  ");
-
-            RemoveUnusedExtensions(json);
-
-            return Glb.ToBytes(json, buffers[0].GetBytes());
-        }
-
-        public (string, List<glTFBuffer>) ToGltf(string gltfPath)
-        {
-            var f = new JsonFormatter();
-
-            // fix buffer path
-            if (buffers.Count == 1)
-            {
-                var withoutExt = Path.GetFileNameWithoutExtension(gltfPath);
-                buffers[0].uri = $"{withoutExt}.bin";
-            }
-            else
-            {
-                throw new NotImplementedException();
-            }
-
-            GltfSerializer.Serialize(f, this);
-            var json = f.ToString().ParseAsJson().ToString("  ");
-            RemoveUnusedExtensions(json);
-            return (json, buffers);
-        }
     }
-
 }

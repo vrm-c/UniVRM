@@ -1,26 +1,13 @@
-﻿using System;
+using System;
 using System.IO;
-
 
 namespace UniGLTF
 {
-    public interface IStorage
-    {
-        ArraySegment<Byte> Get(string url);
-
-        /// <summary>
-        /// Get original filepath if exists
-        /// </summary>
-        /// <param name="url"></param>
-        /// <returns></returns>
-        string GetPath(string url);
-    }
-
     public class SimpleStorage : IStorage
     {
         ArraySegment<Byte> m_bytes;
 
-        public SimpleStorage():this(new ArraySegment<byte>())
+        public SimpleStorage() : this(new ArraySegment<byte>())
         {
         }
 

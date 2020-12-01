@@ -5,13 +5,6 @@ using System.Runtime.InteropServices;
 
 namespace UniGLTF
 {
-    public interface IBytesBuffer
-    {
-        string Uri { get; }
-        ArraySegment<Byte> GetBytes();
-        glTFBufferView Extend<T>(ArraySegment<T> array, glBufferTarget target) where T : struct;
-    }
-
     public static class IBytesBufferExtensions
     {
         public static glTFBufferView Extend<T>(this IBytesBuffer buffer, T[] array, glBufferTarget target) where T : struct
@@ -88,34 +81,6 @@ namespace UniGLTF
         }
     }
 
-    /// <summary>
-    /// for glb chunk buffer read
-    /// </summary>
-    public class ArraySegmentByteBuffer : IBytesBuffer
-    {
-        ArraySegment<Byte> m_bytes;
-
-        public ArraySegmentByteBuffer(ArraySegment<Byte> bytes)
-        {
-            m_bytes = bytes;
-        }
-
-        public string Uri
-        {
-            get;
-            private set;
-        }
-
-        public glTFBufferView Extend<T>(ArraySegment<T> array, glBufferTarget target) where T : struct
-        {
-            throw new NotImplementedException();
-        }
-
-        public ArraySegment<byte> GetBytes()
-        {
-            return m_bytes;
-        }
-    }
 
     /// <summary>
     /// for exporter

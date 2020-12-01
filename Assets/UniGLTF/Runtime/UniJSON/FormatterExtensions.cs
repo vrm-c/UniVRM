@@ -29,6 +29,7 @@ namespace UniJSON
             f.Value(new ArraySegment<Byte>(bytes));
         }
 
+#if UNITY_5_6_OR_NEWER
         public static void Value(this IFormatter f, UnityEngine.Vector2 v)
         {
             //CommaCheck();
@@ -58,6 +59,7 @@ namespace UniJSON
             f.Key("w"); f.Value(v.w);
             f.EndMap();
         }
+#endif
 
         static MethodInfo GetMethod<T>(Expression<Func<T>> expression)
         {
