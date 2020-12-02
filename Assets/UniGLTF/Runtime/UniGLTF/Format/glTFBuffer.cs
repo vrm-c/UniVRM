@@ -180,5 +180,15 @@ namespace UniGLTF
         public glTFExtension extensions;
 
         public glTFExtension extras;
+
+        public int GetStride()
+        {
+            return componentType.GetByteSize() * TypeCount;
+        }
+
+        public int CalcByteSize()
+        {
+            return GetStride() * count;
+        }
     }
 }

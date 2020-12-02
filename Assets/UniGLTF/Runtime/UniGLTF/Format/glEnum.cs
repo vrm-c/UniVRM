@@ -17,6 +17,23 @@ namespace UniGLTF
         FLOAT = 5126,
     }
 
+    public static class glComponentTypeExtensions
+    {
+        public static int GetByteSize(this glComponentType self)
+        {
+            switch (self)
+            {
+                case glComponentType.BYTE: return 1;
+                case glComponentType.UNSIGNED_BYTE: return 1;
+                case glComponentType.SHORT: return 2;
+                case glComponentType.UNSIGNED_SHORT: return 2;
+                case glComponentType.UNSIGNED_INT: return 4;
+                case glComponentType.FLOAT: return 4;
+                default: throw new System.NotImplementedException();
+            }
+        }
+    }
+
     public enum glBufferTarget : int
     {
         NONE = 0,
