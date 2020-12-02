@@ -38,18 +38,12 @@ namespace VRM
             base.ParseJson(json, storage);
 
             // parse VRM part
-            if (GLTF.extensions is glTFExtensionImport imported)
+            if (glTF_VRM_extensions.TryDeserilize(GLTF.extensions, out glTF_VRM_extensions vrm))
             {
-                foreach (var kv in imported.ObjectItems())
-                {
-                    if (kv.Key.GetString() == "VRM")
-                    {
-                        VRM = VrmDeserializer.Deserialize(kv.Value);
-                        break;
-                    }
-                }
+                VRM = vrm;
             }
 
+            // override material importer
             SetMaterialImporter(new VRMMaterialImporter(this, VRM.materialProperties));
         }
 

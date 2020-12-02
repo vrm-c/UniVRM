@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UniGLTF;
-
+using UniJSON;
 
 namespace VRM
 {
@@ -11,13 +11,9 @@ VRM extension is for 3d humanoid avatars (and models) in VR applications.
 ")]
     public class glTF_VRM_extensions
     {
-        public static string ExtensionName
-        {
-            get
-            {
-                return "VRM";
-            }
-        }
+        public const string ExtensionName = "VRM";
+
+        public static readonly Utf8String ExtensionNameUtf8 = Utf8String.From(ExtensionName);
 
         [JsonSchema(Description = @"Version of exporter that vrm created. " + VRMVersion.VRM_VERSION)]
         public string exporterVersion = "UniVRM-" + VRMVersion.VERSION;
@@ -31,5 +27,23 @@ VRM extension is for 3d humanoid avatars (and models) in VR applications.
         public glTF_VRM_BlendShapeMaster blendShapeMaster = new glTF_VRM_BlendShapeMaster();
         public glTF_VRM_SecondaryAnimation secondaryAnimation = new glTF_VRM_SecondaryAnimation();
         public List<glTF_VRM_Material> materialProperties = new List<glTF_VRM_Material>();
+
+        public static bool TryDeserilize(glTFExtension extension, out glTF_VRM_extensions vrm)
+        {            
+            if (extension is glTFExtensionImport import)
+            {
+                foreach (var kv in import.ObjectItems())
+                {
+                    if (kv.Key.GetUtf8String() == ExtensionNameUtf8)
+                    {
+                        vrm = VrmDeserializer.Deserialize(kv.Value);
+                        return true;
+                    }
+                }
+            }
+
+            vrm = default;
+            return false;
+        }
     }
 }
