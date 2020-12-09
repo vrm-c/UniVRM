@@ -1,0 +1,21 @@
+{
+    "name": "VRM.Tests",
+    "references": [
+        "VRM",
+        "UniGLTF",
+        "MeshUtility",
+        "MeshUtility.Editor"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": []
+}

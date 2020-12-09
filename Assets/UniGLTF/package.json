@@ -1,0 +1,16 @@
+{
+  "name": "com.vrmc.unigltf",
+  "version": "2.0.0",
+  "displayName": "UniGLTF",
+  "description": "GLTF importer and exporter",
+  "unity": "2018.4",
+  "keywords": [
+    "gltf"
+  ],
+  "author": {
+    "name": "VRM Consortium"
+  },
+  "dependencies": {
+    "com.vrmc.vrmshaders": "0.62.0"
+  }
+}

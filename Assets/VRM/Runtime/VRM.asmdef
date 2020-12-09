@@ -1,0 +1,19 @@
+{
+    "name": "VRM",
+    "references": [
+        "MToon",
+        "UniUnlit",
+        "UniHumanoid",
+        "ShaderProperty.Runtime",
+        "MeshUtility",
+        "UniGLTF"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": []
+}

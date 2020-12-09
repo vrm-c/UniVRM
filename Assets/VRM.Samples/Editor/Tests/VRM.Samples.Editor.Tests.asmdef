@@ -3,9 +3,10 @@
     "references": [
         "VRM",
         "VRM.Samples",
-        "UniVRM.Editor.Tests",
-        "UniJSON",
-        "MeshUtility"
+        "MeshUtility",
+        "UniGLTF",
+        "UniVRM.Editor",
+        "VRM.Tests"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"
