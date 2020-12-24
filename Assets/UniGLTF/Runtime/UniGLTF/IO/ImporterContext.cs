@@ -85,6 +85,26 @@ namespace UniGLTF
         }
         #endregion
 
+        #region Animation
+        IAnimationImporter m_animationImporter;
+        public void SetAnimationImporter(IAnimationImporter animationImporter)
+        {
+            m_animationImporter = animationImporter;
+        }
+        public IAnimationImporter AnimationImporter
+        {
+            get
+            {
+                if (m_animationImporter == null)
+                {
+                    m_animationImporter = new RootAnimationImporter();
+                }
+                return m_animationImporter;
+            }
+        }
+
+        #endregion
+
         IShaderStore m_shaderStore;
         public IShaderStore ShaderStore
         {
@@ -588,7 +608,7 @@ namespace UniGLTF
                 {
                     using (MeasureTime("AnimationImporter"))
                     {
-                        AnimationImporter.ImportAnimation(this);
+                        AnimationImporter.Import(this);
                     }
                 })
                 .ContinueWithCoroutine(Scheduler.MainThread, OnLoadModel)
