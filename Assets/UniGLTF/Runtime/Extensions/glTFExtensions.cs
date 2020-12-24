@@ -316,6 +316,35 @@ namespace UniGLTF
             return result;
         }
 
+        public static float[] GetFloatArrayFromAccessor(this glTF self, int accessorIndex)
+        {
+            var vertexAccessor = self.accessors[accessorIndex];
+
+            if (vertexAccessor.count <= 0) return new float[] { };
+
+            var bufferCount = vertexAccessor.count * vertexAccessor.TypeCount;
+            var result = (vertexAccessor.bufferView != -1)
+                    ? self.GetAttrib<float>(bufferCount, vertexAccessor.byteOffset, self.bufferViews[vertexAccessor.bufferView])
+                    : new float[bufferCount]
+                ;
+
+            var sparse = vertexAccessor.sparse;
+            if (sparse != null && sparse.count > 0)
+            {
+                // override sparse values
+                var indices = self._GetIndices(self.bufferViews[sparse.indices.bufferView], sparse.count, sparse.indices.byteOffset, sparse.indices.componentType);
+                var values = self.GetAttrib<float>(sparse.count * vertexAccessor.TypeCount, sparse.values.byteOffset, self.bufferViews[sparse.values.bufferView]);
+
+                var it = indices.GetEnumerator();
+                for (int i = 0; i < sparse.count; ++i)
+                {
+                    it.MoveNext();
+                    result[it.Current] = values[i];
+                }
+            }
+            return result;
+        }
+
         public static ArraySegment<Byte> GetImageBytes(this glTF self, IStorage storage, int imageIndex, out string textureName)
         {
             var image = self.images[imageIndex];
