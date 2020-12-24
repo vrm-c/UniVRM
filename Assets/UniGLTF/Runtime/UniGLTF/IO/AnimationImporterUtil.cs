@@ -185,7 +185,7 @@ namespace UniGLTF
             return string.Join("/", path);
         }
 
-        public static AnimationClip ImportAnimationClip(ImporterContext ctx, glTFAnimation animation, glTFNode root = null)
+        public static AnimationClip ConvertAnimationClip(glTF gltf, glTFAnimation animation, glTFNode root = null)
         {
             var clip = new AnimationClip();
             clip.ClearCurves();
@@ -195,14 +195,14 @@ namespace UniGLTF
 
             foreach (var channel in animation.channels)
             {
-                var relativePath = RelativePathFrom(ctx.GLTF.nodes, root, ctx.GLTF.nodes[channel.target.node]);
+                var relativePath = RelativePathFrom(gltf.nodes, root, gltf.nodes[channel.target.node]);
                 switch (channel.target.path)
                 {
                     case glTFAnimationTarget.PATH_TRANSLATION:
                         {
                             var sampler = animation.samplers[channel.sampler];
-                            var input = ctx.GLTF.GetArrayFromAccessor<float>(sampler.input);
-                            var output = ctx.GLTF.GetArrayFromAccessorAsFloat(sampler.output);
+                            var input = gltf.GetArrayFromAccessor<float>(sampler.input);
+                            var output = gltf.GetFloatArrayFromAccessor(sampler.output);
 
                             AnimationImporterUtil.SetAnimationCurve(
                                 clip,
@@ -224,8 +224,8 @@ namespace UniGLTF
                     case glTFAnimationTarget.PATH_ROTATION:
                         {
                             var sampler = animation.samplers[channel.sampler];
-                            var input = ctx.GLTF.GetArrayFromAccessor<float>(sampler.input);
-                            var output = ctx.GLTF.GetArrayFromAccessorAsFloat(sampler.output);
+                            var input = gltf.GetArrayFromAccessor<float>(sampler.input);
+                            var output = gltf.GetFloatArrayFromAccessor(sampler.output);
 
                             AnimationImporterUtil.SetAnimationCurve(
                                 clip,
@@ -250,8 +250,8 @@ namespace UniGLTF
                     case glTFAnimationTarget.PATH_SCALE:
                         {
                             var sampler = animation.samplers[channel.sampler];
-                            var input = ctx.GLTF.GetArrayFromAccessor<float>(sampler.input);
-                            var output = ctx.GLTF.GetArrayFromAccessorAsFloat(sampler.output);
+                            var input = gltf.GetArrayFromAccessor<float>(sampler.input);
+                            var output = gltf.GetFloatArrayFromAccessor(sampler.output);
 
                             AnimationImporterUtil.SetAnimationCurve(
                                 clip,
@@ -267,8 +267,8 @@ namespace UniGLTF
 
                     case glTFAnimationTarget.PATH_WEIGHT:
                         {
-                            var node = ctx.GLTF.nodes[channel.target.node];
-                            var mesh = ctx.GLTF.meshes[node.mesh];
+                            var node = gltf.nodes[channel.target.node];
+                            var mesh = gltf.meshes[node.mesh];
                             var primitive = mesh.primitives.FirstOrDefault();
                             var targets = primitive.targets;
 
@@ -283,8 +283,8 @@ namespace UniGLTF
                                 .ToArray();
 
                             var sampler = animation.samplers[channel.sampler];
-                            var input = ctx.GLTF.GetArrayFromAccessor<float>(sampler.input);
-                            var output = ctx.GLTF.GetArrayFromAccessor<float>(sampler.output);
+                            var input = gltf.GetArrayFromAccessor<float>(sampler.input);
+                            var output = gltf.GetArrayFromAccessor<float>(sampler.output);
                             AnimationImporterUtil.SetAnimationCurve(
                                 clip,
                                 relativePath,
@@ -312,51 +312,5 @@ namespace UniGLTF
             }
             return clip;
         }
-
-        private static List<AnimationClip> ImportAnimationClips(ImporterContext ctx)
-        {
-            var animationClips = new List<AnimationClip>();
-            for (var i = 0; i < ctx.GLTF.animations.Count; ++i)
-            {
-                var clip = new AnimationClip();
-                clip.ClearCurves();
-                clip.legacy = true;
-                clip.name = ctx.GLTF.animations[i].name;
-                if (string.IsNullOrEmpty(clip.name))
-                {
-                    clip.name = $"legacy_{i}";
-                }
-                clip.wrapMode = WrapMode.Loop;
-
-                var animation = ctx.GLTF.animations[i];
-                if (string.IsNullOrEmpty(animation.name))
-                {
-                    animation.name = $"animation:{i}";
-                }
-
-                animationClips.Add(ImportAnimationClip(ctx, animation));
-            }
-
-            return animationClips;
-        }
-
-        public static void ImportAnimation(ImporterContext ctx)
-        {
-            // animation
-            if (ctx.GLTF.animations != null && ctx.GLTF.animations.Any())
-            {
-                var animation = ctx.Root.AddComponent<Animation>();
-                ctx.AnimationClips = ImportAnimationClips(ctx);
-                foreach (var clip in ctx.AnimationClips)
-                {
-                    animation.AddClip(clip, clip.name);
-                }
-                if (ctx.AnimationClips.Count > 0)
-                {
-                    animation.clip = ctx.AnimationClips.First();
-                }
-            }
-        }
-
     }
 }

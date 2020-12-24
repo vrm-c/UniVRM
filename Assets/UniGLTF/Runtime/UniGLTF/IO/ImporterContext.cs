@@ -86,7 +86,7 @@ namespace UniGLTF
         #endregion
 
         #region Animation
-        IAnimationImporter m_animationImporter;
+        protected IAnimationImporter m_animationImporter;
         public void SetAnimationImporter(IAnimationImporter animationImporter)
         {
             m_animationImporter = animationImporter;

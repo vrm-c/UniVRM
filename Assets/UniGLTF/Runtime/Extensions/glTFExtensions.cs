@@ -316,7 +316,7 @@ namespace UniGLTF
             return result;
         }
 
-        public static float[] GetArrayFromAccessorAsFloat(this glTF self, int accessorIndex)
+        public static float[] GetFloatArrayFromAccessor(this glTF self, int accessorIndex)
         {
             var vertexAccessor = self.accessors[accessorIndex];
 
