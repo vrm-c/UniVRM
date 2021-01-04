@@ -11,7 +11,7 @@ namespace VRM
         /// <summary>
         /// UNIGLTF
         /// </summary>
-        static string UniGltfVersionPath = "Assets/UniGLTF/UniGLTF/Scripts/UniGLTFVersion.cs";
+        static string UniGltfVersionPath = "Assets/UniGLTF/Runtime/UniGLTF/UniGLTFVersion.cs";
 
         const string UniGltfVersionTemplate = @"
 namespace UniGLTF
@@ -29,7 +29,7 @@ namespace UniGLTF
         /// <summary>
         /// VRM
         /// </summary>
-        const string VrmVersionPath = "Assets/VRM/UniVRM/Scripts/Format/VRMVersion.cs";
+        const string VrmVersionPath = "Assets/VRM/Runtime/Format/VRMVersion.cs";
         const string VrmVersionTemplate = @"
 namespace VRM
 {{
