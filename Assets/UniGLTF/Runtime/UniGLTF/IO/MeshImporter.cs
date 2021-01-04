@@ -81,7 +81,7 @@ namespace UniGLTF
             }
 
             /// <summary>
-            /// 指定した長さを0で埋める
+            /// Fill list with 0s with the specified length
             /// </summary>
             /// <param name="list"></param>
             /// <param name="fillLength"></param>
@@ -90,7 +90,7 @@ namespace UniGLTF
             {
                 if (list.Count > fillLength)
                 {
-                    throw new Exception("ありえない");
+                    throw new Exception("Impossible");
                 }
                 while (list.Count < fillLength)
                 {
