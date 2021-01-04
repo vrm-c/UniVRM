@@ -234,7 +234,7 @@ namespace VRM
 
         void TakeScreenShot()
         {
-            var dst = SaveDialog(m_target, "png");
+            var dst = SaveDialog(m_target, "png", "jpg");
             if (string.IsNullOrEmpty(dst))
             {
                 return;
@@ -251,7 +251,19 @@ namespace VRM
                 Camera.main.Render();
                 tex.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
                 tex.Apply();
-                File.WriteAllBytes(dst, tex.EncodeToJPG());
+
+                var ext = Path.GetExtension(dst).ToLower();
+                switch (ext)
+                {
+                    case ".png":
+                        File.WriteAllBytes(dst, tex.EncodeToPNG());
+                        break;
+
+                    case ".jpg":
+                        File.WriteAllBytes(dst, tex.EncodeToJPG());
+                        break;
+                }
+
                 var assetPath = MeshUtility.UnityPath.FromFullpath(dst);
                 EditorApplication.delayCall += () =>
                 {
@@ -268,7 +280,7 @@ namespace VRM
             }
         }
 
-        static string SaveDialog(VRMMetaObject meta, string ext)
+        static string SaveDialog(VRMMetaObject meta, params string[] ext)
         {
             var directory = Application.dataPath;
             var assetPath = AssetDatabase.GetAssetPath(meta);
@@ -279,8 +291,8 @@ namespace VRM
             return EditorUtility.SaveFilePanel(
                     "Save thumbnail",
                     directory,
-                    $"thumbnail.{ext}",
-                    ext);
+                    $"thumbnail.{ext[0]}",
+                    string.Join(",", ext));
         }
 
         static (Rect, Rect) FixedRight(Rect r, int width)
