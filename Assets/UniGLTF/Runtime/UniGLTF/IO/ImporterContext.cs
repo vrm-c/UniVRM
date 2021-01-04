@@ -169,13 +169,17 @@ namespace UniGLTF
 
             try
             {
-                var index = generatorVersion.IndexOf('.');
-                var generatorMajor = int.Parse(generatorVersion.Substring(8, index - 8));
-                var generatorMinor = int.Parse(generatorVersion.Substring(index + 1));
+                var splitted = generatorVersion.Substring(8).Split('.');
+                var generatorMajor = int.Parse(splitted[0]);
+                var generatorMinor = int.Parse(splitted[1]);
 
                 if (generatorMajor < major)
                 {
                     return true;
+                }
+                else if (generatorMajor > major)
+                {
+                    return false;
                 }
                 else
                 {
