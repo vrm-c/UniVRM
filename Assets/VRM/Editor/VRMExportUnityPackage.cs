@@ -204,6 +204,7 @@ namespace VRM.DevOnly.PackageExporter
                             new GlobList("Assets/VRM"),
                             new GlobList("Assets/VRMShaders"),
                             new GlobList("Assets/MeshUtility"),
+                            new GlobList("Assets/UniGLTF"),
                         }
                     },
                     new PackageInfo("UniVRM-samples")
