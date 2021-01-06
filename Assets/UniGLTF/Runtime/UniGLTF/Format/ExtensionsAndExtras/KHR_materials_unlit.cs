@@ -11,7 +11,7 @@ namespace UniGLTF
 
         public static readonly Utf8String ExtensionNameUtf8 = Utf8String.From(ExtensionName);
 
-        static readonly byte[] Raw = new byte[] { (byte)'{', (byte)'}' };
+        public static readonly byte[] Raw = new byte[] { (byte)'{', (byte)'}' };
 
         public static glTFMaterial CreateDefault()
         {

@@ -1,0 +1,122 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using MeshUtility;
+using UnityEngine;
+
+
+namespace UniVRM10
+{
+    [CreateAssetMenu(menuName = "VRM10/MetaObject")]
+    public class VRM10MetaObject : ScriptableObject
+    {
+        [SerializeField]
+        public string ExporterVersion;
+
+        #region Info
+        [SerializeField]
+        public string Name;
+
+        [SerializeField]
+        public string Version;
+
+        [SerializeField]
+        public string CopyrightInformation;
+
+        [SerializeField]
+        public string[] Authors;
+
+        [SerializeField]
+        public string ContactInformation;
+
+        [SerializeField]
+        public string Reference;
+
+        [SerializeField]
+        public Texture2D Thumbnail;
+        #endregion
+
+        #region AvatarPermission
+        [SerializeField, Tooltip("A person who can perform with this avatar")]
+        public VrmLib.AvatarUsageType AllowedUser;
+
+        [SerializeField, Tooltip("Violent acts using this avatar")]
+        public bool ViolentUsage;
+
+        [SerializeField, Tooltip("Sexuality acts using this avatar")]
+        public bool SexualUsage;
+
+        [SerializeField, Tooltip("For commercial use")]
+        public VrmLib.CommercialUsageType CommercialUsage;
+
+        [SerializeField]
+        public bool GameUsage;
+
+        [SerializeField]
+        public bool PoliticalOrReligiousUsage;
+
+        [SerializeField, Tooltip("Other License Url")]
+        public string OtherPermissionUrl;
+        #endregion
+
+        #region Distribution License
+        [SerializeField]
+        public VrmLib.CreditNotationType CreditNotation;
+
+        [SerializeField]
+        public bool Redistribution;
+
+        [SerializeField]
+        public VrmLib.ModificationLicenseType ModificationLicense;
+
+        [SerializeField]
+        public string OtherLicenseUrl;
+        #endregion
+
+        public IEnumerable<Validation> Validate(GameObject _)
+        {
+            if (string.IsNullOrEmpty(Name))
+            {
+                yield return Validation.Error("Require Name. ");
+            }
+            // if (string.IsNullOrEmpty(Version))
+            // {
+            //     yield return Validation.Error("Require Version. ");
+            // }
+            if (Authors == null || Authors.Length == 0 || Authors.All(x => string.IsNullOrEmpty(x)))
+            {
+                yield return Validation.Error("Require at leaset one Author.");
+            }
+        }
+
+        public void CopyTo(VRM10MetaObject dst)
+        {
+            dst.ExporterVersion = ExporterVersion;
+            dst.Name = Name;
+            dst.Version = Version;
+            dst.CopyrightInformation = CopyrightInformation;
+            if (Authors != null)
+            {
+                dst.Authors = Authors.Select(x => x).ToArray();
+            }
+            else
+            {
+                dst.Authors = new string[] { };
+            }
+            dst.ContactInformation = ContactInformation;
+            dst.Reference = Reference;
+            dst.Thumbnail = Thumbnail;
+            dst.AllowedUser = AllowedUser;
+            dst.ViolentUsage = ViolentUsage;
+            dst.SexualUsage = SexualUsage;
+            dst.CommercialUsage = CommercialUsage;
+            dst.GameUsage = GameUsage;
+            dst.PoliticalOrReligiousUsage = PoliticalOrReligiousUsage;
+            dst.OtherPermissionUrl = OtherPermissionUrl;
+            dst.CreditNotation = CreditNotation;
+            dst.Redistribution = Redistribution;
+            dst.ModificationLicense = ModificationLicense;
+            dst.OtherLicenseUrl = OtherLicenseUrl;
+        }
+    }
+}

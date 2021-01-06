@@ -2,6 +2,9 @@ using System;
 
 namespace VRM
 {
+    /// <summary>
+    /// 0系では運用されなかった。基本的に凍結。今後も変更しない
+    /// </summary>
     public class VRMSpecVersion
     {
         public const int Major = 0;
