@@ -80,11 +80,21 @@ namespace UniGLTF
                 m_name = name;
             }
 
-            void FillZero<T>(IList<T> list)
+            /// <summary>
+            /// Fill list with 0s with the specified length
+            /// </summary>
+            /// <param name="list"></param>
+            /// <param name="fillLength"></param>
+            /// <typeparam name="T"></typeparam>
+            static void FillZero<T>(IList<T> list, int fillLength)
             {
-                if (list.Count != m_positions.Count)
+                if (list.Count > fillLength)
                 {
-                    throw new NotImplementedException();
+                    throw new Exception("Impossible");
+                }
+                while (list.Count < fillLength)
+                {
+                    list.Add(default);
                 }
             }
 
@@ -105,64 +115,96 @@ namespace UniGLTF
                     var indexBuffer = prim.indices;
 
                     // position は必ずある
-                    var positionCount = m_positions.Count;
-                    m_positions.AddRange(ctx.GLTF.GetArrayFromAccessor<Vector3>(prim.attributes.POSITION).Select(x => x.ReverseZ()));
-                    positionCount = m_positions.Count - positionCount;
+                    var positions = ctx.GLTF.GetArrayFromAccessor<Vector3>(prim.attributes.POSITION);
+                    var fillLength = m_positions.Count;
+                    m_positions.AddRange(positions.Select(x => x.ReverseZ()));
 
                     // normal
                     if (prim.attributes.NORMAL != -1)
                     {
-                        FillZero(m_normals);
-                        m_normals.AddRange(ctx.GLTF.GetArrayFromAccessor<Vector3>(prim.attributes.NORMAL).Select(x => x.ReverseZ()));
+                        var normals = ctx.GLTF.GetArrayFromAccessor<Vector3>(prim.attributes.NORMAL);
+                        if (normals.Length != positions.Length)
+                        {
+                            throw new Exception("different length");
+                        }
+                        FillZero(m_normals, fillLength);
+                        m_normals.AddRange(normals.Select(x => x.ReverseZ()));
                     }
 
 #if false
                     if (prim.attributes.TANGENT != -1)
                     {
-                        FillZero(tangetns);
-                        tangents.AddRange(ctx.GLTF.GetArrayFromAccessor<Vector4>(prim.attributes.TANGENT).Select(x => x.ReverseZ()));
+                        var tangents = ctx.GLTF.GetArrayFromAccessor<Vector4>(prim.attributes.TANGENT);
+                        if (tangents.Length != positions.Length)
+                        {
+                            throw new Exception("different length");
+                        }
+                        FillZero(tangetns, fillLength);
+                        tangents.AddRange(.Select(x => x.ReverseZ()));
                     }
 #endif
 
                     // uv
                     if (prim.attributes.TEXCOORD_0 != -1)
                     {
-                        FillZero(m_uv);
+                        var uvs = ctx.GLTF.GetArrayFromAccessor<Vector2>(prim.attributes.TEXCOORD_0);
+                        if (uvs.Length != positions.Length)
+                        {
+                            throw new Exception("different length");
+                        }
                         if (ctx.IsGeneratedUniGLTFAndOlder(1, 16))
                         {
 #pragma warning disable 0612
                             // backward compatibility
-                            m_uv.AddRange(ctx.GLTF.GetArrayFromAccessor<Vector2>(prim.attributes.TEXCOORD_0).Select(x => x.ReverseY()));
+                            FillZero(m_uv, fillLength);
+                            m_uv.AddRange(uvs.Select(x => x.ReverseY()));
 #pragma warning restore 0612
                         }
                         else
                         {
-                            m_uv.AddRange(ctx.GLTF.GetArrayFromAccessor<Vector2>(prim.attributes.TEXCOORD_0).Select(x => x.ReverseUV()));
+                            FillZero(m_uv, fillLength);
+                            m_uv.AddRange(uvs.Select(x => x.ReverseUV()));
                         }
                     }
 
                     // uv2
                     if (prim.attributes.TEXCOORD_1 != -1)
                     {
-                        FillZero(m_uv2);
-                        m_uv2.AddRange(ctx.GLTF.GetArrayFromAccessor<Vector2>(prim.attributes.TEXCOORD_1).Select(x => x.ReverseUV()));
+                        var uvs = ctx.GLTF.GetArrayFromAccessor<Vector2>(prim.attributes.TEXCOORD_1);
+                        if (uvs.Length != positions.Length)
+                        {
+                            throw new Exception("different length");
+                        }
+                        FillZero(m_uv2, fillLength);
+                        m_uv2.AddRange(uvs.Select(x => x.ReverseUV()));
                     }
 
                     // color
                     if (prim.attributes.COLOR_0 != -1)
                     {
-                        FillZero(m_colors);
-                        m_colors.AddRange(ctx.GLTF.GetArrayFromAccessor<Color>(prim.attributes.COLOR_0));
+                        var colors = ctx.GLTF.GetArrayFromAccessor<Color>(prim.attributes.COLOR_0);
+                        if (colors.Length != positions.Length)
+                        {
+                            throw new Exception("different length");
+                        }
+                        FillZero(m_colors, fillLength);
+                        m_colors.AddRange(colors);
                     }
 
                     // skin
                     if (prim.attributes.JOINTS_0 != -1 && prim.attributes.WEIGHTS_0 != -1)
                     {
-                        FillZero(m_boneWeights);
-
                         var joints0 = ctx.GLTF.GetArrayFromAccessor<UShort4>(prim.attributes.JOINTS_0); // uint4
                         var weights0 = ctx.GLTF.GetArrayFromAccessor<Float4>(prim.attributes.WEIGHTS_0).Select(x => x.One()).ToArray();
-
+                        if (joints0.Length != positions.Length)
+                        {
+                            throw new Exception("different length");
+                        }
+                        if (weights0.Length != positions.Length)
+                        {
+                            throw new Exception("different length");
+                        }
+                        FillZero(m_boneWeights, fillLength);
                         for (int j = 0; j < joints0.Length; ++j)
                         {
                             var bw = new BoneWeight();
@@ -192,21 +234,33 @@ namespace UniGLTF
                             var blendShape = new BlendShape(i.ToString());
                             if (primTarget.POSITION != -1)
                             {
-                                FillZero(blendShape.Positions);
-                                blendShape.Positions.AddRange(
-                                    ctx.GLTF.GetArrayFromAccessor<Vector3>(primTarget.POSITION).Select(x => x.ReverseZ()).ToArray());
+                                var array = ctx.GLTF.GetArrayFromAccessor<Vector3>(primTarget.POSITION);
+                                if (array.Length != positions.Length)
+                                {
+                                    throw new Exception("different length");
+                                }
+                                FillZero(blendShape.Positions, fillLength);
+                                blendShape.Positions.AddRange(array.Select(x => x.ReverseZ()).ToArray());
                             }
                             if (primTarget.NORMAL != -1)
                             {
-                                FillZero(blendShape.Normals);
-                                blendShape.Normals.AddRange(
-                                    ctx.GLTF.GetArrayFromAccessor<Vector3>(primTarget.NORMAL).Select(x => x.ReverseZ()).ToArray());
+                                var array = ctx.GLTF.GetArrayFromAccessor<Vector3>(primTarget.NORMAL);
+                                if (array.Length != positions.Length)
+                                {
+                                    throw new Exception("different length");
+                                }
+                                FillZero(blendShape.Normals, fillLength);
+                                blendShape.Normals.AddRange(array.Select(x => x.ReverseZ()).ToArray());
                             }
                             if (primTarget.TANGENT != -1)
                             {
-                                FillZero(blendShape.Tangents);
-                                blendShape.Tangents.AddRange(
-                                    ctx.GLTF.GetArrayFromAccessor<Vector3>(primTarget.TANGENT).Select(x => x.ReverseZ()).ToArray());
+                                var array = ctx.GLTF.GetArrayFromAccessor<Vector3>(primTarget.TANGENT);
+                                if (array.Length != positions.Length)
+                                {
+                                    throw new Exception("different length");
+                                }
+                                FillZero(blendShape.Tangents, fillLength);
+                                blendShape.Tangents.AddRange(array.Select(x => x.ReverseZ()).ToArray());
                             }
                             m_blendShapes.Add(blendShape);
                         }
