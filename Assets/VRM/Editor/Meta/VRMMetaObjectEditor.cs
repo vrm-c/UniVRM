@@ -234,7 +234,7 @@ namespace VRM
 
         void TakeScreenShot()
         {
-            var dst = SaveDialog(m_target, "png", "jpg");
+            var dst = SaveDialog(m_target, "png");
             if (string.IsNullOrEmpty(dst))
             {
                 return;
@@ -280,7 +280,7 @@ namespace VRM
             }
         }
 
-        static string SaveDialog(VRMMetaObject meta, params string[] ext)
+        static string SaveDialog(VRMMetaObject meta, string ext)
         {
             var directory = Application.dataPath;
             var assetPath = AssetDatabase.GetAssetPath(meta);
@@ -291,8 +291,8 @@ namespace VRM
             return EditorUtility.SaveFilePanel(
                     "Save thumbnail",
                     directory,
-                    $"thumbnail.{ext[0]}",
-                    string.Join(",", ext));
+                    $"thumbnail.{ext}",
+                    ext);
         }
 
         static (Rect, Rect) FixedRight(Rect r, int width)
