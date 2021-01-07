@@ -48,7 +48,7 @@ Another way of importing MeshUtility is manually adding necessary information in
 ```json
 {
   "dependencies": {
-    "com.vrmc.meshutility": "https://github.com/vrm-c/UniVRM.git?path=/Assets/MeshUtility",
+    "com.vrmc.unigltf": "https://github.com/vrm-c/UniVRM.git?path=/Assets/UniGLTF",
   }
 }
 ```
