@@ -42,7 +42,11 @@ public static $0 $2(ListTreeNode<JsonValue> parsed)
 
         public override string CreateSerializationCondition(string argName, JsonSchemaAttribute t)
         {
-            return $"{argName}!=null&&{argName}.Count>0";
+            // return $"{argName}!=null&&{argName}.Count>0";
+
+            // this check is only /extensions/VRM/materialProperties/*
+            // should export empty dictionary.
+            return $"{argName}!=null";
         }
 
         public override void GenerateSerializer(StreamWriter writer, string callName)

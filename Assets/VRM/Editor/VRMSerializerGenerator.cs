@@ -16,7 +16,7 @@ namespace VRM
             get
             {
                 return Path.Combine(UnityEngine.Application.dataPath,
-                "VRM/UniVRM/Scripts/Format/VRMSerializer.g.cs");
+                "VRM/Runtime/Format/VRMSerializer.g.cs");
             }
         }
 
