@@ -73,7 +73,7 @@ namespace UniGLTF
 
         public static bool TryGet(glTFTextureInfo info, out glTF_KHR_texture_transform t)
         {
-            if (info != null && info.extras is glTFExtensionImport imported)
+            if (info != null && info.extensions is glTFExtensionImport imported)
             {
                 foreach (var kv in imported.ObjectItems())
                 {
