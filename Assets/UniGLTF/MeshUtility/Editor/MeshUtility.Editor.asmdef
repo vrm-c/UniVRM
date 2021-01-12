@@ -2,6 +2,7 @@
     "name": "MeshUtility.Editor",
     "references": [
         "MeshUtility",
+        "VrmLib",
         "ShaderProperty.Runtime"
     ],
     "optionalUnityReferences": [],

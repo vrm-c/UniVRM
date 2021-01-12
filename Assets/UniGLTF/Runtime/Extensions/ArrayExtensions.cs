@@ -99,13 +99,6 @@ namespace UniGLTF
             return size;
         }
 
-        public static Byte[] ToArray(this ArraySegment<byte> src)
-        {
-            var dst = new byte[src.Count];
-            Array.Copy(src.Array, src.Offset, dst, 0, src.Count);
-            return dst;
-        }
-
         public static T[] SelectInplace<T>(this T[] src, Func<T, T> pred)
         {
             for (int i = 0; i < src.Length; ++i)
@@ -116,7 +109,7 @@ namespace UniGLTF
         }
 
         public static void Copy<TFrom, TTo>(ArraySegment<TFrom> src, ArraySegment<TTo> dst)
-            where TFrom: struct
+            where TFrom : struct
             where TTo : struct
         {
             var bytes = new byte[src.Count * Marshal.SizeOf(typeof(TFrom))];

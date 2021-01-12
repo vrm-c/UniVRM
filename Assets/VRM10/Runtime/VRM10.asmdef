@@ -1,0 +1,19 @@
+{
+    "name": "VRM10",
+    "references": [
+        "VrmLib",
+        "UniUnlit",
+        "MToon",
+        "MeshUtility",
+        "MeshUtility.Editor",
+        "UniGLTF"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": []
+}

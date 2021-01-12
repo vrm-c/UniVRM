@@ -41,10 +41,13 @@ namespace VRM
             if (glTF_VRM_extensions.TryDeserilize(GLTF.extensions, out glTF_VRM_extensions vrm))
             {
                 VRM = vrm;
+                // override material importer
+                SetMaterialImporter(new VRMMaterialImporter(this, VRM.materialProperties));
             }
-
-            // override material importer
-            SetMaterialImporter(new VRMMaterialImporter(this, VRM.materialProperties));
+            else
+            {
+                throw new KeyNotFoundException("not vrm0");
+            }
         }
 
         #region OnLoad
