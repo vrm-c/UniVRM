@@ -935,27 +935,27 @@ public static void Serialize_vrm_materialProperties_ITEM(JsonFormatter f, glTF_V
         f.Value(value.renderQueue);
     }
 
-    if(value.floatProperties!=null&&value.floatProperties.Count>0){
+    if(value.floatProperties!=null){
         f.Key("floatProperties");                
         Serialize_vrm_materialProperties__floatProperties(f, value.floatProperties);
     }
 
-    if(value.vectorProperties!=null&&value.vectorProperties.Count>0){
+    if(value.vectorProperties!=null){
         f.Key("vectorProperties");                
         Serialize_vrm_materialProperties__vectorProperties(f, value.vectorProperties);
     }
 
-    if(value.textureProperties!=null&&value.textureProperties.Count>0){
+    if(value.textureProperties!=null){
         f.Key("textureProperties");                
         Serialize_vrm_materialProperties__textureProperties(f, value.textureProperties);
     }
 
-    if(value.keywordMap!=null&&value.keywordMap.Count>0){
+    if(value.keywordMap!=null){
         f.Key("keywordMap");                
         Serialize_vrm_materialProperties__keywordMap(f, value.keywordMap);
     }
 
-    if(value.tagMap!=null&&value.tagMap.Count>0){
+    if(value.tagMap!=null){
         f.Key("tagMap");                
         Serialize_vrm_materialProperties__tagMap(f, value.tagMap);
     }
