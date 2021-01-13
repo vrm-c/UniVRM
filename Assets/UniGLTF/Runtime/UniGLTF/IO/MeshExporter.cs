@@ -251,14 +251,6 @@ namespace UniGLTF
             };
         }
 
-        public struct MeshWithRenderer
-        {
-            public Mesh Mesh;
-            [Obsolete("Use Renderer")]
-            public Renderer Rendererer { get { return Renderer; } set { Renderer = value; } }
-            public Renderer Renderer;
-        }
-
         public static IEnumerable<(Mesh, glTFMesh, Dictionary<int, int>)> ExportMeshes(glTF gltf, int bufferIndex,
             List<MeshWithRenderer> unityMeshes, List<Material> unityMaterials,
             MeshExportSettings settings)
