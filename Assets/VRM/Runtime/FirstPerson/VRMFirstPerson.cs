@@ -240,7 +240,7 @@ namespace VRM
         List<Mesh> m_headlessMeshes = new List<Mesh>();
 
         /// <summary>
-        /// 対象の renderer の可視性を設定する
+        /// Set target renderer visibility
         /// 
         /// https://github.com/vrm-c/UniVRM/issues/633#issuecomment-758454045
         /// 
@@ -250,39 +250,47 @@ namespace VRM
         /// <param name="thirdPerson">other camera visibility</param>
         public delegate void SetVisiblityFunc(Renderer renderer, bool firstPerson, bool thirdPerson);
 
+        /// <summary>
+        /// Default implementation.
+        /// Threre are 4 cases.
+        /// </summary>
+        /// <param name="renderer"></param>
+        /// <param name="firstPerson"></param>
+        /// <param name="thirdPerson"></param>
         public static void SetVisiblity(Renderer renderer, bool firstPerson, bool thirdPerson)
         {
             SetupLayers();
 
             if (firstPerson && thirdPerson)
             {
-                // both
-                // 何もしない
-                //x.Renderer.gameObject.layer = 0;
+                // both             
+                // do nothing
             }
             else if (firstPerson)
             {
+                // only first person
                 renderer.gameObject.layer = FIRSTPERSON_ONLY_LAYER;
             }
             else if (thirdPerson)
             {
+                // only third person
                 renderer.gameObject.layer = THIRDPERSON_ONLY_LAYER;
             }
             else
             {
                 // invisible
-                GameObject.Destroy(renderer);
+                renderer.enabled = false;
             }
         }
 
         public void Setup()
         {
-            // デフォルトの挙動。 v0.63.x までと同じ
+            // same as v0.63.2
             Setup(true, SetVisiblity);
         }
 
         /// <summary>
-        /// この GameObject の子孫の可視性を設定する。 from v0.64.0
+        /// from v0.64.0
         /// </summary>
         /// <param name="isSelf"></param>
         public void Setup(bool isSelf, SetVisiblityFunc setVisiblity)
