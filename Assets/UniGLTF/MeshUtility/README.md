@@ -39,7 +39,7 @@ In `Package Manager`, click `Add package from git URL` and paste `https://github
 
 <img src="Documentation/images/installation_2.jpg" width="200">
 
-Now check your project window. In `Packages`, MeshUtility should be in the `UniGLTF` folder.
+Now check your project window. In `Packages`, MeshUtility should be included in the `UniGLTF` folder.
 
 ### 2. Add package name and its url in manifest.json
 
