@@ -20,15 +20,14 @@ namespace UniGLTF
             if (Renderer is SkinnedMeshRenderer skin && skin.bones != null && skin.bones.Length > 0)
             {
                 // has joints
-                UniqueBones = skin.bones;
-                // UniqueBones = skin.bones.Distinct().ToArray();
-
+                var uniqueBones = skin.bones.Distinct().ToArray();
+                UniqueBones = uniqueBones;
                 JointIndexMap = new int[skin.bones.Length];
 
                 var bones = skin.bones;
                 for (int i = 0; i < bones.Length; ++i)
                 {
-                    JointIndexMap[i] = Array.IndexOf(bones, bones[i]);
+                    JointIndexMap[i] = Array.IndexOf(uniqueBones, bones[i]);
                 }
             }
             else
@@ -53,6 +52,20 @@ namespace UniGLTF
             else
             {
                 return index;
+            }
+        }
+
+        public IEnumerable<Matrix4x4> GetBindPoses()
+        {
+            var used = new HashSet<int>();
+            for (int i = 0; i < JointIndexMap.Length; ++i)
+            {
+                var index = JointIndexMap[i];
+                if (!used.Contains(index))
+                {
+                    used.Add(index);
+                    yield return Mesh.bindposes[i];
+                }
             }
         }
 

@@ -283,7 +283,7 @@ namespace UniGLTF
 
                 foreach (var x in unitySkins)
                 {
-                    var matrices = x.Mesh.bindposes.Select(y => y.ReverseZ()).ToArray();
+                    var matrices = x.GetBindPoses().Select(y => y.ReverseZ()).ToArray();
                     var accessor = glTF.ExtendBufferAndGetAccessorIndex(bufferIndex, matrices, glBufferTarget.NONE);
 
                     var renderer = x.Renderer as SkinnedMeshRenderer;
