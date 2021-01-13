@@ -116,6 +116,7 @@ namespace UniGLTF
                 else if (x.alphaMode == "MASK")
                 {
                     UniUnlit.Utils.SetRenderMode(material, UniUnlit.UniUnlitRenderMode.Cutout);
+                    material.SetFloat("_Cutoff", x.alphaCutoff);
                 }
                 else
                 {
