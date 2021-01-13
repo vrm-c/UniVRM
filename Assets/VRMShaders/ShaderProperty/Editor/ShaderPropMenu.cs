@@ -11,7 +11,7 @@ namespace UniGLTF
     public static class ShaderPropMenu
     {
 #if VRM_DEVELOP
-        [MenuItem("VRM/ShaderProperty/PreExport ShaderProps")]
+        [MenuItem("VRMShaders/PreExport ShaderProps")]
 #endif
         public static void PreExport()
         {
