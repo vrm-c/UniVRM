@@ -263,6 +263,7 @@ namespace UniGLTF
             else if (renderMode == UniUnlitRenderMode.Cutout)
             {
                 material.alphaMode = glTFBlendMode.MASK.ToString();
+                material.alphaCutoff = m.GetFloat("_Cutoff");
             }
             else
             {
