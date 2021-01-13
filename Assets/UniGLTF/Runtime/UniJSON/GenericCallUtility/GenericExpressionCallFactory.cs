@@ -15,7 +15,7 @@ namespace UniJSON
 #if UNITY_EDITOR && VRM_DEVELOP
         const int NET35MAX = 4;
         const int ARGS = 6;
-        const string GENERATE_PATH = "/VRM/UniJSON/Scripts/GenericCallUtility/GenericExpressionCallFactory.g.cs";
+        const string GENERATE_PATH = "UniGLTF/UniJSON/Scripts/GenericCallUtility/GenericExpressionCallFactory.g.cs";
 
         static System.Collections.Generic.IEnumerable<string> GetArgs(string prefix, int n)
         {
@@ -25,7 +25,7 @@ namespace UniJSON
             }
         }
 
-        [MenuItem("VRM/UniJSON/Generate GenericExpressionCallFactory")]
+        [MenuItem("UniGLTF/UniJSON/Generate GenericExpressionCallFactory")]
         static void Generate()
         {
             var sb = new StringBuilder();

@@ -19,7 +19,7 @@ namespace UniVRM10
     /// </summary>
     public static class Menu
     {
-        [MenuItem("VRM/UniVRM-" + UniVRM10.VRMVersion.VERSION + "/Generate from JsonSchema")]
+        [MenuItem(UniVRM10.VRMVersion.MENU + "/Generate from JsonSchema")]
         public static void Main()
         {
             var root = new DirectoryInfo(Path.GetFullPath(Path.Combine(Application.dataPath, "../../")));

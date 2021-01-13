@@ -16,7 +16,7 @@ namespace VRM
     [DisallowMultipleComponent]
     public static class MeshIntegratorEditor
     {
-        const string MENU_KEY = "Mesh Utility/MeshIntegrator";
+        const string MENU_KEY = VRMVersion.MENU + "/MeshIntegrator";
         const string ASSET_SUFFIX = ".mesh.asset";
 
         [MenuItem(MENU_KEY, true)]

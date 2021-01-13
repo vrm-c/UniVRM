@@ -102,8 +102,6 @@ namespace UniVRM10
             public string Pre;
         }
 
-        public const string VRM_VERSION = "UniVRM-" + VERSION;
-        public const string MENU = "VRM/" + VRM_VERSION;
-
+        public const string MENU = "VRM1/";
     }
 }

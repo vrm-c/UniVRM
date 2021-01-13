@@ -100,6 +100,6 @@ namespace VRM
         }
 
         public const string VRM_VERSION = "UniVRM-" + VERSION;
-        public const string MENU = "VRM/" + VRM_VERSION;
+        public const string MENU = "VRM0";
     }
 }
