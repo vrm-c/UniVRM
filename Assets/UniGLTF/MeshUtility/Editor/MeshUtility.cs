@@ -8,7 +8,7 @@ namespace MeshUtility
 {
     public class MeshUtility
     {
-        public const string MENU_PARENT = "Mesh Utility/";
+        public const string MENU_PARENT = "UniGLTF/Mesh Utility/";
         public const int MENU_PRIORITY = 11;
 
         private const string ASSET_SUFFIX = ".mesh.asset";
@@ -55,7 +55,7 @@ namespace MeshUtility
             }
         }
 
-        [MenuItem("Mesh Utility/MeshUtility Docs", priority = MeshUtility.MENU_PRIORITY)]
+        [MenuItem(MENU_PARENT + "MeshSeparator Docs", priority = MeshUtility.MENU_PRIORITY)]
         public static void LinkToMeshSeparatorDocs()
         {
             Application.OpenURL("https://github.com/vrm-c/UniVRM/blob/master/Assets/UniGLTF/MeshUtility/README.md");
@@ -282,5 +282,70 @@ namespace MeshUtility
             Debug.LogFormat("CreateAsset: {0}", assetPath);
             AssetDatabase.CreateAsset(newMesh, assetPath);
         }
+
+#if UNITY_EDITOR
+        [MenuItem(MENU_PARENT + "Integrate Static Mesh", validate = true)]
+        public static bool CanIntegrateSelected()
+        {
+            return Selection.activeObject != null && Selection.activeObject is GameObject;
+        }
+
+        [MenuItem(MENU_PARENT + "Integrate Static Mesh", priority = 3)]
+        public static void IntegrateSelected()
+        {
+            var go = Selection.activeObject as GameObject;
+            var meshWithMaterials = StaticMeshIntegrator.Integrate(go.transform);
+
+            // save as asset
+            var assetPath = "";
+#if UNITY_2018_2_OR_NEWER
+            var prefab = PrefabUtility.GetCorrespondingObjectFromSource(go);
+#else
+            var prefab = PrefabUtility.GetPrefabParent(go);
+#endif
+            if (prefab != null)
+            {
+                var prefabPath = AssetDatabase.GetAssetPath(prefab);
+                assetPath = string.Format("{0}/{1}_{2}{3}",
+                     Path.GetDirectoryName(prefabPath),
+                     Path.GetFileNameWithoutExtension(prefabPath),
+                    go.name,
+                     ASSET_SUFFIX
+                     );
+            }
+            else
+            {
+                var path = EditorUtility.SaveFilePanel(
+                        "Save mesh",
+                        "Assets",
+                        go.name + ".asset",
+                        "asset");
+                if (string.IsNullOrEmpty(path))
+                {
+                    return;
+                }
+                assetPath = UnityPath.FromFullpath(path).Value;
+            }
+
+            assetPath = AssetDatabase.GenerateUniqueAssetPath(assetPath);
+            Debug.LogFormat("CreateAsset: {0}", assetPath);
+            AssetDatabase.CreateAsset(meshWithMaterials.Mesh, assetPath);
+
+            // add component
+            var meshObject = new GameObject(go.name + ".integrated");
+            if (go.transform.parent != null)
+            {
+                meshObject.transform.SetParent(go.transform.parent, false);
+            }
+            meshObject.transform.localPosition = go.transform.localPosition;
+            meshObject.transform.localRotation = go.transform.localRotation;
+            meshObject.transform.localScale = go.transform.localScale;
+
+            var filter = meshObject.AddComponent<MeshFilter>();
+            filter.sharedMesh = meshWithMaterials.Mesh;
+            var renderer = meshObject.AddComponent<MeshRenderer>();
+            renderer.sharedMaterials = meshWithMaterials.Materials;
+        }
+#endif
     }
 }
