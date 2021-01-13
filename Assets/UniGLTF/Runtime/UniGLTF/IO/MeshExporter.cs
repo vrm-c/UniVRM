@@ -52,7 +52,13 @@ namespace UniGLTF
 
             var boneweights = mesh.boneWeights;
             var weightAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, boneweights.Select(y => new Vector4(y.weight0, y.weight1, y.weight2, y.weight3)).ToArray(), glBufferTarget.ARRAY_BUFFER);
-            var jointsAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, boneweights.Select(y => new UShort4((ushort)y.boneIndex0, (ushort)y.boneIndex1, (ushort)y.boneIndex2, (ushort)y.boneIndex3)).ToArray(), glBufferTarget.ARRAY_BUFFER);
+            var jointsAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, boneweights.Select(y =>
+                new UShort4(
+                    (ushort)unityMesh.GetJointIndex(y.boneIndex0),
+                    (ushort)unityMesh.GetJointIndex(y.boneIndex1),
+                    (ushort)unityMesh.GetJointIndex(y.boneIndex2),
+                    (ushort)unityMesh.GetJointIndex(y.boneIndex3))
+                ).ToArray(), glBufferTarget.ARRAY_BUFFER);
 
             var attributes = new glTFAttributes
             {
