@@ -6,7 +6,7 @@
 
 * [MIT License](./LICENSE.txt)
 
-## [VRM](https://vrm.dev/)
+## [VRM](https://vrm.dev/en)
 
 "VRM" is a file format for using 3d humanoid avatars (and models) in VR applications.  
 VRM is based on glTF2.0. If you comply with the MIT license, you are free to use it.  

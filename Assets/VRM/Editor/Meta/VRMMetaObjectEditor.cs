@@ -148,6 +148,14 @@ namespace VRM
             [LangMsg(Languages.en, "Redistribution / Modifications License")]
             REDISTRIBUTION_MODIFICATIONS,
 
+            [LangMsg(Languages.ja, "Camera.main で画像を Render します")]
+            [LangMsg(Languages.en, "Create a thumbnail image by Camera.main")]
+            SCREENSHOT,
+
+            [LangMsg(Languages.ja, "スクリーンショット")]
+            [LangMsg(Languages.en, "Screenshot")]
+            SCREENSHOT_BUTTON,
+
             // [LangMsg(Languages.ja, "")]
             // [LangMsg(Languages.en, "")]
         }
@@ -183,8 +191,8 @@ namespace VRM
 
                     if (Camera.main)
                     {
-                        EditorGUILayout.HelpBox("Camera.main で画像を Render します。", MessageType.Info);
-                        if (GUILayout.Button("スクリーンショット"))
+                        EditorGUILayout.HelpBox(MessageKeys.SCREENSHOT.Msg(), MessageType.Info);
+                        if (GUILayout.Button(MessageKeys.SCREENSHOT_BUTTON.Msg()))
                         {
                             TakeScreenShot();
                         }

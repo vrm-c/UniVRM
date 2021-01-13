@@ -35,11 +35,11 @@ You can add MeshUtility package via `UPM`. First click `Window` from menu on top
 
 <img src="Documentation/images/installation_1.jpg" width="200">
 
-In `Package Manager`, click `Add package from git URL` and paste `https://github.com/vrm-c/UniVRM.git?path=/Assets/MeshUtility`.
+In `Package Manager`, click `Add package from git URL` and paste `https://github.com/vrm-c/UniVRM.git?path=/Assets/VRMShaders` and `https://github.com/vrm-c/UniVRM.git?path=/Assets/UniGLTF`
 
 <img src="Documentation/images/installation_2.jpg" width="200">
 
-Now check your project window. You shall see MeshUtility in the `Packages` folder.
+Now check your project window. In `Packages`, MeshUtility should be in the `UniGLTF` folder.
 
 ### 2. Add package name and its url in manifest.json
 
@@ -48,11 +48,8 @@ Another way of importing MeshUtility is manually adding necessary information in
 ```json
 {
   "dependencies": {
+    "com.vrmc.vrmshaders": "https://github.com/vrm-c/UniVRM.git?path=/Assets/VRMShaders",
     "com.vrmc.unigltf": "https://github.com/vrm-c/UniVRM.git?path=/Assets/UniGLTF",
   }
 }
 ```
-
-Go back to the Unity project. The system will automatically load the package.
-
-<img src="Documentation/images/installation_3.jpg" width="200">
