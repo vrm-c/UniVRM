@@ -55,10 +55,10 @@ namespace MeshUtility
             }
         }
 
-        [MenuItem("Mesh Utility/MeshSeparator Docs", priority = MeshUtility.MENU_PRIORITY)]
+        [MenuItem("Mesh Utility/MeshUtility Docs", priority = MeshUtility.MENU_PRIORITY)]
         public static void LinkToMeshSeparatorDocs()
         {
-            Application.OpenURL("https://github.com/vrm-c/UniVRM/tree/master/Assets/MeshUtility");
+            Application.OpenURL("https://github.com/vrm-c/UniVRM/blob/master/Assets/UniGLTF/MeshUtility/README.md");
         }
 
         private static void SeparationProcessing(GameObject go)
