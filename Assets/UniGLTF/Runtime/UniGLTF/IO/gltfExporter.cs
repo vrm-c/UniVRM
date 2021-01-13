@@ -252,23 +252,7 @@ namespace UniGLTF
                 #endregion
 
                 #region Meshes
-                var unityMeshes = Nodes
-                    .Select(x => new MeshWithRenderer(x))
-                    .Where(x =>
-                    {
-                        if (x.Mesh == null)
-                        {
-                            return false;
-                        }
-                        if (x.Renderer.sharedMaterials == null
-                        || x.Renderer.sharedMaterials.Length == 0)
-                        {
-                            return false;
-                        }
-
-                        return true;
-                    })
-                    .ToList();
+                var unityMeshes = MeshWithRenderer.FromNodes(Nodes).ToList();
 
                 MeshBlendShapeIndexMap = new Dictionary<Mesh, Dictionary<int, int>>();
                 foreach (var (mesh, gltfMesh, blendShapeIndexMap) in MeshExporter.ExportMeshes(
