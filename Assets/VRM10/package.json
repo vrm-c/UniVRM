@@ -1,0 +1,11 @@
+{
+    "name": "com.vrmc.univrm1",
+    "displayName": "VRM-1.0",
+    "version": "0.64.0",
+    "unity": "2019.4",
+    "description": "vrm unity utility",
+    "dependencies": {
+        "com.vrmc.vrmshaders": "0.64.0",
+        "com.vrmc.unigltf": "2.0.0"
+    }
+}
