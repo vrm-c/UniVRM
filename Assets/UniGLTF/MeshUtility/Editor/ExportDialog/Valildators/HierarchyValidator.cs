@@ -17,13 +17,17 @@ namespace MeshUtility.Validators
             [LangMsg(Languages.en, "ExportRoot must be topmost parent")]
             NO_PARENT,
 
-            [LangMsg(Languages.ja, "ヒエラルキーに active なメッシュが含まれていない")]
+            [LangMsg(Languages.ja, "ヒエラルキーに active なメッシュが含まれていません")]
             [LangMsg(Languages.en, "No active mesh")]
             NO_ACTIVE_MESH,
 
-            [LangMsg(Languages.ja, "ヒエラルキーの中に同じ名前のGameObjectが含まれている。 エクスポートした場合に自動でリネームする")]
+            [LangMsg(Languages.ja, "ヒエラルキーの中に同じ名前のGameObjectが含まれている。 エクスポートした場合に自動でリネームします")]
             [LangMsg(Languages.en, "There are bones with the same name in the hierarchy. They will be automatically renamed after export")]
             DUPLICATE_BONE_NAME_EXISTS,
+
+            [LangMsg(Languages.ja, "SkinnedMeshRenderer.bones に重複する内容がある。エクスポートした場合に、bones の重複を取り除き、boneweights, bindposes を調整します")]
+            [LangMsg(Languages.en, "There are same bone in bones the SkinnedMeshRenderer. They will be automatically uniqued")]
+            NO_UNIQUE_JOINTS,
         }
 
         /// <summary>
@@ -45,6 +49,19 @@ namespace MeshUtility.Validators
             return (duplicates.Any());
         }
 
+        static bool HasNoUniqueJoints(Renderer r)
+        {
+            if (r is SkinnedMeshRenderer skin)
+            {
+                if (skin.bones != null && skin.bones.Length != skin.bones.Distinct().Count())
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public static IEnumerable<Validation> Validate(GameObject ExportRoot)
         {
             if (ExportRoot == null)
@@ -64,6 +81,11 @@ namespace MeshUtility.Validators
             {
                 yield return Validation.Critical(ExportValidatorMessages.NO_ACTIVE_MESH.Msg());
                 yield break;
+            }
+
+            if (renderers.Any(x => HasNoUniqueJoints(x)))
+            {
+                yield return Validation.Warning(ExportValidatorMessages.NO_UNIQUE_JOINTS.Msg());
             }
 
             if (DuplicateNodeNameExists(ExportRoot))
