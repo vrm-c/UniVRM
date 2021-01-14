@@ -1,56 +1,25 @@
-# UniGLTF
+# UniGLTF-2.0
 
-[glTF](https://github.com/KhronosGroup/glTF) 2.0 importer and exporter for Unity 5.6 or later
+[glTF](https://github.com/KhronosGroup/glTF) 2.0 importer and exporter.
 
-Improved material importer(UniGLTF-1.21) ! 
+Unity-2018.4 or later is supported.
 
 Below is imported from [DamagedHelmet](https://github.com/KhronosGroup/glTF-Sample-Models/tree/master/2.0/DamagedHelmet). Using unity standard shader.
 
 ![standard shader](doc/pbr_to_standard.png)
-
-
 ![duck](doc/duck.png)
 ![animation](doc/animation.gif)
+![SciFiHelmet](doc/SciFiHelmet.png)
 
 # License
 
 * [MIT license](LICENSE)
 
-# See also
-
-* https://github.com/ousttrue/UniGLTF/wiki
-
-# Sample Models
-
-* https://github.com/KhronosGroup/glTF-Sample-Models
-
-## Huge model required Unity2017.3 or later
-
-* [Mesh.IndexFormat(from 2017.3)](https://docs.unity3d.com/ScriptReference/Mesh-indexFormat.html) is required
-
-example. SciFiHelmet(70074vertices)
-
-![SciFiHelmet](doc/SciFiHelmet.png)
-
 # Download
 
-* https://github.com/ousttrue/UniGLTF/releases
+* https://github.com/vrm-c/UniVRM/releases
 
-# Usage
+UniGLTF is part of UniVRM.
+From UniVRM-0.63.2, UniGLTF is separated from UniVRM.
 
-## Import as prefab
-
-* drop gltf folder or glb file into Assets folder
-
-![duck_prefab](doc/duck_prefab.png)
-
-or
-
-* editor mode
-* menu [UniGLTF] - [Import] 
-* open gltf file(gltf, glb, zip) from out of Asset Folder
-
-## API
-
-* https://github.com/ousttrue/UniGLTF/wiki/Rutime-API
-
+* https://vrm.dev/docs/univrm/gltf/unigltf/
