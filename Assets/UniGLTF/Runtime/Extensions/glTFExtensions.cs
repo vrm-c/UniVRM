@@ -316,17 +316,26 @@ namespace UniGLTF
             return result;
         }
 
-        public static float[] GetFloatArrayFromAccessor(this glTF self, int accessorIndex)
+        public static float[] FlatternFloatArrayFromAccessor(this glTF self, int accessorIndex)
         {
             var vertexAccessor = self.accessors[accessorIndex];
 
             if (vertexAccessor.count <= 0) return new float[] { };
 
             var bufferCount = vertexAccessor.count * vertexAccessor.TypeCount;
-            var result = (vertexAccessor.bufferView != -1)
-                    ? self.GetAttrib<float>(bufferCount, vertexAccessor.byteOffset, self.bufferViews[vertexAccessor.bufferView])
-                    : new float[bufferCount]
-                ;
+
+            float[] result = null;
+            if(vertexAccessor.bufferView != -1){
+                var attrib = new float[vertexAccessor.count * vertexAccessor.TypeCount];
+                var view = self.bufferViews[vertexAccessor.bufferView];
+                var segment = self.buffers[view.buffer].GetBytes();
+                var bytes = new ArraySegment<Byte>(segment.Array, segment.Offset + view.byteOffset + vertexAccessor.byteOffset, vertexAccessor.count * view.byteStride);
+                bytes.MarshalCopyTo(attrib);
+                result = attrib;
+            }
+            else{
+                result =  new float[bufferCount];
+            }
 
             var sparse = vertexAccessor.sparse;
             if (sparse != null && sparse.count > 0)

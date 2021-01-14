@@ -202,7 +202,7 @@ namespace UniGLTF
                         {
                             var sampler = animation.samplers[channel.sampler];
                             var input = gltf.GetArrayFromAccessor<float>(sampler.input);
-                            var output = gltf.GetFloatArrayFromAccessor(sampler.output);
+                            var output = gltf.FlatternFloatArrayFromAccessor(sampler.output);
 
                             AnimationImporterUtil.SetAnimationCurve(
                                 clip,
@@ -225,7 +225,7 @@ namespace UniGLTF
                         {
                             var sampler = animation.samplers[channel.sampler];
                             var input = gltf.GetArrayFromAccessor<float>(sampler.input);
-                            var output = gltf.GetFloatArrayFromAccessor(sampler.output);
+                            var output = gltf.FlatternFloatArrayFromAccessor(sampler.output);
 
                             AnimationImporterUtil.SetAnimationCurve(
                                 clip,
@@ -251,7 +251,7 @@ namespace UniGLTF
                         {
                             var sampler = animation.samplers[channel.sampler];
                             var input = gltf.GetArrayFromAccessor<float>(sampler.input);
-                            var output = gltf.GetFloatArrayFromAccessor(sampler.output);
+                            var output = gltf.FlatternFloatArrayFromAccessor(sampler.output);
 
                             AnimationImporterUtil.SetAnimationCurve(
                                 clip,

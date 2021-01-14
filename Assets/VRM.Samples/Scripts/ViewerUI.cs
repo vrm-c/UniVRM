@@ -264,7 +264,7 @@ namespace VRM.Samples
         void OnOpenClicked()
         {
 #if UNITY_STANDALONE_WIN
-            var path = FileDialogForWindows.FileDialog("open VRM", "vrm", "glb", "bvh");
+            var path = FileDialogForWindows.FileDialog("open VRM", "vrm", "glb", "bvh", "gltf", "zip");
 #elif UNITY_EDITOR
             var path = UnityEditor.EditorUtility.OpenFilePanel("Open VRM", "", "vrm");
 #else
@@ -281,6 +281,7 @@ namespace VRM.Samples
                 case ".gltf":
                 case ".glb":
                 case ".vrm":
+                case ".zip":
                     LoadModel(path);
                     break;
 
@@ -320,6 +321,19 @@ namespace VRM.Samples
                         var context = new UniGLTF.ImporterContext();
                         var file = File.ReadAllBytes(path);
                         context.ParseGlb(file);
+                        context.Load();
+                        context.ShowMeshes();
+                        context.EnableUpdateWhenOffscreen();
+                        context.ShowMeshes();
+                        SetModel(context.Root);
+                        break;
+                    }
+
+                case ".gltf":
+                case ".zip":
+                    {
+                        var context = new UniGLTF.ImporterContext();
+                        context.Parse(path);
                         context.Load();
                         context.ShowMeshes();
                         context.EnableUpdateWhenOffscreen();
