@@ -44,7 +44,6 @@ namespace UniGLTF
                 return index;
             }
 
-            // 重複した index をひとつ目に変更する
             if (JointIndexMap != null)
             {
                 return JointIndexMap[index];
