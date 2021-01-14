@@ -91,10 +91,36 @@ namespace UniGLTF
             }
 
             var gltfMesh = new glTFMesh(mesh.name);
+            var indices = new List<uint>();
             for (int j = 0; j < mesh.subMeshCount; ++j)
             {
-                var indices = TriangleUtil.FlipTriangle(mesh.GetIndices(j)).Select(y => (uint)y).ToArray();
-                var indicesAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, indices, glBufferTarget.ELEMENT_ARRAY_BUFFER);
+                indices.Clear();
+
+                var triangles = mesh.GetIndices(j);
+                if (triangles.Length == 0)
+                {
+                    // https://github.com/vrm-c/UniVRM/issues/664                    
+                    continue;
+                }
+
+                for (int i = 0; i < triangles.Length; i += 3)
+                {
+                    var i0 = triangles[i];
+                    var i1 = triangles[i + 1];
+                    var i2 = triangles[i + 2];
+
+                    // flip triangle
+                    indices.Add((uint)i2);
+                    indices.Add((uint)i1);
+                    indices.Add((uint)i0);
+                }
+
+                var indicesAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, indices.ToArray(), glBufferTarget.ELEMENT_ARRAY_BUFFER);
+                if (indicesAccessorIndex < 0)
+                {
+                    // https://github.com/vrm-c/UniVRM/issues/664                    
+                    throw new Exception();
+                }
 
                 if (j >= materials.Length)
                 {
