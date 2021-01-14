@@ -49,7 +49,7 @@ namespace UniVRM10
 
 #if UNITY_2019
             var triangles = src.IndexBuffer.GetAsIntArray();
-            mesh.triangles = triangles
+            mesh.triangles = triangles;
             var flags = MeshUpdateFlags.DontRecalculateBounds | MeshUpdateFlags.DontResetBoneBounds;
             for (int i = 0; i < src.Submeshes.Count; ++i)
             {
