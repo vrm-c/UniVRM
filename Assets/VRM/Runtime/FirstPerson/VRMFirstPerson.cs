@@ -128,13 +128,13 @@ namespace VRM
         /// <summary>
         /// ヘッドレスモデルを作成した場合に返す
         /// </summary>
-        Mesh CreateHeadlessModel(Renderer _renderer, Transform EraseRoot)
+        Mesh CreateHeadlessModel(Renderer _renderer, Transform EraseRoot, SetVisiblityFunc setVisiblity)
         {
             {
                 var renderer = _renderer as SkinnedMeshRenderer;
                 if (renderer != null)
                 {
-                    return CreateHeadlessModelForSkinnedMeshRenderer(renderer, EraseRoot);
+                    return CreateHeadlessModelForSkinnedMeshRenderer(renderer, EraseRoot, setVisiblity);
                 }
             }
 
@@ -143,7 +143,7 @@ namespace VRM
                 var renderer = _renderer as MeshRenderer;
                 if (renderer != null)
                 {
-                    CreateHeadlessModelForMeshRenderer(renderer, EraseRoot);
+                    CreateHeadlessModelForMeshRenderer(renderer, EraseRoot, setVisiblity);
                     return null;
                 }
             }
@@ -164,13 +164,12 @@ namespace VRM
             }
         }
 
-        private static void CreateHeadlessModelForMeshRenderer(MeshRenderer renderer, Transform eraseRoot)
+        private static void CreateHeadlessModelForMeshRenderer(MeshRenderer renderer, Transform eraseRoot, SetVisiblityFunc setVisiblity)
         {
             if (renderer.transform.Ancestors().Any(x => x == eraseRoot))
             {
                 // 祖先に削除ボーンが居る
-                SetupLayers();
-                renderer.gameObject.layer = THIRDPERSON_ONLY_LAYER;
+                setVisiblity(renderer, false, true);
             }
             else
             {
@@ -187,9 +186,8 @@ namespace VRM
         /// * 全部削除対象の場合
         ///
         /// </summary>
-        private static Mesh CreateHeadlessModelForSkinnedMeshRenderer(SkinnedMeshRenderer renderer, Transform eraseRoot)
+        private static Mesh CreateHeadlessModelForSkinnedMeshRenderer(SkinnedMeshRenderer renderer, Transform eraseRoot, SetVisiblityFunc setVisiblity)
         {
-            SetupLayers();
             var bones = renderer.bones;
 
             var eraseBones = bones.Select((x, i) =>
@@ -213,7 +211,7 @@ namespace VRM
             }
 
             // 元のメッシュを三人称に変更(自分からは見えない)
-            renderer.gameObject.layer = THIRDPERSON_ONLY_LAYER;
+            setVisiblity(renderer, false, true);
 
             // 削除対象のボーンに対するウェイトを保持する三角形を除外して、一人称用のモデルを複製する
             var headlessMesh = MeshUtility.BoneMeshEraser.CreateErasedMesh(renderer.sharedMesh, eraseBones);
@@ -242,38 +240,113 @@ namespace VRM
         List<Mesh> m_headlessMeshes = new List<Mesh>();
 
         /// <summary>
-        /// 配下のモデルのレイヤー設定など
+        /// Set target renderer visibility
+        /// 
+        /// https://github.com/vrm-c/UniVRM/issues/633#issuecomment-758454045
+        /// 
         /// </summary>
-        public void Setup()
+        /// <param name="renderer">Target renderer. Player avatar or other</param>
+        /// <param name="firstPerson">visibility in HMD camera</param>
+        /// <param name="thirdPerson">other camera visibility</param>
+        public delegate void SetVisiblityFunc(Renderer renderer, bool firstPerson, bool thirdPerson);
+
+        /// <summary>
+        /// Default implementation.
+        /// Threre are 4 cases.
+        /// </summary>
+        /// <param name="renderer"></param>
+        /// <param name="firstPerson"></param>
+        /// <param name="thirdPerson"></param>
+        public static void SetVisiblity(Renderer renderer, bool firstPerson, bool thirdPerson)
         {
             SetupLayers();
+
+            if (firstPerson && thirdPerson)
+            {
+                // both             
+                // do nothing
+            }
+            else if (firstPerson)
+            {
+                // only first person
+                renderer.gameObject.layer = FIRSTPERSON_ONLY_LAYER;
+            }
+            else if (thirdPerson)
+            {
+                // only third person
+                renderer.gameObject.layer = THIRDPERSON_ONLY_LAYER;
+            }
+            else
+            {
+                // invisible
+                renderer.enabled = false;
+            }
+        }
+
+        public void Setup()
+        {
+            // same as v0.63.2
+            Setup(true, SetVisiblity);
+        }
+
+        /// <summary>
+        /// from v0.64.0
+        /// </summary>
+        /// <param name="isSelf"></param>
+        public void Setup(bool isSelf, SetVisiblityFunc setVisiblity)
+        {
             if (m_done) return;
             m_done = true;
-            foreach (var x in Renderers)
+
+            if (isSelf)
             {
-                switch (x.FirstPersonFlag)
+                // self avatar
+                foreach (var x in Renderers)
                 {
-                    case FirstPersonFlag.Auto:
-                        {
-                            var headlessMesh = CreateHeadlessModel(x.Renderer, FirstPersonBone);
-                            if (headlessMesh != null)
+                    switch (x.FirstPersonFlag)
+                    {
+                        case FirstPersonFlag.Auto:
                             {
-                                m_headlessMeshes.Add(headlessMesh);
+                                var headlessMesh = CreateHeadlessModel(x.Renderer, FirstPersonBone, setVisiblity);
+                                if (headlessMesh != null)
+                                {
+                                    m_headlessMeshes.Add(headlessMesh);
+                                }
                             }
-                        }
-                        break;
+                            break;
 
-                    case FirstPersonFlag.FirstPersonOnly:
-                        x.Renderer.gameObject.layer = FIRSTPERSON_ONLY_LAYER;
-                        break;
+                        case FirstPersonFlag.FirstPersonOnly:
+                            setVisiblity(x.Renderer, true, false);
+                            break;
 
-                    case FirstPersonFlag.ThirdPersonOnly:
-                        x.Renderer.gameObject.layer = THIRDPERSON_ONLY_LAYER;
-                        break;
+                        case FirstPersonFlag.ThirdPersonOnly:
+                            setVisiblity(x.Renderer, false, true);
+                            break;
 
-                    case FirstPersonFlag.Both:
-                        //x.Renderer.gameObject.layer = 0;
-                        break;
+                        case FirstPersonFlag.Both:
+                            setVisiblity(x.Renderer, true, true);
+                            break;
+                    }
+                }
+            }
+            else
+            {
+                // other avatar
+                foreach (var x in Renderers)
+                {
+                    switch (x.FirstPersonFlag)
+                    {
+                        case FirstPersonFlag.FirstPersonOnly:
+                            setVisiblity(x.Renderer, false, false);
+                            break;
+
+                        case FirstPersonFlag.Auto:
+                        // => Same as Both
+                        case FirstPersonFlag.Both:
+                        case FirstPersonFlag.ThirdPersonOnly:
+                            setVisiblity(x.Renderer, true, true);
+                            break;
+                    }
                 }
             }
         }
