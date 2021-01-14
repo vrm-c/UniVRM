@@ -10,7 +10,7 @@ namespace UniVRM10
 {
     public class VRMSpringBoneWindow : EditorWindow
     {
-        [MenuItem("VRM/UniVRM-" + UniVRM10.VRMVersion.VERSION + "/VRMSpringBoneWindow")]
+        [MenuItem(VRMVersion.MENU + "/VRMSpringBoneWindow")]
         public static void ShowEditorWindow()
         {
             var wnd = GetWindow<VRMSpringBoneWindow>();

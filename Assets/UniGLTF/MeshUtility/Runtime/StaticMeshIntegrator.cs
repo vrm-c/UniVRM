@@ -7,7 +7,7 @@ using UnityEditor;
 #endif
 
 
-namespace UniGLTF
+namespace MeshUtility
 {
     public static class StaticMeshIntegrator
     {
@@ -118,69 +118,5 @@ namespace UniGLTF
             };
         }
 
-#if UNITY_EDITOR
-        [MenuItem("Mesh Utility/Integrate Static Mesh", validate = true)]
-        public static bool CanIntegrateSelected()
-        {
-            return Selection.activeObject != null && Selection.activeObject is GameObject;
-        }
-
-        [MenuItem("Mesh Utility/Integrate Static Mesh", priority = 3)]
-        public static void IntegrateSelected()
-        {
-            var go = Selection.activeObject as GameObject;
-            var meshWithMaterials = Integrate(go.transform);
-
-            // save as asset
-            var assetPath = "";
-#if UNITY_2018_2_OR_NEWER
-            var prefab = PrefabUtility.GetCorrespondingObjectFromSource(go);
-#else
-            var prefab = PrefabUtility.GetPrefabParent(go);
-#endif
-            if (prefab != null)
-            {
-                var prefabPath = AssetDatabase.GetAssetPath(prefab);
-                assetPath = string.Format("{0}/{1}_{2}{3}",
-                     Path.GetDirectoryName(prefabPath),
-                     Path.GetFileNameWithoutExtension(prefabPath),
-                    go.name,
-                     ASSET_SUFFIX
-                     );
-            }
-            else
-            {
-                var path = EditorUtility.SaveFilePanel(
-                        "Save mesh",
-                        "Assets",
-                        go.name+".asset",
-                        "asset");
-                if (string.IsNullOrEmpty(path))
-                {
-                    return;
-                }
-                assetPath = UnityPath.FromFullpath(path).Value;
-            }
-
-            assetPath = AssetDatabase.GenerateUniqueAssetPath(assetPath);
-            Debug.LogFormat("CreateAsset: {0}", assetPath);
-            AssetDatabase.CreateAsset(meshWithMaterials.Mesh, assetPath);
-
-            // add component
-            var meshObject = new GameObject(go.name + ".integrated");
-            if (go.transform.parent != null)
-            {
-                meshObject.transform.SetParent(go.transform.parent, false);
-            }
-            meshObject.transform.localPosition = go.transform.localPosition;
-            meshObject.transform.localRotation = go.transform.localRotation;
-            meshObject.transform.localScale = go.transform.localScale;
-
-            var filter = meshObject.AddComponent<MeshFilter>();
-            filter.sharedMesh = meshWithMaterials.Mesh;
-            var renderer = meshObject.AddComponent<MeshRenderer>();
-            renderer.sharedMaterials = meshWithMaterials.Materials;
-        }
-#endif
     }
 }

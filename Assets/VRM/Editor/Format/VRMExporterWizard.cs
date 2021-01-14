@@ -10,7 +10,7 @@ namespace VRM
 {
     public class VRMExporterWizard : EditorWindow
     {
-        const string CONVERT_HUMANOID_KEY = VRMVersion.MENU + "/Export humanoid";
+        const string CONVERT_HUMANOID_KEY = VRMVersion.MENU + "/Export " + VRMVersion.VRM_VERSION;
 
         [MenuItem(CONVERT_HUMANOID_KEY, false, 1)]
         private static void ExportFromMenu()
