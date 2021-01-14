@@ -61,9 +61,8 @@ namespace UniGLTF
             for (int i = 0; i < JointIndexMap.Length; ++i)
             {
                 var index = JointIndexMap[i];
-                if (!used.Contains(index))
+                if (used.Add(index))
                 {
-                    used.Add(index);
                     yield return Mesh.bindposes[i];
                 }
             }
