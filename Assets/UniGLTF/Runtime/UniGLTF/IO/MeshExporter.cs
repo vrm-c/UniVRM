@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using UniJSON;
 using UnityEngine;
 
 namespace UniGLTF
@@ -24,10 +23,10 @@ namespace UniGLTF
     public static class MeshExporter
     {
         static glTFMesh ExportPrimitives(glTF gltf, int bufferIndex,
-            string rendererName,
-            Mesh mesh, Material[] materials,
-            List<Material> unityMaterials)
+            MeshWithRenderer unityMesh, List<Material> unityMaterials)
         {
+            var mesh = unityMesh.Mesh;
+            var materials = unityMesh.Renderer.sharedMaterials;
             var positions = mesh.vertices.Select(y => y.ReverseZ()).ToArray();
             var positionAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, positions, glBufferTarget.ARRAY_BUFFER);
             gltf.accessors[positionAccessorIndex].min = positions.Aggregate(positions[0], (a, b) => new Vector3(Mathf.Min(a.x, b.x), Math.Min(a.y, b.y), Mathf.Min(a.z, b.z))).ToArray();
@@ -53,7 +52,13 @@ namespace UniGLTF
 
             var boneweights = mesh.boneWeights;
             var weightAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, boneweights.Select(y => new Vector4(y.weight0, y.weight1, y.weight2, y.weight3)).ToArray(), glBufferTarget.ARRAY_BUFFER);
-            var jointsAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, boneweights.Select(y => new UShort4((ushort)y.boneIndex0, (ushort)y.boneIndex1, (ushort)y.boneIndex2, (ushort)y.boneIndex3)).ToArray(), glBufferTarget.ARRAY_BUFFER);
+            var jointsAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, boneweights.Select(y =>
+                new UShort4(
+                    (ushort)unityMesh.GetJointIndex(y.boneIndex0),
+                    (ushort)unityMesh.GetJointIndex(y.boneIndex1),
+                    (ushort)unityMesh.GetJointIndex(y.boneIndex2),
+                    (ushort)unityMesh.GetJointIndex(y.boneIndex3))
+                ).ToArray(), glBufferTarget.ARRAY_BUFFER);
 
             var attributes = new glTFAttributes
             {
@@ -124,7 +129,7 @@ namespace UniGLTF
 
                 if (j >= materials.Length)
                 {
-                    Debug.LogWarningFormat("{0}.materials is not enough", rendererName);
+                    Debug.LogWarningFormat("{0}.materials is not enough", unityMesh.Renderer.name);
                     break;
                 }
 
@@ -277,36 +282,23 @@ namespace UniGLTF
             };
         }
 
-        public struct MeshWithRenderer
-        {
-            public Mesh Mesh;
-            [Obsolete("Use Renderer")]
-            public Renderer Rendererer { get { return Renderer; } set { Renderer = value; } }
-            public Renderer Renderer;
-        }
-
         public static IEnumerable<(Mesh, glTFMesh, Dictionary<int, int>)> ExportMeshes(glTF gltf, int bufferIndex,
             List<MeshWithRenderer> unityMeshes, List<Material> unityMaterials,
             MeshExportSettings settings)
         {
-            for (int i = 0; i < unityMeshes.Count; ++i)
+            foreach (var unityMesh in unityMeshes)
             {
-                var x = unityMeshes[i];
-                var mesh = x.Mesh;
-                var materials = x.Renderer.sharedMaterials;
-
                 var gltfMesh = ExportPrimitives(gltf, bufferIndex,
-                    x.Renderer.name,
-                    mesh, materials, unityMaterials);
+                    unityMesh, unityMaterials);
 
                 var targetNames = new List<string>();
 
                 var blendShapeIndexMap = new Dictionary<int, int>();
                 int exportBlendShapes = 0;
-                for (int j = 0; j < mesh.blendShapeCount; ++j)
+                for (int j = 0; j < unityMesh.Mesh.blendShapeCount; ++j)
                 {
                     var morphTarget = ExportMorphTarget(gltf, bufferIndex,
-                        mesh, j,
+                        unityMesh.Mesh, j,
                         settings.UseSparseAccessorForMorphTarget,
                         settings.ExportOnlyBlendShapePosition);
                     if (morphTarget.POSITION < 0 && morphTarget.NORMAL < 0 && morphTarget.TANGENT < 0)
@@ -315,7 +307,7 @@ namespace UniGLTF
                     }
 
                     // maybe skip
-                    var blendShapeName = mesh.GetBlendShapeName(j);
+                    var blendShapeName = unityMesh.Mesh.GetBlendShapeName(j);
                     blendShapeIndexMap.Add(j, exportBlendShapes++);
                     targetNames.Add(blendShapeName);
 
@@ -330,7 +322,7 @@ namespace UniGLTF
 
                 gltf_mesh_extras_targetNames.Serialize(gltfMesh, targetNames);
 
-                yield return (mesh, gltfMesh, blendShapeIndexMap);
+                yield return (unityMesh.Mesh, gltfMesh, blendShapeIndexMap);
             }
         }
     }

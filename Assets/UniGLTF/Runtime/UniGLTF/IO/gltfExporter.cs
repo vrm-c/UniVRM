@@ -252,27 +252,7 @@ namespace UniGLTF
                 #endregion
 
                 #region Meshes
-                var unityMeshes = Nodes
-                    .Select(x => new MeshExporter.MeshWithRenderer
-                    {
-                        Mesh = x.GetSharedMesh(),
-                        Renderer = x.GetComponent<Renderer>(),
-                    })
-                    .Where(x =>
-                    {
-                        if (x.Mesh == null)
-                        {
-                            return false;
-                        }
-                        if (x.Renderer.sharedMaterials == null
-                        || x.Renderer.sharedMaterials.Length == 0)
-                        {
-                            return false;
-                        }
-
-                        return true;
-                    })
-                    .ToList();
+                var unityMeshes = MeshWithRenderer.FromNodes(Nodes).ToList();
 
                 MeshBlendShapeIndexMap = new Dictionary<Mesh, Dictionary<int, int>>();
                 foreach (var (mesh, gltfMesh, blendShapeIndexMap) in MeshExporter.ExportMeshes(
@@ -289,13 +269,10 @@ namespace UniGLTF
                 #endregion
 
                 #region Nodes and Skins
-                var unitySkins = Nodes
-                    .Select(x => x.GetComponent<SkinnedMeshRenderer>()).Where(x =>
-                        x != null
-                        && x.bones != null
-                        && x.bones.Length > 0)
+                var unitySkins = unityMeshes
+                    .Where(x => x.UniqueBones != null)
                     .ToList();
-                glTF.nodes = Nodes.Select(x => ExportNode(x, Nodes, unityMeshes.Select(y => y.Renderer).ToList(), unitySkins)).ToList();
+                glTF.nodes = Nodes.Select(x => ExportNode(x, Nodes, unityMeshes.Select(y => y.Renderer).ToList(), unitySkins.Select(y => y.Renderer as SkinnedMeshRenderer).ToList())).ToList();
                 glTF.scenes = new List<gltfScene>
                 {
                     new gltfScene
@@ -306,19 +283,20 @@ namespace UniGLTF
 
                 foreach (var x in unitySkins)
                 {
-                    var matrices = x.sharedMesh.bindposes.Select(y => y.ReverseZ()).ToArray();
+                    var matrices = x.GetBindPoses().Select(y => y.ReverseZ()).ToArray();
                     var accessor = glTF.ExtendBufferAndGetAccessorIndex(bufferIndex, matrices, glBufferTarget.NONE);
 
+                    var renderer = x.Renderer as SkinnedMeshRenderer;
                     var skin = new glTFSkin
                     {
                         inverseBindMatrices = accessor,
-                        joints = x.bones.Select(y => Nodes.IndexOf(y)).ToArray(),
-                        skeleton = Nodes.IndexOf(x.rootBone),
+                        joints = x.UniqueBones.Select(y => Nodes.IndexOf(y)).ToArray(),
+                        skeleton = Nodes.IndexOf(renderer.rootBone),
                     };
                     var skinIndex = glTF.skins.Count;
                     glTF.skins.Add(skin);
 
-                    foreach (var z in Nodes.Where(y => y.Has(x)))
+                    foreach (var z in Nodes.Where(y => y.Has(x.Renderer)))
                     {
                         var nodeIndex = Nodes.IndexOf(z);
                         var node = glTF.nodes[nodeIndex];

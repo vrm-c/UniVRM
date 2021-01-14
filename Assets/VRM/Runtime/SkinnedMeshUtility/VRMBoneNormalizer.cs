@@ -83,7 +83,10 @@ namespace VRM
                        .ToDictionary(x => x.Key, x => boneMap[x.Value])
                        ;
 
-                var animator = dst.AddComponent<Animator>();
+                if (dst.GetComponent<Animator>() == null)
+                {
+                    var animator = dst.AddComponent<Animator>();
+                }
                 var vrmHuman = go.GetComponent<VRMHumanoidDescription>();
                 var avatarDescription = AvatarDescription.Create();
                 if (vrmHuman != null && vrmHuman.Description != null)
