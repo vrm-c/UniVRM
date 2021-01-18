@@ -68,6 +68,7 @@ namespace UniVRM10
             Selection.selectionChanged += Repaint;
 
             m_tmpMeta = ScriptableObject.CreateInstance<VRM10MetaObject>();
+            m_tmpMeta.Authors = new string[] { "" };
 
             m_state = new MeshUtility.ExporterDialogState();
             m_state.ExportRootChanged += (root) =>
