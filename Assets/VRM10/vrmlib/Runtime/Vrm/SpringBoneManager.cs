@@ -49,15 +49,9 @@ namespace VrmLib
         }
     }
 
-    public class SpringBone
+    public class SpringJoint
     {
-        public const string ExtensionName = "VRMC_springBone";
-        public readonly List<Node> Bones = new List<Node>();
-        public Node Origin;
-
-        public readonly List<SpringBoneColliderGroup> Colliders = new List<SpringBoneColliderGroup>();
-
-        public string Comment = "";
+        public readonly Node Node;
 
         public float DragForce;
 
@@ -70,9 +64,19 @@ namespace VrmLib
         public float Stiffness;
     }
 
+    public class SpringBone
+    {
+        public const string ExtensionName = "VRMC_springBone";
+        public readonly List<SpringJoint> Joints = new List<SpringJoint>();
+        public Node Origin;
+
+        public readonly List<SpringBoneColliderGroup> Colliders = new List<SpringBoneColliderGroup>();
+
+        public string Comment = "";
+    }
+
     public class SpringBoneManager
     {
         public readonly List<SpringBone> Springs = new List<SpringBone>();
-        public readonly List<SpringBoneColliderGroup> Colliders = new List<SpringBoneColliderGroup>();
     }
 }

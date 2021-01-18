@@ -343,12 +343,28 @@ namespace UniVRM10
 
             // springBone
             {
-                var springBoneColliderGroups = root.GetComponentsInChildren<UniVRM10.VRM10SpringBoneColliderGroup>();
-                if (springBoneColliderGroups != null)
+                var springBones = root.GetComponentsInChildren<UniVRM10.VRM10SpringBone>();
+                foreach (var springBone in springBones)
                 {
-                    Model.Vrm.SpringBone = new VrmLib.SpringBoneManager();
-                    var colliders = new Dictionary<UniVRM10.VRM10SpringBoneColliderGroup, VrmLib.SpringBoneColliderGroup>();
-                    foreach (var colliderGroup in springBoneColliderGroups)
+                    var vrmSpringBone = new VrmLib.SpringBone()
+                    {
+                        Comment = springBone.m_comment,
+                        Origin = (springBone.m_center != null) ? Nodes[springBone.m_center.gameObject] : null,
+                    };
+
+                    foreach (var joint in springBone.Joints)
+                    {
+                        vrmSpringBone.Joints.Add(new VrmLib.SpringJoint
+                        {
+                            Stiffness = joint.m_stiffnessForce,
+                            GravityPower = joint.m_gravityPower,
+                            GravityDir = joint.m_gravityDir.ToNumericsVector3(),
+                            DragForce = joint.m_dragForce,
+                            HitRadius = joint.m_hitRadius,
+                        });
+                    }
+
+                    foreach (var colliderGroup in springBone.ColliderGroups)
                     {
                         var colliderGroups = colliderGroup.Colliders.Select(x =>
                         {
@@ -365,37 +381,10 @@ namespace UniVRM10
                             }
                         });
                         var vrmColliderGroup = new VrmLib.SpringBoneColliderGroup(Nodes[colliderGroup.gameObject], colliderGroups);
-                        Model.Vrm.SpringBone.Colliders.Add(vrmColliderGroup);
-
-                        colliders.Add(colliderGroup, vrmColliderGroup);
+                        vrmSpringBone.Colliders.Add(vrmColliderGroup);
                     }
 
-                    var springBones = root.GetComponentsInChildren<UniVRM10.VRM10SpringBone>();
-                    foreach (var springBone in springBones)
-                    {
-                        var vrmSpringBone = new VrmLib.SpringBone()
-                        {
-                            Comment = springBone.m_comment,
-                            Stiffness = springBone.m_stiffnessForce,
-                            GravityPower = springBone.m_gravityPower,
-                            GravityDir = springBone.m_gravityDir.ToNumericsVector3(),
-                            DragForce = springBone.m_dragForce,
-                            Origin = (springBone.m_center != null) ? Nodes[springBone.m_center.gameObject] : null,
-                            HitRadius = springBone.m_hitRadius,
-                        };
-
-                        foreach (var rootBone in springBone.RootBones)
-                        {
-                            vrmSpringBone.Bones.Add(Nodes[rootBone.gameObject]);
-                        }
-
-                        foreach (var collider in springBone.ColliderGroups)
-                        {
-                            vrmSpringBone.Colliders.Add(colliders[collider]);
-                        }
-
-                        Model.Vrm.SpringBone.Springs.Add(vrmSpringBone);
-                    }
+                    Model.Vrm.SpringBone.Springs.Add(vrmSpringBone);
                 }
             }
 

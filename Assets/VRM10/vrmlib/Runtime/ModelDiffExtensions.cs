@@ -384,7 +384,6 @@ namespace VrmLib.Diff
             VrmFirstPerson(context.Enter(nameof(lhs.Vrm.FirstPerson)), lhs.Vrm.FirstPerson, rhs.Vrm.FirstPerson);
             VrmLookAt(context.Enter(nameof(lhs.Vrm.LookAt)), lhs.Vrm.LookAt, rhs.Vrm.LookAt);
             ListDiff(context.Enter("SpringBone.Springs"), lhs.Vrm.SpringBone.Springs, rhs.Vrm.SpringBone.Springs, VrmSpringBoneEquals);
-            ListDiff(context.Enter("SpringBone.Colliders"), lhs.Vrm.SpringBone.Colliders, rhs.Vrm.SpringBone.Colliders, VrmSpringBoneColliderEquals);
         }
 
         static void VrmMeta(ModelDiffContext context, Meta lhs, Meta rhs)
@@ -501,16 +500,23 @@ namespace VrmLib.Diff
             context.Enter("Curve").Push(lhs.Curve, rhs.Curve);
         }
 
-        static bool VrmSpringBoneEquals(ModelDiffContext context, SpringBone lhs, SpringBone rhs)
+        static bool VrmSpringBoneJointEquals(ModelDiffContext context, SpringJoint lhs, SpringJoint rhs)
         {
             var equals = true;
-            if (!context.Enter("Comment").Push(lhs.Comment, rhs.Comment)) equals = false;
             if (!context.Enter("DragForce").Push(lhs.DragForce, rhs.DragForce)) equals = false;
             if (!context.Enter("GravityDir").Push(lhs.GravityDir, rhs.GravityDir)) equals = false;
             if (!context.Enter("GravityPower").Push(lhs.GravityPower, rhs.GravityPower)) equals = false;
             if (!context.Enter("HitRadius").Push(lhs.HitRadius, rhs.HitRadius)) equals = false;
-            if (!context.Enter("Origin").Push(lhs.Origin, rhs.Origin)) equals = false;
             if (!context.Enter("Stiffness").Push(lhs.Stiffness, rhs.Stiffness)) equals = false;
+            return equals;
+        }
+
+        static bool VrmSpringBoneEquals(ModelDiffContext context, SpringBone lhs, SpringBone rhs)
+        {
+            var equals = true;
+            if (!context.Enter("Comment").Push(lhs.Comment, rhs.Comment)) equals = false;
+            if (!context.Enter("Origin").Push(lhs.Origin, rhs.Origin)) equals = false;
+            if (!ListDiff(context.Enter("Joint"), lhs.Joints, rhs.Joints, VrmSpringBoneJointEquals)) equals = false;
             return equals;
         }
 

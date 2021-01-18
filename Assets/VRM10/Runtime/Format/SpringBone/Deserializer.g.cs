@@ -36,11 +36,6 @@ public static VRMC_springBone Deserialize(ListTreeNode<JsonValue> parsed)
     {
         var key = kv.Key.GetString();
 
-        if(key=="settings"){
-            value.Settings = Deserialize_Settings(kv.Value);
-            continue;
-        }
-
         if(key=="springs"){
             value.Springs = Deserialize_Springs(kv.Value);
             continue;
@@ -50,23 +45,65 @@ public static VRMC_springBone Deserialize(ListTreeNode<JsonValue> parsed)
     return value;
 }
 
-public static List<SpringSetting> Deserialize_Settings(ListTreeNode<JsonValue> parsed)
+public static List<Spring> Deserialize_Springs(ListTreeNode<JsonValue> parsed)
 {
-    var value = new List<SpringSetting>();
+    var value = new List<Spring>();
     foreach(var x in parsed.ArrayItems())
     {
-        value.Add(Deserialize_Settings_ITEM(x));
+        value.Add(Deserialize_Springs_ITEM(x));
     }
 	return value;
 } 
 
-public static SpringSetting Deserialize_Settings_ITEM(ListTreeNode<JsonValue> parsed)
+public static Spring Deserialize_Springs_ITEM(ListTreeNode<JsonValue> parsed)
 {
-    var value = new SpringSetting();
+    var value = new Spring();
 
     foreach(var kv in parsed.ObjectItems())
     {
         var key = kv.Key.GetString();
+
+        if(key=="name"){
+            value.Name = kv.Value.GetString();
+            continue;
+        }
+
+        if(key=="joints"){
+            value.Joints = Deserialize_Joints(kv.Value);
+            continue;
+        }
+
+        if(key=="colliders"){
+            value.Colliders = Deserialize_Colliders(kv.Value);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static List<SpringBoneJoint> Deserialize_Joints(ListTreeNode<JsonValue> parsed)
+{
+    var value = new List<SpringBoneJoint>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(Deserialize_Joints_ITEM(x));
+    }
+	return value;
+} 
+
+public static SpringBoneJoint Deserialize_Joints_ITEM(ListTreeNode<JsonValue> parsed)
+{
+    var value = new SpringBoneJoint();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="hitRadius"){
+            value.HitRadius = kv.Value.GetSingle();
+            continue;
+        }
 
         if(key=="stiffness"){
             value.Stiffness = kv.Value.GetSingle();
@@ -102,53 +139,6 @@ public static float[] Deserialize_GravityDir(ListTreeNode<JsonValue> parsed)
     }
 	return value;
 } 
-
-public static List<Spring> Deserialize_Springs(ListTreeNode<JsonValue> parsed)
-{
-    var value = new List<Spring>();
-    foreach(var x in parsed.ArrayItems())
-    {
-        value.Add(Deserialize_Springs_ITEM(x));
-    }
-	return value;
-} 
-
-public static Spring Deserialize_Springs_ITEM(ListTreeNode<JsonValue> parsed)
-{
-    var value = new Spring();
-
-    foreach(var kv in parsed.ObjectItems())
-    {
-        var key = kv.Key.GetString();
-
-        if(key=="name"){
-            value.Name = kv.Value.GetString();
-            continue;
-        }
-
-        if(key=="setting"){
-            value.Setting = kv.Value.GetInt32();
-            continue;
-        }
-
-        if(key=="springRoot"){
-            value.SpringRoot = kv.Value.GetInt32();
-            continue;
-        }
-
-        if(key=="hitRadius"){
-            value.HitRadius = kv.Value.GetSingle();
-            continue;
-        }
-
-        if(key=="colliders"){
-            value.Colliders = Deserialize_Colliders(kv.Value);
-            continue;
-        }
-
-    }
-    return value;
-}
 
 public static int[] Deserialize_Colliders(ListTreeNode<JsonValue> parsed)
 {

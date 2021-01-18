@@ -33,11 +33,6 @@ public static void Serialize(JsonFormatter f, VRMC_springBone value)
     f.BeginMap();
 
 
-    if(value.Settings!=null&&value.Settings.Count()>=0){
-        f.Key("settings");                
-        Serialize_Settings(f, value.Settings);
-    }
-
     if(value.Springs!=null&&value.Springs.Count()>=0){
         f.Key("springs");                
         Serialize_Springs(f, value.Springs);
@@ -46,22 +41,62 @@ public static void Serialize(JsonFormatter f, VRMC_springBone value)
     f.EndMap();
 }
 
-public static void Serialize_Settings(JsonFormatter f, List<SpringSetting> value)
+public static void Serialize_Springs(JsonFormatter f, List<Spring> value)
 {
     f.BeginList();
 
     foreach(var item in value)
     {
-    Serialize_Settings_ITEM(f, item);
+    Serialize_Springs_ITEM(f, item);
 
     }
     f.EndList();
 }
 
-public static void Serialize_Settings_ITEM(JsonFormatter f, SpringSetting value)
+public static void Serialize_Springs_ITEM(JsonFormatter f, Spring value)
 {
     f.BeginMap();
 
+
+    if(!string.IsNullOrEmpty(value.Name)){
+        f.Key("name");                
+        f.Value(value.Name);
+    }
+
+    if(value.Joints!=null&&value.Joints.Count()>=0){
+        f.Key("joints");                
+        Serialize_Joints(f, value.Joints);
+    }
+
+    if(value.Colliders!=null&&value.Colliders.Count()>=0){
+        f.Key("colliders");                
+        Serialize_Colliders(f, value.Colliders);
+    }
+
+    f.EndMap();
+}
+
+public static void Serialize_Joints(JsonFormatter f, List<SpringBoneJoint> value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    Serialize_Joints_ITEM(f, item);
+
+    }
+    f.EndList();
+}
+
+public static void Serialize_Joints_ITEM(JsonFormatter f, SpringBoneJoint value)
+{
+    f.BeginMap();
+
+
+    if(value.HitRadius.HasValue){
+        f.Key("hitRadius");                
+        f.Value(value.HitRadius.GetValueOrDefault());
+    }
 
     if(value.Stiffness.HasValue){
         f.Key("stiffness");                
@@ -96,51 +131,6 @@ public static void Serialize_GravityDir(JsonFormatter f, float[] value)
 
     }
     f.EndList();
-}
-
-public static void Serialize_Springs(JsonFormatter f, List<Spring> value)
-{
-    f.BeginList();
-
-    foreach(var item in value)
-    {
-    Serialize_Springs_ITEM(f, item);
-
-    }
-    f.EndList();
-}
-
-public static void Serialize_Springs_ITEM(JsonFormatter f, Spring value)
-{
-    f.BeginMap();
-
-
-    if(!string.IsNullOrEmpty(value.Name)){
-        f.Key("name");                
-        f.Value(value.Name);
-    }
-
-    if(value.Setting.HasValue){
-        f.Key("setting");                
-        f.Value(value.Setting.GetValueOrDefault());
-    }
-
-    if(value.SpringRoot.HasValue){
-        f.Key("springRoot");                
-        f.Value(value.SpringRoot.GetValueOrDefault());
-    }
-
-    if(value.HitRadius.HasValue){
-        f.Key("hitRadius");                
-        f.Value(value.HitRadius.GetValueOrDefault());
-    }
-
-    if(value.Colliders!=null&&value.Colliders.Count()>=0){
-        f.Key("colliders");                
-        Serialize_Colliders(f, value.Colliders);
-    }
-
-    f.EndMap();
 }
 
 public static void Serialize_Colliders(JsonFormatter f, int[] value)

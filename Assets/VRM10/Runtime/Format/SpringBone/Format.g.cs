@@ -7,8 +7,11 @@ using UniJSON;
 namespace UniGLTF.Extensions.VRMC_springBone
 {
 
-    public class SpringSetting
+    public class SpringBoneJoint
     {
+        // The radius of spring sphere
+        public float? HitRadius;
+
         // The force to return to the initial pose
         public float? Stiffness;
 
@@ -27,14 +30,8 @@ namespace UniGLTF.Extensions.VRMC_springBone
         // Name of the Spring
         public string Name;
 
-        // The index of spring settings
-        public int? Setting;
-
-        // The node index of spring root
-        public int? SpringRoot;
-
-        // The radius of spring sphere
-        public float? HitRadius;
+        // Joints in this spring. Except for the first element, the parent of the element must be the previous element of the array
+        public List<SpringBoneJoint> Joints;
 
         // Colliders that detect collision with nodes start from springRoot
         public int[] Colliders;
@@ -44,9 +41,6 @@ namespace UniGLTF.Extensions.VRMC_springBone
     {
         public const string ExtensionName = "VRMC_springBone";
         public static readonly Utf8String ExtensionNameUtf8 = Utf8String.From(ExtensionName);
-
-        // An array of settings.
-        public List<SpringSetting> Settings;
 
         // An array of springs.
         public List<Spring> Springs;

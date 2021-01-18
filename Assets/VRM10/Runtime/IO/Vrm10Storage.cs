@@ -710,66 +710,62 @@ namespace UniVRM10
                 return null;
             }
 
-            var springBone = new SpringBoneManager();
+            var springBoneManager = new SpringBoneManager();
 
             // springs
             if (gltfVrmSpringBone.Springs != null)
             {
-                foreach (var group in gltfVrmSpringBone.Springs.GroupBy(x => x.Setting.Value))
+                foreach (var gltfSpring in gltfVrmSpringBone.Springs)
                 {
-                    var sb = new SpringBone();
-                    sb.Comment = group.First().Name;
-                    sb.HitRadius = group.First().HitRadius.Value;
-                    var setting = gltfVrmSpringBone.Settings[group.Key];
-                    sb.DragForce = setting.DragForce.Value;
-                    sb.GravityDir = setting.GravityDir.ToVector3();
-                    sb.GravityPower = setting.GravityPower.Value;
-                    sb.Stiffness = setting.Stiffness.Value;
+                    var springBone = new SpringBone();
+                    springBone.Comment = gltfSpring.Name;
 
-                    foreach (var spring in group)
+                    // joint
+                    foreach (var gltfJoint in gltfSpring.Joints)
                     {
-                        // root
-                        sb.Bones.Add(nodes[spring.SpringRoot.Value]);
-                        // collider
-                        foreach (var colliderNode in spring.Colliders)
+                        var joint = new SpringJoint();
+                        joint.HitRadius = gltfJoint.HitRadius.Value;
+                        joint.DragForce = gltfJoint.DragForce.Value;
+                        joint.GravityDir = gltfJoint.GravityDir.ToVector3();
+                        joint.GravityPower = gltfJoint.GravityPower.Value;
+                        joint.Stiffness = gltfJoint.Stiffness.Value;
+                        springBone.Joints.Add(joint);
+                    }
+
+                    // collider
+                    springBone.Colliders.AddRange(gltfSpring.Colliders.Select(colliderNode =>
+                    {
+                        if (UniGLTF.Extensions.VRMC_node_collider.GltfDeserializer.TryGet(Gltf.nodes[colliderNode].extensions,
+                            out UniGLTF.Extensions.VRMC_node_collider.VRMC_node_collider extension))
                         {
-                            var collider = springBone.Colliders.FirstOrDefault(x => x.Node == nodes[colliderNode]);
-                            if (collider == null)
+                            var collider = new SpringBoneColliderGroup(nodes[colliderNode], extension.Shapes.Select(x =>
                             {
-                                if (UniGLTF.Extensions.VRMC_node_collider.GltfDeserializer.TryGet(Gltf.nodes[colliderNode].extensions,
-                                    out UniGLTF.Extensions.VRMC_node_collider.VRMC_node_collider extension))
+                                if (x.Sphere != null)
                                 {
-                                    collider = new SpringBoneColliderGroup(nodes[colliderNode], extension.Shapes.Select(x =>
-                                    {
-                                        if (x.Sphere != null)
-                                        {
-                                            return VrmSpringBoneCollider.CreateSphere(x.Sphere.Offset.ToVector3(), x.Sphere.Radius.Value);
-                                        }
-                                        else if (x.Capsule != null)
-                                        {
-                                            return VrmSpringBoneCollider.CreateCapsule(x.Capsule.Offset.ToVector3(), x.Capsule.Radius.Value, x.Capsule.Tail.ToVector3());
-                                        }
-                                        else
-                                        {
-                                            throw new NotImplementedException();
-                                        }
-                                    }));
-                                    springBone.Colliders.Add(collider);
+                                    return VrmSpringBoneCollider.CreateSphere(x.Sphere.Offset.ToVector3(), x.Sphere.Radius.Value);
+                                }
+                                else if (x.Capsule != null)
+                                {
+                                    return VrmSpringBoneCollider.CreateCapsule(x.Capsule.Offset.ToVector3(), x.Capsule.Radius.Value, x.Capsule.Tail.ToVector3());
                                 }
                                 else
                                 {
-                                    throw new Exception("collider not found");
+                                    throw new NotImplementedException();
                                 }
-                            }
-                            sb.Colliders.Add(collider);
+                            }));
+                            return collider;
                         }
-                    }
+                        else
+                        {
+                            return null;
+                        }
+                    }).Where(x => x != null));
 
-                    springBone.Springs.Add(sb);
+                    springBoneManager.Springs.Add(springBone);
                 }
             }
 
-            return springBone;
+            return springBoneManager;
         }
 
         public FirstPerson CreateVrmFirstPerson(List<Node> nodes, List<MeshGroup> meshGroups)

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -22,26 +23,30 @@ namespace UniVRM10
         [SerializeField]
         Color m_gizmoColor = Color.yellow;
 
-        [SerializeField, Range(0, 4), Header("Settings")]
-        public float m_stiffnessForce = 1.0f;
+        [Serializable]
+        public class VRM10SpringJoint
+        {
+            [SerializeField, Range(0, 4), Header("Settings")]
+            public float m_stiffnessForce = 1.0f;
 
-        [SerializeField, Range(0, 2)]
-        public float m_gravityPower = 0;
+            [SerializeField, Range(0, 2)]
+            public float m_gravityPower = 0;
 
-        [SerializeField]
-        public Vector3 m_gravityDir = new Vector3(0, -1.0f, 0);
+            [SerializeField]
+            public Vector3 m_gravityDir = new Vector3(0, -1.0f, 0);
 
-        [SerializeField, Range(0, 1)]
-        public float m_dragForce = 0.4f;
+            [SerializeField, Range(0, 1)]
+            public float m_dragForce = 0.4f;
+
+            [SerializeField, Range(0, 0.5f), Header("Collision")]
+            public float m_hitRadius = 0.02f;
+        }
 
         [SerializeField]
         public Transform m_center;
 
         [SerializeField]
-        public List<Transform> RootBones = new List<Transform>();
-
-        [SerializeField, Range(0, 0.5f), Header("Collision")]
-        public float m_hitRadius = 0.02f;
+        public List<VRM10SpringJoint> Joints = new List<VRM10SpringJoint>();
 
         [SerializeField]
         public VRM10SpringBoneColliderGroup[] ColliderGroups;
@@ -57,7 +62,7 @@ namespace UniVRM10
         List<SpringBoneLogic.InternalCollider> m_colliderList = new List<SpringBoneLogic.InternalCollider>();
         public void Process()
         {
-            if (RootBones == null)
+            if (Joints == null)
             {
                 return;
             }
@@ -99,20 +104,20 @@ namespace UniVRM10
                 }
             }
 
-            var stiffness = m_stiffnessForce * Time.deltaTime;
-            var external = m_gravityDir * (m_gravityPower * Time.deltaTime);
+            // var stiffness = m_stiffnessForce * Time.deltaTime;
+            // var external = m_gravityDir * (m_gravityPower * Time.deltaTime);
 
-            m_processor.Update(RootBones, m_colliderList,
-                        stiffness, m_dragForce, external,
-                        m_hitRadius, m_center);
+            // m_processor.Update(RootBones, m_colliderList,
+            //             stiffness, m_dragForce, external,
+            //             m_hitRadius, m_center);
         }
 
         private void OnDrawGizmos()
         {
-            if (m_drawGizmo)
-            {
-                m_processor.DrawGizmos(m_center, m_hitRadius, m_gizmoColor);
-            }
+            // if (m_drawGizmo)
+            // {
+            //     m_processor.DrawGizmos(m_center, m_hitRadius, m_gizmoColor);
+            // }
         }
     }
 }
