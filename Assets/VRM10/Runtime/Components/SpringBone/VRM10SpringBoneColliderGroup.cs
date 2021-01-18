@@ -1,13 +1,12 @@
-using System;
 using UnityEngine;
 
 
 namespace UniVRM10
 {
+    /// <summary>
+    /// VRMC_node_collider
+    /// </summary>
     [AddComponentMenu("VRM10/VRM10SpringBoneColliderGroup")]
-#if UNITY_5_5_OR_NEWER
-    [DefaultExecutionOrder(11001)]
-#endif
     public class VRM10SpringBoneColliderGroup : MonoBehaviour
     {
         [SerializeField]
@@ -18,9 +17,6 @@ namespace UniVRM10
                 Radius=0.1f
             }
         };
-
-        [SerializeField]
-        Color m_gizmoColor = Color.magenta;
 
         public static void DrawWireCapsule(Vector3 headPos, Vector3 tailPos, float radius)
         {
@@ -70,9 +66,9 @@ namespace UniVRM10
             }
         }
 
-        private void OnDrawGizmosSelected()
+        public void DrawGizmos(Color color)
         {
-            Gizmos.color = m_gizmoColor;
+            Gizmos.color = color;
             Matrix4x4 mat = transform.localToWorldMatrix;
             Gizmos.matrix = mat * Matrix4x4.Scale(new Vector3(
                 1.0f / transform.lossyScale.x,
@@ -88,9 +84,6 @@ namespace UniVRM10
                         break;
 
                     case VRM10SpringBoneColliderTypes.Capsule:
-                        // Gizmos.DrawWireSphere(y.Offset, y.Radius);
-                        // Gizmos.DrawWireSphere(y.Tail, y.Radius);
-                        // Gizmos.DrawLine(y.Offset, y.Tail);
                         DrawWireCapsule(y.Offset, y.Tail, y.Radius);
                         break;
                 }
