@@ -2,7 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 using System.Linq;
-
+using System;
 
 namespace UniVRM10
 {
@@ -92,7 +92,10 @@ namespace UniVRM10
             {
                 var backup = GUI.enabled;
                 GUI.enabled = true;
-                _tab = MeshUtility.TabBar.OnGUI(_tab);
+
+                _tab = (Tabs)EditorGUILayout.EnumPopup("Select GUI", _tab);
+                EditorGUILayout.Separator();
+
                 GUI.enabled = backup;
             }
 
