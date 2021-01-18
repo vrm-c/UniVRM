@@ -343,21 +343,21 @@ namespace UniVRM10
 
             // springBone
             {
-                var springBoneColliderGroups = root.GetComponentsInChildren<UniVRM10.VRMSpringBoneColliderGroup>();
+                var springBoneColliderGroups = root.GetComponentsInChildren<UniVRM10.VRM10SpringBoneColliderGroup>();
                 if (springBoneColliderGroups != null)
                 {
                     Model.Vrm.SpringBone = new VrmLib.SpringBoneManager();
-                    var colliders = new Dictionary<UniVRM10.VRMSpringBoneColliderGroup, VrmLib.SpringBoneColliderGroup>();
+                    var colliders = new Dictionary<UniVRM10.VRM10SpringBoneColliderGroup, VrmLib.SpringBoneColliderGroup>();
                     foreach (var colliderGroup in springBoneColliderGroups)
                     {
                         var colliderGroups = colliderGroup.Colliders.Select(x =>
                         {
                             switch (x.ColliderType)
                             {
-                                case SpringBoneColliderTypes.Sphere:
+                                case VRM10SpringBoneColliderTypes.Sphere:
                                     return VrmLib.VrmSpringBoneCollider.CreateSphere(x.Offset.ToNumericsVector3(), x.Radius);
 
-                                case SpringBoneColliderTypes.Capsule:
+                                case VRM10SpringBoneColliderTypes.Capsule:
                                     return VrmLib.VrmSpringBoneCollider.CreateCapsule(x.Offset.ToNumericsVector3(), x.Radius, x.Tail.ToNumericsVector3());
 
                                 default:
@@ -370,7 +370,7 @@ namespace UniVRM10
                         colliders.Add(colliderGroup, vrmColliderGroup);
                     }
 
-                    var springBones = root.GetComponentsInChildren<UniVRM10.VRMSpringBone>();
+                    var springBones = root.GetComponentsInChildren<UniVRM10.VRM10SpringBone>();
                     foreach (var springBone in springBones)
                     {
                         var vrmSpringBone = new VrmLib.SpringBone()

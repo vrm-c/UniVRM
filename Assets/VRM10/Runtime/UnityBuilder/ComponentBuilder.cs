@@ -232,30 +232,30 @@ namespace UniVRM10
 
             // springBone
             {
-                var colliders = new Dictionary<VrmLib.SpringBoneColliderGroup, UniVRM10.VRMSpringBoneColliderGroup>();
+                var colliders = new Dictionary<VrmLib.SpringBoneColliderGroup, UniVRM10.VRM10SpringBoneColliderGroup>();
                 if (model.Vrm.SpringBone != null)
                 {
                     foreach (var colliderGroup in model.Vrm.SpringBone.Colliders)
                     {
                         var go = asset.Map.Nodes[colliderGroup.Node];
-                        var springBoneColliderGroup = go.AddComponent<UniVRM10.VRMSpringBoneColliderGroup>();
+                        var springBoneColliderGroup = go.AddComponent<UniVRM10.VRM10SpringBoneColliderGroup>();
 
                         springBoneColliderGroup.Colliders = colliderGroup.Colliders.Select(x =>
                         {
                             switch (x.ColliderType)
                             {
                                 case VrmLib.VrmSpringBoneColliderTypes.Sphere:
-                                    return new UniVRM10.SpringBoneCollider()
+                                    return new UniVRM10.VRM10SpringBoneCollider()
                                     {
-                                        ColliderType = SpringBoneColliderTypes.Sphere,
+                                        ColliderType = VRM10SpringBoneColliderTypes.Sphere,
                                         Offset = x.Offset.ToUnityVector3(),
                                         Radius = x.Radius
                                     };
 
                                 case VrmLib.VrmSpringBoneColliderTypes.Capsule:
-                                    return new UniVRM10.SpringBoneCollider()
+                                    return new UniVRM10.VRM10SpringBoneCollider()
                                     {
-                                        ColliderType = SpringBoneColliderTypes.Capsule,
+                                        ColliderType = VRM10SpringBoneColliderTypes.Capsule,
                                         Offset = x.Offset.ToUnityVector3(),
                                         Radius = x.Radius,
                                         Tail = x.CapsuleTail.ToUnityVector3(),
@@ -286,7 +286,7 @@ namespace UniVRM10
                 {
                     foreach (var spring in model.Vrm.SpringBone.Springs)
                     {
-                        var springBoneComponent = springBoneObject.AddComponent<UniVRM10.VRMSpringBone>();
+                        var springBoneComponent = springBoneObject.AddComponent<UniVRM10.VRM10SpringBone>();
                         springBoneComponent.m_comment = spring.Comment;
                         springBoneComponent.m_stiffnessForce = spring.Stiffness;
                         springBoneComponent.m_gravityPower = spring.GravityPower;

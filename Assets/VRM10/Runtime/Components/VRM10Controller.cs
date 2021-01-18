@@ -62,7 +62,7 @@ namespace UniVRM10
         }
 
         VRMConstraint[] m_constraints;
-        VRMSpringBone[] m_springs;
+        VRM10SpringBone[] m_springs;
 
         Transform m_head;
         public Transform Head
@@ -135,7 +135,7 @@ namespace UniVRM10
             //
             if (m_springs == null)
             {
-                m_springs = GetComponentsInChildren<VRMSpringBone>();
+                m_springs = GetComponentsInChildren<VRM10SpringBone>();
             }
             foreach (var spring in m_springs)
             {

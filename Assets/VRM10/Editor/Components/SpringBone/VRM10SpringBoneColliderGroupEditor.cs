@@ -5,14 +5,14 @@ using UnityEngine;
 
 namespace UniVRM10
 {
-    [CustomEditor(typeof(VRMSpringBoneColliderGroup))]
-    public class VRMSpringBoneColliderGroupEditor : Editor
+    [CustomEditor(typeof(VRM10SpringBoneColliderGroup))]
+    public class VRM10SpringBoneColliderGroupEditor : Editor
     {
-        VRMSpringBoneColliderGroup m_target;
+        VRM10SpringBoneColliderGroup m_target;
 
         private void OnEnable()
         {
-            m_target = (VRMSpringBoneColliderGroup)target;
+            m_target = (VRM10SpringBoneColliderGroup)target;
         }
 
         private void OnSceneGUI()
@@ -43,7 +43,7 @@ namespace UniVRM10
         [MenuItem("CONTEXT/VRM10SpringBoneColliderGroup/X Mirror")]
         private static void InvertOffsetX(MenuCommand command)
         {
-            var target = command.context as VRMSpringBoneColliderGroup;
+            var target = command.context as VRM10SpringBoneColliderGroup;
             if (target == null) return;
             
             Undo.RecordObject(target, "X Mirror");
@@ -59,7 +59,7 @@ namespace UniVRM10
         [MenuItem("CONTEXT/VRM10SpringBoneColliderGroup/Sort Colliders by Radius")]
         private static void SortByRadius(MenuCommand command)
         {
-            var target = command.context as VRMSpringBoneColliderGroup;
+            var target = command.context as VRM10SpringBoneColliderGroup;
             if (target == null) return;
             
             Undo.RecordObject(target, "Sort Colliders by Radius");
@@ -70,7 +70,7 @@ namespace UniVRM10
         [MenuItem("CONTEXT/VRM10SpringBoneColliderGroup/Sort Colliders by Offset Y")]
         private static void SortByOffsetY(MenuCommand command)
         {
-            var target = command.context as VRMSpringBoneColliderGroup;
+            var target = command.context as VRM10SpringBoneColliderGroup;
             if (target == null) return;
             
             Undo.RecordObject(target, "Sort Colliders by Offset Y");

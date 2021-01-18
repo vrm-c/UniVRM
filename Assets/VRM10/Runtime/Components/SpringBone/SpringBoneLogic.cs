@@ -65,7 +65,7 @@ namespace UniVRM10
 
         public struct InternalCollider
         {
-            public SpringBoneColliderTypes ColliderTypes;
+            public VRM10SpringBoneColliderTypes ColliderTypes;
             public Vector3 WorldPosition;
             public float Radius;
             public Vector3 WorldTail;
@@ -165,11 +165,11 @@ namespace UniVRM10
                 // すべての衝突判定を順番に実行する
                 switch (collider.ColliderTypes)
                 {
-                    case SpringBoneColliderTypes.Sphere:
+                    case VRM10SpringBoneColliderTypes.Sphere:
                         TrySphereCollision(collider.WorldPosition, collider.Radius, ref nextTail);
                         break;
 
-                    case SpringBoneColliderTypes.Capsule:
+                    case VRM10SpringBoneColliderTypes.Capsule:
                         TryCapsuleCollision(in collider, ref nextTail);
                         break;
 

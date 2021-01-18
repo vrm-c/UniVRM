@@ -8,12 +8,12 @@ using UnityEngine;
 
 namespace UniVRM10
 {
-    public class VRMSpringBoneWindow : EditorWindow
+    public class VRM10SpringBoneWindow : EditorWindow
     {
         [MenuItem(VRMVersion.MENU + "/VRMSpringBoneWindow")]
         public static void ShowEditorWindow()
         {
-            var wnd = GetWindow<VRMSpringBoneWindow>();
+            var wnd = GetWindow<VRM10SpringBoneWindow>();
             wnd.titleContent = new GUIContent("VRMSpringBoneWindow");
         }
 
@@ -33,7 +33,7 @@ namespace UniVRM10
 
         [SerializeField]
         TreeViewState m_treeViewState;
-        VRMSpringBoneTreeView m_treeView;
+        VRM10SpringBoneTreeView m_treeView;
 
         Rect m_treeRect;
         Rect m_inspectorRect;
@@ -64,7 +64,7 @@ namespace UniVRM10
             if (m_treeViewState.selectedIDs.Any())
             {
                 // selected な SpringBone の Inspector を描画する
-                if (m_treeView.TryGetSpringBone(m_treeViewState.selectedIDs[0], out VRMSpringBone bone))
+                if (m_treeView.TryGetSpringBone(m_treeViewState.selectedIDs[0], out VRM10SpringBone bone))
                 {
                     // Debug.Log(bone);
                     using (var inspector = new CustomInspector(new SerializedObject(bone)))
@@ -102,7 +102,7 @@ namespace UniVRM10
                 // update treeview
                 Debug.Log(m_currentRoot);
                 m_treeViewState = new TreeViewState();
-                m_treeView = new VRMSpringBoneTreeView(m_treeViewState, m_currentRoot);
+                m_treeView = new VRM10SpringBoneTreeView(m_treeViewState, m_currentRoot);
             }
 
             Repaint();

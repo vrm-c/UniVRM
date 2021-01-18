@@ -7,11 +7,11 @@ namespace UniVRM10
     /// The base algorithm is http://rocketjump.skr.jp/unity3d/109/ of @ricopin416
     /// DefaultExecutionOrder(11000) means calculate springbone after FinalIK( VRIK )
     /// </summary>
-    [AddComponentMenu("VRM/VRMSpringBone")]
+    [AddComponentMenu("VRM10/VRM10SpringBone")]
 #if UNITY_5_5_OR_NEWER
     [DefaultExecutionOrder(11000)]
 #endif
-    public class VRMSpringBone : MonoBehaviour
+    public class VRM10SpringBone : MonoBehaviour
     {
         [SerializeField]
         public string m_comment;
@@ -44,7 +44,7 @@ namespace UniVRM10
         public float m_hitRadius = 0.02f;
 
         [SerializeField]
-        public VRMSpringBoneColliderGroup[] ColliderGroups;
+        public VRM10SpringBoneColliderGroup[] ColliderGroups;
 
         SpringBoneProcessor m_processor = new SpringBoneProcessor();
 
@@ -74,20 +74,20 @@ namespace UniVRM10
                         {
                             switch (collider.ColliderType)
                             {
-                                case SpringBoneColliderTypes.Sphere:
+                                case VRM10SpringBoneColliderTypes.Sphere:
                                     m_colliderList.Add(new SpringBoneLogic.InternalCollider
                                     {
-                                        ColliderTypes = SpringBoneColliderTypes.Sphere,
+                                        ColliderTypes = VRM10SpringBoneColliderTypes.Sphere,
                                         WorldPosition = group.transform.TransformPoint(collider.Offset),
                                         Radius = collider.Radius,
 
                                     });
                                     break;
 
-                                case SpringBoneColliderTypes.Capsule:
+                                case VRM10SpringBoneColliderTypes.Capsule:
                                     m_colliderList.Add(new SpringBoneLogic.InternalCollider
                                     {
-                                        ColliderTypes = SpringBoneColliderTypes.Capsule,
+                                        ColliderTypes = VRM10SpringBoneColliderTypes.Capsule,
                                         WorldPosition = group.transform.TransformPoint(collider.Offset),
                                         Radius = collider.Radius,
                                         WorldTail = group.transform.TransformPoint(collider.Tail)

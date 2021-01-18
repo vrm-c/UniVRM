@@ -3,19 +3,19 @@ using UnityEditor.IMGUI.Controls;
 
 namespace UniVRM10
 {
-    class VRMSpringBoneTreeView : TreeView
+    class VRM10SpringBoneTreeView : TreeView
 
     {
         VRM10Controller m_root;
 
-        Dictionary<int, VRMSpringBone> m_boneMap = new Dictionary<int, VRMSpringBone>();
+        Dictionary<int, VRM10SpringBone> m_boneMap = new Dictionary<int, VRM10SpringBone>();
 
-        public bool TryGetSpringBone(int id, out VRMSpringBone bone)
+        public bool TryGetSpringBone(int id, out VRM10SpringBone bone)
         {
             return m_boneMap.TryGetValue(id, out bone);
         }
 
-        public VRMSpringBoneTreeView(TreeViewState treeViewState, VRM10Controller root)
+        public VRM10SpringBoneTreeView(TreeViewState treeViewState, VRM10Controller root)
             : base(treeViewState)
         {
             m_root = root;
@@ -32,7 +32,7 @@ namespace UniVRM10
             m_boneMap.Clear();
             var root = new TreeViewItem { id = 0, depth = -1, displayName = m_root.name };
             var allItems = new List<TreeViewItem>();
-            var bones = m_root.GetComponentsInChildren<VRMSpringBone>();
+            var bones = m_root.GetComponentsInChildren<VRM10SpringBone>();
             var id = 1;
             for (int i = 0; i < bones.Length; ++i, ++id)
             {
