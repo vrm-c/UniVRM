@@ -344,7 +344,7 @@ namespace UniVRM10
             };
             var glbBytes10 = exporter.Export(model, option);
             // ?
-            var glb10 = VrmLib.Glb.Parse(glbBytes10);
+            var glb10 = UniGLTF.Glb.Parse(glbBytes10);
             return glb10.ToBytes();
         }
 

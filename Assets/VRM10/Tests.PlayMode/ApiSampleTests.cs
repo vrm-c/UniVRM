@@ -11,7 +11,7 @@ namespace UniVRM10.Test
         {
             var bytes = File.ReadAllBytes(path);
 
-            if (!VrmLib.Glb.TryParse(bytes, out VrmLib.Glb glb, out Exception ex))
+            if (!UniGLTF.Glb.TryParse(bytes, out UniGLTF.Glb glb, out Exception ex))
             {
                 Debug.LogError($"fail to Glb.TryParse: {path} => {ex}");
                 return null;

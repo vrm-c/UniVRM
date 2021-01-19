@@ -28,7 +28,7 @@ public static class ExportDebugUtil
             // vrm = false
         };
         var glbBytes10 = exporter10.Export(model, option);
-        var glb10 = VrmLib.Glb.Parse(glbBytes10);
+        var glb10 = UniGLTF.Glb.Parse(glbBytes10);
         return System.Text.Encoding.UTF8.GetString(glb10.Json.Bytes.Array, glb10.Json.Bytes.Offset, glb10.Json.Bytes.Count);
     }
 }

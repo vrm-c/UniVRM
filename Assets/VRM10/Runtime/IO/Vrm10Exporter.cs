@@ -37,9 +37,7 @@ namespace UniVRM10
             UniGLTF.GltfSerializer.Serialize(f, Storage.Gltf);
             var json = f.GetStoreBytes();
 
-            var glb = new VrmLib.Glb(
-                new VrmLib.GlbChunk(VrmLib.GlbChunkType.JSON, json),
-                new VrmLib.GlbChunk(VrmLib.GlbChunkType.BIN, Storage.Buffers[0].Bytes));
+            var glb = UniGLTF.Glb.Create(json, Storage.Buffers[0].Bytes);
             return glb.ToBytes();
         }
 

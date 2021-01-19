@@ -438,11 +438,11 @@ namespace UniGLTF
             var f = new JsonFormatter();
             GltfSerializer.Serialize(f, self);
 
+            // remove unused extenions
             var json = f.ToString().ParseAsJson().ToString("  ");
-
             self.RemoveUnusedExtensions(json);
-
-            return Glb.ToBytes(json, self.buffers[0].GetBytes());
+            
+            return Glb.Create(json, self.buffers[0].GetBytes()).ToBytes();
         }
 
         public static (string, List<glTFBuffer>) ToGltf(this glTF self, string gltfPath)

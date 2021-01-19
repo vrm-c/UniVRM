@@ -24,7 +24,7 @@ namespace UniVRM10
 
         public static Model CreateVrmModel(byte[] bytes, FileInfo path)
         {
-            if (!Glb.TryParse(bytes, out Glb glb, out Exception ex))
+            if (!UniGLTF.Glb.TryParse(bytes, out UniGLTF.Glb glb, out Exception ex))
             {
                 throw ex;
             }

@@ -2,7 +2,8 @@
     "name": "VRM10.Tests.PlayMode",
     "references": [
         "VrmLib",
-        "VRM10"
+        "VRM10",
+        "UniGLTF"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

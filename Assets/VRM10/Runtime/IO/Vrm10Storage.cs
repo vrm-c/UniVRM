@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
-using UniGLTF;
 using VrmLib;
 using UniJSON;
 
@@ -13,7 +12,7 @@ namespace UniVRM10
     public class Vrm10Storage : IVrmStorage
     {
         public ArraySegment<Byte> OriginalJson { get; private set; }
-        public glTF Gltf
+        public UniGLTF.glTF Gltf
         {
             get;
             private set;
@@ -30,7 +29,7 @@ namespace UniVRM10
         /// </summary>
         public Vrm10Storage()
         {
-            Gltf = new glTF()
+            Gltf = new UniGLTF.glTF()
             {
                 extensionsUsed = new List<string>(),
             };
@@ -78,7 +77,7 @@ namespace UniVRM10
         {
             Buffers[bufferIndex].Extend(segment, stride, out int offset, out int length);
             var viewIndex = Gltf.bufferViews.Count;
-            Gltf.bufferViews.Add(new glTFBufferView
+            Gltf.bufferViews.Add(new UniGLTF.glTFBufferView
             {
                 buffer = 0,
                 byteOffset = offset,
@@ -176,14 +175,14 @@ namespace UniVRM10
                     .Slice(sparse.values.byteOffset, accessor.GetStride() * sparse.count);
                 ;
 
-                if (sparse.indices.componentType == (glComponentType)AccessorValueType.UNSIGNED_SHORT
-                    && accessor.componentType == (glComponentType)AccessorValueType.FLOAT
+                if (sparse.indices.componentType == (UniGLTF.glComponentType)AccessorValueType.UNSIGNED_SHORT
+                    && accessor.componentType == (UniGLTF.glComponentType)AccessorValueType.FLOAT
                     && accessor.type == "VEC3")
                 {
                     return RestoreSparseAccessorUInt16<Vector3>(bytes, accessor.count, sparseIndexBytes, sparseValueBytes);
                 }
-                if (sparse.indices.componentType == (glComponentType)AccessorValueType.UNSIGNED_INT
-                    && accessor.componentType == (glComponentType)AccessorValueType.FLOAT
+                if (sparse.indices.componentType == (UniGLTF.glComponentType)AccessorValueType.UNSIGNED_INT
+                    && accessor.componentType == (UniGLTF.glComponentType)AccessorValueType.FLOAT
                     && accessor.type == "VEC3")
                 {
                     return RestoreSparseAccessorUInt32<Vector3>(bytes, accessor.count, sparseIndexBytes, sparseValueBytes);
@@ -451,7 +450,7 @@ namespace UniVRM10
         /// </summary>
         /// <param name="textureIndex"></param>
         /// <returns></returns>
-        private (Texture.TextureTypes, glTFMaterial) GetTextureType(int textureIndex)
+        private (Texture.TextureTypes, UniGLTF.glTFMaterial) GetTextureType(int textureIndex)
         {
             foreach (var material in Gltf.materials)
             {
@@ -460,7 +459,7 @@ namespace UniVRM10
                 {
                     if (material.normalTexture?.index == textureIndex) return (Texture.TextureTypes.NormalMap, material);
                 }
-                else if (glTF_KHR_materials_unlit.IsEnable(material))
+                else if (UniGLTF.glTF_KHR_materials_unlit.IsEnable(material))
                 {
                 }
                 else
@@ -495,7 +494,7 @@ namespace UniVRM10
 
                     if (material.normalTexture?.index == textureIndex) return Texture.ColorSpaceTypes.Linear;
                 }
-                else if (glTF_KHR_materials_unlit.IsEnable(material))
+                else if (UniGLTF.glTF_KHR_materials_unlit.IsEnable(material))
                 {
                     // unlit
                     if (material.pbrMetallicRoughness.baseColorTexture?.index == textureIndex) return Texture.ColorSpaceTypes.Srgb;
@@ -522,7 +521,7 @@ namespace UniVRM10
 
             var sampler = (texture.sampler >= 0 && texture.sampler < Gltf.samplers.Count)
             ? Gltf.samplers[texture.sampler]
-            : new glTFTextureSampler()
+            : new UniGLTF.glTFTextureSampler()
             ;
 
             if (textureType.Item1 == Texture.TextureTypes.MetallicRoughness && textureType.Item2.pbrMetallicRoughness != null)
@@ -786,7 +785,7 @@ namespace UniVRM10
             return gltfVrm.LookAt.FromGltf();
         }
 
-        public ArraySegment<byte> GetBufferBytes(glTFBufferView bufferView)
+        public ArraySegment<byte> GetBufferBytes(UniGLTF.glTFBufferView bufferView)
         {
             if (!bufferView.buffer.TryGetValidIndex(Gltf.buffers.Count, out int bufferViewBufferIndex))
             {
@@ -795,7 +794,7 @@ namespace UniVRM10
             return GetBufferBytes(Gltf.buffers[bufferViewBufferIndex]);
         }
 
-        public ArraySegment<byte> GetBufferBytes(glTFBuffer buffer)
+        public ArraySegment<byte> GetBufferBytes(UniGLTF.glTFBuffer buffer)
         {
             int index = Gltf.buffers.IndexOf(buffer);
             return Buffers[index].Bytes;

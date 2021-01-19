@@ -5,7 +5,8 @@
         "VrmLib",
         "MeshUtility",
         "MeshUtility.Editor",
-        "UniGLTF.Editor"
+        "UniGLTF.Editor",
+        "UniGLTF"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [
