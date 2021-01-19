@@ -39,15 +39,15 @@ namespace UniVRM10
                 EditorUtility.SetDirty(m_target);
             }
         }
-        
+
         [MenuItem("CONTEXT/VRM10SpringBoneColliderGroup/X Mirror")]
         private static void InvertOffsetX(MenuCommand command)
         {
             var target = command.context as VRM10SpringBoneColliderGroup;
             if (target == null) return;
-            
+
             Undo.RecordObject(target, "X Mirror");
-            
+
             foreach (var sphereCollider in target.Colliders)
             {
                 var offset = sphereCollider.Offset;
@@ -55,27 +55,27 @@ namespace UniVRM10
                 sphereCollider.Offset = offset;
             }
         }
-        
+
         [MenuItem("CONTEXT/VRM10SpringBoneColliderGroup/Sort Colliders by Radius")]
         private static void SortByRadius(MenuCommand command)
         {
             var target = command.context as VRM10SpringBoneColliderGroup;
             if (target == null) return;
-            
+
             Undo.RecordObject(target, "Sort Colliders by Radius");
 
-            target.Colliders = target.Colliders.OrderBy(x => -x.Radius).ToArray();
+            target.Colliders = target.Colliders.OrderBy(x => -x.Radius).ToList();
         }
-        
+
         [MenuItem("CONTEXT/VRM10SpringBoneColliderGroup/Sort Colliders by Offset Y")]
         private static void SortByOffsetY(MenuCommand command)
         {
             var target = command.context as VRM10SpringBoneColliderGroup;
             if (target == null) return;
-            
+
             Undo.RecordObject(target, "Sort Colliders by Offset Y");
 
-            target.Colliders = target.Colliders.OrderBy(x => -x.Offset.y).ToArray();
+            target.Colliders = target.Colliders.OrderBy(x => -x.Offset.y).ToList();
         }
     }
 }

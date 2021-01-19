@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 
@@ -10,14 +11,18 @@ namespace UniVRM10
     [AddComponentMenu("VRM10/VRM10SpringBoneColliderGroup")]
     public class VRM10SpringBoneColliderGroup : MonoBehaviour
     {
-        [SerializeField]
-        public VRM10SpringBoneCollider[] Colliders = new VRM10SpringBoneCollider[]{
-            new VRM10SpringBoneCollider
+        void Reset()
+        {
+            // default shape
+            Colliders.Add(new VRM10SpringBoneCollider
             {
                 ColliderType = VRM10SpringBoneColliderTypes.Capsule,
-                Radius=0.1f
-            }
-        };
+                Radius = 0.1f
+            });
+        }
+
+        [SerializeField]
+        public List<VRM10SpringBoneCollider> Colliders = new List<VRM10SpringBoneCollider>();
 
         public static void DrawWireCapsule(Vector3 headPos, Vector3 tailPos, float radius)
         {

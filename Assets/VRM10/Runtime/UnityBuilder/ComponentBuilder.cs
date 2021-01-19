@@ -232,67 +232,67 @@ namespace UniVRM10
 
             // springBone
             {
-                var colliders = new Dictionary<VrmLib.SpringBoneColliderGroup, UniVRM10.VRM10SpringBoneColliderGroup>();
-                if (model.Vrm.SpringBone != null)
-                {
-                    foreach (var colliderGroup in model.Vrm.SpringBone.Springs.SelectMany(x => x.Colliders))
-                    {
-                        var go = asset.Map.Nodes[colliderGroup.Node];
-                        var springBoneColliderGroup = go.AddComponent<UniVRM10.VRM10SpringBoneColliderGroup>();
-
-                        springBoneColliderGroup.Colliders = colliderGroup.Colliders.Select(x =>
-                        {
-                            switch (x.ColliderType)
-                            {
-                                case VrmLib.VrmSpringBoneColliderTypes.Sphere:
-                                    return new UniVRM10.VRM10SpringBoneCollider()
-                                    {
-                                        ColliderType = VRM10SpringBoneColliderTypes.Sphere,
-                                        Offset = x.Offset.ToUnityVector3(),
-                                        Radius = x.Radius
-                                    };
-
-                                case VrmLib.VrmSpringBoneColliderTypes.Capsule:
-                                    return new UniVRM10.VRM10SpringBoneCollider()
-                                    {
-                                        ColliderType = VRM10SpringBoneColliderTypes.Capsule,
-                                        Offset = x.Offset.ToUnityVector3(),
-                                        Radius = x.Radius,
-                                        Tail = x.CapsuleTail.ToUnityVector3(),
-                                    };
-
-                                default:
-                                    throw new NotImplementedException();
-                            }
-                        }).ToArray(); ;
-
-                        colliders.Add(colliderGroup, springBoneColliderGroup);
-                    }
-                }
-
-                GameObject springBoneObject = null;
-                var springBoneTransform = asset.Root.transform.GetChildren().FirstOrDefault(x => x.name == "SpringBone");
-                if (springBoneTransform == null)
-                {
-                    springBoneObject = new GameObject("SpringBone");
-                }
-                else
-                {
-                    springBoneObject = springBoneTransform.gameObject;
-                }
-
-                springBoneObject.transform.SetParent(asset.Root.transform);
                 if (model.Vrm.SpringBone != null)
                 {
                     foreach (var vrmSpring in model.Vrm.SpringBone.Springs)
                     {
-                        var springBone = springBoneObject.AddComponent<UniVRM10.VRM10SpringBone>();
+                        // create a spring
+                        var springBone = new UniVRM10.VRM10SpringBone();
                         springBone.m_comment = vrmSpring.Comment;
                         if (vrmSpring.Origin != null && asset.Map.Nodes.TryGetValue(vrmSpring.Origin, out GameObject origin))
                         {
                             springBone.m_center = origin.transform;
                         }
+                        controller.SpringBone.Springs.Add(springBone);
 
+                        // create colliders for the spring
+                        foreach (var vrmSpringBoneCollider in vrmSpring.Colliders)
+                        {
+                            var go = asset.Map.Nodes[vrmSpringBoneCollider.Node];
+                            var springBoneColliderGroup = go.GetComponent<UniVRM10.VRM10SpringBoneColliderGroup>();
+                            if (springBoneColliderGroup != null)
+                            {
+                                // already setup
+                            }
+                            else
+                            {
+                                // new collider
+                                springBoneColliderGroup = go.AddComponent<UniVRM10.VRM10SpringBoneColliderGroup>();
+
+                                // add collider shapes
+                                springBoneColliderGroup.Colliders.Clear();
+                                foreach (var x in vrmSpringBoneCollider.Colliders)
+                                {
+                                    switch (x.ColliderType)
+                                    {
+                                        case VrmLib.VrmSpringBoneColliderTypes.Sphere:
+                                            springBoneColliderGroup.Colliders.Add(new UniVRM10.VRM10SpringBoneCollider()
+                                            {
+                                                ColliderType = VRM10SpringBoneColliderTypes.Sphere,
+                                                Offset = x.Offset.ToUnityVector3(),
+                                                Radius = x.Radius
+                                            });
+                                            break;
+
+                                        case VrmLib.VrmSpringBoneColliderTypes.Capsule:
+                                            springBoneColliderGroup.Colliders.Add(new UniVRM10.VRM10SpringBoneCollider()
+                                            {
+                                                ColliderType = VRM10SpringBoneColliderTypes.Capsule,
+                                                Offset = x.Offset.ToUnityVector3(),
+                                                Radius = x.Radius,
+                                                Tail = x.CapsuleTail.ToUnityVector3(),
+                                            });
+                                            break;
+
+                                        default:
+                                            throw new NotImplementedException();
+                                    }
+                                }
+                            }
+                            springBone.ColliderGroups.Add(springBoneColliderGroup);
+                        }
+
+                        // create joint for the spring
                         foreach (var vrmJoint in vrmSpring.Joints)
                         {
                             var joint = new VRM10SpringBone.VRM10SpringJoint();
@@ -305,8 +305,6 @@ namespace UniVRM10
 
                             springBone.Joints.Add(joint);
                         }
-
-                        springBone.ColliderGroups = vrmSpring.Colliders.Select(x => colliders[x]).ToArray();
                     }
                 }
             }

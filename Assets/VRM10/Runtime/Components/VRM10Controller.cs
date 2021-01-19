@@ -15,16 +15,16 @@ namespace UniVRM10
     [DisallowMultipleComponent]
     public class VRM10Controller : MonoBehaviour
     {
-        public enum UpdateTypes
-        {
-            None,
-            Update,
-            LateUpdate,
-        }
-
         [Serializable]
         public class VRM10ControllerImpl
         {
+            public enum UpdateTypes
+            {
+                None,
+                Update,
+                LateUpdate,
+            }
+
             [SerializeField, Header("UpdateSetting")]
             public UpdateTypes UpdateType = UpdateTypes.LateUpdate;
         }
@@ -45,6 +45,9 @@ namespace UniVRM10
         public VRM10ControllerFirstPerson FirstPerson = new VRM10ControllerFirstPerson();
 
         [SerializeField]
+        public VRM10SpringBoneManager SpringBone = new VRM10SpringBoneManager();
+
+        [SerializeField]
         public ModelAsset ModelAsset;
 
         void OnDestroy()
@@ -62,7 +65,6 @@ namespace UniVRM10
         }
 
         VRMConstraint[] m_constraints;
-        VRM10SpringBone[] m_springs;
 
         Transform m_head;
         public Transform Head
@@ -133,14 +135,7 @@ namespace UniVRM10
             //
             // spring
             //
-            if (m_springs == null)
-            {
-                m_springs = GetComponentsInChildren<VRM10SpringBone>();
-            }
-            foreach (var spring in m_springs)
-            {
-                spring.Process();
-            }
+            SpringBone.Process();
 
             //
             // expression
@@ -160,7 +155,7 @@ namespace UniVRM10
 
         private void Update()
         {
-            if (Controller.UpdateType == UpdateTypes.Update)
+            if (Controller.UpdateType == VRM10ControllerImpl.UpdateTypes.Update)
             {
                 Apply();
             }
@@ -168,7 +163,7 @@ namespace UniVRM10
 
         private void LateUpdate()
         {
-            if (Controller.UpdateType == UpdateTypes.LateUpdate)
+            if (Controller.UpdateType == VRM10ControllerImpl.UpdateTypes.LateUpdate)
             {
                 Apply();
             }

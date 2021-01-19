@@ -8,11 +8,8 @@ namespace UniVRM10
     /// The base algorithm is http://rocketjump.skr.jp/unity3d/109/ of @ricopin416
     /// DefaultExecutionOrder(11000) means calculate springbone after FinalIK( VRIK )
     /// </summary>
-    [AddComponentMenu("VRM10/VRM10SpringBone")]
-#if UNITY_5_5_OR_NEWER
-    [DefaultExecutionOrder(11000)]
-#endif
-    public class VRM10SpringBone : MonoBehaviour
+    [Serializable]
+    public class VRM10SpringBone
     {
         [SerializeField]
         public string m_comment;
@@ -49,7 +46,7 @@ namespace UniVRM10
         public List<VRM10SpringJoint> Joints = new List<VRM10SpringJoint>();
 
         [SerializeField]
-        public VRM10SpringBoneColliderGroup[] ColliderGroups;
+        public List<VRM10SpringBoneColliderGroup> ColliderGroups = new List<VRM10SpringBoneColliderGroup>();
 
         SpringBoneProcessor m_processor = new SpringBoneProcessor();
 
