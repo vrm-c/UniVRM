@@ -33,7 +33,6 @@ namespace UniVRM10
             return default;
         }
 
-
         static ListTreeNode<JsonValue> GetVRM0(byte[] bytes)
         {
             var glb = UniGLTF.Glb.Parse(bytes);
