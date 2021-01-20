@@ -220,6 +220,11 @@ namespace UniGLTF
 
         public static Glb Parse(Byte[] bytes)
         {
+            return Parse(new ArraySegment<byte>(bytes));
+        }
+
+        public static Glb Parse(ArraySegment<Byte> bytes)
+        {
             if (TryParse(bytes, out Glb glb, out Exception ex))
             {
                 return glb;
