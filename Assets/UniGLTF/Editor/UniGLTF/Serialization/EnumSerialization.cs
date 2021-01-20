@@ -71,6 +71,9 @@ namespace UniGLTF
                 case EnumSerializationType.AsLowerString:
                     return $"f.Value({argName}.ToString().ToLower())";
 
+                case EnumSerializationType.AsString:
+                    return $"f.Value({argName}.ToString())";
+
                 default:
                     throw new NotImplementedException();
             }
