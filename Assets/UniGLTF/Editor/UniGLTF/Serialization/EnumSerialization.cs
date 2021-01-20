@@ -46,6 +46,9 @@ namespace UniGLTF
                     // (ProjectionType)Enum.Parse(typeof(ProjectionType), kv.Value.GetString(), true)
                     return $"({m_type.Name})Enum.Parse(typeof({m_type.Name}), {argName}.GetString(), true)";
 
+                case EnumSerializationType.AsString:
+                    return $"({m_type.Name})Enum.Parse(typeof({m_type.Name}), {argName}.GetString(), false)";
+
                 default:
                     throw new NotImplementedException();
             }
