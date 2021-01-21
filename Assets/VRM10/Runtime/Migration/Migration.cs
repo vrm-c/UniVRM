@@ -438,6 +438,12 @@ namespace UniVRM10
                     throw new NotImplementedException();
             }
         }
+
+        public static void Check(ListTreeNode<JsonValue> vrm0, UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm1)
+        {
+            Migration.CheckMeta(vrm0["meta"], vrm1.Meta);
+            Migration.CheckHumanoid(vrm0["humanoid"], vrm1.Humanoid);
+        }
         #endregion
     }
 }

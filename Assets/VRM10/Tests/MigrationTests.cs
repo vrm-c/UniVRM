@@ -53,8 +53,7 @@ namespace UniVRM10
             var VRMC_vrm = GetVRMC_vrm(gltf.extensions);
             Assert.NotNull(VRMC_vrm);
 
-            Migration.CheckMeta(vrm0Json["meta"], VRMC_vrm.Meta);
-            Migration.CheckHumanoid(vrm0Json["humanoid"], VRMC_vrm.Humanoid);
+            Migration.Check(vrm0Json, VRMC_vrm);
         }
     }
 }
