@@ -444,6 +444,12 @@ namespace UniVRM10
             Migration.CheckMeta(vrm0["meta"], vrm1.Meta);
             Migration.CheckHumanoid(vrm0["humanoid"], vrm1.Humanoid);
         }
+
+        public static void Check(ListTreeNode<JsonValue> vrm0, UniGLTF.Extensions.VRMC_springBone.VRMC_springBone vrm1)
+        {
+            var a = 0;
+            // Migration.CheckSpringBone(vrm0["secondaryAnimation"], vrm1.sp)
+        }
         #endregion
     }
 }
