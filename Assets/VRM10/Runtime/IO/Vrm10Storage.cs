@@ -606,7 +606,7 @@ namespace UniVRM10
 
         static void AssignHumanoid(List<Node> nodes, UniGLTF.Extensions.VRMC_vrm.HumanBone humanBone, VrmLib.HumanoidBones key)
         {
-            if (humanBone.Node.HasValue)
+            if (humanBone!=null && humanBone.Node.HasValue)
             {
                 nodes[humanBone.Node.Value].HumanoidBone = key;
             }

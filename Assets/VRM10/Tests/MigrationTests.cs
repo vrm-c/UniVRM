@@ -54,7 +54,7 @@ namespace UniVRM10
             Migration.Check(vrm0Json, GetExtension(gltf.extensions, UniGLTF.Extensions.VRMC_vrm.VRMC_vrm.ExtensionNameUtf8,
                 UniGLTF.Extensions.VRMC_vrm.GltfDeserializer.Deserialize));
             Migration.Check(vrm0Json, GetExtension(gltf.extensions, UniGLTF.Extensions.VRMC_springBone.VRMC_springBone.ExtensionNameUtf8,
-                UniGLTF.Extensions.VRMC_springBone.GltfDeserializer.Deserialize));
+                UniGLTF.Extensions.VRMC_springBone.GltfDeserializer.Deserialize), gltf.nodes);
         }
     }
 }

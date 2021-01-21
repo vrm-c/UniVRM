@@ -9,6 +9,8 @@ namespace UniGLTF.Extensions.VRMC_springBone
 
     public class SpringBoneJoint
     {
+        public int? Node;
+        
         // The radius of spring sphere
         public float? HitRadius;
 

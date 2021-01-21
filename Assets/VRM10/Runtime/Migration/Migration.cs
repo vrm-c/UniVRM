@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using UniGLTF.Extensions.VRMC_vrm;
+using System.Linq;
 using UniJSON;
 
 namespace UniVRM10
@@ -48,7 +48,7 @@ namespace UniVRM10
         // },
         static UniGLTF.Extensions.VRMC_vrm.HumanBone MigrateHumanoidBone(ListTreeNode<JsonValue> vrm0)
         {
-            return new HumanBone
+            return new UniGLTF.Extensions.VRMC_vrm.HumanBone
             {
                 Node = vrm0["node"].GetInt32(),
             };
@@ -58,7 +58,7 @@ namespace UniVRM10
         {
             var humanoid = new UniGLTF.Extensions.VRMC_vrm.Humanoid
             {
-                HumanBones = new HumanBones()
+                HumanBones = new UniGLTF.Extensions.VRMC_vrm.HumanBones()
             };
 
             foreach (var humanoidBone in vrm0["humanBones"].ArrayItems())
@@ -157,10 +157,10 @@ namespace UniVRM10
                 AllowExcessivelySexualUsage = false,
                 AllowExcessivelyViolentUsage = false,
                 AllowRedistribution = false,
-                AvatarPermission = AvatarPermissionType.onlyAuthor,
-                CommercialUsage = CommercialUsageType.personalNonProfit,
-                CreditNotation = CreditNotationType.required,
-                Modification = ModificationType.prohibited,
+                AvatarPermission = UniGLTF.Extensions.VRMC_vrm.AvatarPermissionType.onlyAuthor,
+                CommercialUsage = UniGLTF.Extensions.VRMC_vrm.CommercialUsageType.personalNonProfit,
+                CreditNotation = UniGLTF.Extensions.VRMC_vrm.CreditNotationType.required,
+                Modification = UniGLTF.Extensions.VRMC_vrm.ModificationType.prohibited,
             };
 
             foreach (var kv in vrm0.ObjectItems())
@@ -180,7 +180,7 @@ namespace UniVRM10
                             var allowdUserType = kv.Value.GetString();
                             switch (allowdUserType)
                             {
-                                case "Everyone": meta.AvatarPermission = AvatarPermissionType.everyone; break;
+                                case "Everyone": meta.AvatarPermission = UniGLTF.Extensions.VRMC_vrm.AvatarPermissionType.everyone; break;
                                 default: throw new NotImplementedException($"allowedUser: {allowdUserType}");
                             }
                         }
@@ -193,8 +193,8 @@ namespace UniVRM10
                             var commercialUssageType = kv.Value.GetString();
                             switch (commercialUssageType)
                             {
-                                case "Allow": meta.CommercialUsage = CommercialUsageType.personalProfit; break;
-                                default: meta.CommercialUsage = CommercialUsageType.personalNonProfit; break;
+                                case "Allow": meta.CommercialUsage = UniGLTF.Extensions.VRMC_vrm.CommercialUsageType.personalProfit; break;
+                                default: meta.CommercialUsage = UniGLTF.Extensions.VRMC_vrm.CommercialUsageType.personalNonProfit; break;
                             }
                         }
                         break;
@@ -255,37 +255,195 @@ namespace UniVRM10
             return "";
         }
 
+        static float[] ReverseZ(ListTreeNode<JsonValue> xyz)
+        {
+            return new float[]{
+                xyz["x"].GetSingle(),
+                xyz["y"].GetSingle(),
+                -xyz["z"].GetSingle(),
+            };
+        }
+
+        static IEnumerable<UniGLTF.glTFNode> EnumJoint(List<UniGLTF.glTFNode> nodes, UniGLTF.glTFNode node)
+        {
+            yield return node;
+
+            if (node.children != null && node.children.Length > 0)
+            {
+                foreach (var x in EnumJoint(nodes, nodes[node.children[0]]))
+                {
+                    yield return x;
+                }
+            }
+        }
+
+        static UniGLTF.Extensions.VRMC_springBone.VRMC_springBone MigrateSpringBone(UniGLTF.glTF gltf, ListTreeNode<JsonValue> sa)
+        {
+            var colliderNodes = new List<int>();
+
+            foreach (var x in sa["colliderGroups"].ArrayItems())
+            {
+                var node = x["node"].GetInt32();
+                colliderNodes.Add(node);
+                var gltfNode = gltf.nodes[node];
+
+                var collider = new UniGLTF.Extensions.VRMC_node_collider.VRMC_node_collider()
+                {
+                    Shapes = new List<UniGLTF.Extensions.VRMC_node_collider.ColliderShape>(),
+                };
+
+                // {
+                //   "node": 14,
+                //   "colliders": [
+                //     {
+                //       "offset": {
+                //         "x": 0.025884293,
+                //         "y": -0.120000005,
+                //         "z": 0
+                //       },
+                //       "radius": 0.05
+                //     },
+                //     {
+                //       "offset": {
+                //         "x": -0.02588429,
+                //         "y": -0.120000005,
+                //         "z": 0
+                //       },
+                //       "radius": 0.05
+                //     },
+                //     {
+                //       "offset": {
+                //         "x": 0,
+                //         "y": -0.0220816135,
+                //         "z": 0
+                //       },
+                //       "radius": 0.08
+                //     }
+                //   ]
+                // },
+                foreach (var y in x["colliders"].ArrayItems())
+                {
+                    collider.Shapes.Add(new UniGLTF.Extensions.VRMC_node_collider.ColliderShape
+                    {
+                        Sphere = new UniGLTF.Extensions.VRMC_node_collider.ColliderShapeSphere
+                        {
+                            Offset = ReverseZ(y["offset"]),
+                            Radius = y["radius"].GetSingle()
+                        }
+                    });
+                }
+
+                if (!(gltfNode.extensions is UniGLTF.glTFExtensionExport extensions))
+                {
+                    extensions = new UniGLTF.glTFExtensionExport();
+                    gltfNode.extensions = extensions;
+                }
+
+                var f = new JsonFormatter();
+                UniGLTF.Extensions.VRMC_node_collider.GltfSerializer.Serialize(f, collider);
+                extensions.Add(UniGLTF.Extensions.VRMC_node_collider.VRMC_node_collider.ExtensionName, f.GetStoreBytes());
+            }
+
+            var springBone = new UniGLTF.Extensions.VRMC_springBone.VRMC_springBone
+            {
+                Springs = new List<UniGLTF.Extensions.VRMC_springBone.Spring>(),
+            };
+            foreach (var x in sa["boneGroups"].ArrayItems())
+            {
+                // {
+                //   "comment": "",
+                //   "stiffiness": 2,
+                //   "gravityPower": 0,
+                //   "gravityDir": {
+                //     "x": 0,
+                //     "y": -1,
+                //     "z": 0
+                //   },
+                //   "dragForce": 0.7,
+                //   "center": -1,
+                //   "hitRadius": 0.02,
+                //   "bones": [
+                //     97,
+                //     99,
+                //     101,
+                //     113,
+                //     114
+                //   ],
+                //   "colliderGroups": [
+                //     3,
+                //     4,
+                //     5
+                //   ]
+                // },
+                foreach (var y in x["bones"].ArrayItems())
+                {
+                    var spring = new UniGLTF.Extensions.VRMC_springBone.Spring
+                    {
+                        Name = x["comment"].GetString(),
+                        Colliders = x["colliderGroups"].ArrayItems().Select(z => colliderNodes[z.GetInt32()]).ToArray(),
+                        Joints = new List<UniGLTF.Extensions.VRMC_springBone.SpringBoneJoint>(),
+                    };
+
+                    foreach (var z in EnumJoint(gltf.nodes, gltf.nodes[y.GetInt32()]))
+                    {
+                        spring.Joints.Add(new UniGLTF.Extensions.VRMC_springBone.SpringBoneJoint
+                        {
+                            Node = gltf.nodes.IndexOf(z),
+                            DragForce = x["dragForce"].GetSingle(),
+                            GravityDir = ReverseZ(x["gravityDir"]),
+                            GravityPower = x["gravityPower"].GetSingle(),
+                            HitRadius = x["hitRadius"].GetSingle(),
+                            Stiffness = x["stiffiness"].GetSingle(),
+                        });
+                    }
+
+                    springBone.Springs.Add(spring);
+                }
+            }
+
+            return springBone;
+        }
+
         public static byte[] Migrate(byte[] src)
         {
             var glb = UniGLTF.Glb.Parse(src);
             var json = glb.Json.Bytes.ParseAsJson();
-
             var gltf = UniGLTF.GltfDeserializer.Deserialize(json);
-            if (!(gltf.extensions is UniGLTF.glTFExtensionImport import))
-            {
-                throw new Exception("not extensions");
-            }
-            if (!import.TryGet("VRM", out ListTreeNode<JsonValue> vrm))
-            {
-                throw new Exception("no vrm");
-            }
 
+            var extensions = new UniGLTF.glTFExtensionExport();
             {
-                var vrm1 = new VRMC_vrm();
                 var vrm0 = json["extensions"]["VRM"];
 
-                // meta
-                vrm1.Meta = MigrateMeta(vrm0["meta"]);
-                // humanoid
-                vrm1.Humanoid = MigrateHumanoid(vrm0["humanoid"]);
+                {
+                    // vrm
+                    var vrm1 = new UniGLTF.Extensions.VRMC_vrm.VRMC_vrm();
+                    vrm1.Meta = MigrateMeta(vrm0["meta"]);
+                    vrm1.Humanoid = MigrateHumanoid(vrm0["humanoid"]);
 
-                var f = new JsonFormatter();
-                GltfSerializer.Serialize(f, vrm1);
-                gltf.extensions = new UniGLTF.glTFExtensionExport().Add(VRMC_vrm.ExtensionName, f.GetStoreBytes());
+                    var f = new JsonFormatter();
+                    UniGLTF.Extensions.VRMC_vrm.GltfSerializer.Serialize(f, vrm1);
+                    extensions.Add(UniGLTF.Extensions.VRMC_vrm.VRMC_vrm.ExtensionName, f.GetStoreBytes());
+                }
+                {
+                    // springBone & collider
+                    var vrm1 = MigrateSpringBone(gltf, json["extensions"]["VRM"]["secondaryAnimation"]);
+
+                    var f = new JsonFormatter();
+                    UniGLTF.Extensions.VRMC_springBone.GltfSerializer.Serialize(f, vrm1);
+                    extensions.Add(UniGLTF.Extensions.VRMC_springBone.VRMC_springBone.ExtensionName, f.GetStoreBytes());
+                }
+                {
+                    // MToon
+                }
+                {
+                    // constraint
+                }
             }
 
             ArraySegment<byte> vrm1Json = default;
             {
+                gltf.extensions = extensions;
+
                 var f = new JsonFormatter();
                 UniGLTF.GltfSerializer.Serialize(f, gltf);
                 vrm1Json = f.GetStoreBytes();
@@ -384,11 +542,11 @@ namespace UniVRM10
             return lhs == rhs[0];
         }
 
-        static string AvatarPermission(string key, AvatarPermissionType x)
+        static string AvatarPermission(string key, UniGLTF.Extensions.VRMC_vrm.AvatarPermissionType x)
         {
             switch (x)
             {
-                case AvatarPermissionType.everyone: return "Everyone";
+                case UniGLTF.Extensions.VRMC_vrm.AvatarPermissionType.everyone: return "Everyone";
                     // case AvatarPermissionType.onlyAuthor: return "OnlyAuthor";
                     // case AvatarPermissionType.explicitlyLicensedPerson: return "Explicited";
             }
@@ -410,14 +568,15 @@ namespace UniVRM10
 
             if (vrm0["commercialUssageName"].GetString() == "Allow")
             {
-                if (vrm1.CommercialUsage == CommercialUsageType.personalNonProfit)
+                if (vrm1.CommercialUsage == UniGLTF.Extensions.VRMC_vrm.CommercialUsageType.personalNonProfit)
                 {
                     throw new MigrationException("meta.commercialUssageName", $"{vrm1.CommercialUsage}");
                 }
             }
             else
             {
-                if (vrm1.CommercialUsage == CommercialUsageType.corporation || vrm1.CommercialUsage == CommercialUsageType.personalProfit)
+                if (vrm1.CommercialUsage == UniGLTF.Extensions.VRMC_vrm.CommercialUsageType.corporation
+                || vrm1.CommercialUsage == UniGLTF.Extensions.VRMC_vrm.CommercialUsageType.personalProfit)
                 {
                     throw new MigrationException("meta.commercialUssageName", $"{vrm1.CommercialUsage}");
                 }
@@ -429,7 +588,7 @@ namespace UniVRM10
             {
                 case "Other":
                     {
-                        if (vrm1.Modification != ModificationType.prohibited) throw new MigrationException("meta.licenceName", $"{vrm1.Modification}");
+                        if (vrm1.Modification != UniGLTF.Extensions.VRMC_vrm.ModificationType.prohibited) throw new MigrationException("meta.licenceName", $"{vrm1.Modification}");
                         if (vrm1.AllowRedistribution.Value) throw new MigrationException("meta.liceneName", $"{vrm1.Modification}");
                         break;
                     }
@@ -445,7 +604,7 @@ namespace UniVRM10
             Migration.CheckHumanoid(vrm0["humanoid"], vrm1.Humanoid);
         }
 
-        public static void Check(ListTreeNode<JsonValue> vrm0, UniGLTF.Extensions.VRMC_springBone.VRMC_springBone vrm1)
+        public static void Check(ListTreeNode<JsonValue> vrm0, UniGLTF.Extensions.VRMC_springBone.VRMC_springBone vrm1, List<UniGLTF.glTFNode> nodes)
         {
             var a = 0;
             // Migration.CheckSpringBone(vrm0["secondaryAnimation"], vrm1.sp)
