@@ -29,14 +29,15 @@ namespace UniVRM10
             var dst = EditorUtility.SaveFilePanel(
                 "Save vrm1 file",
                 s_lastPath,
-                $"{path.FileName}_vrm1",
+                $"{path.FileNameWithoutExtension}_vrm1",
                 "vrm");
             if (string.IsNullOrEmpty(dst))
             {
                 return;
             }
-
             s_lastPath = Path.GetDirectoryName(dst);
+
+            // write result
             File.WriteAllBytes(dst, vrm1Bytes);
 
             // immediately import for GUI update

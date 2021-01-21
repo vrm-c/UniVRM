@@ -127,6 +127,105 @@ namespace UniVRM10
             return humanoid;
         }
 
+        ///
+        /// 互換性の無いところ
+        /// 
+        /// * きつくなる方向は許す
+        /// * 緩くなる方向は不許可(throw)
+        /// 
+        // "meta": {
+        //   "title": "Alicia Solid",
+        //   "version": "1.10",
+        //   "author": "© DWANGO Co., Ltd.",
+        //   "contactInformation": "https://3d.nicovideo.jp/alicia/",
+        //   "reference": "",
+        //   "texture": 7,
+        //   "allowedUserName": "Everyone",
+        //   "violentUssageName": "Disallow",
+        //   "sexualUssageName": "Disallow",
+        //   "commercialUssageName": "Allow",
+        //   "otherPermissionUrl": "https://3d.nicovideo.jp/alicia/rule.html",
+        //   "licenseName": "Other",
+        //   "otherLicenseUrl": "https://3d.nicovideo.jp/alicia/rule.html"
+        // },
+        static UniGLTF.Extensions.VRMC_vrm.Meta MigrateMeta(ListTreeNode<JsonValue> vrm0)
+        {
+            var meta = new UniGLTF.Extensions.VRMC_vrm.Meta
+            {
+                AllowPoliticalOrReligiousUsage = false,
+                AllowExcessivelySexualUsage = false,
+                AllowExcessivelyViolentUsage = false,
+                AllowRedistribution = false,
+                AvatarPermission = AvatarPermissionType.onlyAuthor,
+                CommercialUsage = CommercialUsageType.personalNonProfit,
+                CreditNotation = CreditNotationType.required,
+                Modification = ModificationType.prohibited,
+            };
+
+            foreach (var kv in vrm0.ObjectItems())
+            {
+                var key = kv.Key.GetString();
+                switch (key)
+                {
+                    case "title": meta.Name = kv.Value.GetString(); break;
+                    case "version": meta.Version = kv.Value.GetString(); break;
+                    case "author": meta.Authors = new List<string>() { kv.Value.GetString() }; break;
+                    case "contactInformation": meta.ContactInformation = kv.Value.GetString(); break;
+                    case "reference": meta.References = new List<string>() { kv.Value.GetString() }; break;
+                    case "texture": meta.ThumbnailImage = kv.Value.GetInt32(); break;
+
+                    case "allowedUserName":
+                        {
+                            var allowdUserType = kv.Value.GetString();
+                            switch (allowdUserType)
+                            {
+                                case "Everyone": meta.AvatarPermission = AvatarPermissionType.everyone; break;
+                                default: throw new NotImplementedException($"allowedUser: {allowdUserType}");
+                            }
+                        }
+                        break;
+
+                    case "violentUssageName": meta.AllowExcessivelyViolentUsage = kv.Value.GetString().ToLower() == "allow"; break;
+                    case "sexualUssageName": meta.AllowExcessivelySexualUsage = kv.Value.GetString().ToLower() == "allow"; break;
+                    case "commercialUssageName":
+                        {
+                            var commercialUssageType = kv.Value.GetString();
+                            switch (commercialUssageType)
+                            {
+                                case "Allow": meta.CommercialUsage = CommercialUsageType.personalProfit; break;
+                                default: meta.CommercialUsage = CommercialUsageType.personalNonProfit; break;
+                            }
+                        }
+                        break;
+
+                    case "otherPermissionUrl":
+                        {
+                            // TODO
+                            // var url = kv.Value.GetString();
+                            // if (!String.IsNullOrWhiteSpace(url))
+                            // {
+                            //     throw new NotImplementedException("otherPermissionUrl not allowd");
+                            // }
+                        }
+                        break;
+
+                    case "otherLicenseUrl": meta.OtherLicenseUrl = kv.Value.GetString(); break;
+
+                    case "licenseName":
+                        {
+                            // TODO
+                            // CreditNotation = CreditNotationType.required,
+                        }
+                        break;
+
+                    default:
+                        throw new NotImplementedException(key);
+                }
+            }
+
+            return meta;
+        }
+
         public static byte[] Migrate(byte[] src)
         {
             var glb = UniGLTF.Glb.Parse(src);
@@ -145,6 +244,10 @@ namespace UniVRM10
             {
                 var vrm1 = new VRMC_vrm();
                 var vrm0 = json["extensions"]["VRM"];
+
+                // meta
+                vrm1.Meta = MigrateMeta(vrm0["meta"]);
+                // humanoid
                 vrm1.Humanoid = MigrateHumanoid(vrm0["humanoid"]);
 
                 var f = new JsonFormatter();
