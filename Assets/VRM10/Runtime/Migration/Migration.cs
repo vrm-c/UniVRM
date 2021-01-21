@@ -121,6 +121,7 @@ namespace UniVRM10
                     case "rightLittleIntermediate": humanoid.HumanBones.RightLittleIntermediate = MigrateHumanoidBone(humanoidBone); break;
                     case "rightLittleDistal": humanoid.HumanBones.RightLittleDistal = MigrateHumanoidBone(humanoidBone); break;
                     case "upperChest": humanoid.HumanBones.UpperChest = MigrateHumanoidBone(humanoidBone); break;
+                    default: throw new NotImplementedException($"unknown bone: {boneType}");
                 }
             }
 
@@ -226,6 +227,34 @@ namespace UniVRM10
             return meta;
         }
 
+        static string GetLicenseUrl(ListTreeNode<JsonValue> vrm0)
+        {
+            string l0 = default;
+            string l1 = default;
+            foreach (var kv in vrm0.ObjectItems())
+            {
+                switch (kv.Key.GetString())
+                {
+                    case "otherLicenseUrl":
+                        l0 = kv.Value.GetString();
+                        break;
+
+                    case "otherPermissionUrl":
+                        l1 = kv.Value.GetString();
+                        break;
+                }
+            }
+            if (!string.IsNullOrWhiteSpace(l0))
+            {
+                return l0;
+            }
+            if (!string.IsNullOrWhiteSpace(l1))
+            {
+                return l1;
+            }
+            return "";
+        }
+
         public static byte[] Migrate(byte[] src)
         {
             var glb = UniGLTF.Glb.Parse(src);
@@ -266,6 +295,13 @@ namespace UniVRM10
         }
 
         #region for UnitTest
+        public class MigrationException : Exception
+        {
+            public MigrationException(string key, string value) : base($"{key}: {value}")
+            {
+            }
+        }
+
         public static void CheckBone(string bone, ListTreeNode<JsonValue> vrm0, UniGLTF.Extensions.VRMC_vrm.HumanBone vrm1)
         {
             var vrm0NodeIndex = vrm0["node"].GetInt32();
@@ -337,9 +373,69 @@ namespace UniVRM10
                     case "rightLittleIntermediate": CheckBone(boneType, humanoidBone, vrm1.HumanBones.RightLittleIntermediate); break;
                     case "rightLittleDistal": CheckBone(boneType, humanoidBone, vrm1.HumanBones.RightLittleDistal); break;
                     case "upperChest": CheckBone(boneType, humanoidBone, vrm1.HumanBones.UpperChest); break;
-                    default:
-                        throw new NotImplementedException($"unknown bone: {boneType}");
+                    default: throw new MigrationException("humanonoid.humanBones[*].bone", boneType);
                 }
+            }
+        }
+
+        static bool IsSingleList(string key, string lhs, List<string> rhs)
+        {
+            if (rhs.Count != 1) throw new MigrationException(key, $"{rhs.Count}");
+            return lhs == rhs[0];
+        }
+
+        static string AvatarPermission(string key, AvatarPermissionType x)
+        {
+            switch (x)
+            {
+                case AvatarPermissionType.everyone: return "Everyone";
+                    // case AvatarPermissionType.onlyAuthor: return "OnlyAuthor";
+                    // case AvatarPermissionType.explicitlyLicensedPerson: return "Explicited";
+            }
+            throw new MigrationException(key, $"{x}");
+        }
+
+        public static void CheckMeta(ListTreeNode<JsonValue> vrm0, UniGLTF.Extensions.VRMC_vrm.Meta vrm1)
+        {
+            if (vrm0["title"].GetString() != vrm1.Name) throw new MigrationException("meta.title", vrm1.Name);
+            if (vrm0["version"].GetString() != vrm1.Version) throw new MigrationException("meta.version", vrm1.Version);
+            if (!IsSingleList("meta.author", vrm0["author"].GetString(), vrm1.Authors)) throw new MigrationException("meta.author", $"{vrm1.Authors}");
+            if (vrm0["contactInformation"].GetString() != vrm1.ContactInformation) throw new MigrationException("meta.contactInformation", vrm1.ContactInformation);
+            if (!IsSingleList("meta.reference", vrm0["reference"].GetString(), vrm1.References)) throw new MigrationException("meta.reference", $"{vrm1.References}");
+            if (vrm0["texture"].GetInt32() != vrm1.ThumbnailImage) throw new MigrationException("meta.texture", $"{vrm1.ThumbnailImage}");
+
+            if (vrm0["allowedUserName"].GetString() != AvatarPermission("meta.allowedUserName", vrm1.AvatarPermission)) throw new MigrationException("meta.allowedUserName", $"{vrm1.AvatarPermission}");
+            if (vrm0["violentUssageName"].GetString() == "Allow" != vrm1.AllowExcessivelyViolentUsage) throw new MigrationException("meta.violentUssageName", $"{vrm1.AllowExcessivelyViolentUsage}");
+            if (vrm0["sexualUssageName"].GetString() == "Allow" != vrm1.AllowExcessivelySexualUsage) throw new MigrationException("meta.sexualUssageName", $"{vrm1.AllowExcessivelyViolentUsage}");
+
+            if (vrm0["commercialUssageName"].GetString() == "Allow")
+            {
+                if (vrm1.CommercialUsage == CommercialUsageType.personalNonProfit)
+                {
+                    throw new MigrationException("meta.commercialUssageName", $"{vrm1.CommercialUsage}");
+                }
+            }
+            else
+            {
+                if (vrm1.CommercialUsage == CommercialUsageType.corporation || vrm1.CommercialUsage == CommercialUsageType.personalProfit)
+                {
+                    throw new MigrationException("meta.commercialUssageName", $"{vrm1.CommercialUsage}");
+                }
+            }
+
+            if (GetLicenseUrl(vrm0) != vrm1.OtherLicenseUrl) throw new MigrationException("meta.otherLicenseUrl", vrm1.OtherLicenseUrl);
+
+            switch (vrm0["licenseName"].GetString())
+            {
+                case "Other":
+                    {
+                        if (vrm1.Modification != ModificationType.prohibited) throw new MigrationException("meta.licenceName", $"{vrm1.Modification}");
+                        if (vrm1.AllowRedistribution.Value) throw new MigrationException("meta.liceneName", $"{vrm1.Modification}");
+                        break;
+                    }
+
+                default:
+                    throw new NotImplementedException();
             }
         }
         #endregion
