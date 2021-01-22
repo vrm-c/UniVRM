@@ -30,6 +30,12 @@ namespace UniGLTF.Extensions.VRMC_node_collider
 
     public class ColliderShape
     {
+        // Dictionary object with extension-specific objects.
+        public glTFExtension Extensions;
+
+        // Application-specific data.
+        public glTFExtension Extras;
+
         public ColliderShapeSphere Sphere;
 
         public ColliderShapeCapsule Capsule;
@@ -39,6 +45,12 @@ namespace UniGLTF.Extensions.VRMC_node_collider
     {
         public const string ExtensionName = "VRMC_node_collider";
         public static readonly Utf8String ExtensionNameUtf8 = Utf8String.From(ExtensionName);
+
+        // Dictionary object with extension-specific objects.
+        public glTFExtension Extensions;
+
+        // Application-specific data.
+        public glTFExtension Extras;
 
         public List<ColliderShape> Shapes;
     }

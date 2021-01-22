@@ -36,6 +36,16 @@ public static VRMC_springBone Deserialize(ListTreeNode<JsonValue> parsed)
     {
         var key = kv.Key.GetString();
 
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
         if(key=="springs"){
             value.Springs = Deserialize_Springs(kv.Value);
             continue;
@@ -100,6 +110,21 @@ public static SpringBoneJoint Deserialize_Joints_ITEM(ListTreeNode<JsonValue> pa
     {
         var key = kv.Key.GetString();
 
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="node"){
+            value.Node = kv.Value.GetInt32();
+            continue;
+        }
+
         if(key=="hitRadius"){
             value.HitRadius = kv.Value.GetSingle();
             continue;
@@ -122,6 +147,11 @@ public static SpringBoneJoint Deserialize_Joints_ITEM(ListTreeNode<JsonValue> pa
 
         if(key=="dragForce"){
             value.DragForce = kv.Value.GetSingle();
+            continue;
+        }
+
+        if(key=="exclude"){
+            value.Exclude = kv.Value.GetBoolean();
             continue;
         }
 

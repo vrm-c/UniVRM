@@ -33,6 +33,16 @@ public static void Serialize(JsonFormatter f, VRMC_springBone value)
     f.BeginMap();
 
 
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        value.Extensions.Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        value.Extras.Serialize(f);
+    }
+
     if(value.Springs!=null&&value.Springs.Count()>=0){
         f.Key("springs");                
         Serialize_Springs(f, value.Springs);
@@ -93,6 +103,21 @@ public static void Serialize_Joints_ITEM(JsonFormatter f, SpringBoneJoint value)
     f.BeginMap();
 
 
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        value.Extensions.Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        value.Extras.Serialize(f);
+    }
+
+    if(value.Node.HasValue){
+        f.Key("node");                
+        f.Value(value.Node.GetValueOrDefault());
+    }
+
     if(value.HitRadius.HasValue){
         f.Key("hitRadius");                
         f.Value(value.HitRadius.GetValueOrDefault());
@@ -116,6 +141,11 @@ public static void Serialize_Joints_ITEM(JsonFormatter f, SpringBoneJoint value)
     if(value.DragForce.HasValue){
         f.Key("dragForce");                
         f.Value(value.DragForce.GetValueOrDefault());
+    }
+
+    if(value.Exclude.HasValue){
+        f.Key("exclude");                
+        f.Value(value.Exclude.GetValueOrDefault());
     }
 
     f.EndMap();

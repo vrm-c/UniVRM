@@ -33,6 +33,16 @@ public static void Serialize(JsonFormatter f, VRMC_node_collider value)
     f.BeginMap();
 
 
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        value.Extensions.Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        value.Extras.Serialize(f);
+    }
+
     if(value.Shapes!=null&&value.Shapes.Count()>=0){
         f.Key("shapes");                
         Serialize_Shapes(f, value.Shapes);
@@ -57,6 +67,16 @@ public static void Serialize_Shapes_ITEM(JsonFormatter f, ColliderShape value)
 {
     f.BeginMap();
 
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        value.Extensions.Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        value.Extras.Serialize(f);
+    }
 
     if(value.Sphere!=null){
         f.Key("sphere");                

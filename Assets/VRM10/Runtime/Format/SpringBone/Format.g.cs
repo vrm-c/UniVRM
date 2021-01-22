@@ -9,22 +9,32 @@ namespace UniGLTF.Extensions.VRMC_springBone
 
     public class SpringBoneJoint
     {
+        // Dictionary object with extension-specific objects.
+        public glTFExtension Extensions;
+
+        // Application-specific data.
+        public glTFExtension Extras;
+
+        // The node index.
         public int? Node;
-        
-        // The radius of spring sphere
+
+        // The radius of spring sphere.
         public float? HitRadius;
 
-        // The force to return to the initial pose
+        // The force to return to the initial pose.
         public float? Stiffness;
 
-        // Gravitational acceleration
+        // Gravitational acceleration.
         public float? GravityPower;
 
         // The direction of gravity. A gravity other than downward direction also works.
         public float[] GravityDir;
 
-        // Air resistance. Deceleration force
+        // Air resistance. Deceleration force.
         public float? DragForce;
+
+        // When enabled, this joint will skip Spring processing.
+        public bool? Exclude;
     }
 
     public class Spring
@@ -43,6 +53,12 @@ namespace UniGLTF.Extensions.VRMC_springBone
     {
         public const string ExtensionName = "VRMC_springBone";
         public static readonly Utf8String ExtensionNameUtf8 = Utf8String.From(ExtensionName);
+
+        // Dictionary object with extension-specific objects.
+        public glTFExtension Extensions;
+
+        // Application-specific data.
+        public glTFExtension Extras;
 
         // An array of springs.
         public List<Spring> Springs;

@@ -36,6 +36,16 @@ public static VRMC_node_collider Deserialize(ListTreeNode<JsonValue> parsed)
     {
         var key = kv.Key.GetString();
 
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
         if(key=="shapes"){
             value.Shapes = Deserialize_Shapes(kv.Value);
             continue;
@@ -62,6 +72,16 @@ public static ColliderShape Deserialize_Shapes_ITEM(ListTreeNode<JsonValue> pars
     foreach(var kv in parsed.ObjectItems())
     {
         var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
 
         if(key=="sphere"){
             value.Sphere = Deserialize_Sphere(kv.Value);
