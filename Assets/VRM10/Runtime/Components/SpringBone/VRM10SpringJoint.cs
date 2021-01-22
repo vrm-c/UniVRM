@@ -48,18 +48,9 @@ namespace UniVRM10
         {
             if (m_logic == null)
             {
-                // Setup(joints, m_center);
-                // SetupRecursive(joint, m_center);
-                if (tail == null)
+                // 初期化
+                if (tail != null)
                 {
-                    // 末端に追加のスプリングを付加する
-                    var delta = Transform.position - Transform.parent.position;
-                    var childPosition = Transform.position + delta.normalized * 0.07f;
-                    m_logic = new SpringBoneLogic(center, Transform, Transform.worldToLocalMatrix.MultiplyPoint(childPosition));
-                }
-                else
-                {
-                    // 最初の子ボーンを尻尾としてスプリングを付加する
                     var localPosition = tail.Transform.localPosition;
                     var scale = tail.Transform.lossyScale;
                     m_logic = new SpringBoneLogic(center, Transform,
@@ -68,6 +59,13 @@ namespace UniVRM10
                             localPosition.y * scale.y,
                             localPosition.z * scale.z
                             ));
+                }
+                else
+                {
+                    // 親からまっすぐの位置に tail を作成
+                    var delta = Transform.position - Transform.parent.position;
+                    var childPosition = Transform.position + delta.normalized * 0.07f;
+                    m_logic = new SpringBoneLogic(center, Transform, Transform.worldToLocalMatrix.MultiplyPoint(childPosition));
                 }
             }
 
