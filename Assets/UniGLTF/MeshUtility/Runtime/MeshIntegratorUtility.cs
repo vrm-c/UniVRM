@@ -54,7 +54,7 @@ namespace MeshUtility
             }
 
             var mesh = new Mesh();
-            mesh.name = "integrated";
+            mesh.name = "MeshesIntegrated";
 
             if (integrator.Positions.Count > ushort.MaxValue)
             {

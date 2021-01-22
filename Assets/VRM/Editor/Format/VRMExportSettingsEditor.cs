@@ -118,11 +118,11 @@ namespace VRM
             REMOVE_VERTEX_COLOR,
 
             [LangMsg(Languages.ja, "このボタンで自動で T-Pose にできます。手動で T-Pose にしたり、ボタンの後で手直ししてもOKです。")]
-            [LangMsg(Languages.en, "You can automatically set the T pose with this button. You can change it manually to T-pose or after the button.")]
+            [LangMsg(Languages.en, "T-Pose can be made automatically with this button, or you can make the model as T-Pose manually. Adjusting T-Pose manually after applying this function is also OK")]
             ENALBE_TPOSE_BUTTON,
 
             [LangMsg(Languages.ja, "このボタンで自動で T-Pose にできます。prefab には実行できません。")]
-            [LangMsg(Languages.en, "You can set the T pose automatically with this button. It cannot be run on prefabs.")]
+            [LangMsg(Languages.en, "T-Pose can be made automatically with this button. It cannot be run on prefabs.")]
             DISABLE_TPOSE_BUTTON,
 
             [LangMsg(Languages.ja, "T-Pose にする")]

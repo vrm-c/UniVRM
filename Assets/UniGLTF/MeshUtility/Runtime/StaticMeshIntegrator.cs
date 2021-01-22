@@ -66,7 +66,7 @@ namespace MeshUtility
             public Mesh ToMesh()
             {
                 var mesh = new Mesh();
-                mesh.name = "integrated";
+                mesh.name = "MeshesIntegrated";
 
                 mesh.vertices = m_positions.ToArray();
                 if (m_normals.Count > 0)
