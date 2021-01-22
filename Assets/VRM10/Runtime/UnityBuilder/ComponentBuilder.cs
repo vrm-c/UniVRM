@@ -307,7 +307,8 @@ namespace UniVRM10
                         joint.m_gravityPower = vrmJoint.GravityPower;
                         joint.m_gravityDir = vrmJoint.GravityDir.ToUnityVector3();
                         joint.m_dragForce = vrmJoint.DragForce;
-                        joint.m_hitRadius = vrmJoint.HitRadius;
+                        joint.m_jointRadius = vrmJoint.HitRadius;
+                        joint.m_exclude = vrmJoint.Exclude;
 
                         springBone.Joints.Add(joint);
                     }

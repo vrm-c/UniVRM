@@ -362,7 +362,8 @@ namespace UniVRM10
                                 GravityPower = joint.m_gravityPower,
                                 GravityDir = joint.m_gravityDir.ToNumericsVector3(),
                                 DragForce = joint.m_dragForce,
-                                HitRadius = joint.m_hitRadius,
+                                HitRadius = joint.m_jointRadius,
+                                Exclude = joint.m_exclude,
                             });
                         }
 

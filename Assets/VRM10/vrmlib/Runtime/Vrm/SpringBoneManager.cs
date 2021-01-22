@@ -67,6 +67,8 @@ namespace VrmLib
         public float HitRadius;
 
         public float Stiffness;
+
+        public bool Exclude;
     }
 
     public class SpringBone

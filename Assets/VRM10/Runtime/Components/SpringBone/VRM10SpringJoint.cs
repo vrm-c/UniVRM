@@ -27,8 +27,11 @@ namespace UniVRM10
         [SerializeField, Range(0, 1)]
         public float m_dragForce = 0.4f;
 
+        [SerializeField]
+        public bool m_exclude;
+
         [SerializeField, Range(0, 0.5f), Header("Collision")]
-        public float m_hitRadius = 0.02f;
+        public float m_jointRadius = 0.02f;
 
         SpringBoneLogic m_logic;
 
@@ -36,7 +39,7 @@ namespace UniVRM10
         {
             if (m_logic != null)
             {
-                m_logic.DrawGizmo(center, m_hitRadius, color);
+                m_logic.DrawGizmo(center, m_jointRadius, color);
             }
             else
             {
@@ -69,7 +72,7 @@ namespace UniVRM10
                 }
             }
 
-            m_logic.Update(center, m_stiffnessForce * deltaTime, m_dragForce, m_gravityDir * (m_gravityPower * deltaTime), colliders, m_hitRadius);
+            m_logic.Update(center, m_stiffnessForce * deltaTime, m_dragForce, m_gravityDir * (m_gravityPower * deltaTime), colliders, m_jointRadius);
         }
     }
 }
