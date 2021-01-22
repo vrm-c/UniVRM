@@ -79,13 +79,15 @@ namespace UniVRM10
             {
                 yield return Validation.Error("Require Name. ");
             }
-            // if (string.IsNullOrEmpty(Version))
-            // {
-            //     yield return Validation.Error("Require Version. ");
-            // }
-            if (Authors == null || Authors.Length == 0 || Authors.All(x => string.IsNullOrEmpty(x)))
+
+            if (Authors == null || Authors.Length == 0)
             {
                 yield return Validation.Error("Require at leaset one Author.");
+            }
+
+            if (Authors.All(x => string.IsNullOrWhiteSpace(x)))
+            {
+                yield return Validation.Error("All Authors is whitespace");
             }
         }
 

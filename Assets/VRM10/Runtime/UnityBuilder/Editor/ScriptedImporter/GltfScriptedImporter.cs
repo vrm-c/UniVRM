@@ -83,7 +83,7 @@ namespace UniVRM10
         private Model CreateGlbModel(string path)
         {
             var bytes = File.ReadAllBytes(path);
-            if (!VrmLib.Glb.TryParse(bytes, out VrmLib.Glb glb, out Exception ex))
+            if (!UniGLTF.Glb.TryParse(bytes, out UniGLTF.Glb glb, out Exception ex))
             {
                 throw ex;
             }

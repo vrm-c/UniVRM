@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace UniVRM10
@@ -7,57 +9,37 @@ namespace UniVRM10
     /// The base algorithm is http://rocketjump.skr.jp/unity3d/109/ of @ricopin416
     /// DefaultExecutionOrder(11000) means calculate springbone after FinalIK( VRIK )
     /// </summary>
-    [AddComponentMenu("VRM/VRMSpringBone")]
-#if UNITY_5_5_OR_NEWER
-    [DefaultExecutionOrder(11000)]
-#endif
-    public class VRMSpringBone : MonoBehaviour
+    [Serializable]
+    public class VRM10SpringBone
     {
         [SerializeField]
         public string m_comment;
 
-        [SerializeField, Header("Gizmo")]
-        bool m_drawGizmo = default;
+        [SerializeField]
+        public List<VRM10SpringJoint> Joints = new List<VRM10SpringJoint>();
 
         [SerializeField]
-        Color m_gizmoColor = Color.yellow;
-
-        [SerializeField, Range(0, 4), Header("Settings")]
-        public float m_stiffnessForce = 1.0f;
-
-        [SerializeField, Range(0, 2)]
-        public float m_gravityPower = 0;
-
-        [SerializeField]
-        public Vector3 m_gravityDir = new Vector3(0, -1.0f, 0);
-
-        [SerializeField, Range(0, 1)]
-        public float m_dragForce = 0.4f;
+        public List<VRM10SpringBoneColliderGroup> ColliderGroups = new List<VRM10SpringBoneColliderGroup>();
 
         [SerializeField]
         public Transform m_center;
 
-        [SerializeField]
-        public List<Transform> RootBones = new List<Transform>();
-
-        [SerializeField, Range(0, 0.5f), Header("Collision")]
-        public float m_hitRadius = 0.02f;
-
-        [SerializeField]
-        public VRMSpringBoneColliderGroup[] ColliderGroups;
-
-        SpringBoneProcessor m_processor = new SpringBoneProcessor();
-
         [ContextMenu("Reset bones")]
-        public void ResetSpringBone()
+        public void ResetJoints()
         {
-            m_processor.ResetSpringBone();
+            foreach (var joint in Joints)
+            {
+                if (joint != null)
+                {
+                    joint.Transform.localRotation = Quaternion.identity;
+                }
+            }
         }
 
         List<SpringBoneLogic.InternalCollider> m_colliderList = new List<SpringBoneLogic.InternalCollider>();
         public void Process()
         {
-            if (RootBones == null)
+            if (Joints == null)
             {
                 return;
             }
@@ -74,20 +56,20 @@ namespace UniVRM10
                         {
                             switch (collider.ColliderType)
                             {
-                                case SpringBoneColliderTypes.Sphere:
+                                case VRM10SpringBoneColliderTypes.Sphere:
                                     m_colliderList.Add(new SpringBoneLogic.InternalCollider
                                     {
-                                        ColliderTypes = SpringBoneColliderTypes.Sphere,
+                                        ColliderTypes = VRM10SpringBoneColliderTypes.Sphere,
                                         WorldPosition = group.transform.TransformPoint(collider.Offset),
                                         Radius = collider.Radius,
 
                                     });
                                     break;
 
-                                case SpringBoneColliderTypes.Capsule:
+                                case VRM10SpringBoneColliderTypes.Capsule:
                                     m_colliderList.Add(new SpringBoneLogic.InternalCollider
                                     {
-                                        ColliderTypes = SpringBoneColliderTypes.Capsule,
+                                        ColliderTypes = VRM10SpringBoneColliderTypes.Capsule,
                                         WorldPosition = group.transform.TransformPoint(collider.Offset),
                                         Radius = collider.Radius,
                                         WorldTail = group.transform.TransformPoint(collider.Tail)
@@ -99,19 +81,26 @@ namespace UniVRM10
                 }
             }
 
-            var stiffness = m_stiffnessForce * Time.deltaTime;
-            var external = m_gravityDir * (m_gravityPower * Time.deltaTime);
-
-            m_processor.Update(RootBones, m_colliderList,
-                        stiffness, m_dragForce, external,
-                        m_hitRadius, m_center);
+            {
+                // udpate joints
+                VRM10SpringJoint lastJoint = Joints.FirstOrDefault(x => x != null);
+                foreach (var joint in Joints.Where(x => x != null).Skip(1))
+                {
+                    lastJoint.Update(m_center, Time.deltaTime, m_colliderList, joint);
+                    lastJoint = joint;
+                }
+                lastJoint.Update(m_center, Time.deltaTime, m_colliderList, null);
+            }
         }
 
-        private void OnDrawGizmos()
+        public void DrawGizmo(Color color)
         {
-            if (m_drawGizmo)
+            foreach (var joint in Joints)
             {
-                m_processor.DrawGizmos(m_center, m_hitRadius, m_gizmoColor);
+                if (joint != null)
+                {
+                    joint.DrawGizmo(m_center, color);
+                }
             }
         }
     }

@@ -3,16 +3,16 @@ using UnityEngine;
 
 namespace UniVRM10
 {
-    public enum SpringBoneColliderTypes
+    public enum VRM10SpringBoneColliderTypes
     {
         Sphere,
         Capsule,
     }
 
     [Serializable]
-    public class SpringBoneCollider
+    public class VRM10SpringBoneCollider
     {
-        public SpringBoneColliderTypes ColliderType;
+        public VRM10SpringBoneColliderTypes ColliderType;
 
         /// <summary>bone local position</summary>
         public Vector3 Offset;

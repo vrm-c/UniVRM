@@ -10,18 +10,6 @@ namespace UniVRM10
 {
     public static class SpringBoneAdapter
     {
-        public static SpringSetting ToGltf(this SpringBone self, List<Node> nodes)
-        {
-            var setting = new SpringSetting
-            {
-                DragForce = self.DragForce,
-                GravityPower = self.GravityPower,
-                Stiffness = self.Stiffness,
-                GravityDir = self.GravityDir.ToFloat3(),
-            };
-            return setting;
-        }
-
         public static VRMC_springBone ToGltf(this SpringBoneManager self, List<Node> nodes,
             List<glTFNode> gltfNodes)
         {
@@ -35,11 +23,11 @@ namespace UniVRM10
             //
             // VRMC_node_collider
             //
-            foreach (var x in self.Colliders)
+            foreach (var nodeCollider in self.Springs.SelectMany(x => x.Colliders))
             {
-                var index = nodes.IndexOfThrow(x.Node);
-                var collider = new VRMC_node_collider();
-                foreach (var y in x.Colliders)
+                var index = nodes.IndexOfThrow(nodeCollider.Node);
+                var gltfCollider = new VRMC_node_collider();
+                foreach (var y in nodeCollider.Colliders)
                 {
                     switch (y.ColliderType)
                     {
@@ -50,7 +38,7 @@ namespace UniVRM10
                                     Radius = y.Radius,
                                     Offset = y.Offset.ToFloat3(),
                                 };
-                                collider.Shapes.Add(new ColliderShape
+                                gltfCollider.Shapes.Add(new ColliderShape
                                 {
                                     Sphere = sphere,
                                 });
@@ -65,7 +53,7 @@ namespace UniVRM10
                                     Offset = y.Offset.ToFloat3(),
                                     Tail = y.CapsuleTail.ToFloat3(),
                                 };
-                                collider.Shapes.Add(new ColliderShape
+                                gltfCollider.Shapes.Add(new ColliderShape
                                 {
                                     Capsule = capsule,
                                 });
@@ -80,7 +68,7 @@ namespace UniVRM10
                 //
                 // add to node.extensions
                 //
-                UniGLTF.Extensions.VRMC_node_collider.GltfSerializer.SerializeTo(ref gltfNodes[index].extensions, collider);
+                UniGLTF.Extensions.VRMC_node_collider.GltfSerializer.SerializeTo(ref gltfNodes[index].extensions, gltfCollider);
             }
 
             //
@@ -88,20 +76,25 @@ namespace UniVRM10
             //
             foreach (var x in self.Springs)
             {
-                var settingIndex = springBone.Settings.Count;
-                springBone.Settings.Add(x.ToGltf(nodes));
-                foreach (var bone in x.Bones)
+                var spring = new Spring
                 {
-                    var spring = new Spring
+                    Name = x.Comment,
+                    Colliders = x.Colliders.Select(y => nodes.IndexOfThrow(y.Node)).ToArray(),
+                };
+
+                foreach (var y in x.Joints)
+                {
+                    spring.Joints.Add(new SpringBoneJoint
                     {
-                        Name = x.Comment,
-                        HitRadius = x.HitRadius,
-                        SpringRoot = nodes.IndexOfThrow(bone),
-                        Setting = settingIndex,
-                        Colliders = x.Colliders.Select(y => nodes.IndexOfThrow(y.Node)).ToArray(),
-                    };
-                    springBone.Springs.Add(spring);
+                        HitRadius = y.HitRadius,
+                        DragForce = y.DragForce,
+                        GravityDir = y.GravityDir.ToFloat3(),
+                        GravityPower = y.GravityPower,
+                        Stiffness = y.Stiffness,
+                    });
                 }
+
+                springBone.Springs.Add(spring);
             }
 
             return springBone;

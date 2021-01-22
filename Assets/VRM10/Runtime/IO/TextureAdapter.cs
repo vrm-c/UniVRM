@@ -11,7 +11,7 @@ namespace UniVRM10
         {
             var image = images[x.source];
             var name = !string.IsNullOrEmpty(x.name) ? x.name : image.Name;
-            return new ImageTexture(x.name, sampler.FromGltf(), image, colorSpace, textureType);
+            return new ImageTexture(name, sampler.FromGltf(), image, colorSpace, textureType);
         }
 
         public static TextureSampler FromGltf(this glTFTextureSampler sampler)

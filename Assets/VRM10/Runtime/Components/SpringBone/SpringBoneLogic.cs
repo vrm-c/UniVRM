@@ -36,8 +36,6 @@ namespace UniVRM10
         }
         public Vector3 m_boneAxis;
 
-        public float Radius { get; set; }
-
         public SpringBoneLogic(Transform center, Transform transform, Vector3 localChildPosition)
         {
             m_transform = transform;
@@ -65,7 +63,7 @@ namespace UniVRM10
 
         public struct InternalCollider
         {
-            public SpringBoneColliderTypes ColliderTypes;
+            public VRM10SpringBoneColliderTypes ColliderTypes;
             public Vector3 WorldPosition;
             public float Radius;
             public Vector3 WorldTail;
@@ -73,7 +71,7 @@ namespace UniVRM10
 
         public void Update(Transform center,
             float stiffnessForce, float dragForce, Vector3 external,
-            List<InternalCollider> colliders)
+            List<InternalCollider> colliders, float jointRadius)
         {
             var currentTail = center != null
                 ? center.TransformPoint(m_currentTail)
@@ -95,7 +93,7 @@ namespace UniVRM10
             nextTail = m_transform.position + (nextTail - m_transform.position).normalized * m_length;
 
             // Collisionで移動
-            nextTail = Collision(colliders, nextTail);
+            nextTail = Collision(colliders, nextTail, jointRadius);
 
             m_prevTail = center != null
                 ? center.InverseTransformPoint(currentTail)
@@ -117,14 +115,14 @@ namespace UniVRM10
                 nextTail - m_transform.position) * rotation;
         }
 
-        bool TrySphereCollision(Vector3 worldPosition, float radius, ref Vector3 nextTail)
+        bool TrySphereCollision(Vector3 worldPosition, float radius, ref Vector3 nextTail, float jointRadius)
         {
-            var r = Radius + radius;
+            var r = jointRadius + radius;
             if (Vector3.SqrMagnitude(nextTail - worldPosition) <= (r * r))
             {
                 // ヒット。Colliderの半径方向に押し出す
                 var normal = (nextTail - worldPosition).normalized;
-                var posFromCollider = worldPosition + normal * (Radius + radius);
+                var posFromCollider = worldPosition + normal * (jointRadius + radius);
                 // 長さをboneLengthに強制
                 nextTail = m_transform.position + (posFromCollider - m_transform.position).normalized * m_length;
                 return true;
@@ -135,7 +133,7 @@ namespace UniVRM10
             }
         }
 
-        bool TryCapsuleCollision(in InternalCollider collider, ref Vector3 nextTail)
+        bool TryCapsuleCollision(in InternalCollider collider, ref Vector3 nextTail, float jointRadius)
         {
             var P = collider.WorldTail - collider.WorldPosition;
             var Q = m_transform.position - collider.WorldPosition;
@@ -143,34 +141,34 @@ namespace UniVRM10
             if (dot <= 0)
             {
                 // head側半球の球判定
-                return TrySphereCollision(collider.WorldPosition, collider.Radius, ref nextTail);
+                return TrySphereCollision(collider.WorldPosition, collider.Radius, ref nextTail, jointRadius);
             }
 
             var t = dot / P.magnitude;
             if (t >= 1.0f)
             {
                 // tail側半球の球判定
-                return TrySphereCollision(collider.WorldTail, collider.Radius, ref nextTail);
+                return TrySphereCollision(collider.WorldTail, collider.Radius, ref nextTail, jointRadius);
             }
 
             // head-tail上の m_transform.position との最近点
             var p = collider.WorldPosition + P * t;
-            return TrySphereCollision(p, collider.Radius, ref nextTail);
+            return TrySphereCollision(p, collider.Radius, ref nextTail, jointRadius);
         }
 
-        protected virtual Vector3 Collision(List<InternalCollider> colliders, Vector3 nextTail)
+        protected virtual Vector3 Collision(List<InternalCollider> colliders, Vector3 nextTail, float jointRadius)
         {
             foreach (var collider in colliders)
             {
                 // すべての衝突判定を順番に実行する
                 switch (collider.ColliderTypes)
                 {
-                    case SpringBoneColliderTypes.Sphere:
-                        TrySphereCollision(collider.WorldPosition, collider.Radius, ref nextTail);
+                    case VRM10SpringBoneColliderTypes.Sphere:
+                        TrySphereCollision(collider.WorldPosition, collider.Radius, ref nextTail, jointRadius);
                         break;
 
-                    case SpringBoneColliderTypes.Capsule:
-                        TryCapsuleCollision(in collider, ref nextTail);
+                    case VRM10SpringBoneColliderTypes.Capsule:
+                        TryCapsuleCollision(in collider, ref nextTail, jointRadius);
                         break;
 
                     default:

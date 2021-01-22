@@ -105,14 +105,14 @@ namespace VrmLib
             {
                 foreach (var x in spring.Springs)
                 {
-                    foreach (var y in x.Bones)
+                    foreach (var y in x.Joints)
                     {
-                        nodeUsage[model.Nodes.IndexOf(y)].SpringUse = true;
+                        nodeUsage[model.Nodes.IndexOf(y.Node)].SpringUse = true;
                     }
-                }
-                foreach (var x in spring.Colliders)
-                {
-                    nodeUsage[model.Nodes.IndexOf(x.Node)].SpringUse = true;
+                    foreach (var y in x.Colliders)
+                    {
+                        nodeUsage[model.Nodes.IndexOf(y.Node)].SpringUse = true;
+                    }
                 }
             }
 

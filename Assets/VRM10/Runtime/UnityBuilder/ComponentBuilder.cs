@@ -184,121 +184,133 @@ namespace UniVRM10
             // firstPerson
             {
                 // VRMFirstPerson
-                controller.FirstPerson.Renderers = model.Vrm.FirstPerson.Annotations.Select(x =>
-                    new UniVRM10.RendererFirstPersonFlags()
-                    {
-                        Renderer = asset.Map.Renderers[x.Node],
-                        FirstPersonFlag = x.FirstPersonFlag
-                    }
-                    ).ToList();
+                if (model.Vrm.FirstPerson != null)
+                {
+                    controller.FirstPerson.Renderers = model.Vrm.FirstPerson.Annotations.Select(x =>
+                        new UniVRM10.RendererFirstPersonFlags()
+                        {
+                            Renderer = asset.Map.Renderers[x.Node],
+                            FirstPersonFlag = x.FirstPersonFlag
+                        }
+                        ).ToList();
+                }
 
                 // VRMLookAtApplyer
-                controller.LookAt.OffsetFromHead = model.Vrm.LookAt.OffsetFromHeadBone.ToUnityVector3();
-                if (model.Vrm.LookAt.LookAtType == VrmLib.LookAtType.Expression)
+                if (model.Vrm.LookAt != null)
                 {
-                    var lookAtApplyer = controller;
-                    lookAtApplyer.LookAt.LookAtType = VRM10ControllerLookAt.LookAtTypes.Expression;
-                    lookAtApplyer.LookAt.HorizontalOuter = new UniVRM10.CurveMapper(
-                        model.Vrm.LookAt.HorizontalOuter.InputMaxValue,
-                        model.Vrm.LookAt.HorizontalOuter.OutputScaling);
-                    lookAtApplyer.LookAt.VerticalUp = new UniVRM10.CurveMapper(
-                        model.Vrm.LookAt.VerticalUp.InputMaxValue,
-                        model.Vrm.LookAt.VerticalUp.OutputScaling);
-                    lookAtApplyer.LookAt.VerticalDown = new UniVRM10.CurveMapper(
-                        model.Vrm.LookAt.VerticalDown.InputMaxValue,
-                        model.Vrm.LookAt.VerticalDown.OutputScaling);
-                }
-                else if (model.Vrm.LookAt.LookAtType == VrmLib.LookAtType.Bone)
-                {
-                    var lookAtBoneApplyer = controller;
-                    lookAtBoneApplyer.LookAt.HorizontalInner = new UniVRM10.CurveMapper(
-                         model.Vrm.LookAt.HorizontalInner.InputMaxValue,
-                         model.Vrm.LookAt.HorizontalInner.OutputScaling);
-                    lookAtBoneApplyer.LookAt.HorizontalOuter = new UniVRM10.CurveMapper(
-                        model.Vrm.LookAt.HorizontalOuter.InputMaxValue,
-                        model.Vrm.LookAt.HorizontalOuter.OutputScaling);
-                    lookAtBoneApplyer.LookAt.VerticalUp = new UniVRM10.CurveMapper(
-                        model.Vrm.LookAt.VerticalUp.InputMaxValue,
-                        model.Vrm.LookAt.VerticalUp.OutputScaling);
-                    lookAtBoneApplyer.LookAt.VerticalDown = new UniVRM10.CurveMapper(
-                        model.Vrm.LookAt.VerticalDown.InputMaxValue,
-                        model.Vrm.LookAt.VerticalDown.OutputScaling);
-                }
-                else
-                {
-                    throw new NotImplementedException();
+                    controller.LookAt.OffsetFromHead = model.Vrm.LookAt.OffsetFromHeadBone.ToUnityVector3();
+                    if (model.Vrm.LookAt.LookAtType == VrmLib.LookAtType.Expression)
+                    {
+                        var lookAtApplyer = controller;
+                        lookAtApplyer.LookAt.LookAtType = VRM10ControllerLookAt.LookAtTypes.Expression;
+                        lookAtApplyer.LookAt.HorizontalOuter = new UniVRM10.CurveMapper(
+                            model.Vrm.LookAt.HorizontalOuter.InputMaxValue,
+                            model.Vrm.LookAt.HorizontalOuter.OutputScaling);
+                        lookAtApplyer.LookAt.VerticalUp = new UniVRM10.CurveMapper(
+                            model.Vrm.LookAt.VerticalUp.InputMaxValue,
+                            model.Vrm.LookAt.VerticalUp.OutputScaling);
+                        lookAtApplyer.LookAt.VerticalDown = new UniVRM10.CurveMapper(
+                            model.Vrm.LookAt.VerticalDown.InputMaxValue,
+                            model.Vrm.LookAt.VerticalDown.OutputScaling);
+                    }
+                    else if (model.Vrm.LookAt.LookAtType == VrmLib.LookAtType.Bone)
+                    {
+                        var lookAtBoneApplyer = controller;
+                        lookAtBoneApplyer.LookAt.HorizontalInner = new UniVRM10.CurveMapper(
+                             model.Vrm.LookAt.HorizontalInner.InputMaxValue,
+                             model.Vrm.LookAt.HorizontalInner.OutputScaling);
+                        lookAtBoneApplyer.LookAt.HorizontalOuter = new UniVRM10.CurveMapper(
+                            model.Vrm.LookAt.HorizontalOuter.InputMaxValue,
+                            model.Vrm.LookAt.HorizontalOuter.OutputScaling);
+                        lookAtBoneApplyer.LookAt.VerticalUp = new UniVRM10.CurveMapper(
+                            model.Vrm.LookAt.VerticalUp.InputMaxValue,
+                            model.Vrm.LookAt.VerticalUp.OutputScaling);
+                        lookAtBoneApplyer.LookAt.VerticalDown = new UniVRM10.CurveMapper(
+                            model.Vrm.LookAt.VerticalDown.InputMaxValue,
+                            model.Vrm.LookAt.VerticalDown.OutputScaling);
+                    }
+                    else
+                    {
+                        throw new NotImplementedException();
+                    }
                 }
             }
 
             // springBone
+            if (model.Vrm.SpringBone != null)
             {
-                var colliders = new Dictionary<VrmLib.SpringBoneColliderGroup, UniVRM10.VRMSpringBoneColliderGroup>();
-                if (model.Vrm.SpringBone != null)
+                foreach (var vrmSpring in model.Vrm.SpringBone.Springs)
                 {
-                    foreach (var colliderGroup in model.Vrm.SpringBone.Colliders)
+                    // create a spring
+                    var springBone = new UniVRM10.VRM10SpringBone();
+                    springBone.m_comment = vrmSpring.Comment;
+                    if (vrmSpring.Origin != null && asset.Map.Nodes.TryGetValue(vrmSpring.Origin, out GameObject origin))
                     {
-                        var go = asset.Map.Nodes[colliderGroup.Node];
-                        var springBoneColliderGroup = go.AddComponent<UniVRM10.VRMSpringBoneColliderGroup>();
-
-                        springBoneColliderGroup.Colliders = colliderGroup.Colliders.Select(x =>
-                        {
-                            switch (x.ColliderType)
-                            {
-                                case VrmLib.VrmSpringBoneColliderTypes.Sphere:
-                                    return new UniVRM10.SpringBoneCollider()
-                                    {
-                                        ColliderType = SpringBoneColliderTypes.Sphere,
-                                        Offset = x.Offset.ToUnityVector3(),
-                                        Radius = x.Radius
-                                    };
-
-                                case VrmLib.VrmSpringBoneColliderTypes.Capsule:
-                                    return new UniVRM10.SpringBoneCollider()
-                                    {
-                                        ColliderType = SpringBoneColliderTypes.Capsule,
-                                        Offset = x.Offset.ToUnityVector3(),
-                                        Radius = x.Radius,
-                                        Tail = x.CapsuleTail.ToUnityVector3(),
-                                    };
-
-                                default:
-                                    throw new NotImplementedException();
-                            }
-                        }).ToArray(); ;
-
-                        colliders.Add(colliderGroup, springBoneColliderGroup);
+                        springBone.m_center = origin.transform;
                     }
-                }
+                    controller.SpringBone.Springs.Add(springBone);
 
-                GameObject springBoneObject = null;
-                var springBoneTransform = asset.Root.transform.GetChildren().FirstOrDefault(x => x.name == "SpringBone");
-                if (springBoneTransform == null)
-                {
-                    springBoneObject = new GameObject("SpringBone");
-                }
-                else
-                {
-                    springBoneObject = springBoneTransform.gameObject;
-                }
-
-                springBoneObject.transform.SetParent(asset.Root.transform);
-                if (model.Vrm.SpringBone != null)
-                {
-                    foreach (var spring in model.Vrm.SpringBone.Springs)
+                    // create colliders for the spring
+                    foreach (var vrmSpringBoneCollider in vrmSpring.Colliders)
                     {
-                        var springBoneComponent = springBoneObject.AddComponent<UniVRM10.VRMSpringBone>();
-                        springBoneComponent.m_comment = spring.Comment;
-                        springBoneComponent.m_stiffnessForce = spring.Stiffness;
-                        springBoneComponent.m_gravityPower = spring.GravityPower;
-                        springBoneComponent.m_gravityDir = spring.GravityDir.ToUnityVector3();
-                        springBoneComponent.m_dragForce = spring.DragForce;
-                        if (spring.Origin != null && asset.Map.Nodes.TryGetValue(spring.Origin, out GameObject origin))
+                        var go = asset.Map.Nodes[vrmSpringBoneCollider.Node];
+                        var springBoneColliderGroup = go.GetComponent<UniVRM10.VRM10SpringBoneColliderGroup>();
+                        if (springBoneColliderGroup != null)
                         {
-                            springBoneComponent.m_center = origin.transform;
+                            // already setup
                         }
-                        springBoneComponent.RootBones = spring.Bones.Select(x => asset.Map.Nodes[x].transform).ToList();
-                        springBoneComponent.m_hitRadius = spring.HitRadius;
-                        springBoneComponent.ColliderGroups = spring.Colliders.Select(x => colliders[x]).ToArray();
+                        else
+                        {
+                            // new collider
+                            springBoneColliderGroup = go.AddComponent<UniVRM10.VRM10SpringBoneColliderGroup>();
+
+                            // add collider shapes
+                            springBoneColliderGroup.Colliders.Clear();
+                            foreach (var x in vrmSpringBoneCollider.Colliders)
+                            {
+                                switch (x.ColliderType)
+                                {
+                                    case VrmLib.VrmSpringBoneColliderTypes.Sphere:
+                                        springBoneColliderGroup.Colliders.Add(new UniVRM10.VRM10SpringBoneCollider()
+                                        {
+                                            ColliderType = VRM10SpringBoneColliderTypes.Sphere,
+                                            Offset = x.Offset.ToUnityVector3(),
+                                            Radius = x.Radius
+                                        });
+                                        break;
+
+                                    case VrmLib.VrmSpringBoneColliderTypes.Capsule:
+                                        springBoneColliderGroup.Colliders.Add(new UniVRM10.VRM10SpringBoneCollider()
+                                        {
+                                            ColliderType = VRM10SpringBoneColliderTypes.Capsule,
+                                            Offset = x.Offset.ToUnityVector3(),
+                                            Radius = x.Radius,
+                                            Tail = x.CapsuleTail.ToUnityVector3(),
+                                        });
+                                        break;
+
+                                    default:
+                                        throw new NotImplementedException();
+                                }
+                            }
+                        }
+                        springBone.ColliderGroups.Add(springBoneColliderGroup);
+                    }
+
+                    // create joint for the spring
+                    foreach (var vrmJoint in vrmSpring.Joints)
+                    {
+                        var go = asset.Map.Nodes[vrmJoint.Node];
+                        var joint = new VRM10SpringJoint(go.transform);
+
+                        joint.m_stiffnessForce = vrmJoint.Stiffness;
+                        joint.m_gravityPower = vrmJoint.GravityPower;
+                        joint.m_gravityDir = vrmJoint.GravityDir.ToUnityVector3();
+                        joint.m_dragForce = vrmJoint.DragForce;
+                        joint.m_jointRadius = vrmJoint.HitRadius;
+                        joint.m_exclude = vrmJoint.Exclude;
+
+                        springBone.Joints.Add(joint);
                     }
                 }
             }

@@ -1,4 +1,3 @@
-using VrmLib;
 using System;
 using UniGLTF;
 
@@ -6,7 +5,7 @@ namespace UniVRM10
 {
     public static class ImageAdapter
     {
-        public static Image FromGltf(this glTFImage x, Vrm10Storage storage)
+        public static VrmLib.Image FromGltf(this glTFImage x, Vrm10Storage storage)
         {
             if (x.bufferView == -1)
             {
@@ -19,24 +18,24 @@ namespace UniVRM10
             var buffer = storage.Gltf.buffers[view.buffer];
 
             // テクスチャの用途を調べる
-            var usage = default(ImageUsage);
+            var usage = default(VrmLib.ImageUsage);
             foreach (var material in storage.Gltf.materials)
             {
                 var colorImage = GetColorImage(storage, material);
                 if (colorImage == x)
                 {
-                    usage |= ImageUsage.Color;
+                    usage |= VrmLib.ImageUsage.Color;
                 }
 
                 var normalImage = GetNormalImage(storage, material);
                 if (normalImage == x)
                 {
-                    usage |= ImageUsage.Normal;
+                    usage |= VrmLib.ImageUsage.Normal;
                 }
             }
 
             var memory = storage.GetBufferBytes(buffer);
-            return new Image(x.name,
+            return new VrmLib.Image(x.name,
                 x.mimeType,
                 usage,
                 memory.Slice(view.byteOffset, view.byteLength));
@@ -86,7 +85,7 @@ namespace UniVRM10
             return GetTexture(storage, index);
         }
 
-        public static glTFImage ToGltf(this Image src, Vrm10Storage storage)
+        public static glTFImage ToGltf(this VrmLib.Image src, Vrm10Storage storage)
         {
             var viewIndex = storage.AppendToBuffer(0, src.Bytes, 1);
             var gltf = storage.Gltf;

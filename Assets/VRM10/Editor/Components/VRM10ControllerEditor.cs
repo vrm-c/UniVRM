@@ -2,7 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 using System.Linq;
-
+using System;
 
 namespace UniVRM10
 {
@@ -53,11 +53,12 @@ namespace UniVRM10
             {
                 m_metaEditor = Editor.CreateEditor(m_target.Meta);
             }
-            m_controller = serializedObject.FindProperty(nameof(m_target.Controller));
-            m_expression = serializedObject.FindProperty(nameof(m_target.Expression));
-            m_lookAt = serializedObject.FindProperty(nameof(m_target.LookAt));
-            m_firstPerson = serializedObject.FindProperty(nameof(m_target.FirstPerson));
-            m_asset = serializedObject.FindProperty(nameof(m_target.ModelAsset));
+            m_controller = PropGui.FromObject(serializedObject, nameof(m_target.Controller));
+            m_expression = PropGui.FromObject(serializedObject, nameof(m_target.Expression));
+            m_lookAt = PropGui.FromObject(serializedObject, nameof(m_target.LookAt));
+            m_firstPerson = PropGui.FromObject(serializedObject, nameof(m_target.FirstPerson));
+            m_springBone = PropGui.FromObject(serializedObject, nameof(m_target.SpringBone));
+            m_asset = PropGui.FromObject(serializedObject, nameof(m_target.ModelAsset));
         }
 
         void OnDisable()
@@ -76,23 +77,61 @@ namespace UniVRM10
             Expression,
             LookAt,
             FirstPerson,
+            SpringBone,
             Assets,
         }
         Tabs _tab;
 
         Editor m_metaEditor;
-        SerializedProperty m_controller;
-        SerializedProperty m_expression;
-        SerializedProperty m_lookAt;
-        SerializedProperty m_firstPerson;
-        SerializedProperty m_asset;
+
+        class PropGui
+        {
+            SerializedProperty m_prop;
+
+            PropGui(SerializedProperty property)
+            {
+                m_prop = property;
+            }
+
+            public static PropGui FromObject(SerializedObject serializedObject, string name)
+            {
+                var prop = serializedObject.FindProperty(name);
+                return new PropGui(prop);
+            }
+
+            public void RecursiveProperty()
+            {
+                var depth = m_prop.depth;
+                var iterator = m_prop.Copy();
+                for (var enterChildren = true; iterator.NextVisible(enterChildren); enterChildren = false)
+                {
+                    if (iterator.depth < depth)
+                        return;
+
+                    depth = iterator.depth;
+
+                    using (new EditorGUI.DisabledScope("m_Script" == iterator.propertyPath))
+                        EditorGUILayout.PropertyField(iterator, true);
+                }
+            }
+        }
+
+        PropGui m_controller;
+        PropGui m_expression;
+        PropGui m_lookAt;
+        PropGui m_firstPerson;
+        PropGui m_springBone;
+        PropGui m_asset;
 
         public override void OnInspectorGUI()
         {
             {
                 var backup = GUI.enabled;
                 GUI.enabled = true;
-                _tab = MeshUtility.TabBar.OnGUI(_tab);
+
+                _tab = (Tabs)EditorGUILayout.EnumPopup("Select GUI", _tab);
+                EditorGUILayout.Separator();
+
                 GUI.enabled = backup;
             }
 
@@ -106,24 +145,28 @@ namespace UniVRM10
                     break;
 
                 case Tabs.Controller:
-                    RecursiveProperty(m_controller);
+                    m_controller.RecursiveProperty();
                     break;
 
                 case Tabs.Expression:
                     ExpressionGUI();
-                    RecursiveProperty(m_expression);
+                    m_expression.RecursiveProperty();
                     break;
 
                 case Tabs.LookAt:
-                    RecursiveProperty(m_lookAt);
+                    m_lookAt.RecursiveProperty();
                     break;
 
                 case Tabs.FirstPerson:
-                    RecursiveProperty(m_firstPerson);
+                    m_firstPerson.RecursiveProperty();
+                    break;
+
+                case Tabs.SpringBone:
+                    m_springBone.RecursiveProperty();
                     break;
 
                 case Tabs.Assets:
-                    RecursiveProperty(m_asset);
+                    m_asset.RecursiveProperty();
                     break;
             }
 
@@ -158,22 +201,6 @@ namespace UniVRM10
                     m_expressionKeyWeights[slider.Key] = slider.Value;
                 }
                 m_target.Expression.SetValues(m_expressionKeyWeights.Select(x => new KeyValuePair<ExpressionKey, float>(x.Key, x.Value)));
-            }
-        }
-
-        static void RecursiveProperty(SerializedProperty property)
-        {
-            var depth = property.depth;
-            var iterator = property.Copy();
-            for (var enterChildren = true; iterator.NextVisible(enterChildren); enterChildren = false)
-            {
-                if (iterator.depth < depth)
-                    return;
-
-                depth = iterator.depth;
-
-                using (new EditorGUI.DisabledScope("m_Script" == iterator.propertyPath))
-                    EditorGUILayout.PropertyField(iterator, true);
             }
         }
 

@@ -1,7 +1,7 @@
 ﻿namespace UniVRM10
 {
 
-    public static class VRMSpringUtility
+    public static class VRM10SpringUtility
     {
 #if false
 

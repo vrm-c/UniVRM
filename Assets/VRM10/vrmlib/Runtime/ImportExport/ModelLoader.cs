@@ -97,7 +97,9 @@ namespace VrmLib
                 return false;
             }
 
-            var Vrm = new Vrm(storage.CreateVrmMeta(model.Textures), storage.VrmExporterVersion, storage.VrmSpecVersion);
+            var meta = storage.CreateVrmMeta(model.Textures);
+
+            var Vrm = new Vrm(meta, storage.VrmExporterVersion, storage.VrmSpecVersion);
             model.Vrm = Vrm;
 
             storage.LoadVrmHumanoid(model.Nodes);

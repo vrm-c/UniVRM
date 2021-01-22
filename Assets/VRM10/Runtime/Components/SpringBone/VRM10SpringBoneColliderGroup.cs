@@ -1,26 +1,28 @@
-using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 
 namespace UniVRM10
 {
-    [AddComponentMenu("VRM/VRMSpringBoneColliderGroup")]
-#if UNITY_5_5_OR_NEWER
-    [DefaultExecutionOrder(11001)]
-#endif
-    public class VRMSpringBoneColliderGroup : MonoBehaviour
+    /// <summary>
+    /// VRMC_node_collider
+    /// </summary>
+    [DisallowMultipleComponent]
+    [AddComponentMenu("VRM10/VRM10SpringBoneColliderGroup")]
+    public class VRM10SpringBoneColliderGroup : MonoBehaviour
     {
-        [SerializeField]
-        public SpringBoneCollider[] Colliders = new SpringBoneCollider[]{
-            new SpringBoneCollider
+        void Reset()
+        {
+            // default shape
+            Colliders.Add(new VRM10SpringBoneCollider
             {
-                ColliderType = SpringBoneColliderTypes.Capsule,
-                Radius=0.1f
-            }
-        };
+                ColliderType = VRM10SpringBoneColliderTypes.Capsule,
+                Radius = 0.1f
+            });
+        }
 
         [SerializeField]
-        Color m_gizmoColor = Color.magenta;
+        public List<VRM10SpringBoneCollider> Colliders = new List<VRM10SpringBoneCollider>();
 
         public static void DrawWireCapsule(Vector3 headPos, Vector3 tailPos, float radius)
         {
@@ -70,9 +72,9 @@ namespace UniVRM10
             }
         }
 
-        private void OnDrawGizmosSelected()
+        public void DrawGizmos(Color color)
         {
-            Gizmos.color = m_gizmoColor;
+            Gizmos.color = color;
             Matrix4x4 mat = transform.localToWorldMatrix;
             Gizmos.matrix = mat * Matrix4x4.Scale(new Vector3(
                 1.0f / transform.lossyScale.x,
@@ -83,14 +85,11 @@ namespace UniVRM10
             {
                 switch (y.ColliderType)
                 {
-                    case SpringBoneColliderTypes.Sphere:
+                    case VRM10SpringBoneColliderTypes.Sphere:
                         Gizmos.DrawWireSphere(y.Offset, y.Radius);
                         break;
 
-                    case SpringBoneColliderTypes.Capsule:
-                        // Gizmos.DrawWireSphere(y.Offset, y.Radius);
-                        // Gizmos.DrawWireSphere(y.Tail, y.Radius);
-                        // Gizmos.DrawLine(y.Offset, y.Tail);
+                    case VRM10SpringBoneColliderTypes.Capsule:
                         DrawWireCapsule(y.Offset, y.Tail, y.Radius);
                         break;
                 }

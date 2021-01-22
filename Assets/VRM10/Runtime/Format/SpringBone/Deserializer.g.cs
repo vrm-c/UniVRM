@@ -36,8 +36,13 @@ public static VRMC_springBone Deserialize(ListTreeNode<JsonValue> parsed)
     {
         var key = kv.Key.GetString();
 
-        if(key=="settings"){
-            value.Settings = Deserialize_Settings(kv.Value);
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
             continue;
         }
 
@@ -49,59 +54,6 @@ public static VRMC_springBone Deserialize(ListTreeNode<JsonValue> parsed)
     }
     return value;
 }
-
-public static List<SpringSetting> Deserialize_Settings(ListTreeNode<JsonValue> parsed)
-{
-    var value = new List<SpringSetting>();
-    foreach(var x in parsed.ArrayItems())
-    {
-        value.Add(Deserialize_Settings_ITEM(x));
-    }
-	return value;
-} 
-
-public static SpringSetting Deserialize_Settings_ITEM(ListTreeNode<JsonValue> parsed)
-{
-    var value = new SpringSetting();
-
-    foreach(var kv in parsed.ObjectItems())
-    {
-        var key = kv.Key.GetString();
-
-        if(key=="stiffness"){
-            value.Stiffness = kv.Value.GetSingle();
-            continue;
-        }
-
-        if(key=="gravityPower"){
-            value.GravityPower = kv.Value.GetSingle();
-            continue;
-        }
-
-        if(key=="gravityDir"){
-            value.GravityDir = Deserialize_GravityDir(kv.Value);
-            continue;
-        }
-
-        if(key=="dragForce"){
-            value.DragForce = kv.Value.GetSingle();
-            continue;
-        }
-
-    }
-    return value;
-}
-
-public static float[] Deserialize_GravityDir(ListTreeNode<JsonValue> parsed)
-{
-    var value = new float[parsed.GetArrayCount()];
-    int i=0;
-    foreach(var x in parsed.ArrayItems())
-    {
-        value[i++] = x.GetSingle();
-    }
-	return value;
-} 
 
 public static List<Spring> Deserialize_Springs(ListTreeNode<JsonValue> parsed)
 {
@@ -126,18 +78,8 @@ public static Spring Deserialize_Springs_ITEM(ListTreeNode<JsonValue> parsed)
             continue;
         }
 
-        if(key=="setting"){
-            value.Setting = kv.Value.GetInt32();
-            continue;
-        }
-
-        if(key=="springRoot"){
-            value.SpringRoot = kv.Value.GetInt32();
-            continue;
-        }
-
-        if(key=="hitRadius"){
-            value.HitRadius = kv.Value.GetSingle();
+        if(key=="joints"){
+            value.Joints = Deserialize_Joints(kv.Value);
             continue;
         }
 
@@ -149,6 +91,84 @@ public static Spring Deserialize_Springs_ITEM(ListTreeNode<JsonValue> parsed)
     }
     return value;
 }
+
+public static List<SpringBoneJoint> Deserialize_Joints(ListTreeNode<JsonValue> parsed)
+{
+    var value = new List<SpringBoneJoint>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(Deserialize_Joints_ITEM(x));
+    }
+	return value;
+} 
+
+public static SpringBoneJoint Deserialize_Joints_ITEM(ListTreeNode<JsonValue> parsed)
+{
+    var value = new SpringBoneJoint();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="node"){
+            value.Node = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="hitRadius"){
+            value.HitRadius = kv.Value.GetSingle();
+            continue;
+        }
+
+        if(key=="stiffness"){
+            value.Stiffness = kv.Value.GetSingle();
+            continue;
+        }
+
+        if(key=="gravityPower"){
+            value.GravityPower = kv.Value.GetSingle();
+            continue;
+        }
+
+        if(key=="gravityDir"){
+            value.GravityDir = Deserialize_GravityDir(kv.Value);
+            continue;
+        }
+
+        if(key=="dragForce"){
+            value.DragForce = kv.Value.GetSingle();
+            continue;
+        }
+
+        if(key=="exclude"){
+            value.Exclude = kv.Value.GetBoolean();
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static float[] Deserialize_GravityDir(ListTreeNode<JsonValue> parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
 
 public static int[] Deserialize_Colliders(ListTreeNode<JsonValue> parsed)
 {

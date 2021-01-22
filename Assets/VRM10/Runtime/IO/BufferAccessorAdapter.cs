@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Numerics;
-using System.Runtime.InteropServices;
 using UniGLTF;
-using VrmLib;
 
 namespace UniVRM10
 {
@@ -31,7 +29,7 @@ namespace UniVRM10
             }
         }
 
-        public static int AddViewTo(this BufferAccessor self,
+        public static int AddViewTo(this VrmLib.BufferAccessor self,
             Vrm10Storage storage, int bufferIndex,
             int offset = 0, int count = 0)
         {
@@ -44,7 +42,7 @@ namespace UniVRM10
             return storage.AppendToBuffer(bufferIndex, slice, stride);
         }
 
-        static glTFAccessor CreateGltfAccessor(this BufferAccessor self,
+        static glTFAccessor CreateGltfAccessor(this VrmLib.BufferAccessor self,
             int viewIndex, int count = 0, int byteOffset = 0)
         {
             if (count == 0)
@@ -61,7 +59,7 @@ namespace UniVRM10
             };
         }
 
-        public static int AddAccessorTo(this BufferAccessor self,
+        public static int AddAccessorTo(this VrmLib.BufferAccessor self,
             Vrm10Storage storage, int viewIndex,
             Action<ArraySegment<byte>, glTFAccessor> minMax = null,
             int offset = 0, int count = 0)
@@ -77,15 +75,15 @@ namespace UniVRM10
             return accessorIndex;
         }
 
-        public static int AddAccessorTo(this BufferAccessor self,
+        public static int AddAccessorTo(this VrmLib.BufferAccessor self,
             Vrm10Storage storage, int bufferIndex,
             // GltfBufferTargetType targetType,
             bool useSparse,
             Action<ArraySegment<byte>, glTFAccessor> minMax = null,
             int offset = 0, int count = 0)
         {
-            if (self.ComponentType == AccessorValueType.FLOAT
-            && self.AccessorType == AccessorVectorType.VEC3
+            if (self.ComponentType == VrmLib.AccessorValueType.FLOAT
+            && self.AccessorType == VrmLib.AccessorVectorType.VEC3
             )
             {
                 var values = self.GetSpan<Vector3>();
@@ -107,9 +105,9 @@ namespace UniVRM10
                 {
                     // use sparse
                     var sparseIndexBin = new ArraySegment<byte>(new byte[sparseValuesWithIndex.Count * 4]);
-                    var sparseIndexSpan = SpanLike.Wrap<Int32>(sparseIndexBin);
+                    var sparseIndexSpan = VrmLib.SpanLike.Wrap<Int32>(sparseIndexBin);
                     var sparseValueBin = new ArraySegment<byte>(new byte[sparseValuesWithIndex.Count * 12]);
-                    var sparseValueSpan = SpanLike.Wrap<Vector3>(sparseValueBin);
+                    var sparseValueSpan = VrmLib.SpanLike.Wrap<Vector3>(sparseValueBin);
 
                     for (int i = 0; i < sparseValuesWithIndex.Count; ++i)
                     {
@@ -132,7 +130,7 @@ namespace UniVRM10
                             count = sparseValuesWithIndex.Count,
                             indices = new glTFSparseIndices
                             {
-                                componentType = (glComponentType)AccessorValueType.UNSIGNED_INT,
+                                componentType = (glComponentType)VrmLib.AccessorValueType.UNSIGNED_INT,
                                 bufferView = sparseIndexView,
                             },
                             values = new glTFSparseValues

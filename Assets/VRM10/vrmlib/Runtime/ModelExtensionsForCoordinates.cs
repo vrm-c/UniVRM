@@ -167,7 +167,10 @@ namespace VrmLib
                                 }
                             }
 
-                            b.GravityDir = b.GravityDir.ReverseZ();
+                            foreach (var j in b.Joints)
+                            {
+                                j.GravityDir = j.GravityDir.ReverseZ();
+                            }
                         }
                     }
                 }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
-using UniGLTF;
 using VrmLib;
 using UniJSON;
 
@@ -13,7 +12,7 @@ namespace UniVRM10
     public class Vrm10Storage : IVrmStorage
     {
         public ArraySegment<Byte> OriginalJson { get; private set; }
-        public glTF Gltf
+        public UniGLTF.glTF Gltf
         {
             get;
             private set;
@@ -30,7 +29,7 @@ namespace UniVRM10
         /// </summary>
         public Vrm10Storage()
         {
-            Gltf = new glTF()
+            Gltf = new UniGLTF.glTF()
             {
                 extensionsUsed = new List<string>(),
             };
@@ -78,7 +77,7 @@ namespace UniVRM10
         {
             Buffers[bufferIndex].Extend(segment, stride, out int offset, out int length);
             var viewIndex = Gltf.bufferViews.Count;
-            Gltf.bufferViews.Add(new glTFBufferView
+            Gltf.bufferViews.Add(new UniGLTF.glTFBufferView
             {
                 buffer = 0,
                 byteOffset = offset,
@@ -176,14 +175,14 @@ namespace UniVRM10
                     .Slice(sparse.values.byteOffset, accessor.GetStride() * sparse.count);
                 ;
 
-                if (sparse.indices.componentType == (glComponentType)AccessorValueType.UNSIGNED_SHORT
-                    && accessor.componentType == (glComponentType)AccessorValueType.FLOAT
+                if (sparse.indices.componentType == (UniGLTF.glComponentType)AccessorValueType.UNSIGNED_SHORT
+                    && accessor.componentType == (UniGLTF.glComponentType)AccessorValueType.FLOAT
                     && accessor.type == "VEC3")
                 {
                     return RestoreSparseAccessorUInt16<Vector3>(bytes, accessor.count, sparseIndexBytes, sparseValueBytes);
                 }
-                if (sparse.indices.componentType == (glComponentType)AccessorValueType.UNSIGNED_INT
-                    && accessor.componentType == (glComponentType)AccessorValueType.FLOAT
+                if (sparse.indices.componentType == (UniGLTF.glComponentType)AccessorValueType.UNSIGNED_INT
+                    && accessor.componentType == (UniGLTF.glComponentType)AccessorValueType.FLOAT
                     && accessor.type == "VEC3")
                 {
                     return RestoreSparseAccessorUInt32<Vector3>(bytes, accessor.count, sparseIndexBytes, sparseValueBytes);
@@ -451,7 +450,7 @@ namespace UniVRM10
         /// </summary>
         /// <param name="textureIndex"></param>
         /// <returns></returns>
-        private (Texture.TextureTypes, glTFMaterial) GetTextureType(int textureIndex)
+        private (Texture.TextureTypes, UniGLTF.glTFMaterial) GetTextureType(int textureIndex)
         {
             foreach (var material in Gltf.materials)
             {
@@ -460,7 +459,7 @@ namespace UniVRM10
                 {
                     if (material.normalTexture?.index == textureIndex) return (Texture.TextureTypes.NormalMap, material);
                 }
-                else if (glTF_KHR_materials_unlit.IsEnable(material))
+                else if (UniGLTF.glTF_KHR_materials_unlit.IsEnable(material))
                 {
                 }
                 else
@@ -495,7 +494,7 @@ namespace UniVRM10
 
                     if (material.normalTexture?.index == textureIndex) return Texture.ColorSpaceTypes.Linear;
                 }
-                else if (glTF_KHR_materials_unlit.IsEnable(material))
+                else if (UniGLTF.glTF_KHR_materials_unlit.IsEnable(material))
                 {
                     // unlit
                     if (material.pbrMetallicRoughness.baseColorTexture?.index == textureIndex) return Texture.ColorSpaceTypes.Srgb;
@@ -522,7 +521,7 @@ namespace UniVRM10
 
             var sampler = (texture.sampler >= 0 && texture.sampler < Gltf.samplers.Count)
             ? Gltf.samplers[texture.sampler]
-            : new glTFTextureSampler()
+            : new UniGLTF.glTFTextureSampler()
             ;
 
             if (textureType.Item1 == Texture.TextureTypes.MetallicRoughness && textureType.Item2.pbrMetallicRoughness != null)
@@ -607,7 +606,7 @@ namespace UniVRM10
 
         static void AssignHumanoid(List<Node> nodes, UniGLTF.Extensions.VRMC_vrm.HumanBone humanBone, VrmLib.HumanoidBones key)
         {
-            if (humanBone.Node.HasValue)
+            if (humanBone != null && humanBone.Node.HasValue)
             {
                 nodes[humanBone.Node.Value].HumanoidBone = key;
             }
@@ -710,66 +709,63 @@ namespace UniVRM10
                 return null;
             }
 
-            var springBone = new SpringBoneManager();
+            var springBoneManager = new SpringBoneManager();
 
             // springs
             if (gltfVrmSpringBone.Springs != null)
             {
-                foreach (var group in gltfVrmSpringBone.Springs.GroupBy(x => x.Setting.Value))
+                foreach (var gltfSpring in gltfVrmSpringBone.Springs)
                 {
-                    var sb = new SpringBone();
-                    sb.Comment = group.First().Name;
-                    sb.HitRadius = group.First().HitRadius.Value;
-                    var setting = gltfVrmSpringBone.Settings[group.Key];
-                    sb.DragForce = setting.DragForce.Value;
-                    sb.GravityDir = setting.GravityDir.ToVector3();
-                    sb.GravityPower = setting.GravityPower.Value;
-                    sb.Stiffness = setting.Stiffness.Value;
+                    var springBone = new SpringBone();
+                    springBone.Comment = gltfSpring.Name;
 
-                    foreach (var spring in group)
+                    // joint
+                    foreach (var gltfJoint in gltfSpring.Joints)
                     {
-                        // root
-                        sb.Bones.Add(nodes[spring.SpringRoot.Value]);
-                        // collider
-                        foreach (var colliderNode in spring.Colliders)
+                        var joint = new SpringJoint(nodes[gltfJoint.Node.Value]);
+                        joint.HitRadius = gltfJoint.HitRadius.Value;
+                        joint.DragForce = gltfJoint.DragForce.Value;
+                        joint.GravityDir = gltfJoint.GravityDir.ToVector3();
+                        joint.GravityPower = gltfJoint.GravityPower.Value;
+                        joint.Stiffness = gltfJoint.Stiffness.Value;
+                        joint.Exclude = gltfJoint.Exclude.Value;
+                        springBone.Joints.Add(joint);
+                    }
+
+                    // collider
+                    springBone.Colliders.AddRange(gltfSpring.Colliders.Select(colliderNode =>
+                    {
+                        if (UniGLTF.Extensions.VRMC_node_collider.GltfDeserializer.TryGet(Gltf.nodes[colliderNode].extensions,
+                            out UniGLTF.Extensions.VRMC_node_collider.VRMC_node_collider extension))
                         {
-                            var collider = springBone.Colliders.FirstOrDefault(x => x.Node == nodes[colliderNode]);
-                            if (collider == null)
+                            var collider = new SpringBoneColliderGroup(nodes[colliderNode], extension.Shapes.Select(x =>
                             {
-                                if (UniGLTF.Extensions.VRMC_node_collider.GltfDeserializer.TryGet(Gltf.nodes[colliderNode].extensions,
-                                    out UniGLTF.Extensions.VRMC_node_collider.VRMC_node_collider extension))
+                                if (x.Sphere != null)
                                 {
-                                    collider = new SpringBoneColliderGroup(nodes[colliderNode], extension.Shapes.Select(x =>
-                                    {
-                                        if (x.Sphere != null)
-                                        {
-                                            return VrmSpringBoneCollider.CreateSphere(x.Sphere.Offset.ToVector3(), x.Sphere.Radius.Value);
-                                        }
-                                        else if (x.Capsule != null)
-                                        {
-                                            return VrmSpringBoneCollider.CreateCapsule(x.Capsule.Offset.ToVector3(), x.Capsule.Radius.Value, x.Capsule.Tail.ToVector3());
-                                        }
-                                        else
-                                        {
-                                            throw new NotImplementedException();
-                                        }
-                                    }));
-                                    springBone.Colliders.Add(collider);
+                                    return VrmSpringBoneCollider.CreateSphere(x.Sphere.Offset.ToVector3(), x.Sphere.Radius.Value);
+                                }
+                                else if (x.Capsule != null)
+                                {
+                                    return VrmSpringBoneCollider.CreateCapsule(x.Capsule.Offset.ToVector3(), x.Capsule.Radius.Value, x.Capsule.Tail.ToVector3());
                                 }
                                 else
                                 {
-                                    throw new Exception("collider not found");
+                                    throw new NotImplementedException();
                                 }
-                            }
-                            sb.Colliders.Add(collider);
+                            }));
+                            return collider;
                         }
-                    }
+                        else
+                        {
+                            return null;
+                        }
+                    }).Where(x => x != null));
 
-                    springBone.Springs.Add(sb);
+                    springBoneManager.Springs.Add(springBone);
                 }
             }
 
-            return springBone;
+            return springBoneManager;
         }
 
         public FirstPerson CreateVrmFirstPerson(List<Node> nodes, List<MeshGroup> meshGroups)
@@ -790,7 +786,7 @@ namespace UniVRM10
             return gltfVrm.LookAt.FromGltf();
         }
 
-        public ArraySegment<byte> GetBufferBytes(glTFBufferView bufferView)
+        public ArraySegment<byte> GetBufferBytes(UniGLTF.glTFBufferView bufferView)
         {
             if (!bufferView.buffer.TryGetValidIndex(Gltf.buffers.Count, out int bufferViewBufferIndex))
             {
@@ -799,7 +795,7 @@ namespace UniVRM10
             return GetBufferBytes(Gltf.buffers[bufferViewBufferIndex]);
         }
 
-        public ArraySegment<byte> GetBufferBytes(glTFBuffer buffer)
+        public ArraySegment<byte> GetBufferBytes(UniGLTF.glTFBuffer buffer)
         {
             int index = Gltf.buffers.IndexOf(buffer);
             return Buffers[index].Bytes;
