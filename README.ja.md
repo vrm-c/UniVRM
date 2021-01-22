@@ -32,6 +32,14 @@ glTF2.0をベースとしており、誰でも自由に利用することがで�
 
 ## Contributing to UniVRM
 
+以下コマンドでUniVRMリポジトリをクローンして、UnityでUniVRMフォルダを開きます。
+
+```console
+$ git clone https://github.com/vrm-c/UniVRM.git
+$ cd UniVRM
+$ git submodule update --init --recursive
+```
+
 [コントリビューションガイド](https://github.com/vrm-c/UniVRM/wiki/コントリビューションガイド(ja))を参照してください。
 
 ## Documents

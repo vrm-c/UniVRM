@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
@@ -9,11 +9,13 @@ namespace MeshUtility
     public class MeshUtility
     {
         public const string MENU_PARENT = "UniGLTF/Mesh Utility/";
-        public const int MENU_PRIORITY = 11;
 
         private const string ASSET_SUFFIX = ".mesh.asset";
         private const string MENU_NAME = MENU_PARENT + "MeshSeparator";
         private static readonly Vector3 ZERO_MOVEMENT = Vector3.zero;
+
+        private const string INTEGRATED_MESH_NAME = "MeshesIntegrated";
+        private const string INTEGRATED_MESH_BLENDSHAPE_NAME = "MeshesBlendShapeIntegrated";
 
         public static Object GetPrefab(GameObject instance)
         {
@@ -39,31 +41,16 @@ namespace MeshUtility
                 return true;
         }
 
-        [MenuItem(MENU_NAME, priority = 2)]
-        public static void SeparateSkinnedMeshContainedBlendShape()
-        {
-            var go = Selection.activeTransform.gameObject;
-
-            if (go.GetComponentsInChildren<SkinnedMeshRenderer>().Length > 0)
-            {
-                SeparationProcessing(go);
-                go.SetActive(false);
-            }
-            else
-            {
-                EditorUtility.DisplayDialog("Error", "No skinnedMeshRenderer contained", "ok");
-            }
-        }
-
-        [MenuItem(MENU_PARENT + "MeshSeparator Docs", priority = MeshUtility.MENU_PRIORITY)]
+        [MenuItem(MENU_PARENT + "MeshUtility Docs", priority = 32)]
         public static void LinkToMeshSeparatorDocs()
         {
             Application.OpenURL("https://github.com/vrm-c/UniVRM/blob/master/Assets/UniGLTF/MeshUtility/README.md");
         }
 
-        private static void SeparationProcessing(GameObject go)
+        public static void SeparationProcessing(GameObject go)
         {
             var outputObject = GameObject.Instantiate(go);
+            outputObject.name = outputObject.name + "_mesh_separation";
             var skinnedMeshRenderers = outputObject.GetComponentsInChildren<SkinnedMeshRenderer>();
             foreach (var skinnedMeshRenderer in skinnedMeshRenderers)
             {
@@ -284,16 +271,13 @@ namespace MeshUtility
         }
 
 #if UNITY_EDITOR
-        [MenuItem(MENU_PARENT + "Integrate Static Mesh", validate = true)]
-        public static bool CanIntegrateSelected()
+        public static bool IsGameObjectSelected()
         {
             return Selection.activeObject != null && Selection.activeObject is GameObject;
         }
 
-        [MenuItem(MENU_PARENT + "Integrate Static Mesh", priority = 3)]
-        public static void IntegrateSelected()
+        public static void IntegrateSelected(GameObject go)
         {
-            var go = Selection.activeObject as GameObject;
             var meshWithMaterials = StaticMeshIntegrator.Integrate(go.transform);
 
             // save as asset
@@ -347,5 +331,53 @@ namespace MeshUtility
             renderer.sharedMaterials = meshWithMaterials.Materials;
         }
 #endif
+        public static void MeshIntegrator(GameObject go)
+        {
+            MeshIntegratorUtility.Integrate(go, onlyBlendShapeRenderers: true);            
+            MeshIntegratorUtility.Integrate(go, onlyBlendShapeRenderers: false);
+
+            var outputObject = GameObject.Instantiate(go);
+            outputObject.name = outputObject.name + "_mesh_integration";
+            var skinnedMeshes = outputObject.GetComponentsInChildren<SkinnedMeshRenderer>();
+            var normalMeshes = outputObject.GetComponentsInChildren<MeshFilter>();
+
+            // destroy integrated meshes in the source
+            foreach (var skinnedMesh in go.GetComponentsInChildren<SkinnedMeshRenderer>()) 
+            {
+               if (skinnedMesh.sharedMesh.name == INTEGRATED_MESH_NAME)
+               {
+                   GameObject.DestroyImmediate(skinnedMesh.gameObject);
+               }
+            }
+            // destroy original meshes in the copied GameObject
+            foreach (var skinnedMesh in skinnedMeshes)
+            {
+               if (skinnedMesh.sharedMesh.name != INTEGRATED_MESH_NAME)
+               {
+                   GameObject.DestroyImmediate(skinnedMesh);
+               }
+               // avoid repeated name
+               else if (skinnedMesh.sharedMesh.blendShapeCount > 0)
+               {
+                   skinnedMesh.sharedMesh.name = INTEGRATED_MESH_BLENDSHAPE_NAME;
+               }
+               // check if the integrated mesh is empty
+               else if (skinnedMesh.sharedMesh.subMeshCount == 0)
+               {
+                   GameObject.DestroyImmediate(skinnedMesh.gameObject);
+               }
+            }
+            foreach (var normalMesh in normalMeshes)
+            {
+               if (normalMesh.sharedMesh.name != INTEGRATED_MESH_NAME)
+               {
+                    if (normalMesh.gameObject.GetComponent<MeshRenderer>())
+                    {
+                        GameObject.DestroyImmediate(normalMesh.gameObject.GetComponent<MeshRenderer>());
+                    }
+                    GameObject.DestroyImmediate(normalMesh);
+               }
+            }
+        }
     }
 }

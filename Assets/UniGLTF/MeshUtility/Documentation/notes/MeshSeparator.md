@@ -8,9 +8,9 @@ Select a GameObject contained skinned mesh and BlendShape:
 
 <img src="../images/interface_1.jpg" width="200">
 
-Select `Mesh Utility` -> `MeshSeparator`:
+From menu go to `UniGLTF` -> `Mesh Utility` -> `MeshProcessing Wizard`, select `MeshSeparator` and click `process`:
 
-<img src="../images/interface_2.jpg" width="200">
+<img src="../images/interface_2.jpg" width="300">
 
 The separate meshes are saved in the Assets folder. GameObjects with separate meshes are also available in the Hierarchy Window:
 

@@ -26,7 +26,7 @@ namespace MeshUtility.Validators
             DUPLICATE_BONE_NAME_EXISTS,
 
             [LangMsg(Languages.ja, "SkinnedMeshRenderer.bones に重複する内容がある。エクスポートした場合に、bones の重複を取り除き、boneweights, bindposes を調整します")]
-            [LangMsg(Languages.en, "There are same bone in bones the SkinnedMeshRenderer. They will be automatically uniqued")]
+            [LangMsg(Languages.en, "There are duplicated bones in SkinnedMeshRenderer.bones. They will be exported as unique bones. boneweights and bindposes will also be adjusted")]
             NO_UNIQUE_JOINTS,
         }
 

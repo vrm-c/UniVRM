@@ -23,7 +23,7 @@ namespace UniGLTF
             return Selection.activeObject != null && Selection.activeObject is GameObject;
         }
 
-        [MenuItem(MENU_EXPORT_GLTF_KEY, false, 1)]
+        [MenuItem(MENU_EXPORT_GLTF_KEY, priority = 0)]
         private static void ExportGltfFromMenu()
         {
             ExportFromMenu(false, new MeshExportSettings
@@ -33,7 +33,7 @@ namespace UniGLTF
             });
         }
 
-        [MenuItem(MENU_EXPORT_GLB_KEY, false, 1)]
+        [MenuItem(MENU_EXPORT_GLB_KEY,  priority = 10)]
         private static void ExportGlbFromMenu()
         {
             ExportFromMenu(true, MeshExportSettings.Default);
