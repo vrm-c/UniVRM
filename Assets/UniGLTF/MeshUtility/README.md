@@ -14,15 +14,15 @@ Currently support BlendShape mesh separation. See [documentation](Documentation/
 
 ### MeshIntegrator
 
-Integrate all the meshes of a Prefab (Project window).
+Integrate all the meshes of a (prefab) GameObject.
 
-### Integrate Static Mesh
+### StaticMeshIntegrator
 
-Integrate all the static meshes in the Hierarchy (Root and its children).
+Integrate all the static meshes of a (prefab) GameObject (Root and its children).
 
 ### MeshNormalizer
 
-Bake the Hierarchy. This is VRM normalize backend.
+Bake the Hierarchy. This is VRM normalization backend.
 MeshNormalizer can do blendShape bake.
 
 ## Import MeshUtility

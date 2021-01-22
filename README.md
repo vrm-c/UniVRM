@@ -32,6 +32,14 @@ VRM is based on glTF2.0. If you comply with the MIT license, you are free to use
 
 ## Contributing to UniVRM
 
+Use the commands below to clone UniVRM repository, and open the UniVRM folder by Unity.
+
+```console
+$ git clone https://github.com/vrm-c/UniVRM.git
+$ cd UniVRM
+$ git submodule update --init --recursive
+```
+
 See [contributing guidelines](https://github.com/vrm-c/UniVRM/wiki/Contributing-Guidelines).
 
 ## Documents
