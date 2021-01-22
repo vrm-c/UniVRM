@@ -15,21 +15,14 @@ namespace UniVRM10
         [SerializeField]
         public string m_comment;
 
-        [SerializeField, Header("Gizmo")]
-        bool m_drawGizmo = default;
-
-        [SerializeField]
-        Color m_gizmoColor = Color.yellow;
-
-        [SerializeField]
-        public Transform m_center;
-
         [SerializeField]
         public List<VRM10SpringJoint> Joints = new List<VRM10SpringJoint>();
 
         [SerializeField]
         public List<VRM10SpringBoneColliderGroup> ColliderGroups = new List<VRM10SpringBoneColliderGroup>();
 
+        [SerializeField]
+        public Transform m_center;
 
         [ContextMenu("Reset bones")]
         public void ResetJoints()
@@ -100,16 +93,13 @@ namespace UniVRM10
             }
         }
 
-        private void OnDrawGizmos()
+        public void DrawGizmo(Color color)
         {
-            if (m_drawGizmo)
+            foreach (var joint in Joints)
             {
-                foreach (var joint in Joints)
+                if (joint != null)
                 {
-                    if (joint != null)
-                    {
-                        joint.DrawGizmo(m_center, m_gizmoColor);
-                    }
+                    joint.DrawGizmo(m_center, color);
                 }
             }
         }

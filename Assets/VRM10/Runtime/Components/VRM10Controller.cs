@@ -168,5 +168,10 @@ namespace UniVRM10
                 Apply();
             }
         }
+
+        private void OnDrawGizmos()
+        {
+            SpringBone.DrawGizmos();
+        }
     }
 }
