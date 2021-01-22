@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace UniVRM10
@@ -20,25 +21,6 @@ namespace UniVRM10
         [SerializeField]
         Color m_gizmoColor = Color.yellow;
 
-        [Serializable]
-        public class VRM10SpringJoint
-        {
-            [SerializeField, Range(0, 4), Header("Settings")]
-            public float m_stiffnessForce = 1.0f;
-
-            [SerializeField, Range(0, 2)]
-            public float m_gravityPower = 0;
-
-            [SerializeField]
-            public Vector3 m_gravityDir = new Vector3(0, -1.0f, 0);
-
-            [SerializeField, Range(0, 1)]
-            public float m_dragForce = 0.4f;
-
-            [SerializeField, Range(0, 0.5f), Header("Collision")]
-            public float m_hitRadius = 0.02f;
-        }
-
         [SerializeField]
         public Transform m_center;
 
@@ -48,12 +30,17 @@ namespace UniVRM10
         [SerializeField]
         public List<VRM10SpringBoneColliderGroup> ColliderGroups = new List<VRM10SpringBoneColliderGroup>();
 
-        SpringBoneProcessor m_processor = new SpringBoneProcessor();
 
         [ContextMenu("Reset bones")]
-        public void ResetSpringBone()
+        public void ResetJoints()
         {
-            m_processor.ResetSpringBone();
+            foreach (var joint in Joints)
+            {
+                if (joint != null)
+                {
+                    joint.Transform.localRotation = Quaternion.identity;
+                }
+            }
         }
 
         List<SpringBoneLogic.InternalCollider> m_colliderList = new List<SpringBoneLogic.InternalCollider>();
@@ -101,20 +88,30 @@ namespace UniVRM10
                 }
             }
 
-            // var stiffness = m_stiffnessForce * Time.deltaTime;
-            // var external = m_gravityDir * (m_gravityPower * Time.deltaTime);
-
-            // m_processor.Update(RootBones, m_colliderList,
-            //             stiffness, m_dragForce, external,
-            //             m_hitRadius, m_center);
+            {
+                // udpate joints
+                VRM10SpringJoint lastJoint = Joints.FirstOrDefault(x => x != null);
+                foreach (var joint in Joints.Where(x => x != null).Skip(1))
+                {
+                    lastJoint.Update(m_center, Time.deltaTime, m_colliderList, joint);
+                    lastJoint = joint;
+                }
+                lastJoint.Update(m_center, Time.deltaTime, m_colliderList, null);
+            }
         }
 
         private void OnDrawGizmos()
         {
-            // if (m_drawGizmo)
-            // {
-            //     m_processor.DrawGizmos(m_center, m_hitRadius, m_gizmoColor);
-            // }
+            if (m_drawGizmo)
+            {
+                foreach (var joint in Joints)
+                {
+                    if (joint != null)
+                    {
+                        joint.DrawGizmo(m_center, m_gizmoColor);
+                    }
+                }
+            }
         }
     }
 }

@@ -606,7 +606,7 @@ namespace UniVRM10
 
         static void AssignHumanoid(List<Node> nodes, UniGLTF.Extensions.VRMC_vrm.HumanBone humanBone, VrmLib.HumanoidBones key)
         {
-            if (humanBone!=null && humanBone.Node.HasValue)
+            if (humanBone != null && humanBone.Node.HasValue)
             {
                 nodes[humanBone.Node.Value].HumanoidBone = key;
             }
@@ -722,7 +722,7 @@ namespace UniVRM10
                     // joint
                     foreach (var gltfJoint in gltfSpring.Joints)
                     {
-                        var joint = new SpringJoint();
+                        var joint = new SpringJoint(nodes[gltfJoint.Node.Value]);
                         joint.HitRadius = gltfJoint.HitRadius.Value;
                         joint.DragForce = gltfJoint.DragForce.Value;
                         joint.GravityDir = gltfJoint.GravityDir.ToVector3();

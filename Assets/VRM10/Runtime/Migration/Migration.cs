@@ -606,7 +606,6 @@ namespace UniVRM10
 
         public static void Check(ListTreeNode<JsonValue> vrm0, UniGLTF.Extensions.VRMC_springBone.VRMC_springBone vrm1, List<UniGLTF.glTFNode> nodes)
         {
-            var a = 0;
             // Migration.CheckSpringBone(vrm0["secondaryAnimation"], vrm1.sp)
         }
         #endregion

@@ -53,6 +53,11 @@ namespace VrmLib
     {
         public readonly Node Node;
 
+        public SpringJoint(Node node)
+        {
+            Node = node;
+        }
+
         public float DragForce;
 
         public Vector3 GravityDir;

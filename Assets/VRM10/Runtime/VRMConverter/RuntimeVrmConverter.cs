@@ -356,7 +356,7 @@ namespace UniVRM10
 
                         foreach (var joint in springBone.Joints)
                         {
-                            vrmSpringBone.Joints.Add(new VrmLib.SpringJoint
+                            vrmSpringBone.Joints.Add(new VrmLib.SpringJoint(Nodes[joint.Transform.gameObject])
                             {
                                 Stiffness = joint.m_stiffnessForce,
                                 GravityPower = joint.m_gravityPower,

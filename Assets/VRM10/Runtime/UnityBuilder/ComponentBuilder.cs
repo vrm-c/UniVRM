@@ -300,7 +300,8 @@ namespace UniVRM10
                     // create joint for the spring
                     foreach (var vrmJoint in vrmSpring.Joints)
                     {
-                        var joint = new VRM10SpringBone.VRM10SpringJoint();
+                        var go = asset.Map.Nodes[vrmJoint.Node];
+                        var joint = new VRM10SpringJoint(go.transform);
 
                         joint.m_stiffnessForce = vrmJoint.Stiffness;
                         joint.m_gravityPower = vrmJoint.GravityPower;
