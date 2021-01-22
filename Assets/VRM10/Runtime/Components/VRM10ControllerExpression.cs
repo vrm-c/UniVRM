@@ -50,6 +50,8 @@ namespace UniVRM10
             expressionKeyWeights = m_merger.ExpressionKeys.ToDictionary(x => x, x => 0.0f);
 
             m_blinkExpressionKeys.Add(m_merger.ExpressionKeys.FirstOrDefault(x => x.Preset == VrmLib.ExpressionPreset.Blink));
+            m_blinkExpressionKeys.Add(m_merger.ExpressionKeys.FirstOrDefault(x => x.Preset == VrmLib.ExpressionPreset.BlinkLeft));
+            m_blinkExpressionKeys.Add(m_merger.ExpressionKeys.FirstOrDefault(x => x.Preset == VrmLib.ExpressionPreset.BlinkRight));
             m_lookAtExpressionKeys.Add(m_merger.ExpressionKeys.FirstOrDefault(x => x.Preset == VrmLib.ExpressionPreset.LookUp));
             m_lookAtExpressionKeys.Add(m_merger.ExpressionKeys.FirstOrDefault(x => x.Preset == VrmLib.ExpressionPreset.LookDown));
             m_lookAtExpressionKeys.Add(m_merger.ExpressionKeys.FirstOrDefault(x => x.Preset == VrmLib.ExpressionPreset.LookLeft));
@@ -196,32 +198,55 @@ namespace UniVRM10
             return (ignoreBlink, ignoreLookAt, ignoreMouth);
         }
 
-        public (bool ignoreBlink, bool ignoreLookAt, bool ignoreMouth) Begin()
+        public void Apply()
         {
-            //
-            // get ingore settings
-            //
             var validateState = GetValidateState();
             m_ignoreBlink = validateState.ignoreBlink;
             m_ignoreLookAt = validateState.ignoreLookAt;
             m_ignoreMouth = validateState.ignoreMouth;
 
-            if (validateState.ignoreBlink)
-            {
-                // cancel blink
-                m_blinkExpressionKeys.ForEach(x => expressionKeyWeights[x] = 0.0f);
-            }
+            m_merger.SetValues(expressionKeyWeights
+                .Where(x =>
+                {
+                    // skip ignore
+                    if (validateState.ignoreBlink)
+                    {
+                        switch (x.Key.Preset)
+                        {
+                            case VrmLib.ExpressionPreset.Blink:
+                            case VrmLib.ExpressionPreset.BlinkLeft:
+                            case VrmLib.ExpressionPreset.BlinkRight:
+                                return false;
+                        }
+                    }
+                    if (validateState.ignoreMouth)
+                    {
+                        switch (x.Key.Preset)
+                        {
+                            case VrmLib.ExpressionPreset.Aa:
+                            case VrmLib.ExpressionPreset.Ih:
+                            case VrmLib.ExpressionPreset.Ou:
+                            case VrmLib.ExpressionPreset.Ee:
+                            case VrmLib.ExpressionPreset.Oh:
+                                return false;
+                        }
+                    }
+                    if (validateState.ignoreLookAt)
+                    {
+                        switch (x.Key.Preset)
+                        {
+                            case VrmLib.ExpressionPreset.LookUp:
+                            case VrmLib.ExpressionPreset.LookDown:
+                            case VrmLib.ExpressionPreset.LookLeft:
+                            case VrmLib.ExpressionPreset.LookRight:
+                                return false;
+                        }
+                    }
 
-            return validateState;
-        }
+                    return true;
+                })
+                .Select(x => new KeyValuePair<ExpressionKey, float>(x.Key, x.Value)));
 
-        public void End((bool ignoreBlink, bool ignoreLookAt, bool ignoreMouth) validateState)
-        {
-            if (validateState.ignoreMouth)
-            {
-                m_mouthExpressionKeys.ForEach(x => expressionKeyWeights[x] = 0.0f);
-            }
-            m_merger.SetValues(expressionKeyWeights.Select(x => new KeyValuePair<ExpressionKey, float>(x.Key, x.Value)));
             m_merger.Apply();
         }
     }
