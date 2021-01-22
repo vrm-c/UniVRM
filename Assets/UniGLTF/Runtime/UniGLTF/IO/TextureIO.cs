@@ -10,7 +10,8 @@ using UnityEditor;
 
 namespace UniGLTF
 {
-    public static class TextureIO
+
+    public class TextureIO : ITextureExporter
     {
         public static RenderTextureReadWrite GetColorSpace(glTFTextureTypes textureType)
         {
@@ -80,24 +81,12 @@ namespace UniGLTF
         }
 #endif
 
-        public struct TextureExportItem
-        {
-            public Texture Texture;
-            public glTFTextureTypes TextureType;
-
-            public TextureExportItem(Texture texture, glTFTextureTypes textureType)
-            {
-                Texture = texture;
-                TextureType = textureType;
-            }
-        }
-
-        public static IEnumerable<TextureExportItem> GetTextures(Material m)
+        public virtual IEnumerable<(Texture texture, glTFTextureTypes textureType)> GetTextures(Material m)
         {
             var props = ShaderPropExporter.PreShaderPropExporter.GetPropsForSupportedShader(m.shader.name);
             if (props == null)
             {
-                yield return new TextureExportItem(m.mainTexture, glTFTextureTypes.BaseColor);
+                yield return (m.mainTexture, glTFTextureTypes.BaseColor);
             }
 
             foreach (var prop in props.Properties)
@@ -105,19 +94,12 @@ namespace UniGLTF
 
                 if (prop.ShaderPropertyType == ShaderPropExporter.ShaderPropertyType.TexEnv)
                 {
-                    yield return new TextureExportItem(m.GetTexture(prop.Key), GetglTFTextureType(m.shader.name, prop.Key));
+                    yield return (m.GetTexture(prop.Key), GetglTFTextureType(m.shader.name, prop.Key));
                 }
             }
         }
 
-
-        struct BytesWithMime
-        {
-            public Byte[] Bytes;
-            public string Mime;
-        }
-
-        static BytesWithMime GetBytesWithMime(Texture texture, glTFTextureTypes textureType)
+        public virtual (Byte[] bytes, string mine) GetBytesWithMime(Texture texture, glTFTextureTypes textureType)
         {
 #if UNITY_EDITOR
             var path = UnityPath.FromAsset(texture);
@@ -138,46 +120,46 @@ namespace UniGLTF
                     // Resized exporting if MaxSize setting value is smaller than original image size.
                     if (originalSize > requiredMaxSize)
                     {
-                        return new BytesWithMime
-                        {
-                            Bytes = TextureItem.CopyTexture(texture, GetColorSpace(textureType), null).EncodeToPNG(),
-                            Mime = "image/png",
-                        };
+                        return
+                        (
+                            TextureItem.CopyTexture(texture, GetColorSpace(textureType), null).EncodeToPNG(),
+                            "image/png"
+                        );
                     }
                 }
                 
                 if (path.Extension == ".png")
                 {
-                    return new BytesWithMime
-                    {
-                        Bytes = System.IO.File.ReadAllBytes(path.FullPath),
-                        Mime = "image/png",
-                    };
+                    return
+                    (
+                        System.IO.File.ReadAllBytes(path.FullPath),
+                        "image/png"
+                    );
                 }
                 if (path.Extension == ".jpg")
                 {
-                    return new BytesWithMime
-                    {
-                        Bytes = System.IO.File.ReadAllBytes(path.FullPath),
-                        Mime = "image/jpeg",
-                    };
+                    return
+                    (
+                        System.IO.File.ReadAllBytes(path.FullPath),
+                        "image/jpeg"
+                    );
                 }
             }
 #endif
 
-            return new BytesWithMime
-            {
-                Bytes = TextureItem.CopyTexture(texture, TextureIO.GetColorSpace(textureType), null).EncodeToPNG(),
-                Mime = "image/png",
-            };
+            return
+            (
+                TextureItem.CopyTexture(texture, TextureIO.GetColorSpace(textureType), null).EncodeToPNG(),
+                "image/png"
+            );
         }
 
-        public static int ExportTexture(glTF gltf, int bufferIndex, Texture texture, glTFTextureTypes textureType)
+        public virtual int ExportTexture(glTF gltf, int bufferIndex, Texture texture, glTFTextureTypes textureType)
         {
             var bytesWithMime = GetBytesWithMime(texture, textureType); ;
 
             // add view
-            var view = gltf.buffers[bufferIndex].Append(bytesWithMime.Bytes, glBufferTarget.NONE);
+            var view = gltf.buffers[bufferIndex].Append(bytesWithMime.bytes, glBufferTarget.NONE);
             var viewIndex = gltf.AddBufferView(view);
 
             // add image
@@ -186,7 +168,7 @@ namespace UniGLTF
             {
                 name = texture.name,
                 bufferView = viewIndex,
-                mimeType = bytesWithMime.Mime,
+                mimeType = bytesWithMime.mine,
             });
 
             // add sampler
