@@ -353,7 +353,7 @@ namespace MeshUtility
                 else if (skinnedMesh.sharedMesh.name == MeshIntegratorUtility.INTEGRATED_MESH_NAME ||
                          skinnedMesh.sharedMesh.name == MeshIntegratorUtility.INTEGRATED_MESH_BLENDSHAPE_NAME)
                 {
-                    SaveMeshData(skinnedMesh.sharedMesh);
+                    // SaveMeshData(skinnedMesh.sharedMesh);
                 }
             }
             foreach (var normalMesh in normalMeshes)
