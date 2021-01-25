@@ -68,7 +68,7 @@ namespace VRM
                 SelectedIndex = GUILayout.SelectionGrid(SelectedIndex, array, 4);
             }
 
-            if (GUILayout.Button("Add BlendShapeClip"))
+            if (GUILayout.Button("Ceate BlendShapeClip"))
             {
                 var dir = Path.GetDirectoryName(AssetDatabase.GetAssetPath(m_avatar));
                 var path = EditorUtility.SaveFilePanel(
@@ -82,6 +82,9 @@ namespace VRM
                     //clip.Prefab = AssetDatabase.LoadAssetAtPath<GameObject>(AssetDatabase.GetAssetPath(target));
 
                     m_avatar.Clips.Add(clip);
+
+                    // save clips
+                    EditorUtility.SetDirty(m_avatar);
                 }
             }
         }
