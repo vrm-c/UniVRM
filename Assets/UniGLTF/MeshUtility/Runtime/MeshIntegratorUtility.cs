@@ -6,6 +6,8 @@ namespace MeshUtility
 {
     public static class MeshIntegratorUtility
     {
+        public const string INTEGRATED_MESH_NAME = "MeshesIntegrated";
+        public const string INTEGRATED_MESH_BLENDSHAPE_NAME = "MeshesBlendShapeIntegrated";
         /// <summary>
         /// go を root としたヒエラルキーから Renderer を集めて、統合された Mesh 作成する
         /// </summary>
@@ -54,7 +56,6 @@ namespace MeshUtility
             }
 
             var mesh = new Mesh();
-            mesh.name = "MeshesIntegrated";
 
             if (integrator.Positions.Count > ushort.MaxValue)
             {
@@ -77,6 +78,11 @@ namespace MeshUtility
             if (onlyBlendShapeRenderers)
             {
                 integrator.AddBlendShapesToMesh(mesh);
+                mesh.name = INTEGRATED_MESH_BLENDSHAPE_NAME;
+            }
+            else
+            {
+                mesh.name = INTEGRATED_MESH_NAME;
             }
 
             var integrated = meshNode.AddComponent<SkinnedMeshRenderer>();

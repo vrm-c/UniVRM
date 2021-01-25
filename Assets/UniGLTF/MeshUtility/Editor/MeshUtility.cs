@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
@@ -9,13 +9,8 @@ namespace MeshUtility
     public class MeshUtility
     {
         public const string MENU_PARENT = "UniGLTF/Mesh Utility/";
-
         private const string ASSET_SUFFIX = ".mesh.asset";
-        private const string MENU_NAME = MENU_PARENT + "MeshSeparator";
         private static readonly Vector3 ZERO_MOVEMENT = Vector3.zero;
-
-        private const string INTEGRATED_MESH_NAME = "MeshesIntegrated";
-        private const string INTEGRATED_MESH_BLENDSHAPE_NAME = "MeshesBlendShapeIntegrated";
 
         public static Object GetPrefab(GameObject instance)
         {
@@ -30,15 +25,6 @@ namespace MeshUtility
         {
             WithBlendShape,
             WithoutBlendShape,
-        }
-
-        [MenuItem(MENU_NAME, validate = true)]
-        private static bool ShowLogValidation()
-        {
-            if (Selection.activeTransform == null)
-                return false;
-            else
-                return true;
         }
 
         [MenuItem(MENU_PARENT + "MeshUtility Docs", priority = 32)]
@@ -344,32 +330,35 @@ namespace MeshUtility
             // destroy integrated meshes in the source
             foreach (var skinnedMesh in go.GetComponentsInChildren<SkinnedMeshRenderer>()) 
             {
-               if (skinnedMesh.sharedMesh.name == INTEGRATED_MESH_NAME)
+               if (skinnedMesh.sharedMesh.name == MeshIntegratorUtility.INTEGRATED_MESH_NAME ||
+                   skinnedMesh.sharedMesh.name == MeshIntegratorUtility.INTEGRATED_MESH_BLENDSHAPE_NAME)
                {
                    GameObject.DestroyImmediate(skinnedMesh.gameObject);
                }
             }
-            // destroy original meshes in the copied GameObject
             foreach (var skinnedMesh in skinnedMeshes)
             {
-               if (skinnedMesh.sharedMesh.name != INTEGRATED_MESH_NAME)
-               {
-                   GameObject.DestroyImmediate(skinnedMesh);
-               }
-               // avoid repeated name
-               else if (skinnedMesh.sharedMesh.blendShapeCount > 0)
-               {
-                   skinnedMesh.sharedMesh.name = INTEGRATED_MESH_BLENDSHAPE_NAME;
-               }
-               // check if the integrated mesh is empty
-               else if (skinnedMesh.sharedMesh.subMeshCount == 0)
-               {
-                   GameObject.DestroyImmediate(skinnedMesh.gameObject);
-               }
+                // destroy original meshes in the copied GameObject
+                if (!(skinnedMesh.sharedMesh.name == MeshIntegratorUtility.INTEGRATED_MESH_NAME ||
+                    skinnedMesh.sharedMesh.name == MeshIntegratorUtility.INTEGRATED_MESH_BLENDSHAPE_NAME))
+                {
+                    GameObject.DestroyImmediate(skinnedMesh);
+                }
+                // check if the integrated mesh is empty
+                else if (skinnedMesh.sharedMesh.subMeshCount == 0)
+                {
+                    GameObject.DestroyImmediate(skinnedMesh.gameObject);
+                }
+                // save mesh data
+                else if (skinnedMesh.sharedMesh.name == MeshIntegratorUtility.INTEGRATED_MESH_NAME ||
+                         skinnedMesh.sharedMesh.name == MeshIntegratorUtility.INTEGRATED_MESH_BLENDSHAPE_NAME)
+                {
+                    SaveMeshData(skinnedMesh.sharedMesh);
+                }
             }
             foreach (var normalMesh in normalMeshes)
             {
-               if (normalMesh.sharedMesh.name != INTEGRATED_MESH_NAME)
+               if (normalMesh.sharedMesh.name != MeshIntegratorUtility.INTEGRATED_MESH_NAME)
                {
                     if (normalMesh.gameObject.GetComponent<MeshRenderer>())
                     {
@@ -378,6 +367,23 @@ namespace MeshUtility
                     GameObject.DestroyImmediate(normalMesh);
                }
             }
+        }
+
+        private static void SaveMeshData(Mesh mesh)
+        {
+            var assetPath = string.Format("{0}{1}", Path.GetFileNameWithoutExtension(mesh.name), ASSET_SUFFIX);
+            Debug.Log(assetPath);
+            if (!string.IsNullOrEmpty((AssetDatabase.GetAssetPath(mesh))))
+            {
+                var directory = Path.GetDirectoryName(AssetDatabase.GetAssetPath(mesh)).Replace("\\", "/");
+                assetPath = string.Format("{0}/{1}{2}", directory, Path.GetFileNameWithoutExtension(mesh.name), ASSET_SUFFIX);
+            }
+            else
+            {
+                assetPath = string.Format("Assets/{0}{1}", Path.GetFileNameWithoutExtension(mesh.name), ASSET_SUFFIX);
+            }
+            Debug.LogFormat("CreateAsset: {0}", assetPath);
+            AssetDatabase.CreateAsset(mesh, assetPath);
         }
     }
 }

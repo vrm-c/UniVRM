@@ -4,7 +4,7 @@ MeshSeparator provides a functionality of separating meshes contained BlendShape
 
 ## How to use
 
-Select a GameObject contained skinned mesh and BlendShape:
+Select a GameObject contained skinned mesh and BlendShape (or drag and drop a GameObject to TargetObject field shown below):
 
 <img src="../images/interface_1.jpg" width="200">
 
@@ -12,9 +12,13 @@ From menu go to `UniGLTF` -> `Mesh Utility` -> `MeshProcessing Wizard`, select `
 
 <img src="../images/interface_2.jpg" width="300">
 
-The separate meshes are saved in the Assets folder. GameObjects with separate meshes are also available in the Hierarchy Window:
+The separate meshes are saved in the Assets folder.
 
 <img src="../images/interface_3.jpg" width="200">
+
+In the Hierarchy Window, click the generated GameObject and export.
+
+<img src="../images/interface_4.jpg" width="250">
 
 In this example, the model's mesh are split into two parts: face and body:
 

@@ -1,10 +1,8 @@
+using System;
+using System.Reflection;
 using UnityEngine;
 using UnityEditor;
-using System.Reflection;
-using MeshUtility;
-using System.IO;
-using System;
-using System.Linq;
+using MeshUtility.M17N;
 
 namespace MeshUtility
 {
@@ -34,25 +32,67 @@ namespace MeshUtility
         GUIStyle _tabButtonStyle => "LargeButton";
         GUI.ToolbarButtonSize _tabButtonSize => GUI.ToolbarButtonSize.Fixed;
 
+        private enum MeshProcessingMessages
+        {
+            [LangMsg(Languages.ja, "ターゲットオブジェクト")]
+            [LangMsg(Languages.en, "TargetObject")]
+            TARGET_OBJECT,
+
+            [LangMsg(Languages.ja, "BlendShapeを含むメッシュは分割されます")]
+            [LangMsg(Languages.en, "Meshes containing BlendShape will be split")]
+            MESH_SEPARATOR,
+
+            [LangMsg(Languages.ja, "メッシュを統合する。BlendShapeを含むメッシュは独立して統合されます")]
+            [LangMsg(Languages.en, "Generate a single mesh. Meshes w/ BlendShape will be grouped into another one")]
+            MESH_INTEGRATOR,
+
+            [LangMsg(Languages.ja, "静的メッシュを一つに統合する")]
+            [LangMsg(Languages.en, "Integrate static meshes into one")]
+            STATIC_MESH_INTEGRATOR,
+
+            [LangMsg(Languages.ja, "GameObjectを選んでください")]
+            [LangMsg(Languages.en, "Select a GameObject first")]
+            NO_GAMEOBJECT_SELECTED,
+
+            [LangMsg(Languages.ja, "GameObjectにスキンメッシュが含まれていません")]
+            [LangMsg(Languages.en, "No skinned mesh is contained")]
+            NO_SKINNED_MESH,
+
+            [LangMsg(Languages.ja, "GameObjectに静的メッシュが含まれていません")]
+            [LangMsg(Languages.en, "No static mesh is contained")]
+            NO_STATIC_MESH,
+
+            [LangMsg(Languages.ja, "GameObjectにスキンメッシュ・静的メッシュが含まれていません")]
+            [LangMsg(Languages.en, "Skinned/Static mesh is not contained")]
+            NO_MESH,
+
+            [LangMsg(Languages.ja, "ターゲットオブジェクトはVRMモデルです。`VRM0-> MeshIntegrator`を使ってください")]
+            [LangMsg(Languages.en, "Target object is VRM model, use `VRM0 -> MeshIntegrator` instead")]
+            VRM_DETECTED,
+        }
+
         private void OnGUI()
         {
             EditorGUIUtility.labelWidth = 150;
+            // lang
+            Getter.OnGuiSelectLang();
+
             _tab = TabBar.OnGUI(_tab, _tabButtonStyle, _tabButtonSize);
 
             switch (_tab)
             {
                 case Tabs.MeshSeparator:
-                    EditorGUILayout.TextField("Meshes containing BlendShape data will be split");
+                    EditorGUILayout.TextField(MeshProcessingMessages.MESH_SEPARATOR.Msg());
                     break;
                 case Tabs.MeshIntegrator:
-                    EditorGUILayout.TextField("Generate a single mesh. Meshes w/ BlendShape will be grouped into another one");
+                    EditorGUILayout.TextField(MeshProcessingMessages.MESH_INTEGRATOR.Msg());
                     break;
                 case Tabs.StaticMeshIntegrator:
-                    EditorGUILayout.TextField("Integrate static meshes into one");
+                    EditorGUILayout.TextField(MeshProcessingMessages.STATIC_MESH_INTEGRATOR.Msg());
                     break;
             }
 
-            EditorGUILayout.LabelField("ExportTarget");
+            EditorGUILayout.LabelField(MeshProcessingMessages.TARGET_OBJECT.Msg());
             _exportTarget = (GameObject)EditorGUILayout.ObjectField(_exportTarget, typeof(GameObject), true);
             if (_exportTarget == null && MeshUtility.IsGameObjectSelected())
             {
@@ -111,7 +151,7 @@ namespace MeshUtility
 
         private bool GameObjectNull()
         {
-            EditorUtility.DisplayDialog("Failed", "No GameObject Selected", "ok");
+            EditorUtility.DisplayDialog("Failed", MeshProcessingMessages.NO_GAMEOBJECT_SELECTED.Msg(), "ok");
             return false;
         }
 
@@ -127,7 +167,7 @@ namespace MeshUtility
             }
             else
             {
-                EditorUtility.DisplayDialog("Failed", "No skinned mesh contained", "ok");
+                EditorUtility.DisplayDialog("Failed", MeshProcessingMessages.NO_SKINNED_MESH.Msg(), "ok");
                 return false;
             }
         }
@@ -146,7 +186,7 @@ namespace MeshUtility
                 var sourceString = component.ToString();
                 if (sourceString.Contains(keyWord))
                 {
-                    EditorUtility.DisplayDialog("Failed", "Target object is VRM file, use `VRM0 -> MeshIntegrator` instead", "ok");
+                    EditorUtility.DisplayDialog("Failed", MeshProcessingMessages.VRM_DETECTED.Msg(), "ok");
                     return false;
                 }
             }
@@ -158,7 +198,7 @@ namespace MeshUtility
             }
             else
             {
-                EditorUtility.DisplayDialog("Failed", "Neither skinned mesh nor static mesh contained", "ok");
+                EditorUtility.DisplayDialog("Failed", MeshProcessingMessages.NO_MESH.Msg(), "ok");
                 return false;
             }
         }
@@ -174,7 +214,7 @@ namespace MeshUtility
             }
             else
             {
-                EditorUtility.DisplayDialog("Failed", "No static mesh contained", "ok");
+                EditorUtility.DisplayDialog("Failed", MeshProcessingMessages.NO_STATIC_MESH.Msg(), "ok");
                 return false;
             }
         }
