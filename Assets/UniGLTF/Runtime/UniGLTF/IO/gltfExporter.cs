@@ -141,6 +141,28 @@ namespace UniGLTF
             return new MaterialExporter();
         }
 
+        private ITextureExporter _textureExporter;
+        public ITextureExporter TextureExporter
+        {
+            get
+            {
+                if (_textureExporter != null)
+                {
+                    return _textureExporter;
+                }
+                else
+                {
+                    _textureExporter = new TextureIO();
+                    return _textureExporter;
+                }
+            }
+            set
+            {
+                _textureExporter = value;
+            }
+        }
+
+
         /// <summary>
         /// このエクスポーターがサポートするExtension
         /// </summary>
@@ -237,9 +259,9 @@ namespace UniGLTF
 
                 #region Materials and Textures
                 Materials = Nodes.SelectMany(x => x.GetSharedMaterials()).Where(x => x != null).Distinct().ToList();
-                var unityTextures = Materials.SelectMany(x => TextureIO.GetTextures(x)).Where(x => x.Texture != null).Distinct().ToList();
+                var unityTextures = Materials.SelectMany(x => TextureExporter.GetTextures(x)).Where(x => x.texture != null).Distinct().ToList();
 
-                TextureManager = new TextureExportManager(unityTextures.Select(x => x.Texture));
+                TextureManager = new TextureExportManager(unityTextures.Select(x => x.texture));
 
                 var materialExporter = CreateMaterialExporter();
                 glTF.materials = Materials.Select(x => materialExporter.ExportMaterial(x, TextureManager)).ToList();
@@ -247,7 +269,7 @@ namespace UniGLTF
                 for (int i = 0; i < unityTextures.Count; ++i)
                 {
                     var unityTexture = unityTextures[i];
-                    TextureIO.ExportTexture(glTF, bufferIndex, TextureManager.GetExportTexture(i), unityTexture.TextureType);
+                    TextureExporter.ExportTexture(glTF, bufferIndex, TextureManager.GetExportTexture(i), unityTexture.textureType);
                 }
                 #endregion
 
