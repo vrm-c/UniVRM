@@ -310,6 +310,7 @@ namespace UniGLTF
             RestoreOlderVersionValues();
 
             FixUnique();
+            FixNodeName();
 
             // parepare byte buffer
             //GLTF.baseDir = System.IO.Path.GetDirectoryName(Path);
@@ -342,6 +343,21 @@ namespace UniGLTF
                     }
 
                     used.Add(lname);
+                }
+            }
+        }
+
+        /// <summary>
+        /// rename empty name to $"{index}"
+        /// </summary>
+        void FixNodeName()
+        {
+            for (var i = 0; i < GLTF.nodes.Count; ++i)
+            {
+                var node = GLTF.nodes[i];
+                if (string.IsNullOrWhiteSpace(node.name))
+                {
+                    node.name = $"{i}";
                 }
             }
         }
