@@ -72,16 +72,6 @@ namespace VRM
                 v.DrawGUI();
                 isValid = false;
             }
-            if (!isValid)
-            {
-                if (GUILayout.Button("reset renderers"))
-                {
-                    m_target.TraverseRenderers();
-                }
-                GUILayout.Space(10);
-                Separator();
-                GUILayout.Space(10);
-            }
 
             base.OnInspectorGUI();
         }
