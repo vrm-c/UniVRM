@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using MeshUtility;
@@ -8,24 +9,25 @@ namespace VRM
     public static class VRMFirstPersonValidator
     {
         public static Transform[] Hierarchy;
+        static Action extended;
 
         public static bool IsValid(this VRMFirstPerson.RendererFirstPersonFlags r, string name, out Validation validation)
         {
             if (r.Renderer == null)
             {
-                validation = Validation.Error($"{name}.Renderer is null");
+                validation = Validation.Error($"{name}.Renderer is null", extended);
                 return false;
             }
 
             if (!Hierarchy.Contains(r.Renderer.transform))
             {
-                validation = Validation.Error($"{name}.Renderer is out of hierarchy");
+                validation = Validation.Error($"{name}.Renderer is out of hierarchy", extended);
                 return false;
             }
 
             if (!r.Renderer.EnableForExport())
             {
-                validation = Validation.Error($"{name}.Renderer is not active");
+                validation = Validation.Error($"{name}.Renderer is not active", extended);
                 return false;
             }
 
@@ -36,6 +38,14 @@ namespace VRM
         public static IEnumerable<Validation> Validate(this VRMFirstPerson self, GameObject _)
         {
             Hierarchy = self.GetComponentsInChildren<Transform>(true);
+
+            extended = () =>
+            {
+                if (GUILayout.Button("reset VRMFirstPerson.Renderers"))
+                {
+                    self.TraverseRenderers();
+                }
+            };
 
             for (int i = 0; i < self.Renderers.Count; ++i)
             {

@@ -46,10 +46,11 @@ namespace MeshUtility
 
         public readonly String Message;
 
-        Validation(ErrorLevels canExport, string message)
+        Validation(ErrorLevels canExport, string message, Action extended = null)
         {
             ErrorLevel = canExport;
             Message = message;
+            Extended = extended;
         }
 
 #if UNITY_EDITOR
@@ -76,7 +77,14 @@ namespace MeshUtility
                 default:
                     throw new NotImplementedException();
             }
+
+            if (Extended != null)
+            {
+                Extended();
+            }
         }
+
+        public Action Extended;
 #endif
 
         public static Validation Critical(string msg)
@@ -84,9 +92,9 @@ namespace MeshUtility
             return new Validation(ErrorLevels.Critical, msg);
         }
 
-        public static Validation Error(string msg)
+        public static Validation Error(string msg, Action action = null)
         {
-            return new Validation(ErrorLevels.Error, msg);
+            return new Validation(ErrorLevels.Error, msg, action);
         }
 
         public static Validation Warning(string msg)

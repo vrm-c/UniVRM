@@ -76,7 +76,7 @@ namespace VRM
             }
         }
 
-        private void Reset()
+        public void Reset()
         {
             SetDefault();
             TraverseRenderers();
