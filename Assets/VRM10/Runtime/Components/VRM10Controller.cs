@@ -140,7 +140,7 @@ namespace UniVRM10
             //
             // gaze control
             //
-            LookAt.Process(Head, Expression.SetPresetValue);
+            LookAt.Process(Head, Expression.Accumulator.SetPresetValue);
 
             //
             // expression
