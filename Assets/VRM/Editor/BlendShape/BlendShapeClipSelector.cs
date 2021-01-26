@@ -68,7 +68,7 @@ namespace VRM
                 SelectedIndex = GUILayout.SelectionGrid(SelectedIndex, array, 4);
             }
 
-            if (GUILayout.Button("Ceate BlendShapeClip"))
+            if (GUILayout.Button("Create BlendShapeClip"))
             {
                 var dir = Path.GetDirectoryName(AssetDatabase.GetAssetPath(m_avatar));
                 var path = EditorUtility.SaveFilePanel(
