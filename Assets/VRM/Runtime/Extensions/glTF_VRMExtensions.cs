@@ -117,7 +117,7 @@ namespace VRM
             var group = new glTF_VRM_BlendShapeGroup
             {
                 name = clip.BlendShapeName,
-                presetName = clip.Preset.ToString().ToLower(),
+                presetName = clip.Preset.ToString().ToLowerInvariant(),
                 isBinary = clip.IsBinary,
                 binds = list,
                 materialValues = materialList,
