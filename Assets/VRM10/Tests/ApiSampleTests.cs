@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -9,7 +10,7 @@ namespace UniVRM10.Test
     {
         VrmLib.Model ReadModel(string path)
         {
-            var bytes = File.ReadAllBytes(path);
+            var bytes = Migration.Migrate(File.ReadAllBytes(path));
 
             if (!UniGLTF.Glb.TryParse(bytes, out UniGLTF.Glb glb, out Exception ex))
             {
@@ -17,7 +18,7 @@ namespace UniVRM10.Test
                 return null;
             }
 
-            var model = UniVRM10.VrmLoader.CreateVrmModel(path);
+            var model = UniVRM10.VrmLoader.CreateVrmModel(bytes, new FileInfo(path));
             return model;
         }
 
@@ -43,10 +44,10 @@ namespace UniVRM10.Test
             return bytes;
         }
 
-        [UnityTest]
-        public bool Sample()
+        [Test]
+        public void Sample()
         {
-            var path = "Tests/Models/Alicia_vrm-1.00/AliciaSolid_vrm-1.00.vrm";
+            var path = "Tests/Models/Alicia_vrm-0.51/AliciaSolid_vrm-0.51.vrm";
             Debug.Log($"load: {path}");
 
             // import
@@ -74,8 +75,6 @@ namespace UniVRM10.Test
 
             var vrmBytes = ToVrm10(dstModel);
             Debug.Log($"export {vrmBytes.Length} bytes");
-
-            return true;
         }
     }
 }
