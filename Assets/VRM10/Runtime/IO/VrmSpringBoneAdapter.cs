@@ -18,7 +18,10 @@ namespace UniVRM10
                 return null;
             }
 
-            var springBone = new VRMC_springBone();
+            var springBone = new VRMC_springBone
+            {
+                Springs = new List<Spring>(),
+            };
 
             //
             // VRMC_node_collider
@@ -26,7 +29,10 @@ namespace UniVRM10
             foreach (var nodeCollider in self.Springs.SelectMany(x => x.Colliders))
             {
                 var index = nodes.IndexOfThrow(nodeCollider.Node);
-                var gltfCollider = new VRMC_node_collider();
+                var gltfCollider = new VRMC_node_collider
+                {
+                    Shapes = new List<ColliderShape>(),
+                };
                 foreach (var y in nodeCollider.Colliders)
                 {
                     switch (y.ColliderType)
@@ -80,12 +86,14 @@ namespace UniVRM10
                 {
                     Name = x.Comment,
                     Colliders = x.Colliders.Select(y => nodes.IndexOfThrow(y.Node)).ToArray(),
+                    Joints = new List<SpringBoneJoint>(),
                 };
 
                 foreach (var y in x.Joints)
                 {
                     spring.Joints.Add(new SpringBoneJoint
                     {
+                        Node = nodes.IndexOfThrow(y.Node),
                         HitRadius = y.HitRadius,
                         DragForce = y.DragForce,
                         GravityDir = y.GravityDir.ToFloat3(),

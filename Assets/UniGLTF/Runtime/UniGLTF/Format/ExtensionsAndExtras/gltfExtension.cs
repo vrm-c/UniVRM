@@ -59,7 +59,7 @@ namespace UniGLTF
 
         public glTFExtensionExport Add(string key, ArraySegment<byte> raw)
         {
-            m_serialized.Add(key, raw);
+            m_serialized[key] = raw;
             return this;
         }
 
