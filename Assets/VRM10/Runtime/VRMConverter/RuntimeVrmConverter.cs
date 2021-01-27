@@ -152,7 +152,8 @@ namespace UniVRM10
                 var blendShapeValue = new VrmLib.MorphTargetBind(
                     node,
                     names[binding.Index],
-                    binding.Weight
+                    // Unity Range [0-100] to VRM-1.0 Range [0-1.0]
+                    binding.Weight * 0.01f
                     );
                 expression.MorphTargetBinds.Add(blendShapeValue);
             }

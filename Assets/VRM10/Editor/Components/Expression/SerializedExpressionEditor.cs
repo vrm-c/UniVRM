@@ -249,12 +249,7 @@ namespace UniVRM10
                             maxWeightName = name;
                             maxWeight = weight;
                         }
-                        list.Add(new MorphTargetBinding
-                        {
-                            Index = i,
-                            RelativePath = relativePath,
-                            Weight = weight
-                        });
+                        list.Add(new MorphTargetBinding(relativePath, i, weight));
                     }
                 }
                 return list;

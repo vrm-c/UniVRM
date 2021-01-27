@@ -46,12 +46,8 @@ namespace UniVRM10
                 names.Add(mesh.GetBlendShapeName(i));
             }
 
-            return new UniVRM10.MorphTargetBinding
-            {
-                RelativePath = relativePath,
-                Index = names.IndexOf(bind.Name),
-                Weight = bind.Value,
-            };
+            // VRM-1.0 では値域は [0-1.0f]
+            return new UniVRM10.MorphTargetBinding(relativePath, names.IndexOf(bind.Name), bind.Value * 100.0f);
         }
 
         static UniVRM10.MaterialColorBinding? Build10(this VrmLib.MaterialColorBind bind, ModelMap loader)
