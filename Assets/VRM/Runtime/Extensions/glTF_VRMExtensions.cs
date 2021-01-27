@@ -19,6 +19,10 @@ namespace VRM
         public static glTF_VRM_BlendShapeBind Create(Transform root, BlendShapeBinding binding,
             gltfExporter exporter)
         {
+            if (root == null || exporter == null)
+            {
+                return null;
+            }
             if (string.IsNullOrEmpty((binding.RelativePath)))
             {
                 Debug.LogWarning("binding.RelativePath is null");
@@ -77,19 +81,16 @@ namespace VRM
             };
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="master"></param>
-        /// <param name="clip"></param>
-        /// <param name="transform"></param>
-        /// <param name="meshes"></param>
-        /// <param name="blendShapeIndexMap">エクスポート中にBlendShapeIndexが変わったかもしれない</param>
         public static void Add(this glTF_VRM_BlendShapeMaster master,
             BlendShapeClip clip, gltfExporter exporter)
         {
-            var list = new List<glTF_VRM_BlendShapeBind>();
-            if (clip.Values != null)
+            master.blendShapeGroups.Add(clip.Serialize(exporter));
+        }
+
+        public static glTF_VRM_BlendShapeGroup Serialize(this BlendShapeClip clip, gltfExporter exporter)
+        {
+            var bindList = new List<glTF_VRM_BlendShapeBind>();
+            if (clip.Values != null && exporter != null)
             {
                 foreach (var value in clip.Values)
                 {
@@ -99,14 +100,14 @@ namespace VRM
                         // Debug.LogFormat("{0}: skip blendshapebind", clip.name);
                         continue;
                     }
-                    list.Add(bind);
+                    bindList.Add(bind);
                 }
             }
 
-            var materialList = new List<glTF_VRM_MaterialValueBind>();
+            var materialValueBinds = new List<glTF_VRM_MaterialValueBind>();
             if (clip.MaterialValues != null)
             {
-                materialList.AddRange(clip.MaterialValues.Select(y => new glTF_VRM_MaterialValueBind
+                materialValueBinds.AddRange(clip.MaterialValues.Select(y => new glTF_VRM_MaterialValueBind
                 {
                     materialName = y.MaterialName,
                     propertyName = y.ValueName,
@@ -114,15 +115,14 @@ namespace VRM
                 }));
             }
 
-            var group = new glTF_VRM_BlendShapeGroup
+            return new glTF_VRM_BlendShapeGroup
             {
                 name = clip.BlendShapeName,
-                presetName = clip.Preset.ToString().ToLower(),
+                presetName = clip.Preset.ToString().ToLowerInvariant(),
                 isBinary = clip.IsBinary,
-                binds = list,
-                materialValues = materialList,
+                binds = bindList,
+                materialValues = materialValueBinds,
             };
-            master.blendShapeGroups.Add(group);
         }
 
         public static void Apply(this glTF_VRM_DegreeMap map, CurveMapper mapper)

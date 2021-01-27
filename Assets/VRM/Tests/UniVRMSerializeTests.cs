@@ -200,6 +200,19 @@ namespace VRM
                 presetName = "aaaaaaaaaaaa_not_exists_",
             };
         }
+        
+        [Test]
+        public void BlendShapePresetInvariantCultureTest()
+        {
+            // https://github.com/vrm-c/UniVRM/issues/694
+            // Must pass even if this computer's locale was tr-TR.
+            var clip2 = ScriptableObject.CreateInstance<BlendShapeClip>();
+            clip2.Preset = BlendShapePreset.I;
+            var model2 = clip2.Serialize(null);
+            var json2 = model2.ToJson();
+            Assert.AreEqual(@"{""presetName"":""i"",""binds"":[],""materialValues"":[],""isBinary"":false}", json2);
+            Debug.Log(json2);
+        }
 
         [Test]
         public void DegreeMapTest()
