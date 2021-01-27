@@ -181,7 +181,7 @@ namespace UniVRM10
             return m_changed;
         }
 
-        List<bool> m_meshFolds = new List<bool>();
+        static List<bool> m_meshFolds = new List<bool>();
         bool MorphTargetBindsGUI()
         {
             bool changed = false;
