@@ -77,12 +77,12 @@ namespace UniVRM10
             this.m_serializedObject = serializedObject;
             this.m_targetObject = targetObject;
 
-            m_expressionNameProp = serializedObject.FindProperty("expressionName");
-            m_presetProp = serializedObject.FindProperty("Preset");
-            m_isBinaryProp = serializedObject.FindProperty("IsBinary");
-            m_ignoreBlinkProp = serializedObject.FindProperty("IgnoreBlink");
-            m_ignoreLookAtProp = serializedObject.FindProperty("IgnoreLookAt");
-            m_ignoreMouthProp = serializedObject.FindProperty("IgnoreMouth");
+            m_expressionNameProp = serializedObject.FindProperty(nameof(targetObject.ExpressionName));
+            m_presetProp = serializedObject.FindProperty(nameof(targetObject.Preset));
+            m_isBinaryProp = serializedObject.FindProperty(nameof(targetObject.IsBinary));
+            m_ignoreBlinkProp = serializedObject.FindProperty(nameof(targetObject.IgnoreBlink));
+            m_ignoreLookAtProp = serializedObject.FindProperty(nameof(targetObject.IgnoreLookAt));
+            m_ignoreMouthProp = serializedObject.FindProperty(nameof(targetObject.IgnoreMouth));
 
             m_morphTargetBindings = new ReorderableMorphTargetBindingList(serializedObject, previewSceneManager, 20);
             m_materialColorBindings = new ReorderableMaterialColorBindingList(serializedObject, previewSceneManager?.MaterialNames, 20);
