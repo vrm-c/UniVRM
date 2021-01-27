@@ -93,6 +93,7 @@ namespace UniVRM10
                 {
                     spring.Joints.Add(new SpringBoneJoint
                     {
+                        Node = nodes.IndexOfThrow(y.Node),
                         HitRadius = y.HitRadius,
                         DragForce = y.DragForce,
                         GravityDir = y.GravityDir.ToFloat3(),

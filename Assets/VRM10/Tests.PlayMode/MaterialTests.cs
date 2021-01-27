@@ -13,7 +13,7 @@ namespace UniVRM10.Test
 {
     public class MaterialTests
     {
-        const string _vrmPath = "Tests/Models/Alicia_vrm-1.00/AliciaSolid_vrm-1.00.vrm";
+        const string _vrmPath = "Tests/Models/Alicia_vrm-0.51/AliciaSolid_vrm-0.51.vrm";
 
         string[] _mtooSrgbTextureProperties = {
             VrmLib.MToon.Utils.PropMainTex,
@@ -33,6 +33,10 @@ namespace UniVRM10.Test
         {
             var fi = new FileInfo(_vrmPath);
             var bytes = File.ReadAllBytes(fi.FullName);
+
+            // migrate to 1.0
+            bytes = Migration.Migrate(bytes);
+
             return ToUnity(bytes);
         }
 
