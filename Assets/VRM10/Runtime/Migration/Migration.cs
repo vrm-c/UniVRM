@@ -445,7 +445,7 @@ namespace UniVRM10
             {
                 var meshIndex = x["mesh"].GetInt32();
                 var morphTargetIndex = x["index"].GetInt32();
-                var weight = x["weight"].GetInt32() * 0.01f;
+                var weight = x["weight"].GetInt32();
 
                 var bind = new UniGLTF.Extensions.VRMC_vrm.MorphTargetBind();
 

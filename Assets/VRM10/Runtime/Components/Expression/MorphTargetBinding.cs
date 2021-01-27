@@ -16,9 +16,11 @@ namespace UniVRM10
         /// * モデル変更時の改変への強さ
         /// 
         /// </summary>
-        public readonly String RelativePath;
-        public readonly int Index;
-        public readonly float Weight;
+
+        // シリアライズしてEditorから変更するので readonly 不可
+        public /*readonly*/ String RelativePath;
+        public /*readonly*/ int Index;
+        public /*readonly*/ float Weight;
 
         /// <summary>
         /// 
