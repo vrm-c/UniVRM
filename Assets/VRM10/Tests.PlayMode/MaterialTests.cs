@@ -174,11 +174,31 @@ namespace UniVRM10.Test
 
             var model = ToVrmModel(assets.Root);
             var gltfMaterial = model.Materials.First(x => x.Name == key.Name) as VrmLib.MToonMaterial;
-            gltfMaterial.Definition.Color.LitColor = new LinearColor { RGBA = srclinerColor };
-            gltfMaterial.Definition.Color.ShadeColor = new LinearColor { RGBA = srclinerColor };
-            gltfMaterial.Definition.Outline.OutlineColor = new LinearColor { RGBA = srclinerColor };
-            gltfMaterial.Definition.Emission.EmissionColor = new LinearColor { RGBA = srclinerColor };
-            gltfMaterial.Definition.Rim.RimColor = new LinearColor { RGBA = srclinerColor };
+            if (gltfMaterial == null)
+            {
+                throw new NotImplementedException();
+            }
+
+            gltfMaterial.Definition = new VrmLib.MToon.MToonDefinition
+            {
+                Color = new VrmLib.MToon.ColorDefinition
+                {
+                    LitColor = new LinearColor { RGBA = srclinerColor },
+                    ShadeColor = new LinearColor { RGBA = srclinerColor },
+                },
+                Outline = new VrmLib.MToon.OutlineDefinition
+                {
+                    OutlineColor = new LinearColor { RGBA = srclinerColor },
+                },
+                Emission = new VrmLib.MToon.EmissionDefinition
+                {
+                    EmissionColor = new LinearColor { RGBA = srclinerColor },
+                },
+                Rim = new VrmLib.MToon.RimDefinition
+                {
+                    RimColor = new LinearColor { RGBA = srclinerColor },
+                }
+            };
 
             var bytes = model.ToGlb();
 
