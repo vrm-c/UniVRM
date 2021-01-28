@@ -50,7 +50,9 @@ namespace MeshUtility
         {
             ErrorLevel = canExport;
             Message = message;
+#if UNITY_EDITOR
             Extended = extended;
+#endif
         }
 
 #if UNITY_EDITOR
