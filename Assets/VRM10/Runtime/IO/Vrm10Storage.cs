@@ -421,9 +421,18 @@ namespace UniVRM10
             }
             else
             {
-                node.LocalTranslation = x.translation.ToVector3();
-                node.LocalRotation = x.rotation.ToQuaternion();
-                node.LocalScaling = x.scale.ToVector3(Vector3.One);
+                if (x.translation != null && x.translation.Length == 3)
+                {
+                    node.LocalTranslation = x.translation.ToVector3();
+                }
+                if (x.rotation != null && x.rotation.Length == 4)
+                {
+                    node.LocalRotation = x.rotation.ToQuaternion();
+                }
+                if (x.scale != null && x.scale.Length == 4)
+                {
+                    node.LocalScaling = x.scale.ToVector3(Vector3.One);
+                }
             }
             return node;
         }

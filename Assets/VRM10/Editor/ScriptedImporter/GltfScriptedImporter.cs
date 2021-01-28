@@ -10,8 +10,9 @@ using VrmLib;
 
 namespace UniVRM10
 {
-
+#if flase
     [ScriptedImporter(1, "glb")]
+#endif
     public class GltfScriptedImporter : ScriptedImporter, IExternalUnityObject
     {
         const string TextureDirName = "Textures";
@@ -115,9 +116,6 @@ namespace UniVRM10
             AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceUpdate);
         }
 
-
-
-
         public Dictionary<string, T> GetExternalUnityObjects<T>() where T : UnityEngine.Object
         {
             return this.GetExternalObjectMap().Where(x => x.Key.type == typeof(T)).ToDictionary(x => x.Key.name, x => (T)x.Value);
@@ -131,5 +129,3 @@ namespace UniVRM10
         }
     }
 }
-
-
