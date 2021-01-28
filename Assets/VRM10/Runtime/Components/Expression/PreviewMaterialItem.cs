@@ -5,15 +5,38 @@ using UnityEngine;
 
 namespace UniVRM10
 {
-#if UNITY_EDITOR
+
+    public enum ShaderPropertyType
+    {
+        //
+        // 概要:
+        //     Color Property.
+        Color = 0,
+        //
+        // 概要:
+        //     Vector Property.
+        Vector = 1,
+        //
+        // 概要:
+        //     Float Property.
+        Float = 2,
+        //
+        // 概要:
+        //     Range Property.
+        Range = 3,
+        //
+        // 概要:
+        //     Texture Property.
+        TexEnv = 4
+    }
+
     [Serializable]
     public struct PropItem
     {
         public string Name;
-        public ShaderUtil.ShaderPropertyType PropertyType;
+        public ShaderPropertyType PropertyType;
         public Vector4 DefaultValues;
     }
-#endif
 
     /// <summary>
     /// Material 一つ分のプロパティを蓄えている
@@ -68,7 +91,7 @@ namespace UniVRM10
                             item.PropMap.Add(bindType, new PropItem
                             {
                                 Name = name,
-                                PropertyType = propType,
+                                PropertyType = (UniVRM10.ShaderPropertyType)Enum.Parse(typeof(UniVRM10.ShaderPropertyType), propType.ToString(), true),
                                 DefaultValues = material.GetColor(name),
                             });
                             propNames.Add(name);

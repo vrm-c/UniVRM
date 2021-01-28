@@ -8,7 +8,6 @@ using UniJSON;
 using UnityEditor;
 using UnityEngine;
 using VrmLib.Diff;
-using static UnityEditor.ShaderUtil;
 
 namespace UniVRM10
 {
@@ -112,8 +111,8 @@ namespace UniVRM10
 
                 switch (ShaderUtil.GetPropertyType(lhs.shader, i))
                 {
-                    case ShaderPropertyType.Color:
-                    case ShaderPropertyType.Vector:
+                    case UnityEditor.ShaderUtil.ShaderPropertyType.Color:
+                    case UnityEditor.ShaderUtil.ShaderPropertyType.Vector:
                         {
                             var l = lhs.GetVector(prop);
                             var r = rhs.GetVector(prop);
@@ -124,8 +123,8 @@ namespace UniVRM10
                         }
                         break;
 
-                    case ShaderPropertyType.Float:
-                    case ShaderPropertyType.Range:
+                    case UnityEditor.ShaderUtil.ShaderPropertyType.Float:
+                    case UnityEditor.ShaderUtil.ShaderPropertyType.Range:
                         {
                             var l = lhs.GetFloat(prop);
                             var r = rhs.GetFloat(prop);
@@ -136,7 +135,7 @@ namespace UniVRM10
                         }
                         break;
 
-                    case ShaderPropertyType.TexEnv:
+                    case UnityEditor.ShaderUtil.ShaderPropertyType.TexEnv:
                         {
                             var l = lhs.GetTextureOffset(prop);
                             var r = rhs.GetTextureOffset(prop);
