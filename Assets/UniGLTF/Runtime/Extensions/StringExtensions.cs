@@ -35,13 +35,13 @@ namespace UniGLTF
 
         public static bool StartsWithUnityAssetPath(this string path)
         {
-            return path.Replace("\\", "/").StartsWith(UnityBasePath + "/Assets");
+            return path.Replace("\\", "/").FastStartsWith(UnityBasePath + "/Assets");
         }
 
         public static string ToUnityRelativePath(this string path)
         {
             path = path.Replace("\\", "/");
-            if (path.StartsWith(UnityBasePath))
+            if (path.FastStartsWith(UnityBasePath))
             {
                 return path.Substring(UnityBasePath.Length + 1);
             }

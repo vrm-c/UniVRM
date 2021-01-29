@@ -368,7 +368,7 @@ namespace UniGLTF
             }
             else
             {
-                if (image.uri.StartsWith("data:"))
+                if (image.uri.FastStartsWith("data:"))
                 {
                     textureName = !string.IsNullOrEmpty(image.name) ? image.name : string.Format("{0:00}#Base64Embedded", imageIndex);
                 }

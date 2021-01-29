@@ -58,11 +58,11 @@ namespace UniGLTF
                     return ".jpg";
 
                 default:
-                    if (uri.StartsWith("data:image/jpeg;"))
+                    if (uri.FastStartsWith("data:image/jpeg;"))
                     {
                         return ".jpg";
                     }
-                    else if (uri.StartsWith("data:image/png;"))
+                    else if (uri.FastStartsWith("data:image/png;"))
                     {
                         return ".png";
                     }

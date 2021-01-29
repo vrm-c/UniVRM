@@ -39,7 +39,7 @@ namespace UniGLTF
         public ArraySegment<byte> Get(string url)
         {
             var bytes =
-                (url.StartsWith("data:"))
+                (url.FastStartsWith("data:"))
                 ? UriByteBuffer.ReadEmbedded(url)
                 : File.ReadAllBytes(Path.Combine(m_root, url))
                 ;
@@ -48,7 +48,7 @@ namespace UniGLTF
 
         public string GetPath(string url)
         {
-            if (url.StartsWith("data:"))
+            if (url.FastStartsWith("data:"))
             {
                 return null;
             }

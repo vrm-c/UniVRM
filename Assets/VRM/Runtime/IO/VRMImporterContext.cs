@@ -150,7 +150,7 @@ namespace VRM
             var asset = ScriptableObject.CreateInstance<BlendShapeClip>();
             var groupName = group.name;
             var prefix = "BlendShape.";
-            while (groupName.StartsWith(prefix))
+            while (groupName.FastStartsWith(prefix))
             {
                 groupName = groupName.Substring(prefix.Length);
             }
@@ -195,8 +195,8 @@ namespace VRM
 
                     var material = GetMaterials().FirstOrDefault(y => y.name == x.materialName);
                     var propertyName = x.propertyName;
-                    if (x.propertyName.EndsWith("_ST_S")
-                    || x.propertyName.EndsWith("_ST_T"))
+                    if (x.propertyName.FastEndsWith("_ST_S")
+                    || x.propertyName.FastEndsWith("_ST_T"))
                     {
                         propertyName = x.propertyName.Substring(0, x.propertyName.Length - 2);
                     }
