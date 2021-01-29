@@ -177,11 +177,19 @@ namespace UniVRM10
 
                     case "allowedUserName":
                         {
-                            var allowdUserType = kv.Value.GetString();
-                            switch (allowdUserType)
+                            var allowedUserType = kv.Value.GetString();
+                            switch (allowedUserType)
                             {
-                                case "Everyone": meta.AvatarPermission = UniGLTF.Extensions.VRMC_vrm.AvatarPermissionType.everyone; break;
-                                default: throw new NotImplementedException($"allowedUser: {allowdUserType}");
+                                case "OnlyAuthor":
+                                    meta.AvatarPermission = UniGLTF.Extensions.VRMC_vrm.AvatarPermissionType.onlyAuthor;
+                                    break;
+                                case "ExplicitlyLicensedPerson":
+                                    meta.AvatarPermission = UniGLTF.Extensions.VRMC_vrm.AvatarPermissionType.explicitlyLicensedPerson;
+                                    break;
+                                case "Everyone":
+                                    meta.AvatarPermission = UniGLTF.Extensions.VRMC_vrm.AvatarPermissionType.everyone;
+                                    break;
+                                default: throw new NotImplementedException($"allowedUser: {allowedUserType}");
                             }
                         }
                         break;
@@ -445,7 +453,7 @@ namespace UniVRM10
             {
                 var meshIndex = x["mesh"].GetInt32();
                 var morphTargetIndex = x["index"].GetInt32();
-                var weight = x["weight"].GetInt32();
+                var weight = x["weight"].GetSingle();
 
                 var bind = new UniGLTF.Extensions.VRMC_vrm.MorphTargetBind();
 
