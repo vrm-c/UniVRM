@@ -72,5 +72,42 @@ namespace UniGLTF
             }
             return path;
         }
+
+        // https://docs.unity3d.com/Manual/BestPracticeUnderstandingPerformanceInUnity5.html
+        public static bool FastStartsWith(this string a, string b)
+        {
+            var aLen = a.Length;
+            var bLen = b.Length;
+            if (aLen < bLen)
+            {
+                return false;
+            }
+
+            var p = 0;
+            while (p < bLen && a[p] == b[p])
+            {
+                ++p;
+            }
+
+            return p == bLen;
+        }
+
+        public static bool FastEndsWith(this string a, string b)
+        {
+            var aLen = a.Length;
+            var bLen = b.Length;
+            if (aLen < bLen)
+            {
+                return false;
+            }
+
+            var p = 1;
+            while (p <= bLen && a[aLen - p] == b[bLen - p])
+            {
+                ++p;
+            }
+
+            return p - 1 == bLen;
+        }
     }
 }
