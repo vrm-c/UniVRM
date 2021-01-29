@@ -46,29 +46,12 @@ namespace UniVRM10
             }
 
             mesh.subMeshCount = src.Submeshes.Count;
-
-#if UNITY_2019
-            var triangles = src.IndexBuffer.GetAsIntArray();
-            mesh.triangles = triangles;
-            var flags = MeshUpdateFlags.DontRecalculateBounds | MeshUpdateFlags.DontResetBoneBounds;
-            for (int i = 0; i < src.Submeshes.Count; ++i)
-            {
-                var submesh = src.Submeshes[i];
-                mesh.SetSubMesh(i, new SubMeshDescriptor
-                {
-                    indexStart = submesh.Offset,
-                    indexCount = submesh.DrawCount,
-                },
-                flags);                
-            }
-#else
             var triangles = src.IndexBuffer.GetAsIntList();
             for (int i = 0; i < src.Submeshes.Count; ++i)
             {
                 var submesh = src.Submeshes[i];
                 mesh.SetTriangles(triangles.GetRange(submesh.Offset, submesh.DrawCount), i);
             }
-#endif
 
             foreach (var morphTarget in src.MorphTargets)
             {
@@ -78,10 +61,10 @@ namespace UniVRM10
                     : new Vector3[mesh.vertexCount] // dummy
                     ;
                 mesh.AddBlendShapeFrame(morphTarget.Name, 100.0f, positions, null, null);
-
-                mesh.RecalculateBounds();
-                mesh.RecalculateTangents();
             }
+
+            mesh.RecalculateBounds();
+            mesh.RecalculateTangents();
         }
     }
 }

@@ -177,24 +177,71 @@ namespace UniVRM10
 
                     case "allowedUserName":
                         {
-                            var allowdUserType = kv.Value.GetString();
-                            switch (allowdUserType)
+                            var allowedUserName = kv.Value.GetString();
+                            switch (allowedUserName)
                             {
-                                case "Everyone": meta.AvatarPermission = UniGLTF.Extensions.VRMC_vrm.AvatarPermissionType.everyone; break;
-                                default: throw new NotImplementedException($"allowedUser: {allowdUserType}");
+                                case "OnlyAuthor":
+                                    meta.AvatarPermission = UniGLTF.Extensions.VRMC_vrm.AvatarPermissionType.onlyAuthor;
+                                    break;
+                                case "ExplicitlyLicensedPerson":
+                                    meta.AvatarPermission = UniGLTF.Extensions.VRMC_vrm.AvatarPermissionType.explicitlyLicensedPerson;
+                                    break;
+                                case "Everyone":
+                                    meta.AvatarPermission = UniGLTF.Extensions.VRMC_vrm.AvatarPermissionType.everyone;
+                                    break;
+                                default:
+                                    throw new NotImplementedException($"{key}: {allowedUserName}");
                             }
                         }
                         break;
 
-                    case "violentUssageName": meta.AllowExcessivelyViolentUsage = kv.Value.GetString().ToLower() == "allow"; break;
-                    case "sexualUssageName": meta.AllowExcessivelySexualUsage = kv.Value.GetString().ToLower() == "allow"; break;
-                    case "commercialUssageName":
+                    case "violentUssageName": // Typo "Ussage" is VRM 0.x spec.
                         {
-                            var commercialUssageType = kv.Value.GetString();
-                            switch (commercialUssageType)
+                            var violentUsageName = kv.Value.GetString();
+                            switch (violentUsageName)
                             {
-                                case "Allow": meta.CommercialUsage = UniGLTF.Extensions.VRMC_vrm.CommercialUsageType.personalProfit; break;
-                                default: meta.CommercialUsage = UniGLTF.Extensions.VRMC_vrm.CommercialUsageType.personalNonProfit; break;
+                                case "allow":
+                                    meta.AllowExcessivelyViolentUsage = true;
+                                    break;
+                                case "disallow":
+                                    meta.AllowExcessivelyViolentUsage = false;
+                                    break;
+                                default:
+                                    throw new NotImplementedException($"{key}: {violentUsageName}");
+                            }
+                        }
+                        break;
+                    
+                    case "sexualUssageName": // Typo "Ussage" is VRM 0.x spec.
+                        {
+                            var sexualUsageName = kv.Value.GetString();
+                            switch (sexualUsageName)
+                            {
+                                case "Allow":
+                                    meta.AllowExcessivelySexualUsage = true;
+                                    break;
+                                case "Disallow":
+                                    meta.AllowExcessivelySexualUsage = false;
+                                    break;
+                                default:
+                                    throw new NotImplementedException($"{key}: {sexualUsageName}");
+                            }
+                        }
+                        break;
+                    
+                    case "commercialUssageName": // Typo "Ussage" is VRM 0.x spec.
+                        {
+                            var commercialUsageName = kv.Value.GetString();
+                            switch (commercialUsageName)
+                            {
+                                case "Allow":
+                                    meta.CommercialUsage = UniGLTF.Extensions.VRMC_vrm.CommercialUsageType.personalProfit;
+                                    break;
+                                case "Disallow":
+                                    meta.CommercialUsage = UniGLTF.Extensions.VRMC_vrm.CommercialUsageType.personalNonProfit;
+                                    break;
+                                default:
+                                    throw new NotImplementedException($"{key}: {commercialUsageName}");
                             }
                         }
                         break;
@@ -445,7 +492,7 @@ namespace UniVRM10
             {
                 var meshIndex = x["mesh"].GetInt32();
                 var morphTargetIndex = x["index"].GetInt32();
-                var weight = x["weight"].GetInt32();
+                var weight = x["weight"].GetSingle();
 
                 var bind = new UniGLTF.Extensions.VRMC_vrm.MorphTargetBind();
 
