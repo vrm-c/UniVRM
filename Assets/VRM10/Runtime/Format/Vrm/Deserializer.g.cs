@@ -1674,18 +1674,18 @@ public static Expression Deserialize_Expressions_ITEM(ListTreeNode<JsonValue> pa
             continue;
         }
 
-        if(key=="ignoreBlink"){
-            value.IgnoreBlink = kv.Value.GetBoolean();
+        if(key=="overrideBlink"){
+            value.OverrideBlink = (ExpressionOverrideType)Enum.Parse(typeof(ExpressionOverrideType), kv.Value.GetString(), true);
             continue;
         }
 
-        if(key=="ignoreLookAt"){
-            value.IgnoreLookAt = kv.Value.GetBoolean();
+        if(key=="overrideLookAt"){
+            value.OverrideLookAt = (ExpressionOverrideType)Enum.Parse(typeof(ExpressionOverrideType), kv.Value.GetString(), true);
             continue;
         }
 
-        if(key=="ignoreMouth"){
-            value.IgnoreMouth = kv.Value.GetBoolean();
+        if(key=="overrideMouth"){
+            value.OverrideMouth = (ExpressionOverrideType)Enum.Parse(typeof(ExpressionOverrideType), kv.Value.GetString(), true);
             continue;
         }
 

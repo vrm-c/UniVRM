@@ -80,9 +80,9 @@ namespace UniVRM10
             m_expressionNameProp = serializedObject.FindProperty(nameof(targetObject.ExpressionName));
             m_presetProp = serializedObject.FindProperty(nameof(targetObject.Preset));
             m_isBinaryProp = serializedObject.FindProperty(nameof(targetObject.IsBinary));
-            m_ignoreBlinkProp = serializedObject.FindProperty(nameof(targetObject.IgnoreBlink));
-            m_ignoreLookAtProp = serializedObject.FindProperty(nameof(targetObject.IgnoreLookAt));
-            m_ignoreMouthProp = serializedObject.FindProperty(nameof(targetObject.IgnoreMouth));
+            m_ignoreBlinkProp = serializedObject.FindProperty(nameof(targetObject.OverrideBlink));
+            m_ignoreLookAtProp = serializedObject.FindProperty(nameof(targetObject.OverrideLookAt));
+            m_ignoreMouthProp = serializedObject.FindProperty(nameof(targetObject.OverrideMouth));
 
             m_morphTargetBindings = new ReorderableMorphTargetBindingList(serializedObject, previewSceneManager, 20);
             m_materialColorBindings = new ReorderableMaterialColorBindingList(serializedObject, previewSceneManager?.MaterialNames, 20);

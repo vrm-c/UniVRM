@@ -235,7 +235,7 @@ namespace UniVRM10
 
             {
                 var data = new UniGLTF.Extensions.VRMC_vrm.Expression();
-                data.IgnoreBlink = true;
+                data.OverrideBlink = UniGLTF.Extensions.VRMC_vrm.ExpressionOverrideType.block;
 
                 var json = Serialize(data, UniGLTF.Extensions.VRMC_vrm.GltfSerializer.Serialize_Expressions_ITEM);
                 Assert.AreEqual($"{{{q}preset{q}:{q}custom{q},{q}ignoreBlink{q}:true}}", json);
@@ -244,22 +244,22 @@ namespace UniVRM10
             {
                 var expression = new VrmLib.Expression(VrmLib.ExpressionPreset.Blink, "blink", true)
                 {
-                    IgnoreBlink = true,
-                    IgnoreLookAt = true,
-                    IgnoreMouth = true,
+                    OverrideBlink = VrmLib.ExpressionOverrideType.Block,
+                    OverrideLookAt = VrmLib.ExpressionOverrideType.Block,
+                    OverrideMouth = VrmLib.ExpressionOverrideType.Block,
                 };
 
                 // export
                 var gltf = UniVRM10.ExpressionAdapter.ToGltf(expression, new List<VrmLib.Node>(), new List<VrmLib.Material>());
-                Assert.AreEqual(true, gltf.IgnoreBlink);
-                Assert.AreEqual(true, gltf.IgnoreLookAt);
-                Assert.AreEqual(true, gltf.IgnoreMouth);
+                Assert.AreEqual(true, gltf.OverrideBlink);
+                Assert.AreEqual(true, gltf.OverrideLookAt);
+                Assert.AreEqual(true, gltf.OverrideMouth);
 
                 // import
                 var imported = UniVRM10.ExpressionAdapter.FromGltf(gltf, new List<VrmLib.Node>(), new List<VrmLib.Material>());
-                Assert.AreEqual(true, imported.IgnoreBlink);
-                Assert.AreEqual(true, imported.IgnoreLookAt);
-                Assert.AreEqual(true, imported.IgnoreMouth);
+                Assert.AreEqual(true, imported.OverrideBlink);
+                Assert.AreEqual(true, imported.OverrideLookAt);
+                Assert.AreEqual(true, imported.OverrideMouth);
             }
         }
     }

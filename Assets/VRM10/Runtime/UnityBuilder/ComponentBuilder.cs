@@ -157,9 +157,9 @@ namespace UniVRM10
                         clip.Preset = expression.Preset;
                         clip.ExpressionName = expression.Name;
                         clip.IsBinary = expression.IsBinary;
-                        clip.IgnoreBlink = expression.IgnoreBlink;
-                        clip.IgnoreLookAt = expression.IgnoreLookAt;
-                        clip.IgnoreMouth = expression.IgnoreMouth;
+                        clip.OverrideBlink = expression.OverrideBlink;
+                        clip.OverrideLookAt = expression.OverrideLookAt;
+                        clip.OverrideMouth = expression.OverrideMouth;
 
                         clip.MorphTargetBindings = expression.MorphTargetBinds.Select(x => x.Build10(asset.Root, asset.Map))
                             .ToArray();

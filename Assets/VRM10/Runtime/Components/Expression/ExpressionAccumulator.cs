@@ -46,15 +46,15 @@ namespace UniVRM10
 
                 var expression = m_clipMap[kv.Key];
 
-                if (expression.IgnoreBlink && kv.Value > 0)
+                if (expression.OverrideBlink == VrmLib.ExpressionOverrideType.Block && kv.Value > 0)
                 {
                     IgnoreBlink = true;
                 }
-                if (expression.IgnoreLookAt && kv.Value > 0)
+                if (expression.OverrideLookAt == VrmLib.ExpressionOverrideType.Block && kv.Value > 0)
                 {
                     IgnoreLookAt = true;
                 }
-                if (expression.IgnoreMouth && kv.Value > 0)
+                if (expression.OverrideMouth == VrmLib.ExpressionOverrideType.Block && kv.Value > 0)
                 {
                     IgnoreMouth = true;
                 }
