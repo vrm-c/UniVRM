@@ -138,19 +138,14 @@ namespace UniVRM10
             SpringBone.Process();
 
             //
-            // expression
-            //
-            var validateState = Expression.Begin();
-
-            //
             // gaze control
             //
-            LookAt.Process(Head, Expression.SetPresetValue, validateState.ignoreLookAt);
+            LookAt.Process(Head, Expression.Accumulator.SetPresetValue);
 
             //
             // expression
             //
-            Expression.End(validateState);
+            Expression.Apply();
         }
 
         private void Update()

@@ -6,7 +6,7 @@ namespace UniVRM10
     public struct MorphTargetBinding : IEquatable<MorphTargetBinding>
     {
         /// <summary>
-        /// SkinnedMeshRenderer を 指し示す。
+        /// SkinnedMeshRenderer.BlendShape[Index].Weight を 指し示す。
         /// 
         /// [トレードオフ]
         /// 
@@ -16,9 +16,24 @@ namespace UniVRM10
         /// * モデル変更時の改変への強さ
         /// 
         /// </summary>
-        public String RelativePath;
-        public int Index;
-        public float Weight;
+
+        // シリアライズしてEditorから変更するので readonly 不可
+        public /*readonly*/ String RelativePath;
+        public /*readonly*/ int Index;
+        public /*readonly*/ float Weight;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="index"></param>
+        /// <param name="weight">0 to 100</param>
+        public MorphTargetBinding(string path, int index, float weight)
+        {
+            RelativePath = path;
+            Index = index;
+            Weight = weight;
+        }
 
         public override string ToString()
         {

@@ -427,6 +427,14 @@ namespace UniGLTF.Extensions.VRMC_vrm
         public float[] Offset;
     }
 
+    public enum ExpressionOverrideType
+    {
+        none,
+        block,
+        blend,
+
+    }
+
     public class Expression
     {
         // Dictionary object with extension-specific objects.
@@ -454,14 +462,17 @@ namespace UniGLTF.Extensions.VRMC_vrm
         // Interpret non-zero values as 1
         public bool? IsBinary;
 
-        // Disable Blink when this Expression is enabled
-        public bool? IgnoreBlink;
+        // Override values of Blink expressions when this Expression is enabled
+        [JsonSchema(EnumSerializationType = EnumSerializationType.AsString)]
+        public ExpressionOverrideType OverrideBlink;
 
-        // Disable LookAt when this Expression is enabled
-        public bool? IgnoreLookAt;
+        // Override values of LookAt expressions when this Expression is enabled
+        [JsonSchema(EnumSerializationType = EnumSerializationType.AsString)]
+        public ExpressionOverrideType OverrideLookAt;
 
-        // Disable Mouth when this Expression is enabled
-        public bool? IgnoreMouth;
+        // Override values of Mouth expressions when this Expression is enabled
+        [JsonSchema(EnumSerializationType = EnumSerializationType.AsString)]
+        public ExpressionOverrideType OverrideMouth;
     }
 
     public class VRMC_vrm

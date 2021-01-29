@@ -83,19 +83,19 @@ namespace UniVRM10
         /// この Expression と Blink(Blink, BlinkLeft, BlinkRight) が同時に有効な場合、Blink の Weight を 0 にする
         /// </summary>
         [SerializeField]
-        public bool IgnoreBlink;
+        public VrmLib.ExpressionOverrideType OverrideBlink;
 
         /// <summary>
         /// この Expression と LookAt(LookUp, LookDown, LookLeft, LookRight) が同時に有効な場合、LookAt の Weight を 0 にする
         /// </summary>
         [SerializeField]
-        public bool IgnoreLookAt;
+        public VrmLib.ExpressionOverrideType OverrideLookAt;
 
         /// <summary>
         /// この Expression と Mouth(Aa, Ih, Ou, Ee, Oh) が同時に有効な場合、Mouth の Weight を 0 にする
         /// </summary>
         [SerializeField]
-        public bool IgnoreMouth;
+        public VrmLib.ExpressionOverrideType OverrideMouth;
 
         void Reset()
         {

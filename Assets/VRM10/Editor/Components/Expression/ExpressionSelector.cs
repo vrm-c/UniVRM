@@ -74,26 +74,34 @@ namespace UniVRM10
             };
         }
 
-        public void GUI()
+        public void DrawGUI()
         {
-            EditorGUILayout.Space();
-            EditorGUILayout.LabelField("Select Expression", EditorStyles.boldLabel);
-
-            m_mode = GUILayout.Toolbar(m_mode, MODES);
-            switch (m_mode)
+            var backup = GUI.enabled;
+            try
             {
-                case 0:
-                    SelectGUI();
-                    break;
+                GUI.enabled = true;
+                EditorGUILayout.Space();
+                EditorGUILayout.LabelField("Select Expression", EditorStyles.boldLabel);
 
-                case 1:
-                    m_clipList.GUI();
-                    break;
+                m_mode = GUILayout.Toolbar(m_mode, MODES);
+                switch (m_mode)
+                {
+                    case 0:
+                        SelectGUI();
+                        break;
 
-                default:
-                    throw new NotImplementedException();
+                    case 1:
+                        m_clipList.GUI();
+                        break;
+
+                    default:
+                        throw new NotImplementedException();
+                }
             }
-
+            finally
+            {
+                GUI.enabled = backup;
+            }
         }
 
         void SelectGUI()

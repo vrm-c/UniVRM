@@ -77,12 +77,12 @@ namespace UniVRM10
             this.m_serializedObject = serializedObject;
             this.m_targetObject = targetObject;
 
-            m_expressionNameProp = serializedObject.FindProperty("expressionName");
-            m_presetProp = serializedObject.FindProperty("Preset");
-            m_isBinaryProp = serializedObject.FindProperty("IsBinary");
-            m_ignoreBlinkProp = serializedObject.FindProperty("IgnoreBlink");
-            m_ignoreLookAtProp = serializedObject.FindProperty("IgnoreLookAt");
-            m_ignoreMouthProp = serializedObject.FindProperty("IgnoreMouth");
+            m_expressionNameProp = serializedObject.FindProperty(nameof(targetObject.ExpressionName));
+            m_presetProp = serializedObject.FindProperty(nameof(targetObject.Preset));
+            m_isBinaryProp = serializedObject.FindProperty(nameof(targetObject.IsBinary));
+            m_ignoreBlinkProp = serializedObject.FindProperty(nameof(targetObject.OverrideBlink));
+            m_ignoreLookAtProp = serializedObject.FindProperty(nameof(targetObject.OverrideLookAt));
+            m_ignoreMouthProp = serializedObject.FindProperty(nameof(targetObject.OverrideMouth));
 
             m_morphTargetBindings = new ReorderableMorphTargetBindingList(serializedObject, previewSceneManager, 20);
             m_materialColorBindings = new ReorderableMaterialColorBindingList(serializedObject, previewSceneManager?.MaterialNames, 20);
@@ -181,7 +181,7 @@ namespace UniVRM10
             return m_changed;
         }
 
-        List<bool> m_meshFolds = new List<bool>();
+        static List<bool> m_meshFolds = new List<bool>();
         bool MorphTargetBindsGUI()
         {
             bool changed = false;
@@ -249,12 +249,7 @@ namespace UniVRM10
                             maxWeightName = name;
                             maxWeight = weight;
                         }
-                        list.Add(new MorphTargetBinding
-                        {
-                            Index = i,
-                            RelativePath = relativePath,
-                            Weight = weight
-                        });
+                        list.Add(new MorphTargetBinding(relativePath, i, weight));
                     }
                 }
                 return list;

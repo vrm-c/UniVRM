@@ -1416,19 +1416,19 @@ public static void Serialize_Expressions_ITEM(JsonFormatter f, Expression value)
         f.Value(value.IsBinary.GetValueOrDefault());
     }
 
-    if(value.IgnoreBlink.HasValue){
-        f.Key("ignoreBlink");                
-        f.Value(value.IgnoreBlink.GetValueOrDefault());
+    if(true){
+        f.Key("overrideBlink");                
+        f.Value(value.OverrideBlink.ToString());
     }
 
-    if(value.IgnoreLookAt.HasValue){
-        f.Key("ignoreLookAt");                
-        f.Value(value.IgnoreLookAt.GetValueOrDefault());
+    if(true){
+        f.Key("overrideLookAt");                
+        f.Value(value.OverrideLookAt.ToString());
     }
 
-    if(value.IgnoreMouth.HasValue){
-        f.Key("ignoreMouth");                
-        f.Value(value.IgnoreMouth.GetValueOrDefault());
+    if(true){
+        f.Key("overrideMouth");                
+        f.Value(value.OverrideMouth.ToString());
     }
 
     f.EndMap();

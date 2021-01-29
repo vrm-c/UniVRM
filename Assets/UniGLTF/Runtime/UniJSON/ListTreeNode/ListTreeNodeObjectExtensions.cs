@@ -28,6 +28,19 @@ namespace UniJSON
             return self.Children.Count() / 2;
         }
 
+        public static string GetObjectValueOrDefault<T>(this ListTreeNode<T> self, String key, string defualtValue)
+            where T : IListTreeItem, IValue<T>
+        {
+            try
+            {
+                return self[key].GetString();
+            }
+            catch (KeyNotFoundException)
+            {
+                return defualtValue;
+            }
+        }
+
         public static ListTreeNode<T> GetObjectItem<T>(this ListTreeNode<T> self, String key)
             where T : IListTreeItem, IValue<T>
         {

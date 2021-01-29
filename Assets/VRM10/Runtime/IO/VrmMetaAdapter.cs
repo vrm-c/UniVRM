@@ -39,8 +39,14 @@ namespace UniVRM10
                 AvatarPermission = ToAvaterPermission(self),
                 RedistributionLicense = ToRedistributionLicense(self),
             };
-            meta.References.AddRange(self.References);
-            meta.Authors.AddRange(self.Authors);
+            if (self.References != null)
+            {
+                meta.References.AddRange(self.References);
+            }
+            if (self.Authors != null)
+            {
+                meta.Authors.AddRange(self.Authors);
+            }
             if (self.ThumbnailImage.HasValue)
             {
                 var texture = textures[self.ThumbnailImage.Value] as ImageTexture;

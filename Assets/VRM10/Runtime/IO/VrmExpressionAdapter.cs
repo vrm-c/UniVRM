@@ -13,9 +13,9 @@ namespace UniVRM10
                 x.Name,
                 x.IsBinary.HasValue && x.IsBinary.Value)
             {
-                IgnoreBlink = x.IgnoreBlink.GetValueOrDefault(),
-                IgnoreLookAt = x.IgnoreLookAt.GetValueOrDefault(),
-                IgnoreMouth = x.IgnoreMouth.GetValueOrDefault(),
+                OverrideBlink = EnumUtil.Cast<VrmLib.ExpressionOverrideType>(x.OverrideBlink),
+                OverrideLookAt = EnumUtil.Cast<VrmLib.ExpressionOverrideType>(x.OverrideLookAt),
+                OverrideMouth = EnumUtil.Cast<VrmLib.ExpressionOverrideType>(x.OverrideMouth),
             };
 
             if (x.MorphTargetBinds != null)
@@ -112,9 +112,9 @@ namespace UniVRM10
                 Preset = (UniGLTF.Extensions.VRMC_vrm.ExpressionPreset)x.Preset,
                 Name = x.Name,
                 IsBinary = x.IsBinary,
-                IgnoreBlink = x.IgnoreBlink,
-                IgnoreLookAt = x.IgnoreLookAt,
-                IgnoreMouth = x.IgnoreMouth,
+                OverrideBlink = EnumUtil.Cast<UniGLTF.Extensions.VRMC_vrm.ExpressionOverrideType>(x.OverrideBlink),
+                OverrideLookAt = EnumUtil.Cast<UniGLTF.Extensions.VRMC_vrm.ExpressionOverrideType>(x.OverrideLookAt),
+                OverrideMouth = EnumUtil.Cast<UniGLTF.Extensions.VRMC_vrm.ExpressionOverrideType>(x.OverrideMouth),
             };
             foreach (var blendShapeBind in x.MorphTargetBinds)
             {

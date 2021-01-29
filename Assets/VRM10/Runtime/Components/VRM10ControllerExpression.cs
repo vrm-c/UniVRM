@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace UniVRM10
@@ -10,22 +8,6 @@ namespace UniVRM10
     {
         [SerializeField]
         public VRM10ExpressionAvatar ExpressionAvatar;
-
-        bool m_ignoreBlink;
-        bool m_ignoreLookAt;
-        bool m_ignoreMouth;
-
-        #region for CustomEditor
-        public bool IgnoreBlink => m_ignoreBlink;
-        public bool IgnoreLookAt => m_ignoreLookAt;
-        public bool IgnoreMouth => m_ignoreMouth;
-        #endregion
-
-        public Dictionary<ExpressionKey, float> expressionKeyWeights = new Dictionary<ExpressionKey, float>();
-
-        List<ExpressionKey> m_blinkExpressionKeys = new List<ExpressionKey>();
-        List<ExpressionKey> m_lookAtExpressionKeys = new List<ExpressionKey>();
-        List<ExpressionKey> m_mouthExpressionKeys = new List<ExpressionKey>();
 
         ExpressionMerger m_merger;
 
@@ -37,6 +19,20 @@ namespace UniVRM10
             }
         }
 
+        IExpressionAccumulator m_accumulator;
+
+        public IExpressionAccumulator Accumulator
+        {
+            get
+            {
+                if (m_accumulator == null)
+                {
+                    m_accumulator = new DefaultExpressionAccumulator();
+                }
+                return m_accumulator;
+            }
+        }
+
         public void OnStart(Transform transform)
         {
             if (ExpressionAvatar != null)
@@ -45,183 +41,14 @@ namespace UniVRM10
                 {
                     m_merger = new ExpressionMerger(ExpressionAvatar.Clips, transform);
                 }
-            }
 
-            expressionKeyWeights = m_merger.ExpressionKeys.ToDictionary(x => x, x => 0.0f);
-
-            m_blinkExpressionKeys.Add(m_merger.ExpressionKeys.FirstOrDefault(x => x.Preset == VrmLib.ExpressionPreset.Blink));
-            m_lookAtExpressionKeys.Add(m_merger.ExpressionKeys.FirstOrDefault(x => x.Preset == VrmLib.ExpressionPreset.LookUp));
-            m_lookAtExpressionKeys.Add(m_merger.ExpressionKeys.FirstOrDefault(x => x.Preset == VrmLib.ExpressionPreset.LookDown));
-            m_lookAtExpressionKeys.Add(m_merger.ExpressionKeys.FirstOrDefault(x => x.Preset == VrmLib.ExpressionPreset.LookLeft));
-            m_lookAtExpressionKeys.Add(m_merger.ExpressionKeys.FirstOrDefault(x => x.Preset == VrmLib.ExpressionPreset.LookRight));
-            m_mouthExpressionKeys.Add(m_merger.ExpressionKeys.FirstOrDefault(x => x.Preset == VrmLib.ExpressionPreset.Aa));
-            m_mouthExpressionKeys.Add(m_merger.ExpressionKeys.FirstOrDefault(x => x.Preset == VrmLib.ExpressionPreset.Ih));
-            m_mouthExpressionKeys.Add(m_merger.ExpressionKeys.FirstOrDefault(x => x.Preset == VrmLib.ExpressionPreset.Ou));
-            m_mouthExpressionKeys.Add(m_merger.ExpressionKeys.FirstOrDefault(x => x.Preset == VrmLib.ExpressionPreset.Ee));
-            m_mouthExpressionKeys.Add(m_merger.ExpressionKeys.FirstOrDefault(x => x.Preset == VrmLib.ExpressionPreset.Oh));
-        }
-
-        /// <summary>
-        /// SetValue
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        public void SetValue(ExpressionKey key, float value)
-        {
-            if (expressionKeyWeights.ContainsKey(key))
-            {
-                expressionKeyWeights[key] = value;
+                Accumulator.OnStart(ExpressionAvatar);
             }
         }
 
-        /// <summary>
-        /// Get a expression value
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public float GetValue(ExpressionKey key)
+        public void Apply()
         {
-            if (expressionKeyWeights.ContainsKey(key))
-            {
-                return expressionKeyWeights[key];
-            }
-            else
-            {
-                return 0.0f;
-            }
-        }
-
-        public IEnumerable<KeyValuePair<ExpressionKey, float>> GetValues()
-        {
-            return expressionKeyWeights.Select(x => new KeyValuePair<ExpressionKey, float>(x.Key, x.Value));
-        }
-
-        /// <summary>
-        /// Set expression values.
-        /// </summary>
-        /// <param name="values"></param>
-        public void SetValues(IEnumerable<KeyValuePair<ExpressionKey, float>> values)
-        {
-            foreach (var keyValue in values)
-            {
-                if (expressionKeyWeights.ContainsKey(keyValue.Key))
-                {
-                    expressionKeyWeights[keyValue.Key] = keyValue.Value;
-                }
-            }
-        }
-
-        #region Setter and Getter
-        public float GetPresetValue(VrmLib.ExpressionPreset key)
-        {
-            var expressionKey = new ExpressionKey(key);
-            if (this.expressionKeyWeights.ContainsKey(expressionKey))
-            {
-                return this.expressionKeyWeights[expressionKey];
-            }
-            else
-            {
-                return 0.0f;
-            }
-        }
-
-        public float GetCustomValue(String key)
-        {
-            var expressionKey = ExpressionKey.CreateCustom(key);
-            if (this.expressionKeyWeights.ContainsKey(expressionKey))
-            {
-                return this.expressionKeyWeights[expressionKey];
-            }
-            else
-            {
-                return 0.0f;
-            }
-        }
-
-        public void SetPresetValue(VrmLib.ExpressionPreset key, float value)
-        {
-            var expressionKey = new ExpressionKey(key);
-            if (this.expressionKeyWeights.ContainsKey(expressionKey))
-            {
-                this.expressionKeyWeights[expressionKey] = value;
-            }
-        }
-
-        /// <parameter>key</parameter>    
-        public void SetCustomValue(String key, float value)
-        {
-            var expressionKey = ExpressionKey.CreateCustom(key);
-            if (this.expressionKeyWeights.ContainsKey(expressionKey))
-            {
-                this.expressionKeyWeights[expressionKey] = value;
-            }
-        }
-        #endregion
-
-        public IEnumerable<ExpressionKey> GetKeys()
-        {
-            return expressionKeyWeights.Keys;
-        }
-
-        private (bool ignoreBlink, bool ignoreLookAt, bool ignoreMouth) GetValidateState()
-        {
-            var ignoreBlink = false;
-            var ignoreLookAt = false;
-            var ignoreMouth = false;
-
-            foreach (var keyWeight in expressionKeyWeights)
-            {
-                if (keyWeight.Value <= 0.0f)
-                    continue;
-
-                // Blink
-                if (!ignoreBlink && m_merger.GetClip(keyWeight.Key).IgnoreBlink && !m_blinkExpressionKeys.Contains(keyWeight.Key))
-                {
-                    ignoreBlink = true;
-                }
-
-                // LookAt
-                if (!ignoreLookAt && m_merger.GetClip(keyWeight.Key).IgnoreLookAt && !m_lookAtExpressionKeys.Contains(keyWeight.Key))
-                {
-                    ignoreLookAt = true;
-                }
-
-                // Mouth
-                if (!ignoreMouth && m_merger.GetClip(keyWeight.Key).IgnoreMouth && !m_mouthExpressionKeys.Contains(keyWeight.Key))
-                {
-                    ignoreMouth = true;
-                }
-            }
-
-            return (ignoreBlink, ignoreLookAt, ignoreMouth);
-        }
-
-        public (bool ignoreBlink, bool ignoreLookAt, bool ignoreMouth) Begin()
-        {
-            //
-            // get ingore settings
-            //
-            var validateState = GetValidateState();
-            m_ignoreBlink = validateState.ignoreBlink;
-            m_ignoreLookAt = validateState.ignoreLookAt;
-            m_ignoreMouth = validateState.ignoreMouth;
-
-            if (validateState.ignoreBlink)
-            {
-                // cancel blink
-                m_blinkExpressionKeys.ForEach(x => expressionKeyWeights[x] = 0.0f);
-            }
-
-            return validateState;
-        }
-
-        public void End((bool ignoreBlink, bool ignoreLookAt, bool ignoreMouth) validateState)
-        {
-            if (validateState.ignoreMouth)
-            {
-                m_mouthExpressionKeys.ForEach(x => expressionKeyWeights[x] = 0.0f);
-            }
-            m_merger.SetValues(expressionKeyWeights.Select(x => new KeyValuePair<ExpressionKey, float>(x.Key, x.Value)));
+            m_merger.SetValues(m_accumulator.FrameExpression());
             m_merger.Apply();
         }
     }

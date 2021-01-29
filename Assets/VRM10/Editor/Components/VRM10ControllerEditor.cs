@@ -178,9 +178,9 @@ namespace UniVRM10
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("IgnoreStatus", EditorStyles.boldLabel);
             EditorGUI.BeginDisabledGroup(true);
-            EditorGUILayout.Toggle("Ignore Blink", m_target.Expression.IgnoreBlink);
-            EditorGUILayout.Toggle("Ignore Look At", m_target.Expression.IgnoreLookAt);
-            EditorGUILayout.Toggle("Ignore Mouth", m_target.Expression.IgnoreMouth);
+            EditorGUILayout.Toggle("Ignore Blink", m_target.Expression.Accumulator.IgnoreBlink);
+            EditorGUILayout.Toggle("Ignore Look At", m_target.Expression.Accumulator.IgnoreLookAt);
+            EditorGUILayout.Toggle("Ignore Mouth", m_target.Expression.Accumulator.IgnoreMouth);
             EditorGUI.EndDisabledGroup();
 
             if (!Application.isPlaying)
@@ -200,7 +200,7 @@ namespace UniVRM10
                 {
                     m_expressionKeyWeights[slider.Key] = slider.Value;
                 }
-                m_target.Expression.SetValues(m_expressionKeyWeights.Select(x => new KeyValuePair<ExpressionKey, float>(x.Key, x.Value)));
+                m_target.Expression.Accumulator.SetValues(m_expressionKeyWeights.Select(x => new KeyValuePair<ExpressionKey, float>(x.Key, x.Value)));
             }
         }
 

@@ -5,6 +5,13 @@ using System.Numerics;
 
 namespace VrmLib
 {
+    public enum ExpressionOverrideType
+    {
+        None,
+        Block,
+        Blend,
+    }
+
     public class Expression
     {
         public readonly ExpressionPreset Preset;
@@ -12,9 +19,9 @@ namespace VrmLib
 
         public bool IsBinary;
 
-        public bool IgnoreBlink;
-        public bool IgnoreLookAt;
-        public bool IgnoreMouth;
+        public ExpressionOverrideType OverrideBlink;
+        public ExpressionOverrideType OverrideLookAt;
+        public ExpressionOverrideType OverrideMouth;
 
         public readonly List<MorphTargetBind> MorphTargetBinds = new List<MorphTargetBind>();
 

@@ -16,8 +16,6 @@ namespace UniVRM10
         /// </summary>
         Dictionary<ExpressionKey, VRM10Expression> m_clipMap;
 
-        public IEnumerable<ExpressionKey> ExpressionKeys => m_clipMap.Keys;
-
         /// <summary>
         /// Expression のWeightを記録する
         /// </summary>
@@ -80,18 +78,6 @@ namespace UniVRM10
 
             m_morphTargetBindingMerger.AccumulateValue(clip, value);
             m_materialValueBindingMerger.AccumulateValue(clip, value);
-        }
-
-        public VRM10Expression GetClip(ExpressionKey key)
-        {
-            if (m_clipMap.ContainsKey(key))
-            {
-                return m_clipMap[key];
-            }
-            else
-            {
-                return null;
-            }
         }
 
         public void RestoreMaterialInitialValues()

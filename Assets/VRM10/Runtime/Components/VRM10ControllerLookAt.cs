@@ -209,12 +209,10 @@ namespace UniVRM10
             }
         }
 
-        public void Process(Transform head, SetPresetValue setPresetValue, bool ignoreLookAt)
+        public void Process(Transform head, SetPresetValue setPresetValue)
         {
-            var (yaw, pitch) = (ignoreLookAt)
-                ? (0.0f, 0.0f)
-                : GetLookAtYawPitch(head)
-                ;
+            var (yaw, pitch) = GetLookAtYawPitch(head);
+
             switch (LookAtType)
             {
                 case LookAtTypes.Bone:

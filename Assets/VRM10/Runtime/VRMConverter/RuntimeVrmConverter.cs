@@ -126,9 +126,9 @@ namespace UniVRM10
         VrmLib.Expression ToVrmLib(VRM10Expression clip, GameObject root)
         {
             var expression = new VrmLib.Expression(clip.Preset, clip.ExpressionName, clip.IsBinary);
-            expression.IgnoreBlink = clip.IgnoreBlink;
-            expression.IgnoreLookAt = clip.IgnoreLookAt;
-            expression.IgnoreMouth = clip.IgnoreMouth;
+            expression.OverrideBlink = EnumUtil.Cast<VrmLib.ExpressionOverrideType>(clip.OverrideBlink);
+            expression.OverrideLookAt = EnumUtil.Cast<VrmLib.ExpressionOverrideType>(clip.OverrideLookAt);
+            expression.OverrideMouth = EnumUtil.Cast<VrmLib.ExpressionOverrideType>(clip.OverrideMouth);
 
             foreach (var binding in clip.MorphTargetBindings)
             {
@@ -152,7 +152,8 @@ namespace UniVRM10
                 var blendShapeValue = new VrmLib.MorphTargetBind(
                     node,
                     names[binding.Index],
-                    binding.Weight
+                    // Unity Range [0-100] to VRM-1.0 Range [0-1.0]
+                    binding.Weight * 0.01f
                     );
                 expression.MorphTargetBinds.Add(blendShapeValue);
             }

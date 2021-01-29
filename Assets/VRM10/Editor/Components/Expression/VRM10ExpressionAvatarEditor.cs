@@ -64,7 +64,7 @@ namespace UniVRM10
             base.OnInspectorGUI();
 
             // selector
-            Selector.GUI();
+            Selector.DrawGUI();
 
             // editor
             if (m_serializedEditor != null)
