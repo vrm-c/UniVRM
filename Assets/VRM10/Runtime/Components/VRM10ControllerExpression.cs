@@ -49,7 +49,6 @@ namespace UniVRM10
         public void Apply()
         {
             m_merger.SetValues(m_accumulator.FrameExpression());
-            m_merger.Apply();
         }
     }
 }

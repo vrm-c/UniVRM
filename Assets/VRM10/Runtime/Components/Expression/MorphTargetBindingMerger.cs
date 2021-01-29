@@ -7,7 +7,7 @@ namespace UniVRM10
     ///
     /// A.Value * A.Weight + B.Value * B.Weight ...
     ///
-    class MorphTargetBindingMerger
+    internal class MorphTargetBindingMerger
     {
         class DictionaryKeyMorphTargetBindingComparer : IEqualityComparer<MorphTargetBinding>
         {
