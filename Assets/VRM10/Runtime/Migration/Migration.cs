@@ -189,20 +189,27 @@ namespace UniVRM10
                                 case "Everyone":
                                     meta.AvatarPermission = UniGLTF.Extensions.VRMC_vrm.AvatarPermissionType.everyone;
                                     break;
-                                default: throw new NotImplementedException($"allowedUser: {allowedUserType}");
+                                default:
+                                    throw new NotImplementedException($"allowedUser: {allowedUserType}");
                             }
                         }
                         break;
 
-                    case "violentUssageName": meta.AllowExcessivelyViolentUsage = kv.Value.GetString().ToLower() == "allow"; break;
-                    case "sexualUssageName": meta.AllowExcessivelySexualUsage = kv.Value.GetString().ToLower() == "allow"; break;
-                    case "commercialUssageName":
+                    case "violentUssageName": meta.AllowExcessivelyViolentUsage = kv.Value.GetString().ToLower() == "allow"; break; // Typo "Ussage" is VRM 0.x spec.
+                    case "sexualUssageName": meta.AllowExcessivelySexualUsage = kv.Value.GetString().ToLower() == "allow"; break; // Typo "Ussage" is VRM 0.x spec.
+                    case "commercialUssageName": // Typo "Ussage" is VRM 0.x spec.
                         {
-                            var commercialUssageType = kv.Value.GetString();
-                            switch (commercialUssageType)
+                            var commercialUsageType = kv.Value.GetString();
+                            switch (commercialUsageType)
                             {
-                                case "Allow": meta.CommercialUsage = UniGLTF.Extensions.VRMC_vrm.CommercialUsageType.personalProfit; break;
-                                default: meta.CommercialUsage = UniGLTF.Extensions.VRMC_vrm.CommercialUsageType.personalNonProfit; break;
+                                case "Allow":
+                                    meta.CommercialUsage = UniGLTF.Extensions.VRMC_vrm.CommercialUsageType.personalProfit;
+                                    break;
+                                case "Disallow":
+                                    meta.CommercialUsage = UniGLTF.Extensions.VRMC_vrm.CommercialUsageType.personalNonProfit;
+                                    break;
+                                default:
+                                    throw new NotImplementedException($"{key}: {commercialUsageType}");
                             }
                         }
                         break;
