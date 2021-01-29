@@ -308,7 +308,6 @@ namespace UniVRM10.Samples
                         // var context = new ImporterContext();
                         var file = File.ReadAllBytes(path);
                         // context.ParseGlb(file);
-                        // m_texts.UpdateMeta(context);
                         // context.Load();
                         // context.ShowMeshes();
                         // context.EnableUpdateWhenOffscreen();
@@ -378,6 +377,9 @@ namespace UniVRM10.Samples
             if (go != null)
             {
                 m_controller = go.GetComponent<VRM10Controller>();
+
+                m_texts.UpdateMeta(m_controller);
+
                 m_controller.Controller.UpdateType = VRM10Controller.VRM10ControllerImpl.UpdateTypes.LateUpdate; // after HumanPoseTransfer's setPose
                 {
                     m_loaded = go.AddComponent<HumanPoseTransfer>();
