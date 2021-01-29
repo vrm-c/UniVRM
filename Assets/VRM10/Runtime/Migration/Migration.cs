@@ -200,10 +200,10 @@ namespace UniVRM10
                             var violentUsageName = kv.Value.GetString();
                             switch (violentUsageName)
                             {
-                                case "allow":
+                                case "Allow":
                                     meta.AllowExcessivelyViolentUsage = true;
                                     break;
-                                case "disallow":
+                                case "Disallow":
                                     meta.AllowExcessivelyViolentUsage = false;
                                     break;
                                 default:
