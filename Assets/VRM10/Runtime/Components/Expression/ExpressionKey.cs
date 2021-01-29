@@ -27,6 +27,56 @@ namespace UniVRM10
 
         public VrmLib.ExpressionPreset Preset;
 
+        public bool IsBlink
+        {
+            get
+            {
+                switch (Preset)
+                {
+                    case VrmLib.ExpressionPreset.Blink:
+                    case VrmLib.ExpressionPreset.BlinkLeft:
+                    case VrmLib.ExpressionPreset.BlinkRight:
+                        return true;
+                }
+                return false;
+            }
+        }
+
+        public bool IsLookAt
+        {
+            get
+            {
+                switch (Preset)
+                {
+                    case VrmLib.ExpressionPreset.LookUp:
+                    case VrmLib.ExpressionPreset.LookDown:
+                    case VrmLib.ExpressionPreset.LookLeft:
+                    case VrmLib.ExpressionPreset.LookRight:
+                        return true;
+                }
+                return false;
+            }
+        }
+
+        public bool IsMouth
+        {
+            get
+            {
+                switch (Preset)
+                {
+                    case VrmLib.ExpressionPreset.Aa:
+                    case VrmLib.ExpressionPreset.Ih:
+                    case VrmLib.ExpressionPreset.Ou:
+                    case VrmLib.ExpressionPreset.Ee:
+                    case VrmLib.ExpressionPreset.Oh:
+                        return true;
+                }
+                return false;
+            }
+        }
+
+        public bool IsProcedual => IsBlink || IsLookAt || IsMouth;
+
         string m_id;
 
         string ID
@@ -147,4 +197,5 @@ namespace UniVRM10
             return 0;
         }
     }
+
 }
