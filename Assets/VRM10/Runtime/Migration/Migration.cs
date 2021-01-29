@@ -177,8 +177,8 @@ namespace UniVRM10
 
                     case "allowedUserName":
                         {
-                            var allowedUserType = kv.Value.GetString();
-                            switch (allowedUserType)
+                            var allowedUserName = kv.Value.GetString();
+                            switch (allowedUserName)
                             {
                                 case "OnlyAuthor":
                                     meta.AvatarPermission = UniGLTF.Extensions.VRMC_vrm.AvatarPermissionType.onlyAuthor;
@@ -190,17 +190,49 @@ namespace UniVRM10
                                     meta.AvatarPermission = UniGLTF.Extensions.VRMC_vrm.AvatarPermissionType.everyone;
                                     break;
                                 default:
-                                    throw new NotImplementedException($"allowedUser: {allowedUserType}");
+                                    throw new NotImplementedException($"{key}: {allowedUserName}");
                             }
                         }
                         break;
 
-                    case "violentUssageName": meta.AllowExcessivelyViolentUsage = kv.Value.GetString().ToLower() == "allow"; break; // Typo "Ussage" is VRM 0.x spec.
-                    case "sexualUssageName": meta.AllowExcessivelySexualUsage = kv.Value.GetString().ToLower() == "allow"; break; // Typo "Ussage" is VRM 0.x spec.
+                    case "violentUssageName": // Typo "Ussage" is VRM 0.x spec.
+                        {
+                            var violentUsageName = kv.Value.GetString();
+                            switch (violentUsageName)
+                            {
+                                case "allow":
+                                    meta.AllowExcessivelyViolentUsage = true;
+                                    break;
+                                case "disallow":
+                                    meta.AllowExcessivelyViolentUsage = false;
+                                    break;
+                                default:
+                                    throw new NotImplementedException($"{key}: {violentUsageName}");
+                            }
+                        }
+                        break;
+                    
+                    case "sexualUssageName": // Typo "Ussage" is VRM 0.x spec.
+                        {
+                            var sexualUsageName = kv.Value.GetString();
+                            switch (sexualUsageName)
+                            {
+                                case "Allow":
+                                    meta.AllowExcessivelySexualUsage = true;
+                                    break;
+                                case "Disallow":
+                                    meta.AllowExcessivelySexualUsage = false;
+                                    break;
+                                default:
+                                    throw new NotImplementedException($"{key}: {sexualUsageName}");
+                            }
+                        }
+                        break;
+                    
                     case "commercialUssageName": // Typo "Ussage" is VRM 0.x spec.
                         {
-                            var commercialUsageType = kv.Value.GetString();
-                            switch (commercialUsageType)
+                            var commercialUsageName = kv.Value.GetString();
+                            switch (commercialUsageName)
                             {
                                 case "Allow":
                                     meta.CommercialUsage = UniGLTF.Extensions.VRMC_vrm.CommercialUsageType.personalProfit;
@@ -209,7 +241,7 @@ namespace UniVRM10
                                     meta.CommercialUsage = UniGLTF.Extensions.VRMC_vrm.CommercialUsageType.personalNonProfit;
                                     break;
                                 default:
-                                    throw new NotImplementedException($"{key}: {commercialUsageType}");
+                                    throw new NotImplementedException($"{key}: {commercialUsageName}");
                             }
                         }
                         break;
