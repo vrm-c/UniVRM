@@ -9,7 +9,7 @@ namespace UniVRM10
     /// <summary>
     /// プレビュー向けのシーンを管理する
     /// </summary>
-    public class PreviewSceneManager : MonoBehaviour
+    public sealed class PreviewSceneManager : MonoBehaviour
     {
         public GameObject Prefab;
 

@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace UniVRM10
 {
     [Serializable]
-    public class PreviewMeshItem
+    public sealed class PreviewMeshItem
     {
         public string Path
         {

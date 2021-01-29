@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace UniVRM10
 {
@@ -46,7 +48,7 @@ namespace UniVRM10
     ///
     /// </summary>
     [Serializable]
-    public class PreviewMaterialItem
+    public sealed class PreviewMaterialItem
     {
         public readonly Material Material;
 

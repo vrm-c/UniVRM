@@ -9,7 +9,7 @@ namespace UniVRM10
     /// <summary>
     /// ブレンドシェイプを蓄えてまとめて適用するクラス
     /// </summary>
-    internal class ExpressionMerger
+    internal sealed class ExpressionMerger
     {
         /// <summary>
         /// Key から Expression を得る
