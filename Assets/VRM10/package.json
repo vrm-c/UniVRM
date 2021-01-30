@@ -6,6 +6,6 @@
     "description": "vrm unity utility",
     "dependencies": {
         "com.vrmc.vrmshaders": "0.64.0",
-        "com.vrmc.unigltf": "2.0.0"
+        "com.vrmc.unigltf": "2.0.1"
     }
 }
