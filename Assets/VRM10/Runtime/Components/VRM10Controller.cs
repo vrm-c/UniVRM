@@ -52,7 +52,10 @@ namespace UniVRM10
 
         void OnDestroy()
         {
-            Expression.Dispose();
+            if (Expression != null)
+            {
+                Expression.Restore();
+            }
 
             if (ModelAsset != null)
             {

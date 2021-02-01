@@ -136,6 +136,9 @@ namespace UniVRM10
             }
 
             serializedObject.Update();
+            
+            // Setup runtime function.
+            m_target.Setup();
 
             // base.OnInspectorGUI();
             switch (_tab)
@@ -176,14 +179,6 @@ namespace UniVRM10
         void ExpressionGUI()
         {
             EditorGUILayout.Space();
-            EditorGUILayout.LabelField("Override rates", EditorStyles.boldLabel);
-            EditorGUI.BeginDisabledGroup(true);
-            {
-                EditorGUILayout.Slider("Blink override rate", m_target.Expression.BlinkOverrideRate, 0f, 1f);
-                EditorGUILayout.Slider("LookAt override rate", m_target.Expression.LookAtOverrideRate, 0f, 1f);
-                EditorGUILayout.Slider("Mouth override rate", m_target.Expression.MouthOverrideRate, 0f, 1f);
-            }
-            EditorGUI.EndDisabledGroup();
 
             if (!Application.isPlaying)
             {
@@ -197,6 +192,9 @@ namespace UniVRM10
 
             if (m_sliders != null)
             {
+                EditorGUILayout.Space();
+                EditorGUILayout.LabelField("Expression Weights", EditorStyles.boldLabel);
+                
                 var sliders = m_sliders.Select(x => x.Slider());
                 foreach (var slider in sliders)
                 {
@@ -204,6 +202,16 @@ namespace UniVRM10
                 }
                 m_target.Expression.SetWeights(m_expressionKeyWeights);
             }
+            
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Override rates", EditorStyles.boldLabel);
+            EditorGUI.BeginDisabledGroup(true);
+            {
+                EditorGUILayout.Slider("Blink override rate", m_target.Expression.BlinkOverrideRate, 0f, 1f);
+                EditorGUILayout.Slider("LookAt override rate", m_target.Expression.LookAtOverrideRate, 0f, 1f);
+                EditorGUILayout.Slider("Mouth override rate", m_target.Expression.MouthOverrideRate, 0f, 1f);
+            }
+            EditorGUI.EndDisabledGroup();
         }
 
         void OnSceneGUI()

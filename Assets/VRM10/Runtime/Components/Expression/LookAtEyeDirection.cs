@@ -29,5 +29,15 @@
             RightYaw = rightYaw;
             RightPitch = rightPitch;
         }
+
+        public static LookAtEyeDirection Multiply(LookAtEyeDirection a, float b)
+        {
+            return new LookAtEyeDirection(
+                a.LeftYaw * b,
+                a.LeftPitch * b,
+                a.RightYaw * b,
+                a.RightPitch * b
+            );
+        }
     }
 }

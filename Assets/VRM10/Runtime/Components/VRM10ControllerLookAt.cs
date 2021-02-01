@@ -136,7 +136,12 @@ namespace UniVRM10
             m_head = head;
             m_leftEye = animator.GetBoneTransform(HumanBodyBones.LeftEye);
             m_rightEye = animator.GetBoneTransform(HumanBodyBones.RightEye);
-            if (Gaze == null)
+
+            var isRuntimeAsset = true;
+#if UNITY_EDITOR
+            isRuntimeAsset = Application.isPlaying && !PrefabUtility.IsPartOfAnyPrefab(m_head);
+#endif
+            if (isRuntimeAsset && LookAtTargetType == LookAtTargetTypes.CalcYawPitchToGaze && Gaze == null)
             {
                 Gaze = new GameObject().transform;
                 Gaze.name = "__LOOKAT_GAZE__";
