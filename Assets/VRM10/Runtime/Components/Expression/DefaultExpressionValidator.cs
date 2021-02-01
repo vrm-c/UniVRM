@@ -90,7 +90,7 @@ namespace UniVRM10
                 case ExpressionOverrideType.None:
                     return 0f;
                 case ExpressionOverrideType.Block:
-                    return 1f;
+                    return weight > 0f ? 1f : 0f;
                 case ExpressionOverrideType.Blend:
                     return weight;
                 default:
