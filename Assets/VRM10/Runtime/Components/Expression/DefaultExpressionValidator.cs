@@ -8,10 +8,12 @@ namespace UniVRM10
 {
     public sealed class DefaultExpressionValidator : IExpressionValidator
     {
+        private readonly ExpressionKey[] _keys;
         private readonly Dictionary<ExpressionKey, VRM10Expression> _expressions;
         
         private DefaultExpressionValidator(VRM10ExpressionAvatar expressionAvatar)
         {
+            _keys = expressionAvatar.Clips.Select(ExpressionKey.CreateFromClip).ToArray();
             _expressions = expressionAvatar.Clips.ToDictionary(ExpressionKey.CreateFromClip, x => x);
         }
         
@@ -25,8 +27,10 @@ namespace UniVRM10
             mouthOverrideRate = 0f;
             
             // 1. Set weights and Accumulate override rates.
-            foreach (var (key, weight) in inputWeights)
+            foreach (var key in _keys)
             {
+                var weight = inputWeights[key];
+                
                 if (!actualWeights.ContainsKey(key))
                 {
                     actualWeights.Add(key, weight);
@@ -63,8 +67,10 @@ namespace UniVRM10
             var mouthMultiplier = 1f - mouthOverrideRate;
             
             // 3. Set procedural key's weights.
-            foreach (var (key, weight) in inputWeights)
+            foreach (var key in _keys)
             {
+                var weight = inputWeights[key];
+                
                 if (key.IsBlink)
                 {
                     actualWeights[key] = weight * blinkMultiplier;

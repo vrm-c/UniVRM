@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using VrmLib;
 
 
 namespace UniVRM10
@@ -38,12 +39,12 @@ namespace UniVRM10
         /// <summary>
         /// まとめて反映する。1フレームに1回呼び出されることを想定
         /// </summary>
-        /// <param name="values"></param>
-        public void SetValues(IEnumerable<KeyValuePair<ExpressionKey, float>> values)
+        /// <param name="expressionWeights"></param>
+        public void SetValues(Dictionary<ExpressionKey, float> expressionWeights)
         {
-            foreach (var kv in values)
+            foreach (var (key, weight) in expressionWeights)
             {
-                AccumulateValue(kv.Key, kv.Value);
+                AccumulateValue(key, weight);
             }
             
             m_morphTargetBindingMerger.Apply();

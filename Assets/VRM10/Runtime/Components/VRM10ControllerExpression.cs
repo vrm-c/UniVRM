@@ -126,18 +126,7 @@ namespace UniVRM10
                 out var blink, out var lookAt, out var mouth);
             
             // 3. Set eye direction expression weights or any other side-effects (ex. eye bone).
-            if (_eyeDirectionApplicable != null)
-            {
-                foreach (var (expressionKey, weight) in _eyeDirectionApplicable.Apply(_actualEyeDirection))
-                {
-                    if (!_actualWeights.ContainsKey(expressionKey))
-                    {
-                        _actualWeights.Add(expressionKey, 0f);
-                    }
-
-                    _actualWeights[expressionKey] = weight;
-                }
-            }
+            _eyeDirectionApplicable?.Apply(_actualEyeDirection, _actualWeights);
 
             // 4. Set actual weights to raw blendshapes.
             _merger.SetValues(_actualWeights);

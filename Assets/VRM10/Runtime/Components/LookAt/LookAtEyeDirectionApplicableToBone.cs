@@ -26,7 +26,7 @@ namespace UniVRM10
         /// <summary>
         /// LeftEyeボーンとRightEyeボーンに回転を適用する
         /// </summary>
-        public IEnumerable<KeyValuePair<ExpressionKey, float>> Apply(LookAtEyeDirection eyeDirection)
+        public void Apply(LookAtEyeDirection eyeDirection, Dictionary<ExpressionKey, float> actualWeights)
         {
             // FIXME
             var yaw = eyeDirection.LeftYaw;
@@ -57,8 +57,6 @@ namespace UniVRM10
 
             // Apply
             SetYawPitchToBones(new LookAtEyeDirection(leftYaw, pitch, rightYaw, pitch));
-            
-            yield break;
         }
 
         public void Restore()
