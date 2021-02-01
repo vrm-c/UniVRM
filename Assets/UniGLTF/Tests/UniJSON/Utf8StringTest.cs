@@ -164,5 +164,14 @@ namespace UniJSON
                 Assert.AreEqual(src, utf8.ToString());
             }
         }
+
+        [Test]
+        public void UnicodeEscapeTest()
+        {
+            var src = "\"\\u8868\\u60c5\"";
+            var json = src.ParseAsJson();
+            var decoded = json.GetString();
+            Assert.AreEqual("表情", decoded);
+        }
     }
 }
