@@ -29,19 +29,16 @@ namespace UniVRM10
             // 1. Set weights and Accumulate override rates.
             foreach (var key in _keys)
             {
-                var weight = inputWeights[key];
-                
-                if (!actualWeights.ContainsKey(key))
-                {
-                    actualWeights.Add(key, weight);
-                }
-                // Set weight.
-                actualWeights[key] = weight;
-                
                 // Get expression.
                 if (!_expressions.ContainsKey(key)) continue;
                 var expression = _expressions[key];
 
+                // Get weight with evaluation binary flag.
+                var weight = expression.IsBinary ? Mathf.Round(inputWeights[key]) : inputWeights[key];
+                
+                // Set weight.
+                actualWeights[key] = weight;
+                
                 // Override rate without targeting myself.
                 if (!key.IsBlink)
                 {

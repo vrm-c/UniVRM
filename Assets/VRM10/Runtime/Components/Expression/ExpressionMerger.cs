@@ -61,11 +61,6 @@ namespace UniVRM10
                 return;
             }
 
-            if (clip.IsBinary)
-            {
-                value = Mathf.Round(value);
-            }
-
             m_morphTargetBindingMerger.AccumulateValue(clip, value);
             m_materialValueBindingMerger.AccumulateValue(clip, value);
         }
