@@ -23,9 +23,9 @@ namespace UniVRM10
         public IReadOnlyList<ExpressionKey> ExpressionKeys => _keys;
         public IReadOnlyDictionary<ExpressionKey, float> ActualWeights => _actualWeights;
         
-        public float OverrideBlinkWeight { get; private set; }
-        public float OverrideLookAtWeight { get; private set; }
-        public float OverrideMouthWeight { get; private set; }
+        public float BlinkNullifyWeight { get; private set; }
+        public float LookAtNullifyWeight { get; private set; }
+        public float MouthNullifyWeight { get; private set; }
         
         public void Dispose()
         {
@@ -93,8 +93,11 @@ namespace UniVRM10
         /// </summary>
         private void Apply()
         {
-            _validator.Validate(_inputWeights, _actualWeights);
+            _validator.Validate(_inputWeights, _actualWeights, out var blink, out var lookAt, out var mouth);
             _merger.SetValues(_actualWeights);
+            BlinkNullifyWeight = blink;
+            LookAtNullifyWeight = lookAt;
+            MouthNullifyWeight = mouth;
         }
     }
 }

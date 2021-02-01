@@ -10,6 +10,7 @@ namespace UniVRM10
         /// <summary>
         /// Validate input weights with Expression constraints.
         /// </summary>
-        void Validate(IReadOnlyDictionary<ExpressionKey, float> inputWeights, IDictionary<ExpressionKey, float> actualWeights);
+        void Validate(IReadOnlyDictionary<ExpressionKey, float> inputWeights, IDictionary<ExpressionKey, float> actualWeights,
+            out float blinkNullifyWeight, out float lookAtNullifyWeight, out float mouthNullifyWeight);
     }
 }

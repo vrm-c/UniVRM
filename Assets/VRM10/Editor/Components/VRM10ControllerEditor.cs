@@ -179,9 +179,9 @@ namespace UniVRM10
             EditorGUILayout.LabelField("Override weights", EditorStyles.boldLabel);
             EditorGUI.BeginDisabledGroup(true);
             {
-                EditorGUILayout.Slider("Blink override weight", m_target.Expression.OverrideBlinkWeight, 0f, 1f);
-                EditorGUILayout.Slider("LookAt override weight", m_target.Expression.OverrideLookAtWeight, 0f, 1f);
-                EditorGUILayout.Slider("Mouth override weight", m_target.Expression.OverrideMouthWeight, 0f, 1f);
+                EditorGUILayout.Slider("Blink nullify weight", m_target.Expression.BlinkNullifyWeight, 0f, 1f);
+                EditorGUILayout.Slider("LookAt nullify weight", m_target.Expression.LookAtNullifyWeight, 0f, 1f);
+                EditorGUILayout.Slider("Mouth nullify weight", m_target.Expression.MouthNullifyWeight, 0f, 1f);
             }
             EditorGUI.EndDisabledGroup();
 

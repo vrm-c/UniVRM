@@ -10,7 +10,8 @@ namespace UniVRM10
             
         }
         
-        public void Validate(IReadOnlyDictionary<ExpressionKey, float> inputWeights, IDictionary<ExpressionKey, float> actualWeights)
+        public void Validate(IReadOnlyDictionary<ExpressionKey, float> inputWeights, IDictionary<ExpressionKey, float> actualWeights, out float blinkNullifyWeight,
+            out float lookAtNullifyWeight, out float mouthNullifyWeight)
         {
             foreach (var (key, weight) in inputWeights)
             {
@@ -21,6 +22,10 @@ namespace UniVRM10
 
                 actualWeights[key] = weight;
             }
+
+            blinkNullifyWeight = 0f;
+            lookAtNullifyWeight = 0f;
+            mouthNullifyWeight = 0f;
         }
 
         public sealed class Factory : IExpressionValidatorFactory
