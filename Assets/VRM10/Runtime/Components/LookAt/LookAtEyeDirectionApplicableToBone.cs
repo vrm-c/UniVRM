@@ -28,6 +28,7 @@ namespace UniVRM10
         /// </summary>
         public IEnumerable<KeyValuePair<ExpressionKey, float>> Apply(LookAtEyeDirection eyeDirection)
         {
+            // FIXME
             var yaw = eyeDirection.LeftYaw;
             var pitch = eyeDirection.LeftPitch;
             
@@ -55,14 +56,23 @@ namespace UniVRM10
             }
 
             // Apply
-            if (_leftEye != null && _rightEye != null)
-            {
-                // 目に値を適用する
-                _leftEye.localRotation = Matrix4x4.identity.YawPitchRotation(leftYaw, pitch);
-                _rightEye.localRotation = Matrix4x4.identity.YawPitchRotation(rightYaw, pitch);
-            }
+            SetYawPitchToBones(new LookAtEyeDirection(leftYaw, pitch, rightYaw, pitch));
             
             yield break;
+        }
+
+        public void Restore()
+        {
+            SetYawPitchToBones(new LookAtEyeDirection(0, 0, 0, 0));
+        }
+
+        private void SetYawPitchToBones(LookAtEyeDirection actualEyeDirection)
+        {
+            if (_leftEye != null && _rightEye != null)
+            {
+                _leftEye.localRotation = Matrix4x4.identity.YawPitchRotation(actualEyeDirection.LeftYaw, actualEyeDirection.LeftPitch);
+                _rightEye.localRotation = Matrix4x4.identity.YawPitchRotation(actualEyeDirection.RightYaw, actualEyeDirection.RightPitch);
+            }
         }
     }
 }

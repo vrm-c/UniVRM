@@ -34,6 +34,7 @@ namespace UniVRM10
         public void Dispose()
         {
             _merger?.RestoreMaterialInitialValues();
+            _eyeDirectionApplicable?.Restore();
         }
 
         internal void Setup(Transform transform, ILookAtEyeDirectionProvider eyeDirectionProvider, ILookAtEyeDirectionApplicable eyeDirectionApplicable)

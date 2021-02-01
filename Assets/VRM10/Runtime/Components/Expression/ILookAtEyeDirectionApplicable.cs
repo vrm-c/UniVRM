@@ -8,5 +8,6 @@ namespace UniVRM10
     internal interface ILookAtEyeDirectionApplicable
     {
         IEnumerable<KeyValuePair<ExpressionKey, float>> Apply(LookAtEyeDirection eyeDirection);
+        void Restore();
     }
 }

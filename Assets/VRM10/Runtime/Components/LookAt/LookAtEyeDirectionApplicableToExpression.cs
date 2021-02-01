@@ -56,5 +56,9 @@ namespace UniVRM10
                 yield return new KeyValuePair<ExpressionKey, float>(_lookDownKey, 0);
             }
         }
+
+        public void Restore()
+        {
+        }
     }
 }
