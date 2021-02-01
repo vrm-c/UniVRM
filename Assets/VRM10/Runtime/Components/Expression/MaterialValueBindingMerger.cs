@@ -7,7 +7,7 @@ namespace UniVRM10
     ///
     /// Base + (A.Target - Base) * A.Weight + (B.Target - Base) * B.Weight ...
     ///
-    class MaterialValueBindingMerger
+    internal sealed class MaterialValueBindingMerger
     {
         #region MaterialMap
         /// <summary>

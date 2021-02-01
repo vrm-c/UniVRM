@@ -11,7 +11,7 @@ using UnityEditor;
 namespace UniVRM10
 {
     [CreateAssetMenu(menuName = "VRM10/ExpressionAvatar")]
-    public class VRM10ExpressionAvatar : ScriptableObject
+    public sealed class VRM10ExpressionAvatar : ScriptableObject
     {
         [SerializeField]
         public List<VRM10Expression> Clips = new List<VRM10Expression>();

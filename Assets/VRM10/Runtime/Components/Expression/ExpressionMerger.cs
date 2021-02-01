@@ -9,7 +9,7 @@ namespace UniVRM10
     /// <summary>
     /// ブレンドシェイプを蓄えてまとめて適用するクラス
     /// </summary>
-    class ExpressionMerger
+    internal sealed class ExpressionMerger
     {
         /// <summary>
         /// Key から Expression を得る
@@ -36,15 +36,6 @@ namespace UniVRM10
         }
 
         /// <summary>
-        /// 蓄積した値を適用する
-        /// </summary>
-        public void Apply()
-        {
-            m_morphTargetBindingMerger.Apply();
-            m_materialValueBindingMerger.Apply();
-        }
-
-        /// <summary>
         /// まとめて反映する。1フレームに1回呼び出されることを想定
         /// </summary>
         /// <param name="values"></param>
@@ -54,14 +45,12 @@ namespace UniVRM10
             {
                 AccumulateValue(kv.Key, kv.Value);
             }
+            
+            m_morphTargetBindingMerger.Apply();
+            m_materialValueBindingMerger.Apply();
         }
 
-        /// <summary>
-        /// 即時に反映しない。後にApplyによって反映する
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        public void AccumulateValue(ExpressionKey key, float value)
+        private void AccumulateValue(ExpressionKey key, float value)
         {
             m_valueMap[key] = value;
 

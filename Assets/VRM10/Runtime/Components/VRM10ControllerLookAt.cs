@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
+using VrmLib;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -7,7 +9,7 @@ using UnityEditor;
 namespace UniVRM10
 {
     [Serializable]
-    public class VRM10ControllerLookAt
+    public class VRM10ControllerLookAt : ILookAtEyeDirectionProvider
     {
         public enum LookAtTypes
         {
@@ -47,8 +49,14 @@ namespace UniVRM10
         [SerializeField]
         public LookAtTargetTypes LookAtTargetType;
 
-        OffsetOnTransform m_leftEye;
-        OffsetOnTransform m_rightEye;
+        private Transform m_head;
+        private Transform m_leftEye;
+        private Transform m_rightEye;
+        private ILookAtEyeDirectionApplicable _eyeDirectionApplicable;
+
+        internal ILookAtEyeDirectionApplicable EyeDirectionApplicable => _eyeDirectionApplicable;
+        
+        public LookAtEyeDirection EyeDirection { get; private set; }
 
         #region LookAtTargetTypes.CalcYawPitchToGaze
         /// <summay>
@@ -107,7 +115,7 @@ namespace UniVRM10
         /// LookAtTargetType に応じた yaw, pitch を得る
         /// </summary>
         /// <returns>Headボーンのforwardに対するyaw角(度), pitch角(度)</returns>
-        public (float, float) GetLookAtYawPitch(Transform head)
+        private (float, float) GetLookAtYawPitch(Transform head)
         {
             switch (LookAtTargetType)
             {
@@ -123,106 +131,35 @@ namespace UniVRM10
             throw new NotImplementedException();
         }
 
-        /// <summary>
-        /// LeftEyeボーンとRightEyeボーンに回転を適用する
-        /// </summary>
-        void LookAtBone(float yaw, float pitch)
+        internal void Setup(Animator animator, Transform head)
         {
-            // horizontal
-            float leftYaw, rightYaw;
-            if (yaw < 0)
-            {
-                leftYaw = -HorizontalOuter.Map(-yaw);
-                rightYaw = -HorizontalInner.Map(-yaw);
-            }
-            else
-            {
-                rightYaw = HorizontalOuter.Map(yaw);
-                leftYaw = HorizontalInner.Map(yaw);
-            }
-
-            // vertical
-            if (pitch < 0)
-            {
-                pitch = -VerticalDown.Map(-pitch);
-            }
-            else
-            {
-                pitch = VerticalUp.Map(pitch);
-            }
-
-            // Apply
-            if (m_leftEye.Transform != null && m_rightEye.Transform != null)
-            {
-                // 目に値を適用する
-                m_leftEye.Transform.rotation = m_leftEye.InitialWorldMatrix.ExtractRotation() * Matrix4x4.identity.YawPitchRotation(leftYaw, pitch);
-                m_rightEye.Transform.rotation = m_rightEye.InitialWorldMatrix.ExtractRotation() * Matrix4x4.identity.YawPitchRotation(rightYaw, pitch);
-            }
-        }
-
-        public delegate void SetPresetValue(VrmLib.ExpressionPreset preset, float weight);
-
-        /// <summary>
-        /// Expression による LookAt を処理する(関連する Expression の Weight を変更する)
-        /// </summary>
-        /// <param name="yaw"></param>
-        /// <param name="pitch"></param>
-        void LookAtExpression(float yaw, float pitch, SetPresetValue SetPresetValue)
-        {
-            if (yaw < 0)
-            {
-                // Left
-                SetPresetValue(VrmLib.ExpressionPreset.LookRight, 0); // clear first
-                SetPresetValue(VrmLib.ExpressionPreset.LookLeft, Mathf.Clamp(HorizontalOuter.Map(-yaw), 0, 1.0f));
-            }
-            else
-            {
-                // Right
-                SetPresetValue(VrmLib.ExpressionPreset.LookLeft, 0); // clear first
-                SetPresetValue(VrmLib.ExpressionPreset.LookRight, Mathf.Clamp(HorizontalOuter.Map(yaw), 0, 1.0f));
-            }
-
-            if (pitch < 0)
-            {
-                // Down
-                SetPresetValue(VrmLib.ExpressionPreset.LookUp, 0); // clear first
-                SetPresetValue(VrmLib.ExpressionPreset.LookDown, Mathf.Clamp(VerticalDown.Map(-pitch), 0, 1.0f));
-            }
-            else
-            {
-                // Up
-                SetPresetValue(VrmLib.ExpressionPreset.LookDown, 0); // clear first
-                SetPresetValue(VrmLib.ExpressionPreset.LookUp, Mathf.Clamp(VerticalUp.Map(pitch), 0, 1.0f));
-            }
-        }
-
-        public void Setup(Animator animator, Transform head)
-        {
-            m_leftEye = OffsetOnTransform.Create(animator.GetBoneTransform(HumanBodyBones.LeftEye));
-            m_rightEye = OffsetOnTransform.Create(animator.GetBoneTransform(HumanBodyBones.RightEye));
+            m_head = head;
+            m_leftEye = animator.GetBoneTransform(HumanBodyBones.LeftEye);
+            m_rightEye = animator.GetBoneTransform(HumanBodyBones.RightEye);
             if (Gaze == null)
             {
                 Gaze = new GameObject().transform;
                 Gaze.name = "__LOOKAT_GAZE__";
-                Gaze.SetParent(head);
+                Gaze.SetParent(m_head);
                 Gaze.localPosition = Vector3.forward;
             }
-        }
-
-        public void Process(Transform head, SetPresetValue setPresetValue)
-        {
-            var (yaw, pitch) = GetLookAtYawPitch(head);
-
             switch (LookAtType)
             {
                 case LookAtTypes.Bone:
-                    LookAtBone(yaw, pitch);
+                    _eyeDirectionApplicable = new LookAtEyeDirectionApplicableToBone(m_leftEye, m_rightEye, HorizontalOuter, HorizontalInner, VerticalDown, VerticalUp);
                     break;
-
                 case LookAtTypes.Expression:
-                    LookAtExpression(yaw, pitch, setPresetValue);
+                    _eyeDirectionApplicable = new LookAtEyeDirectionApplicableToExpression(HorizontalOuter, HorizontalInner, VerticalDown, VerticalUp);
                     break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
+        }
+
+        public void Process()
+        {
+            var (yaw, pitch) = GetLookAtYawPitch(m_head);
+            EyeDirection = new LookAtEyeDirection(yaw, pitch, 0, 0);
         }
 
 #if UNITY_EDITOR
@@ -244,10 +181,10 @@ namespace UniVRM10
         {
             if (DrawGizmo)
             {
-                if (m_leftEye.Transform != null & m_rightEye.Transform != null)
+                if (m_leftEye != null & m_rightEye != null)
                 {
-                    DrawMatrix(m_leftEye.WorldMatrix, LOOKAT_GIZMO_SIZE);
-                    DrawMatrix(m_rightEye.WorldMatrix, LOOKAT_GIZMO_SIZE);
+                    DrawMatrix(m_leftEye.localToWorldMatrix, LOOKAT_GIZMO_SIZE);
+                    DrawMatrix(m_rightEye.localToWorldMatrix, LOOKAT_GIZMO_SIZE);
                 }
             }
         }

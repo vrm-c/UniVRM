@@ -5,7 +5,7 @@ using UnityEngine;
 namespace UniVRM10
 {
     [CreateAssetMenu(menuName = "VRM10/Expression")]
-    public class VRM10Expression : ScriptableObject
+    public sealed class VRM10Expression : ScriptableObject
     {
 #if UNITY_EDITOR
         /// <summary>
