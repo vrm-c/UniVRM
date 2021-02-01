@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
+using VrmLib;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -49,6 +51,10 @@ namespace UniVRM10
 
         OffsetOnTransform m_leftEye;
         OffsetOnTransform m_rightEye;
+        ExpressionKey m_lookRightKey = ExpressionKey.CreateFromPreset(ExpressionPreset.LookRight);
+        ExpressionKey m_lookLeftKey = ExpressionKey.CreateFromPreset(ExpressionPreset.LookLeft);
+        ExpressionKey m_lookUpKey = ExpressionKey.CreateFromPreset(ExpressionPreset.LookUp);
+        ExpressionKey m_lookDownKey = ExpressionKey.CreateFromPreset(ExpressionPreset.LookDown);
 
         #region LookAtTargetTypes.CalcYawPitchToGaze
         /// <summay>
@@ -160,43 +166,41 @@ namespace UniVRM10
             }
         }
 
-        public delegate void SetPresetValue(VrmLib.ExpressionPreset preset, float weight);
+        public delegate void SetExpressionWeights(IEnumerable<KeyValuePair<ExpressionKey, float>> weights);
 
         /// <summary>
-        /// Expression による LookAt を処理する(関連する Expression の Weight を変更する)
+        /// Expression による LookAt の Weight を計算する
         /// </summary>
-        /// <param name="yaw"></param>
-        /// <param name="pitch"></param>
-        void LookAtExpression(float yaw, float pitch, SetPresetValue SetPresetValue)
+        private IEnumerable<KeyValuePair<ExpressionKey, float>> GetLookAtExpressionEnumerable(float yaw, float pitch)
         {
             if (yaw < 0)
             {
                 // Left
-                SetPresetValue(VrmLib.ExpressionPreset.LookRight, 0); // clear first
-                SetPresetValue(VrmLib.ExpressionPreset.LookLeft, Mathf.Clamp(HorizontalOuter.Map(-yaw), 0, 1.0f));
+                yield return new KeyValuePair<ExpressionKey, float>(m_lookRightKey, 0);
+                yield return new KeyValuePair<ExpressionKey, float>(m_lookLeftKey, Mathf.Clamp(HorizontalOuter.Map(Mathf.Abs(yaw)), 0, 1.0f));
             }
             else
             {
                 // Right
-                SetPresetValue(VrmLib.ExpressionPreset.LookLeft, 0); // clear first
-                SetPresetValue(VrmLib.ExpressionPreset.LookRight, Mathf.Clamp(HorizontalOuter.Map(yaw), 0, 1.0f));
+                yield return new KeyValuePair<ExpressionKey, float>(m_lookRightKey, Mathf.Clamp(HorizontalOuter.Map(Mathf.Abs(yaw)), 0, 1.0f));
+                yield return new KeyValuePair<ExpressionKey, float>(m_lookLeftKey, 0);
             }
 
             if (pitch < 0)
             {
                 // Down
-                SetPresetValue(VrmLib.ExpressionPreset.LookUp, 0); // clear first
-                SetPresetValue(VrmLib.ExpressionPreset.LookDown, Mathf.Clamp(VerticalDown.Map(-pitch), 0, 1.0f));
+                yield return new KeyValuePair<ExpressionKey, float>(m_lookUpKey, 0);
+                yield return new KeyValuePair<ExpressionKey, float>(m_lookDownKey, Mathf.Clamp(VerticalDown.Map(Mathf.Abs(pitch)), 0, 1.0f));
             }
             else
             {
                 // Up
-                SetPresetValue(VrmLib.ExpressionPreset.LookDown, 0); // clear first
-                SetPresetValue(VrmLib.ExpressionPreset.LookUp, Mathf.Clamp(VerticalUp.Map(pitch), 0, 1.0f));
+                yield return new KeyValuePair<ExpressionKey, float>(m_lookUpKey, Mathf.Clamp(VerticalUp.Map(Mathf.Abs(pitch)), 0, 1.0f));
+                yield return new KeyValuePair<ExpressionKey, float>(m_lookDownKey, 0);
             }
         }
 
-        public void Setup(Animator animator, Transform head)
+        internal void Setup(Animator animator, Transform head)
         {
             m_leftEye = OffsetOnTransform.Create(animator.GetBoneTransform(HumanBodyBones.LeftEye));
             m_rightEye = OffsetOnTransform.Create(animator.GetBoneTransform(HumanBodyBones.RightEye));
@@ -209,7 +213,7 @@ namespace UniVRM10
             }
         }
 
-        public void Process(Transform head, SetPresetValue setPresetValue)
+        internal void Process(Transform head, SetExpressionWeights setExpressionWeights)
         {
             var (yaw, pitch) = GetLookAtYawPitch(head);
 
@@ -220,7 +224,7 @@ namespace UniVRM10
                     break;
 
                 case LookAtTypes.Expression:
-                    LookAtExpression(yaw, pitch, setPresetValue);
+                    setExpressionWeights(GetLookAtExpressionEnumerable(yaw, pitch));
                     break;
             }
         }

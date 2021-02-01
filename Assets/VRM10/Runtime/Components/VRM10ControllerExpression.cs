@@ -1,54 +1,100 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using VrmLib;
 
 namespace UniVRM10
 {
     [Serializable]
-    public class VRM10ControllerExpression : IDisposable
+    public sealed class VRM10ControllerExpression : IDisposable
     {
+        public static IExpressionValidatorFactory ExpressionValidatorFactory = new DefaultExpressionValidator.Factory();
+        
         [SerializeField]
         public VRM10ExpressionAvatar ExpressionAvatar;
 
-        ExpressionMerger m_merger;
+        private List<ExpressionKey> _keys = new List<ExpressionKey>();
+        private Dictionary<ExpressionKey, float> _inputWeights = new Dictionary<ExpressionKey, float>();
+        private Dictionary<ExpressionKey, float> _actualWeights = new Dictionary<ExpressionKey, float>();
+        private ExpressionMerger _merger;
+        private IExpressionValidator _validator;
 
+        public IReadOnlyList<ExpressionKey> ExpressionKeys => _keys;
+        public IReadOnlyDictionary<ExpressionKey, float> ActualWeights => _actualWeights;
+        
+        public float OverrideBlinkWeight { get; private set; }
+        public float OverrideLookAtWeight { get; private set; }
+        public float OverrideMouthWeight { get; private set; }
+        
         public void Dispose()
         {
-            if (m_merger != null)
-            {
-                m_merger.RestoreMaterialInitialValues();
-            }
+            _merger?.RestoreMaterialInitialValues();
         }
 
-        IExpressionAccumulator m_accumulator;
-
-        public IExpressionAccumulator Accumulator
+        internal void Setup(Transform transform)
         {
-            get
+            if (ExpressionAvatar == null)
             {
-                if (m_accumulator == null)
+                Debug.LogError($"{nameof(VRM10ControllerExpression)}.{nameof(ExpressionAvatar)} is null.");
+                return;
+            }
+            
+            _merger = new ExpressionMerger(ExpressionAvatar.Clips, transform);
+            _keys = ExpressionAvatar.Clips.Select(ExpressionKey.CreateFromClip).ToList();
+            _inputWeights = _keys.ToDictionary(x => x, x => 0f);
+            _actualWeights = _keys.ToDictionary(x => x, x => 0f);
+            _validator = ExpressionValidatorFactory.Create(ExpressionAvatar);
+        }
+
+        internal void Process()
+        {
+            
+        }
+
+        public IDictionary<ExpressionKey, float> GetWeights()
+        {
+            return _inputWeights;
+        }
+
+        public float GetWeight(ExpressionKey expressionKey)
+        {
+            if (_inputWeights.ContainsKey(expressionKey))
+            {
+                return _inputWeights[expressionKey];
+            }
+
+            return 0f;
+        }
+
+        public void SetWeights(IEnumerable<KeyValuePair<ExpressionKey, float>> weights)
+        {
+            foreach (var (expressionKey, weight) in weights)
+            {
+                if (_inputWeights.ContainsKey(expressionKey))
                 {
-                    m_accumulator = new DefaultExpressionAccumulator();
+                    _inputWeights[expressionKey] = weight;
                 }
-                return m_accumulator;
             }
+            Apply();
         }
 
-        public void OnStart(Transform transform)
+        public void SetWeight(ExpressionKey expressionKey, float weight)
         {
-            if (ExpressionAvatar != null)
+            if (_inputWeights.ContainsKey(expressionKey))
             {
-                if (m_merger == null)
-                {
-                    m_merger = new ExpressionMerger(ExpressionAvatar.Clips, transform);
-                }
-
-                Accumulator.OnStart(ExpressionAvatar);
+                _inputWeights[expressionKey] = weight;
             }
+            Apply();
         }
-
-        public void Apply()
+        
+        /// <summary>
+        /// 入力 Weight を基に、Validation を行い実際にモデルに適用される Weights を計算し、Merger を介して適用する。
+        /// </summary>
+        private void Apply()
         {
-            m_merger.SetValues(m_accumulator.FrameExpression());
+            _validator.Validate(_inputWeights, _actualWeights);
+            _merger.SetValues(_actualWeights);
         }
     }
 }

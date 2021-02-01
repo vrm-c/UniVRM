@@ -2,7 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 using System.Linq;
-using System;
+using VrmLib;
 
 namespace UniVRM10
 {
@@ -176,11 +176,13 @@ namespace UniVRM10
         void ExpressionGUI()
         {
             EditorGUILayout.Space();
-            EditorGUILayout.LabelField("IgnoreStatus", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("Override weights", EditorStyles.boldLabel);
             EditorGUI.BeginDisabledGroup(true);
-            EditorGUILayout.Toggle("Ignore Blink", m_target.Expression.Accumulator.IgnoreBlink);
-            EditorGUILayout.Toggle("Ignore Look At", m_target.Expression.Accumulator.IgnoreLookAt);
-            EditorGUILayout.Toggle("Ignore Mouth", m_target.Expression.Accumulator.IgnoreMouth);
+            {
+                EditorGUILayout.Slider("Blink override weight", m_target.Expression.OverrideBlinkWeight, 0f, 1f);
+                EditorGUILayout.Slider("LookAt override weight", m_target.Expression.OverrideLookAtWeight, 0f, 1f);
+                EditorGUILayout.Slider("Mouth override weight", m_target.Expression.OverrideMouthWeight, 0f, 1f);
+            }
             EditorGUI.EndDisabledGroup();
 
             if (!Application.isPlaying)
@@ -200,7 +202,7 @@ namespace UniVRM10
                 {
                     m_expressionKeyWeights[slider.Key] = slider.Value;
                 }
-                m_target.Expression.Accumulator.SetValues(m_expressionKeyWeights.Select(x => new KeyValuePair<ExpressionKey, float>(x.Key, x.Value)));
+                m_target.Expression.SetWeights(m_expressionKeyWeights);
             }
         }
 

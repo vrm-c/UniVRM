@@ -98,7 +98,7 @@ namespace UniVRM10
 
         private void Start()
         {
-            Expression.OnStart(transform);
+            Expression.Setup(transform);
 
             // get lookat origin
             var animator = GetComponent<Animator>();
@@ -118,7 +118,7 @@ namespace UniVRM10
         /// * Expression
         /// 
         /// </summary>
-        public void Apply()
+        public void Process()
         {
             // 
             // constraint
@@ -140,19 +140,19 @@ namespace UniVRM10
             //
             // gaze control
             //
-            LookAt.Process(Head, Expression.Accumulator.SetPresetValue);
+            LookAt.Process(Head, Expression.SetWeights);
 
             //
             // expression
             //
-            Expression.Apply();
+            Expression.Process();
         }
 
         private void Update()
         {
             if (Controller.UpdateType == VRM10ControllerImpl.UpdateTypes.Update)
             {
-                Apply();
+                Process();
             }
         }
 
@@ -160,7 +160,7 @@ namespace UniVRM10
         {
             if (Controller.UpdateType == VRM10ControllerImpl.UpdateTypes.LateUpdate)
             {
-                Apply();
+                Process();
             }
         }
 
