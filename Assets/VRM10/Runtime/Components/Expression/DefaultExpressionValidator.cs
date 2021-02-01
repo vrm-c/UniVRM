@@ -10,9 +10,11 @@ namespace UniVRM10
             
         }
         
-        public void Validate(IReadOnlyDictionary<ExpressionKey, float> inputWeights, IDictionary<ExpressionKey, float> actualWeights, out float blinkNullifyWeight,
-            out float lookAtNullifyWeight, out float mouthNullifyWeight)
+        public void Validate(IReadOnlyDictionary<ExpressionKey, float> inputWeights, IDictionary<ExpressionKey, float> actualWeights,
+            LookAtEyeDirection inputEyeDirection, out LookAtEyeDirection actualEyeDirection,
+            out float blinkOverrideRate, out float lookAtOverrideRate, out float mouthOverrideRate)
         {
+            // weights
             foreach (var (key, weight) in inputWeights)
             {
                 if (!actualWeights.ContainsKey(key))
@@ -22,10 +24,14 @@ namespace UniVRM10
 
                 actualWeights[key] = weight;
             }
+            
+            // eye direction
+            actualEyeDirection = inputEyeDirection;
 
-            blinkNullifyWeight = 0f;
-            lookAtNullifyWeight = 0f;
-            mouthNullifyWeight = 0f;
+            // override rate
+            blinkOverrideRate = 0f;
+            lookAtOverrideRate = 0f;
+            mouthOverrideRate = 0f;
         }
 
         public sealed class Factory : IExpressionValidatorFactory

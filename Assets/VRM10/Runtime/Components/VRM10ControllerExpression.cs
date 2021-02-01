@@ -19,20 +19,24 @@ namespace UniVRM10
         private Dictionary<ExpressionKey, float> _actualWeights = new Dictionary<ExpressionKey, float>();
         private ExpressionMerger _merger;
         private IExpressionValidator _validator;
+        private LookAtEyeDirection _inputEyeDirection;
+        private LookAtEyeDirection _actualEyeDirection;
+        private ILookAtEyeDirectionProvider _eyeDirectionProvider;
+        private ILookAtEyeDirectionApplicable _eyeDirectionApplicable;
 
         public IReadOnlyList<ExpressionKey> ExpressionKeys => _keys;
         public IReadOnlyDictionary<ExpressionKey, float> ActualWeights => _actualWeights;
-        
-        public float BlinkNullifyWeight { get; private set; }
-        public float LookAtNullifyWeight { get; private set; }
-        public float MouthNullifyWeight { get; private set; }
+        public LookAtEyeDirection ActualEyeDirection => _actualEyeDirection;
+        public float BlinkOverrideRate { get; private set; }
+        public float LookAtOverrideRate { get; private set; }
+        public float MouthOverrideRate { get; private set; }
         
         public void Dispose()
         {
             _merger?.RestoreMaterialInitialValues();
         }
 
-        internal void Setup(Transform transform)
+        internal void Setup(Transform transform, ILookAtEyeDirectionProvider eyeDirectionProvider, ILookAtEyeDirectionApplicable eyeDirectionApplicable)
         {
             if (ExpressionAvatar == null)
             {
@@ -45,11 +49,13 @@ namespace UniVRM10
             _inputWeights = _keys.ToDictionary(x => x, x => 0f);
             _actualWeights = _keys.ToDictionary(x => x, x => 0f);
             _validator = ExpressionValidatorFactory.Create(ExpressionAvatar);
+            _eyeDirectionProvider = eyeDirectionProvider;
+            _eyeDirectionApplicable = eyeDirectionApplicable;
         }
 
-        internal void Process()
+        public void Process()
         {
-            
+            Apply();
         }
 
         public IDictionary<ExpressionKey, float> GetWeights()
@@ -65,6 +71,11 @@ namespace UniVRM10
             }
 
             return 0f;
+        }
+
+        public LookAtEyeDirection GetEyeDirection()
+        {
+            return _inputEyeDirection;
         }
 
         public void SetWeights(IEnumerable<KeyValuePair<ExpressionKey, float>> weights)
@@ -87,17 +98,41 @@ namespace UniVRM10
             }
             Apply();
         }
-        
+
         /// <summary>
         /// 入力 Weight を基に、Validation を行い実際にモデルに適用される Weights を計算し、Merger を介して適用する。
+        /// この際、LookAt の情報を pull してそれも適用する。
         /// </summary>
         private void Apply()
         {
-            _validator.Validate(_inputWeights, _actualWeights, out var blink, out var lookAt, out var mouth);
+            // 1. Get eye direction from provider.
+            _inputEyeDirection = _eyeDirectionProvider.EyeDirection;
+            
+            // 2. Validate user input, and Output as actual weights.
+            _validator.Validate(_inputWeights, _actualWeights,
+                _inputEyeDirection, out _actualEyeDirection,
+                out var blink, out var lookAt, out var mouth);
+            
+            // 3. Set eye direction expression weights or any other side-effects (ex. eye bone).
+            if (_eyeDirectionApplicable != null)
+            {
+                foreach (var (expressionKey, weight) in _eyeDirectionApplicable.Apply(_actualEyeDirection))
+                {
+                    if (!_actualWeights.ContainsKey(expressionKey))
+                    {
+                        _actualWeights.Add(expressionKey, 0f);
+                    }
+
+                    _actualWeights[expressionKey] = weight;
+                }
+            }
+
+            // 4. Set actual weights to raw blendshapes.
             _merger.SetValues(_actualWeights);
-            BlinkNullifyWeight = blink;
-            LookAtNullifyWeight = lookAt;
-            MouthNullifyWeight = mouth;
+            
+            BlinkOverrideRate = blink;
+            LookAtOverrideRate = lookAt;
+            MouthOverrideRate = mouth;
         }
     }
 }

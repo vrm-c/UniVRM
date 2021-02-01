@@ -96,17 +96,14 @@ namespace UniVRM10
             }
         }
 
-        private void Start()
+        public void Setup()
         {
-            Expression.Setup(transform);
-
-            // get lookat origin
             var animator = GetComponent<Animator>();
-            if (animator != null)
-            {
-                m_head = animator.GetBoneTransform(HumanBodyBones.Head);
-                LookAt.Setup(animator, m_head);
-            }
+            if (animator == null) return;
+            
+            m_head = animator.GetBoneTransform(HumanBodyBones.Head);
+            LookAt.Setup(animator, m_head);
+            Expression.Setup(transform, LookAt, LookAt.EyeDirectionApplicable);
         }
 
         /// <summary>
@@ -140,7 +137,7 @@ namespace UniVRM10
             //
             // gaze control
             //
-            LookAt.Process(Head, Expression.SetWeights);
+            LookAt.Process();
 
             //
             // expression
@@ -148,6 +145,11 @@ namespace UniVRM10
             Expression.Process();
         }
 
+        private void OnEnable()
+        {
+            Setup();
+        }
+        
         private void Update()
         {
             if (Controller.UpdateType == VRM10ControllerImpl.UpdateTypes.Update)

@@ -176,12 +176,12 @@ namespace UniVRM10
         void ExpressionGUI()
         {
             EditorGUILayout.Space();
-            EditorGUILayout.LabelField("Override weights", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("Override rates", EditorStyles.boldLabel);
             EditorGUI.BeginDisabledGroup(true);
             {
-                EditorGUILayout.Slider("Blink nullify weight", m_target.Expression.BlinkNullifyWeight, 0f, 1f);
-                EditorGUILayout.Slider("LookAt nullify weight", m_target.Expression.LookAtNullifyWeight, 0f, 1f);
-                EditorGUILayout.Slider("Mouth nullify weight", m_target.Expression.MouthNullifyWeight, 0f, 1f);
+                EditorGUILayout.Slider("Blink override rate", m_target.Expression.BlinkOverrideRate, 0f, 1f);
+                EditorGUILayout.Slider("LookAt override rate", m_target.Expression.LookAtOverrideRate, 0f, 1f);
+                EditorGUILayout.Slider("Mouth override rate", m_target.Expression.MouthOverrideRate, 0f, 1f);
             }
             EditorGUI.EndDisabledGroup();
 

@@ -25,7 +25,7 @@ namespace UniVRM10
         /// <summary>
         /// 1フレームに一回呼び出す(VRM10Controllerの仕事)
         /// </summary>
-        internal void Process()
+        public void Process()
         {
             foreach (var spring in Springs)
             {
