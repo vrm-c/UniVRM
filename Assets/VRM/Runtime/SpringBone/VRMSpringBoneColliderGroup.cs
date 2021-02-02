@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using MeshUtility;
 using UnityEngine;
 
 
@@ -46,6 +48,18 @@ namespace VRM
             foreach (var y in Colliders)
             {
                 Gizmos.DrawWireSphere(y.Offset, y.Radius);
+            }
+        }
+
+        public IEnumerable<Validation> Validate()
+        {
+            if (transform.localScale != Vector3.one)
+            {
+                yield return Validation.Warning($"'{name}' GameObject has none 1 scaling");
+            }
+            else if (transform.lossyScale != Vector3.one)
+            {
+                yield return Validation.Warning($"'{name}' parent GameObject has none 1 scaling");
             }
         }
     }

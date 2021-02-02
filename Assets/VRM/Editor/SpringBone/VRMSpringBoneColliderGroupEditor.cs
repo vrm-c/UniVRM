@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using MeshUtility;
 using UnityEditor;
@@ -42,19 +41,10 @@ namespace VRM
             }
         }
 
-        public IEnumerable<MeshUtility.Validation> Validate()
-        {
-            if (m_target.transform.lossyScale != Vector3.one)
-            {
-                yield return Validation.Warning("this or parent GameObject has none 1 scaling");
-            }
-        }
-
-
         override public void OnInspectorGUI()
         {
             // show validate information
-            foreach (var v in Validate())
+            foreach (var v in m_target.Validate())
             {
                 v.DrawGUI();
             }
