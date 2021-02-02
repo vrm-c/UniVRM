@@ -105,11 +105,6 @@ namespace VRM
                 return avatar;
             });
 
-            // humanPoseTransfer
-            // var animator = normalized.GetComponent<Animator>();
-            // var humanPoseTransfer = normalized.AddComponent<HumanPoseTransfer>();
-            // humanPoseTransfer.Avatar = animator.avatar;
-
             CopyVRMComponents(go, normalized, bMap);
 
             return normalized;
