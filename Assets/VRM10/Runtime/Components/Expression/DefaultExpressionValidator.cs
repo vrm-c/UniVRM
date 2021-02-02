@@ -66,19 +66,17 @@ namespace UniVRM10
             // 3. Set procedural key's weights.
             foreach (var key in _keys)
             {
-                var weight = inputWeights[key];
-                
                 if (key.IsBlink)
                 {
-                    actualWeights[key] = weight * blinkMultiplier;
+                    actualWeights[key] = inputWeights[key] * blinkMultiplier;
                 }
                 else if (key.IsLookAt)
                 {
-                    actualWeights[key] = weight * lookAtMultiplier;
+                    actualWeights[key] = inputWeights[key] * lookAtMultiplier;
                 }
                 else if (key.IsMouth)
                 {
-                    actualWeights[key] = weight * mouthMultiplier;
+                    actualWeights[key] = inputWeights[key] * mouthMultiplier;
                 }
             }
             
