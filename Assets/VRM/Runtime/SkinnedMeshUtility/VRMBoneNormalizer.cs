@@ -130,6 +130,7 @@ namespace VRM
             }
 
             {
+                // springbone
                 var secondary = go.transform.Find("secondary");
                 if (secondary == null)
                 {
@@ -143,7 +144,7 @@ namespace VRM
                     dstSecondary.SetParent(root.transform, false);
                 }
 
-                // 揺れモノ
+                // VRMSpringBoneColliderGroup
                 foreach (var src in go.transform.GetComponentsInChildren<VRMSpringBoneColliderGroup>())
                 {
                     var dst = map[src.transform];
@@ -151,17 +152,18 @@ namespace VRM
                     dstColliderGroup.Colliders = src.Colliders.Select(y =>
                     {
                         var offset = dst.worldToLocalMatrix.MultiplyPoint(src.transform.localToWorldMatrix.MultiplyPoint(y.Offset));
+                        var ls = src.UniformedLossyScale;
                         return new VRMSpringBoneColliderGroup.SphereCollider
                         {
                             Offset = offset,
-                            Radius = y.Radius
+                            Radius = y.Radius * ls
                         };
                     }).ToArray();
                 }
 
+                // VRMSpringBone
                 foreach (var src in go.transform.GetComponentsInChildren<VRMSpringBone>())
                 {
-                    // Copy VRMSpringBone
                     var dst = dstSecondary.gameObject.AddComponent<VRMSpringBone>();
                     dst.m_comment = src.m_comment;
                     dst.m_stiffnessForce = src.m_stiffnessForce;

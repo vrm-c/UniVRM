@@ -31,15 +31,23 @@ namespace VRM
         [SerializeField]
         Color m_gizmoColor = Color.magenta;
 
+        public float UniformedLossyScale
+        {
+            get
+            {
+                return Mathf.Max(
+                    transform.lossyScale.x,
+                    transform.lossyScale.y,
+                    transform.lossyScale.z
+                );
+            }
+        }
+
         private void OnDrawGizmosSelected()
         {
             Gizmos.color = m_gizmoColor;
             Matrix4x4 mat = transform.localToWorldMatrix;
-            var ls = Mathf.Max(
-                transform.lossyScale.x,
-                transform.lossyScale.y,
-                transform.lossyScale.z
-            );
+            var ls = UniformedLossyScale;
             Gizmos.matrix = mat * Matrix4x4.Scale(new Vector3(
                 1.0f / transform.lossyScale.x * ls,
                 1.0f / transform.lossyScale.y * ls,
