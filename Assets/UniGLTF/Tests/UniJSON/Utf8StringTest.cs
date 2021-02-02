@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
+using System.IO;
 using System.Linq;
-
+using System.Text;
 
 namespace UniJSON
 {
@@ -162,6 +163,43 @@ namespace UniJSON
                 var utf8 = Utf8String.From(src, buffer);
                 Assert.AreEqual(3, utf8.ByteLength);
                 Assert.AreEqual(src, utf8.ToString());
+            }
+        }
+
+        [Test]
+        public void UnicodeEscapeTest()
+        {
+            // UTF-8 Encoding:	0xE8 0xA1 0xA8
+            // UTF-16 Encoding:	0x8868
+            // UTF-32 Encoding:	0x00008868                
+
+            {
+                var src = "\"\\u8868\\u60c5\"";
+                var json = src.ParseAsJson();
+                var decoded = json.GetString();
+                Assert.AreEqual("表情", decoded);
+            }
+
+            {
+                Assert.AreEqual("表"[0], (char)0x8868);
+            }
+
+            {
+                var src = Utf8String.From("表");
+                var dst = src.Bytes.ToArray();
+                Assert.AreEqual(0xE8, dst[0]);
+                Assert.AreEqual(0xA1, dst[1]);
+                Assert.AreEqual(0xA8, dst[2]);
+            }
+
+            {
+                var src = Utf8String.From("\\u8868");
+                var ms = new MemoryStream();
+                JsonString.Unescape(src, new StreamStore(ms));
+                var dst = ms.ToArray();
+                Assert.AreEqual(0xE8, dst[0]);
+                Assert.AreEqual(0xA1, dst[1]);
+                Assert.AreEqual(0xA8, dst[2]);
             }
         }
     }
