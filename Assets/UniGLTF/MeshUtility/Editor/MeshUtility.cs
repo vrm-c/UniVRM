@@ -9,7 +9,7 @@ namespace MeshUtility
     public class MeshUtility
     {
         public const string MENU_PARENT = "UniGLTF/Mesh Utility/";
-        private const string ASSET_SUFFIX = ".mesh.asset";
+        public const string ASSET_SUFFIX = ".mesh.asset";
         private static readonly Vector3 ZERO_MOVEMENT = Vector3.zero;
 
         public static Object GetPrefab(GameObject instance)
@@ -302,7 +302,7 @@ namespace MeshUtility
             AssetDatabase.CreateAsset(meshWithMaterials.Mesh, assetPath);
 
             // add component
-            var meshObject = new GameObject(go.name + ".integrated");
+            var meshObject = new GameObject(go.name + ".static_meshes_integrated");
             if (go.transform.parent != null)
             {
                 meshObject.transform.SetParent(go.transform.parent, false);
@@ -353,7 +353,7 @@ namespace MeshUtility
                 else if (skinnedMesh.sharedMesh.name == MeshIntegratorUtility.INTEGRATED_MESH_NAME ||
                          skinnedMesh.sharedMesh.name == MeshIntegratorUtility.INTEGRATED_MESH_BLENDSHAPE_NAME)
                 {
-                    // SaveMeshData(skinnedMesh.sharedMesh);
+                    SaveMeshData(skinnedMesh.sharedMesh);
                 }
             }
             foreach (var normalMesh in normalMeshes)

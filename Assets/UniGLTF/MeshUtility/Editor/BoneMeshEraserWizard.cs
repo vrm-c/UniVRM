@@ -37,6 +37,7 @@ namespace MeshUtility
 
     public class BoneMeshEraserWizard : ScriptableWizard
     {
+        public const string BONE_MESH_ERASER_NAME = "BoneMeshEraser";
         const string ASSET_SUFFIX = ".asset";
 
         [SerializeField]
@@ -132,7 +133,7 @@ namespace MeshUtility
                 .Select(x => Array.IndexOf(bones, x.Bone))
                 .ToArray();
 
-            var meshNode = new GameObject("BoneMeshEraser");
+            var meshNode = new GameObject(BONE_MESH_ERASER_NAME);
             meshNode.transform.SetParent(go.transform, false);
 
             var erased = meshNode.AddComponent<SkinnedMeshRenderer>();
