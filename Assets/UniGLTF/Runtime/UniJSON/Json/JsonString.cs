@@ -64,7 +64,7 @@ namespace UniJSON
             }
 
             var it = s.GetIterator();
-            while(it.MoveNext())
+            while (it.MoveNext())
             {
                 var l = it.CurrentByteLength;
                 if (l == 1)
@@ -174,6 +174,43 @@ namespace UniJSON
         #endregion
 
         #region Unquote
+        static byte CheckHex(int b)
+        {
+            switch ((char)b)
+            {
+                case '0': return 0;
+                case '1': return 1;
+                case '2': return 2;
+                case '3': return 3;
+                case '4': return 4;
+                case '5': return 5;
+                case '6': return 6;
+                case '7': return 7;
+                case '8': return 8;
+                case '9': return 9;
+                case 'A':
+                case 'a':
+                    return 10;
+                case 'B':
+                case 'b':
+                    return 11;
+                case 'C':
+                case 'c':
+                    return 12;
+                case 'D':
+                case 'd':
+                    return 13;
+                case 'E':
+                case 'e':
+                    return 14;
+                case 'F':
+                case 'f':
+                    return 15;
+            }
+
+            throw new ArgumentOutOfRangeException();
+        }
+
         public static int Unescape(string src, IStore w)
         {
             int writeCount = 0;
@@ -223,6 +260,17 @@ namespace UniJSON
                             Write('\t');
                             i += 2;
                             continue;
+                        case 'u':
+                            {
+                                var u0 = CheckHex(src[i + 2]);
+                                var u1 = CheckHex(src[i + 3]);
+                                var u2 = CheckHex(src[i + 4]);
+                                var u3 = CheckHex(src[i + 5]);
+                                var u = (u0 << 12) + (u1 << 8) + (u2 << 4) + u3;
+                                Write((char)u);
+                                i += 6;
+                            }
+                            continue;
                     }
                 }
 
@@ -250,7 +298,7 @@ namespace UniJSON
             };
 
             var it = s.GetIterator();
-            while(it.MoveNext())
+            while (it.MoveNext())
             {
                 var l = it.CurrentByteLength;
                 if (l == 1)
@@ -287,6 +335,33 @@ namespace UniJSON
                             case (Byte)'t':
                                 Write((Byte)'\t');
                                 it.MoveNext();
+                                continue;
+                            case (Byte)'u':
+                                {
+                                    // skip back slash
+                                    it.MoveNext();
+                                    // skip u
+                                    it.MoveNext();
+
+                                    var u0 = CheckHex((char)it.Current);
+                                    it.MoveNext();
+
+                                    var u1 = CheckHex((char)it.Current);
+                                    it.MoveNext();
+
+                                    var u2 = CheckHex((char)it.Current);
+                                    it.MoveNext();
+
+                                    var u3 = CheckHex((char)it.Current);
+
+                                    var u = (u0 << 12) + (u1 << 8) + (u2 << 4) + u3;
+                                    var utf8 = Utf8String.From(new string(new char[] { (char)u }));
+                                    // var utf8 = Utf8String.From((int)u);
+                                    foreach (var x in utf8.Bytes)
+                                    {
+                                        Write(x);
+                                    }
+                                }
                                 continue;
                         }
                     }
