@@ -238,28 +238,57 @@ namespace UniVRM10
                 data.OverrideBlink = UniGLTF.Extensions.VRMC_vrm.ExpressionOverrideType.block;
 
                 var json = Serialize(data, UniGLTF.Extensions.VRMC_vrm.GltfSerializer.Serialize_Expressions_ITEM);
-                Assert.AreEqual($"{{{q}preset{q}:{q}custom{q},{q}ignoreBlink{q}:true}}", json);
+                Assert.AreEqual($"{{{q}preset{q}:{q}custom{q},{q}overrideBlink{q}:{q}block{q},{q}overrideLookAt{q}:{q}none{q},{q}overrideMouth{q}:{q}none{q}}}", json);
             }
 
             {
                 var expression = new VrmLib.Expression(VrmLib.ExpressionPreset.Blink, "blink", true)
                 {
-                    OverrideBlink = VrmLib.ExpressionOverrideType.Block,
+                    OverrideBlink = VrmLib.ExpressionOverrideType.None,
                     OverrideLookAt = VrmLib.ExpressionOverrideType.Block,
-                    OverrideMouth = VrmLib.ExpressionOverrideType.Block,
+                    OverrideMouth = VrmLib.ExpressionOverrideType.Blend,
                 };
 
                 // export
                 var gltf = UniVRM10.ExpressionAdapter.ToGltf(expression, new List<VrmLib.Node>(), new List<VrmLib.Material>());
-                Assert.AreEqual(true, gltf.OverrideBlink);
-                Assert.AreEqual(true, gltf.OverrideLookAt);
-                Assert.AreEqual(true, gltf.OverrideMouth);
+                Assert.AreEqual(UniGLTF.Extensions.VRMC_vrm.ExpressionOverrideType.none, gltf.OverrideBlink);
+                Assert.AreEqual(UniGLTF.Extensions.VRMC_vrm.ExpressionOverrideType.block, gltf.OverrideLookAt);
+                Assert.AreEqual(UniGLTF.Extensions.VRMC_vrm.ExpressionOverrideType.blend, gltf.OverrideMouth);
 
                 // import
                 var imported = UniVRM10.ExpressionAdapter.FromGltf(gltf, new List<VrmLib.Node>(), new List<VrmLib.Material>());
-                Assert.AreEqual(true, imported.OverrideBlink);
-                Assert.AreEqual(true, imported.OverrideLookAt);
-                Assert.AreEqual(true, imported.OverrideMouth);
+                Assert.AreEqual(VrmLib.ExpressionOverrideType.None, imported.OverrideBlink);
+                Assert.AreEqual(VrmLib.ExpressionOverrideType.Block, imported.OverrideLookAt);
+                Assert.AreEqual(VrmLib.ExpressionOverrideType.Blend, imported.OverrideMouth);
+            }
+
+            {
+                // export
+                foreach (var preset in Enum.GetValues(typeof(VrmLib.ExpressionPreset)) as VrmLib.ExpressionPreset[])
+                {
+                    var expression = new VrmLib.Expression(preset, "", false);
+                    
+                    // expect no exception
+                    var gltf = ExpressionAdapter.ToGltf(
+                        expression, 
+                        new List<VrmLib.Node>(),
+                        new List<VrmLib.Material>());
+                }
+                
+                // import 
+                foreach (var preset in Enum.GetValues(typeof(UniGLTF.Extensions.VRMC_vrm.ExpressionPreset)) as UniGLTF.Extensions.VRMC_vrm.ExpressionPreset[])
+                {
+                    var gltf = new UniGLTF.Extensions.VRMC_vrm.Expression
+                    {
+                        Preset = preset,
+                    };
+
+                    // expect no exception
+                    ExpressionAdapter.FromGltf(
+                        gltf,
+                        new List<VrmLib.Node>(),
+                        new List<VrmLib.Material>());
+                }
             }
         }
     }
