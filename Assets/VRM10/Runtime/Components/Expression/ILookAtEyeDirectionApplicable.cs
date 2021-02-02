@@ -7,6 +7,7 @@ namespace UniVRM10
     /// </summary>
     internal interface ILookAtEyeDirectionApplicable
     {
-        IEnumerable<KeyValuePair<ExpressionKey, float>> Apply(LookAtEyeDirection eyeDirection);
+        void Apply(LookAtEyeDirection eyeDirection, Dictionary<ExpressionKey, float> actualWeights);
+        void Restore();
     }
 }

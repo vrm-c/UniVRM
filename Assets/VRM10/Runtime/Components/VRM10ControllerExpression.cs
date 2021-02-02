@@ -7,7 +7,7 @@ using VrmLib;
 namespace UniVRM10
 {
     [Serializable]
-    public sealed class VRM10ControllerExpression : IDisposable
+    public sealed class VRM10ControllerExpression
     {
         public static IExpressionValidatorFactory ExpressionValidatorFactory = new DefaultExpressionValidator.Factory();
         
@@ -31,11 +31,6 @@ namespace UniVRM10
         public float LookAtOverrideRate { get; private set; }
         public float MouthOverrideRate { get; private set; }
         
-        public void Dispose()
-        {
-            _merger?.RestoreMaterialInitialValues();
-        }
-
         internal void Setup(Transform transform, ILookAtEyeDirectionProvider eyeDirectionProvider, ILookAtEyeDirectionApplicable eyeDirectionApplicable)
         {
             if (ExpressionAvatar == null)
@@ -44,13 +39,30 @@ namespace UniVRM10
                 return;
             }
             
+            Restore();
+            
             _merger = new ExpressionMerger(ExpressionAvatar.Clips, transform);
             _keys = ExpressionAvatar.Clips.Select(ExpressionKey.CreateFromClip).ToList();
+            var oldInputWeights = _inputWeights;
             _inputWeights = _keys.ToDictionary(x => x, x => 0f);
+            foreach (var key in _keys)
+            {
+                // remain user input weights.
+                if (oldInputWeights.ContainsKey(key)) _inputWeights[key] = oldInputWeights[key];
+            }
             _actualWeights = _keys.ToDictionary(x => x, x => 0f);
             _validator = ExpressionValidatorFactory.Create(ExpressionAvatar);
             _eyeDirectionProvider = eyeDirectionProvider;
             _eyeDirectionApplicable = eyeDirectionApplicable;
+        }
+        
+        internal void Restore()
+        {
+            _merger?.RestoreMaterialInitialValues();
+            _merger = null;
+            
+            _eyeDirectionApplicable?.Restore();
+            _eyeDirectionApplicable = null;
         }
 
         public void Process()
@@ -106,7 +118,7 @@ namespace UniVRM10
         private void Apply()
         {
             // 1. Get eye direction from provider.
-            _inputEyeDirection = _eyeDirectionProvider.EyeDirection;
+            _inputEyeDirection = _eyeDirectionProvider?.EyeDirection ?? default;
             
             // 2. Validate user input, and Output as actual weights.
             _validator.Validate(_inputWeights, _actualWeights,
@@ -114,18 +126,7 @@ namespace UniVRM10
                 out var blink, out var lookAt, out var mouth);
             
             // 3. Set eye direction expression weights or any other side-effects (ex. eye bone).
-            if (_eyeDirectionApplicable != null)
-            {
-                foreach (var (expressionKey, weight) in _eyeDirectionApplicable.Apply(_actualEyeDirection))
-                {
-                    if (!_actualWeights.ContainsKey(expressionKey))
-                    {
-                        _actualWeights.Add(expressionKey, 0f);
-                    }
-
-                    _actualWeights[expressionKey] = weight;
-                }
-            }
+            _eyeDirectionApplicable?.Apply(_actualEyeDirection, _actualWeights);
 
             // 4. Set actual weights to raw blendshapes.
             _merger.SetValues(_actualWeights);

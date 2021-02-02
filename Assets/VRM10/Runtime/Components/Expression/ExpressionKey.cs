@@ -4,28 +4,34 @@ using System.Collections.Generic;
 namespace UniVRM10
 {
     [Serializable]
-    public struct ExpressionKey : IEquatable<ExpressionKey>, IComparable<ExpressionKey>
+    public readonly struct ExpressionKey : IEquatable<ExpressionKey>, IComparable<ExpressionKey>
     {
         /// <summary>
         /// Enum.ToString() のGC回避用キャッシュ
         /// </summary>
-        private static readonly Dictionary<VrmLib.ExpressionPreset, string> m_presetNameDictionary =
+        private static readonly Dictionary<VrmLib.ExpressionPreset, string> PresetNameDictionary =
             new Dictionary<VrmLib.ExpressionPreset, string>();
-
 
         /// <summary>
         ///  ExpressionPreset と同名の名前を持つ独自に追加した Expression を区別するための prefix
         /// </summary>
         private static readonly string UnknownPresetPrefix = "Unknown_";
 
-        private string m_customName;
-
-        public string Name
-        {
-            get { return m_customName.ToUpper(); }
-        }
-
-        public VrmLib.ExpressionPreset Preset;
+        /// <summary>
+        /// Preset of this ExpressionKey.
+        /// </summary>
+        public readonly VrmLib.ExpressionPreset Preset;
+        
+        /// <summary>
+        /// Custom Name of this ExpressionKey.
+        /// This works if Preset was Custom.
+        /// </summary>
+        public readonly string Name;
+        
+        /// <summary>
+        /// Id for comparison of ExpressionKey.
+        /// </summary>
+        private readonly string _id;
 
         public bool IsBlink
         {
@@ -77,61 +83,31 @@ namespace UniVRM10
 
         public bool IsProcedual => IsBlink || IsLookAt || IsMouth;
 
-        string m_id;
-
-        string ID
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(m_id))
-                {
-                    // Unknown was deleted
-                    if (Preset != VrmLib.ExpressionPreset.Custom)
-                    {
-                        if (m_presetNameDictionary.ContainsKey(Preset))
-                        {
-                            m_id = m_presetNameDictionary[Preset];
-                        }
-                        else
-                        {
-                            m_presetNameDictionary.Add(Preset, Preset.ToString());
-                            m_id = m_presetNameDictionary[Preset];
-                        }
-                    }
-                    else
-                    {
-                        m_id = UnknownPresetPrefix + m_customName;
-                    }
-                }
-
-                return m_id;
-            }
-        }
-
         public ExpressionKey(VrmLib.ExpressionPreset preset, string customName = null)
         {
             Preset = preset;
-            m_customName = customName;
 
             if (Preset != VrmLib.ExpressionPreset.Custom)
             {
-                if (m_presetNameDictionary.ContainsKey((Preset)))
+                if (PresetNameDictionary.ContainsKey((Preset)))
                 {
-                    m_id = m_presetNameDictionary[Preset];
+                    _id = Name = PresetNameDictionary[Preset];
                 }
                 else
                 {
-                    m_presetNameDictionary.Add(Preset, Preset.ToString());
-                    m_id = m_presetNameDictionary[Preset];
+                    PresetNameDictionary.Add(Preset, Preset.ToString());
+                    _id = Name = PresetNameDictionary[Preset];
                 }
             }
             else
             {
-                if (string.IsNullOrEmpty(m_customName))
+                if (string.IsNullOrEmpty(customName))
                 {
                     throw new ArgumentException("name is required for VrmLib.ExpressionPreset.Custom");
                 }
-                m_id = UnknownPresetPrefix + m_customName;
+
+                _id = $"{UnknownPresetPrefix}{customName}";
+                Name = customName;
             }
         }
 
@@ -157,12 +133,12 @@ namespace UniVRM10
 
         public override string ToString()
         {
-            return ID.Replace(UnknownPresetPrefix, "").ToUpper();
+            return _id.Replace(UnknownPresetPrefix, "");
         }
 
         public bool Equals(ExpressionKey other)
         {
-            return ID == other.ID;
+            return _id == other._id;
         }
 
         public override bool Equals(object obj)
@@ -179,7 +155,7 @@ namespace UniVRM10
 
         public override int GetHashCode()
         {
-            return ID.GetHashCode();
+            return _id.GetHashCode();
         }
 
         public bool Match(VRM10Expression clip)

@@ -25,7 +25,7 @@ namespace UniVRM10
             _verticalUp = verticalUp;
         }
 
-        public IEnumerable<KeyValuePair<ExpressionKey, float>> Apply(LookAtEyeDirection eyeDirection)
+        public void Apply(LookAtEyeDirection eyeDirection, Dictionary<ExpressionKey, float> actualWeights)
         {
             var yaw = eyeDirection.LeftYaw;
             var pitch = eyeDirection.LeftPitch;
@@ -33,28 +33,32 @@ namespace UniVRM10
             if (yaw < 0)
             {
                 // Left
-                yield return new KeyValuePair<ExpressionKey, float>(_lookRightKey, 0);
-                yield return new KeyValuePair<ExpressionKey, float>(_lookLeftKey, Mathf.Clamp(_horizontalOuter.Map(Mathf.Abs(yaw)), 0, 1.0f));
+                actualWeights[_lookRightKey] = 0;
+                actualWeights[_lookLeftKey] = Mathf.Clamp(_horizontalOuter.Map(Mathf.Abs(yaw)), 0, 1.0f);
             }
             else
             {
                 // Right
-                yield return new KeyValuePair<ExpressionKey, float>(_lookRightKey, Mathf.Clamp(_horizontalOuter.Map(Mathf.Abs(yaw)), 0, 1.0f));
-                yield return new KeyValuePair<ExpressionKey, float>(_lookLeftKey, 0);
+                actualWeights[_lookRightKey] = Mathf.Clamp(_horizontalOuter.Map(Mathf.Abs(yaw)), 0, 1.0f);
+                actualWeights[_lookLeftKey] = 0;
             }
 
             if (pitch < 0)
             {
                 // Down
-                yield return new KeyValuePair<ExpressionKey, float>(_lookUpKey, 0);
-                yield return new KeyValuePair<ExpressionKey, float>(_lookDownKey, Mathf.Clamp(_verticalDown.Map(Mathf.Abs(pitch)), 0, 1.0f));
+                actualWeights[_lookUpKey] = 0;
+                actualWeights[_lookDownKey] = Mathf.Clamp(_verticalDown.Map(Mathf.Abs(pitch)), 0, 1.0f);
             }
             else
             {
                 // Up
-                yield return new KeyValuePair<ExpressionKey, float>(_lookUpKey, Mathf.Clamp(_verticalUp.Map(Mathf.Abs(pitch)), 0, 1.0f));
-                yield return new KeyValuePair<ExpressionKey, float>(_lookDownKey, 0);
+                actualWeights[_lookUpKey] = Mathf.Clamp(_verticalUp.Map(Mathf.Abs(pitch)), 0, 1.0f);
+                actualWeights[_lookDownKey] = 0;
             }
+        }
+
+        public void Restore()
+        {
         }
     }
 }
