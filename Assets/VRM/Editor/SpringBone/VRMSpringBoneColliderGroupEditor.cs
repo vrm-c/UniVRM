@@ -1,4 +1,6 @@
-﻿using System.Linq;
+using System.Collections.Generic;
+using System.Linq;
+using MeshUtility;
 using UnityEditor;
 using UnityEngine;
 
@@ -39,15 +41,35 @@ namespace VRM
                 EditorUtility.SetDirty(m_target);
             }
         }
-        
+
+        public IEnumerable<MeshUtility.Validation> Validate()
+        {
+            if (m_target.transform.lossyScale != Vector3.one)
+            {
+                yield return Validation.Warning("this or parent GameObject has none 1 scaling");
+            }
+        }
+
+
+        override public void OnInspectorGUI()
+        {
+            // show validate information
+            foreach (var v in Validate())
+            {
+                v.DrawGUI();
+            }
+
+            base.OnInspectorGUI();
+        }
+
         [MenuItem("CONTEXT/VRMSpringBoneColliderGroup/X Mirror")]
         private static void InvertOffsetX(MenuCommand command)
         {
             var target = command.context as VRMSpringBoneColliderGroup;
             if (target == null) return;
-            
+
             Undo.RecordObject(target, "X Mirror");
-            
+
             foreach (var sphereCollider in target.Colliders)
             {
                 var offset = sphereCollider.Offset;
@@ -55,24 +77,24 @@ namespace VRM
                 sphereCollider.Offset = offset;
             }
         }
-        
+
         [MenuItem("CONTEXT/VRMSpringBoneColliderGroup/Sort Colliders by Radius")]
         private static void SortByRadius(MenuCommand command)
         {
             var target = command.context as VRMSpringBoneColliderGroup;
             if (target == null) return;
-            
+
             Undo.RecordObject(target, "Sort Colliders by Radius");
 
             target.Colliders = target.Colliders.OrderBy(x => -x.Radius).ToArray();
         }
-        
+
         [MenuItem("CONTEXT/VRMSpringBoneColliderGroup/Sort Colliders by Offset Y")]
         private static void SortByOffsetY(MenuCommand command)
         {
             var target = command.context as VRMSpringBoneColliderGroup;
             if (target == null) return;
-            
+
             Undo.RecordObject(target, "Sort Colliders by Offset Y");
 
             target.Colliders = target.Colliders.OrderBy(x => -x.Offset.y).ToArray();
