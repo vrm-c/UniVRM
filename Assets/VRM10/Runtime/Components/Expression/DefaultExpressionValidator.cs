@@ -42,15 +42,15 @@ namespace UniVRM10
                 // Override rate without targeting myself.
                 if (!key.IsBlink)
                 {
-                    blinkOverrideRate = Mathf.Max(blinkOverrideRate, GetOverrideRate(expression.OverrideBlink, weight));
+                    blinkOverrideRate += GetOverrideRate(expression.OverrideBlink, weight);
                 }
                 if (!key.IsLookAt)
                 {
-                    lookAtOverrideRate = Mathf.Max(lookAtOverrideRate, GetOverrideRate(expression.OverrideLookAt, weight));
+                    lookAtOverrideRate += GetOverrideRate(expression.OverrideLookAt, weight);
                 }
                 if (!key.IsMouth)
                 {
-                    mouthOverrideRate = Mathf.Max(mouthOverrideRate, GetOverrideRate(expression.OverrideMouth, weight));
+                    mouthOverrideRate += GetOverrideRate(expression.OverrideMouth, weight);
                 }
             }
             
