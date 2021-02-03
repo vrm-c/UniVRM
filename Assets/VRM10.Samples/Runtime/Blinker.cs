@@ -72,10 +72,10 @@ namespace UniVRM10.Samples
                         break;
                     }
 
-                    m_controller.Expression.Accumulator.SetPresetValue(VrmLib.ExpressionPreset.Blink, value);
+                    m_controller.Expression.SetWeight(ExpressionKey.CreateFromPreset(VrmLib.ExpressionPreset.Blink), value);
                     yield return null;
                 }
-                m_controller.Expression.Accumulator.SetPresetValue(VrmLib.ExpressionPreset.Blink, 1.0f);
+                m_controller.Expression.SetWeight(ExpressionKey.CreateFromPreset(VrmLib.ExpressionPreset.Blink), 1.0f);
 
                 // wait...
                 yield return new WaitForSeconds(ClosingTime);
@@ -91,10 +91,10 @@ namespace UniVRM10.Samples
                         break;
                     }
 
-                    m_controller.Expression.Accumulator.SetPresetValue(VrmLib.ExpressionPreset.Blink, value);
+                    m_controller.Expression.SetWeight(ExpressionKey.CreateFromPreset(VrmLib.ExpressionPreset.Blink), value);
                     yield return null;
                 }
-                m_controller.Expression.Accumulator.SetPresetValue(VrmLib.ExpressionPreset.Blink, 0);
+                m_controller.Expression.SetWeight(ExpressionKey.CreateFromPreset(VrmLib.ExpressionPreset.Blink), 0);
             }
         }
 

@@ -30,17 +30,17 @@ namespace UniVRM10.Samples
         {
             for (var value = 0.0f; value <= 1.0f; value += velocity)
             {
-                VRM.Expression.Accumulator.SetPresetValue(preset, value);
+                VRM.Expression.SetWeight(ExpressionKey.CreateFromPreset(preset), value);
                 yield return null;
             }
-            VRM.Expression.Accumulator.SetPresetValue(preset, 1.0f);
+            VRM.Expression.SetWeight(ExpressionKey.CreateFromPreset(preset), 1.0f);
             yield return new WaitForSeconds(wait);
             for (var value = 1.0f; value >= 0; value -= velocity)
             {
-                VRM.Expression.Accumulator.SetPresetValue(preset, value);
+                VRM.Expression.SetWeight(ExpressionKey.CreateFromPreset(preset), value);
                 yield return null;
             }
-            VRM.Expression.Accumulator.SetPresetValue(preset, 0);
+            VRM.Expression.SetWeight(ExpressionKey.CreateFromPreset(preset), 0);
             yield return new WaitForSeconds(wait * 2);
         }
 
