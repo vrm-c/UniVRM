@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace VrmLib
 {
@@ -34,6 +36,24 @@ namespace VrmLib
             }
 
             return (T)Enum.Parse(typeof(T), src.ToString(), ignoreCase);
+        }
+
+        class GenericCache<T> where T : Enum
+        {
+            public static T[] Values = GetValues().ToArray();
+
+            static IEnumerable<T> GetValues()
+            {
+                foreach (var t in Enum.GetValues(typeof(Texture)))
+                {
+                    yield return (T)t;
+                }
+            }
+        }
+
+        public static T[] Values<T>() where T : Enum
+        {
+            return GenericCache<T>.Values;
         }
     }
 }
