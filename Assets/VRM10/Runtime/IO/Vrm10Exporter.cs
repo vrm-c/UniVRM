@@ -284,6 +284,10 @@ namespace UniVRM10
 
         public void ExportVrmExpression(ExpressionManager src, List<MeshGroup> _, List<Material> materials, List<Node> nodes)
         {
+            if (Storage.gltfVrm.Expressions == null)
+            {
+                Storage.gltfVrm.Expressions = new List<UniGLTF.Extensions.VRMC_vrm.Expression>();
+            }
             foreach (var x in src.ExpressionList)
             {
                 Storage.gltfVrm.Expressions.Add(x.ToGltf(nodes, materials));

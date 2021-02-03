@@ -116,18 +116,25 @@ namespace UniVRM10
                 OverrideLookAt = EnumUtil.Cast<UniGLTF.Extensions.VRMC_vrm.ExpressionOverrideType>(x.OverrideLookAt),
                 OverrideMouth = EnumUtil.Cast<UniGLTF.Extensions.VRMC_vrm.ExpressionOverrideType>(x.OverrideMouth),
             };
+
+            g.MorphTargetBinds = new List<UniGLTF.Extensions.VRMC_vrm.MorphTargetBind>();
             foreach (var blendShapeBind in x.MorphTargetBinds)
             {
                 g.MorphTargetBinds.Add(blendShapeBind.ToGltf(nodes));
             }
+
+            g.MaterialColorBinds = new List<UniGLTF.Extensions.VRMC_vrm.MaterialColorBind>();
             foreach (var materialColorBind in x.MaterialColorBinds)
             {
                 g.MaterialColorBinds.Add(materialColorBind.ToGltf(materials));
             }
+
+            g.TextureTransformBinds = new List<UniGLTF.Extensions.VRMC_vrm.TextureTransformBind>();
             foreach (var materialUVBind in x.TextureTransformBinds)
             {
                 g.TextureTransformBinds.Add(materialUVBind.ToGltf(materials));
             }
+
             return g;
         }
 
