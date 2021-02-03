@@ -165,7 +165,7 @@ namespace UniGLTF
         {
             if (string.IsNullOrEmpty(generatorVersion)) return false;
             if (generatorVersion == "UniGLTF") return true;
-            if (!generatorVersion.StartsWith("UniGLTF-")) return false;
+            if (!generatorVersion.FastStartsWith("UniGLTF-")) return false;
 
             try
             {
@@ -475,7 +475,7 @@ namespace UniGLTF
                 var image = GLTF.GetImageFromTextureIndex(i);
                 if (imageBaseDir.IsUnderAssetsFolder
                     && !string.IsNullOrEmpty(image.uri)
-                    && !image.uri.StartsWith("data:")
+                    && !image.uri.FastStartsWith("data:")
                     )
                 {
                     ///

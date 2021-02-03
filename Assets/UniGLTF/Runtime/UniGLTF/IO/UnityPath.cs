@@ -40,7 +40,7 @@ namespace UniGLTF
                 {
                     return false;
                 }
-                return Value == "Assets" || Value.StartsWith("Assets/");
+                return Value == "Assets" || Value.FastStartsWith("Assets/");
             }
         }
 
@@ -53,7 +53,7 @@ namespace UniGLTF
                     return false;
                 }
 
-                return FullPath.StartsWith(Application.streamingAssetsPath + "/");
+                return FullPath.FastStartsWith(Application.streamingAssetsPath + "/");
             }
         }
 
@@ -276,7 +276,7 @@ namespace UniGLTF
                     Value = ""
                 };
             }
-            else if (fullPath.StartsWith(BaseFullPath + "/"))
+            else if (fullPath.FastStartsWith(BaseFullPath + "/"))
             {
                 return new UnityPath(fullPath.Substring(BaseFullPath.Length + 1));
             }
@@ -288,7 +288,7 @@ namespace UniGLTF
 
         public static bool IsUnderAssetFolder(string fullPath)
         {
-            return fullPath.Replace("\\", "/").StartsWith(AssetFullPath);
+            return fullPath.Replace("\\", "/").FastStartsWith(AssetFullPath);
         }
         #endregion
 

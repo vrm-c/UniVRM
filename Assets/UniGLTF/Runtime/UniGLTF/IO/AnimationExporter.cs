@@ -65,23 +65,23 @@ namespace UniGLTF
 
         public static glTFAnimationTarget.AnimationProperties PropertyToTarget(string property)
         {
-            if (property.StartsWith("m_LocalPosition."))
+            if (property.FastStartsWith("m_LocalPosition."))
             {
                 return glTFAnimationTarget.AnimationProperties.Translation;
             }
-            else if (property.StartsWith("localEulerAnglesRaw."))
+            else if (property.FastStartsWith("localEulerAnglesRaw."))
             {
                 return glTFAnimationTarget.AnimationProperties.EulerRotation;
             }
-            else if (property.StartsWith("m_LocalRotation."))
+            else if (property.FastStartsWith("m_LocalRotation."))
             {
                 return glTFAnimationTarget.AnimationProperties.Rotation;
             }
-            else if (property.StartsWith("m_LocalScale."))
+            else if (property.FastStartsWith("m_LocalScale."))
             {
                 return glTFAnimationTarget.AnimationProperties.Scale;
             }
-            else if (property.StartsWith("blendShape."))
+            else if (property.FastStartsWith("blendShape."))
             {
                 return glTFAnimationTarget.AnimationProperties.BlendShape;
             }
@@ -97,7 +97,7 @@ namespace UniGLTF
             {
                 return 0;
             }
-            if (property.EndsWith(".y") || property.StartsWith("blendShape."))
+            if (property.EndsWith(".y") || property.FastStartsWith("blendShape."))
             {
                 return 1;
             }
