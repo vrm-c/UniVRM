@@ -159,6 +159,18 @@ namespace UniVRM10
             {
                 case ExpressionPreset.Custom:
                     return UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.custom;
+                // 喜怒哀楽驚
+                case ExpressionPreset.Happy:
+                    return UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.happy;
+                case ExpressionPreset.Angry:
+                    return UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.angry;
+                case ExpressionPreset.Sad:
+                    return UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.sad;
+                case ExpressionPreset.Relaxed:
+                    return UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.relaxed;
+                case ExpressionPreset.Surprised:
+                    return UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.surprised;
+                // Procedural(LipSync)
                 case ExpressionPreset.Aa:
                     return UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.aa;
                 case ExpressionPreset.Ih:
@@ -169,16 +181,14 @@ namespace UniVRM10
                     return UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.ee;
                 case ExpressionPreset.Oh:
                     return UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.oh;
+                // Procedural(Blink)
                 case ExpressionPreset.Blink:
                     return UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.blink;
-                case ExpressionPreset.Joy:
-                    return UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.happy;
-                case ExpressionPreset.Angry:
-                    return UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.angry;
-                case ExpressionPreset.Sorrow:
-                    return UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.sad;
-                case ExpressionPreset.Fun:
-                    return UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.relaxed;
+                case ExpressionPreset.BlinkLeft:
+                    return UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.blinkLeft;
+                case ExpressionPreset.BlinkRight:
+                    return UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.blinkRight;
+                // Procedural(LookAt)
                 case ExpressionPreset.LookUp:
                     return UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.lookUp;
                 case ExpressionPreset.LookDown:
@@ -187,10 +197,7 @@ namespace UniVRM10
                     return UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.lookLeft;
                 case ExpressionPreset.LookRight:
                     return UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.lookRight;
-                case ExpressionPreset.BlinkLeft:
-                    return UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.blinkLeft;
-                case ExpressionPreset.BlinkRight:
-                    return UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.blinkRight;
+                // Other
                 case ExpressionPreset.Neutral:
                     return UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.neutral;
                 default:
@@ -209,13 +216,12 @@ namespace UniVRM10
                 case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.ee: return ExpressionPreset.Ee;
                 case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.oh: return ExpressionPreset.Oh;
                 case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.blink: return ExpressionPreset.Blink;
-                case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.happy: return ExpressionPreset.Joy;
+                case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.happy: return ExpressionPreset.Happy;
                 case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.angry: return ExpressionPreset.Angry;
-                case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.sad: return ExpressionPreset.Sorrow;
-                case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.relaxed: return ExpressionPreset.Fun;
+                case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.sad: return ExpressionPreset.Sad;
+                case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.relaxed: return ExpressionPreset.Relaxed;
                 case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.lookUp: return ExpressionPreset.LookUp;
-                case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.surprised:
-                    throw new NotImplementedException();
+                case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.surprised: return ExpressionPreset.Surprised;
                 case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.lookDown: return ExpressionPreset.LookDown;
                 case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.lookLeft: return ExpressionPreset.LookLeft;
                 case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.lookRight: return ExpressionPreset.LookRight;
