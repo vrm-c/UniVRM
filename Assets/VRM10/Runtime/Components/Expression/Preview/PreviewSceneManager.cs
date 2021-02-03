@@ -72,6 +72,7 @@ namespace UniVRM10
             }
         }
 
+#if UNITY_EDITOR
         private void Initialize(GameObject prefab)
         {
             //Debug.LogFormat("[PreviewSceneManager.Initialize] {0}", prefab);
@@ -129,6 +130,7 @@ namespace UniVRM10
                 }
             }
         }
+#endif
 
         PreviewMeshItem[] m_meshes;
         PreviewMeshItem[] m_blendShapeMeshes;
