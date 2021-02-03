@@ -63,6 +63,11 @@ namespace VRM
                             yield return Validation.Error($"{sb.name}.ColliderGroups[{i}] is out of hierarchy");
                             continue;
                         }
+
+                        foreach (var x in c.Validate())
+                        {
+                            yield return x;
+                        }
                     }
                 }
             }

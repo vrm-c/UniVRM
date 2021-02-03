@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using MeshUtility;
 using UnityEngine;
 
 
@@ -29,15 +31,23 @@ namespace VRM
         [SerializeField]
         Color m_gizmoColor = Color.magenta;
 
+        public float UniformedLossyScale
+        {
+            get
+            {
+                return Mathf.Max(
+                    transform.lossyScale.x,
+                    transform.lossyScale.y,
+                    transform.lossyScale.z
+                );
+            }
+        }
+
         private void OnDrawGizmosSelected()
         {
             Gizmos.color = m_gizmoColor;
             Matrix4x4 mat = transform.localToWorldMatrix;
-            var ls = Mathf.Max(
-                transform.lossyScale.x,
-                transform.lossyScale.y,
-                transform.lossyScale.z
-            );
+            var ls = UniformedLossyScale;
             Gizmos.matrix = mat * Matrix4x4.Scale(new Vector3(
                 1.0f / transform.lossyScale.x * ls,
                 1.0f / transform.lossyScale.y * ls,
@@ -46,6 +56,18 @@ namespace VRM
             foreach (var y in Colliders)
             {
                 Gizmos.DrawWireSphere(y.Offset, y.Radius);
+            }
+        }
+
+        public IEnumerable<Validation> Validate()
+        {
+            if (transform.localScale != Vector3.one)
+            {
+                yield return Validation.Warning($"'{name}' GameObject has none 1 scaling");
+            }
+            else if (transform.lossyScale != Vector3.one)
+            {
+                yield return Validation.Warning($"'{name}' parent GameObject has none 1 scaling");
             }
         }
     }
