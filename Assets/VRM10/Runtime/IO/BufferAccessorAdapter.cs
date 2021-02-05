@@ -125,6 +125,7 @@ namespace UniVRM10
                         componentType = (glComponentType)self.ComponentType,
                         type = self.AccessorType.ToString(),
                         count = self.Count,
+                        byteOffset = -1,
                         sparse = new glTFSparse
                         {
                             count = sparseValuesWithIndex.Count,
