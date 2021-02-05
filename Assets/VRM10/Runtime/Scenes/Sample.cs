@@ -37,7 +37,7 @@ public class Sample : MonoBehaviour
         var exporter = new UniVRM10.RuntimeVrmConverter();
         var model = exporter.ToModelFrom10(vrm0x.Root);
         // 右手系に変換
-        model.ConvertCoordinate(VrmLib.Coordinates.Gltf);
+        model.ConvertCoordinate(VrmLib.Coordinates.Vrm1);
         var exportedBytes = model.ToGlb();
 
         // Import 1.0

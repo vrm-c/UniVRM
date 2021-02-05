@@ -36,6 +36,11 @@ namespace VrmLib
             return new Vector2(src.X, 1.0f - src.Y);
         }
 
+        public static Vector3 ReverseX(this Vector3 src)
+        {
+            return new Vector3(-src.X, src.Y, src.Z);
+        }
+
         public static Vector3 ReverseZ(this Vector3 src)
         {
             return new Vector3(src.X, src.Y, -src.Z);
@@ -49,6 +54,12 @@ namespace VrmLib
             var y = q.Y / Math.Sqrt(1 - qw * qw);
             var z = q.Z / Math.Sqrt(1 - qw * qw);
             return (new Vector3((float)x, (float)y, (float)z), (float)angle);
+        }
+
+        public static Quaternion ReverseX(this Quaternion src)
+        {
+            var (axis, angle) = src.GetAxisAngle();
+            return Quaternion.CreateFromAxisAngle(axis.ReverseX(), -angle);
         }
 
         public static Quaternion ReverseZ(this Quaternion src)
@@ -131,5 +142,21 @@ namespace VrmLib
                 return FromTRS(t.ReverseZ(), r.ReverseZ(), s);
             }
         }
+
+        public static Matrix4x4 ReverseX(this Matrix4x4 m)
+        {
+            if (m.IsOnlyTranslation())
+            {
+                var ret = m;
+                ret.M43 = -ret.M43;
+                return ret;
+            }
+            else
+            {
+                var (t, r, s) = m.Decompose();
+                return FromTRS(t.ReverseX(), r.ReverseX(), s);
+            }
+        }
+
     }
 }

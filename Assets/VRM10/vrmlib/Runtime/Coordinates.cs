@@ -4,8 +4,11 @@ namespace VrmLib
     {
         Unknown,
 
-        /// OpenGL standard
+        /// VRM-0
         XYZ_RightUpBack_RH,
+
+        /// VRM-1
+        XYZ_RightUpForward_RH,
 
         /// D3D standard(Unity)
         XYZ_RightUpForward_LH,
@@ -27,13 +30,19 @@ namespace VrmLib
         public GeometryCoordinates Geometry;
         public TextureOrigin Texture;
 
-        public static Coordinates Gltf => new Coordinates
+        public static Coordinates Vrm0 => new Coordinates
         {
             Geometry = GeometryCoordinates.XYZ_RightUpBack_RH,
             Texture = TextureOrigin.LeftTop,
         };
+        public bool IsVrm0 => this.Equals(Vrm0);
 
-        public bool IsGltf => this.Equals(Gltf);
+        public static Coordinates Vrm1 => new Coordinates
+        {
+            Geometry = GeometryCoordinates.XYZ_RightUpForward_RH,
+            Texture = TextureOrigin.LeftTop,
+        };
+        public bool IsVrm1 => this.Equals(Vrm1);
 
         public static Coordinates Unity => new Coordinates
         {

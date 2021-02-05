@@ -39,7 +39,7 @@ namespace UniVRM10.Test
         byte[] ToVrm10(VrmLib.Model model)
         {
             // 右手系に変換
-            VrmLib.ModelExtensionsForCoordinates.ConvertCoordinate(model, VrmLib.Coordinates.Gltf);
+            VrmLib.ModelExtensionsForCoordinates.ConvertCoordinate(model, VrmLib.Coordinates.Vrm1);
             var bytes = UniVRM10.ModelExtensions.ToGlb(model);
             return bytes;
         }
