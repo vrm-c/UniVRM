@@ -139,7 +139,7 @@ namespace UniVRM10
                 }
             }
 
-            if (Migration.GetLicenseUrl(vrm0) != vrm1.OtherLicenseUrl) throw new MigrationException("meta.otherLicenseUrl", vrm1.OtherLicenseUrl);
+            if (MigrationVrmMeta.GetLicenseUrl(vrm0) != vrm1.OtherLicenseUrl) throw new MigrationException("meta.otherLicenseUrl", vrm1.OtherLicenseUrl);
 
             switch (vrm0["licenseName"].GetString())
             {
