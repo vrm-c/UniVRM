@@ -35,7 +35,7 @@ namespace UniVRM10.Test
             var bytes = File.ReadAllBytes(fi.FullName);
 
             // migrate to 1.0
-            bytes = Migration.Migrate(bytes);
+            bytes = MigrationVrm.Migrate(bytes);
 
             return ToUnity(bytes);
         }

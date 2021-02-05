@@ -24,7 +24,7 @@ namespace UniVRM10
             var path = UniGLTF.UnityPath.FromAsset(Selection.activeObject);
             var isVrm = path.Extension.ToLower() == ".vrm";
 
-            var vrm1Bytes = Migration.Migrate(File.ReadAllBytes(path.FullPath));
+            var vrm1Bytes = MigrationVrm.Migrate(File.ReadAllBytes(path.FullPath));
 
             var dst = EditorUtility.SaveFilePanel(
                 "Save vrm1 file",

@@ -10,7 +10,7 @@ namespace UniVRM10.Test
     {
         VrmLib.Model ReadModel(string path)
         {
-            var bytes = Migration.Migrate(File.ReadAllBytes(path));
+            var bytes = MigrationVrm.Migrate(File.ReadAllBytes(path));
 
             if (!UniGLTF.Glb.TryParse(bytes, out UniGLTF.Glb glb, out Exception ex))
             {
