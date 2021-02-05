@@ -211,7 +211,7 @@ namespace UniVRM10
                             }
                         }
                         break;
-                    
+
                     case "sexualUssageName": // Typo "Ussage" is VRM 0.x spec.
                         {
                             var sexualUsageName = kv.Value.GetString();
@@ -228,7 +228,7 @@ namespace UniVRM10
                             }
                         }
                         break;
-                    
+
                     case "commercialUssageName": // Typo "Ussage" is VRM 0.x spec.
                         {
                             var commercialUsageName = kv.Value.GetString();
@@ -274,7 +274,7 @@ namespace UniVRM10
             return meta;
         }
 
-        static string GetLicenseUrl(JsonNode vrm0)
+        public static string GetLicenseUrl(JsonNode vrm0)
         {
             string l0 = default;
             string l1 = default;
@@ -627,7 +627,7 @@ namespace UniVRM10
                     // vrm
                     var vrm1 = new UniGLTF.Extensions.VRMC_vrm.VRMC_vrm();
                     vrm1.Meta = MigrateMeta(vrm0["meta"]);
-                    vrm1.Humanoid = MigrateHumanoid(vrm0["humanoid"]);
+                    vrm1.Humanoid = MigrationVrmHumanoid.Migrate(vrm0["humanoid"]);
                     vrm1.Expressions = MigrateExpression(gltf, vrm0["blendShapeMaster"]).ToList();
 
                     var f = new JsonFormatter();
