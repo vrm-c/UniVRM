@@ -16,6 +16,9 @@ namespace UniVRM10
             var json = glb.Json.Bytes.ParseAsJson();
             var gltf = UniGLTF.GltfDeserializer.Deserialize(json);
 
+            // https://github.com/vrm-c/vrm-specification/issues/205
+            SceneRotator.Rotate(gltf);
+
             var extensions = new UniGLTF.glTFExtensionExport();
             {
                 var vrm0 = json["extensions"]["VRM"];
@@ -26,6 +29,8 @@ namespace UniVRM10
                     vrm1.Meta = MigrationVrmMeta.Migrate(vrm0["meta"]);
                     vrm1.Humanoid = MigrationVrmHumanoid.Migrate(vrm0["humanoid"]);
                     vrm1.Expressions = MigrationVrmExpression.Migrate(gltf, vrm0["blendShapeMaster"]).ToList();
+                    // lookat
+                    // firstperson
 
                     var f = new JsonFormatter();
                     UniGLTF.Extensions.VRMC_vrm.GltfSerializer.Serialize(f, vrm1);
