@@ -16,8 +16,14 @@ namespace UniVRM10
             var json = glb.Json.Bytes.ParseAsJson();
             var gltf = UniGLTF.GltfDeserializer.Deserialize(json);
 
+            // attach glb bin to buffer
+            foreach (var buffer in gltf.buffers)
+            {
+                buffer.OpenStorage(new UniGLTF.SimpleStorage(glb.Binary.Bytes));
+            }
+
             // https://github.com/vrm-c/vrm-specification/issues/205
-            SceneRotator.Rotate(gltf);
+            RotateY180.Rotate(gltf);
 
             var extensions = new UniGLTF.glTFExtensionExport();
             {
