@@ -4,15 +4,16 @@ using UniGLTF;
 using UniJSON;
 using UnityEngine;
 using MeshUtility;
+using System;
 
 namespace VRM.Samples
 {
     public static class JsonExtensions
     {
-        public static void SetValue<T>(this JsonNode node, string key, T value)
+        public static void SetValue<T>(this JsonNode node, string key, T value, Action<JsonFormatter, T> seri)
         {
             var f = new JsonFormatter();
-            f.Serialize(value);
+            seri(f, value);
             var p = Utf8String.From(key);
             var bytes = f.GetStoreBytes();
             node.SetValue(p, bytes);
@@ -50,13 +51,13 @@ namespace VRM.Samples
             using (new ActionDisposer(() => { GameObject.DestroyImmediate(context.Root); }))
             {
                 var importedJson = JsonParser.Parse(context.Json);
-                importedJson.SetValue("/extensions/VRM/exporterVersion", VRMVersion.VRM_VERSION);
-                importedJson.SetValue("/asset/generator", UniGLTF.UniGLTFVersion.UNIGLTF_VERSION);
-                importedJson.SetValue("/scene", 0);
-                importedJson.SetValue("/materials/*/doubleSided", false);
+                importedJson.SetValue("/extensions/VRM/exporterVersion", VRMVersion.VRM_VERSION, (f, x) => f.Value(x));
+                importedJson.SetValue("/asset/generator", UniGLTF.UniGLTFVersion.UNIGLTF_VERSION, (f, x) => f.Value(x));
+                importedJson.SetValue("/scene", 0, (f, x) => f.Value(x));
+                importedJson.SetValue("/materials/*/doubleSided", false, (f, x) => f.Value(x));
                 //importJson.SetValue("/materials/*/pbrMetallicRoughness/roughnessFactor", 0);
                 //importJson.SetValue("/materials/*/pbrMetallicRoughness/baseColorFactor", new float[] { 1, 1, 1, 1 });
-                importedJson.SetValue("/accessors/*/normalized", false);
+                importedJson.SetValue("/accessors/*/normalized", false, (f, x) => f.Value(x));
                 importedJson.RemoveValue(Utf8String.From("/nodes/*/extras"));
                 /*
                 importJson.SetValue("/bufferViews/12/byteStride", 4);

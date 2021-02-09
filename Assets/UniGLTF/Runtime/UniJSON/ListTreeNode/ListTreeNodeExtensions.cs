@@ -57,15 +57,6 @@ namespace UniJSON
         public static ulong GetUInt64(this JsonNode self) { return self.Value.GetUInt64(); }
         public static float GetSingle(this JsonNode self) { return self.Value.GetSingle(); }
         public static double GetDouble(this JsonNode self) { return self.Value.GetDouble(); }
-
-        /// <summary>
-        /// for UnitTest. Use explicit GetT() or Deserialize(ref T)
-        /// </summary>
-        /// <returns></returns>
-        public static object GetValue(this JsonNode self)
-        {
-            return self.Value.GetValue<object>();
-        }
         #endregion
 
         public static IEnumerable<JsonNode> Traverse(this JsonNode self)
