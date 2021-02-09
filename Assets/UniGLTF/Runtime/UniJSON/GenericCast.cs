@@ -13,7 +13,7 @@ namespace UniJSON
             }
             else
             {
-                throw new MsgPackTypeException("can not null");
+                throw new Exception("can not null");
             }
         }
 
