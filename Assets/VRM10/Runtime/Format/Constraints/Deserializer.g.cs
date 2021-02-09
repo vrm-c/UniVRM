@@ -28,7 +28,7 @@ public static bool TryGet(UniGLTF.glTFExtension src, out VRMC_constraints extens
 }
 
 
-public static VRMC_constraints Deserialize(ListTreeNode<JsonValue> parsed)
+public static VRMC_constraints Deserialize(JsonNode parsed)
 {
     var value = new VRMC_constraints();
 
@@ -65,7 +65,7 @@ public static VRMC_constraints Deserialize(ListTreeNode<JsonValue> parsed)
     return value;
 }
 
-public static PositionConstraint Deserialize_Position(ListTreeNode<JsonValue> parsed)
+public static PositionConstraint Deserialize_Position(JsonNode parsed)
 {
     var value = new PositionConstraint();
 
@@ -117,7 +117,7 @@ public static PositionConstraint Deserialize_Position(ListTreeNode<JsonValue> pa
     return value;
 }
 
-public static bool[] Deserialize_FreezeAxes(ListTreeNode<JsonValue> parsed)
+public static bool[] Deserialize_FreezeAxes(JsonNode parsed)
 {
     var value = new bool[parsed.GetArrayCount()];
     int i=0;
@@ -128,7 +128,7 @@ public static bool[] Deserialize_FreezeAxes(ListTreeNode<JsonValue> parsed)
 	return value;
 } 
 
-public static RotationConstraint Deserialize_Rotation(ListTreeNode<JsonValue> parsed)
+public static RotationConstraint Deserialize_Rotation(JsonNode parsed)
 {
     var value = new RotationConstraint();
 
@@ -180,7 +180,7 @@ public static RotationConstraint Deserialize_Rotation(ListTreeNode<JsonValue> pa
     return value;
 }
 
-public static AimConstraint Deserialize_Aim(ListTreeNode<JsonValue> parsed)
+public static AimConstraint Deserialize_Aim(JsonNode parsed)
 {
     var value = new AimConstraint();
 
@@ -242,7 +242,7 @@ public static AimConstraint Deserialize_Aim(ListTreeNode<JsonValue> parsed)
     return value;
 }
 
-public static float[] Deserialize_AimVector(ListTreeNode<JsonValue> parsed)
+public static float[] Deserialize_AimVector(JsonNode parsed)
 {
     var value = new float[parsed.GetArrayCount()];
     int i=0;
@@ -253,7 +253,7 @@ public static float[] Deserialize_AimVector(ListTreeNode<JsonValue> parsed)
 	return value;
 } 
 
-public static float[] Deserialize_UpVector(ListTreeNode<JsonValue> parsed)
+public static float[] Deserialize_UpVector(JsonNode parsed)
 {
     var value = new float[parsed.GetArrayCount()];
     int i=0;

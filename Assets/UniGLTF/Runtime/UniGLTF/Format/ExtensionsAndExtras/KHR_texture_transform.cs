@@ -24,7 +24,7 @@ namespace UniGLTF
         [ItemJsonSchema(Minimum = 0)]
         public int texCoord;
 
-        static IEnumerable<float> DeserializeFloat2(ListTreeNode<JsonValue> json)
+        static IEnumerable<float> DeserializeFloat2(JsonNode json)
         {
             if (json.Value.ValueType == ValueNodeType.Array)
             {
@@ -35,7 +35,7 @@ namespace UniGLTF
             }
         }
 
-        static glTF_KHR_texture_transform Deserialize(ListTreeNode<JsonValue> json)
+        static glTF_KHR_texture_transform Deserialize(JsonNode json)
         {
             var t = new glTF_KHR_texture_transform();
 

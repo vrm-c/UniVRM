@@ -7,40 +7,36 @@ namespace UniJSON
 {
     public static class ListTreeNodeJsonPointerExtensions
     {
-        public static void SetValue<T>(this ListTreeNode<T> self, 
+        public static void SetValue(this JsonNode self,
             Utf8String jsonPointer, ArraySegment<Byte> bytes)
-            where T: IListTreeItem, IValue<T>
         {
             foreach (var node in self.GetNodes(jsonPointer))
             {
-                node.SetValue(default(T).New(
+                node.SetValue(default(JsonValue).New(
                     bytes,
                     ValueNodeType.Boolean,
                     node.Value.ParentIndex));
             }
         }
 
-        public static void RemoveValue<T>(this ListTreeNode<T> self, Utf8String jsonPointer)
-            where T : IListTreeItem, IValue<T>
+        public static void RemoveValue(this JsonNode self, Utf8String jsonPointer)
         {
             foreach (var node in self.GetNodes(new JsonPointer(jsonPointer)))
             {
                 if (node.Parent.IsMap())
                 {
-                    node.Prev.SetValue(default(T)); // remove key
+                    node.Prev.SetValue(default(JsonValue)); // remove key
                 }
-                node.SetValue(default(T)); // remove
+                node.SetValue(default(JsonValue)); // remove
             }
         }
 
-        public static JsonPointer Pointer<T>(this ListTreeNode<T> self)
-            where T: IListTreeItem, IValue<T>
+        public static JsonPointer Pointer(this JsonNode self)
         {
             return JsonPointer.Create(self);
         }
 
-        public static IEnumerable<ListTreeNode<T>> Path<T>(this ListTreeNode<T> self)
-            where T : IListTreeItem, IValue<T>
+        public static IEnumerable<JsonNode> Path(this JsonNode self)
         {
             if (self.HasParent)
             {
@@ -52,9 +48,8 @@ namespace UniJSON
             yield return self;
         }
 
-        public static IEnumerable<ListTreeNode<T>> GetNodes<T>(this ListTreeNode<T> self, 
+        public static IEnumerable<JsonNode> GetNodes(this JsonNode self,
             JsonPointer jsonPointer)
-            where T : IListTreeItem, IValue<T>
         {
             if (jsonPointer.Path.Count == 0)
             {
@@ -102,7 +97,7 @@ namespace UniJSON
                 }
                 else
                 {
-                    ListTreeNode<T> child;
+                    JsonNode child;
                     try
                     {
                         child = self.ObjectItems().First(x => x.Key.GetUtf8String() == jsonPointer[0]).Value;
@@ -128,9 +123,8 @@ namespace UniJSON
             }
         }
 
-        public static IEnumerable<ListTreeNode<T>> GetNodes<T>(this ListTreeNode<T> self, 
-            Utf8String jsonPointer) 
-            where T : IListTreeItem, IValue<T>
+        public static IEnumerable<JsonNode> GetNodes(this JsonNode self,
+            Utf8String jsonPointer)
         {
             return self.GetNodes(new JsonPointer(jsonPointer));
         }

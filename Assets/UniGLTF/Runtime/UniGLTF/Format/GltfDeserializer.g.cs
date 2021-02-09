@@ -9,7 +9,7 @@ public static class GltfDeserializer
 {
 
 
-public static glTF Deserialize(ListTreeNode<JsonValue> parsed)
+public static glTF Deserialize(JsonNode parsed)
 {
     var value = new glTF();
 
@@ -116,7 +116,7 @@ public static glTF Deserialize(ListTreeNode<JsonValue> parsed)
     return value;
 }
 
-public static glTFAssets Deserialize_gltf_asset(ListTreeNode<JsonValue> parsed)
+public static glTFAssets Deserialize_gltf_asset(JsonNode parsed)
 {
     var value = new glTFAssets();
 
@@ -158,7 +158,7 @@ public static glTFAssets Deserialize_gltf_asset(ListTreeNode<JsonValue> parsed)
     return value;
 }
 
-public static List<UniGLTF.glTFBuffer> Deserialize_gltf_buffers(ListTreeNode<JsonValue> parsed)
+public static List<UniGLTF.glTFBuffer> Deserialize_gltf_buffers(JsonNode parsed)
 {
     var value = new List<glTFBuffer>();
     foreach(var x in parsed.ArrayItems())
@@ -167,7 +167,7 @@ public static List<UniGLTF.glTFBuffer> Deserialize_gltf_buffers(ListTreeNode<Jso
     }
 	return value;
 }
-public static glTFBuffer Deserialize_gltf_buffers_LIST(ListTreeNode<JsonValue> parsed)
+public static glTFBuffer Deserialize_gltf_buffers_LIST(JsonNode parsed)
 {
     var value = new glTFBuffer();
 
@@ -204,7 +204,7 @@ public static glTFBuffer Deserialize_gltf_buffers_LIST(ListTreeNode<JsonValue> p
     return value;
 }
 
-public static List<UniGLTF.glTFBufferView> Deserialize_gltf_bufferViews(ListTreeNode<JsonValue> parsed)
+public static List<UniGLTF.glTFBufferView> Deserialize_gltf_bufferViews(JsonNode parsed)
 {
     var value = new List<glTFBufferView>();
     foreach(var x in parsed.ArrayItems())
@@ -213,7 +213,7 @@ public static List<UniGLTF.glTFBufferView> Deserialize_gltf_bufferViews(ListTree
     }
 	return value;
 }
-public static glTFBufferView Deserialize_gltf_bufferViews_LIST(ListTreeNode<JsonValue> parsed)
+public static glTFBufferView Deserialize_gltf_bufferViews_LIST(JsonNode parsed)
 {
     var value = new glTFBufferView();
 
@@ -265,7 +265,7 @@ public static glTFBufferView Deserialize_gltf_bufferViews_LIST(ListTreeNode<Json
     return value;
 }
 
-public static List<UniGLTF.glTFAccessor> Deserialize_gltf_accessors(ListTreeNode<JsonValue> parsed)
+public static List<UniGLTF.glTFAccessor> Deserialize_gltf_accessors(JsonNode parsed)
 {
     var value = new List<glTFAccessor>();
     foreach(var x in parsed.ArrayItems())
@@ -274,7 +274,7 @@ public static List<UniGLTF.glTFAccessor> Deserialize_gltf_accessors(ListTreeNode
     }
 	return value;
 }
-public static glTFAccessor Deserialize_gltf_accessors_LIST(ListTreeNode<JsonValue> parsed)
+public static glTFAccessor Deserialize_gltf_accessors_LIST(JsonNode parsed)
 {
     var value = new glTFAccessor();
 
@@ -346,7 +346,7 @@ public static glTFAccessor Deserialize_gltf_accessors_LIST(ListTreeNode<JsonValu
     return value;
 }
 
-public static Single[] Deserialize_gltf_accessors__max(ListTreeNode<JsonValue> parsed)
+public static Single[] Deserialize_gltf_accessors__max(JsonNode parsed)
 {
     var value = new Single[parsed.GetArrayCount()];
     int i=0;
@@ -357,7 +357,7 @@ public static Single[] Deserialize_gltf_accessors__max(ListTreeNode<JsonValue> p
 	return value;
 } 
 
-public static Single[] Deserialize_gltf_accessors__min(ListTreeNode<JsonValue> parsed)
+public static Single[] Deserialize_gltf_accessors__min(JsonNode parsed)
 {
     var value = new Single[parsed.GetArrayCount()];
     int i=0;
@@ -368,7 +368,7 @@ public static Single[] Deserialize_gltf_accessors__min(ListTreeNode<JsonValue> p
 	return value;
 } 
 
-public static glTFSparse Deserialize_gltf_accessors__sparse(ListTreeNode<JsonValue> parsed)
+public static glTFSparse Deserialize_gltf_accessors__sparse(JsonNode parsed)
 {
     var value = new glTFSparse();
 
@@ -405,7 +405,7 @@ public static glTFSparse Deserialize_gltf_accessors__sparse(ListTreeNode<JsonVal
     return value;
 }
 
-public static glTFSparseIndices Deserialize_gltf_accessors__sparse_indices(ListTreeNode<JsonValue> parsed)
+public static glTFSparseIndices Deserialize_gltf_accessors__sparse_indices(JsonNode parsed)
 {
     var value = new glTFSparseIndices();
 
@@ -442,7 +442,7 @@ public static glTFSparseIndices Deserialize_gltf_accessors__sparse_indices(ListT
     return value;
 }
 
-public static glTFSparseValues Deserialize_gltf_accessors__sparse_values(ListTreeNode<JsonValue> parsed)
+public static glTFSparseValues Deserialize_gltf_accessors__sparse_values(JsonNode parsed)
 {
     var value = new glTFSparseValues();
 
@@ -474,7 +474,7 @@ public static glTFSparseValues Deserialize_gltf_accessors__sparse_values(ListTre
     return value;
 }
 
-public static List<UniGLTF.glTFTexture> Deserialize_gltf_textures(ListTreeNode<JsonValue> parsed)
+public static List<UniGLTF.glTFTexture> Deserialize_gltf_textures(JsonNode parsed)
 {
     var value = new List<glTFTexture>();
     foreach(var x in parsed.ArrayItems())
@@ -483,7 +483,7 @@ public static List<UniGLTF.glTFTexture> Deserialize_gltf_textures(ListTreeNode<J
     }
 	return value;
 }
-public static glTFTexture Deserialize_gltf_textures_LIST(ListTreeNode<JsonValue> parsed)
+public static glTFTexture Deserialize_gltf_textures_LIST(JsonNode parsed)
 {
     var value = new glTFTexture();
 
@@ -520,7 +520,7 @@ public static glTFTexture Deserialize_gltf_textures_LIST(ListTreeNode<JsonValue>
     return value;
 }
 
-public static List<UniGLTF.glTFTextureSampler> Deserialize_gltf_samplers(ListTreeNode<JsonValue> parsed)
+public static List<UniGLTF.glTFTextureSampler> Deserialize_gltf_samplers(JsonNode parsed)
 {
     var value = new List<glTFTextureSampler>();
     foreach(var x in parsed.ArrayItems())
@@ -529,7 +529,7 @@ public static List<UniGLTF.glTFTextureSampler> Deserialize_gltf_samplers(ListTre
     }
 	return value;
 }
-public static glTFTextureSampler Deserialize_gltf_samplers_LIST(ListTreeNode<JsonValue> parsed)
+public static glTFTextureSampler Deserialize_gltf_samplers_LIST(JsonNode parsed)
 {
     var value = new glTFTextureSampler();
 
@@ -576,7 +576,7 @@ public static glTFTextureSampler Deserialize_gltf_samplers_LIST(ListTreeNode<Jso
     return value;
 }
 
-public static List<UniGLTF.glTFImage> Deserialize_gltf_images(ListTreeNode<JsonValue> parsed)
+public static List<UniGLTF.glTFImage> Deserialize_gltf_images(JsonNode parsed)
 {
     var value = new List<glTFImage>();
     foreach(var x in parsed.ArrayItems())
@@ -585,7 +585,7 @@ public static List<UniGLTF.glTFImage> Deserialize_gltf_images(ListTreeNode<JsonV
     }
 	return value;
 }
-public static glTFImage Deserialize_gltf_images_LIST(ListTreeNode<JsonValue> parsed)
+public static glTFImage Deserialize_gltf_images_LIST(JsonNode parsed)
 {
     var value = new glTFImage();
 
@@ -627,7 +627,7 @@ public static glTFImage Deserialize_gltf_images_LIST(ListTreeNode<JsonValue> par
     return value;
 }
 
-public static List<UniGLTF.glTFMaterial> Deserialize_gltf_materials(ListTreeNode<JsonValue> parsed)
+public static List<UniGLTF.glTFMaterial> Deserialize_gltf_materials(JsonNode parsed)
 {
     var value = new List<glTFMaterial>();
     foreach(var x in parsed.ArrayItems())
@@ -636,7 +636,7 @@ public static List<UniGLTF.glTFMaterial> Deserialize_gltf_materials(ListTreeNode
     }
 	return value;
 }
-public static glTFMaterial Deserialize_gltf_materials_LIST(ListTreeNode<JsonValue> parsed)
+public static glTFMaterial Deserialize_gltf_materials_LIST(JsonNode parsed)
 {
     var value = new glTFMaterial();
 
@@ -703,7 +703,7 @@ public static glTFMaterial Deserialize_gltf_materials_LIST(ListTreeNode<JsonValu
     return value;
 }
 
-public static glTFPbrMetallicRoughness Deserialize_gltf_materials__pbrMetallicRoughness(ListTreeNode<JsonValue> parsed)
+public static glTFPbrMetallicRoughness Deserialize_gltf_materials__pbrMetallicRoughness(JsonNode parsed)
 {
     var value = new glTFPbrMetallicRoughness();
 
@@ -750,7 +750,7 @@ public static glTFPbrMetallicRoughness Deserialize_gltf_materials__pbrMetallicRo
     return value;
 }
 
-public static glTFMaterialBaseColorTextureInfo Deserialize_gltf_materials__pbrMetallicRoughness_baseColorTexture(ListTreeNode<JsonValue> parsed)
+public static glTFMaterialBaseColorTextureInfo Deserialize_gltf_materials__pbrMetallicRoughness_baseColorTexture(JsonNode parsed)
 {
     var value = new glTFMaterialBaseColorTextureInfo();
 
@@ -782,7 +782,7 @@ public static glTFMaterialBaseColorTextureInfo Deserialize_gltf_materials__pbrMe
     return value;
 }
 
-public static Single[] Deserialize_gltf_materials__pbrMetallicRoughness_baseColorFactor(ListTreeNode<JsonValue> parsed)
+public static Single[] Deserialize_gltf_materials__pbrMetallicRoughness_baseColorFactor(JsonNode parsed)
 {
     var value = new Single[parsed.GetArrayCount()];
     int i=0;
@@ -793,7 +793,7 @@ public static Single[] Deserialize_gltf_materials__pbrMetallicRoughness_baseColo
 	return value;
 } 
 
-public static glTFMaterialMetallicRoughnessTextureInfo Deserialize_gltf_materials__pbrMetallicRoughness_metallicRoughnessTexture(ListTreeNode<JsonValue> parsed)
+public static glTFMaterialMetallicRoughnessTextureInfo Deserialize_gltf_materials__pbrMetallicRoughness_metallicRoughnessTexture(JsonNode parsed)
 {
     var value = new glTFMaterialMetallicRoughnessTextureInfo();
 
@@ -825,7 +825,7 @@ public static glTFMaterialMetallicRoughnessTextureInfo Deserialize_gltf_material
     return value;
 }
 
-public static glTFMaterialNormalTextureInfo Deserialize_gltf_materials__normalTexture(ListTreeNode<JsonValue> parsed)
+public static glTFMaterialNormalTextureInfo Deserialize_gltf_materials__normalTexture(JsonNode parsed)
 {
     var value = new glTFMaterialNormalTextureInfo();
 
@@ -862,7 +862,7 @@ public static glTFMaterialNormalTextureInfo Deserialize_gltf_materials__normalTe
     return value;
 }
 
-public static glTFMaterialOcclusionTextureInfo Deserialize_gltf_materials__occlusionTexture(ListTreeNode<JsonValue> parsed)
+public static glTFMaterialOcclusionTextureInfo Deserialize_gltf_materials__occlusionTexture(JsonNode parsed)
 {
     var value = new glTFMaterialOcclusionTextureInfo();
 
@@ -899,7 +899,7 @@ public static glTFMaterialOcclusionTextureInfo Deserialize_gltf_materials__occlu
     return value;
 }
 
-public static glTFMaterialEmissiveTextureInfo Deserialize_gltf_materials__emissiveTexture(ListTreeNode<JsonValue> parsed)
+public static glTFMaterialEmissiveTextureInfo Deserialize_gltf_materials__emissiveTexture(JsonNode parsed)
 {
     var value = new glTFMaterialEmissiveTextureInfo();
 
@@ -931,7 +931,7 @@ public static glTFMaterialEmissiveTextureInfo Deserialize_gltf_materials__emissi
     return value;
 }
 
-public static Single[] Deserialize_gltf_materials__emissiveFactor(ListTreeNode<JsonValue> parsed)
+public static Single[] Deserialize_gltf_materials__emissiveFactor(JsonNode parsed)
 {
     var value = new Single[parsed.GetArrayCount()];
     int i=0;
@@ -942,7 +942,7 @@ public static Single[] Deserialize_gltf_materials__emissiveFactor(ListTreeNode<J
 	return value;
 } 
 
-public static List<UniGLTF.glTFMesh> Deserialize_gltf_meshes(ListTreeNode<JsonValue> parsed)
+public static List<UniGLTF.glTFMesh> Deserialize_gltf_meshes(JsonNode parsed)
 {
     var value = new List<glTFMesh>();
     foreach(var x in parsed.ArrayItems())
@@ -951,7 +951,7 @@ public static List<UniGLTF.glTFMesh> Deserialize_gltf_meshes(ListTreeNode<JsonVa
     }
 	return value;
 }
-public static glTFMesh Deserialize_gltf_meshes_LIST(ListTreeNode<JsonValue> parsed)
+public static glTFMesh Deserialize_gltf_meshes_LIST(JsonNode parsed)
 {
     var value = new glTFMesh();
 
@@ -988,7 +988,7 @@ public static glTFMesh Deserialize_gltf_meshes_LIST(ListTreeNode<JsonValue> pars
     return value;
 }
 
-public static List<UniGLTF.glTFPrimitives> Deserialize_gltf_meshes__primitives(ListTreeNode<JsonValue> parsed)
+public static List<UniGLTF.glTFPrimitives> Deserialize_gltf_meshes__primitives(JsonNode parsed)
 {
     var value = new List<glTFPrimitives>();
     foreach(var x in parsed.ArrayItems())
@@ -997,7 +997,7 @@ public static List<UniGLTF.glTFPrimitives> Deserialize_gltf_meshes__primitives(L
     }
 	return value;
 }
-public static glTFPrimitives Deserialize_gltf_meshes__primitives_LIST(ListTreeNode<JsonValue> parsed)
+public static glTFPrimitives Deserialize_gltf_meshes__primitives_LIST(JsonNode parsed)
 {
     var value = new glTFPrimitives();
 
@@ -1044,7 +1044,7 @@ public static glTFPrimitives Deserialize_gltf_meshes__primitives_LIST(ListTreeNo
     return value;
 }
 
-public static glTFAttributes Deserialize_gltf_meshes__primitives__attributes(ListTreeNode<JsonValue> parsed)
+public static glTFAttributes Deserialize_gltf_meshes__primitives__attributes(JsonNode parsed)
 {
     var value = new glTFAttributes();
 
@@ -1096,7 +1096,7 @@ public static glTFAttributes Deserialize_gltf_meshes__primitives__attributes(Lis
     return value;
 }
 
-public static List<UniGLTF.gltfMorphTarget> Deserialize_gltf_meshes__primitives__targets(ListTreeNode<JsonValue> parsed)
+public static List<UniGLTF.gltfMorphTarget> Deserialize_gltf_meshes__primitives__targets(JsonNode parsed)
 {
     var value = new List<gltfMorphTarget>();
     foreach(var x in parsed.ArrayItems())
@@ -1105,7 +1105,7 @@ public static List<UniGLTF.gltfMorphTarget> Deserialize_gltf_meshes__primitives_
     }
 	return value;
 }
-public static gltfMorphTarget Deserialize_gltf_meshes__primitives__targets_LIST(ListTreeNode<JsonValue> parsed)
+public static gltfMorphTarget Deserialize_gltf_meshes__primitives__targets_LIST(JsonNode parsed)
 {
     var value = new gltfMorphTarget();
 
@@ -1132,7 +1132,7 @@ public static gltfMorphTarget Deserialize_gltf_meshes__primitives__targets_LIST(
     return value;
 }
 
-public static Single[] Deserialize_gltf_meshes__weights(ListTreeNode<JsonValue> parsed)
+public static Single[] Deserialize_gltf_meshes__weights(JsonNode parsed)
 {
     var value = new Single[parsed.GetArrayCount()];
     int i=0;
@@ -1143,7 +1143,7 @@ public static Single[] Deserialize_gltf_meshes__weights(ListTreeNode<JsonValue> 
 	return value;
 } 
 
-public static List<UniGLTF.glTFNode> Deserialize_gltf_nodes(ListTreeNode<JsonValue> parsed)
+public static List<UniGLTF.glTFNode> Deserialize_gltf_nodes(JsonNode parsed)
 {
     var value = new List<glTFNode>();
     foreach(var x in parsed.ArrayItems())
@@ -1152,7 +1152,7 @@ public static List<UniGLTF.glTFNode> Deserialize_gltf_nodes(ListTreeNode<JsonVal
     }
 	return value;
 }
-public static glTFNode Deserialize_gltf_nodes_LIST(ListTreeNode<JsonValue> parsed)
+public static glTFNode Deserialize_gltf_nodes_LIST(JsonNode parsed)
 {
     var value = new glTFNode();
 
@@ -1224,7 +1224,7 @@ public static glTFNode Deserialize_gltf_nodes_LIST(ListTreeNode<JsonValue> parse
     return value;
 }
 
-public static Int32[] Deserialize_gltf_nodes__children(ListTreeNode<JsonValue> parsed)
+public static Int32[] Deserialize_gltf_nodes__children(JsonNode parsed)
 {
     var value = new Int32[parsed.GetArrayCount()];
     int i=0;
@@ -1235,7 +1235,7 @@ public static Int32[] Deserialize_gltf_nodes__children(ListTreeNode<JsonValue> p
 	return value;
 } 
 
-public static Single[] Deserialize_gltf_nodes__matrix(ListTreeNode<JsonValue> parsed)
+public static Single[] Deserialize_gltf_nodes__matrix(JsonNode parsed)
 {
     var value = new Single[parsed.GetArrayCount()];
     int i=0;
@@ -1246,7 +1246,7 @@ public static Single[] Deserialize_gltf_nodes__matrix(ListTreeNode<JsonValue> pa
 	return value;
 } 
 
-public static Single[] Deserialize_gltf_nodes__translation(ListTreeNode<JsonValue> parsed)
+public static Single[] Deserialize_gltf_nodes__translation(JsonNode parsed)
 {
     var value = new Single[parsed.GetArrayCount()];
     int i=0;
@@ -1257,7 +1257,7 @@ public static Single[] Deserialize_gltf_nodes__translation(ListTreeNode<JsonValu
 	return value;
 } 
 
-public static Single[] Deserialize_gltf_nodes__rotation(ListTreeNode<JsonValue> parsed)
+public static Single[] Deserialize_gltf_nodes__rotation(JsonNode parsed)
 {
     var value = new Single[parsed.GetArrayCount()];
     int i=0;
@@ -1268,7 +1268,7 @@ public static Single[] Deserialize_gltf_nodes__rotation(ListTreeNode<JsonValue> 
 	return value;
 } 
 
-public static Single[] Deserialize_gltf_nodes__scale(ListTreeNode<JsonValue> parsed)
+public static Single[] Deserialize_gltf_nodes__scale(JsonNode parsed)
 {
     var value = new Single[parsed.GetArrayCount()];
     int i=0;
@@ -1279,7 +1279,7 @@ public static Single[] Deserialize_gltf_nodes__scale(ListTreeNode<JsonValue> par
 	return value;
 } 
 
-public static Single[] Deserialize_gltf_nodes__weights(ListTreeNode<JsonValue> parsed)
+public static Single[] Deserialize_gltf_nodes__weights(JsonNode parsed)
 {
     var value = new Single[parsed.GetArrayCount()];
     int i=0;
@@ -1290,7 +1290,7 @@ public static Single[] Deserialize_gltf_nodes__weights(ListTreeNode<JsonValue> p
 	return value;
 } 
 
-public static List<UniGLTF.glTFSkin> Deserialize_gltf_skins(ListTreeNode<JsonValue> parsed)
+public static List<UniGLTF.glTFSkin> Deserialize_gltf_skins(JsonNode parsed)
 {
     var value = new List<glTFSkin>();
     foreach(var x in parsed.ArrayItems())
@@ -1299,7 +1299,7 @@ public static List<UniGLTF.glTFSkin> Deserialize_gltf_skins(ListTreeNode<JsonVal
     }
 	return value;
 }
-public static glTFSkin Deserialize_gltf_skins_LIST(ListTreeNode<JsonValue> parsed)
+public static glTFSkin Deserialize_gltf_skins_LIST(JsonNode parsed)
 {
     var value = new glTFSkin();
 
@@ -1341,7 +1341,7 @@ public static glTFSkin Deserialize_gltf_skins_LIST(ListTreeNode<JsonValue> parse
     return value;
 }
 
-public static Int32[] Deserialize_gltf_skins__joints(ListTreeNode<JsonValue> parsed)
+public static Int32[] Deserialize_gltf_skins__joints(JsonNode parsed)
 {
     var value = new Int32[parsed.GetArrayCount()];
     int i=0;
@@ -1352,7 +1352,7 @@ public static Int32[] Deserialize_gltf_skins__joints(ListTreeNode<JsonValue> par
 	return value;
 } 
 
-public static List<UniGLTF.gltfScene> Deserialize_gltf_scenes(ListTreeNode<JsonValue> parsed)
+public static List<UniGLTF.gltfScene> Deserialize_gltf_scenes(JsonNode parsed)
 {
     var value = new List<gltfScene>();
     foreach(var x in parsed.ArrayItems())
@@ -1361,7 +1361,7 @@ public static List<UniGLTF.gltfScene> Deserialize_gltf_scenes(ListTreeNode<JsonV
     }
 	return value;
 }
-public static gltfScene Deserialize_gltf_scenes_LIST(ListTreeNode<JsonValue> parsed)
+public static gltfScene Deserialize_gltf_scenes_LIST(JsonNode parsed)
 {
     var value = new gltfScene();
 
@@ -1393,7 +1393,7 @@ public static gltfScene Deserialize_gltf_scenes_LIST(ListTreeNode<JsonValue> par
     return value;
 }
 
-public static Int32[] Deserialize_gltf_scenes__nodes(ListTreeNode<JsonValue> parsed)
+public static Int32[] Deserialize_gltf_scenes__nodes(JsonNode parsed)
 {
     var value = new Int32[parsed.GetArrayCount()];
     int i=0;
@@ -1404,7 +1404,7 @@ public static Int32[] Deserialize_gltf_scenes__nodes(ListTreeNode<JsonValue> par
 	return value;
 } 
 
-public static List<UniGLTF.glTFAnimation> Deserialize_gltf_animations(ListTreeNode<JsonValue> parsed)
+public static List<UniGLTF.glTFAnimation> Deserialize_gltf_animations(JsonNode parsed)
 {
     var value = new List<glTFAnimation>();
     foreach(var x in parsed.ArrayItems())
@@ -1413,7 +1413,7 @@ public static List<UniGLTF.glTFAnimation> Deserialize_gltf_animations(ListTreeNo
     }
 	return value;
 }
-public static glTFAnimation Deserialize_gltf_animations_LIST(ListTreeNode<JsonValue> parsed)
+public static glTFAnimation Deserialize_gltf_animations_LIST(JsonNode parsed)
 {
     var value = new glTFAnimation();
 
@@ -1450,7 +1450,7 @@ public static glTFAnimation Deserialize_gltf_animations_LIST(ListTreeNode<JsonVa
     return value;
 }
 
-public static List<UniGLTF.glTFAnimationChannel> Deserialize_gltf_animations__channels(ListTreeNode<JsonValue> parsed)
+public static List<UniGLTF.glTFAnimationChannel> Deserialize_gltf_animations__channels(JsonNode parsed)
 {
     var value = new List<glTFAnimationChannel>();
     foreach(var x in parsed.ArrayItems())
@@ -1459,7 +1459,7 @@ public static List<UniGLTF.glTFAnimationChannel> Deserialize_gltf_animations__ch
     }
 	return value;
 }
-public static glTFAnimationChannel Deserialize_gltf_animations__channels_LIST(ListTreeNode<JsonValue> parsed)
+public static glTFAnimationChannel Deserialize_gltf_animations__channels_LIST(JsonNode parsed)
 {
     var value = new glTFAnimationChannel();
 
@@ -1491,7 +1491,7 @@ public static glTFAnimationChannel Deserialize_gltf_animations__channels_LIST(Li
     return value;
 }
 
-public static glTFAnimationTarget Deserialize_gltf_animations__channels__target(ListTreeNode<JsonValue> parsed)
+public static glTFAnimationTarget Deserialize_gltf_animations__channels__target(JsonNode parsed)
 {
     var value = new glTFAnimationTarget();
 
@@ -1523,7 +1523,7 @@ public static glTFAnimationTarget Deserialize_gltf_animations__channels__target(
     return value;
 }
 
-public static List<UniGLTF.glTFAnimationSampler> Deserialize_gltf_animations__samplers(ListTreeNode<JsonValue> parsed)
+public static List<UniGLTF.glTFAnimationSampler> Deserialize_gltf_animations__samplers(JsonNode parsed)
 {
     var value = new List<glTFAnimationSampler>();
     foreach(var x in parsed.ArrayItems())
@@ -1532,7 +1532,7 @@ public static List<UniGLTF.glTFAnimationSampler> Deserialize_gltf_animations__sa
     }
 	return value;
 }
-public static glTFAnimationSampler Deserialize_gltf_animations__samplers_LIST(ListTreeNode<JsonValue> parsed)
+public static glTFAnimationSampler Deserialize_gltf_animations__samplers_LIST(JsonNode parsed)
 {
     var value = new glTFAnimationSampler();
 
@@ -1569,7 +1569,7 @@ public static glTFAnimationSampler Deserialize_gltf_animations__samplers_LIST(Li
     return value;
 }
 
-public static List<UniGLTF.glTFCamera> Deserialize_gltf_cameras(ListTreeNode<JsonValue> parsed)
+public static List<UniGLTF.glTFCamera> Deserialize_gltf_cameras(JsonNode parsed)
 {
     var value = new List<glTFCamera>();
     foreach(var x in parsed.ArrayItems())
@@ -1578,7 +1578,7 @@ public static List<UniGLTF.glTFCamera> Deserialize_gltf_cameras(ListTreeNode<Jso
     }
 	return value;
 }
-public static glTFCamera Deserialize_gltf_cameras_LIST(ListTreeNode<JsonValue> parsed)
+public static glTFCamera Deserialize_gltf_cameras_LIST(JsonNode parsed)
 {
     var value = new glTFCamera();
 
@@ -1620,7 +1620,7 @@ public static glTFCamera Deserialize_gltf_cameras_LIST(ListTreeNode<JsonValue> p
     return value;
 }
 
-public static glTFOrthographic Deserialize_gltf_cameras__orthographic(ListTreeNode<JsonValue> parsed)
+public static glTFOrthographic Deserialize_gltf_cameras__orthographic(JsonNode parsed)
 {
     var value = new glTFOrthographic();
 
@@ -1662,7 +1662,7 @@ public static glTFOrthographic Deserialize_gltf_cameras__orthographic(ListTreeNo
     return value;
 }
 
-public static glTFPerspective Deserialize_gltf_cameras__perspective(ListTreeNode<JsonValue> parsed)
+public static glTFPerspective Deserialize_gltf_cameras__perspective(JsonNode parsed)
 {
     var value = new glTFPerspective();
 
@@ -1704,7 +1704,7 @@ public static glTFPerspective Deserialize_gltf_cameras__perspective(ListTreeNode
     return value;
 }
 
-public static List<System.String> Deserialize_gltf_extensionsUsed(ListTreeNode<JsonValue> parsed)
+public static List<System.String> Deserialize_gltf_extensionsUsed(JsonNode parsed)
 {
     var value = new List<String>();
     foreach(var x in parsed.ArrayItems())
@@ -1713,7 +1713,7 @@ public static List<System.String> Deserialize_gltf_extensionsUsed(ListTreeNode<J
     }
 	return value;
 }
-public static List<System.String> Deserialize_gltf_extensionsRequired(ListTreeNode<JsonValue> parsed)
+public static List<System.String> Deserialize_gltf_extensionsRequired(JsonNode parsed)
 {
     var value = new List<String>();
     foreach(var x in parsed.ArrayItems())

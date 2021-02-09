@@ -60,7 +60,7 @@ namespace UniGLTF.JsonSchema.Schemas
             {
 
                 writer.Write(@"
-public static $0 $2(ListTreeNode<JsonValue> parsed)
+public static $0 $2(JsonNode parsed)
 {
     var value = new $1[parsed.GetArrayCount()];
     int i=0;
@@ -81,7 +81,7 @@ public static $0 $2(ListTreeNode<JsonValue> parsed)
             else
             {
                 writer.Write(@"
-public static $0 $2(ListTreeNode<JsonValue> parsed)
+public static $0 $2(JsonNode parsed)
 {
     var value = new $1();
     foreach(var x in parsed.ArrayItems())

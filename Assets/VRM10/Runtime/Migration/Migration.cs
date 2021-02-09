@@ -10,7 +10,7 @@ namespace UniVRM10
     /// </summary>
     public static class Migration
     {
-        static bool TryGet(this UniGLTF.glTFExtensionImport extensions, string key, out ListTreeNode<JsonValue> value)
+        static bool TryGet(this UniGLTF.glTFExtensionImport extensions, string key, out JsonNode value)
         {
             foreach (var kv in extensions.ObjectItems())
             {
@@ -46,7 +46,7 @@ namespace UniVRM10
         //   },
         //   "axisLength": 0
         // },
-        static UniGLTF.Extensions.VRMC_vrm.HumanBone MigrateHumanoidBone(ListTreeNode<JsonValue> vrm0)
+        static UniGLTF.Extensions.VRMC_vrm.HumanBone MigrateHumanoidBone(JsonNode vrm0)
         {
             return new UniGLTF.Extensions.VRMC_vrm.HumanBone
             {
@@ -54,7 +54,7 @@ namespace UniVRM10
             };
         }
 
-        static UniGLTF.Extensions.VRMC_vrm.Humanoid MigrateHumanoid(ListTreeNode<JsonValue> vrm0)
+        static UniGLTF.Extensions.VRMC_vrm.Humanoid MigrateHumanoid(JsonNode vrm0)
         {
             var humanoid = new UniGLTF.Extensions.VRMC_vrm.Humanoid
             {
@@ -149,7 +149,7 @@ namespace UniVRM10
         //   "licenseName": "Other",
         //   "otherLicenseUrl": "https://3d.nicovideo.jp/alicia/rule.html"
         // },
-        static UniGLTF.Extensions.VRMC_vrm.Meta MigrateMeta(ListTreeNode<JsonValue> vrm0)
+        static UniGLTF.Extensions.VRMC_vrm.Meta MigrateMeta(JsonNode vrm0)
         {
             var meta = new UniGLTF.Extensions.VRMC_vrm.Meta
             {
@@ -274,7 +274,7 @@ namespace UniVRM10
             return meta;
         }
 
-        static string GetLicenseUrl(ListTreeNode<JsonValue> vrm0)
+        static string GetLicenseUrl(JsonNode vrm0)
         {
             string l0 = default;
             string l1 = default;
@@ -302,7 +302,7 @@ namespace UniVRM10
             return "";
         }
 
-        static float[] ReverseZ(ListTreeNode<JsonValue> xyz)
+        static float[] ReverseZ(JsonNode xyz)
         {
             return new float[]{
                 xyz["x"].GetSingle(),
@@ -324,7 +324,7 @@ namespace UniVRM10
             }
         }
 
-        static UniGLTF.Extensions.VRMC_springBone.VRMC_springBone MigrateSpringBone(UniGLTF.glTF gltf, ListTreeNode<JsonValue> sa)
+        static UniGLTF.Extensions.VRMC_springBone.VRMC_springBone MigrateSpringBone(UniGLTF.glTF gltf, JsonNode sa)
         {
             var colliderNodes = new List<int>();
 
@@ -452,7 +452,7 @@ namespace UniVRM10
             return springBone;
         }
 
-        static UniGLTF.Extensions.VRMC_vrm.ExpressionPreset ToPreset(ListTreeNode<JsonValue> json)
+        static UniGLTF.Extensions.VRMC_vrm.ExpressionPreset ToPreset(JsonNode json)
         {
             switch (json.GetString().ToLower())
             {
@@ -486,7 +486,7 @@ namespace UniVRM10
             throw new NotImplementedException();
         }
 
-        static IEnumerable<UniGLTF.Extensions.VRMC_vrm.MorphTargetBind> ToMorphTargetBinds(UniGLTF.glTF gltf, ListTreeNode<JsonValue> json)
+        static IEnumerable<UniGLTF.Extensions.VRMC_vrm.MorphTargetBind> ToMorphTargetBinds(UniGLTF.glTF gltf, JsonNode json)
         {
             foreach (var x in json.ArrayItems())
             {
@@ -548,7 +548,7 @@ namespace UniVRM10
         /// <param name="gltf"></param>
         /// <param name="json"></param>
         /// <param name="expression"></param>
-        static void ToMaterialColorBinds(UniGLTF.glTF gltf, ListTreeNode<JsonValue> json, UniGLTF.Extensions.VRMC_vrm.Expression expression)
+        static void ToMaterialColorBinds(UniGLTF.glTF gltf, JsonNode json, UniGLTF.Extensions.VRMC_vrm.Expression expression)
         {
             foreach (var x in json.ArrayItems())
             {
@@ -596,7 +596,7 @@ namespace UniVRM10
             }
         }
 
-        static IEnumerable<UniGLTF.Extensions.VRMC_vrm.Expression> MigrateExpression(UniGLTF.glTF gltf, ListTreeNode<JsonValue> json)
+        static IEnumerable<UniGLTF.Extensions.VRMC_vrm.Expression> MigrateExpression(UniGLTF.glTF gltf, JsonNode json)
         {
             foreach (var blendShapeClip in json["blendShapeGroups"].ArrayItems())
             {
@@ -670,7 +670,7 @@ namespace UniVRM10
             }
         }
 
-        public static void CheckBone(string bone, ListTreeNode<JsonValue> vrm0, UniGLTF.Extensions.VRMC_vrm.HumanBone vrm1)
+        public static void CheckBone(string bone, JsonNode vrm0, UniGLTF.Extensions.VRMC_vrm.HumanBone vrm1)
         {
             var vrm0NodeIndex = vrm0["node"].GetInt32();
             if (vrm0NodeIndex != vrm1.Node)
@@ -679,7 +679,7 @@ namespace UniVRM10
             }
         }
 
-        public static void CheckHumanoid(ListTreeNode<JsonValue> vrm0, UniGLTF.Extensions.VRMC_vrm.Humanoid vrm1)
+        public static void CheckHumanoid(JsonNode vrm0, UniGLTF.Extensions.VRMC_vrm.Humanoid vrm1)
         {
             foreach (var humanoidBone in vrm0["humanBones"].ArrayItems())
             {
@@ -763,7 +763,7 @@ namespace UniVRM10
             throw new MigrationException(key, $"{x}");
         }
 
-        public static void CheckMeta(ListTreeNode<JsonValue> vrm0, UniGLTF.Extensions.VRMC_vrm.Meta vrm1)
+        public static void CheckMeta(JsonNode vrm0, UniGLTF.Extensions.VRMC_vrm.Meta vrm1)
         {
             if (vrm0["title"].GetString() != vrm1.Name) throw new MigrationException("meta.title", vrm1.Name);
             if (vrm0["version"].GetString() != vrm1.Version) throw new MigrationException("meta.version", vrm1.Version);
@@ -808,13 +808,13 @@ namespace UniVRM10
             }
         }
 
-        public static void Check(ListTreeNode<JsonValue> vrm0, UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm1)
+        public static void Check(JsonNode vrm0, UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm1)
         {
             Migration.CheckMeta(vrm0["meta"], vrm1.Meta);
             Migration.CheckHumanoid(vrm0["humanoid"], vrm1.Humanoid);
         }
 
-        public static void Check(ListTreeNode<JsonValue> vrm0, UniGLTF.Extensions.VRMC_springBone.VRMC_springBone vrm1, List<UniGLTF.glTFNode> nodes)
+        public static void Check(JsonNode vrm0, UniGLTF.Extensions.VRMC_springBone.VRMC_springBone vrm1, List<UniGLTF.glTFNode> nodes)
         {
             // Migration.CheckSpringBone(vrm0["secondaryAnimation"], vrm1.sp)
         }

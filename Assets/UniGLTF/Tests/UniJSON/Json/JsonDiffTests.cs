@@ -33,7 +33,7 @@ namespace UniJSON
                 var it = root.Traverse().GetEnumerator();
 
                 var f = new JsonFormatter();
-                f.Serialize("JsonPath");
+                f.Value("JsonPath");
 
                 root.SetValue(Utf8String.From("/a"), f.GetStoreBytes());
                 it.MoveNext(); Assert.AreEqual("/", it.Current.Pointer().ToString());

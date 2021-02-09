@@ -14,7 +14,7 @@ namespace UniJSON
             {
                 var v = new JsonValue(Utf8String.From("NaN"), ValueNodeType.NaN, -1);
                 Assert.AreEqual("NaN", v.ToString());
-                Assert.AreEqual(Double.NaN, v.GetValue<double>());
+                Assert.AreEqual(Double.NaN, v.GetDouble());
             }
         }
 
@@ -24,7 +24,7 @@ namespace UniJSON
             {
                 var v = new JsonValue(Utf8String.From("Infinity"), ValueNodeType.Infinity, -1);
                 Assert.AreEqual("Infinity", v.ToString());
-                Assert.AreEqual(Double.PositiveInfinity, v.GetValue<double>());
+                Assert.AreEqual(Double.PositiveInfinity, v.GetDouble());
             }
         }
 
@@ -34,7 +34,7 @@ namespace UniJSON
             {
                 var v = new JsonValue(Utf8String.From("-Infinity"), ValueNodeType.MinusInfinity, -1);
                 Assert.AreEqual("-Infinity", v.ToString());
-                Assert.AreEqual(Double.NegativeInfinity, v.GetValue<double>());
+                Assert.AreEqual(Double.NegativeInfinity, v.GetDouble());
             }
         }
     }

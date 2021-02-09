@@ -43,7 +43,7 @@ namespace UniGLTF
         public override void GenerateDeserializer(StreamWriter writer, string parentName)
         {
             writer.Write(@"
-public static $0 $2(ListTreeNode<JsonValue> parsed)
+public static $0 $2(JsonNode parsed)
 {
     var value = new $0();
 

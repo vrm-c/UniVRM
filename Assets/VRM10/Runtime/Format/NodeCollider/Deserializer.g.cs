@@ -28,7 +28,7 @@ public static bool TryGet(UniGLTF.glTFExtension src, out VRMC_node_collider exte
 }
 
 
-public static VRMC_node_collider Deserialize(ListTreeNode<JsonValue> parsed)
+public static VRMC_node_collider Deserialize(JsonNode parsed)
 {
     var value = new VRMC_node_collider();
 
@@ -55,7 +55,7 @@ public static VRMC_node_collider Deserialize(ListTreeNode<JsonValue> parsed)
     return value;
 }
 
-public static List<ColliderShape> Deserialize_Shapes(ListTreeNode<JsonValue> parsed)
+public static List<ColliderShape> Deserialize_Shapes(JsonNode parsed)
 {
     var value = new List<ColliderShape>();
     foreach(var x in parsed.ArrayItems())
@@ -65,7 +65,7 @@ public static List<ColliderShape> Deserialize_Shapes(ListTreeNode<JsonValue> par
 	return value;
 } 
 
-public static ColliderShape Deserialize_Shapes_ITEM(ListTreeNode<JsonValue> parsed)
+public static ColliderShape Deserialize_Shapes_ITEM(JsonNode parsed)
 {
     var value = new ColliderShape();
 
@@ -97,7 +97,7 @@ public static ColliderShape Deserialize_Shapes_ITEM(ListTreeNode<JsonValue> pars
     return value;
 }
 
-public static ColliderShapeSphere Deserialize_Sphere(ListTreeNode<JsonValue> parsed)
+public static ColliderShapeSphere Deserialize_Sphere(JsonNode parsed)
 {
     var value = new ColliderShapeSphere();
 
@@ -119,7 +119,7 @@ public static ColliderShapeSphere Deserialize_Sphere(ListTreeNode<JsonValue> par
     return value;
 }
 
-public static float[] Deserialize_Offset(ListTreeNode<JsonValue> parsed)
+public static float[] Deserialize_Offset(JsonNode parsed)
 {
     var value = new float[parsed.GetArrayCount()];
     int i=0;
@@ -130,7 +130,7 @@ public static float[] Deserialize_Offset(ListTreeNode<JsonValue> parsed)
 	return value;
 } 
 
-public static ColliderShapeCapsule Deserialize_Capsule(ListTreeNode<JsonValue> parsed)
+public static ColliderShapeCapsule Deserialize_Capsule(JsonNode parsed)
 {
     var value = new ColliderShapeCapsule();
 
@@ -157,7 +157,7 @@ public static ColliderShapeCapsule Deserialize_Capsule(ListTreeNode<JsonValue> p
     return value;
 }
 
-public static float[] Deserialize_Tail(ListTreeNode<JsonValue> parsed)
+public static float[] Deserialize_Tail(JsonNode parsed)
 {
     var value = new float[parsed.GetArrayCount()];
     int i=0;

@@ -11,7 +11,7 @@ public static class VrmDeserializer
 {
 
 
-public static glTF_VRM_extensions Deserialize(ListTreeNode<JsonValue> parsed)
+public static glTF_VRM_extensions Deserialize(JsonNode parsed)
 {
     var value = new glTF_VRM_extensions();
 
@@ -63,7 +63,7 @@ public static glTF_VRM_extensions Deserialize(ListTreeNode<JsonValue> parsed)
     return value;
 }
 
-public static glTF_VRM_Meta Deserialize_vrm_meta(ListTreeNode<JsonValue> parsed)
+public static glTF_VRM_Meta Deserialize_vrm_meta(JsonNode parsed)
 {
     var value = new glTF_VRM_Meta();
 
@@ -140,7 +140,7 @@ public static glTF_VRM_Meta Deserialize_vrm_meta(ListTreeNode<JsonValue> parsed)
     return value;
 }
 
-public static glTF_VRM_Humanoid Deserialize_vrm_humanoid(ListTreeNode<JsonValue> parsed)
+public static glTF_VRM_Humanoid Deserialize_vrm_humanoid(JsonNode parsed)
 {
     var value = new glTF_VRM_Humanoid();
 
@@ -197,7 +197,7 @@ public static glTF_VRM_Humanoid Deserialize_vrm_humanoid(ListTreeNode<JsonValue>
     return value;
 }
 
-public static List<VRM.glTF_VRM_HumanoidBone> Deserialize_vrm_humanoid_humanBones(ListTreeNode<JsonValue> parsed)
+public static List<VRM.glTF_VRM_HumanoidBone> Deserialize_vrm_humanoid_humanBones(JsonNode parsed)
 {
     var value = new List<glTF_VRM_HumanoidBone>();
     foreach(var x in parsed.ArrayItems())
@@ -206,7 +206,7 @@ public static List<VRM.glTF_VRM_HumanoidBone> Deserialize_vrm_humanoid_humanBone
     }
 	return value;
 }
-public static glTF_VRM_HumanoidBone Deserialize_vrm_humanoid_humanBones_LIST(ListTreeNode<JsonValue> parsed)
+public static glTF_VRM_HumanoidBone Deserialize_vrm_humanoid_humanBones_LIST(JsonNode parsed)
 {
     var value = new glTF_VRM_HumanoidBone();
 
@@ -253,7 +253,7 @@ public static glTF_VRM_HumanoidBone Deserialize_vrm_humanoid_humanBones_LIST(Lis
     return value;
 }
 
-public static Vector3 Deserialize_vrm_humanoid_humanBones__min(ListTreeNode<JsonValue> parsed)
+public static Vector3 Deserialize_vrm_humanoid_humanBones__min(JsonNode parsed)
 {
     var value = new Vector3();
 
@@ -280,7 +280,7 @@ public static Vector3 Deserialize_vrm_humanoid_humanBones__min(ListTreeNode<Json
     return value;
 }
 
-public static Vector3 Deserialize_vrm_humanoid_humanBones__max(ListTreeNode<JsonValue> parsed)
+public static Vector3 Deserialize_vrm_humanoid_humanBones__max(JsonNode parsed)
 {
     var value = new Vector3();
 
@@ -307,7 +307,7 @@ public static Vector3 Deserialize_vrm_humanoid_humanBones__max(ListTreeNode<Json
     return value;
 }
 
-public static Vector3 Deserialize_vrm_humanoid_humanBones__center(ListTreeNode<JsonValue> parsed)
+public static Vector3 Deserialize_vrm_humanoid_humanBones__center(JsonNode parsed)
 {
     var value = new Vector3();
 
@@ -334,7 +334,7 @@ public static Vector3 Deserialize_vrm_humanoid_humanBones__center(ListTreeNode<J
     return value;
 }
 
-public static glTF_VRM_Firstperson Deserialize_vrm_firstPerson(ListTreeNode<JsonValue> parsed)
+public static glTF_VRM_Firstperson Deserialize_vrm_firstPerson(JsonNode parsed)
 {
     var value = new glTF_VRM_Firstperson();
 
@@ -386,7 +386,7 @@ public static glTF_VRM_Firstperson Deserialize_vrm_firstPerson(ListTreeNode<Json
     return value;
 }
 
-public static Vector3 Deserialize_vrm_firstPerson_firstPersonBoneOffset(ListTreeNode<JsonValue> parsed)
+public static Vector3 Deserialize_vrm_firstPerson_firstPersonBoneOffset(JsonNode parsed)
 {
     var value = new Vector3();
 
@@ -413,7 +413,7 @@ public static Vector3 Deserialize_vrm_firstPerson_firstPersonBoneOffset(ListTree
     return value;
 }
 
-public static List<VRM.glTF_VRM_MeshAnnotation> Deserialize_vrm_firstPerson_meshAnnotations(ListTreeNode<JsonValue> parsed)
+public static List<VRM.glTF_VRM_MeshAnnotation> Deserialize_vrm_firstPerson_meshAnnotations(JsonNode parsed)
 {
     var value = new List<glTF_VRM_MeshAnnotation>();
     foreach(var x in parsed.ArrayItems())
@@ -422,7 +422,7 @@ public static List<VRM.glTF_VRM_MeshAnnotation> Deserialize_vrm_firstPerson_mesh
     }
 	return value;
 }
-public static glTF_VRM_MeshAnnotation Deserialize_vrm_firstPerson_meshAnnotations_LIST(ListTreeNode<JsonValue> parsed)
+public static glTF_VRM_MeshAnnotation Deserialize_vrm_firstPerson_meshAnnotations_LIST(JsonNode parsed)
 {
     var value = new glTF_VRM_MeshAnnotation();
 
@@ -444,7 +444,7 @@ public static glTF_VRM_MeshAnnotation Deserialize_vrm_firstPerson_meshAnnotation
     return value;
 }
 
-public static glTF_VRM_DegreeMap Deserialize_vrm_firstPerson_lookAtHorizontalInner(ListTreeNode<JsonValue> parsed)
+public static glTF_VRM_DegreeMap Deserialize_vrm_firstPerson_lookAtHorizontalInner(JsonNode parsed)
 {
     var value = new glTF_VRM_DegreeMap();
 
@@ -471,7 +471,7 @@ public static glTF_VRM_DegreeMap Deserialize_vrm_firstPerson_lookAtHorizontalInn
     return value;
 }
 
-public static Single[] Deserialize_vrm_firstPerson_lookAtHorizontalInner_curve(ListTreeNode<JsonValue> parsed)
+public static Single[] Deserialize_vrm_firstPerson_lookAtHorizontalInner_curve(JsonNode parsed)
 {
     var value = new Single[parsed.GetArrayCount()];
     int i=0;
@@ -482,7 +482,7 @@ public static Single[] Deserialize_vrm_firstPerson_lookAtHorizontalInner_curve(L
 	return value;
 } 
 
-public static glTF_VRM_DegreeMap Deserialize_vrm_firstPerson_lookAtHorizontalOuter(ListTreeNode<JsonValue> parsed)
+public static glTF_VRM_DegreeMap Deserialize_vrm_firstPerson_lookAtHorizontalOuter(JsonNode parsed)
 {
     var value = new glTF_VRM_DegreeMap();
 
@@ -509,7 +509,7 @@ public static glTF_VRM_DegreeMap Deserialize_vrm_firstPerson_lookAtHorizontalOut
     return value;
 }
 
-public static Single[] Deserialize_vrm_firstPerson_lookAtHorizontalOuter_curve(ListTreeNode<JsonValue> parsed)
+public static Single[] Deserialize_vrm_firstPerson_lookAtHorizontalOuter_curve(JsonNode parsed)
 {
     var value = new Single[parsed.GetArrayCount()];
     int i=0;
@@ -520,7 +520,7 @@ public static Single[] Deserialize_vrm_firstPerson_lookAtHorizontalOuter_curve(L
 	return value;
 } 
 
-public static glTF_VRM_DegreeMap Deserialize_vrm_firstPerson_lookAtVerticalDown(ListTreeNode<JsonValue> parsed)
+public static glTF_VRM_DegreeMap Deserialize_vrm_firstPerson_lookAtVerticalDown(JsonNode parsed)
 {
     var value = new glTF_VRM_DegreeMap();
 
@@ -547,7 +547,7 @@ public static glTF_VRM_DegreeMap Deserialize_vrm_firstPerson_lookAtVerticalDown(
     return value;
 }
 
-public static Single[] Deserialize_vrm_firstPerson_lookAtVerticalDown_curve(ListTreeNode<JsonValue> parsed)
+public static Single[] Deserialize_vrm_firstPerson_lookAtVerticalDown_curve(JsonNode parsed)
 {
     var value = new Single[parsed.GetArrayCount()];
     int i=0;
@@ -558,7 +558,7 @@ public static Single[] Deserialize_vrm_firstPerson_lookAtVerticalDown_curve(List
 	return value;
 } 
 
-public static glTF_VRM_DegreeMap Deserialize_vrm_firstPerson_lookAtVerticalUp(ListTreeNode<JsonValue> parsed)
+public static glTF_VRM_DegreeMap Deserialize_vrm_firstPerson_lookAtVerticalUp(JsonNode parsed)
 {
     var value = new glTF_VRM_DegreeMap();
 
@@ -585,7 +585,7 @@ public static glTF_VRM_DegreeMap Deserialize_vrm_firstPerson_lookAtVerticalUp(Li
     return value;
 }
 
-public static Single[] Deserialize_vrm_firstPerson_lookAtVerticalUp_curve(ListTreeNode<JsonValue> parsed)
+public static Single[] Deserialize_vrm_firstPerson_lookAtVerticalUp_curve(JsonNode parsed)
 {
     var value = new Single[parsed.GetArrayCount()];
     int i=0;
@@ -596,7 +596,7 @@ public static Single[] Deserialize_vrm_firstPerson_lookAtVerticalUp_curve(ListTr
 	return value;
 } 
 
-public static glTF_VRM_BlendShapeMaster Deserialize_vrm_blendShapeMaster(ListTreeNode<JsonValue> parsed)
+public static glTF_VRM_BlendShapeMaster Deserialize_vrm_blendShapeMaster(JsonNode parsed)
 {
     var value = new glTF_VRM_BlendShapeMaster();
 
@@ -613,7 +613,7 @@ public static glTF_VRM_BlendShapeMaster Deserialize_vrm_blendShapeMaster(ListTre
     return value;
 }
 
-public static List<VRM.glTF_VRM_BlendShapeGroup> Deserialize_vrm_blendShapeMaster_blendShapeGroups(ListTreeNode<JsonValue> parsed)
+public static List<VRM.glTF_VRM_BlendShapeGroup> Deserialize_vrm_blendShapeMaster_blendShapeGroups(JsonNode parsed)
 {
     var value = new List<glTF_VRM_BlendShapeGroup>();
     foreach(var x in parsed.ArrayItems())
@@ -622,7 +622,7 @@ public static List<VRM.glTF_VRM_BlendShapeGroup> Deserialize_vrm_blendShapeMaste
     }
 	return value;
 }
-public static glTF_VRM_BlendShapeGroup Deserialize_vrm_blendShapeMaster_blendShapeGroups_LIST(ListTreeNode<JsonValue> parsed)
+public static glTF_VRM_BlendShapeGroup Deserialize_vrm_blendShapeMaster_blendShapeGroups_LIST(JsonNode parsed)
 {
     var value = new glTF_VRM_BlendShapeGroup();
 
@@ -659,7 +659,7 @@ public static glTF_VRM_BlendShapeGroup Deserialize_vrm_blendShapeMaster_blendSha
     return value;
 }
 
-public static List<VRM.glTF_VRM_BlendShapeBind> Deserialize_vrm_blendShapeMaster_blendShapeGroups__binds(ListTreeNode<JsonValue> parsed)
+public static List<VRM.glTF_VRM_BlendShapeBind> Deserialize_vrm_blendShapeMaster_blendShapeGroups__binds(JsonNode parsed)
 {
     var value = new List<glTF_VRM_BlendShapeBind>();
     foreach(var x in parsed.ArrayItems())
@@ -668,7 +668,7 @@ public static List<VRM.glTF_VRM_BlendShapeBind> Deserialize_vrm_blendShapeMaster
     }
 	return value;
 }
-public static glTF_VRM_BlendShapeBind Deserialize_vrm_blendShapeMaster_blendShapeGroups__binds_LIST(ListTreeNode<JsonValue> parsed)
+public static glTF_VRM_BlendShapeBind Deserialize_vrm_blendShapeMaster_blendShapeGroups__binds_LIST(JsonNode parsed)
 {
     var value = new glTF_VRM_BlendShapeBind();
 
@@ -695,7 +695,7 @@ public static glTF_VRM_BlendShapeBind Deserialize_vrm_blendShapeMaster_blendShap
     return value;
 }
 
-public static List<VRM.glTF_VRM_MaterialValueBind> Deserialize_vrm_blendShapeMaster_blendShapeGroups__materialValues(ListTreeNode<JsonValue> parsed)
+public static List<VRM.glTF_VRM_MaterialValueBind> Deserialize_vrm_blendShapeMaster_blendShapeGroups__materialValues(JsonNode parsed)
 {
     var value = new List<glTF_VRM_MaterialValueBind>();
     foreach(var x in parsed.ArrayItems())
@@ -704,7 +704,7 @@ public static List<VRM.glTF_VRM_MaterialValueBind> Deserialize_vrm_blendShapeMas
     }
 	return value;
 }
-public static glTF_VRM_MaterialValueBind Deserialize_vrm_blendShapeMaster_blendShapeGroups__materialValues_LIST(ListTreeNode<JsonValue> parsed)
+public static glTF_VRM_MaterialValueBind Deserialize_vrm_blendShapeMaster_blendShapeGroups__materialValues_LIST(JsonNode parsed)
 {
     var value = new glTF_VRM_MaterialValueBind();
 
@@ -731,7 +731,7 @@ public static glTF_VRM_MaterialValueBind Deserialize_vrm_blendShapeMaster_blendS
     return value;
 }
 
-public static Single[] Deserialize_vrm_blendShapeMaster_blendShapeGroups__materialValues__targetValue(ListTreeNode<JsonValue> parsed)
+public static Single[] Deserialize_vrm_blendShapeMaster_blendShapeGroups__materialValues__targetValue(JsonNode parsed)
 {
     var value = new Single[parsed.GetArrayCount()];
     int i=0;
@@ -742,7 +742,7 @@ public static Single[] Deserialize_vrm_blendShapeMaster_blendShapeGroups__materi
 	return value;
 } 
 
-public static glTF_VRM_SecondaryAnimation Deserialize_vrm_secondaryAnimation(ListTreeNode<JsonValue> parsed)
+public static glTF_VRM_SecondaryAnimation Deserialize_vrm_secondaryAnimation(JsonNode parsed)
 {
     var value = new glTF_VRM_SecondaryAnimation();
 
@@ -764,7 +764,7 @@ public static glTF_VRM_SecondaryAnimation Deserialize_vrm_secondaryAnimation(Lis
     return value;
 }
 
-public static List<VRM.glTF_VRM_SecondaryAnimationGroup> Deserialize_vrm_secondaryAnimation_boneGroups(ListTreeNode<JsonValue> parsed)
+public static List<VRM.glTF_VRM_SecondaryAnimationGroup> Deserialize_vrm_secondaryAnimation_boneGroups(JsonNode parsed)
 {
     var value = new List<glTF_VRM_SecondaryAnimationGroup>();
     foreach(var x in parsed.ArrayItems())
@@ -773,7 +773,7 @@ public static List<VRM.glTF_VRM_SecondaryAnimationGroup> Deserialize_vrm_seconda
     }
 	return value;
 }
-public static glTF_VRM_SecondaryAnimationGroup Deserialize_vrm_secondaryAnimation_boneGroups_LIST(ListTreeNode<JsonValue> parsed)
+public static glTF_VRM_SecondaryAnimationGroup Deserialize_vrm_secondaryAnimation_boneGroups_LIST(JsonNode parsed)
 {
     var value = new glTF_VRM_SecondaryAnimationGroup();
 
@@ -830,7 +830,7 @@ public static glTF_VRM_SecondaryAnimationGroup Deserialize_vrm_secondaryAnimatio
     return value;
 }
 
-public static Vector3 Deserialize_vrm_secondaryAnimation_boneGroups__gravityDir(ListTreeNode<JsonValue> parsed)
+public static Vector3 Deserialize_vrm_secondaryAnimation_boneGroups__gravityDir(JsonNode parsed)
 {
     var value = new Vector3();
 
@@ -857,7 +857,7 @@ public static Vector3 Deserialize_vrm_secondaryAnimation_boneGroups__gravityDir(
     return value;
 }
 
-public static Int32[] Deserialize_vrm_secondaryAnimation_boneGroups__bones(ListTreeNode<JsonValue> parsed)
+public static Int32[] Deserialize_vrm_secondaryAnimation_boneGroups__bones(JsonNode parsed)
 {
     var value = new Int32[parsed.GetArrayCount()];
     int i=0;
@@ -868,7 +868,7 @@ public static Int32[] Deserialize_vrm_secondaryAnimation_boneGroups__bones(ListT
 	return value;
 } 
 
-public static Int32[] Deserialize_vrm_secondaryAnimation_boneGroups__colliderGroups(ListTreeNode<JsonValue> parsed)
+public static Int32[] Deserialize_vrm_secondaryAnimation_boneGroups__colliderGroups(JsonNode parsed)
 {
     var value = new Int32[parsed.GetArrayCount()];
     int i=0;
@@ -879,7 +879,7 @@ public static Int32[] Deserialize_vrm_secondaryAnimation_boneGroups__colliderGro
 	return value;
 } 
 
-public static List<VRM.glTF_VRM_SecondaryAnimationColliderGroup> Deserialize_vrm_secondaryAnimation_colliderGroups(ListTreeNode<JsonValue> parsed)
+public static List<VRM.glTF_VRM_SecondaryAnimationColliderGroup> Deserialize_vrm_secondaryAnimation_colliderGroups(JsonNode parsed)
 {
     var value = new List<glTF_VRM_SecondaryAnimationColliderGroup>();
     foreach(var x in parsed.ArrayItems())
@@ -888,7 +888,7 @@ public static List<VRM.glTF_VRM_SecondaryAnimationColliderGroup> Deserialize_vrm
     }
 	return value;
 }
-public static glTF_VRM_SecondaryAnimationColliderGroup Deserialize_vrm_secondaryAnimation_colliderGroups_LIST(ListTreeNode<JsonValue> parsed)
+public static glTF_VRM_SecondaryAnimationColliderGroup Deserialize_vrm_secondaryAnimation_colliderGroups_LIST(JsonNode parsed)
 {
     var value = new glTF_VRM_SecondaryAnimationColliderGroup();
 
@@ -910,7 +910,7 @@ public static glTF_VRM_SecondaryAnimationColliderGroup Deserialize_vrm_secondary
     return value;
 }
 
-public static List<VRM.glTF_VRM_SecondaryAnimationCollider> Deserialize_vrm_secondaryAnimation_colliderGroups__colliders(ListTreeNode<JsonValue> parsed)
+public static List<VRM.glTF_VRM_SecondaryAnimationCollider> Deserialize_vrm_secondaryAnimation_colliderGroups__colliders(JsonNode parsed)
 {
     var value = new List<glTF_VRM_SecondaryAnimationCollider>();
     foreach(var x in parsed.ArrayItems())
@@ -919,7 +919,7 @@ public static List<VRM.glTF_VRM_SecondaryAnimationCollider> Deserialize_vrm_seco
     }
 	return value;
 }
-public static glTF_VRM_SecondaryAnimationCollider Deserialize_vrm_secondaryAnimation_colliderGroups__colliders_LIST(ListTreeNode<JsonValue> parsed)
+public static glTF_VRM_SecondaryAnimationCollider Deserialize_vrm_secondaryAnimation_colliderGroups__colliders_LIST(JsonNode parsed)
 {
     var value = new glTF_VRM_SecondaryAnimationCollider();
 
@@ -941,7 +941,7 @@ public static glTF_VRM_SecondaryAnimationCollider Deserialize_vrm_secondaryAnima
     return value;
 }
 
-public static Vector3 Deserialize_vrm_secondaryAnimation_colliderGroups__colliders__offset(ListTreeNode<JsonValue> parsed)
+public static Vector3 Deserialize_vrm_secondaryAnimation_colliderGroups__colliders__offset(JsonNode parsed)
 {
     var value = new Vector3();
 
@@ -968,7 +968,7 @@ public static Vector3 Deserialize_vrm_secondaryAnimation_colliderGroups__collide
     return value;
 }
 
-public static List<VRM.glTF_VRM_Material> Deserialize_vrm_materialProperties(ListTreeNode<JsonValue> parsed)
+public static List<VRM.glTF_VRM_Material> Deserialize_vrm_materialProperties(JsonNode parsed)
 {
     var value = new List<glTF_VRM_Material>();
     foreach(var x in parsed.ArrayItems())
@@ -977,7 +977,7 @@ public static List<VRM.glTF_VRM_Material> Deserialize_vrm_materialProperties(Lis
     }
 	return value;
 }
-public static glTF_VRM_Material Deserialize_vrm_materialProperties_LIST(ListTreeNode<JsonValue> parsed)
+public static glTF_VRM_Material Deserialize_vrm_materialProperties_LIST(JsonNode parsed)
 {
     var value = new glTF_VRM_Material();
 
@@ -1030,7 +1030,7 @@ public static glTF_VRM_Material Deserialize_vrm_materialProperties_LIST(ListTree
 }
 
  
-public static Dictionary<String, Single> Deserialize_vrm_materialProperties__floatProperties(ListTreeNode<JsonValue> parsed)
+public static Dictionary<String, Single> Deserialize_vrm_materialProperties__floatProperties(JsonNode parsed)
 {
     var value = new Dictionary<string, Single>();
     foreach(var kv in parsed.ObjectItems())
@@ -1041,7 +1041,7 @@ public static Dictionary<String, Single> Deserialize_vrm_materialProperties__flo
 }
 
  
-public static Dictionary<String, Single[]> Deserialize_vrm_materialProperties__vectorProperties(ListTreeNode<JsonValue> parsed)
+public static Dictionary<String, Single[]> Deserialize_vrm_materialProperties__vectorProperties(JsonNode parsed)
 {
     var value = new Dictionary<string, Single[]>();
     foreach(var kv in parsed.ObjectItems())
@@ -1051,7 +1051,7 @@ public static Dictionary<String, Single[]> Deserialize_vrm_materialProperties__v
 	return value;
 }
 
-public static Single[] Deserialize_vrm_materialProperties__vectorProperties_DICT(ListTreeNode<JsonValue> parsed)
+public static Single[] Deserialize_vrm_materialProperties__vectorProperties_DICT(JsonNode parsed)
 {
     var value = new Single[parsed.GetArrayCount()];
     int i=0;
@@ -1063,7 +1063,7 @@ public static Single[] Deserialize_vrm_materialProperties__vectorProperties_DICT
 } 
 
  
-public static Dictionary<String, Int32> Deserialize_vrm_materialProperties__textureProperties(ListTreeNode<JsonValue> parsed)
+public static Dictionary<String, Int32> Deserialize_vrm_materialProperties__textureProperties(JsonNode parsed)
 {
     var value = new Dictionary<string, Int32>();
     foreach(var kv in parsed.ObjectItems())
@@ -1074,7 +1074,7 @@ public static Dictionary<String, Int32> Deserialize_vrm_materialProperties__text
 }
 
  
-public static Dictionary<String, Boolean> Deserialize_vrm_materialProperties__keywordMap(ListTreeNode<JsonValue> parsed)
+public static Dictionary<String, Boolean> Deserialize_vrm_materialProperties__keywordMap(JsonNode parsed)
 {
     var value = new Dictionary<string, Boolean>();
     foreach(var kv in parsed.ObjectItems())
@@ -1085,7 +1085,7 @@ public static Dictionary<String, Boolean> Deserialize_vrm_materialProperties__ke
 }
 
  
-public static Dictionary<String, String> Deserialize_vrm_materialProperties__tagMap(ListTreeNode<JsonValue> parsed)
+public static Dictionary<String, String> Deserialize_vrm_materialProperties__tagMap(JsonNode parsed)
 {
     var value = new Dictionary<string, String>();
     foreach(var kv in parsed.ObjectItems())

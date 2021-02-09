@@ -6,27 +6,27 @@ namespace UniJSON
     public static class ListTreeNodeExtensions
     {
         #region IValue
-        public static bool IsNull<T>(this ListTreeNode<T> self) where T : IListTreeItem, IValue<T>
+        public static bool IsNull(this JsonNode self)
         {
             return self.Value.ValueType == ValueNodeType.Null;
         }
 
-        public static bool IsBoolean<T>(this ListTreeNode<T> self) where T : IListTreeItem, IValue<T>
+        public static bool IsBoolean(this JsonNode self)
         {
             return self.Value.ValueType == ValueNodeType.Boolean;
         }
 
-        public static bool IsString<T>(this ListTreeNode<T> self) where T : IListTreeItem, IValue<T>
+        public static bool IsString(this JsonNode self)
         {
             return self.Value.ValueType == ValueNodeType.String;
         }
 
-        public static bool IsInteger<T>(this ListTreeNode<T> self) where T : IListTreeItem, IValue<T>
+        public static bool IsInteger(this JsonNode self)
         {
             return self.Value.ValueType == ValueNodeType.Integer;
         }
 
-        public static bool IsFloat<T>(this ListTreeNode<T> self) where T : IListTreeItem, IValue<T>
+        public static bool IsFloat(this JsonNode self)
         {
             return self.Value.ValueType == ValueNodeType.Number
                    || self.Value.ValueType == ValueNodeType.NaN
@@ -34,41 +34,32 @@ namespace UniJSON
                    || self.Value.ValueType == ValueNodeType.MinusInfinity;
         }
 
-        public static bool IsArray<T>(this ListTreeNode<T> self) where T : IListTreeItem, IValue<T>
+        public static bool IsArray(this JsonNode self)
         {
             return self.Value.ValueType == ValueNodeType.Array;
         }
 
-        public static bool IsMap<T>(this ListTreeNode<T> self) where T : IListTreeItem, IValue<T>
+        public static bool IsMap(this JsonNode self)
         {
             return self.Value.ValueType == ValueNodeType.Object;
         }
 
-        public static bool GetBoolean<T>(this ListTreeNode<T> self) where T : IListTreeItem, IValue<T> { return self.Value.GetBoolean(); }
-        public static string GetString<T>(this ListTreeNode<T> self) where T : IListTreeItem, IValue<T> { return self.Value.GetString(); }
-        public static Utf8String GetUtf8String<T>(this ListTreeNode<T> self) where T : IListTreeItem, IValue<T> { return self.Value.GetUtf8String(); }
-        public static sbyte GetSByte<T>(this ListTreeNode<T> self) where T : IListTreeItem, IValue<T> { return self.Value.GetSByte(); }
-        public static short GetInt16<T>(this ListTreeNode<T> self) where T : IListTreeItem, IValue<T> { return self.Value.GetInt16(); }
-        public static int GetInt32<T>(this ListTreeNode<T> self) where T : IListTreeItem, IValue<T> { return self.Value.GetInt32(); }
-        public static long GetInt64<T>(this ListTreeNode<T> self) where T : IListTreeItem, IValue<T> { return self.Value.GetInt64(); }
-        public static byte GetByte<T>(this ListTreeNode<T> self) where T : IListTreeItem, IValue<T> { return self.Value.GetByte(); }
-        public static ushort GetUInt16<T>(this ListTreeNode<T> self) where T : IListTreeItem, IValue<T> { return self.Value.GetUInt16(); }
-        public static uint GetUInt32<T>(this ListTreeNode<T> self) where T : IListTreeItem, IValue<T> { return self.Value.GetUInt32(); }
-        public static ulong GetUInt64<T>(this ListTreeNode<T> self) where T : IListTreeItem, IValue<T> { return self.Value.GetUInt64(); }
-        public static float GetSingle<T>(this ListTreeNode<T> self) where T : IListTreeItem, IValue<T> { return self.Value.GetSingle(); }
-        public static double GetDouble<T>(this ListTreeNode<T> self) where T : IListTreeItem, IValue<T> { return self.Value.GetDouble(); }
-
-        /// <summary>
-        /// for UnitTest. Use explicit GetT() or Deserialize(ref T)
-        /// </summary>
-        /// <returns></returns>
-        public static object GetValue<T>(this ListTreeNode<T> self) where T : IListTreeItem, IValue<T>
-        {
-            return self.Value.GetValue<object>();
-        }
+        public static bool GetBoolean(this JsonNode self) { return self.Value.GetBoolean(); }
+        public static string GetString(this JsonNode self) { return self.Value.GetString(); }
+        public static Utf8String GetUtf8String(this JsonNode self) { return self.Value.GetUtf8String(); }
+        public static sbyte GetSByte(this JsonNode self) { return self.Value.GetSByte(); }
+        public static short GetInt16(this JsonNode self) { return self.Value.GetInt16(); }
+        public static int GetInt32(this JsonNode self) { return self.Value.GetInt32(); }
+        public static long GetInt64(this JsonNode self) { return self.Value.GetInt64(); }
+        public static byte GetByte(this JsonNode self) { return self.Value.GetByte(); }
+        public static ushort GetUInt16(this JsonNode self) { return self.Value.GetUInt16(); }
+        public static uint GetUInt32(this JsonNode self) { return self.Value.GetUInt32(); }
+        public static ulong GetUInt64(this JsonNode self) { return self.Value.GetUInt64(); }
+        public static float GetSingle(this JsonNode self) { return self.Value.GetSingle(); }
+        public static double GetDouble(this JsonNode self) { return self.Value.GetDouble(); }
         #endregion
 
-        public static IEnumerable<ListTreeNode<T>> Traverse<T>(this ListTreeNode<T> self) where T : IListTreeItem, IValue<T>
+        public static IEnumerable<JsonNode> Traverse(this JsonNode self)
         {
             yield return self;
             if (self.IsArray())
