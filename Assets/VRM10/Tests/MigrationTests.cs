@@ -17,14 +17,14 @@ namespace UniVRM10
             }
         }
 
-        static ListTreeNode<JsonValue> GetVRM0(byte[] bytes)
+        static JsonNode GetVRM0(byte[] bytes)
         {
             var glb = UniGLTF.Glb.Parse(bytes);
             var json = glb.Json.Bytes.ParseAsJson();
             return json["extensions"]["VRM"];
         }
 
-        T GetExtension<T>(UniGLTF.glTFExtension extensions, UniJSON.Utf8String key, Func<ListTreeNode<JsonValue>, T> deserializer)
+        T GetExtension<T>(UniGLTF.glTFExtension extensions, UniJSON.Utf8String key, Func<JsonNode, T> deserializer)
         {
             if (extensions is UniGLTF.glTFExtensionImport import)
             {

@@ -117,13 +117,13 @@ namespace UniGLTF
     /// 
     /// パース済みの JSONの部分 を保持する
     /// 
-    /// ListTreeNode<JsonValue> がJsonの部分を参照できる。
+    /// JsonNode がJsonの部分を参照できる。
     /// 
     /// </summary>
     public class glTFExtensionImport : glTFExtension
     {
-        readonly ListTreeNode<JsonValue> m_json;
-        public glTFExtensionImport(ListTreeNode<JsonValue> json)
+        readonly JsonNode m_json;
+        public glTFExtensionImport(JsonNode json)
         {
             m_json = json;
         }
@@ -134,7 +134,7 @@ namespace UniGLTF
             return "import: " + Encoding.UTF8.GetString(bytes.Array, bytes.Offset, bytes.Count);
         }
 
-        public IEnumerable<KeyValuePair<ListTreeNode<JsonValue>, ListTreeNode<JsonValue>>> ObjectItems()
+        public IEnumerable<KeyValuePair<JsonNode, JsonNode>> ObjectItems()
         {
             if (m_json.Value.ValueType == ValueNodeType.Object)
             {

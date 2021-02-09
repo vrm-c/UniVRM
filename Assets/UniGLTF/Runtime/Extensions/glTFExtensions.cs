@@ -392,7 +392,7 @@ namespace UniGLTF
             return false;
         }
 
-        static void Traverse(this glTF self, ListTreeNode<JsonValue> node, JsonFormatter f, Utf8String parentKey)
+        static void Traverse(this glTF self, JsonNode node, JsonFormatter f, Utf8String parentKey)
         {
             if (node.IsMap())
             {

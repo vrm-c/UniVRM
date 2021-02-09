@@ -22,7 +22,7 @@ namespace UniGLTF
         {
             var itemCallName = callName + "_ITEM";
             writer.Write(@"
-public static $0 $2(ListTreeNode<JsonValue> parsed)
+public static $0 $2(JsonNode parsed)
 {
     var value = new List<$1>();
     foreach(var x in parsed.ArrayItems())

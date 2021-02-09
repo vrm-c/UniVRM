@@ -28,7 +28,7 @@ public static bool TryGet(UniGLTF.glTFExtension src, out VRMC_springBone extensi
 }
 
 
-public static VRMC_springBone Deserialize(ListTreeNode<JsonValue> parsed)
+public static VRMC_springBone Deserialize(JsonNode parsed)
 {
     var value = new VRMC_springBone();
 
@@ -55,7 +55,7 @@ public static VRMC_springBone Deserialize(ListTreeNode<JsonValue> parsed)
     return value;
 }
 
-public static List<Spring> Deserialize_Springs(ListTreeNode<JsonValue> parsed)
+public static List<Spring> Deserialize_Springs(JsonNode parsed)
 {
     var value = new List<Spring>();
     foreach(var x in parsed.ArrayItems())
@@ -65,7 +65,7 @@ public static List<Spring> Deserialize_Springs(ListTreeNode<JsonValue> parsed)
 	return value;
 } 
 
-public static Spring Deserialize_Springs_ITEM(ListTreeNode<JsonValue> parsed)
+public static Spring Deserialize_Springs_ITEM(JsonNode parsed)
 {
     var value = new Spring();
 
@@ -92,7 +92,7 @@ public static Spring Deserialize_Springs_ITEM(ListTreeNode<JsonValue> parsed)
     return value;
 }
 
-public static List<SpringBoneJoint> Deserialize_Joints(ListTreeNode<JsonValue> parsed)
+public static List<SpringBoneJoint> Deserialize_Joints(JsonNode parsed)
 {
     var value = new List<SpringBoneJoint>();
     foreach(var x in parsed.ArrayItems())
@@ -102,7 +102,7 @@ public static List<SpringBoneJoint> Deserialize_Joints(ListTreeNode<JsonValue> p
 	return value;
 } 
 
-public static SpringBoneJoint Deserialize_Joints_ITEM(ListTreeNode<JsonValue> parsed)
+public static SpringBoneJoint Deserialize_Joints_ITEM(JsonNode parsed)
 {
     var value = new SpringBoneJoint();
 
@@ -159,7 +159,7 @@ public static SpringBoneJoint Deserialize_Joints_ITEM(ListTreeNode<JsonValue> pa
     return value;
 }
 
-public static float[] Deserialize_GravityDir(ListTreeNode<JsonValue> parsed)
+public static float[] Deserialize_GravityDir(JsonNode parsed)
 {
     var value = new float[parsed.GetArrayCount()];
     int i=0;
@@ -170,7 +170,7 @@ public static float[] Deserialize_GravityDir(ListTreeNode<JsonValue> parsed)
 	return value;
 } 
 
-public static int[] Deserialize_Colliders(ListTreeNode<JsonValue> parsed)
+public static int[] Deserialize_Colliders(JsonNode parsed)
 {
     var value = new int[parsed.GetArrayCount()];
     int i=0;

@@ -28,7 +28,7 @@ public static bool TryGet(UniGLTF.glTFExtension src, out VRMC_materials_mtoon ex
 }
 
 
-public static VRMC_materials_mtoon Deserialize(ListTreeNode<JsonValue> parsed)
+public static VRMC_materials_mtoon Deserialize(JsonNode parsed)
 {
     var value = new VRMC_materials_mtoon();
 
@@ -170,7 +170,7 @@ public static VRMC_materials_mtoon Deserialize(ListTreeNode<JsonValue> parsed)
     return value;
 }
 
-public static float[] Deserialize_ShadeFactor(ListTreeNode<JsonValue> parsed)
+public static float[] Deserialize_ShadeFactor(JsonNode parsed)
 {
     var value = new float[parsed.GetArrayCount()];
     int i=0;
@@ -181,7 +181,7 @@ public static float[] Deserialize_ShadeFactor(ListTreeNode<JsonValue> parsed)
 	return value;
 } 
 
-public static float[] Deserialize_RimFactor(ListTreeNode<JsonValue> parsed)
+public static float[] Deserialize_RimFactor(JsonNode parsed)
 {
     var value = new float[parsed.GetArrayCount()];
     int i=0;
@@ -192,7 +192,7 @@ public static float[] Deserialize_RimFactor(ListTreeNode<JsonValue> parsed)
 	return value;
 } 
 
-public static float[] Deserialize_OutlineFactor(ListTreeNode<JsonValue> parsed)
+public static float[] Deserialize_OutlineFactor(JsonNode parsed)
 {
     var value = new float[parsed.GetArrayCount()];
     int i=0;

@@ -64,7 +64,7 @@ namespace UniJSON
         /// <param name="valueType"></param>
         /// <param name="parentIndex"></param>
         /// <returns></returns>
-        static ListTreeNode<JsonValue> ParsePrimitive(ListTreeNode<JsonValue> tree, Utf8String segment, ValueNodeType valueType)
+        static JsonNode ParsePrimitive(JsonNode tree, Utf8String segment, ValueNodeType valueType)
         {
             int i = 1;
             for (; i < segment.ByteLength; ++i)
@@ -82,7 +82,7 @@ namespace UniJSON
             return tree.AddValue(segment.Subbytes(0, i).Bytes, valueType);
         }
 
-        static ListTreeNode<JsonValue> ParseString(ListTreeNode<JsonValue> tree, Utf8String segment)
+        static JsonNode ParseString(JsonNode tree, Utf8String segment)
         {
             int pos;
             if (segment.TrySearchAscii((Byte)'"', 1, out pos))
@@ -95,7 +95,7 @@ namespace UniJSON
             }
         }
 
-        static ListTreeNode<JsonValue> ParseArray(ListTreeNode<JsonValue> tree, Utf8String segment)
+        static JsonNode ParseArray(JsonNode tree, Utf8String segment)
         {
             var array = tree.AddValue(segment.Bytes, ValueNodeType.Array);
 
@@ -159,7 +159,7 @@ namespace UniJSON
             return array;
         }
 
-        static ListTreeNode<JsonValue> ParseObject(ListTreeNode<JsonValue> tree, Utf8String segment)
+        static JsonNode ParseObject(JsonNode tree, Utf8String segment)
         {
             var obj = tree.AddValue(segment.Bytes, ValueNodeType.Object);
 
@@ -248,7 +248,7 @@ namespace UniJSON
             return obj;
         }
 
-        public static ListTreeNode<JsonValue> Parse(ListTreeNode<JsonValue> tree, Utf8String segment)
+        public static JsonNode Parse(JsonNode tree, Utf8String segment)
         {
             // skip white space
             int pos;
@@ -284,14 +284,14 @@ namespace UniJSON
             }
         }
 
-        public static ListTreeNode<JsonValue> Parse(String json)
+        public static JsonNode Parse(String json)
         {
             return Parse(Utf8String.From(json));
         }
 
-        public static ListTreeNode<JsonValue> Parse(Utf8String json)
+        public static JsonNode Parse(Utf8String json)
         {
-            return Parse(default(ListTreeNode<JsonValue>), json);
+            return Parse(default(JsonNode), json);
         }
     }
 }

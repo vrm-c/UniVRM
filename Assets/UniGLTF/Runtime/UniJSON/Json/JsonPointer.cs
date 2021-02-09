@@ -37,8 +37,7 @@ namespace UniJSON
             };
         }
 
-        public static JsonPointer Create<T>(ListTreeNode<T> node)
-            where T : IListTreeItem, IValue<T>
+        public static JsonPointer Create(JsonNode node)
         {
             return new JsonPointer
             {
@@ -79,8 +78,7 @@ namespace UniJSON
             return sb.ToString();
         }
 
-        static Utf8String GetKeyFromParent<T>(ListTreeNode<T> json)
-            where T : IListTreeItem, IValue<T>
+        static Utf8String GetKeyFromParent(JsonNode json)
         {
             var parent = json.Parent;
             if (parent.IsArray())

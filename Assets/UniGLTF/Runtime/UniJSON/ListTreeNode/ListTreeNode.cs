@@ -6,8 +6,7 @@ using System.Text;
 
 namespace UniJSON
 {
-    public struct ListTreeNode<T> : ITreeNode<ListTreeNode<T>, T>
-        where T : IListTreeItem, IValue<T>
+    public struct JsonNode
     {
         public override int GetHashCode()
         {
@@ -16,12 +15,12 @@ namespace UniJSON
 
         public override bool Equals(object obj)
         {
-            if (!(obj is ListTreeNode<T>))
+            if (!(obj is JsonNode))
             {
                 return false;
             }
 
-            var rhs = (ListTreeNode<T>)obj;
+            var rhs = (JsonNode)obj;
 
             if ((Value.ValueType == ValueNodeType.Integer || Value.ValueType == ValueNodeType.Null)
                 && (rhs.Value.ValueType == ValueNodeType.Integer || rhs.Value.ValueType == ValueNodeType.Number))
@@ -198,7 +197,7 @@ namespace UniJSON
             return string.Join("", ToString(indent, 0).ToArray());
         }
 
-        public IEnumerable<JsonDiff> Diff(ListTreeNode<T> rhs, JsonPointer path = default(JsonPointer))
+        public IEnumerable<JsonDiff> Diff(JsonNode rhs, JsonPointer path = default(JsonPointer))
         {
             switch (Value.ValueType)
             {
@@ -228,7 +227,7 @@ namespace UniJSON
 
                 foreach (var kv in l)
                 {
-                    ListTreeNode<T> x;
+                    JsonNode x;
                     if (r.TryGetValue(kv.Key, out x))
                     {
                         r.Remove(kv.Key);
@@ -291,7 +290,7 @@ namespace UniJSON
         /// <summary>
         /// Whole tree nodes
         /// </summary>
-        List<T> m_Values;
+        List<JsonValue> m_Values;
         public bool IsValid
         {
             get
@@ -313,26 +312,26 @@ namespace UniJSON
             }
         }
 
-        public ListTreeNode<T> Prev
+        public JsonNode Prev
         {
             get
             {
-                return new ListTreeNode<T>(m_Values, ValueIndex - 1);
+                return new JsonNode(m_Values, ValueIndex - 1);
             }
         }
 
-        public T Value
+        public JsonValue Value
         {
             get
             {
                 if (m_Values == null)
                 {
-                    return default(T);
+                    return default;
                 }
                 return m_Values[ValueIndex];
             }
         }
-        public void SetValue(T value)
+        public void SetValue(JsonValue value)
         {
             m_Values[ValueIndex] = value;
         }
@@ -343,7 +342,7 @@ namespace UniJSON
             get { return Value.ChildCount; }
         }
 
-        public IEnumerable<ListTreeNode<T>> Children
+        public IEnumerable<JsonNode> Children
         {
             get
             {
@@ -353,13 +352,13 @@ namespace UniJSON
                     if (m_Values[i].ParentIndex == ValueIndex)
                     {
                         ++count;
-                        yield return new ListTreeNode<T>(m_Values, i);
+                        yield return new JsonNode(m_Values, i);
                     }
                 }
             }
         }
 
-        public ListTreeNode<T> this[String key]
+        public JsonNode this[String key]
         {
             get
             {
@@ -367,7 +366,7 @@ namespace UniJSON
             }
         }
 
-        public ListTreeNode<T> this[Utf8String key]
+        public JsonNode this[Utf8String key]
         {
             get
             {
@@ -375,7 +374,7 @@ namespace UniJSON
             }
         }
 
-        public ListTreeNode<T> this[int index]
+        public JsonNode this[int index]
         {
             get
             {
@@ -390,7 +389,7 @@ namespace UniJSON
                 return Value.ParentIndex >= 0 && Value.ParentIndex < m_Values.Count;
             }
         }
-        public ListTreeNode<T> Parent
+        public JsonNode Parent
         {
             get
             {
@@ -402,33 +401,33 @@ namespace UniJSON
                 {
                     throw new IndexOutOfRangeException();
                 }
-                return new ListTreeNode<T>(m_Values, Value.ParentIndex);
+                return new JsonNode(m_Values, Value.ParentIndex);
             }
         }
 
-        public ListTreeNode(List<T> values, int index = 0) : this()
+        public JsonNode(List<JsonValue> values, int index = 0) : this()
         {
             m_Values = values;
             _valueIndex = index;
         }
 
         #region JsonPointer
-        public ListTreeNode<T> AddKey(Utf8String key)
+        public JsonNode AddKey(Utf8String key)
         {
-            return AddValue(default(T).Key(key, ValueIndex));
+            return AddValue(default(JsonValue).Key(key, ValueIndex));
         }
 
-        public ListTreeNode<T> AddValue(ArraySegment<byte> bytes, ValueNodeType valueType)
+        public JsonNode AddValue(ArraySegment<byte> bytes, ValueNodeType valueType)
         {
-            return AddValue(default(T).New(bytes, valueType, ValueIndex));
+            return AddValue(default(JsonValue).New(bytes, valueType, ValueIndex));
         }
 
-        public ListTreeNode<T> AddValue(T value)
+        public JsonNode AddValue(JsonValue value)
         {
             if (m_Values == null)
             {
                 // initialize empty tree
-                m_Values = new List<T>();
+                m_Values = new List<JsonValue>();
                 _valueIndex = -1;
             }
             else
@@ -437,7 +436,7 @@ namespace UniJSON
             }
             var index = m_Values.Count;
             m_Values.Add(value);
-            return new ListTreeNode<T>(m_Values, index);
+            return new JsonNode(m_Values, index);
         }
 
         void IncrementChildCount()

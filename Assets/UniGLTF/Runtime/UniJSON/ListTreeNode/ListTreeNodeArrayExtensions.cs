@@ -7,21 +7,19 @@ namespace UniJSON
 {
     public static class ListTreeNodeArrayExtensions
     {
-        public static IEnumerable<ListTreeNode<T>> ArrayItems<T>(this ListTreeNode<T> self) where T : IListTreeItem, IValue<T>
+        public static IEnumerable<JsonNode> ArrayItems(this JsonNode self)
         {
             if (!self.IsArray()) throw new DeserializationException("is not array");
             return self.Children;
         }
 
         [Obsolete("Use GetArrayItem(index)")]
-        public static ListTreeNode<T> GetArrrayItem<T>(this ListTreeNode<T> self, int index)
-            where T : IListTreeItem, IValue<T>
+        public static JsonNode GetArrrayItem(this JsonNode self, int index)
         {
             return GetArrayItem(self, index);
         }
 
-        public static ListTreeNode<T> GetArrayItem<T>(this ListTreeNode<T> self, int index)
-            where T : IListTreeItem, IValue<T>
+        public static JsonNode GetArrayItem(this JsonNode self, int index)
         {
             int i = 0;
             foreach (var v in self.ArrayItems())
@@ -34,15 +32,13 @@ namespace UniJSON
             throw new KeyNotFoundException();
         }
 
-        public static int GetArrayCount<T>(this ListTreeNode<T> self) 
-            where T : IListTreeItem, IValue<T>
+        public static int GetArrayCount(this JsonNode self)
         {
             if (!self.IsArray()) throw new DeserializationException("is not array");
             return self.Children.Count();
         }
 
-        public static int IndexOf<T>(this ListTreeNode<T> self, ListTreeNode<T> child) 
-            where T : IListTreeItem, IValue<T>
+        public static int IndexOf(this JsonNode self, JsonNode child)
         {
             int i = 0;
             foreach (var v in self.ArrayItems())

@@ -278,7 +278,7 @@ namespace UniJSON
             Value(x.ToString("yyyy-MM-ddTHH:mm:ssZ"));
         }
 
-        public void Value(ListTreeNode<JsonValue> node)
+        public void Value(JsonNode node)
         {
             CommaCheck();
             m_w.Write(node.Value.Bytes);

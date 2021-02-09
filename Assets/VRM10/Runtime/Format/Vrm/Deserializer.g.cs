@@ -28,7 +28,7 @@ public static bool TryGet(UniGLTF.glTFExtension src, out VRMC_vrm extension)
 }
 
 
-public static VRMC_vrm Deserialize(ListTreeNode<JsonValue> parsed)
+public static VRMC_vrm Deserialize(JsonNode parsed)
 {
     var value = new VRMC_vrm();
 
@@ -70,7 +70,7 @@ public static VRMC_vrm Deserialize(ListTreeNode<JsonValue> parsed)
     return value;
 }
 
-public static Meta Deserialize_Meta(ListTreeNode<JsonValue> parsed)
+public static Meta Deserialize_Meta(JsonNode parsed)
 {
     var value = new Meta();
 
@@ -167,7 +167,7 @@ public static Meta Deserialize_Meta(ListTreeNode<JsonValue> parsed)
     return value;
 }
 
-public static List<string> Deserialize_Authors(ListTreeNode<JsonValue> parsed)
+public static List<string> Deserialize_Authors(JsonNode parsed)
 {
     var value = new List<string>();
     foreach(var x in parsed.ArrayItems())
@@ -177,7 +177,7 @@ public static List<string> Deserialize_Authors(ListTreeNode<JsonValue> parsed)
 	return value;
 } 
 
-public static List<string> Deserialize_References(ListTreeNode<JsonValue> parsed)
+public static List<string> Deserialize_References(JsonNode parsed)
 {
     var value = new List<string>();
     foreach(var x in parsed.ArrayItems())
@@ -187,7 +187,7 @@ public static List<string> Deserialize_References(ListTreeNode<JsonValue> parsed
 	return value;
 } 
 
-public static Humanoid Deserialize_Humanoid(ListTreeNode<JsonValue> parsed)
+public static Humanoid Deserialize_Humanoid(JsonNode parsed)
 {
     var value = new Humanoid();
 
@@ -204,7 +204,7 @@ public static Humanoid Deserialize_Humanoid(ListTreeNode<JsonValue> parsed)
     return value;
 }
 
-public static HumanBones Deserialize_HumanBones(ListTreeNode<JsonValue> parsed)
+public static HumanBones Deserialize_HumanBones(JsonNode parsed)
 {
     var value = new HumanBones();
 
@@ -491,7 +491,7 @@ public static HumanBones Deserialize_HumanBones(ListTreeNode<JsonValue> parsed)
     return value;
 }
 
-public static HumanBone Deserialize_Hips(ListTreeNode<JsonValue> parsed)
+public static HumanBone Deserialize_Hips(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -508,7 +508,7 @@ public static HumanBone Deserialize_Hips(ListTreeNode<JsonValue> parsed)
     return value;
 }
 
-public static HumanBone Deserialize_Spine(ListTreeNode<JsonValue> parsed)
+public static HumanBone Deserialize_Spine(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -525,7 +525,7 @@ public static HumanBone Deserialize_Spine(ListTreeNode<JsonValue> parsed)
     return value;
 }
 
-public static HumanBone Deserialize_Chest(ListTreeNode<JsonValue> parsed)
+public static HumanBone Deserialize_Chest(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -542,7 +542,7 @@ public static HumanBone Deserialize_Chest(ListTreeNode<JsonValue> parsed)
     return value;
 }
 
-public static HumanBone Deserialize_UpperChest(ListTreeNode<JsonValue> parsed)
+public static HumanBone Deserialize_UpperChest(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -559,7 +559,7 @@ public static HumanBone Deserialize_UpperChest(ListTreeNode<JsonValue> parsed)
     return value;
 }
 
-public static HumanBone Deserialize_Neck(ListTreeNode<JsonValue> parsed)
+public static HumanBone Deserialize_Neck(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -576,7 +576,7 @@ public static HumanBone Deserialize_Neck(ListTreeNode<JsonValue> parsed)
     return value;
 }
 
-public static HumanBone Deserialize_Head(ListTreeNode<JsonValue> parsed)
+public static HumanBone Deserialize_Head(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -593,7 +593,7 @@ public static HumanBone Deserialize_Head(ListTreeNode<JsonValue> parsed)
     return value;
 }
 
-public static HumanBone Deserialize_LeftEye(ListTreeNode<JsonValue> parsed)
+public static HumanBone Deserialize_LeftEye(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -610,7 +610,7 @@ public static HumanBone Deserialize_LeftEye(ListTreeNode<JsonValue> parsed)
     return value;
 }
 
-public static HumanBone Deserialize_RightEye(ListTreeNode<JsonValue> parsed)
+public static HumanBone Deserialize_RightEye(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -627,7 +627,7 @@ public static HumanBone Deserialize_RightEye(ListTreeNode<JsonValue> parsed)
     return value;
 }
 
-public static HumanBone Deserialize_Jaw(ListTreeNode<JsonValue> parsed)
+public static HumanBone Deserialize_Jaw(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -644,7 +644,7 @@ public static HumanBone Deserialize_Jaw(ListTreeNode<JsonValue> parsed)
     return value;
 }
 
-public static HumanBone Deserialize_LeftUpperLeg(ListTreeNode<JsonValue> parsed)
+public static HumanBone Deserialize_LeftUpperLeg(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -661,7 +661,7 @@ public static HumanBone Deserialize_LeftUpperLeg(ListTreeNode<JsonValue> parsed)
     return value;
 }
 
-public static HumanBone Deserialize_LeftLowerLeg(ListTreeNode<JsonValue> parsed)
+public static HumanBone Deserialize_LeftLowerLeg(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -678,7 +678,7 @@ public static HumanBone Deserialize_LeftLowerLeg(ListTreeNode<JsonValue> parsed)
     return value;
 }
 
-public static HumanBone Deserialize_LeftFoot(ListTreeNode<JsonValue> parsed)
+public static HumanBone Deserialize_LeftFoot(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -695,7 +695,7 @@ public static HumanBone Deserialize_LeftFoot(ListTreeNode<JsonValue> parsed)
     return value;
 }
 
-public static HumanBone Deserialize_LeftToes(ListTreeNode<JsonValue> parsed)
+public static HumanBone Deserialize_LeftToes(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -712,7 +712,7 @@ public static HumanBone Deserialize_LeftToes(ListTreeNode<JsonValue> parsed)
     return value;
 }
 
-public static HumanBone Deserialize_RightUpperLeg(ListTreeNode<JsonValue> parsed)
+public static HumanBone Deserialize_RightUpperLeg(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -729,7 +729,7 @@ public static HumanBone Deserialize_RightUpperLeg(ListTreeNode<JsonValue> parsed
     return value;
 }
 
-public static HumanBone Deserialize_RightLowerLeg(ListTreeNode<JsonValue> parsed)
+public static HumanBone Deserialize_RightLowerLeg(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -746,7 +746,7 @@ public static HumanBone Deserialize_RightLowerLeg(ListTreeNode<JsonValue> parsed
     return value;
 }
 
-public static HumanBone Deserialize_RightFoot(ListTreeNode<JsonValue> parsed)
+public static HumanBone Deserialize_RightFoot(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -763,7 +763,7 @@ public static HumanBone Deserialize_RightFoot(ListTreeNode<JsonValue> parsed)
     return value;
 }
 
-public static HumanBone Deserialize_RightToes(ListTreeNode<JsonValue> parsed)
+public static HumanBone Deserialize_RightToes(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -780,7 +780,7 @@ public static HumanBone Deserialize_RightToes(ListTreeNode<JsonValue> parsed)
     return value;
 }
 
-public static HumanBone Deserialize_LeftShoulder(ListTreeNode<JsonValue> parsed)
+public static HumanBone Deserialize_LeftShoulder(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -797,7 +797,7 @@ public static HumanBone Deserialize_LeftShoulder(ListTreeNode<JsonValue> parsed)
     return value;
 }
 
-public static HumanBone Deserialize_LeftUpperArm(ListTreeNode<JsonValue> parsed)
+public static HumanBone Deserialize_LeftUpperArm(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -814,7 +814,7 @@ public static HumanBone Deserialize_LeftUpperArm(ListTreeNode<JsonValue> parsed)
     return value;
 }
 
-public static HumanBone Deserialize_LeftLowerArm(ListTreeNode<JsonValue> parsed)
+public static HumanBone Deserialize_LeftLowerArm(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -831,7 +831,7 @@ public static HumanBone Deserialize_LeftLowerArm(ListTreeNode<JsonValue> parsed)
     return value;
 }
 
-public static HumanBone Deserialize_LeftHand(ListTreeNode<JsonValue> parsed)
+public static HumanBone Deserialize_LeftHand(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -848,7 +848,7 @@ public static HumanBone Deserialize_LeftHand(ListTreeNode<JsonValue> parsed)
     return value;
 }
 
-public static HumanBone Deserialize_RightShoulder(ListTreeNode<JsonValue> parsed)
+public static HumanBone Deserialize_RightShoulder(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -865,7 +865,7 @@ public static HumanBone Deserialize_RightShoulder(ListTreeNode<JsonValue> parsed
     return value;
 }
 
-public static HumanBone Deserialize_RightUpperArm(ListTreeNode<JsonValue> parsed)
+public static HumanBone Deserialize_RightUpperArm(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -882,7 +882,7 @@ public static HumanBone Deserialize_RightUpperArm(ListTreeNode<JsonValue> parsed
     return value;
 }
 
-public static HumanBone Deserialize_RightLowerArm(ListTreeNode<JsonValue> parsed)
+public static HumanBone Deserialize_RightLowerArm(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -899,7 +899,7 @@ public static HumanBone Deserialize_RightLowerArm(ListTreeNode<JsonValue> parsed
     return value;
 }
 
-public static HumanBone Deserialize_RightHand(ListTreeNode<JsonValue> parsed)
+public static HumanBone Deserialize_RightHand(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -916,7 +916,7 @@ public static HumanBone Deserialize_RightHand(ListTreeNode<JsonValue> parsed)
     return value;
 }
 
-public static HumanBone Deserialize_LeftThumbProximal(ListTreeNode<JsonValue> parsed)
+public static HumanBone Deserialize_LeftThumbProximal(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -933,7 +933,7 @@ public static HumanBone Deserialize_LeftThumbProximal(ListTreeNode<JsonValue> pa
     return value;
 }
 
-public static HumanBone Deserialize_LeftThumbIntermediate(ListTreeNode<JsonValue> parsed)
+public static HumanBone Deserialize_LeftThumbIntermediate(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -950,7 +950,7 @@ public static HumanBone Deserialize_LeftThumbIntermediate(ListTreeNode<JsonValue
     return value;
 }
 
-public static HumanBone Deserialize_LeftThumbDistal(ListTreeNode<JsonValue> parsed)
+public static HumanBone Deserialize_LeftThumbDistal(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -967,7 +967,7 @@ public static HumanBone Deserialize_LeftThumbDistal(ListTreeNode<JsonValue> pars
     return value;
 }
 
-public static HumanBone Deserialize_LeftIndexProximal(ListTreeNode<JsonValue> parsed)
+public static HumanBone Deserialize_LeftIndexProximal(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -984,7 +984,7 @@ public static HumanBone Deserialize_LeftIndexProximal(ListTreeNode<JsonValue> pa
     return value;
 }
 
-public static HumanBone Deserialize_LeftIndexIntermediate(ListTreeNode<JsonValue> parsed)
+public static HumanBone Deserialize_LeftIndexIntermediate(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -1001,7 +1001,7 @@ public static HumanBone Deserialize_LeftIndexIntermediate(ListTreeNode<JsonValue
     return value;
 }
 
-public static HumanBone Deserialize_LeftIndexDistal(ListTreeNode<JsonValue> parsed)
+public static HumanBone Deserialize_LeftIndexDistal(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -1018,7 +1018,7 @@ public static HumanBone Deserialize_LeftIndexDistal(ListTreeNode<JsonValue> pars
     return value;
 }
 
-public static HumanBone Deserialize_LeftMiddleProximal(ListTreeNode<JsonValue> parsed)
+public static HumanBone Deserialize_LeftMiddleProximal(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -1035,7 +1035,7 @@ public static HumanBone Deserialize_LeftMiddleProximal(ListTreeNode<JsonValue> p
     return value;
 }
 
-public static HumanBone Deserialize_LeftMiddleIntermediate(ListTreeNode<JsonValue> parsed)
+public static HumanBone Deserialize_LeftMiddleIntermediate(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -1052,7 +1052,7 @@ public static HumanBone Deserialize_LeftMiddleIntermediate(ListTreeNode<JsonValu
     return value;
 }
 
-public static HumanBone Deserialize_LeftMiddleDistal(ListTreeNode<JsonValue> parsed)
+public static HumanBone Deserialize_LeftMiddleDistal(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -1069,7 +1069,7 @@ public static HumanBone Deserialize_LeftMiddleDistal(ListTreeNode<JsonValue> par
     return value;
 }
 
-public static HumanBone Deserialize_LeftRingProximal(ListTreeNode<JsonValue> parsed)
+public static HumanBone Deserialize_LeftRingProximal(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -1086,7 +1086,7 @@ public static HumanBone Deserialize_LeftRingProximal(ListTreeNode<JsonValue> par
     return value;
 }
 
-public static HumanBone Deserialize_LeftRingIntermediate(ListTreeNode<JsonValue> parsed)
+public static HumanBone Deserialize_LeftRingIntermediate(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -1103,7 +1103,7 @@ public static HumanBone Deserialize_LeftRingIntermediate(ListTreeNode<JsonValue>
     return value;
 }
 
-public static HumanBone Deserialize_LeftRingDistal(ListTreeNode<JsonValue> parsed)
+public static HumanBone Deserialize_LeftRingDistal(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -1120,7 +1120,7 @@ public static HumanBone Deserialize_LeftRingDistal(ListTreeNode<JsonValue> parse
     return value;
 }
 
-public static HumanBone Deserialize_LeftLittleProximal(ListTreeNode<JsonValue> parsed)
+public static HumanBone Deserialize_LeftLittleProximal(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -1137,7 +1137,7 @@ public static HumanBone Deserialize_LeftLittleProximal(ListTreeNode<JsonValue> p
     return value;
 }
 
-public static HumanBone Deserialize_LeftLittleIntermediate(ListTreeNode<JsonValue> parsed)
+public static HumanBone Deserialize_LeftLittleIntermediate(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -1154,7 +1154,7 @@ public static HumanBone Deserialize_LeftLittleIntermediate(ListTreeNode<JsonValu
     return value;
 }
 
-public static HumanBone Deserialize_LeftLittleDistal(ListTreeNode<JsonValue> parsed)
+public static HumanBone Deserialize_LeftLittleDistal(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -1171,7 +1171,7 @@ public static HumanBone Deserialize_LeftLittleDistal(ListTreeNode<JsonValue> par
     return value;
 }
 
-public static HumanBone Deserialize_RightThumbProximal(ListTreeNode<JsonValue> parsed)
+public static HumanBone Deserialize_RightThumbProximal(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -1188,7 +1188,7 @@ public static HumanBone Deserialize_RightThumbProximal(ListTreeNode<JsonValue> p
     return value;
 }
 
-public static HumanBone Deserialize_RightThumbIntermediate(ListTreeNode<JsonValue> parsed)
+public static HumanBone Deserialize_RightThumbIntermediate(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -1205,7 +1205,7 @@ public static HumanBone Deserialize_RightThumbIntermediate(ListTreeNode<JsonValu
     return value;
 }
 
-public static HumanBone Deserialize_RightThumbDistal(ListTreeNode<JsonValue> parsed)
+public static HumanBone Deserialize_RightThumbDistal(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -1222,7 +1222,7 @@ public static HumanBone Deserialize_RightThumbDistal(ListTreeNode<JsonValue> par
     return value;
 }
 
-public static HumanBone Deserialize_RightIndexProximal(ListTreeNode<JsonValue> parsed)
+public static HumanBone Deserialize_RightIndexProximal(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -1239,7 +1239,7 @@ public static HumanBone Deserialize_RightIndexProximal(ListTreeNode<JsonValue> p
     return value;
 }
 
-public static HumanBone Deserialize_RightIndexIntermediate(ListTreeNode<JsonValue> parsed)
+public static HumanBone Deserialize_RightIndexIntermediate(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -1256,7 +1256,7 @@ public static HumanBone Deserialize_RightIndexIntermediate(ListTreeNode<JsonValu
     return value;
 }
 
-public static HumanBone Deserialize_RightIndexDistal(ListTreeNode<JsonValue> parsed)
+public static HumanBone Deserialize_RightIndexDistal(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -1273,7 +1273,7 @@ public static HumanBone Deserialize_RightIndexDistal(ListTreeNode<JsonValue> par
     return value;
 }
 
-public static HumanBone Deserialize_RightMiddleProximal(ListTreeNode<JsonValue> parsed)
+public static HumanBone Deserialize_RightMiddleProximal(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -1290,7 +1290,7 @@ public static HumanBone Deserialize_RightMiddleProximal(ListTreeNode<JsonValue> 
     return value;
 }
 
-public static HumanBone Deserialize_RightMiddleIntermediate(ListTreeNode<JsonValue> parsed)
+public static HumanBone Deserialize_RightMiddleIntermediate(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -1307,7 +1307,7 @@ public static HumanBone Deserialize_RightMiddleIntermediate(ListTreeNode<JsonVal
     return value;
 }
 
-public static HumanBone Deserialize_RightMiddleDistal(ListTreeNode<JsonValue> parsed)
+public static HumanBone Deserialize_RightMiddleDistal(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -1324,7 +1324,7 @@ public static HumanBone Deserialize_RightMiddleDistal(ListTreeNode<JsonValue> pa
     return value;
 }
 
-public static HumanBone Deserialize_RightRingProximal(ListTreeNode<JsonValue> parsed)
+public static HumanBone Deserialize_RightRingProximal(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -1341,7 +1341,7 @@ public static HumanBone Deserialize_RightRingProximal(ListTreeNode<JsonValue> pa
     return value;
 }
 
-public static HumanBone Deserialize_RightRingIntermediate(ListTreeNode<JsonValue> parsed)
+public static HumanBone Deserialize_RightRingIntermediate(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -1358,7 +1358,7 @@ public static HumanBone Deserialize_RightRingIntermediate(ListTreeNode<JsonValue
     return value;
 }
 
-public static HumanBone Deserialize_RightRingDistal(ListTreeNode<JsonValue> parsed)
+public static HumanBone Deserialize_RightRingDistal(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -1375,7 +1375,7 @@ public static HumanBone Deserialize_RightRingDistal(ListTreeNode<JsonValue> pars
     return value;
 }
 
-public static HumanBone Deserialize_RightLittleProximal(ListTreeNode<JsonValue> parsed)
+public static HumanBone Deserialize_RightLittleProximal(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -1392,7 +1392,7 @@ public static HumanBone Deserialize_RightLittleProximal(ListTreeNode<JsonValue> 
     return value;
 }
 
-public static HumanBone Deserialize_RightLittleIntermediate(ListTreeNode<JsonValue> parsed)
+public static HumanBone Deserialize_RightLittleIntermediate(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -1409,7 +1409,7 @@ public static HumanBone Deserialize_RightLittleIntermediate(ListTreeNode<JsonVal
     return value;
 }
 
-public static HumanBone Deserialize_RightLittleDistal(ListTreeNode<JsonValue> parsed)
+public static HumanBone Deserialize_RightLittleDistal(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -1426,7 +1426,7 @@ public static HumanBone Deserialize_RightLittleDistal(ListTreeNode<JsonValue> pa
     return value;
 }
 
-public static FirstPerson Deserialize_FirstPerson(ListTreeNode<JsonValue> parsed)
+public static FirstPerson Deserialize_FirstPerson(JsonNode parsed)
 {
     var value = new FirstPerson();
 
@@ -1443,7 +1443,7 @@ public static FirstPerson Deserialize_FirstPerson(ListTreeNode<JsonValue> parsed
     return value;
 }
 
-public static List<MeshAnnotation> Deserialize_MeshAnnotations(ListTreeNode<JsonValue> parsed)
+public static List<MeshAnnotation> Deserialize_MeshAnnotations(JsonNode parsed)
 {
     var value = new List<MeshAnnotation>();
     foreach(var x in parsed.ArrayItems())
@@ -1453,7 +1453,7 @@ public static List<MeshAnnotation> Deserialize_MeshAnnotations(ListTreeNode<Json
 	return value;
 } 
 
-public static MeshAnnotation Deserialize_MeshAnnotations_ITEM(ListTreeNode<JsonValue> parsed)
+public static MeshAnnotation Deserialize_MeshAnnotations_ITEM(JsonNode parsed)
 {
     var value = new MeshAnnotation();
 
@@ -1475,7 +1475,7 @@ public static MeshAnnotation Deserialize_MeshAnnotations_ITEM(ListTreeNode<JsonV
     return value;
 }
 
-public static LookAt Deserialize_LookAt(ListTreeNode<JsonValue> parsed)
+public static LookAt Deserialize_LookAt(JsonNode parsed)
 {
     var value = new LookAt();
 
@@ -1517,7 +1517,7 @@ public static LookAt Deserialize_LookAt(ListTreeNode<JsonValue> parsed)
     return value;
 }
 
-public static float[] Deserialize_OffsetFromHeadBone(ListTreeNode<JsonValue> parsed)
+public static float[] Deserialize_OffsetFromHeadBone(JsonNode parsed)
 {
     var value = new float[parsed.GetArrayCount()];
     int i=0;
@@ -1528,7 +1528,7 @@ public static float[] Deserialize_OffsetFromHeadBone(ListTreeNode<JsonValue> par
 	return value;
 } 
 
-public static LookAtRangeMap Deserialize_LookAtHorizontalInner(ListTreeNode<JsonValue> parsed)
+public static LookAtRangeMap Deserialize_LookAtHorizontalInner(JsonNode parsed)
 {
     var value = new LookAtRangeMap();
 
@@ -1550,7 +1550,7 @@ public static LookAtRangeMap Deserialize_LookAtHorizontalInner(ListTreeNode<Json
     return value;
 }
 
-public static LookAtRangeMap Deserialize_LookAtHorizontalOuter(ListTreeNode<JsonValue> parsed)
+public static LookAtRangeMap Deserialize_LookAtHorizontalOuter(JsonNode parsed)
 {
     var value = new LookAtRangeMap();
 
@@ -1572,7 +1572,7 @@ public static LookAtRangeMap Deserialize_LookAtHorizontalOuter(ListTreeNode<Json
     return value;
 }
 
-public static LookAtRangeMap Deserialize_LookAtVerticalDown(ListTreeNode<JsonValue> parsed)
+public static LookAtRangeMap Deserialize_LookAtVerticalDown(JsonNode parsed)
 {
     var value = new LookAtRangeMap();
 
@@ -1594,7 +1594,7 @@ public static LookAtRangeMap Deserialize_LookAtVerticalDown(ListTreeNode<JsonVal
     return value;
 }
 
-public static LookAtRangeMap Deserialize_LookAtVerticalUp(ListTreeNode<JsonValue> parsed)
+public static LookAtRangeMap Deserialize_LookAtVerticalUp(JsonNode parsed)
 {
     var value = new LookAtRangeMap();
 
@@ -1616,7 +1616,7 @@ public static LookAtRangeMap Deserialize_LookAtVerticalUp(ListTreeNode<JsonValue
     return value;
 }
 
-public static List<Expression> Deserialize_Expressions(ListTreeNode<JsonValue> parsed)
+public static List<Expression> Deserialize_Expressions(JsonNode parsed)
 {
     var value = new List<Expression>();
     foreach(var x in parsed.ArrayItems())
@@ -1626,7 +1626,7 @@ public static List<Expression> Deserialize_Expressions(ListTreeNode<JsonValue> p
 	return value;
 } 
 
-public static Expression Deserialize_Expressions_ITEM(ListTreeNode<JsonValue> parsed)
+public static Expression Deserialize_Expressions_ITEM(JsonNode parsed)
 {
     var value = new Expression();
 
@@ -1693,7 +1693,7 @@ public static Expression Deserialize_Expressions_ITEM(ListTreeNode<JsonValue> pa
     return value;
 }
 
-public static List<MorphTargetBind> Deserialize_MorphTargetBinds(ListTreeNode<JsonValue> parsed)
+public static List<MorphTargetBind> Deserialize_MorphTargetBinds(JsonNode parsed)
 {
     var value = new List<MorphTargetBind>();
     foreach(var x in parsed.ArrayItems())
@@ -1703,7 +1703,7 @@ public static List<MorphTargetBind> Deserialize_MorphTargetBinds(ListTreeNode<Js
 	return value;
 } 
 
-public static MorphTargetBind Deserialize_MorphTargetBinds_ITEM(ListTreeNode<JsonValue> parsed)
+public static MorphTargetBind Deserialize_MorphTargetBinds_ITEM(JsonNode parsed)
 {
     var value = new MorphTargetBind();
 
@@ -1740,7 +1740,7 @@ public static MorphTargetBind Deserialize_MorphTargetBinds_ITEM(ListTreeNode<Jso
     return value;
 }
 
-public static List<MaterialColorBind> Deserialize_MaterialColorBinds(ListTreeNode<JsonValue> parsed)
+public static List<MaterialColorBind> Deserialize_MaterialColorBinds(JsonNode parsed)
 {
     var value = new List<MaterialColorBind>();
     foreach(var x in parsed.ArrayItems())
@@ -1750,7 +1750,7 @@ public static List<MaterialColorBind> Deserialize_MaterialColorBinds(ListTreeNod
 	return value;
 } 
 
-public static MaterialColorBind Deserialize_MaterialColorBinds_ITEM(ListTreeNode<JsonValue> parsed)
+public static MaterialColorBind Deserialize_MaterialColorBinds_ITEM(JsonNode parsed)
 {
     var value = new MaterialColorBind();
 
@@ -1787,7 +1787,7 @@ public static MaterialColorBind Deserialize_MaterialColorBinds_ITEM(ListTreeNode
     return value;
 }
 
-public static float[] Deserialize_TargetValue(ListTreeNode<JsonValue> parsed)
+public static float[] Deserialize_TargetValue(JsonNode parsed)
 {
     var value = new float[parsed.GetArrayCount()];
     int i=0;
@@ -1798,7 +1798,7 @@ public static float[] Deserialize_TargetValue(ListTreeNode<JsonValue> parsed)
 	return value;
 } 
 
-public static List<TextureTransformBind> Deserialize_TextureTransformBinds(ListTreeNode<JsonValue> parsed)
+public static List<TextureTransformBind> Deserialize_TextureTransformBinds(JsonNode parsed)
 {
     var value = new List<TextureTransformBind>();
     foreach(var x in parsed.ArrayItems())
@@ -1808,7 +1808,7 @@ public static List<TextureTransformBind> Deserialize_TextureTransformBinds(ListT
 	return value;
 } 
 
-public static TextureTransformBind Deserialize_TextureTransformBinds_ITEM(ListTreeNode<JsonValue> parsed)
+public static TextureTransformBind Deserialize_TextureTransformBinds_ITEM(JsonNode parsed)
 {
     var value = new TextureTransformBind();
 
@@ -1845,7 +1845,7 @@ public static TextureTransformBind Deserialize_TextureTransformBinds_ITEM(ListTr
     return value;
 }
 
-public static float[] Deserialize_Scaling(ListTreeNode<JsonValue> parsed)
+public static float[] Deserialize_Scaling(JsonNode parsed)
 {
     var value = new float[parsed.GetArrayCount()];
     int i=0;
@@ -1856,7 +1856,7 @@ public static float[] Deserialize_Scaling(ListTreeNode<JsonValue> parsed)
 	return value;
 } 
 
-public static float[] Deserialize_Offset(ListTreeNode<JsonValue> parsed)
+public static float[] Deserialize_Offset(JsonNode parsed)
 {
     var value = new float[parsed.GetArrayCount()];
     int i=0;

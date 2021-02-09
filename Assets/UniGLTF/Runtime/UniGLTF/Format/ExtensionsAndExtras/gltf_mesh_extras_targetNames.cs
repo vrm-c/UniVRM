@@ -18,7 +18,7 @@ namespace UniGLTF
 
         public static readonly Utf8String ExtraNameUtf8 = Utf8String.From(ExtraName);
 
-        static List<string> Deserialize(ListTreeNode<JsonValue> json)
+        static List<string> Deserialize(JsonNode json)
         {
             var targetNames = new List<string>();
             if (json.Value.ValueType == ValueNodeType.Array)

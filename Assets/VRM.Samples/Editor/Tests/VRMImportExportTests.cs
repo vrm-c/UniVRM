@@ -9,7 +9,7 @@ namespace VRM.Samples
 {
     public static class JsonExtensions
     {
-        public static void SetValue<T>(this ListTreeNode<JsonValue> node, string key, T value)
+        public static void SetValue<T>(this JsonNode node, string key, T value)
         {
             var f = new JsonFormatter();
             f.Serialize(value);

@@ -59,7 +59,7 @@ namespace UniGLTF.JsonSchema.Schemas
             writer.Used.Add(callName);
 
             writer.Write(@"
-public static $0 $2(ListTreeNode<JsonValue> parsed)
+public static $0 $2(JsonNode parsed)
 {
     var value = new $0();
 
