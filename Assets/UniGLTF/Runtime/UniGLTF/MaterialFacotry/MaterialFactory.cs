@@ -6,25 +6,13 @@ using UnityEngine;
 
 namespace UniGLTF
 {
+    public delegate TextureItem GetTextureItemFunc(int i);
+    public delegate Shader GetShaderFunc();
+    public delegate MaterialItemBase MaterialImporter(int i, glTFMaterial x, bool hasVertexColor);
+
+
     public class MaterialFactory
     {
-        public IShaderStore m_shaderStore;
-        public IShaderStore ShaderStore
-        {
-            set
-            {
-                m_shaderStore = value;
-            }
-            get
-            {
-                if (m_shaderStore == null)
-                {
-                    m_shaderStore = new ShaderStore(this);
-                }
-                return m_shaderStore;
-            }
-        }
-
         MaterialImporter m_materialImporter;
         public MaterialImporter MaterialImporter
         {
@@ -36,7 +24,7 @@ namespace UniGLTF
             {
                 if (m_materialImporter == null)
                 {
-                    m_materialImporter = new MaterialImporter(ShaderStore);
+                    m_materialImporter = CreateMaterial;
                 }
                 return m_materialImporter;
             }
@@ -60,22 +48,22 @@ namespace UniGLTF
             m_textures.Add(item);
         }
 
-        List<Material> m_materials = new List<Material>();
-        public void AddMaterial(Material material)
+        List<MaterialItemBase> m_materials = new List<MaterialItemBase>();
+        public void AddMaterial(MaterialItemBase material)
         {
-            var originalName = material.name;
+            var originalName = material.Name;
             int j = 2;
-            while (m_materials.Any(x => x.name == material.name))
+            while (m_materials.Any(x => x.Name == material.Name))
             {
-                material.name = string.Format("{0}({1})", originalName, j++);
+                material.Name = string.Format("{0}({1})", originalName, j++);
             }
             m_materials.Add(material);
         }
-        public IList<Material> GetMaterials()
+        public IList<MaterialItemBase> GetMaterials()
         {
             return m_materials;
         }
-        public Material GetMaterial(int index)
+        public MaterialItemBase GetMaterial(int index)
         {
             if (index < 0) return null;
             if (index >= m_materials.Count) return null;
@@ -173,17 +161,33 @@ namespace UniGLTF
             {
                 if (gltf.materials == null || !gltf.materials.Any())
                 {
-                    AddMaterial(MaterialImporter.CreateMaterial(0, null, false, GetTexture));
+                    AddMaterial(MaterialImporter(0, null, false));
                 }
                 else
                 {
                     for (int i = 0; i < gltf.materials.Count; ++i)
                     {
-                        AddMaterial(MaterialImporter.CreateMaterial(i, gltf.materials[i], gltf.MaterialHasVertexColor(i), GetTexture));
+                        AddMaterial(MaterialImporter(i, gltf.materials[i], gltf.MaterialHasVertexColor(i)));
                     }
                 }
             }
             yield return null;
+        }
+
+        public static MaterialItemBase CreateMaterial(int i, glTFMaterial x, bool hasVertexColor)
+        {
+            if (x == null)
+            {
+                UnityEngine.Debug.LogWarning("glTFMaterial is empty");
+                return new PBRMaterialItem(i, x);
+            }
+
+            if (glTF_KHR_materials_unlit.IsEnable(x))
+            {
+                return new UnlitMaterialItem(i, x, hasVertexColor);
+            }
+
+            return new PBRMaterialItem(i, x);
         }
     }
 }

@@ -6,14 +6,8 @@ using System;
 
 namespace VRM
 {
-    public class VRMMaterialImporter : MaterialImporter
+    public class MToonMaterialItem : MaterialItemBase
     {
-        List<glTF_VRM_Material> m_materials;
-        public VRMMaterialImporter(IShaderStore shaderStore, List<glTF_VRM_Material> materials) : base(shaderStore)
-        {
-            m_materials = materials;
-        }
-
         static string[] VRM_SHADER_NAMES =
         {
             "Standard",
@@ -26,15 +20,18 @@ namespace VRM
             "VRM/UnlitTransparentZWrite",
         };
 
-        public override Material CreateMaterial(int i, glTFMaterial src, bool hasVertexColor, GetTextureFunc getTexture)
-        {
-            if (i == 0 && m_materials.Count == 0)
-            {
-                // dummy
-                return new Material(Shader.Find("Standard"));
-            }
+        glTF_VRM_Material m_vrmMaterial;
+        bool m_hasVertexColor;
 
-            var item = m_materials[i];
+        public MToonMaterialItem(int i, glTFMaterial src, bool hasVertexColor, glTF_VRM_Material vrmMaterial) : base(i, src)
+        {
+            m_hasVertexColor = hasVertexColor;
+            m_vrmMaterial = vrmMaterial;
+        }
+
+        public override Material GetOrCreate(GetTextureItemFunc getTexture)
+        {
+            var item = m_vrmMaterial;
             var shaderName = item.shader;
             var shader = Shader.Find(shaderName);
             if (shader == null)
@@ -50,7 +47,7 @@ namespace VRM
                 {
                     Debug.LogWarningFormat("unknown shader {0}.", shaderName);
                 }
-                return base.CreateMaterial(i, src, hasVertexColor, getTexture);
+                return MaterialFactory.CreateMaterial(m_index, m_src, m_hasVertexColor).GetOrCreate(getTexture);
             }
 
             //
@@ -119,6 +116,26 @@ namespace VRM
             }
 
             return material;
+        }
+    }
+
+    public class VRMMaterialImporter
+    {
+        List<glTF_VRM_Material> m_materials;
+        public VRMMaterialImporter(List<glTF_VRM_Material> materials)
+        {
+            m_materials = materials;
+        }
+
+        public MaterialItemBase CreateMaterial(int i, glTFMaterial src, bool hasVertexColor)
+        {
+            if (i == 0 && m_materials.Count == 0)
+            {
+                // dummy
+                return new PBRMaterialItem(i, src);
+            }
+
+            return new MToonMaterialItem(i, src, hasVertexColor, m_materials[i]);
         }
     }
 }

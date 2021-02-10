@@ -106,12 +106,7 @@ namespace UniGLTF
         #endregion
 
         MaterialFactory m_materialFactory = new MaterialFactory();
-        public MaterialFactory MaterialFacotry => m_materialFactory;
-
-        public ImporterContext(IShaderStore shaderStore)
-        {
-            m_materialFactory.ShaderStore = shaderStore;
-        }
+        public MaterialFactory MaterialFactory => m_materialFactory;
 
         public ImporterContext(MaterialImporter materialImporter)
         {
@@ -573,13 +568,13 @@ namespace UniGLTF
                 MeshWithMaterials meshWithMaterials;
                 if (EnableLoadBalancing)
                 {
-                    var buildMesh = MeshImporter.BuildMeshCoroutine(this, x);
+                    var buildMesh = MeshImporter.BuildMeshCoroutine(MaterialFactory, x);
                     yield return buildMesh;
                     meshWithMaterials = buildMesh.Current as MeshWithMaterials;
                 }
                 else
                 {
-                    meshWithMaterials = MeshImporter.BuildMesh(this, x);
+                    meshWithMaterials = MeshImporter.BuildMesh(MaterialFactory, x);
                 }
 
                 var mesh = meshWithMaterials.Mesh;
@@ -605,7 +600,7 @@ namespace UniGLTF
             for (int i = 0; i < GLTF.meshes.Count; ++i)
             {
                 var meshContext = meshImporter.ReadMesh(this, i);
-                var meshWithMaterials = MeshImporter.BuildMesh(this, meshContext);
+                var meshWithMaterials = MeshImporter.BuildMesh(MaterialFactory, meshContext);
                 var mesh = meshWithMaterials.Mesh;
                 if (string.IsNullOrEmpty(mesh.name))
                 {
@@ -702,7 +697,7 @@ namespace UniGLTF
         protected virtual IEnumerable<UnityEngine.Object> ObjectsForSubAsset()
         {
             HashSet<Texture2D> textures = new HashSet<Texture2D>();
-            foreach (var x in MaterialFacotry.GetTextures().SelectMany(y => y.GetTexturesForSaveAssets()))
+            foreach (var x in MaterialFactory.GetTextures().SelectMany(y => y.GetTexturesForSaveAssets()))
             {
                 if (!textures.Contains(x))
                 {
@@ -710,7 +705,7 @@ namespace UniGLTF
                 }
             }
             foreach (var x in textures) { yield return x; }
-            foreach (var x in MaterialFacotry.GetMaterials()) { yield return x; }
+            foreach (var x in MaterialFactory.GetMaterials()) { yield return x.GetOrCreate(MaterialFactory.GetTexture); }
             foreach (var x in Meshes) { yield return x.Mesh; }
             foreach (var x in AnimationClips) { yield return x; }
         }

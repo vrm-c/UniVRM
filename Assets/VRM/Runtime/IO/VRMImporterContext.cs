@@ -42,7 +42,7 @@ namespace VRM
             {
                 VRM = vrm;
                 // override material importer
-                MaterialFacotry.MaterialImporter = new VRMMaterialImporter(new ShaderStore(MaterialFacotry), VRM.materialProperties);
+                MaterialFactory.MaterialImporter = new VRMMaterialImporter(VRM.materialProperties).CreateMaterial;
             }
             else
             {
@@ -193,7 +193,7 @@ namespace VRM
                         }
                     }
 
-                    var material = MaterialFacotry.GetMaterials().FirstOrDefault(y => y.name == x.materialName);
+                    var material = MaterialFactory.GetMaterials().FirstOrDefault(y => y.Name == x.materialName).GetOrCreate(MaterialFactory.GetTexture);
                     var propertyName = x.propertyName;
                     if (x.propertyName.FastEndsWith("_ST_S")
                     || x.propertyName.FastEndsWith("_ST_T"))
@@ -305,7 +305,7 @@ namespace VRM
             meta.Reference = gltfMeta.reference;
             meta.Title = gltfMeta.title;
 
-            var thumbnail = MaterialFacotry.GetTexture(gltfMeta.texture);
+            var thumbnail = MaterialFactory.GetTexture(gltfMeta.texture);
             if (thumbnail != null)
             {
                 // ロード済み
@@ -316,7 +316,7 @@ namespace VRM
                 // 作成する(先行ロード用)
                 if (gltfMeta.texture >= 0 && gltfMeta.texture < GLTF.textures.Count)
                 {
-                    var t = new TextureItem(gltfMeta.texture, MaterialFacotry.CreateTextureLoader(gltfMeta.texture));
+                    var t = new TextureItem(gltfMeta.texture, MaterialFactory.CreateTextureLoader(gltfMeta.texture));
                     t.Process(GLTF, Storage);
                     meta.Thumbnail = t.Texture;
                 }
