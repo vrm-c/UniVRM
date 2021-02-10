@@ -207,6 +207,12 @@ namespace UniGLTF
                 Copy.transform.SetParent(m_tmpParent.transform, true);
                 Copy = m_tmpParent;
             }
+
+            if (Copy.transform.GetComponent<Renderer>() != null)
+            {
+                // should throw ?
+                Debug.LogError("root mesh is not exported");
+            }
         }
 
         public void Dispose()
