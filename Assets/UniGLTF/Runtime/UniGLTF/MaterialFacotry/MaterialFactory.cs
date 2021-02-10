@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace UniGLTF
     public delegate MaterialItemBase MaterialImporter(int i, glTFMaterial x, bool hasVertexColor);
 
 
-    public class MaterialFactory
+    public class MaterialFactory : IDisposable
     {
         MaterialImporter m_materialImporter;
         public MaterialImporter MaterialImporter
@@ -188,6 +189,11 @@ namespace UniGLTF
             }
 
             return new PBRMaterialItem(i, x);
+        }
+
+        public void Dispose()
+        {
+            throw new NotImplementedException();
         }
     }
 }

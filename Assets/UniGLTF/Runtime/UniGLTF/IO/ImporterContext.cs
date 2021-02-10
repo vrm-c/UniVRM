@@ -939,9 +939,14 @@ namespace UniGLTF
             if (Root != null) GameObject.Destroy(Root);
 
             // Remove resources. materials, textures meshes etc...
-            foreach (var o in ObjectsForSubAsset())
+            MaterialFactory.Dispose();
+            foreach (var x in Meshes)
             {
-                UnityEngine.Object.DestroyImmediate(o, true);
+                UnityEngine.Object.DestroyImmediate(x.Mesh, true);
+            }
+            foreach (var x in AnimationClips)
+            {
+                UnityEngine.Object.DestroyImmediate(x, true);
             }
         }
 
