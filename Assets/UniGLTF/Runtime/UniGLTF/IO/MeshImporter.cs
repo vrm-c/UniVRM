@@ -625,7 +625,7 @@ namespace UniGLTF
             }
         }
 
-        public static MeshWithMaterials BuildMesh(ImporterContext ctx, MeshImporter.MeshContext meshContext)
+        public static MeshWithMaterials BuildMesh(MaterialFactory ctx, MeshImporter.MeshContext meshContext)
         {
             var (mesh, recalculateTangents) = _BuildMesh(meshContext);
 
@@ -637,7 +637,7 @@ namespace UniGLTF
             var result = new MeshWithMaterials
             {
                 Mesh = mesh,
-                Materials = meshContext.MaterialIndices.Select(x => ctx.GetMaterial(x)).ToArray()
+                Materials = meshContext.MaterialIndices.Select(x => ctx.GetMaterial(x).GetOrCreate(ctx.GetTexture)).ToArray()
             };
 
             if (meshContext.BlendShapes.Count > 0)
@@ -651,7 +651,7 @@ namespace UniGLTF
             return result;
         }
 
-        public static IEnumerator BuildMeshCoroutine(ImporterContext ctx, MeshImporter.MeshContext meshContext)
+        public static IEnumerator BuildMeshCoroutine(MaterialFactory ctx, MeshImporter.MeshContext meshContext)
         {
             var (mesh, recalculateTangents) = _BuildMesh(meshContext);
 
@@ -665,7 +665,7 @@ namespace UniGLTF
             var result = new MeshWithMaterials
             {
                 Mesh = mesh,
-                Materials = meshContext.MaterialIndices.Select(x => ctx.GetMaterial(x)).ToArray()
+                Materials = meshContext.MaterialIndices.Select(x => ctx.GetMaterial(x).GetOrCreate(ctx.GetTexture)).ToArray()
             };
 
             yield return null;

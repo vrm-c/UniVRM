@@ -105,50 +105,17 @@ namespace UniGLTF
 
         #endregion
 
-        IShaderStore m_shaderStore;
-        public IShaderStore ShaderStore
-        {
-            get
-            {
-                if (m_shaderStore == null)
-                {
-                    m_shaderStore = new ShaderStore(this);
-                }
-                return m_shaderStore;
-            }
-        }
+        MaterialFactory m_materialFactory = new MaterialFactory();
+        public MaterialFactory MaterialFactory => m_materialFactory;
 
-        IMaterialImporter m_materialImporter;
-        protected void SetMaterialImporter(IMaterialImporter importer)
+        public ImporterContext(MaterialImporter materialImporter)
         {
-            m_materialImporter = importer;
-        }
-        public IMaterialImporter MaterialImporter
-        {
-            get
-            {
-                if (m_materialImporter == null)
-                {
-                    m_materialImporter = new MaterialImporter(ShaderStore, (int index) => this.GetTexture(index));
-                }
-                return m_materialImporter;
-            }
-        }
-
-        public ImporterContext(IShaderStore shaderStore)
-        {
-            m_shaderStore = shaderStore;
-        }
-
-        public ImporterContext(IMaterialImporter materialImporter)
-        {
-            m_materialImporter = materialImporter;
+            m_materialFactory.MaterialImporter = materialImporter;
         }
 
         public ImporterContext()
         {
         }
-
         #region Source
 
         /// <summary>
@@ -451,50 +418,6 @@ namespace UniGLTF
             Root.name = Path.GetFileNameWithoutExtension(path);
         }
 
-        public virtual ITextureLoader CreateTextureLoader(int index)
-        {
-#if UNIGLTF_USE_WEBREQUEST_TEXTURELOADER
-            return new UnityWebRequestTextureLoader(index);
-#else
-            return new TextureLoader(index);
-#endif
-        }
-
-        public void CreateTextureItems(UnityPath imageBaseDir = default(UnityPath))
-        {
-            if (m_textures.Any())
-            {
-                return;
-            }
-
-            for (int i = 0; i < GLTF.textures.Count; ++i)
-            {
-
-                TextureItem item = null;
-#if UNITY_EDITOR
-                var image = GLTF.GetImageFromTextureIndex(i);
-                if (imageBaseDir.IsUnderAssetsFolder
-                    && !string.IsNullOrEmpty(image.uri)
-                    && !image.uri.FastStartsWith("data:")
-                    )
-                {
-                    ///
-                    /// required SaveTexturesAsPng or SetTextureBaseDir
-                    ///
-                    var assetPath = imageBaseDir.Child(image.uri);
-                    var textureName = !string.IsNullOrEmpty(image.name) ? image.name : Path.GetFileNameWithoutExtension(image.uri);
-                    item = new TextureItem(i, assetPath, textureName);
-                }
-                else
-#endif
-                {
-                    item = new TextureItem(i, CreateTextureLoader(i));
-                }
-
-                AddTexture(item);
-            }
-        }
-
         /// <summary>
         /// Build unity objects from parsed gltf
         /// </summary>
@@ -578,23 +501,11 @@ namespace UniGLTF
             Schedulable.Create()
                 .AddTask(Scheduler.ThreadPool, () =>
                 {
-                    if (m_textures.Count == 0)
-                    {
-                        //
-                        // runtime
-                        //
-                        CreateTextureItems();
-                    }
-                    else
-                    {
-                        //
-                        // already CreateTextures(by assetPostProcessor or editor menu)
-                        //
-                    }
+                    m_materialFactory.Prepare(GLTF);
                 })
-                .ContinueWithCoroutine(Scheduler.ThreadPool, TexturesProcessOnAnyThread)
-                .ContinueWithCoroutine(Scheduler.MainThread, TexturesProcessOnMainThread)
-                .ContinueWithCoroutine(Scheduler.MainThread, LoadMaterials)
+                .ContinueWithCoroutine(Scheduler.ThreadPool, () => m_materialFactory.TexturesProcessOnAnyThread(GLTF, Storage))
+                .ContinueWithCoroutine(Scheduler.MainThread, () => m_materialFactory.TexturesProcessOnMainThread(GLTF))
+                .ContinueWithCoroutine(Scheduler.MainThread, () => m_materialFactory.LoadMaterials(GLTF))
                 .OnExecute(Scheduler.ThreadPool, parent =>
                 {
                     // UniGLTF does not support draco
@@ -649,47 +560,6 @@ namespace UniGLTF
             yield break;
         }
 
-        IEnumerator TexturesProcessOnAnyThread()
-        {
-            using (MeasureTime("TexturesProcessOnAnyThread"))
-            {
-                foreach (var x in GetTextures())
-                {
-                    x.ProcessOnAnyThread(GLTF, Storage);
-                    yield return null;
-                }
-            }
-        }
-
-        IEnumerator TexturesProcessOnMainThread()
-        {
-            using (MeasureTime("TexturesProcessOnMainThread"))
-            {
-                foreach (var x in GetTextures())
-                {
-                    yield return x.ProcessOnMainThreadCoroutine(GLTF);
-                }
-            }
-        }
-
-        IEnumerator LoadMaterials()
-        {
-            using (MeasureTime("LoadMaterials"))
-            {
-                if (GLTF.materials == null || !GLTF.materials.Any())
-                {
-                    AddMaterial(MaterialImporter.CreateMaterial(0, null, false));
-                }
-                else
-                {
-                    for (int i = 0; i < GLTF.materials.Count; ++i)
-                    {
-                        AddMaterial(MaterialImporter.CreateMaterial(i, GLTF.materials[i], GLTF.MaterialHasVertexColor(i)));
-                    }
-                }
-            }
-            yield return null;
-        }
 
         IEnumerator BuildMesh(MeshImporter.MeshContext x, int i)
         {
@@ -698,13 +568,13 @@ namespace UniGLTF
                 MeshWithMaterials meshWithMaterials;
                 if (EnableLoadBalancing)
                 {
-                    var buildMesh = MeshImporter.BuildMeshCoroutine(this, x);
+                    var buildMesh = MeshImporter.BuildMeshCoroutine(MaterialFactory, x);
                     yield return buildMesh;
                     meshWithMaterials = buildMesh.Current as MeshWithMaterials;
                 }
                 else
                 {
-                    meshWithMaterials = MeshImporter.BuildMesh(this, x);
+                    meshWithMaterials = MeshImporter.BuildMesh(MaterialFactory, x);
                 }
 
                 var mesh = meshWithMaterials.Mesh;
@@ -730,7 +600,7 @@ namespace UniGLTF
             for (int i = 0; i < GLTF.meshes.Count; ++i)
             {
                 var meshContext = meshImporter.ReadMesh(this, i);
-                var meshWithMaterials = MeshImporter.BuildMesh(this, meshContext);
+                var meshWithMaterials = MeshImporter.BuildMesh(MaterialFactory, meshContext);
                 var mesh = meshWithMaterials.Mesh;
                 if (string.IsNullOrEmpty(mesh.name))
                 {
@@ -793,45 +663,6 @@ namespace UniGLTF
         public GameObject Root;
         public List<Transform> Nodes = new List<Transform>();
 
-        List<TextureItem> m_textures = new List<TextureItem>();
-        public IList<TextureItem> GetTextures()
-        {
-            return m_textures;
-        }
-        public TextureItem GetTexture(int i)
-        {
-            if (i < 0 || i >= m_textures.Count)
-            {
-                return null;
-            }
-            return m_textures[i];
-        }
-        public void AddTexture(TextureItem item)
-        {
-            m_textures.Add(item);
-        }
-
-        List<Material> m_materials = new List<Material>();
-        public void AddMaterial(Material material)
-        {
-            var originalName = material.name;
-            int j = 2;
-            while (m_materials.Any(x => x.name == material.name))
-            {
-                material.name = string.Format("{0}({1})", originalName, j++);
-            }
-            m_materials.Add(material);
-        }
-        public IList<Material> GetMaterials()
-        {
-            return m_materials;
-        }
-        public Material GetMaterial(int index)
-        {
-            if (index < 0) return null;
-            if (index >= m_materials.Count) return null;
-            return m_materials[index];
-        }
 
         public List<MeshWithMaterials> Meshes = new List<MeshWithMaterials>();
         public void ShowMeshes()
@@ -866,7 +697,7 @@ namespace UniGLTF
         protected virtual IEnumerable<UnityEngine.Object> ObjectsForSubAsset()
         {
             HashSet<Texture2D> textures = new HashSet<Texture2D>();
-            foreach (var x in m_textures.SelectMany(y => y.GetTexturesForSaveAssets()))
+            foreach (var x in MaterialFactory.GetTextures().SelectMany(y => y.GetTexturesForSaveAssets()))
             {
                 if (!textures.Contains(x))
                 {
@@ -874,7 +705,7 @@ namespace UniGLTF
                 }
             }
             foreach (var x in textures) { yield return x; }
-            foreach (var x in m_materials) { yield return x; }
+            foreach (var x in MaterialFactory.GetMaterials()) { yield return x.GetOrCreate(MaterialFactory.GetTexture); }
             foreach (var x in Meshes) { yield return x.Mesh; }
             foreach (var x in AnimationClips) { yield return x; }
         }
@@ -1065,7 +896,7 @@ namespace UniGLTF
                 AssetDatabase.Refresh();
             }
 
-            CreateTextureItems(prefabParentDir);
+            m_materialFactory.CreateTextureItems(GLTF, prefabParentDir);
         }
         #endregion
 #endif
