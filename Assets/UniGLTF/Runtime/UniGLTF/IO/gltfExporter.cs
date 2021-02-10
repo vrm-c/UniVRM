@@ -392,7 +392,10 @@ namespace UniGLTF
             {
                 if (tmpParent != null)
                 {
-                    tmpParent.transform.GetChild(0).SetParent(null);
+                    var child = tmpParent.transform.GetChild(0);
+                    child.SetParent(null);
+                    Copy = child.gameObject;
+
                     if (Application.isPlaying)
                     {
                         GameObject.Destroy(tmpParent);
