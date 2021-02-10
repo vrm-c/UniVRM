@@ -19,6 +19,21 @@ namespace UniGLTF
 
         public abstract Material GetOrCreate(GetTextureItemFunc getTexture);
 
+        protected Material CreateMaterial(string shaderName)
+        {
+            var material = new Material(Shader.Find(shaderName));
+#if UNITY_EDITOR
+            // textureImporter.SaveAndReimport(); may destroy this material
+            material.hideFlags = HideFlags.DontUnloadUnusedAsset;
+#endif
+            material.name = (m_src == null || string.IsNullOrEmpty(m_src.name))
+                ? string.Format("material_{0:00}", m_index)
+                : m_src.name
+                ;
+
+            return material;
+        }
+
         protected static void SetTextureOffsetAndScale(Material material, glTFTextureInfo textureInfo, string propertyName)
         {
             if (glTF_KHR_texture_transform.TryGet(textureInfo, out glTF_KHR_texture_transform textureTransform))

@@ -4,7 +4,7 @@ namespace UniGLTF
 {
     public class UnlitMaterialItem : MaterialItemBase
     {
-        public const string UniUnlitShaderName = "UniGLTF/UniUnlit";
+        public const string ShaderName = "UniGLTF/UniUnlit";
 
         bool m_hasVertexColor;
 
@@ -20,15 +20,7 @@ namespace UniGLTF
                 getTexture = _ => null;
             }
 
-            var material = new Material(Shader.Find(UniUnlitShaderName));
-#if UNITY_EDITOR
-            // textureImporter.SaveAndReimport(); may destroy this material
-            material.hideFlags = HideFlags.DontUnloadUnusedAsset;
-#endif
-            material.name = (m_src == null || string.IsNullOrEmpty(m_src.name))
-                ? string.Format("material_{0:00}", m_index)
-                : m_src.name
-                ;
+            var material = CreateMaterial(ShaderName);
 
             // texture
             if (m_src.pbrMetallicRoughness.baseColorTexture != null)

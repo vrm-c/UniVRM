@@ -31,7 +31,7 @@ namespace UniGLTF
     /// _ZWrite
     public class PBRMaterialItem : MaterialItemBase
     {
-        public const string PBRShaderName = "Standard";
+        public const string ShaderName = "Standard";
 
         private enum BlendMode
         {
@@ -52,15 +52,7 @@ namespace UniGLTF
                 getTexture = _ => null;
             }
 
-            var material = new Material(Shader.Find(PBRShaderName));
-#if UNITY_EDITOR
-            // textureImporter.SaveAndReimport(); may destroy this material
-            material.hideFlags = HideFlags.DontUnloadUnusedAsset;
-#endif
-            material.name = (base.m_src == null || string.IsNullOrEmpty(base.m_src.name))
-                ? string.Format("material_{0:00}", m_index)
-                : base.m_src.name
-                ;
+            var material = CreateMaterial(ShaderName);
 
             // PBR material
             if (m_src != null)
