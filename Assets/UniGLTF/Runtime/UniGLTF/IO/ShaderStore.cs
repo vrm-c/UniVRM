@@ -85,7 +85,7 @@ namespace UniGLTF
         }
 
         //ImporterContext m_context;
-        public ShaderStore(ImporterContext _)
+        public ShaderStore(MaterialFactory _)
         {
             //m_context = context;
         }
