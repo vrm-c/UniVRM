@@ -76,7 +76,7 @@ namespace UniGLTF
 #if UNIGLTF_USE_WEBREQUEST_TEXTURELOADER
             return new UnityWebRequestTextureLoader(index);
 #else
-            return new TextureLoader(index);
+            return new GltfTextureLoader(index);
 #endif
         }
 
