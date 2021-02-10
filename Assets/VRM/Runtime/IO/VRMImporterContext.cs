@@ -42,7 +42,7 @@ namespace VRM
             {
                 VRM = vrm;
                 // override material importer
-                SetMaterialImporter(new VRMMaterialImporter(this, VRM.materialProperties));
+                SetMaterialImporter(new VRMMaterialImporter(new ShaderStore(this), VRM.materialProperties));
             }
             else
             {

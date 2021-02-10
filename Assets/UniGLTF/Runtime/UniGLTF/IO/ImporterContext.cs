@@ -129,7 +129,7 @@ namespace UniGLTF
             {
                 if (m_materialImporter == null)
                 {
-                    m_materialImporter = new MaterialImporter(ShaderStore, (int index) => this.GetTexture(index));
+                    m_materialImporter = new MaterialImporter(ShaderStore);
                 }
                 return m_materialImporter;
             }
@@ -678,13 +678,13 @@ namespace UniGLTF
             {
                 if (GLTF.materials == null || !GLTF.materials.Any())
                 {
-                    AddMaterial(MaterialImporter.CreateMaterial(0, null, false));
+                    AddMaterial(MaterialImporter.CreateMaterial(0, null, false, GetTexture));
                 }
                 else
                 {
                     for (int i = 0; i < GLTF.materials.Count; ++i)
                     {
-                        AddMaterial(MaterialImporter.CreateMaterial(i, GLTF.materials[i], GLTF.MaterialHasVertexColor(i)));
+                        AddMaterial(MaterialImporter.CreateMaterial(i, GLTF.materials[i], GLTF.MaterialHasVertexColor(i), GetTexture));
                     }
                 }
             }

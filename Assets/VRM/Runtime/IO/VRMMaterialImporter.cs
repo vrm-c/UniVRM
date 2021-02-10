@@ -9,7 +9,7 @@ namespace VRM
     public class VRMMaterialImporter : MaterialImporter
     {
         List<glTF_VRM_Material> m_materials;
-        public VRMMaterialImporter(ImporterContext context, List<glTF_VRM_Material> materials) : base(new ShaderStore(context), (int index) => context.GetTexture(index))
+        public VRMMaterialImporter(IShaderStore shaderStore, List<glTF_VRM_Material> materials) : base(shaderStore)
         {
             m_materials = materials;
         }
@@ -26,9 +26,9 @@ namespace VRM
             "VRM/UnlitTransparentZWrite",
         };
 
-        public override Material CreateMaterial(int i, glTFMaterial src, bool hasVertexColor)
+        public override Material CreateMaterial(int i, glTFMaterial src, bool hasVertexColor, GetTextureFunc getTexture)
         {
-            if(i==0 && m_materials.Count == 0)
+            if (i == 0 && m_materials.Count == 0)
             {
                 // dummy
                 return new Material(Shader.Find("Standard"));
@@ -50,7 +50,7 @@ namespace VRM
                 {
                     Debug.LogWarningFormat("unknown shader {0}.", shaderName);
                 }
-                return base.CreateMaterial(i, src, hasVertexColor);
+                return base.CreateMaterial(i, src, hasVertexColor, getTexture);
             }
 
             //
@@ -81,7 +81,7 @@ namespace VRM
             }
             foreach (var kv in item.textureProperties)
             {
-                var texture = base.GetTextureFunc(kv.Value);
+                var texture = getTexture(kv.Value);
                 if (texture != null)
                 {
                     var converted = texture.ConvertTexture(kv.Key);

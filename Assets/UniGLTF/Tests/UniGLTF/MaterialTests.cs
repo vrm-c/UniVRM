@@ -33,8 +33,8 @@ namespace UniGLTF
             gltfMaterial.pbrMetallicRoughness.baseColorTexture.extensions = gltfMaterial.pbrMetallicRoughness.baseColorTexture.extensions.Deserialize();
 
             var shaderStore = new ShaderStore(null);
-            var materialImporter = new MaterialImporter(shaderStore, (int index) => { return null; });
-            var dstMaterial = materialImporter.CreateMaterial(0, gltfMaterial, false);
+            var materialImporter = new MaterialImporter(shaderStore);
+            var dstMaterial = materialImporter.CreateMaterial(0, gltfMaterial, false, x => null);
 
             Assert.AreEqual(dstMaterial.mainTextureOffset.x, offset.x, 0.3f);
             Assert.AreEqual(dstMaterial.mainTextureOffset.y, offset.y, 0.2f);
@@ -222,10 +222,10 @@ namespace UniGLTF
         public void MaterialImportTest()
         {
             var shaderStore = new ShaderStore(null);
-            var materialImporter = new MaterialImporter(shaderStore, null);
+            var materialImporter = new MaterialImporter(shaderStore);
 
             {
-                var material = materialImporter.CreateMaterial(0, new glTFMaterial { }, false);
+                var material = materialImporter.CreateMaterial(0, new glTFMaterial { }, false, null);
                 Assert.AreEqual("Standard", material.shader.name);
             }
         }
