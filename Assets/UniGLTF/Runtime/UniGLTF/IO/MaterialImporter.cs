@@ -8,12 +8,7 @@ using UnityEditor;
 
 namespace UniGLTF
 {
-    public interface IMaterialImporter
-    {
-        Material CreateMaterial(int i, glTFMaterial src, bool hasVertexColor);
-    }
-
-    public class MaterialImporter : IMaterialImporter
+    public class MaterialImporter
     {
         IShaderStore m_shaderStore;
 

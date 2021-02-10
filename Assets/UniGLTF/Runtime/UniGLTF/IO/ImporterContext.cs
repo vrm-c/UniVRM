@@ -118,12 +118,12 @@ namespace UniGLTF
             }
         }
 
-        IMaterialImporter m_materialImporter;
-        protected void SetMaterialImporter(IMaterialImporter importer)
+        MaterialImporter m_materialImporter;
+        protected void SetMaterialImporter(MaterialImporter importer)
         {
             m_materialImporter = importer;
         }
-        public IMaterialImporter MaterialImporter
+        public MaterialImporter MaterialImporter
         {
             get
             {
@@ -140,7 +140,7 @@ namespace UniGLTF
             m_shaderStore = shaderStore;
         }
 
-        public ImporterContext(IMaterialImporter materialImporter)
+        public ImporterContext(MaterialImporter materialImporter)
         {
             m_materialImporter = materialImporter;
         }
