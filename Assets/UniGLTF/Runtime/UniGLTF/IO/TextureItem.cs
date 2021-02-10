@@ -87,7 +87,7 @@ namespace UniGLTF
 
         public bool IsAsset
         {
-            private set;
+            set;
             get;
         }
 
@@ -115,26 +115,11 @@ namespace UniGLTF
             m_textureIndex = index;
             m_textureLoader = textureLoader;
 
-            if(m_textureLoader == null)
+            if (m_textureLoader == null)
             {
                 throw new Exception("ITextureLoader is null.");
             }
         }
-
-#if UNITY_EDITOR
-        /// <summary>
-        /// Texture from asset
-        /// </summary>
-        /// <param name="index"></param>
-        /// <param name="assetPath"></param>
-        /// <param name="textureName"></param>
-        public TextureItem(int index, UnityPath assetPath, string textureName)
-        {
-            m_textureIndex = index;
-            IsAsset = true;
-            m_textureLoader = new AssetTextureLoader(assetPath, textureName);
-        }
-#endif
 
         #region Process
         ITextureLoader m_textureLoader;

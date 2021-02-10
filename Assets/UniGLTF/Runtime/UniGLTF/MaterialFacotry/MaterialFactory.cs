@@ -121,7 +121,10 @@ namespace UniGLTF
                     ///
                     var assetPath = imageBaseDir.Child(image.uri);
                     var textureName = !string.IsNullOrEmpty(image.name) ? image.name : Path.GetFileNameWithoutExtension(image.uri);
-                    item = new TextureItem(i, assetPath, textureName);
+                    item = new TextureItem(i, new AssetTextureLoader(assetPath, textureName))
+                    {
+                        IsAsset = true
+                    };
                 }
                 else
 #endif
