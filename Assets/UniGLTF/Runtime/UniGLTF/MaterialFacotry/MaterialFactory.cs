@@ -145,6 +145,7 @@ namespace UniGLTF
                 if (m_gltf.materials == null || m_gltf.materials.Count == 0)
                 {
                     var task = CreateMaterialAsync(m_gltf, 0, GetTextureAsync);
+
                     while (!task.IsCompleted)
                     {
                         yield return null;
