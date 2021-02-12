@@ -503,8 +503,7 @@ namespace UniGLTF
                 {
                     m_materialFactory.Prepare(GLTF);
                 })
-                .ContinueWithCoroutine(Scheduler.ThreadPool, () => m_materialFactory.TexturesProcessOnAnyThread(GLTF, Storage))
-                .ContinueWithCoroutine(Scheduler.MainThread, () => m_materialFactory.TexturesProcessOnMainThread(GLTF))
+                .ContinueWithCoroutine(Scheduler.MainThread, () => m_materialFactory.TexturesProcessOnMainThread(GLTF, Storage))
                 .ContinueWithCoroutine(Scheduler.MainThread, () => m_materialFactory.LoadMaterials(GLTF))
                 .OnExecute(Scheduler.ThreadPool, parent =>
                 {

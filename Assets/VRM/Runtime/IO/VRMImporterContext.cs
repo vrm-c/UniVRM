@@ -6,6 +6,7 @@ using UnityEngine;
 using System.IO;
 using System.Collections;
 using UniJSON;
+using DepthFirstScheduler;
 
 namespace VRM
 {
@@ -317,7 +318,7 @@ namespace VRM
                 if (gltfMeta.texture >= 0 && gltfMeta.texture < GLTF.textures.Count)
                 {
                     var t = new TextureItem(gltfMeta.texture, MaterialFactory.CreateTextureLoader(gltfMeta.texture));
-                    t.Process(GLTF, Storage);
+                    t.ProcessOnMainThreadCoroutine(GLTF, Storage).CoroutineToEnd();
                     meta.Thumbnail = t.Texture;
                 }
             }

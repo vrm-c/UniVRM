@@ -3,8 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 
-namespace
-    DepthFirstScheduler
+namespace DepthFirstScheduler
 {
     public static class IEnumeratorExtensions
     {

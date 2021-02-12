@@ -124,31 +124,19 @@ namespace UniGLTF
         #region Process
         ITextureLoader m_textureLoader;
 
-        public void Process(glTF gltf, IStorage storage)
-        {
-            ProcessOnAnyThread(gltf, storage);
-            ProcessOnMainThreadCoroutine(gltf).CoroutineToEnd();
-        }
+        // public void Process(glTF gltf, IStorage storage)
+        // {
+        //     ProcessOnMainThreadCoroutine(gltf, storage).CoroutineToEnd();
+        // }
 
-        public IEnumerator ProcessCoroutine(glTF gltf, IStorage storage)
-        {
-            ProcessOnAnyThread(gltf, storage);
-            yield return ProcessOnMainThreadCoroutine(gltf);
-        }
-
-        public void ProcessOnAnyThread(glTF gltf, IStorage storage)
-        {
-            m_textureLoader.ProcessOnAnyThread(gltf, storage);
-        }
-
-        public IEnumerator ProcessOnMainThreadCoroutine(glTF gltf)
+        public IEnumerator ProcessOnMainThreadCoroutine(glTF gltf, IStorage storage)
         {
             using (m_textureLoader)
             {
                 var textureType = TextureIO.GetglTFTextureType(gltf, m_textureIndex);
                 var colorSpace = TextureIO.GetColorSpace(textureType);
                 var isLinear = colorSpace == RenderTextureReadWrite.Linear;
-                yield return m_textureLoader.ProcessOnMainThread(isLinear, gltf.GetSamplerFromTextureIndex(m_textureIndex));
+                yield return m_textureLoader.ProcessOnMainThread(gltf, storage, isLinear, gltf.GetSamplerFromTextureIndex(m_textureIndex));
             }
         }
         #endregion

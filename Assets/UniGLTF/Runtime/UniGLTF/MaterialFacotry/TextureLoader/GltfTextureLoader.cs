@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace UniGLTF
@@ -40,25 +41,30 @@ namespace UniGLTF
             }
         }
 
-        Byte[] m_imageBytes;
         string m_textureName;
-        public void ProcessOnAnyThread(glTF gltf, IStorage storage)
-        {
-            var imageIndex = gltf.GetImageIndexFromTextureIndex(m_textureIndex);
-            var segments = gltf.GetImageBytes(storage, imageIndex, out m_textureName);
-            m_imageBytes = ToArray(segments);
-        }
 
-        public IEnumerator ProcessOnMainThread(bool isLinear, glTFTextureSampler sampler)
+        public IEnumerator ProcessOnMainThread(glTF gltf, IStorage storage, bool isLinear, glTFTextureSampler sampler)
         {
+            Byte[] imageBytes = default;
+            var task = Task.Run(() =>
+            {
+                var imageIndex = gltf.GetImageIndexFromTextureIndex(m_textureIndex);
+                var segments = gltf.GetImageBytes(storage, imageIndex, out m_textureName);
+                var m_imageBytes = ToArray(segments);
+            });
+            while (!task.IsCompleted)
+            {
+                yield break;
+            }
+
             //
             // texture from image(png etc) bytes
             //
             Texture = new Texture2D(2, 2, TextureFormat.ARGB32, false, isLinear);
             Texture.name = m_textureName;
-            if (m_imageBytes != null)
+            if (imageBytes != null)
             {
-                Texture.LoadImage(m_imageBytes);
+                Texture.LoadImage(imageBytes);
             }
             if (sampler != null)
             {

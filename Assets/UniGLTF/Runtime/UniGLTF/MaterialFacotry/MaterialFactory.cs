@@ -136,25 +136,13 @@ namespace UniGLTF
             }
         }
 
-        public IEnumerator TexturesProcessOnAnyThread(glTF gltf, IStorage storage)
-        {
-            // using (MeasureTime("TexturesProcessOnAnyThread"))
-            {
-                foreach (var x in GetTextures())
-                {
-                    x.ProcessOnAnyThread(gltf, storage);
-                    yield return null;
-                }
-            }
-        }
-
-        public IEnumerator TexturesProcessOnMainThread(glTF gltf)
+        public IEnumerator TexturesProcessOnMainThread(glTF gltf, IStorage storage)
         {
             // using (MeasureTime("TexturesProcessOnMainThread"))
             {
                 foreach (var x in GetTextures())
                 {
-                    yield return x.ProcessOnMainThreadCoroutine(gltf);
+                    yield return x.ProcessOnMainThreadCoroutine(gltf, storage);
                 }
             }
         }

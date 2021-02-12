@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.IO;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -31,83 +32,10 @@ namespace UniGLTF
             }
         }
 
-        ArraySegment<Byte> m_segments;
         string m_textureName;
-        public void ProcessOnAnyThread(glTF gltf, IStorage storage)
+        public void ProcessOnAnyThread()
         {
-            var imageIndex = gltf.GetImageIndexFromTextureIndex(m_textureIndex);
-            m_segments = gltf.GetImageBytes(storage, imageIndex, out m_textureName);
         }
-
-#if false
-        HttpHost m_http;
-        class HttpHost : IDisposable
-        {
-            TcpListener m_listener;
-            Socket m_connection;
-
-            public HttpHost(int port)
-            {
-                m_listener = new TcpListener(IPAddress.Loopback, port);
-                m_listener.Start();
-                m_listener.BeginAcceptSocket(OnAccepted, m_listener);
-            }
-
-            void OnAccepted(IAsyncResult ar)
-            {
-                var l = ar.AsyncState as TcpListener;
-                if (l == null) return;
-                m_connection = l.EndAcceptSocket(ar);
-                // 次の接続受付はしない
-
-                BeginRead(m_connection, new byte[8192]);
-            }
-
-            void BeginRead(Socket c, byte[] buffer)
-            {
-                AsyncCallback callback = ar =>
-                {
-                    var s = ar.AsyncState as Socket;
-                    if (s == null) return;
-                    var size = s.EndReceive(ar);
-                    if (size > 0)
-                    {
-                        OnRead(buffer, size);
-                    }
-                    BeginRead(s, buffer);
-                };
-                m_connection.BeginReceive(buffer, 0, buffer.Length, SocketFlags.None, callback, m_connection);
-            }
-
-            List<Byte> m_buffer = new List<byte>();
-            void OnRead(byte[] buffer, int len)
-            {
-                m_buffer.AddRange(buffer.Take(len));
-            }
-
-            public string Url
-            {
-                get
-                {
-
-                }
-            }
-
-            public void Dispose()
-            {
-                if (m_connection != null)
-                {
-                    m_connection.Dispose();
-                    m_connection = null;
-                }
-                if(m_listener != null)
-                {
-                    m_listener.Stop();
-                    m_listener = null;
-                }
-            }
-        }
-#endif
 
         class Deleter : IDisposable
         {
@@ -125,13 +53,24 @@ namespace UniGLTF
             }
         }
 
-        public IEnumerator ProcessOnMainThread(bool isLinear, glTFTextureSampler sampler)
+        public IEnumerator ProcessOnMainThread(glTF gltf, IStorage storage, bool isLinear, glTFTextureSampler sampler)
         {
+            ArraySegment<Byte> bytes = default;
+            var task = Task.Run(() =>
+            {
+                var imageIndex = gltf.GetImageIndexFromTextureIndex(m_textureIndex);
+                bytes = gltf.GetImageBytes(storage, imageIndex, out m_textureName);
+            });
+            while (!task.IsCompleted)
+            {
+                yield return null;
+            }
+
             // tmp file
             var tmp = Path.GetTempFileName();
             using (var f = new FileStream(tmp, FileMode.Create))
             {
-                f.Write(m_segments.Array, m_segments.Offset, m_segments.Count);
+                f.Write(bytes.Array, bytes.Offset, bytes.Count);
             }
 
             using (var d = new Deleter(tmp))

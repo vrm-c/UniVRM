@@ -23,11 +23,7 @@ namespace UniGLTF
         {
         }
 
-        public void ProcessOnAnyThread(glTF gltf, IStorage storage)
-        {
-        }
-
-        public IEnumerator ProcessOnMainThread(bool isLinear, glTFTextureSampler sampler)
+        public IEnumerator ProcessOnMainThread(glTF gltf, IStorage storage, bool isLinear, glTFTextureSampler sampler)
         {
             //
             // texture from assets
