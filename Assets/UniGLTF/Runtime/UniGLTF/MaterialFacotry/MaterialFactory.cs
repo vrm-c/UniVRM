@@ -58,8 +58,15 @@ namespace UniGLTF
                 return texture;
             }
 
-            texture = await LoadTextureAsync(param.Index0.Value);
-            m_textureCache.Add(GetTextureParam.Create(param.Index0.Value), texture);
+            {
+                var defaultParam = GetTextureParam.Create(param.Index0.Value);
+                if (!m_textureCache.TryGetValue(defaultParam, out texture))
+                {
+                    texture = await LoadTextureAsync(param.Index0.Value);
+                    m_textureCache.Add(defaultParam, texture);
+                }
+            }
+
             switch (param.TextureType)
             {
                 case GetTextureParam.NORMAL_PROP:

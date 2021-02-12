@@ -71,7 +71,12 @@ namespace UniGLTF
         /// <returns></returns>
         public static Material CreateMaterialForTest(int i, glTFMaterial material)
         {
-            throw new System.NotImplementedException();
+            var gltf = new glTF
+            {
+                materials = new System.Collections.Generic.List<glTFMaterial> { material },
+            };
+            var task = DefaultCreateMaterialAsync(gltf, i, null);
+            return task.Result;
         }
     }
 }
