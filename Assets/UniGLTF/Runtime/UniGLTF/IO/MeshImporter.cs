@@ -638,7 +638,7 @@ namespace UniGLTF
             var result = new MeshWithMaterials
             {
                 Mesh = mesh,
-                Materials = meshContext.MaterialIndices.Select(x => ctx.GetMaterial(x).GetOrCreateAsync(ctx.GetTextureAsync).Result).ToArray()
+                Materials = meshContext.MaterialIndices.Select(x => ctx.GetMaterial(x)).ToArray()
             };
 
             if (meshContext.BlendShapes.Count > 0)
@@ -667,7 +667,7 @@ namespace UniGLTF
             var result = new MeshWithMaterials
             {
                 Mesh = mesh,
-                Materials = meshContext.MaterialIndices.Select(x => ctx.GetMaterial(x).GetOrCreateAsync(ctx.GetTextureAsync).Result).ToArray()
+                Materials = meshContext.MaterialIndices.Select(x => ctx.GetMaterial(x)).ToArray()
             };
 
             yield return null;

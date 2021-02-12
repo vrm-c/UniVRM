@@ -4,43 +4,24 @@ using UnityEngine;
 
 namespace UniGLTF
 {
-    public abstract class MaterialItemBase
+    public static class MaterialItemBase
     {
-        protected int m_index;
-        protected glTFMaterial m_src;
-
-        public string Name { get; set; }
-
-        public MaterialItemBase(int i, glTFMaterial src)
-        {
-            m_index = i;
-            m_src = src;
-            Name = src != null ? m_src.name : "";
-        }
-
-        public abstract Task<Material> GetOrCreateAsync(GetTextureAsyncFunc getTexture);
-
-        public Material GetOrCreateForTest()
-        {
-            return GetOrCreateAsync(null).Result;
-        }
-
-        protected Material CreateMaterial(string shaderName)
+        public static Material CreateMaterial(int index, glTFMaterial src, string shaderName)
         {
             var material = new Material(Shader.Find(shaderName));
 #if UNITY_EDITOR
             // textureImporter.SaveAndReimport(); may destroy this material
             material.hideFlags = HideFlags.DontUnloadUnusedAsset;
 #endif
-            material.name = (m_src == null || string.IsNullOrEmpty(m_src.name))
-                ? string.Format("material_{0:00}", m_index)
-                : m_src.name
+            material.name = (src == null || string.IsNullOrEmpty(src.name))
+                ? string.Format("material_{0:00}", index)
+                : src.name
                 ;
 
             return material;
         }
 
-        protected static void SetTextureOffsetAndScale(Material material, glTFTextureInfo textureInfo, string propertyName)
+        public static void SetTextureOffsetAndScale(Material material, glTFTextureInfo textureInfo, string propertyName)
         {
             if (glTF_KHR_texture_transform.TryGet(textureInfo, out glTF_KHR_texture_transform textureTransform))
             {
@@ -60,6 +41,37 @@ namespace UniGLTF
                 material.SetTextureOffset(propertyName, offset);
                 material.SetTextureScale(propertyName, scale);
             }
+        }
+
+        public static Task<Material> DefaultCreateMaterialAsync(glTF gltf, int i, GetTextureAsyncFunc getTexture)
+        {
+
+            if (i < 0 || i >= gltf.materials.Count)
+            {
+                UnityEngine.Debug.LogWarning("glTFMaterial is empty");
+                return PBRMaterialItem.CreateAsync(i, null, getTexture);
+            }
+            var x = gltf.materials[i];
+
+            if (glTF_KHR_materials_unlit.IsEnable(x))
+            {
+                var hasVertexColor = gltf.MaterialHasVertexColor(i);
+                return UnlitMaterialItem.CreateAsync(i, x, getTexture, hasVertexColor);
+            }
+
+            return PBRMaterialItem.CreateAsync(i, x, getTexture);
+        }
+
+        /// <summary>
+        /// for unittest
+        /// </summary>
+        /// <param name="i"></param>
+        /// <param name="material"></param>
+        /// <param name="getTexture"></param>
+        /// <returns></returns>
+        public static Material CreateMaterialForTest(int i, glTFMaterial material)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

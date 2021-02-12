@@ -3,55 +3,48 @@ using UnityEngine;
 
 namespace UniGLTF
 {
-    public class UnlitMaterialItem : MaterialItemBase
+    public static class UnlitMaterialItem
     {
         public const string ShaderName = "UniGLTF/UniUnlit";
 
-        bool m_hasVertexColor;
-
-        public UnlitMaterialItem(int i, glTFMaterial src, bool hasVertexColor) : base(i, src)
-        {
-            m_hasVertexColor = hasVertexColor;
-        }
-
-        public override async Task<Material> GetOrCreateAsync(GetTextureAsyncFunc getTexture)
+        public static async Task<Material> CreateAsync(int i, glTFMaterial src, GetTextureAsyncFunc getTexture, bool hasVertexColor)
         {
             if (getTexture == null)
             {
                 getTexture = _ => Task.FromResult<Texture2D>(null);
             }
 
-            var material = CreateMaterial(ShaderName);
+            var material = MaterialItemBase.CreateMaterial(i, src, ShaderName);
 
             // texture
-            if (m_src.pbrMetallicRoughness.baseColorTexture != null)
+            if (src.pbrMetallicRoughness.baseColorTexture != null)
             {
-                material.mainTexture = await getTexture(GetTextureParam.Create(m_src.pbrMetallicRoughness.baseColorTexture.index));
+                material.mainTexture = await getTexture(GetTextureParam.Create(src.pbrMetallicRoughness.baseColorTexture.index));
 
                 // Texture Offset and Scale
-                SetTextureOffsetAndScale(material, m_src.pbrMetallicRoughness.baseColorTexture, "_MainTex");
+                MaterialItemBase.SetTextureOffsetAndScale(material, src.pbrMetallicRoughness.baseColorTexture, "_MainTex");
             }
 
             // color
-            if (m_src.pbrMetallicRoughness.baseColorFactor != null && m_src.pbrMetallicRoughness.baseColorFactor.Length == 4)
+            if (src.pbrMetallicRoughness.baseColorFactor != null && src.pbrMetallicRoughness.baseColorFactor.Length == 4)
             {
-                var color = m_src.pbrMetallicRoughness.baseColorFactor;
+                var color = src.pbrMetallicRoughness.baseColorFactor;
                 material.color = (new Color(color[0], color[1], color[2], color[3])).gamma;
             }
 
             //renderMode
-            if (m_src.alphaMode == "OPAQUE")
+            if (src.alphaMode == "OPAQUE")
             {
                 UniUnlit.Utils.SetRenderMode(material, UniUnlit.UniUnlitRenderMode.Opaque);
             }
-            else if (m_src.alphaMode == "BLEND")
+            else if (src.alphaMode == "BLEND")
             {
                 UniUnlit.Utils.SetRenderMode(material, UniUnlit.UniUnlitRenderMode.Transparent);
             }
-            else if (m_src.alphaMode == "MASK")
+            else if (src.alphaMode == "MASK")
             {
                 UniUnlit.Utils.SetRenderMode(material, UniUnlit.UniUnlitRenderMode.Cutout);
-                material.SetFloat("_Cutoff", m_src.alphaCutoff);
+                material.SetFloat("_Cutoff", src.alphaCutoff);
             }
             else
             {
@@ -60,7 +53,7 @@ namespace UniGLTF
             }
 
             // culling
-            if (m_src.doubleSided)
+            if (src.doubleSided)
             {
                 UniUnlit.Utils.SetCullMode(material, UniUnlit.UniUnlitCullMode.Off);
             }
@@ -70,7 +63,7 @@ namespace UniGLTF
             }
 
             // VColor
-            if (m_hasVertexColor)
+            if (hasVertexColor)
             {
                 UniUnlit.Utils.SetVColBlendMode(material, UniUnlit.UniUnlitVertexColorBlendOp.Multiply);
             }

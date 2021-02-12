@@ -499,7 +499,7 @@ namespace UniGLTF
                 {
                     // root task. do nothing
                 })
-                .ContinueWithCoroutine(Scheduler.MainThread, () => m_materialFactory.LoadMaterials())
+                .ContinueWithCoroutine(Scheduler.MainThread, m_materialFactory.LoadMaterials)
                 .OnExecute(Scheduler.ThreadPool, parent =>
                 {
                     // UniGLTF does not support draco

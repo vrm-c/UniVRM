@@ -43,7 +43,7 @@ namespace VRM
             {
                 VRM = vrm;
                 // override material importer
-                MaterialFactory.MaterialImporter = new VRMMaterialImporter(VRM.materialProperties).CreateMaterial;
+                MaterialFactory.CreateMaterialAsync = new VRMMaterialImporter(VRM.materialProperties).CreateMaterial;
             }
             else
             {
@@ -198,9 +198,8 @@ namespace VRM
                         }
                     }
 
-                    var material = MaterialFactory.GetMaterials()
-                        .FirstOrDefault(y => y.Name == x.materialName)
-                        .GetOrCreateAsync(MaterialFactory.GetTextureAsync).Result;
+                    var material = MaterialFactory.Materials
+                        .FirstOrDefault(y => y.name == x.materialName);
                     var propertyName = x.propertyName;
                     if (x.propertyName.FastEndsWith("_ST_S")
                     || x.propertyName.FastEndsWith("_ST_T"))

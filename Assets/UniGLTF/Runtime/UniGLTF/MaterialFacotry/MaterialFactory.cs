@@ -10,8 +10,6 @@ using UnityEditor;
 
 namespace UniGLTF
 {
-    public delegate MaterialItemBase MaterialImporter(int i, glTFMaterial x, bool hasVertexColor);
-
     public class MaterialFactory : IDisposable
     {
         glTF m_gltf;
@@ -24,20 +22,21 @@ namespace UniGLTF
 
         public UnityPath ImageBaseDir { get; set; }
 
-        MaterialImporter m_materialImporter;
-        public MaterialImporter MaterialImporter
+        public delegate Task<Material> CreateMaterialAsyncFunc(glTF glTF, int i, GetTextureAsyncFunc getTexture);
+        CreateMaterialAsyncFunc m_createMaterialAsync;
+        public CreateMaterialAsyncFunc CreateMaterialAsync
         {
             set
             {
-                m_materialImporter = value;
+                m_createMaterialAsync = value;
             }
             get
             {
-                if (m_materialImporter == null)
+                if (m_createMaterialAsync == null)
                 {
-                    m_materialImporter = CreateMaterial;
+                    m_createMaterialAsync = MaterialItemBase.DefaultCreateMaterialAsync;
                 }
-                return m_materialImporter;
+                return m_createMaterialAsync;
             }
         }
 
@@ -111,22 +110,19 @@ namespace UniGLTF
             throw new NotImplementedException();
         }
 
-        List<MaterialItemBase> m_materials = new List<MaterialItemBase>();
-        public void AddMaterial(MaterialItemBase material)
+        List<Material> m_materials = new List<Material>();
+        public IReadOnlyList<Material> Materials => m_materials;
+        public void AddMaterial(Material material)
         {
-            var originalName = material.Name;
+            var originalName = material.name;
             int j = 2;
-            while (m_materials.Any(x => x.Name == material.Name))
+            while (m_materials.Any(x => x.name == material.name))
             {
-                material.Name = string.Format("{0}({1})", originalName, j++);
+                material.name = string.Format("{0}({1})", originalName, j++);
             }
             m_materials.Add(material);
         }
-        public IList<MaterialItemBase> GetMaterials()
-        {
-            return m_materials;
-        }
-        public MaterialItemBase GetMaterial(int index)
+        public Material GetMaterial(int index)
         {
             if (index < 0) return null;
             if (index >= m_materials.Count) return null;
@@ -146,35 +142,29 @@ namespace UniGLTF
         {
             // using (MeasureTime("LoadMaterials"))
             {
-                if (m_gltf.materials == null || !m_gltf.materials.Any())
+                if (m_gltf.materials == null || m_gltf.materials.Count == 0)
                 {
-                    AddMaterial(MaterialImporter(0, null, false));
+                    var task = CreateMaterialAsync(m_gltf, 0, GetTextureAsync);
+                    while (!task.IsCompleted)
+                    {
+                        yield return null;
+                    }
+                    AddMaterial(task.Result);
                 }
                 else
                 {
                     for (int i = 0; i < m_gltf.materials.Count; ++i)
                     {
-                        AddMaterial(MaterialImporter(i, m_gltf.materials[i], m_gltf.MaterialHasVertexColor(i)));
+                        var task = CreateMaterialAsync(m_gltf, i, GetTextureAsync);
+                        while (!task.IsCompleted)
+                        {
+                            yield return null;
+                        }
+                        AddMaterial(task.Result);
                     }
                 }
             }
             yield return null;
-        }
-
-        public static MaterialItemBase CreateMaterial(int i, glTFMaterial x, bool hasVertexColor)
-        {
-            if (x == null)
-            {
-                UnityEngine.Debug.LogWarning("glTFMaterial is empty");
-                return new PBRMaterialItem(i, x);
-            }
-
-            if (glTF_KHR_materials_unlit.IsEnable(x))
-            {
-                return new UnlitMaterialItem(i, x, hasVertexColor);
-            }
-
-            return new PBRMaterialItem(i, x);
         }
 
         public void Dispose()
@@ -193,7 +183,7 @@ namespace UniGLTF
             }
             foreach (var x in m_materials)
             {
-                yield return x.GetOrCreateAsync(GetTextureAsync).Result;
+                yield return x;
             }
         }
     }

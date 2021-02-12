@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace VRM
 {
-    public class MToonMaterialItem : MaterialItemBase
+    public static class MToonMaterialItem
     {
         static string[] VRM_SHADER_NAMES =
         {
@@ -21,18 +21,9 @@ namespace VRM
             "VRM/UnlitTransparentZWrite",
         };
 
-        glTF_VRM_Material m_vrmMaterial;
-        bool m_hasVertexColor;
-
-        public MToonMaterialItem(int i, glTFMaterial src, bool hasVertexColor, glTF_VRM_Material vrmMaterial) : base(i, src)
+        public static async Task<Material> CreateAsync(glTF gltf, int m_index, glTF_VRM_Material vrmMaterial, GetTextureAsyncFunc getTexture)
         {
-            m_hasVertexColor = hasVertexColor;
-            m_vrmMaterial = vrmMaterial;
-        }
-
-        public override async Task<Material> GetOrCreateAsync(GetTextureAsyncFunc getTexture)
-        {
-            var item = m_vrmMaterial;
+            var item = vrmMaterial;
             var shaderName = item.shader;
             var shader = Shader.Find(shaderName);
             if (shader == null)
@@ -48,7 +39,7 @@ namespace VRM
                 {
                     Debug.LogWarningFormat("unknown shader {0}.", shaderName);
                 }
-                return await MaterialFactory.CreateMaterial(m_index, m_src, m_hasVertexColor).GetOrCreateAsync(getTexture);
+                return await MaterialItemBase.DefaultCreateMaterialAsync(gltf, m_index, getTexture);
             }
 
             //
@@ -120,15 +111,15 @@ namespace VRM
             m_materials = materials;
         }
 
-        public MaterialItemBase CreateMaterial(int i, glTFMaterial src, bool hasVertexColor)
+        public Task<Material> CreateMaterial(glTF gltf, int i, GetTextureAsyncFunc getTexture)
         {
             if (i == 0 && m_materials.Count == 0)
             {
                 // dummy
-                return new PBRMaterialItem(i, src);
+                return MaterialItemBase.DefaultCreateMaterialAsync(gltf, i, getTexture);
             }
 
-            return new MToonMaterialItem(i, src, hasVertexColor, m_materials[i]);
+            return MToonMaterialItem.CreateAsync(gltf, i, m_materials[i], getTexture);
         }
     }
 }
