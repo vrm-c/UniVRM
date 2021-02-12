@@ -70,7 +70,7 @@ namespace VRM.Samples
             m_canvas.LoadBVHButton.onClick.AddListener(LoadBVHClicked);
         }
 
-        void LoadVRMClicked()
+        async void LoadVRMClicked()
         {
 #if UNITY_STANDALONE_WIN
             var path = FileDialogForWindows.FileDialog("open VRM", ".vrm");
@@ -94,7 +94,7 @@ namespace VRM.Samples
 
 
             // metaを取得(todo: thumbnailテクスチャのロード)
-            var meta = context.ReadMeta();
+            var meta = await context.ReadMetaAsync();
             Debug.LogFormat("meta: title:{0}", meta.Title);
 
 

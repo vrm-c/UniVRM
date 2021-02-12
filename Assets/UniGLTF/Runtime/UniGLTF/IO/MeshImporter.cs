@@ -634,10 +634,11 @@ namespace UniGLTF
                 mesh.RecalculateTangents();
             }
 
+            // 先にすべてのマテリアルを作成済みなのでテクスチャーは生成済み。Resultを使ってよい
             var result = new MeshWithMaterials
             {
                 Mesh = mesh,
-                Materials = meshContext.MaterialIndices.Select(x => ctx.GetMaterial(x).GetOrCreate(ctx.GetTexture)).ToArray()
+                Materials = meshContext.MaterialIndices.Select(x => ctx.GetMaterial(x).GetOrCreateAsync(ctx.GetTextureAsync).Result).ToArray()
             };
 
             if (meshContext.BlendShapes.Count > 0)
@@ -662,10 +663,11 @@ namespace UniGLTF
                 yield return null;
             }
 
+            // 先にすべてのマテリアルを作成済みなのでテクスチャーは生成済み。Resultを使ってよい
             var result = new MeshWithMaterials
             {
                 Mesh = mesh,
-                Materials = meshContext.MaterialIndices.Select(x => ctx.GetMaterial(x).GetOrCreate(ctx.GetTexture)).ToArray()
+                Materials = meshContext.MaterialIndices.Select(x => ctx.GetMaterial(x).GetOrCreateAsync(ctx.GetTextureAsync).Result).ToArray()
             };
 
             yield return null;

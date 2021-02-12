@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Threading.Tasks;
+using UnityEngine;
 
 namespace UniGLTF
 {
@@ -13,11 +14,11 @@ namespace UniGLTF
             m_hasVertexColor = hasVertexColor;
         }
 
-        public override Material GetOrCreate(GetTextureItemFunc getTexture)
+        public override async Task<Material> GetOrCreateAsync(GetTextureAsyncFunc getTexture)
         {
             if (getTexture == null)
             {
-                getTexture = _ => null;
+                getTexture = _ => Task.FromResult<Texture2D>(null);
             }
 
             var material = CreateMaterial(ShaderName);
@@ -25,11 +26,7 @@ namespace UniGLTF
             // texture
             if (m_src.pbrMetallicRoughness.baseColorTexture != null)
             {
-                var texture = getTexture(m_src.pbrMetallicRoughness.baseColorTexture.index);
-                if (texture != null)
-                {
-                    material.mainTexture = texture.Texture;
-                }
+                material.mainTexture = await getTexture(GetTextureParam.Create(m_src.pbrMetallicRoughness.baseColorTexture.index));
 
                 // Texture Offset and Scale
                 SetTextureOffsetAndScale(material, m_src.pbrMetallicRoughness.baseColorTexture, "_MainTex");

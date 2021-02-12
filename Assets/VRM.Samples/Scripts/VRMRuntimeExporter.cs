@@ -29,7 +29,7 @@ namespace VRM.Samples
 
         #region Load
 
-        void OnLoadClicked()
+        async void OnLoadClicked()
         {
 #if UNITY_STANDALONE_WIN
             var path = FileDialogForWindows.FileDialog("open VRM", ".vrm");
@@ -53,7 +53,7 @@ namespace VRM.Samples
 
 
             // metaを取得(todo: thumbnailテクスチャのロード)
-            var meta = context.ReadMeta();
+            var meta = await context.ReadMetaAsync();
             Debug.LogFormat("meta: title:{0}", meta.Title);
 
             // ParseしたJSONをシーンオブジェクトに変換していく

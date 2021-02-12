@@ -32,7 +32,7 @@ namespace UniGLTF
             var gltfMaterial = materialExporter.ExportMaterial(srcMaterial, textureManager);
             gltfMaterial.pbrMetallicRoughness.baseColorTexture.extensions = gltfMaterial.pbrMetallicRoughness.baseColorTexture.extensions.Deserialize();
 
-            var dstMaterial = MaterialFactory.CreateMaterial(0, gltfMaterial, false).GetOrCreate(null);
+            var dstMaterial = MaterialFactory.CreateMaterial(0, gltfMaterial, false).GetOrCreateForTest();
 
             Assert.AreEqual(dstMaterial.mainTextureOffset.x, offset.x, 0.3f);
             Assert.AreEqual(dstMaterial.mainTextureOffset.y, offset.y, 0.2f);
@@ -80,7 +80,7 @@ namespace UniGLTF
 
                 Assert.IsTrue(glTF_KHR_materials_unlit.IsEnable(gltfMaterial));
 
-                var material = MaterialFactory.CreateMaterial(0, gltfMaterial, false).GetOrCreate(null);
+                var material = MaterialFactory.CreateMaterial(0, gltfMaterial, false).GetOrCreateForTest();
                 Assert.AreEqual("UniGLTF/UniUnlit", material.shader.name);
             }
         }
@@ -99,7 +99,7 @@ namespace UniGLTF
                     },
                     extensions = glTF_KHR_materials_unlit.Serialize().Deserialize(),
                 };
-                var material = MaterialFactory.CreateMaterial(0, gltfMaterial, false).GetOrCreate(null);
+                var material = MaterialFactory.CreateMaterial(0, gltfMaterial, false).GetOrCreateForTest();
                 Assert.AreEqual("UniGLTF/UniUnlit", material.shader.name);
             }
 
@@ -114,7 +114,7 @@ namespace UniGLTF
                     },
                     extensions = glTF_KHR_materials_unlit.Serialize().Deserialize(),
                 };
-                var material = MaterialFactory.CreateMaterial(0, gltfMaterial, false).GetOrCreate(null);
+                var material = MaterialFactory.CreateMaterial(0, gltfMaterial, false).GetOrCreateForTest();
                 Assert.AreEqual("UniGLTF/UniUnlit", material.shader.name);
             }
 
@@ -130,7 +130,7 @@ namespace UniGLTF
                     },
                     extensions = glTF_KHR_materials_unlit.Serialize().Deserialize(),
                 };
-                var material = MaterialFactory.CreateMaterial(0, gltfMaterial, false).GetOrCreate(null);
+                var material = MaterialFactory.CreateMaterial(0, gltfMaterial, false).GetOrCreateForTest();
                 Assert.AreEqual("UniGLTF/UniUnlit", material.shader.name);
             }
 
@@ -145,7 +145,7 @@ namespace UniGLTF
                     },
                     extensions = glTF_KHR_materials_unlit.Serialize().Deserialize(),
                 };
-                var material = MaterialFactory.CreateMaterial(0, gltfMaterial, false).GetOrCreate(null);
+                var material = MaterialFactory.CreateMaterial(0, gltfMaterial, false).GetOrCreateForTest();
                 Assert.AreEqual("UniGLTF/UniUnlit", material.shader.name);
             }
 
@@ -160,7 +160,7 @@ namespace UniGLTF
                     },
                     extensions = glTF_KHR_materials_unlit.Serialize().Deserialize(),
                 };
-                var material = MaterialFactory.CreateMaterial(0, gltfMaterial, false).GetOrCreate(null);
+                var material = MaterialFactory.CreateMaterial(0, gltfMaterial, false).GetOrCreateForTest();
                 Assert.AreEqual("UniGLTF/UniUnlit", material.shader.name);
             }
 
@@ -176,7 +176,7 @@ namespace UniGLTF
                     },
                     extensions = glTF_KHR_materials_unlit.Serialize().Deserialize(),
                 };
-                var material = MaterialFactory.CreateMaterial(0, gltfMaterial, false).GetOrCreate(null);
+                var material = MaterialFactory.CreateMaterial(0, gltfMaterial, false).GetOrCreateForTest();
                 Assert.AreEqual("UniGLTF/UniUnlit", material.shader.name);
             }
 
@@ -191,7 +191,7 @@ namespace UniGLTF
                     },
                     extensions = glTF_KHR_materials_unlit.Serialize().Deserialize(),
                 };
-                var material = MaterialFactory.CreateMaterial(0, gltfMaterial, false).GetOrCreate(null);
+                var material = MaterialFactory.CreateMaterial(0, gltfMaterial, false).GetOrCreateForTest();
                 Assert.AreEqual("UniGLTF/UniUnlit", material.shader.name);
             }
 
@@ -207,7 +207,7 @@ namespace UniGLTF
                     },
                     extensions = glTF_KHR_materials_unlit.Serialize().Deserialize(),
                 };
-                var material = MaterialFactory.CreateMaterial(0, gltfMaterial, false).GetOrCreate(null);
+                var material = MaterialFactory.CreateMaterial(0, gltfMaterial, false).GetOrCreateForTest();
                 Assert.AreEqual("UniGLTF/UniUnlit", material.shader.name);
             }
 
@@ -217,7 +217,7 @@ namespace UniGLTF
                 {
                     extensions = glTF_KHR_materials_unlit.Serialize().Deserialize(),
                 };
-                var material = MaterialFactory.CreateMaterial(0, gltfMaterial, false).GetOrCreate(null);
+                var material = MaterialFactory.CreateMaterial(0, gltfMaterial, false).GetOrCreateForTest();
                 Assert.AreEqual("UniGLTF/UniUnlit", material.shader.name);
             }
         }
@@ -225,7 +225,7 @@ namespace UniGLTF
         [Test]
         public void MaterialImportTest()
         {
-            var material = MaterialFactory.CreateMaterial(0, new glTFMaterial { }, false).GetOrCreate(null);
+            var material = MaterialFactory.CreateMaterial(0, new glTFMaterial { }, false).GetOrCreateForTest();
             Assert.AreEqual("Standard", material.shader.name);
         }
 

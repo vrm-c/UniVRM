@@ -1,19 +1,80 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace UniGLTF
 {
-    public delegate TextureItem GetTextureItemFunc(int i);
+    public struct GetTextureParam
+    {
+        public const string NORMAL_PROP = "_BumpMap";
+        public const string METALLIC_GLOSS_PROP = "_MetallicGlossMap";
+        public const string OCCLUSION_PROP = "_OcclusionMap";
+
+        public readonly string TextureType;
+        public readonly float MetallicFactor;
+        public readonly ushort? Index0;
+        public readonly ushort? Index1;
+        public readonly ushort? Index2;
+        public readonly ushort? Index3;
+        public readonly ushort? Index4;
+        public readonly ushort? Index5;
+
+        public GetTextureParam(string textureType, float metallicFactor, int i0, int i1, int i2, int i3, int i4, int i5)
+        {
+            TextureType = textureType;
+            MetallicFactor = metallicFactor;
+            Index0 = (ushort)i0;
+            Index1 = (ushort)i1;
+            Index2 = (ushort)i2;
+            Index3 = (ushort)i3;
+            Index4 = (ushort)i4;
+            Index5 = (ushort)i5;
+        }
+
+        public static GetTextureParam Create(int index)
+        {
+            return new GetTextureParam(default, default, index, default, default, default, default, default);
+        }
+
+        public static GetTextureParam CreateNormal(int index)
+        {
+            return new GetTextureParam(NORMAL_PROP, default, index, default, default, default, default, default);
+        }
+
+        public static GetTextureParam CreateMetallic(int index, float metallicFactor)
+        {
+            return new GetTextureParam(METALLIC_GLOSS_PROP, metallicFactor, index, default, default, default, default, default);
+        }
+
+        public static GetTextureParam CreateOcclusion(int index)
+        {
+            return new GetTextureParam(OCCLUSION_PROP, default, index, default, default, default, default, default);
+        }
+    }
+
+    public delegate Task<Texture2D> GetTextureAsyncFunc(GetTextureParam param);
     public delegate Shader GetShaderFunc();
     public delegate MaterialItemBase MaterialImporter(int i, glTFMaterial x, bool hasVertexColor);
 
 
     public class MaterialFactory : IDisposable
     {
+        glTF m_gltf;
+        IStorage m_storage;
+        public MaterialFactory(glTF gltf, IStorage storage)
+        {
+            m_gltf = gltf;
+            m_storage = storage;
+        }
+
+        public UnityPath ImageBaseDir { get; set; }
+
         MaterialImporter m_materialImporter;
         public MaterialImporter MaterialImporter
         {
@@ -31,22 +92,74 @@ namespace UniGLTF
             }
         }
 
-        List<TextureItem> m_textures = new List<TextureItem>();
-        public IList<TextureItem> GetTextures()
+        List<Texture2D> m_textuers = new List<Texture2D>();
+        Dictionary<GetTextureParam, Texture2D> m_textureCache = new Dictionary<GetTextureParam, Texture2D>();
+
+        /// <summary>
+        /// テクスチャーをロード、必要であれば変換して返す。
+        /// 同じものはキャッシュを返す
+        /// </summary>
+        /// <param name="texture_type">変換の有無を判断する: METALLIC_GLOSS_PROP</param>
+        /// <param name="roughnessFactor">METALLIC_GLOSS_PROPの追加パラメーター</param>
+        /// <param name="indices">gltf の texture index</param>
+        /// <returns></returns>
+        public async Task<Texture2D> GetTextureAsync(GetTextureParam param)
         {
-            return m_textures;
-        }
-        public TextureItem GetTexture(int i)
-        {
-            if (i < 0 || i >= m_textures.Count)
+            if (m_textureCache.TryGetValue(param, out Texture2D texture))
             {
-                return null;
+                return texture;
             }
-            return m_textures[i];
-        }
-        public void AddTexture(TextureItem item)
-        {
-            m_textures.Add(item);
+
+            texture = await LoadTextureAsync(param.Index0.Value);
+            m_textureCache.Add(GetTextureParam.Create(param.Index0.Value), texture);
+            switch (param.TextureType)
+            {
+                case GetTextureParam.NORMAL_PROP:
+                    {
+                        if (Application.isPlaying)
+                        {
+                            var converted = new NormalConverter().GetImportTexture(texture);
+                            m_textureCache.Add(param, converted);
+                            return converted;
+                        }
+                        else
+                        {
+#if UNITY_EDITOR
+                            var textureAssetPath = AssetDatabase.GetAssetPath(texture);
+                            if (!string.IsNullOrEmpty(textureAssetPath))
+                            {
+                                TextureIO.MarkTextureAssetAsNormalMap(textureAssetPath);
+                            }
+                            else
+                            {
+                                Debug.LogWarningFormat("no asset for {0}", texture);
+                            }
+#endif
+                            m_textureCache.Add(param, texture);
+                            return texture;
+                        }
+                    }
+
+                case GetTextureParam.METALLIC_GLOSS_PROP:
+                    {
+                        // Bake roughnessFactor values into a texture.
+                        var converted = new MetallicRoughnessConverter(param.MetallicFactor).GetImportTexture(texture);
+                        m_textureCache.Add(param, converted);
+                        return converted;
+                    }
+
+                case GetTextureParam.OCCLUSION_PROP:
+                    {
+                        var converted = new OcclusionConverter().GetImportTexture(texture);
+                        m_textureCache.Add(param, converted);
+                        return converted;
+                    }
+
+                default:
+                    return texture;
+            }
+
+            throw new NotImplementedException();
         }
 
         List<MaterialItemBase> m_materials = new List<MaterialItemBase>();
@@ -71,95 +184,28 @@ namespace UniGLTF
             return m_materials[index];
         }
 
-        public virtual ITextureLoader CreateTextureLoader(int index)
+        public virtual Task<Texture2D> LoadTextureAsync(int index)
         {
 #if UNIGLTF_USE_WEBREQUEST_TEXTURELOADER
-            return new UnityWebRequestTextureLoader(index);
+            return UnityWebRequestTextureLoader.LoadTextureAsync(index);
 #else
-            return new GltfTextureLoader(index);
+            return GltfTextureLoader.LoadTextureAsync(m_gltf, m_storage, index);
 #endif
         }
 
-        public void Prepare(UniGLTF.glTF gltf, UnityPath imageBaseDir = default(UnityPath))
-        {
-            if (m_textures.Count == 0)
-            {
-                //
-                // runtime
-                //
-                CreateTextureItems(gltf, imageBaseDir);
-            }
-            else
-            {
-                //
-                // already CreateTextures(by assetPostProcessor or editor menu)
-                //
-            }
-
-        }
-
-        public void CreateTextureItems(UniGLTF.glTF gltf, UnityPath imageBaseDir)
-        {
-            if (m_textures.Any())
-            {
-                return;
-            }
-
-            for (int i = 0; i < gltf.textures.Count; ++i)
-            {
-
-                TextureItem item = null;
-#if UNITY_EDITOR
-                var image = gltf.GetImageFromTextureIndex(i);
-                if (imageBaseDir.IsUnderAssetsFolder
-                    && !string.IsNullOrEmpty(image.uri)
-                    && !image.uri.FastStartsWith("data:")
-                    )
-                {
-                    ///
-                    /// required SaveTexturesAsPng or SetTextureBaseDir
-                    ///
-                    var assetPath = imageBaseDir.Child(image.uri);
-                    var textureName = !string.IsNullOrEmpty(image.name) ? image.name : Path.GetFileNameWithoutExtension(image.uri);
-                    item = new TextureItem(i, new AssetTextureLoader(assetPath, textureName))
-                    {
-                        IsAsset = true
-                    };
-                }
-                else
-#endif
-                {
-                    item = new TextureItem(i, CreateTextureLoader(i));
-                }
-
-                AddTexture(item);
-            }
-        }
-
-        public IEnumerator TexturesProcessOnMainThread(glTF gltf, IStorage storage)
-        {
-            // using (MeasureTime("TexturesProcessOnMainThread"))
-            {
-                foreach (var x in GetTextures())
-                {
-                    yield return x.ProcessOnMainThreadCoroutine(gltf, storage);
-                }
-            }
-        }
-
-        public IEnumerator LoadMaterials(glTF gltf)
+        public IEnumerator LoadMaterials()
         {
             // using (MeasureTime("LoadMaterials"))
             {
-                if (gltf.materials == null || !gltf.materials.Any())
+                if (m_gltf.materials == null || !m_gltf.materials.Any())
                 {
                     AddMaterial(MaterialImporter(0, null, false));
                 }
                 else
                 {
-                    for (int i = 0; i < gltf.materials.Count; ++i)
+                    for (int i = 0; i < m_gltf.materials.Count; ++i)
                     {
-                        AddMaterial(MaterialImporter(i, gltf.materials[i], gltf.MaterialHasVertexColor(i)));
+                        AddMaterial(MaterialImporter(i, m_gltf.materials[i], m_gltf.MaterialHasVertexColor(i)));
                     }
                 }
             }
@@ -184,7 +230,22 @@ namespace UniGLTF
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            foreach (var x in ObjectsForSubAsset())
+            {
+                UnityEngine.Object.DestroyImmediate(x, true);
+            }
+        }
+
+        public IEnumerable<UnityEngine.Object> ObjectsForSubAsset()
+        {
+            foreach (var kv in m_textureCache)
+            {
+                yield return kv.Value;
+            }
+            foreach (var x in m_materials)
+            {
+                yield return x.GetOrCreateAsync(GetTextureAsync).Result;
+            }
         }
     }
 }

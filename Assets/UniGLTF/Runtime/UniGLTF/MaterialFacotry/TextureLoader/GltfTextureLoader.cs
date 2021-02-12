@@ -1,28 +1,11 @@
 ﻿using System;
-using System.Collections;
 using System.Threading.Tasks;
 using UnityEngine;
 
 namespace UniGLTF
 {
-    public class GltfTextureLoader : ITextureLoader
+    public static class GltfTextureLoader
     {
-        int m_textureIndex;
-        public GltfTextureLoader(int textureIndex)
-        {
-            m_textureIndex = textureIndex;
-        }
-
-        public Texture2D Texture
-        {
-            private set;
-            get;
-        }
-
-        public void Dispose()
-        {
-        }
-
         static Byte[] ToArray(ArraySegment<byte> bytes)
         {
             if (bytes.Array == null)
@@ -41,36 +24,35 @@ namespace UniGLTF
             }
         }
 
-        string m_textureName;
-
-        public IEnumerator ProcessOnMainThread(glTF gltf, IStorage storage, bool isLinear, glTFTextureSampler sampler)
+        public static async Task<Texture2D> LoadTextureAsync(glTF gltf, IStorage storage, int index)
         {
-            Byte[] imageBytes = default;
-            var task = Task.Run(() =>
+            string m_textureName = default;
+            var imageBytes = await Task.Run(() =>
             {
-                var imageIndex = gltf.GetImageIndexFromTextureIndex(m_textureIndex);
+                var imageIndex = gltf.GetImageIndexFromTextureIndex(index);
                 var segments = gltf.GetImageBytes(storage, imageIndex, out m_textureName);
-                var m_imageBytes = ToArray(segments);
+                return ToArray(segments);
             });
-            while (!task.IsCompleted)
-            {
-                yield break;
-            }
 
             //
             // texture from image(png etc) bytes
             //
-            Texture = new Texture2D(2, 2, TextureFormat.ARGB32, false, isLinear);
-            Texture.name = m_textureName;
+            var textureType = TextureIO.GetglTFTextureType(gltf, index);
+            var colorSpace = TextureIO.GetColorSpace(textureType);
+            var isLinear = colorSpace == RenderTextureReadWrite.Linear;
+            var sampler = gltf.GetSamplerFromTextureIndex(index);
+
+            var texture = new Texture2D(2, 2, TextureFormat.ARGB32, false, isLinear);
+            texture.name = m_textureName;
             if (imageBytes != null)
             {
-                Texture.LoadImage(imageBytes);
+                texture.LoadImage(imageBytes);
             }
             if (sampler != null)
             {
-                TextureSamplerUtil.SetSampler(Texture, sampler);
+                TextureSamplerUtil.SetSampler(texture, sampler);
             }
-            yield break;
+            return texture;
         }
     }
 }

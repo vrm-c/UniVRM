@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using UniHumanoid;
 using UnityEngine;
 using UnityEngine.UI;
@@ -83,9 +84,9 @@ namespace VRM.Samples
                 m_textDistributionOther.text = "";
             }
 
-            public void UpdateMeta(VRMImporterContext context)
+            public async Task UpdateMetaAsync(VRMImporterContext context)
             {
-                var meta = context.ReadMeta(true);
+                var meta = await context.ReadMetaAsync(true);
 
                 m_textModelTitle.text = meta.Title;
                 m_textModelVersion.text = meta.Version;
@@ -211,7 +212,7 @@ namespace VRM.Samples
             string[] cmds = System.Environment.GetCommandLineArgs();
             if (cmds.Length > 1)
             {
-                LoadModel(cmds[1]);
+                LoadModelAsync(cmds[1]);
             }
 
             m_texts.Start();
@@ -282,7 +283,7 @@ namespace VRM.Samples
                 case ".glb":
                 case ".vrm":
                 case ".zip":
-                    LoadModel(path);
+                    LoadModelAsync(path);
                     break;
 
                 case ".bvh":
@@ -291,7 +292,7 @@ namespace VRM.Samples
             }
         }
 
-        void LoadModel(string path)
+        async void LoadModelAsync(string path)
         {
             if (!File.Exists(path))
             {
@@ -307,7 +308,7 @@ namespace VRM.Samples
                         var context = new VRMImporterContext();
                         var file = File.ReadAllBytes(path);
                         context.ParseGlb(file);
-                        m_texts.UpdateMeta(context);
+                        await m_texts.UpdateMetaAsync(context);
                         context.Load();
                         context.ShowMeshes();
                         context.EnableUpdateWhenOffscreen();

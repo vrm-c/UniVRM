@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using UnityEngine;
 
 
@@ -17,7 +18,12 @@ namespace UniGLTF
             Name = src != null ? m_src.name : "";
         }
 
-        public abstract Material GetOrCreate(GetTextureItemFunc getTexture);
+        public abstract Task<Material> GetOrCreateAsync(GetTextureAsyncFunc getTexture);
+
+        public Material GetOrCreateForTest()
+        {
+            return GetOrCreateAsync(null).Result;
+        }
 
         protected Material CreateMaterial(string shaderName)
         {

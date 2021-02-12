@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Threading.Tasks;
+using UnityEngine;
 
 namespace UniGLTF
 {
@@ -45,11 +46,11 @@ namespace UniGLTF
         {
         }
 
-        public override Material GetOrCreate(GetTextureItemFunc getTexture)
+        public override async Task<Material> GetOrCreateAsync(GetTextureAsyncFunc getTexture)
         {
             if (getTexture == null)
             {
-                getTexture = _ => null;
+                getTexture = _ => Task.FromResult<Texture2D>(null);
             }
 
             var material = CreateMaterial(ShaderName);
@@ -67,11 +68,7 @@ namespace UniGLTF
 
                     if (m_src.pbrMetallicRoughness.baseColorTexture != null && m_src.pbrMetallicRoughness.baseColorTexture.index != -1)
                     {
-                        var texture = getTexture(m_src.pbrMetallicRoughness.baseColorTexture.index);
-                        if (texture != null)
-                        {
-                            material.mainTexture = texture.Texture;
-                        }
+                        material.mainTexture = await getTexture(GetTextureParam.Create(m_src.pbrMetallicRoughness.baseColorTexture.index));
 
                         // Texture Offset and Scale
                         SetTextureOffsetAndScale(material, m_src.pbrMetallicRoughness.baseColorTexture, "_MainTex");
@@ -80,12 +77,13 @@ namespace UniGLTF
                     if (m_src.pbrMetallicRoughness.metallicRoughnessTexture != null && m_src.pbrMetallicRoughness.metallicRoughnessTexture.index != -1)
                     {
                         material.EnableKeyword("_METALLICGLOSSMAP");
-                        var texture = getTexture(m_src.pbrMetallicRoughness.metallicRoughnessTexture.index);
+
+                        var texture = await getTexture(GetTextureParam.CreateMetallic(
+                            m_src.pbrMetallicRoughness.metallicRoughnessTexture.index,
+                            m_src.pbrMetallicRoughness.metallicFactor));
                         if (texture != null)
                         {
-                            var prop = "_MetallicGlossMap";
-                            // Bake roughnessFactor values into a texture.
-                            material.SetTexture(prop, texture.ConvertTexture(prop, m_src.pbrMetallicRoughness.roughnessFactor));
+                            material.SetTexture(GetTextureParam.METALLIC_GLOSS_PROP, texture);
                         }
 
                         material.SetFloat("_Metallic", 1.0f);
@@ -105,11 +103,10 @@ namespace UniGLTF
                 if (m_src.normalTexture != null && m_src.normalTexture.index != -1)
                 {
                     material.EnableKeyword("_NORMALMAP");
-                    var texture = getTexture(m_src.normalTexture.index);
+                    var texture = await getTexture(GetTextureParam.CreateNormal(m_src.normalTexture.index));
                     if (texture != null)
                     {
-                        var prop = "_BumpMap";
-                        material.SetTexture(prop, texture.ConvertTexture(prop));
+                        material.SetTexture(GetTextureParam.NORMAL_PROP, texture);
                         material.SetFloat("_BumpScale", m_src.normalTexture.scale);
                     }
 
@@ -119,11 +116,10 @@ namespace UniGLTF
 
                 if (m_src.occlusionTexture != null && m_src.occlusionTexture.index != -1)
                 {
-                    var texture = getTexture(m_src.occlusionTexture.index);
+                    var texture = await getTexture(GetTextureParam.CreateOcclusion(m_src.occlusionTexture.index));
                     if (texture != null)
                     {
-                        var prop = "_OcclusionMap";
-                        material.SetTexture(prop, texture.ConvertTexture(prop));
+                        material.SetTexture(GetTextureParam.OCCLUSION_PROP, texture);
                         material.SetFloat("_OcclusionStrength", m_src.occlusionTexture.strength);
                     }
 
@@ -144,10 +140,10 @@ namespace UniGLTF
 
                     if (m_src.emissiveTexture != null && m_src.emissiveTexture.index != -1)
                     {
-                        var texture = getTexture(m_src.emissiveTexture.index);
+                        var texture = await getTexture(GetTextureParam.Create(m_src.emissiveTexture.index));
                         if (texture != null)
                         {
-                            material.SetTexture("_EmissionMap", texture.Texture);
+                            material.SetTexture("_EmissionMap", texture);
                         }
 
                         // Texture Offset and Scale

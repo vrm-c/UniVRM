@@ -1,10 +1,6 @@
 ﻿using UnityEngine;
-using System.Linq;
-using System.Collections.Generic;
-using System.Collections;
 using System.IO;
 using System;
-using DepthFirstScheduler;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -12,135 +8,8 @@ using UnityEditor;
 
 namespace UniGLTF
 {
-    public class TextureItem
+    public static class TextureItem
     {
-        private int m_textureIndex;
-        public Texture2D Texture
-        {
-            get
-            {
-                return m_textureLoader.Texture;
-            }
-        }
-
-        #region Texture converter
-        private Dictionary<string, Texture2D> m_converts = new Dictionary<string, Texture2D>();
-        public Dictionary<string, Texture2D> Converts
-        {
-            get { return m_converts; }
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="prop"></param>
-        /// <param name="smoothness">used only when converting MetallicRoughness maps</param>
-        /// <returns></returns>
-        public Texture2D ConvertTexture(string prop, float smoothnessOrRoughness = 1.0f)
-        {
-            var convertedTexture = Converts.FirstOrDefault(x => x.Key == prop);
-            if (convertedTexture.Value != null)
-                return convertedTexture.Value;
-
-            if (prop == "_BumpMap")
-            {
-                if (Application.isPlaying)
-                {
-                    var converted = new NormalConverter().GetImportTexture(Texture);
-                    m_converts.Add(prop, converted);
-                    return converted;
-                }
-                else
-                {
-#if UNITY_EDITOR
-                    var textureAssetPath = AssetDatabase.GetAssetPath(Texture);
-                    if (!string.IsNullOrEmpty(textureAssetPath))
-                    {
-                        TextureIO.MarkTextureAssetAsNormalMap(textureAssetPath);
-                    }
-                    else
-                    {
-                        Debug.LogWarningFormat("no asset for {0}", Texture);
-                    }
-#endif
-                    return Texture;
-                }
-            }
-
-            if (prop == "_MetallicGlossMap")
-            {
-                var converted = new MetallicRoughnessConverter(smoothnessOrRoughness).GetImportTexture(Texture);
-                m_converts.Add(prop, converted);
-                return converted;
-            }
-
-            if (prop == "_OcclusionMap")
-            {
-                var converted = new OcclusionConverter().GetImportTexture(Texture);
-                m_converts.Add(prop, converted);
-                return converted;
-            }
-
-            return null;
-        }
-        #endregion
-
-        public bool IsAsset
-        {
-            set;
-            get;
-        }
-
-        public IEnumerable<Texture2D> GetTexturesForSaveAssets()
-        {
-            if (!IsAsset)
-            {
-                yield return Texture;
-            }
-            if (m_converts.Any())
-            {
-                foreach (var texture in m_converts)
-                {
-                    yield return texture.Value;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Texture from buffer
-        /// </summary>
-        /// <param name="index"></param>
-        public TextureItem(int index, ITextureLoader textureLoader)
-        {
-            m_textureIndex = index;
-            m_textureLoader = textureLoader;
-
-            if (m_textureLoader == null)
-            {
-                throw new Exception("ITextureLoader is null.");
-            }
-        }
-
-        #region Process
-        ITextureLoader m_textureLoader;
-
-        // public void Process(glTF gltf, IStorage storage)
-        // {
-        //     ProcessOnMainThreadCoroutine(gltf, storage).CoroutineToEnd();
-        // }
-
-        public IEnumerator ProcessOnMainThreadCoroutine(glTF gltf, IStorage storage)
-        {
-            using (m_textureLoader)
-            {
-                var textureType = TextureIO.GetglTFTextureType(gltf, m_textureIndex);
-                var colorSpace = TextureIO.GetColorSpace(textureType);
-                var isLinear = colorSpace == RenderTextureReadWrite.Linear;
-                yield return m_textureLoader.ProcessOnMainThread(gltf, storage, isLinear, gltf.GetSamplerFromTextureIndex(m_textureIndex));
-            }
-        }
-        #endregion
-
         struct ColorSpaceScope : IDisposable
         {
             bool m_sRGBWrite;

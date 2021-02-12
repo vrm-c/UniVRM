@@ -3,6 +3,7 @@ using UniGLTF;
 using UnityEngine;
 using System.Linq;
 using System;
+using System.Threading.Tasks;
 
 namespace VRM
 {
@@ -29,7 +30,7 @@ namespace VRM
             m_vrmMaterial = vrmMaterial;
         }
 
-        public override Material GetOrCreate(GetTextureItemFunc getTexture)
+        public override async Task<Material> GetOrCreateAsync(GetTextureAsyncFunc getTexture)
         {
             var item = m_vrmMaterial;
             var shaderName = item.shader;
@@ -47,7 +48,7 @@ namespace VRM
                 {
                     Debug.LogWarningFormat("unknown shader {0}.", shaderName);
                 }
-                return MaterialFactory.CreateMaterial(m_index, m_src, m_hasVertexColor).GetOrCreate(getTexture);
+                return await MaterialFactory.CreateMaterial(m_index, m_src, m_hasVertexColor).GetOrCreateAsync(getTexture);
             }
 
             //
@@ -78,18 +79,10 @@ namespace VRM
             }
             foreach (var kv in item.textureProperties)
             {
-                var texture = getTexture(kv.Value);
+                var texture = await getTexture(new GetTextureParam(kv.Key, default, kv.Value, default, default, default, default, default));
                 if (texture != null)
                 {
-                    var converted = texture.ConvertTexture(kv.Key);
-                    if (converted != null)
-                    {
-                        material.SetTexture(kv.Key, converted);
-                    }
-                    else
-                    {
-                        material.SetTexture(kv.Key, texture.Texture);
-                    }
+                    material.SetTexture(kv.Key, texture);
                 }
             }
             foreach (var kv in item.keywordMap)

@@ -105,13 +105,8 @@ namespace UniGLTF
 
         #endregion
 
-        MaterialFactory m_materialFactory = new MaterialFactory();
+        MaterialFactory m_materialFactory;
         public MaterialFactory MaterialFactory => m_materialFactory;
-
-        public ImporterContext(MaterialImporter materialImporter)
-        {
-            m_materialFactory.MaterialImporter = materialImporter;
-        }
 
         public ImporterContext()
         {
@@ -267,11 +262,12 @@ namespace UniGLTF
             Json = json;
             Storage = storage;
             GLTF = GltfDeserializer.Deserialize(json.ParseAsJson());
-
             if (GLTF.asset.version != "2.0")
             {
                 throw new UniGLTFException("unknown gltf version {0}", GLTF.asset.version);
             }
+
+            m_materialFactory = new MaterialFactory(GLTF, Storage);
 
             // Version Compatibility
             RestoreOlderVersionValues();
@@ -501,10 +497,9 @@ namespace UniGLTF
             Schedulable.Create()
                 .AddTask(Scheduler.ThreadPool, () =>
                 {
-                    m_materialFactory.Prepare(GLTF);
+                    // root task. do nothing
                 })
-                .ContinueWithCoroutine(Scheduler.MainThread, () => m_materialFactory.TexturesProcessOnMainThread(GLTF, Storage))
-                .ContinueWithCoroutine(Scheduler.MainThread, () => m_materialFactory.LoadMaterials(GLTF))
+                .ContinueWithCoroutine(Scheduler.MainThread, () => m_materialFactory.LoadMaterials())
                 .OnExecute(Scheduler.ThreadPool, parent =>
                 {
                     // UniGLTF does not support draco
@@ -695,16 +690,10 @@ namespace UniGLTF
 
         protected virtual IEnumerable<UnityEngine.Object> ObjectsForSubAsset()
         {
-            HashSet<Texture2D> textures = new HashSet<Texture2D>();
-            foreach (var x in MaterialFactory.GetTextures().SelectMany(y => y.GetTexturesForSaveAssets()))
+            foreach (var x in MaterialFactory.ObjectsForSubAsset())
             {
-                if (!textures.Contains(x))
-                {
-                    textures.Add(x);
-                }
+                yield return x;
             }
-            foreach (var x in textures) { yield return x; }
-            foreach (var x in MaterialFactory.GetMaterials()) { yield return x.GetOrCreate(MaterialFactory.GetTexture); }
             foreach (var x in Meshes) { yield return x.Mesh; }
             foreach (var x in AnimationClips) { yield return x; }
         }
@@ -895,7 +884,8 @@ namespace UniGLTF
                 AssetDatabase.Refresh();
             }
 
-            m_materialFactory.CreateTextureItems(GLTF, prefabParentDir);
+            // texture will load from assets
+            m_materialFactory.ImageBaseDir = prefabParentDir;
         }
         #endregion
 #endif

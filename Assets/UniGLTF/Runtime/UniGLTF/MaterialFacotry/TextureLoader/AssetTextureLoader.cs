@@ -1,29 +1,14 @@
 ﻿using System.Collections;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace UniGLTF
 {
 #if UNITY_EDITOR
-    public class AssetTextureLoader : ITextureLoader
+    public static class AssetTextureLoader
     {
-        public Texture2D Texture
-        {
-            private set;
-            get;
-        }
-
-        UnityPath m_assetPath;
-
-        public AssetTextureLoader(UnityPath assetPath, string _)
-        {
-            m_assetPath = assetPath;
-        }
-
-        public void Dispose()
-        {
-        }
-
-        public IEnumerator ProcessOnMainThread(glTF gltf, IStorage storage, bool isLinear, glTFTextureSampler sampler)
+        public static Task<Texture2D> LoadTaskAsync(UnityPath m_assetPath,
+            bool isLinear, glTFTextureSampler sampler)
         {
             //
             // texture from assets
@@ -39,9 +24,8 @@ namespace UniGLTF
 
             importer.SaveAndReimport();
 
-            Texture = m_assetPath.LoadAsset<Texture2D>();
+            var Texture = m_assetPath.LoadAsset<Texture2D>();
 
-            //Texture.name = m_textureName;
             if (Texture == null)
             {
                 Debug.LogWarningFormat("fail to Load Texture2D: {0}", m_assetPath);
@@ -66,7 +50,7 @@ namespace UniGLTF
                 TextureSamplerUtil.SetSampler(Texture, sampler);
             }
 
-            yield break;
+            return Task.FromResult(Texture);
         }
     }
 #endif

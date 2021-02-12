@@ -7,7 +7,7 @@ using UnityEngine.Networking;
 
 namespace UniGLTF
 {
-    public class UnityWebRequestTextureLoader : ITextureLoader
+    public class UnityWebRequestTextureLoader
     {
         public Texture2D Texture
         {
