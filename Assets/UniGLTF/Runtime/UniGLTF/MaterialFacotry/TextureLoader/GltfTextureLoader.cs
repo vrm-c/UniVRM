@@ -24,13 +24,16 @@ namespace UniGLTF
             }
         }
 
-        public static Task<Texture2D> LoadTextureAsync(glTF gltf, IStorage storage, int index)
+        public static async Task<Texture2D> LoadTextureAsync(glTF gltf, IStorage storage, int index)
         {
             string m_textureName = default;
 
-            var imageIndex = gltf.GetImageIndexFromTextureIndex(index);
-            var segments = gltf.GetImageBytes(storage, imageIndex, out m_textureName);
-            var imageBytes = ToArray(segments);
+            var imageBytes = await Task.Run(() =>
+            {
+                var imageIndex = gltf.GetImageIndexFromTextureIndex(index);
+                var segments = gltf.GetImageBytes(storage, imageIndex, out m_textureName);
+                return ToArray(segments);
+            });
 
             //
             // texture from image(png etc) bytes
@@ -50,7 +53,7 @@ namespace UniGLTF
             {
                 TextureSamplerUtil.SetSampler(texture, sampler);
             }
-            return Task.FromResult(texture);
+            return texture;
         }
     }
 }

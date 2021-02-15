@@ -59,9 +59,9 @@ namespace VRM
             using (MeasureTime("VRM LoadMeta"))
             {
                 var task = LoadMetaAsync();
-                while (!task.IsCompleted)
+                foreach (var x in task.AsIEnumerator())
                 {
-                    yield return null;
+                    yield return x;
                 }
             }
             yield return null;

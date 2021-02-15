@@ -153,10 +153,11 @@ namespace UniGLTF
                 {
                     var task = CreateMaterialAsync(m_gltf, 0, GetTextureAsync);
 
-                    while (!task.IsCompleted)
+                    foreach (var x in task.AsIEnumerator())
                     {
-                        yield return null;
+                        yield return x;
                     }
+
                     AddMaterial(task.Result);
                 }
                 else
@@ -164,10 +165,11 @@ namespace UniGLTF
                     for (int i = 0; i < m_gltf.materials.Count; ++i)
                     {
                         var task = CreateMaterialAsync(m_gltf, i, GetTextureAsync);
-                        while (!task.IsCompleted)
+                        foreach (var x in task.AsIEnumerator())
                         {
                             yield return null;
                         }
+
                         AddMaterial(task.Result);
                     }
                 }
