@@ -39,7 +39,7 @@ namespace VRM
                 {
                     Debug.LogWarningFormat("unknown shader {0}.", shaderName);
                 }
-                return await MaterialItemBase.DefaultCreateMaterialAsync(gltf, m_index, getTexture);
+                return await MaterialFactory.DefaultCreateMaterialAsync(gltf, m_index, getTexture);
             }
 
             //
@@ -116,7 +116,7 @@ namespace VRM
             if (i == 0 && m_materials.Count == 0)
             {
                 // dummy
-                return MaterialItemBase.DefaultCreateMaterialAsync(gltf, i, getTexture);
+                return MaterialFactory.DefaultCreateMaterialAsync(gltf, i, getTexture);
             }
 
             return MToonMaterialItem.CreateAsync(gltf, i, m_materials[i], getTexture);

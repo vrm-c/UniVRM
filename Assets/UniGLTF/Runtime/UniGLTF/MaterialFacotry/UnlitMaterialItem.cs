@@ -14,7 +14,7 @@ namespace UniGLTF
                 getTexture = _ => Task.FromResult<Texture2D>(null);
             }
 
-            var material = MaterialItemBase.CreateMaterial(i, src, ShaderName);
+            var material = MaterialFactory.CreateMaterial(i, src, ShaderName);
 
             // texture
             if (src.pbrMetallicRoughness.baseColorTexture != null)
@@ -22,7 +22,7 @@ namespace UniGLTF
                 material.mainTexture = await getTexture(GetTextureParam.Create(src.pbrMetallicRoughness.baseColorTexture.index));
 
                 // Texture Offset and Scale
-                MaterialItemBase.SetTextureOffsetAndScale(material, src.pbrMetallicRoughness.baseColorTexture, "_MainTex");
+                MaterialFactory.SetTextureOffsetAndScale(material, src.pbrMetallicRoughness.baseColorTexture, "_MainTex");
             }
 
             // color

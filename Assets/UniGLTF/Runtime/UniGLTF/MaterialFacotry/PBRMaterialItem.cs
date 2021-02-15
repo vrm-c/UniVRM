@@ -49,7 +49,7 @@ namespace UniGLTF
                 getTexture = _ => Task.FromResult<Texture2D>(null);
             }
 
-            var material = MaterialItemBase.CreateMaterial(i, src, ShaderName);
+            var material = MaterialFactory.CreateMaterial(i, src, ShaderName);
 
             // PBR material
             if (src != null)
@@ -67,7 +67,7 @@ namespace UniGLTF
                         material.mainTexture = await getTexture(GetTextureParam.Create(src.pbrMetallicRoughness.baseColorTexture.index));
 
                         // Texture Offset and Scale
-                        MaterialItemBase.SetTextureOffsetAndScale(material, src.pbrMetallicRoughness.baseColorTexture, "_MainTex");
+                        MaterialFactory.SetTextureOffsetAndScale(material, src.pbrMetallicRoughness.baseColorTexture, "_MainTex");
                     }
 
                     if (src.pbrMetallicRoughness.metallicRoughnessTexture != null && src.pbrMetallicRoughness.metallicRoughnessTexture.index != -1)
@@ -87,7 +87,7 @@ namespace UniGLTF
                         material.SetFloat("_GlossMapScale", 1.0f);
 
                         // Texture Offset and Scale
-                        MaterialItemBase.SetTextureOffsetAndScale(material, src.pbrMetallicRoughness.metallicRoughnessTexture, "_MetallicGlossMap");
+                        MaterialFactory.SetTextureOffsetAndScale(material, src.pbrMetallicRoughness.metallicRoughnessTexture, "_MetallicGlossMap");
                     }
                     else
                     {
@@ -107,7 +107,7 @@ namespace UniGLTF
                     }
 
                     // Texture Offset and Scale
-                    MaterialItemBase.SetTextureOffsetAndScale(material, src.normalTexture, "_BumpMap");
+                    MaterialFactory.SetTextureOffsetAndScale(material, src.normalTexture, "_BumpMap");
                 }
 
                 if (src.occlusionTexture != null && src.occlusionTexture.index != -1)
@@ -120,7 +120,7 @@ namespace UniGLTF
                     }
 
                     // Texture Offset and Scale
-                    MaterialItemBase.SetTextureOffsetAndScale(material, src.occlusionTexture, "_OcclusionMap");
+                    MaterialFactory.SetTextureOffsetAndScale(material, src.occlusionTexture, "_OcclusionMap");
                 }
 
                 if (src.emissiveFactor != null
@@ -143,7 +143,7 @@ namespace UniGLTF
                         }
 
                         // Texture Offset and Scale
-                        MaterialItemBase.SetTextureOffsetAndScale(material, src.emissiveTexture, "_EmissionMap");
+                        MaterialFactory.SetTextureOffsetAndScale(material, src.emissiveTexture, "_EmissionMap");
                     }
                 }
 
