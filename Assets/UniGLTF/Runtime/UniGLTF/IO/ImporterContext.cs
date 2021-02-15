@@ -105,13 +105,11 @@ namespace UniGLTF
 
         #endregion
 
-        MaterialFactory m_materialFactory = new MaterialFactory();
+        MaterialFactory m_materialFactory;
         public MaterialFactory MaterialFactory => m_materialFactory;
 
-        public ImporterContext(MaterialImporter materialImporter)
-        {
-            m_materialFactory.MaterialImporter = materialImporter;
-        }
+        TextureFactory m_textureFactory;
+        public TextureFactory TextureFactory => m_textureFactory;
 
         public ImporterContext()
         {
@@ -267,11 +265,13 @@ namespace UniGLTF
             Json = json;
             Storage = storage;
             GLTF = GltfDeserializer.Deserialize(json.ParseAsJson());
-
             if (GLTF.asset.version != "2.0")
             {
                 throw new UniGLTFException("unknown gltf version {0}", GLTF.asset.version);
             }
+
+            m_textureFactory = new TextureFactory(GLTF, Storage);
+            m_materialFactory = new MaterialFactory(GLTF, Storage);
 
             // Version Compatibility
             RestoreOlderVersionValues();
@@ -501,11 +501,15 @@ namespace UniGLTF
             Schedulable.Create()
                 .AddTask(Scheduler.ThreadPool, () =>
                 {
-                    m_materialFactory.Prepare(GLTF);
+                    // root task. do nothing
                 })
-                .ContinueWithCoroutine(Scheduler.ThreadPool, () => m_materialFactory.TexturesProcessOnAnyThread(GLTF, Storage))
-                .ContinueWithCoroutine(Scheduler.MainThread, () => m_materialFactory.TexturesProcessOnMainThread(GLTF))
-                .ContinueWithCoroutine(Scheduler.MainThread, () => m_materialFactory.LoadMaterials(GLTF))
+                .ContinueWithCoroutine(Scheduler.MainThread, () =>
+                {
+                    using (MeasureTime("LoadMaterials"))
+                    {
+                        return m_materialFactory.LoadMaterials(m_textureFactory.GetTextureAsync);
+                    }
+                })
                 .OnExecute(Scheduler.ThreadPool, parent =>
                 {
                     // UniGLTF does not support draco
@@ -696,16 +700,14 @@ namespace UniGLTF
 
         protected virtual IEnumerable<UnityEngine.Object> ObjectsForSubAsset()
         {
-            HashSet<Texture2D> textures = new HashSet<Texture2D>();
-            foreach (var x in MaterialFactory.GetTextures().SelectMany(y => y.GetTexturesForSaveAssets()))
+            foreach (var x in TextureFactory.ObjectsForSubAsset())
             {
-                if (!textures.Contains(x))
-                {
-                    textures.Add(x);
-                }
+                yield return x;
             }
-            foreach (var x in textures) { yield return x; }
-            foreach (var x in MaterialFactory.GetMaterials()) { yield return x.GetOrCreate(MaterialFactory.GetTexture); }
+            foreach (var x in MaterialFactory.ObjectsForSubAsset())
+            {
+                yield return x;
+            }
             foreach (var x in Meshes) { yield return x.Mesh; }
             foreach (var x in AnimationClips) { yield return x; }
         }
@@ -896,7 +898,8 @@ namespace UniGLTF
                 AssetDatabase.Refresh();
             }
 
-            m_materialFactory.CreateTextureItems(GLTF, prefabParentDir);
+            // texture will load from assets
+            m_textureFactory.ImageBaseDir = prefabParentDir;
         }
         #endregion
 #endif
@@ -939,10 +942,16 @@ namespace UniGLTF
             if (Root != null) GameObject.Destroy(Root);
 
             // Remove resources. materials, textures meshes etc...
-            foreach (var o in ObjectsForSubAsset())
+            foreach (var x in Meshes)
             {
-                UnityEngine.Object.DestroyImmediate(o, true);
+                UnityEngine.Object.DestroyImmediate(x.Mesh, true);
             }
+            foreach (var x in AnimationClips)
+            {
+                UnityEngine.Object.DestroyImmediate(x, true);
+            }
+            MaterialFactory.Dispose();
+            TextureFactory.Dispose();
         }
 
 #if UNITY_EDITOR

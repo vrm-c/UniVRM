@@ -6,6 +6,7 @@ using UnityEngine;
 using System.IO;
 using System.Collections;
 using UniJSON;
+using System.Threading.Tasks;
 
 namespace VRM
 {
@@ -42,7 +43,7 @@ namespace VRM
             {
                 VRM = vrm;
                 // override material importer
-                MaterialFactory.MaterialImporter = new VRMMaterialImporter(VRM.materialProperties).CreateMaterial;
+                MaterialFactory.CreateMaterialAsync = new VRMMaterialImporter(VRM.materialProperties).CreateMaterial;
             }
             else
             {
@@ -57,7 +58,11 @@ namespace VRM
 
             using (MeasureTime("VRM LoadMeta"))
             {
-                LoadMeta();
+                var task = LoadMetaAsync();
+                foreach (var x in task.AsIEnumerator())
+                {
+                    yield return x;
+                }
             }
             yield return null;
 
@@ -86,9 +91,9 @@ namespace VRM
             }
         }
 
-        void LoadMeta()
+        async Task LoadMetaAsync()
         {
-            var meta = ReadMeta();
+            var meta = await ReadMetaAsync();
             var _meta = Root.AddComponent<VRMMeta>();
             _meta.Meta = meta;
             Meta = meta;
@@ -193,7 +198,8 @@ namespace VRM
                         }
                     }
 
-                    var material = MaterialFactory.GetMaterials().FirstOrDefault(y => y.Name == x.materialName).GetOrCreate(MaterialFactory.GetTexture);
+                    var material = MaterialFactory.Materials
+                        .FirstOrDefault(y => y.name == x.materialName);
                     var propertyName = x.propertyName;
                     if (x.propertyName.FastEndsWith("_ST_S")
                     || x.propertyName.FastEndsWith("_ST_T"))
@@ -292,7 +298,7 @@ namespace VRM
         public BlendShapeAvatar BlendShapeAvatar;
         public VRMMetaObject Meta;
 
-        public VRMMetaObject ReadMeta(bool createThumbnail = false)
+        public async Task<VRMMetaObject> ReadMetaAsync(bool createThumbnail = false)
         {
             var meta = ScriptableObject.CreateInstance<VRMMetaObject>();
             meta.name = "Meta";
@@ -304,24 +310,7 @@ namespace VRM
             meta.ContactInformation = gltfMeta.contactInformation;
             meta.Reference = gltfMeta.reference;
             meta.Title = gltfMeta.title;
-
-            var thumbnail = MaterialFactory.GetTexture(gltfMeta.texture);
-            if (thumbnail != null)
-            {
-                // ロード済み
-                meta.Thumbnail = thumbnail.Texture;
-            }
-            else if (createThumbnail)
-            {
-                // 作成する(先行ロード用)
-                if (gltfMeta.texture >= 0 && gltfMeta.texture < GLTF.textures.Count)
-                {
-                    var t = new TextureItem(gltfMeta.texture, MaterialFactory.CreateTextureLoader(gltfMeta.texture));
-                    t.Process(GLTF, Storage);
-                    meta.Thumbnail = t.Texture;
-                }
-            }
-
+            meta.Thumbnail = await TextureFactory.GetTextureAsync(GetTextureParam.Create(gltfMeta.texture));
             meta.AllowedUser = gltfMeta.allowedUser;
             meta.ViolentUssage = gltfMeta.violentUssage;
             meta.SexualUssage = gltfMeta.sexualUssage;

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Threading.Tasks;
+using UnityEngine;
 
 namespace UniGLTF
 {
@@ -29,7 +30,7 @@ namespace UniGLTF
     /// _SrcBlend
     /// _DstBlend
     /// _ZWrite
-    public class PBRMaterialItem : MaterialItemBase
+    public static class PBRMaterialItem
     {
         public const string ShaderName = "Standard";
 
@@ -41,51 +42,44 @@ namespace UniGLTF
             Transparent
         }
 
-        public PBRMaterialItem(int i, glTFMaterial src) : base(i, src)
-        {
-        }
-
-        public override Material GetOrCreate(GetTextureItemFunc getTexture)
+        public static async Task<Material> CreateAsync(int i, glTFMaterial src, GetTextureAsyncFunc getTexture)
         {
             if (getTexture == null)
             {
-                getTexture = _ => null;
+                getTexture = _ => Task.FromResult<Texture2D>(null);
             }
 
-            var material = CreateMaterial(ShaderName);
+            var material = MaterialFactory.CreateMaterial(i, src, ShaderName);
 
             // PBR material
-            if (m_src != null)
+            if (src != null)
             {
-                if (m_src.pbrMetallicRoughness != null)
+                if (src.pbrMetallicRoughness != null)
                 {
-                    if (m_src.pbrMetallicRoughness.baseColorFactor != null && m_src.pbrMetallicRoughness.baseColorFactor.Length == 4)
+                    if (src.pbrMetallicRoughness.baseColorFactor != null && src.pbrMetallicRoughness.baseColorFactor.Length == 4)
                     {
-                        var color = m_src.pbrMetallicRoughness.baseColorFactor;
+                        var color = src.pbrMetallicRoughness.baseColorFactor;
                         material.color = (new Color(color[0], color[1], color[2], color[3])).gamma;
                     }
 
-                    if (m_src.pbrMetallicRoughness.baseColorTexture != null && m_src.pbrMetallicRoughness.baseColorTexture.index != -1)
+                    if (src.pbrMetallicRoughness.baseColorTexture != null && src.pbrMetallicRoughness.baseColorTexture.index != -1)
                     {
-                        var texture = getTexture(m_src.pbrMetallicRoughness.baseColorTexture.index);
-                        if (texture != null)
-                        {
-                            material.mainTexture = texture.Texture;
-                        }
+                        material.mainTexture = await getTexture(GetTextureParam.Create(src.pbrMetallicRoughness.baseColorTexture.index));
 
                         // Texture Offset and Scale
-                        SetTextureOffsetAndScale(material, m_src.pbrMetallicRoughness.baseColorTexture, "_MainTex");
+                        MaterialFactory.SetTextureOffsetAndScale(material, src.pbrMetallicRoughness.baseColorTexture, "_MainTex");
                     }
 
-                    if (m_src.pbrMetallicRoughness.metallicRoughnessTexture != null && m_src.pbrMetallicRoughness.metallicRoughnessTexture.index != -1)
+                    if (src.pbrMetallicRoughness.metallicRoughnessTexture != null && src.pbrMetallicRoughness.metallicRoughnessTexture.index != -1)
                     {
                         material.EnableKeyword("_METALLICGLOSSMAP");
-                        var texture = getTexture(m_src.pbrMetallicRoughness.metallicRoughnessTexture.index);
+
+                        var texture = await getTexture(GetTextureParam.CreateMetallic(
+                            src.pbrMetallicRoughness.metallicRoughnessTexture.index,
+                            src.pbrMetallicRoughness.metallicFactor));
                         if (texture != null)
                         {
-                            var prop = "_MetallicGlossMap";
-                            // Bake roughnessFactor values into a texture.
-                            material.SetTexture(prop, texture.ConvertTexture(prop, m_src.pbrMetallicRoughness.roughnessFactor));
+                            material.SetTexture(GetTextureParam.METALLIC_GLOSS_PROP, texture);
                         }
 
                         material.SetFloat("_Metallic", 1.0f);
@@ -93,71 +87,69 @@ namespace UniGLTF
                         material.SetFloat("_GlossMapScale", 1.0f);
 
                         // Texture Offset and Scale
-                        SetTextureOffsetAndScale(material, m_src.pbrMetallicRoughness.metallicRoughnessTexture, "_MetallicGlossMap");
+                        MaterialFactory.SetTextureOffsetAndScale(material, src.pbrMetallicRoughness.metallicRoughnessTexture, "_MetallicGlossMap");
                     }
                     else
                     {
-                        material.SetFloat("_Metallic", m_src.pbrMetallicRoughness.metallicFactor);
-                        material.SetFloat("_Glossiness", 1.0f - m_src.pbrMetallicRoughness.roughnessFactor);
+                        material.SetFloat("_Metallic", src.pbrMetallicRoughness.metallicFactor);
+                        material.SetFloat("_Glossiness", 1.0f - src.pbrMetallicRoughness.roughnessFactor);
                     }
                 }
 
-                if (m_src.normalTexture != null && m_src.normalTexture.index != -1)
+                if (src.normalTexture != null && src.normalTexture.index != -1)
                 {
                     material.EnableKeyword("_NORMALMAP");
-                    var texture = getTexture(m_src.normalTexture.index);
+                    var texture = await getTexture(GetTextureParam.CreateNormal(src.normalTexture.index));
                     if (texture != null)
                     {
-                        var prop = "_BumpMap";
-                        material.SetTexture(prop, texture.ConvertTexture(prop));
-                        material.SetFloat("_BumpScale", m_src.normalTexture.scale);
+                        material.SetTexture(GetTextureParam.NORMAL_PROP, texture);
+                        material.SetFloat("_BumpScale", src.normalTexture.scale);
                     }
 
                     // Texture Offset and Scale
-                    SetTextureOffsetAndScale(material, m_src.normalTexture, "_BumpMap");
+                    MaterialFactory.SetTextureOffsetAndScale(material, src.normalTexture, "_BumpMap");
                 }
 
-                if (m_src.occlusionTexture != null && m_src.occlusionTexture.index != -1)
+                if (src.occlusionTexture != null && src.occlusionTexture.index != -1)
                 {
-                    var texture = getTexture(m_src.occlusionTexture.index);
+                    var texture = await getTexture(GetTextureParam.CreateOcclusion(src.occlusionTexture.index));
                     if (texture != null)
                     {
-                        var prop = "_OcclusionMap";
-                        material.SetTexture(prop, texture.ConvertTexture(prop));
-                        material.SetFloat("_OcclusionStrength", m_src.occlusionTexture.strength);
+                        material.SetTexture(GetTextureParam.OCCLUSION_PROP, texture);
+                        material.SetFloat("_OcclusionStrength", src.occlusionTexture.strength);
                     }
 
                     // Texture Offset and Scale
-                    SetTextureOffsetAndScale(material, m_src.occlusionTexture, "_OcclusionMap");
+                    MaterialFactory.SetTextureOffsetAndScale(material, src.occlusionTexture, "_OcclusionMap");
                 }
 
-                if (m_src.emissiveFactor != null
-                    || (m_src.emissiveTexture != null && m_src.emissiveTexture.index != -1))
+                if (src.emissiveFactor != null
+                    || (src.emissiveTexture != null && src.emissiveTexture.index != -1))
                 {
                     material.EnableKeyword("_EMISSION");
                     material.globalIlluminationFlags &= ~MaterialGlobalIlluminationFlags.EmissiveIsBlack;
 
-                    if (m_src.emissiveFactor != null && m_src.emissiveFactor.Length == 3)
+                    if (src.emissiveFactor != null && src.emissiveFactor.Length == 3)
                     {
-                        material.SetColor("_EmissionColor", new Color(m_src.emissiveFactor[0], m_src.emissiveFactor[1], m_src.emissiveFactor[2]));
+                        material.SetColor("_EmissionColor", new Color(src.emissiveFactor[0], src.emissiveFactor[1], src.emissiveFactor[2]));
                     }
 
-                    if (m_src.emissiveTexture != null && m_src.emissiveTexture.index != -1)
+                    if (src.emissiveTexture != null && src.emissiveTexture.index != -1)
                     {
-                        var texture = getTexture(m_src.emissiveTexture.index);
+                        var texture = await getTexture(GetTextureParam.Create(src.emissiveTexture.index));
                         if (texture != null)
                         {
-                            material.SetTexture("_EmissionMap", texture.Texture);
+                            material.SetTexture("_EmissionMap", texture);
                         }
 
                         // Texture Offset and Scale
-                        SetTextureOffsetAndScale(material, m_src.emissiveTexture, "_EmissionMap");
+                        MaterialFactory.SetTextureOffsetAndScale(material, src.emissiveTexture, "_EmissionMap");
                     }
                 }
 
                 BlendMode blendMode = BlendMode.Opaque;
                 // https://forum.unity.com/threads/standard-material-shader-ignoring-setfloat-property-_mode.344557/#post-2229980
-                switch (m_src.alphaMode)
+                switch (src.alphaMode)
                 {
                     case "BLEND":
                         blendMode = BlendMode.Fade;
@@ -177,7 +169,7 @@ namespace UniGLTF
                         material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
                         material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
                         material.SetInt("_ZWrite", 1);
-                        material.SetFloat("_Cutoff", m_src.alphaCutoff);
+                        material.SetFloat("_Cutoff", src.alphaCutoff);
                         material.EnableKeyword("_ALPHATEST_ON");
                         material.DisableKeyword("_ALPHABLEND_ON");
                         material.DisableKeyword("_ALPHAPREMULTIPLY_ON");

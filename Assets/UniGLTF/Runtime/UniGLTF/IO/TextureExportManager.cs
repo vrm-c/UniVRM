@@ -66,7 +66,7 @@ namespace UniGLTF
 #endif
 
             // ToDo: may already exists
-            m_exportTextures[index] = TextureItem.CopyTexture(texture, readWrite, null);
+            m_exportTextures[index] = TextureConverter.CopyTexture(texture, readWrite, null);
 
             return index;
         }

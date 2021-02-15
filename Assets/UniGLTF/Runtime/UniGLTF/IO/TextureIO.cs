@@ -52,7 +52,7 @@ namespace UniGLTF
         {
             foreach (var material in glTf.materials)
             {
-                var textureInfo = material.GetTextures().FirstOrDefault(x => (x!=null) && x.index == textureIndex);
+                var textureInfo = material.GetTextures().FirstOrDefault(x => (x != null) && x.index == textureIndex);
                 if (textureInfo != null)
                 {
                     return textureInfo.TextureType;
@@ -109,10 +109,10 @@ namespace UniGLTF
                 var getSizeMethod = typeof(TextureImporter).GetMethod("GetWidthAndHeight", BindingFlags.NonPublic | BindingFlags.Instance);
                 if (textureImporter != null && getSizeMethod != null)
                 {
-                    var args = new object[2] {0, 0};
+                    var args = new object[2] { 0, 0 };
                     getSizeMethod.Invoke(textureImporter, args);
-                    var originalWidth = (int) args[0];
-                    var originalHeight = (int) args[1];
+                    var originalWidth = (int)args[0];
+                    var originalHeight = (int)args[1];
 
                     var originalSize = Mathf.Max(originalWidth, originalHeight);
                     var requiredMaxSize = textureImporter.maxTextureSize;
@@ -122,12 +122,12 @@ namespace UniGLTF
                     {
                         return
                         (
-                            TextureItem.CopyTexture(texture, GetColorSpace(textureType), null).EncodeToPNG(),
+                            TextureConverter.CopyTexture(texture, GetColorSpace(textureType), null).EncodeToPNG(),
                             "image/png"
                         );
                     }
                 }
-                
+
                 if (path.Extension == ".png")
                 {
                     return
@@ -149,7 +149,7 @@ namespace UniGLTF
 
             return
             (
-                TextureItem.CopyTexture(texture, TextureIO.GetColorSpace(textureType), null).EncodeToPNG(),
+                TextureConverter.CopyTexture(texture, TextureIO.GetColorSpace(textureType), null).EncodeToPNG(),
                 "image/png"
             );
         }
