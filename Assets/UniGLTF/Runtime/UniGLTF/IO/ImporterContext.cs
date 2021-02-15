@@ -270,6 +270,7 @@ namespace UniGLTF
                 throw new UniGLTFException("unknown gltf version {0}", GLTF.asset.version);
             }
 
+            m_textureFactory = new TextureFactory(GLTF, Storage);
             m_materialFactory = new MaterialFactory(GLTF, Storage);
 
             // Version Compatibility
@@ -941,7 +942,6 @@ namespace UniGLTF
             if (Root != null) GameObject.Destroy(Root);
 
             // Remove resources. materials, textures meshes etc...
-            MaterialFactory.Dispose();
             foreach (var x in Meshes)
             {
                 UnityEngine.Object.DestroyImmediate(x.Mesh, true);
@@ -950,6 +950,8 @@ namespace UniGLTF
             {
                 UnityEngine.Object.DestroyImmediate(x, true);
             }
+            MaterialFactory.Dispose();
+            TextureFactory.Dispose();
         }
 
 #if UNITY_EDITOR
