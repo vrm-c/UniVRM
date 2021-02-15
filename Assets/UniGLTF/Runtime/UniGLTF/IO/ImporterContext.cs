@@ -108,6 +108,9 @@ namespace UniGLTF
         MaterialFactory m_materialFactory;
         public MaterialFactory MaterialFactory => m_materialFactory;
 
+        TextureFactory m_textureFactory;
+        public TextureFactory TextureFactory => m_textureFactory;
+
         public ImporterContext()
         {
         }
@@ -499,7 +502,13 @@ namespace UniGLTF
                 {
                     // root task. do nothing
                 })
-                .ContinueWithCoroutine(Scheduler.MainThread, m_materialFactory.LoadMaterials)
+                .ContinueWithCoroutine(Scheduler.MainThread, () =>
+                {
+                    using (MeasureTime("LoadMaterials"))
+                    {
+                        return m_materialFactory.LoadMaterials(m_textureFactory.GetTextureAsync);
+                    }
+                })
                 .OnExecute(Scheduler.ThreadPool, parent =>
                 {
                     // UniGLTF does not support draco
@@ -690,6 +699,10 @@ namespace UniGLTF
 
         protected virtual IEnumerable<UnityEngine.Object> ObjectsForSubAsset()
         {
+            foreach (var x in TextureFactory.ObjectsForSubAsset())
+            {
+                yield return x;
+            }
             foreach (var x in MaterialFactory.ObjectsForSubAsset())
             {
                 yield return x;
@@ -885,7 +898,7 @@ namespace UniGLTF
             }
 
             // texture will load from assets
-            m_materialFactory.ImageBaseDir = prefabParentDir;
+            m_textureFactory.ImageBaseDir = prefabParentDir;
         }
         #endregion
 #endif

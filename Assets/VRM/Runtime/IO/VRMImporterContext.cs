@@ -310,7 +310,7 @@ namespace VRM
             meta.ContactInformation = gltfMeta.contactInformation;
             meta.Reference = gltfMeta.reference;
             meta.Title = gltfMeta.title;
-            meta.Thumbnail = await MaterialFactory.GetTextureAsync(GetTextureParam.Create(gltfMeta.texture));
+            meta.Thumbnail = await TextureFactory.GetTextureAsync(GetTextureParam.Create(gltfMeta.texture));
             meta.AllowedUser = gltfMeta.allowedUser;
             meta.ViolentUssage = gltfMeta.violentUssage;
             meta.SexualUssage = gltfMeta.sexualUssage;

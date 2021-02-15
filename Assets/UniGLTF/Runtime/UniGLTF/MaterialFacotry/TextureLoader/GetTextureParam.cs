@@ -51,5 +51,4 @@ namespace UniGLTF
         }
     }
 
-    public delegate Task<Texture2D> GetTextureAsyncFunc(GetTextureParam param);
 }
