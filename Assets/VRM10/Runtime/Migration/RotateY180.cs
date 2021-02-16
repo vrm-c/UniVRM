@@ -19,15 +19,16 @@ namespace UniVRM10
             {
                 if (node.translation != null && node.translation.Length == 3)
                 {
+                    // rotate 180 degrees around the Y axis
                     var t = node.translation;
                     t[0] = -t[0];
                     t[2] = -t[2];
                 }
                 if (node.rotation != null && node.rotation.Length == 4)
                 {
-                    // throw new NotImplementedException("not normlaized !");
+                    // throw new NotImplementedException("not normalized !");
                 }
-                if (node.scale != null && node.rotation.Length == 3)
+                if (node.scale != null && node.scale.Length == 3)
                 {
                     // do nothing
                 }
