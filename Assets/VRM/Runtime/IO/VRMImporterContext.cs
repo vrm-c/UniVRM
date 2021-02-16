@@ -51,7 +51,7 @@ namespace VRM
         }
 
         #region OnLoad
-        protected override async Task OnLoadModel()
+        protected override async Task OnLoadModel(Func<Task> nextFrame)
         {
             Root.name = "VRM";
 
@@ -59,26 +59,26 @@ namespace VRM
             {
                 await LoadMetaAsync();
             }
-            // yield return null;
+            await nextFrame();
 
             using (MeasureTime("VRM LoadHumanoid"))
             {
                 LoadHumanoid();
             }
-            // yield return null;
+            await nextFrame();
 
             using (MeasureTime("VRM LoadBlendShapeMaster"))
             {
                 LoadBlendShapeMaster();
             }
-            // yield return null;
+            await nextFrame();
 
             using (MeasureTime("VRM LoadSecondary"))
             {
                 VRMSpringUtility.LoadSecondary(Root.transform, Nodes,
                 VRM.secondaryAnimation);
             }
-            // yield return null;
+            await nextFrame();
 
             using (MeasureTime("VRM LoadFirstPerson"))
             {

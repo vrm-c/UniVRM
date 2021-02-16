@@ -653,15 +653,15 @@ namespace UniGLTF
             return result;
         }
 
-        public static async Task<MeshWithMaterials> BuildMeshAsync(MaterialFactory ctx, MeshImporter.MeshContext meshContext)
+        public static async Task<MeshWithMaterials> BuildMeshAsync(Func<Task> nextFrame, MaterialFactory ctx, MeshImporter.MeshContext meshContext)
         {
             var (mesh, recalculateTangents) = _BuildMesh(meshContext);
 
             if (recalculateTangents)
             {
-                // yield return null;
+                await nextFrame();
                 mesh.RecalculateTangents();
-                // yield return null;
+                await nextFrame();
             }
 
             // 先にすべてのマテリアルを作成済みなのでテクスチャーは生成済み。Resultを使ってよい
@@ -671,7 +671,7 @@ namespace UniGLTF
                 Materials = meshContext.MaterialIndices.Select(x => ctx.GetMaterial(x)).ToArray()
             };
 
-            // yield return null;
+            await nextFrame();
             if (meshContext.BlendShapes.Count > 0)
             {
                 var emptyVertices = new Vector3[mesh.vertexCount];
