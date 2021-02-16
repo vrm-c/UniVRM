@@ -10,10 +10,10 @@ namespace VRM.Samples
 {
     public static class JsonExtensions
     {
-        public static void SetValue<T>(this JsonNode node, string key, T value, Action<JsonFormatter, T> seri)
+        public static void SetValue<T>(this JsonNode node, string key, T value, Action<JsonFormatter, T> serialize)
         {
             var f = new JsonFormatter();
-            seri(f, value);
+            serialize(f, value);
             var p = Utf8String.From(key);
             var bytes = f.GetStoreBytes();
             node.SetValue(p, bytes);

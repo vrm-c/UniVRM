@@ -33,12 +33,11 @@ namespace UniGLTF
 
         public TextureExportManager(IEnumerable<Texture> textures)
         {
-            /*
             if (textures == null)
             {
-                throw new System.ArgumentNullException();
+                // empty list for UnitTest
+                textures = new Texture[] { };
             }
-			*/
             m_textures = textures.ToList();
             m_exportTextures = new List<Texture>(Enumerable.Repeat<Texture>(null, m_textures.Count));
         }
