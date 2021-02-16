@@ -28,12 +28,9 @@ namespace UniGLTF
         {
             string m_textureName = default;
 
-            var imageBytes = await Task.Run(() =>
-            {
-                var imageIndex = gltf.GetImageIndexFromTextureIndex(index);
-                var segments = gltf.GetImageBytes(storage, imageIndex, out m_textureName);
-                return ToArray(segments);
-            });
+            var imageIndex = gltf.GetImageIndexFromTextureIndex(index);
+            var segments = gltf.GetImageBytes(storage, imageIndex, out m_textureName);
+            var imageBytes = ToArray(segments);
 
             //
             // texture from image(png etc) bytes
