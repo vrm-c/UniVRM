@@ -10,10 +10,6 @@ using UniJSON;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
-#if ((NET_4_6 || NET_STANDARD_2_0) && UNITY_2017_1_OR_NEWER)
-using System.Threading.Tasks;
-#endif
-
 
 namespace UniGLTF
 {
@@ -351,44 +347,6 @@ namespace UniGLTF
                     }
                 }
             }
-            // for (int i = 0; i < GLTF.meshes.Count; ++i)
-            // {
-            //     var mesh = GLTF.meshes[i];
-            //     try
-            //     {
-            //         for (int j = 0; j < mesh.primitives.Count; ++j)
-            //         {
-            //             var primitive = mesh.primitives[j];
-            //             for (int k = 0; k < primitive.targets.Count; ++k)
-            //             {
-            //                 var extraName = parsed["meshes"][i]["primitives"][j]["targets"][k]["extra"]["name"].Value.GetString();
-            //                 //Debug.LogFormat("restore morphName: {0}", extraName);
-            //                 throw new NotImplementedException();
-            //                 // primitive.extras.targetNames.Add(extraName);
-            //             }
-            //         }
-            //     }
-            //     catch (Exception)
-            //     {
-            //         // do nothing
-            //     }
-            // }
-#if false
-            for (int i = 0; i < GLTF.nodes.Count; ++i)
-            {
-                var node = GLTF.nodes[i];
-                try
-                {
-                    var extra = parsed["nodes"][i]["extra"]["skinRootBone"].AsInt;
-                    //Debug.LogFormat("restore extra: {0}", extra);
-                    //node.extras.skinRootBone = extra;
-                }
-                catch (Exception)
-                {
-                    // do nothing
-                }
-            }
-#endif
         }
         #endregion
 
@@ -396,106 +354,7 @@ namespace UniGLTF
 
         public bool EnableLoadBalancing;
 
-        /// <summary>
-        /// ReadAllBytes, Parse, Create GameObject
-        /// </summary>
-        /// <param name="path">allbytes</param>
-        public void Load(string path)
-        {
-            var bytes = File.ReadAllBytes(path);
-            Load(path, bytes);
-        }
-
-        /// <summary>
-        /// Parse, Create GameObject
-        /// </summary>
-        /// <param name="path">gltf or glb path</param>
-        /// <param name="bytes">allbytes</param>
-        public void Load(string path, byte[] bytes)
-        {
-            Parse(path, bytes);
-            Load();
-            Root.name = Path.GetFileNameWithoutExtension(path);
-        }
-
-        /// <summary>
-        /// Build unity objects from parsed gltf
-        /// </summary>
-        public void Load()
-        {
-            var schedulable = LoadAsync();
-            schedulable.ExecuteAll();
-        }
-
-        [Obsolete("Action<Unit> to Action")]
-        public IEnumerator LoadCoroutine(Action<Unit> onLoaded, Action<Exception> onError = null)
-        {
-            return LoadCoroutine(() => onLoaded(Unit.Default), onError);
-        }
-
-        public IEnumerator LoadCoroutine(Action<Exception> onError = null)
-        {
-            return LoadCoroutine(() => { }, onError);
-        }
-
-        public IEnumerator LoadCoroutine(Action onLoaded, Action<Exception> onError = null)
-        {
-            if (onLoaded == null)
-            {
-                onLoaded = () => { };
-            }
-
-            if (onError == null)
-            {
-                onError = Debug.LogError;
-            }
-
-            var schedulable = LoadAsync();
-            foreach (var x in schedulable.GetRoot().Traverse())
-            {
-                while (true)
-                {
-                    var status = x.Execute();
-                    if (status != ExecutionStatus.Continue)
-                    {
-                        break;
-                    }
-                    yield return null;
-                }
-            }
-
-            onLoaded();
-        }
-
-        [Obsolete("Action<Unit> to Action")]
-        public void LoadAsync(Action<Unit> onLoaded, Action<Exception> onError = null)
-        {
-            LoadAsync(() => onLoaded(Unit.Default), onError);
-        }
-
-        public void LoadAsync(Action onLoaded, Action<Exception> onError = null)
-        {
-            if (onError == null)
-            {
-                onError = Debug.LogError;
-            }
-
-            LoadAsync()
-                .Subscribe(Scheduler.MainThread,
-                _ => onLoaded(),
-                onError
-                );
-        }
-
-#if ((NET_4_6 || NET_STANDARD_2_0) && UNITY_2017_1_OR_NEWER && !UNITY_WEBGL)
-        public async Task<GameObject> LoadAsyncTask()
-        {
-            await LoadAsync().ToTask();
-            return Root;
-        }
-#endif
-
-        protected virtual Schedulable<Unit> LoadAsync()
+        public virtual Schedulable<Unit> LoadAsync()
         {
             return
             Schedulable.Create()
@@ -666,7 +525,6 @@ namespace UniGLTF
         #region Imported
         public GameObject Root;
         public List<Transform> Nodes = new List<Transform>();
-
 
         public List<MeshWithMaterials> Meshes = new List<MeshWithMaterials>();
         public void ShowMeshes()
@@ -842,12 +700,6 @@ namespace UniGLTF
             {
                 x.ImportAsset();
             }
-        }
-
-        [Obsolete("Use ExtractImages(prefabPath)")]
-        public void ExtranctImages(UnityPath prefabPath)
-        {
-            ExtractImages(prefabPath);
         }
 
         /// <summary>

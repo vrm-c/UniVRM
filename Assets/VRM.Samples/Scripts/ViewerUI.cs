@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using UniGLTF;
 using UniHumanoid;
 using UnityEngine;
 using UnityEngine.UI;
