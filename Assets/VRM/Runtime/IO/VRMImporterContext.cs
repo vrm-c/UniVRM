@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using UniGLTF;
 using UnityEngine;
 using System.IO;
-using System.Collections;
 using UniJSON;
 using System.Threading.Tasks;
 
@@ -52,38 +51,34 @@ namespace VRM
         }
 
         #region OnLoad
-        protected override IEnumerator OnLoadModel()
+        protected override async Task OnLoadModel()
         {
             Root.name = "VRM";
 
             using (MeasureTime("VRM LoadMeta"))
             {
-                var task = LoadMetaAsync();
-                foreach (var x in task.AsIEnumerator())
-                {
-                    yield return x;
-                }
+                await LoadMetaAsync();
             }
-            yield return null;
+            // yield return null;
 
             using (MeasureTime("VRM LoadHumanoid"))
             {
                 LoadHumanoid();
             }
-            yield return null;
+            // yield return null;
 
             using (MeasureTime("VRM LoadBlendShapeMaster"))
             {
                 LoadBlendShapeMaster();
             }
-            yield return null;
+            // yield return null;
 
             using (MeasureTime("VRM LoadSecondary"))
             {
                 VRMSpringUtility.LoadSecondary(Root.transform, Nodes,
                 VRM.secondaryAnimation);
             }
-            yield return null;
+            // yield return null;
 
             using (MeasureTime("VRM LoadFirstPerson"))
             {

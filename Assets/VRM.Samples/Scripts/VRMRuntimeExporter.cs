@@ -57,7 +57,9 @@ namespace VRM.Samples
             Debug.LogFormat("meta: title:{0}", meta.Title);
 
             // ParseしたJSONをシーンオブジェクトに変換していく
-            context.LoadAsync(() => OnLoaded(context));
+            await context.LoadAsync();
+
+            OnLoaded(context);
         }
 
         void OnLoaded(VRMImporterContext context)

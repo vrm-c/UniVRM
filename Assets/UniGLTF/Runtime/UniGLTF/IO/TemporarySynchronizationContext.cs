@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace UniGLTF
 {
@@ -15,27 +16,21 @@ namespace UniGLTF
 
         public override void Post(SendOrPostCallback d, object state)
         {
+            // Debug.Log($"Post");
             m_callbacks.Enqueue(() => d(state));
         }
 
-        public void ExecuteSync()
+        public bool ExecuteOneCallback()
         {
-            while (m_callbacks.Count > 0)
+            while (m_callbacks.Count == 0)
             {
-                var callback = m_callbacks.Dequeue();
-                callback();
+                // Debug.Log($"empty callbacks");
+                return false;
             }
-        }
 
-        public IEnumerator AsCoroutine()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task AsTask()
-        {
-            // repost to SynchronizationContext.Current
-            throw new NotImplementedException();
+            var callback = m_callbacks.Dequeue();
+            callback();
+            return true;
         }
 
         class Hijacker : IDisposable

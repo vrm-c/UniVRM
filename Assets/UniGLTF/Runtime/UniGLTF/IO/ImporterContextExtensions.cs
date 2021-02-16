@@ -1,9 +1,4 @@
-using System;
-using System.Collections;
 using System.IO;
-using UnityEngine;
-using DepthFirstScheduler;
-using System.Threading.Tasks;
 
 namespace UniGLTF
 {
@@ -36,64 +31,17 @@ namespace UniGLTF
         /// </summary>
         public static void Load(this ImporterContext self)
         {
-            var schedulable = self.LoadAsync();
-            schedulable.ExecuteAll();
-        }
-
-        public static IEnumerator LoadCoroutine(this ImporterContext self, Action<Exception> onError = null)
-        {
-            return self.LoadCoroutine(() => { }, onError);
-        }
-
-        public static IEnumerator LoadCoroutine(this ImporterContext self, Action onLoaded, Action<Exception> onError = null)
-        {
-            if (onLoaded == null)
+            var tcs = new TemporarySynchronizationContext();
+            using (tcs.Hijack())
             {
-                onLoaded = () => { };
-            }
+                var task = self.LoadAsync();
 
-            if (onError == null)
-            {
-                onError = Debug.LogError;
-            }
-
-            var schedulable = self.LoadAsync();
-            foreach (var x in schedulable.GetRoot().Traverse())
-            {
-                while (true)
+                while (!task.IsCompleted)
                 {
-                    var status = x.Execute();
-                    if (status != ExecutionStatus.Continue)
-                    {
-                        break;
-                    }
-                    yield return null;
+                    // execute synchronous
+                    tcs.ExecuteOneCallback();
                 }
             }
-
-            onLoaded();
         }
-
-        public static void LoadAsync(this ImporterContext self, Action onLoaded, Action<Exception> onError = null)
-        {
-            if (onError == null)
-            {
-                onError = Debug.LogError;
-            }
-
-            self.LoadAsync()
-                .Subscribe(Scheduler.MainThread,
-                _ => onLoaded(),
-                onError
-                );
-        }
-
-#if ((NET_4_6 || NET_STANDARD_2_0) && UNITY_2017_1_OR_NEWER && !UNITY_WEBGL)
-        public static async Task<GameObject> LoadAsyncTask(this ImporterContext self)
-        {
-            await self.LoadAsync().ToTask();
-            return self.Root;
-        }
-#endif
     }
 }

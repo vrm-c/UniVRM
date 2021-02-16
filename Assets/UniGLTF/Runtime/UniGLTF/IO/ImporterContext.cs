@@ -5,8 +5,8 @@ using UnityEngine;
 using System.IO;
 using System.Text;
 using System.Collections;
-using DepthFirstScheduler;
 using UniJSON;
+using System.Threading.Tasks;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -354,129 +354,30 @@ namespace UniGLTF
 
         public bool EnableLoadBalancing;
 
-        public virtual Schedulable<Unit> LoadAsync()
+        public virtual async Task LoadAsync()
         {
-            return
-            Schedulable.Create()
-                .AddTask(Scheduler.ThreadPool, () =>
-                {
-                    // root task. do nothing
-                })
-                .ContinueWithCoroutine(Scheduler.MainThread, () =>
-                {
-                    using (MeasureTime("LoadMaterials"))
-                    {
-                        return m_materialFactory.LoadMaterials(m_textureFactory.GetTextureAsync);
-                    }
-                })
-                .OnExecute(Scheduler.ThreadPool, parent =>
-                {
-                    // UniGLTF does not support draco
-                    // https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Khronos/KHR_draco_mesh_compression/README.md#conformance
-                    if (GLTF.extensionsRequired.Contains("KHR_draco_mesh_compression"))
-                    {
-                        throw new UniGLTFNotSupportedException("draco is not supported");
-                    }
-
-                    // meshes
-                    var meshImporter = new MeshImporter();
-                    for (int i = 0; i < GLTF.meshes.Count; ++i)
-                    {
-                        var index = i;
-                        parent.AddTask(Scheduler.ThreadPool,
-                                () =>
-                                {
-                                    using (MeasureTime("ReadMesh"))
-                                    {
-                                        return meshImporter.ReadMesh(this, index);
-                                    }
-                                })
-                        .ContinueWithCoroutine<MeshWithMaterials>(Scheduler.MainThread, x => BuildMesh(x, index))
-                        .ContinueWith(Scheduler.ThreadPool, x => Meshes.Add(x))
-                        ;
-                    }
-                })
-                .ContinueWithCoroutine(Scheduler.MainThread, LoadNodes)
-                .ContinueWithCoroutine(Scheduler.MainThread, BuildHierarchy)
-                .ContinueWith(Scheduler.MainThread, _ =>
-                {
-                    using (MeasureTime("AnimationImporter"))
-                    {
-                        AnimationImporter.Import(this);
-                    }
-                })
-                .ContinueWithCoroutine(Scheduler.MainThread, OnLoadModel)
-                .ContinueWith(Scheduler.CurrentThread,
-                    _ =>
-                    {
-                        if (m_showSpeedLog)
-                        {
-                            Debug.Log(GetSpeedLog());
-                        }
-                        return Unit.Default;
-                    });
-        }
-
-        protected virtual IEnumerator OnLoadModel()
-        {
-            Root.name = "GLTF";
-            yield break;
-        }
-
-
-        IEnumerator BuildMesh(MeshImporter.MeshContext x, int i)
-        {
-            using (MeasureTime("BuildMesh"))
+            // UniGLTF does not support draco
+            // https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Khronos/KHR_draco_mesh_compression/README.md#conformance
+            if (GLTF.extensionsRequired.Contains("KHR_draco_mesh_compression"))
             {
-                MeshWithMaterials meshWithMaterials;
-                if (EnableLoadBalancing)
-                {
-                    var buildMesh = MeshImporter.BuildMeshCoroutine(MaterialFactory, x);
-                    yield return buildMesh;
-                    meshWithMaterials = buildMesh.Current as MeshWithMaterials;
-                }
-                else
-                {
-                    meshWithMaterials = MeshImporter.BuildMesh(MaterialFactory, x);
-                }
-
-                var mesh = meshWithMaterials.Mesh;
-
-                // mesh name
-                if (string.IsNullOrEmpty(mesh.name))
-                {
-                    mesh.name = string.Format("UniGLTF import#{0}", i);
-                }
-                var originalName = mesh.name;
-                for (int j = 1; Meshes.Any(y => y.Mesh.name == mesh.name); ++j)
-                {
-                    mesh.name = string.Format("{0}({1})", originalName, j);
-                }
-
-                yield return meshWithMaterials;
+                throw new UniGLTFNotSupportedException("draco is not supported");
             }
-        }
 
-        IEnumerator LoadMeshes()
-        {
+            await m_materialFactory.LoadMaterialsAsync(m_textureFactory.GetTextureAsync);
+
+            // meshes
             var meshImporter = new MeshImporter();
             for (int i = 0; i < GLTF.meshes.Count; ++i)
             {
-                var meshContext = meshImporter.ReadMesh(this, i);
-                var meshWithMaterials = MeshImporter.BuildMesh(MaterialFactory, meshContext);
-                var mesh = meshWithMaterials.Mesh;
-                if (string.IsNullOrEmpty(mesh.name))
+                var index = i;
+                using (MeasureTime("ReadMesh"))
                 {
-                    mesh.name = string.Format("UniGLTF import#{0}", i);
+                    var x = await Task.Run(() => meshImporter.ReadMesh(this, index));
+                    var y = await BuildMeshAsync(x, index);
+                    Meshes.Add(y);
                 }
-                Meshes.Add(meshWithMaterials);
-
-                yield return null;
             }
-        }
 
-        IEnumerator LoadNodes()
-        {
             using (MeasureTime("LoadNodes"))
             {
                 for (int i = 0; i < GLTF.nodes.Count; i++)
@@ -484,12 +385,8 @@ namespace UniGLTF
                     Nodes.Add(NodeImporter.ImportNode(GLTF.nodes[i], i).transform);
                 }
             }
+            // yield return null;
 
-            yield return null;
-        }
-
-        IEnumerator BuildHierarchy()
-        {
             using (MeasureTime("BuildHierarchy"))
             {
                 var nodes = new List<NodeImporter.TransformWithSkin>();
@@ -517,8 +414,73 @@ namespace UniGLTF
                     t.SetParent(Root.transform, false);
                 }
             }
+            // yield return null;
 
-            yield return null;
+            using (MeasureTime("AnimationImporter"))
+            {
+                AnimationImporter.Import(this);
+            }
+
+            await OnLoadModel();
+
+            if (m_showSpeedLog)
+            {
+                Debug.Log(GetSpeedLog());
+            }
+        }
+
+        protected virtual async Task OnLoadModel()
+        {
+            Root.name = "GLTF";
+        }
+
+        async Task<MeshWithMaterials> BuildMeshAsync(MeshImporter.MeshContext x, int i)
+        {
+            using (MeasureTime("BuildMesh"))
+            {
+                MeshWithMaterials meshWithMaterials;
+                if (EnableLoadBalancing)
+                {
+                    meshWithMaterials = await MeshImporter.BuildMeshAsync(MaterialFactory, x);
+                }
+                else
+                {
+                    meshWithMaterials = MeshImporter.BuildMesh(MaterialFactory, x);
+                }
+
+                var mesh = meshWithMaterials.Mesh;
+
+                // mesh name
+                if (string.IsNullOrEmpty(mesh.name))
+                {
+                    mesh.name = string.Format("UniGLTF import#{0}", i);
+                }
+                var originalName = mesh.name;
+                for (int j = 1; Meshes.Any(y => y.Mesh.name == mesh.name); ++j)
+                {
+                    mesh.name = string.Format("{0}({1})", originalName, j);
+                }
+
+                return meshWithMaterials;
+            }
+        }
+
+        IEnumerator LoadMeshes()
+        {
+            var meshImporter = new MeshImporter();
+            for (int i = 0; i < GLTF.meshes.Count; ++i)
+            {
+                var meshContext = meshImporter.ReadMesh(this, i);
+                var meshWithMaterials = MeshImporter.BuildMesh(MaterialFactory, meshContext);
+                var mesh = meshWithMaterials.Mesh;
+                if (string.IsNullOrEmpty(mesh.name))
+                {
+                    mesh.name = string.Format("UniGLTF import#{0}", i);
+                }
+                Meshes.Add(meshWithMaterials);
+
+                yield return null;
+            }
         }
         #endregion
 

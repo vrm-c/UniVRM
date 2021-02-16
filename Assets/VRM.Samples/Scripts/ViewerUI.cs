@@ -310,7 +310,11 @@ namespace VRM.Samples
                         var file = File.ReadAllBytes(path);
                         context.ParseGlb(file);
                         await m_texts.UpdateMetaAsync(context);
+#if true
+                        await context.LoadAsync();
+#else
                         context.Load();
+#endif
                         context.ShowMeshes();
                         context.EnableUpdateWhenOffscreen();
                         context.ShowMeshes();
