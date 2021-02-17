@@ -57,10 +57,10 @@ namespace UniVRM10
         /// <param name="gltf"></param>
         public static void Rotate(glTF gltf)
         {
-            // foreach (var node in gltf.nodes)
-            // {
-            //     Rotate(node);
-            // }
+            foreach (var node in gltf.nodes)
+            {
+                Rotate(node);
+            }
 
             // mesh の回転のみでよい
             var used = new HashSet<int>();
@@ -78,19 +78,19 @@ namespace UniVRM10
                 }
             }
 
-            // foreach (var skin in gltf.skins)
-            // {
-            //     if (!used.Add(skin.inverseBindMatrices))
-            //     {
-            //         var accessor = gltf.accessors[skin.inverseBindMatrices];
-            //         var buffer = gltf.GetViewBytes(accessor.bufferView);
-            //         var span = VrmLib.SpanLike.Wrap<UnityEngine.Matrix4x4>(buffer);
-            //         for (int i = 0; i < span.Length; ++i)
-            //         {
-            //             span[i] = span[i].RotateY180();
-            //         }
-            //     }
-            // }
+            foreach (var skin in gltf.skins)
+            {
+                if (!used.Add(skin.inverseBindMatrices))
+                {
+                    var accessor = gltf.accessors[skin.inverseBindMatrices];
+                    var buffer = gltf.GetViewBytes(accessor.bufferView);
+                    var span = VrmLib.SpanLike.Wrap<UnityEngine.Matrix4x4>(buffer);
+                    for (int i = 0; i < span.Length; ++i)
+                    {
+                        span[i] = span[i].RotateY180();
+                    }
+                }
+            }
         }
     }
 }
