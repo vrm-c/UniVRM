@@ -19,7 +19,7 @@ namespace UniVRM10
             switch (src)
             {
                 case UniGLTF.Extensions.VRMC_vrm.LookAtType.bone: return LookAtType.Bone;
-                case UniGLTF.Extensions.VRMC_vrm.LookAtType.blendShape: return LookAtType.Expression;
+                case UniGLTF.Extensions.VRMC_vrm.LookAtType.expression: return LookAtType.Expression;
             }
 
             throw new NotImplementedException();

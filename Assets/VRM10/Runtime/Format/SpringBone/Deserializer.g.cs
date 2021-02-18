@@ -73,6 +73,16 @@ public static Spring Deserialize_Springs_ITEM(JsonNode parsed)
     {
         var key = kv.Key.GetString();
 
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
         if(key=="name"){
             value.Name = kv.Value.GetString();
             continue;
@@ -147,11 +157,6 @@ public static SpringBoneJoint Deserialize_Joints_ITEM(JsonNode parsed)
 
         if(key=="dragForce"){
             value.DragForce = kv.Value.GetSingle();
-            continue;
-        }
-
-        if(key=="exclude"){
-            value.Exclude = kv.Value.GetBoolean();
             continue;
         }
 

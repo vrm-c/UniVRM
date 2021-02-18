@@ -32,20 +32,23 @@ namespace UniGLTF.Extensions.VRMC_springBone
 
         // Air resistance. Deceleration force.
         public float? DragForce;
-
-        // When enabled, this joint will skip Spring processing.
-        public bool? Exclude;
     }
 
     public class Spring
     {
+        // Dictionary object with extension-specific objects.
+        public glTFExtension Extensions;
+
+        // Application-specific data.
+        public glTFExtension Extras;
+
         // Name of the Spring
         public string Name;
 
-        // Joints in this spring. Except for the first element, the parent of the element must be the previous element of the array
+        // Joints of the spring. Except for the first element, a previous joint of the array must be an ancestor of the joint.
         public List<SpringBoneJoint> Joints;
 
-        // Colliders that detect collision with nodes start from springRoot
+        // Colliders that detect collision with this spring.
         public int[] Colliders;
     }
 

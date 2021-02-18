@@ -68,6 +68,16 @@ public static void Serialize_Springs_ITEM(JsonFormatter f, Spring value)
     f.BeginMap();
 
 
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        value.Extensions.Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        value.Extras.Serialize(f);
+    }
+
     if(!string.IsNullOrEmpty(value.Name)){
         f.Key("name");                
         f.Value(value.Name);
@@ -141,11 +151,6 @@ public static void Serialize_Joints_ITEM(JsonFormatter f, SpringBoneJoint value)
     if(value.DragForce.HasValue){
         f.Key("dragForce");                
         f.Value(value.DragForce.GetValueOrDefault());
-    }
-
-    if(value.Exclude.HasValue){
-        f.Key("exclude");                
-        f.Value(value.Exclude.GetValueOrDefault());
     }
 
     f.EndMap();
