@@ -305,7 +305,7 @@ namespace UniGLTF.Extensions.VRMC_vrm
     public enum LookAtType
     {
         bone,
-        blendShape,
+        expression,
 
     }
 
@@ -342,23 +342,23 @@ namespace UniGLTF.Extensions.VRMC_vrm
     public enum ExpressionPreset
     {
         custom,
+        happy,
+        angry,
+        sad,
+        relaxed,
+        surprised,
         aa,
         ih,
         ou,
         ee,
         oh,
         blink,
-        happy,
-        angry,
-        sad,
-        relaxed,
+        blinkLeft,
+        blinkRight,
         lookUp,
-        surprised,
         lookDown,
         lookLeft,
         lookRight,
-        blinkLeft,
-        blinkRight,
         neutral,
 
     }
