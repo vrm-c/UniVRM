@@ -4,15 +4,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using System.Text;
-using System.Collections;
 using UniJSON;
-using System.Threading.Tasks;
+using UniGLTF.ExplicitTask;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
 namespace UniGLTF
 {
+    using Task = ExplicitTask<Unit>;
+
     /// <summary>
     /// GLTF importer
     /// </summary>
@@ -358,7 +359,7 @@ namespace UniGLTF
         {
             if (nextFrame == null)
             {
-                nextFrame = () => Task.FromResult<object>(null);
+                nextFrame = () => Task.Delay();
             }
 
             if (Root == null)
@@ -382,7 +383,7 @@ namespace UniGLTF
                 var index = i;
                 using (MeasureTime("ReadMesh"))
                 {
-                    var x = await Task.Run(() => meshImporter.ReadMesh(this, index));
+                    var x = meshImporter.ReadMesh(this, index);
                     var y = await BuildMeshAsync(nextFrame, x, index);
                     Meshes.Add(y);
                 }
@@ -433,15 +434,18 @@ namespace UniGLTF
             {
                 Debug.Log(GetSpeedLog());
             }
+
+            return new Unit();
         }
 
         protected virtual async Task OnLoadModel(Func<Task> nextFrame)
         {
             Root.name = "GLTF";
             await nextFrame();
+            return new Unit();
         }
 
-        async Task<MeshWithMaterials> BuildMeshAsync(Func<Task> nextFrame, MeshImporter.MeshContext x, int i)
+        async ExplicitTask<MeshWithMaterials> BuildMeshAsync(Func<Task> nextFrame, MeshImporter.MeshContext x, int i)
         {
             using (MeasureTime("BuildMesh"))
             {

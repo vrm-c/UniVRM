@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using UniGLTF;
+using UniGLTF.ExplicitTask;
 using UniHumanoid;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,6 +10,8 @@ using UnityEngine.UI;
 
 namespace VRM.Samples
 {
+    using Task = ExplicitTask<Unit>;
+
     public class ViewerUI : MonoBehaviour
     {
         #region UI
@@ -105,6 +107,8 @@ namespace VRM.Samples
                 m_textDistributionOther.text = meta.OtherLicenseUrl;
 
                 m_thumbnail.texture = meta.Thumbnail;
+
+                return new Unit();
             }
         }
         [SerializeField]

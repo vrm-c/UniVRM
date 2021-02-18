@@ -1,14 +1,15 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
+using UniGLTF.ExplicitTask;
 using UnityEngine;
 
 
 namespace UniGLTF
 {
+    using Task = ExplicitTask<Unit>;
+
     public class MeshImporter
     {
         const float FRAME_WEIGHT = 100.0f;
@@ -653,7 +654,7 @@ namespace UniGLTF
             return result;
         }
 
-        public static async Task<MeshWithMaterials> BuildMeshAsync(Func<Task> nextFrame, MaterialFactory ctx, MeshImporter.MeshContext meshContext)
+        public static async ExplicitTask<MeshWithMaterials> BuildMeshAsync(Func<Task> nextFrame, MaterialFactory ctx, MeshImporter.MeshContext meshContext)
         {
             var (mesh, recalculateTangents) = _BuildMesh(meshContext);
 

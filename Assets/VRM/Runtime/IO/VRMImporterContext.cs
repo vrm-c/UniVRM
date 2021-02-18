@@ -5,10 +5,12 @@ using UniGLTF;
 using UnityEngine;
 using System.IO;
 using UniJSON;
-using System.Threading.Tasks;
+using UniGLTF.ExplicitTask;
 
 namespace VRM
 {
+    using Task = ExplicitTask<Unit>;
+
     public class VRMImporterContext : ImporterContext
     {
         public VRM.glTF_VRM_extensions VRM { get; private set; }
@@ -84,6 +86,8 @@ namespace VRM
             {
                 LoadFirstPerson();
             }
+
+            return new Unit();
         }
 
         async Task LoadMetaAsync()
@@ -92,6 +96,8 @@ namespace VRM
             var _meta = Root.AddComponent<VRMMeta>();
             _meta.Meta = meta;
             Meta = meta;
+
+            return new Unit();
         }
 
         void LoadFirstPerson()
@@ -293,7 +299,7 @@ namespace VRM
         public BlendShapeAvatar BlendShapeAvatar;
         public VRMMetaObject Meta;
 
-        public async Task<VRMMetaObject> ReadMetaAsync(bool createThumbnail = false)
+        public async ExplicitTask<VRMMetaObject> ReadMetaAsync(bool createThumbnail = false)
         {
             var meta = ScriptableObject.CreateInstance<VRMMetaObject>();
             meta.name = "Meta";

@@ -1,13 +1,14 @@
 ﻿#pragma warning disable 0414
-using System;
 using System.IO;
-using System.Runtime.InteropServices;
 using UniGLTF;
+using UniGLTF.ExplicitTask;
 using UnityEngine;
 
 
 namespace VRM.Samples
 {
+    using Task = ExplicitTask<Unit>;
+
     public class VRMRuntimeLoader : MonoBehaviour
     {
         [SerializeField]
@@ -102,11 +103,11 @@ namespace VRM.Samples
             // ParseしたJSONをシーンオブジェクトに変換していく
             if (m_loadAsync)
             {
-                LoadAsync(context);
+                await LoadAsync(context);
             }
             else
             {
-                context.Load();
+                context.LoadAsync();
                 OnLoaded(context);
             }
         }
@@ -164,7 +165,7 @@ namespace VRM.Samples
         }
 
 
-        async void LoadAsync(VRMImporterContext context)
+        async Task LoadAsync(VRMImporterContext context)
         {
 #if true
             var now = Time.time;
@@ -177,6 +178,7 @@ namespace VRM.Samples
             // ローカルファイルシステムからロードします
             VRMImporter.LoadVrmAsync(path, OnLoaded);
 #endif
+            return new Unit();
         }
 
         void LoadBVHClicked()
