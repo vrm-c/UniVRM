@@ -737,7 +737,6 @@ namespace UniVRM10
                         joint.GravityDir = gltfJoint.GravityDir.ToVector3();
                         joint.GravityPower = gltfJoint.GravityPower.Value;
                         joint.Stiffness = gltfJoint.Stiffness.Value;
-                        joint.Exclude = gltfJoint.Exclude.GetValueOrDefault();
                         springBone.Joints.Add(joint);
                     }
 
