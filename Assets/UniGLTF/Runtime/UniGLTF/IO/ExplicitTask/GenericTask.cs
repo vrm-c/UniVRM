@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
@@ -28,11 +29,74 @@ namespace UniGLTF.ExplicitTask
         IAwaiter<T> GetAwaiter();
     }
 
+    public delegate void EnequeueCallback(Action continuation);
+
+    public class TaskQueue : IDisposable
+    {
+        [ThreadStatic]
+        static EnequeueCallback s_EnequeueCallback;
+
+        public static void EnequeueCurrent(Action continuation)
+        {
+            if (s_EnequeueCallback == null)
+            {
+                System.Threading.SynchronizationContext.Current.Post(_ =>
+                {
+                    continuation();
+                }, null);
+            }
+            else
+            {
+                s_EnequeueCallback(continuation);
+            }
+        }
+
+        EnequeueCallback m_backup;
+
+        Queue<Action> m_tasks = new Queue<Action>();
+
+        public static TaskQueue Create()
+        {
+            return new TaskQueue();
+        }
+
+        TaskQueue()
+        {
+            m_backup = s_EnequeueCallback;
+            s_EnequeueCallback = x =>
+            {
+                m_tasks.Enqueue(x);
+            };
+        }
+
+        public void Dispose()
+        {
+            s_EnequeueCallback = m_backup;
+        }
+
+        public bool ExecuteOneCallback()
+        {
+            if (m_tasks.Count == 0)
+            {
+                return false;
+            }
+            var task = m_tasks.Dequeue();
+            task();
+            return true;
+        }
+    }
+
     public class Awaiter<T> : IAwaiter<T>
     {
         Task<T> m_task;
 
-        public bool IsCompleted => m_task.IsCompleted;
+        public bool IsCompleted
+        {
+            get
+            {
+                return m_task.IsCompleted;
+            }
+        }
 
         public T GetResult()
         {
@@ -41,7 +105,7 @@ namespace UniGLTF.ExplicitTask
 
         public void OnCompleted(Action continuation)
         {
-            continuation();
+            TaskQueue.EnequeueCurrent(continuation);
         }
 
         public Awaiter(Task<T> task)
@@ -113,6 +177,29 @@ namespace UniGLTF.ExplicitTask
         public IAwaiter<T> GetAwaiter()
         {
             return new Awaiter<T>(_task);
+        }
+
+        public bool IsCompleted => _task.IsCompleted;
+    }
+
+    public struct ThreadTask
+    {
+        public static ExplicitTask<T> RunThreadAsync<T>(Func<T> callback)
+        {
+            var tcs = new TaskCompletionSource<T>();
+            System.Threading.ThreadPool.QueueUserWorkItem(_ =>
+            {
+                try
+                {
+                    var t = callback();
+                    tcs.SetResult(t);
+                }
+                catch (Exception ex)
+                {
+                    tcs.SetException(ex);
+                }
+            });
+            return new ExplicitTask<T>(tcs.Task);
         }
     }
 
