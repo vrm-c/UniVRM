@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Threading.Tasks;
+using UniGLTF.AltTask;
 using UnityEngine;
 
 namespace UniGLTF
@@ -24,13 +24,16 @@ namespace UniGLTF
             }
         }
 
-        public static async Task<Texture2D> LoadTextureAsync(glTF gltf, IStorage storage, int index)
+        public static async Awaitable<Texture2D> LoadTextureAsync(glTF gltf, IStorage storage, int index)
         {
             string m_textureName = default;
 
-            var imageIndex = gltf.GetImageIndexFromTextureIndex(index);
-            var segments = gltf.GetImageBytes(storage, imageIndex, out m_textureName);
-            var imageBytes = ToArray(segments);
+            var imageBytes = await Awaitable.Run(() =>
+            {
+                var imageIndex = gltf.GetImageIndexFromTextureIndex(index);
+                var segments = gltf.GetImageBytes(storage, imageIndex, out m_textureName);
+                return ToArray(segments);
+            });
 
             //
             // texture from image(png etc) bytes

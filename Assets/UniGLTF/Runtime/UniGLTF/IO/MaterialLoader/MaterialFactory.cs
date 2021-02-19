@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using UnityEngine;
+using UniGLTF.AltTask;
 
 namespace UniGLTF
 {
@@ -17,7 +16,7 @@ namespace UniGLTF
             m_storage = storage;
         }
 
-        public delegate Task<Material> CreateMaterialAsyncFunc(glTF glTF, int i, GetTextureAsyncFunc getTexture);
+        public delegate Awaitable<Material> CreateMaterialAsyncFunc(glTF glTF, int i, GetTextureAsyncFunc getTexture);
         CreateMaterialAsyncFunc m_createMaterialAsync;
         public CreateMaterialAsyncFunc CreateMaterialAsync
         {
@@ -70,33 +69,21 @@ namespace UniGLTF
             return m_materials[index];
         }
 
-        public IEnumerator LoadMaterials(GetTextureAsyncFunc getTexture)
+        public async Awaitable LoadMaterialsAsync(GetTextureAsyncFunc getTexture)
         {
             if (m_gltf.materials == null || m_gltf.materials.Count == 0)
             {
-                var task = CreateMaterialAsync(m_gltf, 0, getTexture);
-
-                foreach (var x in task.AsIEnumerator())
-                {
-                    yield return x;
-                }
-
-                AddMaterial(task.Result);
+                var material = await CreateMaterialAsync(m_gltf, 0, getTexture);
+                AddMaterial(material);
             }
             else
             {
                 for (int i = 0; i < m_gltf.materials.Count; ++i)
                 {
-                    var task = CreateMaterialAsync(m_gltf, i, getTexture);
-                    foreach (var x in task.AsIEnumerator())
-                    {
-                        yield return null;
-                    }
-
-                    AddMaterial(task.Result);
+                    var material = await CreateMaterialAsync(m_gltf, i, getTexture);
+                    AddMaterial(material);
                 }
             }
-            yield return null;
         }
 
         public static Material CreateMaterial(int index, glTFMaterial src, string shaderName)
@@ -136,7 +123,7 @@ namespace UniGLTF
             }
         }
 
-        public static Task<Material> DefaultCreateMaterialAsync(glTF gltf, int i, GetTextureAsyncFunc getTexture)
+        public static Awaitable<Material> DefaultCreateMaterialAsync(glTF gltf, int i, GetTextureAsyncFunc getTexture)
         {
 
             if (i < 0 || i >= gltf.materials.Count)

@@ -4,12 +4,13 @@ using System.Collections.Generic;
 using UniGLTF;
 using UnityEngine;
 using System.IO;
-using System.Collections;
 using UniJSON;
-using System.Threading.Tasks;
+using UniGLTF.AltTask;
 
 namespace VRM
 {
+
+
     public class VRMImporterContext : ImporterContext
     {
         public VRM.glTF_VRM_extensions VRM { get; private set; }
@@ -52,38 +53,34 @@ namespace VRM
         }
 
         #region OnLoad
-        protected override IEnumerator OnLoadModel()
+        protected override async Awaitable OnLoadModel()
         {
             Root.name = "VRM";
 
             using (MeasureTime("VRM LoadMeta"))
             {
-                var task = LoadMetaAsync();
-                foreach (var x in task.AsIEnumerator())
-                {
-                    yield return x;
-                }
+                await LoadMetaAsync();
             }
-            yield return null;
+            await LoopAwaitable.Create();
 
             using (MeasureTime("VRM LoadHumanoid"))
             {
                 LoadHumanoid();
             }
-            yield return null;
+            await LoopAwaitable.Create();
 
             using (MeasureTime("VRM LoadBlendShapeMaster"))
             {
                 LoadBlendShapeMaster();
             }
-            yield return null;
+            await LoopAwaitable.Create();
 
             using (MeasureTime("VRM LoadSecondary"))
             {
                 VRMSpringUtility.LoadSecondary(Root.transform, Nodes,
                 VRM.secondaryAnimation);
             }
-            yield return null;
+            await LoopAwaitable.Create();
 
             using (MeasureTime("VRM LoadFirstPerson"))
             {
@@ -91,7 +88,7 @@ namespace VRM
             }
         }
 
-        async Task LoadMetaAsync()
+        async Awaitable LoadMetaAsync()
         {
             var meta = await ReadMetaAsync();
             var _meta = Root.AddComponent<VRMMeta>();
@@ -298,7 +295,7 @@ namespace VRM
         public BlendShapeAvatar BlendShapeAvatar;
         public VRMMetaObject Meta;
 
-        public async Task<VRMMetaObject> ReadMetaAsync(bool createThumbnail = false)
+        public async Awaitable<VRMMetaObject> ReadMetaAsync(bool createThumbnail = false)
         {
             var meta = ScriptableObject.CreateInstance<VRMMetaObject>();
             meta.name = "Meta";

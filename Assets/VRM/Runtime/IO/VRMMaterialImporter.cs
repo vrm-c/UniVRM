@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Linq;
 using System;
 using System.Threading.Tasks;
+using UniGLTF.AltTask;
 
 namespace VRM
 {
@@ -21,7 +22,7 @@ namespace VRM
             "VRM/UnlitTransparentZWrite",
         };
 
-        public static async Task<Material> CreateAsync(glTF gltf, int m_index, glTF_VRM_Material vrmMaterial, GetTextureAsyncFunc getTexture)
+        public static async Awaitable<Material> CreateAsync(glTF gltf, int m_index, glTF_VRM_Material vrmMaterial, GetTextureAsyncFunc getTexture)
         {
             var item = vrmMaterial;
             var shaderName = item.shader;
@@ -111,7 +112,7 @@ namespace VRM
             m_materials = materials;
         }
 
-        public Task<Material> CreateMaterial(glTF gltf, int i, GetTextureAsyncFunc getTexture)
+        public Awaitable<Material> CreateMaterial(glTF gltf, int i, GetTextureAsyncFunc getTexture)
         {
             if (i == 0 && m_materials.Count == 0)
             {

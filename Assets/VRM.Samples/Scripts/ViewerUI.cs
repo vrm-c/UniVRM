@@ -1,7 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
+using UniGLTF;
+using UniGLTF.AltTask;
 using UniHumanoid;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,6 +10,8 @@ using UnityEngine.UI;
 
 namespace VRM.Samples
 {
+
+
     public class ViewerUI : MonoBehaviour
     {
         #region UI
@@ -84,7 +87,7 @@ namespace VRM.Samples
                 m_textDistributionOther.text = "";
             }
 
-            public async Task UpdateMetaAsync(VRMImporterContext context)
+            public async Awaitable UpdateMetaAsync(VRMImporterContext context)
             {
                 var meta = await context.ReadMetaAsync(true);
 
@@ -106,6 +109,7 @@ namespace VRM.Samples
                 m_thumbnail.texture = meta.Thumbnail;
             }
         }
+
         [SerializeField]
         TextFields m_texts = default;
 
@@ -309,7 +313,11 @@ namespace VRM.Samples
                         var file = File.ReadAllBytes(path);
                         context.ParseGlb(file);
                         await m_texts.UpdateMetaAsync(context);
+#if true
+                        await context.LoadAsync();
+#else
                         context.Load();
+#endif
                         context.ShowMeshes();
                         context.EnableUpdateWhenOffscreen();
                         context.ShowMeshes();
