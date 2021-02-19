@@ -9,7 +9,7 @@ using UniGLTF.AltTask;
 
 namespace VRM
 {
-    using Task = Awaitable<Unit>;
+
 
     public class VRMImporterContext : ImporterContext
     {
@@ -53,7 +53,7 @@ namespace VRM
         }
 
         #region OnLoad
-        protected override async Task OnLoadModel(Func<Task> nextFrame)
+        protected override async Awaitable OnLoadModel()
         {
             Root.name = "VRM";
 
@@ -61,43 +61,39 @@ namespace VRM
             {
                 await LoadMetaAsync();
             }
-            await nextFrame();
+            await Awaitable.Delay();
 
             using (MeasureTime("VRM LoadHumanoid"))
             {
                 LoadHumanoid();
             }
-            await nextFrame();
+            await Awaitable.Delay();
 
             using (MeasureTime("VRM LoadBlendShapeMaster"))
             {
                 LoadBlendShapeMaster();
             }
-            await nextFrame();
+            await Awaitable.Delay();
 
             using (MeasureTime("VRM LoadSecondary"))
             {
                 VRMSpringUtility.LoadSecondary(Root.transform, Nodes,
                 VRM.secondaryAnimation);
             }
-            await nextFrame();
+            await Awaitable.Delay();
 
             using (MeasureTime("VRM LoadFirstPerson"))
             {
                 LoadFirstPerson();
             }
-
-            return new Unit();
         }
 
-        async Task LoadMetaAsync()
+        async Awaitable LoadMetaAsync()
         {
             var meta = await ReadMetaAsync();
             var _meta = Root.AddComponent<VRMMeta>();
             _meta.Meta = meta;
             Meta = meta;
-
-            return new Unit();
         }
 
         void LoadFirstPerson()

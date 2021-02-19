@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Threading;
 using System.Threading.Tasks;
 
 
@@ -98,19 +96,6 @@ namespace UniGLTF.AltTask
         }
     }
 
-    public static class Awaitable
-    {
-        public static Awaitable<T> Run<T>(Func<T> action)
-        {
-            return new Awaitable<T>(Task.Run(action));
-        }
-
-        public static Awaitable<T> FromResult<T>(T result)
-        {
-            return new Awaitable<T>(Task.FromResult(result));
-        }
-    }
-
     public class Awaiter<T> : IAwaiter<T>
     {
         Awaitable<T> m_task;
@@ -142,6 +127,4 @@ namespace UniGLTF.AltTask
             m_task = task;
         }
     }
-
-    public struct Unit { }
 }

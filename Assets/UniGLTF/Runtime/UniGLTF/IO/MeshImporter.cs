@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace UniGLTF
 {
-    using Task = Awaitable<Unit>;
+
 
     public class MeshImporter
     {
@@ -654,15 +654,15 @@ namespace UniGLTF
             return result;
         }
 
-        public static async Awaitable<MeshWithMaterials> BuildMeshAsync(Func<Task> nextFrame, MaterialFactory ctx, MeshImporter.MeshContext meshContext)
+        public static async Awaitable<MeshWithMaterials> BuildMeshAsync(MaterialFactory ctx, MeshImporter.MeshContext meshContext)
         {
             var (mesh, recalculateTangents) = _BuildMesh(meshContext);
 
             if (recalculateTangents)
             {
-                await nextFrame();
+                await Awaitable.Delay();
                 mesh.RecalculateTangents();
-                await nextFrame();
+                await Awaitable.Delay();
             }
 
             // 先にすべてのマテリアルを作成済みなのでテクスチャーは生成済み。Resultを使ってよい
@@ -672,7 +672,7 @@ namespace UniGLTF
                 Materials = meshContext.MaterialIndices.Select(x => ctx.GetMaterial(x)).ToArray()
             };
 
-            await nextFrame();
+            await Awaitable.Delay();
             if (meshContext.BlendShapes.Count > 0)
             {
                 var emptyVertices = new Vector3[mesh.vertexCount];

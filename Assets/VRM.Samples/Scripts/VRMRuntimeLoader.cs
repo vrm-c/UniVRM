@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace VRM.Samples
 {
-    using Task = Awaitable<Unit>;
+
 
     public class VRMRuntimeLoader : MonoBehaviour
     {
@@ -165,7 +165,7 @@ namespace VRM.Samples
         }
 
 
-        async Task LoadAsync(VRMImporterContext context)
+        async Awaitable LoadAsync(VRMImporterContext context)
         {
 #if true
             var now = Time.time;
@@ -178,7 +178,6 @@ namespace VRM.Samples
             // ローカルファイルシステムからロードします
             VRMImporter.LoadVrmAsync(path, OnLoaded);
 #endif
-            return new Unit();
         }
 
         void LoadBVHClicked()

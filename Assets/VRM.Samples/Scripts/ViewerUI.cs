@@ -10,7 +10,7 @@ using UnityEngine.UI;
 
 namespace VRM.Samples
 {
-    using Task = Awaitable<Unit>;
+
 
     public class ViewerUI : MonoBehaviour
     {
@@ -87,7 +87,7 @@ namespace VRM.Samples
                 m_textDistributionOther.text = "";
             }
 
-            public async Task UpdateMetaAsync(VRMImporterContext context)
+            public async Awaitable UpdateMetaAsync(VRMImporterContext context)
             {
                 var meta = await context.ReadMetaAsync(true);
 
@@ -107,10 +107,9 @@ namespace VRM.Samples
                 m_textDistributionOther.text = meta.OtherLicenseUrl;
 
                 m_thumbnail.texture = meta.Thumbnail;
-
-                return new Unit();
             }
         }
+
         [SerializeField]
         TextFields m_texts = default;
 

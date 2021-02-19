@@ -69,7 +69,7 @@ namespace UniGLTF
             return m_materials[index];
         }
 
-        public async Awaitable<Unit> LoadMaterialsAsync(GetTextureAsyncFunc getTexture)
+        public async Awaitable LoadMaterialsAsync(GetTextureAsyncFunc getTexture)
         {
             if (m_gltf.materials == null || m_gltf.materials.Count == 0)
             {
@@ -84,7 +84,6 @@ namespace UniGLTF
                     AddMaterial(material);
                 }
             }
-            return new Unit();
         }
 
         public static Material CreateMaterial(int index, glTFMaterial src, string shaderName)

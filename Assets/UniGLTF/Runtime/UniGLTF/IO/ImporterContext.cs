@@ -12,7 +12,7 @@ using UnityEditor;
 
 namespace UniGLTF
 {
-    using Task = Awaitable<Unit>;
+
 
     /// <summary>
     /// GLTF importer
@@ -355,13 +355,8 @@ namespace UniGLTF
 
         public bool EnableLoadBalancing;
 
-        public virtual async Awaitable<Unit> LoadAsync(Func<Task> nextFrame = null)
+        public virtual async Awaitable LoadAsync()
         {
-            if (nextFrame == null)
-            {
-                nextFrame = () => Task.Delay();
-            }
-
             if (Root == null)
             {
                 Root = new GameObject("_root_");
@@ -384,7 +379,7 @@ namespace UniGLTF
                 using (MeasureTime("ReadMesh"))
                 {
                     var x = meshImporter.ReadMesh(this, index);
-                    var y = await BuildMeshAsync(nextFrame, x, index);
+                    var y = await BuildMeshAsync(x, index);
                     Meshes.Add(y);
                 }
             }
@@ -396,7 +391,7 @@ namespace UniGLTF
                     Nodes.Add(NodeImporter.ImportNode(GLTF.nodes[i], i).transform);
                 }
             }
-            await nextFrame();
+            await Awaitable.Delay();
 
             using (MeasureTime("BuildHierarchy"))
             {
@@ -421,38 +416,35 @@ namespace UniGLTF
                     t.SetParent(Root.transform, false);
                 }
             }
-            await nextFrame();
+            await Awaitable.Delay();
 
             using (MeasureTime("AnimationImporter"))
             {
                 AnimationImporter.Import(this);
             }
 
-            await OnLoadModel(nextFrame);
+            await OnLoadModel();
 
             if (m_showSpeedLog)
             {
                 Debug.Log(GetSpeedLog());
             }
-
-            return new Unit();
         }
 
-        protected virtual async Task OnLoadModel(Func<Task> nextFrame)
+        protected virtual async Awaitable OnLoadModel()
         {
             Root.name = "GLTF";
-            await nextFrame();
-            return new Unit();
+            await Awaitable.Delay();
         }
 
-        async Awaitable<MeshWithMaterials> BuildMeshAsync(Func<Task> nextFrame, MeshImporter.MeshContext x, int i)
+        async Awaitable<MeshWithMaterials> BuildMeshAsync(MeshImporter.MeshContext x, int i)
         {
             using (MeasureTime("BuildMesh"))
             {
                 MeshWithMaterials meshWithMaterials;
                 if (EnableLoadBalancing)
                 {
-                    meshWithMaterials = await MeshImporter.BuildMeshAsync(nextFrame, MaterialFactory, x);
+                    meshWithMaterials = await MeshImporter.BuildMeshAsync(MaterialFactory, x);
                 }
                 else
                 {
