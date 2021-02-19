@@ -6,6 +6,83 @@ namespace VrmLib
 {
     public static class ModelExtensionsForCoordinates
     {
+        static void ReverseX(BufferAccessor ba)
+        {
+            if (ba.ComponentType != AccessorValueType.FLOAT)
+            {
+                throw new Exception();
+            }
+            if (ba.AccessorType == AccessorVectorType.VEC3)
+            {
+                var span = SpanLike.Wrap<Vector3>(ba.Bytes);
+                for (int i = 0; i < span.Length; ++i)
+                {
+                    span[i] = span[i].ReverseX();
+                }
+            }
+            else if (ba.AccessorType == AccessorVectorType.MAT4)
+            {
+                var span = SpanLike.Wrap<Matrix4x4>(ba.Bytes);
+                for (int i = 0; i < span.Length; ++i)
+                {
+                    span[i] = span[i].ReverseX();
+                }
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        static void ReverseZ(BufferAccessor ba)
+        {
+            if (ba.ComponentType != AccessorValueType.FLOAT)
+            {
+                throw new Exception();
+            }
+            if (ba.AccessorType == AccessorVectorType.VEC3)
+            {
+                var span = SpanLike.Wrap<Vector3>(ba.Bytes);
+                for (int i = 0; i < span.Length; ++i)
+                {
+                    span[i] = span[i].ReverseZ();
+                }
+            }
+            else if (ba.AccessorType == AccessorVectorType.MAT4)
+            {
+                var span = SpanLike.Wrap<Matrix4x4>(ba.Bytes);
+                for (int i = 0; i < span.Length; ++i)
+                {
+                    span[i] = span[i].ReverseZ();
+                }
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        struct Reverser
+        {
+            public Action<BufferAccessor> ReverseBuffer;
+            public Func<Vector3, Vector3> ReverseVector3;
+            public Func<Matrix4x4, Matrix4x4> ReverseMatrix;
+        }
+
+        static Reverser ZReverser => new Reverser
+        {
+            ReverseBuffer = ReverseZ,
+            ReverseVector3 = v => v.ReverseZ(),
+            ReverseMatrix = m => m.ReverseZ(),
+        };
+
+        static Reverser XReverser => new Reverser
+        {
+            ReverseBuffer = ReverseX,
+            ReverseVector3 = v => v.ReverseX(),
+            ReverseMatrix = m => m.ReverseX(),
+        };
+
         /// <summary>
         /// ignoreVrm: VRM-0.XX では無変換で入出力してた。VRM-1.0 では変換する。
         /// </summary>
@@ -16,14 +93,24 @@ namespace VrmLib
                 return;
             }
 
-            if (model.Coordinates.IsGltf && coordinates.IsUnity)
+            if (model.Coordinates.IsVrm0 && coordinates.IsUnity)
             {
-                model.ReverseZAndFlipTriangle(ignoreVrm);
+                model.ReverseAxisAndFlipTriangle(ZReverser, ignoreVrm);
                 model.UVVerticalFlip();
             }
-            else if (model.Coordinates.IsUnity && coordinates.IsGltf)
+            else if (model.Coordinates.IsUnity && coordinates.IsVrm0)
             {
-                model.ReverseZAndFlipTriangle(ignoreVrm);
+                model.ReverseAxisAndFlipTriangle(ZReverser, ignoreVrm);
+                model.UVVerticalFlip();
+            }
+            else if (model.Coordinates.IsVrm1 && coordinates.IsUnity)
+            {
+                model.ReverseAxisAndFlipTriangle(XReverser, ignoreVrm);
+                model.UVVerticalFlip();
+            }
+            else if (model.Coordinates.IsUnity && coordinates.IsVrm1)
+            {
+                model.ReverseAxisAndFlipTriangle(XReverser, ignoreVrm);
                 model.UVVerticalFlip();
             }
             else
@@ -59,7 +146,7 @@ namespace VrmLib
         /// * Rotation => Axis Angle に分解 => Axis の Z座標に -1 を乗算。Angle に -1 を乗算
         /// * Triangle の index を 0, 1, 2 から 2, 1, 0 に反転する
         /// </summary>
-        static void ReverseZAndFlipTriangle(this Model model, bool ignoreVrm)
+        static void ReverseAxisAndFlipTriangle(this Model model, Reverser reverser, bool ignoreVrm)
         {
             foreach (var g in model.MeshGroups)
             {
@@ -69,9 +156,9 @@ namespace VrmLib
                     {
                         if (k == VertexBuffer.PositionKey || k == VertexBuffer.NormalKey)
                         {
-                            ReverseZ(v);
+                            reverser.ReverseBuffer(v);
                         }
-                        if (k == VertexBuffer.TangentKey)
+                        else if (k == VertexBuffer.TangentKey)
                         {
                             // I don't know
                         }
@@ -98,7 +185,7 @@ namespace VrmLib
                         {
                             if (k == VertexBuffer.PositionKey || k == VertexBuffer.NormalKey)
                             {
-                                ReverseZ(v);
+                                reverser.ReverseBuffer(v);
                             }
                             if (k == VertexBuffer.TangentKey)
                             {
@@ -113,7 +200,7 @@ namespace VrmLib
             // Rootは原点決め打ちのノード(GLTFに含まれない)
             foreach (var n in model.Root.Traverse().Skip(1))
             {
-                n.SetMatrix(n.Matrix.ReverseZ(), false);
+                n.SetMatrix(reverser.ReverseMatrix(n.Matrix), false);
             }
             // 親から順に処理したので不要
             // model.Root.CalcWorldMatrix();
@@ -122,7 +209,7 @@ namespace VrmLib
             {
                 if (s.InverseMatrices != null)
                 {
-                    ReverseZ(s.InverseMatrices);
+                    reverser.ReverseBuffer(s.InverseMatrices);
                 }
             }
 
@@ -138,7 +225,7 @@ namespace VrmLib
                     // LookAt
                     if (model.Vrm.LookAt != null)
                     {
-                        model.Vrm.LookAt.OffsetFromHeadBone = model.Vrm.LookAt.OffsetFromHeadBone.ReverseZ();
+                        model.Vrm.LookAt.OffsetFromHeadBone = reverser.ReverseVector3(model.Vrm.LookAt.OffsetFromHeadBone);
                     }
 
                     // SpringBone
@@ -154,11 +241,11 @@ namespace VrmLib
                                     switch (s.ColliderType)
                                     {
                                         case VrmSpringBoneColliderTypes.Sphere:
-                                            c.Colliders[i] = VrmSpringBoneCollider.CreateSphere(s.Offset.ReverseZ(), s.Radius);
+                                            c.Colliders[i] = VrmSpringBoneCollider.CreateSphere(reverser.ReverseVector3(s.Offset), s.Radius);
                                             break;
 
                                         case VrmSpringBoneColliderTypes.Capsule:
-                                            c.Colliders[i] = VrmSpringBoneCollider.CreateCapsule(s.Offset.ReverseZ(), s.Radius, s.CapsuleTail.ReverseZ());
+                                            c.Colliders[i] = VrmSpringBoneCollider.CreateCapsule(reverser.ReverseVector3(s.Offset), s.Radius, reverser.ReverseVector3(s.CapsuleTail));
                                             break;
 
                                         default:
@@ -169,39 +256,11 @@ namespace VrmLib
 
                             foreach (var j in b.Joints)
                             {
-                                j.GravityDir = j.GravityDir.ReverseZ();
+                                j.GravityDir = reverser.ReverseVector3(j.GravityDir);
                             }
                         }
                     }
                 }
-            }
-        }
-
-        static void ReverseZ(BufferAccessor ba)
-        {
-            if (ba.ComponentType != AccessorValueType.FLOAT)
-            {
-                throw new Exception();
-            }
-            if (ba.AccessorType == AccessorVectorType.VEC3)
-            {
-                var span = SpanLike.Wrap<Vector3>(ba.Bytes);
-                for (int i = 0; i < span.Length; ++i)
-                {
-                    span[i] = span[i].ReverseZ();
-                }
-            }
-            else if (ba.AccessorType == AccessorVectorType.MAT4)
-            {
-                var span = SpanLike.Wrap<Matrix4x4>(ba.Bytes);
-                for (int i = 0; i < span.Length; ++i)
-                {
-                    span[i] = span[i].ReverseZ();
-                }
-            }
-            else
-            {
-                throw new NotImplementedException();
             }
         }
 

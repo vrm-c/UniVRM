@@ -438,23 +438,26 @@ namespace VrmLib
             }},
             {typeof(UnityEngine.Matrix4x4), new GetSet<UnityEngine.Matrix4x4>{
                 Getter = (array, start) =>
+                    // UnityEngine.Matrix4x4
+                    // * 列優先メモリレイアウト(col0, col1, col2, col3)
+                    // * Constructor 引き数が行優先 new Matrix4x4(row0, row1, row2, row3);
                     new UnityEngine.Matrix4x4(
                         new UnityEngine.Vector4(BitConverter.ToSingle(array, start),
-                        BitConverter.ToSingle(array, start + 4),
-                        BitConverter.ToSingle(array, start + 8),
-                        BitConverter.ToSingle(array, start + 12)),
-                        new UnityEngine.Vector4(BitConverter.ToSingle(array, start+16),
-                        BitConverter.ToSingle(array, start + 20),
-                        BitConverter.ToSingle(array, start + 24),
-                        BitConverter.ToSingle(array, start + 28)),
-                        new UnityEngine.Vector4(BitConverter.ToSingle(array, start+32),
-                        BitConverter.ToSingle(array, start + 36),
-                        BitConverter.ToSingle(array, start + 40),
-                        BitConverter.ToSingle(array, start + 44)),
-                        new UnityEngine.Vector4(BitConverter.ToSingle(array, start+48),
-                        BitConverter.ToSingle(array, start + 52),
-                        BitConverter.ToSingle(array, start + 56),
-                        BitConverter.ToSingle(array, start + 60))
+                        BitConverter.ToSingle(array, start + 16),
+                        BitConverter.ToSingle(array, start + 32),
+                        BitConverter.ToSingle(array, start + 48)),
+                        new UnityEngine.Vector4(BitConverter.ToSingle(array, start+4),
+                        BitConverter.ToSingle(array, start + 16+4),
+                        BitConverter.ToSingle(array, start + 32+4),
+                        BitConverter.ToSingle(array, start + 48+4)),
+                        new UnityEngine.Vector4(BitConverter.ToSingle(array, start+8),
+                        BitConverter.ToSingle(array, start + 16+8),
+                        BitConverter.ToSingle(array, start + 32+8),
+                        BitConverter.ToSingle(array, start + 48+8)),
+                        new UnityEngine.Vector4(BitConverter.ToSingle(array, start+12),
+                        BitConverter.ToSingle(array, start + 16+12),
+                        BitConverter.ToSingle(array, start + 32+12),
+                        BitConverter.ToSingle(array, start + 48+12))
                     ),
                 Setter = BitWriter.Write
             }},

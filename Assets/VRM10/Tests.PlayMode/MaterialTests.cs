@@ -35,7 +35,7 @@ namespace UniVRM10.Test
             var bytes = File.ReadAllBytes(fi.FullName);
 
             // migrate to 1.0
-            bytes = Migration.Migrate(bytes);
+            bytes = MigrationVrm.Migrate(bytes);
 
             return ToUnity(bytes);
         }
@@ -62,7 +62,7 @@ namespace UniVRM10.Test
             var exporter = new UniVRM10.RuntimeVrmConverter();
             var model = exporter.ToModelFrom10(root, root.GetComponent<VRM10Controller>().Meta);
 
-            model.ConvertCoordinate(VrmLib.Coordinates.Gltf, ignoreVrm: false);
+            model.ConvertCoordinate(VrmLib.Coordinates.Vrm1, ignoreVrm: false);
             return model;
         }
 

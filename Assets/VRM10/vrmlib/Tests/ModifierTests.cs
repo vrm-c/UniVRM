@@ -10,7 +10,7 @@ namespace VrmLibTests
         [Test]
         public void ModifierTest()
         {
-            var model = new Model(Coordinates.Gltf);
+            var model = new Model(Coordinates.Vrm1);
             var modifier = new ModelModifier(model);
 
             var node0 = new Node("node0");

@@ -313,7 +313,7 @@ namespace UniVRM10
 
                 // 右手系に変換
                 m_logLabel += $"convert to right handed coordinate...\n";
-                model.ConvertCoordinate(VrmLib.Coordinates.Gltf, ignoreVrm: false);
+                model.ConvertCoordinate(VrmLib.Coordinates.Vrm1, ignoreVrm: false);
 
                 var exportedBytes = GetGlb(model);
                 m_logLabel += $"write to {path}...\n";

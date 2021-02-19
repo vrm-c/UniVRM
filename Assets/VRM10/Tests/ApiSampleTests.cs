@@ -10,7 +10,7 @@ namespace UniVRM10.Test
     {
         VrmLib.Model ReadModel(string path)
         {
-            var bytes = Migration.Migrate(File.ReadAllBytes(path));
+            var bytes = MigrationVrm.Migrate(File.ReadAllBytes(path));
 
             if (!UniGLTF.Glb.TryParse(bytes, out UniGLTF.Glb glb, out Exception ex))
             {
@@ -39,7 +39,7 @@ namespace UniVRM10.Test
         byte[] ToVrm10(VrmLib.Model model)
         {
             // 右手系に変換
-            VrmLib.ModelExtensionsForCoordinates.ConvertCoordinate(model, VrmLib.Coordinates.Gltf);
+            VrmLib.ModelExtensionsForCoordinates.ConvertCoordinate(model, VrmLib.Coordinates.Vrm1);
             var bytes = UniVRM10.ModelExtensions.ToGlb(model);
             return bytes;
         }

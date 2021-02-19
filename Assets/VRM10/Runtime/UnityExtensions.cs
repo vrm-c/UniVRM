@@ -40,9 +40,19 @@ namespace UniVRM10
 
     public static class UnityExtensions
     {
+        public static Vector4 RotateY180(this Vector4 v)
+        {
+            return new Vector4(-v.x, v.y, -v.z, v.w);
+        }
+
         public static Vector4 ReverseZ(this Vector4 v)
         {
             return new Vector4(v.x, v.y, -v.z, v.w);
+        }
+
+        public static Vector3 RotateY180(this Vector3 v)
+        {
+            return new Vector3(-v.x, v.y, -v.z);
         }
 
         public static Vector3 ReverseZ(this Vector3 v)
@@ -92,6 +102,18 @@ namespace UniVRM10
             m.SetTRS(Vector3.zero, q, Vector3.one);
             return m;
 #endif
+        }
+
+        public static Matrix4x4 RotateY180(this Matrix4x4 m)
+        {
+            // R, R, R, 0
+            // R, R, R, 0
+            // R, R, R, 0
+            // T, T, T, 1
+            var t = m.GetRow(3);
+            var tt = RotateY180(t);
+            m.SetRow(3, tt);
+            return m;
         }
 
         public static Matrix4x4 ReverseZ(this Matrix4x4 m)
