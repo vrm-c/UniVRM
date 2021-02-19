@@ -4,18 +4,6 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace System.Runtime.CompilerServices
-{
-    public sealed class AsyncMethodBuilderAttribute : Attribute
-    {
-        public AsyncMethodBuilderAttribute(Type builderType)
-        {
-            BuilderType = builderType;
-        }
-
-        public Type BuilderType { get; }
-    }
-}
 
 namespace UniGLTF.AltTask
 {
@@ -30,54 +18,6 @@ namespace UniGLTF.AltTask
         IAwaiter<T> GetAwaiter();
     }
 
-    public class TaskQueue : SynchronizationContext, IDisposable
-    {
-        [ThreadStatic]
-        static TaskQueue s_queue;
-
-        public new static SynchronizationContext Current
-        {
-            get
-            {
-                if (s_queue == null)
-                {
-                    return System.Threading.SynchronizationContext.Current;
-                }
-                else
-                {
-                    return s_queue;
-                }
-            }
-        }
-
-        Queue<Action> m_tasks = new Queue<Action>();
-
-        public static TaskQueue Create()
-        {
-            return new TaskQueue();
-        }
-
-        TaskQueue()
-        {
-            s_queue = this;
-        }
-
-        public void Dispose()
-        {
-            s_queue = null;
-        }
-
-        public bool ExecuteOneCallback()
-        {
-            if (m_tasks.Count == 0)
-            {
-                return false;
-            }
-            var task = m_tasks.Dequeue();
-            task();
-            return true;
-        }
-    }
 
     public struct ExplicitTaskMethodBuilder<T>
     {
