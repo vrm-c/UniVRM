@@ -103,7 +103,7 @@ namespace VrmLib
                 model.ReverseAxisAndFlipTriangle(ZReverser, ignoreVrm);
                 model.UVVerticalFlip();
             }
-            if (model.Coordinates.IsVrm1 && coordinates.IsUnity)
+            else if (model.Coordinates.IsVrm1 && coordinates.IsUnity)
             {
                 model.ReverseAxisAndFlipTriangle(XReverser, ignoreVrm);
                 model.UVVerticalFlip();
@@ -158,7 +158,7 @@ namespace VrmLib
                         {
                             reverser.ReverseBuffer(v);
                         }
-                        if (k == VertexBuffer.TangentKey)
+                        else if (k == VertexBuffer.TangentKey)
                         {
                             // I don't know
                         }
