@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using UnityEngine;
+using UniGLTF.AltTask;
 
 namespace UniGLTF
 {
@@ -17,7 +16,7 @@ namespace UniGLTF
             m_storage = storage;
         }
 
-        public delegate Task<Material> CreateMaterialAsyncFunc(glTF glTF, int i, GetTextureAsyncFunc getTexture);
+        public delegate Awaitable<Material> CreateMaterialAsyncFunc(glTF glTF, int i, GetTextureAsyncFunc getTexture);
         CreateMaterialAsyncFunc m_createMaterialAsync;
         public CreateMaterialAsyncFunc CreateMaterialAsync
         {
@@ -70,7 +69,7 @@ namespace UniGLTF
             return m_materials[index];
         }
 
-        public async Task LoadMaterialsAsync(GetTextureAsyncFunc getTexture)
+        public async Awaitable<Unit> LoadMaterialsAsync(GetTextureAsyncFunc getTexture)
         {
             if (m_gltf.materials == null || m_gltf.materials.Count == 0)
             {
@@ -85,6 +84,7 @@ namespace UniGLTF
                     AddMaterial(material);
                 }
             }
+            return new Unit();
         }
 
         public static Material CreateMaterial(int index, glTFMaterial src, string shaderName)
@@ -124,7 +124,7 @@ namespace UniGLTF
             }
         }
 
-        public static Task<Material> DefaultCreateMaterialAsync(glTF gltf, int i, GetTextureAsyncFunc getTexture)
+        public static Awaitable<Material> DefaultCreateMaterialAsync(glTF gltf, int i, GetTextureAsyncFunc getTexture)
         {
 
             if (i < 0 || i >= gltf.materials.Count)

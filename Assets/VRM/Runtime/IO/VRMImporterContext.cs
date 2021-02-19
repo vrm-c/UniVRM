@@ -5,11 +5,11 @@ using UniGLTF;
 using UnityEngine;
 using System.IO;
 using UniJSON;
-using UniGLTF.ExplicitTask;
+using UniGLTF.AltTask;
 
 namespace VRM
 {
-    using Task = ExplicitTask<Unit>;
+    using Task = Awaitable<Unit>;
 
     public class VRMImporterContext : ImporterContext
     {
@@ -299,7 +299,7 @@ namespace VRM
         public BlendShapeAvatar BlendShapeAvatar;
         public VRMMetaObject Meta;
 
-        public async ExplicitTask<VRMMetaObject> ReadMetaAsync(bool createThumbnail = false)
+        public async Awaitable<VRMMetaObject> ReadMetaAsync(bool createThumbnail = false)
         {
             var meta = ScriptableObject.CreateInstance<VRMMetaObject>();
             meta.name = "Meta";

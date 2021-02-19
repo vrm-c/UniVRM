@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
-using UniGLTF.ExplicitTask;
+using UniGLTF.AltTask;
 using UnityEngine;
 
 
 namespace UniGLTF
 {
-    using Task = ExplicitTask<Unit>;
+    using Task = Awaitable<Unit>;
 
     public class MeshImporter
     {
@@ -654,7 +654,7 @@ namespace UniGLTF
             return result;
         }
 
-        public static async ExplicitTask<MeshWithMaterials> BuildMeshAsync(Func<Task> nextFrame, MaterialFactory ctx, MeshImporter.MeshContext meshContext)
+        public static async Awaitable<MeshWithMaterials> BuildMeshAsync(Func<Task> nextFrame, MaterialFactory ctx, MeshImporter.MeshContext meshContext)
         {
             var (mesh, recalculateTangents) = _BuildMesh(meshContext);
 

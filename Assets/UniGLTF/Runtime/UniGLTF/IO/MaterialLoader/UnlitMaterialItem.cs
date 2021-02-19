@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+﻿using UniGLTF.AltTask;
 using UnityEngine;
 
 namespace UniGLTF
@@ -7,11 +7,11 @@ namespace UniGLTF
     {
         public const string ShaderName = "UniGLTF/UniUnlit";
 
-        public static async Task<Material> CreateAsync(int i, glTFMaterial src, GetTextureAsyncFunc getTexture, bool hasVertexColor)
+        public static async Awaitable<Material> CreateAsync(int i, glTFMaterial src, GetTextureAsyncFunc getTexture, bool hasVertexColor)
         {
             if (getTexture == null)
             {
-                getTexture = _ => Task.FromResult<Texture2D>(null);
+                getTexture = _ => Awaitable.FromResult<Texture2D>(null);
             }
 
             var material = MaterialFactory.CreateMaterial(i, src, ShaderName);

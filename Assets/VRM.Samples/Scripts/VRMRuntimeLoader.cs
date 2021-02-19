@@ -1,13 +1,13 @@
 ﻿#pragma warning disable 0414
 using System.IO;
 using UniGLTF;
-using UniGLTF.ExplicitTask;
+using UniGLTF.AltTask;
 using UnityEngine;
 
 
 namespace VRM.Samples
 {
-    using Task = ExplicitTask<Unit>;
+    using Task = Awaitable<Unit>;
 
     public class VRMRuntimeLoader : MonoBehaviour
     {

@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using UniGLTF.AltTask;
 using UnityEditor;
 using UnityEngine;
 
 namespace UniGLTF
 {
-    public delegate Task<Texture2D> GetTextureAsyncFunc(GetTextureParam param);
+    public delegate Awaitable<Texture2D> GetTextureAsyncFunc(GetTextureParam param);
     public class TextureFactory : IDisposable
 
     {
@@ -40,7 +41,7 @@ namespace UniGLTF
 
         Dictionary<GetTextureParam, Texture2D> m_textureCache = new Dictionary<GetTextureParam, Texture2D>();
 
-        public virtual Task<Texture2D> LoadTextureAsync(int index)
+        public virtual Awaitable<Texture2D> LoadTextureAsync(int index)
         {
 #if UNIGLTF_USE_WEBREQUEST_TEXTURELOADER
             return UnityWebRequestTextureLoader.LoadTextureAsync(index);
@@ -57,7 +58,7 @@ namespace UniGLTF
         /// <param name="roughnessFactor">METALLIC_GLOSS_PROPの追加パラメーター</param>
         /// <param name="indices">gltf の texture index</param>
         /// <returns></returns>
-        public async Task<Texture2D> GetTextureAsync(GetTextureParam param)
+        public async Awaitable<Texture2D> GetTextureAsync(GetTextureParam param)
         {
             if (m_textureCache.TryGetValue(param, out Texture2D texture))
             {

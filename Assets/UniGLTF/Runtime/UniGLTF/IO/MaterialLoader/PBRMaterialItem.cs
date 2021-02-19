@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿
+using UniGLTF.AltTask;
 using UnityEngine;
 
 namespace UniGLTF
@@ -42,11 +43,11 @@ namespace UniGLTF
             Transparent
         }
 
-        public static async Task<Material> CreateAsync(int i, glTFMaterial src, GetTextureAsyncFunc getTexture)
+        public static async Awaitable<Material> CreateAsync(int i, glTFMaterial src, GetTextureAsyncFunc getTexture)
         {
             if (getTexture == null)
             {
-                getTexture = _ => Task.FromResult<Texture2D>(null);
+                getTexture = _ => Awaitable.FromResult<Texture2D>(null);
             }
 
             var material = MaterialFactory.CreateMaterial(i, src, ShaderName);

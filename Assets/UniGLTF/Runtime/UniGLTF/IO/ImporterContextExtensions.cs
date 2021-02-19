@@ -1,5 +1,5 @@
 using System.IO;
-using UniGLTF.ExplicitTask;
+using UniGLTF.AltTask;
 
 namespace UniGLTF
 {

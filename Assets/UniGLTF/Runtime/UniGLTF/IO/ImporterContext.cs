@@ -5,14 +5,14 @@ using UnityEngine;
 using System.IO;
 using System.Text;
 using UniJSON;
-using UniGLTF.ExplicitTask;
+using UniGLTF.AltTask;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
 namespace UniGLTF
 {
-    using Task = ExplicitTask<Unit>;
+    using Task = Awaitable<Unit>;
 
     /// <summary>
     /// GLTF importer
@@ -355,7 +355,7 @@ namespace UniGLTF
 
         public bool EnableLoadBalancing;
 
-        public virtual async Task LoadAsync(Func<Task> nextFrame = null)
+        public virtual async Awaitable<Unit> LoadAsync(Func<Task> nextFrame = null)
         {
             if (nextFrame == null)
             {
@@ -383,7 +383,7 @@ namespace UniGLTF
                 var index = i;
                 using (MeasureTime("ReadMesh"))
                 {
-                    var x= meshImporter.ReadMesh(this, index);
+                    var x = meshImporter.ReadMesh(this, index);
                     var y = await BuildMeshAsync(nextFrame, x, index);
                     Meshes.Add(y);
                 }
@@ -445,7 +445,7 @@ namespace UniGLTF
             return new Unit();
         }
 
-        async ExplicitTask<MeshWithMaterials> BuildMeshAsync(Func<Task> nextFrame, MeshImporter.MeshContext x, int i)
+        async Awaitable<MeshWithMaterials> BuildMeshAsync(Func<Task> nextFrame, MeshImporter.MeshContext x, int i)
         {
             using (MeasureTime("BuildMesh"))
             {

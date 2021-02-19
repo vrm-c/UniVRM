@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace System.Runtime.CompilerServices
@@ -16,7 +17,7 @@ namespace System.Runtime.CompilerServices
     }
 }
 
-namespace UniGLTF.ExplicitTask
+namespace UniGLTF.AltTask
 {
     public interface IAwaiter<out T> : INotifyCompletion
     {
@@ -29,29 +30,25 @@ namespace UniGLTF.ExplicitTask
         IAwaiter<T> GetAwaiter();
     }
 
-    public delegate void EnequeueCallback(Action continuation);
-
-    public class TaskQueue : IDisposable
+    public class TaskQueue : SynchronizationContext, IDisposable
     {
         [ThreadStatic]
-        static EnequeueCallback s_EnequeueCallback;
+        static TaskQueue s_queue;
 
-        public static void EnequeueCurrent(Action continuation)
+        public new static SynchronizationContext Current
         {
-            if (s_EnequeueCallback == null)
+            get
             {
-                System.Threading.SynchronizationContext.Current.Post(_ =>
+                if (s_queue == null)
                 {
-                    continuation();
-                }, null);
-            }
-            else
-            {
-                s_EnequeueCallback(continuation);
+                    return System.Threading.SynchronizationContext.Current;
+                }
+                else
+                {
+                    return s_queue;
+                }
             }
         }
-
-        EnequeueCallback m_backup;
 
         Queue<Action> m_tasks = new Queue<Action>();
 
@@ -62,16 +59,12 @@ namespace UniGLTF.ExplicitTask
 
         TaskQueue()
         {
-            m_backup = s_EnequeueCallback;
-            s_EnequeueCallback = x =>
-            {
-                m_tasks.Enqueue(x);
-            };
+            s_queue = this;
         }
 
         public void Dispose()
         {
-            s_EnequeueCallback = m_backup;
+            s_queue = null;
         }
 
         public bool ExecuteOneCallback()
@@ -83,34 +76,6 @@ namespace UniGLTF.ExplicitTask
             var task = m_tasks.Dequeue();
             task();
             return true;
-        }
-    }
-
-    public class Awaiter<T> : IAwaiter<T>
-    {
-        Task<T> m_task;
-
-        public bool IsCompleted
-        {
-            get
-            {
-                return m_task.IsCompleted;
-            }
-        }
-
-        public T GetResult()
-        {
-            return m_task.Result;
-        }
-
-        public void OnCompleted(Action continuation)
-        {
-            TaskQueue.EnequeueCurrent(continuation);
-        }
-
-        public Awaiter(Task<T> task)
-        {
-            m_task = task;
         }
     }
 
@@ -156,50 +121,85 @@ namespace UniGLTF.ExplicitTask
             _methodBuilder.AwaitUnsafeOnCompleted(ref awaiter, ref stateMachine);
         }
 
-        public ExplicitTask<T> Task => new ExplicitTask<T>(_methodBuilder.Task);
+        public Awaitable<T> Task => new Awaitable<T>(_methodBuilder.Task);
     }
 
     [AsyncMethodBuilder(typeof(ExplicitTaskMethodBuilder<>))]
-    public struct ExplicitTask<T> : IAwaitable<T>
+    public struct Awaitable<T> : IAwaitable<T>
     {
         private Task<T> _task;
 
-        public ExplicitTask(Task<T> task) => _task = task;
-
-        public static ExplicitTask<T> Delay()
+        public Awaitable(Task<T> task)
         {
-            var task = Task.FromResult<T>(default);
-            return new ExplicitTask<T>(task);
+            _task = task;
         }
 
+
+        public bool IsCompleted => _task.IsCompleted;
         public T Result => _task.Result;
 
         public IAwaiter<T> GetAwaiter()
         {
-            return new Awaiter<T>(_task);
+            return new Awaiter<T>(this);
         }
 
-        public bool IsCompleted => _task.IsCompleted;
+        public void ContinueWith(Action action)
+        {
+            _task.ContinueWith((Task, _) =>
+            {
+                action();
+            }, null);
+        }
+
+        public static Awaitable<T> Delay()
+        {
+            var task = Task.FromResult<T>(default);
+            return new Awaitable<T>(task);
+        }
     }
 
-    public struct ThreadTask
+    public static class Awaitable
     {
-        public static ExplicitTask<T> RunThreadAsync<T>(Func<T> callback)
+        public static Awaitable<T> Run<T>(Func<T> action)
         {
-            var tcs = new TaskCompletionSource<T>();
-            System.Threading.ThreadPool.QueueUserWorkItem(_ =>
+            return new Awaitable<T>(Task.Run(action));
+        }
+
+        public static Awaitable<T> FromResult<T>(T result)
+        {
+            return new Awaitable<T>(Task.FromResult(result));
+        }
+    }
+
+    public class Awaiter<T> : IAwaiter<T>
+    {
+        Awaitable<T> m_task;
+
+        public bool IsCompleted
+        {
+            get
             {
-                try
-                {
-                    var t = callback();
-                    tcs.SetResult(t);
-                }
-                catch (Exception ex)
-                {
-                    tcs.SetException(ex);
-                }
+                return m_task.IsCompleted;
+            }
+        }
+
+        public T GetResult()
+        {
+            return m_task.Result;
+        }
+
+        public void OnCompleted(Action continuation)
+        {
+            var context = TaskQueue.Current;
+            this.m_task.ContinueWith(() =>
+            {
+                context.Post(_ => continuation(), null);
             });
-            return new ExplicitTask<T>(tcs.Task);
+        }
+
+        public Awaiter(Awaitable<T> task)
+        {
+            m_task = task;
         }
     }
 

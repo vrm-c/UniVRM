@@ -2,7 +2,7 @@
 using System.IO;
 using System.Linq;
 using UniGLTF;
-using UniGLTF.ExplicitTask;
+using UniGLTF.AltTask;
 using UniHumanoid;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,7 +10,7 @@ using UnityEngine.UI;
 
 namespace VRM.Samples
 {
-    using Task = ExplicitTask<Unit>;
+    using Task = Awaitable<Unit>;
 
     public class ViewerUI : MonoBehaviour
     {
