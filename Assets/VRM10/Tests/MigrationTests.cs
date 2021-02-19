@@ -4,6 +4,7 @@ using UnityEngine;
 using UniJSON;
 using System;
 using UniGLTF;
+using System.Runtime.InteropServices;
 
 namespace UniVRM10
 {
@@ -95,6 +96,63 @@ namespace UniVRM10
             Assert.True(Nearly(0, result.x));
             Assert.True(Nearly(360 - 10, result.y));
             Assert.True(Nearly(360 - 20, result.z));
+        }
+
+        [Test]
+        public void UnityEngineMatrixTest()
+        {
+            var u = new UnityEngine.Matrix4x4();
+            u.m00 = 0;
+            u.m01 = 1;
+            u.m02 = 2;
+            u.m03 = 3;
+            u.m10 = 4;
+            u.m11 = 5;
+            u.m12 = 6;
+            u.m13 = 7;
+            u.m20 = 8;
+            u.m21 = 9;
+            u.m22 = 10;
+            u.m23 = 11;
+            u.m30 = 12;
+            u.m31 = 13;
+            u.m32 = 14;
+            u.m33 = 15;
+            Assert.AreEqual(new UnityEngine.Vector4(0, 1, 2, 3), u.GetRow(0));
+            var bytes = new Byte[64];
+            using (var pin = Pin.Create(new[] { u }))
+            {
+                Marshal.Copy(pin.Ptr, bytes, 0, 64);
+            }
+            Assert.AreEqual(1.0f, BitConverter.ToSingle(bytes, 16));
+        }
+
+        [Test]
+        public void NumericMatrixTest()
+        {
+            var u = new System.Numerics.Matrix4x4();
+            u.M11 = 0;
+            u.M12 = 1;
+            u.M13 = 2;
+            u.M14 = 3;
+            u.M21 = 4;
+            u.M22 = 5;
+            u.M23 = 6;
+            u.M24 = 7;
+            u.M31 = 8;
+            u.M32 = 9;
+            u.M33 = 10;
+            u.M34 = 11;
+            u.M41 = 12;
+            u.M42 = 13;
+            u.M43 = 14;
+            u.M44 = 15;
+            var bytes = new Byte[64];
+            using (var pin = Pin.Create(new[] { u }))
+            {
+                Marshal.Copy(pin.Ptr, bytes, 0, 64);
+            }
+            Assert.AreEqual(1.0f, BitConverter.ToSingle(bytes, 4));
         }
     }
 }
