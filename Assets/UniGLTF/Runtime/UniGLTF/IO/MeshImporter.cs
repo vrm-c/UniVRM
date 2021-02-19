@@ -660,9 +660,9 @@ namespace UniGLTF
 
             if (recalculateTangents)
             {
-                await Awaitable.Delay();
+                await LoopAwaitable.Create();
                 mesh.RecalculateTangents();
-                await Awaitable.Delay();
+                await LoopAwaitable.Create();
             }
 
             // 先にすべてのマテリアルを作成済みなのでテクスチャーは生成済み。Resultを使ってよい
@@ -672,7 +672,7 @@ namespace UniGLTF
                 Materials = meshContext.MaterialIndices.Select(x => ctx.GetMaterial(x)).ToArray()
             };
 
-            await Awaitable.Delay();
+            await LoopAwaitable.Create();
             if (meshContext.BlendShapes.Count > 0)
             {
                 var emptyVertices = new Vector3[mesh.vertexCount];

@@ -5,6 +5,16 @@ using System.Threading.Tasks;
 
 namespace UniGLTF.AltTask
 {
+    /// <summary>
+    /// Importer 向けに Task を wrap した。
+    /// 
+    /// * EditorやUnitTestなどで、Unity の MainLoop を進行させずに 非同期を進行させることが目的
+    /// 
+    /// Global変数 SynchronizationContext.Current を一時的に変更したいのだが、
+    /// システムに予期せぬ副作用を与える可能性があるのでこれを回避。
+    /// UniGLTF.AltTask.TaskQueue.Current に同じ機能を与えて、タスクのPost先を制御することにした。
+    /// </summary>
+
     public interface IAwaiter : INotifyCompletion
     {
         bool IsCompleted { get; }
@@ -86,18 +96,12 @@ namespace UniGLTF.AltTask
             }, null);
         }
 
-        public static Awaitable Delay()
-        {
-            var task = Task.FromResult<object>(default);
-            return new Awaitable(task);
-        }
-
         public static Awaitable<T> Run<T>(Func<T> action)
         {
             return new Awaitable<T>(Task.Run(action));
         }
 
-        public static Awaitable Run<T>(Action action)
+        public static Awaitable Run(Action action)
         {
             return new Awaitable(Task.Run(action));
         }

@@ -391,7 +391,7 @@ namespace UniGLTF
                     Nodes.Add(NodeImporter.ImportNode(GLTF.nodes[i], i).transform);
                 }
             }
-            await Awaitable.Delay();
+            await LoopAwaitable.Create();
 
             using (MeasureTime("BuildHierarchy"))
             {
@@ -416,7 +416,7 @@ namespace UniGLTF
                     t.SetParent(Root.transform, false);
                 }
             }
-            await Awaitable.Delay();
+            await LoopAwaitable.Create();
 
             using (MeasureTime("AnimationImporter"))
             {
@@ -434,7 +434,7 @@ namespace UniGLTF
         protected virtual async Awaitable OnLoadModel()
         {
             Root.name = "GLTF";
-            await Awaitable.Delay();
+            await LoopAwaitable.Create();
         }
 
         async Awaitable<MeshWithMaterials> BuildMeshAsync(MeshImporter.MeshContext x, int i)
