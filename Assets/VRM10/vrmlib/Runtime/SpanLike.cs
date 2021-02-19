@@ -438,6 +438,9 @@ namespace VrmLib
             }},
             {typeof(UnityEngine.Matrix4x4), new GetSet<UnityEngine.Matrix4x4>{
                 Getter = (array, start) =>
+                    // UnityEngine.Matrix4x4
+                    // * 列優先メモリレイアウト(col0, col1, col2, col3)
+                    // * Constructor 引き数が行優先 new Matrix4x4(row0, row1, row2, row3);
                     new UnityEngine.Matrix4x4(
                         new UnityEngine.Vector4(BitConverter.ToSingle(array, start),
                         BitConverter.ToSingle(array, start + 16),

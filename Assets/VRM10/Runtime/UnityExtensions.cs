@@ -106,6 +106,10 @@ namespace UniVRM10
 
         public static Matrix4x4 RotateY180(this Matrix4x4 m)
         {
+            // R, R, R, 0
+            // R, R, R, 0
+            // R, R, R, 0
+            // T, T, T, 1
             var t = m.GetRow(3);
             var tt = RotateY180(t);
             m.SetRow(3, tt);
