@@ -148,7 +148,7 @@ namespace VrmLib
             if (m.IsOnlyTranslation())
             {
                 var ret = m;
-                ret.M43 = -ret.M43;
+                ret.M41 = -ret.M41;
                 return ret;
             }
             else
