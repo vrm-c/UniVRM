@@ -80,7 +80,7 @@ namespace UniVRM10
 
             foreach (var skin in gltf.skins)
             {
-                if (!used.Add(skin.inverseBindMatrices))
+                if (used.Add(skin.inverseBindMatrices))
                 {
                     var accessor = gltf.accessors[skin.inverseBindMatrices];
                     var buffer = gltf.GetViewBytes(accessor.bufferView);
