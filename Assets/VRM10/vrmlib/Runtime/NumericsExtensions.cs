@@ -133,6 +133,7 @@ namespace VrmLib
             if (m.IsOnlyTranslation())
             {
                 var ret = m;
+                // M4x に移動が入っている
                 ret.M43 = -ret.M43;
                 return ret;
             }
@@ -148,6 +149,7 @@ namespace VrmLib
             if (m.IsOnlyTranslation())
             {
                 var ret = m;
+                // M4x に移動が入っている
                 ret.M41 = -ret.M41;
                 return ret;
             }
