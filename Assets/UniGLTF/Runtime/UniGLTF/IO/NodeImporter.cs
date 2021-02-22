@@ -16,7 +16,7 @@ namespace UniGLTF
                 Debug.LogWarningFormat("node {0} contains /. replace _", node.name);
                 nodeName = nodeName.Replace("/", "_");
             }
-            if(string.IsNullOrEmpty(nodeName))
+            if (string.IsNullOrEmpty(nodeName))
             {
                 nodeName = string.Format("nodeIndex_{0}", nodeIndex);
             }
@@ -131,7 +131,7 @@ namespace UniGLTF
         //
         // fix node's coordinate. z-back to z-forward
         //
-        public static void FixCoordinate(ImporterContext context, List<TransformWithSkin> nodes)
+        public static void FixCoordinate(ImporterContext context, List<TransformWithSkin> nodes, AxisInverter inverter)
         {
             var globalTransformMap = nodes.ToDictionary(x => x.Transform, x => new PosRot
             {
@@ -148,13 +148,13 @@ namespace UniGLTF
                 foreach (var transform in t.Traverse())
                 {
                     var g = globalTransformMap[transform];
-                    transform.position = g.Position.ReverseZ();
-                    transform.rotation = g.Rotation.ReverseZ();
+                    transform.position = inverter.InvertVector3(g.Position);
+                    transform.rotation = inverter.InvertQuaternion(g.Rotation);
                 }
             }
         }
 
-        public static void SetupSkinning(ImporterContext context, List<TransformWithSkin> nodes, int i)
+        public static void SetupSkinning(ImporterContext context, List<TransformWithSkin> nodes, int i, AxisInverter inverter)
         {
             var x = nodes[i];
             var skinnedMeshRenderer = x.Transform.GetComponent<SkinnedMeshRenderer>();
@@ -181,7 +181,7 @@ namespace UniGLTF
                             if (skin.inverseBindMatrices != -1)
                             {
                                 var bindPoses = context.GLTF.GetArrayFromAccessor<Matrix4x4>(skin.inverseBindMatrices)
-                                    .Select(y => y.ReverseZ())
+                                    .Select(inverter.InvertMat4)
                                     .ToArray()
                                     ;
                                 mesh.bindposes = bindPoses;

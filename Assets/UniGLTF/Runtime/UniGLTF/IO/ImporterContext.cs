@@ -56,12 +56,34 @@ namespace UniGLTF
         public IStorage Storage => m_parser.Storage;
         #endregion
 
+        // configuration
+
+        /// <summary>
+        /// GLTF から Unity に変換するときに反転させる軸
+        /// </summary>
+        public Axises InvertAxis = Axises.Z;
+
         #region Load. Build unity objects
         public virtual async Awaitable LoadAsync(Func<string, IDisposable> MeasureTime = null)
         {
             if (MeasureTime == null)
             {
                 MeasureTime = new ImporterContextSpeedLog().MeasureTime;
+            }
+
+            AxisInverter inverter = default;
+            switch (InvertAxis)
+            {
+                case Axises.Z:
+                    inverter = AxisInverter.ReverseZ;
+                    break;
+
+                case Axises.X:
+                    inverter = AxisInverter.ReverseX;
+                    break;
+
+                default:
+                    throw new NotImplementedException();
             }
 
             if (Root == null)
@@ -85,7 +107,7 @@ namespace UniGLTF
                 var index = i;
                 using (MeasureTime("ReadMesh"))
                 {
-                    var x = meshImporter.ReadMesh(this, index);
+                    var x = meshImporter.ReadMesh(this, index, inverter);
                     var y = await BuildMeshAsync(MeasureTime, x, index);
                     Meshes.Add(y);
                 }
@@ -108,12 +130,12 @@ namespace UniGLTF
                     nodes.Add(NodeImporter.BuildHierarchy(this, i));
                 }
 
-                NodeImporter.FixCoordinate(this, nodes);
+                NodeImporter.FixCoordinate(this, nodes, inverter);
 
                 // skinning
                 for (int i = 0; i < nodes.Count; ++i)
                 {
-                    NodeImporter.SetupSkinning(this, nodes, i);
+                    NodeImporter.SetupSkinning(this, nodes, i, inverter);
                 }
 
                 // connect root
