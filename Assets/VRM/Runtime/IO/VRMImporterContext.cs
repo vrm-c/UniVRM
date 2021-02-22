@@ -53,7 +53,7 @@ namespace VRM
         }
 
         #region OnLoad
-        protected override async Awaitable OnLoadModel()
+        protected override async Awaitable OnLoadModel(Func<string, IDisposable> MeasureTime)
         {
             Root.name = "VRM";
 

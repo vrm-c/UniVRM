@@ -12,76 +12,11 @@ using UnityEditor;
 
 namespace UniGLTF
 {
-
-
     /// <summary>
     /// GLTF importer
     /// </summary>
     public class ImporterContext : IDisposable
     {
-        #region MeasureTime
-        bool m_showSpeedLog
-#if VRM_DEVELOP
-            = true
-#endif
-            ;
-        public bool ShowSpeedLog
-        {
-            set { m_showSpeedLog = value; }
-        }
-
-        public struct KeyElapsed
-        {
-            public string Key;
-            public TimeSpan Elapsed;
-            public KeyElapsed(string key, TimeSpan elapsed)
-            {
-                Key = key;
-                Elapsed = elapsed;
-            }
-        }
-
-        public struct MeasureScope : IDisposable
-        {
-            Action m_onDispose;
-            public MeasureScope(Action onDispose)
-            {
-                m_onDispose = onDispose;
-            }
-            public void Dispose()
-            {
-                m_onDispose();
-            }
-        }
-
-        public List<KeyElapsed> m_speedReports = new List<KeyElapsed>();
-
-        public IDisposable MeasureTime(string key)
-        {
-            var sw = System.Diagnostics.Stopwatch.StartNew();
-            return new MeasureScope(() =>
-            {
-                m_speedReports.Add(new KeyElapsed(key, sw.Elapsed));
-            });
-        }
-
-        public string GetSpeedLog()
-        {
-            var total = TimeSpan.Zero;
-
-            var sb = new StringBuilder();
-            sb.AppendLine("【SpeedLog】");
-            foreach (var kv in m_speedReports)
-            {
-                sb.AppendLine(string.Format("{0}: {1}ms", kv.Key, (int)kv.Elapsed.TotalMilliseconds));
-                total += kv.Elapsed;
-            }
-            sb.AppendLine(string.Format("total: {0}ms", (int)total.TotalMilliseconds));
-
-            return sb.ToString();
-        }
-        #endregion
-
         #region Animation
         protected IAnimationImporter m_animationImporter;
         public void SetAnimationImporter(IAnimationImporter animationImporter)
@@ -355,11 +290,16 @@ namespace UniGLTF
 
         public bool EnableLoadBalancing;
 
-        public virtual async Awaitable LoadAsync()
+        public virtual async Awaitable LoadAsync(Func<string, IDisposable> MeasureTime = null)
         {
+            if (MeasureTime == null)
+            {
+                MeasureTime = new ImporterContextSpeedLog().MeasureTime;
+            }
+
             if (Root == null)
             {
-                Root = new GameObject("_root_");
+                Root = new GameObject("GLTF");
             }
 
             // UniGLTF does not support draco
@@ -379,7 +319,7 @@ namespace UniGLTF
                 using (MeasureTime("ReadMesh"))
                 {
                     var x = meshImporter.ReadMesh(this, index);
-                    var y = await BuildMeshAsync(x, index);
+                    var y = await BuildMeshAsync(MeasureTime, x, index);
                     Meshes.Add(y);
                 }
             }
@@ -423,21 +363,15 @@ namespace UniGLTF
                 AnimationImporter.Import(this);
             }
 
-            await OnLoadModel();
-
-            if (m_showSpeedLog)
-            {
-                Debug.Log(GetSpeedLog());
-            }
+            await OnLoadModel(MeasureTime);
         }
 
-        protected virtual async Awaitable OnLoadModel()
+        protected virtual async Awaitable OnLoadModel(Func<string, IDisposable> MeasureTime)
         {
-            Root.name = "GLTF";
-            await LoopAwaitable.Create();
+            // do nothing
         }
 
-        async Awaitable<MeshWithMaterials> BuildMeshAsync(MeshImporter.MeshContext x, int i)
+        async Awaitable<MeshWithMaterials> BuildMeshAsync(Func<string, IDisposable> MeasureTime, MeshImporter.MeshContext x, int i)
         {
             using (MeasureTime("BuildMesh"))
             {
