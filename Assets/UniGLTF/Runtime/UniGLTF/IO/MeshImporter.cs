@@ -627,33 +627,6 @@ namespace UniGLTF
             }
         }
 
-        public static MeshWithMaterials BuildMesh(MaterialFactory ctx, MeshImporter.MeshContext meshContext)
-        {
-            var (mesh, recalculateTangents) = _BuildMesh(meshContext);
-
-            if (recalculateTangents)
-            {
-                mesh.RecalculateTangents();
-            }
-
-            // 先にすべてのマテリアルを作成済みなのでテクスチャーは生成済み。Resultを使ってよい
-            var result = new MeshWithMaterials
-            {
-                Mesh = mesh,
-                Materials = meshContext.MaterialIndices.Select(x => ctx.GetMaterial(x)).ToArray()
-            };
-
-            if (meshContext.BlendShapes.Count > 0)
-            {
-                var emptyVertices = new Vector3[mesh.vertexCount];
-                foreach (var blendShape in meshContext.BlendShapes)
-                {
-                    BuildBlendShape(mesh, meshContext, blendShape, emptyVertices);
-                }
-            }
-            return result;
-        }
-
         public static async Awaitable<MeshWithMaterials> BuildMeshAsync(MaterialFactory ctx, MeshImporter.MeshContext meshContext)
         {
             var (mesh, recalculateTangents) = _BuildMesh(meshContext);

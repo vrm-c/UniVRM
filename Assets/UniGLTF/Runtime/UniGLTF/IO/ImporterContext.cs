@@ -57,9 +57,6 @@ namespace UniGLTF
         #endregion
 
         #region Load. Build unity objects
-
-        public bool EnableLoadBalancing;
-
         public virtual async Awaitable LoadAsync(Func<string, IDisposable> MeasureTime = null)
         {
             if (MeasureTime == null)
@@ -145,16 +142,7 @@ namespace UniGLTF
         {
             using (MeasureTime("BuildMesh"))
             {
-                MeshWithMaterials meshWithMaterials;
-                if (EnableLoadBalancing)
-                {
-                    meshWithMaterials = await MeshImporter.BuildMeshAsync(MaterialFactory, x);
-                }
-                else
-                {
-                    meshWithMaterials = MeshImporter.BuildMesh(MaterialFactory, x);
-                }
-
+                var meshWithMaterials = await MeshImporter.BuildMeshAsync(MaterialFactory, x);
                 var mesh = meshWithMaterials.Mesh;
 
                 // mesh name
