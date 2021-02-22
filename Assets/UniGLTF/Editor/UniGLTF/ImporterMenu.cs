@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿#if false
+using System.IO;
 using UnityEditor;
 using UnityEngine;
 
@@ -51,3 +52,4 @@ namespace UniGLTF
         }
     }
 }
+#endif

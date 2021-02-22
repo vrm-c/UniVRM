@@ -163,7 +163,8 @@ namespace UniGLTF
             // Version Compatibility
             RestoreOlderVersionValues();
 
-            FixUnique();
+            FixMeshNameUnique();
+            FixImageNameUnique();
             FixNodeName();
 
             // parepare byte buffer
@@ -174,29 +175,66 @@ namespace UniGLTF
             }
         }
 
-        void FixUnique()
+        void FixMeshNameUnique()
         {
             var used = new HashSet<string>();
             foreach (var mesh in GLTF.meshes)
             {
                 if (string.IsNullOrEmpty(mesh.name))
                 {
+                    // empty
                     mesh.name = "mesh_" + Guid.NewGuid().ToString("N");
+                    Debug.LogWarning($"no name: => {mesh.name}");
                     used.Add(mesh.name);
                 }
                 else
                 {
-                    var lname = mesh.name.ToLower();
-                    if (used.Contains(lname))
+                    var lower = mesh.name.ToLower();
+                    if (used.Contains(lower))
                     {
                         // rename
-                        var uname = lname + "_" + Guid.NewGuid().ToString("N");
-                        Debug.LogWarning($"same name: {lname} => {uname}");
+                        var uname = lower + "_" + Guid.NewGuid().ToString("N");
+                        Debug.LogWarning($"same name: {lower} => {uname}");
                         mesh.name = uname;
-                        lname = uname;
+                        lower = uname;
                     }
+                    used.Add(lower);
+                }
+            }
+        }
 
-                    used.Add(lname);
+        void FixImageNameUnique()
+        {
+            var used = new HashSet<string>();
+            for (int i = 0; i < GLTF.images.Count; ++i)
+            {
+                var image = GLTF.images[i];
+                if (string.IsNullOrEmpty(image.name))
+                {
+                    var newName = $"image_{i}";
+                    if (!used.Add(newName))
+                    {
+                        newName = "image_" + Guid.NewGuid().ToString("N");
+                        if (!used.Add(newName))
+                        {
+                            throw new Exception();
+                        }
+                    }
+                    image.name = newName;
+                    // Debug.LogWarning($"no name: => {image.name}");
+                }
+                else
+                {
+                    var lower = image.name.ToLower();
+                    if (used.Contains(lower))
+                    {
+                        // rename
+                        var uname = lower + "_" + Guid.NewGuid().ToString("N");
+                        Debug.LogWarning($"same name: {lower} => {uname}");
+                        image.name = uname;
+                        lower = uname;
+                    }
+                    used.Add(lower);
                 }
             }
         }

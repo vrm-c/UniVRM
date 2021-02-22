@@ -16,7 +16,7 @@ namespace UniGLTF
             m_storage = storage;
         }
 
-        public delegate Awaitable<Material> CreateMaterialAsyncFunc(glTF glTF, int i, GetTextureAsyncFunc getTexture);
+        public delegate Awaitable<Material> CreateMaterialAsyncFunc(glTF gltf, int i, GetTextureAsyncFunc getTexture);
         CreateMaterialAsyncFunc m_createMaterialAsync;
         public CreateMaterialAsyncFunc CreateMaterialAsync
         {
@@ -78,6 +78,13 @@ namespace UniGLTF
             }
             else
             {
+                // 先に m_gltf.textures を作成
+                for (int i = 0; i < m_gltf.textures.Count; ++i)
+                {
+                    await getTexture(GetTextureParam.Create(i));
+                }
+                // 後に material を作成。
+                // 必用に応じてテクスチャを変換。
                 for (int i = 0; i < m_gltf.materials.Count; ++i)
                 {
                     var material = await CreateMaterialAsync(m_gltf, i, getTexture);
@@ -125,7 +132,6 @@ namespace UniGLTF
 
         public static Awaitable<Material> DefaultCreateMaterialAsync(glTF gltf, int i, GetTextureAsyncFunc getTexture)
         {
-
             if (i < 0 || i >= gltf.materials.Count)
             {
                 UnityEngine.Debug.LogWarning("glTFMaterial is empty");

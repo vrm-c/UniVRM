@@ -1,19 +1,15 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.Experimental.AssetImporters;
 using UnityEngine;
-using VrmLib;
 
-namespace UniVRM10
+
+namespace UniGLTF
 {
-#if flase
     [ScriptedImporter(1, "glb")]
-#endif
-    public class GltfScriptedImporter : ScriptedImporter, IExternalUnityObject
+    public class GltfScriptedImporter : ScriptedImporter
     {
         const string TextureDirName = "Textures";
         const string MaterialDirName = "Materials";
@@ -24,24 +20,25 @@ namespace UniVRM10
 
             try
             {
-                // Create model
-                VrmLib.Model model = CreateGlbModel(ctx.assetPath);
-                Debug.Log($"ModelLoader.Load: {model}");
+                // Parse
+                var parser = new GltfParser();
+                parser.ParsePath(ctx.assetPath);
 
                 // Build Unity Model
-                var assets = EditorUnityBuilder.ToUnityAsset(model, assetPath, this);
+                var context = new ImporterContext(parser);
+                context.Load();
+                context.ShowMeshes();
 
                 // Texture
                 var externalTextures = this.GetExternalUnityObjects<UnityEngine.Texture2D>();
-                foreach (var texture in assets.Textures)
+                foreach (var texture in context.Textures)
                 {
                     if (texture == null)
-                        continue;
-
-                    if (externalTextures.ContainsValue(texture))
                     {
+                        throw new Exception();
                     }
-                    else
+
+                    if (!externalTextures.ContainsValue(texture))
                     {
                         ctx.AddObjectToAsset(texture.name, texture);
                     }
@@ -49,31 +46,28 @@ namespace UniVRM10
 
                 // Material
                 var externalMaterials = this.GetExternalUnityObjects<UnityEngine.Material>();
-                foreach (var material in assets.Materials)
+                foreach (var material in context.Materials)
                 {
                     if (material == null)
-                        continue;
-
-                    if (externalMaterials.ContainsValue(material))
                     {
-
+                        throw new Exception();
                     }
-                    else
+
+                    if (!externalMaterials.ContainsValue(material))
                     {
                         ctx.AddObjectToAsset(material.name, material);
                     }
                 }
 
                 // Mesh
-                foreach (var mesh in assets.Meshes)
+                foreach (var mesh in context.Meshes.Select(x => x.Mesh))
                 {
                     ctx.AddObjectToAsset(mesh.name, mesh);
                 }
 
                 // Root
-                ctx.AddObjectToAsset(assets.Root.name, assets.Root);
-                ctx.SetMainObject(assets.Root);
-
+                ctx.AddObjectToAsset(context.Root.name, context.Root);
+                ctx.SetMainObject(context.Root);
             }
             catch (System.Exception ex)
             {
@@ -81,26 +75,11 @@ namespace UniVRM10
             }
         }
 
-        private Model CreateGlbModel(string path)
-        {
-            var bytes = File.ReadAllBytes(path);
-            if (!UniGLTF.Glb.TryParse(bytes, out UniGLTF.Glb glb, out Exception ex))
-            {
-                throw ex;
-            }
-
-            VrmLib.Model model = null;
-            VrmLib.IVrmStorage storage;
-            storage = new Vrm10Storage(glb.Json.Bytes, glb.Binary.Bytes);
-            model = VrmLib.ModelLoader.Load(storage, Path.GetFileNameWithoutExtension(path));
-            model.ConvertCoordinate(VrmLib.Coordinates.Unity);
-
-            return model;
-        }
-
         public void ExtractTextures()
         {
-            this.ExtractTextures(TextureDirName, (path) => { return CreateGlbModel(path); });
+            // extract textures to files
+            this.ExtractTextures(TextureDirName);
+            // reimport
             AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceUpdate);
         }
 
@@ -112,7 +91,7 @@ namespace UniVRM10
 
         public void ExtractMaterialsAndTextures()
         {
-            this.ExtractTextures(TextureDirName, (path) => { return CreateGlbModel(path); }, () => { this.ExtractAssets<UnityEngine.Material>(MaterialDirName, ".mat"); });
+            this.ExtractTextures(TextureDirName, () => { this.ExtractAssets<UnityEngine.Material>(MaterialDirName, ".mat"); });
             AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceUpdate);
         }
 

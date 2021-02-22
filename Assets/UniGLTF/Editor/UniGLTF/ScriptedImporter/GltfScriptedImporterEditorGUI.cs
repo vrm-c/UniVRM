@@ -1,11 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using UnityEditor;
 using UnityEditor.Experimental.AssetImporters;
 using UnityEngine;
 
-namespace UniVRM10
+namespace UniGLTF
 {
     [CustomEditor(typeof(GltfScriptedImporter))]
     public class GltfScriptedImporterEditorGUI : ScriptedImporterEditor
@@ -43,7 +41,7 @@ namespace UniVRM10
             base.OnInspectorGUI();
         }
 
-        private void DrawRemapGUI<T>(string title, GltfScriptedImporter importer) where T: UnityEngine.Object
+        private void DrawRemapGUI<T>(string title, GltfScriptedImporter importer) where T : UnityEngine.Object
         {
             EditorGUILayout.Foldout(_isOpen, title);
             EditorGUI.indentLevel++;
@@ -53,7 +51,7 @@ namespace UniVRM10
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.PrefixLabel(obj.Key.name);
                 var asset = EditorGUILayout.ObjectField(obj.Value, obj.Key.type, true) as T;
-                if(asset != obj.Value)
+                if (asset != obj.Value)
                 {
                     importer.SetExternalUnityObject(obj.Key, asset);
                 }

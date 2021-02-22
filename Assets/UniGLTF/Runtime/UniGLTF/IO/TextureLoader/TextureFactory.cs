@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using UniGLTF.AltTask;
 using UnityEditor;
 using UnityEngine;
@@ -9,7 +8,6 @@ namespace UniGLTF
 {
     public delegate Awaitable<Texture2D> GetTextureAsyncFunc(GetTextureParam param);
     public class TextureFactory : IDisposable
-
     {
         glTF m_gltf;
         IStorage m_storage;
@@ -22,7 +20,6 @@ namespace UniGLTF
             m_storage = storage;
         }
 
-        List<Texture2D> m_textuers = new List<Texture2D>();
         public void Dispose()
         {
             foreach (var x in ObjectsForSubAsset())
@@ -40,6 +37,7 @@ namespace UniGLTF
         }
 
         Dictionary<GetTextureParam, Texture2D> m_textureCache = new Dictionary<GetTextureParam, Texture2D>();
+        public IEnumerable<Texture2D> Textures => m_textureCache.Values;
 
         public virtual Awaitable<Texture2D> LoadTextureAsync(int index)
         {
@@ -82,6 +80,7 @@ namespace UniGLTF
                         {
                             var converted = new NormalConverter().GetImportTexture(texture);
                             m_textureCache.Add(param, converted);
+                            converted.name = $"{converted.name}.{GetTextureParam.NORMAL_PROP}";
                             return converted;
                         }
                         else
@@ -91,6 +90,7 @@ namespace UniGLTF
                             if (!string.IsNullOrEmpty(textureAssetPath))
                             {
                                 TextureIO.MarkTextureAssetAsNormalMap(textureAssetPath);
+                                texture.name = $"{texture.name}.{GetTextureParam.NORMAL_PROP}";
                             }
                             else
                             {
@@ -106,6 +106,7 @@ namespace UniGLTF
                     {
                         // Bake roughnessFactor values into a texture.
                         var converted = new MetallicRoughnessConverter(param.MetallicFactor).GetImportTexture(texture);
+                        converted.name = $"{converted.name}.{GetTextureParam.METALLIC_GLOSS_PROP}";
                         m_textureCache.Add(param, converted);
                         return converted;
                     }
@@ -113,6 +114,7 @@ namespace UniGLTF
                 case GetTextureParam.OCCLUSION_PROP:
                     {
                         var converted = new OcclusionConverter().GetImportTexture(texture);
+                        converted.name = $"{converted.name}.{GetTextureParam.OCCLUSION_PROP}";
                         m_textureCache.Add(param, converted);
                         return converted;
                     }
