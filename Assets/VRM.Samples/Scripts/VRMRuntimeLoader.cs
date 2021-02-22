@@ -1,14 +1,11 @@
 ﻿#pragma warning disable 0414
 using System.IO;
 using UniGLTF;
-using UniGLTF.AltTask;
 using UnityEngine;
 
 
 namespace VRM.Samples
 {
-
-
     public class VRMRuntimeLoader : MonoBehaviour
     {
         [SerializeField]
@@ -89,33 +86,33 @@ namespace VRM.Samples
             var bytes = File.ReadAllBytes(path);
             // なんらかの方法でByte列を得た
 
-            var context = new VRMImporterContext();
-
             // GLB形式でJSONを取得しParseします
-            context.ParseGlb(bytes);
+            var parser = new GltfParser();
+            parser.Parse(path, bytes);
 
+            var context = new VRMImporterContext(parser);
 
             // metaを取得(todo: thumbnailテクスチャのロード)
             var meta = await context.ReadMetaAsync();
             Debug.LogFormat("meta: title:{0}", meta.Title);
 
-
             // ParseしたJSONをシーンオブジェクトに変換していく
             if (m_loadAsync)
             {
-                await LoadAsync(context);
+                await context.LoadAsync();
             }
             else
             {
-                context.LoadAsync();
-                OnLoaded(context);
+                context.Load();
             }
+
+            OnLoaded(context);
         }
 
         /// <summary>
         /// メタが不要な場合のローダー
         /// </summary>
-        void LoadVRMClicked_without_meta()
+        async void LoadVRMClicked_without_meta()
         {
 #if UNITY_STANDALONE_WIN
             var path = FileDialogForWindows.FileDialog("open VRM", ".vrm");
@@ -129,55 +126,23 @@ namespace VRM.Samples
                 return;
             }
 
-#if true
             var bytes = File.ReadAllBytes(path);
             // なんらかの方法でByte列を得た
 
-            var context = new VRMImporterContext();
-
             // GLB形式でJSONを取得しParseします
-            context.ParseGlb(bytes);
+            var parser = new GltfParser();
+            parser.ParseGlb(bytes);
 
+            var context = new VRMImporterContext(parser);
             if (m_loadAsync)
             {
-                // ローカルファイルシステムからロードします
-                LoadAsync(context);
+                await context.LoadAsync();
             }
             else
             {
                 context.Load();
-                OnLoaded(context);
             }
-
-#else
-            // ParseしたJSONをシーンオブジェクトに変換していく
-            if (m_loadAsync)
-            {
-                // ローカルファイルシステムからロードします
-                VRMImporter.LoadVrmAsync(path, OnLoaded);
-            }
-            else
-            {
-                var root=VRMImporter.LoadFromPath(path);
-                OnLoaded(root);
-            }
-#endif
-        }
-
-
-        async Awaitable LoadAsync(VRMImporterContext context)
-        {
-#if true
-            var now = Time.time;
-            await context.LoadAsync();
-
-            var delta = Time.time - now;
-            Debug.LogFormat("LoadAsync {0:0.0} seconds", delta);
             OnLoaded(context);
-#else
-            // ローカルファイルシステムからロードします
-            VRMImporter.LoadVrmAsync(path, OnLoaded);
-#endif
         }
 
         void LoadBVHClicked()

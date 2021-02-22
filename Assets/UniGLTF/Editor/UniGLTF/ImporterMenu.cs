@@ -21,8 +21,10 @@ namespace UniGLTF
                 //
                 // load into scene
                 //
-                var context = new ImporterContext();
-                context.Load(path);
+                var parser = new GltfParser();
+                parser.ParsePath(path);
+                var context = new ImporterContext(parser);
+                context.Load();
                 context.ShowMeshes();
                 Selection.activeGameObject = context.Root;
             }

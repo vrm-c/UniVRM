@@ -15,30 +15,8 @@ namespace VRM
     {
         public VRM.glTF_VRM_extensions VRM { get; private set; }
 
-        public VRMImporterContext()
+        public VRMImporterContext(GltfParser parser) : base(parser)
         {
-        }
-
-        public override void Parse(string path, byte[] bytes)
-        {
-            var ext = Path.GetExtension(path).ToLower();
-            switch (ext)
-            {
-                case ".vrm":
-                    ParseGlb(bytes);
-                    break;
-
-                default:
-                    base.Parse(path, bytes);
-                    break;
-            }
-        }
-
-        public override void ParseJson(string json, IStorage storage)
-        {
-            // parse GLTF part(core + unlit, textureTransform, targetNames)
-            base.ParseJson(json, storage);
-
             // parse VRM part
             if (glTF_VRM_extensions.TryDeserilize(GLTF.extensions, out glTF_VRM_extensions vrm))
             {

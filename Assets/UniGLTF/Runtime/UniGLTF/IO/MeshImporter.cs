@@ -154,7 +154,7 @@ namespace UniGLTF
                         {
                             throw new Exception("different length");
                         }
-                        if (ctx.IsGeneratedUniGLTFAndOlder(1, 16))
+                        if (ctx.Parser.IsGeneratedUniGLTFAndOlder(1, 16))
                         {
 #pragma warning disable 0612
                             // backward compatibility
@@ -317,7 +317,7 @@ namespace UniGLTF
                     // uv
                     if (prim.attributes.TEXCOORD_0 != -1)
                     {
-                        if (ctx.IsGeneratedUniGLTFAndOlder(1, 16))
+                        if (ctx.Parser.IsGeneratedUniGLTFAndOlder(1, 16))
                         {
 #pragma warning disable 0612
                             // backward compatibility

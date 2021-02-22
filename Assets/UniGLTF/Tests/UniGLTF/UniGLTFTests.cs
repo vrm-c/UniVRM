@@ -98,7 +98,7 @@ namespace UniGLTF
         public void UniGLTFSimpleSceneTest()
         {
             var go = CreateSimpleScene();
-            var context = new ImporterContext();
+            ImporterContext context = default;
 
             try
             {
@@ -117,9 +117,12 @@ namespace UniGLTF
                     json = gltf.ToJson();
                 }
 
+                // parse
+                var parser = new GltfParser();
+                parser.ParseJson(json, new SimpleStorage(new ArraySegment<byte>()));
+
                 // import
-                context.ParseJson(json, new SimpleStorage(new ArraySegment<byte>()));
-                //Debug.LogFormat("{0}", context.Json);
+                context = new ImporterContext(parser);
                 context.Load();
 
                 AssertAreEqual(go.transform, context.Root.transform);
@@ -128,7 +131,10 @@ namespace UniGLTF
             {
                 //Debug.LogFormat("Destroy, {0}", go.name);
                 GameObject.DestroyImmediate(go);
-                context.EditorDestroyRootAndAssets();
+                if (context != null)
+                {
+                    context.EditorDestroyRootAndAssets();
+                }
             }
         }
 
@@ -191,12 +197,12 @@ namespace UniGLTF
         [Test]
         public void VersionChecker()
         {
-            Assert.False(ImporterContext.IsGeneratedUniGLTFAndOlderThan("hoge", 1, 16));
-            Assert.False(ImporterContext.IsGeneratedUniGLTFAndOlderThan("UniGLTF-1.16", 1, 16));
-            Assert.True(ImporterContext.IsGeneratedUniGLTFAndOlderThan("UniGLTF-1.15", 1, 16));
-            Assert.False(ImporterContext.IsGeneratedUniGLTFAndOlderThan("UniGLTF-11.16", 1, 16));
-            Assert.True(ImporterContext.IsGeneratedUniGLTFAndOlderThan("UniGLTF-0.16", 1, 16));
-            Assert.True(ImporterContext.IsGeneratedUniGLTFAndOlderThan("UniGLTF", 1, 16));
+            Assert.False(GltfParser.IsGeneratedUniGLTFAndOlderThan("hoge", 1, 16));
+            Assert.False(GltfParser.IsGeneratedUniGLTFAndOlderThan("UniGLTF-1.16", 1, 16));
+            Assert.True(GltfParser.IsGeneratedUniGLTFAndOlderThan("UniGLTF-1.15", 1, 16));
+            Assert.False(GltfParser.IsGeneratedUniGLTFAndOlderThan("UniGLTF-11.16", 1, 16));
+            Assert.True(GltfParser.IsGeneratedUniGLTFAndOlderThan("UniGLTF-0.16", 1, 16));
+            Assert.True(GltfParser.IsGeneratedUniGLTFAndOlderThan("UniGLTF", 1, 16));
         }
 
         [Test]
@@ -439,7 +445,7 @@ namespace UniGLTF
         public void SkinTestEmptyName()
         {
             var model = new glTFSkin()
-            {                
+            {
                 name = "",
                 inverseBindMatrices = 4,
                 joints = new int[] { 1 },
@@ -559,8 +565,9 @@ namespace UniGLTF
 
                 // import
                 {
-                    var context = new ImporterContext();
-                    context.ParseJson(json, new SimpleStorage(new ArraySegment<byte>(new byte[1024 * 1024])));
+                    var parser = new GltfParser();
+                    parser.ParseJson(json, new SimpleStorage(new ArraySegment<byte>(new byte[1024 * 1024])));
+                    var context = new ImporterContext(parser);
                     //Debug.LogFormat("{0}", context.Json);
                     context.Load();
 
@@ -577,9 +584,10 @@ namespace UniGLTF
 
                 // import new version
                 {
-                    var context = new ImporterContext();
-                    context.ParseJson(json, new SimpleStorage(new ArraySegment<byte>(new byte[1024 * 1024])));
+                    var parser = new GltfParser();
+                    parser.ParseJson(json, new SimpleStorage(new ArraySegment<byte>(new byte[1024 * 1024])));
                     //Debug.LogFormat("{0}", context.Json);
+                    var context = new ImporterContext(parser);
                     context.Load();
 
                     var importedRed = context.Root.transform.GetChild(0);
