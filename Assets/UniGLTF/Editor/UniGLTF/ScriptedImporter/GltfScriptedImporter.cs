@@ -25,28 +25,25 @@ namespace UniGLTF
                 parser.ParsePath(ctx.assetPath);
 
                 // Build Unity Model
-                var context = new ImporterContext(parser);
+                var context = new ImporterContext(parser, GetExternalObjectMap()
+                .Select(kv => new KeyValuePair<string, UnityEngine.Object>(kv.Key.name, kv.Value)));
                 context.Load();
                 context.ShowMeshes();
 
                 // Texture
                 var externalTextures = this.GetExternalUnityObjects<UnityEngine.Texture2D>();
-                foreach (var texture in context.Textures)
+                foreach (var info in context.TextureFactory.Textures)
                 {
-                    if (texture == null)
+                    if (!info.UseExternal)
                     {
-                        throw new Exception();
-                    }
-
-                    if (!externalTextures.ContainsValue(texture))
-                    {
+                        var texture = info.Texture;
                         ctx.AddObjectToAsset(texture.name, texture);
                     }
                 }
 
                 // Material
                 var externalMaterials = this.GetExternalUnityObjects<UnityEngine.Material>();
-                foreach (var material in context.Materials)
+                foreach (var material in context.MaterialFactory.Materials)
                 {
                     if (material == null)
                     {

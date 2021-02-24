@@ -19,19 +19,15 @@ namespace UniGLTF
 
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.PrefixLabel("Materials And Textures");
-            GUI.enabled = !(importer.GetExternalUnityObjects<UnityEngine.Material>().Any()
-                && importer.GetExternalUnityObjects<UnityEngine.Texture2D>().Any());
             if (GUILayout.Button("Extract"))
             {
                 importer.ExtractMaterialsAndTextures();
             }
-            GUI.enabled = !GUI.enabled;
             if (GUILayout.Button("Clear"))
             {
                 importer.ClearExternalObjects<UnityEngine.Material>();
                 importer.ClearExternalObjects<UnityEngine.Texture2D>();
             }
-            GUI.enabled = true;
             EditorGUILayout.EndHorizontal();
 
             // ObjectMap

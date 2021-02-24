@@ -11,7 +11,7 @@ namespace UniGLTF
         {
             if (getTexture == null)
             {
-                getTexture = _ => Awaitable.FromResult<Texture2D>(null);
+                getTexture = _ => Awaitable.FromResult<Texture2D>(default);
             }
 
             var material = MaterialFactory.CreateMaterial(i, src, ShaderName);
