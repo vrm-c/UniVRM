@@ -182,5 +182,12 @@ namespace UniGLTF
                 && animations.SequenceEqual(other.animations)
                 ;
         }
+
+        public string ImageNameFromTextureIndex(int index)
+        {
+            var gltfTexture = textures[index];
+            var glTFImage = images[gltfTexture.source];
+            return glTFImage.name;
+        }
     }
 }

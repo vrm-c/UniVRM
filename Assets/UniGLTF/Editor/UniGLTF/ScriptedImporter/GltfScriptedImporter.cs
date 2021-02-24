@@ -26,7 +26,7 @@ namespace UniGLTF
 
                 // Build Unity Model
                 var context = new ImporterContext(parser, GetExternalObjectMap()
-                .Select(kv => new KeyValuePair<string, UnityEngine.Object>(kv.Key.name, kv.Value)));
+                .Select(kv => (kv.Key.name, kv.Value)));
                 context.Load();
                 context.ShowMeshes();
 

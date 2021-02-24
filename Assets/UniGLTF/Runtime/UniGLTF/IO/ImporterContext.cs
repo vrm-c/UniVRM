@@ -41,7 +41,7 @@ namespace UniGLTF
         TextureFactory m_textureFactory;
         public TextureFactory TextureFactory => m_textureFactory;
 
-        public ImporterContext(GltfParser parser, IEnumerable<KeyValuePair<string, UnityEngine.Object>> externalObjectMap = null)
+        public ImporterContext(GltfParser parser, IEnumerable<(string, UnityEngine.Object)> externalObjectMap = null)
         {
             m_parser = parser;
             m_textureFactory = new TextureFactory(GLTF, Storage, externalObjectMap);

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.Experimental.AssetImporters;
 using UnityEngine;
@@ -8,48 +9,91 @@ namespace UniGLTF
     [CustomEditor(typeof(GltfScriptedImporter))]
     public class GltfScriptedImporterEditorGUI : ScriptedImporterEditor
     {
+        GltfScriptedImporter m_importer;
+        GltfParser m_parser;
 
-        private bool _isOpen = true;
+        public override void OnEnable()
+        {
+            m_importer = target as GltfScriptedImporter;
+            m_parser = new GltfParser();
+            m_parser.ParsePath(m_importer.assetPath);
+        }
+
+        enum Tabs
+        {
+            Model,
+            Materials,
+        }
+        static Tabs s_currentTab;
 
         public override void OnInspectorGUI()
         {
-            var importer = target as GltfScriptedImporter;
+            s_currentTab = MeshUtility.TabBar.OnGUI(s_currentTab);
+            switch (s_currentTab)
+            {
+                case Tabs.Model:
+                    base.OnInspectorGUI();
+                    break;
 
-            EditorGUILayout.LabelField("Extract settings");
+                case Tabs.Materials:
+                    OnGUIMaterial(m_importer, m_parser);
+                    break;
+            }
+        }
 
-            EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.PrefixLabel("Materials And Textures");
-            if (GUILayout.Button("Extract"))
+        static bool s_foldMaterials = true;
+        static bool s_foldTextures = true;
+
+        static void OnGUIMaterial(GltfScriptedImporter importer, GltfParser parser)
+        {
+            if (GUILayout.Button("Extract Materials And Textures ..."))
             {
                 importer.ExtractMaterialsAndTextures();
             }
+
+            // ObjectMap
+            s_foldMaterials = EditorGUILayout.Foldout(s_foldMaterials, "Remapped Materials");
+            if (s_foldMaterials)
+            {
+                DrawRemapGUI<UnityEngine.Material>(importer, parser.GLTF.materials.Select(x => x.name));
+            }
+
+            s_foldTextures = EditorGUILayout.Foldout(s_foldMaterials, "Remapped Textures");
+            if (s_foldTextures)
+            {
+                DrawRemapGUI<UnityEngine.Texture2D>(importer, parser.EnumerateTextures().Select(x => x.Name));
+            }
+
             if (GUILayout.Button("Clear"))
             {
                 importer.ClearExternalObjects<UnityEngine.Material>();
                 importer.ClearExternalObjects<UnityEngine.Texture2D>();
             }
-            EditorGUILayout.EndHorizontal();
-
-            // ObjectMap
-            DrawRemapGUI<UnityEngine.Material>("Material Remap", importer);
-            DrawRemapGUI<UnityEngine.Texture2D>("Texture Remap", importer);
-
-            base.OnInspectorGUI();
         }
 
-        private void DrawRemapGUI<T>(string title, GltfScriptedImporter importer) where T : UnityEngine.Object
+        static void DrawRemapGUI<T>(GltfScriptedImporter importer, IEnumerable<string> names) where T : UnityEngine.Object
         {
-            EditorGUILayout.Foldout(_isOpen, title);
             EditorGUI.indentLevel++;
-            var objects = importer.GetExternalObjectMap().Where(x => x.Key.type == typeof(T));
-            foreach (var obj in objects)
+            var map = importer.GetExternalObjectMap()
+                .Select(x => (x.Key.name, x.Value as T))
+                .Where(x => x.Item2 != null)
+                .ToDictionary(x => x.Item1, x => x.Item2)
+                ;
+            foreach (var name in names)
             {
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.PrefixLabel(obj.Key.name);
-                var asset = EditorGUILayout.ObjectField(obj.Value, obj.Key.type, true) as T;
-                if (asset != obj.Value)
+                if (string.IsNullOrEmpty(name))
                 {
-                    importer.SetExternalUnityObject(obj.Key, asset);
+                    throw new System.ArgumentNullException();
+                }
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.PrefixLabel(name);
+                if (map.TryGetValue(name, out T value))
+                {
+                }
+                var asset = EditorGUILayout.ObjectField(value, typeof(T), true) as T;
+                if (asset != value)
+                {
+                    importer.SetExternalUnityObject(new AssetImporter.SourceAssetIdentifier(value), asset);
                 }
                 EditorGUILayout.EndHorizontal();
             }

@@ -292,5 +292,15 @@ namespace UniGLTF
             }
         }
         #endregion
+
+        public IEnumerable<GetTextureParam> EnumerateTextures()
+        {
+            for (int i = 0; i < GLTF.textures.Count; ++i)
+            {
+                yield return GetTextureParam.Create(GLTF, i);
+            }
+
+            // TODO: converted textures
+        }
     }
 }

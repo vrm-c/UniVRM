@@ -21,7 +21,7 @@ namespace UniGLTF
         }
     }
 
-    public delegate Awaitable<Texture2D> GetTextureAsyncFunc(GetTextureParam param);
+    public delegate Awaitable<Texture2D> GetTextureAsyncFunc(glTF gltf, GetTextureParam param);
     public class TextureFactory : IDisposable
     {
         glTF m_gltf;
@@ -48,14 +48,14 @@ namespace UniGLTF
         public UnityPath ImageBaseDir { get; set; }
 
         public TextureFactory(glTF gltf, IStorage storage,
-        IEnumerable<KeyValuePair<string, UnityEngine.Object>> externalMap)
+        IEnumerable<(string, UnityEngine.Object)> externalMap)
         {
             m_gltf = gltf;
             m_storage = storage;
             if (externalMap != null)
             {
                 m_externalMap = externalMap
-                    .Select(kv => (kv.Key, kv.Value as Texture2D))
+                    .Select(kv => (kv.Item1, kv.Item2 as Texture2D))
                     .Where(kv => kv.Item2 != null)
                     .ToDictionary(kv => kv.Item1, kv => kv.Item2);
             }
@@ -99,7 +99,7 @@ namespace UniGLTF
         /// <param name="roughnessFactor">METALLIC_GLOSS_PROPの追加パラメーター</param>
         /// <param name="indices">gltf の texture index</param>
         /// <returns></returns>
-        public async Awaitable<Texture2D> GetTextureAsync(GetTextureParam param)
+        public async Awaitable<Texture2D> GetTextureAsync(glTF gltf, GetTextureParam param)
         {
             if (m_textureCache.TryGetValue(param, out TextureLoadInfo info))
             {
@@ -111,7 +111,7 @@ namespace UniGLTF
             }
 
             {
-                var defaultParam = GetTextureParam.Create(param.Index0.Value);
+                var defaultParam = GetTextureParam.Create(gltf, param.Index0.Value);
                 if (!m_textureCache.TryGetValue(defaultParam, out info))
                 {
                     info = await LoadTextureAsync(param.Index0.Value);

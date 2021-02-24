@@ -24,14 +24,14 @@ namespace UniGLTF
         }
 
         public MaterialFactory(glTF gltf, IStorage storage,
-        IEnumerable<KeyValuePair<string, UnityEngine.Object>> externalMap)
+        IEnumerable<(string, UnityEngine.Object)> externalMap)
         {
             m_gltf = gltf;
             m_storage = storage;
             if (externalMap != null)
             {
                 m_externalMap = externalMap
-                    .Select(kv => (kv.Key, kv.Value as Material))
+                    .Select(kv => (kv.Item1, kv.Item2 as Material))
                     .Where(kv => kv.Item2 != null)
                     .ToDictionary(kv => kv.Item1, kv => kv.Item2)
                     ;
@@ -93,6 +93,7 @@ namespace UniGLTF
             return m_materials[index].Asset;
         }
 
+
         public async Awaitable LoadMaterialsAsync(GetTextureAsyncFunc getTexture)
         {
             if (m_gltf.materials == null || m_gltf.materials.Count == 0)
@@ -106,7 +107,7 @@ namespace UniGLTF
             // 先に m_gltf.textures を作成
             for (int i = 0; i < m_gltf.textures.Count; ++i)
             {
-                await getTexture(GetTextureParam.Create(i));
+                await getTexture(m_gltf, GetTextureParam.Create(m_gltf, i));
             }
 
             // 後に material を作成。
@@ -167,17 +168,17 @@ namespace UniGLTF
             if (i < 0 || i >= gltf.materials.Count)
             {
                 UnityEngine.Debug.LogWarning("glTFMaterial is empty");
-                return PBRMaterialItem.CreateAsync(i, null, getTexture);
+                return PBRMaterialItem.CreateAsync(gltf, i, getTexture);
             }
             var x = gltf.materials[i];
 
             if (glTF_KHR_materials_unlit.IsEnable(x))
             {
                 var hasVertexColor = gltf.MaterialHasVertexColor(i);
-                return UnlitMaterialItem.CreateAsync(i, x, getTexture, hasVertexColor);
+                return UnlitMaterialItem.CreateAsync(gltf, i, getTexture, hasVertexColor);
             }
 
-            return PBRMaterialItem.CreateAsync(i, x, getTexture);
+            return PBRMaterialItem.CreateAsync(gltf, i, getTexture);
         }
 
         /// <summary>
