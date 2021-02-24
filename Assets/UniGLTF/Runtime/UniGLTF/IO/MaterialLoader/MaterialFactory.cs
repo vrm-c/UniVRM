@@ -108,12 +108,11 @@ namespace UniGLTF
                 if (TryGetExternal(i, out Material material))
                 {
                     m_materials.Add(new MaterialLoadInfo(material, true));
+                    continue;
                 }
-                else
-                {
-                    material = await CreateMaterialAsync(m_gltf, i, getTexture);
-                    m_materials.Add(new MaterialLoadInfo(material, false));
-                }
+
+                material = await CreateMaterialAsync(m_gltf, i, getTexture);
+                m_materials.Add(new MaterialLoadInfo(material, false));
             }
         }
 

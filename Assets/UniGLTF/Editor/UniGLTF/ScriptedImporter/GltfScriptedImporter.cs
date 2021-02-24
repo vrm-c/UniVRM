@@ -39,7 +39,11 @@ namespace UniGLTF
                 // Texture
                 foreach (var info in context.TextureFactory.Textures)
                 {
-                    if (!info.UseExternal)
+                    if (!info.IsUsed)
+                    {
+                        continue;
+                    }
+                    if (!info.IsExternal)
                     {
                         var texture = info.Texture;
                         ctx.AddObjectToAsset(texture.name, texture);
