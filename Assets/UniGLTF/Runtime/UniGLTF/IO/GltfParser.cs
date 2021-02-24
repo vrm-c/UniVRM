@@ -204,12 +204,32 @@ namespace UniGLTF
             }
         }
 
+        void RenameImageFromTexture(int i)
+        {
+            foreach (var texture in GLTF.textures)
+            {
+                if (texture.source == i)
+                {
+                    if (!string.IsNullOrEmpty(texture.name))
+                    {
+                        GLTF.images[i].name = texture.name;
+                        return;
+                    }
+                }
+            }
+        }
+
         void FixImageNameUnique()
         {
             var used = new HashSet<string>();
             for (int i = 0; i < GLTF.images.Count; ++i)
             {
                 var image = GLTF.images[i];
+                if (string.IsNullOrEmpty(image.name))
+                {
+                    RenameImageFromTexture(i);
+                }
+
                 if (string.IsNullOrEmpty(image.name))
                 {
                     var newName = $"image_{i}";
