@@ -174,6 +174,7 @@ namespace VRM
                     }
 
                     var material = MaterialFactory.Materials
+                        .Select(y => y.Asset)
                         .FirstOrDefault(y => y.name == x.materialName);
                     var propertyName = x.propertyName;
                     if (x.propertyName.FastEndsWith("_ST_S")

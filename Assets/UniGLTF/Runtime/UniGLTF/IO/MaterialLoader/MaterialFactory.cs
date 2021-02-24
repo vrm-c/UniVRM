@@ -10,10 +10,32 @@ namespace UniGLTF
     {
         glTF m_gltf;
         IStorage m_storage;
-        public MaterialFactory(glTF gltf, IStorage storage)
+        Dictionary<string, Material> m_externalMap;
+        public bool TryGetExternal(int index, out Material external)
+        {
+            var gltfMaterial = m_gltf.materials[index];
+            if (m_externalMap.TryGetValue(gltfMaterial.name, out external))
+            {
+                return true;
+            }
+
+            external = default;
+            return false;
+        }
+
+        public MaterialFactory(glTF gltf, IStorage storage,
+        IEnumerable<KeyValuePair<string, UnityEngine.Object>> externalMap)
         {
             m_gltf = gltf;
             m_storage = storage;
+            if (externalMap != null)
+            {
+                m_externalMap = externalMap
+                    .Select(kv => (kv.Key, kv.Value as Material))
+                    .Where(kv => kv.Item2 != null)
+                    .ToDictionary(kv => kv.Item1, kv => kv.Item2)
+                    ;
+            }
         }
 
         public delegate Awaitable<Material> CreateMaterialAsyncFunc(glTF gltf, int i, GetTextureAsyncFunc getTexture);
@@ -34,8 +56,20 @@ namespace UniGLTF
             }
         }
 
-        List<Material> m_materials = new List<Material>();
-        public IReadOnlyList<Material> Materials => m_materials;
+        public struct MaterialLoadInfo
+        {
+            public readonly Material Asset;
+            public readonly bool UseExternal;
+
+            public MaterialLoadInfo(Material asset, bool useExternal)
+            {
+                Asset = asset;
+                UseExternal = useExternal;
+            }
+        }
+
+        List<MaterialLoadInfo> m_materials = new List<MaterialLoadInfo>();
+        public IReadOnlyList<MaterialLoadInfo> Materials => m_materials;
         public void Dispose()
         {
             foreach (var x in ObjectsForSubAsset())
@@ -48,47 +82,45 @@ namespace UniGLTF
         {
             foreach (var x in m_materials)
             {
-                yield return x;
+                yield return x.Asset;
             }
         }
 
-        public void AddMaterial(Material material)
-        {
-            var originalName = material.name;
-            int j = 2;
-            while (m_materials.Any(x => x.name == material.name))
-            {
-                material.name = string.Format("{0}({1})", originalName, j++);
-            }
-            m_materials.Add(material);
-        }
         public Material GetMaterial(int index)
         {
             if (index < 0) return null;
             if (index >= m_materials.Count) return null;
-            return m_materials[index];
+            return m_materials[index].Asset;
         }
 
         public async Awaitable LoadMaterialsAsync(GetTextureAsyncFunc getTexture)
         {
             if (m_gltf.materials == null || m_gltf.materials.Count == 0)
             {
+                // no material. work around.
                 var material = await CreateMaterialAsync(m_gltf, 0, getTexture);
-                AddMaterial(material);
+                m_materials.Add(new MaterialLoadInfo(material, false));
+                return;
             }
-            else
+
+            // 先に m_gltf.textures を作成
+            for (int i = 0; i < m_gltf.textures.Count; ++i)
             {
-                // 先に m_gltf.textures を作成
-                for (int i = 0; i < m_gltf.textures.Count; ++i)
+                await getTexture(GetTextureParam.Create(i));
+            }
+
+            // 後に material を作成。
+            // 必用に応じてテクスチャを変換。
+            for (int i = 0; i < m_gltf.materials.Count; ++i)
+            {
+                if (TryGetExternal(i, out Material material))
                 {
-                    await getTexture(GetTextureParam.Create(i));
+                    m_materials.Add(new MaterialLoadInfo(material, true));
                 }
-                // 後に material を作成。
-                // 必用に応じてテクスチャを変換。
-                for (int i = 0; i < m_gltf.materials.Count; ++i)
+                else
                 {
-                    var material = await CreateMaterialAsync(m_gltf, i, getTexture);
-                    AddMaterial(material);
+                    material = await CreateMaterialAsync(m_gltf, i, getTexture);
+                    m_materials.Add(new MaterialLoadInfo(material, false));
                 }
             }
         }

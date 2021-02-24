@@ -165,6 +165,7 @@ namespace UniGLTF
 
             FixMeshNameUnique();
             FixImageNameUnique();
+            FixMaterialNameUnique();
             FixNodeName();
 
             // parepare byte buffer
@@ -235,6 +236,19 @@ namespace UniGLTF
                         lower = uname;
                     }
                     used.Add(lower);
+                }
+            }
+        }
+
+        public void FixMaterialNameUnique()
+        {
+            foreach (var material in GLTF.materials)
+            {
+                var originalName = material.name;
+                int j = 2;
+                while (GLTF.materials.Any(x => x != material && x.name == material.name))
+                {
+                    material.name = string.Format("{0}({1})", originalName, j++);
                 }
             }
         }

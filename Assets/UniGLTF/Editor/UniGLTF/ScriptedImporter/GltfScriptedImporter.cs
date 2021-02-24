@@ -31,7 +31,6 @@ namespace UniGLTF
                 context.ShowMeshes();
 
                 // Texture
-                var externalTextures = this.GetExternalUnityObjects<UnityEngine.Texture2D>();
                 foreach (var info in context.TextureFactory.Textures)
                 {
                     if (!info.UseExternal)
@@ -42,16 +41,11 @@ namespace UniGLTF
                 }
 
                 // Material
-                var externalMaterials = this.GetExternalUnityObjects<UnityEngine.Material>();
-                foreach (var material in context.MaterialFactory.Materials)
+                foreach (var info in context.MaterialFactory.Materials)
                 {
-                    if (material == null)
+                    if (!info.UseExternal)
                     {
-                        throw new Exception();
-                    }
-
-                    if (!externalMaterials.ContainsValue(material))
-                    {
+                        var material = info.Asset;
                         ctx.AddObjectToAsset(material.name, material);
                     }
                 }
@@ -88,8 +82,11 @@ namespace UniGLTF
 
         public void ExtractMaterialsAndTextures()
         {
-            this.ExtractTextures(TextureDirName, () => { this.ExtractAssets<UnityEngine.Material>(MaterialDirName, ".mat"); });
-            AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceUpdate);
+            this.ExtractTextures(TextureDirName, () =>
+            {
+                this.ExtractAssets<UnityEngine.Material>(MaterialDirName, ".mat");
+                AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceUpdate);
+            });
         }
 
         public Dictionary<string, T> GetExternalUnityObjects<T>() where T : UnityEngine.Object

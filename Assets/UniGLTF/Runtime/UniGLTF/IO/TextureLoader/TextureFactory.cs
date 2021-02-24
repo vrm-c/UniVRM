@@ -27,17 +27,38 @@ namespace UniGLTF
         glTF m_gltf;
         IStorage m_storage;
         Dictionary<string, Texture2D> m_externalMap;
+        public bool TryGetExternal(GetTextureParam param, out Texture2D external)
+        {
+            if (param.Index0.HasValue && m_externalMap != null)
+            {
+                var gltfTexture = m_gltf.textures[param.Index0.Value];
+                m_gltf.GetImageBytes(m_storage, gltfTexture.source, out string textureName);
+
+                if (m_externalMap.TryGetValue(textureName, out external))
+                {
+                    Debug.Log($"use external: {textureName}");
+                    m_textureCache.Add(param, new TextureLoadInfo(external, true));
+                    return external;
+                }
+            }
+            external = default;
+            return false;
+        }
 
         public UnityPath ImageBaseDir { get; set; }
 
-        public TextureFactory(glTF gltf, IStorage storage, IEnumerable<KeyValuePair<string, UnityEngine.Object>> externalMap)
+        public TextureFactory(glTF gltf, IStorage storage,
+        IEnumerable<KeyValuePair<string, UnityEngine.Object>> externalMap)
         {
             m_gltf = gltf;
             m_storage = storage;
-            m_externalMap = externalMap
-                .Select(kv => (kv.Key, kv.Value as Texture2D))
-                .Where(kv => kv.Item2 != null)
-                .ToDictionary(kv => kv.Item1, kv => kv.Item2);
+            if (externalMap != null)
+            {
+                m_externalMap = externalMap
+                    .Select(kv => (kv.Key, kv.Value as Texture2D))
+                    .Where(kv => kv.Item2 != null)
+                    .ToDictionary(kv => kv.Item1, kv => kv.Item2);
+            }
         }
 
         public void Dispose()
@@ -68,24 +89,6 @@ namespace UniGLTF
             var texture = await GltfTextureLoader.LoadTextureAsync(m_gltf, m_storage, index);
             return new TextureLoadInfo(texture, false);
 #endif
-        }
-
-        public bool TryGetExternal(GetTextureParam param, out Texture2D external)
-        {
-            if (param.Index0.HasValue && m_externalMap != null)
-            {
-                var gltfTexture = m_gltf.textures[param.Index0.Value];
-                m_gltf.GetImageBytes(m_storage, gltfTexture.source, out string textureName);
-
-                if (m_externalMap.TryGetValue(textureName, out external))
-                {
-                    Debug.Log($"use external: {textureName}");
-                    m_textureCache.Add(param, new TextureLoadInfo(external, true));
-                    return external;
-                }
-            }
-            external = default;
-            return false;
         }
 
         /// <summary>
