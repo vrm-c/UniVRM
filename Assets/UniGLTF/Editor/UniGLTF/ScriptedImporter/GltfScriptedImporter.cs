@@ -11,6 +11,9 @@ namespace UniGLTF
     [ScriptedImporter(1, "glb")]
     public class GltfScriptedImporter : ScriptedImporter
     {
+        [SerializeField]
+        Axises m_reverseAxis;
+
         const string TextureDirName = "Textures";
         const string MaterialDirName = "Materials";
 
@@ -25,8 +28,11 @@ namespace UniGLTF
                 parser.ParsePath(ctx.assetPath);
 
                 // Build Unity Model
-                var context = new ImporterContext(parser, GetExternalObjectMap()
-                .Select(kv => (kv.Key.name, kv.Value)));
+                var externalObjectMap = GetExternalObjectMap()
+                .Select(kv => (kv.Key.name, kv.Value))
+                ;
+                var context = new ImporterContext(parser, externalObjectMap);
+                context.InvertAxis = m_reverseAxis;
                 context.Load();
                 context.ShowMeshes();
 
