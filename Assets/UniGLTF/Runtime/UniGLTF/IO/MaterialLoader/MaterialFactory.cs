@@ -13,10 +13,13 @@ namespace UniGLTF
         Dictionary<string, Material> m_externalMap;
         public bool TryGetExternal(int index, out Material external)
         {
-            var gltfMaterial = m_gltf.materials[index];
-            if (m_externalMap.TryGetValue(gltfMaterial.name, out external))
+            if (m_externalMap != null)
             {
-                return true;
+                var gltfMaterial = m_gltf.materials[index];
+                if (m_externalMap.TryGetValue(gltfMaterial.name, out external))
+                {
+                    return true;
+                }
             }
 
             external = default;
