@@ -39,26 +39,26 @@ namespace VRM
             {
                 await LoadMetaAsync();
             }
-            await LoopAwaitable.Create();
+            await NextFrameAwaitable.Create();
 
             using (MeasureTime("VRM LoadHumanoid"))
             {
                 LoadHumanoid();
             }
-            await LoopAwaitable.Create();
+            await NextFrameAwaitable.Create();
 
             using (MeasureTime("VRM LoadBlendShapeMaster"))
             {
                 LoadBlendShapeMaster();
             }
-            await LoopAwaitable.Create();
+            await NextFrameAwaitable.Create();
 
             using (MeasureTime("VRM LoadSecondary"))
             {
                 VRMSpringUtility.LoadSecondary(Root.transform, Nodes,
                 VRM.secondaryAnimation);
             }
-            await LoopAwaitable.Create();
+            await NextFrameAwaitable.Create();
 
             using (MeasureTime("VRM LoadFirstPerson"))
             {

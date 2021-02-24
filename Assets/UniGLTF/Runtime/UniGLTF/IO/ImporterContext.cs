@@ -98,7 +98,6 @@ namespace UniGLTF
                 throw new UniGLTFNotSupportedException("draco is not supported");
             }
 
-            // create textures
             using (MeasureTime("LoadTextures"))
             {
                 for (int i = 0; i < GLTF.materials.Count; ++i)
@@ -115,7 +114,6 @@ namespace UniGLTF
                 await m_materialFactory.LoadMaterialsAsync(m_textureFactory.GetTextureAsync);
             }
 
-            // meshes
             var meshImporter = new MeshImporter();
             for (int i = 0; i < GLTF.meshes.Count; ++i)
             {
@@ -135,7 +133,7 @@ namespace UniGLTF
                     Nodes.Add(NodeImporter.ImportNode(GLTF.nodes[i], i).transform);
                 }
             }
-            await LoopAwaitable.Create();
+            await NextFrameAwaitable.Create();
 
             using (MeasureTime("BuildHierarchy"))
             {
@@ -160,7 +158,7 @@ namespace UniGLTF
                     t.SetParent(Root.transform, false);
                 }
             }
-            await LoopAwaitable.Create();
+            await NextFrameAwaitable.Create();
 
             using (MeasureTime("AnimationImporter"))
             {
