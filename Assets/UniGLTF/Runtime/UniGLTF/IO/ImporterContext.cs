@@ -98,6 +98,15 @@ namespace UniGLTF
                 throw new UniGLTFNotSupportedException("draco is not supported");
             }
 
+            // create textures
+            for (int i = 0; i < GLTF.materials.Count; ++i)
+            {
+                foreach (var param in MaterialFactory.EnumerateGetTextureparam(i))
+                {
+                    await m_textureFactory.GetTextureAsync(GLTF, param);
+                }
+            }
+
             await m_materialFactory.LoadMaterialsAsync(m_textureFactory.GetTextureAsync);
 
             // meshes

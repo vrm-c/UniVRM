@@ -93,7 +93,6 @@ namespace UniGLTF
             return m_materials[index].Asset;
         }
 
-
         public async Awaitable LoadMaterialsAsync(GetTextureAsyncFunc getTexture)
         {
             if (m_gltf.materials == null || m_gltf.materials.Count == 0)
@@ -104,14 +103,6 @@ namespace UniGLTF
                 return;
             }
 
-            // 先に m_gltf.textures を作成
-            for (int i = 0; i < m_gltf.textures.Count; ++i)
-            {
-                await getTexture(m_gltf, GetTextureParam.Create(m_gltf, i));
-            }
-
-            // 後に material を作成。
-            // 必用に応じてテクスチャを変換。
             for (int i = 0; i < m_gltf.materials.Count; ++i)
             {
                 if (TryGetExternal(i, out Material material))
@@ -196,6 +187,23 @@ namespace UniGLTF
             };
             var task = DefaultCreateMaterialAsync(gltf, i, null);
             return task.Result;
+        }
+
+        public IEnumerable<GetTextureParam> EnumerateGetTextureparam(int i)
+        {
+            var m = m_gltf.materials[i];
+
+            // color texture
+            var colorIndex = m.pbrMetallicRoughness?.baseColorTexture?.index;
+            if (colorIndex.HasValue)
+            {
+                yield return GetTextureParam.Create(m_gltf, i);
+            }
+
+            if (!glTF_KHR_materials_unlit.IsEnable(m))
+            {
+                // PBR
+            }
         }
     }
 }
