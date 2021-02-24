@@ -131,14 +131,13 @@ namespace UniGLTF
         /// <returns></returns>
         public async Awaitable<Texture2D> GetTextureAsync(glTF gltf, GetTextureParam param)
         {
-            if (TryGetExternal(param, true, out Texture2D external))
-            {
-                return external;
-            }
-
             if (m_textureCache.TryGetValue(param, out TextureLoadInfo cacheInfo))
             {
                 return cacheInfo.Texture;
+            }
+            if (TryGetExternal(param, true, out Texture2D external))
+            {
+                return external;
             }
 
             switch (param.TextureType)
