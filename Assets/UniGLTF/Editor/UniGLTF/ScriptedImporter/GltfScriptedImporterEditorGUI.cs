@@ -85,10 +85,14 @@ namespace UniGLTF
                 {
                     throw new System.ArgumentNullException();
                 }
+
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.PrefixLabel(name);
-                if (map.TryGetValue(name, out T value))
+                map.TryGetValue(name, out T value);
+                if (map.Any() && value == null)
                 {
+                    var a = 0;
+                    // Debug.Log($"{name}: {value}");
                 }
                 var asset = EditorGUILayout.ObjectField(value, typeof(T), true) as T;
                 if (asset != value)

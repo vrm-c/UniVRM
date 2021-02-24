@@ -257,6 +257,12 @@ namespace UniGLTF
                     }
                     used.Add(lower);
                 }
+
+                var ext = GetTextureExtension(i);
+                if (!string.IsNullOrEmpty(ext))
+                {
+                    AppendImageExtension(image, ext);
+                }
             }
         }
 
@@ -313,14 +319,117 @@ namespace UniGLTF
         }
         #endregion
 
-        public IEnumerable<GetTextureParam> EnumerateTextures()
+
+        public static void AppendImageExtension(glTFImage texture, string extension)
         {
-            for (int i = 0; i < GLTF.textures.Count; ++i)
+            if (!texture.name.EndsWith(extension))
             {
-                yield return GetTextureParam.Create(GLTF, i);
+                texture.name = texture.name + extension;
+            }
+        }
+
+        public string GetTextureExtension(int imageIndex)
+        {
+            foreach (var m in GLTF.materials)
+            {
+                if (m.pbrMetallicRoughness != null)
+                {
+                    // base color
+                    if (m.pbrMetallicRoughness?.baseColorTexture != null)
+                    {
+                        if (m.pbrMetallicRoughness.baseColorTexture.index == imageIndex)
+                        {
+                            return "";
+                        }
+                    }
+
+                    // metallic roughness
+                    if (m.pbrMetallicRoughness?.metallicRoughnessTexture != null)
+                    {
+                        if (m.pbrMetallicRoughness.metallicRoughnessTexture.index == imageIndex)
+                        {
+                            return ".metallicRoughness";
+                        }
+                    }
+                }
+
+                // emission
+                if (m.emissiveTexture != null)
+                {
+                    if (m.emissiveTexture.index == imageIndex)
+                    {
+                        return "";
+                    }
+                }
+
+                // normal
+                if (m.normalTexture != null)
+                {
+                    if (m.normalTexture.index == imageIndex)
+                    {
+                        return "";
+                    }
+                }
+
+                // occlusion
+                if (m.occlusionTexture != null)
+                {
+                    if (m.occlusionTexture.index == imageIndex)
+                    {
+                        return ".occlusion";
+                    }
+                }
             }
 
-            // TODO: converted textures
+            return "";
+        }
+
+        public IEnumerable<GetTextureParam> EnumerateTextures(glTFMaterial m)
+        {
+            if (m.pbrMetallicRoughness != null)
+            {
+                // base color
+                if (m.pbrMetallicRoughness?.baseColorTexture != null)
+                {
+                    yield return PBRMaterialItem.BaseColorTexture(GLTF, m);
+                }
+
+                // metallic roughness
+                if (m.pbrMetallicRoughness?.metallicRoughnessTexture != null)
+                {
+                    yield return PBRMaterialItem.MetallicRoughnessTexture(GLTF, m);
+                }
+            }
+
+            // emission
+            if (m.emissiveTexture != null)
+            {
+                yield return GetTextureParam.Create(GLTF, m.emissiveTexture.index);
+            }
+
+            // normal
+            if (m.normalTexture != null)
+            {
+                yield return PBRMaterialItem.NormalTexture(GLTF, m);
+            }
+
+            // occlusion
+            if (m.occlusionTexture != null)
+            {
+                yield return PBRMaterialItem.OcclusionTexture(GLTF, m);
+            }
+        }
+
+        public IEnumerable<GetTextureParam> EnumerateTextures()
+        {
+            for (int i = 0; i < GLTF.materials.Count; ++i)
+            {
+                var m = GLTF.materials[i];
+                foreach (var x in EnumerateTextures(m))
+                {
+                    yield return x;
+                }
+            }
         }
     }
 }

@@ -76,19 +76,19 @@ namespace UniGLTF
             }
         }
 
-        public void ExtractTextures()
-        {
-            // extract textures to files
-            this.ExtractTextures(TextureDirName);
-            // reimport
-            AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceUpdate);
-        }
+        // public void ExtractTextures()
+        // {
+        //     // extract textures to files
+        //     this.ExtractTextures(TextureDirName);
+        //     // reimport
+        //     AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceUpdate);
+        // }
 
-        public void ExtractMaterials()
-        {
-            this.ExtractAssets<UnityEngine.Material>(MaterialDirName, ".mat");
-            AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceUpdate);
-        }
+        // public void ExtractMaterials()
+        // {
+        //     this.ExtractAssets<UnityEngine.Material>(MaterialDirName, ".mat");
+        //     AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceUpdate);
+        // }
 
         public void ExtractMaterialsAndTextures()
         {
@@ -99,10 +99,10 @@ namespace UniGLTF
             });
         }
 
-        public Dictionary<string, T> GetExternalUnityObjects<T>() where T : UnityEngine.Object
-        {
-            return this.GetExternalObjectMap().Where(x => x.Key.type == typeof(T)).ToDictionary(x => x.Key.name, x => (T)x.Value);
-        }
+        // public Dictionary<string, T> GetExternalUnityObjects<T>() where T : UnityEngine.Object
+        // {
+        //     return this.GetExternalObjectMap().Where(x => x.Key.type == typeof(T)).ToDictionary(x => x.Key.name, x => (T)x.Value);
+        // }
 
         public void SetExternalUnityObject<T>(UnityEditor.AssetImporter.SourceAssetIdentifier sourceAssetIdentifier, T obj) where T : UnityEngine.Object
         {

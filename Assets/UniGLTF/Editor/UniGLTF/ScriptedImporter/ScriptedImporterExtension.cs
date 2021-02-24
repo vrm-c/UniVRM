@@ -96,6 +96,7 @@ namespace UniGLTF
         class TextureExtractor
         {
             GltfParser m_parser;
+            public GltfParser Parser => m_parser;
 
             public glTF GLTF => m_parser.GLTF;
 
@@ -115,59 +116,17 @@ namespace UniGLTF
 
             static Regex s_mimeTypeReg = new Regex("image/(?<mime>.*)$");
 
-            public void Extract(int? index, string prop = default)
+            public void Extract(GetTextureParam param)
             {
-                if (!index.HasValue)
-                {
-                    return;
-                }
-
-                var gltfTexture = GLTF.textures[index.Value];
-                var gltfImage = GLTF.images[gltfTexture.source];
-                var mimeType = s_mimeTypeReg.Match(gltfImage.mimeType);
-                var ext = "";
-                switch (mimeType.Groups["mime"].Value)
-                {
-                    case "jpeg":
-                        ext = ".jpg";
-                        break;
-
-                    case "png":
-                        ext = ".png";
-                        break;
-
-                    default:
-                        throw new NotImplementedException();
-
-                }
-
-                var assetName = gltfImage.name;
-                string targetPath = default;
-                switch (prop)
-                {
-                    case GetTextureParam.NORMAL_PROP:
-                    case GetTextureParam.METALLIC_GLOSS_PROP:
-                    case GetTextureParam.OCCLUSION_PROP:
-                        // File.WriteAllBytes(targetPath, subAsset.EncodeToPNG());
-                        throw new NotImplementedException();
-
-                    default:
-                        {
-                            var name = "";
-                            var bytes = GLTF.GetImageBytes(m_parser.Storage, gltfTexture.source, out name);
-                            targetPath = string.Format("{0}/{1}{2}",
-                                m_path,
-                                assetName,
-                                ext
-                                );
-                            File.WriteAllBytes(targetPath, bytes.ToArray());
-                        }
-                        break;
-                }
-
+                var subAsset = m_subAssets.FirstOrDefault(x => x.name == param.Name);
+                var targetPath = string.Format("{0}/{1}{2}",
+                    m_path,
+                    param.Name,
+                    ".png"
+                    );
+                File.WriteAllBytes(targetPath, subAsset.EncodeToPNG().ToArray());
                 AssetDatabase.ImportAsset(targetPath);
 
-                var subAsset = m_subAssets.FirstOrDefault(x => x.name == assetName);
                 Textures.Add(new TextureInfo
                 {
                     Path = targetPath,
@@ -195,11 +154,9 @@ namespace UniGLTF
 
             foreach (var material in extractor.GLTF.materials)
             {
-                // standard or unlit
-                extractor.Extract(material.pbrMetallicRoughness?.baseColorTexture?.index);
-                if (!glTF_KHR_materials_unlit.IsEnable(material))
+                foreach (var x in extractor.Parser.EnumerateTextures(material))
                 {
-                    // standard
+                    extractor.Extract(x);
                 }
             }
 

@@ -148,7 +148,6 @@ namespace UniGLTF
                         {
                             var baseTexture = await GetOrCreateBaseTexture(gltf, param.Index0.Value, false);
                             var converted = new NormalConverter().GetImportTexture(baseTexture);
-                            converted.name = $"{converted.name}.{GetTextureParam.NORMAL_PROP}";
                             var info = new TextureLoadInfo(converted, true, false);
                             m_textureCache.Add(param, info);
                             return info.Texture;
@@ -161,7 +160,6 @@ namespace UniGLTF
 
                             var textureAssetPath = AssetDatabase.GetAssetPath(info.Texture);
                             TextureIO.MarkTextureAssetAsNormalMap(textureAssetPath);
-                            info.Texture.name = $"{info.Texture.name}.{GetTextureParam.NORMAL_PROP}";
 #endif
                             return info.Texture;
                         }
@@ -172,7 +170,6 @@ namespace UniGLTF
                         // Bake roughnessFactor values into a texture.
                         var baseTexture = await GetOrCreateBaseTexture(gltf, param.Index0.Value, false);
                         var converted = new MetallicRoughnessConverter(param.MetallicFactor).GetImportTexture(baseTexture);
-                        converted.name = $"{converted.name}.{GetTextureParam.METALLIC_GLOSS_PROP}";
                         var info = new TextureLoadInfo(converted, true, false);
                         m_textureCache.Add(param, info);
                         return info.Texture;
@@ -182,7 +179,6 @@ namespace UniGLTF
                     {
                         var baseTexture = await GetOrCreateBaseTexture(gltf, param.Index0.Value, false);
                         var converted = new OcclusionConverter().GetImportTexture(baseTexture);
-                        converted.name = $"{converted.name}.{GetTextureParam.OCCLUSION_PROP}";
                         var info = new TextureLoadInfo(converted, true, false);
                         m_textureCache.Add(param, info);
                         return info.Texture;
