@@ -78,6 +78,10 @@ namespace UniGLTF.AltTask
 
         public Awaitable(Task task)
         {
+            if (task.IsFaulted)
+            {
+                throw task.Exception;
+            }
             _task = task;
         }
 
