@@ -99,15 +99,21 @@ namespace UniGLTF
             }
 
             // create textures
-            for (int i = 0; i < GLTF.materials.Count; ++i)
+            using (MeasureTime("LoadTextures"))
             {
-                foreach (var param in MaterialFactory.EnumerateGetTextureparam(i))
+                for (int i = 0; i < GLTF.materials.Count; ++i)
                 {
-                    await m_textureFactory.GetTextureAsync(GLTF, param);
+                    foreach (var param in MaterialFactory.EnumerateGetTextureparam(i))
+                    {
+                        await m_textureFactory.GetTextureAsync(GLTF, param);
+                    }
                 }
             }
 
-            await m_materialFactory.LoadMaterialsAsync(m_textureFactory.GetTextureAsync);
+            using (MeasureTime("LoadMaterials"))
+            {
+                await m_materialFactory.LoadMaterialsAsync(m_textureFactory.GetTextureAsync);
+            }
 
             // meshes
             var meshImporter = new MeshImporter();
