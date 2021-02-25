@@ -51,11 +51,9 @@ namespace UniGLTF
             if (param.Index0.HasValue && m_externalMap != null)
             {
                 var gltfTexture = m_gltf.textures[param.Index0.Value];
-                m_gltf.GetImageBytes(m_storage, gltfTexture.source, out string textureName);
-
-                if (m_externalMap.TryGetValue(textureName, out external))
+                if (m_externalMap.TryGetValue(gltfTexture.name, out external))
                 {
-                    Debug.Log($"use external: {textureName}");
+                    Debug.Log($"use external: {gltfTexture.name}");
                     m_textureCache.Add(param, new TextureLoadInfo(external, used, true));
                     return external;
                 }

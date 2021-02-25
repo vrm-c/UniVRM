@@ -391,30 +391,29 @@ namespace UniGLTF
             // https://answers.unity.com/questions/647615/how-to-update-import-settings-for-newly-created-as.html
             //
             int created = 0;
-            //for (int i = 0; i < GLTF.textures.Count; ++i)
-            for (int i = 0; i < GLTF.images.Count; ++i)
+            for (int i = 0; i < GLTF.textures.Count; ++i)
             {
                 folder.EnsureFolder();
 
-                //var x = GLTF.textures[i];
-                var image = GLTF.images[i];
-                var src = Storage.GetPath(image.uri);
+                var gltfTexture = GLTF.textures[i];
+                var gltfImage = GLTF.images[gltfTexture.source];
+                var src = Storage.GetPath(gltfImage.uri);
                 if (UnityPath.FromFullpath(src).IsUnderAssetsFolder)
                 {
                     // asset is exists.
                 }
                 else
                 {
-                    string textureName;
-                    var byteSegment = GLTF.GetImageBytes(Storage, i, out textureName);
+                    var byteSegment = GLTF.GetImageBytes(Storage, gltfTexture.source);
+                    var textureName = gltfTexture.name;
 
                     // path
-                    var dst = folder.Child(textureName + image.GetExt());
+                    var dst = folder.Child(textureName + gltfImage.GetExt());
                     File.WriteAllBytes(dst.FullPath, byteSegment.ToArray());
                     dst.ImportAsset();
 
                     // make relative path from PrefabParentDir
-                    image.uri = dst.Value.Substring(prefabParentDir.Value.Length + 1);
+                    gltfImage.uri = dst.Value.Substring(prefabParentDir.Value.Length + 1);
                     ++created;
                 }
             }

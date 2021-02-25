@@ -24,23 +24,23 @@ namespace UniGLTF
             }
         }
 
-        public static async Awaitable<Texture2D> LoadTextureAsync(glTF gltf, IStorage storage, int index)
+        public static async Awaitable<Texture2D> LoadTextureAsync(glTF gltf, IStorage storage, int textureIndex)
         {
             string textureName = default;
             var imageBytes = await Awaitable.Run(() =>
             {
-                var imageIndex = gltf.GetImageIndexFromTextureIndex(index);
-                var segments = gltf.GetImageBytes(storage, imageIndex, out textureName);
+                var imageIndex = gltf.textures[textureIndex].source;
+                var segments = gltf.GetImageBytes(storage, imageIndex);
                 return ToArray(segments);
             });
 
             //
             // texture from image(png etc) bytes
             //
-            var textureType = TextureIO.GetglTFTextureType(gltf, index);
+            var textureType = TextureIO.GetglTFTextureType(gltf, textureIndex);
             var colorSpace = TextureIO.GetColorSpace(textureType);
             var isLinear = colorSpace == RenderTextureReadWrite.Linear;
-            var sampler = gltf.GetSamplerFromTextureIndex(index);
+            var sampler = gltf.GetSamplerFromTextureIndex(textureIndex);
 
             var texture = new Texture2D(2, 2, TextureFormat.ARGB32, false, isLinear);
             texture.name = textureName;
