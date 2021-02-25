@@ -8,7 +8,7 @@ namespace UniGLTF
         public const string METALLIC_GLOSS_PROP = "_MetallicGlossMap";
         public const string OCCLUSION_PROP = "_OcclusionMap";
 
-        public string Name;
+        public readonly string Name;
         public readonly string TextureType;
         public readonly float MetallicFactor;
         public readonly ushort? Index0;
@@ -69,13 +69,13 @@ namespace UniGLTF
         public static GetTextureParam CreateMetallic(glTF gltf, int textureIndex, float metallicFactor)
         {
             var name = gltf.textures[textureIndex].name;
-            return new GetTextureParam(name, METALLIC_GLOSS_PROP, metallicFactor, textureIndex, default, default, default, default, default);
+            return new GetTextureParam(name + ".metallicRoughness", METALLIC_GLOSS_PROP, metallicFactor, textureIndex, default, default, default, default, default);
         }
 
         public static GetTextureParam CreateOcclusion(glTF gltf, int textureIndex)
         {
             var name = gltf.textures[textureIndex].name;
-            return new GetTextureParam(name, OCCLUSION_PROP, default, textureIndex, default, default, default, default, default);
+            return new GetTextureParam(name + ".occlusion", OCCLUSION_PROP, default, textureIndex, default, default, default, default, default);
         }
     }
 }

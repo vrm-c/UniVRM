@@ -164,7 +164,7 @@ namespace UniGLTF
             RestoreOlderVersionValues();
 
             FixMeshNameUnique();
-            FixTextureAndImageNameUnique();
+            FixTextureNameUnique();
             FixMaterialNameUnique();
             FixNodeName();
 
@@ -223,86 +223,42 @@ namespace UniGLTF
         /// gltfTexture.name を Unity Asset 名として運用する。
         /// ユニークである必要がある。
         /// </summary>
-        void FixTextureAndImageNameUnique()
+        void FixTextureNameUnique()
         {
+            var used = new HashSet<string>();
+            for (int i = 0; i < GLTF.textures.Count; ++i)
             {
-                // process images
-                var used = new HashSet<string>();
-                for (int i = 0; i < GLTF.images.Count; ++i)
+                var gltfTexture = GLTF.textures[i];
+                if (string.IsNullOrEmpty(gltfTexture.name))
                 {
-                    var image = GLTF.images[i];
-                    if (string.IsNullOrEmpty(image.name))
-                    {
-                        RenameImageFromTexture(i);
-                    }
-
-                    if (string.IsNullOrEmpty(image.name))
-                    {
-                        var newName = $"image_{i}";
-                        if (!used.Add(newName))
-                        {
-                            newName = "image_" + Guid.NewGuid().ToString("N");
-                            if (!used.Add(newName))
-                            {
-                                throw new Exception();
-                            }
-                        }
-                        image.name = newName;
-                        // Debug.LogWarning($"no name: => {image.name}");
-                    }
-                    else
-                    {
-                        var lower = image.name.ToLower();
-                        if (used.Contains(lower))
-                        {
-                            // rename
-                            var uname = lower + "_" + Guid.NewGuid().ToString("N");
-                            Debug.LogWarning($"same name: {lower} => {uname}");
-                            image.name = uname;
-                            lower = uname;
-                        }
-                        used.Add(lower);
-                    }
+                    // use image name
+                    gltfTexture.name = GLTF.images[gltfTexture.source].name;
                 }
-            }
-
-            {
-                // process textures
-                var used = new HashSet<string>();
-                for (int i = 0; i < GLTF.textures.Count; ++i)
+                if (string.IsNullOrEmpty(gltfTexture.name))
                 {
-                    var gltfTexture = GLTF.textures[i];
-                    if (string.IsNullOrEmpty(gltfTexture.name))
+                    var newName = $"texture_{i}";
+                    if (!used.Add(newName))
                     {
-                        // use image name
-                        gltfTexture.name = GLTF.images[gltfTexture.source].name;
-                    }
-                    if (string.IsNullOrEmpty(gltfTexture.name))
-                    {
-                        var newName = $"image_{i}";
+                        newName = "texture_" + Guid.NewGuid().ToString("N");
                         if (!used.Add(newName))
                         {
-                            newName = "image_" + Guid.NewGuid().ToString("N");
-                            if (!used.Add(newName))
-                            {
-                                throw new Exception();
-                            }
+                            throw new Exception();
                         }
-                        gltfTexture.name = newName;
                     }
-                    else
+                    gltfTexture.name = newName;
+                }
+                else
+                {
+                    var lower = gltfTexture.name.ToLower();
+                    if (used.Contains(lower))
                     {
-                        var lower = gltfTexture.name.ToLower();
-                        if (used.Contains(lower))
-                        {
-                            // rename
-                            var uname = lower + "_" + Guid.NewGuid().ToString("N");
-                            Debug.LogWarning($"same name: {lower} => {uname}");
-                            gltfTexture.name = uname;
-                            lower = uname;
-                        }
-                        used.Add(lower);
+                        // rename
+                        var uname = lower + "_" + Guid.NewGuid().ToString("N");
+                        Debug.LogWarning($"same name: {lower} => {uname}");
+                        gltfTexture.name = uname;
+                        lower = uname;
                     }
+                    used.Add(lower);
                 }
             }
         }
@@ -463,12 +419,16 @@ namespace UniGLTF
 
         public IEnumerable<GetTextureParam> EnumerateTextures()
         {
+            var used = new HashSet<string>();
             for (int i = 0; i < GLTF.materials.Count; ++i)
             {
                 var m = GLTF.materials[i];
                 foreach (var x in EnumerateTextures(m))
                 {
-                    yield return x;
+                    if (used.Add(x.Name))
+                    {
+                        yield return x;
+                    }
                 }
             }
         }
