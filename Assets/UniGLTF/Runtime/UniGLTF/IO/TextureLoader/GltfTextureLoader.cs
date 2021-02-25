@@ -26,7 +26,6 @@ namespace UniGLTF
 
         public static async Awaitable<Texture2D> LoadTextureAsync(glTF gltf, IStorage storage, int textureIndex)
         {
-            string textureName = default;
             var imageBytes = await Awaitable.Run(() =>
             {
                 var imageIndex = gltf.textures[textureIndex].source;
@@ -43,7 +42,7 @@ namespace UniGLTF
             var sampler = gltf.GetSamplerFromTextureIndex(textureIndex);
 
             var texture = new Texture2D(2, 2, TextureFormat.ARGB32, false, isLinear);
-            texture.name = textureName;
+            texture.name = gltf.textures[textureIndex].name;
             if (imageBytes != null)
             {
                 texture.LoadImage(imageBytes);

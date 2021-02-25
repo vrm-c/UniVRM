@@ -1,4 +1,6 @@
-﻿namespace UniGLTF
+﻿using System;
+
+namespace UniGLTF
 {
     public struct GetTextureParam
     {
@@ -18,7 +20,12 @@
 
         public GetTextureParam(string name, string textureType, float metallicFactor, int i0, int i1, int i2, int i3, int i4, int i5)
         {
+            if (string.IsNullOrEmpty(name))
+            {
+                throw new ArgumentNullException();
+            }
             Name = name;
+
             TextureType = textureType;
             MetallicFactor = metallicFactor;
             Index0 = (ushort)i0;
@@ -29,10 +36,10 @@
             Index5 = (ushort)i5;
         }
 
-        public static GetTextureParam Create(glTF gltf, int index)
+        public static GetTextureParam Create(glTF gltf, int textureIndex)
         {
-            var name = gltf.ImageNameFromTextureIndex(index);
-            return new GetTextureParam(name, default, default, index, default, default, default, default, default);
+            var name = gltf.textures[textureIndex].name;
+            return new GetTextureParam(name, default, default, textureIndex, default, default, default, default, default);
         }
 
         public static GetTextureParam Create(glTF gltf, int index, string prop)
@@ -53,22 +60,22 @@
             }
         }
 
-        public static GetTextureParam CreateNormal(glTF gltf, int index)
+        public static GetTextureParam CreateNormal(glTF gltf, int textureIndex)
         {
-            var name = gltf.ImageNameFromTextureIndex(index);
-            return new GetTextureParam(name, NORMAL_PROP, default, index, default, default, default, default, default);
+            var name = gltf.textures[textureIndex].name;
+            return new GetTextureParam(name, NORMAL_PROP, default, textureIndex, default, default, default, default, default);
         }
 
-        public static GetTextureParam CreateMetallic(glTF gltf, int index, float metallicFactor)
+        public static GetTextureParam CreateMetallic(glTF gltf, int textureIndex, float metallicFactor)
         {
-            var name = gltf.ImageNameFromTextureIndex(index);
-            return new GetTextureParam(name, METALLIC_GLOSS_PROP, metallicFactor, index, default, default, default, default, default);
+            var name = gltf.textures[textureIndex].name;
+            return new GetTextureParam(name, METALLIC_GLOSS_PROP, metallicFactor, textureIndex, default, default, default, default, default);
         }
 
-        public static GetTextureParam CreateOcclusion(glTF gltf, int index)
+        public static GetTextureParam CreateOcclusion(glTF gltf, int textureIndex)
         {
-            var name = gltf.ImageNameFromTextureIndex(index);
-            return new GetTextureParam(name, OCCLUSION_PROP, default, index, default, default, default, default, default);
+            var name = gltf.textures[textureIndex].name;
+            return new GetTextureParam(name, OCCLUSION_PROP, default, textureIndex, default, default, default, default, default);
         }
     }
 }

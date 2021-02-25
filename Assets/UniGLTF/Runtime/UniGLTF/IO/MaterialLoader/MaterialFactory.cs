@@ -96,6 +96,11 @@ namespace UniGLTF
             return m_materials[index].Asset;
         }
 
+        /// <summary>
+        /// テクスチャ生成
+        /// </summary>
+        /// <param name="getTexture"></param>
+        /// <returns></returns>
         public async Awaitable LoadMaterialsAsync(GetTextureAsyncFunc getTexture)
         {
             if (m_gltf.materials == null || m_gltf.materials.Count == 0)
