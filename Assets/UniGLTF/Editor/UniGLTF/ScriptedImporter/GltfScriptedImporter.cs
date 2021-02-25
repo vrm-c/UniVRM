@@ -12,7 +12,7 @@ namespace UniGLTF
     public class GltfScriptedImporter : ScriptedImporter
     {
         [SerializeField]
-        Axises m_reverseAxis;
+        Axises m_reverseAxis = default;
 
         const string TextureDirName = "Textures";
         const string MaterialDirName = "Materials";

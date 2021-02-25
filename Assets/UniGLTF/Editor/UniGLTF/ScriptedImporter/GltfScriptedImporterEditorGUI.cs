@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.Experimental.AssetImporters;
@@ -51,11 +52,30 @@ namespace UniGLTF
         static bool s_foldMaterials;
         static bool s_foldTextures;
 
+        class TmpGuiEnable : IDisposable
+        {
+            bool m_backup;
+            public TmpGuiEnable(bool enable)
+            {
+                m_backup = GUI.enabled;
+                GUI.enabled = enable;
+            }
+
+            public void Dispose()
+            {
+                GUI.enabled = m_backup;
+            }
+        }
+
         static void OnGUIMaterial(GltfScriptedImporter importer, GltfParser parser)
         {
-            if (GUILayout.Button("Extract Materials And Textures ..."))
+            var canExtract = !importer.GetExternalObjectMap().Any(x => x.Value is Material || x.Value is Texture2D);
+            using (new TmpGuiEnable(canExtract))
             {
-                importer.ExtractMaterialsAndTextures();
+                if (GUILayout.Button("Extract Materials And Textures ..."))
+                {
+                    importer.ExtractMaterialsAndTextures();
+                }
             }
 
             // ObjectMap
@@ -96,11 +116,6 @@ namespace UniGLTF
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.PrefixLabel(name);
                 map.TryGetValue(name, out T value);
-                if (map.Any() && value == null)
-                {
-                    var a = 0;
-                    // Debug.Log($"{name}: {value}");
-                }
                 var asset = EditorGUILayout.ObjectField(value, typeof(T), true) as T;
                 if (asset != value)
                 {

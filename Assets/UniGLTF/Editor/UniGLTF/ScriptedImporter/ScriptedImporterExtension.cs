@@ -131,6 +131,7 @@ namespace UniGLTF
                 {
                     Path = targetPath,
                     sRGB = true,
+                    IsNormalMap = param.TextureType == GetTextureParam.NORMAL_PROP,
                 });
             }
         }
