@@ -70,11 +70,15 @@ namespace UniGLTF.AltTask
         public Awaitable(Task<T> task)
         {
             _task = task;
+            if (_task.Exception != null)
+            {
+                throw _task.Exception;
+            }
         }
-
 
         public bool IsCompleted => _task.IsCompleted;
         public T Result => _task.Result;
+        public Exception Exception => _task.Exception;
 
         public IAwaiter<T> GetAwaiter()
         {
@@ -110,6 +114,10 @@ namespace UniGLTF.AltTask
 
         public T GetResult()
         {
+            if (m_task.Exception != null)
+            {
+                throw m_task.Exception;
+            }
             return m_task.Result;
         }
 
