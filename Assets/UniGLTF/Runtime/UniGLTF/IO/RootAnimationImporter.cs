@@ -12,7 +12,7 @@ namespace UniGLTF
             if (context.GLTF.animations != null && context.GLTF.animations.Any())
             {
                 var animation = context.Root.AddComponent<Animation>();
-                context.AnimationClips = ImportAnimationClips(context.GLTF);
+                context.AnimationClips = ImportAnimationClips(context.GLTF, context.InvertAxis);
 
                 foreach (var clip in context.AnimationClips)
                 {
@@ -25,7 +25,7 @@ namespace UniGLTF
             }
         }
 
-        private List<AnimationClip> ImportAnimationClips(glTF gltf)
+        private List<AnimationClip> ImportAnimationClips(glTF gltf, Axises invertAxis)
         {
             var animationClips = new List<AnimationClip>();
             for (var i = 0; i < gltf.animations.Count; ++i)
@@ -46,7 +46,23 @@ namespace UniGLTF
                     animation.name = $"animation:{i}";
                 }
 
-                animationClips.Add(AnimationImporterUtil.ConvertAnimationClip(gltf, animation));
+                AxisInverter inverter = default;
+                switch (invertAxis)
+                {
+                    case Axises.X:
+                        inverter = AxisInverter.ReverseX;
+                        break;
+
+                    case Axises.Z:
+                        inverter = AxisInverter.ReverseZ;
+                        break;
+
+                    default:
+                        throw new System.Exception();
+
+                }
+
+                animationClips.Add(AnimationImporterUtil.ConvertAnimationClip(gltf, animation, inverter));
             }
 
             return animationClips;
