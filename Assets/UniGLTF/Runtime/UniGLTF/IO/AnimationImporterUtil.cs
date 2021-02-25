@@ -64,7 +64,7 @@ namespace UniGLTF
 
         }
 
-        public delegate float[] ReverseZ(float[] current, float[] last);
+        public delegate float[] ReverseFunc(float[] current, float[] last);
         public static void SetAnimationCurve(
             AnimationClip targetClip,
             string relativePath,
@@ -73,7 +73,7 @@ namespace UniGLTF
             float[] output,
             string interpolation,
             Type curveType,
-            ReverseZ reverse)
+            ReverseFunc reverse)
         {
             var tangentMode = GetTangentMode(interpolation);
 
@@ -164,18 +164,18 @@ namespace UniGLTF
 
         private static string RelativePathFrom(List<glTFNode> nodes, glTFNode root, glTFNode target, List<string> path)
         {
-            if(path.Count == 0) path.Add(target.name);
+            if (path.Count == 0) path.Add(target.name);
 
             var targetIndex = nodes.IndexOf(target);
             foreach (var parent in nodes)
             {
-                if(parent.children == null || parent.children.Length == 0) continue;
+                if (parent.children == null || parent.children.Length == 0) continue;
 
-                foreach(var child in parent.children)
+                foreach (var child in parent.children)
                 {
-                    if(child != targetIndex) continue;
+                    if (child != targetIndex) continue;
 
-                    if(parent == root) return string.Join("/", path);
+                    if (parent == root) return string.Join("/", path);
 
                     path.Insert(0, parent.name);
                     return RelativePathFrom(nodes, root, parent, path);
@@ -185,7 +185,7 @@ namespace UniGLTF
             return string.Join("/", path);
         }
 
-        public static AnimationClip ConvertAnimationClip(glTF gltf, glTFAnimation animation, glTFNode root = null)
+        public static AnimationClip ConvertAnimationClip(glTF gltf, glTFAnimation animation, AxisInverter inverter, glTFNode root = null)
         {
             var clip = new AnimationClip();
             clip.ClearCurves();
@@ -215,7 +215,7 @@ namespace UniGLTF
                                 (values, last) =>
                                 {
                                     Vector3 temp = new Vector3(values[0], values[1], values[2]);
-                                    return temp.ReverseZ().ToArray();
+                                    return inverter.InvertVector3(temp).ToArray();
                                 }
                                 );
                         }
@@ -239,7 +239,7 @@ namespace UniGLTF
                                 {
                                     Quaternion currentQuaternion = new Quaternion(values[0], values[1], values[2], values[3]);
                                     Quaternion lastQuaternion = new Quaternion(last[0], last[1], last[2], last[3]);
-                                    return AnimationImporterUtil.GetShortest(lastQuaternion, currentQuaternion.ReverseZ()).ToArray();
+                                    return AnimationImporterUtil.GetShortest(lastQuaternion, inverter.InvertQuaternion(currentQuaternion)).ToArray();
                                 }
                             );
 

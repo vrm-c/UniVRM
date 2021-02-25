@@ -3,8 +3,6 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
-using System.Text;
-using UniJSON;
 using UniGLTF.AltTask;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -12,76 +10,11 @@ using UnityEditor;
 
 namespace UniGLTF
 {
-
-
     /// <summary>
     /// GLTF importer
     /// </summary>
     public class ImporterContext : IDisposable
     {
-        #region MeasureTime
-        bool m_showSpeedLog
-#if VRM_DEVELOP
-            = true
-#endif
-            ;
-        public bool ShowSpeedLog
-        {
-            set { m_showSpeedLog = value; }
-        }
-
-        public struct KeyElapsed
-        {
-            public string Key;
-            public TimeSpan Elapsed;
-            public KeyElapsed(string key, TimeSpan elapsed)
-            {
-                Key = key;
-                Elapsed = elapsed;
-            }
-        }
-
-        public struct MeasureScope : IDisposable
-        {
-            Action m_onDispose;
-            public MeasureScope(Action onDispose)
-            {
-                m_onDispose = onDispose;
-            }
-            public void Dispose()
-            {
-                m_onDispose();
-            }
-        }
-
-        public List<KeyElapsed> m_speedReports = new List<KeyElapsed>();
-
-        public IDisposable MeasureTime(string key)
-        {
-            var sw = System.Diagnostics.Stopwatch.StartNew();
-            return new MeasureScope(() =>
-            {
-                m_speedReports.Add(new KeyElapsed(key, sw.Elapsed));
-            });
-        }
-
-        public string GetSpeedLog()
-        {
-            var total = TimeSpan.Zero;
-
-            var sb = new StringBuilder();
-            sb.AppendLine("【SpeedLog】");
-            foreach (var kv in m_speedReports)
-            {
-                sb.AppendLine(string.Format("{0}: {1}ms", kv.Key, (int)kv.Elapsed.TotalMilliseconds));
-                total += kv.Elapsed;
-            }
-            sb.AppendLine(string.Format("total: {0}ms", (int)total.TotalMilliseconds));
-
-            return sb.ToString();
-        }
-        #endregion
-
         #region Animation
         protected IAnimationImporter m_animationImporter;
         public void SetAnimationImporter(IAnimationImporter animationImporter)
@@ -108,258 +41,54 @@ namespace UniGLTF
         TextureFactory m_textureFactory;
         public TextureFactory TextureFactory => m_textureFactory;
 
-        public ImporterContext()
+        public ImporterContext(GltfParser parser, IEnumerable<(string, UnityEngine.Object)> externalObjectMap = null)
         {
+            m_parser = parser;
+            m_textureFactory = new TextureFactory(GLTF, Storage, externalObjectMap);
+            m_materialFactory = new MaterialFactory(GLTF, Storage, externalObjectMap);
         }
+
         #region Source
-
-        /// <summary>
-        /// JSON source
-        /// </summary>
-        public String Json;
-
-        /// <summary>
-        /// GLTF parsed from JSON
-        /// </summary>
-        public glTF GLTF; // parsed
-
-        public static bool IsGeneratedUniGLTFAndOlderThan(string generatorVersion, int major, int minor)
-        {
-            if (string.IsNullOrEmpty(generatorVersion)) return false;
-            if (generatorVersion == "UniGLTF") return true;
-            if (!generatorVersion.FastStartsWith("UniGLTF-")) return false;
-
-            try
-            {
-                var splitted = generatorVersion.Substring(8).Split('.');
-                var generatorMajor = int.Parse(splitted[0]);
-                var generatorMinor = int.Parse(splitted[1]);
-
-                if (generatorMajor < major)
-                {
-                    return true;
-                }
-                else if (generatorMajor > major)
-                {
-                    return false;
-                }
-                else
-                {
-                    if (generatorMinor >= minor)
-                    {
-                        return false;
-                    }
-                    else
-                    {
-                        return true;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.LogWarningFormat("{0}: {1}", generatorVersion, ex);
-                return false;
-            }
-        }
-
-        public bool IsGeneratedUniGLTFAndOlder(int major, int minor)
-        {
-            if (GLTF == null) return false;
-            if (GLTF.asset == null) return false;
-            return IsGeneratedUniGLTFAndOlderThan(GLTF.asset.generator, major, minor);
-        }
-
-        /// <summary>
-        /// URI access
-        /// </summary>
-        public IStorage Storage;
+        GltfParser m_parser;
+        public GltfParser Parser => m_parser;
+        public String Json => m_parser.Json;
+        public glTF GLTF => m_parser.GLTF;
+        public IStorage Storage => m_parser.Storage;
         #endregion
 
-        #region Parse
-        public void Parse(string path)
-        {
-            Parse(path, File.ReadAllBytes(path));
-        }
+        // configuration
 
         /// <summary>
-        /// Parse gltf json or Parse json chunk of glb
+        /// GLTF から Unity に変換するときに反転させる軸
         /// </summary>
-        /// <param name="path"></param>
-        /// <param name="bytes"></param>
-        public virtual void Parse(string path, Byte[] bytes)
+        public Axises InvertAxis = Axises.Z;
+
+        #region Load. Build unity objects
+        public virtual async Awaitable LoadAsync(Func<string, IDisposable> MeasureTime = null)
         {
-            var ext = Path.GetExtension(path).ToLower();
-            switch (ext)
+            if (MeasureTime == null)
             {
-                case ".gltf":
-                    ParseJson(Encoding.UTF8.GetString(bytes), new FileSystemStorage(Path.GetDirectoryName(path)));
+                MeasureTime = new ImporterContextSpeedLog().MeasureTime;
+            }
+
+            AxisInverter inverter = default;
+            switch (InvertAxis)
+            {
+                case Axises.Z:
+                    inverter = AxisInverter.ReverseZ;
                     break;
 
-                case ".zip":
-                    {
-                        var zipArchive = Zip.ZipArchiveStorage.Parse(bytes);
-                        var gltf = zipArchive.Entries.FirstOrDefault(x => x.FileName.ToLower().EndsWith(".gltf"));
-                        if (gltf == null)
-                        {
-                            throw new Exception("no gltf in archive");
-                        }
-                        var jsonBytes = zipArchive.Extract(gltf);
-                        var json = Encoding.UTF8.GetString(jsonBytes);
-                        ParseJson(json, zipArchive);
-                    }
-                    break;
-
-                case ".glb":
-                    ParseGlb(bytes);
+                case Axises.X:
+                    inverter = AxisInverter.ReverseX;
                     break;
 
                 default:
                     throw new NotImplementedException();
             }
-        }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="bytes"></param>
-        public void ParseGlb(Byte[] bytes)
-        {
-            var chunks = glbImporter.ParseGlbChunks(bytes);
-
-            if (chunks.Count != 2)
-            {
-                throw new Exception("unknown chunk count: " + chunks.Count);
-            }
-
-            if (chunks[0].ChunkType != GlbChunkType.JSON)
-            {
-                throw new Exception("chunk 0 is not JSON");
-            }
-
-            if (chunks[1].ChunkType != GlbChunkType.BIN)
-            {
-                throw new Exception("chunk 1 is not BIN");
-            }
-
-            try
-            {
-                var jsonBytes = chunks[0].Bytes;
-                ParseJson(Encoding.UTF8.GetString(jsonBytes.Array, jsonBytes.Offset, jsonBytes.Count),
-                    new SimpleStorage(chunks[1].Bytes));
-            }
-            catch (StackOverflowException ex)
-            {
-                throw new Exception("[UniVRM Import Error] json parsing failed, nesting is too deep.\n" + ex);
-            }
-            catch
-            {
-                throw;
-            }
-        }
-
-        public virtual void ParseJson(string json, IStorage storage)
-        {
-            Json = json;
-            Storage = storage;
-            GLTF = GltfDeserializer.Deserialize(json.ParseAsJson());
-            if (GLTF.asset.version != "2.0")
-            {
-                throw new UniGLTFException("unknown gltf version {0}", GLTF.asset.version);
-            }
-
-            m_textureFactory = new TextureFactory(GLTF, Storage);
-            m_materialFactory = new MaterialFactory(GLTF, Storage);
-
-            // Version Compatibility
-            RestoreOlderVersionValues();
-
-            FixUnique();
-            FixNodeName();
-
-            // parepare byte buffer
-            //GLTF.baseDir = System.IO.Path.GetDirectoryName(Path);
-            foreach (var buffer in GLTF.buffers)
-            {
-                buffer.OpenStorage(storage);
-            }
-        }
-
-        void FixUnique()
-        {
-            var used = new HashSet<string>();
-            foreach (var mesh in GLTF.meshes)
-            {
-                if (string.IsNullOrEmpty(mesh.name))
-                {
-                    mesh.name = "mesh_" + Guid.NewGuid().ToString("N");
-                    used.Add(mesh.name);
-                }
-                else
-                {
-                    var lname = mesh.name.ToLower();
-                    if (used.Contains(lname))
-                    {
-                        // rename
-                        var uname = lname + "_" + Guid.NewGuid().ToString("N");
-                        Debug.LogWarning($"same name: {lname} => {uname}");
-                        mesh.name = uname;
-                        lname = uname;
-                    }
-
-                    used.Add(lname);
-                }
-            }
-        }
-
-        /// <summary>
-        /// rename empty name to $"{index}"
-        /// </summary>
-        void FixNodeName()
-        {
-            for (var i = 0; i < GLTF.nodes.Count; ++i)
-            {
-                var node = GLTF.nodes[i];
-                if (string.IsNullOrWhiteSpace(node.name))
-                {
-                    node.name = $"{i}";
-                }
-            }
-        }
-
-        void RestoreOlderVersionValues()
-        {
-            var parsed = UniJSON.JsonParser.Parse(Json);
-            for (int i = 0; i < GLTF.images.Count; ++i)
-            {
-                if (string.IsNullOrEmpty(GLTF.images[i].name))
-                {
-                    try
-                    {
-                        var extraName = parsed["images"][i]["extra"]["name"].Value.GetString();
-                        if (!string.IsNullOrEmpty(extraName))
-                        {
-                            //Debug.LogFormat("restore texturename: {0}", extraName);
-                            GLTF.images[i].name = extraName;
-                        }
-                    }
-                    catch (Exception)
-                    {
-                        // do nothing
-                    }
-                }
-            }
-        }
-        #endregion
-
-        #region Load. Build unity objects
-
-        public bool EnableLoadBalancing;
-
-        public virtual async Awaitable LoadAsync()
-        {
             if (Root == null)
             {
-                Root = new GameObject("_root_");
+                Root = new GameObject("GLTF");
             }
 
             // UniGLTF does not support draco
@@ -369,17 +98,30 @@ namespace UniGLTF
                 throw new UniGLTFNotSupportedException("draco is not supported");
             }
 
-            await m_materialFactory.LoadMaterialsAsync(m_textureFactory.GetTextureAsync);
+            // using (MeasureTime("LoadTextures"))
+            // {
+            //     for (int i = 0; i < GLTF.materials.Count; ++i)
+            //     {
+            //         foreach (var param in MaterialFactory.EnumerateGetTextureparam(i))
+            //         {
+            //             await m_textureFactory.GetTextureAsync(GLTF, param);
+            //         }
+            //     }
+            // }
 
-            // meshes
+            using (MeasureTime("LoadMaterials"))
+            {
+                await m_materialFactory.LoadMaterialsAsync(m_textureFactory.GetTextureAsync);
+            }
+
             var meshImporter = new MeshImporter();
             for (int i = 0; i < GLTF.meshes.Count; ++i)
             {
                 var index = i;
                 using (MeasureTime("ReadMesh"))
                 {
-                    var x = meshImporter.ReadMesh(this, index);
-                    var y = await BuildMeshAsync(x, index);
+                    var x = meshImporter.ReadMesh(this, index, inverter);
+                    var y = await BuildMeshAsync(MeasureTime, x, index);
                     Meshes.Add(y);
                 }
             }
@@ -391,7 +133,7 @@ namespace UniGLTF
                     Nodes.Add(NodeImporter.ImportNode(GLTF.nodes[i], i).transform);
                 }
             }
-            await LoopAwaitable.Create();
+            await NextFrameAwaitable.Create();
 
             using (MeasureTime("BuildHierarchy"))
             {
@@ -401,12 +143,12 @@ namespace UniGLTF
                     nodes.Add(NodeImporter.BuildHierarchy(this, i));
                 }
 
-                NodeImporter.FixCoordinate(this, nodes);
+                NodeImporter.FixCoordinate(this, nodes, inverter);
 
                 // skinning
                 for (int i = 0; i < nodes.Count; ++i)
                 {
-                    NodeImporter.SetupSkinning(this, nodes, i);
+                    NodeImporter.SetupSkinning(this, nodes, i, inverter);
                 }
 
                 // connect root
@@ -416,41 +158,26 @@ namespace UniGLTF
                     t.SetParent(Root.transform, false);
                 }
             }
-            await LoopAwaitable.Create();
+            await NextFrameAwaitable.Create();
 
             using (MeasureTime("AnimationImporter"))
             {
                 AnimationImporter.Import(this);
             }
 
-            await OnLoadModel();
-
-            if (m_showSpeedLog)
-            {
-                Debug.Log(GetSpeedLog());
-            }
+            await OnLoadModel(MeasureTime);
         }
 
-        protected virtual async Awaitable OnLoadModel()
+        protected virtual async Awaitable OnLoadModel(Func<string, IDisposable> MeasureTime)
         {
-            Root.name = "GLTF";
-            await LoopAwaitable.Create();
+            // do nothing
         }
 
-        async Awaitable<MeshWithMaterials> BuildMeshAsync(MeshImporter.MeshContext x, int i)
+        async Awaitable<MeshWithMaterials> BuildMeshAsync(Func<string, IDisposable> MeasureTime, MeshImporter.MeshContext x, int i)
         {
             using (MeasureTime("BuildMesh"))
             {
-                MeshWithMaterials meshWithMaterials;
-                if (EnableLoadBalancing)
-                {
-                    meshWithMaterials = await MeshImporter.BuildMeshAsync(MaterialFactory, x);
-                }
-                else
-                {
-                    meshWithMaterials = MeshImporter.BuildMesh(MaterialFactory, x);
-                }
-
+                var meshWithMaterials = await MeshImporter.BuildMeshAsync(MaterialFactory, x);
                 var mesh = meshWithMaterials.Mesh;
 
                 // mesh name
@@ -664,30 +391,29 @@ namespace UniGLTF
             // https://answers.unity.com/questions/647615/how-to-update-import-settings-for-newly-created-as.html
             //
             int created = 0;
-            //for (int i = 0; i < GLTF.textures.Count; ++i)
-            for (int i = 0; i < GLTF.images.Count; ++i)
+            for (int i = 0; i < GLTF.textures.Count; ++i)
             {
                 folder.EnsureFolder();
 
-                //var x = GLTF.textures[i];
-                var image = GLTF.images[i];
-                var src = Storage.GetPath(image.uri);
+                var gltfTexture = GLTF.textures[i];
+                var gltfImage = GLTF.images[gltfTexture.source];
+                var src = Storage.GetPath(gltfImage.uri);
                 if (UnityPath.FromFullpath(src).IsUnderAssetsFolder)
                 {
                     // asset is exists.
                 }
                 else
                 {
-                    string textureName;
-                    var byteSegment = GLTF.GetImageBytes(Storage, i, out textureName);
+                    var byteSegment = GLTF.GetImageBytes(Storage, gltfTexture.source);
+                    var textureName = gltfTexture.name;
 
                     // path
-                    var dst = folder.Child(textureName + image.GetExt());
+                    var dst = folder.Child(textureName + gltfImage.GetExt());
                     File.WriteAllBytes(dst.FullPath, byteSegment.ToArray());
                     dst.ImportAsset();
 
                     // make relative path from PrefabParentDir
-                    image.uri = dst.Value.Substring(prefabParentDir.Value.Length + 1);
+                    gltfImage.uri = dst.Value.Substring(prefabParentDir.Value.Length + 1);
                     ++created;
                 }
             }

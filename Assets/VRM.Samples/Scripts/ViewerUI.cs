@@ -309,15 +309,15 @@ namespace VRM.Samples
             {
                 case ".vrm":
                     {
-                        var context = new VRMImporterContext();
                         var file = File.ReadAllBytes(path);
-                        context.ParseGlb(file);
+
+                        var parser = new GltfParser();
+                        parser.ParseGlb(file);
+
+                        var context = new VRMImporterContext(parser);
                         await m_texts.UpdateMetaAsync(context);
-#if true
                         await context.LoadAsync();
-#else
-                        context.Load();
-#endif
+
                         context.ShowMeshes();
                         context.EnableUpdateWhenOffscreen();
                         context.ShowMeshes();
@@ -327,9 +327,11 @@ namespace VRM.Samples
 
                 case ".glb":
                     {
-                        var context = new UniGLTF.ImporterContext();
                         var file = File.ReadAllBytes(path);
-                        context.ParseGlb(file);
+                        var parser = new GltfParser();
+                        parser.ParseGlb(file);
+
+                        var context = new UniGLTF.ImporterContext(parser);
                         context.Load();
                         context.ShowMeshes();
                         context.EnableUpdateWhenOffscreen();
@@ -341,8 +343,10 @@ namespace VRM.Samples
                 case ".gltf":
                 case ".zip":
                     {
-                        var context = new UniGLTF.ImporterContext();
-                        context.Parse(path);
+                        var parser = new GltfParser();
+                        parser.ParsePath(path);
+
+                        var context = new UniGLTF.ImporterContext(parser);
                         context.Load();
                         context.ShowMeshes();
                         context.EnableUpdateWhenOffscreen();

@@ -46,11 +46,11 @@ namespace VRM.Samples
             var bytes = File.ReadAllBytes(path);
             // なんらかの方法でByte列を得た
 
-            var context = new VRMImporterContext();
-
             // GLB形式でJSONを取得しParseします
-            context.ParseGlb(bytes);
+            var parser = new GltfParser();
+            parser.ParseGlb(bytes);
 
+            var context = new VRMImporterContext(parser);
 
             // metaを取得(todo: thumbnailテクスチャのロード)
             var meta = await context.ReadMetaAsync();

@@ -31,22 +31,6 @@ namespace UniGLTF
             return copyTexture;
         }
 
-        public static void AppendTextureExtension(Texture texture, string extension)
-        {
-            if (!texture.name.EndsWith(extension))
-            {
-                texture.name = texture.name + extension;
-            }
-        }
-
-        public static void RemoveTextureExtension(Texture texture, string extension)
-        {
-            if (texture.name.EndsWith(extension))
-            {
-                texture.name = texture.name.Replace(extension, "");
-            }
-        }
-
         struct ColorSpaceScope : IDisposable
         {
             bool m_sRGBWrite;
@@ -194,8 +178,6 @@ namespace UniGLTF
 
     public class MetallicRoughnessConverter : ITextureConverter
     {
-        private const string m_extension = ".metallicRoughness";
-
         private float _smoothnessOrRoughness;
 
         public MetallicRoughnessConverter(float smoothnessOrRoughness)
@@ -206,14 +188,12 @@ namespace UniGLTF
         public Texture2D GetImportTexture(Texture2D texture)
         {
             var converted = TextureConverter.Convert(texture, glTFTextureTypes.Metallic, Import, null);
-            TextureConverter.AppendTextureExtension(converted, m_extension);
             return converted;
         }
 
         public Texture2D GetExportTexture(Texture2D texture)
         {
             var converted = TextureConverter.Convert(texture, glTFTextureTypes.Metallic, Export, null);
-            TextureConverter.RemoveTextureExtension(converted, m_extension);
             return converted;
         }
 
@@ -260,8 +240,6 @@ namespace UniGLTF
 
     public class NormalConverter : ITextureConverter
     {
-        private const string m_extension = ".normal";
-
         private Material m_decoder;
         private Material GetDecoder()
         {
@@ -288,7 +266,6 @@ namespace UniGLTF
         {
             var mat = GetEncoder();
             var converted = TextureConverter.Convert(texture, glTFTextureTypes.Normal, null, mat);
-            TextureConverter.AppendTextureExtension(converted, m_extension);
             return converted;
         }
 
@@ -298,26 +275,22 @@ namespace UniGLTF
         {
             var mat = GetDecoder();
             var converted = TextureConverter.Convert(texture, glTFTextureTypes.Normal, null, mat);
-            TextureConverter.RemoveTextureExtension(converted, m_extension);
             return converted;
         }
     }
 
     public class OcclusionConverter : ITextureConverter
     {
-        private const string m_extension = ".occlusion";
 
         public Texture2D GetImportTexture(Texture2D texture)
         {
             var converted = TextureConverter.Convert(texture, glTFTextureTypes.Occlusion, Import, null);
-            TextureConverter.AppendTextureExtension(converted, m_extension);
             return converted;
         }
 
         public Texture2D GetExportTexture(Texture2D texture)
         {
             var converted = TextureConverter.Convert(texture, glTFTextureTypes.Occlusion, Export, null);
-            TextureConverter.RemoveTextureExtension(converted, m_extension);
             return converted;
         }
 

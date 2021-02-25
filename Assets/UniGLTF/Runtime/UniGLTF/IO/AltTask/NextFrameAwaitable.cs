@@ -2,7 +2,7 @@ using System;
 
 namespace UniGLTF.AltTask
 {
-    public static class LoopAwaitable
+    public static class NextFrameAwaitable
     {
         // TODO
         // loop スレッド使わないようにしたい

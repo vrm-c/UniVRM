@@ -15,30 +15,8 @@ namespace VRM
     {
         public VRM.glTF_VRM_extensions VRM { get; private set; }
 
-        public VRMImporterContext()
+        public VRMImporterContext(GltfParser parser) : base(parser)
         {
-        }
-
-        public override void Parse(string path, byte[] bytes)
-        {
-            var ext = Path.GetExtension(path).ToLower();
-            switch (ext)
-            {
-                case ".vrm":
-                    ParseGlb(bytes);
-                    break;
-
-                default:
-                    base.Parse(path, bytes);
-                    break;
-            }
-        }
-
-        public override void ParseJson(string json, IStorage storage)
-        {
-            // parse GLTF part(core + unlit, textureTransform, targetNames)
-            base.ParseJson(json, storage);
-
             // parse VRM part
             if (glTF_VRM_extensions.TryDeserilize(GLTF.extensions, out glTF_VRM_extensions vrm))
             {
@@ -53,7 +31,7 @@ namespace VRM
         }
 
         #region OnLoad
-        protected override async Awaitable OnLoadModel()
+        protected override async Awaitable OnLoadModel(Func<string, IDisposable> MeasureTime)
         {
             Root.name = "VRM";
 
@@ -61,26 +39,26 @@ namespace VRM
             {
                 await LoadMetaAsync();
             }
-            await LoopAwaitable.Create();
+            await NextFrameAwaitable.Create();
 
             using (MeasureTime("VRM LoadHumanoid"))
             {
                 LoadHumanoid();
             }
-            await LoopAwaitable.Create();
+            await NextFrameAwaitable.Create();
 
             using (MeasureTime("VRM LoadBlendShapeMaster"))
             {
                 LoadBlendShapeMaster();
             }
-            await LoopAwaitable.Create();
+            await NextFrameAwaitable.Create();
 
             using (MeasureTime("VRM LoadSecondary"))
             {
                 VRMSpringUtility.LoadSecondary(Root.transform, Nodes,
                 VRM.secondaryAnimation);
             }
-            await LoopAwaitable.Create();
+            await NextFrameAwaitable.Create();
 
             using (MeasureTime("VRM LoadFirstPerson"))
             {
@@ -196,6 +174,7 @@ namespace VRM
                     }
 
                     var material = MaterialFactory.Materials
+                        .Select(y => y.Asset)
                         .FirstOrDefault(y => y.name == x.materialName);
                     var propertyName = x.propertyName;
                     if (x.propertyName.FastEndsWith("_ST_S")
@@ -307,7 +286,7 @@ namespace VRM
             meta.ContactInformation = gltfMeta.contactInformation;
             meta.Reference = gltfMeta.reference;
             meta.Title = gltfMeta.title;
-            meta.Thumbnail = await TextureFactory.GetTextureAsync(GetTextureParam.Create(gltfMeta.texture));
+            meta.Thumbnail = await TextureFactory.GetTextureAsync(GLTF, GetTextureParam.Create(GLTF, gltfMeta.texture));
             meta.AllowedUser = gltfMeta.allowedUser;
             meta.ViolentUssage = gltfMeta.violentUssage;
             meta.SexualUssage = gltfMeta.sexualUssage;

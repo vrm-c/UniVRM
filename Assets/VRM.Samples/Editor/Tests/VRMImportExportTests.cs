@@ -42,8 +42,10 @@ namespace VRM.Samples
         public void ImportExportTest()
         {
             var path = AliciaPath;
-            var context = new VRMImporterContext();
-            context.ParseGlb(File.ReadAllBytes(path));
+            var parser = new GltfParser();
+            parser.ParseGlb(File.ReadAllBytes(path));
+
+            var context = new VRMImporterContext(parser);
             context.Load();
             context.ShowMeshes();
             context.EnableUpdateWhenOffscreen();
@@ -114,8 +116,9 @@ namespace VRM.Samples
         public void MeshCopyTest()
         {
             var path = AliciaPath;
-            var context = new VRMImporterContext();
-            context.ParseGlb(File.ReadAllBytes(path));
+            var parser = new GltfParser();
+            parser.ParseGlb(File.ReadAllBytes(path));
+            var context = new VRMImporterContext(parser);
             context.Load();
             context.ShowMeshes();
             context.EnableUpdateWhenOffscreen();
@@ -133,8 +136,9 @@ namespace VRM.Samples
         {
             // Aliciaを古いデシリアライザでロードする
             var path = AliciaPath;
-            var context = new VRMImporterContext();
-            context.ParseGlb(File.ReadAllBytes(path));
+            var parser = new GltfParser();
+            parser.ParseGlb(File.ReadAllBytes(path));
+            var context = new VRMImporterContext(parser);
             var oldJson = context.GLTF.ToJson().ParseAsJson().ToString("  ");
 
             // 生成シリアライザでJSON化する

@@ -71,7 +71,8 @@ namespace VRM
             }
             foreach (var kv in item.textureProperties)
             {
-                var texture = await getTexture(new GetTextureParam(kv.Key, default, kv.Value, default, default, default, default, default));
+                var param = GetTextureParam.Create(gltf, kv.Value, kv.Key);
+                var texture = await getTexture(gltf, param);
                 if (texture != null)
                 {
                     material.SetTexture(kv.Key, texture);

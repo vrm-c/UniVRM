@@ -8,8 +8,6 @@ using UnityEngine;
 
 namespace UniGLTF
 {
-
-
     public class MeshImporter
     {
         const float FRAME_WEIGHT = 100.0f;
@@ -109,7 +107,7 @@ namespace UniGLTF
             /// <param name="ctx"></param>
             /// <param name="gltfMesh"></param>
             /// <returns></returns>
-            public void ImportMeshIndependentVertexBuffer(ImporterContext ctx, glTFMesh gltfMesh)
+            public void ImportMeshIndependentVertexBuffer(ImporterContext ctx, glTFMesh gltfMesh, AxisInverter inverter)
             {
                 foreach (var prim in gltfMesh.primitives)
                 {
@@ -119,7 +117,7 @@ namespace UniGLTF
                     // position は必ずある
                     var positions = ctx.GLTF.GetArrayFromAccessor<Vector3>(prim.attributes.POSITION);
                     var fillLength = m_positions.Count;
-                    m_positions.AddRange(positions.Select(x => x.ReverseZ()));
+                    m_positions.AddRange(positions.Select(inverter.InvertVector3));
 
                     // normal
                     if (prim.attributes.NORMAL != -1)
@@ -130,7 +128,7 @@ namespace UniGLTF
                             throw new Exception("different length");
                         }
                         FillZero(m_normals, fillLength);
-                        m_normals.AddRange(normals.Select(x => x.ReverseZ()));
+                        m_normals.AddRange(normals.Select(inverter.InvertVector3));
                     }
 
 #if false
@@ -142,7 +140,7 @@ namespace UniGLTF
                             throw new Exception("different length");
                         }
                         FillZero(tangetns, fillLength);
-                        tangents.AddRange(.Select(x => x.ReverseZ()));
+                        tangents.AddRange(.Select(inverter.InvertVector4));
                     }
 #endif
 
@@ -154,7 +152,7 @@ namespace UniGLTF
                         {
                             throw new Exception("different length");
                         }
-                        if (ctx.IsGeneratedUniGLTFAndOlder(1, 16))
+                        if (ctx.Parser.IsGeneratedUniGLTFAndOlder(1, 16))
                         {
 #pragma warning disable 0612
                             // backward compatibility
@@ -242,7 +240,7 @@ namespace UniGLTF
                                     throw new Exception("different length");
                                 }
                                 FillZero(blendShape.Positions, fillLength);
-                                blendShape.Positions.AddRange(array.Select(x => x.ReverseZ()).ToArray());
+                                blendShape.Positions.AddRange(array.Select(inverter.InvertVector3).ToArray());
                             }
                             if (primTarget.NORMAL != -1)
                             {
@@ -252,7 +250,7 @@ namespace UniGLTF
                                     throw new Exception("different length");
                                 }
                                 FillZero(blendShape.Normals, fillLength);
-                                blendShape.Normals.AddRange(array.Select(x => x.ReverseZ()).ToArray());
+                                blendShape.Normals.AddRange(array.Select(inverter.InvertVector3).ToArray());
                             }
                             if (primTarget.TANGENT != -1)
                             {
@@ -262,7 +260,7 @@ namespace UniGLTF
                                     throw new Exception("different length");
                                 }
                                 FillZero(blendShape.Tangents, fillLength);
-                                blendShape.Tangents.AddRange(array.Select(x => x.ReverseZ()).ToArray());
+                                blendShape.Tangents.AddRange(array.Select(inverter.InvertVector3).ToArray());
                             }
                             m_blendShapes.Add(blendShape);
                         }
@@ -293,31 +291,31 @@ namespace UniGLTF
             /// <param name="ctx"></param>
             /// <param name="gltfMesh"></param>
             /// <returns></returns>
-            public void ImportMeshSharingVertexBuffer(ImporterContext ctx, glTFMesh gltfMesh)
+            public void ImportMeshSharingVertexBuffer(ImporterContext ctx, glTFMesh gltfMesh, AxisInverter inverter)
             {
                 {
                     //  同じVertexBufferを共有しているので先頭のモノを使う
                     var prim = gltfMesh.primitives.First();
-                    m_positions.AddRange(ctx.GLTF.GetArrayFromAccessor<Vector3>(prim.attributes.POSITION).SelectInplace(x => x.ReverseZ()));
+                    m_positions.AddRange(ctx.GLTF.GetArrayFromAccessor<Vector3>(prim.attributes.POSITION).SelectInplace(inverter.InvertVector3));
 
                     // normal
                     if (prim.attributes.NORMAL != -1)
                     {
-                        m_normals.AddRange(ctx.GLTF.GetArrayFromAccessor<Vector3>(prim.attributes.NORMAL).SelectInplace(x => x.ReverseZ()));
+                        m_normals.AddRange(ctx.GLTF.GetArrayFromAccessor<Vector3>(prim.attributes.NORMAL).SelectInplace(inverter.InvertVector3));
                     }
 
 #if false
                     // tangent
                     if (prim.attributes.TANGENT != -1)
                     {
-                        tangents.AddRange(ctx.GLTF.GetArrayFromAccessor<Vector4>(prim.attributes.TANGENT).SelectInplace(x => x.ReverseZ()));
+                        tangents.AddRange(ctx.GLTF.GetArrayFromAccessor<Vector4>(prim.attributes.TANGENT).SelectInplace(inverter.InvertVector4));
                     }
 #endif
 
                     // uv
                     if (prim.attributes.TEXCOORD_0 != -1)
                     {
-                        if (ctx.IsGeneratedUniGLTFAndOlder(1, 16))
+                        if (ctx.Parser.IsGeneratedUniGLTFAndOlder(1, 16))
                         {
 #pragma warning disable 0612
                             // backward compatibility
@@ -403,17 +401,17 @@ namespace UniGLTF
                             if (primTarget.POSITION != -1)
                             {
                                 blendShape.Positions.Assign(
-                                    ctx.GLTF.GetArrayFromAccessor<Vector3>(primTarget.POSITION), x => x.ReverseZ());
+                                    ctx.GLTF.GetArrayFromAccessor<Vector3>(primTarget.POSITION), inverter.InvertVector3);
                             }
                             if (primTarget.NORMAL != -1)
                             {
                                 blendShape.Normals.Assign(
-                                    ctx.GLTF.GetArrayFromAccessor<Vector3>(primTarget.NORMAL), x => x.ReverseZ());
+                                    ctx.GLTF.GetArrayFromAccessor<Vector3>(primTarget.NORMAL), inverter.InvertVector3);
                             }
                             if (primTarget.TANGENT != -1)
                             {
                                 blendShape.Tangents.Assign(
-                                    ctx.GLTF.GetArrayFromAccessor<Vector3>(primTarget.TANGENT), x => x.ReverseZ());
+                                    ctx.GLTF.GetArrayFromAccessor<Vector3>(primTarget.TANGENT), inverter.InvertVector3);
                             }
                         }
                     }
@@ -509,18 +507,18 @@ namespace UniGLTF
             return sharedAttributes;
         }
 
-        public MeshContext ReadMesh(ImporterContext ctx, int meshIndex)
+        public MeshContext ReadMesh(ImporterContext ctx, int meshIndex, AxisInverter inverter)
         {
             var gltfMesh = ctx.GLTF.meshes[meshIndex];
 
             var meshContext = new MeshContext(gltfMesh.name, meshIndex);
             if (HasSharedVertexBuffer(gltfMesh))
             {
-                meshContext.ImportMeshSharingVertexBuffer(ctx, gltfMesh);
+                meshContext.ImportMeshSharingVertexBuffer(ctx, gltfMesh, inverter);
             }
             else
             {
-                meshContext.ImportMeshIndependentVertexBuffer(ctx, gltfMesh);
+                meshContext.ImportMeshIndependentVertexBuffer(ctx, gltfMesh, inverter);
             }
 
             meshContext.RenameBlendShape(gltfMesh);
@@ -627,42 +625,15 @@ namespace UniGLTF
             }
         }
 
-        public static MeshWithMaterials BuildMesh(MaterialFactory ctx, MeshImporter.MeshContext meshContext)
-        {
-            var (mesh, recalculateTangents) = _BuildMesh(meshContext);
-
-            if (recalculateTangents)
-            {
-                mesh.RecalculateTangents();
-            }
-
-            // 先にすべてのマテリアルを作成済みなのでテクスチャーは生成済み。Resultを使ってよい
-            var result = new MeshWithMaterials
-            {
-                Mesh = mesh,
-                Materials = meshContext.MaterialIndices.Select(x => ctx.GetMaterial(x)).ToArray()
-            };
-
-            if (meshContext.BlendShapes.Count > 0)
-            {
-                var emptyVertices = new Vector3[mesh.vertexCount];
-                foreach (var blendShape in meshContext.BlendShapes)
-                {
-                    BuildBlendShape(mesh, meshContext, blendShape, emptyVertices);
-                }
-            }
-            return result;
-        }
-
         public static async Awaitable<MeshWithMaterials> BuildMeshAsync(MaterialFactory ctx, MeshImporter.MeshContext meshContext)
         {
             var (mesh, recalculateTangents) = _BuildMesh(meshContext);
 
             if (recalculateTangents)
             {
-                await LoopAwaitable.Create();
+                await NextFrameAwaitable.Create();
                 mesh.RecalculateTangents();
-                await LoopAwaitable.Create();
+                await NextFrameAwaitable.Create();
             }
 
             // 先にすべてのマテリアルを作成済みなのでテクスチャーは生成済み。Resultを使ってよい
@@ -672,7 +643,7 @@ namespace UniGLTF
                 Materials = meshContext.MaterialIndices.Select(x => ctx.GetMaterial(x)).ToArray()
             };
 
-            await LoopAwaitable.Create();
+            await NextFrameAwaitable.Create();
             if (meshContext.BlendShapes.Count > 0)
             {
                 var emptyVertices = new Vector3[mesh.vertexCount];

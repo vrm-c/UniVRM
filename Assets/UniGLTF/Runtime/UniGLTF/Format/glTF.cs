@@ -67,16 +67,6 @@ namespace UniGLTF
         [JsonSchema(MinItems = 1, ExplicitIgnorableItemLength = 0)]
         public List<glTFImage> images = new List<glTFImage>();
 
-        public int GetImageIndexFromTextureIndex(int textureIndex)
-        {
-            return textures[textureIndex].source;
-        }
-
-        public glTFImage GetImageFromTextureIndex(int textureIndex)
-        {
-            return images[GetImageIndexFromTextureIndex(textureIndex)];
-        }
-
         public glTFTextureSampler GetSamplerFromTextureIndex(int textureIndex)
         {
             var samplerIndex = textures[textureIndex].sampler;

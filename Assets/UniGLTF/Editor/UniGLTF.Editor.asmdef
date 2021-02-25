@@ -1,7 +1,8 @@
 {
     "name": "UniGLTF.Editor",
     "references": [
-        "UniGLTF"
+        "UniGLTF",
+        "MeshUtility.Editor"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [

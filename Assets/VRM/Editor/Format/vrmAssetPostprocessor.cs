@@ -36,11 +36,11 @@ namespace VRM
             {
                 throw new Exception();
             }
-            var context = new VRMImporterContext();
 
+            var parser = new GltfParser();
             try
             {
-                context.ParseGlb(File.ReadAllBytes(path.FullPath));
+                parser.ParseGlb(File.ReadAllBytes(path.FullPath));
             }
             catch (KeyNotFoundException)
             {
@@ -52,6 +52,7 @@ namespace VRM
             var prefabPath = path.Parent.Child(path.FileNameWithoutExtension + ".prefab");
 
             // save texture assets !
+            var context = new VRMImporterContext(parser);
             context.ExtractImages(prefabPath);
 
             EditorApplication.delayCall += () =>

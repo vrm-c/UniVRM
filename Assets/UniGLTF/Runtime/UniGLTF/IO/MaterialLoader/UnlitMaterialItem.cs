@@ -7,19 +7,20 @@ namespace UniGLTF
     {
         public const string ShaderName = "UniGLTF/UniUnlit";
 
-        public static async Awaitable<Material> CreateAsync(int i, glTFMaterial src, GetTextureAsyncFunc getTexture, bool hasVertexColor)
+        public static async Awaitable<Material> CreateAsync(glTF gltf, int i, GetTextureAsyncFunc getTexture, bool hasVertexColor)
         {
             if (getTexture == null)
             {
-                getTexture = _ => Awaitable.FromResult<Texture2D>(null);
+                getTexture = (_x, _y) => Awaitable.FromResult<Texture2D>(default);
             }
 
+            var src = gltf.materials[i];
             var material = MaterialFactory.CreateMaterial(i, src, ShaderName);
 
             // texture
             if (src.pbrMetallicRoughness.baseColorTexture != null)
             {
-                material.mainTexture = await getTexture(GetTextureParam.Create(src.pbrMetallicRoughness.baseColorTexture.index));
+                material.mainTexture = await getTexture(gltf, GetTextureParam.Create(gltf, src.pbrMetallicRoughness.baseColorTexture.index));
 
                 // Texture Offset and Scale
                 MaterialFactory.SetTextureOffsetAndScale(material, src.pbrMetallicRoughness.baseColorTexture, "_MainTex");

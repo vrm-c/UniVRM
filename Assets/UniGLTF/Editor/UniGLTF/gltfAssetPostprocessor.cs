@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if false
+using System;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
@@ -44,8 +45,9 @@ namespace UniGLTF
                 return;
             }
 
-            var context = new ImporterContext();
-            context.Parse(src);
+            var parser = new GltfParser();
+            parser.ParsePath(src);
+            var context = new ImporterContext(parser);
 
             // Extract textures to assets folder
             context.ExtractImages(prefabPath);
@@ -84,3 +86,4 @@ namespace UniGLTF
         }
     }
 }
+#endif

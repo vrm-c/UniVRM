@@ -325,7 +325,8 @@ namespace UniGLTF
             var bufferCount = vertexAccessor.count * vertexAccessor.TypeCount;
 
             float[] result = null;
-            if(vertexAccessor.bufferView != -1){
+            if (vertexAccessor.bufferView != -1)
+            {
                 var attrib = new float[vertexAccessor.count * vertexAccessor.TypeCount];
                 var view = self.bufferViews[vertexAccessor.bufferView];
                 var segment = self.buffers[view.buffer].GetBytes();
@@ -333,8 +334,9 @@ namespace UniGLTF
                 bytes.MarshalCopyTo(attrib);
                 result = attrib;
             }
-            else{
-                result =  new float[bufferCount];
+            else
+            {
+                result = new float[bufferCount];
             }
 
             var sparse = vertexAccessor.sparse;
@@ -354,28 +356,15 @@ namespace UniGLTF
             return result;
         }
 
-        public static ArraySegment<Byte> GetImageBytes(this glTF self, IStorage storage, int imageIndex, out string textureName)
+        public static ArraySegment<Byte> GetImageBytes(this glTF self, IStorage storage, int imageIndex)
         {
             var image = self.images[imageIndex];
             if (string.IsNullOrEmpty(image.uri))
             {
-                //
-                // use buffer view (GLB)
-                //
-                //m_imageBytes = ToArray(byteSegment);
-                textureName = !string.IsNullOrEmpty(image.name) ? image.name : string.Format("{0:00}#GLB", imageIndex);
                 return self.GetViewBytes(image.bufferView);
             }
             else
             {
-                if (image.uri.FastStartsWith("data:"))
-                {
-                    textureName = !string.IsNullOrEmpty(image.name) ? image.name : string.Format("{0:00}#Base64Embedded", imageIndex);
-                }
-                else
-                {
-                    textureName = !string.IsNullOrEmpty(image.name) ? image.name : Path.GetFileNameWithoutExtension(image.uri);
-                }
                 return storage.Get(image.uri);
             }
         }
@@ -441,7 +430,7 @@ namespace UniGLTF
             // remove unused extenions
             var json = f.ToString().ParseAsJson().ToString("  ");
             self.RemoveUnusedExtensions(json);
-            
+
             return Glb.Create(json, self.buffers[0].GetBytes()).ToBytes();
         }
 

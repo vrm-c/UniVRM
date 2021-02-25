@@ -20,8 +20,10 @@ namespace VRM
             if (Application.isPlaying)
             {
                 // load into scene
-                var context = new VRMImporterContext();
-                context.Load(path);
+                var parser = new GltfParser();
+                parser.ParsePath(path);
+                var context = new VRMImporterContext(parser);
+                context.Load();
                 context.ShowMeshes();
                 context.EnableUpdateWhenOffscreen();
                 Selection.activeGameObject = context.Root;
@@ -48,8 +50,9 @@ namespace VRM
 
                 // import as asset
                 var prefabPath = UnityPath.FromUnityPath(assetPath);
-                var context = new VRMImporterContext();
-                context.ParseGlb(File.ReadAllBytes(path));
+                var parser = new GltfParser();
+                parser.ParseGlb(File.ReadAllBytes(path));
+                var context = new VRMImporterContext(parser);
                 context.ExtractImages(prefabPath);
 
                 EditorApplication.delayCall += () =>

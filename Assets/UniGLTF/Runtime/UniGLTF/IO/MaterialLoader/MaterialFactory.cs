@@ -10,13 +10,38 @@ namespace UniGLTF
     {
         glTF m_gltf;
         IStorage m_storage;
-        public MaterialFactory(glTF gltf, IStorage storage)
+        Dictionary<string, Material> m_externalMap;
+        public bool TryGetExternal(int index, out Material external)
+        {
+            if (m_externalMap != null)
+            {
+                var gltfMaterial = m_gltf.materials[index];
+                if (m_externalMap.TryGetValue(gltfMaterial.name, out external))
+                {
+                    return true;
+                }
+            }
+
+            external = default;
+            return false;
+        }
+
+        public MaterialFactory(glTF gltf, IStorage storage,
+        IEnumerable<(string, UnityEngine.Object)> externalMap)
         {
             m_gltf = gltf;
             m_storage = storage;
+            if (externalMap != null)
+            {
+                m_externalMap = externalMap
+                    .Select(kv => (kv.Item1, kv.Item2 as Material))
+                    .Where(kv => kv.Item2 != null)
+                    .ToDictionary(kv => kv.Item1, kv => kv.Item2)
+                    ;
+            }
         }
 
-        public delegate Awaitable<Material> CreateMaterialAsyncFunc(glTF glTF, int i, GetTextureAsyncFunc getTexture);
+        public delegate Awaitable<Material> CreateMaterialAsyncFunc(glTF gltf, int i, GetTextureAsyncFunc getTexture);
         CreateMaterialAsyncFunc m_createMaterialAsync;
         public CreateMaterialAsyncFunc CreateMaterialAsync
         {
@@ -34,8 +59,20 @@ namespace UniGLTF
             }
         }
 
-        List<Material> m_materials = new List<Material>();
-        public IReadOnlyList<Material> Materials => m_materials;
+        public struct MaterialLoadInfo
+        {
+            public readonly Material Asset;
+            public readonly bool UseExternal;
+
+            public MaterialLoadInfo(Material asset, bool useExternal)
+            {
+                Asset = asset;
+                UseExternal = useExternal;
+            }
+        }
+
+        List<MaterialLoadInfo> m_materials = new List<MaterialLoadInfo>();
+        public IReadOnlyList<MaterialLoadInfo> Materials => m_materials;
         public void Dispose()
         {
             foreach (var x in ObjectsForSubAsset())
@@ -48,41 +85,42 @@ namespace UniGLTF
         {
             foreach (var x in m_materials)
             {
-                yield return x;
+                yield return x.Asset;
             }
         }
 
-        public void AddMaterial(Material material)
-        {
-            var originalName = material.name;
-            int j = 2;
-            while (m_materials.Any(x => x.name == material.name))
-            {
-                material.name = string.Format("{0}({1})", originalName, j++);
-            }
-            m_materials.Add(material);
-        }
         public Material GetMaterial(int index)
         {
             if (index < 0) return null;
             if (index >= m_materials.Count) return null;
-            return m_materials[index];
+            return m_materials[index].Asset;
         }
 
+        /// <summary>
+        /// テクスチャ生成
+        /// </summary>
+        /// <param name="getTexture"></param>
+        /// <returns></returns>
         public async Awaitable LoadMaterialsAsync(GetTextureAsyncFunc getTexture)
         {
             if (m_gltf.materials == null || m_gltf.materials.Count == 0)
             {
+                // no material. work around.
                 var material = await CreateMaterialAsync(m_gltf, 0, getTexture);
-                AddMaterial(material);
+                m_materials.Add(new MaterialLoadInfo(material, false));
+                return;
             }
-            else
+
+            for (int i = 0; i < m_gltf.materials.Count; ++i)
             {
-                for (int i = 0; i < m_gltf.materials.Count; ++i)
+                if (TryGetExternal(i, out Material material))
                 {
-                    var material = await CreateMaterialAsync(m_gltf, i, getTexture);
-                    AddMaterial(material);
+                    m_materials.Add(new MaterialLoadInfo(material, true));
+                    continue;
                 }
+
+                material = await CreateMaterialAsync(m_gltf, i, getTexture);
+                m_materials.Add(new MaterialLoadInfo(material, false));
             }
         }
 
@@ -125,21 +163,20 @@ namespace UniGLTF
 
         public static Awaitable<Material> DefaultCreateMaterialAsync(glTF gltf, int i, GetTextureAsyncFunc getTexture)
         {
-
             if (i < 0 || i >= gltf.materials.Count)
             {
                 UnityEngine.Debug.LogWarning("glTFMaterial is empty");
-                return PBRMaterialItem.CreateAsync(i, null, getTexture);
+                return PBRMaterialItem.CreateAsync(gltf, i, getTexture);
             }
             var x = gltf.materials[i];
 
             if (glTF_KHR_materials_unlit.IsEnable(x))
             {
                 var hasVertexColor = gltf.MaterialHasVertexColor(i);
-                return UnlitMaterialItem.CreateAsync(i, x, getTexture, hasVertexColor);
+                return UnlitMaterialItem.CreateAsync(gltf, i, getTexture, hasVertexColor);
             }
 
-            return PBRMaterialItem.CreateAsync(i, x, getTexture);
+            return PBRMaterialItem.CreateAsync(gltf, i, getTexture);
         }
 
         /// <summary>
@@ -157,6 +194,23 @@ namespace UniGLTF
             };
             var task = DefaultCreateMaterialAsync(gltf, i, null);
             return task.Result;
+        }
+
+        public IEnumerable<GetTextureParam> EnumerateGetTextureparam(int i)
+        {
+            var m = m_gltf.materials[i];
+
+            // color texture
+            var colorIndex = m.pbrMetallicRoughness?.baseColorTexture?.index;
+            if (colorIndex.HasValue)
+            {
+                yield return GetTextureParam.Create(m_gltf, i);
+            }
+
+            if (!glTF_KHR_materials_unlit.IsEnable(m))
+            {
+                // PBR
+            }
         }
     }
 }

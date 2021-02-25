@@ -55,8 +55,8 @@ namespace UniGLTF
 
         public IEnumerator ProcessOnMainThread(glTF gltf, IStorage storage, bool isLinear, glTFTextureSampler sampler)
         {
-            var imageIndex = gltf.GetImageIndexFromTextureIndex(m_textureIndex);
-            var bytes = gltf.GetImageBytes(storage, imageIndex, out m_textureName);
+            var gltfTexture = gltf.textures[m_textureIndex];
+            var bytes = gltf.GetImageBytes(storage, gltfTexture.source);
 
             // tmp file
             var tmp = Path.GetTempFileName();
