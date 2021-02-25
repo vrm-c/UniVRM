@@ -66,6 +66,12 @@ namespace UniGLTF
                     ctx.AddObjectToAsset(mesh.name, mesh);
                 }
 
+                // Animation
+                foreach (var clip in context.AnimationClips)
+                {
+                    ctx.AddObjectToAsset(clip.name, clip);
+                }
+
                 // Root
                 ctx.AddObjectToAsset(context.Root.name, context.Root);
                 ctx.SetMainObject(context.Root);

@@ -22,6 +22,7 @@ namespace UniGLTF
         enum Tabs
         {
             Model,
+            Animation,
             Materials,
         }
         static Tabs s_currentTab;
@@ -29,10 +30,16 @@ namespace UniGLTF
         public override void OnInspectorGUI()
         {
             s_currentTab = MeshUtility.TabBar.OnGUI(s_currentTab);
+            GUILayout.Space(10);
+
             switch (s_currentTab)
             {
                 case Tabs.Model:
                     base.OnInspectorGUI();
+                    break;
+
+                case Tabs.Animation:
+                    OnGUIAnimation(m_importer, m_parser);
                     break;
 
                 case Tabs.Materials:
@@ -102,6 +109,14 @@ namespace UniGLTF
                 EditorGUILayout.EndHorizontal();
             }
             EditorGUI.indentLevel--;
+        }
+
+        static void OnGUIAnimation(GltfScriptedImporter importer, GltfParser parser)
+        {
+            foreach (var a in parser.GLTF.animations)
+            {
+                GUILayout.Label(a.name);
+            }
         }
     }
 }
