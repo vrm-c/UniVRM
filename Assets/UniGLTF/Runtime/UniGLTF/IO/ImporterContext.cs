@@ -430,57 +430,6 @@ namespace UniGLTF
 #endif
 
         /// <summary>
-        /// This function is used for clean up after create assets.
-        /// </summary>
-        /// <param name="destroySubAssets">Ambiguous arguments</param>
-        [Obsolete("Use Dispose for runtime loader resource management")]
-        public void Destroy(bool destroySubAssets)
-        {
-            if (Root != null) GameObject.DestroyImmediate(Root);
-            if (destroySubAssets)
-            {
-#if UNITY_EDITOR
-                foreach (var o in ObjectsForSubAsset())
-                {
-                    UnityEngine.Object.DestroyImmediate(o, true);
-                }
-#endif
-            }
-        }
-
-        public void Dispose()
-        {
-            DestroyRootAndResources();
-        }
-
-        /// <summary>
-        /// Destroy resources that created ImporterContext for runtime load.
-        /// </summary>
-        public void DestroyRootAndResources()
-        {
-            if (!Application.isPlaying)
-            {
-                Debug.LogWarningFormat("Dispose called in editor mode. This function is for runtime");
-            }
-
-            // Remove hierarchy
-            if (Root != null) GameObject.Destroy(Root);
-
-            // Remove resources. materials, textures meshes etc...
-            foreach (var x in Meshes)
-            {
-                UnityEngine.Object.DestroyImmediate(x.Mesh, true);
-            }
-            foreach (var x in AnimationClips)
-            {
-                UnityEngine.Object.DestroyImmediate(x, true);
-            }
-            MaterialFactory.Dispose();
-            TextureFactory.Dispose();
-        }
-
-#if UNITY_EDITOR
-        /// <summary>
         /// Destroy the GameObject that became the basis of Prefab
         /// </summary>
         public void EditorDestroyRoot()
@@ -502,6 +451,50 @@ namespace UniGLTF
                 UnityEngine.Object.DestroyImmediate(o, true);
             }
         }
-#endif
+
+        /// <summary>
+        /// Importに使った一時オブジェクトを破棄する
+        /// 
+        /// 変換のあるテクスチャで、変換前のもの
+        /// normal, occlusion, metallicRoughness
+        /// </summary>
+        public void Dispose()
+        {
+            // m_textureFactory.Dispose();
+        }
+
+        /// <summary>
+        /// Root ヒエラルキーで使っているリソース
+        /// </summary>
+        /// <returns></returns>
+        public virtual IEnumerable<UnityEngine.Object> ResourcesInRootHierarchy()
+        {
+            foreach (var mesh in Meshes)
+            {
+                yield return mesh.Mesh;
+            }
+            foreach (var material in m_materialFactory.Materials)
+            {
+                yield return material.Asset;
+            }
+            foreach (var texture in m_textureFactory.Textures)
+            {
+                yield return texture.Texture;
+            }
+            foreach (var animation in AnimationClips)
+            {
+                yield return animation;
+            }
+        }
+
+        public UnityResourceDestroyer DisposeOnGameObjectDestroyed()
+        {
+            var destroyer = Root.AddComponent<UnityResourceDestroyer>();
+            foreach (var x in ResourcesInRootHierarchy())
+            {
+                destroyer.Resources.Add(x);
+            }
+            return destroyer;
+        }
     }
 }
