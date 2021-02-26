@@ -129,6 +129,11 @@ namespace UniGLTF
             {
                 var curve = AnimationUtility.GetEditorCurve(clip, binding);
 
+                if (!curve.keys.Any())
+                {
+                    throw new Exception("There is no keyframe in AnimationCurve : " + clip.name);
+                }
+
                 var property = AnimationExporter.PropertyToTarget(binding.propertyName);
                 if (property == glTFAnimationTarget.AnimationProperties.NotImplemented)
                 {
