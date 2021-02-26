@@ -248,7 +248,7 @@ namespace UniGLTF
         /// Root ヒエラルキーで使っているリソース
         /// </summary>
         /// <returns></returns>
-        public virtual IEnumerable<UnityEngine.Object> ResourcesInRootHierarchy()
+        public virtual IEnumerable<UnityEngine.Object> ModelOwnResources()
         {
             foreach (var mesh in Meshes)
             {
@@ -271,7 +271,7 @@ namespace UniGLTF
         public UnityResourceDestroyer DisposeOnGameObjectDestroyed()
         {
             var destroyer = Root.AddComponent<UnityResourceDestroyer>();
-            foreach (var x in ResourcesInRootHierarchy())
+            foreach (var x in ModelOwnResources())
             {
                 destroyer.Resources.Add(x);
             }

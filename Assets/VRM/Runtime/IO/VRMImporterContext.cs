@@ -3,7 +3,6 @@ using System.Linq;
 using System.Collections.Generic;
 using UniGLTF;
 using UnityEngine;
-using System.IO;
 using UniJSON;
 using UniGLTF.AltTask;
 
@@ -298,8 +297,23 @@ namespace VRM
 
             return meta;
         }
+
+        public override IEnumerable<UnityEngine.Object> ModelOwnResources()
+        {
+            foreach (var x in base.ModelOwnResources())
+            {
+                yield return x;
+            }
+
+            // VRM 固有のリソース(ScriptableObject)
+            yield return HumanoidAvatar;
+            yield return AvatarDescription;
+            yield return Meta;
+            foreach (var x in BlendShapeAvatar.Clips)
+            {
+                yield return x;
+            }
+            yield return BlendShapeAvatar;
+        }
     }
-
-
-
 }
