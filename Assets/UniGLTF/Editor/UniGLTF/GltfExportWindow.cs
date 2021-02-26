@@ -240,6 +240,7 @@ namespace UniGLTF
             // export
             Export(root, path, new MeshExportSettings
             {
+                InvertAxis = settings.InverseAxis,
                 ExportOnlyBlendShapePosition = settings.DropNormal,
                 UseSparseAccessorForMorphTarget = settings.Sparse,
             });

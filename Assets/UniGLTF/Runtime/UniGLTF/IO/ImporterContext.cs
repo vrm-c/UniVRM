@@ -71,20 +71,7 @@ namespace UniGLTF
                 MeasureTime = new ImporterContextSpeedLog().MeasureTime;
             }
 
-            AxisInverter inverter = default;
-            switch (InvertAxis)
-            {
-                case Axises.Z:
-                    inverter = AxisInverter.ReverseZ;
-                    break;
-
-                case Axises.X:
-                    inverter = AxisInverter.ReverseX;
-                    break;
-
-                default:
-                    throw new NotImplementedException();
-            }
+            var inverter = InvertAxis.Create();
 
             if (Root == null)
             {

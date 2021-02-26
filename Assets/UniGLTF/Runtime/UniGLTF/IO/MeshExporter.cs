@@ -8,6 +8,9 @@ namespace UniGLTF
     [Serializable]
     public struct MeshExportSettings
     {
+        // 反転軸
+        public Axises InvertAxis;
+
         // MorphTarget に Sparse Accessor を使う
         public bool UseSparseAccessorForMorphTarget;
 
@@ -16,6 +19,7 @@ namespace UniGLTF
 
         public static MeshExportSettings Default => new MeshExportSettings
         {
+            InvertAxis = Axises.Z,
             UseSparseAccessorForMorphTarget = false,
             ExportOnlyBlendShapePosition = false,
         };

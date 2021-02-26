@@ -131,7 +131,7 @@ namespace UniGLTF
         //
         // fix node's coordinate. z-back to z-forward
         //
-        public static void FixCoordinate(ImporterContext context, List<TransformWithSkin> nodes, AxisInverter inverter)
+        public static void FixCoordinate(ImporterContext context, List<TransformWithSkin> nodes, IAxisInverter inverter)
         {
             var globalTransformMap = nodes.ToDictionary(x => x.Transform, x => new PosRot
             {
@@ -154,7 +154,7 @@ namespace UniGLTF
             }
         }
 
-        public static void SetupSkinning(ImporterContext context, List<TransformWithSkin> nodes, int i, AxisInverter inverter)
+        public static void SetupSkinning(ImporterContext context, List<TransformWithSkin> nodes, int i, IAxisInverter inverter)
         {
             var x = nodes[i];
             var skinnedMeshRenderer = x.Transform.GetComponent<SkinnedMeshRenderer>();
