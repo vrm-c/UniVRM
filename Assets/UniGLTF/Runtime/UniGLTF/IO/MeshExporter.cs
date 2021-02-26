@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace UniGLTF
 {
+    [Serializable]
     public struct MeshExportSettings
     {
         // MorphTarget に Sparse Accessor を使う
