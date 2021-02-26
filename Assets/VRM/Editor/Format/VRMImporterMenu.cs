@@ -53,7 +53,8 @@ namespace VRM
                 var parser = new GltfParser();
                 parser.ParseGlb(File.ReadAllBytes(path));
                 var context = new VRMImporterContext(parser);
-                context.ExtractImages(prefabPath);
+                var editor = new VRMEditorImporterContext(context);
+                editor.ExtractImages(prefabPath);
 
                 EditorApplication.delayCall += () =>
                 {
@@ -61,8 +62,8 @@ namespace VRM
                     // after textures imported
                     //
                     context.Load();
-                    context.SaveAsAsset(prefabPath);
-                    context.EditorDestroyRoot();
+                    editor.SaveAsAsset(prefabPath);
+                    editor.Dispose();
                 };
             }
         }

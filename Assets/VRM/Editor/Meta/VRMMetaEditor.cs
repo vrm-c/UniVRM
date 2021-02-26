@@ -16,7 +16,7 @@ namespace VRM
 
         private void OnEnable()
         {
-            m_VRMMetaObjectProp = serializedObject.FindProperty("Meta");
+            m_VRMMetaObjectProp = serializedObject.FindProperty(nameof(VRMMeta.Meta));
             m_Inspector = Editor.CreateEditor(m_VRMMetaObjectProp.objectReferenceValue);
         }
 
