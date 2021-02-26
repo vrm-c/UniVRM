@@ -98,6 +98,51 @@ namespace UniGLTF
                 }
             }
 
+            delegate ushort Getter(int index, int component);
+
+            static (Getter, int) GetAccessor(glTF gltf, int accessorIndex)
+            {
+                var gltfAccessor = gltf.accessors[accessorIndex];
+                switch (gltfAccessor.componentType)
+                {
+                    case glComponentType.UNSIGNED_BYTE:
+                        {
+                            var array = gltf.GetArrayFromAccessor<Byte4>(accessorIndex);
+                            Getter getter = (i, j) =>
+                            {
+                                switch (j)
+                                {
+                                    case 0: return array[i].x;
+                                    case 1: return array[i].y;
+                                    case 2: return array[i].z;
+                                    case 3: return array[i].w;
+                                    default: throw new Exception();
+                                }
+                            };
+                            return (getter, array.Length);
+                        }
+
+                    case glComponentType.UNSIGNED_SHORT:
+                        {
+                            var array = gltf.GetArrayFromAccessor<UShort4>(accessorIndex);
+                            Getter getter = (i, j) =>
+                            {
+                                switch (j)
+                                {
+                                    case 0: return array[i].x;
+                                    case 1: return array[i].y;
+                                    case 2: return array[i].z;
+                                    case 3: return array[i].w;
+                                    default: throw new Exception();
+                                }
+                            };
+                            return (getter, array.Length);
+                        }
+                }
+
+                throw new Exception();
+            }
+
             /// <summary>
             /// 各 primitive の attribute の要素が同じでない。=> uv が有るものと無いものが混在するなど
             /// glTF 的にはありうる。
@@ -194,9 +239,9 @@ namespace UniGLTF
                     // skin
                     if (prim.attributes.JOINTS_0 != -1 && prim.attributes.WEIGHTS_0 != -1)
                     {
-                        var joints0 = ctx.GLTF.GetArrayFromAccessor<UShort4>(prim.attributes.JOINTS_0); // uint4
+                        var (joints0, length) = GetAccessor(ctx.GLTF, prim.attributes.JOINTS_0);
                         var weights0 = ctx.GLTF.GetArrayFromAccessor<Float4>(prim.attributes.WEIGHTS_0).Select(x => x.One()).ToArray();
-                        if (joints0.Length != positions.Length)
+                        if (length != positions.Length)
                         {
                             throw new Exception("different length");
                         }
@@ -205,20 +250,20 @@ namespace UniGLTF
                             throw new Exception("different length");
                         }
                         FillZero(m_boneWeights, fillLength);
-                        for (int j = 0; j < joints0.Length; ++j)
+                        for (int j = 0; j < length; ++j)
                         {
                             var bw = new BoneWeight();
 
-                            bw.boneIndex0 = joints0[j].x;
+                            bw.boneIndex0 = joints0(j, 0);
                             bw.weight0 = weights0[j].x;
 
-                            bw.boneIndex1 = joints0[j].y;
+                            bw.boneIndex1 = joints0(j, 1);
                             bw.weight1 = weights0[j].y;
 
-                            bw.boneIndex2 = joints0[j].z;
+                            bw.boneIndex2 = joints0(j, 2);
                             bw.weight2 = weights0[j].z;
 
-                            bw.boneIndex3 = joints0[j].w;
+                            bw.boneIndex3 = joints0(j, 3);
                             bw.weight3 = weights0[j].w;
 
                             m_boneWeights.Add(bw);
@@ -361,27 +406,27 @@ namespace UniGLTF
                     // skin
                     if (prim.attributes.JOINTS_0 != -1 && prim.attributes.WEIGHTS_0 != -1)
                     {
-                        var joints0 = ctx.GLTF.GetArrayFromAccessor<UShort4>(prim.attributes.JOINTS_0); // uint4
+                        var (joints0, length) = GetAccessor(ctx.GLTF, prim.attributes.JOINTS_0);
                         var weights0 = ctx.GLTF.GetArrayFromAccessor<Float4>(prim.attributes.WEIGHTS_0);
                         for (int i = 0; i < weights0.Length; ++i)
                         {
                             weights0[i] = weights0[i].One();
                         }
 
-                        for (int j = 0; j < joints0.Length; ++j)
+                        for (int j = 0; j < length; ++j)
                         {
                             var bw = new BoneWeight();
 
-                            bw.boneIndex0 = joints0[j].x;
+                            bw.boneIndex0 = joints0(j, 0);
                             bw.weight0 = weights0[j].x;
 
-                            bw.boneIndex1 = joints0[j].y;
+                            bw.boneIndex1 = joints0(j, 1);
                             bw.weight1 = weights0[j].y;
 
-                            bw.boneIndex2 = joints0[j].z;
+                            bw.boneIndex2 = joints0(j, 2);
                             bw.weight2 = weights0[j].z;
 
-                            bw.boneIndex3 = joints0[j].w;
+                            bw.boneIndex3 = joints0(j, 3);
                             bw.weight3 = weights0[j].w;
 
                             m_boneWeights.Add(bw);
