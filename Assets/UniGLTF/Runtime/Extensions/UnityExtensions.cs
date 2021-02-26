@@ -286,14 +286,14 @@ namespace UniGLTF
             return new float[] { c.r, c.g, c.b, c.a };
         }
 
-        public static void ReverseZRecursive(this Transform root)
+        public static void ReverseRecursive(this Transform root, IAxisInverter axisInverter)
         {
             var globalMap = root.Traverse().ToDictionary(x => x, x => PosRot.FromGlobalTransform(x));
 
             foreach (var x in root.Traverse())
             {
-                x.position = globalMap[x].Position.ReverseZ();
-                x.rotation = globalMap[x].Rotation.ReverseZ();
+                x.position = axisInverter.InvertVector3(globalMap[x].Position);
+                x.rotation = axisInverter.InvertQuaternion(globalMap[x].Rotation);
             }
         }
 

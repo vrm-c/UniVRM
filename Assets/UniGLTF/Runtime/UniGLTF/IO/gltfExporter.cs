@@ -88,7 +88,9 @@ namespace UniGLTF
             }
         }
 
-        public gltfExporter(glTF gltf)
+        IAxisInverter m_axisInverter;
+
+        public gltfExporter(glTF gltf, Axises invertAxis = Axises.Z)
         {
             glTF = gltf;
 
@@ -99,15 +101,17 @@ namespace UniGLTF
                 generator = "UniGLTF-" + UniGLTFVersion.VERSION,
                 version = "2.0",
             };
+
+            m_axisInverter = invertAxis.Create();
         }
 
         GameObject m_tmpParent = null;
 
         public virtual void Prepare(GameObject go)
         {
-            // コピーを作って、Z軸を反転することで左手系を右手系に変換する
+            // コピーを作って左手系を右手系に変換する
             Copy = GameObject.Instantiate(go);
-            Copy.transform.ReverseZRecursive();
+            Copy.transform.ReverseRecursive(m_axisInverter);
 
             // Export の root は gltf の scene になるので、
             // エクスポート対象が単一の GameObject の場合に、
@@ -216,7 +220,7 @@ namespace UniGLTF
 
             MeshBlendShapeIndexMap = new Dictionary<Mesh, Dictionary<int, int>>();
             foreach (var (mesh, gltfMesh, blendShapeIndexMap) in MeshExporter.ExportMeshes(
-                    glTF, bufferIndex, unityMeshes, Materials, meshExportSettings))
+                    glTF, bufferIndex, unityMeshes, Materials, meshExportSettings, m_axisInverter))
             {
                 glTF.meshes.Add(gltfMesh);
                 if (!MeshBlendShapeIndexMap.ContainsKey(mesh))
@@ -243,7 +247,7 @@ namespace UniGLTF
 
             foreach (var x in unitySkins)
             {
-                var matrices = x.GetBindPoses().Select(y => y.ReverseZ()).ToArray();
+                var matrices = x.GetBindPoses().Select(m_axisInverter.InvertMat4).ToArray();
                 var accessor = glTF.ExtendBufferAndGetAccessorIndex(bufferIndex, matrices, glBufferTarget.NONE);
 
                 var renderer = x.Renderer as SkinnedMeshRenderer;

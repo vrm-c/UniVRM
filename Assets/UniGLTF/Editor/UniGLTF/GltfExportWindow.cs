@@ -20,7 +20,7 @@ namespace UniGLTF
             window.Show();
         }
 
-        private static void Export(GameObject go, string path, MeshExportSettings settings)
+        private static void Export(GameObject go, string path, MeshExportSettings settings, Axises inverseAxis)
         {
             var ext = Path.GetExtension(path).ToLower();
             var isGlb = false;
@@ -32,7 +32,7 @@ namespace UniGLTF
             }
 
             var gltf = new glTF();
-            using (var exporter = new gltfExporter(gltf))
+            using (var exporter = new gltfExporter(gltf, inverseAxis))
             {
                 exporter.Prepare(go);
                 exporter.Export(settings);
@@ -240,10 +240,9 @@ namespace UniGLTF
             // export
             Export(root, path, new MeshExportSettings
             {
-                InvertAxis = settings.InverseAxis,
                 ExportOnlyBlendShapePosition = settings.DropNormal,
                 UseSparseAccessorForMorphTarget = settings.Sparse,
-            });
+            }, settings.InverseAxis);
         }
     }
 }
