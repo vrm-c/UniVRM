@@ -46,23 +46,7 @@ namespace UniGLTF
                     animation.name = $"animation:{i}";
                 }
 
-                AxisInverter inverter = default;
-                switch (invertAxis)
-                {
-                    case Axises.X:
-                        inverter = AxisInverter.ReverseX;
-                        break;
-
-                    case Axises.Z:
-                        inverter = AxisInverter.ReverseZ;
-                        break;
-
-                    default:
-                        throw new System.Exception();
-
-                }
-
-                animationClips.Add(AnimationImporterUtil.ConvertAnimationClip(gltf, animation, inverter));
+                animationClips.Add(AnimationImporterUtil.ConvertAnimationClip(gltf, animation, invertAxis.Create()));
             }
 
             return animationClips;

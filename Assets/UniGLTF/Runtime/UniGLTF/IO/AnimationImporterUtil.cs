@@ -185,7 +185,7 @@ namespace UniGLTF
             return string.Join("/", path);
         }
 
-        public static AnimationClip ConvertAnimationClip(glTF gltf, glTFAnimation animation, AxisInverter inverter, glTFNode root = null)
+        public static AnimationClip ConvertAnimationClip(glTF gltf, glTFAnimation animation, IAxisInverter inverter, glTFNode root = null)
         {
             var clip = new AnimationClip();
             clip.ClearCurves();

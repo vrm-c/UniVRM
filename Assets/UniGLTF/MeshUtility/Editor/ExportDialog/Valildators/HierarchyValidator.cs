@@ -62,6 +62,21 @@ namespace MeshUtility.Validators
             return false;
         }
 
+        public static IEnumerable<Validation> ValidateRoot(GameObject ExportRoot)
+        {
+            if (ExportRoot == null)
+            {
+                yield return Validation.Critical(ExportValidatorMessages.ROOT_EXISTS.Msg());
+                yield break;
+            }
+
+            if (ExportRoot.transform.parent != null)
+            {
+                yield return Validation.Critical(ExportValidatorMessages.NO_PARENT.Msg());
+                yield break;
+            }
+        }
+
         public static IEnumerable<Validation> Validate(GameObject ExportRoot)
         {
             if (ExportRoot == null)

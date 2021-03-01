@@ -107,7 +107,7 @@ namespace UniGLTF
             /// <param name="ctx"></param>
             /// <param name="gltfMesh"></param>
             /// <returns></returns>
-            public void ImportMeshIndependentVertexBuffer(ImporterContext ctx, glTFMesh gltfMesh, AxisInverter inverter)
+            public void ImportMeshIndependentVertexBuffer(ImporterContext ctx, glTFMesh gltfMesh, IAxisInverter inverter)
             {
                 foreach (var prim in gltfMesh.primitives)
                 {
@@ -291,7 +291,7 @@ namespace UniGLTF
             /// <param name="ctx"></param>
             /// <param name="gltfMesh"></param>
             /// <returns></returns>
-            public void ImportMeshSharingVertexBuffer(ImporterContext ctx, glTFMesh gltfMesh, AxisInverter inverter)
+            public void ImportMeshSharingVertexBuffer(ImporterContext ctx, glTFMesh gltfMesh, IAxisInverter inverter)
             {
                 {
                     //  同じVertexBufferを共有しているので先頭のモノを使う
@@ -507,7 +507,7 @@ namespace UniGLTF
             return sharedAttributes;
         }
 
-        public MeshContext ReadMesh(ImporterContext ctx, int meshIndex, AxisInverter inverter)
+        public MeshContext ReadMesh(ImporterContext ctx, int meshIndex, IAxisInverter inverter)
         {
             var gltfMesh = ctx.GLTF.meshes[meshIndex];
 
