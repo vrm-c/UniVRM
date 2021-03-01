@@ -455,7 +455,7 @@ namespace UniGLTF
             }
         }
 
-        public static (glTFMesh gltfMesh, Dictionary<int, int> blendShapeIndexMap) ExportMesh(glTF gltf, int bufferIndex, Mesh mesh, Renderer renderer, List<Material> exportedMaterials, MeshExportSettings meshExportSettings)
+        public static (glTFMesh gltfMesh, Dictionary<int, int> blendShapeIndexMap) ExportMesh(glTF gltf, int bufferIndex, Mesh mesh, Renderer renderer, List<Material> exportedMaterials, MeshExportSettings meshExportSettings, IAxisInverter axisInverter)
         {
             var meshMaterials = default(Material[]);
             if (renderer != null)
@@ -489,7 +489,7 @@ namespace UniGLTF
                 var morphTarget = ExportMorphTarget(gltf, bufferIndex,
                     mesh, j,
                     meshExportSettings.UseSparseAccessorForMorphTarget,
-                    meshExportSettings.ExportOnlyBlendShapePosition);
+                    meshExportSettings.ExportOnlyBlendShapePosition, axisInverter);
                 if (morphTarget.POSITION < 0 && morphTarget.NORMAL < 0 && morphTarget.TANGENT < 0)
                 {
                     continue;
