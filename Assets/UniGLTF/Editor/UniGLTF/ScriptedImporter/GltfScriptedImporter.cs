@@ -31,7 +31,8 @@ namespace UniGLTF
                 var externalObjectMap = GetExternalObjectMap()
                 .Select(kv => (kv.Key.name, kv.Value))
                 ;
-                var context = new ImporterContext(parser, externalObjectMap);
+
+                var context = new ImporterContext(parser, null, externalObjectMap);
                 context.InvertAxis = m_reverseAxis;
                 context.Load();
                 context.ShowMeshes();

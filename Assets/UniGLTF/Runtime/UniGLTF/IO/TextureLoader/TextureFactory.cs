@@ -40,11 +40,10 @@ namespace UniGLTF
         }
     }
 
+    public delegate Awaitable<TextureLoadInfo> LoadTextureAsyncFunc(int index, bool used);
     public delegate Awaitable<Texture2D> GetTextureAsyncFunc(glTF gltf, GetTextureParam param);
     public class TextureFactory : IDisposable
     {
-        glTF m_gltf;
-        IStorage m_storage;
         Dictionary<string, Texture2D> m_externalMap;
         public bool TryGetExternal(GetTextureParam param, bool used, out Texture2D external)
         {
@@ -63,11 +62,10 @@ namespace UniGLTF
 
         public UnityPath ImageBaseDir { get; set; }
 
-        public TextureFactory(glTF gltf, IStorage storage,
-        IEnumerable<(string, UnityEngine.Object)> externalMap)
+        public TextureFactory(LoadTextureAsyncFunc loadTextureAsync,
+            IEnumerable<(string, UnityEngine.Object)> externalMap)
         {
-            m_gltf = gltf;
-            m_storage = storage;
+            LoadTextureAsync = loadTextureAsync;
             if (externalMap != null)
             {
                 m_externalMap = externalMap
@@ -97,15 +95,7 @@ namespace UniGLTF
 
         public IEnumerable<TextureLoadInfo> Textures => m_textureCache.Values;
 
-        public virtual async Awaitable<TextureLoadInfo> LoadTextureAsync(int index, bool used)
-        {
-#if UNIGLTF_USE_WEBREQUEST_TEXTURELOADER
-            return UnityWebRequestTextureLoader.LoadTextureAsync(index);
-#else
-            var texture = await GltfTextureLoader.LoadTextureAsync(m_gltf, m_storage, index);
-            return new TextureLoadInfo(texture, used, false);
-#endif
-        }
+        public LoadTextureAsyncFunc LoadTextureAsync;
 
         async Awaitable<TextureLoadInfo> GetOrCreateBaseTexture(glTF gltf, int textureIndex, bool used)
         {
