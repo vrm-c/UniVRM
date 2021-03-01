@@ -40,7 +40,7 @@ namespace UniGLTF
         }
     }
 
-    public class ReverseX : IAxisInverter
+    public struct ReverseX : IAxisInverter
     {
         public Matrix4x4 InvertMat4(Matrix4x4 src)
         {
