@@ -59,7 +59,9 @@ namespace VRM
                 spring.boneGroups.Add
             );
 
-            // File.WriteAllText(path, spring.ToJson());
+            var f = new UniJSON.JsonFormatter();
+            VRM.VRMSerializer.Serialize_vrm_secondaryAnimation(f, spring);
+            File.WriteAllBytes(path, f.GetStore().Bytes.ToArray());
         }
 
         #endregion
