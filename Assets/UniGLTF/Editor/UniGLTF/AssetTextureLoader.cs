@@ -1,10 +1,8 @@
-﻿using System.Collections;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using UnityEngine;
 
 namespace UniGLTF
 {
-#if UNITY_EDITOR
     public static class AssetTextureLoader
     {
         public static Task<Texture2D> LoadTaskAsync(UnityPath m_assetPath,
@@ -60,5 +58,4 @@ namespace UniGLTF
             return Task.FromResult(Texture);
         }
     }
-#endif
 }
