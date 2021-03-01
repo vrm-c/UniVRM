@@ -1,7 +1,8 @@
 {
     "name": "UniGLTF.Tests",
     "references": [
-        "UniGLTF"
+        "UniGLTF",
+        "UniGLTF.Editor"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using UniGLTF;
 using UnityEditor;
 using UnityEngine;
@@ -53,7 +52,8 @@ namespace VRM
 
             // save texture assets !
             var context = new VRMImporterContext(parser);
-            context.ExtractImages(prefabPath);
+            var editor = new VRMEditorImporterContext(context);
+            editor.ExtractImages(prefabPath);
 
             EditorApplication.delayCall += () =>
             {
@@ -61,8 +61,8 @@ namespace VRM
                 // after textures imported
                 //
                 context.Load();
-                context.SaveAsAsset(prefabPath);
-                context.EditorDestroyRoot();
+                editor.SaveAsAsset(prefabPath);
+                editor.Dispose();
             };
         }
     }

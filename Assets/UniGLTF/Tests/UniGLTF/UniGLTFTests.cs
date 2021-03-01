@@ -133,7 +133,8 @@ namespace UniGLTF
                 GameObject.DestroyImmediate(go);
                 if (context != null)
                 {
-                    context.EditorDestroyRootAndAssets();
+                    var editor = new EditorImporterContext(context);
+                    editor.EditorDestroyRootAndAssets();
                 }
             }
         }

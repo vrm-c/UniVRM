@@ -2,11 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
-using System.IO;
 using UniGLTF.AltTask;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 
 namespace UniGLTF
 {
@@ -217,278 +213,56 @@ namespace UniGLTF
         public List<AnimationClip> AnimationClips = new List<AnimationClip>();
         #endregion
 
-        protected virtual IEnumerable<UnityEngine.Object> ObjectsForSubAsset()
+        /// <summary>
+        /// Importに使った一時オブジェクトを破棄する
+        /// 
+        /// 変換のあるテクスチャで、変換前のもの
+        /// normal, occlusion, metallicRoughness
+        /// </summary>
+        public virtual void Dispose()
         {
-            foreach (var x in TextureFactory.ObjectsForSubAsset())
+            foreach (var x in m_textureFactory.Textures)
             {
-                yield return x;
-            }
-            foreach (var x in MaterialFactory.ObjectsForSubAsset())
-            {
-                yield return x;
-            }
-            foreach (var x in Meshes) { yield return x.Mesh; }
-            foreach (var x in AnimationClips) { yield return x; }
-        }
-
-#if UNITY_EDITOR
-        #region Assets
-        public bool MeshAsSubAsset = false;
-
-        protected virtual UnityPath GetAssetPath(UnityPath prefabPath, UnityEngine.Object o)
-        {
-            if (o is Material)
-            {
-                var materialDir = prefabPath.GetAssetFolder(".Materials");
-                var materialPath = materialDir.Child(o.name.EscapeFilePath() + ".asset");
-                return materialPath;
-            }
-            else if (o is Texture2D)
-            {
-                var textureDir = prefabPath.GetAssetFolder(".Textures");
-                var texturePath = textureDir.Child(o.name.EscapeFilePath() + ".asset");
-                return texturePath;
-            }
-            else if (o is Mesh && !MeshAsSubAsset)
-            {
-                var meshDir = prefabPath.GetAssetFolder(".Meshes");
-                var meshPath = meshDir.Child(o.name.EscapeFilePath() + ".asset");
-                return meshPath;
-            }
-            else
-            {
-                return default(UnityPath);
-            }
-        }
-
-        public virtual bool AvoidOverwriteAndLoad(UnityPath assetPath, UnityEngine.Object o)
-        {
-            if (o is Material)
-            {
-                var loaded = assetPath.LoadAsset<Material>();
-
-                // replace component reference
-                foreach (var mesh in Meshes)
+                if (!x.IsUsed)
                 {
-                    foreach (var r in mesh.Renderers)
-                    {
-                        for (int i = 0; i < r.sharedMaterials.Length; ++i)
-                        {
-                            if (r.sharedMaterials.Contains(o))
-                            {
-                                r.sharedMaterials = r.sharedMaterials.Select(x => x == o ? loaded : x).ToArray();
-                            }
-                        }
-                    }
+                    // Destroy temporary texture object
+                    UnityEngine.Object.Destroy(x.Texture);
                 }
-
-                return true;
-            }
-
-            return false;
-        }
-
-        public void SaveAsAsset(UnityPath prefabPath)
-        {
-            ShowMeshes();
-
-            //var prefabPath = PrefabPath;
-            if (prefabPath.IsFileExists)
-            {
-                // clear SubAssets
-                foreach (var x in prefabPath.GetSubAssets().Where(x => !(x is GameObject) && !(x is Component)))
-                {
-                    GameObject.DestroyImmediate(x, true);
-                }
-            }
-
-            //
-            // save sub assets
-            //
-            var paths = new List<UnityPath>(){
-                prefabPath
-            };
-            foreach (var o in ObjectsForSubAsset())
-            {
-                if (o == null) continue;
-
-                var assetPath = GetAssetPath(prefabPath, o);
-                if (!assetPath.IsNull)
-                {
-                    if (assetPath.IsFileExists)
-                    {
-                        if (AvoidOverwriteAndLoad(assetPath, o))
-                        {
-                            // 上書きせずに既存のアセットからロードして置き換えた
-                            continue;
-                        }
-                    }
-
-                    // アセットとして書き込む
-                    assetPath.Parent.EnsureFolder();
-                    assetPath.CreateAsset(o);
-                    paths.Add(assetPath);
-                }
-                else
-                {
-                    // save as subasset
-                    prefabPath.AddObjectToAsset(o);
-                }
-            }
-
-            // Create or update Main Asset
-            if (prefabPath.IsFileExists)
-            {
-                Debug.LogFormat("replace prefab: {0}", prefabPath);
-                var prefab = prefabPath.LoadAsset<GameObject>();
-#if UNITY_2018_3_OR_NEWER
-                PrefabUtility.SaveAsPrefabAssetAndConnect(Root, prefabPath.Value, InteractionMode.AutomatedAction);
-#else
-                PrefabUtility.ReplacePrefab(Root, prefab, ReplacePrefabOptions.ReplaceNameBased);
-#endif
-
-            }
-            else
-            {
-                Debug.LogFormat("create prefab: {0}", prefabPath);
-#if UNITY_2018_3_OR_NEWER
-                PrefabUtility.SaveAsPrefabAssetAndConnect(Root, prefabPath.Value, InteractionMode.AutomatedAction);
-#else
-                PrefabUtility.CreatePrefab(prefabPath.Value, Root);
-#endif
-            }
-            foreach (var x in paths)
-            {
-                x.ImportAsset();
             }
         }
 
         /// <summary>
-        /// Extract images from glb or gltf out of Assets folder.
+        /// Root ヒエラルキーで使っているリソース
         /// </summary>
-        /// <param name="prefabPath"></param>
-        public void ExtractImages(UnityPath prefabPath)
+        /// <returns></returns>
+        public virtual IEnumerable<UnityEngine.Object> ModelOwnResources()
         {
-            var prefabParentDir = prefabPath.Parent;
-
-            // glb buffer
-            var folder = prefabPath.GetAssetFolder(".Textures");
-
-            //
-            // https://answers.unity.com/questions/647615/how-to-update-import-settings-for-newly-created-as.html
-            //
-            int created = 0;
-            for (int i = 0; i < GLTF.textures.Count; ++i)
+            foreach (var mesh in Meshes)
             {
-                folder.EnsureFolder();
-
-                var gltfTexture = GLTF.textures[i];
-                var gltfImage = GLTF.images[gltfTexture.source];
-                var src = Storage.GetPath(gltfImage.uri);
-                if (UnityPath.FromFullpath(src).IsUnderAssetsFolder)
-                {
-                    // asset is exists.
-                }
-                else
-                {
-                    var byteSegment = GLTF.GetImageBytes(Storage, gltfTexture.source);
-                    var textureName = gltfTexture.name;
-
-                    // path
-                    var dst = folder.Child(textureName + gltfImage.GetExt());
-                    File.WriteAllBytes(dst.FullPath, byteSegment.ToArray());
-                    dst.ImportAsset();
-
-                    // make relative path from PrefabParentDir
-                    gltfImage.uri = dst.Value.Substring(prefabParentDir.Value.Length + 1);
-                    ++created;
-                }
+                yield return mesh.Mesh;
             }
-
-            if (created > 0)
+            foreach (var material in m_materialFactory.Materials)
             {
-                AssetDatabase.Refresh();
+                yield return material.Asset;
             }
-
-            // texture will load from assets
-            m_textureFactory.ImageBaseDir = prefabParentDir;
-        }
-        #endregion
-#endif
-
-        /// <summary>
-        /// This function is used for clean up after create assets.
-        /// </summary>
-        /// <param name="destroySubAssets">Ambiguous arguments</param>
-        [Obsolete("Use Dispose for runtime loader resource management")]
-        public void Destroy(bool destroySubAssets)
-        {
-            if (Root != null) GameObject.DestroyImmediate(Root);
-            if (destroySubAssets)
+            foreach (var texture in m_textureFactory.Textures)
             {
-#if UNITY_EDITOR
-                foreach (var o in ObjectsForSubAsset())
-                {
-                    UnityEngine.Object.DestroyImmediate(o, true);
-                }
-#endif
+                yield return texture.Texture;
+            }
+            foreach (var animation in AnimationClips)
+            {
+                yield return animation;
             }
         }
 
-        public void Dispose()
+        public UnityResourceDestroyer DisposeOnGameObjectDestroyed()
         {
-            DestroyRootAndResources();
-        }
-
-        /// <summary>
-        /// Destroy resources that created ImporterContext for runtime load.
-        /// </summary>
-        public void DestroyRootAndResources()
-        {
-            if (!Application.isPlaying)
+            var destroyer = Root.AddComponent<UnityResourceDestroyer>();
+            foreach (var x in ModelOwnResources())
             {
-                Debug.LogWarningFormat("Dispose called in editor mode. This function is for runtime");
+                destroyer.Resources.Add(x);
             }
-
-            // Remove hierarchy
-            if (Root != null) GameObject.Destroy(Root);
-
-            // Remove resources. materials, textures meshes etc...
-            foreach (var x in Meshes)
-            {
-                UnityEngine.Object.DestroyImmediate(x.Mesh, true);
-            }
-            foreach (var x in AnimationClips)
-            {
-                UnityEngine.Object.DestroyImmediate(x, true);
-            }
-            MaterialFactory.Dispose();
-            TextureFactory.Dispose();
+            return destroyer;
         }
-
-#if UNITY_EDITOR
-        /// <summary>
-        /// Destroy the GameObject that became the basis of Prefab
-        /// </summary>
-        public void EditorDestroyRoot()
-        {
-            if (Root != null) GameObject.DestroyImmediate(Root);
-        }
-
-        /// <summary>
-        /// Destroy assets that created ImporterContext. This function is clean up for importer error.
-        /// </summary>
-        public void EditorDestroyRootAndAssets()
-        {
-            // Remove hierarchy
-            if (Root != null) GameObject.DestroyImmediate(Root);
-
-            // Remove resources. materials, textures meshes etc...
-            foreach (var o in ObjectsForSubAsset())
-            {
-                UnityEngine.Object.DestroyImmediate(o, true);
-            }
-        }
-#endif
     }
 }

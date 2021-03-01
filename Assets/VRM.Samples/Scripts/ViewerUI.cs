@@ -318,6 +318,7 @@ namespace VRM.Samples
                         await m_texts.UpdateMetaAsync(context);
                         await context.LoadAsync();
 
+                        context.DisposeOnGameObjectDestroyed();
                         context.ShowMeshes();
                         context.EnableUpdateWhenOffscreen();
                         context.ShowMeshes();
@@ -333,6 +334,7 @@ namespace VRM.Samples
 
                         var context = new UniGLTF.ImporterContext(parser);
                         context.Load();
+                        context.DisposeOnGameObjectDestroyed();
                         context.ShowMeshes();
                         context.EnableUpdateWhenOffscreen();
                         context.ShowMeshes();
@@ -348,6 +350,7 @@ namespace VRM.Samples
 
                         var context = new UniGLTF.ImporterContext(parser);
                         context.Load();
+                        context.DisposeOnGameObjectDestroyed();
                         context.ShowMeshes();
                         context.EnableUpdateWhenOffscreen();
                         context.ShowMeshes();
