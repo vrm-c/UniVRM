@@ -8,8 +8,13 @@ namespace UniGLTF
     public static class AssetTextureLoader
     {
         public static Task<Texture2D> LoadTaskAsync(UnityPath m_assetPath,
-            bool isLinear, glTFTextureSampler sampler)
+            glTF gltf, int textureIndex)
         {
+            var textureType = TextureIO.GetglTFTextureType(gltf, textureIndex);
+            var colorSpace = TextureIO.GetColorSpace(textureType);
+            var isLinear = colorSpace == RenderTextureReadWrite.Linear;
+            var sampler = gltf.GetSamplerFromTextureIndex(textureIndex);
+
             //
             // texture from assets
             //
