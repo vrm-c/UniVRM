@@ -138,7 +138,11 @@ namespace UniGLTF
             };
             foreach (var o in ObjectsForSubAsset())
             {
-                if (o == null) continue;
+                if (!string.IsNullOrEmpty(AssetDatabase.GetAssetPath(o)))
+                {
+                    // already exists
+                    continue;
+                }
 
                 var assetPath = GetAssetPath(prefabPath, o, meshAsSubAsset);
                 if (!assetPath.IsNull)

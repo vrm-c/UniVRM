@@ -19,10 +19,12 @@ namespace UniGLTF
             {
                 Debug.LogWarningFormat("fail to get TextureImporter: {0}", m_assetPath);
             }
-            importer.maxTextureSize = 8192;
-            importer.sRGBTexture = !isLinear;
-
-            importer.SaveAndReimport();
+            else
+            {
+                importer.maxTextureSize = 8192;
+                importer.sRGBTexture = !isLinear;
+                importer.SaveAndReimport();
+            }
 
             var Texture = m_assetPath.LoadAsset<Texture2D>();
 

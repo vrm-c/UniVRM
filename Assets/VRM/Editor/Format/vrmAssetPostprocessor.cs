@@ -51,7 +51,19 @@ namespace VRM
             var prefabPath = path.Parent.Child(path.FileNameWithoutExtension + ".prefab");
 
             // save texture assets !
-            var context = new VRMImporterContext(parser);
+            LoadTextureAsyncFunc textureLoader = async (textureIndex, used) =>
+            {
+                var textureType = TextureIO.GetglTFTextureType(parser.GLTF, textureIndex);
+                var colorSpace = TextureIO.GetColorSpace(textureType);
+                var isLinear = colorSpace == RenderTextureReadWrite.Linear;
+                var sampler = parser.GLTF.GetSamplerFromTextureIndex(textureIndex);
+                var gltfTexture = parser.GLTF.textures[textureIndex];
+                var gltfImage = parser.GLTF.images[gltfTexture.source];
+                var assetPath = prefabPath.Parent.Child(gltfImage.uri);
+                var texture = await UniGLTF.AssetTextureLoader.LoadTaskAsync(assetPath, isLinear, sampler);
+                return new TextureLoadInfo(texture, used, false);
+            };
+            var context = new VRMImporterContext(parser, textureLoader);
             var editor = new VRMEditorImporterContext(context);
             editor.ExtractImages(prefabPath);
 

@@ -14,7 +14,7 @@ namespace VRM
     {
         public VRM.glTF_VRM_extensions VRM { get; private set; }
 
-        public VRMImporterContext(GltfParser parser) : base(parser)
+        public VRMImporterContext(GltfParser parser, UniGLTF.LoadTextureAsyncFunc asyncTextureLoader = null) : base(parser, asyncTextureLoader)
         {
             // parse VRM part
             if (glTF_VRM_extensions.TryDeserilize(GLTF.extensions, out glTF_VRM_extensions vrm))
