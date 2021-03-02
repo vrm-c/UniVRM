@@ -4,26 +4,7 @@ Mesh processing tool in Unity platform.
 
 ## Utilities
 
-### MeshSeparator
-
-Separate the target mesh into different categories based on given conditions.
-
-Currently support BlendShape mesh separation. See [documentation](Documentation/notes/MeshSeparator.md) for more details.
-
-<img src="Documentation/images/blendshape_separator.jpg" width="300">
-
-### MeshIntegrator
-
-Integrate all the meshes of a (prefab) GameObject.
-
-### StaticMeshIntegrator
-
-Integrate all the static meshes of a (prefab) GameObject (Root and its children).
-
-### MeshNormalizer
-
-Bake the Hierarchy. This is VRM normalization backend.
-MeshNormalizer can do blendShape bake.
+[Details can be found here](https://vrm.dev/en/docs/univrm/gltf/mesh_utility/)
 
 ## Import MeshUtility
 
@@ -31,7 +12,7 @@ There are two ways to import MeshUtility into a Unity project.
 
 ### 1. Unity Package Manager (from Unity 2019)
 
-You can add MeshUtility package via `UPM`. First click `Window` from menu on top, then select `Package Manager`.
+You can add MeshUtility package via `UPM`. First click `Window` at the top of Unity Editor, then select `Package Manager`.
 
 <img src="Documentation/images/installation_1.jpg" width="200">
 
