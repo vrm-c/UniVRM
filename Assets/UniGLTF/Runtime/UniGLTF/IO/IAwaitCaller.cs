@@ -65,7 +65,7 @@ namespace UniGLTF
         {
             return Task.Run(() =>
             {
-                Thread.Sleep(10);
+                // Thread.Sleep(10);
             });
         }
 
