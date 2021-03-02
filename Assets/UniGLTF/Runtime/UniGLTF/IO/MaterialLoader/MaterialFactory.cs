@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
-using UniGLTF.AltTask;
 
 namespace UniGLTF
 {
@@ -41,7 +41,7 @@ namespace UniGLTF
             }
         }
 
-        public delegate Awaitable<Material> CreateMaterialAsyncFunc(glTF gltf, int i, GetTextureAsyncFunc getTexture);
+        public delegate Task<Material> CreateMaterialAsyncFunc(IAwaitCaller awaitCaller, glTF gltf, int i, GetTextureAsyncFunc getTexture);
         CreateMaterialAsyncFunc m_createMaterialAsync;
         public CreateMaterialAsyncFunc CreateMaterialAsync
         {
@@ -101,12 +101,12 @@ namespace UniGLTF
         /// </summary>
         /// <param name="getTexture"></param>
         /// <returns></returns>
-        public async Awaitable LoadMaterialsAsync(GetTextureAsyncFunc getTexture)
+        public async Task LoadMaterialsAsync(IAwaitCaller awaitCaller, GetTextureAsyncFunc getTexture)
         {
             if (m_gltf.materials == null || m_gltf.materials.Count == 0)
             {
                 // no material. work around.
-                var material = await CreateMaterialAsync(m_gltf, 0, getTexture);
+                var material = await CreateMaterialAsync(awaitCaller, m_gltf, 0, getTexture);
                 m_materials.Add(new MaterialLoadInfo(material, false));
                 return;
             }
@@ -119,7 +119,7 @@ namespace UniGLTF
                     continue;
                 }
 
-                material = await CreateMaterialAsync(m_gltf, i, getTexture);
+                material = await CreateMaterialAsync(awaitCaller, m_gltf, i, getTexture);
                 m_materials.Add(new MaterialLoadInfo(material, false));
             }
         }
@@ -161,22 +161,22 @@ namespace UniGLTF
             }
         }
 
-        public static Awaitable<Material> DefaultCreateMaterialAsync(glTF gltf, int i, GetTextureAsyncFunc getTexture)
+        public static Task<Material> DefaultCreateMaterialAsync(IAwaitCaller awaitCaller, glTF gltf, int i, GetTextureAsyncFunc getTexture)
         {
             if (i < 0 || i >= gltf.materials.Count)
             {
                 UnityEngine.Debug.LogWarning("glTFMaterial is empty");
-                return PBRMaterialItem.CreateAsync(gltf, i, getTexture);
+                return PBRMaterialItem.CreateAsync(awaitCaller, gltf, i, getTexture);
             }
             var x = gltf.materials[i];
 
             if (glTF_KHR_materials_unlit.IsEnable(x))
             {
                 var hasVertexColor = gltf.MaterialHasVertexColor(i);
-                return UnlitMaterialItem.CreateAsync(gltf, i, getTexture, hasVertexColor);
+                return UnlitMaterialItem.CreateAsync(awaitCaller, gltf, i, getTexture, hasVertexColor);
             }
 
-            return PBRMaterialItem.CreateAsync(gltf, i, getTexture);
+            return PBRMaterialItem.CreateAsync(awaitCaller, gltf, i, getTexture);
         }
 
         /// <summary>
@@ -192,7 +192,7 @@ namespace UniGLTF
             {
                 materials = new System.Collections.Generic.List<glTFMaterial> { material },
             };
-            var task = DefaultCreateMaterialAsync(gltf, i, null);
+            var task = DefaultCreateMaterialAsync(default(ImmediateCaller), gltf, i, null);
             return task.Result;
         }
 

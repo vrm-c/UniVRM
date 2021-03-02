@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
-using UniGLTF.AltTask;
+using System.Threading.Tasks;
 
 namespace UniGLTF
 {
@@ -37,10 +37,26 @@ namespace UniGLTF
         TextureFactory m_textureFactory;
         public TextureFactory TextureFactory => m_textureFactory;
 
-        public ImporterContext(GltfParser parser, IEnumerable<(string, UnityEngine.Object)> externalObjectMap = null)
+        IAwaitCaller m_awaitCaller;
+
+        public ImporterContext(GltfParser parser,
+            LoadTextureAsyncFunc loadTextureAsync = null,
+            IEnumerable<(string, UnityEngine.Object)> externalObjectMap = null)
         {
             m_parser = parser;
-            m_textureFactory = new TextureFactory(GLTF, Storage, externalObjectMap);
+            if (loadTextureAsync == null)
+            {
+#if UNIGLTF_USE_WEBREQUEST_TEXTURELOADER
+                loadTextureAsync = (awaitCaller, index, used) => UnityWebRequestTextureLoader.LoadTextureAsync(index);
+#else
+                loadTextureAsync = async (awaitCaller, index, used) =>
+                {
+                    var texture = await GltfTextureLoader.LoadTextureAsync(awaitCaller, GLTF, Storage, index);
+                    return new TextureLoadInfo(texture, used, false);
+                };
+#endif
+            }
+            m_textureFactory = new TextureFactory(loadTextureAsync, externalObjectMap);
             m_materialFactory = new MaterialFactory(GLTF, Storage, externalObjectMap);
         }
 
@@ -60,8 +76,14 @@ namespace UniGLTF
         public Axises InvertAxis = Axises.Z;
 
         #region Load. Build unity objects
-        public virtual async Awaitable LoadAsync(Func<string, IDisposable> MeasureTime = null)
+        public virtual async Task LoadAsync(IAwaitCaller awaitCaller = null, Func<string, IDisposable> MeasureTime = null)
         {
+            if (awaitCaller == null)
+            {
+                awaitCaller = new TaskCaller();
+            }
+            m_awaitCaller = awaitCaller;
+
             if (MeasureTime == null)
             {
                 MeasureTime = new ImporterContextSpeedLog().MeasureTime;
@@ -94,7 +116,7 @@ namespace UniGLTF
 
             using (MeasureTime("LoadMaterials"))
             {
-                await m_materialFactory.LoadMaterialsAsync(m_textureFactory.GetTextureAsync);
+                await m_materialFactory.LoadMaterialsAsync(m_awaitCaller, m_textureFactory.GetTextureAsync);
             }
 
             var meshImporter = new MeshImporter();
@@ -116,7 +138,7 @@ namespace UniGLTF
                     Nodes.Add(NodeImporter.ImportNode(GLTF.nodes[i], i).transform);
                 }
             }
-            await NextFrameAwaitable.Create();
+            await m_awaitCaller.NextFrame();
 
             using (MeasureTime("BuildHierarchy"))
             {
@@ -141,26 +163,26 @@ namespace UniGLTF
                     t.SetParent(Root.transform, false);
                 }
             }
-            await NextFrameAwaitable.Create();
+            await m_awaitCaller.NextFrame();
 
             using (MeasureTime("AnimationImporter"))
             {
                 AnimationImporter.Import(this);
             }
 
-            await OnLoadModel(MeasureTime);
+            await OnLoadModel(m_awaitCaller, MeasureTime);
         }
 
-        protected virtual async Awaitable OnLoadModel(Func<string, IDisposable> MeasureTime)
+        protected virtual async Task OnLoadModel(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime)
         {
             // do nothing
         }
 
-        async Awaitable<MeshWithMaterials> BuildMeshAsync(Func<string, IDisposable> MeasureTime, MeshImporter.MeshContext x, int i)
+        async Task<MeshWithMaterials> BuildMeshAsync(Func<string, IDisposable> MeasureTime, MeshImporter.MeshContext x, int i)
         {
             using (MeasureTime("BuildMesh"))
             {
-                var meshWithMaterials = await MeshImporter.BuildMeshAsync(MaterialFactory, x);
+                var meshWithMaterials = await MeshImporter.BuildMeshAsync(m_awaitCaller, MaterialFactory, x);
                 var mesh = meshWithMaterials.Mesh;
 
                 // mesh name

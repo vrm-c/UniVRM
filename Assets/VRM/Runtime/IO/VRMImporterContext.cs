@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UniGLTF;
 using UnityEngine;
 using UniJSON;
-using UniGLTF.AltTask;
+using System.Threading.Tasks;
 
 namespace VRM
 {
@@ -14,14 +14,14 @@ namespace VRM
     {
         public VRM.glTF_VRM_extensions VRM { get; private set; }
 
-        public VRMImporterContext(GltfParser parser) : base(parser)
+        public VRMImporterContext(GltfParser parser, UniGLTF.LoadTextureAsyncFunc asyncTextureLoader = null) : base(parser, asyncTextureLoader)
         {
             // parse VRM part
             if (glTF_VRM_extensions.TryDeserilize(GLTF.extensions, out glTF_VRM_extensions vrm))
             {
                 VRM = vrm;
                 // override material importer
-                MaterialFactory.CreateMaterialAsync = new VRMMaterialImporter(VRM.materialProperties).CreateMaterial;
+                MaterialFactory.CreateMaterialAsync = new VRMMaterialImporter(VRM.materialProperties).CreateMaterialAsync;
             }
             else
             {
@@ -30,7 +30,7 @@ namespace VRM
         }
 
         #region OnLoad
-        protected override async Awaitable OnLoadModel(Func<string, IDisposable> MeasureTime)
+        protected override async Task OnLoadModel(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime)
         {
             Root.name = "VRM";
 
@@ -38,26 +38,26 @@ namespace VRM
             {
                 await LoadMetaAsync();
             }
-            await NextFrameAwaitable.Create();
+            await awaitCaller.NextFrame();
 
             using (MeasureTime("VRM LoadHumanoid"))
             {
                 LoadHumanoid();
             }
-            await NextFrameAwaitable.Create();
+            await awaitCaller.NextFrame();
 
             using (MeasureTime("VRM LoadBlendShapeMaster"))
             {
                 LoadBlendShapeMaster();
             }
-            await NextFrameAwaitable.Create();
+            await awaitCaller.NextFrame();
 
             using (MeasureTime("VRM LoadSecondary"))
             {
                 VRMSpringUtility.LoadSecondary(Root.transform, Nodes,
                 VRM.secondaryAnimation);
             }
-            await NextFrameAwaitable.Create();
+            await awaitCaller.NextFrame();
 
             using (MeasureTime("VRM LoadFirstPerson"))
             {
@@ -65,7 +65,7 @@ namespace VRM
             }
         }
 
-        async Awaitable LoadMetaAsync()
+        async Task LoadMetaAsync()
         {
             var meta = await ReadMetaAsync();
             var _meta = Root.AddComponent<VRMMeta>();
@@ -273,8 +273,13 @@ namespace VRM
         public BlendShapeAvatar BlendShapeAvatar;
         public VRMMetaObject Meta;
 
-        public async Awaitable<VRMMetaObject> ReadMetaAsync(bool createThumbnail = false)
+        public async Task<VRMMetaObject> ReadMetaAsync(IAwaitCaller awaitCaller = null, bool createThumbnail = false)
         {
+            if (awaitCaller == null)
+            {
+                awaitCaller = default(ImmediateCaller);
+            }
+
             var meta = ScriptableObject.CreateInstance<VRMMetaObject>();
             meta.name = "Meta";
             meta.ExporterVersion = VRM.exporterVersion;
@@ -285,7 +290,7 @@ namespace VRM
             meta.ContactInformation = gltfMeta.contactInformation;
             meta.Reference = gltfMeta.reference;
             meta.Title = gltfMeta.title;
-            meta.Thumbnail = await TextureFactory.GetTextureAsync(GLTF, GetTextureParam.Create(GLTF, gltfMeta.texture));
+            meta.Thumbnail = await TextureFactory.GetTextureAsync(awaitCaller, GLTF, GetTextureParam.Create(GLTF, gltfMeta.texture));
             meta.AllowedUser = gltfMeta.allowedUser;
             meta.ViolentUssage = gltfMeta.violentUssage;
             meta.SexualUssage = gltfMeta.sexualUssage;

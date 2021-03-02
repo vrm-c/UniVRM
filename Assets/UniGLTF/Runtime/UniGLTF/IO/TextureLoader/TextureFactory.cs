@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using UniGLTF.AltTask;
 using UnityEngine;
 using System.Linq;
+using System.Threading.Tasks;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -40,11 +40,10 @@ namespace UniGLTF
         }
     }
 
-    public delegate Awaitable<Texture2D> GetTextureAsyncFunc(glTF gltf, GetTextureParam param);
+    public delegate Task<TextureLoadInfo> LoadTextureAsyncFunc(IAwaitCaller awaitCaller, int index, bool used);
+    public delegate Task<Texture2D> GetTextureAsyncFunc(IAwaitCaller awaitCaller, glTF gltf, GetTextureParam param);
     public class TextureFactory : IDisposable
     {
-        glTF m_gltf;
-        IStorage m_storage;
         Dictionary<string, Texture2D> m_externalMap;
         public bool TryGetExternal(GetTextureParam param, bool used, out Texture2D external)
         {
@@ -63,11 +62,10 @@ namespace UniGLTF
 
         public UnityPath ImageBaseDir { get; set; }
 
-        public TextureFactory(glTF gltf, IStorage storage,
-        IEnumerable<(string, UnityEngine.Object)> externalMap)
+        public TextureFactory(LoadTextureAsyncFunc loadTextureAsync,
+            IEnumerable<(string, UnityEngine.Object)> externalMap)
         {
-            m_gltf = gltf;
-            m_storage = storage;
+            LoadTextureAsync = loadTextureAsync;
             if (externalMap != null)
             {
                 m_externalMap = externalMap
@@ -97,22 +95,14 @@ namespace UniGLTF
 
         public IEnumerable<TextureLoadInfo> Textures => m_textureCache.Values;
 
-        public virtual async Awaitable<TextureLoadInfo> LoadTextureAsync(int index, bool used)
-        {
-#if UNIGLTF_USE_WEBREQUEST_TEXTURELOADER
-            return UnityWebRequestTextureLoader.LoadTextureAsync(index);
-#else
-            var texture = await GltfTextureLoader.LoadTextureAsync(m_gltf, m_storage, index);
-            return new TextureLoadInfo(texture, used, false);
-#endif
-        }
+        public LoadTextureAsyncFunc LoadTextureAsync;
 
-        async Awaitable<TextureLoadInfo> GetOrCreateBaseTexture(glTF gltf, int textureIndex, bool used)
+        async Task<TextureLoadInfo> GetOrCreateBaseTexture(IAwaitCaller awaitCaller, glTF gltf, int textureIndex, bool used)
         {
             var name = gltf.textures[textureIndex].name;
             if (!m_textureCache.TryGetValue(name, out TextureLoadInfo cacheInfo))
             {
-                cacheInfo = await LoadTextureAsync(textureIndex, used);
+                cacheInfo = await LoadTextureAsync(awaitCaller, textureIndex, used);
                 m_textureCache.Add(name, cacheInfo);
             }
             return cacheInfo;
@@ -126,7 +116,7 @@ namespace UniGLTF
         /// <param name="roughnessFactor">METALLIC_GLOSS_PROPの追加パラメーター</param>
         /// <param name="indices">gltf の texture index</param>
         /// <returns></returns>
-        public async Awaitable<Texture2D> GetTextureAsync(glTF gltf, GetTextureParam param)
+        public async Task<Texture2D> GetTextureAsync(IAwaitCaller awaitCaller, glTF gltf, GetTextureParam param)
         {
             if (m_textureCache.TryGetValue(param.Name, out TextureLoadInfo cacheInfo))
             {
@@ -143,7 +133,7 @@ namespace UniGLTF
                     {
                         if (Application.isPlaying)
                         {
-                            var baseTexture = await GetOrCreateBaseTexture(gltf, param.Index0.Value, false);
+                            var baseTexture = await GetOrCreateBaseTexture(awaitCaller, gltf, param.Index0.Value, false);
                             var converted = new NormalConverter().GetImportTexture(baseTexture.Texture);
                             var info = new TextureLoadInfo(converted, true, false);
                             m_textureCache.Add(param.Name, info);
@@ -152,7 +142,7 @@ namespace UniGLTF
                         else
                         {
 #if UNITY_EDITOR
-                            var info = await LoadTextureAsync(param.Index0.Value, true);
+                            var info = await LoadTextureAsync(awaitCaller, param.Index0.Value, true);
                             var name = gltf.textures[param.Index0.Value].name;
                             m_textureCache.Add(name, info);
 
@@ -166,7 +156,7 @@ namespace UniGLTF
                 case GetTextureParam.METALLIC_GLOSS_PROP:
                     {
                         // Bake roughnessFactor values into a texture.
-                        var baseTexture = await GetOrCreateBaseTexture(gltf, param.Index0.Value, false);
+                        var baseTexture = await GetOrCreateBaseTexture(awaitCaller, gltf, param.Index0.Value, false);
                         var converted = new MetallicRoughnessConverter(param.MetallicFactor).GetImportTexture(baseTexture.Texture);
                         converted.name = param.Name;
                         var info = new TextureLoadInfo(converted, true, false);
@@ -176,7 +166,7 @@ namespace UniGLTF
 
                 case GetTextureParam.OCCLUSION_PROP:
                     {
-                        var baseTexture = await GetOrCreateBaseTexture(gltf, param.Index0.Value, false);
+                        var baseTexture = await GetOrCreateBaseTexture(awaitCaller, gltf, param.Index0.Value, false);
                         var converted = new OcclusionConverter().GetImportTexture(baseTexture.Texture);
                         converted.name = param.Name;
                         var info = new TextureLoadInfo(converted, true, false);
@@ -186,7 +176,7 @@ namespace UniGLTF
 
                 default:
                     {
-                        var baseTexture = await GetOrCreateBaseTexture(gltf, param.Index0.Value, true);
+                        var baseTexture = await GetOrCreateBaseTexture(awaitCaller, gltf, param.Index0.Value, true);
                         return baseTexture.Texture;
                     }
 

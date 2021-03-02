@@ -86,21 +86,15 @@ namespace UniGLTF
             }
         }
 
-        struct TextureInfo
-        {
-            public string Path;
-            public bool sRGB;
-            public bool IsNormalMap;
-        }
-
         class TextureExtractor
         {
             GltfParser m_parser;
             public GltfParser Parser => m_parser;
 
             public glTF GLTF => m_parser.GLTF;
+            public IStorage Storage => m_parser.Storage;
 
-            public readonly List<TextureInfo> Textures = new List<TextureInfo>();
+            public readonly Dictionary<string, GetTextureParam> Textures = new Dictionary<string, GetTextureParam>();
             UnityEngine.Texture2D[] m_subAssets;
             string m_path;
 
@@ -119,20 +113,38 @@ namespace UniGLTF
             public void Extract(GetTextureParam param)
             {
                 var subAsset = m_subAssets.FirstOrDefault(x => x.name == param.Name);
-                var targetPath = string.Format("{0}/{1}{2}",
-                    m_path,
-                    param.Name,
-                    ".png"
-                    );
-                File.WriteAllBytes(targetPath, subAsset.EncodeToPNG().ToArray());
-                AssetDatabase.ImportAsset(targetPath);
+                string targetPath = "";
 
-                Textures.Add(new TextureInfo
+                switch (param.TextureType)
                 {
-                    Path = targetPath,
-                    sRGB = true,
-                    IsNormalMap = param.TextureType == GetTextureParam.NORMAL_PROP,
-                });
+                    case GetTextureParam.METALLIC_GLOSS_PROP:
+                    case GetTextureParam.OCCLUSION_PROP:
+                        {
+                            // write converted texture
+                            targetPath = string.Format("{0}/{1}{2}",
+                               m_path,
+                               param.Name,
+                               ".png"
+                               );
+                            File.WriteAllBytes(targetPath, subAsset.EncodeToPNG().ToArray());
+                            break;
+                        }
+
+                    default:
+                        {
+                            // write original bytes
+                            targetPath = string.Format("{0}/{1}{2}",
+                               m_path,
+                               param.Name,
+                               ".png"
+                               );
+                            var gltfTexture = GLTF.textures[param.Index0.Value];
+                            File.WriteAllBytes(targetPath, GLTF.GetImageBytes(Storage, gltfTexture.source).ToArray());
+                            break;
+                        }
+                }
+                AssetDatabase.ImportAsset(targetPath);
+                Textures.Add(targetPath, param);
             }
         }
 
@@ -163,19 +175,30 @@ namespace UniGLTF
 
             EditorApplication.delayCall += () =>
             {
-                foreach (var extracted in extractor.Textures)
+                foreach (var kv in extractor.Textures)
                 {
-                    // TextureImporter
-                    var targetTextureImporter = AssetImporter.GetAtPath(extracted.Path) as TextureImporter;
-                    targetTextureImporter.sRGBTexture = extracted.sRGB;
-                    if (extracted.IsNormalMap)
+                    var targetPath = kv.Key;
+                    var param = kv.Value;
+
+                    // TextureImporter                   
+                    var targetTextureImporter = AssetImporter.GetAtPath(targetPath) as TextureImporter;
+
+                    switch (param.TextureType)
                     {
-                        targetTextureImporter.textureType = TextureImporterType.NormalMap;
+                        case GetTextureParam.OCCLUSION_PROP:
+                        case GetTextureParam.METALLIC_GLOSS_PROP:
+                            targetTextureImporter.sRGBTexture = false;
+                            break;
+
+                        case GetTextureParam.NORMAL_PROP:
+                            targetTextureImporter.textureType = TextureImporterType.NormalMap;
+                            break;
                     }
+
                     targetTextureImporter.SaveAndReimport();
 
                     // remap
-                    var externalObject = AssetDatabase.LoadAssetAtPath<UnityEngine.Texture2D>(extracted.Path);
+                    var externalObject = AssetDatabase.LoadAssetAtPath<UnityEngine.Texture2D>(targetPath);
                     importer.AddRemap(new AssetImporter.SourceAssetIdentifier(typeof(UnityEngine.Texture2D), externalObject.name), externalObject);
                 }
 

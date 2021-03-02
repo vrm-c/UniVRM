@@ -1,15 +1,18 @@
-﻿using System.Collections;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using UnityEngine;
 
 namespace UniGLTF
 {
-#if UNITY_EDITOR
     public static class AssetTextureLoader
     {
         public static Task<Texture2D> LoadTaskAsync(UnityPath m_assetPath,
-            bool isLinear, glTFTextureSampler sampler)
+            glTF gltf, int textureIndex)
         {
+            var textureType = TextureIO.GetglTFTextureType(gltf, textureIndex);
+            var colorSpace = TextureIO.GetColorSpace(textureType);
+            var isLinear = colorSpace == RenderTextureReadWrite.Linear;
+            var sampler = gltf.GetSamplerFromTextureIndex(textureIndex);
+
             //
             // texture from assets
             //
@@ -19,10 +22,12 @@ namespace UniGLTF
             {
                 Debug.LogWarningFormat("fail to get TextureImporter: {0}", m_assetPath);
             }
-            importer.maxTextureSize = 8192;
-            importer.sRGBTexture = !isLinear;
-
-            importer.SaveAndReimport();
+            else
+            {
+                importer.maxTextureSize = 8192;
+                importer.sRGBTexture = !isLinear;
+                importer.SaveAndReimport();
+            }
 
             var Texture = m_assetPath.LoadAsset<Texture2D>();
 
@@ -53,5 +58,4 @@ namespace UniGLTF
             return Task.FromResult(Texture);
         }
     }
-#endif
 }

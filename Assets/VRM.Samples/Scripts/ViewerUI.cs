@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using UniGLTF;
-using UniGLTF.AltTask;
 using UniHumanoid;
 using UnityEngine;
 using UnityEngine.UI;
@@ -87,9 +87,9 @@ namespace VRM.Samples
                 m_textDistributionOther.text = "";
             }
 
-            public async Awaitable UpdateMetaAsync(VRMImporterContext context)
+            public async Task UpdateMetaAsync(VRMImporterContext context)
             {
-                var meta = await context.ReadMetaAsync(true);
+                var meta = await context.ReadMetaAsync(default(TaskCaller), true);
 
                 m_textModelTitle.text = meta.Title;
                 m_textModelVersion.text = meta.Version;
