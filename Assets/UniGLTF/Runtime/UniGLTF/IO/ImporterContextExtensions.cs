@@ -1,5 +1,4 @@
-using System.IO;
-using UniGLTF.AltTask;
+using System;
 using UnityEngine;
 
 namespace UniGLTF
@@ -12,21 +11,15 @@ namespace UniGLTF
         public static void Load(this ImporterContext self)
         {
             var meassureTime = new ImporterContextSpeedLog();
-            using (var queue = TaskQueue.Create())
+            var task = self.LoadAsync(default(ImmediateCaller), meassureTime.MeasureTime);
+            if (!task.IsCompleted)
             {
-                var task = self.LoadAsync(meassureTime.MeasureTime);
-
-                // 中断された await を消化する
-                while (!task.IsCompleted)
-                {
-                    // execute synchronous
-                    queue.ExecuteOneCallback();
-                }
+                throw new Exception();
             }
-
 #if VRM_DEVELOP
             Debug.Log(meassureTime.GetSpeedLog());
 #endif
+
         }
     }
 }

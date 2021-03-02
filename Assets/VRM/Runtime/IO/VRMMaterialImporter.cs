@@ -4,7 +4,6 @@ using UnityEngine;
 using System.Linq;
 using System;
 using System.Threading.Tasks;
-using UniGLTF.AltTask;
 
 namespace VRM
 {
@@ -22,7 +21,7 @@ namespace VRM
             "VRM/UnlitTransparentZWrite",
         };
 
-        public static async Awaitable<Material> CreateAsync(glTF gltf, int m_index, glTF_VRM_Material vrmMaterial, GetTextureAsyncFunc getTexture)
+        public static async Task<Material> CreateAsync(IAwaitCaller awaitCaller, glTF gltf, int m_index, glTF_VRM_Material vrmMaterial, GetTextureAsyncFunc getTexture)
         {
             var item = vrmMaterial;
             var shaderName = item.shader;
@@ -40,7 +39,7 @@ namespace VRM
                 {
                     Debug.LogWarningFormat("unknown shader {0}.", shaderName);
                 }
-                return await MaterialFactory.DefaultCreateMaterialAsync(gltf, m_index, getTexture);
+                return await MaterialFactory.DefaultCreateMaterialAsync(awaitCaller, gltf, m_index, getTexture);
             }
 
             //
@@ -72,7 +71,7 @@ namespace VRM
             foreach (var kv in item.textureProperties)
             {
                 var param = GetTextureParam.Create(gltf, kv.Value, kv.Key);
-                var texture = await getTexture(gltf, param);
+                var texture = await getTexture(awaitCaller, gltf, param);
                 if (texture != null)
                 {
                     material.SetTexture(kv.Key, texture);
@@ -113,15 +112,15 @@ namespace VRM
             m_materials = materials;
         }
 
-        public Awaitable<Material> CreateMaterial(glTF gltf, int i, GetTextureAsyncFunc getTexture)
+        public Task<Material> CreateMaterialAsync(IAwaitCaller awaitCaller, glTF gltf, int i, GetTextureAsyncFunc getTexture)
         {
             if (i == 0 && m_materials.Count == 0)
             {
                 // dummy
-                return MaterialFactory.DefaultCreateMaterialAsync(gltf, i, getTexture);
+                return MaterialFactory.DefaultCreateMaterialAsync(awaitCaller, gltf, i, getTexture);
             }
 
-            return MToonMaterialItem.CreateAsync(gltf, i, m_materials[i], getTexture);
+            return MToonMaterialItem.CreateAsync(awaitCaller, gltf, i, m_materials[i], getTexture);
         }
     }
 }

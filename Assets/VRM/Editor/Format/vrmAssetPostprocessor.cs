@@ -51,7 +51,7 @@ namespace VRM
             var prefabPath = path.Parent.Child(path.FileNameWithoutExtension + ".prefab");
 
             // save texture assets !
-            LoadTextureAsyncFunc textureLoader = async (textureIndex, used) =>
+            LoadTextureAsyncFunc textureLoader = async (caller, textureIndex, used) =>
             {
                 var gltfTexture = parser.GLTF.textures[textureIndex];
                 var gltfImage = parser.GLTF.images[gltfTexture.source];

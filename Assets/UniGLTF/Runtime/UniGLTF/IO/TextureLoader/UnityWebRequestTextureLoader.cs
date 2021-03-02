@@ -32,7 +32,7 @@ namespace UniGLTF
             }
         }
 
-        string m_textureName;
+        string m_textureName = default;
         public void ProcessOnAnyThread()
         {
         }

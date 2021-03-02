@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
-using UniGLTF.AltTask;
+using System.Threading.Tasks;
 using UnityEngine;
 
 
@@ -670,15 +670,15 @@ namespace UniGLTF
             }
         }
 
-        public static async Awaitable<MeshWithMaterials> BuildMeshAsync(MaterialFactory ctx, MeshImporter.MeshContext meshContext)
+        public static async Task<MeshWithMaterials> BuildMeshAsync(IAwaitCaller awaitCaller, MaterialFactory ctx, MeshImporter.MeshContext meshContext)
         {
             var (mesh, recalculateTangents) = _BuildMesh(meshContext);
 
             if (recalculateTangents)
             {
-                await NextFrameAwaitable.Create();
+                await awaitCaller.NextFrame();
                 mesh.RecalculateTangents();
-                await NextFrameAwaitable.Create();
+                await awaitCaller.NextFrame();
             }
 
             // 先にすべてのマテリアルを作成済みなのでテクスチャーは生成済み。Resultを使ってよい
@@ -688,7 +688,7 @@ namespace UniGLTF
                 Materials = meshContext.MaterialIndices.Select(x => ctx.GetMaterial(x)).ToArray()
             };
 
-            await NextFrameAwaitable.Create();
+            await awaitCaller.NextFrame();
             if (meshContext.BlendShapes.Count > 0)
             {
                 var emptyVertices = new Vector3[mesh.vertexCount];
