@@ -28,9 +28,9 @@ namespace MeshUtility
         }
 
         [MenuItem(MENU_PARENT + "MeshUtility Docs", priority = 32)]
-        public static void LinkToMeshSeparatorDocs()
+        public static void MeshUtilityDocs()
         {
-            Application.OpenURL("https://github.com/vrm-c/UniVRM/blob/master/Assets/UniGLTF/MeshUtility/README.md");
+            Application.OpenURL("https://vrm.dev/en/docs/univrm/gltf/mesh_utility/");
         }
 
         public static void SeparationProcessing(GameObject go)

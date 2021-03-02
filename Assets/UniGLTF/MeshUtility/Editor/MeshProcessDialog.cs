@@ -57,9 +57,9 @@ namespace MeshUtility
         [SerializeField]
         private SkinnedMeshRenderer _cSkinnedMesh = null;
         [SerializeField]
-        private Animator _cAnimator;
+        private Animator _cAnimator = null;
         [SerializeField]
-        private Transform _cEraseRoot;
+        private Transform _cEraseRoot = null;
         [SerializeField]
         private BoneMeshEraser.EraseBone[] _eraseBones;
 
