@@ -26,7 +26,7 @@ namespace UniVRM10
                 }
                 if (node.rotation != null && node.rotation.Length == 4)
                 {
-                    // throw new NotImplementedException("not normalized !");
+                    throw new NotImplementedException("not normalized !");
                 }
                 if (node.scale != null && node.scale.Length == 3)
                 {
