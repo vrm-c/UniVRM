@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using UnityEditor;
 using UnityEditor.Experimental.AssetImporters;
 using UnityEngine;
@@ -85,7 +83,7 @@ namespace UniGLTF
 
         public void ExtractMaterialsAndTextures()
         {
-            this.ExtractTextures(TextureDirName, () =>
+            TextureExtractor.ExtractTextures(this, TextureDirName, () =>
             {
                 this.ExtractAssets<UnityEngine.Material>(MaterialDirName, ".mat");
                 AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceUpdate);
