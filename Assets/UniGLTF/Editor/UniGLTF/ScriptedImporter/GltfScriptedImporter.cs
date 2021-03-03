@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.Experimental.AssetImporters;
 using UnityEngine;
@@ -12,7 +13,6 @@ namespace UniGLTF
         [SerializeField]
         Axises m_reverseAxis = default;
 
-        const string TextureDirName = "Textures";
         const string MaterialDirName = "Materials";
 
         public override void OnImportAsset(AssetImportContext ctx)
@@ -83,11 +83,23 @@ namespace UniGLTF
 
         public void ExtractMaterialsAndTextures()
         {
-            TextureExtractor.ExtractTextures(this, TextureDirName, () =>
+            if (string.IsNullOrEmpty(assetPath))
             {
-                this.ExtractAssets<UnityEngine.Material>(MaterialDirName, ".mat");
-                AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceUpdate);
-            });
+                return;
+            }
+
+            TextureExtractor.ExtractTextures(assetPath,
+                this.GetSubAssets<UnityEngine.Texture2D>(this.assetPath).ToArray(),
+                externalObject =>
+                {
+                    this.AddRemap(new AssetImporter.SourceAssetIdentifier(typeof(UnityEngine.Texture2D), externalObject.name), externalObject);
+                },
+                () =>
+                {
+                    AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceUpdate);
+                    this.ExtractAssets<UnityEngine.Material>(MaterialDirName, ".mat");
+                    AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceUpdate);
+                });
         }
 
         public void SetExternalUnityObject<T>(UnityEditor.AssetImporter.SourceAssetIdentifier sourceAssetIdentifier, T obj) where T : UnityEngine.Object

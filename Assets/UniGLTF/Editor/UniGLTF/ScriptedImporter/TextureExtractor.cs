@@ -1,16 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEditor;
-using UnityEditor.Experimental.AssetImporters;
 using System.Linq;
 
 namespace UniGLTF
 {
     class TextureExtractor
     {
+        const string TextureDirName = "Textures";
+
         GltfParser m_parser;
         public GltfParser Parser => m_parser;
 
@@ -21,17 +21,27 @@ namespace UniGLTF
         UnityEngine.Texture2D[] m_subAssets;
         string m_path;
 
-        public TextureExtractor(ScriptedImporter importer)
+        public TextureExtractor(string assetPath, UnityEngine.Texture2D[] subAssets)
         {
             // parse GLTF
             m_parser = new GltfParser();
-            m_parser.ParsePath(importer.assetPath);
+            m_parser.ParsePath(assetPath);
 
-            m_path = $"{Path.GetDirectoryName(importer.assetPath)}/{Path.GetFileNameWithoutExtension(importer.assetPath)}.Textures";
-            m_subAssets = importer.GetSubAssets<UnityEngine.Texture2D>(importer.assetPath).ToArray();
+            m_path = $"{Path.GetDirectoryName(assetPath)}/{Path.GetFileNameWithoutExtension(assetPath)}.Textures";
+            SafeCreateDirectory(m_path);
+
+            m_subAssets = subAssets;
         }
 
-        static Regex s_mimeTypeReg = new Regex("image/(?<mime>.*)$");
+        static string GetExt(string mime)
+        {
+            switch (mime)
+            {
+                case "image/png": return ".png";
+                case "image/jpeg": return ".jpg";
+            }
+            throw new NotImplementedException();
+        }
 
         public void Extract(GetTextureParam param)
         {
@@ -44,11 +54,7 @@ namespace UniGLTF
                 case GetTextureParam.OCCLUSION_PROP:
                     {
                         // write converted texture
-                        targetPath = string.Format("{0}/{1}{2}",
-                           m_path,
-                           param.Name,
-                           ".png"
-                           );
+                        targetPath = $"{m_path}/{param.Name}.png";
                         File.WriteAllBytes(targetPath, subAsset.EncodeToPNG().ToArray());
                         break;
                     }
@@ -56,18 +62,25 @@ namespace UniGLTF
                 default:
                     {
                         // write original bytes
-                        targetPath = string.Format("{0}/{1}{2}",
-                           m_path,
-                           param.Name,
-                           ".png"
-                           );
                         var gltfTexture = GLTF.textures[param.Index0.Value];
+                        var gltfImage = GLTF.images[gltfTexture.source];
+                        var ext = GetExt(gltfImage.mimeType);
+                        targetPath = $"{m_path}/{param.Name}{ext}";
                         File.WriteAllBytes(targetPath, GLTF.GetImageBytes(Storage, gltfTexture.source).ToArray());
                         break;
                     }
             }
             AssetDatabase.ImportAsset(targetPath);
             Textures.Add(targetPath, param);
+        }
+
+        public static DirectoryInfo SafeCreateDirectory(string path)
+        {
+            if (Directory.Exists(path))
+            {
+                return null;
+            }
+            return Directory.CreateDirectory(path);
         }
 
         /// <summary>
@@ -80,23 +93,9 @@ namespace UniGLTF
         /// <param name="importer"></param>
         /// <param name="dirName"></param>
         /// <param name="onCompleted"></param>
-        public static void ExtractTextures(ScriptedImporter importer, string dirName, Action onCompleted = null)
+        public static void ExtractTextures(string assetPath, Texture2D[] subAssets, Action<Texture2D> addRemap, Action onCompleted = null)
         {
-            if (string.IsNullOrEmpty(importer.assetPath))
-            {
-                return;
-            }
-
-            var path = string.Format("{0}/{1}.{2}",
-                Path.GetDirectoryName(importer.assetPath),
-                Path.GetFileNameWithoutExtension(importer.assetPath),
-                dirName
-                );
-            importer.SafeCreateDirectory(path);
-
-            // Reload Model
-            var extractor = new TextureExtractor(importer);
-
+            var extractor = new TextureExtractor(assetPath, subAssets);
             foreach (var material in extractor.GLTF.materials)
             {
                 foreach (var x in extractor.Parser.EnumerateTextures(material))
@@ -131,10 +130,8 @@ namespace UniGLTF
 
                     // remap
                     var externalObject = AssetDatabase.LoadAssetAtPath<UnityEngine.Texture2D>(targetPath);
-                    importer.AddRemap(new AssetImporter.SourceAssetIdentifier(typeof(UnityEngine.Texture2D), externalObject.name), externalObject);
+                    addRemap(externalObject);
                 }
-
-                AssetDatabase.ImportAsset(importer.assetPath, ImportAssetOptions.ForceUpdate);
 
                 if (onCompleted != null)
                 {

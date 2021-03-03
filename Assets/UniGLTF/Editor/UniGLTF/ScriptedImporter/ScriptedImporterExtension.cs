@@ -75,22 +75,12 @@ namespace UniGLTF
                 dirName
                 );
 
-            var info = importer.SafeCreateDirectory(path);
+            var info = TextureExtractor.SafeCreateDirectory(path);
 
             foreach (var asset in subAssets)
             {
                 ExtractFromAsset(asset, string.Format("{0}/{1}{2}", path, asset.name, extension), false);
             }
-        }
-
-
-        public static DirectoryInfo SafeCreateDirectory(this ScriptedImporter importer, string path)
-        {
-            if (Directory.Exists(path))
-            {
-                return null;
-            }
-            return Directory.CreateDirectory(path);
         }
     }
 }
