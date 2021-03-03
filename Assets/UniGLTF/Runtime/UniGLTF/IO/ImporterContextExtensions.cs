@@ -16,10 +16,21 @@ namespace UniGLTF
             {
                 throw new Exception();
             }
+            if (task.IsFaulted)
+            {
+                if (task.Exception is AggregateException ae && ae.InnerExceptions.Count == 1)
+                {
+                    throw ae.InnerException;
+                }
+                else
+                {
+                    throw task.Exception;
+                }
+            }
+
 #if VRM_DEVELOP
             Debug.Log(meassureTime.GetSpeedLog());
 #endif
-
         }
     }
 }
