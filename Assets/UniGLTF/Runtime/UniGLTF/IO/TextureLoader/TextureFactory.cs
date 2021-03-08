@@ -24,6 +24,8 @@ namespace UniGLTF
         public bool IsUsed => Flags.HasFlag(TextureLoadFlags.Used);
         public bool IsExternal => Flags.HasFlag(TextureLoadFlags.External);
 
+        public bool IsSubAsset => IsUsed && !IsExternal;
+
         public TextureLoadInfo(Texture2D texture, bool used, bool isExternal)
         {
             Texture = texture;

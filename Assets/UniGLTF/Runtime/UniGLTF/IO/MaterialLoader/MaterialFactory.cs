@@ -64,6 +64,8 @@ namespace UniGLTF
             public readonly Material Asset;
             public readonly bool UseExternal;
 
+            public bool IsSubAsset => !UseExternal;
+
             public MaterialLoadInfo(Material asset, bool useExternal)
             {
                 Asset = asset;
