@@ -1,5 +1,4 @@
-﻿#if false
-using System;
+﻿using System;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
@@ -26,7 +25,6 @@ namespace UniGLTF
                 switch (ext)
                 {
                     case ".gltf":
-                    case ".glb":
                         {
                             var gltfPath = UnityPath.FromUnityPath(path);
                             var prefabPath = gltfPath.Parent.Child(gltfPath.FileNameWithoutExtension + ".prefab");
@@ -50,7 +48,8 @@ namespace UniGLTF
             var context = new ImporterContext(parser);
 
             // Extract textures to assets folder
-            context.ExtractImages(prefabPath);
+            var editor = new EditorImporterContext(context);
+            editor.ExtractImages(prefabPath);
 
             ImportDelayed(src, prefabPath, context);
         }
@@ -65,8 +64,9 @@ namespace UniGLTF
                     try
                     {
                         context.Load();
-                        context.SaveAsAsset(prefabPath);
-                        context.EditorDestroyRoot();
+                        var editor = new EditorImporterContext(context);
+                        editor.SaveAsAsset(prefabPath);
+                        GameObject.DestroyImmediate(context.Root);
                     }
                     catch (UniGLTFNotSupportedException ex)
                     {
@@ -74,16 +74,15 @@ namespace UniGLTF
                             src,
                             ex.Message
                             );
-                        context.EditorDestroyRootAndAssets();
+                        context.Dispose();
                     }
                     catch (Exception ex)
                     {
                         Debug.LogErrorFormat("import error: {0}", src);
                         Debug.LogErrorFormat("{0}", ex);
-                        context.EditorDestroyRootAndAssets();
+                        context.Dispose();
                     }
                 };
         }
     }
 }
-#endif
