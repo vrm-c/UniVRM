@@ -331,62 +331,6 @@ namespace UniGLTF
             }
         }
 
-        public string GetTextureExtension(int imageIndex)
-        {
-            foreach (var m in GLTF.materials)
-            {
-                if (m.pbrMetallicRoughness != null)
-                {
-                    // base color
-                    if (m.pbrMetallicRoughness?.baseColorTexture != null)
-                    {
-                        if (m.pbrMetallicRoughness.baseColorTexture.index == imageIndex)
-                        {
-                            return "";
-                        }
-                    }
-
-                    // metallic roughness
-                    if (m.pbrMetallicRoughness?.metallicRoughnessTexture != null)
-                    {
-                        if (m.pbrMetallicRoughness.metallicRoughnessTexture.index == imageIndex)
-                        {
-                            return ".metallicRoughness";
-                        }
-                    }
-                }
-
-                // emission
-                if (m.emissiveTexture != null)
-                {
-                    if (m.emissiveTexture.index == imageIndex)
-                    {
-                        return "";
-                    }
-                }
-
-                // normal
-                if (m.normalTexture != null)
-                {
-                    if (m.normalTexture.index == imageIndex)
-                    {
-                        return "";
-                    }
-                }
-
-                // occlusion
-                if (m.occlusionTexture != null)
-                {
-                    if (m.occlusionTexture.index == imageIndex)
-                    {
-                        return ".occlusion";
-                    }
-                }
-            }
-
-            return "";
-        }
-
         public IEnumerable<GetTextureParam> EnumerateTextures(glTFMaterial m)
         {
             if (m.pbrMetallicRoughness != null)

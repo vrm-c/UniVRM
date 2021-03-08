@@ -33,44 +33,58 @@ namespace UniGLTF
             m_subAssets = subAssets;
         }
 
-        static string GetExt(string mime)
+        static string GetExt(string mime, string uri)
         {
             switch (mime)
             {
                 case "image/png": return ".png";
                 case "image/jpeg": return ".jpg";
             }
-            throw new NotImplementedException();
+
+            return Path.GetExtension(uri).ToLower();
         }
 
-        public void Extract(GetTextureParam param)
+        public void Extract(GetTextureParam param, bool hasUri)
         {
             var subAsset = m_subAssets.FirstOrDefault(x => x.name == param.Name);
             string targetPath = "";
 
-            switch (param.TextureType)
+            if (hasUri && !param.ExtractConverted)
             {
-                case GetTextureParam.METALLIC_GLOSS_PROP:
-                case GetTextureParam.OCCLUSION_PROP:
-                    {
-                        // write converted texture
-                        targetPath = $"{m_path}/{param.Name}.png";
-                        File.WriteAllBytes(targetPath, subAsset.EncodeToPNG().ToArray());
-                        break;
-                    }
-
-                default:
-                    {
-                        // write original bytes
-                        var gltfTexture = GLTF.textures[param.Index0.Value];
-                        var gltfImage = GLTF.images[gltfTexture.source];
-                        var ext = GetExt(gltfImage.mimeType);
-                        targetPath = $"{m_path}/{param.Name}{ext}";
-                        File.WriteAllBytes(targetPath, GLTF.GetImageBytes(Storage, gltfTexture.source).ToArray());
-                        break;
-                    }
+                var gltfTexture = GLTF.textures[param.Index0.Value];
+                var gltfImage = GLTF.images[gltfTexture.source];
+                var ext = GetExt(gltfImage.mimeType, gltfImage.uri);
+                targetPath = $"{Path.GetDirectoryName(m_path)}/{param.Name}{ext}";
             }
-            AssetDatabase.ImportAsset(targetPath);
+            else
+            {
+
+                switch (param.TextureType)
+                {
+                    case GetTextureParam.METALLIC_GLOSS_PROP:
+                    case GetTextureParam.OCCLUSION_PROP:
+                        {
+                            // write converted texture
+                            targetPath = $"{m_path}/{param.Name}.png";
+                            File.WriteAllBytes(targetPath, subAsset.EncodeToPNG().ToArray());
+                            AssetDatabase.ImportAsset(targetPath);
+                            break;
+                        }
+
+                    default:
+                        {
+                            // write original bytes
+                            var gltfTexture = GLTF.textures[param.Index0.Value];
+                            var gltfImage = GLTF.images[gltfTexture.source];
+                            var ext = GetExt(gltfImage.mimeType, gltfImage.uri);
+                            targetPath = $"{m_path}/{param.Name}{ext}";
+                            File.WriteAllBytes(targetPath, GLTF.GetImageBytes(Storage, gltfTexture.source).ToArray());
+                            AssetDatabase.ImportAsset(targetPath);
+                            break;
+                        }
+                }
+            }
+
             Textures.Add(targetPath, param);
         }
 
@@ -96,11 +110,14 @@ namespace UniGLTF
         public static void ExtractTextures(string assetPath, Texture2D[] subAssets, Action<Texture2D> addRemap, Action onCompleted = null)
         {
             var extractor = new TextureExtractor(assetPath, subAssets);
+            var normalMaps = new List<string>();
             foreach (var material in extractor.GLTF.materials)
             {
                 foreach (var x in extractor.Parser.EnumerateTextures(material))
                 {
-                    extractor.Extract(x);
+                    var gltfTexture = extractor.GLTF.textures[x.Index0.Value];
+                    var gltfImage = extractor.GLTF.images[gltfTexture.source];
+                    extractor.Extract(x, !string.IsNullOrEmpty(gltfImage.uri));
                 }
             }
 
@@ -113,24 +130,39 @@ namespace UniGLTF
 
                     // TextureImporter                   
                     var targetTextureImporter = AssetImporter.GetAtPath(targetPath) as TextureImporter;
-
-                    switch (param.TextureType)
+                    if (targetTextureImporter != null)
                     {
-                        case GetTextureParam.OCCLUSION_PROP:
-                        case GetTextureParam.METALLIC_GLOSS_PROP:
-                            targetTextureImporter.sRGBTexture = false;
-                            break;
+                        switch (param.TextureType)
+                        {
+                            case GetTextureParam.OCCLUSION_PROP:
+                            case GetTextureParam.METALLIC_GLOSS_PROP:
+#if VRM_DEVELOP
+                                Debug.Log($"{targetPath} => linear");
+#endif
+                                targetTextureImporter.sRGBTexture = false;
+                                targetTextureImporter.SaveAndReimport();
+                                break;
 
-                        case GetTextureParam.NORMAL_PROP:
-                            targetTextureImporter.textureType = TextureImporterType.NormalMap;
-                            break;
+                            case GetTextureParam.NORMAL_PROP:
+#if VRM_DEVELOP
+                                Debug.Log($"{targetPath} => normalmap");
+#endif
+                                targetTextureImporter.textureType = TextureImporterType.NormalMap;
+                                targetTextureImporter.SaveAndReimport();
+                                break;
+                        }
                     }
-
-                    targetTextureImporter.SaveAndReimport();
+                    else
+                    {
+                        throw new FileNotFoundException(targetPath);
+                    }
 
                     // remap
                     var externalObject = AssetDatabase.LoadAssetAtPath<UnityEngine.Texture2D>(targetPath);
-                    addRemap(externalObject);
+                    if (externalObject != null)
+                    {
+                        addRemap(externalObject);
+                    }
                 }
 
                 if (onCompleted != null)

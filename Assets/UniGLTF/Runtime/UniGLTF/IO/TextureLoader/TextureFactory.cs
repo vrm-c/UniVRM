@@ -137,8 +137,9 @@ namespace UniGLTF
                         {
                             var baseTexture = await GetOrCreateBaseTexture(awaitCaller, gltf, param.Index0.Value, false);
                             var converted = new NormalConverter().GetImportTexture(baseTexture.Texture);
+                            converted.name = $"{param.Name}.normal";
                             var info = new TextureLoadInfo(converted, true, false);
-                            m_textureCache.Add(param.Name, info);
+                            m_textureCache.Add(converted.name, info);
                             return info.Texture;
                         }
                         else
@@ -150,8 +151,8 @@ namespace UniGLTF
 
                             var textureAssetPath = AssetDatabase.GetAssetPath(info.Texture);
                             TextureIO.MarkTextureAssetAsNormalMap(textureAssetPath);
-#endif
                             return info.Texture;
+#endif
                         }
                     }
 
@@ -160,7 +161,7 @@ namespace UniGLTF
                         // Bake roughnessFactor values into a texture.
                         var baseTexture = await GetOrCreateBaseTexture(awaitCaller, gltf, param.Index0.Value, false);
                         var converted = new MetallicRoughnessConverter(param.MetallicFactor).GetImportTexture(baseTexture.Texture);
-                        converted.name = param.Name;
+                        converted.name = $"{param.Name}.metallicRoughness";
                         var info = new TextureLoadInfo(converted, true, false);
                         m_textureCache.Add(param.Name, info);
                         return info.Texture;
@@ -170,7 +171,7 @@ namespace UniGLTF
                     {
                         var baseTexture = await GetOrCreateBaseTexture(awaitCaller, gltf, param.Index0.Value, false);
                         var converted = new OcclusionConverter().GetImportTexture(baseTexture.Texture);
-                        converted.name = param.Name;
+                        converted.name = $"{param.Name}.occlusion";
                         var info = new TextureLoadInfo(converted, true, false);
                         m_textureCache.Add(param.Name, info);
                         return info.Texture;

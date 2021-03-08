@@ -18,6 +18,11 @@ namespace UniGLTF
         public readonly ushort? Index4;
         public readonly ushort? Index5;
 
+        /// <summary>
+        /// この２種類は変換済みをExtract
+        /// </summary>
+        public bool ExtractConverted => TextureType == OCCLUSION_PROP || TextureType == METALLIC_GLOSS_PROP;
+
         public GetTextureParam(string name, string textureType, float metallicFactor, int i0, int i1, int i2, int i3, int i4, int i5)
         {
             if (string.IsNullOrEmpty(name))
@@ -69,13 +74,13 @@ namespace UniGLTF
         public static GetTextureParam CreateMetallic(glTF gltf, int textureIndex, float metallicFactor)
         {
             var name = gltf.textures[textureIndex].name;
-            return new GetTextureParam(name + ".metallicRoughness", METALLIC_GLOSS_PROP, metallicFactor, textureIndex, default, default, default, default, default);
+            return new GetTextureParam(name, METALLIC_GLOSS_PROP, metallicFactor, textureIndex, default, default, default, default, default);
         }
 
         public static GetTextureParam CreateOcclusion(glTF gltf, int textureIndex)
         {
             var name = gltf.textures[textureIndex].name;
-            return new GetTextureParam(name + ".occlusion", OCCLUSION_PROP, default, textureIndex, default, default, default, default, default);
+            return new GetTextureParam(name, OCCLUSION_PROP, default, textureIndex, default, default, default, default, default);
         }
     }
 }

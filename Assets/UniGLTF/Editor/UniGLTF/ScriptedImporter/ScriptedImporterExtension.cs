@@ -10,30 +10,13 @@ namespace UniGLTF
     {
         public static void ClearExternalObjects<T>(this ScriptedImporter importer) where T : UnityEngine.Object
         {
-            foreach (var extarnalObject in importer.GetExternalObjectMap().Where(x => x.Key.type == typeof(T)))
+            foreach (var externalObject in importer.GetExternalObjectMap().Where(x => x.Key.type == typeof(T)))
             {
-                importer.RemoveRemap(extarnalObject.Key);
+                importer.RemoveRemap(externalObject.Key);
             }
 
             AssetDatabase.WriteImportSettingsIfDirty(importer.assetPath);
             AssetDatabase.ImportAsset(importer.assetPath, ImportAssetOptions.ForceUpdate);
-        }
-
-        public static void ClearExtarnalObjects(this ScriptedImporter importer)
-        {
-            foreach (var extarnalObject in importer.GetExternalObjectMap())
-            {
-                importer.RemoveRemap(extarnalObject.Key);
-            }
-
-            AssetDatabase.WriteImportSettingsIfDirty(importer.assetPath);
-            AssetDatabase.ImportAsset(importer.assetPath, ImportAssetOptions.ForceUpdate);
-        }
-
-        private static T GetSubAsset<T>(this ScriptedImporter importer, string assetPath) where T : UnityEngine.Object
-        {
-            return importer.GetSubAssets<T>(assetPath)
-                .FirstOrDefault();
         }
 
         public static IEnumerable<T> GetSubAssets<T>(this ScriptedImporter importer, string assetPath) where T : UnityEngine.Object
@@ -43,74 +26,6 @@ namespace UniGLTF
                 .Where(x => AssetDatabase.IsSubAsset(x))
                 .Where(x => x is T)
                 .Select(x => x as T);
-        }
-
-        private static void ExtractFromAsset(UnityEngine.Object subAsset, string destinationPath, bool isForceUpdate)
-        {
-            string assetPath = AssetDatabase.GetAssetPath(subAsset);
-
-            var clone = UnityEngine.Object.Instantiate(subAsset);
-            AssetDatabase.CreateAsset(clone, destinationPath);
-
-            var assetImporter = AssetImporter.GetAtPath(assetPath);
-            assetImporter.AddRemap(new AssetImporter.SourceAssetIdentifier(subAsset), clone);
-
-            if (isForceUpdate)
-            {
-                AssetDatabase.WriteImportSettingsIfDirty(assetPath);
-                AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceUpdate);
-            }
-        }
-
-        public static void ExtractAssets<T>(this ScriptedImporter importer, string dirName, string extension) where T : UnityEngine.Object
-        {
-            if (string.IsNullOrEmpty(importer.assetPath))
-                return;
-
-            var subAssets = importer.GetSubAssets<T>(importer.assetPath);
-
-            var path = string.Format("{0}/{1}.{2}",
-                Path.GetDirectoryName(importer.assetPath),
-                Path.GetFileNameWithoutExtension(importer.assetPath),
-                dirName
-                );
-
-            var info = TextureExtractor.SafeCreateDirectory(path);
-
-            foreach (var asset in subAssets)
-            {
-                ExtractFromAsset(asset, string.Format("{0}/{1}{2}", path, asset.name, extension), false);
-            }
-        }
-
-        const string MaterialDirName = "Materials";
-
-        public static void ExtractMaterialsAndTextures(this ScriptedImporter self)
-        {
-            if (string.IsNullOrEmpty(self.assetPath))
-            {
-                return;
-            }
-
-            TextureExtractor.ExtractTextures(self.assetPath,
-                self.GetSubAssets<UnityEngine.Texture2D>(self.assetPath).ToArray(),
-                externalObject =>
-                {
-                    self.AddRemap(new AssetImporter.SourceAssetIdentifier(typeof(UnityEngine.Texture2D), externalObject.name), externalObject);
-                },
-                () =>
-                {
-                    AssetDatabase.ImportAsset(self.assetPath, ImportAssetOptions.ForceUpdate);
-                    self.ExtractAssets<UnityEngine.Material>(MaterialDirName, ".mat");
-                    AssetDatabase.ImportAsset(self.assetPath, ImportAssetOptions.ForceUpdate);
-                });
-        }
-
-        public static void SetExternalUnityObject<T>(this ScriptedImporter self, UnityEditor.AssetImporter.SourceAssetIdentifier sourceAssetIdentifier, T obj) where T : UnityEngine.Object
-        {
-            self.AddRemap(sourceAssetIdentifier, obj);
-            AssetDatabase.WriteImportSettingsIfDirty(self.assetPath);
-            AssetDatabase.ImportAsset(self.assetPath, ImportAssetOptions.ForceUpdate);
         }
     }
 }

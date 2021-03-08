@@ -21,14 +21,15 @@ namespace UniGLTF
 #endif
 
             var loaded = Load(context.assetPath,
-                scriptedImporter.GetExternalObjectMap().Select(kv => (kv.Key.name, kv.Value)),
+                scriptedImporter.GetExternalObjectMap(),
                 reverseAxis
             );
 
             AddSubAssets(context, loaded);
         }
 
-        static IEnumerable<(string, UnityEngine.Object)> EnumerateExists(GltfParser parser, UnityPath dir)
+        static IEnumerable<(string, UnityEngine.Object)> EnumerateExists(Dictionary<AssetImporter.SourceAssetIdentifier, UnityEngine.Object> exclude,
+            GltfParser parser, UnityPath dir)
         {
             foreach (var texParam in parser.EnumerateTextures())
             {
@@ -47,7 +48,10 @@ namespace UniGLTF
                                 var child = dir.Child(gltfImage.uri);
                                 var asset = AssetDatabase.LoadAssetAtPath<Texture2D>(child.Value);
                                 // Debug.Log($"exists: {child}: {asset}");
-                                yield return (asset.name, asset);
+                                if (!exclude.Any(kv => kv.Value.name == asset.name))
+                                {
+                                    yield return (asset.name, asset);
+                                }
                             }
                         }
                         break;
@@ -64,7 +68,7 @@ namespace UniGLTF
         /// <param name="externalObjectMap">ScriptedImporter外部に作成済みのAssetへの参照</param>
         /// <param name="reverseAxis">gltf から unityへの座標変換オプション</param>
         /// <returns></returns>
-        static ImporterContext Load(string assetPath, IEnumerable<(string, UnityEngine.Object)> externalObjectMap, Axises reverseAxis)
+        static ImporterContext Load(string assetPath, Dictionary<AssetImporter.SourceAssetIdentifier, UnityEngine.Object> externalObjectMap, Axises reverseAxis)
         {
             //
             // Parse(parse glb, parser gltf json)
@@ -75,8 +79,9 @@ namespace UniGLTF
             //
             // Import(create unity objects)
             //
-            var context = new ImporterContext(parser, null, externalObjectMap.Concat(
-                    EnumerateExists(parser, UnityPath.FromUnityPath(assetPath).Parent)));
+            var context = new ImporterContext(parser, null,
+                externalObjectMap.Where(x => x.Value != null).Select(x => (x.Value.name, x.Value)).Concat(
+                EnumerateExists(externalObjectMap, parser, UnityPath.FromUnityPath(assetPath).Parent)));
             context.InvertAxis = reverseAxis;
             context.Load();
             context.ShowMeshes();
