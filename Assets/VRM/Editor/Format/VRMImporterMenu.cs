@@ -2,7 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 using UniGLTF;
-
+using System;
 
 namespace VRM
 {
@@ -57,13 +57,7 @@ namespace VRM
                 var parser = new GltfParser();
                 parser.ParseGlb(File.ReadAllBytes(path));
 
-                using (var context = new VRMImporterContext(parser))
-                {
-                    var editor = new VRMEditorImporterContext(context);
-                    editor.ExtractImages(prefabPath);
-                }
-
-                EditorApplication.delayCall += () =>
+                Action onCompleted = () =>
                 {
                     //
                     // after textures imported
@@ -75,6 +69,12 @@ namespace VRM
                         editor.SaveAsAsset(prefabPath);
                     }
                 };
+
+                using (var context = new VRMImporterContext(parser))
+                {
+                    var editor = new VRMEditorImporterContext(context);
+                    editor.ConvertAndExtractImages(UnityPath.FromFullpath(path), onCompleted);
+                }
             }
         }
     }

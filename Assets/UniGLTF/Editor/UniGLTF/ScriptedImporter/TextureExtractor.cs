@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace UniGLTF
 {
-    class TextureExtractor
+    public class TextureExtractor
     {
         const string TextureDirName = "Textures";
 
@@ -30,10 +30,14 @@ namespace UniGLTF
             m_path = $"{Path.GetDirectoryName(assetPath)}/{Path.GetFileNameWithoutExtension(assetPath)}.Textures";
             SafeCreateDirectory(m_path);
 
+            if (assetPath == null)
+            {
+                throw new ArgumentNullException();
+            }
             m_subAssets = subAssets;
         }
 
-        static string GetExt(string mime, string uri)
+        public static string GetExt(string mime, string uri)
         {
             switch (mime)
             {

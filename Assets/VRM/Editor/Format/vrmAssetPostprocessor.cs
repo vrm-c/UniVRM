@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UniGLTF;
 using UnityEditor;
 using UnityEngine;
@@ -50,34 +51,21 @@ namespace VRM
 
             var prefabPath = path.Parent.Child(path.FileNameWithoutExtension + ".prefab");
 
-            // save texture assets !
-            LoadTextureAsyncFunc textureLoader = async (caller, textureIndex, used) =>
+            Action onCompleted = () =>
             {
-                var gltfTexture = parser.GLTF.textures[textureIndex];
-                var gltfImage = parser.GLTF.images[gltfTexture.source];
-                var assetPath = prefabPath.Parent.Child(gltfImage.uri);
-                var texture = await UniGLTF.AssetTextureLoader.LoadTaskAsync(assetPath, parser.GLTF, textureIndex);
-                return new TextureLoadInfo(texture, used, false);
-            };
-
-            using (var context = new VRMImporterContext(parser, textureLoader))
-            {
-                var editor = new VRMEditorImporterContext(context);
-                editor.ExtractImages(prefabPath);
-            }
-
-            EditorApplication.delayCall += () =>
-            {
-                //
-                // after textures imported
-                //
-                using (var context = new VRMImporterContext(parser, textureLoader))
+                using (var context = new VRMImporterContext(parser))
                 {
                     var editor = new VRMEditorImporterContext(context);
                     context.Load();
                     editor.SaveAsAsset(prefabPath);
                 }
             };
+
+            using (var context = new VRMImporterContext(parser))
+            {
+                var editor = new VRMEditorImporterContext(context);
+                editor.ConvertAndExtractImages(path, onCompleted);
+            }
         }
     }
 #endif
