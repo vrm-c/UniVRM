@@ -314,15 +314,15 @@ namespace VRM.Samples
                         var parser = new GltfParser();
                         parser.ParseGlb(file);
 
-                        var context = new VRMImporterContext(parser);
-                        await m_texts.UpdateMetaAsync(context);
-                        await context.LoadAsync();
-
-                        context.DisposeOnGameObjectDestroyed();
-                        context.ShowMeshes();
-                        context.EnableUpdateWhenOffscreen();
-                        context.ShowMeshes();
-                        SetModel(context.Root);
+                        using (var context = new VRMImporterContext(parser))
+                        {
+                            await m_texts.UpdateMetaAsync(context);
+                            await context.LoadAsync();
+                            context.EnableUpdateWhenOffscreen();
+                            context.ShowMeshes();
+                            context.DisposeOnGameObjectDestroyed();
+                            SetModel(context.Root);
+                        }
                         break;
                     }
 
@@ -334,10 +334,9 @@ namespace VRM.Samples
 
                         var context = new UniGLTF.ImporterContext(parser);
                         context.Load();
-                        context.DisposeOnGameObjectDestroyed();
-                        context.ShowMeshes();
                         context.EnableUpdateWhenOffscreen();
                         context.ShowMeshes();
+                        context.DisposeOnGameObjectDestroyed();
                         SetModel(context.Root);
                         break;
                     }
@@ -350,10 +349,9 @@ namespace VRM.Samples
 
                         var context = new UniGLTF.ImporterContext(parser);
                         context.Load();
-                        context.DisposeOnGameObjectDestroyed();
-                        context.ShowMeshes();
                         context.EnableUpdateWhenOffscreen();
                         context.ShowMeshes();
+                        context.DisposeOnGameObjectDestroyed();
                         SetModel(context.Root);
                         break;
                     }

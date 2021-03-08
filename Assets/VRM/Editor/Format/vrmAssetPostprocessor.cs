@@ -59,18 +59,24 @@ namespace VRM
                 var texture = await UniGLTF.AssetTextureLoader.LoadTaskAsync(assetPath, parser.GLTF, textureIndex);
                 return new TextureLoadInfo(texture, used, false);
             };
-            var context = new VRMImporterContext(parser, textureLoader);
-            var editor = new VRMEditorImporterContext(context);
-            editor.ExtractImages(prefabPath);
+
+            using (var context = new VRMImporterContext(parser, textureLoader))
+            {
+                var editor = new VRMEditorImporterContext(context);
+                editor.ExtractImages(prefabPath);
+            }
 
             EditorApplication.delayCall += () =>
             {
                 //
                 // after textures imported
                 //
-                context.Load();
-                editor.SaveAsAsset(prefabPath);
-                context.Dispose();
+                using (var context = new VRMImporterContext(parser, textureLoader))
+                {
+                    var editor = new VRMEditorImporterContext(context);
+                    context.Load();
+                    editor.SaveAsAsset(prefabPath);
+                }
             };
         }
     }

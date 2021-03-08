@@ -190,8 +190,9 @@ namespace UniGLTF
         }
         #endregion
 
-        #region Imported
+        #region Imported        
         public GameObject Root;
+        bool m_ownRoot = true;
         public List<Transform> Nodes = new List<Transform>();
 
         public List<MeshWithMaterials> Meshes = new List<MeshWithMaterials>();
@@ -252,7 +253,7 @@ namespace UniGLTF
             m_materialFactory.Dispose();
             m_textureFactory.Dispose();
 
-            if (Root)
+            if (m_ownRoot && Root != null)
             {
 #if VRM_DEVELOP
                 Debug.Log($"Destroy {Root}");
@@ -282,10 +283,10 @@ namespace UniGLTF
             }
             AnimationClips.Clear();
 
-            if (Root != null)
+            if (m_ownRoot && Root != null)
             {
                 add(Root);
-                Root = null;
+                m_ownRoot = false;
             }
         }
 

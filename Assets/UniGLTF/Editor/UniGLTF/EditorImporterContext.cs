@@ -19,35 +19,6 @@ namespace UniGLTF
             m_context = context;
         }
 
-        // public virtual IEnumerable<UnityEngine.Object> ObjectsForSubAsset()
-        // {
-        //     foreach (var x in m_context.TextureFactory.ObjectsForSubAsset())
-        //     {
-        //         yield return x;
-        //     }
-        //     foreach (var x in m_context.MaterialFactory.ObjectsForSubAsset())
-        //     {
-        //         yield return x;
-        //     }
-        //     foreach (var x in m_context.Meshes) { yield return x.Mesh; }
-        //     foreach (var x in m_context.AnimationClips) { yield return x; }
-        // }
-
-        // /// <summary>
-        // /// Destroy assets that created ImporterContext. This function is clean up for importer error.
-        // /// </summary>
-        // public virtual void EditorDestroyRootAndAssets()
-        // {
-        //     // Remove hierarchy
-        //     if (m_context.Root != null) GameObject.DestroyImmediate(m_context.Root);
-
-        //     // Remove resources. materials, textures meshes etc...
-        //     foreach (var o in ObjectsForSubAsset())
-        //     {
-        //         UnityEngine.Object.DestroyImmediate(o, true);
-        //     }
-        // }
-
         public virtual UnityPath GetAssetPath(UnityPath prefabPath, UnityEngine.Object o, bool meshAsSubAsset)
         {
             if (o is Material)
@@ -122,6 +93,9 @@ namespace UniGLTF
                 prefabPath
             };
 
+            // backup
+            var root = m_context.Root;
+
             m_context.TransferOwnership(o =>
             {
 
@@ -168,21 +142,13 @@ namespace UniGLTF
             {
                 Debug.LogFormat("replace prefab: {0}", prefabPath);
                 var prefab = prefabPath.LoadAsset<GameObject>();
-#if UNITY_2018_3_OR_NEWER
-                PrefabUtility.SaveAsPrefabAssetAndConnect(m_context.Root, prefabPath.Value, InteractionMode.AutomatedAction);
-#else
-                PrefabUtility.ReplacePrefab(Root, prefab, ReplacePrefabOptions.ReplaceNameBased);
-#endif
+                PrefabUtility.SaveAsPrefabAssetAndConnect(root, prefabPath.Value, InteractionMode.AutomatedAction);
 
             }
             else
             {
                 Debug.LogFormat("create prefab: {0}", prefabPath);
-#if UNITY_2018_3_OR_NEWER
-                PrefabUtility.SaveAsPrefabAssetAndConnect(m_context.Root, prefabPath.Value, InteractionMode.AutomatedAction);
-#else
-                PrefabUtility.CreatePrefab(prefabPath.Value, Root);
-#endif
+                PrefabUtility.SaveAsPrefabAssetAndConnect(root, prefabPath.Value, InteractionMode.AutomatedAction);
             }
             foreach (var x in paths)
             {

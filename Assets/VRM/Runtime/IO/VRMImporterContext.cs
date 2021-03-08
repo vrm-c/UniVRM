@@ -306,8 +306,6 @@ namespace VRM
 
         public override void TransferOwnership(Action<UnityEngine.Object> add)
         {
-            base.TransferOwnership(add);
-
             // VRM 固有のリソース(ScriptableObject)
             add(HumanoidAvatar);
             HumanoidAvatar = null;
@@ -326,6 +324,8 @@ namespace VRM
 
             add(BlendShapeAvatar);
             BlendShapeAvatar = null;
+
+            base.TransferOwnership(add);
         }
     }
 }
