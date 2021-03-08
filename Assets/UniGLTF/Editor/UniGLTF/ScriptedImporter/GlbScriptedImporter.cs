@@ -1,4 +1,3 @@
-﻿using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.Experimental.AssetImporters;
@@ -8,7 +7,7 @@ using UnityEngine;
 namespace UniGLTF
 {
     [ScriptedImporter(1, "glb")]
-    public class GltfScriptedImporter : ScriptedImporter
+    public class GlbScriptedImporter : ScriptedImporter
     {
         [SerializeField]
         Axises m_reverseAxis = default;

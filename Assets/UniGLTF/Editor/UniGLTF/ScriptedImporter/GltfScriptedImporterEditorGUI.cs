@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -7,15 +7,15 @@ using UnityEngine;
 
 namespace UniGLTF
 {
-    [CustomEditor(typeof(GltfScriptedImporter))]
+    [CustomEditor(typeof(GlbScriptedImporter))]
     public class GltfScriptedImporterEditorGUI : ScriptedImporterEditor
     {
-        GltfScriptedImporter m_importer;
+        GlbScriptedImporter m_importer;
         GltfParser m_parser;
 
         public override void OnEnable()
         {
-            m_importer = target as GltfScriptedImporter;
+            m_importer = target as GlbScriptedImporter;
             m_parser = new GltfParser();
             m_parser.ParsePath(m_importer.assetPath);
         }
@@ -67,7 +67,7 @@ namespace UniGLTF
             }
         }
 
-        static void OnGUIMaterial(GltfScriptedImporter importer, GltfParser parser)
+        static void OnGUIMaterial(GlbScriptedImporter importer, GltfParser parser)
         {
             var canExtract = !importer.GetExternalObjectMap().Any(x => x.Value is Material || x.Value is Texture2D);
             using (new TmpGuiEnable(canExtract))
@@ -98,7 +98,7 @@ namespace UniGLTF
             }
         }
 
-        static void DrawRemapGUI<T>(GltfScriptedImporter importer, IEnumerable<string> names) where T : UnityEngine.Object
+        static void DrawRemapGUI<T>(GlbScriptedImporter importer, IEnumerable<string> names) where T : UnityEngine.Object
         {
             EditorGUI.indentLevel++;
             var map = importer.GetExternalObjectMap()
@@ -126,7 +126,7 @@ namespace UniGLTF
             EditorGUI.indentLevel--;
         }
 
-        static void OnGUIAnimation(GltfScriptedImporter importer, GltfParser parser)
+        static void OnGUIAnimation(GlbScriptedImporter importer, GltfParser parser)
         {
             foreach (var a in parser.GLTF.animations)
             {
