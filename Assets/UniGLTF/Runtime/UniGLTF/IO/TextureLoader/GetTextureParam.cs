@@ -5,8 +5,31 @@ namespace UniGLTF
     public struct GetTextureParam
     {
         public const string NORMAL_PROP = "_BumpMap";
+        public const string NORMAL_SUFFIX = ".normal";
         public const string METALLIC_GLOSS_PROP = "_MetallicGlossMap";
+        public const string METALLIC_GLOSS_SUFFIX = ".metallicRoughness";
         public const string OCCLUSION_PROP = "_OcclusionMap";
+        public const string OCCLUSION_SUFFIX = ".occlusion";
+
+        public static string RemoveSuffix(string src)
+        {
+            if (src.EndsWith(NORMAL_SUFFIX))
+            {
+                return src.Substring(0, src.Length - NORMAL_SUFFIX.Length);
+            }
+            else if (src.EndsWith(METALLIC_GLOSS_SUFFIX))
+            {
+                return src.Substring(0, src.Length - METALLIC_GLOSS_SUFFIX.Length);
+            }
+            else if (src.EndsWith(OCCLUSION_SUFFIX))
+            {
+                return src.Substring(0, src.Length - OCCLUSION_SUFFIX.Length);
+            }
+            else
+            {
+                return src;
+            }
+        }
 
         readonly string m_name;
 
@@ -18,9 +41,9 @@ namespace UniGLTF
             {
                 switch (TextureType)
                 {
-                    case METALLIC_GLOSS_PROP: return $"{m_name}.metallicRoughness";
-                    case OCCLUSION_PROP: return $"{m_name}.occlusion";
-                    case NORMAL_PROP: return $"{m_name}.normal";
+                    case METALLIC_GLOSS_PROP: return $"{m_name}{METALLIC_GLOSS_SUFFIX}";
+                    case OCCLUSION_PROP: return $"{m_name}{OCCLUSION_SUFFIX}";
+                    case NORMAL_PROP: return $"{m_name}{NORMAL_SUFFIX}";
                     default: return m_name;
                 }
             }
