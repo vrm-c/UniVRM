@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using UnityEditor.Experimental.AssetImporters;
 using UnityEngine;
 
@@ -27,6 +28,33 @@ namespace UniGLTF
             AddSubAssets(context, loaded);
         }
 
+        static IEnumerable<(string, UnityEngine.Object)> EnumerateExists(GltfParser parser, UnityPath dir)
+        {
+            foreach (var texParam in parser.EnumerateTextures())
+            {
+                switch (texParam.TextureType)
+                {
+                    case GetTextureParam.METALLIC_GLOSS_PROP:
+                    case GetTextureParam.OCCLUSION_PROP:
+                        break;
+
+                    default:
+                        {
+                            var gltfTexture = parser.GLTF.textures.First(y => y.name == texParam.Name);
+                            var gltfImage = parser.GLTF.images[gltfTexture.source];
+                            if (!string.IsNullOrEmpty(gltfImage.uri))
+                            {
+                                var child = dir.Child(gltfImage.uri);
+                                var asset = AssetDatabase.LoadAssetAtPath<Texture2D>(child.Value);
+                                // Debug.Log($"exists: {child}: {asset}");
+                                yield return (asset.name, asset);
+                            }
+                        }
+                        break;
+                }
+            }
+        }
+
         /// <summary>
         /// Parse して、UnityObject 化する。
         /// 
@@ -47,7 +75,8 @@ namespace UniGLTF
             //
             // Import(create unity objects)
             //
-            var context = new ImporterContext(parser, null, externalObjectMap);
+            var context = new ImporterContext(parser, null, externalObjectMap.Concat(
+                    EnumerateExists(parser, UnityPath.FromUnityPath(assetPath).Parent)));
             context.InvertAxis = reverseAxis;
             context.Load();
             context.ShowMeshes();
