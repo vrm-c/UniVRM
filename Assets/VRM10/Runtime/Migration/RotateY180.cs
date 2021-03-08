@@ -26,7 +26,14 @@ namespace UniVRM10
                 }
                 if (node.rotation != null && node.rotation.Length == 4)
                 {
-                    // throw new NotImplementedException("not normalized !");
+                    if (node.rotation[0] == 0 && node.rotation[1] == 0 && node.rotation[2] == 0 && node.rotation[3] == 1)
+                    {
+                        // indentity
+                    }
+                    else
+                    {
+                        throw new NotImplementedException("not normalized !");
+                    }
                 }
                 if (node.scale != null && node.scale.Length == 3)
                 {

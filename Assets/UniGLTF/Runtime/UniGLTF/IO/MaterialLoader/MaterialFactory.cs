@@ -191,6 +191,11 @@ namespace UniGLTF
             var gltf = new glTF
             {
                 materials = new System.Collections.Generic.List<glTFMaterial> { material },
+                textures = new List<glTFTexture>{
+                    new glTFTexture{
+                        name = "texture_0"
+                    }
+                },
             };
             var task = DefaultCreateMaterialAsync(default(ImmediateCaller), gltf, i, null);
             return task.Result;

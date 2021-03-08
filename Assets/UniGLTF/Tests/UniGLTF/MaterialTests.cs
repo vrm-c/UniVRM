@@ -111,7 +111,10 @@ namespace UniGLTF
                     alphaMode = "OPAQUE",
                     pbrMetallicRoughness = new glTFPbrMetallicRoughness
                     {
-                        baseColorTexture = new glTFMaterialBaseColorTextureInfo(),
+                        baseColorTexture = new glTFMaterialBaseColorTextureInfo
+                        {
+                            index = 0,
+                        },
                     },
                     extensions = glTF_KHR_materials_unlit.Serialize().Deserialize(),
                 };
@@ -127,7 +130,10 @@ namespace UniGLTF
                     pbrMetallicRoughness = new glTFPbrMetallicRoughness
                     {
                         baseColorFactor = new float[] { 1, 0, 0, 1 },
-                        baseColorTexture = new glTFMaterialBaseColorTextureInfo(),
+                        baseColorTexture = new glTFMaterialBaseColorTextureInfo
+                        {
+                            index = 0
+                        },
                     },
                     extensions = glTF_KHR_materials_unlit.Serialize().Deserialize(),
                 };
@@ -157,7 +163,10 @@ namespace UniGLTF
                     alphaMode = "BLEND",
                     pbrMetallicRoughness = new glTFPbrMetallicRoughness
                     {
-                        baseColorTexture = new glTFMaterialBaseColorTextureInfo(),
+                        baseColorTexture = new glTFMaterialBaseColorTextureInfo
+                        {
+                            index = 0,
+                        },
                     },
                     extensions = glTF_KHR_materials_unlit.Serialize().Deserialize(),
                 };
@@ -173,7 +182,10 @@ namespace UniGLTF
                     pbrMetallicRoughness = new glTFPbrMetallicRoughness
                     {
                         baseColorFactor = new float[] { 1, 0, 0, 1 },
-                        baseColorTexture = new glTFMaterialBaseColorTextureInfo(),
+                        baseColorTexture = new glTFMaterialBaseColorTextureInfo
+                        {
+                            index = 0,
+                        },
                     },
                     extensions = glTF_KHR_materials_unlit.Serialize().Deserialize(),
                 };
@@ -188,7 +200,10 @@ namespace UniGLTF
                     alphaMode = "MASK",
                     pbrMetallicRoughness = new glTFPbrMetallicRoughness
                     {
-                        baseColorTexture = new glTFMaterialBaseColorTextureInfo(),
+                        baseColorTexture = new glTFMaterialBaseColorTextureInfo
+                        {
+                            index = 0,
+                        },
                     },
                     extensions = glTF_KHR_materials_unlit.Serialize().Deserialize(),
                 };
@@ -204,7 +219,10 @@ namespace UniGLTF
                     pbrMetallicRoughness = new glTFPbrMetallicRoughness
                     {
                         baseColorFactor = new float[] { 1, 0, 0, 1 },
-                        baseColorTexture = new glTFMaterialBaseColorTextureInfo(),
+                        baseColorTexture = new glTFMaterialBaseColorTextureInfo
+                        {
+                            index = 0,
+                        },
                     },
                     extensions = glTF_KHR_materials_unlit.Serialize().Deserialize(),
                 };
