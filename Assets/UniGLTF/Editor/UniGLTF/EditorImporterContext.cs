@@ -151,7 +151,14 @@ namespace UniGLTF
                 else
                 {
                     // save as subasset
-                    prefabPath.AddObjectToAsset(o);
+                    if (o is GameObject)
+                    {
+
+                    }
+                    else
+                    {
+                        prefabPath.AddObjectToAsset(o);
+                    }
                 }
 
             });

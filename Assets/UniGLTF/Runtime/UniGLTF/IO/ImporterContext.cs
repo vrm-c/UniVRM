@@ -230,22 +230,35 @@ namespace UniGLTF
         public virtual void Dispose()
         {
             Action<UnityEngine.Object> destroy = UnityResourceDestroyer.DestroyResource();
+
             foreach (var x in AnimationClips)
             {
+#if VRM_DEVELOP
+                Debug.Log($"Destroy {x}");
+#endif
                 destroy(x);
             }
             AnimationClips.Clear();
 
             foreach (var x in Meshes)
             {
+#if VRM_DEVELOP
+                Debug.Log($"Destroy {x}");
+#endif
                 destroy(x.Mesh);
             }
             Meshes.Clear();
 
-            // // m_materialFactory.Dispose();
-            // m_textureFactory.Dispose();
+            m_materialFactory.Dispose();
+            m_textureFactory.Dispose();
 
-            // destroy(Root);
+            if (Root)
+            {
+#if VRM_DEVELOP
+                Debug.Log($"Destroy {Root}");
+#endif
+                destroy(Root);
+            }
         }
 
         /// <summary>

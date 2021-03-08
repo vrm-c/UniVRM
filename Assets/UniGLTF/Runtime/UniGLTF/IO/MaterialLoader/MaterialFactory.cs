@@ -80,8 +80,26 @@ namespace UniGLTF
         {
             foreach (var x in m_materials)
             {
-                UnityEngine.Object.DestroyImmediate(x.Asset, false);
+                if (!x.UseExternal)
+                {
+#if VRM_DEVELOP
+                    Debug.Log($"Destroy {x.Asset}");
+#endif
+                    UnityEngine.Object.DestroyImmediate(x.Asset, false);
+                }
             }
+        }
+
+        public void TransferOwnership(Action<UnityEngine.Object> add)
+        {
+            foreach (var x in m_materials)
+            {
+                if (!x.UseExternal)
+                {
+                    add(x.Asset);
+                }
+            }
+            m_materials.Clear();
         }
 
         public Material GetMaterial(int index)
@@ -194,18 +212,6 @@ namespace UniGLTF
             };
             var task = DefaultCreateMaterialAsync(default(ImmediateCaller), gltf, i, null);
             return task.Result;
-        }
-
-        public void TransferOwnership(Action<UnityEngine.Object> add)
-        {
-            foreach (var x in m_materials)
-            {
-                if (!x.UseExternal)
-                {
-                    add(x.Asset);
-                }
-            }
-            m_materials.Clear();
         }
     }
 }
