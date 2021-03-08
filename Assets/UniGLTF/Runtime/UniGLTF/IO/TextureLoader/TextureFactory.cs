@@ -199,7 +199,7 @@ namespace UniGLTF
             var keys = new List<string>();
             foreach (var x in m_textureCache)
             {
-                if (x.Value.IsUsed)
+                if (x.Value.IsUsed && !x.Value.IsExternal)
                 {
                     keys.Add(x.Key);
                     add(x.Value.Texture);

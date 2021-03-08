@@ -235,14 +235,17 @@ namespace UniGLTF
                 destroy(x);
             }
             AnimationClips.Clear();
+
             foreach (var x in Meshes)
             {
                 destroy(x.Mesh);
             }
             Meshes.Clear();
-            m_materialFactory.Dispose();
-            m_textureFactory.Dispose();
-            destroy(Root);
+
+            // // m_materialFactory.Dispose();
+            // m_textureFactory.Dispose();
+
+            // destroy(Root);
         }
 
         /// <summary>
@@ -256,13 +259,21 @@ namespace UniGLTF
                 add(mesh.Mesh);
             }
             Meshes.Clear();
-            MaterialFactory.TransferOwnership(add);
+
             TextureFactory.TransferOwnership(add);
+            MaterialFactory.TransferOwnership(add);
+
             foreach (var animation in AnimationClips)
             {
                 add(animation);
             }
             AnimationClips.Clear();
+
+            if (Root != null)
+            {
+                add(Root);
+                Root = null;
+            }
         }
 
         /// <summary>

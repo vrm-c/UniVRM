@@ -75,19 +75,12 @@ namespace UniGLTF
 
         List<MaterialLoadInfo> m_materials = new List<MaterialLoadInfo>();
         public IReadOnlyList<MaterialLoadInfo> Materials => m_materials;
-        public void Dispose()
-        {
-            foreach (var x in ObjectsForSubAsset())
-            {
-                UnityEngine.Object.DestroyImmediate(x, true);
-            }
-        }
 
-        public IEnumerable<UnityEngine.Object> ObjectsForSubAsset()
+        public void Dispose()
         {
             foreach (var x in m_materials)
             {
-                yield return x.Asset;
+                UnityEngine.Object.DestroyImmediate(x.Asset, false);
             }
         }
 
@@ -207,7 +200,10 @@ namespace UniGLTF
         {
             foreach (var x in m_materials)
             {
-                add(x.Asset);
+                if (!x.UseExternal)
+                {
+                    add(x.Asset);
+                }
             }
             m_materials.Clear();
         }
