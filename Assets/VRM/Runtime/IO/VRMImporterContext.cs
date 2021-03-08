@@ -8,8 +8,6 @@ using System.Threading.Tasks;
 
 namespace VRM
 {
-
-
     public class VRMImporterContext : ImporterContext
     {
         public VRM.glTF_VRM_extensions VRM { get; private set; }
@@ -17,7 +15,7 @@ namespace VRM
         public VRMImporterContext(GltfParser parser, UniGLTF.LoadTextureAsyncFunc asyncTextureLoader = null) : base(parser, asyncTextureLoader)
         {
             // parse VRM part
-            if (glTF_VRM_extensions.TryDeserilize(GLTF.extensions, out glTF_VRM_extensions vrm))
+            if (glTF_VRM_extensions.TryDeserialize(GLTF.extensions, out glTF_VRM_extensions vrm))
             {
                 VRM = vrm;
                 // override material importer
@@ -290,7 +288,10 @@ namespace VRM
             meta.ContactInformation = gltfMeta.contactInformation;
             meta.Reference = gltfMeta.reference;
             meta.Title = gltfMeta.title;
-            meta.Thumbnail = await TextureFactory.GetTextureAsync(awaitCaller, GLTF, GetTextureParam.Create(GLTF, gltfMeta.texture));
+            if (gltfMeta.texture >= 0)
+            {
+                meta.Thumbnail = await TextureFactory.GetTextureAsync(awaitCaller, GLTF, GetTextureParam.Create(GLTF, gltfMeta.texture));
+            }
             meta.AllowedUser = gltfMeta.allowedUser;
             meta.ViolentUssage = gltfMeta.violentUssage;
             meta.SexualUssage = gltfMeta.sexualUssage;
@@ -303,22 +304,28 @@ namespace VRM
             return meta;
         }
 
-        public override IEnumerable<UnityEngine.Object> ModelOwnResources()
+        public override void TransferOwnership(Action<UnityEngine.Object> add)
         {
-            foreach (var x in base.ModelOwnResources())
-            {
-                yield return x;
-            }
+            base.TransferOwnership(add);
 
             // VRM 固有のリソース(ScriptableObject)
-            yield return HumanoidAvatar;
-            yield return AvatarDescription;
-            yield return Meta;
+            add(HumanoidAvatar);
+            HumanoidAvatar = null;
+
+            add(Meta);
+            Meta = null;
+
+            add(AvatarDescription);
+            AvatarDescription = null;
+
             foreach (var x in BlendShapeAvatar.Clips)
             {
-                yield return x;
+                add(x);
             }
-            yield return BlendShapeAvatar;
+            BlendShapeAvatar.Clips.Clear();
+
+            add(BlendShapeAvatar);
+            BlendShapeAvatar = null;
         }
     }
 }

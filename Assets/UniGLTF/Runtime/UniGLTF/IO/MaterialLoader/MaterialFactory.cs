@@ -203,21 +203,13 @@ namespace UniGLTF
             return task.Result;
         }
 
-        public IEnumerable<GetTextureParam> EnumerateGetTextureparam(int i)
+        public void TransferOwnership(Action<UnityEngine.Object> add)
         {
-            var m = m_gltf.materials[i];
-
-            // color texture
-            var colorIndex = m.pbrMetallicRoughness?.baseColorTexture?.index;
-            if (colorIndex.HasValue)
+            foreach (var x in m_materials)
             {
-                yield return GetTextureParam.Create(m_gltf, i);
+                add(x.Asset);
             }
-
-            if (!glTF_KHR_materials_unlit.IsEnable(m))
-            {
-                // PBR
-            }
+            m_materials.Clear();
         }
     }
 }

@@ -225,54 +225,59 @@ namespace UniGLTF
         #endregion
 
         /// <summary>
-        /// Importに使った一時オブジェクトを破棄する
-        /// 
-        /// 変換のあるテクスチャで、変換前のもの
-        /// normal, occlusion, metallicRoughness
+        /// ImporterContextが所有する UnityEngine.Object を破棄する
         /// </summary>
         public virtual void Dispose()
         {
-            foreach (var x in m_textureFactory.Textures)
+            Action<UnityEngine.Object> destroy = UnityResourceDestroyer.DestroyResource();
+            foreach (var x in AnimationClips)
             {
-                if (!x.IsUsed)
-                {
-                    // Destroy temporary texture object
-                    UnityEngine.Object.Destroy(x.Texture);
-                }
+                destroy(x);
             }
+            AnimationClips.Clear();
+            foreach (var x in Meshes)
+            {
+                destroy(x.Mesh);
+            }
+            Meshes.Clear();
+            m_materialFactory.Dispose();
+            m_textureFactory.Dispose();
+            destroy(Root);
         }
 
         /// <summary>
         /// Root ヒエラルキーで使っているリソース
         /// </summary>
         /// <returns></returns>
-        public virtual IEnumerable<UnityEngine.Object> ModelOwnResources()
+        public virtual void TransferOwnership(Action<UnityEngine.Object> add)
         {
             foreach (var mesh in Meshes)
             {
-                yield return mesh.Mesh;
+                add(mesh.Mesh);
             }
-            foreach (var material in m_materialFactory.Materials)
-            {
-                yield return material.Asset;
-            }
-            foreach (var texture in m_textureFactory.Textures)
-            {
-                yield return texture.Texture;
-            }
+            Meshes.Clear();
+            MaterialFactory.TransferOwnership(add);
+            TextureFactory.TransferOwnership(add);
             foreach (var animation in AnimationClips)
             {
-                yield return animation;
+                add(animation);
             }
+            AnimationClips.Clear();
         }
 
+        /// <summary>
+        /// RootにUnityResourceDestroyerをアタッチして、
+        /// RootをUnityEngine.Object.Destroyしたときに、
+        /// 関連するUnityEngine.Objectを破棄するようにする。
+        /// Mesh, Material, Texture, AnimationClip, GameObject の所有者が
+        /// ImporterContext から UnityResourceDestroyer に移動する。
+        /// ImporterContext.Dispose の対象から外れる。
+        /// </summary>
+        /// <returns></returns>
         public UnityResourceDestroyer DisposeOnGameObjectDestroyed()
         {
             var destroyer = Root.AddComponent<UnityResourceDestroyer>();
-            foreach (var x in ModelOwnResources())
-            {
-                destroyer.Resources.Add(x);
-            }
+            TransferOwnership(destroyer.Resources.Add);
             return destroyer;
         }
     }

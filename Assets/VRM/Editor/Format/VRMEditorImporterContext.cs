@@ -14,28 +14,6 @@ namespace VRM
             m_context = context;
         }
 
-        public override IEnumerable<UnityEngine.Object> ObjectsForSubAsset()
-        {
-            foreach (var x in base.ObjectsForSubAsset())
-            {
-                yield return x;
-            }
-
-            yield return m_context.AvatarDescription;
-            yield return m_context.HumanoidAvatar;
-
-            if (m_context.BlendShapeAvatar != null && m_context.BlendShapeAvatar.Clips != null)
-            {
-                foreach (var x in m_context.BlendShapeAvatar.Clips)
-                {
-                    yield return x;
-                }
-            }
-            yield return m_context.BlendShapeAvatar;
-
-            yield return m_context.Meta;
-        }
-
         public override bool AvoidOverwriteAndLoad(UnityPath assetPath, UnityEngine.Object o)
         {
             if (o is BlendShapeAvatar)

@@ -84,19 +84,21 @@ namespace UniGLTF
 
         public void Dispose()
         {
-            foreach (var x in ObjectsForSubAsset())
-            {
-                UnityEngine.Object.DestroyImmediate(x, true);
-            }
+            // Action<UnityEngine.Object> destroy = UnityResourceDestroyer.DestroyResource;
+            // foreach (var kv in m_textureCache)
+            // {
+            //     destroy(kv.Value.Texture);
+            // }
+            m_textureCache.Clear();
         }
 
-        public IEnumerable<UnityEngine.Object> ObjectsForSubAsset()
-        {
-            foreach (var kv in m_textureCache)
-            {
-                yield return kv.Value.Texture;
-            }
-        }
+        // public IEnumerable<UnityEngine.Object> ObjectsForSubAsset()
+        // {
+        //     foreach (var kv in m_textureCache)
+        //     {
+        //         yield return kv.Value.Texture;
+        //     }
+        // }
 
         Dictionary<string, TextureLoadInfo> m_textureCache = new Dictionary<string, TextureLoadInfo>();
 
@@ -189,6 +191,23 @@ namespace UniGLTF
                     }
 
                     throw new NotImplementedException();
+            }
+        }
+
+        public void TransferOwnership(Action<UnityEngine.Object> add)
+        {
+            var keys = new List<string>();
+            foreach (var x in m_textureCache)
+            {
+                if (x.Value.IsUsed)
+                {
+                    keys.Add(x.Key);
+                    add(x.Value.Texture);
+                }
+            }
+            foreach (var x in keys)
+            {
+                m_textureCache.Remove(x);
             }
         }
     }

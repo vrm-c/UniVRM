@@ -28,7 +28,7 @@ VRM extension is for 3d humanoid avatars (and models) in VR applications.
         public glTF_VRM_SecondaryAnimation secondaryAnimation = new glTF_VRM_SecondaryAnimation();
         public List<glTF_VRM_Material> materialProperties = new List<glTF_VRM_Material>();
 
-        public static bool TryDeserilize(glTFExtension extension, out glTF_VRM_extensions vrm)
+        public static bool TryDeserialize(glTFExtension extension, out glTF_VRM_extensions vrm)
         {            
             if (extension is glTFExtensionImport import)
             {

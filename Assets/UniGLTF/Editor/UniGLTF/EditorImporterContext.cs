@@ -19,34 +19,34 @@ namespace UniGLTF
             m_context = context;
         }
 
-        public virtual IEnumerable<UnityEngine.Object> ObjectsForSubAsset()
-        {
-            foreach (var x in m_context.TextureFactory.ObjectsForSubAsset())
-            {
-                yield return x;
-            }
-            foreach (var x in m_context.MaterialFactory.ObjectsForSubAsset())
-            {
-                yield return x;
-            }
-            foreach (var x in m_context.Meshes) { yield return x.Mesh; }
-            foreach (var x in m_context.AnimationClips) { yield return x; }
-        }
+        // public virtual IEnumerable<UnityEngine.Object> ObjectsForSubAsset()
+        // {
+        //     foreach (var x in m_context.TextureFactory.ObjectsForSubAsset())
+        //     {
+        //         yield return x;
+        //     }
+        //     foreach (var x in m_context.MaterialFactory.ObjectsForSubAsset())
+        //     {
+        //         yield return x;
+        //     }
+        //     foreach (var x in m_context.Meshes) { yield return x.Mesh; }
+        //     foreach (var x in m_context.AnimationClips) { yield return x; }
+        // }
 
-        /// <summary>
-        /// Destroy assets that created ImporterContext. This function is clean up for importer error.
-        /// </summary>
-        public virtual void EditorDestroyRootAndAssets()
-        {
-            // Remove hierarchy
-            if (m_context.Root != null) GameObject.DestroyImmediate(m_context.Root);
+        // /// <summary>
+        // /// Destroy assets that created ImporterContext. This function is clean up for importer error.
+        // /// </summary>
+        // public virtual void EditorDestroyRootAndAssets()
+        // {
+        //     // Remove hierarchy
+        //     if (m_context.Root != null) GameObject.DestroyImmediate(m_context.Root);
 
-            // Remove resources. materials, textures meshes etc...
-            foreach (var o in ObjectsForSubAsset())
-            {
-                UnityEngine.Object.DestroyImmediate(o, true);
-            }
-        }
+        //     // Remove resources. materials, textures meshes etc...
+        //     foreach (var o in ObjectsForSubAsset())
+        //     {
+        //         UnityEngine.Object.DestroyImmediate(o, true);
+        //     }
+        // }
 
         public virtual UnityPath GetAssetPath(UnityPath prefabPath, UnityEngine.Object o, bool meshAsSubAsset)
         {
@@ -121,12 +121,14 @@ namespace UniGLTF
             var paths = new List<UnityPath>(){
                 prefabPath
             };
-            foreach (var o in ObjectsForSubAsset())
+
+            m_context.TransferOwnership(o =>
             {
+
                 if (!string.IsNullOrEmpty(AssetDatabase.GetAssetPath(o)))
                 {
                     // already exists
-                    continue;
+                    return;
                 }
 
                 var assetPath = GetAssetPath(prefabPath, o, meshAsSubAsset);
@@ -137,7 +139,7 @@ namespace UniGLTF
                         if (AvoidOverwriteAndLoad(assetPath, o))
                         {
                             // 上書きせずに既存のアセットからロードして置き換えた
-                            continue;
+                            return;
                         }
                     }
 
@@ -151,7 +153,8 @@ namespace UniGLTF
                     // save as subasset
                     prefabPath.AddObjectToAsset(o);
                 }
-            }
+
+            });
 
             // Create or update Main Asset
             if (prefabPath.IsFileExists)
