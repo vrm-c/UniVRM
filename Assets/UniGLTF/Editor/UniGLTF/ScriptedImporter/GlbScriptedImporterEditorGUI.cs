@@ -8,7 +8,7 @@ using UnityEngine;
 namespace UniGLTF
 {
     [CustomEditor(typeof(GlbScriptedImporter))]
-    public class GltfScriptedImporterEditorGUI : ScriptedImporterEditor
+    public class GlbScriptedImporterEditorGUI : ScriptedImporterEditor
     {
         GlbScriptedImporter m_importer;
         GltfParser m_parser;

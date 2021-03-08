@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -10,28 +9,14 @@ namespace UniGLTF
 {
     /// <summary>
     /// Editor で Asset 化する場合専用
-    /// 
-    /// GameObject を prefab 化するので、prefab の元になった GameObject は破棄対象となる。
-    /// 
     /// </summary>
-    public class EditorImporterContext : IDisposable
+    public class EditorImporterContext
     {
         ImporterContext m_context;
 
         public EditorImporterContext(ImporterContext context)
         {
             m_context = context;
-        }
-
-        public void Dispose()
-        {
-            m_context.Dispose();
-
-            if (m_context.Root != null)
-            {
-                // Destroy the GameObject that became the basis of Prefab
-                GameObject.DestroyImmediate(m_context.Root);
-            }
         }
 
         public virtual IEnumerable<UnityEngine.Object> ObjectsForSubAsset()

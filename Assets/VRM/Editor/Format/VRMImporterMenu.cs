@@ -63,7 +63,7 @@ namespace VRM
                     //
                     context.Load();
                     editor.SaveAsAsset(prefabPath);
-                    editor.Dispose();
+                    context.Dispose();
                 };
             }
         }
