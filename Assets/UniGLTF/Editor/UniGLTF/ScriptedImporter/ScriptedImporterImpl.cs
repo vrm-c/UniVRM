@@ -41,7 +41,7 @@ namespace UniGLTF
 
                     default:
                         {
-                            var gltfTexture = parser.GLTF.textures.First(y => y.name == texParam.Name);
+                            var gltfTexture = parser.GLTF.textures.First(y => y.name == texParam.GltflName);
                             var gltfImage = parser.GLTF.images[gltfTexture.source];
                             if (!string.IsNullOrEmpty(gltfImage.uri))
                             {

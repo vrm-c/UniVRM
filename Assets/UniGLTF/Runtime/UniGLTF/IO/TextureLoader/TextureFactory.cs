@@ -51,10 +51,15 @@ namespace UniGLTF
         {
             if (param.Index0.HasValue && m_externalMap != null)
             {
-                if (m_externalMap.TryGetValue(param.Name, out external))
+                var cacheName = param.ConvertedName;
+                if (param.TextureType == GetTextureParam.NORMAL_PROP)
                 {
-                    // Debug.Log($"use external: {param.Name}");
-                    m_textureCache.Add(param.Name, new TextureLoadInfo(external, used, true));
+                    cacheName = param.GltflName;
+                }
+
+                if (m_externalMap.TryGetValue(cacheName, out external))
+                {
+                    m_textureCache.Add(cacheName, new TextureLoadInfo(external, used, true));
                     return external;
                 }
             }
@@ -120,7 +125,7 @@ namespace UniGLTF
         /// <returns></returns>
         public async Task<Texture2D> GetTextureAsync(IAwaitCaller awaitCaller, glTF gltf, GetTextureParam param)
         {
-            if (m_textureCache.TryGetValue(param.Name, out TextureLoadInfo cacheInfo))
+            if (m_textureCache.TryGetValue(param.ConvertedName, out TextureLoadInfo cacheInfo))
             {
                 return cacheInfo.Texture;
             }
@@ -137,7 +142,7 @@ namespace UniGLTF
                         {
                             var baseTexture = await GetOrCreateBaseTexture(awaitCaller, gltf, param.Index0.Value, false);
                             var converted = new NormalConverter().GetImportTexture(baseTexture.Texture);
-                            converted.name = $"{param.Name}.normal";
+                            converted.name = param.ConvertedName;
                             var info = new TextureLoadInfo(converted, true, false);
                             m_textureCache.Add(converted.name, info);
                             return info.Texture;
@@ -161,9 +166,9 @@ namespace UniGLTF
                         // Bake roughnessFactor values into a texture.
                         var baseTexture = await GetOrCreateBaseTexture(awaitCaller, gltf, param.Index0.Value, false);
                         var converted = new MetallicRoughnessConverter(param.MetallicFactor).GetImportTexture(baseTexture.Texture);
-                        converted.name = $"{param.Name}.metallicRoughness";
+                        converted.name = param.ConvertedName;
                         var info = new TextureLoadInfo(converted, true, false);
-                        m_textureCache.Add(param.Name, info);
+                        m_textureCache.Add(converted.name, info);
                         return info.Texture;
                     }
 
@@ -171,9 +176,9 @@ namespace UniGLTF
                     {
                         var baseTexture = await GetOrCreateBaseTexture(awaitCaller, gltf, param.Index0.Value, false);
                         var converted = new OcclusionConverter().GetImportTexture(baseTexture.Texture);
-                        converted.name = $"{param.Name}.occlusion";
+                        converted.name = param.ConvertedName;
                         var info = new TextureLoadInfo(converted, true, false);
-                        m_textureCache.Add(param.Name, info);
+                        m_textureCache.Add(converted.name, info);
                         return info.Texture;
                     }
 

@@ -51,7 +51,7 @@ namespace UniGLTF
             s_foldTextures = EditorGUILayout.Foldout(s_foldTextures, "Remapped Textures");
             if (s_foldTextures)
             {
-                DrawRemapGUI<UnityEngine.Texture2D>(importer, parser.EnumerateTextures().Select(x => x.Name));
+                DrawRemapGUI<UnityEngine.Texture2D>(importer, parser.EnumerateTextures().Select(x => x.ConvertedName));
             }
 
             if (GUILayout.Button("Clear"))

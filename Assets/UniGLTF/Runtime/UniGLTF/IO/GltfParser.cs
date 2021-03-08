@@ -375,7 +375,7 @@ namespace UniGLTF
                 var m = GLTF.materials[i];
                 foreach (var x in EnumerateTextures(m))
                 {
-                    if (used.Add(x.Name))
+                    if (used.Add(x.ConvertedName))
                     {
                         yield return x;
                     }

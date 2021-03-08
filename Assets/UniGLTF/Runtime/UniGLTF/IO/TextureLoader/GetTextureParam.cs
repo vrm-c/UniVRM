@@ -8,7 +8,24 @@ namespace UniGLTF
         public const string METALLIC_GLOSS_PROP = "_MetallicGlossMap";
         public const string OCCLUSION_PROP = "_OcclusionMap";
 
-        public readonly string Name;
+        readonly string m_name;
+
+        public string GltflName => m_name;
+
+        public string ConvertedName
+        {
+            get
+            {
+                switch (TextureType)
+                {
+                    case METALLIC_GLOSS_PROP: return $"{m_name}.metallicRoughness";
+                    case OCCLUSION_PROP: return $"{m_name}.occlusion";
+                    case NORMAL_PROP: return $"{m_name}.normal";
+                    default: return m_name;
+                }
+            }
+        }
+
         public readonly string TextureType;
         public readonly float MetallicFactor;
         public readonly ushort? Index0;
@@ -29,7 +46,7 @@ namespace UniGLTF
             {
                 throw new ArgumentNullException();
             }
-            Name = name;
+            m_name = name;
 
             TextureType = textureType;
             MetallicFactor = metallicFactor;
