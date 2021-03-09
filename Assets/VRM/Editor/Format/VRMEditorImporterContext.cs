@@ -39,6 +39,10 @@ namespace VRM
             if (o is Material)
             {
                 var loaded = assetPath.LoadAsset<Material>();
+                if (loaded == null)
+                {
+                    throw new Exception();
+                }
 
                 // replace component reference
                 foreach (var mesh in m_context.Meshes)
@@ -94,12 +98,13 @@ namespace VRM
                 var materialPath = materialDir.Child(o.name.EscapeFilePath() + ".asset");
                 return materialPath;
             }
-            else if (o is Texture2D)
-            {
-                var textureDir = prefabPath.GetAssetFolder(".Textures");
-                var texturePath = textureDir.Child(o.name.EscapeFilePath() + ".asset");
-                return texturePath;
-            }
+            // texture is already extracted
+            // else if (o is Texture2D)
+            // {
+            //     var textureDir = prefabPath.GetAssetFolder(".Textures");
+            //     var texturePath = textureDir.Child(o.name.EscapeFilePath() + ".asset");
+            //     return texturePath;
+            // }
             else if (o is Mesh)
             {
                 var meshDir = prefabPath.GetAssetFolder(".Meshes");
@@ -152,6 +157,11 @@ namespace VRM
 
         bool SaveAsAsset(UnityEngine.Object o)
         {
+            if (o is GameObject)
+            {
+                return false;
+            }
+
             if (!string.IsNullOrEmpty(AssetDatabase.GetAssetPath(o)))
             {
                 // already exists. not dispose
@@ -164,20 +174,21 @@ namespace VRM
             var assetPath = GetAssetPath(m_prefabPath, o);
             if (assetPath.IsNull)
             {
-                return false;
+                // not dispose
+                return true;
             }
 
-            if (assetPath.IsFileExists)
-            {
-                if (AvoidOverwriteAndLoad(assetPath, o))
-                {
-#if VRM_DEVELOP                    
-                    Debug.Log($"AvoidOverwriteAndLoad: {assetPath}");
-#endif
-                    // 上書きせずに既存のアセットからロードして置き換えた
-                    return true;
-                }
-            }
+//             if (assetPath.IsFileExists)
+//             {
+//                 if (AvoidOverwriteAndLoad(assetPath, o))
+//                 {
+// #if VRM_DEVELOP                    
+//                     Debug.Log($"AvoidOverwriteAndLoad: {assetPath}");
+// #endif
+//                     // 上書きせずに既存のアセットからロードして置き換えた
+//                     return true;
+//                 }
+//             }
 
             // アセットとして書き込む
             assetPath.Parent.EnsureFolder();

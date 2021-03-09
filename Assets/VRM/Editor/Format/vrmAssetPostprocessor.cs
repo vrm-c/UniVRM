@@ -44,7 +44,11 @@ namespace VRM
 
             Action<IEnumerable<string>> onCompleted = texturePaths =>
             {
-                var map = texturePaths.Select(x => (x, AssetDatabase.LoadAssetAtPath(x, typeof(Texture2D))));
+                var map = texturePaths.Select(x =>
+                {
+                    var texture = AssetDatabase.LoadAssetAtPath(x, typeof(Texture2D));
+                    return (texture.name, texture);
+                }).ToArray();
                 using (var context = new VRMImporterContext(parser, null, map))
                 {
                     var editor = new VRMEditorImporterContext(context, prefabPath);
