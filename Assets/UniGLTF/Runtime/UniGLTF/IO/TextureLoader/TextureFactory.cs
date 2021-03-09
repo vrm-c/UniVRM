@@ -98,15 +98,23 @@ namespace UniGLTF
             m_textureCache.Clear();
         }
 
-        public void TransferOwnership(Action<UnityEngine.Object> add)
+        /// <summary>
+        /// 所有権(Dispose権)を移譲する
+        /// </summary>
+        /// <param name="take"></param>
+        public void TransferOwnership(TakeOwnershipFunc take)
         {
             var keys = new List<string>();
             foreach (var x in m_textureCache)
             {
                 if (x.Value.IsUsed && !x.Value.IsExternal)
                 {
-                    keys.Add(x.Key);
-                    add(x.Value.Texture);
+                    // マテリアルから参照されていて
+                    // 外部のAssetからロードしていない。
+                    if (take(x.Value.Texture))
+                    {
+                        keys.Add(x.Key);
+                    }
                 }
             }
             foreach (var x in keys)

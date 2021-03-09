@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using UniGLTF;
 using UnityEditor;
 using UnityEngine;
@@ -38,16 +36,7 @@ namespace VRM
             }
 
             var parser = new GltfParser();
-            try
-            {
-                parser.ParseGlb(File.ReadAllBytes(path.FullPath));
-            }
-            catch (KeyNotFoundException)
-            {
-                // invalid VRM-0.X.
-                // maybe VRM-1.0.do nothing
-                return;
-            }
+            parser.ParseGlb(File.ReadAllBytes(path.FullPath));
 
             var prefabPath = path.Parent.Child(path.FileNameWithoutExtension + ".prefab");
 
@@ -55,15 +44,15 @@ namespace VRM
             {
                 using (var context = new VRMImporterContext(parser))
                 {
-                    var editor = new VRMEditorImporterContext(context);
+                    var editor = new VRMEditorImporterContext(context, prefabPath);
                     context.Load();
-                    editor.SaveAsAsset(prefabPath);
+                    editor.SaveAsAsset();
                 }
             };
 
             using (var context = new VRMImporterContext(parser))
             {
-                var editor = new VRMEditorImporterContext(context);
+                var editor = new VRMEditorImporterContext(context, prefabPath);
                 editor.ConvertAndExtractImages(path, onCompleted);
             }
         }

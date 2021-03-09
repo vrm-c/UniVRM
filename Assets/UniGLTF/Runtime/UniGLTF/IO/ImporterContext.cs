@@ -206,6 +206,14 @@ namespace UniGLTF
                 }
             }
         }
+        void RemoveMesh(Mesh mesh)
+        {
+            var index = Meshes.FindIndex(x => x.Mesh == mesh);
+            if (index >= 0)
+            {
+                Meshes.RemoveAt(index);
+            }
+        }
 
         public void EnableUpdateWhenOffscreen()
         {
@@ -266,27 +274,44 @@ namespace UniGLTF
         /// Root ヒエラルキーで使っているリソース
         /// </summary>
         /// <returns></returns>
-        public virtual void TransferOwnership(Action<UnityEngine.Object> add)
+        public virtual void TransferOwnership(TakeOwnershipFunc take)
         {
+            var list = new List<UnityEngine.Object>();
             foreach (var mesh in Meshes)
             {
-                add(mesh.Mesh);
+                if (take(mesh.Mesh))
+                {
+                    list.Add(mesh.Mesh);
+                }
             }
-            Meshes.Clear();
+            foreach (var x in list)
+            {
+                RemoveMesh(x as Mesh);
+            }
 
-            TextureFactory.TransferOwnership(add);
-            MaterialFactory.TransferOwnership(add);
+            TextureFactory.TransferOwnership(take);
+            MaterialFactory.TransferOwnership(take);
 
+            list.Clear();
             foreach (var animation in AnimationClips)
             {
-                add(animation);
+                if (take(animation))
+                {
+                    list.Add(animation);
+                }
             }
-            AnimationClips.Clear();
+            foreach (var x in list)
+            {
+                AnimationClips.Remove(x as AnimationClip);
+            }
 
             if (m_ownRoot && Root != null)
             {
-                add(Root);
-                m_ownRoot = false;
+                if (take(Root))
+                {
+                    // 所有権(Dispose権)
+                    m_ownRoot = false;
+                }
             }
         }
 
@@ -302,7 +327,11 @@ namespace UniGLTF
         public UnityResourceDestroyer DisposeOnGameObjectDestroyed()
         {
             var destroyer = Root.AddComponent<UnityResourceDestroyer>();
-            TransferOwnership(destroyer.Resources.Add);
+            TransferOwnership(o =>
+            {
+                destroyer.Resources.Add(o);
+                return true;
+            });
             return destroyer;
         }
     }

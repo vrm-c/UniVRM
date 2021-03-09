@@ -75,6 +75,15 @@ namespace UniGLTF
 
         List<MaterialLoadInfo> m_materials = new List<MaterialLoadInfo>();
         public IReadOnlyList<MaterialLoadInfo> Materials => m_materials;
+        void Remove(Material material)
+        {
+            var index = m_materials.FindIndex(x => x.Asset == material);
+            if (index >= 0)
+            {
+                m_materials.RemoveAt(index);
+
+            }
+        }
 
         public void Dispose()
         {
@@ -82,6 +91,7 @@ namespace UniGLTF
             {
                 if (!x.UseExternal)
                 {
+                    // 外部の '.asset' からロードしていない
 #if VRM_DEVELOP
                     Debug.Log($"Destroy {x.Asset}");
 #endif
@@ -90,16 +100,28 @@ namespace UniGLTF
             }
         }
 
-        public void TransferOwnership(Action<UnityEngine.Object> add)
+        /// <summary>
+        /// 所有権(Dispose権)を移譲する
+        /// </summary>
+        /// <param name="take"></param>
+        public void TransferOwnership(TakeOwnershipFunc take)
         {
+            var list = new List<Material>();
             foreach (var x in m_materials)
             {
                 if (!x.UseExternal)
                 {
-                    add(x.Asset);
+                    // 外部の '.asset' からロードしていない
+                    if (take(x.Asset))
+                    {
+                        list.Add(x.Asset);
+                    }
                 }
             }
-            m_materials.Clear();
+            foreach (var x in list)
+            {
+                Remove(x);
+            }
         }
 
         public Material GetMaterial(int index)

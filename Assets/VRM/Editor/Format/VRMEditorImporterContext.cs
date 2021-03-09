@@ -10,10 +10,14 @@ namespace VRM
     public class VRMEditorImporterContext
     {
         VRMImporterContext m_context;
+        UnityPath m_prefabPath;
+        List<UnityPath> m_paths = new List<UnityPath>();
 
-        public VRMEditorImporterContext(VRMImporterContext context)
+
+        public VRMEditorImporterContext(VRMImporterContext context, UnityPath prefabPath)
         {
             m_context = context;
+            m_prefabPath = prefabPath;
         }
 
         public bool AvoidOverwriteAndLoad(UnityPath assetPath, UnityEngine.Object o)
@@ -57,7 +61,7 @@ namespace VRM
             return false;
         }
 
-        public UnityPath GetAssetPath(UnityPath prefabPath, UnityEngine.Object o, bool meshAsSubAsset)
+        public UnityPath GetAssetPath(UnityPath prefabPath, UnityEngine.Object o)
         {
             if (o is BlendShapeAvatar
                 || o is BlendShapeClip)
@@ -96,7 +100,7 @@ namespace VRM
                 var texturePath = textureDir.Child(o.name.EscapeFilePath() + ".asset");
                 return texturePath;
             }
-            else if (o is Mesh && !meshAsSubAsset)
+            else if (o is Mesh)
             {
                 var meshDir = prefabPath.GetAssetFolder(".Meshes");
                 var meshPath = meshDir.Child(o.name.EscapeFilePath() + ".asset");
@@ -146,85 +150,64 @@ namespace VRM
             TextureExtractor.ExtractTextures(assetPath.Value, subAssets, _ => { }, onTextureReloaded);
         }
 
-        public void SaveAsAsset(UnityPath prefabPath, bool meshAsSubAsset = false)
+        bool SaveAsAsset(UnityEngine.Object o)
         {
-            m_context.ShowMeshes();
-
-            //var prefabPath = PrefabPath;
-            if (prefabPath.IsFileExists)
+            if (!string.IsNullOrEmpty(AssetDatabase.GetAssetPath(o)))
             {
-                // clear SubAssets
-                foreach (var x in prefabPath.GetSubAssets().Where(x => !(x is GameObject) && !(x is Component)))
+                // already exists. not dispose
+                return true;
+            }
+
+            var assetPath = GetAssetPath(m_prefabPath, o);
+            if (assetPath.IsNull)
+            {
+                return false;
+            }
+
+            if (assetPath.IsFileExists)
+            {
+                if (AvoidOverwriteAndLoad(assetPath, o))
                 {
-                    GameObject.DestroyImmediate(x, true);
+                    // 上書きせずに既存のアセットからロードして置き換えた
+                    return true;
                 }
             }
+
+            // アセットとして書き込む
+            assetPath.Parent.EnsureFolder();
+            assetPath.CreateAsset(o);
+            m_paths.Add(assetPath);
+
+            // 所有権が移動
+            return true;
+        }
+
+        public void SaveAsAsset()
+        {
+            m_context.ShowMeshes();
 
             //
             // save sub assets
             //
-            var paths = new List<UnityPath>(){
-                prefabPath
-            };
-
-            // backup
-            var root = m_context.Root;
-
-            m_context.TransferOwnership(o =>
-            {
-
-                if (!string.IsNullOrEmpty(AssetDatabase.GetAssetPath(o)))
-                {
-                    // already exists
-                    return;
-                }
-
-                var assetPath = GetAssetPath(prefabPath, o, meshAsSubAsset);
-                if (!assetPath.IsNull)
-                {
-                    if (assetPath.IsFileExists)
-                    {
-                        if (AvoidOverwriteAndLoad(assetPath, o))
-                        {
-                            // 上書きせずに既存のアセットからロードして置き換えた
-                            return;
-                        }
-                    }
-
-                    // アセットとして書き込む
-                    assetPath.Parent.EnsureFolder();
-                    assetPath.CreateAsset(o);
-                    paths.Add(assetPath);
-                }
-                else
-                {
-                    // save as subasset
-                    if (o is GameObject)
-                    {
-
-                    }
-                    else
-                    {
-                        prefabPath.AddObjectToAsset(o);
-                    }
-                }
-
-            });
+            m_paths.Clear();
+            m_paths.Add(m_prefabPath);
+            m_context.TransferOwnership(SaveAsAsset);
 
             // Create or update Main Asset
-            if (prefabPath.IsFileExists)
+            if (m_prefabPath.IsFileExists)
             {
-                Debug.LogFormat("replace prefab: {0}", prefabPath);
-                var prefab = prefabPath.LoadAsset<GameObject>();
-                PrefabUtility.SaveAsPrefabAssetAndConnect(root, prefabPath.Value, InteractionMode.AutomatedAction);
+                Debug.LogFormat("replace prefab: {0}", m_prefabPath);
+                var prefab = m_prefabPath.LoadAsset<GameObject>();
+                PrefabUtility.SaveAsPrefabAssetAndConnect(m_context.Root, m_prefabPath.Value, InteractionMode.AutomatedAction);
 
             }
             else
             {
-                Debug.LogFormat("create prefab: {0}", prefabPath);
-                PrefabUtility.SaveAsPrefabAssetAndConnect(root, prefabPath.Value, InteractionMode.AutomatedAction);
+                Debug.LogFormat("create prefab: {0}", m_prefabPath);
+                PrefabUtility.SaveAsPrefabAssetAndConnect(m_context.Root, m_prefabPath.Value, InteractionMode.AutomatedAction);
             }
-            foreach (var x in paths)
+
+            foreach (var x in m_paths)
             {
                 x.ImportAsset();
             }

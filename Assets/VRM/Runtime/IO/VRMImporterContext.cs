@@ -304,28 +304,44 @@ namespace VRM
             return meta;
         }
 
-        public override void TransferOwnership(Action<UnityEngine.Object> add)
+        public override void TransferOwnership(TakeOwnershipFunc take)
         {
             // VRM 固有のリソース(ScriptableObject)
-            add(HumanoidAvatar);
-            HumanoidAvatar = null;
+            if (take(HumanoidAvatar))
+            {
+                HumanoidAvatar = null;
+            }
 
-            add(Meta);
-            Meta = null;
+            if (take(Meta))
+            {
+                Meta = null;
+            }
 
-            add(AvatarDescription);
-            AvatarDescription = null;
+            if (take(AvatarDescription))
+            {
+                AvatarDescription = null;
+            }
 
+            var list = new List<BlendShapeClip>();
             foreach (var x in BlendShapeAvatar.Clips)
             {
-                add(x);
+                if (take(x))
+                {
+                    list.Add(x);
+                }
             }
-            BlendShapeAvatar.Clips.Clear();
+            foreach (var x in list)
+            {
+                BlendShapeAvatar.Clips.Remove(x);
+            }
 
-            add(BlendShapeAvatar);
-            BlendShapeAvatar = null;
+            if (take(BlendShapeAvatar))
+            {
+                BlendShapeAvatar = null;
+            }
 
-            base.TransferOwnership(add);
+            // GLTF のリソース
+            base.TransferOwnership(take);
         }
     }
 }

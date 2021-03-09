@@ -51,6 +51,8 @@ namespace UniGLTF
                         // Root GameObject is main object
                         context.SetMainObject(loaded.Root);
                     }
+
+                    return true;
                 });
             }
         }
