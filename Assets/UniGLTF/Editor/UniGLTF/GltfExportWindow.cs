@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using MeshUtility.M17N;
+using UniGLTF.Animation;
 using UnityEditor;
 using UnityEngine;
 
@@ -123,6 +123,7 @@ namespace UniGLTF
         IEnumerable<MeshUtility.Validator> ValidatorFactory()
         {
             yield return MeshUtility.Validators.HierarchyValidator.ValidateRoot;
+            yield return AnimationValidator.Validate;
             if (!m_state.ExportRoot)
             {
                 yield break;

@@ -213,7 +213,7 @@ namespace UniGLTF
         {
             var current = self;
 
-            var split = path.Split('/');
+            var split = path.Split(new [] {'/'}, StringSplitOptions.RemoveEmptyEntries);
 
             foreach (var childName in split)
             {
