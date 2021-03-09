@@ -33,7 +33,7 @@ namespace UniGLTF
 
             using (var loaded = new ImporterContext(parser, null,
                 externalObjectMap.Where(x => x.Value != null).Select(x => (x.Value.name, x.Value)).Concat(
-                EnumerateExists(externalObjectMap, parser, UnityPath.FromUnityPath(scriptedImporter.assetPath).Parent))))
+                EnumerateTexturesFromUri(externalObjectMap, parser, UnityPath.FromUnityPath(scriptedImporter.assetPath).Parent))))
             {
                 loaded.InvertAxis = reverseAxis;
                 loaded.Load();
@@ -57,7 +57,7 @@ namespace UniGLTF
             }
         }
 
-        static IEnumerable<(string, UnityEngine.Object)> EnumerateExists(Dictionary<AssetImporter.SourceAssetIdentifier, UnityEngine.Object> exclude,
+        public static IEnumerable<(string, UnityEngine.Object)> EnumerateTexturesFromUri(Dictionary<AssetImporter.SourceAssetIdentifier, UnityEngine.Object> exclude,
             GltfParser parser, UnityPath dir)
         {
             foreach (var texParam in parser.EnumerateTextures())
@@ -76,8 +76,12 @@ namespace UniGLTF
                             {
                                 var child = dir.Child(gltfImage.uri);
                                 var asset = AssetDatabase.LoadAssetAtPath<Texture2D>(child.Value);
+                                if (asset == null)
+                                {
+                                    throw new System.IO.FileNotFoundException($"{child}");
+                                }
                                 // Debug.Log($"exists: {child}: {asset}");
-                                if (!exclude.Any(kv => kv.Value.name == asset.name))
+                                if (exclude == null || !exclude.Any(kv => kv.Value.name == asset.name))
                                 {
                                     yield return (asset.name, asset);
                                 }

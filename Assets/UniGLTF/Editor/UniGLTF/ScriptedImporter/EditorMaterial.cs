@@ -109,7 +109,7 @@ namespace UniGLTF
                 {
                     self.AddRemap(new AssetImporter.SourceAssetIdentifier(typeof(UnityEngine.Texture2D), externalObject.name), externalObject);
                 };
-            Action onCompleted = () =>
+            Action<IEnumerable<string>> onCompleted = _ =>
                 {
                     AssetDatabase.ImportAsset(self.assetPath, ImportAssetOptions.ForceUpdate);
                     self.ExtractSubAssets<UnityEngine.Material>(MaterialDirName, ".mat");

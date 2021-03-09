@@ -111,7 +111,7 @@ namespace UniGLTF
         /// <param name="importer"></param>
         /// <param name="dirName"></param>
         /// <param name="onCompleted"></param>
-        public static void ExtractTextures(string assetPath, Texture2D[] subAssets, Action<Texture2D> addRemap, Action onCompleted = null)
+        public static void ExtractTextures(string assetPath, Texture2D[] subAssets, Action<Texture2D> addRemap, Action<IEnumerable<string>> onCompleted = null)
         {
             var extractor = new TextureExtractor(assetPath, subAssets);
             var normalMaps = new List<string>();
@@ -171,7 +171,7 @@ namespace UniGLTF
 
                 if (onCompleted != null)
                 {
-                    onCompleted();
+                    onCompleted(extractor.Textures.Keys);
                 }
             };
         }

@@ -232,9 +232,9 @@ namespace UniGLTF
                 var gltfImage = GLTF.images[gltfTexture.source];
                 if (!string.IsNullOrEmpty(gltfImage.uri))
                 {
+                    // from image uri
                     gltfTexture.name = Path.GetFileNameWithoutExtension(gltfImage.uri);
                 }
-
                 if (string.IsNullOrEmpty(gltfTexture.name))
                 {
                     // use image name
@@ -242,6 +242,7 @@ namespace UniGLTF
                 }
                 if (string.IsNullOrEmpty(gltfTexture.name))
                 {
+                    // no name
                     var newName = $"texture_{i}";
                     if (!used.Add(newName))
                     {
@@ -256,15 +257,17 @@ namespace UniGLTF
                 else
                 {
                     var lower = gltfTexture.name.ToLower();
-                    if (used.Contains(lower))
+                    if (!used.Add(lower))
                     {
                         // rename
                         var uname = lower + "_" + Guid.NewGuid().ToString("N");
                         Debug.LogWarning($"same name: {lower} => {uname}");
                         gltfTexture.name = uname;
-                        lower = uname;
+                        if (!used.Add(uname))
+                        {
+                            throw new Exception();
+                        }
                     }
-                    used.Add(lower);
                 }
             }
         }

@@ -3,6 +3,7 @@ using UnityEditor;
 using UnityEngine;
 using UniGLTF;
 using System;
+using System.Collections.Generic;
 
 namespace VRM
 {
@@ -57,7 +58,7 @@ namespace VRM
                 var parser = new GltfParser();
                 parser.ParseGlb(File.ReadAllBytes(path));
 
-                Action onCompleted = () =>
+                Action<IEnumerable<string>> onCompleted = _ =>
                 {
                     //
                     // after textures imported

@@ -12,7 +12,9 @@ namespace VRM
     {
         public VRM.glTF_VRM_extensions VRM { get; private set; }
 
-        public VRMImporterContext(GltfParser parser, UniGLTF.LoadTextureAsyncFunc asyncTextureLoader = null) : base(parser, asyncTextureLoader)
+        public VRMImporterContext(GltfParser parser,
+            UniGLTF.LoadTextureAsyncFunc asyncTextureLoader = null,
+            IEnumerable<(string, UnityEngine.Object)> externalObjectMap = null) : base(parser, asyncTextureLoader, externalObjectMap)
         {
             // parse VRM part
             if (glTF_VRM_extensions.TryDeserialize(GLTF.extensions, out glTF_VRM_extensions vrm))

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UniGLTF;
 using UnityEditor;
 using UnityEngine;
@@ -40,9 +42,10 @@ namespace VRM
 
             var prefabPath = path.Parent.Child(path.FileNameWithoutExtension + ".prefab");
 
-            Action onCompleted = () =>
+            Action<IEnumerable<string>> onCompleted = texturePaths =>
             {
-                using (var context = new VRMImporterContext(parser))
+                var map = texturePaths.Select(x => (x, AssetDatabase.LoadAssetAtPath(x, typeof(Texture2D))));
+                using (var context = new VRMImporterContext(parser, null, map))
                 {
                     var editor = new VRMEditorImporterContext(context, prefabPath);
                     context.Load();
@@ -50,6 +53,7 @@ namespace VRM
                 }
             };
 
+            // extract texture images
             using (var context = new VRMImporterContext(parser))
             {
                 var editor = new VRMEditorImporterContext(context, prefabPath);

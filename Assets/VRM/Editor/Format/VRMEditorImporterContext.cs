@@ -116,7 +116,7 @@ namespace VRM
         /// Extract images from glb or gltf out of Assets folder.
         /// </summary>
         /// <param name="assetPath"></param>
-        public void ConvertAndExtractImages(UnityPath assetPath, Action onTextureReloaded)
+        public void ConvertAndExtractImages(UnityPath assetPath, Action<IEnumerable<string>> onTextureReloaded)
         {
             // 
             // convert images(metallic roughness, occlusion map)
@@ -155,6 +155,9 @@ namespace VRM
             if (!string.IsNullOrEmpty(AssetDatabase.GetAssetPath(o)))
             {
                 // already exists. not dispose
+#if VRM_DEVELOP                    
+                Debug.Log($"Loaded. skip: {o}");
+#endif
                 return true;
             }
 
@@ -168,6 +171,9 @@ namespace VRM
             {
                 if (AvoidOverwriteAndLoad(assetPath, o))
                 {
+#if VRM_DEVELOP                    
+                    Debug.Log($"AvoidOverwriteAndLoad: {assetPath}");
+#endif
                     // 上書きせずに既存のアセットからロードして置き換えた
                     return true;
                 }
