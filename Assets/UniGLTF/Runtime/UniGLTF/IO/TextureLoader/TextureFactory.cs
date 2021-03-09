@@ -163,27 +163,12 @@ namespace UniGLTF
             {
                 case GetTextureParam.NORMAL_PROP:
                     {
-                        if (Application.isPlaying)
-                        {
-                            var baseTexture = await GetOrCreateBaseTexture(awaitCaller, gltf, param.Index0.Value, false);
-                            var converted = new NormalConverter().GetImportTexture(baseTexture.Texture);
-                            converted.name = param.ConvertedName;
-                            var info = new TextureLoadInfo(converted, true, false);
-                            m_textureCache.Add(converted.name, info);
-                            return info.Texture;
-                        }
-                        else
-                        {
-#if UNITY_EDITOR
-                            var info = await LoadTextureAsync(awaitCaller, param.Index0.Value, true);
-                            var name = gltf.textures[param.Index0.Value].name;
-                            m_textureCache.Add(name, info);
-
-                            var textureAssetPath = AssetDatabase.GetAssetPath(info.Texture);
-                            TextureIO.MarkTextureAssetAsNormalMap(textureAssetPath);
-                            return info.Texture;
-#endif
-                        }
+                        var baseTexture = await GetOrCreateBaseTexture(awaitCaller, gltf, param.Index0.Value, false);
+                        var converted = new NormalConverter().GetImportTexture(baseTexture.Texture);
+                        converted.name = param.ConvertedName;
+                        var info = new TextureLoadInfo(converted, true, false);
+                        m_textureCache.Add(converted.name, info);
+                        return info.Texture;
                     }
 
                 case GetTextureParam.METALLIC_GLOSS_PROP:
