@@ -96,8 +96,6 @@ namespace UniGLTF
             AssetDatabase.ImportAsset(self.assetPath, ImportAssetOptions.ForceUpdate);
         }
 
-        const string MaterialDirName = "Materials";
-
         static void ExtractMaterialsAndTextures(ScriptedImporter self)
         {
             if (string.IsNullOrEmpty(self.assetPath))
@@ -112,7 +110,7 @@ namespace UniGLTF
             Action<IEnumerable<string>> onCompleted = _ =>
                 {
                     AssetDatabase.ImportAsset(self.assetPath, ImportAssetOptions.ForceUpdate);
-                    self.ExtractSubAssets<UnityEngine.Material>(MaterialDirName, ".mat");
+                    self.ExtractMaterials();
                     AssetDatabase.ImportAsset(self.assetPath, ImportAssetOptions.ForceUpdate);
                 };
 
@@ -123,24 +121,18 @@ namespace UniGLTF
                 );
         }
 
-        public static void ExtractSubAssets<T>(this ScriptedImporter importer, string dirName, string extension) where T : UnityEngine.Object
+        public static void ExtractMaterials(this ScriptedImporter importer)
         {
             if (string.IsNullOrEmpty(importer.assetPath))
+            {
                 return;
-
-            var subAssets = importer.GetSubAssets<T>(importer.assetPath);
-
-            var path = string.Format("{0}/{1}.{2}",
-                Path.GetDirectoryName(importer.assetPath),
-                Path.GetFileNameWithoutExtension(importer.assetPath),
-                dirName
-                );
-
+            }
+            var path = $"{Path.GetDirectoryName(importer.assetPath)}/{Path.GetFileNameWithoutExtension(importer.assetPath)}.Materials";
             var info = TextureExtractor.SafeCreateDirectory(path);
 
-            foreach (var asset in subAssets)
+            foreach (var asset in importer.GetSubAssets<Material>(importer.assetPath))
             {
-                ExtractSubAsset(asset, string.Format("{0}/{1}{2}", path, asset.name, extension), false);
+                ExtractSubAsset(asset, $"{path}/{asset.name}.mat", false);
             }
         }
 
@@ -152,7 +144,7 @@ namespace UniGLTF
             AssetDatabase.CreateAsset(clone, destinationPath);
 
             var assetImporter = AssetImporter.GetAtPath(assetPath);
-            assetImporter.AddRemap(new AssetImporter.SourceAssetIdentifier(subAsset), clone);
+            assetImporter.AddRemap(new AssetImporter.SourceAssetIdentifier(clone), clone);
 
             if (isForceUpdate)
             {
