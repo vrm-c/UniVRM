@@ -50,6 +50,11 @@ namespace UniGLTF
 
         public void Extract(GetTextureParam param, bool hasUri)
         {
+            if (Textures.Values.Contains(param))
+            {
+                return;
+            }
+
             var subAsset = m_subAssets.FirstOrDefault(x => x.name == param.ConvertedName);
             string targetPath = "";
 
