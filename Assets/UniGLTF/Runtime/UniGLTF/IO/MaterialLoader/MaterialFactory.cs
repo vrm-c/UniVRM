@@ -64,6 +64,8 @@ namespace UniGLTF
             public readonly Material Asset;
             public readonly bool UseExternal;
 
+            public bool IsSubAsset => !UseExternal;
+
             public MaterialLoadInfo(Material asset, bool useExternal)
             {
                 Asset = asset;
@@ -73,19 +75,52 @@ namespace UniGLTF
 
         List<MaterialLoadInfo> m_materials = new List<MaterialLoadInfo>();
         public IReadOnlyList<MaterialLoadInfo> Materials => m_materials;
-        public void Dispose()
+        void Remove(Material material)
         {
-            foreach (var x in ObjectsForSubAsset())
+            var index = m_materials.FindIndex(x => x.Asset == material);
+            if (index >= 0)
             {
-                UnityEngine.Object.DestroyImmediate(x, true);
+                m_materials.RemoveAt(index);
+
             }
         }
 
-        public IEnumerable<UnityEngine.Object> ObjectsForSubAsset()
+        public void Dispose()
         {
             foreach (var x in m_materials)
             {
-                yield return x.Asset;
+                if (!x.UseExternal)
+                {
+                    // 外部の '.asset' からロードしていない
+#if VRM_DEVELOP
+                    Debug.Log($"Destroy {x.Asset}");
+#endif
+                    UnityEngine.Object.DestroyImmediate(x.Asset, false);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 所有権(Dispose権)を移譲する
+        /// </summary>
+        /// <param name="take"></param>
+        public void TransferOwnership(TakeOwnershipFunc take)
+        {
+            var list = new List<Material>();
+            foreach (var x in m_materials)
+            {
+                if (!x.UseExternal)
+                {
+                    // 外部の '.asset' からロードしていない
+                    if (take(x.Asset))
+                    {
+                        list.Add(x.Asset);
+                    }
+                }
+            }
+            foreach (var x in list)
+            {
+                Remove(x);
             }
         }
 
@@ -199,23 +234,6 @@ namespace UniGLTF
             };
             var task = DefaultCreateMaterialAsync(default(ImmediateCaller), gltf, i, null);
             return task.Result;
-        }
-
-        public IEnumerable<GetTextureParam> EnumerateGetTextureparam(int i)
-        {
-            var m = m_gltf.materials[i];
-
-            // color texture
-            var colorIndex = m.pbrMetallicRoughness?.baseColorTexture?.index;
-            if (colorIndex.HasValue)
-            {
-                yield return GetTextureParam.Create(m_gltf, i);
-            }
-
-            if (!glTF_KHR_materials_unlit.IsEnable(m))
-            {
-                // PBR
-            }
         }
     }
 }

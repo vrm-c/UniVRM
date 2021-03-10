@@ -154,7 +154,7 @@ namespace UniGLTF
             );
         }
 
-        public virtual int ExportTexture(glTF gltf, int bufferIndex, Texture texture, glTFTextureTypes textureType)
+        public int ExportTexture(glTF gltf, int bufferIndex, Texture texture, glTFTextureTypes textureType)
         {
             var bytesWithMime = GetBytesWithMime(texture, textureType); ;
 
@@ -166,7 +166,7 @@ namespace UniGLTF
             var imageIndex = gltf.images.Count;
             gltf.images.Add(new glTFImage
             {
-                name = texture.name,
+                name = GetTextureParam.RemoveSuffix(texture.name),
                 bufferView = viewIndex,
                 mimeType = bytesWithMime.mine,
             });

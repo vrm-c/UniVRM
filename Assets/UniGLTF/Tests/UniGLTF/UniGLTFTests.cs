@@ -98,44 +98,31 @@ namespace UniGLTF
         public void UniGLTFSimpleSceneTest()
         {
             var go = CreateSimpleScene();
-            ImporterContext context = default;
 
-            try
+            // export
+            var gltf = new glTF();
+
+            string json = null;
+            using (var exporter = new gltfExporter(gltf))
             {
-                // export
-                var gltf = new glTF();
+                exporter.Prepare(go);
+                exporter.Export(MeshExportSettings.Default);
 
-                string json = null;
-                using (var exporter = new gltfExporter(gltf))
-                {
-                    exporter.Prepare(go);
-                    exporter.Export(MeshExportSettings.Default);
+                // remove empty buffer
+                gltf.buffers.Clear();
 
-                    // remove empty buffer
-                    gltf.buffers.Clear();
-
-                    json = gltf.ToJson();
-                }
-
-                // parse
-                var parser = new GltfParser();
-                parser.ParseJson(json, new SimpleStorage(new ArraySegment<byte>()));
-
-                // import
-                context = new ImporterContext(parser);
-                context.Load();
-
-                AssertAreEqual(go.transform, context.Root.transform);
+                json = gltf.ToJson();
             }
-            finally
+
+            // parse
+            var parser = new GltfParser();
+            parser.ParseJson(json, new SimpleStorage(new ArraySegment<byte>()));
+
+            // import
+            using (var context = new ImporterContext(parser))
             {
-                //Debug.LogFormat("Destroy, {0}", go.name);
-                GameObject.DestroyImmediate(go);
-                if (context != null)
-                {
-                    var editor = new EditorImporterContext(context);
-                    editor.EditorDestroyRootAndAssets();
-                }
+                context.Load();
+                AssertAreEqual(go.transform, context.Root.transform);
             }
         }
 
@@ -568,19 +555,22 @@ namespace UniGLTF
                 {
                     var parser = new GltfParser();
                     parser.ParseJson(json, new SimpleStorage(new ArraySegment<byte>(new byte[1024 * 1024])));
-                    var context = new ImporterContext(parser);
-                    //Debug.LogFormat("{0}", context.Json);
-                    context.Load();
 
-                    var importedRed = context.Root.transform.GetChild(0);
-                    var importedRedMaterial = importedRed.GetComponent<Renderer>().sharedMaterial;
-                    Assert.AreEqual("red", importedRedMaterial.name);
-                    Assert.AreEqual(Color.red, importedRedMaterial.color);
+                    using (var context = new ImporterContext(parser))
+                    {
+                        //Debug.LogFormat("{0}", context.Json);
+                        context.Load();
 
-                    var importedBlue = context.Root.transform.GetChild(1);
-                    var importedBlueMaterial = importedBlue.GetComponent<Renderer>().sharedMaterial;
-                    Assert.AreEqual("blue", importedBlueMaterial.name);
-                    Assert.AreEqual(Color.blue, importedBlueMaterial.color);
+                        var importedRed = context.Root.transform.GetChild(0);
+                        var importedRedMaterial = importedRed.GetComponent<Renderer>().sharedMaterial;
+                        Assert.AreEqual("red", importedRedMaterial.name);
+                        Assert.AreEqual(Color.red, importedRedMaterial.color);
+
+                        var importedBlue = context.Root.transform.GetChild(1);
+                        var importedBlueMaterial = importedBlue.GetComponent<Renderer>().sharedMaterial;
+                        Assert.AreEqual("blue", importedBlueMaterial.name);
+                        Assert.AreEqual(Color.blue, importedBlueMaterial.color);
+                    }
                 }
 
                 // import new version
@@ -588,18 +578,20 @@ namespace UniGLTF
                     var parser = new GltfParser();
                     parser.ParseJson(json, new SimpleStorage(new ArraySegment<byte>(new byte[1024 * 1024])));
                     //Debug.LogFormat("{0}", context.Json);
-                    var context = new ImporterContext(parser);
-                    context.Load();
+                    using (var context = new ImporterContext(parser))
+                    {
+                        context.Load();
 
-                    var importedRed = context.Root.transform.GetChild(0);
-                    var importedRedMaterial = importedRed.GetComponent<Renderer>().sharedMaterial;
-                    Assert.AreEqual("red", importedRedMaterial.name);
-                    Assert.AreEqual(Color.red, importedRedMaterial.color);
+                        var importedRed = context.Root.transform.GetChild(0);
+                        var importedRedMaterial = importedRed.GetComponent<Renderer>().sharedMaterial;
+                        Assert.AreEqual("red", importedRedMaterial.name);
+                        Assert.AreEqual(Color.red, importedRedMaterial.color);
 
-                    var importedBlue = context.Root.transform.GetChild(1);
-                    var importedBlueMaterial = importedBlue.GetComponent<Renderer>().sharedMaterial;
-                    Assert.AreEqual("blue", importedBlueMaterial.name);
-                    Assert.AreEqual(Color.blue, importedBlueMaterial.color);
+                        var importedBlue = context.Root.transform.GetChild(1);
+                        var importedBlueMaterial = importedBlue.GetComponent<Renderer>().sharedMaterial;
+                        Assert.AreEqual("blue", importedBlueMaterial.name);
+                        Assert.AreEqual(Color.blue, importedBlueMaterial.color);
+                    }
                 }
             }
             finally

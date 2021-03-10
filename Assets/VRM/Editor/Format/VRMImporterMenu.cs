@@ -2,7 +2,8 @@
 using UnityEditor;
 using UnityEngine;
 using UniGLTF;
-
+using System;
+using System.Collections.Generic;
 
 namespace VRM
 {
@@ -22,11 +23,15 @@ namespace VRM
                 // load into scene
                 var parser = new GltfParser();
                 parser.ParsePath(path);
-                var context = new VRMImporterContext(parser);
-                context.Load();
-                context.ShowMeshes();
-                context.EnableUpdateWhenOffscreen();
-                Selection.activeGameObject = context.Root;
+
+                using (var context = new VRMImporterContext(parser))
+                {
+                    context.Load();
+                    context.EnableUpdateWhenOffscreen();
+                    context.ShowMeshes();
+                    context.DisposeOnGameObjectDestroyed();
+                    Selection.activeGameObject = context.Root;
+                }
             }
             else
             {
@@ -52,19 +57,25 @@ namespace VRM
                 var prefabPath = UnityPath.FromUnityPath(assetPath);
                 var parser = new GltfParser();
                 parser.ParseGlb(File.ReadAllBytes(path));
-                var context = new VRMImporterContext(parser);
-                var editor = new VRMEditorImporterContext(context);
-                editor.ExtractImages(prefabPath);
 
-                EditorApplication.delayCall += () =>
+                Action<IEnumerable<string>> onCompleted = _ =>
                 {
                     //
                     // after textures imported
                     //
-                    context.Load();
-                    editor.SaveAsAsset(prefabPath);
-                    editor.Dispose();
+                    using (var context = new VRMImporterContext(parser))
+                    {
+                        var editor = new VRMEditorImporterContext(context, prefabPath);
+                        context.Load();
+                        editor.SaveAsAsset();
+                    }
                 };
+
+                using (var context = new VRMImporterContext(parser))
+                {
+                    var editor = new VRMEditorImporterContext(context, prefabPath);
+                    editor.ConvertAndExtractImages(UnityPath.FromFullpath(path), onCompleted);
+                }
             }
         }
     }

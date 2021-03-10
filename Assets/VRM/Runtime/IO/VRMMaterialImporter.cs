@@ -37,7 +37,9 @@ namespace VRM
                 }
                 else
                 {
-                    Debug.LogWarningFormat("unknown shader {0}.", shaderName);
+// #if VRM_DEVELOP                    
+//                     Debug.LogWarningFormat("unknown shader {0}.", shaderName);
+// #endif                    
                 }
                 return await MaterialFactory.DefaultCreateMaterialAsync(awaitCaller, gltf, m_index, getTexture);
             }

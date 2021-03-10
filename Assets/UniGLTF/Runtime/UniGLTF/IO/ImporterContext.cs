@@ -103,17 +103,6 @@ namespace UniGLTF
                 throw new UniGLTFNotSupportedException("draco is not supported");
             }
 
-            // using (MeasureTime("LoadTextures"))
-            // {
-            //     for (int i = 0; i < GLTF.materials.Count; ++i)
-            //     {
-            //         foreach (var param in MaterialFactory.EnumerateGetTextureparam(i))
-            //         {
-            //             await m_textureFactory.GetTextureAsync(GLTF, param);
-            //         }
-            //     }
-            // }
-
             using (MeasureTime("LoadMaterials"))
             {
                 await m_materialFactory.LoadMaterialsAsync(m_awaitCaller, m_textureFactory.GetTextureAsync);
@@ -201,8 +190,9 @@ namespace UniGLTF
         }
         #endregion
 
-        #region Imported
+        #region Imported        
         public GameObject Root;
+        bool m_ownRoot = true;
         public List<Transform> Nodes = new List<Transform>();
 
         public List<MeshWithMaterials> Meshes = new List<MeshWithMaterials>();
@@ -214,6 +204,14 @@ namespace UniGLTF
                 {
                     y.enabled = true;
                 }
+            }
+        }
+        void RemoveMesh(Mesh mesh)
+        {
+            var index = Meshes.FindIndex(x => x.Mesh == mesh);
+            if (index >= 0)
+            {
+                Meshes.RemoveAt(index);
             }
         }
 
@@ -236,20 +234,39 @@ namespace UniGLTF
         #endregion
 
         /// <summary>
-        /// Importに使った一時オブジェクトを破棄する
-        /// 
-        /// 変換のあるテクスチャで、変換前のもの
-        /// normal, occlusion, metallicRoughness
+        /// ImporterContextが所有する UnityEngine.Object を破棄する
         /// </summary>
         public virtual void Dispose()
         {
-            foreach (var x in m_textureFactory.Textures)
+            Action<UnityEngine.Object> destroy = UnityResourceDestroyer.DestroyResource();
+
+            foreach (var x in AnimationClips)
             {
-                if (!x.IsUsed)
-                {
-                    // Destroy temporary texture object
-                    UnityEngine.Object.Destroy(x.Texture);
-                }
+#if VRM_DEVELOP
+                Debug.Log($"Destroy {x}");
+#endif
+                destroy(x);
+            }
+            AnimationClips.Clear();
+
+            foreach (var x in Meshes)
+            {
+#if VRM_DEVELOP
+                Debug.Log($"Destroy {x}");
+#endif
+                destroy(x.Mesh);
+            }
+            Meshes.Clear();
+
+            m_materialFactory.Dispose();
+            m_textureFactory.Dispose();
+
+            if (m_ownRoot && Root != null)
+            {
+#if VRM_DEVELOP
+                Debug.Log($"Destroy {Root}");
+#endif
+                destroy(Root);
             }
         }
 
@@ -257,33 +274,64 @@ namespace UniGLTF
         /// Root ヒエラルキーで使っているリソース
         /// </summary>
         /// <returns></returns>
-        public virtual IEnumerable<UnityEngine.Object> ModelOwnResources()
+        public virtual void TransferOwnership(TakeOwnershipFunc take)
         {
+            var list = new List<UnityEngine.Object>();
             foreach (var mesh in Meshes)
             {
-                yield return mesh.Mesh;
+                if (take(mesh.Mesh))
+                {
+                    list.Add(mesh.Mesh);
+                }
             }
-            foreach (var material in m_materialFactory.Materials)
+            foreach (var x in list)
             {
-                yield return material.Asset;
+                RemoveMesh(x as Mesh);
             }
-            foreach (var texture in m_textureFactory.Textures)
-            {
-                yield return texture.Texture;
-            }
+
+            TextureFactory.TransferOwnership(take);
+            MaterialFactory.TransferOwnership(take);
+
+            list.Clear();
             foreach (var animation in AnimationClips)
             {
-                yield return animation;
+                if (take(animation))
+                {
+                    list.Add(animation);
+                }
+            }
+            foreach (var x in list)
+            {
+                AnimationClips.Remove(x as AnimationClip);
+            }
+
+            if (m_ownRoot && Root != null)
+            {
+                if (take(Root))
+                {
+                    // 所有権(Dispose権)
+                    m_ownRoot = false;
+                }
             }
         }
 
+        /// <summary>
+        /// RootにUnityResourceDestroyerをアタッチして、
+        /// RootをUnityEngine.Object.Destroyしたときに、
+        /// 関連するUnityEngine.Objectを破棄するようにする。
+        /// Mesh, Material, Texture, AnimationClip, GameObject の所有者が
+        /// ImporterContext から UnityResourceDestroyer に移動する。
+        /// ImporterContext.Dispose の対象から外れる。
+        /// </summary>
+        /// <returns></returns>
         public UnityResourceDestroyer DisposeOnGameObjectDestroyed()
         {
             var destroyer = Root.AddComponent<UnityResourceDestroyer>();
-            foreach (var x in ModelOwnResources())
+            TransferOwnership(o =>
             {
-                destroyer.Resources.Add(x);
-            }
+                destroyer.Resources.Add(o);
+                return true;
+            });
             return destroyer;
         }
     }

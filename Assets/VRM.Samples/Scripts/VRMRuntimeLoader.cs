@@ -90,23 +90,24 @@ namespace VRM.Samples
             var parser = new GltfParser();
             parser.Parse(path, bytes);
 
-            var context = new VRMImporterContext(parser);
-
-            // metaを取得(todo: thumbnailテクスチャのロード)
-            var meta = await context.ReadMetaAsync();
-            Debug.LogFormat("meta: title:{0}", meta.Title);
-
-            // ParseしたJSONをシーンオブジェクトに変換していく
-            if (m_loadAsync)
+            using (var context = new VRMImporterContext(parser))
             {
-                await context.LoadAsync();
-            }
-            else
-            {
-                context.Load();
-            }
+                // metaを取得(todo: thumbnailテクスチャのロード)
+                var meta = await context.ReadMetaAsync();
+                Debug.LogFormat("meta: title:{0}", meta.Title);
 
-            OnLoaded(context);
+                // ParseしたJSONをシーンオブジェクトに変換していく
+                if (m_loadAsync)
+                {
+                    await context.LoadAsync();
+                }
+                else
+                {
+                    context.Load();
+                }
+
+                OnLoaded(context);
+            }
         }
 
         /// <summary>
@@ -167,10 +168,12 @@ namespace VRM.Samples
         void OnLoaded(VRMImporterContext context)
         {
             var root = context.Root;
+
             root.transform.SetParent(transform, false);
 
             //メッシュを表示します
             context.ShowMeshes();
+            context.DisposeOnGameObjectDestroyed();
 
             // add motion
             var humanPoseTransfer = root.AddComponent<UniHumanoid.HumanPoseTransfer>();

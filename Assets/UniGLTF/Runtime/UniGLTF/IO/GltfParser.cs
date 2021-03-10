@@ -229,13 +229,20 @@ namespace UniGLTF
             for (int i = 0; i < GLTF.textures.Count; ++i)
             {
                 var gltfTexture = GLTF.textures[i];
-                if (string.IsNullOrEmpty(gltfTexture.name))
+                var gltfImage = GLTF.images[gltfTexture.source];
+                if (!string.IsNullOrEmpty(gltfImage.uri))
                 {
-                    // use image name
-                    gltfTexture.name = GLTF.images[gltfTexture.source].name;
+                    // from image uri
+                    gltfTexture.name = Path.GetFileNameWithoutExtension(gltfImage.uri);
                 }
                 if (string.IsNullOrEmpty(gltfTexture.name))
                 {
+                    // use image name
+                    gltfTexture.name = gltfImage.name;
+                }
+                if (string.IsNullOrEmpty(gltfTexture.name))
+                {
+                    // no name
                     var newName = $"texture_{i}";
                     if (!used.Add(newName))
                     {
@@ -250,15 +257,17 @@ namespace UniGLTF
                 else
                 {
                     var lower = gltfTexture.name.ToLower();
-                    if (used.Contains(lower))
+                    if (!used.Add(lower))
                     {
                         // rename
                         var uname = lower + "_" + Guid.NewGuid().ToString("N");
                         Debug.LogWarning($"same name: {lower} => {uname}");
                         gltfTexture.name = uname;
-                        lower = uname;
+                        if (!used.Add(uname))
+                        {
+                            throw new Exception();
+                        }
                     }
-                    used.Add(lower);
                 }
             }
         }
@@ -325,62 +334,6 @@ namespace UniGLTF
             }
         }
 
-        public string GetTextureExtension(int imageIndex)
-        {
-            foreach (var m in GLTF.materials)
-            {
-                if (m.pbrMetallicRoughness != null)
-                {
-                    // base color
-                    if (m.pbrMetallicRoughness?.baseColorTexture != null)
-                    {
-                        if (m.pbrMetallicRoughness.baseColorTexture.index == imageIndex)
-                        {
-                            return "";
-                        }
-                    }
-
-                    // metallic roughness
-                    if (m.pbrMetallicRoughness?.metallicRoughnessTexture != null)
-                    {
-                        if (m.pbrMetallicRoughness.metallicRoughnessTexture.index == imageIndex)
-                        {
-                            return ".metallicRoughness";
-                        }
-                    }
-                }
-
-                // emission
-                if (m.emissiveTexture != null)
-                {
-                    if (m.emissiveTexture.index == imageIndex)
-                    {
-                        return "";
-                    }
-                }
-
-                // normal
-                if (m.normalTexture != null)
-                {
-                    if (m.normalTexture.index == imageIndex)
-                    {
-                        return "";
-                    }
-                }
-
-                // occlusion
-                if (m.occlusionTexture != null)
-                {
-                    if (m.occlusionTexture.index == imageIndex)
-                    {
-                        return ".occlusion";
-                    }
-                }
-            }
-
-            return "";
-        }
-
         public IEnumerable<GetTextureParam> EnumerateTextures(glTFMaterial m)
         {
             if (m.pbrMetallicRoughness != null)
@@ -425,7 +378,7 @@ namespace UniGLTF
                 var m = GLTF.materials[i];
                 foreach (var x in EnumerateTextures(m))
                 {
-                    if (used.Add(x.Name))
+                    if (used.Add(x.ConvertedName))
                     {
                         yield return x;
                     }

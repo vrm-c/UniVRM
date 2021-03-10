@@ -4,15 +4,15 @@ using UnityEngine;
 
 namespace UniGLTF
 {
-    [CustomEditor(typeof(GltfScriptedImporter))]
-    public class GltfScriptedImporterEditorGUI : ScriptedImporterEditor
+    [CustomEditor(typeof(GlbScriptedImporter))]
+    public class GlbScriptedImporterEditorGUI : ScriptedImporterEditor
     {
-        GltfScriptedImporter m_importer;
+        GlbScriptedImporter m_importer;
         GltfParser m_parser;
 
         public override void OnEnable()
         {
-            m_importer = target as GltfScriptedImporter;
+            m_importer = target as GlbScriptedImporter;
             m_parser = new GltfParser();
             m_parser.ParsePath(m_importer.assetPath);
         }

@@ -45,13 +45,12 @@ namespace VRM.Samples
             var parser = new GltfParser();
             parser.ParseGlb(File.ReadAllBytes(path));
 
-            var context = new VRMImporterContext(parser);
-            context.Load();
-            context.ShowMeshes();
-            context.EnableUpdateWhenOffscreen();
-
-            using (new ActionDisposer(() => { GameObject.DestroyImmediate(context.Root); }))
+            using (var context = new VRMImporterContext(parser))
             {
+                context.Load();
+                context.ShowMeshes();
+                context.EnableUpdateWhenOffscreen();
+
                 var importedJson = JsonParser.Parse(context.Json);
                 importedJson.SetValue("/extensions/VRM/exporterVersion", VRMVersion.VRM_VERSION, (f, x) => f.Value(x));
                 importedJson.SetValue("/asset/generator", UniGLTF.UniGLTFVersion.UNIGLTF_VERSION, (f, x) => f.Value(x));
@@ -118,16 +117,18 @@ namespace VRM.Samples
             var path = AliciaPath;
             var parser = new GltfParser();
             parser.ParseGlb(File.ReadAllBytes(path));
-            var context = new VRMImporterContext(parser);
-            context.Load();
-            context.ShowMeshes();
-            context.EnableUpdateWhenOffscreen();
 
-            foreach (var mesh in context.Meshes)
+            using (var context = new VRMImporterContext(parser))
             {
-                var src = mesh.Mesh;
-                var dst = src.Copy(true);
-                MeshTests.MeshEquals(src, dst);
+                context.Load();
+                context.ShowMeshes();
+                context.EnableUpdateWhenOffscreen();
+                foreach (var mesh in context.Meshes)
+                {
+                    var src = mesh.Mesh;
+                    var dst = src.Copy(true);
+                    MeshTests.MeshEquals(src, dst);
+                }
             }
         }
 
@@ -138,28 +139,31 @@ namespace VRM.Samples
             var path = AliciaPath;
             var parser = new GltfParser();
             parser.ParseGlb(File.ReadAllBytes(path));
-            var context = new VRMImporterContext(parser);
-            var oldJson = context.GLTF.ToJson().ParseAsJson().ToString("  ");
 
-            // 生成シリアライザでJSON化する
-            var f = new JsonFormatter();
-            GltfSerializer.Serialize(f, context.GLTF);
-            var parsed = f.ToString().ParseAsJson();
-            var newJson = parsed.ToString("  ");
+            using (var context = new VRMImporterContext(parser))
+            {
+                var oldJson = context.GLTF.ToJson().ParseAsJson().ToString("  ");
 
-            // File.WriteAllText("old.json", oldJson);
-            // File.WriteAllText("new.json", newJson);
+                // 生成シリアライザでJSON化する
+                var f = new JsonFormatter();
+                GltfSerializer.Serialize(f, context.GLTF);
+                var parsed = f.ToString().ParseAsJson();
+                var newJson = parsed.ToString("  ");
 
-            // 比較
-            Assert.AreEqual(oldJson.ParseAsJson().ToString(), newJson.ParseAsJson().ToString());
+                // File.WriteAllText("old.json", oldJson);
+                // File.WriteAllText("new.json", newJson);
 
-            // 生成デシリアライザでロードする
-            var ff = new JsonFormatter();
-            var des = GltfDeserializer.Deserialize(parsed);
-            ff.Clear();
-            GltfSerializer.Serialize(ff, des);
-            var desJson = ff.ToString().ParseAsJson().ToString("  ");
-            Assert.AreEqual(oldJson.ParseAsJson().ToString(), desJson.ParseAsJson().ToString());
+                // 比較
+                Assert.AreEqual(oldJson.ParseAsJson().ToString(), newJson.ParseAsJson().ToString());
+
+                // 生成デシリアライザでロードする
+                var ff = new JsonFormatter();
+                var des = GltfDeserializer.Deserialize(parsed);
+                ff.Clear();
+                GltfSerializer.Serialize(ff, des);
+                var desJson = ff.ToString().ParseAsJson().ToString("  ");
+                Assert.AreEqual(oldJson.ParseAsJson().ToString(), desJson.ParseAsJson().ToString());
+            }
         }
     }
 }

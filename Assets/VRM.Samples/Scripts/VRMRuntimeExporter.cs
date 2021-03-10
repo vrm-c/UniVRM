@@ -50,16 +50,18 @@ namespace VRM.Samples
             var parser = new GltfParser();
             parser.ParseGlb(bytes);
 
-            var context = new VRMImporterContext(parser);
+            using (var context = new VRMImporterContext(parser))
+            {
 
-            // metaを取得(todo: thumbnailテクスチャのロード)
-            var meta = await context.ReadMetaAsync();
-            Debug.LogFormat("meta: title:{0}", meta.Title);
+                // metaを取得(todo: thumbnailテクスチャのロード)
+                var meta = await context.ReadMetaAsync();
+                Debug.LogFormat("meta: title:{0}", meta.Title);
 
-            // ParseしたJSONをシーンオブジェクトに変換していく
-            await context.LoadAsync();
+                // ParseしたJSONをシーンオブジェクトに変換していく
+                await context.LoadAsync();
 
-            OnLoaded(context);
+                OnLoaded(context);
+            }
         }
 
         void OnLoaded(VRMImporterContext context)

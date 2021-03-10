@@ -8,16 +8,16 @@ using System.Threading.Tasks;
 
 namespace VRM
 {
-
-
     public class VRMImporterContext : ImporterContext
     {
         public VRM.glTF_VRM_extensions VRM { get; private set; }
 
-        public VRMImporterContext(GltfParser parser, UniGLTF.LoadTextureAsyncFunc asyncTextureLoader = null) : base(parser, asyncTextureLoader)
+        public VRMImporterContext(GltfParser parser,
+            UniGLTF.LoadTextureAsyncFunc asyncTextureLoader = null,
+            IEnumerable<(string, UnityEngine.Object)> externalObjectMap = null) : base(parser, asyncTextureLoader, externalObjectMap)
         {
             // parse VRM part
-            if (glTF_VRM_extensions.TryDeserilize(GLTF.extensions, out glTF_VRM_extensions vrm))
+            if (glTF_VRM_extensions.TryDeserialize(GLTF.extensions, out glTF_VRM_extensions vrm))
             {
                 VRM = vrm;
                 // override material importer
@@ -290,7 +290,10 @@ namespace VRM
             meta.ContactInformation = gltfMeta.contactInformation;
             meta.Reference = gltfMeta.reference;
             meta.Title = gltfMeta.title;
-            meta.Thumbnail = await TextureFactory.GetTextureAsync(awaitCaller, GLTF, GetTextureParam.Create(GLTF, gltfMeta.texture));
+            if (gltfMeta.texture >= 0)
+            {
+                meta.Thumbnail = await TextureFactory.GetTextureAsync(awaitCaller, GLTF, GetTextureParam.Create(GLTF, gltfMeta.texture));
+            }
             meta.AllowedUser = gltfMeta.allowedUser;
             meta.ViolentUssage = gltfMeta.violentUssage;
             meta.SexualUssage = gltfMeta.sexualUssage;
@@ -303,22 +306,44 @@ namespace VRM
             return meta;
         }
 
-        public override IEnumerable<UnityEngine.Object> ModelOwnResources()
+        public override void TransferOwnership(TakeOwnershipFunc take)
         {
-            foreach (var x in base.ModelOwnResources())
+            // VRM 固有のリソース(ScriptableObject)
+            if (take(HumanoidAvatar))
             {
-                yield return x;
+                HumanoidAvatar = null;
             }
 
-            // VRM 固有のリソース(ScriptableObject)
-            yield return HumanoidAvatar;
-            yield return AvatarDescription;
-            yield return Meta;
+            if (take(Meta))
+            {
+                Meta = null;
+            }
+
+            if (take(AvatarDescription))
+            {
+                AvatarDescription = null;
+            }
+
+            var list = new List<BlendShapeClip>();
             foreach (var x in BlendShapeAvatar.Clips)
             {
-                yield return x;
+                if (take(x))
+                {
+                    list.Add(x);
+                }
             }
-            yield return BlendShapeAvatar;
+            foreach (var x in list)
+            {
+                BlendShapeAvatar.Clips.Remove(x);
+            }
+
+            if (take(BlendShapeAvatar))
+            {
+                BlendShapeAvatar = null;
+            }
+
+            // GLTF のリソース
+            base.TransferOwnership(take);
         }
     }
 }

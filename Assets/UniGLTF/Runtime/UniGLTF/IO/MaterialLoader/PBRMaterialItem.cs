@@ -71,13 +71,13 @@ namespace UniGLTF
             {
                 getTexture = (_x, _y, _z) => Task.FromResult<Texture2D>(null);
             }
-            var src = gltf.materials[i];
-
-            var material = MaterialFactory.CreateMaterial(i, src, ShaderName);
 
             // PBR material
-            if (src != null)
+            var material = default(Material);
+            if (i >= 0 && i < gltf.materials.Count)
             {
+                var src = gltf.materials[i];
+                material = MaterialFactory.CreateMaterial(i, src, ShaderName);
                 if (src.pbrMetallicRoughness != null)
                 {
                     if (src.pbrMetallicRoughness.baseColorFactor != null && src.pbrMetallicRoughness.baseColorFactor.Length == 4)
@@ -213,6 +213,10 @@ namespace UniGLTF
                 }
 
                 material.SetFloat("_Mode", (float)blendMode);
+            }
+            else
+            {
+                material = MaterialFactory.CreateMaterial(i, null, ShaderName);
             }
 
             return material;

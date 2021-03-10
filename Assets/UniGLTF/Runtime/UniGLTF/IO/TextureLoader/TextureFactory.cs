@@ -24,6 +24,8 @@ namespace UniGLTF
         public bool IsUsed => Flags.HasFlag(TextureLoadFlags.Used);
         public bool IsExternal => Flags.HasFlag(TextureLoadFlags.External);
 
+        public bool IsSubAsset => IsUsed && !IsExternal;
+
         public TextureLoadInfo(Texture2D texture, bool used, bool isExternal)
         {
             Texture = texture;
@@ -49,10 +51,15 @@ namespace UniGLTF
         {
             if (param.Index0.HasValue && m_externalMap != null)
             {
-                if (m_externalMap.TryGetValue(param.Name, out external))
+                var cacheName = param.ConvertedName;
+                if (param.TextureType == GetTextureParam.NORMAL_PROP)
                 {
-                    // Debug.Log($"use external: {param.Name}");
-                    m_textureCache.Add(param.Name, new TextureLoadInfo(external, used, true));
+                    cacheName = param.GltflName;
+                }
+
+                if (m_externalMap.TryGetValue(cacheName, out external))
+                {
+                    m_textureCache.Add(cacheName, new TextureLoadInfo(external, used, true));
                     return external;
                 }
             }
@@ -77,17 +84,42 @@ namespace UniGLTF
 
         public void Dispose()
         {
-            foreach (var x in ObjectsForSubAsset())
-            {
-                UnityEngine.Object.DestroyImmediate(x, true);
-            }
-        }
-
-        public IEnumerable<UnityEngine.Object> ObjectsForSubAsset()
-        {
+            Action<UnityEngine.Object> destroy = UnityResourceDestroyer.DestroyResource();
             foreach (var kv in m_textureCache)
             {
-                yield return kv.Value.Texture;
+                if (!kv.Value.IsExternal)
+                {
+#if VRM_DEVELOP
+                    Debug.Log($"Destroy {kv.Value.Texture}");
+#endif
+                    destroy(kv.Value.Texture);
+                }
+            }
+            m_textureCache.Clear();
+        }
+
+        /// <summary>
+        /// 所有権(Dispose権)を移譲する
+        /// </summary>
+        /// <param name="take"></param>
+        public void TransferOwnership(TakeOwnershipFunc take)
+        {
+            var keys = new List<string>();
+            foreach (var x in m_textureCache)
+            {
+                if (x.Value.IsUsed && !x.Value.IsExternal)
+                {
+                    // マテリアルから参照されていて
+                    // 外部のAssetからロードしていない。
+                    if (take(x.Value.Texture))
+                    {
+                        keys.Add(x.Key);
+                    }
+                }
+            }
+            foreach (var x in keys)
+            {
+                m_textureCache.Remove(x);
             }
         }
 
@@ -118,7 +150,7 @@ namespace UniGLTF
         /// <returns></returns>
         public async Task<Texture2D> GetTextureAsync(IAwaitCaller awaitCaller, glTF gltf, GetTextureParam param)
         {
-            if (m_textureCache.TryGetValue(param.Name, out TextureLoadInfo cacheInfo))
+            if (m_textureCache.TryGetValue(param.ConvertedName, out TextureLoadInfo cacheInfo))
             {
                 return cacheInfo.Texture;
             }
@@ -131,26 +163,12 @@ namespace UniGLTF
             {
                 case GetTextureParam.NORMAL_PROP:
                     {
-                        if (Application.isPlaying)
-                        {
-                            var baseTexture = await GetOrCreateBaseTexture(awaitCaller, gltf, param.Index0.Value, false);
-                            var converted = new NormalConverter().GetImportTexture(baseTexture.Texture);
-                            var info = new TextureLoadInfo(converted, true, false);
-                            m_textureCache.Add(param.Name, info);
-                            return info.Texture;
-                        }
-                        else
-                        {
-#if UNITY_EDITOR
-                            var info = await LoadTextureAsync(awaitCaller, param.Index0.Value, true);
-                            var name = gltf.textures[param.Index0.Value].name;
-                            m_textureCache.Add(name, info);
-
-                            var textureAssetPath = AssetDatabase.GetAssetPath(info.Texture);
-                            TextureIO.MarkTextureAssetAsNormalMap(textureAssetPath);
-#endif
-                            return info.Texture;
-                        }
+                        var baseTexture = await GetOrCreateBaseTexture(awaitCaller, gltf, param.Index0.Value, false);
+                        var converted = new NormalConverter().GetImportTexture(baseTexture.Texture);
+                        converted.name = param.ConvertedName;
+                        var info = new TextureLoadInfo(converted, true, false);
+                        m_textureCache.Add(converted.name, info);
+                        return info.Texture;
                     }
 
                 case GetTextureParam.METALLIC_GLOSS_PROP:
@@ -158,9 +176,9 @@ namespace UniGLTF
                         // Bake roughnessFactor values into a texture.
                         var baseTexture = await GetOrCreateBaseTexture(awaitCaller, gltf, param.Index0.Value, false);
                         var converted = new MetallicRoughnessConverter(param.MetallicFactor).GetImportTexture(baseTexture.Texture);
-                        converted.name = param.Name;
+                        converted.name = param.ConvertedName;
                         var info = new TextureLoadInfo(converted, true, false);
-                        m_textureCache.Add(param.Name, info);
+                        m_textureCache.Add(converted.name, info);
                         return info.Texture;
                     }
 
@@ -168,9 +186,9 @@ namespace UniGLTF
                     {
                         var baseTexture = await GetOrCreateBaseTexture(awaitCaller, gltf, param.Index0.Value, false);
                         var converted = new OcclusionConverter().GetImportTexture(baseTexture.Texture);
-                        converted.name = param.Name;
+                        converted.name = param.ConvertedName;
                         var info = new TextureLoadInfo(converted, true, false);
-                        m_textureCache.Add(param.Name, info);
+                        m_textureCache.Add(converted.name, info);
                         return info.Texture;
                     }
 

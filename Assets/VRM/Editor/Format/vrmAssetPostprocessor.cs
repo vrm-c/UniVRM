@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UniGLTF;
 using UnityEditor;
 using UnityEngine;
@@ -37,41 +38,31 @@ namespace VRM
             }
 
             var parser = new GltfParser();
-            try
-            {
-                parser.ParseGlb(File.ReadAllBytes(path.FullPath));
-            }
-            catch (KeyNotFoundException)
-            {
-                // invalid VRM-0.X.
-                // maybe VRM-1.0.do nothing
-                return;
-            }
+            parser.ParseGlb(File.ReadAllBytes(path.FullPath));
 
             var prefabPath = path.Parent.Child(path.FileNameWithoutExtension + ".prefab");
 
-            // save texture assets !
-            LoadTextureAsyncFunc textureLoader = async (caller, textureIndex, used) =>
+            Action<IEnumerable<string>> onCompleted = texturePaths =>
             {
-                var gltfTexture = parser.GLTF.textures[textureIndex];
-                var gltfImage = parser.GLTF.images[gltfTexture.source];
-                var assetPath = prefabPath.Parent.Child(gltfImage.uri);
-                var texture = await UniGLTF.AssetTextureLoader.LoadTaskAsync(assetPath, parser.GLTF, textureIndex);
-                return new TextureLoadInfo(texture, used, false);
+                var map = texturePaths.Select(x =>
+                {
+                    var texture = AssetDatabase.LoadAssetAtPath(x, typeof(Texture2D));
+                    return (texture.name, texture);
+                }).ToArray();
+                using (var context = new VRMImporterContext(parser, null, map))
+                {
+                    var editor = new VRMEditorImporterContext(context, prefabPath);
+                    context.Load();
+                    editor.SaveAsAsset();
+                }
             };
-            var context = new VRMImporterContext(parser, textureLoader);
-            var editor = new VRMEditorImporterContext(context);
-            editor.ExtractImages(prefabPath);
 
-            EditorApplication.delayCall += () =>
+            // extract texture images
+            using (var context = new VRMImporterContext(parser))
             {
-                //
-                // after textures imported
-                //
-                context.Load();
-                editor.SaveAsAsset(prefabPath);
-                editor.Dispose();
-            };
+                var editor = new VRMEditorImporterContext(context, prefabPath);
+                editor.ConvertAndExtractImages(path, onCompleted);
+            }
         }
     }
 #endif
