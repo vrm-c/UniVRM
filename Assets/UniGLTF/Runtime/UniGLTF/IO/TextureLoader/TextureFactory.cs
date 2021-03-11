@@ -55,15 +55,16 @@ namespace UniGLTF
                 if (param.TextureType == GetTextureParam.NORMAL_PROP)
                 {
                     cacheName = param.GltflName;
+                    if (m_textureCache.TryGetValue(cacheName, out TextureLoadInfo normalInfo))
+                    {
+                        external = normalInfo.Texture;
+                        return true;
+                    }
                 }
-
                 if (m_externalMap.TryGetValue(cacheName, out external))
                 {
-                    if (!m_textureCache.ContainsKey(cacheName))
-                    {
-                        m_textureCache.Add(cacheName, new TextureLoadInfo(external, used, true));
-                    }
-                    return external;
+                    m_textureCache.Add(cacheName, new TextureLoadInfo(external, used, true));
+                    return true;
                 }
             }
             external = default;
