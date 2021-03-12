@@ -50,10 +50,18 @@ namespace UniGLTF
 
         public static GetTextureParam StandardTexture(glTF gltf, glTFMaterial src)
         {
+            var metallicFactor = 1.0f;
+            var roughnessFactor = 1.0f;
+            if (src.pbrMetallicRoughness != null)
+            {
+                metallicFactor = src.pbrMetallicRoughness.metallicFactor;
+                roughnessFactor = src.pbrMetallicRoughness.roughnessFactor;
+            }
             return GetTextureParam.CreateStandard(gltf,
-                            src.pbrMetallicRoughness.metallicRoughnessTexture.index,
-                            src.pbrMetallicRoughness.metallicFactor,
-                            src.pbrMetallicRoughness.roughnessFactor);
+                            src.pbrMetallicRoughness?.metallicRoughnessTexture?.index,
+                            src.occlusionTexture?.index,
+                            metallicFactor,
+                            roughnessFactor);
         }
 
         public static GetTextureParam NormalTexture(glTF gltf, glTFMaterial src)

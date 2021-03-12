@@ -80,7 +80,7 @@ namespace UniGLTF
             {
                 var roughnessFactor = 1.0f;
                 Assert.That(
-                    OcclusionMetallicRoughnessConverter.Import(new Color32(255, 255, 255, 255), roughnessFactor),
+                    OcclusionMetallicRoughnessConverter.Import(new Color32(255, 255, 255, 255), 1.0f, roughnessFactor, default),
                     // r <- 255 : Same metallic (src.r)
                     // g <- 0   : (Unused)
                     // b <- 0   : (Unused)
@@ -91,7 +91,7 @@ namespace UniGLTF
             {
                 var roughnessFactor = 1.0f;
                 Assert.That(
-                    OcclusionMetallicRoughnessConverter.Import(new Color32(255, 63, 255, 255), roughnessFactor),
+                    OcclusionMetallicRoughnessConverter.Import(new Color32(255, 63, 255, 255), 1.0f, roughnessFactor, default),
                     // r <- 255 : Same metallic (src.r)
                     // g <- 0   : (Unused)
                     // b <- 0   : (Unused)
@@ -102,7 +102,7 @@ namespace UniGLTF
             {
                 var roughnessFactor = 0.5f;
                 Assert.That(
-                    OcclusionMetallicRoughnessConverter.Import(new Color32(255, 255, 255, 255), roughnessFactor),
+                    OcclusionMetallicRoughnessConverter.Import(new Color32(255, 255, 255, 255), 1.0f, roughnessFactor, default),
                     // r <- 255 : Same metallic (src.r)
                     // g <- 0   : (Unused)
                     // b <- 0   : (Unused)
@@ -113,7 +113,7 @@ namespace UniGLTF
             {
                 var roughnessFactor = 0.0f;
                 Assert.That(
-                    OcclusionMetallicRoughnessConverter.Import(new Color32(255, 255, 255, 255), roughnessFactor),
+                    OcclusionMetallicRoughnessConverter.Import(new Color32(255, 255, 255, 255), 1.0f, roughnessFactor, default),
                     // r <- 255 : Same metallic (src.r)
                     // g <- 0   : (Unused)
                     // b <- 0   : (Unused)

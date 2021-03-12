@@ -70,7 +70,7 @@ namespace UniGLTF
         /// </summary>
         public bool ExtractConverted => TextureType == TextureTypes.StandardMap;
 
-        public GetTextureParam(string name, TextureTypes textureType, float metallicFactor, float roughnessFactor, int i0, int i1, int i2, int i3, int i4, int i5)
+        public GetTextureParam(string name, TextureTypes textureType, float metallicFactor, float roughnessFactor, int? i0, int? i1, int? i2, int? i3, int? i4, int? i5)
         {
             if (string.IsNullOrEmpty(name))
             {
@@ -81,12 +81,12 @@ namespace UniGLTF
             TextureType = textureType;
             MetallicFactor = metallicFactor;
             RoughnessFactor = roughnessFactor;
-            Index0 = (ushort)i0;
-            Index1 = (ushort)i1;
-            Index2 = (ushort)i2;
-            Index3 = (ushort)i3;
-            Index4 = (ushort)i4;
-            Index5 = (ushort)i5;
+            Index0 = (ushort?)i0;
+            Index1 = (ushort?)i1;
+            Index2 = (ushort?)i2;
+            Index3 = (ushort?)i3;
+            Index4 = (ushort?)i4;
+            Index5 = (ushort?)i5;
         }
 
         public static GetTextureParam CreateSRGB(glTF gltf, int textureIndex)
@@ -104,7 +104,7 @@ namespace UniGLTF
 
                 case OCCLUSION_PROP:
                 case METALLIC_GLOSS_PROP:
-                    return CreateStandard(gltf, index, metallicFactor, roughnessFactor);
+                    return CreateStandard(gltf, index, default, metallicFactor, roughnessFactor);
 
                 default:
                     return CreateSRGB(gltf, index);
@@ -117,10 +117,18 @@ namespace UniGLTF
             return new GetTextureParam(name, TextureTypes.NormalMap, default, default, textureIndex, default, default, default, default, default);
         }
 
-        public static GetTextureParam CreateStandard(glTF gltf, int textureIndex, float metallicFactor, float roughnessFactor)
+        public static GetTextureParam CreateStandard(glTF gltf, int? metallicRoughnessTextureIndex, int? occlusionTextureIndex, float metallicFactor, float roughnessFactor)
         {
-            var name = gltf.textures[textureIndex].name;
-            return new GetTextureParam(name, TextureTypes.StandardMap, metallicFactor, roughnessFactor, textureIndex, default, default, default, default, default);
+            string name = default;
+            if (metallicRoughnessTextureIndex.HasValue)
+            {
+                name = gltf.textures[metallicRoughnessTextureIndex.Value].name;
+            }
+            else if (occlusionTextureIndex.HasValue)
+            {
+                name = gltf.textures[occlusionTextureIndex.Value].name;
+            }
+            return new GetTextureParam(name, TextureTypes.StandardMap, metallicFactor, roughnessFactor, metallicRoughnessTextureIndex, occlusionTextureIndex, default, default, default, default);
         }
     }
 }

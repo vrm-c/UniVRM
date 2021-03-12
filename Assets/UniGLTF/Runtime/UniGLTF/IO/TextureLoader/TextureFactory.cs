@@ -178,22 +178,17 @@ namespace UniGLTF
                 case GetTextureParam.TextureTypes.StandardMap:
                     {
                         var baseTexture = await GetOrCreateBaseTexture(awaitCaller, gltf, param.Index0.Value, false);
-                        var converted = OcclusionMetallicRoughnessConverter.GetImportTexture(baseTexture.Texture, param.MetallicFactor, param.RoughnessFactor);
+                        TextureLoadInfo occlusionBaseTexture = default;
+                        if (param.Index1.HasValue)
+                        {
+                            occlusionBaseTexture = await GetOrCreateBaseTexture(awaitCaller, gltf, param.Index1.Value, false);
+                        }
+                        var converted = OcclusionMetallicRoughnessConverter.GetImportTexture(baseTexture.Texture, param.MetallicFactor, param.RoughnessFactor, occlusionBaseTexture.Texture);
                         converted.name = param.ConvertedName;
                         var info = new TextureLoadInfo(converted, true, false);
                         m_textureCache.Add(converted.name, info);
                         return info.Texture;
                     }
-
-                // case GetTextureParam.OCCLUSION_PROP:
-                //     {
-                //         var baseTexture = await GetOrCreateBaseTexture(awaitCaller, gltf, param.Index0.Value, false);
-                //         var converted = new OcclusionConverter().GetImportTexture(baseTexture.Texture);
-                //         converted.name = param.ConvertedName;
-                //         var info = new TextureLoadInfo(converted, true, false);
-                //         m_textureCache.Add(converted.name, info);
-                //         return info.Texture;
-                //     }
 
                 default:
                     {
