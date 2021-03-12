@@ -79,9 +79,8 @@ namespace UniGLTF
         {
             {
                 var roughnessFactor = 1.0f;
-                var conv = new OcclusionMetallicRoughnessConverter(roughnessFactor);
                 Assert.That(
-                    conv.Import(new Color32(255, 255, 255, 255)),
+                    OcclusionMetallicRoughnessConverter.Import(new Color32(255, 255, 255, 255), roughnessFactor),
                     // r <- 255 : Same metallic (src.r)
                     // g <- 0   : (Unused)
                     // b <- 0   : (Unused)
@@ -91,9 +90,8 @@ namespace UniGLTF
 
             {
                 var roughnessFactor = 1.0f;
-                var conv = new OcclusionMetallicRoughnessConverter(roughnessFactor);
                 Assert.That(
-                    conv.Import(new Color32(255, 63, 255, 255)),
+                    OcclusionMetallicRoughnessConverter.Import(new Color32(255, 63, 255, 255), roughnessFactor),
                     // r <- 255 : Same metallic (src.r)
                     // g <- 0   : (Unused)
                     // b <- 0   : (Unused)
@@ -103,9 +101,8 @@ namespace UniGLTF
 
             {
                 var roughnessFactor = 0.5f;
-                var conv = new OcclusionMetallicRoughnessConverter(roughnessFactor);
                 Assert.That(
-                    conv.Import(new Color32(255, 255, 255, 255)),
+                    OcclusionMetallicRoughnessConverter.Import(new Color32(255, 255, 255, 255), roughnessFactor),
                     // r <- 255 : Same metallic (src.r)
                     // g <- 0   : (Unused)
                     // b <- 0   : (Unused)
@@ -115,9 +112,8 @@ namespace UniGLTF
 
             {
                 var roughnessFactor = 0.0f;
-                var conv = new OcclusionMetallicRoughnessConverter(roughnessFactor);
                 Assert.That(
-                    conv.Import(new Color32(255, 255, 255, 255)),
+                    OcclusionMetallicRoughnessConverter.Import(new Color32(255, 255, 255, 255), roughnessFactor),
                     // r <- 255 : Same metallic (src.r)
                     // g <- 0   : (Unused)
                     // b <- 0   : (Unused)

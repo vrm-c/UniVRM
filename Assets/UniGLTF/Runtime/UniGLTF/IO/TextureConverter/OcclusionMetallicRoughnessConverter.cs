@@ -22,9 +22,13 @@ namespace UniGLTF
             _smoothnessOrRoughness = smoothnessOrRoughness;
         }
 
-        public Texture2D GetImportTexture(Texture2D texture)
+        public static Texture2D GetImportTexture(Texture2D texture, float smoothnessOrRoughness)
         {
-            var converted = TextureConverter.Convert(texture, glTFTextureTypes.Metallic, Import, null);
+            TextureConverter.ColorConversion convert = src =>
+            {
+                return Import(src, smoothnessOrRoughness);
+            };
+            var converted = TextureConverter.Convert(texture, glTFTextureTypes.Metallic, convert, null);
             return converted;
         }
 
@@ -34,7 +38,7 @@ namespace UniGLTF
             return converted;
         }
 
-        public Color32 Import(Color32 src)
+        public static Color32 Import(Color32 src, float _smoothnessOrRoughness)
         {
             var dst = new Color32
             {
