@@ -70,8 +70,7 @@ namespace UniGLTF
 
                 switch (param.TextureType)
                 {
-                    case GetTextureParam.METALLIC_GLOSS_PROP:
-                    case GetTextureParam.OCCLUSION_PROP:
+                    case GetTextureParam.TextureTypes.StandardMap:
                         {
                             // write converted texture
                             targetPath = $"{m_path}/{param.ConvertedName}.png";
@@ -141,8 +140,7 @@ namespace UniGLTF
                     {
                         switch (param.TextureType)
                         {
-                            case GetTextureParam.OCCLUSION_PROP:
-                            case GetTextureParam.METALLIC_GLOSS_PROP:
+                            case GetTextureParam.TextureTypes.StandardMap:
 #if VRM_DEVELOP
                                 Debug.Log($"{targetPath} => linear");
 #endif
@@ -150,7 +148,7 @@ namespace UniGLTF
                                 targetTextureImporter.SaveAndReimport();
                                 break;
 
-                            case GetTextureParam.NORMAL_PROP:
+                            case GetTextureParam.TextureTypes.NormalMap:
 #if VRM_DEVELOP
                                 Debug.Log($"{targetPath} => normalmap");
 #endif

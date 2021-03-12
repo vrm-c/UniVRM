@@ -64,8 +64,7 @@ namespace UniGLTF
             {
                 switch (texParam.TextureType)
                 {
-                    case GetTextureParam.METALLIC_GLOSS_PROP:
-                    case GetTextureParam.OCCLUSION_PROP:
+                    case GetTextureParam.TextureTypes.StandardMap:
                         break;
 
                     default:

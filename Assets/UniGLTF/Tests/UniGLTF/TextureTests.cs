@@ -14,7 +14,7 @@ namespace UniGLTF
                 wrapMode = TextureWrapMode.Clamp,
                 filterMode = FilterMode.Trilinear,
             };
-            var textureManager = new TextureExportManager(new Texture[] {tex0});
+            var textureManager = new TextureExportManager(new Texture[] { tex0 });
 
             var material = new Material(Shader.Find("Standard"));
             material.mainTexture = tex0;
@@ -39,7 +39,7 @@ namespace UniGLTF
         {
             {
                 var smoothness = 1.0f;
-                var conv = new MetallicRoughnessConverter(smoothness);
+                var conv = new OcclusionMetallicRoughnessConverter(smoothness);
                 Assert.That(
                     conv.Export(new Color32(255, 255, 255, 255)),
                     // r <- 0   : (Unused)
@@ -51,7 +51,7 @@ namespace UniGLTF
 
             {
                 var smoothness = 0.5f;
-                var conv = new MetallicRoughnessConverter(smoothness);
+                var conv = new OcclusionMetallicRoughnessConverter(smoothness);
                 Assert.That(
                     conv.Export(new Color32(255, 255, 255, 255)),
                     // r <- 0   : (Unused)
@@ -63,7 +63,7 @@ namespace UniGLTF
 
             {
                 var smoothness = 0.0f;
-                var conv = new MetallicRoughnessConverter(smoothness);
+                var conv = new OcclusionMetallicRoughnessConverter(smoothness);
                 Assert.That(
                     conv.Export(new Color32(255, 255, 255, 255)),
                     // r <- 0   : (Unused)
@@ -79,7 +79,7 @@ namespace UniGLTF
         {
             {
                 var roughnessFactor = 1.0f;
-                var conv = new MetallicRoughnessConverter(roughnessFactor);
+                var conv = new OcclusionMetallicRoughnessConverter(roughnessFactor);
                 Assert.That(
                     conv.Import(new Color32(255, 255, 255, 255)),
                     // r <- 255 : Same metallic (src.r)
@@ -91,7 +91,7 @@ namespace UniGLTF
 
             {
                 var roughnessFactor = 1.0f;
-                var conv = new MetallicRoughnessConverter(roughnessFactor);
+                var conv = new OcclusionMetallicRoughnessConverter(roughnessFactor);
                 Assert.That(
                     conv.Import(new Color32(255, 63, 255, 255)),
                     // r <- 255 : Same metallic (src.r)
@@ -103,7 +103,7 @@ namespace UniGLTF
 
             {
                 var roughnessFactor = 0.5f;
-                var conv = new MetallicRoughnessConverter(roughnessFactor);
+                var conv = new OcclusionMetallicRoughnessConverter(roughnessFactor);
                 Assert.That(
                     conv.Import(new Color32(255, 255, 255, 255)),
                     // r <- 255 : Same metallic (src.r)
@@ -115,7 +115,7 @@ namespace UniGLTF
 
             {
                 var roughnessFactor = 0.0f;
-                var conv = new MetallicRoughnessConverter(roughnessFactor);
+                var conv = new OcclusionMetallicRoughnessConverter(roughnessFactor);
                 Assert.That(
                     conv.Import(new Color32(255, 255, 255, 255)),
                     // r <- 255 : Same metallic (src.r)

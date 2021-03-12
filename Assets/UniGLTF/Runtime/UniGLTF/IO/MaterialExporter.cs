@@ -27,10 +27,9 @@ namespace UniGLTF
             // common params
             material.name = m.name;
             Export_Color(m, textureManager, material);
-            Export_Metallic(m, textureManager, material);
-            Export_Normal(m, textureManager, material);
-            Export_Occlusion(m, textureManager, material);
             Export_Emission(m, textureManager, material);
+            Export_Normal(m, textureManager, material);
+            Export_PBR(m, textureManager, material);
 
             return material;
         }
@@ -57,7 +56,13 @@ namespace UniGLTF
             }
         }
 
-        static void Export_Metallic(Material m, TextureExportManager textureManager, glTFMaterial material)
+        /// <summary>
+        /// Occlusion, Metallic, Roughness
+        /// </summary>
+        /// <param name="m"></param>
+        /// <param name="textureManager"></param>
+        /// <param name="material"></param>
+        static void Export_PBR(Material m, TextureExportManager textureManager, glTFMaterial material)
         {
             int index = -1;
             if (m.HasProperty("_MetallicGlossMap"))
@@ -69,7 +74,7 @@ namespace UniGLTF
                 }
 
                 // Bake smoothness values into a texture.
-                var converter = new MetallicRoughnessConverter(smoothness);
+                var converter = new OcclusionMetallicRoughnessConverter(smoothness);
                 index = textureManager.ConvertAndGetIndex(m.GetTexture("_MetallicGlossMap"), converter);
                 if (index != -1)
                 {
@@ -102,6 +107,27 @@ namespace UniGLTF
                 }
             }
         }
+        // static void Export_Occlusion(Material m, TextureExportManager textureManager, glTFMaterial material)
+        // {
+        //     if (m.HasProperty("_OcclusionMap"))
+        //     {
+        //         var index = textureManager.ConvertAndGetIndex(m.GetTexture("_OcclusionMap"), new OcclusionConverter());
+        //         if (index != -1)
+        //         {
+        //             material.occlusionTexture = new glTFMaterialOcclusionTextureInfo()
+        //             {
+        //                 index = index,
+        //             };
+
+        //             Export_MainTextureTransform(m, material.occlusionTexture);
+        //         }
+
+        //         if (index != -1 && m.HasProperty("_OcclusionStrength"))
+        //         {
+        //             material.occlusionTexture.strength = m.GetFloat("_OcclusionStrength");
+        //         }
+        //     }
+        // }
 
         static void Export_Normal(Material m, TextureExportManager textureManager, glTFMaterial material)
         {
@@ -121,28 +147,6 @@ namespace UniGLTF
                 if (index != -1 && m.HasProperty("_BumpScale"))
                 {
                     material.normalTexture.scale = m.GetFloat("_BumpScale");
-                }
-            }
-        }
-
-        static void Export_Occlusion(Material m, TextureExportManager textureManager, glTFMaterial material)
-        {
-            if (m.HasProperty("_OcclusionMap"))
-            {
-                var index = textureManager.ConvertAndGetIndex(m.GetTexture("_OcclusionMap"), new OcclusionConverter());
-                if (index != -1)
-                {
-                    material.occlusionTexture = new glTFMaterialOcclusionTextureInfo()
-                    {
-                        index = index,
-                    };
-
-                    Export_MainTextureTransform(m, material.occlusionTexture);
-                }
-
-                if (index != -1 && m.HasProperty("_OcclusionStrength"))
-                {
-                    material.occlusionTexture.strength = m.GetFloat("_OcclusionStrength");
                 }
             }
         }

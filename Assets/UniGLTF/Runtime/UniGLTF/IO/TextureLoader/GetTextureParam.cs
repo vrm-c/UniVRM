@@ -2,14 +2,25 @@
 
 namespace UniGLTF
 {
+    /// <summary>
+    /// STANDARD(Pbr) texture = occlusion + metallic + smoothness
+    /// </summary>
     public struct GetTextureParam
     {
         public const string NORMAL_PROP = "_BumpMap";
         public const string NORMAL_SUFFIX = ".normal";
+
         public const string METALLIC_GLOSS_PROP = "_MetallicGlossMap";
-        public const string METALLIC_GLOSS_SUFFIX = ".metallicRoughness";
         public const string OCCLUSION_PROP = "_OcclusionMap";
-        public const string OCCLUSION_SUFFIX = ".occlusion";
+        public const string STANDARD_SUFFIX = ".standard";
+
+        public enum TextureTypes
+        {
+            sRGB,
+            NormalMap,
+            // Occlusion + Metallic + Smoothness
+            StandardMap,
+        }
 
         public static string RemoveSuffix(string src)
         {
@@ -17,13 +28,9 @@ namespace UniGLTF
             {
                 return src.Substring(0, src.Length - NORMAL_SUFFIX.Length);
             }
-            else if (src.EndsWith(METALLIC_GLOSS_SUFFIX))
+            else if (src.EndsWith(STANDARD_SUFFIX))
             {
-                return src.Substring(0, src.Length - METALLIC_GLOSS_SUFFIX.Length);
-            }
-            else if (src.EndsWith(OCCLUSION_SUFFIX))
-            {
-                return src.Substring(0, src.Length - OCCLUSION_SUFFIX.Length);
+                return src.Substring(0, src.Length - STANDARD_SUFFIX.Length);
             }
             else
             {
@@ -41,15 +48,14 @@ namespace UniGLTF
             {
                 switch (TextureType)
                 {
-                    case METALLIC_GLOSS_PROP: return $"{m_name}{METALLIC_GLOSS_SUFFIX}";
-                    case OCCLUSION_PROP: return $"{m_name}{OCCLUSION_SUFFIX}";
-                    case NORMAL_PROP: return $"{m_name}{NORMAL_SUFFIX}";
+                    case TextureTypes.StandardMap: return $"{m_name}{STANDARD_SUFFIX}";
+                    case TextureTypes.NormalMap: return $"{m_name}{NORMAL_SUFFIX}";
                     default: return m_name;
                 }
             }
         }
 
-        public readonly string TextureType;
+        public readonly TextureTypes TextureType;
         public readonly float MetallicFactor;
         public readonly ushort? Index0;
         public readonly ushort? Index1;
@@ -59,11 +65,11 @@ namespace UniGLTF
         public readonly ushort? Index5;
 
         /// <summary>
-        /// この２種類は変換済みをExtract
+        /// この種類は RGB チャンネルの組み換えが必用
         /// </summary>
-        public bool ExtractConverted => TextureType == OCCLUSION_PROP || TextureType == METALLIC_GLOSS_PROP;
+        public bool ExtractConverted => TextureType == TextureTypes.StandardMap;
 
-        public GetTextureParam(string name, string textureType, float metallicFactor, int i0, int i1, int i2, int i3, int i4, int i5)
+        public GetTextureParam(string name, TextureTypes textureType, float metallicFactor, int i0, int i1, int i2, int i3, int i4, int i5)
         {
             if (string.IsNullOrEmpty(name))
             {
@@ -81,10 +87,10 @@ namespace UniGLTF
             Index5 = (ushort)i5;
         }
 
-        public static GetTextureParam Create(glTF gltf, int textureIndex)
+        public static GetTextureParam CreateSRGB(glTF gltf, int textureIndex)
         {
             var name = gltf.textures[textureIndex].name;
-            return new GetTextureParam(name, default, default, textureIndex, default, default, default, default, default);
+            return new GetTextureParam(name, TextureTypes.sRGB, default, textureIndex, default, default, default, default, default);
         }
 
         public static GetTextureParam Create(glTF gltf, int index, string prop)
@@ -95,32 +101,24 @@ namespace UniGLTF
                     return CreateNormal(gltf, index);
 
                 case OCCLUSION_PROP:
-                    return CreateOcclusion(gltf, index);
-
                 case METALLIC_GLOSS_PROP:
-                    return CreateMetallic(gltf, index, 1);
+                    return CreateStandard(gltf, index, 1);
 
                 default:
-                    return Create(gltf, index);
+                    return CreateSRGB(gltf, index);
             }
         }
 
         public static GetTextureParam CreateNormal(glTF gltf, int textureIndex)
         {
             var name = gltf.textures[textureIndex].name;
-            return new GetTextureParam(name, NORMAL_PROP, default, textureIndex, default, default, default, default, default);
+            return new GetTextureParam(name, TextureTypes.NormalMap, default, textureIndex, default, default, default, default, default);
         }
 
-        public static GetTextureParam CreateMetallic(glTF gltf, int textureIndex, float metallicFactor)
+        public static GetTextureParam CreateStandard(glTF gltf, int textureIndex, float metallicFactor)
         {
             var name = gltf.textures[textureIndex].name;
-            return new GetTextureParam(name, METALLIC_GLOSS_PROP, metallicFactor, textureIndex, default, default, default, default, default);
-        }
-
-        public static GetTextureParam CreateOcclusion(glTF gltf, int textureIndex)
-        {
-            var name = gltf.textures[textureIndex].name;
-            return new GetTextureParam(name, OCCLUSION_PROP, default, textureIndex, default, default, default, default, default);
+            return new GetTextureParam(name, TextureTypes.StandardMap, metallicFactor, textureIndex, default, default, default, default, default);
         }
     }
 }

@@ -52,7 +52,7 @@ namespace UniGLTF
             if (param.Index0.HasValue && m_externalMap != null)
             {
                 var cacheName = param.ConvertedName;
-                if (param.TextureType == GetTextureParam.NORMAL_PROP)
+                if (param.TextureType == GetTextureParam.TextureTypes.NormalMap)
                 {
                     cacheName = param.GltflName;
                     if (m_textureCache.TryGetValue(cacheName, out TextureLoadInfo normalInfo))
@@ -165,7 +165,7 @@ namespace UniGLTF
 
             switch (param.TextureType)
             {
-                case GetTextureParam.NORMAL_PROP:
+                case GetTextureParam.TextureTypes.NormalMap:
                     {
                         var baseTexture = await GetOrCreateBaseTexture(awaitCaller, gltf, param.Index0.Value, false);
                         var converted = new NormalConverter().GetImportTexture(baseTexture.Texture);
@@ -175,26 +175,25 @@ namespace UniGLTF
                         return info.Texture;
                     }
 
-                case GetTextureParam.METALLIC_GLOSS_PROP:
+                case GetTextureParam.TextureTypes.StandardMap:
                     {
-                        // Bake roughnessFactor values into a texture.
                         var baseTexture = await GetOrCreateBaseTexture(awaitCaller, gltf, param.Index0.Value, false);
-                        var converted = new MetallicRoughnessConverter(param.MetallicFactor).GetImportTexture(baseTexture.Texture);
+                        var converted = new OcclusionMetallicRoughnessConverter(param.MetallicFactor).GetImportTexture(baseTexture.Texture);
                         converted.name = param.ConvertedName;
                         var info = new TextureLoadInfo(converted, true, false);
                         m_textureCache.Add(converted.name, info);
                         return info.Texture;
                     }
 
-                case GetTextureParam.OCCLUSION_PROP:
-                    {
-                        var baseTexture = await GetOrCreateBaseTexture(awaitCaller, gltf, param.Index0.Value, false);
-                        var converted = new OcclusionConverter().GetImportTexture(baseTexture.Texture);
-                        converted.name = param.ConvertedName;
-                        var info = new TextureLoadInfo(converted, true, false);
-                        m_textureCache.Add(converted.name, info);
-                        return info.Texture;
-                    }
+                // case GetTextureParam.OCCLUSION_PROP:
+                //     {
+                //         var baseTexture = await GetOrCreateBaseTexture(awaitCaller, gltf, param.Index0.Value, false);
+                //         var converted = new OcclusionConverter().GetImportTexture(baseTexture.Texture);
+                //         converted.name = param.ConvertedName;
+                //         var info = new TextureLoadInfo(converted, true, false);
+                //         m_textureCache.Add(converted.name, info);
+                //         return info.Texture;
+                //     }
 
                 default:
                     {
