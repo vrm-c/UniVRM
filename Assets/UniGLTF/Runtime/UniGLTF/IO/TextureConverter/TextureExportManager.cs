@@ -9,12 +9,6 @@ namespace UniGLTF
 {
     public class TextureExportManager
     {
-        // List<Texture> m_exported;
-        // public List<Texture> Exported
-        // {
-        //     get { return m_exported; }
-        // }
-
         public int GetTextureIndex(Texture src, glTFTextureTypes textureType)
         {
             throw new NotImplementedException();
