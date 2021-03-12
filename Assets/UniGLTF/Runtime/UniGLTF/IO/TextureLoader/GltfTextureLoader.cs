@@ -36,17 +36,15 @@ namespace UniGLTF
             //
             // texture from image(png etc) bytes
             //
-            var textureType = TextureIO.GetglTFTextureType(gltf, textureIndex);
-            var colorSpace = TextureIO.GetColorSpace(textureType);
-            var isLinear = colorSpace == RenderTextureReadWrite.Linear;
-            var sampler = gltf.GetSamplerFromTextureIndex(textureIndex);
-
-            var texture = new Texture2D(2, 2, TextureFormat.ARGB32, false, isLinear);
+            var colorSpace = TextureIO.GetColorSpace(gltf, textureIndex);
+            var texture = new Texture2D(2, 2, TextureFormat.ARGB32, false, colorSpace == RenderTextureReadWrite.Linear);
             texture.name = gltf.textures[textureIndex].name;
             if (imageBytes != null)
             {
                 texture.LoadImage(imageBytes);
             }
+
+            var sampler = gltf.GetSamplerFromTextureIndex(textureIndex);
             if (sampler != null)
             {
                 TextureSamplerUtil.SetSampler(texture, sampler);

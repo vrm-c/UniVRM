@@ -14,7 +14,7 @@ namespace UniGLTF
     {
         public delegate Color32 ColorConversion(Color32 color);
 
-        public static Texture2D Convert(Texture2D texture, glTFTextureTypes textureType, ColorConversion colorConversion, Material convertMaterial)
+        public static Texture2D Convert(Texture texture, glTFTextureTypes textureType, ColorConversion colorConversion, Material convertMaterial)
         {
             var copyTexture = CopyTexture(texture, TextureIO.GetColorSpace(textureType), convertMaterial);
             if (colorConversion != null)

@@ -90,9 +90,9 @@ namespace UniGLTF
             return dst;
         }
 
-        public static Texture2D Export(Texture2D texture, float smoothness)
+        public static Texture2D Export(Texture texture, float smoothness)
         {
-            var converted = TextureConverter.Convert(texture, glTFTextureTypes.Metallic, x => ExportPixel(x, smoothness), null);
+            var converted = TextureConverter.Convert(texture, glTFTextureTypes.OcclusionMetallicRoughness, x => ExportPixel(x, smoothness), null);
             return converted;
         }
 

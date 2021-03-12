@@ -39,7 +39,7 @@ namespace UniGLTF
 
         // Unity texture to GLTF data
         // ConvertToRawColorWhenNormalValueIsCompressed
-        public static Texture2D Export(Texture2D texture)
+        public static Texture2D Export(Texture texture)
         {
             return TextureConverter.Convert(texture, glTFTextureTypes.Normal, null, Decoder);
         }

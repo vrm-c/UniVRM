@@ -17,15 +17,25 @@ namespace UniGLTF
         {
             switch (textureType)
             {
-                case glTFTextureTypes.Metallic:
+                case glTFTextureTypes.SRGB:
+                    return RenderTextureReadWrite.sRGB;
+                case glTFTextureTypes.OcclusionMetallicRoughness:
                 case glTFTextureTypes.Normal:
-                case glTFTextureTypes.Occlusion:
                     return RenderTextureReadWrite.Linear;
-                case glTFTextureTypes.BaseColor:
-                case glTFTextureTypes.Emissive:
-                    return RenderTextureReadWrite.sRGB;
                 default:
-                    return RenderTextureReadWrite.sRGB;
+                    throw new NotImplementedException();
+            }
+        }
+
+        public static RenderTextureReadWrite GetColorSpace(glTF gltf, int textureIndex)
+        {
+            if (TextureIO.TryGetglTFTextureType(gltf, textureIndex, out glTFTextureTypes textureType))
+            {
+                return GetColorSpace(textureType);
+            }
+            else
+            {
+                return RenderTextureReadWrite.sRGB;
             }
         }
 
@@ -33,32 +43,35 @@ namespace UniGLTF
         {
             switch (propName)
             {
-                case "_Color":
-                    return glTFTextureTypes.BaseColor;
                 case "_MetallicGlossMap":
-                    return glTFTextureTypes.Metallic;
+                case "_OcclusionMap":
+                    return glTFTextureTypes.OcclusionMetallicRoughness;
                 case "_BumpMap":
                     return glTFTextureTypes.Normal;
-                case "_OcclusionMap":
-                    return glTFTextureTypes.Occlusion;
+                case "_Color":
                 case "_EmissionMap":
-                    return glTFTextureTypes.Emissive;
+                    return glTFTextureTypes.SRGB;
                 default:
-                    return glTFTextureTypes.Unknown;
+                    Debug.LogWarning($"unknown texture property: {propName} as sRGB");
+                    return glTFTextureTypes.SRGB;
             }
         }
 
-        public static glTFTextureTypes GetglTFTextureType(glTF glTf, int textureIndex)
+        public static bool TryGetglTFTextureType(glTF glTf, int textureIndex, out glTFTextureTypes textureType)
         {
             foreach (var material in glTf.materials)
             {
                 var textureInfo = material.GetTextures().FirstOrDefault(x => (x != null) && x.index == textureIndex);
                 if (textureInfo != null)
                 {
-                    return textureInfo.TextureType;
+                    textureType = textureInfo.TextureType;
+                    return true;
                 }
             }
-            return glTFTextureTypes.Unknown;
+
+            // textureIndex is not used by Material.
+            textureType = default;
+            return false;
         }
 
 #if UNITY_EDITOR
@@ -86,7 +99,8 @@ namespace UniGLTF
             var props = ShaderPropExporter.PreShaderPropExporter.GetPropsForSupportedShader(m.shader.name);
             if (props == null)
             {
-                yield return (m.mainTexture, glTFTextureTypes.BaseColor);
+                // unknown shader
+                yield return (m.mainTexture, glTFTextureTypes.SRGB);
             }
 
             foreach (var prop in props.Properties)

@@ -40,7 +40,7 @@ namespace UniGLTF
             {
                 var smoothness = 1.0f;
                 Assert.That(
-                    OcclusionMetallicRoughnessConverter.Export(new Color32(255, 255, 255, 255), smoothness),
+                    OcclusionMetallicRoughnessConverter.ExportPixel(new Color32(255, 255, 255, 255), smoothness),
                     // r <- 0   : (Unused)
                     // g <- 0   : ((1 - src.a(as float) * smoothness) ^ 2)(as uint8)
                     // b <- 255 : Same metallic (src.r)
@@ -51,7 +51,7 @@ namespace UniGLTF
             {
                 var smoothness = 0.5f;
                 Assert.That(
-                    OcclusionMetallicRoughnessConverter.Export(new Color32(255, 255, 255, 255), smoothness),
+                    OcclusionMetallicRoughnessConverter.ExportPixel(new Color32(255, 255, 255, 255), smoothness),
                     // r <- 0   : (Unused)
                     // g <- 63  : ((1 - src.a(as float) * smoothness) ^ 2)(as uint8)
                     // b <- 255 : Same metallic (src.r)
@@ -62,7 +62,7 @@ namespace UniGLTF
             {
                 var smoothness = 0.0f;
                 Assert.That(
-                    OcclusionMetallicRoughnessConverter.Export(new Color32(255, 255, 255, 255), smoothness),
+                    OcclusionMetallicRoughnessConverter.ExportPixel(new Color32(255, 255, 255, 255), smoothness),
                     // r <- 0   : (Unused)
                     // g <- 255 : ((1 - src.a(as float) * smoothness) ^ 2)(as uint8)
                     // b <- 255 : Same metallic (src.r)

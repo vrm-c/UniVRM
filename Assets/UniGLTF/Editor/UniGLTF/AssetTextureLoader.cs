@@ -8,10 +8,7 @@ namespace UniGLTF
         public static Task<Texture2D> LoadTaskAsync(UnityPath m_assetPath,
             glTF gltf, int textureIndex)
         {
-            var textureType = TextureIO.GetglTFTextureType(gltf, textureIndex);
-            var colorSpace = TextureIO.GetColorSpace(textureType);
-            var isLinear = colorSpace == RenderTextureReadWrite.Linear;
-            var sampler = gltf.GetSamplerFromTextureIndex(textureIndex);
+            var colorSpace = TextureIO.GetColorSpace(gltf, textureIndex);
 
             //
             // texture from assets
@@ -25,7 +22,7 @@ namespace UniGLTF
             else
             {
                 importer.maxTextureSize = 8192;
-                importer.sRGBTexture = !isLinear;
+                importer.sRGBTexture = colorSpace == RenderTextureReadWrite.sRGB;
                 importer.SaveAndReimport();
             }
 
@@ -50,6 +47,7 @@ namespace UniGLTF
                 importer.SaveAndReimport();
             }
 
+            var sampler = gltf.GetSamplerFromTextureIndex(textureIndex);
             if (sampler != null)
             {
                 TextureSamplerUtil.SetSampler(Texture, sampler);
