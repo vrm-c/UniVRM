@@ -39,9 +39,8 @@ namespace UniGLTF
         {
             {
                 var smoothness = 1.0f;
-                var conv = new OcclusionMetallicRoughnessConverter(smoothness);
                 Assert.That(
-                    conv.Export(new Color32(255, 255, 255, 255)),
+                    OcclusionMetallicRoughnessConverter.Export(new Color32(255, 255, 255, 255), smoothness),
                     // r <- 0   : (Unused)
                     // g <- 0   : ((1 - src.a(as float) * smoothness) ^ 2)(as uint8)
                     // b <- 255 : Same metallic (src.r)
@@ -51,9 +50,8 @@ namespace UniGLTF
 
             {
                 var smoothness = 0.5f;
-                var conv = new OcclusionMetallicRoughnessConverter(smoothness);
                 Assert.That(
-                    conv.Export(new Color32(255, 255, 255, 255)),
+                    OcclusionMetallicRoughnessConverter.Export(new Color32(255, 255, 255, 255), smoothness),
                     // r <- 0   : (Unused)
                     // g <- 63  : ((1 - src.a(as float) * smoothness) ^ 2)(as uint8)
                     // b <- 255 : Same metallic (src.r)
@@ -63,9 +61,8 @@ namespace UniGLTF
 
             {
                 var smoothness = 0.0f;
-                var conv = new OcclusionMetallicRoughnessConverter(smoothness);
                 Assert.That(
-                    conv.Export(new Color32(255, 255, 255, 255)),
+                    OcclusionMetallicRoughnessConverter.Export(new Color32(255, 255, 255, 255), smoothness),
                     // r <- 0   : (Unused)
                     // g <- 255 : ((1 - src.a(as float) * smoothness) ^ 2)(as uint8)
                     // b <- 255 : Same metallic (src.r)
@@ -80,7 +77,7 @@ namespace UniGLTF
             {
                 var roughnessFactor = 1.0f;
                 Assert.That(
-                    OcclusionMetallicRoughnessConverter.Import(new Color32(255, 255, 255, 255), 1.0f, roughnessFactor, default),
+                    OcclusionMetallicRoughnessConverter.ImportPixel(new Color32(255, 255, 255, 255), 1.0f, roughnessFactor, default),
                     // r <- 255 : Same metallic (src.r)
                     // g <- 0   : (Unused)
                     // b <- 0   : (Unused)
@@ -91,7 +88,7 @@ namespace UniGLTF
             {
                 var roughnessFactor = 1.0f;
                 Assert.That(
-                    OcclusionMetallicRoughnessConverter.Import(new Color32(255, 63, 255, 255), 1.0f, roughnessFactor, default),
+                    OcclusionMetallicRoughnessConverter.ImportPixel(new Color32(255, 63, 255, 255), 1.0f, roughnessFactor, default),
                     // r <- 255 : Same metallic (src.r)
                     // g <- 0   : (Unused)
                     // b <- 0   : (Unused)
@@ -102,7 +99,7 @@ namespace UniGLTF
             {
                 var roughnessFactor = 0.5f;
                 Assert.That(
-                    OcclusionMetallicRoughnessConverter.Import(new Color32(255, 255, 255, 255), 1.0f, roughnessFactor, default),
+                    OcclusionMetallicRoughnessConverter.ImportPixel(new Color32(255, 255, 255, 255), 1.0f, roughnessFactor, default),
                     // r <- 255 : Same metallic (src.r)
                     // g <- 0   : (Unused)
                     // b <- 0   : (Unused)
@@ -113,7 +110,7 @@ namespace UniGLTF
             {
                 var roughnessFactor = 0.0f;
                 Assert.That(
-                    OcclusionMetallicRoughnessConverter.Import(new Color32(255, 255, 255, 255), 1.0f, roughnessFactor, default),
+                    OcclusionMetallicRoughnessConverter.ImportPixel(new Color32(255, 255, 255, 255), 1.0f, roughnessFactor, default),
                     // r <- 255 : Same metallic (src.r)
                     // g <- 0   : (Unused)
                     // b <- 0   : (Unused)

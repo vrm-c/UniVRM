@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -70,7 +71,7 @@ namespace UniGLTF
             return index;
         }
 
-        public int ConvertAndGetIndex(Texture texture, ITextureConverter converter)
+        public int ConvertAndGetIndex(Texture texture, Func<Texture2D, Texture2D> converter)
         {
             if (texture == null)
             {
@@ -84,7 +85,7 @@ namespace UniGLTF
                 return -1;
             }
 
-            m_exportTextures[index] = converter.GetExportTexture(texture as Texture2D);
+            m_exportTextures[index] = converter(texture as Texture2D);
 
             return index;
         }

@@ -183,7 +183,7 @@ namespace UniGLTF
                         {
                             occlusionBaseTexture = await GetOrCreateBaseTexture(awaitCaller, gltf, param.Index1.Value, false);
                         }
-                        var converted = OcclusionMetallicRoughnessConverter.GetImportTexture(baseTexture.Texture, param.MetallicFactor, param.RoughnessFactor, occlusionBaseTexture.Texture);
+                        var converted = OcclusionMetallicRoughnessConverter.Import(baseTexture.Texture, param.MetallicFactor, param.RoughnessFactor, occlusionBaseTexture.Texture);
                         converted.name = param.ConvertedName;
                         var info = new TextureLoadInfo(converted, true, false);
                         m_textureCache.Add(converted.name, info);

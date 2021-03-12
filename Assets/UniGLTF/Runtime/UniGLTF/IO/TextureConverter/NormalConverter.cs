@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace UniGLTF
 {
-    public class NormalConverter : ITextureConverter
+    public class NormalConverter
     {
         private Material m_decoder;
         private Material GetDecoder()

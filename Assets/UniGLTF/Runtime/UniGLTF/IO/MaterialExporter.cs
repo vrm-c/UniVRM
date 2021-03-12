@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using UniGLTF.UniUnlit;
-using UniJSON;
+﻿using UniGLTF.UniUnlit;
 using UnityEngine;
 
 
@@ -67,15 +65,14 @@ namespace UniGLTF
             int index = -1;
             if (m.HasProperty("_MetallicGlossMap"))
             {
-                float smoothness = 0.0f;
+                float smoothness = 1.0f;
                 if (m.HasProperty("_GlossMapScale"))
                 {
                     smoothness = m.GetFloat("_GlossMapScale");
                 }
 
                 // Bake smoothness values into a texture.
-                var converter = new OcclusionMetallicRoughnessConverter(smoothness);
-                index = textureManager.ConvertAndGetIndex(m.GetTexture("_MetallicGlossMap"), converter);
+                index = textureManager.ConvertAndGetIndex(m.GetTexture("_MetallicGlossMap"), x => OcclusionMetallicRoughnessConverter.GetExportTexture(x, smoothness));
                 if (index != -1)
                 {
                     material.pbrMetallicRoughness.metallicRoughnessTexture =
@@ -107,33 +104,12 @@ namespace UniGLTF
                 }
             }
         }
-        // static void Export_Occlusion(Material m, TextureExportManager textureManager, glTFMaterial material)
-        // {
-        //     if (m.HasProperty("_OcclusionMap"))
-        //     {
-        //         var index = textureManager.ConvertAndGetIndex(m.GetTexture("_OcclusionMap"), new OcclusionConverter());
-        //         if (index != -1)
-        //         {
-        //             material.occlusionTexture = new glTFMaterialOcclusionTextureInfo()
-        //             {
-        //                 index = index,
-        //             };
-
-        //             Export_MainTextureTransform(m, material.occlusionTexture);
-        //         }
-
-        //         if (index != -1 && m.HasProperty("_OcclusionStrength"))
-        //         {
-        //             material.occlusionTexture.strength = m.GetFloat("_OcclusionStrength");
-        //         }
-        //     }
-        // }
 
         static void Export_Normal(Material m, TextureExportManager textureManager, glTFMaterial material)
         {
             if (m.HasProperty("_BumpMap"))
             {
-                var index = textureManager.ConvertAndGetIndex(m.GetTexture("_BumpMap"), new NormalConverter());
+                var index = textureManager.ConvertAndGetIndex(m.GetTexture("_BumpMap"), new NormalConverter().GetExportTexture);
                 if (index != -1)
                 {
                     material.normalTexture = new glTFMaterialNormalTextureInfo()
