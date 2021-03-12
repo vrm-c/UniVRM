@@ -10,7 +10,7 @@ namespace VRM.Samples
         {
             var material = Resources.Load<Material>(resourceName);
             var exporter = new VRMMaterialExporter();
-            var textureManager = new UniGLTF.TextureExportManager(null);
+            var textureManager = new UniGLTF.TextureExportManager();
             var exported = exporter.ExportMaterial(material, textureManager);
 
             // parse glTFExtensionExport to glTFExtensionImport

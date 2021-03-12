@@ -201,7 +201,7 @@ namespace VRM
             // materials
             foreach (var m in Materials)
             {
-                VRM.materialProperties.Add(VRMMaterialExporter.CreateFromMaterial(m, TextureManager.Textures));
+                VRM.materialProperties.Add(VRMMaterialExporter.CreateFromMaterial(m, TextureManager.GetTextureIndex));
             }
 
             // Serialize VRM

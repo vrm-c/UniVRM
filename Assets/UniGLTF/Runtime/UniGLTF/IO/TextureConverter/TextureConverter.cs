@@ -16,7 +16,7 @@ namespace UniGLTF
 
         public static Texture2D Convert(Texture texture, glTFTextureTypes textureType, ColorConversion colorConversion, Material convertMaterial)
         {
-            var copyTexture = CopyTexture(texture, TextureIO.GetColorSpace(textureType), convertMaterial);
+            var copyTexture = CopyTexture(texture, textureType, convertMaterial);
             if (colorConversion != null)
             {
                 copyTexture.SetPixels32(copyTexture.GetPixels32().Select(x => colorConversion(x)).ToArray());
@@ -126,10 +126,10 @@ namespace UniGLTF
         }
 #endif
 
-        public static Texture2D CopyTexture(Texture src, RenderTextureReadWrite colorSpace, Material material)
+        public static Texture2D CopyTexture(Texture src, glTFTextureTypes textureType, Material material)
         {
             Texture2D dst = null;
-
+            RenderTextureReadWrite colorSpace = TextureIO.GetColorSpace(textureType);
             var renderTexture = new RenderTexture(src.width, src.height, 0, RenderTextureFormat.ARGB32, colorSpace);
 
             using (var scope = new ColorSpaceScope(colorSpace))

@@ -49,10 +49,10 @@ namespace UniGLTF
                 case "_BumpMap":
                     return glTFTextureTypes.Normal;
                 case "_Color":
-                case "_EmissionMap":
+                case "_EmissionMap":                
                     return glTFTextureTypes.SRGB;
-                default:
-                    Debug.LogWarning($"unknown texture property: {propName} as sRGB");
+                default:                
+                    // Debug.LogWarning($"unknown texture property: {propName} as sRGB");
                     return glTFTextureTypes.SRGB;
             }
         }
@@ -136,7 +136,7 @@ namespace UniGLTF
                     {
                         return
                         (
-                            TextureConverter.CopyTexture(texture, GetColorSpace(textureType), null).EncodeToPNG(),
+                            TextureConverter.CopyTexture(texture, textureType, null).EncodeToPNG(),
                             "image/png"
                         );
                     }
@@ -163,7 +163,7 @@ namespace UniGLTF
 
             return
             (
-                TextureConverter.CopyTexture(texture, TextureIO.GetColorSpace(textureType), null).EncodeToPNG(),
+                TextureConverter.CopyTexture(texture, textureType, null).EncodeToPNG(),
                 "image/png"
             );
         }

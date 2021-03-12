@@ -201,22 +201,20 @@ namespace UniGLTF
 
             #region Materials and Textures
             Materials = Nodes.SelectMany(x => x.GetSharedMaterials()).Where(x => x != null).Distinct().ToList();
-            var unityTextures = Materials.SelectMany(x => TextureExporter.GetTextures(x)).Where(x => x.texture != null).Distinct().ToList();
 
-            TextureManager = new TextureExportManager(unityTextures.Select(x => x.texture));
+            TextureManager = new TextureExportManager();
 
             var materialExporter = CreateMaterialExporter();
             glTF.materials = Materials.Select(x => materialExporter.ExportMaterial(x, TextureManager)).ToList();
 
-            for (int i = 0; i < unityTextures.Count; ++i)
+            foreach (var material in Materials)
             {
-                var unityTexture = unityTextures[i];
-                TextureExporter.ExportTexture(glTF, bufferIndex, TextureManager.GetExportTexture(i), unityTexture.textureType);
+                materialExporter.ExportMaterial(material, TextureManager);
             }
             #endregion
 
             #region Meshes
-            var unityMeshes = MeshWithRenderer.FromNodes(Nodes).Where(x=> x.Mesh.vertices.Any()).ToList();
+            var unityMeshes = MeshWithRenderer.FromNodes(Nodes).Where(x => x.Mesh.vertices.Any()).ToList();
 
             MeshBlendShapeIndexMap = new Dictionary<Mesh, Dictionary<int, int>>();
             foreach (var (mesh, gltfMesh, blendShapeIndexMap) in MeshExporter.ExportMeshes(
