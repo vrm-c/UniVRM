@@ -109,7 +109,7 @@ namespace UniGLTF
         {
             if (m.HasProperty("_BumpMap"))
             {
-                var index = textureManager.ConvertAndGetIndex(m.GetTexture("_BumpMap"), new NormalConverter().GetExportTexture);
+                var index = textureManager.ConvertAndGetIndex(m.GetTexture("_BumpMap"), NormalConverter.Export);
                 if (index != -1)
                 {
                     material.normalTexture = new glTFMaterialNormalTextureInfo()

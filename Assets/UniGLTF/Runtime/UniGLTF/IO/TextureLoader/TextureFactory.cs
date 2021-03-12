@@ -168,7 +168,7 @@ namespace UniGLTF
                 case GetTextureParam.TextureTypes.NormalMap:
                     {
                         var baseTexture = await GetOrCreateBaseTexture(awaitCaller, gltf, param.Index0.Value, false);
-                        var converted = new NormalConverter().GetImportTexture(baseTexture.Texture);
+                        var converted = NormalConverter.Import(baseTexture.Texture);
                         converted.name = param.ConvertedName;
                         var info = new TextureLoadInfo(converted, true, false);
                         m_textureCache.Add(converted.name, info);

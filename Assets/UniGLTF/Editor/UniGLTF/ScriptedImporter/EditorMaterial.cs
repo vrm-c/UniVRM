@@ -25,8 +25,8 @@ namespace UniGLTF
             }
         }
 
-        static bool s_foldMaterials;
-        static bool s_foldTextures;
+        static bool s_foldMaterials = true;
+        static bool s_foldTextures = true;
 
         public static void OnGUIMaterial(ScriptedImporter importer, GltfParser parser)
         {
