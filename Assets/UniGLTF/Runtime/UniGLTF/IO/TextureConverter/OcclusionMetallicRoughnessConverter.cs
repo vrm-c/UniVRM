@@ -4,14 +4,18 @@ namespace UniGLTF
 {
     /// <summary>
     /// 
-    /// * https://github.com/dwango/UniVRM/issues/212.
-    /// * https://blogs.unity3d.com/jp/2016/01/25/ggx-in-unity-5-3/  
-    /// * https://github.com/vrm-c/UniVRM/issues/388
+    /// * https://github.com/vrm-c/UniVRM/issues/781 
+    /// 
+    /// Unity = glTF
+    /// Occlusion: unity.g = glTF.r
+    /// Roughness: unity.a = 1 - glTF.g * roughnessFactor
+    /// Metallic : unity.r = glTF.b * metallicFactor
     /// 
     /// glTF = Unity
-    /// Occlusion: src.r -> dst.g
-    /// Roughness: src.g -> dst.a (bake smoothnessOrRoughness)
-    /// Metallic : src.b -> dst.r
+    /// Occlusion: glTF.r = unity.g
+    /// Roughness: glTF.g = 1 - unity.a * smoothness
+    /// Metallic : glTF.b = unity.r
+    /// 
     /// </summary>
     public class OcclusionMetallicRoughnessConverter : ITextureConverter
     {
@@ -22,11 +26,11 @@ namespace UniGLTF
             _smoothnessOrRoughness = smoothnessOrRoughness;
         }
 
-        public static Texture2D GetImportTexture(Texture2D texture, float smoothnessOrRoughness)
+        public static Texture2D GetImportTexture(Texture2D texture, float metallicFactor, float roughnessFactor)
         {
             TextureConverter.ColorConversion convert = src =>
             {
-                return Import(src, smoothnessOrRoughness);
+                return Import(src, metallicFactor, roughnessFactor);
             };
             var converted = TextureConverter.Convert(texture, glTFTextureTypes.Metallic, convert, null);
             return converted;
@@ -38,15 +42,14 @@ namespace UniGLTF
             return converted;
         }
 
-        public static Color32 Import(Color32 src, float _smoothnessOrRoughness)
+        public static Color32 Import(Color32 src, float metallicFactor, float roughnessFactor)
         {
             var dst = new Color32
             {
-                r = src.b, // Metallic
+                r = (byte)(src.b * metallicFactor), // Metallic
                 g = src.r, // Occlusion
-                b = 0, // not used
-                // Roughness to Smoothness. Bake _smoothnessOrRoughness into a texture.
-                a = (byte)(255 - src.g * _smoothnessOrRoughness),
+                b = 0, // not used               
+                a = (byte)(255 - src.g * roughnessFactor), // Roughness to Smoothness
             };
 
             return dst;
@@ -56,9 +59,8 @@ namespace UniGLTF
         {
             var dst = new Color32
             {
-                r = src.g, // Occlusion
-                // Roughness from Smoothness. Bake divide _smoothnessOrRoughness from a texture.
-                g = (byte)(255 - src.a),
+                r = src.g, // Occlusion               
+                g = (byte)(255 - src.a), // Roughness from Smoothness
                 b = src.r, // Metallic
                 a = 255, // not used
             };

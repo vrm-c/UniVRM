@@ -57,6 +57,7 @@ namespace UniGLTF
 
         public readonly TextureTypes TextureType;
         public readonly float MetallicFactor;
+        public readonly float RoughnessFactor;
         public readonly ushort? Index0;
         public readonly ushort? Index1;
         public readonly ushort? Index2;
@@ -69,7 +70,7 @@ namespace UniGLTF
         /// </summary>
         public bool ExtractConverted => TextureType == TextureTypes.StandardMap;
 
-        public GetTextureParam(string name, TextureTypes textureType, float metallicFactor, int i0, int i1, int i2, int i3, int i4, int i5)
+        public GetTextureParam(string name, TextureTypes textureType, float metallicFactor, float roughnessFactor, int i0, int i1, int i2, int i3, int i4, int i5)
         {
             if (string.IsNullOrEmpty(name))
             {
@@ -79,6 +80,7 @@ namespace UniGLTF
 
             TextureType = textureType;
             MetallicFactor = metallicFactor;
+            RoughnessFactor = roughnessFactor;
             Index0 = (ushort)i0;
             Index1 = (ushort)i1;
             Index2 = (ushort)i2;
@@ -90,10 +92,10 @@ namespace UniGLTF
         public static GetTextureParam CreateSRGB(glTF gltf, int textureIndex)
         {
             var name = gltf.textures[textureIndex].name;
-            return new GetTextureParam(name, TextureTypes.sRGB, default, textureIndex, default, default, default, default, default);
+            return new GetTextureParam(name, TextureTypes.sRGB, default, default, textureIndex, default, default, default, default, default);
         }
 
-        public static GetTextureParam Create(glTF gltf, int index, string prop)
+        public static GetTextureParam Create(glTF gltf, int index, string prop, float metallicFactor, float roughnessFactor)
         {
             switch (prop)
             {
@@ -102,7 +104,7 @@ namespace UniGLTF
 
                 case OCCLUSION_PROP:
                 case METALLIC_GLOSS_PROP:
-                    return CreateStandard(gltf, index, 1);
+                    return CreateStandard(gltf, index, metallicFactor, roughnessFactor);
 
                 default:
                     return CreateSRGB(gltf, index);
@@ -112,13 +114,13 @@ namespace UniGLTF
         public static GetTextureParam CreateNormal(glTF gltf, int textureIndex)
         {
             var name = gltf.textures[textureIndex].name;
-            return new GetTextureParam(name, TextureTypes.NormalMap, default, textureIndex, default, default, default, default, default);
+            return new GetTextureParam(name, TextureTypes.NormalMap, default, default, textureIndex, default, default, default, default, default);
         }
 
-        public static GetTextureParam CreateStandard(glTF gltf, int textureIndex, float metallicFactor)
+        public static GetTextureParam CreateStandard(glTF gltf, int textureIndex, float metallicFactor, float roughnessFactor)
         {
             var name = gltf.textures[textureIndex].name;
-            return new GetTextureParam(name, TextureTypes.StandardMap, metallicFactor, textureIndex, default, default, default, default, default);
+            return new GetTextureParam(name, TextureTypes.StandardMap, metallicFactor, roughnessFactor, textureIndex, default, default, default, default, default);
         }
     }
 }

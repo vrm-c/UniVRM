@@ -73,7 +73,7 @@ namespace VRM
             }
             foreach (var kv in item.textureProperties)
             {
-                var param = GetTextureParam.Create(gltf, kv.Value, kv.Key);
+                var param = GetTextureParam.Create(gltf, kv.Value, kv.Key, 1, 1);
                 var texture = await getTexture(awaitCaller, gltf, param);
                 if (texture != null)
                 {
