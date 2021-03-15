@@ -10,6 +10,12 @@ namespace VRM
 {
     public class VRMImporterContext : ImporterContext
     {
+        public class NotVrm0Exception : Exception
+        {
+            public NotVrm0Exception()
+            { }
+        }
+
         public VRM.glTF_VRM_extensions VRM { get; private set; }
 
         public VRMImporterContext(GltfParser parser,
@@ -25,7 +31,7 @@ namespace VRM
             }
             else
             {
-                throw new KeyNotFoundException("not vrm0");
+                throw new NotVrm0Exception();
             }
         }
 

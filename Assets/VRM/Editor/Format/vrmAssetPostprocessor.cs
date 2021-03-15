@@ -25,7 +25,14 @@ namespace VRM
                 var ext = Path.GetExtension(path).ToLower();
                 if (ext == ".vrm")
                 {
-                    ImportVrm(UnityPath.FromUnityPath(path));
+                    try
+                    {
+                        ImportVrm(UnityPath.FromUnityPath(path));
+                    }
+                    catch (VRMImporterContext.NotVrm0Exception)
+                    {
+                        // is not vrm0
+                    }
                 }
             }
         }
