@@ -36,7 +36,7 @@ namespace UniGLTF
             //
             // texture from image(png etc) bytes
             //
-            var colorSpace = TextureIO.GetColorSpace(gltf, textureIndex);
+            var colorSpace = gltf.GetColorSpace(textureIndex);
             var texture = new Texture2D(2, 2, TextureFormat.ARGB32, false, colorSpace == RenderTextureReadWrite.Linear);
             texture.name = gltf.textures[textureIndex].name;
             if (imageBytes != null)

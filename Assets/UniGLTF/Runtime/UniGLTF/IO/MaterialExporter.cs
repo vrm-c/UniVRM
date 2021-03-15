@@ -14,12 +14,12 @@ namespace UniGLTF
 
     public interface IMaterialExporter
     {
-        glTFMaterial ExportMaterial(Material m, TextureExportManager textureManager);
+        glTFMaterial ExportMaterial(Material m, TextureExporter textureManager);
     }
 
     public class MaterialExporter : IMaterialExporter
     {
-        public virtual glTFMaterial ExportMaterial(Material m, TextureExportManager textureManager)
+        public virtual glTFMaterial ExportMaterial(Material m, TextureExporter textureManager)
         {
             var material = CreateMaterial(m);
 
@@ -33,7 +33,7 @@ namespace UniGLTF
             return material;
         }
 
-        static void Export_Color(Material m, TextureExportManager textureManager, glTFMaterial material)
+        static void Export_Color(Material m, TextureExporter textureManager, glTFMaterial material)
         {
             if (m.HasProperty("_Color"))
             {
@@ -61,7 +61,7 @@ namespace UniGLTF
         /// <param name="m"></param>
         /// <param name="textureManager"></param>
         /// <param name="material"></param>
-        static void Export_OcclusionMetallicRoughness(Material m, TextureExportManager textureManager, glTFMaterial material)
+        static void Export_OcclusionMetallicRoughness(Material m, TextureExporter textureManager, glTFMaterial material)
         {
             Texture metallicSmoothTexture = default;
             float smoothness = 1.0f;
@@ -124,7 +124,7 @@ namespace UniGLTF
             }
         }
 
-        static void Export_Normal(Material m, TextureExportManager textureManager, glTFMaterial material)
+        static void Export_Normal(Material m, TextureExporter textureManager, glTFMaterial material)
         {
             if (m.HasProperty("_BumpMap"))
             {
@@ -146,7 +146,7 @@ namespace UniGLTF
             }
         }
 
-        static void Export_Emission(Material m, TextureExportManager textureManager, glTFMaterial material)
+        static void Export_Emission(Material m, TextureExporter textureManager, glTFMaterial material)
         {
             if (m.IsKeywordEnabled("_EMISSION") == false)
                 return;

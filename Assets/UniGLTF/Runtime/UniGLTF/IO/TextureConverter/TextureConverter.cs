@@ -129,7 +129,7 @@ namespace UniGLTF
         public static Texture2D CopyTexture(Texture src, glTFTextureTypes textureType, Material material)
         {
             Texture2D dst = null;
-            RenderTextureReadWrite colorSpace = TextureIO.GetColorSpace(textureType);
+            RenderTextureReadWrite colorSpace = textureType.GetColorSpace();
             var renderTexture = new RenderTexture(src.width, src.height, 0, RenderTextureFormat.ARGB32, colorSpace);
 
             using (var scope = new ColorSpaceScope(colorSpace))

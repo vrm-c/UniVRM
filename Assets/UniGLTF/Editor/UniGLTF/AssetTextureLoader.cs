@@ -8,7 +8,7 @@ namespace UniGLTF
         public static Task<Texture2D> LoadTaskAsync(UnityPath m_assetPath,
             glTF gltf, int textureIndex)
         {
-            var colorSpace = TextureIO.GetColorSpace(gltf, textureIndex);
+            var colorSpace = gltf.GetColorSpace(textureIndex);
 
             //
             // texture from assets

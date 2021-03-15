@@ -11,7 +11,7 @@ namespace UniGLTF
     /// <summary>
     /// glTF にエクスポートする Texture2D を蓄えて index を確定させる
     /// </summary>
-    public class TextureExportManager
+    public class TextureExporter
     {
         struct ExportKey
         {
@@ -29,11 +29,31 @@ namespace UniGLTF
             }
         }
         Dictionary<ExportKey, int> m_exportMap = new Dictionary<ExportKey, int>();
-        List<Texture2D> m_exported = new List<Texture2D>();
 
-        public IReadOnlyList<Texture2D> Exported => m_exported;
+        /// <summary>
+        /// Export する Texture2D のリスト。これが gltf.textures になる
+        /// </summary>
+        /// <typeparam name="Texture2D"></typeparam>
+        /// <returns></returns>
+        public readonly List<Texture2D> Exported = new List<Texture2D>();
 
-        static bool CopyIfMaxTextureSizeIsSmaller(Texture src/*, glTFTextureTypes textureType, out Texture2D dst*/)
+        /// <summary>
+        /// Texture の export index を得る
+        /// </summary>
+        /// <param name="src"></param>
+        /// <param name="textureType"></param>
+        /// <returns></returns>
+        public int GetTextureIndex(Texture src, glTFTextureTypes textureType)
+        {
+            return m_exportMap[new ExportKey(src, textureType)];
+        }
+
+        /// <summary>
+        /// TextureImporter.maxTextureSize が元のテクスチャーより小さいか否かの判定
+        /// </summary>
+        /// <param name="src"></param>
+        /// <returns></returns>
+        static bool CopyIfMaxTextureSizeIsSmaller(Texture src)
         {
 #if UNITY_EDITOR            
             var textureImporter = AssetImporter.GetAtPath(UnityPath.FromAsset(src).Value) as TextureImporter;
@@ -47,27 +67,32 @@ namespace UniGLTF
                 var originalSize = Mathf.Max(originalWidth, originalHeight);
                 if (textureImporter.maxTextureSize < originalSize)
                 {
-                    // export resized texture.
-                    // this has textureImporter.maxTextureSize
-                    // dst = TextureConverter.CopyTexture(src, textureType, null);
                     return true;
                 }
             }
 #endif
-
-            // dst = default;
             return false;
         }
 
         /// <summary>
-        /// Texture の export index を得る
+        /// 元の Asset が存在して、 TextureImporter に設定された画像サイズが小さくない
         /// </summary>
         /// <param name="src"></param>
-        /// <param name="textureType"></param>
+        /// <param name="texture2D"></param>
         /// <returns></returns>
-        public int GetTextureIndex(Texture src, glTFTextureTypes textureType)
+        static bool UseAsset(Texture2D texture2D)
         {
-            return m_exportMap[new ExportKey(src, textureType)];
+#if UNITY_EDITOR
+            if (texture2D != null && !string.IsNullOrEmpty(UnityEditor.AssetDatabase.GetAssetPath(texture2D)))
+            {
+                if (CopyIfMaxTextureSizeIsSmaller(texture2D))
+                {
+                    return false;
+                }
+                return true;
+            }
+#endif
+            return false;
         }
 
         /// <summary>
@@ -89,8 +114,9 @@ namespace UniGLTF
             }
 
             // get Texture2D
-            index = m_exported.Count;
-            if (src is Texture2D texture2D && !CopyIfMaxTextureSizeIsSmaller(src))
+            index = Exported.Count;
+            var texture2D = src as Texture2D;
+            if (UseAsset(texture2D))
             {
                 // do nothing                
             }
@@ -98,7 +124,7 @@ namespace UniGLTF
             {
                 texture2D = TextureConverter.CopyTexture(src, glTFTextureTypes.SRGB, null);
             }
-            m_exported.Add(texture2D);
+            Exported.Add(texture2D);
             m_exportMap.Add(new ExportKey(src, glTFTextureTypes.SRGB), index);
 
             return index;
@@ -131,10 +157,10 @@ namespace UniGLTF
             //
             // Unity と glTF で互換性が無いので必ず変換が必用
             //
-            index = m_exported.Count;
+            index = Exported.Count;
             var texture2D = OcclusionMetallicRoughnessConverter.Export(metallicSmoothTexture, smoothness, occlusionTexture);
 
-            m_exported.Add(texture2D);
+            Exported.Add(texture2D);
             m_exportMap.Add(new ExportKey(metallicSmoothTexture, glTFTextureTypes.OcclusionMetallicRoughness), index);
             if (occlusionTexture != metallicSmoothTexture && occlusionTexture != null)
             {
@@ -142,25 +168,6 @@ namespace UniGLTF
             }
 
             return index;
-        }
-
-        static bool UseNormalAsset(Texture src, out Texture2D texture2D)
-        {
-#if UNITY_EDITOR
-            // asset として存在して textureImporter.textureType = TextureImporterType.NormalMap
-            texture2D = src as Texture2D;
-            if (texture2D != null && !string.IsNullOrEmpty(UnityEditor.AssetDatabase.GetAssetPath(src)))
-            {
-                if (CopyIfMaxTextureSizeIsSmaller(src))
-                {
-                    return false;
-                }
-                return true;
-            }
-#endif
-
-            texture2D = default;
-            return false;
         }
 
         /// <summary>
@@ -182,9 +189,9 @@ namespace UniGLTF
             }
 
             // get Texture2D
-            index = m_exported.Count;
-            Texture2D texture2D = default;
-            if (UseNormalAsset(src, out texture2D))
+            index = Exported.Count;
+            var texture2D = src as Texture2D;
+            if (UseAsset(texture2D))
             {
                 // EditorAsset を使うので変換不要
             }
@@ -194,10 +201,88 @@ namespace UniGLTF
                 texture2D = NormalConverter.Export(src);
             }
 
-            m_exported.Add(texture2D);
+            Exported.Add(texture2D);
             m_exportMap.Add(new ExportKey(src, glTFTextureTypes.Normal), index);
 
             return index;
+        }
+
+        /// <summary>
+        /// 画像のバイト列を得る
+        /// </summary>
+        /// <param name="bytes"></param>
+        /// <param name="texture"></param>
+        /// <returns></returns>
+        static (Byte[] bytes, string mine) GetBytesWithMime(Texture2D texture)
+        {
+#if UNITY_EDITOR
+            var path = UnityPath.FromAsset(texture);
+            if (path.IsUnderAssetsFolder)
+            {
+                if (path.Extension == ".png")
+                {
+                    return
+                    (
+                        System.IO.File.ReadAllBytes(path.FullPath),
+                        "image/png"
+                    );
+                }
+                if (path.Extension == ".jpg")
+                {
+                    return
+                    (
+                        System.IO.File.ReadAllBytes(path.FullPath),
+                        "image/jpeg"
+                    );
+                }
+            }
+#endif
+
+            return
+            (
+                texture.EncodeToPNG(),
+                "image/png"
+            );
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="gltf"></param>
+        /// <param name="bufferIndex"></param>
+        /// <param name="texture"></param>
+        /// <returns></returns>
+        static public int ExportTexture(glTF gltf, int bufferIndex, Texture2D texture)
+        {
+            var bytesWithMime = GetBytesWithMime(texture);
+
+            // add view
+            var view = gltf.buffers[bufferIndex].Append(bytesWithMime.bytes, glBufferTarget.NONE);
+            var viewIndex = gltf.AddBufferView(view);
+
+            // add image
+            var imageIndex = gltf.images.Count;
+            gltf.images.Add(new glTFImage
+            {
+                name = GetTextureParam.RemoveSuffix(texture.name),
+                bufferView = viewIndex,
+                mimeType = bytesWithMime.mine,
+            });
+
+            // add sampler
+            var samplerIndex = gltf.samplers.Count;
+            var sampler = TextureSamplerUtil.Export(texture);
+            gltf.samplers.Add(sampler);
+
+            // add texture
+            var textureIndex = gltf.textures.Count;
+            gltf.textures.Add(new glTFTexture
+            {
+                sampler = samplerIndex,
+                source = imageIndex,
+            });
+
+            return textureIndex;
         }
     }
 }

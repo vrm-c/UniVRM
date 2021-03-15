@@ -47,7 +47,7 @@ namespace UniGLTF
             private set;
         }
 
-        public TextureExportManager TextureManager;
+        public TextureExporter TextureManager;
 
         protected virtual IMaterialExporter CreateMaterialExporter()
         {
@@ -180,7 +180,7 @@ namespace UniGLTF
             #region Materials and Textures
             Materials = Nodes.SelectMany(x => x.GetSharedMaterials()).Where(x => x != null).Distinct().ToList();
 
-            TextureManager = new TextureExportManager();
+            TextureManager = new TextureExporter();
 
             var materialExporter = CreateMaterialExporter();
             glTF.materials = Materials.Select(x => materialExporter.ExportMaterial(x, TextureManager)).ToList();
@@ -188,7 +188,7 @@ namespace UniGLTF
             for (int i = 0; i < TextureManager.Exported.Count; ++i)
             {
                 var unityTexture = TextureManager.Exported[i];
-                TextureIO.ExportTexture(glTF, bufferIndex, unityTexture);
+                TextureExporter.ExportTexture(glTF, bufferIndex, unityTexture);
             }
             #endregion
 
