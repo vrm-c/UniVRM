@@ -104,7 +104,7 @@ namespace UniGLTF
         {
             if (src == null)
             {
-                throw new ArgumentNullException();
+                return -1;
             }
 
             // cache
@@ -141,7 +141,7 @@ namespace UniGLTF
         {
             if (metallicSmoothTexture == null && occlusionTexture == null)
             {
-                throw new ArgumentNullException();
+                return -1;
             }
 
             // cache
@@ -179,7 +179,7 @@ namespace UniGLTF
         {
             if (src == null)
             {
-                throw new ArgumentNullException();
+                return -1;
             }
 
             // cache
