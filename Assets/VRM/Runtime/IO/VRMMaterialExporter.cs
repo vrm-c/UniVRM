@@ -107,7 +107,7 @@ namespace VRM
             // "Queue",
         };
 
-        public static glTF_VRM_Material CreateFromMaterial(Material m, Func<Texture, glTFTextureTypes, int> getTextureIndex)
+        public static glTF_VRM_Material CreateFromMaterial(Material m, TextureExporter textureExporter)
         {
             var material = new glTF_VRM_Material
             {
@@ -160,12 +160,10 @@ namespace VRM
                                 var texture = m.GetTexture(kv.Key);
                                 if (texture != null)
                                 {
-                                    var textureType = glTFTextureTypes.SRGB;
-                                    if (kv.Key == "_BumpMap")
-                                    {
-                                        textureType = glTFTextureTypes.Normal;
-                                    }
-                                    var value = getTextureIndex(texture, textureType);
+                                    var value = kv.Key == "_BumpMap"
+                                        ? textureExporter.ExportNormal(texture)
+                                        : textureExporter.ExportSRGB(texture)
+                                        ;
                                     if (value == -1)
                                     {
                                         Debug.LogFormat("not found {0}", texture.name);

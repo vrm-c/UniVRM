@@ -137,7 +137,7 @@ namespace VRM
                     VRM.meta.title = meta.Title;
                     if (meta.Thumbnail != null)
                     {
-                        VRM.meta.texture = TextureExporter.ExportTexture(glTF, glTF.buffers.Count - 1, meta.Thumbnail);
+                        VRM.meta.texture = TextureManager.ExportSRGB(meta.Thumbnail);
                     }
 
                     // ussage permission
@@ -200,7 +200,7 @@ namespace VRM
             // materials
             foreach (var m in Materials)
             {
-                VRM.materialProperties.Add(VRMMaterialExporter.CreateFromMaterial(m, TextureManager.GetTextureIndex));
+                VRM.materialProperties.Add(VRMMaterialExporter.CreateFromMaterial(m, TextureManager));
             }
 
             // Serialize VRM

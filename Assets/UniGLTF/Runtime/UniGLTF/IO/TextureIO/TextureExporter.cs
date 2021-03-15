@@ -45,6 +45,10 @@ namespace UniGLTF
         /// <returns></returns>
         public int GetTextureIndex(Texture src, glTFTextureTypes textureType)
         {
+            if (src == null)
+            {
+                return -1;
+            }
             return m_exportMap[new ExportKey(src, textureType)];
         }
 
