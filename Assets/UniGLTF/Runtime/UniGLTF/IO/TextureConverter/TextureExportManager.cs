@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-
+using System.Reflection;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace UniGLTF
 {
@@ -27,6 +30,34 @@ namespace UniGLTF
         }
         Dictionary<ExportKey, int> m_exportMap = new Dictionary<ExportKey, int>();
         List<Texture2D> m_exported = new List<Texture2D>();
+
+        public IReadOnlyList<Texture2D> Exported => m_exported;
+
+        static bool CopyIfMaxTextureSizeIsSmaller(Texture src/*, glTFTextureTypes textureType, out Texture2D dst*/)
+        {
+#if UNITY_EDITOR            
+            var textureImporter = AssetImporter.GetAtPath(UnityPath.FromAsset(src).Value) as TextureImporter;
+            var getSizeMethod = typeof(TextureImporter).GetMethod("GetWidthAndHeight", BindingFlags.NonPublic | BindingFlags.Instance);
+            if (textureImporter != null && getSizeMethod != null)
+            {
+                var args = new object[2] { 0, 0 };
+                getSizeMethod.Invoke(textureImporter, args);
+                var originalWidth = (int)args[0];
+                var originalHeight = (int)args[1];
+                var originalSize = Mathf.Max(originalWidth, originalHeight);
+                if (textureImporter.maxTextureSize < originalSize)
+                {
+                    // export resized texture.
+                    // this has textureImporter.maxTextureSize
+                    // dst = TextureConverter.CopyTexture(src, textureType, null);
+                    return true;
+                }
+            }
+#endif
+
+            // dst = default;
+            return false;
+        }
 
         /// <summary>
         /// Texture の export index を得る
@@ -59,7 +90,7 @@ namespace UniGLTF
 
             // get Texture2D
             index = m_exported.Count;
-            if (src is Texture2D texture2D)
+            if (src is Texture2D texture2D && !CopyIfMaxTextureSizeIsSmaller(src))
             {
                 // do nothing                
             }
@@ -105,7 +136,10 @@ namespace UniGLTF
 
             m_exported.Add(texture2D);
             m_exportMap.Add(new ExportKey(metallicSmoothTexture, glTFTextureTypes.OcclusionMetallicRoughness), index);
-            m_exportMap.Add(new ExportKey(occlusionTexture, glTFTextureTypes.OcclusionMetallicRoughness), index);
+            if (occlusionTexture != metallicSmoothTexture && occlusionTexture != null)
+            {
+                m_exportMap.Add(new ExportKey(occlusionTexture, glTFTextureTypes.OcclusionMetallicRoughness), index);
+            }
 
             return index;
         }
@@ -117,6 +151,10 @@ namespace UniGLTF
             texture2D = src as Texture2D;
             if (texture2D != null && !string.IsNullOrEmpty(UnityEditor.AssetDatabase.GetAssetPath(src)))
             {
+                if (CopyIfMaxTextureSizeIsSmaller(src))
+                {
+                    return false;
+                }
                 return true;
             }
 #endif

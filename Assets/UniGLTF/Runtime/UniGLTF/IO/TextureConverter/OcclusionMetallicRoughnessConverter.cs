@@ -100,7 +100,11 @@ namespace UniGLTF
                 }
                 else
                 {
-                    throw new NotImplementedException();
+                    var copyTexture = TextureConverter.CopyTexture(metallicSmoothTexture, glTFTextureTypes.OcclusionMetallicRoughness, null);
+                    copyTexture.SetPixels32(copyTexture.GetPixels32().Select(x => ExportPixel(x, smoothness, x)).ToArray());
+                    copyTexture.Apply();
+                    copyTexture.name = metallicSmoothTexture.name;
+                    return copyTexture;
                 }
             }
             else if (metallicSmoothTexture)

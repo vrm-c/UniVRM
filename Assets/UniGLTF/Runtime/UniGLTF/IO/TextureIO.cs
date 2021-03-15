@@ -1,17 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-#if UNITY_EDITOR
-using System.Reflection;
-using UnityEditor;
-#endif
 
 
 namespace UniGLTF
 {
 
-    public class TextureIO : ITextureExporter
+    public class TextureIO
     {
         public static RenderTextureReadWrite GetColorSpace(glTFTextureTypes textureType)
         {
@@ -39,24 +34,6 @@ namespace UniGLTF
             }
         }
 
-        public static glTFTextureTypes GetglTFTextureType(string shaderName, string propName)
-        {
-            switch (propName)
-            {
-                case "_MetallicGlossMap":
-                case "_OcclusionMap":
-                    return glTFTextureTypes.OcclusionMetallicRoughness;
-                case "_BumpMap":
-                    return glTFTextureTypes.Normal;
-                case "_Color":
-                case "_EmissionMap":                
-                    return glTFTextureTypes.SRGB;
-                default:                
-                    // Debug.LogWarning($"unknown texture property: {propName} as sRGB");
-                    return glTFTextureTypes.SRGB;
-            }
-        }
-
         public static bool TryGetglTFTextureType(glTF glTf, int textureIndex, out glTFTextureTypes textureType)
         {
             foreach (var material in glTf.materials)
@@ -74,74 +51,12 @@ namespace UniGLTF
             return false;
         }
 
-#if UNITY_EDITOR
-        public static void MarkTextureAssetAsNormalMap(string assetPath)
-        {
-            if (string.IsNullOrEmpty(assetPath))
-            {
-                return;
-            }
-
-            var textureImporter = AssetImporter.GetAtPath(assetPath) as TextureImporter;
-            if (null == textureImporter)
-            {
-                return;
-            }
-
-            //Debug.LogFormat("[MarkTextureAssetAsNormalMap] {0}", assetPath);
-            textureImporter.textureType = TextureImporterType.NormalMap;
-            textureImporter.SaveAndReimport();
-        }
-#endif
-
-        public virtual IEnumerable<(Texture texture, glTFTextureTypes textureType)> GetTextures(Material m)
-        {
-            var props = ShaderPropExporter.PreShaderPropExporter.GetPropsForSupportedShader(m.shader.name);
-            if (props == null)
-            {
-                // unknown shader
-                yield return (m.mainTexture, glTFTextureTypes.SRGB);
-            }
-
-            foreach (var prop in props.Properties)
-            {
-
-                if (prop.ShaderPropertyType == ShaderPropExporter.ShaderPropertyType.TexEnv)
-                {
-                    yield return (m.GetTexture(prop.Key), GetglTFTextureType(m.shader.name, prop.Key));
-                }
-            }
-        }
-
-        public virtual (Byte[] bytes, string mine) GetBytesWithMime(Texture texture, glTFTextureTypes textureType)
+        static (Byte[] bytes, string mine) GetBytesWithMime(Texture2D texture)
         {
 #if UNITY_EDITOR
             var path = UnityPath.FromAsset(texture);
             if (path.IsUnderAssetsFolder)
             {
-                var textureImporter = AssetImporter.GetAtPath(path.Value) as TextureImporter;
-                var getSizeMethod = typeof(TextureImporter).GetMethod("GetWidthAndHeight", BindingFlags.NonPublic | BindingFlags.Instance);
-                if (textureImporter != null && getSizeMethod != null)
-                {
-                    var args = new object[2] { 0, 0 };
-                    getSizeMethod.Invoke(textureImporter, args);
-                    var originalWidth = (int)args[0];
-                    var originalHeight = (int)args[1];
-
-                    var originalSize = Mathf.Max(originalWidth, originalHeight);
-                    var requiredMaxSize = textureImporter.maxTextureSize;
-
-                    // Resized exporting if MaxSize setting value is smaller than original image size.
-                    if (originalSize > requiredMaxSize)
-                    {
-                        return
-                        (
-                            TextureConverter.CopyTexture(texture, textureType, null).EncodeToPNG(),
-                            "image/png"
-                        );
-                    }
-                }
-
                 if (path.Extension == ".png")
                 {
                     return
@@ -163,14 +78,14 @@ namespace UniGLTF
 
             return
             (
-                TextureConverter.CopyTexture(texture, textureType, null).EncodeToPNG(),
+                texture.EncodeToPNG(),
                 "image/png"
             );
         }
 
-        public int ExportTexture(glTF gltf, int bufferIndex, Texture texture, glTFTextureTypes textureType)
+        static public int ExportTexture(glTF gltf, int bufferIndex, Texture2D texture)
         {
-            var bytesWithMime = GetBytesWithMime(texture, textureType); ;
+            var bytesWithMime = GetBytesWithMime(texture);
 
             // add view
             var view = gltf.buffers[bufferIndex].Append(bytesWithMime.bytes, glBufferTarget.NONE);

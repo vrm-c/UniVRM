@@ -54,28 +54,6 @@ namespace UniGLTF
             return new MaterialExporter();
         }
 
-        private ITextureExporter _textureExporter;
-        public ITextureExporter TextureExporter
-        {
-            get
-            {
-                if (_textureExporter != null)
-                {
-                    return _textureExporter;
-                }
-                else
-                {
-                    _textureExporter = new TextureIO();
-                    return _textureExporter;
-                }
-            }
-            set
-            {
-                _textureExporter = value;
-            }
-        }
-
-
         /// <summary>
         /// このエクスポーターがサポートするExtension
         /// </summary>
@@ -206,6 +184,12 @@ namespace UniGLTF
 
             var materialExporter = CreateMaterialExporter();
             glTF.materials = Materials.Select(x => materialExporter.ExportMaterial(x, TextureManager)).ToList();
+
+            for (int i = 0; i < TextureManager.Exported.Count; ++i)
+            {
+                var unityTexture = TextureManager.Exported[i];
+                TextureIO.ExportTexture(glTF, bufferIndex, unityTexture);
+            }
             #endregion
 
             #region Meshes

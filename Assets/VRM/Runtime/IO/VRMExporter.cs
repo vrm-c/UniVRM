@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using UniGLTF;
 using UniJSON;
@@ -113,7 +112,7 @@ namespace VRM
                     VRM.meta.title = meta.Title;
                     if (meta.Thumbnail != null)
                     {
-                        VRM.meta.texture = TextureExporter.ExportTexture(glTF, glTF.buffers.Count - 1, meta.Thumbnail, glTFTextureTypes.SRGB);
+                        VRM.meta.texture = TextureIO.ExportTexture(glTF, glTF.buffers.Count - 1, meta.Thumbnail);
                     }
 
                     VRM.meta.licenseType = meta.LicenseType;
@@ -138,7 +137,7 @@ namespace VRM
                     VRM.meta.title = meta.Title;
                     if (meta.Thumbnail != null)
                     {
-                        VRM.meta.texture = TextureExporter.ExportTexture(glTF, glTF.buffers.Count - 1, meta.Thumbnail, glTFTextureTypes.SRGB);
+                        VRM.meta.texture = TextureIO.ExportTexture(glTF, glTF.buffers.Count - 1, meta.Thumbnail);
                     }
 
                     // ussage permission
