@@ -129,38 +129,12 @@ namespace UniGLTF
 
             EditorApplication.delayCall += () =>
             {
+                // Wait for the texture assets to be imported
+
                 foreach (var kv in extractor.Textures)
                 {
                     var targetPath = kv.Key;
                     var param = kv.Value;
-
-                    // TextureImporter                   
-                    var targetTextureImporter = AssetImporter.GetAtPath(targetPath) as TextureImporter;
-                    if (targetTextureImporter != null)
-                    {
-                        switch (param.TextureType)
-                        {
-                            case GetTextureParam.TextureTypes.StandardMap:
-#if VRM_DEVELOP
-                                Debug.Log($"{targetPath} => linear");
-#endif
-                                targetTextureImporter.sRGBTexture = false;
-                                targetTextureImporter.SaveAndReimport();
-                                break;
-
-                            case GetTextureParam.TextureTypes.NormalMap:
-#if VRM_DEVELOP
-                                Debug.Log($"{targetPath} => normalmap");
-#endif
-                                targetTextureImporter.textureType = TextureImporterType.NormalMap;
-                                targetTextureImporter.SaveAndReimport();
-                                break;
-                        }
-                    }
-                    else
-                    {
-                        throw new FileNotFoundException(targetPath);
-                    }
 
                     // remap
                     var externalObject = AssetDatabase.LoadAssetAtPath<UnityEngine.Texture2D>(targetPath);

@@ -83,9 +83,10 @@ namespace UniGLTF
 
             var src = gltf.materials[i];
             var material = MaterialFactory.CreateMaterial(i, src, ShaderName);
-            var standardParam = StandardTexture(gltf, src);
-            if (src.pbrMetallicRoughness != null)
+            var standardParam = default(GetTextureParam);
+            if (src.pbrMetallicRoughness != null || src.occlusionTexture != null)
             {
+                standardParam = StandardTexture(gltf, src);
                 if (src.pbrMetallicRoughness.baseColorFactor != null && src.pbrMetallicRoughness.baseColorFactor.Length == 4)
                 {
                     var color = src.pbrMetallicRoughness.baseColorFactor;

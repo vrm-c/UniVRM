@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -35,6 +36,12 @@ namespace UniGLTF
                 externalObjectMap.Where(x => x.Value != null).Select(x => (x.Value.name, x.Value)).Concat(
                 EnumerateTexturesFromUri(externalObjectMap, parser, UnityPath.FromUnityPath(scriptedImporter.assetPath).Parent))))
             {
+                // settings TextureImporters
+                foreach (var textureInfo in parser.EnumerateTextures())
+                {
+                    TextureImporterConfigurator.Configure(textureInfo, loaded.TextureFactory.ExternalMap);
+                }
+
                 loaded.InvertAxis = reverseAxis;
                 loaded.Load();
                 loaded.ShowMeshes();

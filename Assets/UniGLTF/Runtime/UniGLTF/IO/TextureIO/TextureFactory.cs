@@ -46,10 +46,11 @@ namespace UniGLTF
     public delegate Task<Texture2D> GetTextureAsyncFunc(IAwaitCaller awaitCaller, glTF gltf, GetTextureParam param);
     public class TextureFactory : IDisposable
     {
-        Dictionary<string, Texture2D> m_externalMap;
+        public readonly Dictionary<string, Texture2D> ExternalMap;
+
         public bool TryGetExternal(GetTextureParam param, bool used, out Texture2D external)
         {
-            if (param.Index0.HasValue && m_externalMap != null)
+            if (param.Index0.HasValue && ExternalMap != null)
             {
                 var cacheName = param.ConvertedName;
                 if (param.TextureType == GetTextureParam.TextureTypes.NormalMap)
@@ -61,7 +62,7 @@ namespace UniGLTF
                         return true;
                     }
                 }
-                if (m_externalMap.TryGetValue(cacheName, out external))
+                if (ExternalMap.TryGetValue(cacheName, out external))
                 {
                     m_textureCache.Add(cacheName, new TextureLoadInfo(external, used, true));
                     return true;
@@ -79,7 +80,7 @@ namespace UniGLTF
             LoadTextureAsync = loadTextureAsync;
             if (externalMap != null)
             {
-                m_externalMap = externalMap
+                ExternalMap = externalMap
                     .Select(kv => (kv.Item1, kv.Item2 as Texture2D))
                     .Where(kv => kv.Item2 != null)
                     .ToDictionary(kv => kv.Item1, kv => kv.Item2);

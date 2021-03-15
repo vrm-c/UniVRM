@@ -49,9 +49,14 @@ namespace VRM
                     var texture = AssetDatabase.LoadAssetAtPath(x, typeof(Texture2D));
                     return (texture.name, texture);
                 }).ToArray();
+
                 using (var context = new VRMImporterContext(parser, null, map))
                 {
                     var editor = new VRMEditorImporterContext(context, prefabPath);
+                    foreach (var textureInfo in parser.EnumerateTextures())
+                    {
+                        TextureImporterConfigurator.Configure(textureInfo, map.ToDictionary(x => x.name, x => x.texture as Texture2D));
+                    }
                     context.Load();
                     editor.SaveAsAsset();
                 }
