@@ -206,11 +206,6 @@ namespace UniGLTF
 
             var materialExporter = CreateMaterialExporter();
             glTF.materials = Materials.Select(x => materialExporter.ExportMaterial(x, TextureManager)).ToList();
-
-            foreach (var material in Materials)
-            {
-                materialExporter.ExportMaterial(material, TextureManager);
-            }
             #endregion
 
             #region Meshes

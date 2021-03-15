@@ -1,129 +1,165 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 
 namespace UniGLTF
 {
+    /// <summary>
+    /// glTF にエクスポートする Texture2D を蓄えて index を確定させる
+    /// </summary>
     public class TextureExportManager
     {
+        struct ExportKey
+        {
+            public readonly Texture Src;
+            public readonly glTFTextureTypes TextureType;
+
+            public ExportKey(Texture src, glTFTextureTypes type)
+            {
+                if (src == null)
+                {
+                    throw new ArgumentNullException();
+                }
+                Src = src;
+                TextureType = type;
+            }
+        }
+        Dictionary<ExportKey, int> m_exportMap = new Dictionary<ExportKey, int>();
+        List<Texture2D> m_exported = new List<Texture2D>();
+
+        /// <summary>
+        /// Texture の export index を得る
+        /// </summary>
+        /// <param name="src"></param>
+        /// <param name="textureType"></param>
+        /// <returns></returns>
         public int GetTextureIndex(Texture src, glTFTextureTypes textureType)
         {
-            throw new NotImplementedException();
+            return m_exportMap[new ExportKey(src, textureType)];
         }
 
+        /// <summary>
+        /// sRGBなテクスチャーを処理する
+        /// </summary>
+        /// <param name="src"></param>
+        /// <returns></returns>
         public int ExportSRGB(Texture src)
         {
-            throw new NotImplementedException();
-        }
+            if (src == null)
+            {
+                throw new ArgumentNullException();
+            }
 
-        public int ExportMetallicSmoothnessOcclusion(Texture metallicSmoothTexture, float smoothness, Texture occlusionTexture)
-        {
-            if (metallicSmoothTexture != null && occlusionTexture != null)
+            // cache
+            if (m_exportMap.TryGetValue(new ExportKey(src, glTFTextureTypes.SRGB), out var index))
             {
-                if (metallicSmoothTexture != occlusionTexture)
-                {
-                    throw new NotImplementedException();
-                }
-                else
-                {
-                    throw new NotImplementedException();
-                }
+                return index;
             }
-            else if (metallicSmoothTexture)
+
+            // get Texture2D
+            index = m_exported.Count;
+            if (src is Texture2D texture2D)
             {
-                throw new NotImplementedException();
-            }
-            else if (occlusionTexture)
-            {
-                throw new NotImplementedException();
+                // do nothing                
             }
             else
             {
-                throw new NotImplementedException();
+                texture2D = TextureConverter.CopyTexture(src, glTFTextureTypes.SRGB, null);
             }
+            m_exported.Add(texture2D);
+            m_exportMap.Add(new ExportKey(src, glTFTextureTypes.SRGB), index);
+
+            return index;
         }
 
-        public int ExportNormal(Texture normalTexture)
+        /// <summary>
+        /// Standard の Metallic, Smoothness, Occlusion をまとめる
+        /// </summary>
+        /// <param name="metallicSmoothTexture"></param>
+        /// <param name="smoothness"></param>
+        /// <param name="occlusionTexture"></param>
+        /// <returns></returns>
+        public int ExportMetallicSmoothnessOcclusion(Texture metallicSmoothTexture, float smoothness, Texture occlusionTexture)
         {
-            throw new NotImplementedException();
+            if (metallicSmoothTexture == null && occlusionTexture == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            // cache
+            if (m_exportMap.TryGetValue(new ExportKey(metallicSmoothTexture, glTFTextureTypes.OcclusionMetallicRoughness), out var index))
+            {
+                return index;
+            }
+            if (m_exportMap.TryGetValue(new ExportKey(occlusionTexture, glTFTextureTypes.OcclusionMetallicRoughness), out index))
+            {
+                return index;
+            }
+
+            //
+            // Unity と glTF で互換性が無いので必ず変換が必用
+            //
+            index = m_exported.Count;
+            var texture2D = OcclusionMetallicRoughnessConverter.Export(metallicSmoothTexture, smoothness, occlusionTexture);
+
+            m_exported.Add(texture2D);
+            m_exportMap.Add(new ExportKey(metallicSmoothTexture, glTFTextureTypes.OcclusionMetallicRoughness), index);
+            m_exportMap.Add(new ExportKey(occlusionTexture, glTFTextureTypes.OcclusionMetallicRoughness), index);
+
+            return index;
         }
 
-        //         List<Texture> m_exportTextures;
-        //         public Texture GetExportTexture(int index)
-        //         {
-        //             if (index < 0 || index >= m_exportTextures.Count)
-        //             {
-        //                 return null;
-        //             }
-        //             if (m_exportTextures[index] != null)
-        //             {
-        //                 // コピー変換済み
-        //                 return m_exportTextures[index];
-        //             }
+        static bool UseNormalAsset(Texture src, out Texture2D texture2D)
+        {
+#if UNITY_EDITOR
+            // asset として存在して textureImporter.textureType = TextureImporterType.NormalMap
+            texture2D = src as Texture2D;
+            if (texture2D != null && !string.IsNullOrEmpty(UnityEditor.AssetDatabase.GetAssetPath(src)))
+            {
+                return true;
+            }
+#endif
 
-        //             // オリジナル
-        //             return m_textures[index];
-        //         }
+            texture2D = default;
+            return false;
+        }
 
-        //         public TextureExportManager(IEnumerable<Texture> textures)
-        //         {
-        //             if (textures == null)
-        //             {
-        //                 // empty list for UnitTest
-        //                 textures = new Texture[] { };
-        //             }
-        //             m_textures = textures.ToList();
-        //             m_exportTextures = new List<Texture>(Enumerable.Repeat<Texture>(null, m_textures.Count));
-        //         }
+        /// <summary>
+        /// Normal のテクスチャを変換する
+        /// </summary>
+        /// <param name="normalTexture"></param>
+        /// <returns></returns>
+        public int ExportNormal(Texture src)
+        {
+            if (src == null)
+            {
+                throw new ArgumentNullException();
+            }
 
-        //         public int CopyAndGetIndex(Texture texture, glTFTextureTypes readWrite)
-        //         {
-        //             if (texture == null)
-        //             {
-        //                 return -1;
-        //             }
+            // cache
+            if (m_exportMap.TryGetValue(new ExportKey(src, glTFTextureTypes.Normal), out var index))
+            {
+                return index;
+            }
 
-        //             var index = m_textures.IndexOf(texture);
-        //             if (index == -1)
-        //             {
-        //                 // ありえない？
-        //                 return -1;
-        //             }
+            // get Texture2D
+            index = m_exported.Count;
+            Texture2D texture2D = default;
+            if (UseNormalAsset(src, out texture2D))
+            {
+                // EditorAsset を使うので変換不要
+            }
+            else
+            {
+                // 後で Bitmap を使うために変換する
+                texture2D = NormalConverter.Export(src);
+            }
 
-        // #if UNITY_EDITOR
-        //             if (!string.IsNullOrEmpty(UnityEditor.AssetDatabase.GetAssetPath(texture)))
-        //             {
-        //                 m_exportTextures[index] = texture;
-        //                 return index;
-        //             }
-        // #endif
+            m_exported.Add(texture2D);
+            m_exportMap.Add(new ExportKey(src, glTFTextureTypes.Normal), index);
 
-        //             // ToDo: may already exists
-        //             m_exportTextures[index] = TextureConverter.CopyTexture(texture, readWrite, null);
-
-        //             return index;
-        //         }
-
-        //         public int ConvertAndGetIndex(Texture texture, Func<Texture, Texture2D> converter)
-        //         {
-        //             if (texture == null)
-        //             {
-        //                 return -1;
-        //             }
-
-        //             var index = m_textures.IndexOf(texture);
-        //             if (index == -1)
-        //             {
-        //                 // ありえない？
-        //                 return -1;
-        //             }
-
-        //             m_exportTextures[index] = converter(texture);
-
-        //             return index;
-        //         }
+            return index;
+        }
     }
 }

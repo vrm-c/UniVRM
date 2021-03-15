@@ -90,11 +90,36 @@ namespace UniGLTF
             return dst;
         }
 
-        // public static Texture2D Export(Texture texture, float smoothness)
-        // {
-        //     var converted = TextureConverter.Convert(texture, glTFTextureTypes.OcclusionMetallicRoughness, x => ExportPixel(x, smoothness), null);
-        //     return converted;
-        // }
+        public static Texture2D Export(Texture metallicSmoothTexture, float smoothness, Texture occlusionTexture)
+        {
+            if (metallicSmoothTexture != null && occlusionTexture != null)
+            {
+                if (metallicSmoothTexture != occlusionTexture)
+                {
+                    throw new NotImplementedException();
+                }
+                else
+                {
+                    throw new NotImplementedException();
+                }
+            }
+            else if (metallicSmoothTexture)
+            {
+                var copyTexture = TextureConverter.CopyTexture(metallicSmoothTexture, glTFTextureTypes.OcclusionMetallicRoughness, null);
+                copyTexture.SetPixels32(copyTexture.GetPixels32().Select(x => ExportPixel(x, smoothness, default)).ToArray());
+                copyTexture.Apply();
+                copyTexture.name = metallicSmoothTexture.name;
+                return copyTexture;
+            }
+            else if (occlusionTexture)
+            {
+                throw new NotImplementedException();
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+        }
 
         public static Color32 ExportPixel(Color32 metallicSmooth, float smoothness, Color32 occlusion)
         {
