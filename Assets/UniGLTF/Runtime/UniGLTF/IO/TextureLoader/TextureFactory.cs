@@ -59,7 +59,10 @@ namespace UniGLTF
 
                 if (m_externalMap.TryGetValue(cacheName, out external))
                 {
-                    m_textureCache.Add(cacheName, new TextureLoadInfo(external, used, true));
+                    if (!m_textureCache.ContainsKey(cacheName))
+                    {
+                        m_textureCache.Add(cacheName, new TextureLoadInfo(external, used, true));
+                    }
                     return external;
                 }
             }
