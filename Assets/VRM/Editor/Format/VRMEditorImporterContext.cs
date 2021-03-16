@@ -178,17 +178,17 @@ namespace VRM
                 return true;
             }
 
-//             if (assetPath.IsFileExists)
-//             {
-//                 if (AvoidOverwriteAndLoad(assetPath, o))
-//                 {
-// #if VRM_DEVELOP                    
-//                     Debug.Log($"AvoidOverwriteAndLoad: {assetPath}");
-// #endif
-//                     // 上書きせずに既存のアセットからロードして置き換えた
-//                     return true;
-//                 }
-//             }
+            //             if (assetPath.IsFileExists)
+            //             {
+            //                 if (AvoidOverwriteAndLoad(assetPath, o))
+            //                 {
+            // #if VRM_DEVELOP                    
+            //                     Debug.Log($"AvoidOverwriteAndLoad: {assetPath}");
+            // #endif
+            //                     // 上書きせずに既存のアセットからロードして置き換えた
+            //                     return true;
+            //                 }
+            //             }
 
             // アセットとして書き込む
             assetPath.Parent.EnsureFolder();

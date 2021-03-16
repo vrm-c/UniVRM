@@ -37,9 +37,9 @@ namespace VRM
                 }
                 else
                 {
-// #if VRM_DEVELOP                    
-//                     Debug.LogWarningFormat("unknown shader {0}.", shaderName);
-// #endif                    
+                    // #if VRM_DEVELOP                    
+                    //                     Debug.LogWarningFormat("unknown shader {0}.", shaderName);
+                    // #endif                    
                 }
                 return await MaterialFactory.DefaultCreateMaterialAsync(awaitCaller, gltf, m_index, getTexture);
             }
@@ -48,7 +48,8 @@ namespace VRM
             // restore VRM material
             //
             var material = new Material(shader);
-            material.name = item.name;
+            // use material.name, because material name may renamed in GltfParser.
+            material.name = gltf.materials[m_index].name;
             material.renderQueue = item.renderQueue;
 
             foreach (var kv in item.floatProperties)
