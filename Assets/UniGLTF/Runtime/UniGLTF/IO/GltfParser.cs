@@ -261,7 +261,7 @@ namespace UniGLTF
                     {
                         // rename
                         var uname = lower + "_" + Guid.NewGuid().ToString("N");
-                        Debug.LogWarning($"same name: {lower} => {uname}");
+                        Debug.LogWarning($"texture.name: {lower} => {uname}");
                         gltfTexture.name = uname;
                         if (!used.Add(uname))
                         {
@@ -274,12 +274,21 @@ namespace UniGLTF
 
         public void FixMaterialNameUnique()
         {
+            var used = new HashSet<string>();
             foreach (var material in GLTF.materials)
             {
                 var originalName = material.name;
                 int j = 2;
-                while (GLTF.materials.Any(x => x != material && x.name == material.name))
+
+                while (true)
                 {
+                    if (used.Add(material.name))
+                    {
+#if VRM_DEVELOP                        
+                        Debug.Log($"Material: {material.name}");
+#endif
+                        break;
+                    }
                     material.name = string.Format("{0}({1})", originalName, j++);
                 }
             }
