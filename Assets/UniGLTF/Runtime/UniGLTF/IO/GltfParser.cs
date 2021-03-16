@@ -334,64 +334,11 @@ namespace UniGLTF
         }
         #endregion
 
-
         public static void AppendImageExtension(glTFImage texture, string extension)
         {
             if (!texture.name.EndsWith(extension))
             {
                 texture.name = texture.name + extension;
-            }
-        }
-
-        public IEnumerable<GetTextureParam> EnumerateTextures(glTFMaterial m)
-        {
-            if (m.pbrMetallicRoughness != null)
-            {
-                // base color
-                if (m.pbrMetallicRoughness?.baseColorTexture != null)
-                {
-                    yield return PBRMaterialItem.BaseColorTexture(GLTF, m);
-                }
-
-                // metallic roughness
-                if (m.pbrMetallicRoughness?.metallicRoughnessTexture != null)
-                {
-                    yield return PBRMaterialItem.MetallicRoughnessTexture(GLTF, m);
-                }
-            }
-
-            // emission
-            if (m.emissiveTexture != null)
-            {
-                yield return GetTextureParam.Create(GLTF, m.emissiveTexture.index);
-            }
-
-            // normal
-            if (m.normalTexture != null)
-            {
-                yield return PBRMaterialItem.NormalTexture(GLTF, m);
-            }
-
-            // occlusion
-            if (m.occlusionTexture != null)
-            {
-                yield return PBRMaterialItem.OcclusionTexture(GLTF, m);
-            }
-        }
-
-        public IEnumerable<GetTextureParam> EnumerateTextures()
-        {
-            var used = new HashSet<string>();
-            for (int i = 0; i < GLTF.materials.Count; ++i)
-            {
-                var m = GLTF.materials[i];
-                foreach (var x in EnumerateTextures(m))
-                {
-                    if (used.Add(x.ConvertedName))
-                    {
-                        yield return x;
-                    }
-                }
             }
         }
     }

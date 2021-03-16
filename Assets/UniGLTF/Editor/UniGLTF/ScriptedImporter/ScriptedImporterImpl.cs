@@ -60,7 +60,7 @@ namespace UniGLTF
         public static IEnumerable<(string, UnityEngine.Object)> EnumerateTexturesFromUri(Dictionary<AssetImporter.SourceAssetIdentifier, UnityEngine.Object> exclude,
             GltfParser parser, UnityPath dir)
         {
-            foreach (var texParam in parser.EnumerateTextures())
+            foreach (var texParam in GltfTextureEnumerator.Enumerate(parser.GLTF))
             {
                 switch (texParam.TextureType)
                 {

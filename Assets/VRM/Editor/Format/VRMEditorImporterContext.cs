@@ -152,7 +152,8 @@ namespace VRM
                     .ToArray();
             var prefabParentDir = assetPath.Parent;
             var folder = assetPath.GetAssetFolder(".Textures");
-            TextureExtractor.ExtractTextures(assetPath.Value, subAssets, _ => { }, onTextureReloaded);
+            var vrmTextures = new VRMTextureEnumerator(m_context.VRM);
+            TextureExtractor.ExtractTextures(assetPath.Value, vrmTextures.Enumerate, subAssets, _ => { }, onTextureReloaded);
         }
 
         bool SaveAsAsset(UnityEngine.Object o)
