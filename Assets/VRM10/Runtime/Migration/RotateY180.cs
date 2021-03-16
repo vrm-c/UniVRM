@@ -50,11 +50,24 @@ namespace UniVRM10
             }
 
             var accessor = gltf.accessors[accessorIndex];
-            var buffer = gltf.GetViewBytes(accessor.bufferView);
-            var span = VrmLib.SpanLike.Wrap<UnityEngine.Vector3>(buffer);
-            for (int i = 0; i < span.Length; ++i)
+            var bufferViewIndex = -1;
+            if (accessor.bufferView != -1)
             {
-                span[i] = span[i].RotateY180();
+                bufferViewIndex = accessor.bufferView;
+            }
+            else if (accessor.sparse?.values != null && accessor.sparse.values.bufferView != -1)
+            {
+                bufferViewIndex = accessor.sparse.values.bufferView;
+            }
+
+            if (bufferViewIndex != -1)
+            {
+                var buffer = gltf.GetViewBytes(bufferViewIndex);
+                var span = VrmLib.SpanLike.Wrap<UnityEngine.Vector3>(buffer);
+                for (int i = 0; i < span.Length; ++i)
+                {
+                    span[i] = span[i].RotateY180();
+                }
             }
         }
 
