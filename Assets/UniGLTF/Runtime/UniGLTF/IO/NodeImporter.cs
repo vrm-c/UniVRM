@@ -133,6 +133,10 @@ namespace UniGLTF
         //
         public static void FixCoordinate(ImporterContext context, List<TransformWithSkin> nodes, IAxisInverter inverter)
         {
+            if (context.GLTF.rootnodes == null)
+            {
+                return;
+            }
             var globalTransformMap = nodes.ToDictionary(x => x.Transform, x => new PosRot
             {
                 Position = x.Transform.position,

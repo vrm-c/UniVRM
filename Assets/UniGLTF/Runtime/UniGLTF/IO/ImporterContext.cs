@@ -145,11 +145,14 @@ namespace UniGLTF
                     NodeImporter.SetupSkinning(this, nodes, i, inverter);
                 }
 
-                // connect root
-                foreach (var x in GLTF.rootnodes)
+                if (GLTF.rootnodes != null)
                 {
-                    var t = nodes[x].Transform;
-                    t.SetParent(Root.transform, false);
+                    // connect root
+                    foreach (var x in GLTF.rootnodes)
+                    {
+                        var t = nodes[x].Transform;
+                        t.SetParent(Root.transform, false);
+                    }
                 }
             }
             await m_awaitCaller.NextFrame();
