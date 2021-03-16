@@ -34,6 +34,12 @@ namespace VRM
                     }
                 }
             }
+
+            // thumbnail
+            if (m_vrm.meta != null && m_vrm.meta.texture != -1)
+            {
+                yield return GetTextureParam.Create(gltf, m_vrm.meta.texture);
+            }
         }
     }
 }
