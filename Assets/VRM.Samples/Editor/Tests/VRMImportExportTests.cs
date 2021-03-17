@@ -54,6 +54,60 @@ namespace VRM.Samples
                 var destroyer = context.DisposeOnGameObjectDestroyed();
                 try
                 {
+                    // mesh
+                    {
+                        foreach (var renderer in destroyer.GetComponentsInChildren<Renderer>())
+                        {
+                            Mesh mesh = default;
+                            if (renderer is MeshRenderer)
+                            {
+                                var f = renderer.GetComponent<MeshFilter>();
+                                mesh = f.sharedMesh;
+                            }
+                            else if (renderer is SkinnedMeshRenderer smr)
+                            {
+                                mesh = smr.sharedMesh;
+                            }
+
+                            var gltfMesh = parser.GLTF.meshes.Find(x => x.name == mesh.name);
+                            Assert.AreEqual(gltfMesh.name, mesh.name);
+
+                            // materials
+                            foreach (var material in renderer.sharedMaterials)
+                            {
+                                var gltfMaterial = parser.GLTF.materials.Find(x => x.name == material.name);
+                                Assert.AreEqual(gltfMaterial.name, material.name);
+
+                                var materialIndex = parser.GLTF.materials.IndexOf(gltfMaterial);
+                                var vrmMaterial = context.VRM.materialProperties[materialIndex];
+                                // Debug.Log($"shaderName: '{vrmMaterial.shader}'");
+                                if (vrmMaterial.shader == "VRM/MToon")
+                                {
+                                    // MToon
+                                    // Debug.Log($"{material.name} is MToon");
+                                    foreach (var kv in vrmMaterial.textureProperties)
+                                    {
+                                        var texture = material.GetTexture(kv.Key);
+                                        // Debug.Log($"{kv.Key}: {texture}");
+                                        Assert.NotNull(texture);
+                                    }
+                                }
+                                else if (glTF_KHR_materials_unlit.IsEnable(gltfMaterial))
+                                {
+                                    // Unlit
+                                    // Debug.Log($"{material.name} is unlit");
+                                    throw new NotImplementedException();
+                                }
+                                else
+                                {
+                                    // PBR
+                                    // Debug.Log($"{material.name} is PBR");
+                                    throw new NotImplementedException();
+                                }
+                            }
+                        }
+                    }
+
                     // meta
                     {
                         var meta = destroyer.GetComponent<VRMMeta>();
