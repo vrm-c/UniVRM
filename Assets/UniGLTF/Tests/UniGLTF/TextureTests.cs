@@ -22,13 +22,13 @@ namespace UniGLTF
             var materialExporter = new MaterialExporter();
             materialExporter.ExportMaterial(material, textureManager);
 
-            // var convTex0 = textureManager.GetExportTexture(0);
-            // var sampler = TextureSamplerUtil.Export(convTex0);
+            var convTex0 = textureManager.Exported[0];
+            var sampler = TextureSamplerUtil.Export(convTex0);
 
-            // Assert.AreEqual(glWrap.CLAMP_TO_EDGE, sampler.wrapS);
-            // Assert.AreEqual(glWrap.CLAMP_TO_EDGE, sampler.wrapT);
-            // Assert.AreEqual(glFilter.LINEAR_MIPMAP_LINEAR, sampler.minFilter);
-            // Assert.AreEqual(glFilter.LINEAR_MIPMAP_LINEAR, sampler.magFilter);
+            Assert.AreEqual(glWrap.CLAMP_TO_EDGE, sampler.wrapS);
+            Assert.AreEqual(glWrap.CLAMP_TO_EDGE, sampler.wrapT);
+            Assert.AreEqual(glFilter.LINEAR_MIPMAP_LINEAR, sampler.minFilter);
+            Assert.AreEqual(glFilter.LINEAR_MIPMAP_LINEAR, sampler.magFilter);
         }
     }
 
