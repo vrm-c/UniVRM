@@ -324,17 +324,12 @@ namespace VRM
                 AvatarDescription = null;
             }
 
-            var list = new List<BlendShapeClip>();
             foreach (var x in BlendShapeAvatar.Clips)
             {
                 if (take(x))
                 {
-                    list.Add(x);
+                    // do nothing
                 }
-            }
-            foreach (var x in list)
-            {
-                BlendShapeAvatar.Clips.Remove(x);
             }
 
             if (take(BlendShapeAvatar))
@@ -344,6 +339,35 @@ namespace VRM
 
             // GLTF のリソース
             base.TransferOwnership(take);
+        }
+
+        public override void Dispose()
+        {
+            Action<UnityEngine.Object> destroy = UnityResourceDestroyer.DestroyResource();
+
+            // VRM specific
+            if (HumanoidAvatar != null)
+            {
+                destroy(HumanoidAvatar);
+            }
+            if (Meta != null)
+            {
+                destroy(Meta);
+            }
+            if (AvatarDescription != null)
+            {
+                destroy(AvatarDescription);
+            }
+            if (BlendShapeAvatar != null)
+            {
+                foreach (var clip in BlendShapeAvatar.Clips)
+                {
+                    destroy(clip);
+                }
+                destroy(BlendShapeAvatar);
+            }
+
+            base.Dispose();
         }
     }
 }
