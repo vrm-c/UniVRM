@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace UniGLTF
 {
-    public class LoadTests
+    public class GltfLoadTests
     {
         static IEnumerable<FileInfo> EnumerateGltfFiles(DirectoryInfo dir)
         {
