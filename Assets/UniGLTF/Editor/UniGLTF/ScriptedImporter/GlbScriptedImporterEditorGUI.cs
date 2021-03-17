@@ -17,6 +17,8 @@ namespace UniGLTF
 
         public override void OnEnable()
         {
+            base.OnEnable();
+
             m_importer = target as GlbScriptedImporter;
             m_parser = new GltfParser();
             m_parser.ParsePath(m_importer.assetPath);
