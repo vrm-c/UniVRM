@@ -116,18 +116,16 @@ namespace UniGLTF
         /// <param name="importer"></param>
         /// <param name="dirName"></param>
         /// <param name="onCompleted"></param>
-        public static void ExtractTextures(string assetPath, Texture2D[] subAssets, Action<Texture2D> addRemap, Action<IEnumerable<string>> onCompleted = null)
+        public static void ExtractTextures(string assetPath, TextureEnumerator textureEnumerator, Texture2D[] subAssets, Action<Texture2D> addRemap, Action<IEnumerable<string>> onCompleted = null)
         {
             var extractor = new TextureExtractor(assetPath, subAssets);
             var normalMaps = new List<string>();
-            foreach (var material in extractor.GLTF.materials)
+
+            foreach (var x in textureEnumerator(extractor.GLTF))
             {
-                foreach (var x in extractor.Parser.EnumerateTextures(material))
-                {
-                    var gltfTexture = extractor.GLTF.textures[x.Index0.Value];
-                    var gltfImage = extractor.GLTF.images[gltfTexture.source];
-                    extractor.Extract(x, !string.IsNullOrEmpty(gltfImage.uri));
-                }
+                var gltfTexture = extractor.GLTF.textures[x.Index0.Value];
+                var gltfImage = extractor.GLTF.images[gltfTexture.source];
+                extractor.Extract(x, !string.IsNullOrEmpty(gltfImage.uri));
             }
 
             EditorApplication.delayCall += () =>
