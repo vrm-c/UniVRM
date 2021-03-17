@@ -230,9 +230,9 @@ namespace UniGLTF
             {
                 var gltfTexture = GLTF.textures[i];
                 var gltfImage = GLTF.images[gltfTexture.source];
-                if (!string.IsNullOrEmpty(gltfImage.uri))
+                if (!string.IsNullOrEmpty(gltfImage.uri) && !gltfImage.uri.StartsWith("data:"))
                 {
-                    // from image uri
+                    // from image uri                    
                     gltfTexture.name = Path.GetFileNameWithoutExtension(gltfImage.uri);
                 }
                 if (string.IsNullOrEmpty(gltfTexture.name))
