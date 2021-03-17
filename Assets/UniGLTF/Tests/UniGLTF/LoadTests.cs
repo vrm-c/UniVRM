@@ -35,7 +35,25 @@ namespace UniGLTF
             }
         }
 
-        static void Load(FileInfo gltf)
+        static void Message(string path, Exception exception)
+        {
+            while (exception.InnerException != null)
+            {
+                exception = exception.InnerException;
+            }
+
+            if (exception is UniGLTFNotSupportedException ex)
+            {
+                // skip
+                Debug.LogWarning($"LoadError: {path}: {ex}");
+            }
+            else
+            {
+                Debug.LogError($"LoadError: {path}: {exception}");
+            }
+        }
+
+        static void Load(FileInfo gltf, DirectoryInfo root)
         {
             var parser = new GltfParser();
             try
@@ -55,14 +73,9 @@ namespace UniGLTF
                     importer.Load();
                 }
             }
-            catch (UniGLTFNotSupportedException)
-            {
-                // skip
-            }
             catch (Exception ex)
             {
-                Debug.LogError($"LoadError: {gltf}");
-                Debug.LogException(ex);
+                Message(gltf.FullName.Substring(root.FullName.Length), ex);
             }
         }
 
@@ -82,7 +95,7 @@ namespace UniGLTF
 
             foreach (var gltf in EnumerateGltfFiles(root))
             {
-                Load(gltf);
+                Load(gltf, root);
             }
         }
     }

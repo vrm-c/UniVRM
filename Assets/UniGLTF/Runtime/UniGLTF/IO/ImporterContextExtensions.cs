@@ -18,14 +18,7 @@ namespace UniGLTF
             }
             if (task.IsFaulted)
             {
-                if (task.Exception is AggregateException ae && ae.InnerExceptions.Count == 1)
-                {
-                    throw ae.InnerException;
-                }
-                else
-                {
-                    throw task.Exception;
-                }
+                throw new AggregateException(task.Exception);
             }
 
 #if VRM_DEVELOP
