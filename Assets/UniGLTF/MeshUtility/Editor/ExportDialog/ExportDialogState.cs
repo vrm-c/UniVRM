@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 namespace MeshUtility
@@ -22,24 +23,39 @@ namespace MeshUtility
         }
 
         #region ExportRoot管理
-        GameObject m_root;
+        (GameObject GameObject, bool IsPrefab) m_root;
         public event Action<GameObject> ExportRootChanged;
         void RaiseExportRootChanged()
         {
             var tmp = ExportRootChanged;
             if (tmp == null) return;
-            tmp(m_root);
+            tmp(m_root.GameObject);
         }
         public GameObject ExportRoot
         {
-            get { return m_root; }
+            get { return m_root.GameObject; }
             set
             {
-                if (m_root == value)
+                string assetPath = default;
+                var isPrefab = false;
+                if (value != null && AssetDatabase.IsMainAsset(value))
+                {
+                    assetPath = AssetDatabase.GetAssetPath(value);
+                    isPrefab = true;
+                    value = PrefabUtility.LoadPrefabContents(assetPath);
+                }
+                if (m_root.GameObject == value)
                 {
                     return;
                 }
-                m_root = value;
+                if (m_root.IsPrefab)
+                {
+#if VRM_DEVELOP
+                    Debug.Log($"PrefabUtility.UnloadPrefabContents({m_root.GameObject})");
+#endif
+                    PrefabUtility.UnloadPrefabContents(m_root.GameObject);
+                }
+                m_root = (value, isPrefab);
                 m_requireValidation = true;
                 RaiseExportRootChanged();
             }
