@@ -93,7 +93,7 @@ namespace UniGLTF
                 {
                     // 外部の '.asset' からロードしていない
 #if VRM_DEVELOP
-                    Debug.Log($"Destroy {x.Asset}");
+                    // Debug.Log($"Destroy {x.Asset}");
 #endif
                     UnityEngine.Object.DestroyImmediate(x.Asset, false);
                 }

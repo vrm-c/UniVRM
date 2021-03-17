@@ -95,7 +95,7 @@ namespace UniGLTF
                 if (!kv.Value.IsExternal)
                 {
 #if VRM_DEVELOP
-                    Debug.Log($"Destroy {kv.Value.Texture}");
+                    // Debug.Log($"Destroy {kv.Value.Texture}");
 #endif
                     destroy(kv.Value.Texture);
                 }
