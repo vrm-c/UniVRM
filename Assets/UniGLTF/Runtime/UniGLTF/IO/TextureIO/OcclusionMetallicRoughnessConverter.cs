@@ -69,7 +69,11 @@ namespace UniGLTF
             }
             else if (occlusionTexture != null)
             {
-                throw new NotImplementedException("occlusion only");
+                var copyTexture = TextureConverter.CopyTexture(occlusionTexture, glTFTextureTypes.OcclusionMetallicRoughness, null);
+                copyTexture.SetPixels32(copyTexture.GetPixels32().Select(x => ImportPixel(default, metallicFactor, roughnessFactor, x)).ToArray());
+                copyTexture.Apply();
+                copyTexture.name = occlusionTexture.name;
+                return copyTexture;
             }
             else
             {
