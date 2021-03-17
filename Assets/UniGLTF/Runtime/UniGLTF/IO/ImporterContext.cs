@@ -56,6 +56,7 @@ namespace UniGLTF
                 };
 #endif
             }
+
             m_textureFactory = new TextureFactory(loadTextureAsync, externalObjectMap);
             m_materialFactory = new MaterialFactory(GLTF, Storage, externalObjectMap);
         }

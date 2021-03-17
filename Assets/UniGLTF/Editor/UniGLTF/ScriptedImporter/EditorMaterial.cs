@@ -30,8 +30,8 @@ namespace UniGLTF
             }
         }
 
-        static bool s_foldMaterials;
-        static bool s_foldTextures;
+        static bool s_foldMaterials = true;
+        static bool s_foldTextures = true;
 
         public static void OnGUIMaterial(ScriptedImporter importer, GltfParser parser)
         {
@@ -56,7 +56,17 @@ namespace UniGLTF
             s_foldTextures = EditorGUILayout.Foldout(s_foldTextures, "Remapped Textures");
             if (s_foldTextures)
             {
-                DrawRemapGUI<UnityEngine.Texture2D>(importer, GltfTextureEnumerator.Enumerate(parser.GLTF).Select(x => x.ConvertedName));
+                DrawRemapGUI<UnityEngine.Texture2D>(importer, GltfTextureEnumerator.Enumerate(parser.GLTF).Select(x =>
+                {
+                    switch (x.TextureType)
+                    {
+                        case GetTextureParam.TextureTypes.NormalMap:
+                            return x.GltflName;
+
+                        default:
+                            return x.ConvertedName;
+                    }
+                }));
             }
 
             if (GUILayout.Button("Clear"))

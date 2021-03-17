@@ -17,14 +17,7 @@ namespace UniGLTF
 
         public override void OnImportAsset(AssetImportContext ctx)
         {
-            try
-            {
-                ScriptedImporterImpl.Import(this, ctx, m_reverseAxis);
-            }
-            catch (System.Exception ex)
-            {
-                Debug.LogError(ex);
-            }
+            ScriptedImporterImpl.Import(this, ctx, m_reverseAxis);
         }
     }
 }

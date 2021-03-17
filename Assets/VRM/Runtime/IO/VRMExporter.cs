@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using UniGLTF;
 using UniJSON;
@@ -113,7 +112,7 @@ namespace VRM
                     VRM.meta.title = meta.Title;
                     if (meta.Thumbnail != null)
                     {
-                        VRM.meta.texture = TextureExporter.ExportTexture(glTF, glTF.buffers.Count - 1, meta.Thumbnail, glTFTextureTypes.Unknown);
+                        VRM.meta.texture = glTF.PushGltfTexture(glTF.buffers.Count - 1, meta.Thumbnail);
                     }
 
                     VRM.meta.licenseType = meta.LicenseType;
@@ -138,7 +137,7 @@ namespace VRM
                     VRM.meta.title = meta.Title;
                     if (meta.Thumbnail != null)
                     {
-                        VRM.meta.texture = TextureExporter.ExportTexture(glTF, glTF.buffers.Count - 1, meta.Thumbnail, glTFTextureTypes.Unknown);
+                        VRM.meta.texture = TextureManager.ExportSRGB(meta.Thumbnail);
                     }
 
                     // ussage permission
@@ -201,7 +200,7 @@ namespace VRM
             // materials
             foreach (var m in Materials)
             {
-                VRM.materialProperties.Add(VRMMaterialExporter.CreateFromMaterial(m, TextureManager.Textures));
+                VRM.materialProperties.Add(VRMMaterialExporter.CreateFromMaterial(m, TextureManager));
             }
 
             // Serialize VRM

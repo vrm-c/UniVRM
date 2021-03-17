@@ -70,8 +70,7 @@ namespace UniGLTF
 
                 switch (param.TextureType)
                 {
-                    case GetTextureParam.METALLIC_GLOSS_PROP:
-                    case GetTextureParam.OCCLUSION_PROP:
+                    case GetTextureParam.TextureTypes.StandardMap:
                         {
                             // write converted texture
                             targetPath = $"{m_path}/{param.ConvertedName}.png";
@@ -130,39 +129,12 @@ namespace UniGLTF
 
             EditorApplication.delayCall += () =>
             {
+                // Wait for the texture assets to be imported
+
                 foreach (var kv in extractor.Textures)
                 {
                     var targetPath = kv.Key;
                     var param = kv.Value;
-
-                    // TextureImporter                   
-                    var targetTextureImporter = AssetImporter.GetAtPath(targetPath) as TextureImporter;
-                    if (targetTextureImporter != null)
-                    {
-                        switch (param.TextureType)
-                        {
-                            case GetTextureParam.OCCLUSION_PROP:
-                            case GetTextureParam.METALLIC_GLOSS_PROP:
-#if VRM_DEVELOP
-                                Debug.Log($"{targetPath} => linear");
-#endif
-                                targetTextureImporter.sRGBTexture = false;
-                                targetTextureImporter.SaveAndReimport();
-                                break;
-
-                            case GetTextureParam.NORMAL_PROP:
-#if VRM_DEVELOP
-                                Debug.Log($"{targetPath} => normalmap");
-#endif
-                                targetTextureImporter.textureType = TextureImporterType.NormalMap;
-                                targetTextureImporter.SaveAndReimport();
-                                break;
-                        }
-                    }
-                    else
-                    {
-                        throw new FileNotFoundException(targetPath);
-                    }
 
                     // remap
                     var externalObject = AssetDatabase.LoadAssetAtPath<UnityEngine.Texture2D>(targetPath);

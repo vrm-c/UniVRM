@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using UniGLTF.UniUnlit;
-using UniJSON;
 using UnityEngine;
 
 
@@ -15,27 +14,26 @@ namespace UniGLTF
 
     public interface IMaterialExporter
     {
-        glTFMaterial ExportMaterial(Material m, TextureExportManager textureManager);
+        glTFMaterial ExportMaterial(Material m, TextureExporter textureManager);
     }
 
     public class MaterialExporter : IMaterialExporter
     {
-        public virtual glTFMaterial ExportMaterial(Material m, TextureExportManager textureManager)
+        public virtual glTFMaterial ExportMaterial(Material m, TextureExporter textureManager)
         {
             var material = CreateMaterial(m);
 
             // common params
             material.name = m.name;
             Export_Color(m, textureManager, material);
-            Export_Metallic(m, textureManager, material);
-            Export_Normal(m, textureManager, material);
-            Export_Occlusion(m, textureManager, material);
             Export_Emission(m, textureManager, material);
+            Export_Normal(m, textureManager, material);
+            Export_OcclusionMetallicRoughness(m, textureManager, material);
 
             return material;
         }
 
-        static void Export_Color(Material m, TextureExportManager textureManager, glTFMaterial material)
+        static void Export_Color(Material m, TextureExporter textureManager, glTFMaterial material)
         {
             if (m.HasProperty("_Color"))
             {
@@ -44,7 +42,7 @@ namespace UniGLTF
 
             if (m.HasProperty("_MainTex"))
             {
-                var index = textureManager.CopyAndGetIndex(m.GetTexture("_MainTex"), RenderTextureReadWrite.sRGB);
+                var index = textureManager.ExportSRGB(m.GetTexture("_MainTex"));
                 if (index != -1)
                 {
                     material.pbrMetallicRoughness.baseColorTexture = new glTFMaterialBaseColorTextureInfo()
@@ -57,36 +55,49 @@ namespace UniGLTF
             }
         }
 
-        static void Export_Metallic(Material m, TextureExportManager textureManager, glTFMaterial material)
+        /// <summary>
+        /// Occlusion, Metallic, Roughness
+        /// </summary>
+        /// <param name="m"></param>
+        /// <param name="textureManager"></param>
+        /// <param name="material"></param>
+        static void Export_OcclusionMetallicRoughness(Material m, TextureExporter textureManager, glTFMaterial material)
         {
-            int index = -1;
+            Texture metallicSmoothTexture = default;
+            float smoothness = 1.0f;
             if (m.HasProperty("_MetallicGlossMap"))
             {
-                float smoothness = 0.0f;
                 if (m.HasProperty("_GlossMapScale"))
                 {
                     smoothness = m.GetFloat("_GlossMapScale");
                 }
+                metallicSmoothTexture = m.GetTexture("_MetallicGlossMap");
+            }
 
-                // Bake smoothness values into a texture.
-                var converter = new MetallicRoughnessConverter(smoothness);
-                index = textureManager.ConvertAndGetIndex(m.GetTexture("_MetallicGlossMap"), converter);
-                if (index != -1)
+            Texture occlusionTexture = default;
+            var occlusionStrength = 1.0f;
+            if (m.HasProperty("_OcclusionMap"))
+            {
+                occlusionTexture = m.GetTexture("_OcclusionMap");
+                if (occlusionTexture != null && m.HasProperty("_OcclusionStrength"))
                 {
-                    material.pbrMetallicRoughness.metallicRoughnessTexture =
-                        new glTFMaterialMetallicRoughnessTextureInfo()
-                        {
-                            index = index,
-                        };
-
-                    Export_MainTextureTransform(m, material.pbrMetallicRoughness.metallicRoughnessTexture);
+                    occlusionStrength = m.GetFloat("_OcclusionStrength");
                 }
             }
 
-            if (index != -1)
+            int index = textureManager.ExportMetallicSmoothnessOcclusion(metallicSmoothTexture, smoothness, occlusionTexture);
+
+            if (index != -1 && metallicSmoothTexture != null)
             {
-                material.pbrMetallicRoughness.metallicFactor = 1.0f;
+                material.pbrMetallicRoughness.metallicRoughnessTexture =
+                    new glTFMaterialMetallicRoughnessTextureInfo()
+                    {
+                        index = index,
+                    };
+                Export_MainTextureTransform(m, material.pbrMetallicRoughness.metallicRoughnessTexture);
+
                 // Set 1.0f as hard-coded. See: https://github.com/dwango/UniVRM/issues/212.
+                material.pbrMetallicRoughness.metallicFactor = 1.0f;
                 material.pbrMetallicRoughness.roughnessFactor = 1.0f;
             }
             else
@@ -101,13 +112,23 @@ namespace UniGLTF
                     material.pbrMetallicRoughness.roughnessFactor = 1.0f - m.GetFloat("_Glossiness");
                 }
             }
+
+            if (index != -1 && occlusionTexture != null)
+            {
+                material.occlusionTexture = new glTFMaterialOcclusionTextureInfo()
+                {
+                    index = index,
+                    strength = occlusionStrength,
+                };
+                Export_MainTextureTransform(m, material.occlusionTexture);
+            }
         }
 
-        static void Export_Normal(Material m, TextureExportManager textureManager, glTFMaterial material)
+        static void Export_Normal(Material m, TextureExporter textureManager, glTFMaterial material)
         {
             if (m.HasProperty("_BumpMap"))
             {
-                var index = textureManager.ConvertAndGetIndex(m.GetTexture("_BumpMap"), new NormalConverter());
+                var index = textureManager.ExportNormal(m.GetTexture("_BumpMap"));
                 if (index != -1)
                 {
                     material.normalTexture = new glTFMaterialNormalTextureInfo()
@@ -125,29 +146,7 @@ namespace UniGLTF
             }
         }
 
-        static void Export_Occlusion(Material m, TextureExportManager textureManager, glTFMaterial material)
-        {
-            if (m.HasProperty("_OcclusionMap"))
-            {
-                var index = textureManager.ConvertAndGetIndex(m.GetTexture("_OcclusionMap"), new OcclusionConverter());
-                if (index != -1)
-                {
-                    material.occlusionTexture = new glTFMaterialOcclusionTextureInfo()
-                    {
-                        index = index,
-                    };
-
-                    Export_MainTextureTransform(m, material.occlusionTexture);
-                }
-
-                if (index != -1 && m.HasProperty("_OcclusionStrength"))
-                {
-                    material.occlusionTexture.strength = m.GetFloat("_OcclusionStrength");
-                }
-            }
-        }
-
-        static void Export_Emission(Material m, TextureExportManager textureManager, glTFMaterial material)
+        static void Export_Emission(Material m, TextureExporter textureManager, glTFMaterial material)
         {
             if (m.IsKeywordEnabled("_EMISSION") == false)
                 return;
@@ -164,7 +163,7 @@ namespace UniGLTF
 
             if (m.HasProperty("_EmissionMap"))
             {
-                var index = textureManager.CopyAndGetIndex(m.GetTexture("_EmissionMap"), RenderTextureReadWrite.sRGB);
+                var index = textureManager.ExportSRGB(m.GetTexture("_EmissionMap"));
                 if (index != -1)
                 {
                     material.emissiveTexture = new glTFMaterialEmissiveTextureInfo()

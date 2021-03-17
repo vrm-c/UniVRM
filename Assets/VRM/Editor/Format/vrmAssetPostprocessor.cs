@@ -25,7 +25,14 @@ namespace VRM
                 var ext = Path.GetExtension(path).ToLower();
                 if (ext == ".vrm")
                 {
-                    ImportVrm(UnityPath.FromUnityPath(path));
+                    try
+                    {
+                        ImportVrm(UnityPath.FromUnityPath(path));
+                    }
+                    catch (VRMImporterContext.NotVrm0Exception)
+                    {
+                        // is not vrm0
+                    }
                 }
             }
         }
@@ -49,9 +56,14 @@ namespace VRM
                     var texture = AssetDatabase.LoadAssetAtPath(x, typeof(Texture2D));
                     return (texture.name, texture);
                 }).ToArray();
+
                 using (var context = new VRMImporterContext(parser, null, map))
                 {
                     var editor = new VRMEditorImporterContext(context, prefabPath);
+                    foreach (var textureInfo in new VRMTextureEnumerator(context.VRM).Enumerate(parser.GLTF))
+                    {
+                        TextureImporterConfigurator.Configure(textureInfo, map.ToDictionary(x => x.name, x => x.texture as Texture2D));
+                    }
                     context.Load();
                     editor.SaveAsAsset();
                 }

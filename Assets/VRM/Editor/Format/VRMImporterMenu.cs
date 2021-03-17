@@ -4,6 +4,7 @@ using UnityEngine;
 using UniGLTF;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace VRM
 {
@@ -58,14 +59,24 @@ namespace VRM
                 var parser = new GltfParser();
                 parser.ParseGlb(File.ReadAllBytes(path));
 
-                Action<IEnumerable<string>> onCompleted = _ =>
+                Action<IEnumerable<string>> onCompleted = texturePaths =>
                 {
                     //
                     // after textures imported
                     //
+                    var map = texturePaths.Select(x =>
+                    {
+                        var texture = AssetDatabase.LoadAssetAtPath(x, typeof(Texture2D));
+                        return (texture.name, texture);
+                    }).ToArray();
+
                     using (var context = new VRMImporterContext(parser))
                     {
                         var editor = new VRMEditorImporterContext(context, prefabPath);
+                        foreach (var textureInfo in new VRMTextureEnumerator(context.VRM).Enumerate(parser.GLTF))
+                        {
+                            TextureImporterConfigurator.Configure(textureInfo, map.ToDictionary(x => x.name, x => x.texture as Texture2D));
+                        }
                         context.Load();
                         editor.SaveAsAsset();
                     }

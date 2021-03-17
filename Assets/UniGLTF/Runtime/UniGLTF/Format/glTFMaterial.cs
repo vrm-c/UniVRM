@@ -5,12 +5,10 @@ namespace UniGLTF
 {
     public enum glTFTextureTypes
     {
-        BaseColor,
-        Metallic,
+        OcclusionMetallicRoughness,
         Normal,
-        Occlusion,
-        Emissive,
-        Unknown
+        SRGB,
+        Linear,
     }
 
     public interface IglTFTextureinfo
@@ -38,19 +36,13 @@ namespace UniGLTF
     [Serializable]
     public class glTFMaterialBaseColorTextureInfo : glTFTextureInfo
     {
-        public override glTFTextureTypes TextureType
-        {
-            get { return glTFTextureTypes.BaseColor; }
-        }
+        public override glTFTextureTypes TextureType => glTFTextureTypes.SRGB;
     }
 
     [Serializable]
     public class glTFMaterialMetallicRoughnessTextureInfo : glTFTextureInfo
     {
-        public override glTFTextureTypes TextureType
-        {
-            get { return glTFTextureTypes.Metallic; }
-        }
+        public override glTFTextureTypes TextureType => glTFTextureTypes.OcclusionMetallicRoughness;
     }
 
     [Serializable]
@@ -70,19 +62,13 @@ namespace UniGLTF
         [JsonSchema(Minimum = 0.0, Maximum = 1.0)]
         public float strength = 1.0f;
 
-        public override glTFTextureTypes TextureType
-        {
-            get { return glTFTextureTypes.Occlusion; }
-        }
+        public override glTFTextureTypes TextureType => glTFTextureTypes.OcclusionMetallicRoughness;
     }
 
     [Serializable]
     public class glTFMaterialEmissiveTextureInfo : glTFTextureInfo
     {
-        public override glTFTextureTypes TextureType
-        {
-            get { return glTFTextureTypes.Emissive; }
-        }
+        public override glTFTextureTypes TextureType => glTFTextureTypes.SRGB;
     }
 
     [Serializable]

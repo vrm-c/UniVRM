@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -40,6 +41,12 @@ namespace UniGLTF
                 externalObjectMap.Where(x => x.Value != null).Select(x => (x.Value.name, x.Value)).Concat(
                 EnumerateTexturesFromUri(externalObjectMap, parser, UnityPath.FromUnityPath(scriptedImporter.assetPath).Parent))))
             {
+                // settings TextureImporters
+                foreach (var textureInfo in GltfTextureEnumerator.Enumerate(parser.GLTF))
+                {
+                    TextureImporterConfigurator.Configure(textureInfo, loaded.TextureFactory.ExternalMap);
+                }
+
                 loaded.InvertAxis = reverseAxis;
                 loaded.Load();
                 loaded.ShowMeshes();
@@ -69,8 +76,7 @@ namespace UniGLTF
             {
                 switch (texParam.TextureType)
                 {
-                    case GetTextureParam.METALLIC_GLOSS_PROP:
-                    case GetTextureParam.OCCLUSION_PROP:
+                    case GetTextureParam.TextureTypes.StandardMap:
                         break;
 
                     default:
