@@ -42,10 +42,10 @@ namespace UniGLTF
             {
                 parser.ParsePath(gltf.FullName);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 Debug.LogError($"ParseError: {gltf}");
-                throw;
+                Debug.LogException(ex);
             }
 
             try
@@ -55,10 +55,14 @@ namespace UniGLTF
                     importer.Load();
                 }
             }
-            catch (Exception)
+            catch (UniGLTFNotSupportedException)
+            {
+                // skip
+            }
+            catch (Exception ex)
             {
                 Debug.LogError($"LoadError: {gltf}");
-                throw;
+                Debug.LogException(ex);
             }
         }
 
@@ -70,7 +74,7 @@ namespace UniGLTF
             {
                 return;
             }
-            var root = new DirectoryInfo(env);
+            var root = new DirectoryInfo($"{env}/2.0");
             if (!root.Exists)
             {
                 return;
