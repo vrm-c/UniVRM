@@ -275,10 +275,16 @@ namespace UniGLTF
         public void FixMaterialNameUnique()
         {
             var used = new HashSet<string>();
-            foreach (var material in GLTF.materials)
+            for (int i = 0; i < GLTF.materials.Count; ++i)
             {
+                var material = GLTF.materials[i];
                 var originalName = material.name;
                 int j = 2;
+
+                if (string.IsNullOrEmpty(material.name))
+                {
+                    material.name = $"material_{i}";
+                }
 
                 while (true)
                 {
