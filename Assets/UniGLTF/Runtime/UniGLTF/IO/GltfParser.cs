@@ -285,7 +285,7 @@ namespace UniGLTF
                     if (used.Add(material.name))
                     {
 #if VRM_DEVELOP                        
-                        Debug.Log($"Material: {material.name}");
+                        // Debug.Log($"Material: {material.name}");
 #endif
                         break;
                     }

@@ -252,7 +252,7 @@ namespace UniGLTF
             foreach (var x in Meshes)
             {
 #if VRM_DEVELOP
-                Debug.Log($"Destroy {x}");
+                Debug.Log($"Destroy {x.Mesh}");
 #endif
                 destroy(x.Mesh);
             }
