@@ -16,7 +16,7 @@ namespace UniGLTF
 
         private static TangentMode GetTangentMode(string interpolation)
         {
-            if (interpolation == glTFAnimationTarget.Interpolations.LINEAR.ToString())
+            if (string.IsNullOrEmpty(interpolation) || interpolation == glTFAnimationTarget.Interpolations.LINEAR.ToString())
             {
                 return TangentMode.Linear;
             }
@@ -30,7 +30,7 @@ namespace UniGLTF
             }
             else
             {
-                throw new NotImplementedException();
+                throw new UniGLTFNotSupportedException($"unknown interpolation: {interpolation}");
             }
         }
 
@@ -274,7 +274,7 @@ namespace UniGLTF
 
                             if (!gltf_mesh_extras_targetNames.TryGet(mesh, out List<string> targetNames))
                             {
-                                throw new Exception("glTF BlendShape Animation. targetNames invalid.");
+                                throw new UniGLTFNotSupportedException("glTF BlendShape Animation. targetNames invalid.");
                             }
 
                             var keyNames = targetNames
