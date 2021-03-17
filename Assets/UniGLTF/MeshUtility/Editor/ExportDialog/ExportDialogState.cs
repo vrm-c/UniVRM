@@ -48,6 +48,13 @@ namespace MeshUtility
                 {
                     return;
                 }
+                if (m_root.IsPrefab)
+                {
+#if VRM_DEVELOP
+                    Debug.Log($"PrefabUtility.UnloadPrefabContents({m_root.GameObject})");
+#endif
+                    PrefabUtility.UnloadPrefabContents(m_root.GameObject);
+                }
                 m_root = (value, isPrefab);
                 m_requireValidation = true;
                 RaiseExportRootChanged();
