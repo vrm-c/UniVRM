@@ -20,6 +20,7 @@ namespace UniGLTF
             NormalMap,
             // Occlusion + Metallic + Smoothness
             StandardMap,
+            Linear,
         }
 
         public static string RemoveSuffix(string src)

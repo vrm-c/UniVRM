@@ -100,7 +100,7 @@ namespace UniGLTF
         }
 
         /// <summary>
-        /// sRGBなテクスチャーを処理する
+        /// sRGBなテクスチャーを処理し、index を確定させる
         /// </summary>
         /// <param name="src"></param>
         /// <returns></returns>
@@ -135,7 +135,17 @@ namespace UniGLTF
         }
 
         /// <summary>
-        /// Standard の Metallic, Smoothness, Occlusion をまとめる
+        /// Linearなテクスチャーを処理し、index を確定させる
+        /// </summary>
+        /// <param name="src"></param>
+        /// <returns></returns>
+        public int ExportLinear(Texture src)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Standard の Metallic, Smoothness, Occlusion をまとめ、index を確定させる
         /// </summary>
         /// <param name="metallicSmoothTexture"></param>
         /// <param name="smoothness"></param>
@@ -175,7 +185,7 @@ namespace UniGLTF
         }
 
         /// <summary>
-        /// Normal のテクスチャを変換する
+        /// Normal のテクスチャを変換し index を確定させる
         /// </summary>
         /// <param name="normalTexture"></param>
         /// <returns></returns>
@@ -209,84 +219,6 @@ namespace UniGLTF
             m_exportMap.Add(new ExportKey(src, glTFTextureTypes.Normal), index);
 
             return index;
-        }
-
-        /// <summary>
-        /// 画像のバイト列を得る
-        /// </summary>
-        /// <param name="bytes"></param>
-        /// <param name="texture"></param>
-        /// <returns></returns>
-        static (Byte[] bytes, string mine) GetBytesWithMime(Texture2D texture)
-        {
-#if UNITY_EDITOR
-            var path = UnityPath.FromAsset(texture);
-            if (path.IsUnderAssetsFolder)
-            {
-                if (path.Extension == ".png")
-                {
-                    return
-                    (
-                        System.IO.File.ReadAllBytes(path.FullPath),
-                        "image/png"
-                    );
-                }
-                if (path.Extension == ".jpg")
-                {
-                    return
-                    (
-                        System.IO.File.ReadAllBytes(path.FullPath),
-                        "image/jpeg"
-                    );
-                }
-            }
-#endif
-
-            return
-            (
-                texture.EncodeToPNG(),
-                "image/png"
-            );
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="gltf"></param>
-        /// <param name="bufferIndex"></param>
-        /// <param name="texture"></param>
-        /// <returns></returns>
-        static public int ExportTexture(glTF gltf, int bufferIndex, Texture2D texture)
-        {
-            var bytesWithMime = GetBytesWithMime(texture);
-
-            // add view
-            var view = gltf.buffers[bufferIndex].Append(bytesWithMime.bytes, glBufferTarget.NONE);
-            var viewIndex = gltf.AddBufferView(view);
-
-            // add image
-            var imageIndex = gltf.images.Count;
-            gltf.images.Add(new glTFImage
-            {
-                name = GetTextureParam.RemoveSuffix(texture.name),
-                bufferView = viewIndex,
-                mimeType = bytesWithMime.mine,
-            });
-
-            // add sampler
-            var samplerIndex = gltf.samplers.Count;
-            var sampler = TextureSamplerUtil.Export(texture);
-            gltf.samplers.Add(sampler);
-
-            // add texture
-            var textureIndex = gltf.textures.Count;
-            gltf.textures.Add(new glTFTexture
-            {
-                sampler = samplerIndex,
-                source = imageIndex,
-            });
-
-            return textureIndex;
         }
     }
 }

@@ -8,6 +8,7 @@ namespace UniGLTF
         OcclusionMetallicRoughness,
         Normal,
         SRGB,
+        Linear,
     }
 
     public interface IglTFTextureinfo

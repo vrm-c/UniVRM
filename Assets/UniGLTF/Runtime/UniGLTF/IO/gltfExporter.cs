@@ -188,7 +188,7 @@ namespace UniGLTF
             for (int i = 0; i < TextureManager.Exported.Count; ++i)
             {
                 var unityTexture = TextureManager.Exported[i];
-                TextureExporter.ExportTexture(glTF, bufferIndex, unityTexture);
+                glTF.PushGltfTexture(bufferIndex, unityTexture);
             }
             #endregion
 
