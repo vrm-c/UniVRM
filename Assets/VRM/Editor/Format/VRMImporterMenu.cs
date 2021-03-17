@@ -73,7 +73,7 @@ namespace VRM
                     using (var context = new VRMImporterContext(parser))
                     {
                         var editor = new VRMEditorImporterContext(context, prefabPath);
-                        foreach (var textureInfo in parser.EnumerateTextures())
+                        foreach (var textureInfo in new VRMTextureEnumerator(context.VRM).Enumerate(parser.GLTF))
                         {
                             TextureImporterConfigurator.Configure(textureInfo, map.ToDictionary(x => x.name, x => x.texture as Texture2D));
                         }

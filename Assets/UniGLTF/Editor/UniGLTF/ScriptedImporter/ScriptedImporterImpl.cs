@@ -37,7 +37,7 @@ namespace UniGLTF
                 EnumerateTexturesFromUri(externalObjectMap, parser, UnityPath.FromUnityPath(scriptedImporter.assetPath).Parent))))
             {
                 // settings TextureImporters
-                foreach (var textureInfo in parser.EnumerateTextures())
+                foreach (var textureInfo in GltfTextureEnumerator.Enumerate(parser.GLTF))
                 {
                     TextureImporterConfigurator.Configure(textureInfo, loaded.TextureFactory.ExternalMap);
                 }

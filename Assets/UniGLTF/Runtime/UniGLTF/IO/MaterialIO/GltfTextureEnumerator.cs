@@ -8,6 +8,7 @@ namespace UniGLTF
     {
         public static IEnumerable<GetTextureParam> EnumerateTextures(glTF gltf, glTFMaterial m)
         {
+            int? metallicRoughnessTexture = default;
             if (m.pbrMetallicRoughness != null)
             {
                 // base color
@@ -17,16 +18,16 @@ namespace UniGLTF
                 }
 
                 // metallic roughness
-                if (m.pbrMetallicRoughness?.metallicRoughnessTexture != null)
+                if (m.pbrMetallicRoughness?.metallicRoughnessTexture != null && m.pbrMetallicRoughness.metallicRoughnessTexture.index != -1)
                 {
-                    yield return PBRMaterialItem.MetallicRoughnessTexture(gltf, m);
+                    metallicRoughnessTexture = m.pbrMetallicRoughness?.metallicRoughnessTexture?.index;
                 }
             }
 
             // emission
             if (m.emissiveTexture != null)
             {
-                yield return GetTextureParam.Create(gltf, m.emissiveTexture.index);
+                yield return GetTextureParam.CreateSRGB(gltf, m.emissiveTexture.index);
             }
 
             // normal
@@ -36,9 +37,16 @@ namespace UniGLTF
             }
 
             // occlusion
-            if (m.occlusionTexture != null)
+            int? occlusionTexture = default;
+            if (m.occlusionTexture != null && m.occlusionTexture.index != -1)
             {
-                yield return PBRMaterialItem.OcclusionTexture(gltf, m);
+                occlusionTexture = m.occlusionTexture.index;
+            }
+
+            // metallicSmooth and occlusion
+            if (metallicRoughnessTexture.HasValue || occlusionTexture.HasValue)
+            {
+                yield return PBRMaterialItem.StandardTexture(gltf, m);
             }
         }
 
