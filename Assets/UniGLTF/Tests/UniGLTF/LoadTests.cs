@@ -44,12 +44,12 @@ namespace UniGLTF
 
             if (exception is UniGLTFNotSupportedException ex)
             {
-                // skip
                 Debug.LogWarning($"LoadError: {path}: {ex}");
             }
             else
             {
-                Debug.LogError($"LoadError: {path}: {exception}");
+                Debug.LogError($"LoadError: {path}");
+                Debug.LogException(exception);
             }
         }
 
