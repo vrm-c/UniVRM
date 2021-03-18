@@ -18,18 +18,11 @@ namespace UniGLTF
             }
             if (task.IsFaulted)
             {
-                if (task.Exception is AggregateException ae && ae.InnerExceptions.Count == 1)
-                {
-                    throw ae.InnerException;
-                }
-                else
-                {
-                    throw task.Exception;
-                }
+                throw new AggregateException(task.Exception);
             }
 
 #if VRM_DEVELOP
-            Debug.Log(meassureTime.GetSpeedLog());
+            Debug.Log($"{self.Parser.TargetPath}: {meassureTime.GetSpeedLog()}");
 #endif
         }
     }

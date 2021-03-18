@@ -247,7 +247,7 @@ namespace UniGLTF
             foreach (var x in AnimationClips)
             {
 #if VRM_DEVELOP
-                Debug.Log($"Destroy {x}");
+                // Debug.Log($"Destroy {x}");
 #endif
                 destroy(x);
             }
@@ -256,7 +256,7 @@ namespace UniGLTF
             foreach (var x in Meshes)
             {
 #if VRM_DEVELOP
-                Debug.Log($"Destroy {x.Mesh}");
+                // Debug.Log($"Destroy {x.Mesh}");
 #endif
                 destroy(x.Mesh);
             }
@@ -268,7 +268,7 @@ namespace UniGLTF
             if (m_ownRoot && Root != null)
             {
 #if VRM_DEVELOP
-                Debug.Log($"Destroy {Root}");
+                // Debug.Log($"Destroy {Root}");
 #endif
                 destroy(Root);
             }

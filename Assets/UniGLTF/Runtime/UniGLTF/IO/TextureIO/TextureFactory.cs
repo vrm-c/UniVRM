@@ -95,7 +95,7 @@ namespace UniGLTF
                 if (!kv.Value.IsExternal)
                 {
 #if VRM_DEVELOP
-                    Debug.Log($"Destroy {kv.Value.Texture}");
+                    // Debug.Log($"Destroy {kv.Value.Texture}");
 #endif
                     destroy(kv.Value.Texture);
                 }
@@ -178,7 +178,11 @@ namespace UniGLTF
 
                 case GetTextureParam.TextureTypes.StandardMap:
                     {
-                        var baseTexture = await GetOrCreateBaseTexture(awaitCaller, gltf, param.Index0.Value, false);
+                        TextureLoadInfo baseTexture = default;
+                        if (param.Index0.HasValue)
+                        {
+                            baseTexture = await GetOrCreateBaseTexture(awaitCaller, gltf, param.Index0.Value, false);
+                        }
                         TextureLoadInfo occlusionBaseTexture = default;
                         if (param.Index1.HasValue)
                         {

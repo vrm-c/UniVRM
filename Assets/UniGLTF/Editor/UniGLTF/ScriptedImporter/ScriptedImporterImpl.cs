@@ -83,7 +83,7 @@ namespace UniGLTF
                         {
                             var gltfTexture = parser.GLTF.textures.First(y => y.name == texParam.GltflName);
                             var gltfImage = parser.GLTF.images[gltfTexture.source];
-                            if (!string.IsNullOrEmpty(gltfImage.uri))
+                            if (!string.IsNullOrEmpty(gltfImage.uri) && !gltfImage.uri.StartsWith("data:"))
                             {
                                 var child = dir.Child(gltfImage.uri);
                                 var asset = AssetDatabase.LoadAssetAtPath<Texture2D>(child.Value);

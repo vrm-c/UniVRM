@@ -77,6 +77,8 @@ namespace UniGLTF
             Parse(path, File.ReadAllBytes(path));
         }
 
+        public string TargetPath;
+
         /// <summary>
         /// Parse gltf json or Parse json chunk of glb
         /// </summary>
@@ -84,6 +86,7 @@ namespace UniGLTF
         /// <param name="bytes"></param>
         public virtual void Parse(string path, Byte[] bytes)
         {
+            TargetPath = path;
             var ext = Path.GetExtension(path).ToLower();
             switch (ext)
             {
@@ -185,7 +188,7 @@ namespace UniGLTF
                 {
                     // empty
                     mesh.name = "mesh_" + Guid.NewGuid().ToString("N");
-                    Debug.LogWarning($"no name: => {mesh.name}");
+                    // Debug.LogWarning($"mesh.name: => {mesh.name}");
                     used.Add(mesh.name);
                 }
                 else
@@ -195,7 +198,7 @@ namespace UniGLTF
                     {
                         // rename
                         var uname = lower + "_" + Guid.NewGuid().ToString("N");
-                        Debug.LogWarning($"same name: {lower} => {uname}");
+                        // Debug.LogWarning($"mesh.name: {lower} => {uname}");
                         mesh.name = uname;
                         lower = uname;
                     }
@@ -230,9 +233,9 @@ namespace UniGLTF
             {
                 var gltfTexture = GLTF.textures[i];
                 var gltfImage = GLTF.images[gltfTexture.source];
-                if (!string.IsNullOrEmpty(gltfImage.uri))
+                if (!string.IsNullOrEmpty(gltfImage.uri) && !gltfImage.uri.StartsWith("data:"))
                 {
-                    // from image uri
+                    // from image uri                    
                     gltfTexture.name = Path.GetFileNameWithoutExtension(gltfImage.uri);
                 }
                 if (string.IsNullOrEmpty(gltfTexture.name))
@@ -261,7 +264,7 @@ namespace UniGLTF
                     {
                         // rename
                         var uname = lower + "_" + Guid.NewGuid().ToString("N");
-                        Debug.LogWarning($"texture.name: {lower} => {uname}");
+                        // Debug.LogWarning($"texture.name: {lower} => {uname}");
                         gltfTexture.name = uname;
                         if (!used.Add(uname))
                         {
@@ -275,10 +278,16 @@ namespace UniGLTF
         public void FixMaterialNameUnique()
         {
             var used = new HashSet<string>();
-            foreach (var material in GLTF.materials)
+            for (int i = 0; i < GLTF.materials.Count; ++i)
             {
+                var material = GLTF.materials[i];
                 var originalName = material.name;
                 int j = 2;
+
+                if (string.IsNullOrEmpty(material.name))
+                {
+                    material.name = $"material_{i}";
+                }
 
                 while (true)
                 {
