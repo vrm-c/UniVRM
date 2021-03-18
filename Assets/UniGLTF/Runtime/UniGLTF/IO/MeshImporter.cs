@@ -593,6 +593,8 @@ namespace UniGLTF
                 mesh.RecalculateNormals();
             }
 
+            mesh.UploadMeshData(false);
+
             return (mesh, recalculateTangents);
         }
 
