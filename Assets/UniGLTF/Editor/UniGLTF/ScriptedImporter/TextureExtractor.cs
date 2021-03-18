@@ -17,23 +17,15 @@ namespace UniGLTF
         public glTF GLTF => m_parser.GLTF;
         public IStorage Storage => m_parser.Storage;
 
-        public readonly Dictionary<string, GetTextureParam> Textures = new Dictionary<string, GetTextureParam>();
+        public readonly Dictionary<UnityPath, GetTextureParam> Textures = new Dictionary<UnityPath, GetTextureParam>();
         UnityEngine.Texture2D[] m_subAssets;
-        string m_path;
+        UnityPath m_textureDirectory;
 
-        public TextureExtractor(string assetPath, UnityEngine.Texture2D[] subAssets)
+        public TextureExtractor(GltfParser parser, UnityPath textureDirectory, UnityEngine.Texture2D[] subAssets)
         {
-            // parse GLTF
-            m_parser = new GltfParser();
-            m_parser.ParsePath(assetPath);
-
-            m_path = $"{Path.GetDirectoryName(assetPath)}/{Path.GetFileNameWithoutExtension(assetPath)}.Textures";
-            SafeCreateDirectory(m_path);
-
-            if (assetPath == null)
-            {
-                throw new ArgumentNullException();
-            }
+            m_parser = parser;
+            m_textureDirectory = textureDirectory;
+            m_textureDirectory.EnsureFolder();
             m_subAssets = subAssets;
         }
 
@@ -56,14 +48,14 @@ namespace UniGLTF
             }
 
             var subAsset = m_subAssets.FirstOrDefault(x => x.name == param.ConvertedName);
-            string targetPath = "";
+            UnityPath targetPath = default;
 
             if (hasUri && !param.ExtractConverted)
             {
                 var gltfTexture = GLTF.textures[param.Index0.Value];
                 var gltfImage = GLTF.images[gltfTexture.source];
                 var ext = GetExt(gltfImage.mimeType, gltfImage.uri);
-                targetPath = $"{Path.GetDirectoryName(m_path)}/{param.GltflName}{ext}";
+                targetPath = m_textureDirectory.Child($"{param.GltflName}{ext}");
             }
             else
             {
@@ -73,9 +65,9 @@ namespace UniGLTF
                     case GetTextureParam.TextureTypes.StandardMap:
                         {
                             // write converted texture
-                            targetPath = $"{m_path}/{param.ConvertedName}.png";
-                            File.WriteAllBytes(targetPath, subAsset.EncodeToPNG().ToArray());
-                            AssetDatabase.ImportAsset(targetPath);
+                            targetPath = m_textureDirectory.Child($"{param.ConvertedName}.png");
+                            File.WriteAllBytes(targetPath.FullPath, subAsset.EncodeToPNG().ToArray());
+                            targetPath.ImportAsset();
                             break;
                         }
 
@@ -85,9 +77,9 @@ namespace UniGLTF
                             var gltfTexture = GLTF.textures[param.Index0.Value];
                             var gltfImage = GLTF.images[gltfTexture.source];
                             var ext = GetExt(gltfImage.mimeType, gltfImage.uri);
-                            targetPath = $"{m_path}/{param.GltflName}{ext}";
-                            File.WriteAllBytes(targetPath, GLTF.GetImageBytes(Storage, gltfTexture.source).ToArray());
-                            AssetDatabase.ImportAsset(targetPath);
+                            targetPath = m_textureDirectory.Child($"{param.GltflName}{ext}");
+                            File.WriteAllBytes(targetPath.FullPath, GLTF.GetImageBytes(Storage, gltfTexture.source).ToArray());
+                            targetPath.ImportAsset();
                             break;
                         }
                 }
@@ -115,11 +107,11 @@ namespace UniGLTF
         /// <param name="importer"></param>
         /// <param name="dirName"></param>
         /// <param name="onCompleted"></param>
-        public static void ExtractTextures(string assetPath, TextureEnumerator textureEnumerator, Texture2D[] subAssets, Action<Texture2D> addRemap, Action<IEnumerable<string>> onCompleted = null)
+        public static void ExtractTextures(GltfParser parser, UnityPath textureDirectory,
+            TextureEnumerator textureEnumerator, Texture2D[] subAssets, Action<Texture2D> addRemap,
+            Action<IEnumerable<UnityPath>> onCompleted = null)
         {
-            var extractor = new TextureExtractor(assetPath, subAssets);
-            var normalMaps = new List<string>();
-
+            var extractor = new TextureExtractor(parser, textureDirectory, subAssets);
             foreach (var x in textureEnumerator(extractor.GLTF))
             {
                 var gltfTexture = extractor.GLTF.textures[x.Index0.Value];
@@ -137,7 +129,7 @@ namespace UniGLTF
                     var param = kv.Value;
 
                     // remap
-                    var externalObject = AssetDatabase.LoadAssetAtPath<UnityEngine.Texture2D>(targetPath);
+                    var externalObject = targetPath.LoadAsset<Texture2D>();
                     if (externalObject != null)
                     {
                         addRemap(externalObject);

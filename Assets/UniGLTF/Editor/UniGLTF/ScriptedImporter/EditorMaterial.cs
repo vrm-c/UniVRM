@@ -40,7 +40,7 @@ namespace UniGLTF
             {
                 if (GUILayout.Button("Extract Materials And Textures ..."))
                 {
-                    ExtractMaterialsAndTextures(importer);
+                    ExtractMaterialsAndTextures(importer, parser);
                 }
             }
 
@@ -111,7 +111,7 @@ namespace UniGLTF
             AssetDatabase.ImportAsset(self.assetPath, ImportAssetOptions.ForceUpdate);
         }
 
-        static void ExtractMaterialsAndTextures(ScriptedImporter self)
+        static void ExtractMaterialsAndTextures(ScriptedImporter self, GltfParser parser)
         {
             if (string.IsNullOrEmpty(self.assetPath))
             {
@@ -122,14 +122,16 @@ namespace UniGLTF
                 {
                     self.AddRemap(new AssetImporter.SourceAssetIdentifier(typeof(UnityEngine.Texture2D), externalObject.name), externalObject);
                 };
-            Action<IEnumerable<string>> onCompleted = _ =>
+            Action<IEnumerable<UnityPath>> onCompleted = _ =>
                 {
                     AssetDatabase.ImportAsset(self.assetPath, ImportAssetOptions.ForceUpdate);
                     self.ExtractMaterials();
                     AssetDatabase.ImportAsset(self.assetPath, ImportAssetOptions.ForceUpdate);
                 };
 
-            TextureExtractor.ExtractTextures(self.assetPath,
+            var assetPath = UnityPath.FromFullpath(parser.TargetPath);
+            var dirName = $"{assetPath.FileNameWithoutExtension}.Textures";
+            TextureExtractor.ExtractTextures(parser, assetPath.Parent.Child(dirName),
                 GltfTextureEnumerator.Enumerate,
                 self.GetSubAssets<UnityEngine.Texture2D>(self.assetPath).ToArray(),
                 addRemap,

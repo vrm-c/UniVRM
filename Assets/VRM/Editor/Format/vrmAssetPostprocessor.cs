@@ -37,24 +37,24 @@ namespace VRM
             }
         }
 
-        static void ImportVrm(UnityPath path)
+        static void ImportVrm(UnityPath vrmPath)
         {
-            if (!path.IsUnderAssetsFolder)
+            if (!vrmPath.IsUnderAssetsFolder)
             {
                 throw new Exception();
             }
 
             var parser = new GltfParser();
-            parser.ParseGlb(File.ReadAllBytes(path.FullPath));
+            parser.ParseGlb(File.ReadAllBytes(vrmPath.FullPath));
 
-            var prefabPath = path.Parent.Child(path.FileNameWithoutExtension + ".prefab");
+            var prefabPath = vrmPath.Parent.Child(vrmPath.FileNameWithoutExtension + ".prefab");
 
-            Action<IEnumerable<string>> onCompleted = texturePaths =>
+            Action<IEnumerable<UnityPath>> onCompleted = texturePaths =>
             {
                 var map = texturePaths.Select(x =>
                 {
-                    var texture = AssetDatabase.LoadAssetAtPath(x, typeof(Texture2D));
-                    return (texture.name, texture);
+                    var texture = x.LoadAsset<Texture2D>();
+                    return (texture.name, texture: texture as UnityEngine.Object);
                 }).ToArray();
 
                 using (var context = new VRMImporterContext(parser, null, map))
@@ -73,7 +73,7 @@ namespace VRM
             using (var context = new VRMImporterContext(parser))
             {
                 var editor = new VRMEditorImporterContext(context, prefabPath);
-                editor.ConvertAndExtractImages(path, onCompleted);
+                editor.ConvertAndExtractImages(onCompleted);
             }
         }
     }

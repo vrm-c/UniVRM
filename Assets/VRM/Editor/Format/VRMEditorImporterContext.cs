@@ -120,8 +120,7 @@ namespace VRM
         /// <summary>
         /// Extract images from glb or gltf out of Assets folder.
         /// </summary>
-        /// <param name="assetPath"></param>
-        public void ConvertAndExtractImages(UnityPath assetPath, Action<IEnumerable<string>> onTextureReloaded)
+        public void ConvertAndExtractImages(Action<IEnumerable<UnityPath>> onTextureReloaded)
         {
             // 
             // convert images(metallic roughness, occlusion map)
@@ -150,10 +149,9 @@ namespace VRM
                     .Where(x => x.IsUsed)
                     .Select(x => x.Texture)
                     .ToArray();
-            var prefabParentDir = assetPath.Parent;
-            var folder = assetPath.GetAssetFolder(".Textures");
             var vrmTextures = new VRMTextureEnumerator(m_context.VRM);
-            TextureExtractor.ExtractTextures(assetPath.Value, vrmTextures.Enumerate, subAssets, _ => { }, onTextureReloaded);
+            var dirName = $"{m_prefabPath.FileNameWithoutExtension}.Textures";
+            TextureExtractor.ExtractTextures(m_context.Parser, m_prefabPath.Parent.Child(dirName), vrmTextures.Enumerate, subAssets, _ => { }, onTextureReloaded);
         }
 
         bool SaveAsAsset(UnityEngine.Object o)
