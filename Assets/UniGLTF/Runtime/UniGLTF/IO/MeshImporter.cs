@@ -638,8 +638,6 @@ namespace UniGLTF
                 mesh.RecalculateNormals();
             }
 
-            mesh.UploadMeshData(false);
-
             return (mesh, recalculateTangents);
         }
 
@@ -699,6 +697,8 @@ namespace UniGLTF
                     BuildBlendShape(mesh, meshContext, blendShape, emptyVertices);
                 }
             }
+
+            mesh.UploadMeshData(false);
 
             return result;
         }
