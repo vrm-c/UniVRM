@@ -77,7 +77,15 @@ namespace UniGLTF
             Parse(path, File.ReadAllBytes(path));
         }
 
-        public string TargetPath;
+        string m_targetPath;
+        public string TargetPath
+        {
+            get => m_targetPath;
+            set
+            {
+                m_targetPath = Path.GetFullPath(value);
+            }
+        }
 
         /// <summary>
         /// Parse gltf json or Parse json chunk of glb
