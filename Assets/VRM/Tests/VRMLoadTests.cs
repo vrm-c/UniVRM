@@ -48,17 +48,25 @@ namespace VRM
             }
         }
 
-        static void Load(FileInfo gltf, DirectoryInfo root)
+        static GameObject Load(FileInfo gltf, DirectoryInfo root, byte[] bytes = null)
         {
             var parser = new GltfParser();
             try
             {
-                parser.ParsePath(gltf.FullName);
+                if (bytes != null)
+                {
+                    parser.Parse(gltf.FullName, bytes);
+                }
+                else
+                {
+                    parser.ParsePath(gltf.FullName);
+                }
             }
             catch (Exception ex)
             {
                 Debug.LogError($"ParseError: {gltf}");
                 Debug.LogException(ex);
+                return null;
             }
 
             try
@@ -66,11 +74,13 @@ namespace VRM
                 using (var importer = new VRMImporterContext(parser))
                 {
                     importer.Load();
+                    return importer.DisposeOnGameObjectDestroyed().gameObject;
                 }
             }
             catch (Exception ex)
             {
                 Message(gltf.FullName.Substring(root.FullName.Length), ex);
+                return null;
             }
         }
 
@@ -90,7 +100,23 @@ namespace VRM
 
             foreach (var gltf in EnumerateGltfFiles(root))
             {
-                Load(gltf, root);
+                // import
+                var go = Load(gltf, root);
+                try
+                {
+                    // export
+                    var vrm = VRMExporter.Export(UniGLTF.MeshExportSettings.Default, go);
+
+                    // re import
+                    if (vrm != null)
+                    {
+                        Load(gltf, root, vrm.ToGlbBytes());
+                    }
+                }
+                finally
+                {
+                    GameObject.DestroyImmediate(go);
+                }
             }
         }
     }
