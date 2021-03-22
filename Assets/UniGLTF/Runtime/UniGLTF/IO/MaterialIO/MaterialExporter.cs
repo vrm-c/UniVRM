@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using UniGLTF.UniUnlit;
 using UnityEngine;
 
@@ -65,7 +66,9 @@ namespace UniGLTF
         {
             Texture metallicSmoothTexture = default;
             float smoothness = 1.0f;
-            if (m.HasProperty("_MetallicGlossMap"))
+
+            var textuerNames = m.GetTexturePropertyNames();
+            if (textuerNames.Contains("_MetallicGlossMap"))
             {
                 if (m.HasProperty("_GlossMapScale"))
                 {
@@ -76,7 +79,7 @@ namespace UniGLTF
 
             Texture occlusionTexture = default;
             var occlusionStrength = 1.0f;
-            if (m.HasProperty("_OcclusionMap"))
+            if (textuerNames.Contains("_OcclusionMap"))
             {
                 occlusionTexture = m.GetTexture("_OcclusionMap");
                 if (occlusionTexture != null && m.HasProperty("_OcclusionStrength"))
