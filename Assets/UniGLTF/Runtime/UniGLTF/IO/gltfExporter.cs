@@ -168,6 +168,11 @@ namespace UniGLTF
             return node;
         }
 
+        public virtual void ExportExtensions()
+        {
+
+        }
+
         public virtual void Export(MeshExportSettings meshExportSettings)
         {
             var bytesBuffer = new ArrayByteBuffer(new byte[50 * 1024 * 1024]);
@@ -184,12 +189,6 @@ namespace UniGLTF
 
             var materialExporter = CreateMaterialExporter();
             glTF.materials = Materials.Select(x => materialExporter.ExportMaterial(x, TextureManager)).ToList();
-
-            for (int i = 0; i < TextureManager.Exported.Count; ++i)
-            {
-                var unityTexture = TextureManager.Exported[i];
-                glTF.PushGltfTexture(bufferIndex, unityTexture);
-            }
             #endregion
 
             #region Meshes
@@ -306,6 +305,15 @@ namespace UniGLTF
             }
             #endregion
 #endif
+
+            ExportExtensions();
+
+            // Extension で Texture が増える場合があるので最後に呼ぶ
+            for (int i = 0; i < TextureManager.Exported.Count; ++i)
+            {
+                var unityTexture = TextureManager.Exported[i];
+                glTF.PushGltfTexture(bufferIndex, unityTexture);
+            }
         }
         #endregion
     }

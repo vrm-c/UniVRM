@@ -32,10 +32,8 @@ namespace VRM
             gltf.extensionsUsed.Add(glTF_VRM_extensions.ExtensionName);
         }
 
-        public override void Export(MeshExportSettings configuration)
+        public override void ExportExtensions()
         {
-            base.Export(configuration);
-
             // avatar
             var animator = Copy.GetComponent<Animator>();
             if (animator != null)
