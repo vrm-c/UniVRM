@@ -3,9 +3,20 @@ using System.Text;
 using UnityEditor;
 using UnityEngine;
 using UniGLTF;
+using System;
 
 namespace VRM
 {
+    /// <summary>
+    /// VersionDialog
+    /// 
+    /// UniGLTFVersion は、 VRMVersion から自動的に決まる。
+    /// 
+    /// Major = 2
+    /// Minor = VRMVersion.MINOR - 64
+    /// Patch = VRMVersion.PATCH
+    /// 
+    /// </summary>
     public class VRMVersionMenu : EditorWindow
     {
         /// <summary>
@@ -120,30 +131,50 @@ namespace VRM
         [SerializeField]
         string m_vrmVersion;
 
-        [SerializeField]
-        string m_uniGltfVersion;
+        (int, int, int) m_uniGltfVersion
+        {
+            get
+            {
+                if (TryGetVersion(m_vrmVersion, out (int, int, int) vrmVersion))
+                {
+                    return (2, vrmVersion.Item2 - 64, vrmVersion.Item3);
+                }
+                else
+                {
+                    return (0, 0, 0);
+                }
+            }
+        }
 
         static bool TryGetVersion(string src, out (int, int, int) version)
         {
-            if (string.IsNullOrEmpty(src))
+            try
+            {
+                if (string.IsNullOrEmpty(src))
+                {
+                    version = default;
+                    return false;
+                }
+
+                var splitted = src.Split('.');
+                if (splitted.Length != 3)
+                {
+                    version = default;
+                    return false;
+                }
+
+                version = (
+                    int.Parse(splitted[0]),
+                    int.Parse(splitted[1]),
+                    int.Parse(splitted[2])
+                );
+                return true;
+            }
+            catch (Exception)
             {
                 version = default;
                 return false;
             }
-
-            var splitted = src.Split('.');
-            if (splitted.Length != 3)
-            {
-                version = default;
-                return false;
-            }
-
-            version = (
-                int.Parse(splitted[0]),
-                int.Parse(splitted[1]),
-                int.Parse(splitted[2])
-            );
-            return true;
         }
 
         /// <summary>
@@ -158,24 +189,22 @@ namespace VRM
 
             GUILayout.Label("UniGLTF");
             GUILayout.Label($"Current version: {UniGLTFVersion.VERSION}");
-            m_uniGltfVersion = EditorGUILayout.TextField("Major.Minor.Patch", m_uniGltfVersion);
+            {
+                var enabled = GUI.enabled;
+                GUI.enabled = false;
+                EditorGUILayout.TextField("Major.Minor.Patch", $"{m_uniGltfVersion}");
+                GUI.enabled = enabled;
+            }
             GUILayout.Space(30);
 
             if (GUILayout.Button("Apply"))
             {
                 if (TryGetVersion(m_vrmVersion, out (int, int, int) vrmVersion))
                 {
-                    if (TryGetVersion(m_uniGltfVersion, out (int, int, int) uniGltfVersion))
-                    {
-                        UpdateVrmVersion(uniGltfVersion, vrmVersion);
-                        UpdateUniGLTFVersion(uniGltfVersion, vrmVersion);
-                        AssetDatabase.Refresh();
-                        Debug.Log($"{uniGltfVersion}, {vrmVersion}");
-                    }
-                    else
-                    {
-                        Debug.LogWarning($"InvalidFormat: {m_uniGltfVersion}");
-                    }
+                    UpdateVrmVersion(m_uniGltfVersion, vrmVersion);
+                    UpdateUniGLTFVersion(m_uniGltfVersion, vrmVersion);
+                    AssetDatabase.Refresh();
+                    Debug.Log($"{m_uniGltfVersion}, {vrmVersion}");
                 }
                 else
                 {
@@ -228,7 +257,7 @@ namespace VRM
         {
             var window = ScriptableObject.CreateInstance<VRMVersionMenu>();
             window.m_vrmVersion = VRMVersion.VERSION;
-            window.m_uniGltfVersion = UniGLTFVersion.VERSION;
+            // window.m_uniGltfVersion = UniGLTFVersion.VERSION;
             window.ShowUtility();
         }
     }
