@@ -45,7 +45,7 @@ namespace UniGLTF
         {
             m_parser = parser;
             m_textureFactory = new TextureFactory(GLTF, Storage, externalObjectMap);
-            m_materialFactory = new MaterialFactory(GLTF, Storage, externalObjectMap);
+            m_materialFactory = new MaterialFactory(m_parser, externalObjectMap);
         }
 
         #region Source

@@ -40,22 +40,17 @@ namespace UniGLTF
             return Path.GetExtension(uri).ToLower();
         }
 
-        public void Extract(GetTextureParam param, bool hasUri)
+        public void Extract(GetTextureParam param)
         {
             if (Textures.Values.Contains(param))
             {
                 return;
             }
 
-            var subAsset = m_subAssets.FirstOrDefault(x => x.name == param.ConvertedName);
             UnityPath targetPath = default;
-
-            if (hasUri && !param.ExtractConverted)
+            if (!string.IsNullOrEmpty(param.Uri) && !param.ExtractConverted)
             {
-                var gltfTexture = GLTF.textures[param.Index0.Value];
-                var gltfImage = GLTF.images[gltfTexture.source];
-                var ext = GetExt(gltfImage.mimeType, gltfImage.uri);
-                targetPath = m_textureDirectory.Child($"{param.GltflName}{ext}");
+                targetPath = m_textureDirectory.Child(param.GltfFileName);
             }
             else
             {
@@ -65,7 +60,8 @@ namespace UniGLTF
                     case GetTextureParam.TextureTypes.StandardMap:
                         {
                             // write converted texture
-                            targetPath = m_textureDirectory.Child($"{param.ConvertedName}.png");
+                            var subAsset = m_subAssets.FirstOrDefault(x => x.name == param.ConvertedName);
+                            targetPath = m_textureDirectory.Child(param.ConvertedFileName);
                             File.WriteAllBytes(targetPath.FullPath, subAsset.EncodeToPNG().ToArray());
                             targetPath.ImportAsset();
                             break;
@@ -74,11 +70,8 @@ namespace UniGLTF
                     default:
                         {
                             // write original bytes
-                            var gltfTexture = GLTF.textures[param.Index0.Value];
-                            var gltfImage = GLTF.images[gltfTexture.source];
-                            var ext = GetExt(gltfImage.mimeType, gltfImage.uri);
-                            targetPath = m_textureDirectory.Child($"{param.GltflName}{ext}");
-                            File.WriteAllBytes(targetPath.FullPath, GLTF.GetImageBytes(Storage, gltfTexture.source).ToArray());
+                            targetPath = m_textureDirectory.Child(param.GltfFileName);
+                            File.WriteAllBytes(targetPath.FullPath, param.Index0().Result.ToArray());
                             targetPath.ImportAsset();
                             break;
                         }
@@ -112,11 +105,9 @@ namespace UniGLTF
             Action<IEnumerable<UnityPath>> onCompleted = null)
         {
             var extractor = new TextureExtractor(parser, textureDirectory, subAssets);
-            foreach (var x in textureEnumerator(extractor.GLTF))
+            foreach (var x in textureEnumerator(parser))
             {
-                var gltfTexture = extractor.GLTF.textures[x.Index0.Value];
-                var gltfImage = extractor.GLTF.images[gltfTexture.source];
-                extractor.Extract(x, !string.IsNullOrEmpty(gltfImage.uri));
+                extractor.Extract(x);
             }
 
             EditorApplication.delayCall += () =>

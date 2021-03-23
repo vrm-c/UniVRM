@@ -56,12 +56,12 @@ namespace UniGLTF
             s_foldTextures = EditorGUILayout.Foldout(s_foldTextures, "Remapped Textures");
             if (s_foldTextures)
             {
-                DrawRemapGUI<UnityEngine.Texture2D>(importer, GltfTextureEnumerator.Enumerate(parser.GLTF).Select(x =>
+                DrawRemapGUI<UnityEngine.Texture2D>(importer, GltfTextureEnumerator.Enumerate(parser).Select(x =>
                 {
                     switch (x.TextureType)
                     {
                         case GetTextureParam.TextureTypes.NormalMap:
-                            return x.GltflName;
+                            return x.GltfName;
 
                         default:
                             return x.ConvertedName;

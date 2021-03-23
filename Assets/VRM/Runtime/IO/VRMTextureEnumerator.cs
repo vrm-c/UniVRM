@@ -11,9 +11,9 @@ namespace VRM
             m_vrm = vrm;
         }
 
-        public IEnumerable<GetTextureParam> Enumerate(glTF gltf)
+        public IEnumerable<GetTextureParam> Enumerate(GltfParser parser)
         {
-            for (int i = 0; i < gltf.materials.Count; ++i)
+            for (int i = 0; i < parser.GLTF.materials.Count; ++i)
             {
                 var vrmMaterial = m_vrm.materialProperties[i];
                 if (vrmMaterial.shader == MToon.Utils.ShaderName)
@@ -22,13 +22,13 @@ namespace VRM
                     foreach (var kv in vrmMaterial.textureProperties)
                     {
                         // SRGB color or normalmap
-                        yield return GetTextureParam.Create(gltf, kv.Value, kv.Key, default, default);
+                        yield return GetTextureParam.Create(parser, kv.Value, kv.Key, default, default);
                     }
                 }
                 else
                 {
                     // PBR or Unlit
-                    foreach (var textureInfo in GltfTextureEnumerator.EnumerateTextures(gltf, gltf.materials[i]))
+                    foreach (var textureInfo in GltfTextureEnumerator.EnumerateTextures(parser, parser.GLTF.materials[i]))
                     {
                         yield return textureInfo;
                     }
@@ -38,7 +38,7 @@ namespace VRM
             // thumbnail
             if (m_vrm.meta != null && m_vrm.meta.texture != -1)
             {
-                yield return GetTextureParam.CreateSRGB(gltf, m_vrm.meta.texture);
+                yield return GetTextureParam.CreateSRGB(parser, m_vrm.meta.texture);
             }
         }
     }

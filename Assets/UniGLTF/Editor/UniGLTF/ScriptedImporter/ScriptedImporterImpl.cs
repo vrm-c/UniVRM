@@ -42,7 +42,7 @@ namespace UniGLTF
             using (var loaded = new ImporterContext(parser, externalObjectMap.Concat(externalTextures)))
             {
                 // settings TextureImporters
-                foreach (var textureInfo in GltfTextureEnumerator.Enumerate(parser.GLTF))
+                foreach (var textureInfo in GltfTextureEnumerator.Enumerate(parser))
                 {
                     TextureImporterConfigurator.Configure(textureInfo, loaded.TextureFactory.ExternalMap);
                 }
@@ -73,7 +73,7 @@ namespace UniGLTF
             GltfParser parser, UnityPath dir)
         {
             var used = new HashSet<Texture2D>();
-            foreach (var texParam in GltfTextureEnumerator.Enumerate(parser.GLTF))
+            foreach (var texParam in GltfTextureEnumerator.Enumerate(parser))
             {
                 switch (texParam.TextureType)
                 {
@@ -82,11 +82,9 @@ namespace UniGLTF
 
                     default:
                         {
-                            var gltfTexture = parser.GLTF.textures.First(y => y.name == texParam.GltflName);
-                            var gltfImage = parser.GLTF.images[gltfTexture.source];
-                            if (!string.IsNullOrEmpty(gltfImage.uri) && !gltfImage.uri.StartsWith("data:"))
+                            if (!string.IsNullOrEmpty(texParam.Uri) && !texParam.Uri.StartsWith("data:"))
                             {
-                                var child = dir.Child(gltfImage.uri);
+                                var child = dir.Child(texParam.Uri);
                                 var asset = AssetDatabase.LoadAssetAtPath<Texture2D>(child.Value);
                                 if (asset == null)
                                 {

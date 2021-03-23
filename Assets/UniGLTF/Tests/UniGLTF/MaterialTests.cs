@@ -1,9 +1,7 @@
-﻿using System.Collections.Generic;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using UnityEngine;
 using UniJSON;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace UniGLTF
 {

@@ -52,12 +52,12 @@ namespace UniGLTF
 
         public bool TryGetExternal(GetTextureParam param, bool used, out Texture2D external)
         {
-            if (param.Index0.HasValue && ExternalMap != null)
+            if (param.Index0!=null && ExternalMap != null)
             {
                 var cacheName = param.ConvertedName;
                 if (param.TextureType == GetTextureParam.TextureTypes.NormalMap)
                 {
-                    cacheName = param.GltflName;
+                    cacheName = param.GltfName;
                     if (m_textureCache.TryGetValue(cacheName, out TextureLoadInfo normalInfo))
                     {
                         external = normalInfo.Texture;
@@ -151,42 +151,67 @@ namespace UniGLTF
             }
         }
 
-        async Task<TextureLoadInfo> GetOrCreateBaseTexture(IAwaitCaller awaitCaller, glTF gltf, int textureIndex, bool used)
+        async Task<TextureLoadInfo> GetOrCreateBaseTexture(IAwaitCaller awaitCaller, GetTextureParam param, GetTextureBytesAsync getTextureBytesAsync, RenderTextureReadWrite colorSpace, bool used)
         {
-            var name = gltf.textures[textureIndex].name;
+            var name = param.GltfName;
             if (m_textureCache.TryGetValue(name, out TextureLoadInfo cacheInfo))
             {
                 return cacheInfo;
             }
 
             // not found. load new
-            var imageBytes = await awaitCaller.Run(() =>
-            {
-                var imageIndex = gltf.textures[textureIndex].source;
-                var segments = gltf.GetImageBytes(m_storage, imageIndex);
-                return ToArray(segments);
-            });
+            var imageBytes = await getTextureBytesAsync();
 
             //
             // texture from image(png etc) bytes
             //
-            var colorSpace = gltf.GetColorSpace(textureIndex);
             var texture = new Texture2D(2, 2, TextureFormat.ARGB32, false, colorSpace == RenderTextureReadWrite.Linear);
-            texture.name = gltf.textures[textureIndex].name;
+            texture.name = name;
             if (imageBytes != null)
             {
-                texture.LoadImage(imageBytes);
+                texture.LoadImage(ToArray(imageBytes));
             }
 
-            var sampler = gltf.GetSamplerFromTextureIndex(textureIndex);
-            if (sampler != null)
-            {
-                TextureSamplerUtil.SetSampler(texture, sampler);
-            }
+            SetSampler(texture, param);
 
             cacheInfo = new TextureLoadInfo(texture, used, false);
             m_textureCache.Add(name, cacheInfo);
             return cacheInfo;
+        }
+
+        public static void SetSampler(Texture2D texture, GetTextureParam param)
+        {
+            if (texture == null)
+            {
+                return;
+            }
+
+            foreach (var (key, value) in param.Sampler.WrapModes)
+            {
+                switch (key)
+                {
+                    case GetTextureParam.TextureSamplerParam.TextureWrapType.All:
+                        texture.wrapMode = value;
+                        break;
+
+                    case GetTextureParam.TextureSamplerParam.TextureWrapType.U:
+                        texture.wrapModeU = value;
+                        break;
+
+                    case GetTextureParam.TextureSamplerParam.TextureWrapType.V:
+                        texture.wrapModeV = value;
+                        break;
+
+                    case GetTextureParam.TextureSamplerParam.TextureWrapType.W:
+                        texture.wrapModeW = value;
+                        break;
+
+                    default:
+                        throw new NotImplementedException();
+                }
+            }
+
+            texture.filterMode = param.Sampler.FilterMode;
         }
 
         /// <summary>
@@ -212,7 +237,7 @@ namespace UniGLTF
             {
                 case GetTextureParam.TextureTypes.NormalMap:
                     {
-                        var baseTexture = await GetOrCreateBaseTexture(awaitCaller, gltf, param.Index0.Value, false);
+                        var baseTexture = await GetOrCreateBaseTexture(awaitCaller, param, param.Index0, RenderTextureReadWrite.Linear, false);
                         var converted = NormalConverter.Import(baseTexture.Texture);
                         converted.name = param.ConvertedName;
                         var info = new TextureLoadInfo(converted, true, false);
@@ -223,14 +248,14 @@ namespace UniGLTF
                 case GetTextureParam.TextureTypes.StandardMap:
                     {
                         TextureLoadInfo baseTexture = default;
-                        if (param.Index0.HasValue)
+                        if (param.Index0!=null)
                         {
-                            baseTexture = await GetOrCreateBaseTexture(awaitCaller, gltf, param.Index0.Value, false);
+                            baseTexture = await GetOrCreateBaseTexture(awaitCaller, param, param.Index0, RenderTextureReadWrite.Linear, false);
                         }
                         TextureLoadInfo occlusionBaseTexture = default;
-                        if (param.Index1.HasValue)
+                        if (param.Index1!=null)
                         {
-                            occlusionBaseTexture = await GetOrCreateBaseTexture(awaitCaller, gltf, param.Index1.Value, false);
+                            occlusionBaseTexture = await GetOrCreateBaseTexture(awaitCaller, param, param.Index1, RenderTextureReadWrite.Linear, false);
                         }
                         var converted = OcclusionMetallicRoughnessConverter.Import(baseTexture.Texture, param.MetallicFactor, param.RoughnessFactor, occlusionBaseTexture.Texture);
                         converted.name = param.ConvertedName;
@@ -241,7 +266,7 @@ namespace UniGLTF
 
                 default:
                     {
-                        var baseTexture = await GetOrCreateBaseTexture(awaitCaller, gltf, param.Index0.Value, true);
+                        var baseTexture = await GetOrCreateBaseTexture(awaitCaller, param, param.Index0, RenderTextureReadWrite.sRGB, true);
                         return baseTexture.Texture;
                     }
 
