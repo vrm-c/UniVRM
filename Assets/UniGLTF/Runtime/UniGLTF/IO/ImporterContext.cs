@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Threading.Tasks;
+using System.Text;
 
 namespace UniGLTF
 {
@@ -76,6 +77,14 @@ namespace UniGLTF
         /// </summary>
         public Axises InvertAxis = Axises.Z;
 
+        public static List<string> UnsupportedExtensions = new List<string>
+        {
+            // https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Khronos/KHR_draco_mesh_compression
+            "KHR_draco_mesh_compression",
+            // https://github.com/KhronosGroup/glTF/tree/master/extensions/2.0/Khronos/KHR_mesh_quantization
+            "KHR_mesh_quantization",
+        };
+
         #region Load. Build unity objects
         public virtual async Task LoadAsync(IAwaitCaller awaitCaller = null, Func<string, IDisposable> MeasureTime = null)
         {
@@ -97,11 +106,20 @@ namespace UniGLTF
                 Root = new GameObject("GLTF");
             }
 
-            // UniGLTF does not support draco
-            // https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Khronos/KHR_draco_mesh_compression/README.md#conformance
-            if (GLTF.extensionsRequired.Contains("KHR_draco_mesh_compression"))
+            if (GLTF.extensionsRequired != null)
             {
-                throw new UniGLTFNotSupportedException("draco is not supported");
+                var sb = new List<string>();
+                foreach (var required in GLTF.extensionsRequired)
+                {
+                    if (UnsupportedExtensions.Contains(required))
+                    {
+                        sb.Add(required);
+                    }
+                }
+                if (sb.Any())
+                {
+                    throw new UniGLTFNotSupportedException(string.Join(", ", sb) + " is not supported");
+                }
             }
 
             using (MeasureTime("LoadMaterials"))
