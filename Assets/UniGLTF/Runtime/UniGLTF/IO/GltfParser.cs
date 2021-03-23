@@ -175,6 +175,10 @@ namespace UniGLTF
             RestoreOlderVersionValues();
 
             FixMeshNameUnique();
+            foreach(var image in GLTF.images)
+            {
+                image.uri = PrepareUri(image.uri);
+            }
             FixTextureNameUnique();
             FixMaterialNameUnique();
             FixNodeName();
@@ -228,6 +232,29 @@ namespace UniGLTF
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// image.uri を前理
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <returns></returns>
+        public static string PrepareUri(string uri)
+        {
+            if (string.IsNullOrEmpty(uri))
+            {
+                return uri;
+            }
+
+            if (uri.StartsWith("./"))
+            {
+                // skip
+                uri = uri.Substring(2);
+            }
+
+            // %20 to ' ' etc...
+            var unescape = Uri.UnescapeDataString(uri);
+            return unescape;
         }
 
         /// <summary>
