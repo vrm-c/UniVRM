@@ -101,10 +101,6 @@ namespace UniGLTF
             // should unique
             var gltfTextures = GltfTextureEnumerator.Enumerate(parser.GLTF);
             var distinct = gltfTextures.Distinct().ToArray();
-            if (!gltfTextures.SequenceEqual(distinct))
-            {
-                var a = 0;
-            }
             Assert.True(gltfTextures.SequenceEqual(distinct));
         }
 
