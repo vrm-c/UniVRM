@@ -35,11 +35,11 @@ namespace UniGLTF
             //
             // Import(create unity objects)
             //
-            var externalObjectMap = scriptedImporter.GetExternalObjectMap();
+            var externalObjectMap = scriptedImporter.GetExternalObjectMap().Select(kv => (kv.Value.name, kv.Value)).ToArray();
+            
+            var externalTextures = EnumerateTexturesFromUri(externalObjectMap, parser, UnityPath.FromUnityPath(scriptedImporter.assetPath).Parent).ToArray();
 
-            using (var loaded = new ImporterContext(parser, null,
-                externalObjectMap.Where(x => x.Value != null).Select(x => (x.Value.name, x.Value)).Concat(
-                EnumerateTexturesFromUri(externalObjectMap, parser, UnityPath.FromUnityPath(scriptedImporter.assetPath).Parent))))
+            using (var loaded = new ImporterContext(parser, null, externalObjectMap.Concat(externalTextures)))
             {
                 // settings TextureImporters
                 foreach (var textureInfo in GltfTextureEnumerator.Enumerate(parser.GLTF))
@@ -69,9 +69,10 @@ namespace UniGLTF
             }
         }
 
-        public static IEnumerable<(string, UnityEngine.Object)> EnumerateTexturesFromUri(Dictionary<AssetImporter.SourceAssetIdentifier, UnityEngine.Object> exclude,
+        public static IEnumerable<(string, UnityEngine.Object)> EnumerateTexturesFromUri(IEnumerable<(string, UnityEngine.Object)> exclude,
             GltfParser parser, UnityPath dir)
         {
+            var used = new HashSet<Texture2D>();
             foreach (var texParam in GltfTextureEnumerator.Enumerate(parser.GLTF))
             {
                 switch (texParam.TextureType)
@@ -91,10 +92,16 @@ namespace UniGLTF
                                 {
                                     throw new System.IO.FileNotFoundException($"{child}");
                                 }
-                                // Debug.Log($"exists: {child}: {asset}");
-                                if (exclude == null || !exclude.Any(kv => kv.Value.name == asset.name))
+
+                                if (exclude != null && exclude.Any(kv => kv.Item2.name == asset.name))
                                 {
-                                    yield return (asset.name, asset);
+                                    // exclude. skip
+                                    var a = 0;
+                                }
+                                else{
+                                    if(used.Add(asset)){
+                                        yield return (asset.name, asset);
+                                    }
                                 }
                             }
                         }
