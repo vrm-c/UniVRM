@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -53,7 +54,7 @@ namespace UniGLTF
             }
         }
 
-        static void Load(FileInfo gltf, DirectoryInfo root)
+        static void RuntimeLoad(FileInfo gltf, int subStrStart)
         {
             var parser = new GltfParser();
             try
@@ -75,8 +76,32 @@ namespace UniGLTF
             }
             catch (Exception ex)
             {
-                Message(gltf.FullName.Substring(root.FullName.Length), ex);
+                Message(gltf.FullName.Substring(subStrStart), ex);
             }
+        }
+
+        /// <summary>
+        /// Extract をテスト
+        /// </summary>
+        /// <param name="gltf"></param>
+        /// <param name="root"></param>
+        static void EditorLoad(FileInfo gltf, int subStrStart)
+        {
+            var parser = new GltfParser();
+            try
+            {
+                parser.ParsePath(gltf.FullName);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"ParseError: {gltf}");
+                Debug.LogException(ex);
+            }
+
+            // should unique
+            var gltfTextures = GltfTextureEnumerator.Enumerate(parser.GLTF);
+            var distinct = gltfTextures.Distinct().ToArray();
+            Assert.True(gltfTextures.SequenceEqual(distinct));
         }
 
         [Test]
@@ -95,7 +120,9 @@ namespace UniGLTF
 
             foreach (var gltf in EnumerateGltfFiles(root))
             {
-                Load(gltf, root);
+                RuntimeLoad(gltf, root.FullName.Length);
+
+                EditorLoad(gltf, root.FullName.Length);
             }
         }
     }

@@ -52,11 +52,14 @@ namespace UniGLTF
 
         public static IEnumerable<GetTextureParam> Enumerate(glTF gltf)
         {
+            var used = new HashSet<GetTextureParam>();
             foreach (var material in gltf.materials)
             {
                 foreach (var textureInfo in EnumerateTextures(gltf, material))
                 {
-                    yield return textureInfo;
+                    if(used.Add(textureInfo)){
+                        yield return textureInfo;
+                    }
                 }
             }
         }
