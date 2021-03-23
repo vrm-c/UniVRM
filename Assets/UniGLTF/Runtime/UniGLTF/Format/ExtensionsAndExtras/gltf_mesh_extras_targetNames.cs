@@ -58,6 +58,21 @@ namespace UniGLTF
                 }
             }
 
+            if (mesh.primitives.Count > 0)
+            {
+                var prim = mesh.primitives[0];
+                if (prim.targets.Count > 0)
+                {
+                    // 名無しには連番を付ける
+                    targetNames = new List<string>();
+                    for (int i = 0; i < prim.targets.Count; ++i)
+                    {
+                        targetNames.Add($"{i}");
+                    }
+                    return true;
+                }
+            }
+
             targetNames = default;
             return false;
         }
