@@ -133,15 +133,59 @@ namespace UniGLTF
 
         public IEnumerable<TextureLoadInfo> Textures => m_textureCache.Values;
 
+        static Byte[] ToArray(ArraySegment<byte> bytes)
+        {
+            if (bytes.Array == null)
+            {
+                return new byte[] { };
+            }
+            else if (bytes.Offset == 0 && bytes.Count == bytes.Array.Length)
+            {
+                return bytes.Array;
+            }
+            else
+            {
+                Byte[] result = new byte[bytes.Count];
+                Buffer.BlockCopy(bytes.Array, bytes.Offset, result, 0, result.Length);
+                return result;
+            }
+        }
+
         async Task<TextureLoadInfo> GetOrCreateBaseTexture(IAwaitCaller awaitCaller, glTF gltf, int textureIndex, bool used)
         {
             var name = gltf.textures[textureIndex].name;
-            if (!m_textureCache.TryGetValue(name, out TextureLoadInfo cacheInfo))
+            if (m_textureCache.TryGetValue(name, out TextureLoadInfo cacheInfo))
             {
-                var texture = await GltfTextureLoader.LoadTextureAsync(awaitCaller, m_gltf, m_storage, textureIndex);
-                cacheInfo = new TextureLoadInfo(texture, used, false);
-                m_textureCache.Add(name, cacheInfo);
+                return cacheInfo;
             }
+
+            // not found. load new
+            var imageBytes = await awaitCaller.Run(() =>
+            {
+                var imageIndex = gltf.textures[textureIndex].source;
+                var segments = gltf.GetImageBytes(m_storage, imageIndex);
+                return ToArray(segments);
+            });
+
+            //
+            // texture from image(png etc) bytes
+            //
+            var colorSpace = gltf.GetColorSpace(textureIndex);
+            var texture = new Texture2D(2, 2, TextureFormat.ARGB32, false, colorSpace == RenderTextureReadWrite.Linear);
+            texture.name = gltf.textures[textureIndex].name;
+            if (imageBytes != null)
+            {
+                texture.LoadImage(imageBytes);
+            }
+
+            var sampler = gltf.GetSamplerFromTextureIndex(textureIndex);
+            if (sampler != null)
+            {
+                TextureSamplerUtil.SetSampler(texture, sampler);
+            }
+
+            cacheInfo = new TextureLoadInfo(texture, used, false);
+            m_textureCache.Add(name, cacheInfo);
             return cacheInfo;
         }
 
