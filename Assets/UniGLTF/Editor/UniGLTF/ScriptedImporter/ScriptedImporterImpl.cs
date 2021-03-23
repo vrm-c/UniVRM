@@ -39,7 +39,7 @@ namespace UniGLTF
             
             var externalTextures = EnumerateTexturesFromUri(externalObjectMap, parser, UnityPath.FromUnityPath(scriptedImporter.assetPath).Parent).ToArray();
 
-            using (var loaded = new ImporterContext(parser, null, externalObjectMap.Concat(externalTextures)))
+            using (var loaded = new ImporterContext(parser, externalObjectMap.Concat(externalTextures)))
             {
                 // settings TextureImporters
                 foreach (var textureInfo in GltfTextureEnumerator.Enumerate(parser.GLTF))
@@ -96,7 +96,6 @@ namespace UniGLTF
                                 if (exclude != null && exclude.Any(kv => kv.Item2.name == asset.name))
                                 {
                                     // exclude. skip
-                                    var a = 0;
                                 }
                                 else{
                                     if(used.Add(asset)){

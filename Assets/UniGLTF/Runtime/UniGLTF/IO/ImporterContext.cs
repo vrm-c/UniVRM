@@ -41,24 +41,10 @@ namespace UniGLTF
         IAwaitCaller m_awaitCaller;
 
         public ImporterContext(GltfParser parser,
-            LoadTextureAsyncFunc loadTextureAsync = null,
             IEnumerable<(string, UnityEngine.Object)> externalObjectMap = null)
         {
             m_parser = parser;
-            if (loadTextureAsync == null)
-            {
-#if UNIGLTF_USE_WEBREQUEST_TEXTURELOADER
-                loadTextureAsync = (awaitCaller, index, used) => UnityWebRequestTextureLoader.LoadTextureAsync(index);
-#else
-                loadTextureAsync = async (awaitCaller, index, used) =>
-                {
-                    var texture = await GltfTextureLoader.LoadTextureAsync(awaitCaller, GLTF, Storage, index);
-                    return new TextureLoadInfo(texture, used, false);
-                };
-#endif
-            }
-
-            m_textureFactory = new TextureFactory(loadTextureAsync, externalObjectMap);
+            m_textureFactory = new TextureFactory(GLTF, Storage, externalObjectMap);
             m_materialFactory = new MaterialFactory(GLTF, Storage, externalObjectMap);
         }
 
