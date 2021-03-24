@@ -156,19 +156,13 @@ namespace UniGLTF
             }
         }
 
-        public static Material CreateMaterial(int index, glTFMaterial src, string shaderName)
+        public static string MaterialName(int index, glTFMaterial src)
         {
-            var material = new Material(Shader.Find(shaderName));
-#if UNITY_EDITOR
-            // textureImporter.SaveAndReimport(); may destroy this material
-            material.hideFlags = HideFlags.DontUnloadUnusedAsset;
-#endif
-            material.name = (src == null || string.IsNullOrEmpty(src.name))
-                ? string.Format("material_{0:00}", index)
-                : src.name
-                ;
-
-            return material;
+            if(src!=null && !string.IsNullOrEmpty(src.name))
+            {
+                return src.name;
+            }
+            return $"material_{index:00}";
         }
 
         public static void SetTextureOffsetAndScale(Material material, glTFTextureInfo textureInfo, string propertyName)

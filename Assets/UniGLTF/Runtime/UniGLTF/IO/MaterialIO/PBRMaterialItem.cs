@@ -77,13 +77,15 @@ namespace UniGLTF
                 getTexture = (IAwaitCaller _awaitCaller, glTF _gltf, TextureImportParam _param) => Task.FromResult<Texture2D>(null);
             }
 
+            var material = new Material(Shader.Find(ShaderName));
             if (i < 0 || i >= parser.GLTF.materials.Count)
             {
-                return MaterialFactory.CreateMaterial(i, null, ShaderName);
+                material.name = MaterialFactory.MaterialName(i, null);
+                return material;
             }
 
             var src = parser.GLTF.materials[i];
-            var material = MaterialFactory.CreateMaterial(i, src, ShaderName);
+            material.name = MaterialFactory.MaterialName(i, src);
             var standardParam = default(TextureImportParam);
             if (src.pbrMetallicRoughness != null || src.occlusionTexture != null)
             {

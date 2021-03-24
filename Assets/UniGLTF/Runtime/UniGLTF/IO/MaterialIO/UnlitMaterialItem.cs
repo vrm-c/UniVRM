@@ -16,7 +16,8 @@ namespace UniGLTF
             }
 
             var src = parser.GLTF.materials[i];
-            var material = MaterialFactory.CreateMaterial(i, src, ShaderName);
+            var material = new Material(Shader.Find(ShaderName));
+            material.name = MaterialFactory.MaterialName(i, src);
 
             // texture
             if (src.pbrMetallicRoughness.baseColorTexture != null)
