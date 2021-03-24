@@ -78,7 +78,7 @@ namespace UniGLTF
             {
                 switch (texParam.TextureType)
                 {
-                    case GetTextureParam.TextureTypes.StandardMap:
+                    case TextureImportTypes.StandardMap:
                         break;
 
                     default:

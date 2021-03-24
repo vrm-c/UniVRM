@@ -56,7 +56,7 @@ namespace UniGLTF
             if (param.Index0!=null && ExternalMap != null)
             {
                 var cacheName = param.ConvertedName;
-                if (param.TextureType == GetTextureParam.TextureTypes.NormalMap)
+                if (param.TextureType == TextureImportTypes.NormalMap)
                 {
                     cacheName = param.GltfName;
                     if (m_textureCache.TryGetValue(cacheName, out TextureLoadInfo normalInfo))
@@ -236,7 +236,7 @@ namespace UniGLTF
 
             switch (param.TextureType)
             {
-                case GetTextureParam.TextureTypes.NormalMap:
+                case TextureImportTypes.NormalMap:
                     {
                         var baseTexture = await GetOrCreateBaseTexture(awaitCaller, param, param.Index0, RenderTextureReadWrite.Linear, false);
                         var converted = NormalConverter.Import(baseTexture.Texture);
@@ -246,7 +246,7 @@ namespace UniGLTF
                         return info.Texture;
                     }
 
-                case GetTextureParam.TextureTypes.StandardMap:
+                case TextureImportTypes.StandardMap:
                     {
                         TextureLoadInfo baseTexture = default;
                         if (param.Index0!=null)
@@ -277,18 +277,18 @@ namespace UniGLTF
 
         public static GetTextureParam CreateSRGB(GltfParser parser, int textureIndex)
         {
-            var name = CreateNameExt(parser.GLTF, textureIndex, GetTextureParam.TextureTypes.sRGB);
+            var name = CreateNameExt(parser.GLTF, textureIndex, TextureImportTypes.sRGB);
             var sampler = CreateSampler(parser.GLTF, textureIndex);
             GetTextureBytesAsync getTextureBytesAsync = async () => parser.GLTF.GetImageBytesFromTextureIndex(parser.Storage, textureIndex);
-            return new GetTextureParam(name, sampler, GetTextureParam.TextureTypes.sRGB, default, default, getTextureBytesAsync, default, default, default, default, default);
+            return new GetTextureParam(name, sampler, TextureImportTypes.sRGB, default, default, getTextureBytesAsync, default, default, default, default, default);
         }
 
         public static GetTextureParam CreateNormal(GltfParser parser, int textureIndex)
         {
-            var name = CreateNameExt(parser.GLTF, textureIndex, GetTextureParam.TextureTypes.NormalMap);
+            var name = CreateNameExt(parser.GLTF, textureIndex, TextureImportTypes.NormalMap);
             var sampler = CreateSampler(parser.GLTF, textureIndex);
             GetTextureBytesAsync getTextureBytesAsync = async () => parser.GLTF.GetImageBytesFromTextureIndex(parser.Storage, textureIndex);
-            return new GetTextureParam(name, sampler, GetTextureParam.TextureTypes.NormalMap, default, default, getTextureBytesAsync, default, default, default, default, default);
+            return new GetTextureParam(name, sampler, TextureImportTypes.NormalMap, default, default, getTextureBytesAsync, default, default, default, default, default);
         }
 
         public static GetTextureParam CreateStandard(GltfParser parser, int? metallicRoughnessTextureIndex, int? occlusionTextureIndex, float metallicFactor, float roughnessFactor)
@@ -299,7 +299,7 @@ namespace UniGLTF
             GetTextureParam.TextureSamplerParam sampler = default;
             if (metallicRoughnessTextureIndex.HasValue)
             {
-                name = CreateNameExt(parser.GLTF, metallicRoughnessTextureIndex.Value, GetTextureParam.TextureTypes.StandardMap);
+                name = CreateNameExt(parser.GLTF, metallicRoughnessTextureIndex.Value, TextureImportTypes.StandardMap);
                 sampler = CreateSampler(parser.GLTF, metallicRoughnessTextureIndex.Value);
                 getMetallicRoughnessAsync = async () => parser.GLTF.GetImageBytesFromTextureIndex(parser.Storage, metallicRoughnessTextureIndex.Value);
             }
@@ -308,13 +308,13 @@ namespace UniGLTF
             if (occlusionTextureIndex.HasValue)
             {
                 if(string.IsNullOrEmpty(name.GltfName)){
-                    name = CreateNameExt(parser.GLTF, occlusionTextureIndex.Value, GetTextureParam.TextureTypes.StandardMap);
+                    name = CreateNameExt(parser.GLTF, occlusionTextureIndex.Value, TextureImportTypes.StandardMap);
                 }
                 sampler = CreateSampler(parser.GLTF, occlusionTextureIndex.Value);
                 getOcclusionAsync = async () => parser.GLTF.GetImageBytesFromTextureIndex(parser.Storage, occlusionTextureIndex.Value);
             }
 
-            return new GetTextureParam(name, sampler, GetTextureParam.TextureTypes.StandardMap, metallicFactor, roughnessFactor, getMetallicRoughnessAsync, getOcclusionAsync, default, default, default, default);
+            return new GetTextureParam(name, sampler, TextureImportTypes.StandardMap, metallicFactor, roughnessFactor, getMetallicRoughnessAsync, getOcclusionAsync, default, default, default, default);
         }
 
         public static GetTextureParam Create(GltfParser parser, int index, string prop, float metallicFactor, float roughnessFactor)
@@ -333,7 +333,7 @@ namespace UniGLTF
             }
         }
 
-        public static GetTextureParam.NameExt CreateNameExt(glTF gltf, int textureIndex, GetTextureParam.TextureTypes textureType)
+        public static GetTextureParam.NameExt CreateNameExt(glTF gltf, int textureIndex, TextureImportTypes textureType)
         {
             if (textureIndex < 0 || textureIndex >= gltf.textures.Count)
             {

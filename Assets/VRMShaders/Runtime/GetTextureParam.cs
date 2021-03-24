@@ -19,15 +19,6 @@ namespace VRMShaders
         public const string OCCLUSION_PROP = "_OcclusionMap";
         public const string STANDARD_SUFFIX = ".standard";
 
-        public enum TextureTypes
-        {
-            sRGB,
-            NormalMap,
-            // Occlusion + Metallic + Smoothness
-            StandardMap,
-            Linear,
-        }
-
         public static string RemoveSuffix(string src)
         {
             if (src.EndsWith(NORMAL_SUFFIX))
@@ -64,12 +55,12 @@ namespace VRMShaders
             
             public string ConvertedFileName => $"{ConvertedName}.png";
             
-            public static string Convert(string name, TextureTypes textureType) 
+            public static string Convert(string name, TextureImportTypes textureType) 
             {
                 switch (textureType)
                 {
-                    case TextureTypes.StandardMap: return $"{name}{STANDARD_SUFFIX}";
-                    case TextureTypes.NormalMap: return $"{name}{NORMAL_SUFFIX}";
+                    case TextureImportTypes.StandardMap: return $"{name}{STANDARD_SUFFIX}";
+                    case TextureImportTypes.NormalMap: return $"{name}{NORMAL_SUFFIX}";
                     default: return name;
                 }
             }
@@ -98,7 +89,7 @@ namespace VRMShaders
 
         public TextureSamplerParam Sampler;
 
-        public readonly TextureTypes TextureType;
+        public readonly TextureImportTypes TextureType;
         public readonly float MetallicFactor;
         public readonly float RoughnessFactor;
         
@@ -112,9 +103,9 @@ namespace VRMShaders
         /// <summary>
         /// この種類は RGB チャンネルの組み換えが必用
         /// </summary>
-        public bool ExtractConverted => TextureType == TextureTypes.StandardMap;
+        public bool ExtractConverted => TextureType == TextureImportTypes.StandardMap;
 
-        public GetTextureParam(NameExt name, TextureSamplerParam sampler, TextureTypes textureType, float metallicFactor, float roughnessFactor,
+        public GetTextureParam(NameExt name, TextureSamplerParam sampler, TextureImportTypes textureType, float metallicFactor, float roughnessFactor,
             GetTextureBytesAsync i0,
             GetTextureBytesAsync i1,
             GetTextureBytesAsync i2,

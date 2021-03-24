@@ -61,7 +61,7 @@ namespace UniGLTF
                 {
                     switch (x.TextureType)
                     {
-                        case GetTextureParam.TextureTypes.NormalMap:
+                        case TextureImportTypes.NormalMap:
                             return x.GltfName;
 
                         default:

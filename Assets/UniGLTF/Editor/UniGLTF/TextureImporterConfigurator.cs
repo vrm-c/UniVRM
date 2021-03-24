@@ -66,7 +66,7 @@ namespace UniGLTF
         {
             switch (textureInfo.TextureType)
             {
-                case GetTextureParam.TextureTypes.NormalMap:
+                case TextureImportTypes.NormalMap:
                     {
                         if (ExternalMap.TryGetValue(textureInfo.GltfName, out Texture2D external))
                         {
@@ -76,7 +76,7 @@ namespace UniGLTF
                     }
                     break;
 
-                case GetTextureParam.TextureTypes.StandardMap:
+                case TextureImportTypes.StandardMap:
                     {
                         if (ExternalMap.TryGetValue(textureInfo.ConvertedName, out Texture2D external))
                         {
@@ -86,7 +86,7 @@ namespace UniGLTF
                     }
                     break;
 
-                case GetTextureParam.TextureTypes.sRGB:
+                case TextureImportTypes.sRGB:
                     {
                         if (ExternalMap.TryGetValue(textureInfo.GltfName, out Texture2D external))
                         {

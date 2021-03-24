@@ -58,7 +58,7 @@ namespace UniGLTF
 
                 switch (param.TextureType)
                 {
-                    case GetTextureParam.TextureTypes.StandardMap:
+                    case TextureImportTypes.StandardMap:
                         {
                             // write converted texture
                             var subAsset = m_subAssets.FirstOrDefault(x => x.name == param.ConvertedName);
