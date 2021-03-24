@@ -73,13 +73,7 @@ namespace VRMShaders
         public string ConvertedFileName => Name.ConvertedFileName;
         public string Uri => Name.Uri;
 
-        public struct TextureSamplerParam
-        {
-            public (SamplerWrapType, TextureWrapMode)[] WrapModes;
-            public FilterMode FilterMode;
-        }
-
-        public TextureSamplerParam Sampler;
+        public SamplerParam Sampler;
 
         public readonly TextureImportTypes TextureType;
         public readonly float MetallicFactor;
@@ -97,7 +91,7 @@ namespace VRMShaders
         /// </summary>
         public bool ExtractConverted => TextureType == TextureImportTypes.StandardMap;
 
-        public GetTextureParam(NameExt name, TextureSamplerParam sampler, TextureImportTypes textureType, float metallicFactor, float roughnessFactor,
+        public GetTextureParam(NameExt name, SamplerParam sampler, TextureImportTypes textureType, float metallicFactor, float roughnessFactor,
             GetTextureBytesAsync i0,
             GetTextureBytesAsync i1,
             GetTextureBytesAsync i2,

@@ -296,7 +296,7 @@ namespace UniGLTF
             GetTextureParam.NameExt name = default;
 
             GetTextureBytesAsync getMetallicRoughnessAsync = default;
-            GetTextureParam.TextureSamplerParam sampler = default;
+            SamplerParam sampler = default;
             if (metallicRoughnessTextureIndex.HasValue)
             {
                 name = CreateNameExt(parser.GLTF, metallicRoughnessTextureIndex.Value, TextureImportTypes.StandardMap);
@@ -349,13 +349,13 @@ namespace UniGLTF
             return new GetTextureParam.NameExt(gltfTexture.name, convertedName, gltfImage.GetExt(), gltfImage.uri);
         }
 
-        public static GetTextureParam.TextureSamplerParam CreateSampler(glTF gltf, int index)
+        public static SamplerParam CreateSampler(glTF gltf, int index)
         {
             var gltfTexture = gltf.textures[index];
             if (gltfTexture.sampler < 0 || gltfTexture.sampler >= gltf.samplers.Count)
             {
                 // default
-                return new GetTextureParam.TextureSamplerParam
+                return new SamplerParam
                 {
                     FilterMode = FilterMode.Bilinear,
                     WrapModes = new (SamplerWrapType, TextureWrapMode)[] { },
@@ -363,7 +363,7 @@ namespace UniGLTF
             }
 
             var gltfSampler = gltf.samplers[gltfTexture.sampler];
-            return new GetTextureParam.TextureSamplerParam
+            return new SamplerParam
             {
                 WrapModes = GetUnityWrapMode(gltfSampler).ToArray(),
                 FilterMode = ImportFilterMode(gltfSampler.minFilter),
