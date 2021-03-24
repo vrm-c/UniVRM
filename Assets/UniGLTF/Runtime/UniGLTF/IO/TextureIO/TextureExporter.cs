@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Reflection;
+using VRMShaders;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -126,7 +127,7 @@ namespace UniGLTF
             }
             else
             {
-                texture2D = TextureConverter.CopyTexture(src, glTFTextureTypes.SRGB, null);
+                texture2D = TextureConverter.CopyTexture(src, TextureImportTypes.sRGB, null);
             }
             Exported.Add(texture2D);
             m_exportMap.Add(new ExportKey(src, glTFTextureTypes.SRGB), index);
