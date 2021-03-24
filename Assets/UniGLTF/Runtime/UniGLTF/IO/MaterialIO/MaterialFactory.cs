@@ -164,13 +164,13 @@ namespace UniGLTF
             }
             return $"material_{index:00}";
         }
-
-        public static void SetTextureOffsetAndScale(Material material, glTFTextureInfo textureInfo, string propertyName)
+        
+        public static (Vector2, Vector2) GetTextureOffsetAndScale(glTFTextureInfo textureInfo)
         {
+            Vector2 offset = new Vector2(0, 0);
+            Vector2 scale = new Vector2(1, 1);
             if (glTF_KHR_texture_transform.TryGet(textureInfo, out glTF_KHR_texture_transform textureTransform))
             {
-                Vector2 offset = new Vector2(0, 0);
-                Vector2 scale = new Vector2(1, 1);
                 if (textureTransform.offset != null && textureTransform.offset.Length == 2)
                 {
                     offset = new Vector2(textureTransform.offset[0], textureTransform.offset[1]);
@@ -181,10 +181,14 @@ namespace UniGLTF
                 }
 
                 offset.y = (offset.y + scale.y - 1.0f) * -1.0f;
-
-                material.SetTextureOffset(propertyName, offset);
-                material.SetTextureScale(propertyName, scale);
             }
+            return (offset, scale);
+        }
+
+        public static void SetTextureOffsetAndScale(Material material, string propertyName, Vector2 offset, Vector2 scale)
+        {
+            material.SetTextureOffset(propertyName, offset);
+            material.SetTextureScale(propertyName, scale);
         }
 
         public static Task<Material> DefaultCreateMaterialAsync(IAwaitCaller awaitCaller, GltfParser parser, int i, GetTextureAsyncFunc getTexture)

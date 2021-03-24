@@ -22,10 +22,11 @@ namespace UniGLTF
             // texture
             if (src.pbrMetallicRoughness.baseColorTexture != null)
             {
-                material.mainTexture = await getTexture(awaitCaller, parser.GLTF, TextureFactory.CreateSRGB(parser, src.pbrMetallicRoughness.baseColorTexture.index));
+                var (offset, scale) = MaterialFactory.GetTextureOffsetAndScale(src.pbrMetallicRoughness.baseColorTexture);
+                material.mainTexture = await getTexture(awaitCaller, parser.GLTF, TextureFactory.CreateSRGB(parser, src.pbrMetallicRoughness.baseColorTexture.index, offset, scale));
 
                 // Texture Offset and Scale
-                MaterialFactory.SetTextureOffsetAndScale(material, src.pbrMetallicRoughness.baseColorTexture, "_MainTex");
+                MaterialFactory.SetTextureOffsetAndScale(material, "_MainTex", offset, scale);
             }
 
             // color
