@@ -190,19 +190,19 @@ namespace UniGLTF
             {
                 switch (key)
                 {
-                    case GetTextureParam.TextureSamplerParam.TextureWrapType.All:
+                    case GetTextureParam.TextureWrapType.All:
                         texture.wrapMode = value;
                         break;
 
-                    case GetTextureParam.TextureSamplerParam.TextureWrapType.U:
+                    case GetTextureParam.TextureWrapType.U:
                         texture.wrapModeU = value;
                         break;
 
-                    case GetTextureParam.TextureSamplerParam.TextureWrapType.V:
+                    case GetTextureParam.TextureWrapType.V:
                         texture.wrapModeV = value;
                         break;
 
-                    case GetTextureParam.TextureSamplerParam.TextureWrapType.W:
+                    case GetTextureParam.TextureWrapType.W:
                         texture.wrapModeW = value;
                         break;
 
@@ -273,5 +273,196 @@ namespace UniGLTF
                     throw new NotImplementedException();
             }
         }
+
+        public static GetTextureParam CreateSRGB(GltfParser parser, int textureIndex)
+        {
+            var name = CreateNameExt(parser.GLTF, textureIndex, GetTextureParam.TextureTypes.sRGB);
+            var sampler = CreateSampler(parser.GLTF, textureIndex);
+            GetTextureBytesAsync getTextureBytesAsync = async () => parser.GLTF.GetImageBytesFromTextureIndex(parser.Storage, textureIndex);
+            return new GetTextureParam(name, sampler, GetTextureParam.TextureTypes.sRGB, default, default, getTextureBytesAsync, default, default, default, default, default);
+        }
+
+        public static GetTextureParam CreateNormal(GltfParser parser, int textureIndex)
+        {
+            var name = CreateNameExt(parser.GLTF, textureIndex, GetTextureParam.TextureTypes.NormalMap);
+            var sampler = CreateSampler(parser.GLTF, textureIndex);
+            GetTextureBytesAsync getTextureBytesAsync = async () => parser.GLTF.GetImageBytesFromTextureIndex(parser.Storage, textureIndex);
+            return new GetTextureParam(name, sampler, GetTextureParam.TextureTypes.NormalMap, default, default, getTextureBytesAsync, default, default, default, default, default);
+        }
+
+        public static GetTextureParam CreateStandard(GltfParser parser, int? metallicRoughnessTextureIndex, int? occlusionTextureIndex, float metallicFactor, float roughnessFactor)
+        {
+            GetTextureParam.NameExt name = default;
+
+            GetTextureBytesAsync getMetallicRoughnessAsync = default;
+            GetTextureParam.TextureSamplerParam sampler = default;
+            if (metallicRoughnessTextureIndex.HasValue)
+            {
+                name = CreateNameExt(parser.GLTF, metallicRoughnessTextureIndex.Value, GetTextureParam.TextureTypes.StandardMap);
+                sampler = CreateSampler(parser.GLTF, metallicRoughnessTextureIndex.Value);
+                getMetallicRoughnessAsync = async () => parser.GLTF.GetImageBytesFromTextureIndex(parser.Storage, metallicRoughnessTextureIndex.Value);
+            }
+
+            GetTextureBytesAsync getOcclusionAsync = default;
+            if (occlusionTextureIndex.HasValue)
+            {
+                if(string.IsNullOrEmpty(name.GltfName)){
+                    name = CreateNameExt(parser.GLTF, occlusionTextureIndex.Value, GetTextureParam.TextureTypes.StandardMap);
+                }
+                sampler = CreateSampler(parser.GLTF, occlusionTextureIndex.Value);
+                getOcclusionAsync = async () => parser.GLTF.GetImageBytesFromTextureIndex(parser.Storage, occlusionTextureIndex.Value);
+            }
+
+            return new GetTextureParam(name, sampler, GetTextureParam.TextureTypes.StandardMap, metallicFactor, roughnessFactor, getMetallicRoughnessAsync, getOcclusionAsync, default, default, default, default);
+        }
+
+        public static GetTextureParam Create(GltfParser parser, int index, string prop, float metallicFactor, float roughnessFactor)
+        {
+            switch (prop)
+            {
+                case GetTextureParam.NORMAL_PROP:
+                    return CreateNormal(parser, index);
+
+                case GetTextureParam.OCCLUSION_PROP:
+                case GetTextureParam.METALLIC_GLOSS_PROP:
+                    return CreateStandard(parser, index, default, metallicFactor, roughnessFactor);
+
+                default:
+                    return CreateSRGB(parser, index);
+            }
+        }
+
+        public static GetTextureParam.NameExt CreateNameExt(glTF gltf, int textureIndex, GetTextureParam.TextureTypes textureType)
+        {
+            if (textureIndex < 0 || textureIndex >= gltf.textures.Count)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+            var gltfTexture = gltf.textures[textureIndex];
+            if (gltfTexture.source < 0 || gltfTexture.source >= gltf.images.Count)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+            var gltfImage = gltf.images[gltfTexture.source];
+            var convertedName = GetTextureParam.NameExt.Convert(gltfTexture.name, textureType);
+            return new GetTextureParam.NameExt(gltfTexture.name, convertedName, gltfImage.GetExt(), gltfImage.uri);
+        }
+
+        public static GetTextureParam.TextureSamplerParam CreateSampler(glTF gltf, int index)
+        {
+            var gltfTexture = gltf.textures[index];
+            if (gltfTexture.sampler < 0 || gltfTexture.sampler >= gltf.samplers.Count)
+            {
+                // default
+                return new GetTextureParam.TextureSamplerParam
+                {
+                    FilterMode = FilterMode.Bilinear,
+                    WrapModes = new (GetTextureParam.TextureWrapType, TextureWrapMode)[] { },
+                };
+            }
+
+            var gltfSampler = gltf.samplers[gltfTexture.sampler];
+            return new GetTextureParam.TextureSamplerParam
+            {
+                WrapModes = GetUnityWrapMode(gltfSampler).ToArray(),
+                FilterMode = ImportFilterMode(gltfSampler.minFilter),
+            };
+        }
+
+        public static IEnumerable<(GetTextureParam.TextureWrapType, TextureWrapMode)> GetUnityWrapMode(glTFTextureSampler sampler)
+        {
+            if (sampler.wrapS == sampler.wrapT)
+            {
+                switch (sampler.wrapS)
+                {
+                    case glWrap.NONE: // default
+                        yield return (GetTextureParam.TextureWrapType.All, TextureWrapMode.Repeat);
+                        break;
+
+                    case glWrap.CLAMP_TO_EDGE:
+                        yield return (GetTextureParam.TextureWrapType.All, TextureWrapMode.Clamp);
+                        break;
+
+                    case glWrap.REPEAT:
+                        yield return (GetTextureParam.TextureWrapType.All, TextureWrapMode.Repeat);
+                        break;
+
+                    case glWrap.MIRRORED_REPEAT:
+                        yield return (GetTextureParam.TextureWrapType.All, TextureWrapMode.Mirror);
+                        break;
+
+                    default:
+                        throw new NotImplementedException();
+                }
+            }
+            else
+            {
+                switch (sampler.wrapS)
+                {
+                    case glWrap.NONE: // default
+                        yield return (GetTextureParam.TextureWrapType.U, TextureWrapMode.Repeat);
+                        break;
+
+                    case glWrap.CLAMP_TO_EDGE:
+                        yield return (GetTextureParam.TextureWrapType.U, TextureWrapMode.Clamp);
+                        break;
+
+                    case glWrap.REPEAT:
+                        yield return (GetTextureParam.TextureWrapType.U, TextureWrapMode.Repeat);
+                        break;
+
+                    case glWrap.MIRRORED_REPEAT:
+                        yield return (GetTextureParam.TextureWrapType.U, TextureWrapMode.Mirror);
+                        break;
+
+                    default:
+                        throw new NotImplementedException();
+                }
+                switch (sampler.wrapT)
+                {
+                    case glWrap.NONE: // default
+                        yield return (GetTextureParam.TextureWrapType.V, TextureWrapMode.Repeat);
+                        break;
+
+                    case glWrap.CLAMP_TO_EDGE:
+                        yield return (GetTextureParam.TextureWrapType.V, TextureWrapMode.Clamp);
+                        break;
+
+                    case glWrap.REPEAT:
+                        yield return (GetTextureParam.TextureWrapType.V, TextureWrapMode.Repeat);
+                        break;
+
+                    case glWrap.MIRRORED_REPEAT:
+                        yield return (GetTextureParam.TextureWrapType.V, TextureWrapMode.Mirror);
+                        break;
+
+                    default:
+                        throw new NotImplementedException();
+                }
+            }
+        }
+
+        public static FilterMode ImportFilterMode(glFilter filterMode)
+        {
+            switch (filterMode)
+            {
+                case glFilter.NEAREST:
+                case glFilter.NEAREST_MIPMAP_LINEAR:
+                case glFilter.NEAREST_MIPMAP_NEAREST:
+                    return FilterMode.Point;
+
+                case glFilter.NONE:
+                case glFilter.LINEAR:
+                case glFilter.LINEAR_MIPMAP_NEAREST:
+                    return FilterMode.Bilinear;
+
+                case glFilter.LINEAR_MIPMAP_LINEAR:
+                    return FilterMode.Trilinear;
+
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
     }
 }

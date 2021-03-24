@@ -22,7 +22,7 @@ namespace VRM
                     foreach (var kv in vrmMaterial.textureProperties)
                     {
                         // SRGB color or normalmap
-                        yield return GetTextureParam.Create(parser, kv.Value, kv.Key, default, default);
+                        yield return TextureFactory.Create(parser, kv.Value, kv.Key, default, default);
                     }
                 }
                 else
@@ -38,7 +38,7 @@ namespace VRM
             // thumbnail
             if (m_vrm.meta != null && m_vrm.meta.texture != -1)
             {
-                yield return GetTextureParam.CreateSRGB(parser, m_vrm.meta.texture);
+                yield return TextureFactory.CreateSRGB(parser, m_vrm.meta.texture);
             }
         }
     }

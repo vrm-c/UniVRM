@@ -27,7 +27,7 @@ namespace UniGLTF
             // emission
             if (m.emissiveTexture != null)
             {
-                yield return GetTextureParam.CreateSRGB(parser, m.emissiveTexture.index);
+                yield return TextureFactory.CreateSRGB(parser, m.emissiveTexture.index);
             }
 
             // normal
