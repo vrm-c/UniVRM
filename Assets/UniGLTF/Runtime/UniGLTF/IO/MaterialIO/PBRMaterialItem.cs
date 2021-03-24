@@ -1,6 +1,7 @@
 ﻿
 using System.Threading.Tasks;
 using UnityEngine;
+using VRMShaders;
 
 namespace UniGLTF
 {

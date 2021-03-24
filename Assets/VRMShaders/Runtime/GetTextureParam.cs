@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 
-namespace UniGLTF
+namespace VRMShaders
 {
     public delegate Task<ArraySegment<byte>> GetTextureBytesAsync();
 

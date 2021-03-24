@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using System.Threading.Tasks;
+using VRMShaders;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
