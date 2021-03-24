@@ -71,7 +71,7 @@ namespace UniGLTF
             var imageIndex = gltf.images.Count;
             gltf.images.Add(new glTFImage
             {
-                name = GetTextureParam.RemoveSuffix(texture.name),
+                name = TextureImportName.RemoveSuffix(texture.name),
                 bufferView = viewIndex,
                 mimeType = bytesWithMime.mine,
             });

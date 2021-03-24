@@ -170,9 +170,10 @@ namespace UniGLTF
             await OnLoadModel(m_awaitCaller, MeasureTime);
         }
 
-        protected virtual async Task OnLoadModel(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime)
+        protected virtual Task OnLoadModel(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime)
         {
             // do nothing
+            return Task.FromResult<object>(null);
         }
 
         async Task<MeshWithMaterials> BuildMeshAsync(Func<string, IDisposable> MeasureTime, MeshImporter.MeshContext x, int i)
