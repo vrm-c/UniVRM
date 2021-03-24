@@ -3,7 +3,8 @@
     "references": [
         "UniGLTF",
         "MeshUtility",
-        "MeshUtility.Editor"
+        "MeshUtility.Editor",
+        "VRMShaders"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [

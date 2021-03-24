@@ -372,6 +372,12 @@ namespace UniGLTF
             return result;
         }
 
+        public static ArraySegment<Byte> GetImageBytesFromTextureIndex(this glTF self, IStorage storage, int textureIndex)
+        {
+            var imageIndex = self.textures[textureIndex].source;
+            return self.GetImageBytes(storage, imageIndex);
+        }
+
         public static ArraySegment<Byte> GetImageBytes(this glTF self, IStorage storage, int imageIndex)
         {
             var image = self.images[imageIndex];

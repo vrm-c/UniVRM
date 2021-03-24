@@ -57,10 +57,10 @@ namespace VRM
                     return (texture.name, texture: texture as UnityEngine.Object);
                 }).ToArray();
 
-                using (var context = new VRMImporterContext(parser, null, map))
+                using (var context = new VRMImporterContext(parser, map))
                 {
                     var editor = new VRMEditorImporterContext(context, prefabPath);
-                    foreach (var textureInfo in new VRMTextureEnumerator(context.VRM).Enumerate(parser.GLTF))
+                    foreach (var textureInfo in new VRMTextureEnumerator(context.VRM).Enumerate(parser))
                     {
                         TextureImporterConfigurator.Configure(textureInfo, map.ToDictionary(x => x.name, x => x.texture as Texture2D));
                     }

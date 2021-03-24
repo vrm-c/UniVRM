@@ -6,7 +6,8 @@
         "UniHumanoid",
         "ShaderProperty.Runtime",
         "MeshUtility",
-        "UniGLTF"
+        "UniGLTF",
+        "VRMShaders"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],

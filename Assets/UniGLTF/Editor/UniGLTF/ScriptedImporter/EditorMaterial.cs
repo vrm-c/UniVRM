@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using VRMShaders;
 #if UNITY_2020_2_OR_NEWER
 using UnityEditor.AssetImporters;
 #else
@@ -56,12 +57,12 @@ namespace UniGLTF
             s_foldTextures = EditorGUILayout.Foldout(s_foldTextures, "Remapped Textures");
             if (s_foldTextures)
             {
-                DrawRemapGUI<UnityEngine.Texture2D>(importer, GltfTextureEnumerator.Enumerate(parser.GLTF).Select(x =>
+                DrawRemapGUI<UnityEngine.Texture2D>(importer, GltfTextureEnumerator.Enumerate(parser).Select(x =>
                 {
                     switch (x.TextureType)
                     {
-                        case GetTextureParam.TextureTypes.NormalMap:
-                            return x.GltflName;
+                        case TextureImportTypes.NormalMap:
+                            return x.GltfName;
 
                         default:
                             return x.ConvertedName;

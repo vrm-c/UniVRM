@@ -2,7 +2,8 @@
     "name": "UniGLTF",
     "references": [
         "UniUnlit",
-        "ShaderProperty.Runtime"
+        "ShaderProperty.Runtime",
+        "VRMShaders"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],

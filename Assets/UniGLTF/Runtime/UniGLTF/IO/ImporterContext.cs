@@ -41,25 +41,11 @@ namespace UniGLTF
         IAwaitCaller m_awaitCaller;
 
         public ImporterContext(GltfParser parser,
-            LoadTextureAsyncFunc loadTextureAsync = null,
             IEnumerable<(string, UnityEngine.Object)> externalObjectMap = null)
         {
             m_parser = parser;
-            if (loadTextureAsync == null)
-            {
-#if UNIGLTF_USE_WEBREQUEST_TEXTURELOADER
-                loadTextureAsync = (awaitCaller, index, used) => UnityWebRequestTextureLoader.LoadTextureAsync(index);
-#else
-                loadTextureAsync = async (awaitCaller, index, used) =>
-                {
-                    var texture = await GltfTextureLoader.LoadTextureAsync(awaitCaller, GLTF, Storage, index);
-                    return new TextureLoadInfo(texture, used, false);
-                };
-#endif
-            }
-
-            m_textureFactory = new TextureFactory(loadTextureAsync, externalObjectMap);
-            m_materialFactory = new MaterialFactory(GLTF, Storage, externalObjectMap);
+            m_textureFactory = new TextureFactory(GLTF, Storage, externalObjectMap);
+            m_materialFactory = new MaterialFactory(m_parser, externalObjectMap);
         }
 
         #region Source
@@ -184,9 +170,10 @@ namespace UniGLTF
             await OnLoadModel(m_awaitCaller, MeasureTime);
         }
 
-        protected virtual async Task OnLoadModel(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime)
+        protected virtual Task OnLoadModel(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime)
         {
             // do nothing
+            return Task.FromResult<object>(null);
         }
 
         async Task<MeshWithMaterials> BuildMeshAsync(Func<string, IDisposable> MeasureTime, MeshImporter.MeshContext x, int i)

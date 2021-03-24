@@ -19,8 +19,7 @@ namespace VRM
         public VRM.glTF_VRM_extensions VRM { get; private set; }
 
         public VRMImporterContext(GltfParser parser,
-            UniGLTF.LoadTextureAsyncFunc asyncTextureLoader = null,
-            IEnumerable<(string, UnityEngine.Object)> externalObjectMap = null) : base(parser, asyncTextureLoader, externalObjectMap)
+            IEnumerable<(string, UnityEngine.Object)> externalObjectMap = null) : base(parser, externalObjectMap)
         {
             // parse VRM part
             if (glTF_VRM_extensions.TryDeserialize(GLTF.extensions, out glTF_VRM_extensions vrm))
@@ -298,7 +297,7 @@ namespace VRM
             meta.Title = gltfMeta.title;
             if (gltfMeta.texture >= 0)
             {
-                meta.Thumbnail = await TextureFactory.GetTextureAsync(awaitCaller, GLTF, GetTextureParam.CreateSRGB(GLTF, gltfMeta.texture));
+                meta.Thumbnail = await TextureFactory.GetTextureAsync(awaitCaller, GLTF, TextureFactory.CreateSRGB(Parser, gltfMeta.texture));
             }
             meta.AllowedUser = gltfMeta.allowedUser;
             meta.ViolentUssage = gltfMeta.violentUssage;

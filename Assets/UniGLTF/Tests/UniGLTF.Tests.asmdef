@@ -2,7 +2,8 @@
     "name": "UniGLTF.Tests",
     "references": [
         "UniGLTF",
-        "UniGLTF.Editor"
+        "UniGLTF.Editor",
+        "VRMShaders"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

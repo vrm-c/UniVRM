@@ -1,6 +1,7 @@
 ﻿
 using System.Threading.Tasks;
 using UnityEngine;
+using VRMShaders;
 
 namespace UniGLTF
 {
@@ -43,12 +44,12 @@ namespace UniGLTF
             Transparent
         }
 
-        public static GetTextureParam BaseColorTexture(glTF gltf, glTFMaterial src)
+        public static TextureImportParam BaseColorTexture(GltfParser parser, glTFMaterial src)
         {
-            return GetTextureParam.CreateSRGB(gltf, src.pbrMetallicRoughness.baseColorTexture.index);
+            return TextureFactory.CreateSRGB(parser, src.pbrMetallicRoughness.baseColorTexture.index);
         }
 
-        public static GetTextureParam StandardTexture(glTF gltf, glTFMaterial src)
+        public static TextureImportParam StandardTexture(GltfParser parser, glTFMaterial src)
         {
             var metallicFactor = 1.0f;
             var roughnessFactor = 1.0f;
@@ -57,38 +58,38 @@ namespace UniGLTF
                 metallicFactor = src.pbrMetallicRoughness.metallicFactor;
                 roughnessFactor = src.pbrMetallicRoughness.roughnessFactor;
             }
-            return GetTextureParam.CreateStandard(gltf,
+            return TextureFactory.CreateStandard(parser,
                             src.pbrMetallicRoughness?.metallicRoughnessTexture?.index,
                             src.occlusionTexture?.index,
                             metallicFactor,
                             roughnessFactor);
         }
 
-        public static GetTextureParam NormalTexture(glTF gltf, glTFMaterial src)
+        public static TextureImportParam NormalTexture(GltfParser parser, glTFMaterial src)
         {
-            return GetTextureParam.CreateNormal(gltf, src.normalTexture.index);
+            return TextureFactory.CreateNormal(parser, src.normalTexture.index);
         }
 
-        public static async Task<Material> CreateAsync(IAwaitCaller awaitCaller, glTF gltf, int i, GetTextureAsyncFunc getTexture)
+        public static async Task<Material> CreateAsync(IAwaitCaller awaitCaller, GltfParser parser, int i, GetTextureAsyncFunc getTexture)
         {
             if (getTexture == null)
             {
-                getTexture = (IAwaitCaller _awaitCaller, glTF _gltf, GetTextureParam _param) => Task.FromResult<Texture2D>(null);
+                getTexture = (IAwaitCaller _awaitCaller, glTF _gltf, TextureImportParam _param) => Task.FromResult<Texture2D>(null);
             }
 
-            if (i < 0 || i >= gltf.materials.Count)
+            if (i < 0 || i >= parser.GLTF.materials.Count)
             {
                 return MaterialFactory.CreateMaterial(i, null, ShaderName);
             }
 
-            var src = gltf.materials[i];
+            var src = parser.GLTF.materials[i];
             var material = MaterialFactory.CreateMaterial(i, src, ShaderName);
-            var standardParam = default(GetTextureParam);
+            var standardParam = default(TextureImportParam);
             if (src.pbrMetallicRoughness != null || src.occlusionTexture != null)
             {
                 if (src.pbrMetallicRoughness.metallicRoughnessTexture != null || src.occlusionTexture != null)
                 {
-                    standardParam = StandardTexture(gltf, src);
+                    standardParam = StandardTexture(parser, src);
                 }
                 if (src.pbrMetallicRoughness.baseColorFactor != null && src.pbrMetallicRoughness.baseColorFactor.Length == 4)
                 {
@@ -98,7 +99,7 @@ namespace UniGLTF
 
                 if (src.pbrMetallicRoughness.baseColorTexture != null && src.pbrMetallicRoughness.baseColorTexture.index != -1)
                 {
-                    material.mainTexture = await getTexture(awaitCaller, gltf, BaseColorTexture(gltf, src));
+                    material.mainTexture = await getTexture(awaitCaller, parser.GLTF, BaseColorTexture(parser, src));
 
                     // Texture Offset and Scale
                     MaterialFactory.SetTextureOffsetAndScale(material, src.pbrMetallicRoughness.baseColorTexture, "_MainTex");
@@ -108,10 +109,10 @@ namespace UniGLTF
                 {
                     material.EnableKeyword("_METALLICGLOSSMAP");
 
-                    var texture = await getTexture(awaitCaller, gltf, standardParam);
+                    var texture = await getTexture(awaitCaller, parser.GLTF, standardParam);
                     if (texture != null)
                     {
-                        material.SetTexture(GetTextureParam.METALLIC_GLOSS_PROP, texture);
+                        material.SetTexture(TextureImportParam.METALLIC_GLOSS_PROP, texture);
                     }
 
                     material.SetFloat("_Metallic", 1.0f);
@@ -131,10 +132,10 @@ namespace UniGLTF
             if (src.normalTexture != null && src.normalTexture.index != -1)
             {
                 material.EnableKeyword("_NORMALMAP");
-                var texture = await getTexture(awaitCaller, gltf, NormalTexture(gltf, src));
+                var texture = await getTexture(awaitCaller, parser.GLTF, NormalTexture(parser, src));
                 if (texture != null)
                 {
-                    material.SetTexture(GetTextureParam.NORMAL_PROP, texture);
+                    material.SetTexture(TextureImportParam.NORMAL_PROP, texture);
                     material.SetFloat("_BumpScale", src.normalTexture.scale);
                 }
 
@@ -144,10 +145,10 @@ namespace UniGLTF
 
             if (src.occlusionTexture != null && src.occlusionTexture.index != -1)
             {
-                var texture = await getTexture(awaitCaller, gltf, standardParam);
+                var texture = await getTexture(awaitCaller, parser.GLTF, standardParam);
                 if (texture != null)
                 {
-                    material.SetTexture(GetTextureParam.OCCLUSION_PROP, texture);
+                    material.SetTexture(TextureImportParam.OCCLUSION_PROP, texture);
                     material.SetFloat("_OcclusionStrength", src.occlusionTexture.strength);
                 }
 
@@ -168,7 +169,7 @@ namespace UniGLTF
 
                 if (src.emissiveTexture != null && src.emissiveTexture.index != -1)
                 {
-                    var texture = await getTexture(awaitCaller, gltf, GetTextureParam.CreateSRGB(gltf, src.emissiveTexture.index));
+                    var texture = await getTexture(awaitCaller, parser.GLTF, TextureFactory.CreateSRGB(parser, src.emissiveTexture.index));
                     if (texture != null)
                     {
                         material.SetTexture("_EmissionMap", texture);
