@@ -1,9 +1,9 @@
 using System;
 using System.Linq;
 using UnityEngine;
-using VRMShaders;
 
-namespace UniGLTF
+
+namespace VRMShaders
 {
     /// <summary>
     /// 

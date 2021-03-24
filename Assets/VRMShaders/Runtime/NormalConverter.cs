@@ -1,7 +1,7 @@
 using UnityEngine;
-using VRMShaders;
 
-namespace UniGLTF
+
+namespace VRMShaders
 {
     public static class NormalConverter
     {
