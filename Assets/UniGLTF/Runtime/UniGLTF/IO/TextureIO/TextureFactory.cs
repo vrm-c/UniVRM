@@ -191,19 +191,19 @@ namespace UniGLTF
             {
                 switch (key)
                 {
-                    case GetTextureParam.TextureWrapType.All:
+                    case SamplerWrapType.All:
                         texture.wrapMode = value;
                         break;
 
-                    case GetTextureParam.TextureWrapType.U:
+                    case SamplerWrapType.U:
                         texture.wrapModeU = value;
                         break;
 
-                    case GetTextureParam.TextureWrapType.V:
+                    case SamplerWrapType.V:
                         texture.wrapModeV = value;
                         break;
 
-                    case GetTextureParam.TextureWrapType.W:
+                    case SamplerWrapType.W:
                         texture.wrapModeW = value;
                         break;
 
@@ -358,7 +358,7 @@ namespace UniGLTF
                 return new GetTextureParam.TextureSamplerParam
                 {
                     FilterMode = FilterMode.Bilinear,
-                    WrapModes = new (GetTextureParam.TextureWrapType, TextureWrapMode)[] { },
+                    WrapModes = new (SamplerWrapType, TextureWrapMode)[] { },
                 };
             }
 
@@ -370,26 +370,26 @@ namespace UniGLTF
             };
         }
 
-        public static IEnumerable<(GetTextureParam.TextureWrapType, TextureWrapMode)> GetUnityWrapMode(glTFTextureSampler sampler)
+        public static IEnumerable<(SamplerWrapType, TextureWrapMode)> GetUnityWrapMode(glTFTextureSampler sampler)
         {
             if (sampler.wrapS == sampler.wrapT)
             {
                 switch (sampler.wrapS)
                 {
                     case glWrap.NONE: // default
-                        yield return (GetTextureParam.TextureWrapType.All, TextureWrapMode.Repeat);
+                        yield return (SamplerWrapType.All, TextureWrapMode.Repeat);
                         break;
 
                     case glWrap.CLAMP_TO_EDGE:
-                        yield return (GetTextureParam.TextureWrapType.All, TextureWrapMode.Clamp);
+                        yield return (SamplerWrapType.All, TextureWrapMode.Clamp);
                         break;
 
                     case glWrap.REPEAT:
-                        yield return (GetTextureParam.TextureWrapType.All, TextureWrapMode.Repeat);
+                        yield return (SamplerWrapType.All, TextureWrapMode.Repeat);
                         break;
 
                     case glWrap.MIRRORED_REPEAT:
-                        yield return (GetTextureParam.TextureWrapType.All, TextureWrapMode.Mirror);
+                        yield return (SamplerWrapType.All, TextureWrapMode.Mirror);
                         break;
 
                     default:
@@ -401,19 +401,19 @@ namespace UniGLTF
                 switch (sampler.wrapS)
                 {
                     case glWrap.NONE: // default
-                        yield return (GetTextureParam.TextureWrapType.U, TextureWrapMode.Repeat);
+                        yield return (SamplerWrapType.U, TextureWrapMode.Repeat);
                         break;
 
                     case glWrap.CLAMP_TO_EDGE:
-                        yield return (GetTextureParam.TextureWrapType.U, TextureWrapMode.Clamp);
+                        yield return (SamplerWrapType.U, TextureWrapMode.Clamp);
                         break;
 
                     case glWrap.REPEAT:
-                        yield return (GetTextureParam.TextureWrapType.U, TextureWrapMode.Repeat);
+                        yield return (SamplerWrapType.U, TextureWrapMode.Repeat);
                         break;
 
                     case glWrap.MIRRORED_REPEAT:
-                        yield return (GetTextureParam.TextureWrapType.U, TextureWrapMode.Mirror);
+                        yield return (SamplerWrapType.U, TextureWrapMode.Mirror);
                         break;
 
                     default:
@@ -422,19 +422,19 @@ namespace UniGLTF
                 switch (sampler.wrapT)
                 {
                     case glWrap.NONE: // default
-                        yield return (GetTextureParam.TextureWrapType.V, TextureWrapMode.Repeat);
+                        yield return (SamplerWrapType.V, TextureWrapMode.Repeat);
                         break;
 
                     case glWrap.CLAMP_TO_EDGE:
-                        yield return (GetTextureParam.TextureWrapType.V, TextureWrapMode.Clamp);
+                        yield return (SamplerWrapType.V, TextureWrapMode.Clamp);
                         break;
 
                     case glWrap.REPEAT:
-                        yield return (GetTextureParam.TextureWrapType.V, TextureWrapMode.Repeat);
+                        yield return (SamplerWrapType.V, TextureWrapMode.Repeat);
                         break;
 
                     case glWrap.MIRRORED_REPEAT:
-                        yield return (GetTextureParam.TextureWrapType.V, TextureWrapMode.Mirror);
+                        yield return (SamplerWrapType.V, TextureWrapMode.Mirror);
                         break;
 
                     default:

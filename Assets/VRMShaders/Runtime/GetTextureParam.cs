@@ -73,17 +73,9 @@ namespace VRMShaders
         public string ConvertedFileName => Name.ConvertedFileName;
         public string Uri => Name.Uri;
 
-        public enum TextureWrapType
-        {
-            All,
-            U,
-            V,
-            W,
-        }
-
         public struct TextureSamplerParam
         {
-            public (TextureWrapType, TextureWrapMode)[] WrapModes;
+            public (SamplerWrapType, TextureWrapMode)[] WrapModes;
             public FilterMode FilterMode;
         }
 
