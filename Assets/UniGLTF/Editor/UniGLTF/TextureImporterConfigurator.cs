@@ -62,7 +62,7 @@ namespace UniGLTF
             }
         }
 
-        public static void Configure(GetTextureParam textureInfo, IDictionary<string, Texture2D> ExternalMap)
+        public static void Configure(TextureImportParam textureInfo, IDictionary<string, Texture2D> ExternalMap)
         {
             switch (textureInfo.TextureType)
             {

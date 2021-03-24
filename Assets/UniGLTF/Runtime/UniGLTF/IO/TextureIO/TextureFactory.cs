@@ -41,7 +41,7 @@ namespace UniGLTF
         }
     }
 
-    public delegate Task<Texture2D> GetTextureAsyncFunc(IAwaitCaller awaitCaller, glTF gltf, GetTextureParam param);
+    public delegate Task<Texture2D> GetTextureAsyncFunc(IAwaitCaller awaitCaller, glTF gltf, TextureImportParam param);
     public class TextureFactory : IDisposable
     {
         glTF m_gltf;
@@ -49,7 +49,7 @@ namespace UniGLTF
 
         public readonly Dictionary<string, Texture2D> ExternalMap;
 
-        public bool TryGetExternal(GetTextureParam param, bool used, out Texture2D external)
+        public bool TryGetExternal(TextureImportParam param, bool used, out Texture2D external)
         {
             if (param.Index0!=null && ExternalMap != null)
             {
@@ -150,7 +150,7 @@ namespace UniGLTF
             }
         }
 
-        async Task<TextureLoadInfo> GetOrCreateBaseTexture(IAwaitCaller awaitCaller, GetTextureParam param, GetTextureBytesAsync getTextureBytesAsync, RenderTextureReadWrite colorSpace, bool used)
+        async Task<TextureLoadInfo> GetOrCreateBaseTexture(IAwaitCaller awaitCaller, TextureImportParam param, GetTextureBytesAsync getTextureBytesAsync, RenderTextureReadWrite colorSpace, bool used)
         {
             var name = param.GltfName;
             if (m_textureCache.TryGetValue(name, out TextureLoadInfo cacheInfo))
@@ -178,7 +178,7 @@ namespace UniGLTF
             return cacheInfo;
         }
 
-        public static void SetSampler(Texture2D texture, GetTextureParam param)
+        public static void SetSampler(Texture2D texture, TextureImportParam param)
         {
             if (texture == null)
             {
@@ -221,7 +221,7 @@ namespace UniGLTF
         /// <param name="roughnessFactor">METALLIC_GLOSS_PROPの追加パラメーター</param>
         /// <param name="indices">gltf の texture index</param>
         /// <returns></returns>
-        public async Task<Texture2D> GetTextureAsync(IAwaitCaller awaitCaller, glTF gltf, GetTextureParam param)
+        public async Task<Texture2D> GetTextureAsync(IAwaitCaller awaitCaller, glTF gltf, TextureImportParam param)
         {
             if (m_textureCache.TryGetValue(param.ConvertedName, out TextureLoadInfo cacheInfo))
             {
@@ -273,23 +273,23 @@ namespace UniGLTF
             }
         }
 
-        public static GetTextureParam CreateSRGB(GltfParser parser, int textureIndex)
+        public static TextureImportParam CreateSRGB(GltfParser parser, int textureIndex)
         {
             var name = CreateNameExt(parser.GLTF, textureIndex, TextureImportTypes.sRGB);
             var sampler = CreateSampler(parser.GLTF, textureIndex);
             GetTextureBytesAsync getTextureBytesAsync = () => Task.FromResult(ToArray(parser.GLTF.GetImageBytesFromTextureIndex(parser.Storage, textureIndex)));
-            return new GetTextureParam(name, sampler, TextureImportTypes.sRGB, default, default, getTextureBytesAsync, default, default, default, default, default);
+            return new TextureImportParam(name, sampler, TextureImportTypes.sRGB, default, default, getTextureBytesAsync, default, default, default, default, default);
         }
 
-        public static GetTextureParam CreateNormal(GltfParser parser, int textureIndex)
+        public static TextureImportParam CreateNormal(GltfParser parser, int textureIndex)
         {
             var name = CreateNameExt(parser.GLTF, textureIndex, TextureImportTypes.NormalMap);
             var sampler = CreateSampler(parser.GLTF, textureIndex);
             GetTextureBytesAsync getTextureBytesAsync = () => Task.FromResult(ToArray(parser.GLTF.GetImageBytesFromTextureIndex(parser.Storage, textureIndex)));
-            return new GetTextureParam(name, sampler, TextureImportTypes.NormalMap, default, default, getTextureBytesAsync, default, default, default, default, default);
+            return new TextureImportParam(name, sampler, TextureImportTypes.NormalMap, default, default, getTextureBytesAsync, default, default, default, default, default);
         }
 
-        public static GetTextureParam CreateStandard(GltfParser parser, int? metallicRoughnessTextureIndex, int? occlusionTextureIndex, float metallicFactor, float roughnessFactor)
+        public static TextureImportParam CreateStandard(GltfParser parser, int? metallicRoughnessTextureIndex, int? occlusionTextureIndex, float metallicFactor, float roughnessFactor)
         {
             TextureImportName name = default;
 
@@ -312,18 +312,18 @@ namespace UniGLTF
                 getOcclusionAsync = () => Task.FromResult(ToArray(parser.GLTF.GetImageBytesFromTextureIndex(parser.Storage, occlusionTextureIndex.Value)));
             }
 
-            return new GetTextureParam(name, sampler, TextureImportTypes.StandardMap, metallicFactor, roughnessFactor, getMetallicRoughnessAsync, getOcclusionAsync, default, default, default, default);
+            return new TextureImportParam(name, sampler, TextureImportTypes.StandardMap, metallicFactor, roughnessFactor, getMetallicRoughnessAsync, getOcclusionAsync, default, default, default, default);
         }
 
-        public static GetTextureParam Create(GltfParser parser, int index, string prop, float metallicFactor, float roughnessFactor)
+        public static TextureImportParam Create(GltfParser parser, int index, string prop, float metallicFactor, float roughnessFactor)
         {
             switch (prop)
             {
-                case GetTextureParam.NORMAL_PROP:
+                case TextureImportParam.NORMAL_PROP:
                     return CreateNormal(parser, index);
 
-                case GetTextureParam.OCCLUSION_PROP:
-                case GetTextureParam.METALLIC_GLOSS_PROP:
+                case TextureImportParam.OCCLUSION_PROP:
+                case TextureImportParam.METALLIC_GLOSS_PROP:
                     return CreateStandard(parser, index, default, metallicFactor, roughnessFactor);
 
                 default:

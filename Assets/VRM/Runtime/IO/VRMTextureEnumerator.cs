@@ -12,7 +12,7 @@ namespace VRM
             m_vrm = vrm;
         }
 
-        public IEnumerable<GetTextureParam> Enumerate(GltfParser parser)
+        public IEnumerable<TextureImportParam> Enumerate(GltfParser parser)
         {
             for (int i = 0; i < parser.GLTF.materials.Count; ++i)
             {

@@ -18,7 +18,7 @@ namespace UniGLTF
         public glTF GLTF => m_parser.GLTF;
         public IStorage Storage => m_parser.Storage;
 
-        public readonly Dictionary<UnityPath, GetTextureParam> Textures = new Dictionary<UnityPath, GetTextureParam>();
+        public readonly Dictionary<UnityPath, TextureImportParam> Textures = new Dictionary<UnityPath, TextureImportParam>();
         UnityEngine.Texture2D[] m_subAssets;
         UnityPath m_textureDirectory;
 
@@ -41,7 +41,7 @@ namespace UniGLTF
             return Path.GetExtension(uri).ToLower();
         }
 
-        public void Extract(GetTextureParam param)
+        public void Extract(TextureImportParam param)
         {
             if (Textures.Values.Contains(param))
             {

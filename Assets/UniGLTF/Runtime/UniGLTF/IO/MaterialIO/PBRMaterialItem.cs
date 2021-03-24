@@ -44,12 +44,12 @@ namespace UniGLTF
             Transparent
         }
 
-        public static GetTextureParam BaseColorTexture(GltfParser parser, glTFMaterial src)
+        public static TextureImportParam BaseColorTexture(GltfParser parser, glTFMaterial src)
         {
             return TextureFactory.CreateSRGB(parser, src.pbrMetallicRoughness.baseColorTexture.index);
         }
 
-        public static GetTextureParam StandardTexture(GltfParser parser, glTFMaterial src)
+        public static TextureImportParam StandardTexture(GltfParser parser, glTFMaterial src)
         {
             var metallicFactor = 1.0f;
             var roughnessFactor = 1.0f;
@@ -65,7 +65,7 @@ namespace UniGLTF
                             roughnessFactor);
         }
 
-        public static GetTextureParam NormalTexture(GltfParser parser, glTFMaterial src)
+        public static TextureImportParam NormalTexture(GltfParser parser, glTFMaterial src)
         {
             return TextureFactory.CreateNormal(parser, src.normalTexture.index);
         }
@@ -74,7 +74,7 @@ namespace UniGLTF
         {
             if (getTexture == null)
             {
-                getTexture = (IAwaitCaller _awaitCaller, glTF _gltf, GetTextureParam _param) => Task.FromResult<Texture2D>(null);
+                getTexture = (IAwaitCaller _awaitCaller, glTF _gltf, TextureImportParam _param) => Task.FromResult<Texture2D>(null);
             }
 
             if (i < 0 || i >= parser.GLTF.materials.Count)
@@ -84,7 +84,7 @@ namespace UniGLTF
 
             var src = parser.GLTF.materials[i];
             var material = MaterialFactory.CreateMaterial(i, src, ShaderName);
-            var standardParam = default(GetTextureParam);
+            var standardParam = default(TextureImportParam);
             if (src.pbrMetallicRoughness != null || src.occlusionTexture != null)
             {
                 if (src.pbrMetallicRoughness.metallicRoughnessTexture != null || src.occlusionTexture != null)
@@ -112,7 +112,7 @@ namespace UniGLTF
                     var texture = await getTexture(awaitCaller, parser.GLTF, standardParam);
                     if (texture != null)
                     {
-                        material.SetTexture(GetTextureParam.METALLIC_GLOSS_PROP, texture);
+                        material.SetTexture(TextureImportParam.METALLIC_GLOSS_PROP, texture);
                     }
 
                     material.SetFloat("_Metallic", 1.0f);
@@ -135,7 +135,7 @@ namespace UniGLTF
                 var texture = await getTexture(awaitCaller, parser.GLTF, NormalTexture(parser, src));
                 if (texture != null)
                 {
-                    material.SetTexture(GetTextureParam.NORMAL_PROP, texture);
+                    material.SetTexture(TextureImportParam.NORMAL_PROP, texture);
                     material.SetFloat("_BumpScale", src.normalTexture.scale);
                 }
 
@@ -148,7 +148,7 @@ namespace UniGLTF
                 var texture = await getTexture(awaitCaller, parser.GLTF, standardParam);
                 if (texture != null)
                 {
-                    material.SetTexture(GetTextureParam.OCCLUSION_PROP, texture);
+                    material.SetTexture(TextureImportParam.OCCLUSION_PROP, texture);
                     material.SetFloat("_OcclusionStrength", src.occlusionTexture.strength);
                 }
 

@@ -15,7 +15,7 @@ namespace VRMShaders
     /// <returns></returns>
     public delegate Task<byte[]> GetTextureBytesAsync();
 
-    public struct GetTextureParam
+    public struct TextureImportParam
     {
         public const string NORMAL_PROP = "_BumpMap";
 
@@ -48,7 +48,7 @@ namespace VRMShaders
         /// </summary>
         public bool ExtractConverted => TextureType == TextureImportTypes.StandardMap;
 
-        public GetTextureParam(TextureImportName name, SamplerParam sampler, TextureImportTypes textureType, float metallicFactor, float roughnessFactor,
+        public TextureImportParam(TextureImportName name, SamplerParam sampler, TextureImportTypes textureType, float metallicFactor, float roughnessFactor,
             GetTextureBytesAsync i0,
             GetTextureBytesAsync i1,
             GetTextureBytesAsync i2,

@@ -3,11 +3,11 @@ using VRMShaders;
 
 namespace UniGLTF
 {
-    public delegate IEnumerable<GetTextureParam> TextureEnumerator(GltfParser parser);
+    public delegate IEnumerable<TextureImportParam> TextureEnumerator(GltfParser parser);
 
     public static class GltfTextureEnumerator
     {
-        public static IEnumerable<GetTextureParam> EnumerateTextures(GltfParser parser, glTFMaterial m)
+        public static IEnumerable<TextureImportParam> EnumerateTextures(GltfParser parser, glTFMaterial m)
         {
             int? metallicRoughnessTexture = default;
             if (m.pbrMetallicRoughness != null)
@@ -51,9 +51,9 @@ namespace UniGLTF
             }
         }
 
-        public static IEnumerable<GetTextureParam> Enumerate(GltfParser parser)
+        public static IEnumerable<TextureImportParam> Enumerate(GltfParser parser)
         {
-            var used = new HashSet<GetTextureParam>();
+            var used = new HashSet<TextureImportParam>();
             foreach (var material in parser.GLTF.materials)
             {
                 foreach (var textureInfo in EnumerateTextures(parser, material))
