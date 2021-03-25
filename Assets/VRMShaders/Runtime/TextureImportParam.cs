@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-
+using UnityEngine;
 
 namespace VRMShaders
 {
@@ -30,6 +30,12 @@ namespace VRMShaders
         public string ConvertedFileName => Name.ConvertedFileName;
         public string Uri => Name.Uri;
 
+        public string ExtractKey => Name.ExtractKey;
+
+        
+        public Vector2 Offset;
+        public Vector2 Scale;
+
         public SamplerParam Sampler;
 
         public readonly TextureImportTypes TextureType;
@@ -48,7 +54,7 @@ namespace VRMShaders
         /// </summary>
         public bool ExtractConverted => TextureType == TextureImportTypes.StandardMap;
 
-        public TextureImportParam(TextureImportName name, SamplerParam sampler, TextureImportTypes textureType, float metallicFactor, float roughnessFactor,
+        public TextureImportParam(TextureImportName name, Vector2 offset, Vector2 scale, SamplerParam sampler, TextureImportTypes textureType, float metallicFactor, float roughnessFactor,
             GetTextureBytesAsync i0,
             GetTextureBytesAsync i1,
             GetTextureBytesAsync i2,
@@ -57,6 +63,8 @@ namespace VRMShaders
             GetTextureBytesAsync i5)
         {
             Name = name;
+            Offset = offset;
+            Scale = scale;
             Sampler = sampler;
             TextureType = textureType;
             MetallicFactor = metallicFactor;

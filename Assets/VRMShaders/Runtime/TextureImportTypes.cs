@@ -1,4 +1,7 @@
-﻿namespace VRMShaders
+﻿using System;
+using UnityEngine;
+
+namespace VRMShaders
 {
     public enum TextureImportTypes
     {
@@ -24,5 +27,23 @@
         // extract:
         //   TextureImporter.sRGBTexture = false;
         Linear,
+    }
+
+    public static class TextureImportTypesExtensions
+    {
+        public static RenderTextureReadWrite GetColorSpace(this TextureImportTypes textureType)
+        {
+            switch (textureType)
+            {
+                case TextureImportTypes.sRGB:
+                    return RenderTextureReadWrite.sRGB;
+                case TextureImportTypes.Linear:
+                case TextureImportTypes.StandardMap:
+                case TextureImportTypes.NormalMap:
+                    return RenderTextureReadWrite.Linear;
+                default:
+                    throw new NotImplementedException();
+            }
+        }
     }
 }

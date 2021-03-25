@@ -1,4 +1,6 @@
-﻿namespace VRMShaders
+﻿using System.IO;
+
+namespace VRMShaders
 {
     public struct TextureImportName
     {
@@ -6,14 +8,38 @@
         public readonly string ConvertedName;
 
         public readonly string Ext;
-        public string Uri;
+        public readonly string Uri;
+        public readonly string ExtractKey;
 
-        public TextureImportName(string gltfName, string convertedName, string ext, string uri)
+        public static string GetExtractKey(TextureImportTypes type, string gltfName, string convertedName, string uri)
+        {
+            if (type == TextureImportTypes.StandardMap)
+            {
+                // metallic, smooth, occlusion
+                return convertedName;
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(uri))
+                {
+                    // external image
+                    return Path.GetFileNameWithoutExtension(uri);
+                }
+                else
+                {
+                    // texture name
+                    return gltfName;
+                }
+            }
+        }
+
+        public TextureImportName(TextureImportTypes textureType, string gltfName, string ext, string uri)
         {
             GltfName = gltfName;
-            ConvertedName = convertedName;
+            ConvertedName = TextureImportName.Convert(gltfName, textureType);
             Ext = ext;
             Uri = uri;
+            ExtractKey = GetExtractKey(textureType, gltfName, ConvertedName, uri);
         }
 
         public string GltfFileName => $"{GltfName}{Ext}";

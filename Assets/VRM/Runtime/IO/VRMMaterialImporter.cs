@@ -56,13 +56,14 @@ namespace VRM
             {
                 material.SetFloat(kv.Key, kv.Value);
             }
+
+            var offsetScaleMap = new Dictionary<string, float[]>();
             foreach (var kv in item.vectorProperties)
             {
                 if (item.textureProperties.ContainsKey(kv.Key))
                 {
                     // texture offset & scale
-                    material.SetTextureOffset(kv.Key, new Vector2(kv.Value[0], kv.Value[1]));
-                    material.SetTextureScale(kv.Key, new Vector2(kv.Value[2], kv.Value[3]));
+                    offsetScaleMap.Add(kv.Key, kv.Value);
                 }
                 else
                 {
@@ -71,13 +72,22 @@ namespace VRM
                     material.SetVector(kv.Key, v);
                 }
             }
+
             foreach (var kv in item.textureProperties)
             {
-                var param = TextureFactory.Create(parser, kv.Value, kv.Key, 1, 1);
+                var (offset, scale) = (Vector2.zero, Vector2.one);
+                if (offsetScaleMap.TryGetValue(kv.Key, out float[] value))
+                {
+                    offset = new Vector2(value[0], value[1]);
+                    scale = new Vector2(value[2], value[3]);
+                }
+
+                var param = VRMTextureParam.Create(parser, kv.Value, offset, scale, kv.Key, 1, 1);
                 var texture = await getTexture(awaitCaller, parser.GLTF, param);
                 if (texture != null)
                 {
                     material.SetTexture(kv.Key, texture);
+                    MaterialFactory.SetTextureOffsetAndScale(material, kv.Key, offset, scale);
                 }
             }
             foreach (var kv in item.keywordMap)

@@ -1,6 +1,7 @@
 using UnityEngine;
 
-namespace UniGLTF
+
+namespace VRMShaders
 {
     public static class NormalConverter
     {
@@ -34,14 +35,14 @@ namespace UniGLTF
         // ConvertToNormalValueFromRawColorWhenCompressionIsRequired
         public static Texture2D Import(Texture2D texture)
         {
-            return TextureConverter.Convert(texture, glTFTextureTypes.Normal, null, Encoder);
+            return TextureConverter.Convert(texture, TextureImportTypes.NormalMap, null, Encoder);
         }
 
         // Unity texture to GLTF data
         // ConvertToRawColorWhenNormalValueIsCompressed
         public static Texture2D Export(Texture texture)
         {
-            return TextureConverter.Convert(texture, glTFTextureTypes.Normal, null, Decoder);
+            return TextureConverter.Convert(texture, TextureImportTypes.NormalMap, null, Decoder);
         }
     }
 }

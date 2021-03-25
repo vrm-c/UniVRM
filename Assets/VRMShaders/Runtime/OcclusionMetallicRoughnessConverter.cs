@@ -2,7 +2,8 @@ using System;
 using System.Linq;
 using UnityEngine;
 
-namespace UniGLTF
+
+namespace VRMShaders
 {
     /// <summary>
     /// 
@@ -28,7 +29,7 @@ namespace UniGLTF
             {
                 if (metallicRoughnessTexture == occlusionTexture)
                 {
-                    var copyMetallicRoughness = TextureConverter.CopyTexture(metallicRoughnessTexture, glTFTextureTypes.OcclusionMetallicRoughness, null);
+                    var copyMetallicRoughness = TextureConverter.CopyTexture(metallicRoughnessTexture, TextureImportTypes.StandardMap, null);
                     var metallicRoughnessPixels = copyMetallicRoughness.GetPixels32();
                     for (int i = 0; i < metallicRoughnessPixels.Length; ++i)
                     {
@@ -41,9 +42,9 @@ namespace UniGLTF
                 }
                 else
                 {
-                    var copyMetallicRoughness = TextureConverter.CopyTexture(metallicRoughnessTexture, glTFTextureTypes.OcclusionMetallicRoughness, null);
+                    var copyMetallicRoughness = TextureConverter.CopyTexture(metallicRoughnessTexture, TextureImportTypes.StandardMap, null);
                     var metallicRoughnessPixels = copyMetallicRoughness.GetPixels32();
-                    var copyOcclusion = TextureConverter.CopyTexture(occlusionTexture, glTFTextureTypes.OcclusionMetallicRoughness, null);
+                    var copyOcclusion = TextureConverter.CopyTexture(occlusionTexture, TextureImportTypes.StandardMap, null);
                     var occlusionPixels = copyOcclusion.GetPixels32();
                     if (metallicRoughnessPixels.Length != occlusionPixels.Length)
                     {
@@ -61,7 +62,7 @@ namespace UniGLTF
             }
             else if (metallicRoughnessTexture != null)
             {
-                var copyTexture = TextureConverter.CopyTexture(metallicRoughnessTexture, glTFTextureTypes.OcclusionMetallicRoughness, null);
+                var copyTexture = TextureConverter.CopyTexture(metallicRoughnessTexture, TextureImportTypes.StandardMap, null);
                 copyTexture.SetPixels32(copyTexture.GetPixels32().Select(x => ImportPixel(x, metallicFactor, roughnessFactor, default)).ToArray());
                 copyTexture.Apply();
                 copyTexture.name = metallicRoughnessTexture.name;
@@ -69,7 +70,7 @@ namespace UniGLTF
             }
             else if (occlusionTexture != null)
             {
-                var copyTexture = TextureConverter.CopyTexture(occlusionTexture, glTFTextureTypes.OcclusionMetallicRoughness, null);
+                var copyTexture = TextureConverter.CopyTexture(occlusionTexture, TextureImportTypes.StandardMap, null);
                 copyTexture.SetPixels32(copyTexture.GetPixels32().Select(x => ImportPixel(default, metallicFactor, roughnessFactor, x)).ToArray());
                 copyTexture.Apply();
                 copyTexture.name = occlusionTexture.name;
@@ -100,7 +101,7 @@ namespace UniGLTF
             {
                 if (metallicSmoothTexture == occlusionTexture)
                 {
-                    var copyTexture = TextureConverter.CopyTexture(metallicSmoothTexture, glTFTextureTypes.OcclusionMetallicRoughness, null);
+                    var copyTexture = TextureConverter.CopyTexture(metallicSmoothTexture, TextureImportTypes.StandardMap, null);
                     copyTexture.SetPixels32(copyTexture.GetPixels32().Select(x => ExportPixel(x, smoothness, x)).ToArray());
                     copyTexture.Apply();
                     copyTexture.name = metallicSmoothTexture.name;
@@ -108,9 +109,9 @@ namespace UniGLTF
                 }
                 else
                 {
-                    var copyMetallicSmooth = TextureConverter.CopyTexture(metallicSmoothTexture, glTFTextureTypes.OcclusionMetallicRoughness, null);
+                    var copyMetallicSmooth = TextureConverter.CopyTexture(metallicSmoothTexture, TextureImportTypes.StandardMap, null);
                     var metallicSmoothPixels = copyMetallicSmooth.GetPixels32();
-                    var copyOcclusion = TextureConverter.CopyTexture(occlusionTexture, glTFTextureTypes.OcclusionMetallicRoughness, null);
+                    var copyOcclusion = TextureConverter.CopyTexture(occlusionTexture, TextureImportTypes.StandardMap, null);
                     var occlusionPixels = copyOcclusion.GetPixels32();
                     if (metallicSmoothPixels.Length != occlusionPixels.Length)
                     {
@@ -128,7 +129,7 @@ namespace UniGLTF
             }
             else if (metallicSmoothTexture)
             {
-                var copyTexture = TextureConverter.CopyTexture(metallicSmoothTexture, glTFTextureTypes.OcclusionMetallicRoughness, null);
+                var copyTexture = TextureConverter.CopyTexture(metallicSmoothTexture, TextureImportTypes.StandardMap, null);
                 copyTexture.SetPixels32(copyTexture.GetPixels32().Select(x => ExportPixel(x, smoothness, default)).ToArray());
                 copyTexture.Apply();
                 copyTexture.name = metallicSmoothTexture.name;
@@ -136,7 +137,7 @@ namespace UniGLTF
             }
             else if (occlusionTexture)
             {
-                var copyTexture = TextureConverter.CopyTexture(occlusionTexture, glTFTextureTypes.OcclusionMetallicRoughness, null);
+                var copyTexture = TextureConverter.CopyTexture(occlusionTexture, TextureImportTypes.StandardMap, null);
                 copyTexture.SetPixels32(copyTexture.GetPixels32().Select(x => ExportPixel(default, smoothness, x)).ToArray());
                 copyTexture.Apply();
                 copyTexture.name = occlusionTexture.name;
