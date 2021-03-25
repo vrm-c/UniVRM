@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace UniGLTF
 {
@@ -40,7 +41,7 @@ namespace UniGLTF
 
                 case glComponentType.FLOAT:
                     {
-                        var array = gltf.GetArrayFromAccessor<UShort4>(accessorIndex);
+                        var array = gltf.GetArrayFromAccessor<Vector4>(accessorIndex);
                         Getter getter = (i) =>
                             {
                                 var value = array[i];
