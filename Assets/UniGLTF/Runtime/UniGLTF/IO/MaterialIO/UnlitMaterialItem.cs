@@ -12,7 +12,7 @@ namespace UniGLTF
         {
             if (getTexture == null)
             {
-                getTexture = (_x, _y, _z) => Task.FromResult<Texture2D>(default);
+                getTexture = (_) => Task.FromResult<Texture2D>(default);
             }
 
             var src = parser.GLTF.materials[i];
@@ -23,7 +23,7 @@ namespace UniGLTF
             if (src.pbrMetallicRoughness.baseColorTexture != null)
             {
                 var (offset, scale) = MaterialFactory.GetTextureOffsetAndScale(src.pbrMetallicRoughness.baseColorTexture);
-                material.mainTexture = await getTexture(awaitCaller, parser.GLTF, TextureFactory.CreateSRGB(parser, src.pbrMetallicRoughness.baseColorTexture.index, offset, scale));
+                material.mainTexture = await getTexture(GltfTextureImporter.CreateSRGB(parser, src.pbrMetallicRoughness.baseColorTexture.index, offset, scale));
 
                 // Texture Offset and Scale
                 MaterialFactory.SetTextureOffsetAndScale(material, "_MainTex", offset, scale);

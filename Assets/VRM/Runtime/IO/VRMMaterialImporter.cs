@@ -82,8 +82,8 @@ namespace VRM
                     scale = new Vector2(value[2], value[3]);
                 }
 
-                var param = VRMTextureParam.Create(parser, kv.Value, offset, scale, kv.Key, 1, 1);
-                var texture = await getTexture(awaitCaller, parser.GLTF, param);
+                var param = MToonTextureParam.Create(parser, kv.Value, offset, scale, kv.Key, 1, 1);
+                var texture = await getTexture(param);
                 if (texture != null)
                 {
                     material.SetTexture(kv.Key, texture);

@@ -99,9 +99,15 @@ namespace UniGLTF
 
         /// <summary>
         /// 所有権(Dispose権)を移譲する
+        /// 
+        /// 所有権を移動する関数。
+        /// 
+        /// * 所有権が移動する。return true => ImporterContext.Dispose の対象から外れる
+        /// * 所有権が移動しない。return false => Importer.Context.Dispose でDestroyされる
+        /// 
         /// </summary>
         /// <param name="take"></param>
-        public void TransferOwnership(TakeOwnershipFunc take)
+        public void TransferOwnership(Func<UnityEngine.Object, bool> take)
         {
             var list = new List<Material>();
             foreach (var x in m_materials)

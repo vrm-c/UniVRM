@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Threading.Tasks;
 using System.Text;
+using VRMShaders;
 
 namespace UniGLTF
 {
@@ -44,7 +45,7 @@ namespace UniGLTF
             IEnumerable<(string, UnityEngine.Object)> externalObjectMap = null)
         {
             m_parser = parser;
-            m_textureFactory = new TextureFactory(GLTF, Storage, externalObjectMap);
+            m_textureFactory = new TextureFactory(externalObjectMap);
             m_materialFactory = new MaterialFactory(m_parser, externalObjectMap);
         }
 
@@ -283,7 +284,7 @@ namespace UniGLTF
         /// Root ヒエラルキーで使っているリソース
         /// </summary>
         /// <returns></returns>
-        public virtual void TransferOwnership(TakeOwnershipFunc take)
+        public virtual void TransferOwnership(Func<UnityEngine.Object, bool> take)
         {
             var list = new List<UnityEngine.Object>();
             foreach (var mesh in Meshes)

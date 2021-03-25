@@ -35,7 +35,7 @@ namespace VRM
                 }
 
                 // SRGB color or normalmap
-                yield return VRMTextureParam.Create(parser, kv.Value, offset, scale, kv.Key, default, default);
+                yield return MToonTextureParam.Create(parser, kv.Value, offset, scale, kv.Key, default, default);
             }
         }
 
@@ -72,7 +72,7 @@ namespace VRM
             // thumbnail
             if (m_vrm.meta != null && m_vrm.meta.texture != -1)
             {
-                var textureInfo = TextureFactory.CreateSRGB(parser, m_vrm.meta.texture, Vector2.zero, Vector2.one);
+                var textureInfo = GltfTextureImporter.CreateSRGB(parser, m_vrm.meta.texture, Vector2.zero, Vector2.one);
                 if (used.Add(textureInfo.ExtractKey))
                 {
                     yield return textureInfo;
