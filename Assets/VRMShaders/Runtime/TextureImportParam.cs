@@ -29,6 +29,9 @@ namespace VRMShaders
         public string ConvertedName => Name.ConvertedName;
         public string ConvertedFileName => Name.ConvertedFileName;
         public string Uri => Name.Uri;
+
+        public string ExtractKey => Name.ExtractKey;
+
         
         public Vector2 Offset;
         public Vector2 Scale;
