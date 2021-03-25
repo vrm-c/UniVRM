@@ -49,30 +49,6 @@ namespace UniGLTF
 
         public readonly Dictionary<string, Texture2D> ExternalMap;
 
-        public bool TryGetExternal(TextureImportParam param, bool used, out Texture2D external)
-        {
-            if (param.Index0!=null && ExternalMap != null)
-            {
-                var cacheName = param.ConvertedName;
-                if (param.TextureType == TextureImportTypes.NormalMap)
-                {
-                    cacheName = param.GltfName;
-                    if (m_textureCache.TryGetValue(cacheName, out TextureLoadInfo normalInfo))
-                    {
-                        external = normalInfo.Texture;
-                        return true;
-                    }
-                }
-                if (ExternalMap.TryGetValue(cacheName, out external))
-                {
-                    m_textureCache.Add(cacheName, new TextureLoadInfo(external, used, true));
-                    return true;
-                }
-            }
-            external = default;
-            return false;
-        }
-
         public TextureFactory(glTF gltf, IStorage storage, IEnumerable<(string, UnityEngine.Object)> externalMap)
         {
             m_gltf = gltf;
@@ -128,6 +104,12 @@ namespace UniGLTF
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="string"></typeparam>
+        /// <typeparam name="TextureLoadInfo"></typeparam>
+        /// <returns></returns>
         Dictionary<string, TextureLoadInfo> m_textureCache = new Dictionary<string, TextureLoadInfo>();
 
         public IEnumerable<TextureLoadInfo> Textures => m_textureCache.Values;
@@ -223,43 +205,58 @@ namespace UniGLTF
         /// <returns></returns>
         public async Task<Texture2D> GetTextureAsync(IAwaitCaller awaitCaller, glTF gltf, TextureImportParam param)
         {
-            if (m_textureCache.TryGetValue(param.ConvertedName, out TextureLoadInfo cacheInfo))
+            //
+            // ExtractKey で External とのマッチングを試みる
+            // 
+            // Normal => GltfName
+            // Standard => ConvertedName
+            // sRGB => GltfName 
+            // Linear => GltfName 
+            //
+            if (param.Index0 != null && ExternalMap != null)
             {
-                return cacheInfo.Texture;
-            }
-            if (TryGetExternal(param, true, out Texture2D external))
-            {
-                return external;
+                if (ExternalMap.TryGetValue(param.ExtractKey, out Texture2D external))
+                {
+                    return external;
+                }
             }
 
             switch (param.TextureType)
             {
                 case TextureImportTypes.NormalMap:
+                    // Runtime/SubAsset 用に変換する
                     {
-                        var baseTexture = await GetOrCreateBaseTexture(awaitCaller, param, param.Index0, RenderTextureReadWrite.Linear, false);
-                        var converted = NormalConverter.Import(baseTexture.Texture);
-                        converted.name = param.ConvertedName;
-                        var info = new TextureLoadInfo(converted, true, false);
-                        m_textureCache.Add(converted.name, info);
+                        if (!m_textureCache.TryGetValue(param.ConvertedName, out TextureLoadInfo info))
+                        {
+                            var baseTexture = await GetOrCreateBaseTexture(awaitCaller, param, param.Index0, RenderTextureReadWrite.Linear, false);
+                            var converted = NormalConverter.Import(baseTexture.Texture);
+                            converted.name = param.ConvertedName;
+                            info = new TextureLoadInfo(converted, true, false);
+                            m_textureCache.Add(converted.name, info);
+                        }
                         return info.Texture;
                     }
 
                 case TextureImportTypes.StandardMap:
+                    // 変換する
                     {
-                        TextureLoadInfo baseTexture = default;
-                        if (param.Index0!=null)
+                        if (!m_textureCache.TryGetValue(param.ConvertedName, out TextureLoadInfo info))
                         {
-                            baseTexture = await GetOrCreateBaseTexture(awaitCaller, param, param.Index0, RenderTextureReadWrite.Linear, false);
+                            TextureLoadInfo baseTexture = default;
+                            if (param.Index0!=null)
+                            {
+                                baseTexture = await GetOrCreateBaseTexture(awaitCaller, param, param.Index0, RenderTextureReadWrite.Linear, false);
+                            }
+                            TextureLoadInfo occlusionBaseTexture = default;
+                            if (param.Index1!=null)
+                            {
+                                occlusionBaseTexture = await GetOrCreateBaseTexture(awaitCaller, param, param.Index1, RenderTextureReadWrite.Linear, false);
+                            }
+                            var converted = OcclusionMetallicRoughnessConverter.Import(baseTexture.Texture, param.MetallicFactor, param.RoughnessFactor, occlusionBaseTexture.Texture);
+                            converted.name = param.ConvertedName;
+                            info = new TextureLoadInfo(converted, true, false);
+                            m_textureCache.Add(converted.name, info);
                         }
-                        TextureLoadInfo occlusionBaseTexture = default;
-                        if (param.Index1!=null)
-                        {
-                            occlusionBaseTexture = await GetOrCreateBaseTexture(awaitCaller, param, param.Index1, RenderTextureReadWrite.Linear, false);
-                        }
-                        var converted = OcclusionMetallicRoughnessConverter.Import(baseTexture.Texture, param.MetallicFactor, param.RoughnessFactor, occlusionBaseTexture.Texture);
-                        converted.name = param.ConvertedName;
-                        var info = new TextureLoadInfo(converted, true, false);
-                        m_textureCache.Add(converted.name, info);
                         return info.Texture;
                     }
 
@@ -268,9 +265,9 @@ namespace UniGLTF
                         var baseTexture = await GetOrCreateBaseTexture(awaitCaller, param, param.Index0, RenderTextureReadWrite.sRGB, true);
                         return baseTexture.Texture;
                     }
-
-                    throw new NotImplementedException();
             }
+
+            throw new NotImplementedException();
         }
 
         public static TextureImportParam CreateSRGB(GltfParser parser, int textureIndex, Vector2 offset, Vector2 scale)
@@ -327,8 +324,7 @@ namespace UniGLTF
                 throw new ArgumentOutOfRangeException();
             }
             var gltfImage = gltf.images[gltfTexture.source];
-            var convertedName = TextureImportName.Convert(gltfTexture.name, textureType);
-            return new TextureImportName(gltfTexture.name, convertedName, gltfImage.GetExt(), gltfImage.uri);
+            return new TextureImportName(textureType, gltfTexture.name, gltfImage.GetExt(), gltfImage.uri);
         }
 
         public static SamplerParam CreateSampler(glTF gltf, int index)
