@@ -40,13 +40,13 @@ namespace UniGLTF
         public glTFBufferView Append<T>(ArraySegment<T> segment, glBufferTarget target) where T : struct
         {
             var view = Storage.Extend(segment, target);
-            byteLength = Storage.GetBytes().Count;
+            byteLength = Storage.Bytes.Count;
             return view;
         }
 
         public ArraySegment<Byte> GetBytes()
         {
-            return Storage.GetBytes();
+            return Storage.Bytes;
         }
     }
 

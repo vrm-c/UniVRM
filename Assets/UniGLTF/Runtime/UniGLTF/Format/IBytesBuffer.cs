@@ -5,7 +5,8 @@ namespace UniGLTF
     public interface IBytesBuffer
     {
         string Uri { get; }
-        ArraySegment<Byte> GetBytes();
-        glTFBufferView Extend<T>(ArraySegment<T> array, glBufferTarget target) where T : struct;
+        ArraySegment<Byte> Bytes { get; }
+        glTFBufferView Extend<T>(ArraySegment<T> array, glBufferTarget target = glBufferTarget.NONE) where T : struct;
+        void ExtendCapacity(int capacity);
     }
 }

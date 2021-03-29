@@ -18,7 +18,7 @@ namespace UniVRM10
             private set;
         }
 
-        public readonly List<ArrayByteBuffer10> Buffers;
+        public readonly List<UniGLTF.IBytesBuffer> Buffers;
 
         public UniGLTF.Extensions.VRMC_vrm.VRMC_vrm gltfVrm;
 
@@ -33,9 +33,9 @@ namespace UniVRM10
             {
                 extensionsUsed = new List<string>(),
             };
-            Buffers = new List<ArrayByteBuffer10>()
+            Buffers = new List<UniGLTF.IBytesBuffer>()
             {
-                new ArrayByteBuffer10()
+                new UniGLTF.ArrayByteBuffer()
             };
         }
 
@@ -61,10 +61,9 @@ namespace UniVRM10
                 gltfVrmSpringBone = springBone;
             }
 
-            var array = bin.ToArray();
-            Buffers = new List<ArrayByteBuffer10>()
+            Buffers = new List<UniGLTF.IBytesBuffer>()
             {
-                new ArrayByteBuffer10(array, bin.Count)
+                new UniGLTF.ArraySegmentByteBuffer(bin)
             };
         }
 
@@ -75,14 +74,9 @@ namespace UniVRM10
 
         public int AppendToBuffer(int bufferIndex, ArraySegment<byte> segment)
         {
-            Buffers[bufferIndex].Extend(segment, out int offset, out int length);
+            var gltfBufferView = Buffers[bufferIndex].Extend(segment);
             var viewIndex = Gltf.bufferViews.Count;
-            Gltf.bufferViews.Add(new UniGLTF.glTFBufferView
-            {
-                buffer = 0,
-                byteOffset = offset,
-                byteLength = length,
-            });
+            Gltf.bufferViews.Add(gltfBufferView);
             return viewIndex;
         }
 
