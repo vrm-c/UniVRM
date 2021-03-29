@@ -125,7 +125,7 @@ namespace VRM
             // 
             // convert images(metallic roughness, occlusion map)
             //
-            var task = m_context.MaterialFactory.LoadMaterialsAsync(default(ImmediateCaller), m_context.TextureFactory.GetTextureAsync);
+            var task = m_context.LoadMaterialsAsync();
             if (!task.IsCompleted)
             {
                 throw new Exception();

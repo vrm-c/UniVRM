@@ -8,8 +8,6 @@ using VRMShaders;
 
 namespace UniGLTF
 {
-    public delegate Task<Texture2D> GetTextureAsyncFunc(TextureImportParam param);
-
     /// <summary>
     /// glTFTexture を TextureImportParam に変換する
     /// </summary>

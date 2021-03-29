@@ -42,7 +42,7 @@ namespace UniGLTF
                 // base color
                 if (m.pbrMetallicRoughness?.baseColorTexture != null)
                 {
-                    yield return PBRMaterialItem.BaseColorTexture(parser, m);
+                    yield return GltfPBRMaterial.BaseColorTexture(parser, m);
                 }
 
                 // metallic roughness
@@ -55,14 +55,14 @@ namespace UniGLTF
             // emission
             if (m.emissiveTexture != null)
             {
-                var (offset, scale) = MaterialFactory.GetTextureOffsetAndScale(m.emissiveTexture);
+                var (offset, scale) = GltfMaterialImporter.GetTextureOffsetAndScale(m.emissiveTexture);
                 yield return GltfTextureImporter.CreateSRGB(parser, m.emissiveTexture.index, offset, scale);
             }
 
             // normal
             if (m.normalTexture != null)
             {
-                yield return PBRMaterialItem.NormalTexture(parser, m);
+                yield return GltfPBRMaterial.NormalTexture(parser, m);
             }
 
             // occlusion
@@ -75,7 +75,7 @@ namespace UniGLTF
             // metallicSmooth and occlusion
             if (metallicRoughnessTexture.HasValue || occlusionTexture.HasValue)
             {
-                yield return PBRMaterialItem.StandardTexture(parser, m);
+                yield return GltfPBRMaterial.StandardTexture(parser, m);
             }
         }
 

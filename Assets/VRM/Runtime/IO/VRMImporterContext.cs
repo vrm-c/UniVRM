@@ -26,7 +26,7 @@ namespace VRM
             {
                 VRM = vrm;
                 // override material importer
-                MaterialFactory.CreateMaterialAsync = new VRMMaterialImporter(VRM.materialProperties).CreateMaterialAsync;
+                GltfMaterialImporter.GltfMaterialParamProcessors.Insert(0, new MToonMaterialImporter(VRM.materialProperties).TryCreateParam);
             }
             else
             {
