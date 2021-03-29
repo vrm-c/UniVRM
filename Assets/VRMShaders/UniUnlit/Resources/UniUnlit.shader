@@ -44,6 +44,7 @@
             #if defined(_VERTEXCOL_MUL)
                 fixed4 color : COLOR;
             #endif
+                UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
             struct v2f
@@ -54,6 +55,7 @@
             #if defined(_VERTEXCOL_MUL)
                 fixed4 color : COLOR;
             #endif
+                UNITY_VERTEX_OUTPUT_STEREO
             };
 
             sampler2D _MainTex;
@@ -64,6 +66,8 @@
             v2f vert (appdata v)
             {
                 v2f o;
+                UNITY_SETUP_INSTANCE_ID(v);
+                UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
                 UNITY_TRANSFER_FOG(o,o.vertex);
