@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
+using VrmLib;
 
-namespace VrmLib
+namespace UniVRM10
 {
     public interface IVrmStorage
     {

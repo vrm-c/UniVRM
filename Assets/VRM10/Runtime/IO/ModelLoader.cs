@@ -1,7 +1,8 @@
 using System;
 using System.Linq;
+using VrmLib;
 
-namespace VrmLib
+namespace UniVRM10
 {
     public static class ModelLoader
     {
