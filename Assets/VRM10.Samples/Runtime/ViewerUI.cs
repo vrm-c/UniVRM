@@ -84,10 +84,12 @@ namespace UniVRM10.Samples
                 m_textDistributionOther.text = "";
             }
 
-            public void UpdateMeta(VRM10Controller context)
+            public void UpdateMeta(VRM10MetaObject meta)
             {
-                // var meta = context.ReadMeta(true);
-                var meta = context.Meta;
+                if (meta == null)
+                {
+                    return;
+                }
 
                 m_textModelTitle.text = meta.Name;
                 m_textModelVersion.text = meta.Version;
@@ -306,28 +308,17 @@ namespace UniVRM10.Samples
             {
                 case ".vrm":
                     {
-                        var parser =new UniGLTF.GltfParser();
+                        var parser = new UniGLTF.GltfParser();
                         parser.ParsePath(path);
 
-                        // context.Load();
-                        // context.ShowMeshes();
-                        // context.EnableUpdateWhenOffscreen();
-                        // context.ShowMeshes();
-
-                        var model = UniVRM10.VrmLoader.CreateVrmModel(parser);
-
-                        // UniVRM-0.XXのコンポーネントを構築する
-                        var assets = UniVRM10.RuntimeUnityBuilder.ToUnityAsset(model, showMesh: false);
-
-                        // showRenderer = false のときに後で表示する例
-                        foreach (var renderer in assets.Renderers)
+                        using (var loader = new RuntimeUnityBuilder(parser))
                         {
-                            renderer.enabled = true;
+                            loader.Load();
+                            loader.ShowMeshes();
+                            loader.EnableUpdateWhenOffscreen();
+                            var destroyer = loader.DisposeOnGameObjectDestroyed();
+                            SetModel(destroyer.gameObject);
                         }
-
-                        UniVRM10.ComponentBuilder.Build10(model, assets);
-
-                        SetModel(assets.Root);
                         break;
                     }
 
@@ -337,12 +328,15 @@ namespace UniVRM10.Samples
                         var parser = new GltfParser();
                         parser.ParseGlb(file);
 
-                        var context = new UniGLTF.ImporterContext(parser);
-                        context.Load();
-                        context.ShowMeshes();
-                        context.EnableUpdateWhenOffscreen();
-                        context.ShowMeshes();
-                        SetModel(context.Root);
+                        using (var loader = new UniGLTF.ImporterContext(parser))
+                        {
+                            loader.Load();
+                            loader.ShowMeshes();
+                            loader.EnableUpdateWhenOffscreen();
+                            loader.ShowMeshes();
+                            var destroyer = loader.DisposeOnGameObjectDestroyed();
+                            SetModel(destroyer.gameObject);
+                        }
                         break;
                     }
 
@@ -352,12 +346,15 @@ namespace UniVRM10.Samples
                         var parser = new GltfParser();
                         parser.ParsePath(path);
 
-                        var context = new UniGLTF.ImporterContext(parser);
-                        context.Load();
-                        context.ShowMeshes();
-                        context.EnableUpdateWhenOffscreen();
-                        context.ShowMeshes();
-                        SetModel(context.Root);
+                        using (var loader = new UniGLTF.ImporterContext(parser))
+                        {
+                            loader.Load();
+                            loader.ShowMeshes();
+                            loader.EnableUpdateWhenOffscreen();
+                            loader.ShowMeshes();
+                            var destroyer = loader.DisposeOnGameObjectDestroyed();
+                            SetModel(destroyer.gameObject);
+                        }
                         break;
                     }
 
@@ -382,19 +379,22 @@ namespace UniVRM10.Samples
             if (go != null)
             {
                 m_controller = go.GetComponent<VRM10Controller>();
-
-                m_texts.UpdateMeta(m_controller);
-
-                m_controller.Controller.UpdateType = VRM10Controller.VRM10ControllerImpl.UpdateTypes.LateUpdate; // after HumanPoseTransfer's setPose
+                if (m_controller != null)
                 {
-                    m_loaded = go.AddComponent<HumanPoseTransfer>();
-                    m_loaded.Source = m_src;
-                    m_loaded.SourceType = HumanPoseTransfer.HumanPoseTransferSourceType.HumanPoseTransfer;
 
-                    m_lipSync = go.AddComponent<AIUEO>();
-                    m_blink = go.AddComponent<Blinker>();
+                    m_texts.UpdateMeta(m_controller.Meta);
 
-                    m_controller.LookAt.Gaze = m_target.transform;
+                    m_controller.Controller.UpdateType = VRM10Controller.VRM10ControllerImpl.UpdateTypes.LateUpdate; // after HumanPoseTransfer's setPose
+                    {
+                        m_loaded = go.AddComponent<HumanPoseTransfer>();
+                        m_loaded.Source = m_src;
+                        m_loaded.SourceType = HumanPoseTransfer.HumanPoseTransferSourceType.HumanPoseTransfer;
+
+                        m_lipSync = go.AddComponent<AIUEO>();
+                        m_blink = go.AddComponent<Blinker>();
+
+                        m_controller.LookAt.Gaze = m_target.transform;
+                    }
                 }
 
                 var animation = go.GetComponent<Animation>();
@@ -402,7 +402,6 @@ namespace UniVRM10.Samples
                 {
                     animation.Play(animation.clip.name);
                 }
-
             }
         }
 

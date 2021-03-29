@@ -3,31 +3,24 @@ using System.IO;
 using UnityEngine;
 using VrmLib;
 using UniVRM10;
+using UniGLTF;
 
 public class Sample : MonoBehaviour
 {
     [SerializeField]
     string m_vrmPath = "Tests/Models/Alicia_vrm-0.51/AliciaSolid_vrm-0.51.vrm";
 
-    static UniVRM10.ModelAsset Import(byte[] bytes, FileInfo path)
+    static GameObject Import(byte[] bytes, FileInfo path)
     {
-        var parser = new UniGLTF.GltfParser();
+        var parser = new GltfParser();
         parser.Parse(path.FullName, bytes);
 
-        var model = UniVRM10.VrmLoader.CreateVrmModel(parser);
-
-        // UniVRM-0.XXのコンポーネントを構築する
-        var assets = UniVRM10.RuntimeUnityBuilder.ToUnityAsset(model, showMesh: false);
-
-        // showRenderer = false のときに後で表示する例
-        foreach (var renderer in assets.Renderers)
+        using (var loader = new RuntimeUnityBuilder(parser))
         {
-            renderer.enabled = true;
+            loader.Load();
+            loader.ShowMeshes();
+            return loader.DisposeOnGameObjectDestroyed().gameObject;
         }
-
-        UniVRM10.ComponentBuilder.Build10(model, assets);
-
-        return assets;
     }
 
     // Start is called before the first frame update
@@ -38,17 +31,17 @@ public class Sample : MonoBehaviour
 
         // Export 1.0
         var exporter = new UniVRM10.RuntimeVrmConverter();
-        var model = exporter.ToModelFrom10(vrm0x.Root);
+        var model = exporter.ToModelFrom10(vrm0x);
         // 右手系に変換
         model.ConvertCoordinate(VrmLib.Coordinates.Vrm1);
         var exportedBytes = model.ToGlb();
 
         // Import 1.0
         var vrm10 = Import(exportedBytes, src);
-        var pos = vrm10.Root.transform.position;
+        var pos = vrm10.transform.position;
         pos.x += 1.5f;
-        vrm10.Root.transform.position = pos;
-        vrm10.Root.name = vrm10.Root.name + "_Imported_v1_0";
+        vrm10.transform.position = pos;
+        vrm10.name = vrm10.name + "_Imported_v1_0";
 
         // write
         var path = Path.GetFullPath("vrm10.vrm");

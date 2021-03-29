@@ -6,7 +6,8 @@
         "MToon",
         "MeshUtility",
         "MeshUtility.Editor",
-        "UniGLTF"
+        "UniGLTF",
+        "VRMShaders"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],

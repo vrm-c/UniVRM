@@ -27,136 +27,136 @@ namespace UniVRM10
             var parser = new UniGLTF.GltfParser();
             parser.ParsePath(ctx.assetPath);
 
-            try
-            {
-                // Create Vrm Model
-                VrmLib.Model model = VrmLoader.CreateVrmModel(parser);
-                if (model == null)
-                {
-                    // maybe VRM-0.X
-                    return;
-                }
-                Debug.Log($"VrmLoader.CreateVrmModel: {model}");
+            // try
+            // {
+            //     // Create Vrm Model
+            //     VrmLib.Model model = VrmLoader.CreateVrmModel(parser);
+            //     if (model == null)
+            //     {
+            //         // maybe VRM-0.X
+            //         return;
+            //     }
+            //     Debug.Log($"VrmLoader.CreateVrmModel: {model}");
 
-                // Build Unity Model
-                var assets = EditorUnityBuilder.ToUnityAsset(model, assetPath, this);
-                ComponentBuilder.Build10(model, assets);
+            //     // Build Unity Model
+            //     var assets = EditorUnityBuilder.ToUnityAsset(model, assetPath, this);
+            //     ComponentBuilder.Build10(model, assets);
 
-                // Texture
-                var externalTextures = this.GetExternalUnityObjects<UnityEngine.Texture2D>();
-                foreach (var texture in assets.Textures)
-                {
-                    if (texture == null)
-                        continue;
+            //     // Texture
+            //     var externalTextures = this.GetExternalUnityObjects<UnityEngine.Texture2D>();
+            //     foreach (var texture in assets.Textures)
+            //     {
+            //         if (texture == null)
+            //             continue;
 
-                    if (externalTextures.ContainsValue(texture))
-                    {
-                    }
-                    else
-                    {
-                        ctx.AddObjectToAsset(texture.name, texture);
-                    }
-                }
+            //         if (externalTextures.ContainsValue(texture))
+            //         {
+            //         }
+            //         else
+            //         {
+            //             ctx.AddObjectToAsset(texture.name, texture);
+            //         }
+            //     }
 
-                // Material
-                var externalMaterials = this.GetExternalUnityObjects<UnityEngine.Material>();
-                foreach (var material in assets.Materials)
-                {
-                    if (material == null)
-                        continue;
+            //     // Material
+            //     var externalMaterials = this.GetExternalUnityObjects<UnityEngine.Material>();
+            //     foreach (var material in assets.Materials)
+            //     {
+            //         if (material == null)
+            //             continue;
 
-                    if (externalMaterials.ContainsValue(material))
-                    {
+            //         if (externalMaterials.ContainsValue(material))
+            //         {
 
-                    }
-                    else
-                    {
-                        ctx.AddObjectToAsset(material.name, material);
-                    }
-                }
+            //         }
+            //         else
+            //         {
+            //             ctx.AddObjectToAsset(material.name, material);
+            //         }
+            //     }
 
-                // Mesh
-                foreach (var mesh in assets.Meshes)
-                {
-                    ctx.AddObjectToAsset(mesh.name, mesh);
-                }
+            //     // Mesh
+            //     foreach (var mesh in assets.Meshes)
+            //     {
+            //         ctx.AddObjectToAsset(mesh.name, mesh);
+            //     }
 
-                //// ScriptableObject
-                // avatar
-                ctx.AddObjectToAsset("avatar", assets.HumanoidAvatar);
+            //     //// ScriptableObject
+            //     // avatar
+            //     ctx.AddObjectToAsset("avatar", assets.HumanoidAvatar);
 
-                // meta
-                {
-                    var external = this.GetExternalUnityObjects<UniVRM10.VRM10MetaObject>().FirstOrDefault();
-                    if (external.Value != null)
-                    {
-                        var controller = assets.Root.GetComponent<VRM10Controller>();
-                        if (controller != null)
-                        {
-                            controller.Meta = external.Value;
-                        }
-                    }
-                    else
-                    {
-                        var meta = assets.ScriptableObjects
-                            .FirstOrDefault(x => x.GetType() == typeof(UniVRM10.VRM10MetaObject)) as UniVRM10.VRM10MetaObject;
-                        if (meta != null)
-                        {
-                            meta.name = "meta";
-                            ctx.AddObjectToAsset(meta.name, meta);
-                        }
-                    }
-                }
+            //     // meta
+            //     {
+            //         var external = this.GetExternalUnityObjects<UniVRM10.VRM10MetaObject>().FirstOrDefault();
+            //         if (external.Value != null)
+            //         {
+            //             var controller = assets.Root.GetComponent<VRM10Controller>();
+            //             if (controller != null)
+            //             {
+            //                 controller.Meta = external.Value;
+            //             }
+            //         }
+            //         else
+            //         {
+            //             var meta = assets.ScriptableObjects
+            //                 .FirstOrDefault(x => x.GetType() == typeof(UniVRM10.VRM10MetaObject)) as UniVRM10.VRM10MetaObject;
+            //             if (meta != null)
+            //             {
+            //                 meta.name = "meta";
+            //                 ctx.AddObjectToAsset(meta.name, meta);
+            //             }
+            //         }
+            //     }
 
-                // expression
-                {
-                    var external = this.GetExternalUnityObjects<UniVRM10.VRM10Expression>();
-                    if (external.Any())
-                    {
-                    }
-                    else
-                    {
-                        var expression = assets.ScriptableObjects
-                            .Where(x => x.GetType() == typeof(UniVRM10.VRM10Expression))
-                            .Select(x => x as UniVRM10.VRM10Expression);
-                        foreach (var clip in expression)
-                        {
-                            clip.name = clip.ExpressionName;
-                            ctx.AddObjectToAsset(clip.ExpressionName, clip);
-                        }
-                    }
-                }
-                {
-                    var external = this.GetExternalUnityObjects<UniVRM10.VRM10ExpressionAvatar>().FirstOrDefault();
-                    if (external.Value != null)
-                    {
-                        var controller = assets.Root.GetComponent<VRM10Controller>();
-                        if (controller != null)
-                        {
-                            controller.Expression.ExpressionAvatar = external.Value;
-                        }
-                    }
-                    else
-                    {
-                        var expressionAvatar = assets.ScriptableObjects
-                            .FirstOrDefault(x => x.GetType() == typeof(UniVRM10.VRM10ExpressionAvatar)) as UniVRM10.VRM10ExpressionAvatar;
-                        if (expressionAvatar != null)
-                        {
-                            expressionAvatar.name = "expressionAvatar";
-                            ctx.AddObjectToAsset(expressionAvatar.name, expressionAvatar);
-                        }
-                    }
-                }
+            //     // expression
+            //     {
+            //         var external = this.GetExternalUnityObjects<UniVRM10.VRM10Expression>();
+            //         if (external.Any())
+            //         {
+            //         }
+            //         else
+            //         {
+            //             var expression = assets.ScriptableObjects
+            //                 .Where(x => x.GetType() == typeof(UniVRM10.VRM10Expression))
+            //                 .Select(x => x as UniVRM10.VRM10Expression);
+            //             foreach (var clip in expression)
+            //             {
+            //                 clip.name = clip.ExpressionName;
+            //                 ctx.AddObjectToAsset(clip.ExpressionName, clip);
+            //             }
+            //         }
+            //     }
+            //     {
+            //         var external = this.GetExternalUnityObjects<UniVRM10.VRM10ExpressionAvatar>().FirstOrDefault();
+            //         if (external.Value != null)
+            //         {
+            //             var controller = assets.Root.GetComponent<VRM10Controller>();
+            //             if (controller != null)
+            //             {
+            //                 controller.Expression.ExpressionAvatar = external.Value;
+            //             }
+            //         }
+            //         else
+            //         {
+            //             var expressionAvatar = assets.ScriptableObjects
+            //                 .FirstOrDefault(x => x.GetType() == typeof(UniVRM10.VRM10ExpressionAvatar)) as UniVRM10.VRM10ExpressionAvatar;
+            //             if (expressionAvatar != null)
+            //             {
+            //                 expressionAvatar.name = "expressionAvatar";
+            //                 ctx.AddObjectToAsset(expressionAvatar.name, expressionAvatar);
+            //             }
+            //         }
+            //     }
 
-                // Root
-                ctx.AddObjectToAsset(assets.Root.name, assets.Root);
-                ctx.SetMainObject(assets.Root);
+            //     // Root
+            //     ctx.AddObjectToAsset(assets.Root.name, assets.Root);
+            //     ctx.SetMainObject(assets.Root);
 
-            }
-            catch (System.Exception ex)
-            {
-                Debug.LogError(ex);
-            }
+            // }
+            // catch (System.Exception ex)
+            // {
+            //     Debug.LogError(ex);
+            // }
         }
 
         public void ExtractTextures()

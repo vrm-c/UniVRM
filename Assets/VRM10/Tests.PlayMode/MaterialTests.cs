@@ -3,6 +3,7 @@ using System.Collections;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
+using UniGLTF;
 using UnityEngine;
 using UnityEngine.TestTools;
 using UniVRM10;
@@ -46,18 +47,18 @@ namespace UniVRM10.Test
             var parser = new UniGLTF.GltfParser();
             parser.Parse("tmp.vrm", bytes);
 
-            var model = VrmLoader.CreateVrmModel(parser);
-            model.RemoveSecondary();
-
-            return ToUnity(model);
+            return ToUnity(parser);
         }
 
-        private ModelAsset ToUnity(Model model)
+        private ModelAsset ToUnity(GltfParser parser)
         {
             // Model => Unity
-            var assets = RuntimeUnityBuilder.ToUnityAsset(model);
-            UniVRM10.ComponentBuilder.Build10(model, assets);
-            return assets;
+            using (var loader = new RuntimeUnityBuilder(parser))
+            {
+                loader.Load();
+                loader.DisposeOnGameObjectDestroyed();
+                return loader.Asset;
+            }
         }
 
         private Model ToVrmModel(GameObject root)

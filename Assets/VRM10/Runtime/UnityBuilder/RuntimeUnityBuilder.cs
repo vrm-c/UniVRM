@@ -1,66 +1,61 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using MeshUtility;
+using System.Threading.Tasks;
+using UniGLTF;
 using UnityEngine;
 using VrmLib;
+
 
 namespace UniVRM10
 {
     /// <summary>
     /// VrmLib.Model から UnityPrefab を構築する
     /// </summary>
-    public static class RuntimeUnityBuilder
+    public class RuntimeUnityBuilder : UniGLTF.ImporterContext
     {
+        readonly Model m_model;
+
         /// <summary>
-        /// モデル(Transform + Renderer)を構築する。
-        /// <summary>
-        public static ModelAsset ToUnityAsset(VrmLib.Model model, bool showMesh = true)
+        /// VrmLib.Model の オブジェクトと UnityEngine.Object のマッピングを記録する
+        /// </summary>
+        /// <returns></returns>
+        readonly ModelAsset m_asset = new ModelAsset();
+
+        public ModelAsset Asset => m_asset;
+
+        public RuntimeUnityBuilder(UniGLTF.GltfParser parser, IEnumerable<(string, UnityEngine.Object)> externalObjectMap = null) : base(parser, externalObjectMap)
         {
-            var modelAsset = new ModelAsset();
+            m_model = VrmLoader.CreateVrmModel(parser);
+        }
 
-            // texture
-            for (int i = 0; i < model.Textures.Count; ++i)
+        /// <summary>
+        /// VrmLib.Model から 構築する
+        /// </summary>
+        /// <param name="MeasureTime"></param>
+        /// <returns></returns>
+        protected override async Task LoadGeometryAsync(Func<string, IDisposable> MeasureTime)
+        {
+            // fill assets
+            for (int i = 0; i < m_model.Materials.Count; ++i)
             {
-                var src = model.Textures[i];
-                var name = !string.IsNullOrEmpty(src.Name)
-                    ? src.Name
-                    : string.Format("{0}_img{1}", model.Root.Name, i);
-                if (src is VrmLib.ImageTexture imageTexture)
-                {
-                    var texture = CreateTexture(imageTexture);
-                    texture.name = name;
-                    modelAsset.Map.Textures.Add(src, texture);
-                    modelAsset.Textures.Add(texture);
-                }
-                else
-                {
-                    Debug.LogWarning($"{name} not ImageTexture");
-                }
-            }
-
-            // material
-            foreach (var src in model.Materials)
-            {
-                // TODO: material has VertexColor
-                var material = RuntimeUnityMaterialBuilder.CreateMaterialAsset(src, hasVertexColor: false, modelAsset.Map.Textures);
-                material.name = src.Name;
-                modelAsset.Map.Materials.Add(src, material);
-                modelAsset.Materials.Add(material);
+                var src = m_model.Materials[i];
+                var dst = MaterialFactory.Materials[i].Asset;
+                m_asset.Map.Materials.Add(src, dst);
             }
 
             // mesh
-            for (int i = 0; i < model.MeshGroups.Count; ++i)
+            for (int i = 0; i < m_model.MeshGroups.Count; ++i)
             {
-                var src = model.MeshGroups[i];
+                var src = m_model.MeshGroups[i];
                 if (src.Meshes.Count == 1)
                 {
                     // submesh 方式
                     var mesh = new UnityEngine.Mesh();
                     mesh.name = src.Name;
                     mesh.LoadMesh(src.Meshes[0], src.Skin);
-                    modelAsset.Map.Meshes.Add(src, mesh);
-                    modelAsset.Meshes.Add(mesh);
+                    m_asset.Map.Meshes.Add(src, mesh);
+                    m_asset.Meshes.Add(mesh);
                 }
                 else
                 {
@@ -70,11 +65,11 @@ namespace UniVRM10
             }
 
             // node: recursive
-            CreateNodes(model.Root, null, modelAsset.Map.Nodes);
-            modelAsset.Root = modelAsset.Map.Nodes[model.Root];
+            CreateNodes(m_model.Root, null, m_asset.Map.Nodes);
+            m_asset.Root = m_asset.Map.Nodes[m_model.Root];
 
             // renderer
-            var map = modelAsset.Map;
+            var map = m_asset.Map;
             foreach (var (node, go) in map.Nodes)
             {
                 if (node.MeshGroup is null)
@@ -88,91 +83,36 @@ namespace UniVRM10
                 }
 
                 var renderer = CreateRenderer(node, go, map);
-                if (!showMesh)
-                {
-                    renderer.enabled = false;
-                }
                 map.Renderers.Add(node, renderer);
-                modelAsset.Renderers.Add(renderer);
+                m_asset.Renderers.Add(renderer);
             }
 
-            var humanoid = modelAsset.Root.AddComponent<MeshUtility.Humanoid>();
-            humanoid.AssignBones(map.Nodes.Select(x => (x.Key.HumanoidBone.GetValueOrDefault().ToUnity(), x.Value.transform)));
-            modelAsset.HumanoidAvatar = humanoid.CreateAvatar();
-            modelAsset.HumanoidAvatar.name = "VRM";
+            var humanoid = m_asset.Root.AddComponent<MeshUtility.Humanoid>();
+            humanoid.AssignBones(map.Nodes.Select(x => (ToUnity(x.Key.HumanoidBone.GetValueOrDefault()), x.Value.transform)));
+            m_asset.HumanoidAvatar = humanoid.CreateAvatar();
+            m_asset.HumanoidAvatar.name = "VRM";
 
-            var animator = modelAsset.Root.AddComponent<Animator>();
-            animator.avatar = modelAsset.HumanoidAvatar;
-
-            return modelAsset;
+            var animator = m_asset.Root.AddComponent<Animator>();
+            animator.avatar = m_asset.HumanoidAvatar;
         }
 
-        public static HumanBodyBones ToUnity(this VrmLib.HumanoidBones bone)
+        protected override async Task OnLoadModel(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime)
+        {
+            Root.name = "VRM1";
+
+            // UniVRM10.ComponentBuilder.Build10(m_model, m_assets);
+
+            // var model = VrmLoader.CreateVrmModel(parser);
+            // model.RemoveSecondary();
+        }
+
+        public static HumanBodyBones ToUnity(VrmLib.HumanoidBones bone)
         {
             if (bone == VrmLib.HumanoidBones.unknown)
             {
                 return HumanBodyBones.LastBone;
             }
             return VrmLib.EnumUtil.Cast<HumanBodyBones>(bone);
-        }
-
-        private static RenderTextureReadWrite GetRenderTextureReadWrite(VrmLib.Texture.ColorSpaceTypes type)
-        {
-            return (type == VrmLib.Texture.ColorSpaceTypes.Linear) ? RenderTextureReadWrite.Linear : RenderTextureReadWrite.sRGB;
-        }
-
-        /// <summary>
-        /// 画像のバイト列からテクスチャを作成する
-        /// <summary>
-        public static Texture2D CreateTexture(VrmLib.ImageTexture imageTexture)
-        {
-            Texture2D dstTexture = null;
-            UnityEngine.Material convertMaterial = null;
-            var texture = new Texture2D(2, 2, TextureFormat.ARGB32, false, imageTexture.ColorSpace == VrmLib.Texture.ColorSpaceTypes.Linear);
-            texture.LoadImage(imageTexture.Image.Bytes.ToArray());
-
-            // Convert Texture Gltf to Unity
-            if (imageTexture.TextureType == VrmLib.Texture.TextureTypes.NormalMap)
-            {
-                convertMaterial = TextureConvertMaterial.GetNormalMapConvertGltfToUnity();
-                dstTexture = UnityTextureUtil.CopyTexture(
-                    texture,
-                    GetRenderTextureReadWrite(imageTexture.ColorSpace),
-                    convertMaterial);
-            }
-            else if (imageTexture.TextureType == VrmLib.Texture.TextureTypes.MetallicRoughness)
-            {
-                var metallicRoughnessImage = imageTexture as VrmLib.MetallicRoughnessImageTexture;
-                convertMaterial = TextureConvertMaterial.GetMetallicRoughnessGltfToUnity(metallicRoughnessImage.RoughnessFactor);
-                dstTexture = UnityTextureUtil.CopyTexture(
-                    texture,
-                    GetRenderTextureReadWrite(imageTexture.ColorSpace),
-                    convertMaterial);
-            }
-            else if (imageTexture.TextureType == VrmLib.Texture.TextureTypes.Occlusion)
-            {
-                convertMaterial = TextureConvertMaterial.GetOcclusionGltfToUnity();
-                dstTexture = UnityTextureUtil.CopyTexture(
-                    texture,
-                    GetRenderTextureReadWrite(imageTexture.ColorSpace),
-                    convertMaterial);
-            }
-
-            if (dstTexture != null)
-            {
-                if (texture != null)
-                {
-                    UnityEngine.Object.DestroyImmediate(texture);
-                }
-                texture = dstTexture;
-            }
-
-            if (convertMaterial != null)
-            {
-                UnityEngine.Object.DestroyImmediate(convertMaterial);
-            }
-
-            return texture;
         }
 
         /// <summary>

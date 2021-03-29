@@ -3,8 +3,8 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Threading.Tasks;
-using System.Text;
 using VRMShaders;
+
 
 namespace UniGLTF
 {
@@ -88,8 +88,6 @@ namespace UniGLTF
                 MeasureTime = new ImporterContextSpeedLog().MeasureTime;
             }
 
-            var inverter = InvertAxis.Create();
-
             if (Root == null)
             {
                 Root = new GameObject("GLTF");
@@ -115,6 +113,20 @@ namespace UniGLTF
             {
                 await LoadMaterialsAsync();
             }
+
+            await LoadGeometryAsync(MeasureTime);
+
+            using (MeasureTime("AnimationImporter"))
+            {
+                AnimationImporter.Import(this);
+            }
+
+            await OnLoadModel(m_awaitCaller, MeasureTime);
+        }
+
+        protected virtual async Task LoadGeometryAsync(Func<string, IDisposable> MeasureTime)
+        {
+            var inverter = InvertAxis.Create();
 
             var meshImporter = new MeshImporter();
             for (int i = 0; i < GLTF.meshes.Count; ++i)
@@ -164,13 +176,6 @@ namespace UniGLTF
                 }
             }
             await m_awaitCaller.NextFrame();
-
-            using (MeasureTime("AnimationImporter"))
-            {
-                AnimationImporter.Import(this);
-            }
-
-            await OnLoadModel(m_awaitCaller, MeasureTime);
         }
 
         public async Task LoadMaterialsAsync()

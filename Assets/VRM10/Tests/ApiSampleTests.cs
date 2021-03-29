@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using NUnit.Framework;
+using UniGLTF;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -12,18 +13,25 @@ namespace UniVRM10.Test
         {
             var bytes = MigrationVrm.Migrate(File.ReadAllBytes(path));
 
-            var parser = new UniGLTF.GltfParser();
+            var parser = new GltfParser();
             parser.Parse("migrated", bytes);
 
             var model = UniVRM10.VrmLoader.CreateVrmModel(parser);
             return model;
         }
 
-        ModelAsset BuildGameObject(VrmLib.Model model, bool showMesh)
+        GameObject BuildGameObject(GltfParser parser, bool showMesh)
         {
-            var assets = RuntimeUnityBuilder.ToUnityAsset(model, showMesh);
-            UniVRM10.ComponentBuilder.Build10(model, assets);
-            return assets;
+            using (var loader = new RuntimeUnityBuilder(parser))
+            {
+                loader.Load();
+                if (showMesh)
+                {
+                    loader.ShowMeshes();
+                }
+                loader.EnableUpdateWhenOffscreen();
+                return loader.DisposeOnGameObjectDestroyed().gameObject;
+            }
         }
 
         VrmLib.Model ToModel(UnityEngine.GameObject target)
@@ -47,27 +55,14 @@ namespace UniVRM10.Test
             var path = "Tests/Models/Alicia_vrm-0.51/AliciaSolid_vrm-0.51.vrm";
             Debug.Log($"load: {path}");
 
-            // import
-            var srcModel = ReadModel(path);
-            Debug.Log(srcModel);
+            var parser = new GltfParser();
+            parser.ParsePath(path);
 
-            var asset = BuildGameObject(srcModel, false);
+            var asset = BuildGameObject(parser, true);
             Debug.Log(asset);
 
-            // renderer setting
-            foreach (var render in asset.Renderers)
-            {
-                // show when RuntimeUnityBuilder.ToUnity(showMesh = false)
-                render.enabled = true;
-                // avoid culling
-                if (render is SkinnedMeshRenderer skinned)
-                {
-                    skinned.updateWhenOffscreen = true;
-                }
-            }
-
             // export
-            var dstModel = ToModel(asset.Root);
+            var dstModel = ToModel(asset);
             Debug.Log(dstModel);
 
             var vrmBytes = ToVrm10(dstModel);
