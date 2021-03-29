@@ -6,7 +6,7 @@ namespace UniVRM10
 {
     public static class ModelLoader
     {
-        public static Model Load(IVrmStorage storage, string rootName, bool estimateHumanoid = false)
+        public static Model Load(Vrm10Storage storage, string rootName, bool estimateHumanoid = false)
         {
             if (storage == null)
             {
@@ -91,7 +91,7 @@ namespace UniVRM10
             return model;
         }
 
-        static bool LoadVrm(Model model, IVrmStorage storage)
+        static bool LoadVrm(Model model, Vrm10Storage storage)
         {
             if (!storage.HasVrm)
             {

@@ -9,7 +9,7 @@ using UniJSON;
 
 namespace UniVRM10
 {
-    public class Vrm10Storage : IVrmStorage
+    public class Vrm10Storage
     {
         public ArraySegment<Byte> OriginalJson { get; private set; }
         public UniGLTF.glTF Gltf
