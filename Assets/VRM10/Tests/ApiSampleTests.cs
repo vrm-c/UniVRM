@@ -12,13 +12,10 @@ namespace UniVRM10.Test
         {
             var bytes = MigrationVrm.Migrate(File.ReadAllBytes(path));
 
-            if (!UniGLTF.Glb.TryParse(bytes, out UniGLTF.Glb glb, out Exception ex))
-            {
-                Debug.LogError($"fail to Glb.TryParse: {path} => {ex}");
-                return null;
-            }
+            var parser = new UniGLTF.GltfParser();
+            parser.Parse("migrated", bytes);
 
-            var model = UniVRM10.VrmLoader.CreateVrmModel(bytes, new FileInfo(path));
+            var model = UniVRM10.VrmLoader.CreateVrmModel(parser);
             return model;
         }
 

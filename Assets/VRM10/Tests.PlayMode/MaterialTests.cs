@@ -43,7 +43,10 @@ namespace UniVRM10.Test
         private ModelAsset ToUnity(byte[] bytes)
         {
             // Vrm => Model
-            var model = VrmLoader.CreateVrmModel(bytes, new FileInfo("tmp.vrm"));
+            var parser = new UniGLTF.GltfParser();
+            parser.Parse("tmp.vrm", bytes);
+
+            var model = VrmLoader.CreateVrmModel(parser);
             model.RemoveSecondary();
 
             return ToUnity(model);

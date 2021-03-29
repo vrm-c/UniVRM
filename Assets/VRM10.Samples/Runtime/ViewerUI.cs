@@ -306,15 +306,15 @@ namespace UniVRM10.Samples
             {
                 case ".vrm":
                     {
-                        // var context = new ImporterContext();
-                        var file = File.ReadAllBytes(path);
-                        // context.ParseGlb(file);
+                        var parser =new UniGLTF.GltfParser();
+                        parser.ParsePath(path);
+
                         // context.Load();
                         // context.ShowMeshes();
                         // context.EnableUpdateWhenOffscreen();
                         // context.ShowMeshes();
 
-                        var model = UniVRM10.VrmLoader.CreateVrmModel(file, new FileInfo(path));
+                        var model = UniVRM10.VrmLoader.CreateVrmModel(parser);
 
                         // UniVRM-0.XXのコンポーネントを構築する
                         var assets = UniVRM10.RuntimeUnityBuilder.ToUnityAsset(model, showMesh: false);

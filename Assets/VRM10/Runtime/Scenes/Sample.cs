@@ -11,7 +11,10 @@ public class Sample : MonoBehaviour
 
     static UniVRM10.ModelAsset Import(byte[] bytes, FileInfo path)
     {
-        var model = UniVRM10.VrmLoader.CreateVrmModel(bytes, path);
+        var parser = new UniGLTF.GltfParser();
+        parser.Parse(path.FullName, bytes);
+
+        var model = UniVRM10.VrmLoader.CreateVrmModel(parser);
 
         // UniVRM-0.XXのコンポーネントを構築する
         var assets = UniVRM10.RuntimeUnityBuilder.ToUnityAsset(model, showMesh: false);

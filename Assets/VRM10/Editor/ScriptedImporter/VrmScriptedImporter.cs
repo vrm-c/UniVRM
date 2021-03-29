@@ -24,10 +24,13 @@ namespace UniVRM10
         {
             Debug.Log("OnImportAsset to " + ctx.assetPath);
 
+            var parser = new UniGLTF.GltfParser();
+            parser.ParsePath(ctx.assetPath);
+
             try
             {
                 // Create Vrm Model
-                VrmLib.Model model = VrmLoader.CreateVrmModel(ctx.assetPath);
+                VrmLib.Model model = VrmLoader.CreateVrmModel(parser);
                 if (model == null)
                 {
                     // maybe VRM-0.X
@@ -158,7 +161,12 @@ namespace UniVRM10
 
         public void ExtractTextures()
         {
-            this.ExtractTextures(TextureDirName, (path) => { return VrmLoader.CreateVrmModel(path); });
+            this.ExtractTextures(TextureDirName, (path) =>
+            {
+                var parser = new UniGLTF.GltfParser();
+                parser.ParsePath(path);
+                return VrmLoader.CreateVrmModel(parser);
+            });
             AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceUpdate);
         }
 
@@ -170,7 +178,15 @@ namespace UniVRM10
 
         public void ExtractMaterialsAndTextures()
         {
-            this.ExtractTextures(TextureDirName, (path) => { return VrmLoader.CreateVrmModel(path); }, () => { this.ExtractAssets<UnityEngine.Material>(MaterialDirName, ".mat"); });
+            this.ExtractTextures(TextureDirName, (path) =>
+            {
+                var parser = new UniGLTF.GltfParser();
+                parser.ParsePath(path);
+                return VrmLoader.CreateVrmModel(parser);
+            }, () =>
+            {
+                this.ExtractAssets<UnityEngine.Material>(MaterialDirName, ".mat");
+            });
             AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceUpdate);
         }
 
