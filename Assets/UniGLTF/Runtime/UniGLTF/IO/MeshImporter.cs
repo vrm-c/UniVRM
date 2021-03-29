@@ -98,49 +98,21 @@ namespace UniGLTF
                 }
             }
 
-            delegate ushort Getter(int index, int component);
 
-            static (Getter, int) GetAccessor(glTF gltf, int accessorIndex)
+
+            public static BoneWeight NormalizeBoneWeight(BoneWeight src)
             {
-                var gltfAccessor = gltf.accessors[accessorIndex];
-                switch (gltfAccessor.componentType)
+                var sum = src.weight0 + src.weight1 + src.weight2 + src.weight3;
+                if (sum == 0)
                 {
-                    case glComponentType.UNSIGNED_BYTE:
-                        {
-                            var array = gltf.GetArrayFromAccessor<Byte4>(accessorIndex);
-                            Getter getter = (i, j) =>
-                            {
-                                switch (j)
-                                {
-                                    case 0: return array[i].x;
-                                    case 1: return array[i].y;
-                                    case 2: return array[i].z;
-                                    case 3: return array[i].w;
-                                    default: throw new Exception();
-                                }
-                            };
-                            return (getter, array.Length);
-                        }
-
-                    case glComponentType.UNSIGNED_SHORT:
-                        {
-                            var array = gltf.GetArrayFromAccessor<UShort4>(accessorIndex);
-                            Getter getter = (i, j) =>
-                            {
-                                switch (j)
-                                {
-                                    case 0: return array[i].x;
-                                    case 1: return array[i].y;
-                                    case 2: return array[i].z;
-                                    case 3: return array[i].w;
-                                    default: throw new Exception();
-                                }
-                            };
-                            return (getter, array.Length);
-                        }
+                    return src;
                 }
-
-                throw new Exception();
+                var f = 1.0f / sum;
+                src.weight0 *= f;
+                src.weight1 *= f;
+                src.weight2 *= f;
+                src.weight3 *= f;
+                return src;
             }
 
             /// <summary>
@@ -239,32 +211,37 @@ namespace UniGLTF
                     // skin
                     if (prim.attributes.JOINTS_0 != -1 && prim.attributes.WEIGHTS_0 != -1)
                     {
-                        var (joints0, length) = GetAccessor(ctx.GLTF, prim.attributes.JOINTS_0);
-                        var weights0 = ctx.GLTF.GetArrayFromAccessor<Float4>(prim.attributes.WEIGHTS_0).Select(x => x.One()).ToArray();
-                        if (length != positions.Length)
+                        var (joints0, jointsLength) = JointsAccessor.GetAccessor(ctx.GLTF, prim.attributes.JOINTS_0);
+                        var (weights0, weightsLength) = WeightsAccessor.GetAccessor(ctx.GLTF, prim.attributes.WEIGHTS_0);
+                        if (jointsLength != positions.Length)
                         {
                             throw new Exception("different length");
                         }
-                        if (weights0.Length != positions.Length)
+                        if (weightsLength != positions.Length)
                         {
                             throw new Exception("different length");
                         }
                         FillZero(m_boneWeights, fillLength);
-                        for (int j = 0; j < length; ++j)
+                        for (int j = 0; j < jointsLength; ++j)
                         {
                             var bw = new BoneWeight();
+                            
+                            var joints = joints0(j);
+                            var weights = weights0(j);
 
-                            bw.boneIndex0 = joints0(j, 0);
-                            bw.weight0 = weights0[j].x;
+                            bw.boneIndex0 = joints.x;
+                            bw.weight0 = weights.x;
 
-                            bw.boneIndex1 = joints0(j, 1);
-                            bw.weight1 = weights0[j].y;
+                            bw.boneIndex1 = joints.y;
+                            bw.weight1 = weights.y;
 
-                            bw.boneIndex2 = joints0(j, 2);
-                            bw.weight2 = weights0[j].z;
+                            bw.boneIndex2 = joints.z;
+                            bw.weight2 = weights.z;
 
-                            bw.boneIndex3 = joints0(j, 3);
-                            bw.weight3 = weights0[j].w;
+                            bw.boneIndex3 = joints.w;
+                            bw.weight3 = weights.w;
+                            
+                            bw = NormalizeBoneWeight(bw);
 
                             m_boneWeights.Add(bw);
                         }
@@ -406,29 +383,30 @@ namespace UniGLTF
                     // skin
                     if (prim.attributes.JOINTS_0 != -1 && prim.attributes.WEIGHTS_0 != -1)
                     {
-                        var (joints0, length) = GetAccessor(ctx.GLTF, prim.attributes.JOINTS_0);
-                        var weights0 = ctx.GLTF.GetArrayFromAccessor<Float4>(prim.attributes.WEIGHTS_0);
-                        for (int i = 0; i < weights0.Length; ++i)
-                        {
-                            weights0[i] = weights0[i].One();
-                        }
+                        var (joints0, jointsLength) = JointsAccessor.GetAccessor(ctx.GLTF, prim.attributes.JOINTS_0);
+                        var (weights0, weightsLength) = WeightsAccessor.GetAccessor(ctx.GLTF, prim.attributes.WEIGHTS_0);
 
-                        for (int j = 0; j < length; ++j)
+                        for (int j = 0; j < jointsLength; ++j)
                         {
                             var bw = new BoneWeight();
+                            
+                            var joints = joints0(j);
+                            var weights = weights0(j);
 
-                            bw.boneIndex0 = joints0(j, 0);
-                            bw.weight0 = weights0[j].x;
+                            bw.boneIndex0 = joints.x;
+                            bw.weight0 = weights.x;
 
-                            bw.boneIndex1 = joints0(j, 1);
-                            bw.weight1 = weights0[j].y;
+                            bw.boneIndex1 = joints.y;
+                            bw.weight1 = weights.y;
 
-                            bw.boneIndex2 = joints0(j, 2);
-                            bw.weight2 = weights0[j].z;
+                            bw.boneIndex2 = joints.z;
+                            bw.weight2 = weights.z;
 
-                            bw.boneIndex3 = joints0(j, 3);
-                            bw.weight3 = weights0[j].w;
+                            bw.boneIndex3 = joints.w;
+                            bw.weight3 = weights.w;
 
+                            bw = NormalizeBoneWeight(bw);
+                            
                             m_boneWeights.Add(bw);
                         }
                     }
