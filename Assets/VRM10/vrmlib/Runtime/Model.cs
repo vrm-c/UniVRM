@@ -18,8 +18,6 @@ namespace VrmLib
             Coordinates = coordinates;
         }
 
-        public ArraySegment<byte> OriginalJson;
-
         public Coordinates Coordinates;
 
         public string AssetVersion = "2.0";

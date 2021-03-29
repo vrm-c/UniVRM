@@ -19,7 +19,6 @@ namespace UniVRM10
                 AssetGenerator = storage.AssetGenerator,
                 AssetCopyright = storage.AssetCopyright,
                 AssetMinVersion = storage.AssetMinVersion,
-                OriginalJson = storage.OriginalJson,
             };
 
             // node

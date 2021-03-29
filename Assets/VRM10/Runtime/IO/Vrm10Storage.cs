@@ -11,14 +11,10 @@ namespace UniVRM10
 {
     public class Vrm10Storage
     {
-        public ArraySegment<Byte> OriginalJson { get; private set; }
-        public UniGLTF.glTF Gltf
-        {
-            get;
-            private set;
-        }
+        UniGLTF.GltfParser m_parser;
+        public UniGLTF.glTF Gltf => m_parser.GLTF;
 
-        public readonly List<UniGLTF.IBytesBuffer> Buffers;
+        public List<UniGLTF.IBytesBuffer> Buffers;
 
         public UniGLTF.Extensions.VRMC_vrm.VRMC_vrm gltfVrm;
 
@@ -29,9 +25,12 @@ namespace UniVRM10
         /// </summary>
         public Vrm10Storage()
         {
-            Gltf = new UniGLTF.glTF()
+            m_parser = new UniGLTF.GltfParser
             {
-                extensionsUsed = new List<string>(),
+                GLTF = new UniGLTF.glTF()
+                {
+                    extensionsUsed = new List<string>(),
+                }
             };
             Buffers = new List<UniGLTF.IBytesBuffer>()
             {
@@ -44,10 +43,9 @@ namespace UniVRM10
         /// </summary>
         /// <param name="json"></param>
         /// <param name="bin"></param>
-        public Vrm10Storage(ArraySegment<byte> json, ArraySegment<byte> bin)
+        public Vrm10Storage(UniGLTF.GltfParser parser)
         {
-            OriginalJson = json;
-            Gltf = UniGLTF.GltfDeserializer.Deserialize(json.ParseAsJson());
+            m_parser = parser;
 
             if (UniGLTF.Extensions.VRMC_vrm.GltfDeserializer.TryGet(Gltf.extensions,
                 out UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm))
@@ -63,7 +61,7 @@ namespace UniVRM10
 
             Buffers = new List<UniGLTF.IBytesBuffer>()
             {
-                new UniGLTF.ArraySegmentByteBuffer(bin)
+                Gltf.buffers[0].Buffer,
             };
         }
 

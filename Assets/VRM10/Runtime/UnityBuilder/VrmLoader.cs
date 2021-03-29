@@ -2,6 +2,7 @@
 using System.IO;
 using VrmLib;
 using UniJSON;
+using UniGLTF;
 
 namespace UniVRM10
 {
@@ -24,40 +25,12 @@ namespace UniVRM10
 
         public static Model CreateVrmModel(byte[] bytes, FileInfo path)
         {
-            if (!UniGLTF.Glb.TryParse(bytes, out UniGLTF.Glb glb, out Exception ex))
-            {
-                throw ex;
-            }
-
-            var json = glb.Json.Bytes.ParseAsJson();
-
-            var extensions = json["extensions"];
-
-            foreach (var kv in extensions.ObjectItems())
-            {
-                switch (kv.Key.GetString())
-                {
-                    // case "VRM":
-                    //     {
-                    //         var storage = new Vrm10Storage(glb.Json.Bytes, glb.Binary.Bytes);
-                    //         var model = ModelLoader.Load(storage, path.Name);
-                    //         model.ConvertCoordinate(Coordinates.Unity);
-                    //         return model;
-                    //     }
-
-                    case "VRMC_vrm":
-                        {
-                            var storage = new Vrm10Storage(glb.Json.Bytes, glb.Binary.Bytes);
-                            var model = ModelLoader.Load(storage, path.Name);
-                            model.ConvertCoordinate(Coordinates.Unity);
-                            return model;
-                        }
-                }
-            }
-
-            // this is error
-            // throw new NotImplementedException();
-            return null;
+            var parser = new GltfParser();
+            parser.Parse(path.FullName, bytes);
+            var storage = new Vrm10Storage(parser);
+            var model = ModelLoader.Load(storage, path.Name);
+            model.ConvertCoordinate(Coordinates.Unity);
+            return model;
         }
     }
 }
