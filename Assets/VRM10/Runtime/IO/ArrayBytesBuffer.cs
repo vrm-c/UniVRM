@@ -43,11 +43,11 @@ namespace UniVRM10
             backup.CopyTo(m_bytes, backup.Length);
         }
 
-        public void Extend(ArraySegment<byte> array, int stride, out int offset, out int length)
+        public void Extend(ArraySegment<byte> array, out int offset, out int length)
         {
             var tmp = m_bytes;
             // alignment
-            var padding = m_used % stride == 0 ? 0 : stride - m_used % stride;
+            var padding = 0; // m_used % stride == 0 ? 0 : stride - m_used % stride;
 
             if (m_bytes == null || m_used + padding + array.Count > m_bytes.Length)
             {

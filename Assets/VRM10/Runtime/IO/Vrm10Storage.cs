@@ -73,9 +73,9 @@ namespace UniVRM10
             Buffers[0].ExtendCapacity(bytesLength);
         }
 
-        public int AppendToBuffer(int bufferIndex, ArraySegment<byte> segment, int stride)
+        public int AppendToBuffer(int bufferIndex, ArraySegment<byte> segment)
         {
-            Buffers[bufferIndex].Extend(segment, stride, out int offset, out int length);
+            Buffers[bufferIndex].Extend(segment, out int offset, out int length);
             var viewIndex = Gltf.bufferViews.Count;
             Gltf.bufferViews.Add(new UniGLTF.glTFBufferView
             {

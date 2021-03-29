@@ -87,7 +87,7 @@ namespace UniVRM10
 
         public static glTFImage ToGltf(this VrmLib.Image src, Vrm10Storage storage)
         {
-            var viewIndex = storage.AppendToBuffer(0, src.Bytes, 1);
+            var viewIndex = storage.AppendToBuffer(0, src.Bytes);
             var gltf = storage.Gltf;
             return new glTFImage
             {

@@ -39,7 +39,7 @@ namespace UniVRM10
                 count = self.Count;
             }
             var slice = self.Bytes.Slice(offset * stride, count * stride);
-            return storage.AppendToBuffer(bufferIndex, slice, stride);
+            return storage.AppendToBuffer(bufferIndex, slice);
         }
 
         static glTFAccessor CreateGltfAccessor(this VrmLib.BufferAccessor self,
@@ -116,8 +116,8 @@ namespace UniVRM10
                         sparseValueSpan[i] = value;
                     }
 
-                    var sparseIndexView = storage.AppendToBuffer(bufferIndex, sparseIndexBin, 4);
-                    var sparseValueView = storage.AppendToBuffer(bufferIndex, sparseValueBin, 12);
+                    var sparseIndexView = storage.AppendToBuffer(bufferIndex, sparseIndexBin);
+                    var sparseValueView = storage.AppendToBuffer(bufferIndex, sparseValueBin);
 
                     var accessorIndex = storage.Gltf.accessors.Count;
                     var accessor = new glTFAccessor
