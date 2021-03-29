@@ -8,7 +8,7 @@ using VrmLib;
 
 namespace UniVRM10
 {
-    public class Vrm10Exporter : IVrmExporter
+    public class Vrm10Exporter
     {
         public readonly Vrm10Storage Storage = new Vrm10Storage();
 

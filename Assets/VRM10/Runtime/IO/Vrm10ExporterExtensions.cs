@@ -1,39 +1,11 @@
-using System;
-using System.Collections.Generic;
+﻿using System;
 using VrmLib;
 
 namespace UniVRM10
 {
-    public interface IVrmExporter
-    {
-        byte[] ToBytes();
-
-        #region GLTF
-        void ExportAsset(Model model);
-        void Reserve(int bytesLength);
-        void ExportImageAndTextures(List<Image> images, List<Texture> textures);
-        void ExportMaterialPBR(Material src, PBRMaterial pbr, List<Texture> textures);
-        void ExportMaterialUnlit(Material src, UnlitMaterial unlit, List<Texture> textures);
-        void ExportMaterialMToon(Material src, MToonMaterial mtoon, List<Texture> textures);
-        void ExportMeshes(List<MeshGroup> groups, List<Material> materials, ExportArgs option);
-        void ExportNodes(Node root, List<Node> nodes, List<MeshGroup> groups, ExportArgs option);
-        void ExportAnimations(List<Animation> animations, List<Node> nodes, ExportArgs option);
-        #endregion
-
-        #region VRM
-        void ExportVrmMeta(Vrm src, List<Texture> textures);
-        void ExportVrmHumanoid(Dictionary<VrmLib.HumanoidBones, Node> map, List<Node> nodes);
-        void ExportVrmMaterialProperties(List<Material> materials, List<Texture> textures);
-        void ExportVrmExpression(ExpressionManager expression, List<MeshGroup> meshes, List<Material> materials, List<Node> nodes);
-        void ExportVrmSpringBone(SpringBoneManager springBone, List<Node> nodes);
-        void ExportVrmFirstPersonAndLookAt(FirstPerson firstPerson, LookAt lookat, List<MeshGroup> meshes, List<Node> nodes);
-        void ExportVrmEnd();
-        #endregion
-    }
-
     public static class IExporterExtensions
     {
-        public static byte[] Export(this IVrmExporter exporter, Model m, ExportArgs option)
+        public static byte[] Export(this Vrm10Exporter exporter, Model m, ExportArgs option)
         {
             exporter.ExportAsset(m);
 
@@ -112,7 +84,7 @@ namespace UniVRM10
             return exporter.ToBytes();
         }
 
-        static void ExportVrm(IVrmExporter exporter, Model m)
+        static void ExportVrm(Vrm10Exporter exporter, Model m)
         {
             if (m.Vrm == null)
             {
@@ -133,5 +105,6 @@ namespace UniVRM10
 
             exporter.ExportVrmEnd();
         }
+
     }
 }
