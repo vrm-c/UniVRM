@@ -26,7 +26,7 @@ namespace VRM
             {
                 VRM = vrm;
                 // override material importer
-                MaterialFactory.CreateMaterialAsync = new VRMMaterialImporter(VRM.materialProperties).CreateMaterialAsync;
+                GltfMaterialImporter.GltfMaterialParamProcessors.Insert(0, new MToonMaterialImporter(VRM.materialProperties).TryCreateParam);
             }
             else
             {
@@ -297,7 +297,7 @@ namespace VRM
             meta.Title = gltfMeta.title;
             if (gltfMeta.texture >= 0)
             {
-                meta.Thumbnail = await TextureFactory.GetTextureAsync(awaitCaller, GLTF, TextureFactory.CreateSRGB(Parser, gltfMeta.texture, Vector2.zero, Vector2.one));
+                meta.Thumbnail = await TextureFactory.GetTextureAsync(GltfTextureImporter.CreateSRGB(Parser, gltfMeta.texture, Vector2.zero, Vector2.one));
             }
             meta.AllowedUser = gltfMeta.allowedUser;
             meta.ViolentUssage = gltfMeta.violentUssage;
@@ -311,7 +311,7 @@ namespace VRM
             return meta;
         }
 
-        public override void TransferOwnership(TakeOwnershipFunc take)
+        public override void TransferOwnership(Func<UnityEngine.Object, bool> take)
         {
             // VRM 固有のリソース(ScriptableObject)
             if (take(HumanoidAvatar))

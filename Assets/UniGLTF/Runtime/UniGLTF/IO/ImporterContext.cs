@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Threading.Tasks;
 using System.Text;
+using VRMShaders;
 
 namespace UniGLTF
 {
@@ -35,6 +36,8 @@ namespace UniGLTF
         MaterialFactory m_materialFactory;
         public MaterialFactory MaterialFactory => m_materialFactory;
 
+        public readonly GltfMaterialImporter GltfMaterialImporter = new GltfMaterialImporter();
+
         TextureFactory m_textureFactory;
         public TextureFactory TextureFactory => m_textureFactory;
 
@@ -44,8 +47,8 @@ namespace UniGLTF
             IEnumerable<(string, UnityEngine.Object)> externalObjectMap = null)
         {
             m_parser = parser;
-            m_textureFactory = new TextureFactory(GLTF, Storage, externalObjectMap);
-            m_materialFactory = new MaterialFactory(m_parser, externalObjectMap);
+            m_textureFactory = new TextureFactory(externalObjectMap);
+            m_materialFactory = new MaterialFactory(externalObjectMap);
         }
 
         #region Source
@@ -110,7 +113,7 @@ namespace UniGLTF
 
             using (MeasureTime("LoadMaterials"))
             {
-                await m_materialFactory.LoadMaterialsAsync(m_awaitCaller, m_textureFactory.GetTextureAsync);
+                await LoadMaterialsAsync();
             }
 
             var meshImporter = new MeshImporter();
@@ -168,6 +171,24 @@ namespace UniGLTF
             }
 
             await OnLoadModel(m_awaitCaller, MeasureTime);
+        }
+
+        public async Task LoadMaterialsAsync()
+        {
+            if (m_parser.GLTF.materials == null || m_parser.GLTF.materials.Count == 0)
+            {
+                // no material. work around.
+                var param = GltfMaterialImporter.CreateParam(m_parser, 0);
+                var material = await MaterialFactory.LoadAsync(param, TextureFactory.GetTextureAsync);
+            }
+            else
+            {
+                for (int i = 0; i < m_parser.GLTF.materials.Count; ++i)
+                {
+                    var param = GltfMaterialImporter.CreateParam(m_parser, i);
+                    var material = await MaterialFactory.LoadAsync(param, TextureFactory.GetTextureAsync);
+                }
+            }
         }
 
         protected virtual Task OnLoadModel(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime)
@@ -283,7 +304,7 @@ namespace UniGLTF
         /// Root ヒエラルキーで使っているリソース
         /// </summary>
         /// <returns></returns>
-        public virtual void TransferOwnership(TakeOwnershipFunc take)
+        public virtual void TransferOwnership(Func<UnityEngine.Object, bool> take)
         {
             var list = new List<UnityEngine.Object>();
             foreach (var mesh in Meshes)
