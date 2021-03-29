@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using VRMShaders;
 
 namespace UniGLTF
@@ -37,11 +38,30 @@ namespace UniGLTF
             }
 #endif
 
-            return
-            (
-                texture.EncodeToPNG(),
-                "image/png"
-            );
+            try
+            {
+                var png = texture.EncodeToPNG();
+                if (png != null)
+                {
+                    return (png, "image/png");
+                }
+            }
+            catch (Exception ex)
+            {
+                // fail to EncodeToPng
+                // System.ArgumentException: not readable, the texture memory can not be accessed from scripts. You can make the texture readable in the Texture Import Settings.
+
+                Debug.LogWarning(ex);
+            }
+
+            {
+                // try copy and EncodeToPng
+                var copy = TextureConverter.CopyTexture(texture, TextureImportTypes.sRGB, null);
+                var png = copy.EncodeToPNG();
+                UnityEngine.Object.DestroyImmediate(copy);
+
+                return (png, "image/png");
+            }
         }
 
         /// <summary>
