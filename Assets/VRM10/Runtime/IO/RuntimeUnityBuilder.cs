@@ -192,6 +192,9 @@ namespace UniVRM10
             }
         }
 
+        UnityEngine.Avatar m_humanoid;
+        UniVRM10.VRM10ExpressionAvatar m_exressionAvatar;
+
         protected override async Task OnLoadHierarchy(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime)
         {
             Root.name = "VRM1";
@@ -200,7 +203,8 @@ namespace UniVRM10
             var humanoid = Root.AddComponent<MeshUtility.Humanoid>();
             humanoid.AssignBones(m_asset.Map.Nodes.Select(x => (ToUnity(x.Key.HumanoidBone.GetValueOrDefault()), x.Value.transform)));
             m_asset.HumanoidAvatar = humanoid.CreateAvatar();
-            m_asset.HumanoidAvatar.name = "VRM1";
+            m_humanoid = m_asset.HumanoidAvatar;
+            m_asset.HumanoidAvatar.name = "humanoid";
             var animator = m_asset.Root.AddComponent<Animator>();
             animator.avatar = m_asset.HumanoidAvatar;
 
@@ -216,6 +220,26 @@ namespace UniVRM10
             // firstPerson
 
             // expression
+            if (m_vrm.Expressions != null)
+            {
+                controller.Expression.ExpressionAvatar = ScriptableObject.CreateInstance<UniVRM10.VRM10ExpressionAvatar>();
+
+                m_exressionAvatar = controller.Expression.ExpressionAvatar;
+                m_exressionAvatar.name = "ExpressionAvatar";
+
+                foreach (var expression in m_vrm.Expressions)
+                {
+                    var clip = ScriptableObject.CreateInstance<UniVRM10.VRM10Expression>();
+                    clip.Preset = expression.Preset;
+                    clip.ExpressionName = expression.Name;
+                    clip.name = expression.ExtractName();
+                    clip.IsBinary = expression.IsBinary.GetValueOrDefault();
+                    clip.OverrideBlink = expression.OverrideBlink;
+                    clip.OverrideLookAt = expression.OverrideLookAt;
+                    clip.OverrideMouth = expression.OverrideMouth;
+                    m_exressionAvatar.Clips.Add(clip);
+                }
+            }
 
             // lookat
 
@@ -291,6 +315,61 @@ namespace UniVRM10
             renderer.sharedMaterials = materials;
 
             return renderer;
+        }
+
+        public override void TransferOwnership(Func<UnityEngine.Object, bool> take)
+        {
+            // VRM 固有のリソース(ScriptableObject)
+            if (take(m_humanoid))
+            {
+                m_humanoid = null;
+            }
+
+            // if (take(Meta))
+            // {
+            //     Meta = null;
+            // }
+
+            foreach (var x in m_exressionAvatar.Clips)
+            {
+                if (take(x))
+                {
+                    // do nothing
+                }
+            }
+
+            if (take(m_exressionAvatar))
+            {
+                m_exressionAvatar = null;
+            }
+
+            // GLTF のリソース
+            base.TransferOwnership(take);
+        }
+
+        public override void Dispose()
+        {
+            Action<UnityEngine.Object> destroy = UnityResourceDestroyer.DestroyResource();
+
+            // VRM specific
+            if (m_humanoid != null)
+            {
+                destroy(m_humanoid);
+            }
+            // if (Meta != null)
+            // {
+            //     destroy(Meta);
+            // }
+            if (m_exressionAvatar != null)
+            {
+                foreach (var clip in m_exressionAvatar.Clips)
+                {
+                    destroy(clip);
+                }
+                destroy(m_exressionAvatar);
+            }
+
+            base.Dispose();
         }
     }
 }
