@@ -104,12 +104,6 @@ namespace UniVRM10
                 var image = new VrmLib.Image(texture.name, mime, VrmLib.ImageUsage.None, new ArraySegment<byte>(bytes));
                 info = new VrmLib.TextureInfo(new VrmLib.ImageTexture(texture.name, sampler, image, colorSpace, textureType));
                 Textures.Add(texture, info);
-
-                if (Model != null)
-                {
-                    Model.Images.Add(image);
-                    Model.Textures.Add(info.Texture);
-                }
             }
 
             return info;
@@ -235,7 +229,6 @@ namespace UniVRM10
                 ModificationLicense = metaObject.ModificationLicense,
                 OtherLicenseUrl = metaObject.OtherLicenseUrl,
             };
-            Model.Vrm = new VrmLib.Vrm(meta, UniVRM10.VRMVersion.VERSION, UniVRM10.VRMSpecVersion.Version);
 
             // humanoid
             {
@@ -252,143 +245,6 @@ namespace UniVRM10
                     if (transform != null && Nodes.TryGetValue(transform.gameObject, out VrmLib.Node node))
                     {
                         node.HumanoidBone = (VrmLib.HumanoidBones)Enum.Parse(typeof(VrmLib.HumanoidBones), humanBoneType.ToString(), true);
-                    }
-                }
-            }
-
-
-            // blendShape
-            var controller = root.GetComponent<UniVRM10.VRM10Controller>();
-            if (controller != null)
-            {
-                {
-                    Model.Vrm.ExpressionManager = new VrmLib.ExpressionManager();
-                    if (controller != null)
-                    {
-                        foreach (var clip in controller.Expression.ExpressionAvatar.Clips)
-                        {
-                            var expression = ToVrmLib(clip, root);
-                            if (expression != null)
-                            {
-                                Model.Vrm.ExpressionManager.ExpressionList.Add(expression);
-                            }
-                        }
-                    }
-                }
-
-                // firstPerson
-                {
-                    var firstPerson = new VrmLib.FirstPerson();
-                    if (controller != null)
-                    {
-                        foreach (var annotation in controller.FirstPerson.Renderers)
-                        {
-                            firstPerson.Annotations.Add(
-                                new VrmLib.FirstPersonMeshAnnotation(Nodes[annotation.Renderer.gameObject],
-                                annotation.FirstPersonFlag)
-                                );
-                        }
-                        Model.Vrm.FirstPerson = firstPerson;
-                    }
-                }
-
-                // lookAt
-                {
-                    var lookAt = new VrmLib.LookAt();
-                    if (controller != null)
-                    {
-                        if (controller.LookAt.LookAtType == VRM10ControllerLookAt.LookAtTypes.Expression)
-                        {
-                            lookAt.HorizontalInner = new VrmLib.LookAtRangeMap();
-                            lookAt.HorizontalOuter = new VrmLib.LookAtRangeMap()
-                            {
-                                InputMaxValue = controller.LookAt.HorizontalOuter.CurveXRangeDegree,
-                                OutputScaling = controller.LookAt.HorizontalOuter.CurveYRangeDegree
-                            };
-                            lookAt.VerticalUp = new VrmLib.LookAtRangeMap()
-                            {
-                                InputMaxValue = controller.LookAt.VerticalUp.CurveXRangeDegree,
-                                OutputScaling = controller.LookAt.VerticalUp.CurveYRangeDegree,
-                            };
-                            lookAt.VerticalDown = new VrmLib.LookAtRangeMap()
-                            {
-                                InputMaxValue = controller.LookAt.VerticalDown.CurveXRangeDegree,
-                                OutputScaling = controller.LookAt.VerticalDown.CurveYRangeDegree,
-                            };
-                        }
-                        else if (controller.LookAt.LookAtType == VRM10ControllerLookAt.LookAtTypes.Bone)
-                        {
-                            lookAt.HorizontalInner = new VrmLib.LookAtRangeMap()
-                            {
-                                InputMaxValue = controller.LookAt.HorizontalInner.CurveXRangeDegree,
-                                OutputScaling = controller.LookAt.HorizontalInner.CurveYRangeDegree
-                            };
-                            lookAt.HorizontalOuter = new VrmLib.LookAtRangeMap()
-                            {
-                                InputMaxValue = controller.LookAt.HorizontalOuter.CurveXRangeDegree,
-                                OutputScaling = controller.LookAt.HorizontalOuter.CurveYRangeDegree
-                            };
-                            lookAt.VerticalUp = new VrmLib.LookAtRangeMap()
-                            {
-                                InputMaxValue = controller.LookAt.VerticalUp.CurveXRangeDegree,
-                                OutputScaling = controller.LookAt.VerticalUp.CurveYRangeDegree,
-                            };
-                            lookAt.VerticalDown = new VrmLib.LookAtRangeMap()
-                            {
-                                InputMaxValue = controller.LookAt.VerticalDown.CurveXRangeDegree,
-                                OutputScaling = controller.LookAt.VerticalDown.CurveYRangeDegree,
-                            };
-                        }
-                        lookAt.OffsetFromHeadBone = controller.LookAt.OffsetFromHead.ToNumericsVector3();
-                    }
-                    Model.Vrm.LookAt = lookAt;
-                }
-
-                // springBone
-                {
-                    var springBoneManager = controller.SpringBone;
-                    foreach (var springBone in springBoneManager.Springs)
-                    {
-                        var vrmSpringBone = new VrmLib.SpringBone()
-                        {
-                            Comment = springBone.m_comment,
-                            Origin = (springBone.m_center != null) ? Nodes[springBone.m_center.gameObject] : null,
-                        };
-
-                        foreach (var joint in springBone.Joints)
-                        {
-                            vrmSpringBone.Joints.Add(new VrmLib.SpringJoint(Nodes[joint.Transform.gameObject])
-                            {
-                                Stiffness = joint.m_stiffnessForce,
-                                GravityPower = joint.m_gravityPower,
-                                GravityDir = joint.m_gravityDir.ToNumericsVector3(),
-                                DragForce = joint.m_dragForce,
-                                HitRadius = joint.m_jointRadius,
-                                Exclude = joint.m_exclude,
-                            });
-                        }
-
-                        foreach (var colliderGroup in springBone.ColliderGroups)
-                        {
-                            var colliderGroups = colliderGroup.Colliders.Select(x =>
-                            {
-                                switch (x.ColliderType)
-                                {
-                                    case VRM10SpringBoneColliderTypes.Sphere:
-                                        return VrmLib.VrmSpringBoneCollider.CreateSphere(x.Offset.ToNumericsVector3(), x.Radius);
-
-                                    case VRM10SpringBoneColliderTypes.Capsule:
-                                        return VrmLib.VrmSpringBoneCollider.CreateCapsule(x.Offset.ToNumericsVector3(), x.Radius, x.Tail.ToNumericsVector3());
-
-                                    default:
-                                        throw new NotImplementedException();
-                                }
-                            });
-                            var vrmColliderGroup = new VrmLib.SpringBoneColliderGroup(Nodes[colliderGroup.gameObject], colliderGroups);
-                            vrmSpringBone.Colliders.Add(vrmColliderGroup);
-                        }
-
-                        Model.Vrm.SpringBone.Springs.Add(vrmSpringBone);
                     }
                 }
             }

@@ -49,10 +49,6 @@ namespace UniVRM10
             if (!string.IsNullOrEmpty(model.AssetMinVersion)) Storage.Gltf.asset.minVersion = model.AssetMinVersion;
 
             if (!string.IsNullOrEmpty(model.AssetGenerator)) Storage.Gltf.asset.generator = model.AssetGenerator;
-            if (model.Vrm != null && !string.IsNullOrEmpty(model.Vrm.ExporterVersion))
-            {
-                Storage.Gltf.asset.generator = model.Vrm.ExporterVersion;
-            }
 
             if (!string.IsNullOrEmpty(model.AssetCopyright)) Storage.Gltf.asset.copyright = model.AssetCopyright;
         }

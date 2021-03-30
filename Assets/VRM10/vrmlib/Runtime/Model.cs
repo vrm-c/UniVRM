@@ -78,8 +78,6 @@ namespace VrmLib
             Root.CalcWorldMatrix();
         }
 
-        public Vrm Vrm;
-
         public Dictionary<HumanoidBones, Node> GetBoneMap()
         {
             return Root.Traverse()
@@ -124,38 +122,6 @@ namespace VrmLib
                 sb.Append($"[Skin] {skin}\n");
             }
 
-            //
-            // VRM
-            //
-            if (Vrm != null)
-            {
-                sb.Append($"[VRM] export: {Vrm.ExporterVersion}, spec: {Vrm.SpecVersion}\n");
-                sb.Append($"[VRM][meta] {Vrm.Meta}\n");
-                var boneMap = GetBoneMap();
-                if (boneMap.Any())
-                {
-                    sb.Append($"[VRM][humanoid] {boneMap.Count}/{Enum.GetValues(typeof(HumanoidBones)).Length - 1}\n");
-                    if (boneMap.Keys.Contains(HumanoidBones.unknown))
-                    {
-                        sb.Append($"[VRM][humanoid] {boneMap.Count} contains 'unknown'\n");
-                    }
-                    if (boneMap.TryGetValue(HumanoidBones.jaw, out Node jaw))
-                    {
-                        sb.Append($"[VRM][humanoid] contains 'jaw' => {jaw.Name}\n");
-                    }
-                }
-                if (Vrm.ExpressionManager != null
-                    && Vrm.ExpressionManager.ExpressionList != null
-                    && Vrm.ExpressionManager.ExpressionList.Any())
-                {
-                    sb.Append("[VRM][expression] ");
-                    foreach (var ex in Vrm.ExpressionManager.ExpressionList)
-                    {
-                        sb.Append($"[{ex.Preset}]");
-                    }
-                    sb.Append($"\n");
-                }
-            }
             return sb.ToString();
         }
 
