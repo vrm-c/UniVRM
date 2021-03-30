@@ -45,15 +45,6 @@ namespace UniVRM10
                 }
             }
 
-            // image
-            model.Images.AddRange(Enumerable.Range(0, storage.ImageCount).Select(x => storage.CreateImage(x)));
-
-            // texture
-            model.Textures.AddRange(Enumerable.Range(0, storage.TextureCount).Select(x => storage.CreateTexture(x, model.Images)));
-
-            // material
-            model.Materials.AddRange(Enumerable.Range(0, storage.MaterialCount).Select(x => storage.CreateMaterial(x, model.Textures)));
-
             // skin
             model.Skins.AddRange(Enumerable.Range(0, storage.SkinCount).Select(x => storage.CreateSkin(x, model.Nodes)));
 

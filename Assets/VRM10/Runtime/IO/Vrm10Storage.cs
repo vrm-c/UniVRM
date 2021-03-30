@@ -4,7 +4,6 @@ using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using VrmLib;
-using UniJSON;
 
 
 namespace UniVRM10
@@ -319,14 +318,6 @@ namespace UniVRM10
             }
         }
 
-        public void CreateBufferAccessorAndAdd(int? accessorIndex, VertexBuffer b, string key)
-        {
-            if (accessorIndex.HasValue)
-            {
-                CreateBufferAccessorAndAdd(accessorIndex.Value, b, key);
-            }
-        }
-
         public void CreateBufferAccessorAndAdd(int accessorIndex, VertexBuffer b, string key)
         {
             var a = CreateAccessor(accessorIndex);
@@ -373,11 +364,7 @@ namespace UniVRM10
 
         public int NodeCount => Gltf.nodes.Count;
 
-        public int ImageCount => Gltf.images.Count;
-
         public int TextureCount => Gltf.textures.Count;
-
-        public int MaterialCount => Gltf.materials.Count;
 
         public int SkinCount => Gltf.skins.Count;
 
@@ -432,114 +419,6 @@ namespace UniVRM10
             }
         }
 
-        public Image CreateImage(int index)
-        {
-            return Gltf.images[index].FromGltf(this);
-        }
-
-        /// <summary>
-        /// sRGB でないテクスチャーを検出する
-        /// </summary>
-        /// <param name="textureIndex"></param>
-        /// <returns></returns>
-        private (Texture.TextureTypes, UniGLTF.glTFMaterial) GetTextureType(int textureIndex)
-        {
-            foreach (var material in Gltf.materials)
-            {
-                if (UniGLTF.Extensions.VRMC_materials_mtoon.GltfDeserializer.TryGet(material.extensions,
-                    out UniGLTF.Extensions.VRMC_materials_mtoon.VRMC_materials_mtoon mtoon))
-                {
-                    if (material.normalTexture?.index == textureIndex) return (Texture.TextureTypes.NormalMap, material);
-                }
-                else if (UniGLTF.glTF_KHR_materials_unlit.IsEnable(material))
-                {
-                }
-                else
-                {
-                    if (material.pbrMetallicRoughness?.baseColorTexture?.index == textureIndex) return (Texture.TextureTypes.Default, material);
-                    if (material.pbrMetallicRoughness?.metallicRoughnessTexture?.index == textureIndex) return (Texture.TextureTypes.MetallicRoughness, material);
-                    if (material.occlusionTexture?.index == textureIndex) return (Texture.TextureTypes.Occlusion, material);
-                    if (material.emissiveTexture?.index == textureIndex) return (Texture.TextureTypes.Emissive, material);
-                    if (material.normalTexture?.index == textureIndex) return (Texture.TextureTypes.NormalMap, material);
-                }
-            }
-
-            return (Texture.TextureTypes.Default, null);
-        }
-
-        private Texture.ColorSpaceTypes GetTextureColorSpaceType(int textureIndex)
-        {
-            foreach (var material in Gltf.materials)
-            {
-                if (UniGLTF.Extensions.VRMC_materials_mtoon.GltfDeserializer.TryGet(material.extensions,
-                    out UniGLTF.Extensions.VRMC_materials_mtoon.VRMC_materials_mtoon mtoon))
-                {
-                    // mtoon
-                    if (material.pbrMetallicRoughness.baseColorTexture.index == textureIndex) return Texture.ColorSpaceTypes.Srgb;
-                    if (mtoon.ShadeMultiplyTexture == textureIndex) return Texture.ColorSpaceTypes.Srgb;
-                    if (material.emissiveTexture?.index == textureIndex) return Texture.ColorSpaceTypes.Srgb;
-                    if (mtoon.RimMultiplyTexture == textureIndex) return Texture.ColorSpaceTypes.Srgb;
-                    if (mtoon.AdditiveTexture == textureIndex) return Texture.ColorSpaceTypes.Srgb;
-
-                    if (mtoon.OutlineWidthMultiplyTexture == textureIndex) return Texture.ColorSpaceTypes.Linear;
-                    if (mtoon.UvAnimationMaskTexture == textureIndex) return Texture.ColorSpaceTypes.Linear;
-
-                    if (material.normalTexture?.index == textureIndex) return Texture.ColorSpaceTypes.Linear;
-                }
-                else if (UniGLTF.glTF_KHR_materials_unlit.IsEnable(material))
-                {
-                    // unlit
-                    if (material.pbrMetallicRoughness.baseColorTexture?.index == textureIndex) return Texture.ColorSpaceTypes.Srgb;
-                }
-                else
-                {
-                    // Pbr
-                    if (material.pbrMetallicRoughness?.baseColorTexture?.index == textureIndex) return Texture.ColorSpaceTypes.Srgb;
-                    if (material.pbrMetallicRoughness?.metallicRoughnessTexture?.index == textureIndex) return Texture.ColorSpaceTypes.Linear;
-                    if (material.occlusionTexture?.index == textureIndex) return Texture.ColorSpaceTypes.Linear;
-                    if (material.emissiveTexture?.index == textureIndex) return Texture.ColorSpaceTypes.Srgb;
-                    if (material.normalTexture?.index == textureIndex) return Texture.ColorSpaceTypes.Linear;
-                }
-            }
-
-            return Texture.ColorSpaceTypes.Srgb;
-        }
-
-        public Texture CreateTexture(int index, List<Image> images)
-        {
-            var texture = Gltf.textures[index];
-            var textureType = GetTextureType(index);
-            var colorSpace = GetTextureColorSpaceType(index);
-
-            var sampler = (texture.sampler >= 0 && texture.sampler < Gltf.samplers.Count)
-            ? Gltf.samplers[texture.sampler]
-            : new UniGLTF.glTFTextureSampler()
-            ;
-
-            if (textureType.Item1 == Texture.TextureTypes.MetallicRoughness && textureType.Item2.pbrMetallicRoughness != null)
-            {
-                var roughnessFactor = textureType.Item2.pbrMetallicRoughness.roughnessFactor;
-                var name = !string.IsNullOrEmpty(texture.name) ? texture.name : images[texture.source].Name;
-                return new MetallicRoughnessImageTexture(
-                    name,
-                    sampler.FromGltf(),
-                    images[texture.source],
-                    roughnessFactor,
-                    colorSpace,
-                    textureType.Item1);
-            }
-            else
-            {
-                return texture.FromGltf(sampler, images, colorSpace, textureType.Item1);
-            }
-        }
-
-        public Material CreateMaterial(int index, List<Texture> textures)
-        {
-            var x = Gltf.materials[index];
-            return x.FromGltf(textures);
-        }
-
         public Skin CreateSkin(int index, List<Node> nodes)
         {
             var x = Gltf.skins[index];
@@ -584,11 +463,6 @@ namespace UniVRM10
             }
 
             return (meshIndex, skinIndex);
-        }
-
-        public Meta CreateVrmMeta(List<Texture> textures)
-        {
-            return gltfVrm.Meta.FromGltf(textures);
         }
 
         public ArraySegment<byte> GetBufferBytes(UniGLTF.glTFBufferView bufferView)
