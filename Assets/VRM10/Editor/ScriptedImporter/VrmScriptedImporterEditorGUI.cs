@@ -14,6 +14,11 @@ namespace UniVRM10
     [CustomEditor(typeof(VrmScriptedImporter))]
     public class VrmScriptedImporterEditorGUI : ScriptedImporterEditor
     {
+        // const string TextureDirName = "Textures";
+        // const string MaterialDirName = "Materials";
+        // const string MetaDirName = "MetaObjects";
+        // const string ExpressionDirName = "Expressions";
+
         VrmScriptedImporter m_importer;
         GltfParser m_parser;
         VrmLib.Model m_model;

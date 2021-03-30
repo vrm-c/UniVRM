@@ -13,11 +13,12 @@ namespace UniVRM10
 {
     public static class VrmScriptedImporterImpl
     {
-        // const string TextureDirName = "Textures";
-        // const string MaterialDirName = "Materials";
-        // const string MetaDirName = "MetaObjects";
-        // const string ExpressionDirName = "Expressions";
-
+        /// <summary>
+        /// VRM1 で　パースし、失敗したら Migration してから VRM1 でパースする
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="migrateToVrm1"></param>
+        /// <returns></returns>
         static GltfParser Parse(string path, bool migrateToVrm1)
         {
             //
@@ -84,60 +85,6 @@ namespace UniVRM10
                 });
             }
         }
-
-        // try
-        // {
-        //     // Create Vrm Model
-        //     VrmLib.Model model = VrmLoader.CreateVrmModel(parser);
-        //     if (model == null)
-        //     {
-        //         // maybe VRM-0.X
-        //         return;
-        //     }
-        //     Debug.Log($"VrmLoader.CreateVrmModel: {model}");
-
-        //     // Build Unity Model
-        //     var assets = EditorUnityBuilder.ToUnityAsset(model, assetPath, this);
-        //     ComponentBuilder.Build10(model, assets);
-
-        //     // Texture
-        //     var externalTextures = this.GetExternalUnityObjects<UnityEngine.Texture2D>();
-        //     foreach (var texture in assets.Textures)
-        //     {
-        //         if (texture == null)
-        //             continue;
-
-        //         if (externalTextures.ContainsValue(texture))
-        //         {
-        //         }
-        //         else
-        //         {
-        //             ctx.AddObjectToAsset(texture.name, texture);
-        //         }
-        //     }
-
-        //     // Material
-        //     var externalMaterials = this.GetExternalUnityObjects<UnityEngine.Material>();
-        //     foreach (var material in assets.Materials)
-        //     {
-        //         if (material == null)
-        //             continue;
-
-        //         if (externalMaterials.ContainsValue(material))
-        //         {
-
-        //         }
-        //         else
-        //         {
-        //             ctx.AddObjectToAsset(material.name, material);
-        //         }
-        //     }
-
-        //     // Mesh
-        //     foreach (var mesh in assets.Meshes)
-        //     {
-        //         ctx.AddObjectToAsset(mesh.name, mesh);
-        //     }
 
         //     //// ScriptableObject
         //     // avatar
