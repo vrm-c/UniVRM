@@ -237,6 +237,18 @@ namespace UniVRM10
                     clip.OverrideBlink = expression.OverrideBlink;
                     clip.OverrideLookAt = expression.OverrideLookAt;
                     clip.OverrideMouth = expression.OverrideMouth;
+
+                    clip.MorphTargetBindings = expression.MorphTargetBinds.Select(x => x.Build10(Root, m_asset.Map, m_model))
+                        .ToArray();
+                    // clip.MaterialColorBindings = expression.MaterialColorBinds.Select(x => x.Build10(asset.Map))
+                    //     .Where(x => x.HasValue)
+                    //     .Select(x => x.Value)
+                    //     .ToArray();
+                    // clip.MaterialUVBindings = expression.TextureTransformBinds.Select(x => x.Build10(asset.Map))
+                    //     .Where(x => x.HasValue)
+                    //     .Select(x => x.Value)
+                    //     .ToArray();
+
                     m_exressionAvatar.Clips.Add(clip);
                 }
             }
