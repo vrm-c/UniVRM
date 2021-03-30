@@ -3,7 +3,8 @@
     "references": [
         "VrmLib",
         "VRM10",
-        "UniGLTF"
+        "UniGLTF",
+        "VRMShaders"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

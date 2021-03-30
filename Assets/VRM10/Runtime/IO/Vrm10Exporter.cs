@@ -58,7 +58,7 @@ namespace UniVRM10
             Storage.Reserve(bytesLength);
         }
 
-        public void ExportMeshes(List<MeshGroup> groups, List<Material> materials, ExportArgs option)
+        public void ExportMeshes(List<MeshGroup> groups, List<object> materials, ExportArgs option)
         {
             foreach (var group in groups)
             {

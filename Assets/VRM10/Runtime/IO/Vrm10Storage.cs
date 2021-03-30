@@ -439,10 +439,10 @@ namespace UniVRM10
             return skin;
         }
 
-        public MeshGroup CreateMesh(int index, List<Material> materials)
+        public MeshGroup CreateMesh(int index)
         {
             var x = Gltf.meshes[index];
-            var group = x.FromGltf(this, materials);
+            var group = x.FromGltf(this);
             return group;
         }
 

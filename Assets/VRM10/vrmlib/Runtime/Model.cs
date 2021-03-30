@@ -25,14 +25,8 @@ namespace VrmLib
         public string AssetCopyright;
         public string AssetMinVersion;
 
-        // gltf/images
-        public readonly List<Image> Images = new List<Image>();
-
-        // gltf/textures
-        public readonly List<Texture> Textures = new List<Texture>();
-
         // gltf/materials
-        public readonly List<Material> Materials = new List<Material>();
+        public readonly List<object> Materials = new List<object>();
 
         // gltf/skins
         public readonly List<Skin> Skins = new List<Skin>();
@@ -90,16 +84,6 @@ namespace VrmLib
             var sb = new StringBuilder();
             sb.Append($"[GLTF] generator: {AssetGenerator}\n");
 
-            for (int i = 0; i < Images.Count; ++i)
-            {
-                var x = Images[i];
-                sb.Append($"[Image#{i:00}] {x}\n");
-            }
-            // for (int i = 0; i < Textures.Count; ++i)
-            // {
-            //     var t = Textures[i];
-            //     sb.Append($"[Texture#{i:00}] {t}\n");
-            // }
             for (int i = 0; i < Materials.Count; ++i)
             {
                 var m = Materials[i];

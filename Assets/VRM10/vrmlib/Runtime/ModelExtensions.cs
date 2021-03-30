@@ -68,9 +68,6 @@ namespace VrmLib
 
         public static void CheckIndex(this Model model)
         {
-            CheckIndex(model.Images, nameof(model.Images));
-            CheckIndex(model.Textures, nameof(model.Textures));
-            CheckIndex(model.Materials, nameof(model.Materials));
             CheckIndex(model.Nodes, nameof(model.Nodes));
             CheckIndex(model.Skins, nameof(model.Skins));
             CheckIndex(model.MeshGroups, nameof(model.MeshGroups));

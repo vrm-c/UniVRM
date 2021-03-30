@@ -49,7 +49,7 @@ namespace UniVRM10
             model.Skins.AddRange(Enumerable.Range(0, storage.SkinCount).Select(x => storage.CreateSkin(x, model.Nodes)));
 
             // mesh
-            model.MeshGroups.AddRange(Enumerable.Range(0, storage.MeshCount).Select(x => storage.CreateMesh(x, model.Materials)));
+            model.MeshGroups.AddRange(Enumerable.Range(0, storage.MeshCount).Select(x => storage.CreateMesh(x)));
 
             // skin
             for (int i = 0; i < storage.NodeCount; ++i)

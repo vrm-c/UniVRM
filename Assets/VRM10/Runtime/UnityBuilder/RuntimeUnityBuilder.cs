@@ -44,7 +44,6 @@ namespace UniVRM10
             {
                 var src = m_model.Materials[i];
                 var dst = MaterialFactory.Materials[i].Asset;
-                m_asset.Map.Materials.Add(src, dst);
             }
 
             // mesh
@@ -62,7 +61,7 @@ namespace UniVRM10
                     Meshes.Add(new MeshWithMaterials
                     {
                         Mesh = mesh,
-                        Materials = src.Meshes[0].Submeshes.Select(x => m_asset.Map.Materials[x.Material]).ToArray(),
+                        Materials = src.Meshes[0].Submeshes.Select(x => MaterialFactory.Materials[x.Material].Asset).ToArray(),
                     });
                 }
                 else
@@ -105,7 +104,7 @@ namespace UniVRM10
                     throw new NotImplementedException("invalid isolated vertexbuffer");
                 }
 
-                var renderer = CreateRenderer(node, go, map);
+                var renderer = CreateRenderer(node, go, map, MaterialFactory.Materials);
                 map.Renderers.Add(node, renderer);
                 m_asset.Renderers.Add(renderer);
             }
@@ -163,7 +162,8 @@ namespace UniVRM10
         /// <summary>
         /// MeshFilter + MeshRenderer もしくは SkinnedMeshRenderer を構築する
         /// </summary>
-        public static Renderer CreateRenderer(VrmLib.Node node, GameObject go, ModelMap map)
+        public static Renderer CreateRenderer(VrmLib.Node node, GameObject go, ModelMap map,
+            IReadOnlyList<VRMShaders.MaterialFactory.MaterialLoadInfo> materialLoadInfos)
         {
             var mesh = node.MeshGroup.Meshes[0];
 
@@ -189,7 +189,7 @@ namespace UniVRM10
                 renderer = go.AddComponent<MeshRenderer>();
                 meshFilter.sharedMesh = map.Meshes[node.MeshGroup];
             }
-            var materials = mesh.Submeshes.Select(x => map.Materials[x.Material]).ToArray();
+            var materials = mesh.Submeshes.Select(x => materialLoadInfos[x.Material].Asset).ToArray();
             renderer.sharedMaterials = materials;
 
             return renderer;

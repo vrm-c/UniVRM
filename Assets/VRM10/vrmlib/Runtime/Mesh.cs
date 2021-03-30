@@ -34,18 +34,18 @@ namespace VrmLib
     {
         public int Offset;
         public int DrawCount;
-        public Material Material;
+        public int Material;
 
         public override string ToString()
         {
-            return $"{Material.Name}({DrawCount})";
+            return $"{Material}({DrawCount})";
         }
 
-        public Submesh(Material material) : this(0, 0, material)
+        public Submesh(int material) : this(0, 0, material)
         {
         }
 
-        public Submesh(int offset, int drawCount, Material material)
+        public Submesh(int offset, int drawCount, int material)
         {
             Offset = offset;
             DrawCount = drawCount;

@@ -15,11 +15,6 @@ namespace UniVRM10
             ///
             {
                 var reserveBytes = 0;
-                // image
-                foreach (var image in m.Images)
-                {
-                    reserveBytes += image.Bytes.Count;
-                }
                 // mesh
                 foreach (var g in m.MeshGroups)
                 {

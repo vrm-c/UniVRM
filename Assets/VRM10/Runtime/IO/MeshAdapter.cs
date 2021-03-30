@@ -164,8 +164,7 @@ namespace UniVRM10
             return true;
         }
 
-        public static MeshGroup FromGltf(this glTFMesh x,
-            Vrm10Storage storage, List<Material> materials)
+        public static MeshGroup FromGltf(this glTFMesh x, Vrm10Storage storage)
         {
             var group = new MeshGroup(x.name);
 
@@ -176,7 +175,7 @@ namespace UniVRM10
                 var materialIndex = primitive.material;
 
                 mesh.Submeshes.Add(
-                    new Submesh(0, mesh.IndexBuffer.Count, materials[materialIndex]));
+                    new Submesh(0, mesh.IndexBuffer.Count, materialIndex));
 
                 group.Meshes.Add(mesh);
             }
@@ -189,7 +188,7 @@ namespace UniVRM10
                     var materialIndex = primitive.material;
 
                     mesh.Submeshes.Add(
-                        new Submesh(offset, mesh.IndexBuffer.Count, materials[materialIndex]));
+                        new Submesh(offset, mesh.IndexBuffer.Count, materialIndex));
                     offset += mesh.IndexBuffer.Count;
 
                     group.Meshes.Add(mesh);
@@ -206,7 +205,7 @@ namespace UniVRM10
                     var materialIndex = primitive.material;
                     var count = storage.Gltf.accessors[primitive.indices].count;
                     mesh.Submeshes.Add(
-                        new Submesh(offset, count, materials[materialIndex]));
+                        new Submesh(offset, count, materialIndex));
                     offset += count;
                 }
 
@@ -258,7 +257,7 @@ namespace UniVRM10
             }
         }
 
-        static void ExportMesh(this Mesh mesh, List<Material> materials, Vrm10Storage storage, glTFMesh gltfMesh, ExportArgs option)
+        static void ExportMesh(this Mesh mesh, List<object> materials, Vrm10Storage storage, glTFMesh gltfMesh, ExportArgs option)
         {
             //
             // primitive share vertex buffer
@@ -383,7 +382,7 @@ namespace UniVRM10
             }
         }
 
-        public static glTFMesh ExportMeshGroup(this MeshGroup src, List<Material> materials, Vrm10Storage storage, ExportArgs option)
+        public static glTFMesh ExportMeshGroup(this MeshGroup src, List<object> materials, Vrm10Storage storage, ExportArgs option)
         {
             var mesh = new glTFMesh
             {

@@ -14,8 +14,7 @@ namespace UniVRM10
         public VrmLib.Model Model;
 
         public Dictionary<GameObject, VrmLib.Node> Nodes = new Dictionary<GameObject, VrmLib.Node>();
-        public Dictionary<Texture2D, VrmLib.TextureInfo> Textures = new Dictionary<Texture2D, VrmLib.TextureInfo>();
-        public Dictionary<UnityEngine.Material, VrmLib.Material> Materials = new Dictionary<UnityEngine.Material, VrmLib.Material>();
+        public List<UnityEngine.Material> Materials = new List<UnityEngine.Material>();
         public Dictionary<UnityEngine.Mesh, VrmLib.MeshGroup> Meshes = new Dictionary<UnityEngine.Mesh, VrmLib.MeshGroup>();
 
         static string GetSupportedMime(string path)
@@ -53,136 +52,7 @@ namespace UniVRM10
             return (copy.EncodeToPNG(), "image/png");
         }
 
-        public VrmLib.TextureInfo GetOrCreateTexture(UnityEngine.Material material, UnityEngine.Texture srcTexture, VrmLib.Texture.ColorSpaceTypes colorSpace, VrmLib.Texture.TextureTypes textureType)
-        {
-            var texture = srcTexture as Texture2D;
-            if (texture is null)
-            {
-                return null;
-            }
-
-            if (!Textures.TryGetValue(texture, out VrmLib.TextureInfo info))
-            {
-                UnityEngine.Material converter = null;
-                if (textureType == VrmLib.Texture.TextureTypes.NormalMap)
-                {
-                    converter = TextureConvertMaterial.GetNormalMapConvertUnityToGltf();
-                }
-                else if (textureType == VrmLib.Texture.TextureTypes.MetallicRoughness)
-                {
-                    float smoothness = 0.0f;
-                    if (material.HasProperty("_GlossMapScale"))
-                    {
-                        smoothness = material.GetFloat("_GlossMapScale");
-                    }
-
-                    converter = TextureConvertMaterial.GetMetallicRoughnessUnityToGltf(smoothness);
-                }
-                else if (textureType == VrmLib.Texture.TextureTypes.Occlusion)
-                {
-                    converter = TextureConvertMaterial.GetOcclusionUnityToGltf();
-                }
-
-                var (bytes, mime) = GetImageEncodedBytes(
-                    texture,
-                    (colorSpace == VrmLib.Texture.ColorSpaceTypes.Linear) ? RenderTextureReadWrite.Linear : RenderTextureReadWrite.sRGB,
-                    converter
-                    );
-
-                if (converter != null)
-                {
-                    UnityEngine.Object.DestroyImmediate(converter);
-                }
-
-                var sampler = new VrmLib.TextureSampler
-                {
-                    MagFilter = texture.filterMode.ToVrmLibMagFilter(),
-                    MinFilter = texture.filterMode.ToVrmLibMinFilter(),
-                    WrapS = texture.wrapMode.ToVrmLib(),
-                    WrapT = texture.wrapMode.ToVrmLib(),
-                };
-                var image = new VrmLib.Image(texture.name, mime, VrmLib.ImageUsage.None, new ArraySegment<byte>(bytes));
-                info = new VrmLib.TextureInfo(new VrmLib.ImageTexture(texture.name, sampler, image, colorSpace, textureType));
-                Textures.Add(texture, info);
-            }
-
-            return info;
-        }
-
         #region Export 1.0
-        /// <summary>
-        /// VRM-0.X の MaterialBindValue を VRM-1.0 仕様に変換する
-        ///
-        /// * Property名 => enum MaterialBindType
-        /// * 特に _MainTex_ST の場合、MaterialBindType.UvScale + MaterialBindType.UvScale ２つになりうる
-        ///
-        /// </summary>
-        VrmLib.Expression ToVrmLib(VRM10Expression clip, GameObject root)
-        {
-            var expression = new VrmLib.Expression(clip.Preset, clip.ExpressionName, clip.IsBinary);
-            expression.OverrideBlink = EnumUtil.Cast<VrmLib.ExpressionOverrideType>(clip.OverrideBlink);
-            expression.OverrideLookAt = EnumUtil.Cast<VrmLib.ExpressionOverrideType>(clip.OverrideLookAt);
-            expression.OverrideMouth = EnumUtil.Cast<VrmLib.ExpressionOverrideType>(clip.OverrideMouth);
-
-            foreach (var binding in clip.MorphTargetBindings)
-            {
-                var transform = GetTransformFromRelativePath(root.transform, binding.RelativePath);
-                if (transform == null)
-                    continue;
-                var renderer = transform.gameObject.GetComponent<SkinnedMeshRenderer>();
-                if (renderer == null)
-                    continue;
-                var mesh = renderer.sharedMesh;
-                if (mesh == null)
-                    continue;
-
-                var names = new List<string>();
-                for (int i = 0; i < mesh.blendShapeCount; ++i)
-                {
-                    names.Add(mesh.GetBlendShapeName(i));
-                }
-
-                var node = Nodes[transform.gameObject];
-                var blendShapeValue = new VrmLib.MorphTargetBind(
-                    node,
-                    names[binding.Index],
-                    // Unity Range [0-100] to VRM-1.0 Range [0-1.0]
-                    binding.Weight * 0.01f
-                    );
-                expression.MorphTargetBinds.Add(blendShapeValue);
-            }
-
-            foreach (var binding in clip.MaterialColorBindings)
-            {
-                var materialPair = Materials.FirstOrDefault(x => x.Key.name == binding.MaterialName);
-                if (materialPair.Value != null)
-                {
-                    var bind = new VrmLib.MaterialColorBind(
-                        materialPair.Value,
-                        binding.BindType,
-                        binding.TargetValue.ToNumericsVector4()
-                        );
-                    expression.MaterialColorBinds.Add(bind);
-                }
-            }
-
-            foreach (var binding in clip.MaterialUVBindings)
-            {
-                var materialPair = Materials.FirstOrDefault(x => x.Key.name == binding.MaterialName);
-                if (materialPair.Value != null)
-                {
-                    var bind = new VrmLib.TextureTransformBind(
-                        materialPair.Value,
-                        binding.Scaling.ToNumericsVector2(),
-                        binding.Offset.ToNumericsVector2()
-                    );
-                    expression.TextureTransformBinds.Add(bind);
-                }
-            }
-
-            return expression;
-        }
-
         /// <summary>
         /// metaObject が null のときは、root から取得する
         /// </summary>
@@ -276,14 +146,13 @@ namespace UniVRM10
                     var materials = renderer.sharedMaterials; // avoid copy
                     foreach (var material in materials)
                     {
-                        if (Materials.ContainsKey(material))
+                        if (Materials.Contains(material))
                         {
                             continue;
                         }
 
-                        var vrmMaterial = Export10(material, GetOrCreateTexture);
-                        Model.Materials.Add(vrmMaterial);
-                        Materials.Add(material, vrmMaterial);
+                        Model.Materials.Add(material);
+                        Materials.Add(material);
                     }
                 }
             }
@@ -554,7 +423,7 @@ namespace UniVRM10
             return null;
         }
 
-        private static VrmLib.MeshGroup CreateMesh(UnityEngine.Mesh mesh, Renderer renderer, Dictionary<UnityEngine.Material, VrmLib.Material> materials)
+        private static VrmLib.MeshGroup CreateMesh(UnityEngine.Mesh mesh, Renderer renderer, List<UnityEngine.Material> materials)
         {
             var meshGroup = new VrmLib.MeshGroup(mesh.name);
             var vrmMesh = new VrmLib.Mesh();
@@ -586,7 +455,7 @@ namespace UniVRM10
                 var subMesh = mesh.GetSubMesh(i);
                 try
                 {
-                    vrmMesh.Submeshes.Add(new VrmLib.Submesh(offset, subMesh.indexCount, materials[renderer.sharedMaterials[i]]));
+                    vrmMesh.Submeshes.Add(new VrmLib.Submesh(offset, subMesh.indexCount, materials.IndexOf(renderer.sharedMaterials[i])));
                 }
                 catch (Exception ex)
                 {
@@ -597,7 +466,7 @@ namespace UniVRM10
                 var triangles = mesh.GetTriangles(i);
                 try
                 {
-                    vrmMesh.Submeshes.Add(new VrmLib.Submesh(offset, triangles.Length, materials[renderer.sharedMaterials[i]]));
+                    vrmMesh.Submeshes.Add(new VrmLib.Submesh(offset, triangles.Length, materials.IndexOf(renderer.sharedMaterials[i])));
                 }
                 catch (Exception ex)
                 {
