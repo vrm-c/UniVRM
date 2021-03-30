@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
+using UniGLTF.Extensions.VRMC_vrm;
 using UnityEngine;
-using VrmLib;
 
 namespace UniVRM10
 {
@@ -10,12 +10,12 @@ namespace UniVRM10
         private readonly CurveMapper _horizontalInner;
         private readonly CurveMapper _verticalDown;
         private readonly CurveMapper _verticalUp;
-        
-        private readonly ExpressionKey _lookRightKey = ExpressionKey.CreateFromPreset(ExpressionPreset.LookRight);
-        private readonly ExpressionKey _lookLeftKey = ExpressionKey.CreateFromPreset(ExpressionPreset.LookLeft);
-        private readonly ExpressionKey _lookUpKey = ExpressionKey.CreateFromPreset(ExpressionPreset.LookUp);
-        private readonly ExpressionKey _lookDownKey = ExpressionKey.CreateFromPreset(ExpressionPreset.LookDown);
-        
+
+        private readonly ExpressionKey _lookRightKey = ExpressionKey.CreateFromPreset(ExpressionPreset.lookRight);
+        private readonly ExpressionKey _lookLeftKey = ExpressionKey.CreateFromPreset(ExpressionPreset.lookLeft);
+        private readonly ExpressionKey _lookUpKey = ExpressionKey.CreateFromPreset(ExpressionPreset.lookUp);
+        private readonly ExpressionKey _lookDownKey = ExpressionKey.CreateFromPreset(ExpressionPreset.lookDown);
+
         public LookAtEyeDirectionApplicableToExpression(
             CurveMapper horizontalOuter, CurveMapper horizontalInner, CurveMapper verticalDown, CurveMapper verticalUp)
         {
@@ -29,7 +29,7 @@ namespace UniVRM10
         {
             var yaw = eyeDirection.LeftYaw;
             var pitch = eyeDirection.LeftPitch;
-            
+
             if (yaw < 0)
             {
                 // Left

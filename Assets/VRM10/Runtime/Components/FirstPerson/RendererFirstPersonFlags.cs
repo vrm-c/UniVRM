@@ -7,7 +7,7 @@ namespace UniVRM10
     public struct RendererFirstPersonFlags
     {
         public Renderer Renderer;
-        public VrmLib.FirstPersonMeshType FirstPersonFlag;
+        public UniGLTF.Extensions.VRMC_vrm.FirstPersonType FirstPersonFlag;
         public Mesh SharedMesh
         {
             get

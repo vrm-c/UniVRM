@@ -16,20 +16,6 @@ namespace UniVRM10.Test
     {
         const string _vrmPath = "Tests/Models/Alicia_vrm-0.51/AliciaSolid_vrm-0.51.vrm";
 
-        string[] _mtooSrgbTextureProperties = {
-            VrmLib.MToon.Utils.PropMainTex,
-            VrmLib.MToon.Utils.PropShadeTexture,
-            VrmLib.MToon.Utils.PropEmissionMap,
-            VrmLib.MToon.Utils.PropSphereAdd,
-            VrmLib.MToon.Utils.PropRimTexture,
-        };
-
-        string[] _mtoonLinearTextureProperties = {
-            VrmLib.MToon.Utils.PropBumpMap,
-            VrmLib.MToon.Utils.PropOutlineWidthTexture,
-            VrmLib.MToon.Utils.PropUvAnimMaskTexture
-        };
-
         private (ModelAsset, IReadOnlyList<VRMShaders.MaterialFactory.MaterialLoadInfo>) ToUnity(string path)
         {
             var fi = new FileInfo(_vrmPath);

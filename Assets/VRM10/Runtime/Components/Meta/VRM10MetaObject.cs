@@ -38,7 +38,7 @@ namespace UniVRM10
 
         #region AvatarPermission
         [SerializeField, Tooltip("A person who can perform with this avatar")]
-        public VrmLib.AvatarUsageType AllowedUser;
+        public UniGLTF.Extensions.VRMC_vrm.AvatarPermissionType AllowedUser;
 
         [SerializeField, Tooltip("Violent acts using this avatar")]
         public bool ViolentUsage;
@@ -47,7 +47,7 @@ namespace UniVRM10
         public bool SexualUsage;
 
         [SerializeField, Tooltip("For commercial use")]
-        public VrmLib.CommercialUsageType CommercialUsage;
+        public UniGLTF.Extensions.VRMC_vrm.CommercialUsageType CommercialUsage;
 
         [SerializeField]
         public bool GameUsage;
@@ -61,13 +61,13 @@ namespace UniVRM10
 
         #region Distribution License
         [SerializeField]
-        public VrmLib.CreditNotationType CreditNotation;
+        public UniGLTF.Extensions.VRMC_vrm.CreditNotationType CreditNotation;
 
         [SerializeField]
         public bool Redistribution;
 
         [SerializeField]
-        public VrmLib.ModificationLicenseType ModificationLicense;
+        public UniGLTF.Extensions.VRMC_vrm.ModificationType ModificationLicense;
 
         [SerializeField]
         public string OtherLicenseUrl;

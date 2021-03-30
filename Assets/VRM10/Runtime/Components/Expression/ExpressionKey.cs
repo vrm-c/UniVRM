@@ -9,8 +9,8 @@ namespace UniVRM10
         /// <summary>
         /// Enum.ToString() のGC回避用キャッシュ
         /// </summary>
-        private static readonly Dictionary<VrmLib.ExpressionPreset, string> PresetNameDictionary =
-            new Dictionary<VrmLib.ExpressionPreset, string>();
+        private static readonly Dictionary<UniGLTF.Extensions.VRMC_vrm.ExpressionPreset, string> PresetNameDictionary =
+            new Dictionary<UniGLTF.Extensions.VRMC_vrm.ExpressionPreset, string>();
 
         /// <summary>
         ///  ExpressionPreset と同名の名前を持つ独自に追加した Expression を区別するための prefix
@@ -20,7 +20,7 @@ namespace UniVRM10
         /// <summary>
         /// Preset of this ExpressionKey.
         /// </summary>
-        public readonly VrmLib.ExpressionPreset Preset;
+        public readonly UniGLTF.Extensions.VRMC_vrm.ExpressionPreset Preset;
         
         /// <summary>
         /// Custom Name of this ExpressionKey.
@@ -39,9 +39,9 @@ namespace UniVRM10
             {
                 switch (Preset)
                 {
-                    case VrmLib.ExpressionPreset.Blink:
-                    case VrmLib.ExpressionPreset.BlinkLeft:
-                    case VrmLib.ExpressionPreset.BlinkRight:
+                    case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.blink:
+                    case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.blinkLeft:
+                    case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.blinkRight:
                         return true;
                 }
                 return false;
@@ -54,10 +54,10 @@ namespace UniVRM10
             {
                 switch (Preset)
                 {
-                    case VrmLib.ExpressionPreset.LookUp:
-                    case VrmLib.ExpressionPreset.LookDown:
-                    case VrmLib.ExpressionPreset.LookLeft:
-                    case VrmLib.ExpressionPreset.LookRight:
+                    case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.lookUp:
+                    case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.lookDown:
+                    case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.lookLeft:
+                    case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.lookRight:
                         return true;
                 }
                 return false;
@@ -70,11 +70,11 @@ namespace UniVRM10
             {
                 switch (Preset)
                 {
-                    case VrmLib.ExpressionPreset.Aa:
-                    case VrmLib.ExpressionPreset.Ih:
-                    case VrmLib.ExpressionPreset.Ou:
-                    case VrmLib.ExpressionPreset.Ee:
-                    case VrmLib.ExpressionPreset.Oh:
+                    case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.aa:
+                    case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.ih:
+                    case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.ou:
+                    case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.ee:
+                    case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.oh:
                         return true;
                 }
                 return false;
@@ -83,11 +83,11 @@ namespace UniVRM10
 
         public bool IsProcedual => IsBlink || IsLookAt || IsMouth;
 
-        public ExpressionKey(VrmLib.ExpressionPreset preset, string customName = null)
+        public ExpressionKey(UniGLTF.Extensions.VRMC_vrm.ExpressionPreset preset, string customName = null)
         {
             Preset = preset;
 
-            if (Preset != VrmLib.ExpressionPreset.Custom)
+            if (Preset != UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.custom)
             {
                 if (PresetNameDictionary.ContainsKey((Preset)))
                 {
@@ -103,7 +103,7 @@ namespace UniVRM10
             {
                 if (string.IsNullOrEmpty(customName))
                 {
-                    throw new ArgumentException("name is required for VrmLib.ExpressionPreset.Custom");
+                    throw new ArgumentException("name is required for UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.Custom");
                 }
 
                 _id = $"{UnknownPresetPrefix}{customName}";
@@ -113,10 +113,10 @@ namespace UniVRM10
 
         public static ExpressionKey CreateCustom(String key)
         {
-            return new ExpressionKey(VrmLib.ExpressionPreset.Custom, key);
+            return new ExpressionKey(UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.custom, key);
         }
 
-        public static ExpressionKey CreateFromPreset(VrmLib.ExpressionPreset preset)
+        public static ExpressionKey CreateFromPreset(UniGLTF.Extensions.VRMC_vrm.ExpressionPreset preset)
         {
             return new ExpressionKey(preset);
         }

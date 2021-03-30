@@ -53,7 +53,7 @@ namespace UniVRM10
         /// ExpressionPreset を識別する。 Unknown の場合は、 ExpressionName で識別する
         /// </summary>
         [SerializeField]
-        public VrmLib.ExpressionPreset Preset;
+        public UniGLTF.Extensions.VRMC_vrm.ExpressionPreset Preset;
 
         /// <summary>
         /// 対象メッシュの Expression を操作する
@@ -83,19 +83,19 @@ namespace UniVRM10
         /// この Expression と Blink(Blink, BlinkLeft, BlinkRight) が同時に有効な場合、Blink の Weight を 0 にする
         /// </summary>
         [SerializeField]
-        public VrmLib.ExpressionOverrideType OverrideBlink;
+        public UniGLTF.Extensions.VRMC_vrm.ExpressionOverrideType OverrideBlink;
 
         /// <summary>
         /// この Expression と LookAt(LookUp, LookDown, LookLeft, LookRight) が同時に有効な場合、LookAt の Weight を 0 にする
         /// </summary>
         [SerializeField]
-        public VrmLib.ExpressionOverrideType OverrideLookAt;
+        public UniGLTF.Extensions.VRMC_vrm.ExpressionOverrideType OverrideLookAt;
 
         /// <summary>
         /// この Expression と Mouth(Aa, Ih, Ou, Ee, Oh) が同時に有効な場合、Mouth の Weight を 0 にする
         /// </summary>
         [SerializeField]
-        public VrmLib.ExpressionOverrideType OverrideMouth;
+        public UniGLTF.Extensions.VRMC_vrm.ExpressionOverrideType OverrideMouth;
 
         void Reset()
         {
@@ -104,7 +104,7 @@ namespace UniVRM10
 
         void OnValidate()
         {
-            if (Preset == VrmLib.ExpressionPreset.Custom)
+            if (Preset == UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.custom)
             {
                 if (string.IsNullOrEmpty(ExpressionName))
                 {

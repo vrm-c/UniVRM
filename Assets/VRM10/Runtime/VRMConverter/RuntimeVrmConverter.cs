@@ -8,7 +8,6 @@ using VrmLib;
 
 namespace UniVRM10
 {
-    public delegate VrmLib.TextureInfo GetOrCreateTextureDelegate(UnityEngine.Material material, UnityEngine.Texture srcTexture, VrmLib.Texture.ColorSpaceTypes colorSpace, VrmLib.Texture.TextureTypes textureType);
     public class RuntimeVrmConverter
     {
         public VrmLib.Model Model;
@@ -16,41 +15,6 @@ namespace UniVRM10
         public Dictionary<GameObject, VrmLib.Node> Nodes = new Dictionary<GameObject, VrmLib.Node>();
         public List<UnityEngine.Material> Materials = new List<UnityEngine.Material>();
         public Dictionary<UnityEngine.Mesh, VrmLib.MeshGroup> Meshes = new Dictionary<UnityEngine.Mesh, VrmLib.MeshGroup>();
-
-        static string GetSupportedMime(string path)
-        {
-            var ext = Path.GetExtension(path).ToLower();
-            switch (ext)
-            {
-                case ".png": return "image/png";
-                case ".jpg": return "image/jpeg";
-            }
-
-            // .tga etc
-            return null;
-        }
-
-        /// <summary>
-        /// return (bytes, mime string)
-        /// </summary>
-        static (byte[], string) GetImageEncodedBytes(UnityEngine.Texture src, RenderTextureReadWrite renderTextureReadWrite, UnityEngine.Material renderMaterial = null)
-        {
-#if false
-            /// 元になるアセットがあればそれを得る(png, jpgのみ)
-            var assetPath = UnityEditor.AssetDatabase.GetAssetPath(src);
-            if (!string.IsNullOrEmpty(assetPath))
-            {
-                var mime = GetSupportedMime(assetPath);
-                if (!string.IsNullOrEmpty(mime))
-                {
-                    return (File.ReadAllBytes(assetPath), GetSupportedMime(assetPath));
-                }
-            }
-#endif
-
-            var copy = UnityTextureUtil.CopyTexture(src, renderTextureReadWrite, renderMaterial);
-            return (copy.EncodeToPNG(), "image/png");
-        }
 
         #region Export 1.0
         /// <summary>
@@ -71,34 +35,6 @@ namespace UniVRM10
             }
 
             ToGlbModel(root);
-
-            // meta
-            var meta = new VrmLib.Meta();
-            meta.Name = metaObject.Name;
-            meta.Version = metaObject.Version;
-            meta.CopyrightInformation = metaObject.CopyrightInformation;
-            meta.Authors.AddRange(metaObject.Authors);
-            meta.ContactInformation = metaObject.ContactInformation;
-            meta.Reference = metaObject.Reference;
-            meta.Thumbnail = metaObject.Thumbnail.ToPngImage(VrmLib.ImageUsage.None);
-
-            meta.AvatarPermission = new VrmLib.AvatarPermission
-            {
-                AvatarUsage = metaObject.AllowedUser,
-                IsAllowedViolentUsage = metaObject.ViolentUsage,
-                IsAllowedSexualUsage = metaObject.SexualUsage,
-                CommercialUsage = metaObject.CommercialUsage,
-                IsAllowedGameUsage = metaObject.GameUsage,
-                IsAllowedPoliticalOrReligiousUsage = metaObject.PoliticalOrReligiousUsage,
-                OtherPermissionUrl = metaObject.OtherPermissionUrl,
-            };
-            meta.RedistributionLicense = new VrmLib.RedistributionLicense
-            {
-                CreditNotation = metaObject.CreditNotation,
-                IsAllowRedistribution = metaObject.Redistribution,
-                ModificationLicense = metaObject.ModificationLicense,
-                OtherLicenseUrl = metaObject.OtherLicenseUrl,
-            };
 
             // humanoid
             {
@@ -196,186 +132,7 @@ namespace UniVRM10
         }
         #endregion
 
-        public VrmLib.Material Export10(UnityEngine.Material src, GetOrCreateTextureDelegate map)
-        {
-            switch (src.shader.name)
-            {
-                case "VRM/MToon":
-                    {
-                        var def = MToon.Utils.GetMToonParametersFromMaterial(src);
-                        return new VrmLib.MToonMaterial(src.name)
-                        {
-                            Definition = def.ToVrmLib(src, map),
-                        };
-                    }
 
-                case "Unlit/Color":
-                    return new VrmLib.UnlitMaterial(src.name)
-                    {
-                        BaseColorFactor = src.color.FromUnitySrgbToLinear(),
-                    };
-
-                case "Unlit/Texture":
-                    return new VrmLib.UnlitMaterial(src.name)
-                    {
-                        BaseColorTexture = map(src, src.mainTexture as Texture2D, VrmLib.Texture.ColorSpaceTypes.Srgb, VrmLib.Texture.TextureTypes.Default),
-                    };
-
-                case "Unlit/Transparent":
-                    return new VrmLib.UnlitMaterial(src.name)
-                    {
-                        BaseColorTexture = map(src, src.mainTexture as Texture2D, VrmLib.Texture.ColorSpaceTypes.Srgb, VrmLib.Texture.TextureTypes.Default),
-                        AlphaMode = VrmLib.AlphaModeType.BLEND,
-                    };
-
-                case "Unlit/Transparent Cutout":
-                    return new VrmLib.UnlitMaterial(src.name)
-                    {
-                        BaseColorTexture = map(src, src.mainTexture as Texture2D, VrmLib.Texture.ColorSpaceTypes.Srgb, VrmLib.Texture.TextureTypes.Default),
-                        AlphaMode = VrmLib.AlphaModeType.MASK,
-                        AlphaCutoff = src.GetFloat("_Cutoff"),
-                    };
-
-                case "UniGLTF/UniUnlit":
-                case "VRM/UniUnlit":
-                    {
-                        var material = new VrmLib.UnlitMaterial(src.name)
-                        {
-                            BaseColorFactor = src.color.FromUnitySrgbToLinear(),
-                            BaseColorTexture = map(src, src.mainTexture as Texture2D, VrmLib.Texture.ColorSpaceTypes.Srgb, VrmLib.Texture.TextureTypes.Default),
-                            AlphaMode = GetAlphaMode(src),
-                            DoubleSided = UniGLTF.UniUnlit.Utils.GetCullMode(src) == UniGLTF.UniUnlit.UniUnlitCullMode.Off,
-                        };
-                        if (material.AlphaMode == VrmLib.AlphaModeType.MASK)
-                        {
-                            material.AlphaCutoff = src.GetFloat("_Cutoff");
-                        }
-                        // TODO: VertexColorMode
-                        return material;
-                    }
-
-                default:
-                    return ExportStandard(src, map);
-            }
-        }
-
-        static VrmLib.AlphaModeType GetAlphaMode(UnityEngine.Material m)
-        {
-            switch (UniGLTF.UniUnlit.Utils.GetRenderMode(m))
-            {
-                case UniGLTF.UniUnlit.UniUnlitRenderMode.Opaque: return VrmLib.AlphaModeType.OPAQUE;
-                case UniGLTF.UniUnlit.UniUnlitRenderMode.Cutout: return VrmLib.AlphaModeType.MASK;
-                case UniGLTF.UniUnlit.UniUnlitRenderMode.Transparent: return VrmLib.AlphaModeType.BLEND;
-            }
-            throw new NotImplementedException();
-        }
-
-        static VrmLib.PBRMaterial ExportStandard(UnityEngine.Material src, GetOrCreateTextureDelegate map)
-        {
-            var material = new VrmLib.PBRMaterial(src.name)
-            {
-            };
-
-            switch (src.GetTag("RenderType", true))
-            {
-                case "Transparent":
-                    material.AlphaMode = VrmLib.AlphaModeType.BLEND;
-                    break;
-
-                case "TransparentCutout":
-                    material.AlphaMode = VrmLib.AlphaModeType.MASK;
-                    material.AlphaCutoff = src.GetFloat("_Cutoff");
-                    break;
-
-                default:
-                    material.AlphaMode = VrmLib.AlphaModeType.OPAQUE;
-                    break;
-            }
-
-            if (src.HasProperty("_Color"))
-            {
-                material.BaseColorFactor = src.color.linear.FromUnitySrgbToLinear();
-            }
-
-            if (src.HasProperty("_MainTex"))
-            {
-                material.BaseColorTexture = map(src, src.GetTexture("_MainTex"), VrmLib.Texture.ColorSpaceTypes.Srgb, VrmLib.Texture.TextureTypes.Default);
-            }
-
-            if (src.HasProperty("_MetallicGlossMap"))
-            {
-                // float smoothness = 0.0f;
-                // if (m.HasProperty("_GlossMapScale"))
-                // {
-                //     smoothness = m.GetFloat("_GlossMapScale");
-                // }
-
-                material.MetallicRoughnessTexture = map(
-                    src,
-                    src.GetTexture("_MetallicGlossMap"),
-                    VrmLib.Texture.ColorSpaceTypes.Linear,
-                    VrmLib.Texture.TextureTypes.MetallicRoughness)?.Texture;
-                if (material.MetallicRoughnessTexture != null)
-                {
-                    material.MetallicFactor = 1.0f;
-                    // Set 1.0f as hard-coded. See: https://github.com/vrm-c/UniVRM/issues/212.
-                    material.RoughnessFactor = 1.0f;
-                }
-            }
-
-            if (material.MetallicRoughnessTexture == null)
-            {
-                if (src.HasProperty("_Metallic"))
-                {
-                    material.MetallicFactor = src.GetFloat("_Metallic");
-                }
-
-                if (src.HasProperty("_Glossiness"))
-                {
-                    material.RoughnessFactor = 1.0f - src.GetFloat("_Glossiness");
-                }
-            }
-
-            if (src.HasProperty("_BumpMap"))
-            {
-                material.NormalTexture = map(src, src.GetTexture("_BumpMap"), VrmLib.Texture.ColorSpaceTypes.Linear, VrmLib.Texture.TextureTypes.NormalMap)?.Texture;
-
-                if (src.HasProperty("_BumpScale"))
-                {
-                    material.NormalTextureScale = src.GetFloat("_BumpScale");
-                }
-            }
-
-            if (src.HasProperty("_OcclusionMap"))
-            {
-                material.OcclusionTexture = map(src, src.GetTexture("_OcclusionMap"), VrmLib.Texture.ColorSpaceTypes.Linear, VrmLib.Texture.TextureTypes.Occlusion)?.Texture;
-
-                if (src.HasProperty("_OcclusionStrength"))
-                {
-                    material.OcclusionTextureStrength = src.GetFloat("_OcclusionStrength");
-                }
-            }
-
-            if (src.IsKeywordEnabled("_EMISSION"))
-            {
-                if (src.HasProperty("_EmissionColor"))
-                {
-                    var color = src.GetColor("_EmissionColor");
-                    if (color.maxColorComponent > 1)
-                    {
-                        color /= color.maxColorComponent;
-                    }
-                    material.EmissiveFactor = new System.Numerics.Vector3(color.r, color.g, color.b);
-                }
-
-                if (src.HasProperty("_EmissionMap"))
-                {
-                    material.EmissiveTexture = map(src, src.GetTexture("_EmissionMap"), VrmLib.Texture.ColorSpaceTypes.Srgb, VrmLib.Texture.TextureTypes.Emissive)?.Texture;
-                }
-            }
-
-            return material;
-        }
 
         private static void CreateNodes(
             Transform parentTransform,
@@ -394,12 +151,6 @@ namespace UniVRM10
                 CreateNodes(child, childNode, nodes);
                 parentNode.Add(childNode);
             }
-        }
-
-        private static Transform GetTransformFromRelativePath(Transform root, string relativePath)
-        {
-            var paths = new Queue<string>(relativePath.Split('/'));
-            return GetTransformFromRelativePath(root, paths);
         }
 
         private static Transform GetTransformFromRelativePath(Transform root, Queue<string> relativePath)

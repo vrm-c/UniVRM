@@ -109,13 +109,13 @@ namespace UniVRM10
                 m_asset.Renderers.Add(renderer);
             }
 
-            var humanoid = m_asset.Root.AddComponent<MeshUtility.Humanoid>();
-            humanoid.AssignBones(map.Nodes.Select(x => (ToUnity(x.Key.HumanoidBone.GetValueOrDefault()), x.Value.transform)));
-            m_asset.HumanoidAvatar = humanoid.CreateAvatar();
-            m_asset.HumanoidAvatar.name = "VRM";
+            // var humanoid = m_asset.Root.AddComponent<MeshUtility.Humanoid>();
+            // humanoid.AssignBones(map.Nodes.Select(x => (ToUnity(x.Key.HumanoidBone.GetValueOrDefault()), x.Value.transform)));
+            // m_asset.HumanoidAvatar = humanoid.CreateAvatar();
+            // m_asset.HumanoidAvatar.name = "VRM";
 
-            var animator = m_asset.Root.AddComponent<Animator>();
-            animator.avatar = m_asset.HumanoidAvatar;
+            // var animator = m_asset.Root.AddComponent<Animator>();
+            // animator.avatar = m_asset.HumanoidAvatar;
         }
 
         protected override async Task OnLoadModel(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime)

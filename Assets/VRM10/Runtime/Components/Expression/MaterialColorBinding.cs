@@ -7,7 +7,7 @@ namespace UniVRM10
     public struct MaterialColorBinding : IEquatable<MaterialColorBinding>
     {
         public String MaterialName;
-        public VrmLib.MaterialBindType BindType;
+        public UniGLTF.Extensions.VRMC_vrm.MaterialColorType BindType;
         public Vector4 TargetValue;
 
         public bool Equals(MaterialColorBinding other)

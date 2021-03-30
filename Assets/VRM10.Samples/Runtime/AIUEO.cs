@@ -26,7 +26,7 @@ namespace UniVRM10.Samples
             }
         }
 
-        IEnumerator RoutineNest(VrmLib.ExpressionPreset preset, float velocity, float wait)
+        IEnumerator RoutineNest(UniGLTF.Extensions.VRMC_vrm.ExpressionPreset preset, float velocity, float wait)
         {
             for (var value = 0.0f; value <= 1.0f; value += velocity)
             {
@@ -52,11 +52,11 @@ namespace UniVRM10.Samples
 
                 var velocity = 0.1f;
 
-                yield return RoutineNest(VrmLib.ExpressionPreset.Aa, velocity, m_wait);
-                yield return RoutineNest(VrmLib.ExpressionPreset.Ih, velocity, m_wait);
-                yield return RoutineNest(VrmLib.ExpressionPreset.Ou, velocity, m_wait);
-                yield return RoutineNest(VrmLib.ExpressionPreset.Ee, velocity, m_wait);
-                yield return RoutineNest(VrmLib.ExpressionPreset.Oh, velocity, m_wait);
+                yield return RoutineNest(UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.aa, velocity, m_wait);
+                yield return RoutineNest(UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.ih, velocity, m_wait);
+                yield return RoutineNest(UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.ou, velocity, m_wait);
+                yield return RoutineNest(UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.ee, velocity, m_wait);
+                yield return RoutineNest(UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.oh, velocity, m_wait);
             }
         }
 
