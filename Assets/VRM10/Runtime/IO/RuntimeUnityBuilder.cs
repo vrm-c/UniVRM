@@ -24,12 +24,87 @@ namespace UniVRM10
 
         public ModelAsset Asset => m_asset;
 
+        UniGLTF.Extensions.VRMC_vrm.VRMC_vrm m_vrm;
+
         public RuntimeUnityBuilder(UniGLTF.GltfParser parser, IEnumerable<(string, UnityEngine.Object)> externalObjectMap = null) : base(parser, externalObjectMap)
         {
             m_model = VrmLoader.CreateVrmModel(parser);
 
             // for `VRMC_materials_mtoon`
             this.GltfMaterialImporter.GltfMaterialParamProcessors.Insert(0, Vrm10MToonMaterialImporter.TryCreateParam);
+
+            if (!UniGLTF.Extensions.VRMC_vrm.GltfDeserializer.TryGet(parser.GLTF.extensions, out m_vrm))
+            {
+                throw new Exception("VRMC_vrm is not found");
+            }
+
+            // assign humanoid bones
+            if (m_vrm.Humanoid != null)
+            {
+                AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.Hips, HumanoidBones.hips);
+                AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.LeftUpperLeg, HumanoidBones.leftUpperLeg);
+                AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.RightUpperLeg, HumanoidBones.rightUpperLeg);
+                AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.LeftLowerLeg, HumanoidBones.leftLowerLeg);
+                AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.RightLowerLeg, HumanoidBones.rightLowerLeg);
+                AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.LeftFoot, HumanoidBones.leftFoot);
+                AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.RightFoot, HumanoidBones.rightFoot);
+                AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.Spine, HumanoidBones.spine);
+                AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.Chest, HumanoidBones.chest);
+                AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.Neck, HumanoidBones.neck);
+                AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.Head, HumanoidBones.head);
+                AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.LeftShoulder, HumanoidBones.leftShoulder);
+                AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.RightShoulder, HumanoidBones.rightShoulder);
+                AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.LeftUpperArm, HumanoidBones.leftUpperArm);
+                AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.RightUpperArm, HumanoidBones.rightUpperArm);
+                AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.LeftLowerArm, HumanoidBones.leftLowerArm);
+                AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.RightLowerArm, HumanoidBones.rightLowerArm);
+                AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.LeftHand, HumanoidBones.leftHand);
+                AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.RightHand, HumanoidBones.rightHand);
+                AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.LeftToes, HumanoidBones.leftToes);
+                AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.RightToes, HumanoidBones.rightToes);
+                AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.LeftEye, HumanoidBones.leftEye);
+                AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.RightEye, HumanoidBones.rightEye);
+                AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.Jaw, HumanoidBones.jaw);
+                AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.LeftThumbProximal, HumanoidBones.leftThumbProximal);
+                AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.LeftThumbIntermediate, HumanoidBones.leftThumbIntermediate);
+                AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.LeftThumbDistal, HumanoidBones.leftThumbDistal);
+                AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.LeftIndexProximal, HumanoidBones.leftIndexProximal);
+                AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.LeftIndexIntermediate, HumanoidBones.leftIndexIntermediate);
+                AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.LeftIndexDistal, HumanoidBones.leftIndexDistal);
+                AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.LeftMiddleProximal, HumanoidBones.leftMiddleProximal);
+                AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.LeftMiddleIntermediate, HumanoidBones.leftMiddleIntermediate);
+                AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.LeftMiddleDistal, HumanoidBones.leftMiddleDistal);
+                AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.LeftRingProximal, HumanoidBones.leftRingProximal);
+                AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.LeftRingIntermediate, HumanoidBones.leftRingIntermediate);
+                AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.LeftRingDistal, HumanoidBones.leftRingDistal);
+                AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.LeftLittleProximal, HumanoidBones.leftLittleProximal);
+                AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.LeftLittleIntermediate, HumanoidBones.leftLittleIntermediate);
+                AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.LeftLittleDistal, HumanoidBones.leftLittleDistal);
+                AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.RightThumbProximal, HumanoidBones.rightThumbProximal);
+                AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.RightThumbIntermediate, HumanoidBones.rightThumbIntermediate);
+                AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.RightThumbDistal, HumanoidBones.rightThumbDistal);
+                AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.RightIndexProximal, HumanoidBones.rightIndexProximal);
+                AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.RightIndexIntermediate, HumanoidBones.rightIndexIntermediate);
+                AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.RightIndexDistal, HumanoidBones.rightIndexDistal);
+                AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.RightMiddleProximal, HumanoidBones.rightMiddleProximal);
+                AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.RightMiddleIntermediate, HumanoidBones.rightMiddleIntermediate);
+                AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.RightMiddleDistal, HumanoidBones.rightMiddleDistal);
+                AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.RightRingProximal, HumanoidBones.rightRingProximal);
+                AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.RightRingIntermediate, HumanoidBones.rightRingIntermediate);
+                AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.RightRingDistal, HumanoidBones.rightRingDistal);
+                AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.RightLittleProximal, HumanoidBones.rightLittleProximal);
+                AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.RightLittleIntermediate, HumanoidBones.rightLittleIntermediate);
+                AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.RightLittleDistal, HumanoidBones.rightLittleDistal);
+                AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.UpperChest, HumanoidBones.upperChest);
+            }
+        }
+
+        static void AssignHumanoid(List<Node> nodes, UniGLTF.Extensions.VRMC_vrm.HumanBone humanBone, VrmLib.HumanoidBones key)
+        {
+            if (humanBone != null && humanBone.Node.HasValue)
+            {
+                nodes[humanBone.Node.Value].HumanoidBone = key;
+            }
         }
 
         /// <summary>
@@ -117,15 +192,26 @@ namespace UniVRM10
             }
         }
 
-        protected override async Task OnLoadModel(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime)
+        protected override async Task OnLoadHierarchy(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime)
         {
             Root.name = "VRM1";
 
+            // humanoid
+            var humanoid = Root.AddComponent<MeshUtility.Humanoid>();
+            humanoid.AssignBones(m_asset.Map.Nodes.Select(x => (ToUnity(x.Key.HumanoidBone.GetValueOrDefault()), x.Value.transform)));
+            m_asset.HumanoidAvatar = humanoid.CreateAvatar();
+            m_asset.HumanoidAvatar.name = "VRM1";
+            var animator = m_asset.Root.AddComponent<Animator>();
+            animator.avatar = m_asset.HumanoidAvatar;
+
             // VrmController
+            var controller = Root.AddComponent<VRM10Controller>();
 
             // meta
+            if (m_vrm.Meta != null)
+            {
 
-            // humanoid
+            }
 
             // firstPerson
 
@@ -136,19 +222,6 @@ namespace UniVRM10
             // springBone
 
             // constraint
-
-            // var humanoid = m_asset.Root.AddComponent<MeshUtility.Humanoid>();
-            // humanoid.AssignBones(map.Nodes.Select(x => (ToUnity(x.Key.HumanoidBone.GetValueOrDefault()), x.Value.transform)));
-            // m_asset.HumanoidAvatar = humanoid.CreateAvatar();
-            // m_asset.HumanoidAvatar.name = "VRM";
-
-            // var animator = m_asset.Root.AddComponent<Animator>();
-            // animator.avatar = m_asset.HumanoidAvatar;
-
-            // UniVRM10.ComponentBuilder.Build10(m_model, m_assets);
-
-            // var model = VrmLoader.CreateVrmModel(parser);
-            // model.RemoveSecondary();
 
             await awaitCaller.NextFrame();
         }

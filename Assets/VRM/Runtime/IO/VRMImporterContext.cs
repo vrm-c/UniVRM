@@ -35,7 +35,7 @@ namespace VRM
         }
 
         #region OnLoad
-        protected override async Task OnLoadModel(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime)
+        protected override async Task OnLoadHierarchy(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime)
         {
             Root.name = "VRM";
 

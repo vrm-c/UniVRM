@@ -10,7 +10,7 @@ namespace UniVRM10
     public sealed class VRM10ControllerExpression
     {
         public static IExpressionValidatorFactory ExpressionValidatorFactory = new DefaultExpressionValidator.Factory();
-        
+
         [SerializeField]
         public VRM10ExpressionAvatar ExpressionAvatar;
 
@@ -30,17 +30,19 @@ namespace UniVRM10
         public float BlinkOverrideRate { get; private set; }
         public float LookAtOverrideRate { get; private set; }
         public float MouthOverrideRate { get; private set; }
-        
+
         internal void Setup(Transform transform, ILookAtEyeDirectionProvider eyeDirectionProvider, ILookAtEyeDirectionApplicable eyeDirectionApplicable)
         {
             if (ExpressionAvatar == null)
             {
-                Debug.LogError($"{nameof(VRM10ControllerExpression)}.{nameof(ExpressionAvatar)} is null.");
+#if VRM_DEVELOP                
+                Debug.LogWarning($"{nameof(VRM10ControllerExpression)}.{nameof(ExpressionAvatar)} is null.");
+#endif                
                 return;
             }
-            
+
             Restore();
-            
+
             _merger = new ExpressionMerger(ExpressionAvatar.Clips, transform);
             _keys = ExpressionAvatar.Clips.Select(ExpressionKey.CreateFromClip).ToList();
             var oldInputWeights = _inputWeights;
@@ -55,12 +57,12 @@ namespace UniVRM10
             _eyeDirectionProvider = eyeDirectionProvider;
             _eyeDirectionApplicable = eyeDirectionApplicable;
         }
-        
+
         internal void Restore()
         {
             _merger?.RestoreMaterialInitialValues();
             _merger = null;
-            
+
             _eyeDirectionApplicable?.Restore();
             _eyeDirectionApplicable = null;
         }
@@ -119,18 +121,18 @@ namespace UniVRM10
         {
             // 1. Get eye direction from provider.
             _inputEyeDirection = _eyeDirectionProvider?.EyeDirection ?? default;
-            
+
             // 2. Validate user input, and Output as actual weights.
             _validator.Validate(_inputWeights, _actualWeights,
                 _inputEyeDirection, out _actualEyeDirection,
                 out var blink, out var lookAt, out var mouth);
-            
+
             // 3. Set eye direction expression weights or any other side-effects (ex. eye bone).
             _eyeDirectionApplicable?.Apply(_actualEyeDirection, _actualWeights);
 
             // 4. Set actual weights to raw blendshapes.
             _merger.SetValues(_actualWeights);
-            
+
             BlinkOverrideRate = blink;
             LookAtOverrideRate = lookAt;
             MouthOverrideRate = mouth;

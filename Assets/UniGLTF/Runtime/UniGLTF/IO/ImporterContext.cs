@@ -113,7 +113,7 @@ namespace UniGLTF
                 AnimationImporter.Import(this);
             }
 
-            await OnLoadModel(awaitCaller, MeasureTime);
+            await OnLoadHierarchy(awaitCaller, MeasureTime);
         }
 
         protected virtual async Task LoadGeometryAsync(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime)
@@ -192,7 +192,7 @@ namespace UniGLTF
             }
         }
 
-        protected virtual Task OnLoadModel(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime)
+        protected virtual Task OnLoadHierarchy(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime)
         {
             // do nothing
             return Task.FromResult<object>(null);
