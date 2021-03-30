@@ -19,7 +19,7 @@ namespace UniVRM10
         /// <param name="path"></param>
         /// <param name="migrateToVrm1"></param>
         /// <returns></returns>
-        static GltfParser Parse(string path, bool migrateToVrm1)
+        public static GltfParser Parse(string path, bool migrateToVrm1)
         {
             //
             // Parse(parse glb, parser gltf json)

@@ -28,8 +28,12 @@ namespace UniVRM10
             base.OnEnable();
 
             m_importer = target as VrmScriptedImporter;
-            m_parser = new GltfParser();
-            m_parser.ParsePath(m_importer.assetPath);
+            m_parser = VrmScriptedImporterImpl.Parse(m_importer.assetPath, m_importer.MigrateToVrm1);
+            if (m_parser == null)
+            {
+                return;
+            }
+
             m_model = VrmLoader.CreateVrmModel(m_parser);
         }
 
@@ -53,7 +57,10 @@ namespace UniVRM10
                     break;
 
                 case Tabs.Materials:
-                    EditorMaterial.OnGUIMaterial(m_importer, m_parser, Vrm10MToonMaterialImporter.EnumerateAllTexturesDistinct);
+                    if (m_parser != null)
+                    {
+                        EditorMaterial.OnGUIMaterial(m_importer, m_parser, Vrm10MToonMaterialImporter.EnumerateAllTexturesDistinct);
+                    }
                     break;
 
                 case Tabs.Vrm:

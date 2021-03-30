@@ -12,11 +12,11 @@ namespace UniVRM10
     public class VrmScriptedImporter : ScriptedImporter
     {
         [SerializeField]
-        bool m_migrateToVrm1 = default;
+        public bool MigrateToVrm1 = default;
 
         public override void OnImportAsset(AssetImportContext ctx)
         {
-            VrmScriptedImporterImpl.Import(this, ctx, m_migrateToVrm1);
+            VrmScriptedImporterImpl.Import(this, ctx, MigrateToVrm1);
         }
     }
 }
