@@ -37,7 +37,7 @@ namespace UniVRM10
         /// </summary>
         /// <param name="MeasureTime"></param>
         /// <returns></returns>
-        protected override async Task LoadGeometryAsync(Func<string, IDisposable> MeasureTime)
+        protected override async Task LoadGeometryAsync(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime)
         {
             // fill assets
             for (int i = 0; i < m_model.Materials.Count; ++i)
@@ -45,6 +45,8 @@ namespace UniVRM10
                 var src = m_model.Materials[i];
                 var dst = MaterialFactory.Materials[i].Asset;
             }
+
+            await awaitCaller.NextFrame();
 
             // mesh
             for (int i = 0; i < m_model.MeshGroups.Count; ++i)
@@ -69,10 +71,13 @@ namespace UniVRM10
                     // 頂点バッファの連結が必用
                     throw new NotImplementedException();
                 }
+
+                await awaitCaller.NextFrame();
             }
 
             // node: recursive
             CreateNodes(m_model.Root, null, m_asset.Map.Nodes);
+            await awaitCaller.NextFrame();
 
             if (Root == null)
             {
@@ -89,6 +94,7 @@ namespace UniVRM10
                 m_asset.Map.Nodes[m_model.Root] = Root;
             }
             m_asset.Root = m_asset.Map.Nodes[m_model.Root];
+            await awaitCaller.NextFrame();
 
             // renderer
             var map = m_asset.Map;
@@ -107,7 +113,29 @@ namespace UniVRM10
                 var renderer = CreateRenderer(node, go, map, MaterialFactory.Materials);
                 map.Renderers.Add(node, renderer);
                 m_asset.Renderers.Add(renderer);
+                await awaitCaller.NextFrame();
             }
+        }
+
+        protected override async Task OnLoadModel(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime)
+        {
+            Root.name = "VRM1";
+
+            // VrmController
+
+            // meta
+
+            // humanoid
+
+            // firstPerson
+
+            // expression
+
+            // lookat
+
+            // springBone
+
+            // constraint
 
             // var humanoid = m_asset.Root.AddComponent<MeshUtility.Humanoid>();
             // humanoid.AssignBones(map.Nodes.Select(x => (ToUnity(x.Key.HumanoidBone.GetValueOrDefault()), x.Value.transform)));
@@ -116,16 +144,13 @@ namespace UniVRM10
 
             // var animator = m_asset.Root.AddComponent<Animator>();
             // animator.avatar = m_asset.HumanoidAvatar;
-        }
-
-        protected override async Task OnLoadModel(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime)
-        {
-            Root.name = "VRM1";
 
             // UniVRM10.ComponentBuilder.Build10(m_model, m_assets);
 
             // var model = VrmLoader.CreateVrmModel(parser);
             // model.RemoveSecondary();
+
+            await awaitCaller.NextFrame();
         }
 
         public static HumanBodyBones ToUnity(VrmLib.HumanoidBones bone)

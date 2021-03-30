@@ -41,8 +41,6 @@ namespace UniGLTF
         TextureFactory m_textureFactory;
         public TextureFactory TextureFactory => m_textureFactory;
 
-        IAwaitCaller m_awaitCaller;
-
         public ImporterContext(GltfParser parser,
             IEnumerable<(string, UnityEngine.Object)> externalObjectMap = null)
         {
@@ -81,7 +79,6 @@ namespace UniGLTF
             {
                 awaitCaller = new TaskCaller();
             }
-            m_awaitCaller = awaitCaller;
 
             if (MeasureTime == null)
             {
@@ -109,17 +106,17 @@ namespace UniGLTF
                 await LoadMaterialsAsync();
             }
 
-            await LoadGeometryAsync(MeasureTime);
+            await LoadGeometryAsync(awaitCaller, MeasureTime);
 
             using (MeasureTime("AnimationImporter"))
             {
                 AnimationImporter.Import(this);
             }
 
-            await OnLoadModel(m_awaitCaller, MeasureTime);
+            await OnLoadModel(awaitCaller, MeasureTime);
         }
 
-        protected virtual async Task LoadGeometryAsync(Func<string, IDisposable> MeasureTime)
+        protected virtual async Task LoadGeometryAsync(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime)
         {
             var inverter = InvertAxis.Create();
 
@@ -130,7 +127,7 @@ namespace UniGLTF
                 using (MeasureTime("ReadMesh"))
                 {
                     var x = meshImporter.ReadMesh(this, index, inverter);
-                    var y = await BuildMeshAsync(MeasureTime, x, index);
+                    var y = await BuildMeshAsync(awaitCaller, MeasureTime, x, index);
                     Meshes.Add(y);
                 }
             }
@@ -142,7 +139,7 @@ namespace UniGLTF
                     Nodes.Add(NodeImporter.ImportNode(GLTF.nodes[i], i).transform);
                 }
             }
-            await m_awaitCaller.NextFrame();
+            await awaitCaller.NextFrame();
 
             using (MeasureTime("BuildHierarchy"))
             {
@@ -174,7 +171,7 @@ namespace UniGLTF
                     }
                 }
             }
-            await m_awaitCaller.NextFrame();
+            await awaitCaller.NextFrame();
         }
 
         public async Task LoadMaterialsAsync()
@@ -201,11 +198,11 @@ namespace UniGLTF
             return Task.FromResult<object>(null);
         }
 
-        async Task<MeshWithMaterials> BuildMeshAsync(Func<string, IDisposable> MeasureTime, MeshImporter.MeshContext x, int i)
+        async Task<MeshWithMaterials> BuildMeshAsync(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime, MeshImporter.MeshContext x, int i)
         {
             using (MeasureTime("BuildMesh"))
             {
-                var meshWithMaterials = await MeshImporter.BuildMeshAsync(m_awaitCaller, MaterialFactory, x);
+                var meshWithMaterials = await MeshImporter.BuildMeshAsync(awaitCaller, MaterialFactory, x);
                 var mesh = meshWithMaterials.Mesh;
 
                 // mesh name
