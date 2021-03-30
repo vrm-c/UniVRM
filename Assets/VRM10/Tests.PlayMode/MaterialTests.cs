@@ -8,7 +8,6 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using UniVRM10;
 using VrmLib;
-using VrmLib.Diff;
 
 namespace UniVRM10.Test
 {

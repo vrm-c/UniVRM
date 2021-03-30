@@ -6,7 +6,7 @@ namespace UniVRM10
 {
     public static class ModelLoader
     {
-        public static Model Load(Vrm10Storage storage, string rootName, bool estimateHumanoid = false)
+        public static Model Load(Vrm10Storage storage, string rootName)
         {
             if (storage == null)
             {
@@ -81,11 +81,7 @@ namespace UniVRM10
             model.Animations.AddRange(Enumerable.Range(0, storage.AnimationCount).Select(x => storage.CreateAnimation(x, model.Nodes)));
 
             // VRM
-            if (!LoadVrm(model, storage) && estimateHumanoid)
-            {
-                // VRMでないときにボーン推定する
-                model.HumanoidBoneEstimate();
-            }
+            LoadVrm(model, storage);
 
             return model;
         }
