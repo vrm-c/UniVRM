@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using UniGLTF;
 using UniJSON;
@@ -61,67 +60,6 @@ namespace UniVRM10
         public void Reserve(int bytesLength)
         {
             Storage.Reserve(bytesLength);
-        }
-
-        public void ExportImageAndTextures(List<Image> images, List<Texture> textures)
-        {
-            foreach (var x in images)
-            {
-                Storage.Gltf.images.Add(x.ToGltf(Storage));
-            }
-            foreach (var x in textures)
-            {
-                if (x is ImageTexture imageTexture)
-                {
-                    var samplerIndex = Storage.Gltf.samplers.Count;
-                    Storage.Gltf.samplers.Add(x.Sampler.ToGltf());
-                    Storage.Gltf.textures.Add(new glTFTexture
-                    {
-                        name = x.Name,
-                        source = images.IndexOfThrow(imageTexture.Image),
-                        sampler = samplerIndex,
-                        // extensions
-                        // = imageTexture.Image.MimeType.Equals("image/webp") ? new GltfTextureExtensions() { EXT_texture_webp = new EXT_texture_webp() { source = images.IndexOf(imageTexture.Image) } }
-                        // : imageTexture.Image.MimeType.Equals("image/vnd-ms.dds") ? new GltfTextureExtensions() { MSFT_texture_dds = new MSFT_texture_dds() { source = images.IndexOf(imageTexture.Image) } }
-                        // : null
-                    });
-                }
-                else
-                {
-                    throw new NotImplementedException();
-                }
-            }
-        }
-
-        public void ExportMaterialPBR(Material src, PBRMaterial pbr, List<Texture> textures)
-        {
-            var material = pbr.PBRToGltf(textures);
-            Storage.Gltf.materials.Add(material);
-        }
-
-        public void ExportMaterialUnlit(Material src, UnlitMaterial unlit, List<Texture> textures)
-        {
-            var material = unlit.UnlitToGltf(textures);
-            Storage.Gltf.materials.Add(material);
-            if (!Storage.Gltf.extensionsUsed.Contains(UnlitMaterial.ExtensionName))
-            {
-                Storage.Gltf.extensionsUsed.Add(UnlitMaterial.ExtensionName);
-            }
-        }
-
-        public void ExportMaterialMToon(Material src, MToonMaterial mtoon, List<Texture> textures)
-        {
-            if (!Storage.Gltf.extensionsUsed.Contains(UnlitMaterial.ExtensionName))
-            {
-                Storage.Gltf.extensionsUsed.Add(UnlitMaterial.ExtensionName);
-            }
-
-            var material = mtoon.MToonToGltf(textures);
-            Storage.Gltf.materials.Add(material);
-            if (!Storage.Gltf.extensionsUsed.Contains(MToonMaterial.ExtensionName))
-            {
-                Storage.Gltf.extensionsUsed.Add(MToonMaterial.ExtensionName);
-            }
         }
 
         public void ExportMeshes(List<MeshGroup> groups, List<Material> materials, ExportArgs option)

@@ -44,29 +44,6 @@ namespace UniVRM10
                 exporter.Reserve(reserveBytes);
             }
 
-            exporter.ExportImageAndTextures(m.Images, m.Textures);
-
-            // material
-            foreach (var src in m.Materials)
-            {
-                if (src is MToonMaterial mtoon)
-                {
-                    exporter.ExportMaterialMToon(src, mtoon, m.Textures);
-                }
-                else if (src is UnlitMaterial unlit)
-                {
-                    exporter.ExportMaterialUnlit(src, unlit, m.Textures);
-                }
-                else if (src is PBRMaterial pbr)
-                {
-                    exporter.ExportMaterialPBR(src, pbr, m.Textures);
-                }
-                else
-                {
-                    throw new NotImplementedException();
-                }
-            }
-
             // mesh
             exporter.ExportMeshes(m.MeshGroups, m.Materials, option);
 
