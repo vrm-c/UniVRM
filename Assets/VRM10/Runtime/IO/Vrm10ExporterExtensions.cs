@@ -76,35 +76,7 @@ namespace UniVRM10
             // animation
             exporter.ExportAnimations(m.Animations, m.Nodes, option);
 
-            if (option.vrm)
-            {
-                ExportVrm(exporter, m);
-            }
-
             return exporter.ToBytes();
         }
-
-        static void ExportVrm(Vrm10Exporter exporter, Model m)
-        {
-            if (m.Vrm == null)
-            {
-                return;
-            }
-
-            exporter.ExportVrmMeta(m.Vrm, m.Textures);
-
-            exporter.ExportVrmHumanoid(m.GetBoneMap(), m.Nodes);
-
-            exporter.ExportVrmMaterialProperties(m.Materials, m.Textures);
-
-            exporter.ExportVrmExpression(m.Vrm.ExpressionManager, m.MeshGroups, m.Materials, m.Nodes);
-
-            exporter.ExportVrmSpringBone(m.Vrm.SpringBone, m.Nodes);
-
-            exporter.ExportVrmFirstPersonAndLookAt(m.Vrm.FirstPerson, m.Vrm.LookAt, m.MeshGroups, m.Nodes);
-
-            exporter.ExportVrmEnd();
-        }
-
     }
 }
