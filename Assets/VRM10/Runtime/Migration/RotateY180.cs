@@ -4,6 +4,11 @@ using UniGLTF;
 
 namespace UniVRM10
 {
+    public class UnNormalizedException : Exception
+    {
+
+    }
+
     /// <summary>
     /// x, y, z => -x, y, -z
     /// </summary>
@@ -32,7 +37,7 @@ namespace UniVRM10
                     }
                     else
                     {
-                        throw new NotImplementedException("not normalized !");
+                        throw new UnNormalizedException();
                     }
                 }
                 if (node.scale != null && node.scale.Length == 3)

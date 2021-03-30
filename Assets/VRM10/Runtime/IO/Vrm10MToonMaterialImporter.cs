@@ -40,6 +40,22 @@ namespace UniVRM10
                 }
             }
 
+            if (m.normalTexture != null && m.normalTexture.index != -1)
+            {
+                // normal map
+                param.Actions.Add(material => material.EnableKeyword("_NORMALMAP"));
+                var textureParam = GltfPBRMaterial.NormalTexture(parser, m);
+                param.TextureSlots.Add("_BumpMap", textureParam);
+                // param.FloatValues.Add("_BumpScale", m.normalTexture.scale);
+            }
+
+            if (m.emissiveTexture != null && m.emissiveTexture.index != -1)
+            {
+                var (offset, scale) = GltfMaterialImporter.GetTextureOffsetAndScale(m.emissiveTexture);
+                var textureParam = GltfTextureImporter.CreateSRGB(parser, m.emissiveTexture.index, offset, scale);
+                param.TextureSlots.Add("_EmissionMap", textureParam);
+            }
+
             // TODO:
 
             return true;

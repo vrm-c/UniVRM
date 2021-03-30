@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using UnityEngine;
 using UniGLTF;
+using System.IO;
 #if UNITY_2020_2_OR_NEWER
 using UnityEditor.AssetImporters;
 #else
@@ -17,17 +18,42 @@ namespace UniVRM10
         // const string MetaDirName = "MetaObjects";
         // const string ExpressionDirName = "Expressions";
 
-        public static void Import(ScriptedImporter scriptedImporter, AssetImportContext context)
+        static GltfParser Parse(string path, bool migrateToVrm1)
+        {
+            //
+            // Parse(parse glb, parser gltf json)
+            //
+            var parser = new GltfParser();
+            parser.ParsePath(path);
+            if (UniGLTF.Extensions.VRMC_vrm.GltfDeserializer.TryGet(parser.GLTF.extensions, out UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm))
+            {
+                return parser;
+            }
+
+            if (migrateToVrm1)
+            {
+                // try migrateion
+                var migrated = MigrationVrm.Migrate(File.ReadAllBytes(path));
+                parser = new GltfParser();
+                parser.Parse(path, migrated);
+                return parser;
+            }
+
+            return null;
+        }
+
+        public static void Import(ScriptedImporter scriptedImporter, AssetImportContext context, bool migrateToVrm1)
         {
 #if VRM_DEVELOP            
             Debug.Log("OnImportAsset to " + scriptedImporter.assetPath);
 #endif
 
-            //
-            // Parse(parse glb, parser gltf json)
-            //
-            var parser = new GltfParser();
-            parser.ParsePath(scriptedImporter.assetPath);
+            var parser = Parse(scriptedImporter.assetPath, migrateToVrm1);
+            if (parser == null)
+            {
+                // fail to parse vrm1
+                return;
+            }
 
             //
             // Import(create unity objects)
@@ -36,11 +62,11 @@ namespace UniVRM10
 
             using (var loader = new RuntimeUnityBuilder(parser, externalObjectMap))
             {
-                // // settings TextureImporters
-                // foreach (var textureInfo in GltfTextureEnumerator.Enumerate(parser))
-                // {
-                //     TextureImporterConfigurator.Configure(textureInfo, loader.TextureFactory.ExternalMap);
-                // }
+                // settings TextureImporters
+                foreach (var textureInfo in Vrm10MToonMaterialImporter.EnumerateAllTexturesDistinct(parser))
+                {
+                    TextureImporterConfigurator.Configure(textureInfo, loader.TextureFactory.ExternalMap);
+                }
 
                 loader.Load();
                 loader.ShowMeshes();

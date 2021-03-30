@@ -66,6 +66,27 @@ namespace UniJSON
             return self.ContainsKey(ukey);
         }
 
+        public static bool TryGet(this JsonNode self, Utf8String key, out JsonNode found)
+        {
+            foreach (var kv in self.ObjectItems())
+            {
+                if (kv.Key.GetUtf8String() == key)
+                {
+                    found = kv.Value;
+                    return true;
+                }
+            }
+
+            found = default;
+            return false;
+        }
+
+        public static bool TryGet(this JsonNode self, String key, out JsonNode found)
+        {
+            var ukey = Utf8String.From(key);
+            return self.TryGet(ukey, out found);
+        }
+
         public static Utf8String KeyOf(this JsonNode self, JsonNode node)
         {
             foreach (var kv in self.ObjectItems())
