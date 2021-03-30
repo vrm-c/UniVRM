@@ -12,10 +12,10 @@ namespace UniVRM10
 {
     public static class VrmScriptedImporterImpl
     {
-        const string TextureDirName = "Textures";
-        const string MaterialDirName = "Materials";
-        const string MetaDirName = "MetaObjects";
-        const string ExpressionDirName = "Expressions";
+        // const string TextureDirName = "Textures";
+        // const string MaterialDirName = "Materials";
+        // const string MetaDirName = "MetaObjects";
+        // const string ExpressionDirName = "Expressions";
 
         public static void Import(ScriptedImporter scriptedImporter, AssetImportContext context)
         {
@@ -47,10 +47,6 @@ namespace UniVRM10
 
                 loader.TransferOwnership(o =>
                 {
-#if VRM_DEVELOP
-                    Debug.Log($"[{o.GetType().Name}] {o.name} will not destroy");
-#endif
-
                     context.AddObjectToAsset(o.name, o);
                     if (o is GameObject)
                     {
@@ -422,15 +418,6 @@ namespace UniVRM10
         //             onComplited();
         //         }
         //     };
-        // }
-
-        // public static DirectoryInfo SafeCreateDirectory(this ScriptedImporter importer, string path)
-        // {
-        //     if (Directory.Exists(path))
-        //     {
-        //         return null;
-        //     }
-        //     return Directory.CreateDirectory(path);
         // }
     }
 }

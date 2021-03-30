@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -54,10 +53,6 @@ namespace UniGLTF
 
                 loader.TransferOwnership(o =>
                 {
-#if VRM_DEVELOP
-                    Debug.Log($"[{o.GetType().Name}] {o.name} will not destroy");
-#endif
-
                     context.AddObjectToAsset(o.name, o);
                     if (o is GameObject)
                     {
