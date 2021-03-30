@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UniGLTF.Extensions.VRMC_vrm;
 using UnityEngine;
@@ -30,56 +31,54 @@ namespace UniVRM10
             return new UniVRM10.MorphTargetBinding(relativePath, bind.Index.Value, bind.Weight.Value * 100.0f);
         }
 
-        // static UniVRM10.MaterialColorBinding? Build10(this MaterialColorBind bind, ModelMap loader)
-        // {
-        //     var kv = bind.Property;
-        //     var value = kv.Value.ToUnityVector4();
-        //     var material = loader.Materials[bind.Material];
+        public static UniVRM10.MaterialColorBinding? Build10(this MaterialColorBind bind, IReadOnlyList<VRMShaders.MaterialFactory.MaterialLoadInfo> materials)
+        {
+            var value = new Vector4(bind.TargetValue[0], bind.TargetValue[1], bind.TargetValue[2], bind.TargetValue[3]);
+            var material = materials[bind.Material.Value].Asset;
 
-        //     var binding = default(UniVRM10.MaterialColorBinding?);
-        //     if (material != null)
-        //     {
-        //         try
-        //         {
-        //             binding = new UniVRM10.MaterialColorBinding
-        //             {
-        //                 MaterialName = bind.Material.Name, // UniVRM-0Xの実装は名前で持っている
-        //                 BindType = bind.BindType,
-        //                 TargetValue = value,
-        //                 // BaseValue = material.GetColor(kv.Key),
-        //             };
-        //         }
-        //         catch (Exception)
-        //         {
-        //             // do nothing
-        //         }
-        //     }
-        //     return binding;
-        // }
+            var binding = default(UniVRM10.MaterialColorBinding?);
+            if (material != null)
+            {
+                try
+                {
+                    binding = new UniVRM10.MaterialColorBinding
+                    {
+                        MaterialName = material.name, // 名前で持つべき？
+                        BindType = bind.Type,
+                        TargetValue = value,
+                        // BaseValue = material.GetColor(kv.Key),
+                    };
+                }
+                catch (Exception)
+                {
+                    // do nothing
+                }
+            }
+            return binding;
+        }
 
-        // static UniVRM10.MaterialUVBinding? Build10(this VrmLib.TextureTransformBind bind, ModelMap loader)
-        // {
-        //     var material = loader.Materials[bind.Material];
+        public static UniVRM10.MaterialUVBinding? Build10(this TextureTransformBind bind, IReadOnlyList<VRMShaders.MaterialFactory.MaterialLoadInfo> materials)
+        {
+            var material = materials[bind.Material.Value].Asset;
 
-        //     var binding = default(UniVRM10.MaterialUVBinding?);
-        //     if (material != null)
-        //     {
-        //         try
-        //         {
-        //             binding = new UniVRM10.MaterialUVBinding
-        //             {
-        //                 MaterialName = bind.Material.Name, // UniVRM-0Xの実装は名前で持っている
-        //                 Scaling = new Vector2(bind.Scale.X, bind.Scale.Y),
-        //                 Offset = new Vector2(bind.Offset.X, bind.Offset.Y),
-        //             };
-        //         }
-        //         catch (Exception)
-        //         {
-        //             // do nothing
-        //         }
-        //     }
-        //     return binding;
-        // }
-
+            var binding = default(UniVRM10.MaterialUVBinding?);
+            if (material != null)
+            {
+                try
+                {
+                    binding = new UniVRM10.MaterialUVBinding
+                    {
+                        MaterialName = material.name, // 名前で持つべき
+                        Scaling = new Vector2(bind.Scaling[0], bind.Scaling[1]),
+                        Offset = new Vector2(bind.Offset[0], bind.Offset[1]),
+                    };
+                }
+                catch (Exception)
+                {
+                    // do nothing
+                }
+            }
+            return binding;
+        }
     }
 }
