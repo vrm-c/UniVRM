@@ -184,10 +184,5 @@ namespace UniVRM10
                 nodes = root.Children.Select(child => nodes.IndexOfThrow(child)).ToArray()
             });
         }
-
-        public void ExportAnimations(List<Animation> animations, List<Node> nodes, ExportArgs option)
-        {
-            // throw new System.NotImplementedException();
-        }
     }
 }

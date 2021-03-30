@@ -77,43 +77,7 @@ namespace UniVRM10
                 }
             }
 
-            // animation
-            model.Animations.AddRange(Enumerable.Range(0, storage.AnimationCount).Select(x => storage.CreateAnimation(x, model.Nodes)));
-
-            // VRM
-            LoadVrm(model, storage);
-
             return model;
-        }
-
-        static bool LoadVrm(Model model, Vrm10Storage storage)
-        {
-            if (!storage.HasVrm)
-            {
-                return false;
-            }
-
-            var meta = storage.CreateVrmMeta(model.Textures);
-
-            var Vrm = new Vrm(meta, storage.VrmExporterVersion, storage.VrmSpecVersion);
-            model.Vrm = Vrm;
-
-            storage.LoadVrmHumanoid(model.Nodes);
-
-            if (!model.CheckVrmHumanoid())
-            {
-                throw new Exception("CheckVrmHumanoid");
-            }
-
-            Vrm.ExpressionManager = storage.CreateVrmExpression(model.MeshGroups, model.Materials, model.Nodes);
-
-            Vrm.SpringBone = storage.CreateVrmSpringBone(model.Nodes);
-
-            Vrm.FirstPerson = storage.CreateVrmFirstPerson(model.Nodes, model.MeshGroups);
-
-            Vrm.LookAt = storage.CreateVrmLookAt();
-
-            return true;
         }
     }
 }

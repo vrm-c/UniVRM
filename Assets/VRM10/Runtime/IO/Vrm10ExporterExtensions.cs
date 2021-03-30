@@ -73,9 +73,6 @@ namespace UniVRM10
             // node
             exporter.ExportNodes(m.Root, m.Nodes, m.MeshGroups, option);
 
-            // animation
-            exporter.ExportAnimations(m.Animations, m.Nodes, option);
-
             return exporter.ToBytes();
         }
     }
