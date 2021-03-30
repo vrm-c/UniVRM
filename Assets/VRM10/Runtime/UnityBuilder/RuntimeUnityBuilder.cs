@@ -27,6 +27,9 @@ namespace UniVRM10
         public RuntimeUnityBuilder(UniGLTF.GltfParser parser, IEnumerable<(string, UnityEngine.Object)> externalObjectMap = null) : base(parser, externalObjectMap)
         {
             m_model = VrmLoader.CreateVrmModel(parser);
+
+            // for `VRMC_materials_mtoon`
+            this.GltfMaterialImporter.GltfMaterialParamProcessors.Insert(0, VrmMToonMaterialImporter.TryCreateParam);
         }
 
         /// <summary>
