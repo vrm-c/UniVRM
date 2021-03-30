@@ -13,7 +13,7 @@ namespace UniVRM10
 {
 
     [ScriptedImporter(1, "vrm")]
-    public class VrmScriptedImporter : ScriptedImporter, IExternalUnityObject
+    public class VrmScriptedImporter : ScriptedImporter
     {
         const string TextureDirName = "Textures";
         const string MaterialDirName = "Materials";

@@ -13,7 +13,7 @@ using UnityEditor.Experimental.AssetImporters;
 
 namespace UniVRM10
 {
-    public static class ScriptedImporterExtension
+    public static class VrmScriptedImporterImpl
     {
         public static void ClearExternalObjects<T>(this ScriptedImporter importer) where T : UnityEngine.Object
         {
