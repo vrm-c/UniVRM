@@ -4,7 +4,7 @@ using VRMShaders;
 
 namespace UniGLTF
 {
-    public delegate IEnumerable<TextureImportParam> TextureEnumerator(GltfParser parser);
+    public delegate IEnumerable<TextureImportParam> EnumerateAllTexturesDistinctFunc(GltfParser parser);
 
     /// <summary>
     /// Texture 生成に関して
@@ -34,8 +34,10 @@ namespace UniGLTF
     /// </summary>
     public static class GltfTextureEnumerator
     {
-        public static IEnumerable<TextureImportParam> EnumerateTextures(GltfParser parser, glTFMaterial m)
+        public static IEnumerable<TextureImportParam> EnumerateTexturesForMaterial(GltfParser parser, int i)
         {
+            var m = parser.GLTF.materials[i];
+
             int? metallicRoughnessTexture = default;
             if (m.pbrMetallicRoughness != null)
             {
@@ -79,14 +81,20 @@ namespace UniGLTF
             }
         }
 
-        public static IEnumerable<TextureImportParam> Enumerate(GltfParser parser)
+        /// <summary>
+        /// glTF 全体で使うテクスチャーをユニークになるように列挙する
+        /// </summary>
+        /// <param name="parser"></param>
+        /// <returns></returns>
+        public static IEnumerable<TextureImportParam> EnumerateAllTexturesDistinct(GltfParser parser)
         {
             var used = new HashSet<string>();
-            foreach (var material in parser.GLTF.materials)
+            for (int i = 0; i < parser.GLTF.materials.Count; ++i)
             {
-                foreach (var textureInfo in EnumerateTextures(parser, material))
+                foreach (var textureInfo in EnumerateTexturesForMaterial(parser, i))
                 {
-                    if(used.Add(textureInfo.ExtractKey)){
+                    if (used.Add(textureInfo.ExtractKey))
+                    {
                         yield return textureInfo;
                     }
                 }

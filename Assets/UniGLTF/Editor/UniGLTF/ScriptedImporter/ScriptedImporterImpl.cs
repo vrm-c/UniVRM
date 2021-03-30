@@ -42,7 +42,7 @@ namespace UniGLTF
             using (var loader = new ImporterContext(parser, externalObjectMap.Concat(externalTextures)))
             {
                 // settings TextureImporters
-                foreach (var textureInfo in GltfTextureEnumerator.Enumerate(parser))
+                foreach (var textureInfo in GltfTextureEnumerator.EnumerateAllTexturesDistinct(parser))
                 {
                     TextureImporterConfigurator.Configure(textureInfo, loader.TextureFactory.ExternalMap);
                 }
@@ -69,7 +69,7 @@ namespace UniGLTF
             GltfParser parser, UnityPath dir)
         {
             var used = new HashSet<Texture2D>();
-            foreach (var texParam in GltfTextureEnumerator.Enumerate(parser))
+            foreach (var texParam in GltfTextureEnumerator.EnumerateAllTexturesDistinct(parser))
             {
                 switch (texParam.TextureType)
                 {

@@ -29,7 +29,7 @@ namespace UniVRM10
             m_model = VrmLoader.CreateVrmModel(parser);
 
             // for `VRMC_materials_mtoon`
-            // this.GltfMaterialImporter.GltfMaterialParamProcessors.Insert(0, VrmMToonMaterialImporter.TryCreateParam);
+            this.GltfMaterialImporter.GltfMaterialParamProcessors.Insert(0, Vrm10MToonMaterialImporter.TryCreateParam);
         }
 
         /// <summary>

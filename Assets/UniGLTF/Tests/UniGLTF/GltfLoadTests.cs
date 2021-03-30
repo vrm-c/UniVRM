@@ -99,7 +99,7 @@ namespace UniGLTF
             }
 
             // should unique
-            var gltfTextures = GltfTextureEnumerator.Enumerate(parser).ToArray();
+            var gltfTextures = GltfTextureEnumerator.EnumerateAllTexturesDistinct(parser).ToArray();
             var distinct = gltfTextures.Distinct().ToArray();
             Assert.True(gltfTextures.SequenceEqual(distinct));
         }

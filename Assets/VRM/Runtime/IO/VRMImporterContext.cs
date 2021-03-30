@@ -26,7 +26,7 @@ namespace VRM
             {
                 VRM = vrm;
                 // override material importer
-                GltfMaterialImporter.GltfMaterialParamProcessors.Insert(0, new MToonMaterialImporter(VRM.materialProperties).TryCreateParam);
+                GltfMaterialImporter.GltfMaterialParamProcessors.Insert(0, new VRMMtoonMaterialImporter(VRM).TryCreateParam);
             }
             else
             {

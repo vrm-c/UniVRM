@@ -48,7 +48,7 @@ namespace UniVRM10
                     break;
 
                 case Tabs.Materials:
-                    EditorMaterial.OnGUIMaterial(m_importer, m_parser);
+                    EditorMaterial.OnGUIMaterial(m_importer, m_parser, Vrm10MToonMaterialImporter.EnumerateAllTexturesDistinct);
                     break;
 
                 case Tabs.Vrm:

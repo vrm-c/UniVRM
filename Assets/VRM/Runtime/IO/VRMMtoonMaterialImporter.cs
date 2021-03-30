@@ -3,13 +3,19 @@ using UniGLTF;
 using UnityEngine;
 using VRMShaders;
 
-
 namespace VRM
 {
-    public class MToonMaterialImporter
+    public class VRMMtoonMaterialImporter
     {
-        public static bool TryCreateParam(GltfParser parser, int i, glTF_VRM_Material vrmMaterial, out MaterialImportParam param)
+        readonly glTF_VRM_extensions m_vrm;
+        public VRMMtoonMaterialImporter(glTF_VRM_extensions vrm)
         {
+            m_vrm = vrm;
+        }
+
+        public bool TryCreateParam(GltfParser parser, int i, out MaterialImportParam param)
+        {
+            var vrmMaterial = m_vrm.materialProperties[i];
             if (vrmMaterial.shader == VRM.glTF_VRM_Material.VRM_USE_GLTFSHADER)
             {
                 // fallback to gltf
@@ -87,21 +93,64 @@ namespace VRM
             return true;
         }
 
-        List<glTF_VRM_Material> m_materials;
-        public MToonMaterialImporter(List<glTF_VRM_Material> materials)
+        public IEnumerable<TextureImportParam> EnumerateTexturesForMaterial(GltfParser parser, int i)
         {
-            m_materials = materials;
-        }
-
-        public bool TryCreateParam(GltfParser parser, int i, out MaterialImportParam param)
-        {
-            if (TryCreateParam(parser, i, m_materials[i], out param))
+            // mtoon
+            if (!TryCreateParam(parser, i, out MaterialImportParam param))
             {
-                return true;
+                // unlit
+                if (!GltfUnlitMaterial.TryCreateParam(parser, i, out param))
+                {
+                    // pbr
+                    GltfPBRMaterial.TryCreateParam(parser, i, out param);
+                }
             }
 
-            param = default;
-            return false;
+            foreach (var kv in param.TextureSlots)
+            {
+                yield return kv.Value;
+            }
+        }
+
+        public IEnumerable<TextureImportParam> EnumerateAllTexturesDistinct(GltfParser parser)
+        {
+            var used = new HashSet<string>();
+            for (int i = 0; i < parser.GLTF.materials.Count; ++i)
+            {
+                var vrmMaterial = m_vrm.materialProperties[i];
+                if (vrmMaterial.shader == MToon.Utils.ShaderName)
+                {
+                    // MToon
+                    foreach (var textureInfo in EnumerateTexturesForMaterial(parser, i))
+                    {
+                        if (used.Add(textureInfo.ExtractKey))
+                        {
+                            yield return textureInfo;
+                        }
+                    }
+                }
+                else
+                {
+                    // PBR or Unlit
+                    foreach (var textureInfo in GltfTextureEnumerator.EnumerateTexturesForMaterial(parser, i))
+                    {
+                        if (used.Add(textureInfo.ExtractKey))
+                        {
+                            yield return textureInfo;
+                        }
+                    }
+                }
+            }
+
+            // thumbnail
+            if (m_vrm.meta != null && m_vrm.meta.texture != -1)
+            {
+                var textureInfo = GltfTextureImporter.CreateSRGB(parser, m_vrm.meta.texture, Vector2.zero, Vector2.one);
+                if (used.Add(textureInfo.ExtractKey))
+                {
+                    yield return textureInfo;
+                }
+            }
         }
     }
 }
