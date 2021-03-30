@@ -88,11 +88,6 @@ namespace UniGLTF
                 MeasureTime = new ImporterContextSpeedLog().MeasureTime;
             }
 
-            if (Root == null)
-            {
-                Root = new GameObject("GLTF");
-            }
-
             if (GLTF.extensionsRequired != null)
             {
                 var sb = new List<string>();
@@ -165,6 +160,10 @@ namespace UniGLTF
                     NodeImporter.SetupSkinning(this, nodes, i, inverter);
                 }
 
+                if (Root == null)
+                {
+                    Root = new GameObject("GLTF");
+                }
                 if (GLTF.rootnodes != null)
                 {
                     // connect root

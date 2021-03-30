@@ -29,7 +29,7 @@ namespace UniVRM10
             m_model = VrmLoader.CreateVrmModel(parser);
 
             // for `VRMC_materials_mtoon`
-            this.GltfMaterialImporter.GltfMaterialParamProcessors.Insert(0, VrmMToonMaterialImporter.TryCreateParam);
+            // this.GltfMaterialImporter.GltfMaterialParamProcessors.Insert(0, VrmMToonMaterialImporter.TryCreateParam);
         }
 
         /// <summary>
@@ -59,6 +59,11 @@ namespace UniVRM10
                     mesh.LoadMesh(src.Meshes[0], src.Skin);
                     m_asset.Map.Meshes.Add(src, mesh);
                     m_asset.Meshes.Add(mesh);
+                    Meshes.Add(new MeshWithMaterials
+                    {
+                        Mesh = mesh,
+                        Materials = src.Meshes[0].Submeshes.Select(x => m_asset.Map.Materials[x.Material]).ToArray(),
+                    });
                 }
                 else
                 {
@@ -69,6 +74,21 @@ namespace UniVRM10
 
             // node: recursive
             CreateNodes(m_model.Root, null, m_asset.Map.Nodes);
+
+            if (Root == null)
+            {
+                Root = m_asset.Map.Nodes[m_model.Root];
+            }
+            else
+            {
+                // replace
+                var modelRoot = m_asset.Map.Nodes[m_model.Root];
+                foreach (Transform child in modelRoot.transform)
+                {
+                    child.SetParent(Root.transform, true);
+                }
+                m_asset.Map.Nodes[m_model.Root] = Root;
+            }
             m_asset.Root = m_asset.Map.Nodes[m_model.Root];
 
             // renderer
