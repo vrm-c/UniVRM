@@ -16,12 +16,6 @@ namespace UniVRM10
     {
         readonly Model m_model;
 
-        /// <summary>
-        /// VrmLib.Model の オブジェクトと UnityEngine.Object のマッピングを記録する
-        /// </summary>
-        /// <returns></returns>
-        readonly ModelAsset m_asset = new ModelAsset();
-
         UniGLTF.Extensions.VRMC_vrm.VRMC_vrm m_vrm;
 
         public RuntimeUnityBuilder(UniGLTF.GltfParser parser, IEnumerable<(string, UnityEngine.Object)> externalObjectMap = null) : base(parser, externalObjectMap)
@@ -97,6 +91,18 @@ namespace UniVRM10
             }
         }
 
+        public class ModelMap
+        {
+            public readonly Dictionary<VrmLib.Node, GameObject> Nodes = new Dictionary<VrmLib.Node, GameObject>();
+            public readonly Dictionary<VrmLib.MeshGroup, UnityEngine.Mesh> Meshes = new Dictionary<VrmLib.MeshGroup, UnityEngine.Mesh>();
+        }
+
+        /// <summary>
+        /// VrmLib.Model の オブジェクトと UnityEngine.Object のマッピングを記録する
+        /// </summary>
+        /// <returns></returns>
+        readonly ModelMap m_map = new ModelMap();
+
         static void AssignHumanoid(List<Node> nodes, UniGLTF.Extensions.VRMC_vrm.HumanBone humanBone, VrmLib.HumanoidBones key)
         {
             if (humanBone != null && humanBone.Node.HasValue)
@@ -131,8 +137,7 @@ namespace UniVRM10
                     var mesh = new UnityEngine.Mesh();
                     mesh.name = src.Name;
                     mesh.LoadMesh(src.Meshes[0], src.Skin);
-                    m_asset.Map.Meshes.Add(src, mesh);
-                    m_asset.Meshes.Add(mesh);
+                    m_map.Meshes.Add(src, mesh);
                     Meshes.Add(new MeshWithMaterials
                     {
                         Mesh = mesh,
@@ -149,28 +154,27 @@ namespace UniVRM10
             }
 
             // node: recursive
-            CreateNodes(m_model.Root, null, m_asset.Map.Nodes);
+            CreateNodes(m_model.Root, null, m_map.Nodes);
             await awaitCaller.NextFrame();
 
             if (Root == null)
             {
-                Root = m_asset.Map.Nodes[m_model.Root];
+                Root = m_map.Nodes[m_model.Root];
             }
             else
             {
                 // replace
-                var modelRoot = m_asset.Map.Nodes[m_model.Root];
+                var modelRoot = m_map.Nodes[m_model.Root];
                 foreach (Transform child in modelRoot.transform)
                 {
                     child.SetParent(Root.transform, true);
                 }
-                m_asset.Map.Nodes[m_model.Root] = Root;
+                m_map.Nodes[m_model.Root] = Root;
             }
-            m_asset.Root = m_asset.Map.Nodes[m_model.Root];
             await awaitCaller.NextFrame();
 
             // renderer
-            var map = m_asset.Map;
+            var map = m_map;
             foreach (var (node, go) in map.Nodes)
             {
                 if (node.MeshGroup is null)
@@ -184,8 +188,6 @@ namespace UniVRM10
                 }
 
                 var renderer = CreateRenderer(node, go, map, MaterialFactory.Materials);
-                map.Renderers.Add(node, renderer);
-                m_asset.Renderers.Add(renderer);
                 await awaitCaller.NextFrame();
             }
         }
@@ -199,12 +201,11 @@ namespace UniVRM10
 
             // humanoid
             var humanoid = Root.AddComponent<MeshUtility.Humanoid>();
-            humanoid.AssignBones(m_asset.Map.Nodes.Select(x => (ToUnity(x.Key.HumanoidBone.GetValueOrDefault()), x.Value.transform)));
-            m_asset.HumanoidAvatar = humanoid.CreateAvatar();
-            m_humanoid = m_asset.HumanoidAvatar;
-            m_asset.HumanoidAvatar.name = "humanoid";
-            var animator = m_asset.Root.AddComponent<Animator>();
-            animator.avatar = m_asset.HumanoidAvatar;
+            humanoid.AssignBones(m_map.Nodes.Select(x => (ToUnity(x.Key.HumanoidBone.GetValueOrDefault()), x.Value.transform)));
+            m_humanoid = humanoid.CreateAvatar();
+            m_humanoid.name = "humanoid";
+            var animator = Root.AddComponent<Animator>();
+            animator.avatar = m_humanoid;
 
             // VrmController
             var controller = Root.AddComponent<VRM10Controller>();
@@ -236,7 +237,7 @@ namespace UniVRM10
                     clip.OverrideLookAt = expression.OverrideLookAt;
                     clip.OverrideMouth = expression.OverrideMouth;
 
-                    clip.MorphTargetBindings = expression.MorphTargetBinds.Select(x => x.Build10(Root, m_asset.Map, m_model))
+                    clip.MorphTargetBindings = expression.MorphTargetBinds.Select(x => x.Build10(Root, m_map, m_model))
                         .ToArray();
                     clip.MaterialColorBindings = expression.MaterialColorBinds.Select(x => x.Build10(MaterialFactory.Materials))
                         .Where(x => x.HasValue)

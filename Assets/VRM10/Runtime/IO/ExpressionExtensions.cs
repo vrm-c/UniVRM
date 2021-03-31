@@ -21,7 +21,7 @@ namespace UniVRM10
             return $"Expression.{key}";
         }
 
-        public static UniVRM10.MorphTargetBinding Build10(this MorphTargetBind bind, GameObject root, ModelMap loader, VrmLib.Model model)
+        public static UniVRM10.MorphTargetBinding Build10(this MorphTargetBind bind, GameObject root, RuntimeUnityBuilder.ModelMap loader, VrmLib.Model model)
         {
             var libNode = model.Nodes[bind.Node.Value];
             var node = loader.Nodes[libNode].transform;
