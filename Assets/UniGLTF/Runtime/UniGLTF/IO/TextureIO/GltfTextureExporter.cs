@@ -13,7 +13,7 @@ namespace UniGLTF
         /// <param name="bytes"></param>
         /// <param name="texture"></param>
         /// <returns></returns>
-        static (byte[] bytes, string mine) GetBytesWithMime(Texture2D texture)
+        public static (byte[] bytes, string mine) GetBytesWithMime(Texture2D texture)
         {
 #if UNITY_EDITOR
             var path = UnityPath.FromAsset(texture);
