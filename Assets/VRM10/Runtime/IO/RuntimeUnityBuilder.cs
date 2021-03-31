@@ -22,8 +22,6 @@ namespace UniVRM10
         /// <returns></returns>
         readonly ModelAsset m_asset = new ModelAsset();
 
-        public ModelAsset Asset => m_asset;
-
         UniGLTF.Extensions.VRMC_vrm.VRMC_vrm m_vrm;
 
         public RuntimeUnityBuilder(UniGLTF.GltfParser parser, IEnumerable<(string, UnityEngine.Object)> externalObjectMap = null) : base(parser, externalObjectMap)

@@ -16,7 +16,7 @@ namespace UniVRM10.Test
     {
         const string _vrmPath = "Tests/Models/Alicia_vrm-0.51/AliciaSolid_vrm-0.51.vrm";
 
-        private (ModelAsset, IReadOnlyList<VRMShaders.MaterialFactory.MaterialLoadInfo>) ToUnity(string path)
+        private (GameObject, IReadOnlyList<VRMShaders.MaterialFactory.MaterialLoadInfo>) ToUnity(string path)
         {
             var fi = new FileInfo(_vrmPath);
             var bytes = File.ReadAllBytes(fi.FullName);
@@ -27,7 +27,7 @@ namespace UniVRM10.Test
             return ToUnity(bytes);
         }
 
-        private (ModelAsset, IReadOnlyList<VRMShaders.MaterialFactory.MaterialLoadInfo>) ToUnity(byte[] bytes)
+        private (GameObject, IReadOnlyList<VRMShaders.MaterialFactory.MaterialLoadInfo>) ToUnity(byte[] bytes)
         {
             // Vrm => Model
             var parser = new UniGLTF.GltfParser();
@@ -36,14 +36,14 @@ namespace UniVRM10.Test
             return ToUnity(parser);
         }
 
-        private (ModelAsset, IReadOnlyList<VRMShaders.MaterialFactory.MaterialLoadInfo>) ToUnity(GltfParser parser)
+        private (GameObject, IReadOnlyList<VRMShaders.MaterialFactory.MaterialLoadInfo>) ToUnity(GltfParser parser)
         {
             // Model => Unity
             using (var loader = new RuntimeUnityBuilder(parser))
             {
                 loader.Load();
                 loader.DisposeOnGameObjectDestroyed();
-                return (loader.Asset, loader.MaterialFactory.Materials);
+                return (loader.Root, loader.MaterialFactory.Materials);
             }
         }
 
@@ -77,7 +77,7 @@ namespace UniVRM10.Test
         [UnityTest]
         public IEnumerator ColorSpace_UnityBaseColorToLiner()
         {
-            var (assets, materials) = ToUnity(_vrmPath);
+            var (root, materials) = ToUnity(_vrmPath);
             var srcMaterial = materials.First();
             var srcColor = new Color(0.5f, 0.5f, 0.5f, 0.5f);
             var srcGammaColor = srcColor;
@@ -85,7 +85,7 @@ namespace UniVRM10.Test
 
             srcMaterial.Asset.color = srcColor;
 
-            var model = ToVrmModel(assets.Root);
+            var model = ToVrmModel(root);
             var dstMaterial = model.Materials.First(x => x is UnityEngine.Material m && m.name == srcMaterial.Asset.name) as UnityEngine.Material;
 
             EqualColor(srclinerColor, dstMaterial.color);
