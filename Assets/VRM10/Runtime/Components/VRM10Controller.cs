@@ -47,23 +47,11 @@ namespace UniVRM10
         [SerializeField]
         public VRM10SpringBoneManager SpringBone = new VRM10SpringBoneManager();
 
-        [SerializeField]
-        public ModelAsset ModelAsset;
-
         void OnDestroy()
         {
             if (Expression != null)
             {
                 Expression.Restore();
-            }
-
-            if (ModelAsset != null)
-            {
-#if UNITY_EDITOR
-                ModelAsset.DisposeEditor();
-#else
-                ModelAsset.Dispose();
-#endif
             }
         }
 
@@ -103,7 +91,7 @@ namespace UniVRM10
         {
             var animator = GetComponent<Animator>();
             if (animator == null) return;
-            
+
             m_head = animator.GetBoneTransform(HumanBodyBones.Head);
             LookAt.Setup(animator, m_head);
             Expression.Setup(transform, LookAt, LookAt.EyeDirectionApplicable);
@@ -152,7 +140,7 @@ namespace UniVRM10
         {
             Setup();
         }
-        
+
         private void Update()
         {
             if (Controller.UpdateType == VRM10ControllerImpl.UpdateTypes.Update)

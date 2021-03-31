@@ -58,7 +58,6 @@ namespace UniVRM10
             m_lookAt = PropGui.FromObject(serializedObject, nameof(m_target.LookAt));
             m_firstPerson = PropGui.FromObject(serializedObject, nameof(m_target.FirstPerson));
             m_springBone = PropGui.FromObject(serializedObject, nameof(m_target.SpringBone));
-            m_asset = PropGui.FromObject(serializedObject, nameof(m_target.ModelAsset));
         }
 
         void OnDisable()
@@ -78,7 +77,6 @@ namespace UniVRM10
             LookAt,
             FirstPerson,
             SpringBone,
-            Assets,
         }
         Tabs _tab;
 
@@ -136,7 +134,7 @@ namespace UniVRM10
             }
 
             serializedObject.Update();
-            
+
             // Setup runtime function.
             m_target.Setup();
 
@@ -167,10 +165,6 @@ namespace UniVRM10
                 case Tabs.SpringBone:
                     m_springBone.RecursiveProperty();
                     break;
-
-                case Tabs.Assets:
-                    m_asset.RecursiveProperty();
-                    break;
             }
 
             serializedObject.ApplyModifiedProperties();
@@ -194,7 +188,7 @@ namespace UniVRM10
             {
                 EditorGUILayout.Space();
                 EditorGUILayout.LabelField("Expression Weights", EditorStyles.boldLabel);
-                
+
                 var sliders = m_sliders.Select(x => x.Slider());
                 foreach (var slider in sliders)
                 {
@@ -202,7 +196,7 @@ namespace UniVRM10
                 }
                 m_target.Expression.SetWeights(m_expressionKeyWeights);
             }
-            
+
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Override rates", EditorStyles.boldLabel);
             EditorGUI.BeginDisabledGroup(true);
