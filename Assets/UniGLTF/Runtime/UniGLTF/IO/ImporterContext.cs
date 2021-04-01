@@ -126,7 +126,7 @@ namespace UniGLTF
                 var index = i;
                 using (MeasureTime("ReadMesh"))
                 {
-                    var x = meshImporter.ReadMesh(this, index, inverter);
+                    var x = meshImporter.ReadMesh(GLTF, index, inverter);
                     var y = await BuildMeshAsync(awaitCaller, MeasureTime, x, index);
                     Meshes.Add(y);
                 }
