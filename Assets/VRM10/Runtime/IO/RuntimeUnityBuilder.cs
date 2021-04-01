@@ -155,6 +155,10 @@ namespace UniVRM10
 
             // node: recursive
             CreateNodes(m_model.Root, null, m_map.Nodes);
+            for (int i = 0; i < m_model.Nodes.Count; ++i)
+            {
+                Nodes.Add(m_map.Nodes[m_model.Nodes[i]].transform);
+            }
             await awaitCaller.NextFrame();
 
             if (Root == null)
@@ -348,7 +352,7 @@ namespace UniVRM10
                             var index = gltfJoint.Node.Value;
                             if (index < 0 || index >= Nodes.Count)
                             {
-                                throw new IndexOutOfRangeException($"{index}");
+                                throw new IndexOutOfRangeException($"{index} > {Nodes.Count}");
                             }
                             var joint = new VRM10SpringJoint(Nodes[gltfJoint.Node.Value]);
                             joint.m_jointRadius = gltfJoint.HitRadius.Value;
@@ -368,7 +372,7 @@ namespace UniVRM10
                             out UniGLTF.Extensions.VRMC_node_collider.VRMC_node_collider extension))
                         {
                             var node = Nodes[colliderNode];
-                            var colliderGroup = node.gameObject.AddComponent<VRM10SpringBoneColliderGroup>();
+                            var colliderGroup = node.gameObject.GetOrAddComponent<VRM10SpringBoneColliderGroup>();
                             colliderGroup.Colliders.AddRange(extension.Shapes.Select(x =>
                             {
                                 if (x.Sphere != null)
