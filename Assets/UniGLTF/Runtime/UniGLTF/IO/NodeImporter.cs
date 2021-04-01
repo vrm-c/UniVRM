@@ -64,9 +64,9 @@ namespace UniGLTF
             public int? SkinIndex;
         }
 
-        public static TransformWithSkin BuildHierarchy(ImporterContext context, int i)
+        public static TransformWithSkin BuildHierarchy(glTF gltf, int i, List<Transform> nodes, List<MeshWithMaterials> meshes)
         {
-            var go = context.Nodes[i].gameObject;
+            var go = nodes[i].gameObject;
             if (string.IsNullOrEmpty(go.name))
             {
                 go.name = string.Format("node{0:000}", i);
@@ -80,12 +80,12 @@ namespace UniGLTF
             //
             // build hierarchy
             //
-            var node = context.GLTF.nodes[i];
+            var node = gltf.nodes[i];
             if (node.children != null)
             {
                 foreach (var child in node.children)
                 {
-                    context.Nodes[child].transform.SetParent(context.Nodes[i].transform,
+                    nodes[child].transform.SetParent(nodes[i].transform,
                         false // node has local transform
                         );
                 }
@@ -96,7 +96,7 @@ namespace UniGLTF
             //
             if (node.mesh != -1)
             {
-                var mesh = context.Meshes[node.mesh];
+                var mesh = meshes[node.mesh];
                 if (mesh.Mesh.blendShapeCount == 0 && node.skin == -1)
                 {
                     // without blendshape and bone skinning

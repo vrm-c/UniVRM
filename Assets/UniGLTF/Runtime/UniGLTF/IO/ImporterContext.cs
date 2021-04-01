@@ -146,7 +146,7 @@ namespace UniGLTF
                 var nodes = new List<NodeImporter.TransformWithSkin>();
                 for (int i = 0; i < Nodes.Count; ++i)
                 {
-                    nodes.Add(NodeImporter.BuildHierarchy(this, i));
+                    nodes.Add(NodeImporter.BuildHierarchy(GLTF, i, Nodes, Meshes));
                 }
 
                 NodeImporter.FixCoordinate(this, nodes, inverter);
