@@ -135,7 +135,7 @@ namespace UniVRM10
                         {
                             return ("", MessageType.None);
                         });
-            m_reference = new ValidateProperty(serializedObject.FindProperty(nameof(m_target.Reference)), prop =>
+            m_reference = new ValidateProperty(serializedObject.FindProperty(nameof(m_target.References)), prop =>
                         {
                             return ("", MessageType.None);
                         });

@@ -87,6 +87,40 @@ namespace UniVRM10
         }
 
         /// <summary>
+        /// VRM-1 の thumbnail テクスチャー。gltf.textures ではなく gltf.images の参照であることに注意(sampler等の設定が無い)
+        /// 
+        /// MToonとは無関係だがとりあえずここに
+        /// </summary>
+        /// <param name="parser"></param>
+        /// <param name="vrm"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static bool TryGetMetaThumbnailTextureImportParam(GltfParser parser, UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm, out TextureImportParam value)
+        {
+            if (!vrm.Meta.ThumbnailImage.HasValue)
+            {
+                value = default;
+                return false;
+            }
+
+            // thumbnail
+            var imageIndex = vrm.Meta.ThumbnailImage.Value;
+            var gltfImage = parser.GLTF.images[imageIndex];
+            var name = new TextureImportName(TextureImportTypes.sRGB, gltfImage.name, gltfImage.GetExt(), "");
+
+            GetTextureBytesAsync getBytesAsync = () =>
+            {
+                var bytes = parser.GLTF.GetImageBytes(parser.Storage, imageIndex);
+                return Task.FromResult(GltfTextureImporter.ToArray(bytes));
+            };
+            value = new TextureImportParam(name, Vector2.zero, Vector2.one, default, TextureImportTypes.sRGB, default, default,
+               getBytesAsync, default, default,
+               default, default, default
+               );
+            return true;
+        }
+
+        /// <summary>
         /// glTF 全体で使うテクスチャーをユニークになるように列挙する
         /// </summary>
         /// <param name="parser"></param>
@@ -97,24 +131,11 @@ namespace UniVRM10
             {
                 throw new System.Exception("not vrm");
             }
-            if (vrm.Meta.ThumbnailImage.HasValue)
+
+            if (TryGetMetaThumbnailTextureImportParam(parser, vrm, out TextureImportParam thumbnail))
             {
-                // thumbnail
-                var imageIndex = vrm.Meta.ThumbnailImage.Value;
-                var gltfImage = parser.GLTF.images[imageIndex];
-                var name = new TextureImportName(TextureImportTypes.sRGB, gltfImage.name, gltfImage.GetExt(), "");
-
-                GetTextureBytesAsync getBytesAsync = () =>
-                {
-                    var bytes = parser.GLTF.GetImageBytes(parser.Storage, imageIndex);
-                    return Task.FromResult(GltfTextureImporter.ToArray(bytes));
-                };
-                yield return new TextureImportParam(name, Vector2.zero, Vector2.one, default, TextureImportTypes.sRGB, default, default,
-                    getBytesAsync, default, default,
-                    default, default, default
-                    );
+                yield return thumbnail;
             }
-
 
             var used = new HashSet<string>();
             for (int i = 0; i < parser.GLTF.materials.Count; ++i)

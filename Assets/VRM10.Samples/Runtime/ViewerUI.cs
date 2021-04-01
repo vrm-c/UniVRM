@@ -95,7 +95,7 @@ namespace UniVRM10.Samples
                 m_textModelVersion.text = meta.Version;
                 m_textModelAuthor.text = meta.Authors[0];
                 m_textModelContact.text = meta.ContactInformation;
-                m_textModelReference.text = meta.Reference;
+                m_textModelReference.text = meta.References[0];
 
                 m_textPermissionAllowed.text = meta.AllowedUser.ToString();
                 m_textPermissionViolent.text = meta.ViolentUsage.ToString();

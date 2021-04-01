@@ -13,6 +13,8 @@ namespace UniVRM10
     [CreateAssetMenu(menuName = "VRM10/ExpressionAvatar")]
     public sealed class VRM10ExpressionAvatar : ScriptableObject
     {
+        public const string ExtractKey = ".ExpressionAvatar";
+
         [SerializeField]
         public List<VRM10Expression> Clips = new List<VRM10Expression>();
 

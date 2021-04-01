@@ -193,7 +193,8 @@ namespace UniVRM10
         }
 
         UnityEngine.Avatar m_humanoid;
-        UniVRM10.VRM10ExpressionAvatar m_exressionAvatar;
+        VRM10MetaObject m_meta;
+        VRM10ExpressionAvatar m_exressionAvatar;
 
         protected override async Task OnLoadHierarchy(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime)
         {
@@ -213,7 +214,41 @@ namespace UniVRM10
             // meta
             if (m_vrm.Meta != null)
             {
-
+                var src = m_vrm.Meta;
+                m_meta = ScriptableObject.CreateInstance<VRM10MetaObject>();
+                m_meta.name = VRM10MetaObject.ExtractKey;
+                controller.Meta = m_meta;
+                m_meta.Name = src.Name;
+                m_meta.Version = src.Version;
+                m_meta.ContactInformation = src.ContactInformation;
+                // avatar
+                m_meta.AllowedUser = src.AvatarPermission;
+                m_meta.ViolentUsage = src.AllowExcessivelyViolentUsage.Value;
+                m_meta.SexualUsage = src.AllowExcessivelySexualUsage.Value;
+                m_meta.CommercialUsage = src.CommercialUsage;
+                m_meta.PoliticalOrReligiousUsage = src.AllowPoliticalOrReligiousUsage.Value;
+                // redistribution
+                m_meta.CreditNotation = src.CreditNotation;
+                m_meta.Redistribution = src.AllowRedistribution.Value;
+                m_meta.ModificationLicense = src.Modification;
+                m_meta.OtherLicenseUrl = src.OtherLicenseUrl;
+                //
+                if (src.References != null)
+                {
+                    m_meta.References.AddRange(src.References);
+                }
+                if (src.Authors != null)
+                {
+                    m_meta.Authors.AddRange(src.Authors);
+                }
+                if (Vrm10MToonMaterialImporter.TryGetMetaThumbnailTextureImportParam(Parser, m_vrm, out VRMShaders.TextureImportParam param))
+                {
+                    var texture = await TextureFactory.GetTextureAsync(param);
+                    if (texture != null)
+                    {
+                        m_meta.Thumbnail = texture;
+                    }
+                }
             }
 
             // firstPerson
@@ -221,10 +256,10 @@ namespace UniVRM10
             // expression
             if (m_vrm.Expressions != null)
             {
-                controller.Expression.ExpressionAvatar = ScriptableObject.CreateInstance<UniVRM10.VRM10ExpressionAvatar>();
+                controller.Expression.ExpressionAvatar = ScriptableObject.CreateInstance<VRM10ExpressionAvatar>();
 
                 m_exressionAvatar = controller.Expression.ExpressionAvatar;
-                m_exressionAvatar.name = "ExpressionAvatar";
+                m_exressionAvatar.name = VRM10ExpressionAvatar.ExtractKey;
 
                 foreach (var expression in m_vrm.Expressions)
                 {
@@ -336,10 +371,10 @@ namespace UniVRM10
                 m_humanoid = null;
             }
 
-            // if (take(Meta))
-            // {
-            //     Meta = null;
-            // }
+            if (take(m_meta))
+            {
+                m_meta = null;
+            }
 
             foreach (var x in m_exressionAvatar.Clips)
             {
@@ -367,10 +402,10 @@ namespace UniVRM10
             {
                 destroy(m_humanoid);
             }
-            // if (Meta != null)
-            // {
-            //     destroy(Meta);
-            // }
+            if (m_meta != null)
+            {
+                destroy(m_meta);
+            }
             if (m_exressionAvatar != null)
             {
                 foreach (var clip in m_exressionAvatar.Clips)
