@@ -343,14 +343,22 @@ namespace UniVRM10
                     // joint
                     foreach (var gltfJoint in gltfSpring.Joints)
                     {
-                        var joint = new VRM10SpringJoint(Nodes[gltfJoint.Node.Value]);
-                        joint.m_jointRadius = gltfJoint.HitRadius.Value;
-                        joint.m_dragForce = gltfJoint.DragForce.Value;
-                        joint.m_gravityDir = Vector3(gltfJoint.GravityDir);
-                        joint.m_gravityPower = gltfJoint.GravityPower.Value;
-                        joint.m_stiffnessForce = gltfJoint.Stiffness.Value;
-                        // joint.m_exclude = gltfJoint.Exclude.GetValueOrDefault();
-                        springBone.Joints.Add(joint);
+                        if (gltfJoint.Node.HasValue)
+                        {
+                            var index = gltfJoint.Node.Value;
+                            if (index < 0 || index >= Nodes.Count)
+                            {
+                                throw new IndexOutOfRangeException($"{index}");
+                            }
+                            var joint = new VRM10SpringJoint(Nodes[gltfJoint.Node.Value]);
+                            joint.m_jointRadius = gltfJoint.HitRadius.Value;
+                            joint.m_dragForce = gltfJoint.DragForce.Value;
+                            joint.m_gravityDir = Vector3(gltfJoint.GravityDir);
+                            joint.m_gravityPower = gltfJoint.GravityPower.Value;
+                            joint.m_stiffnessForce = gltfJoint.Stiffness.Value;
+                            // joint.m_exclude = gltfJoint.Exclude.GetValueOrDefault();
+                            springBone.Joints.Add(joint);
+                        }
                     }
 
                     // collider

@@ -153,28 +153,31 @@ namespace VRMShaders
                 return;
             }
 
-            foreach (var (key, value) in param.Sampler.WrapModes)
+            if (param.Sampler.WrapModes != null)
             {
-                switch (key)
+                foreach (var (key, value) in param.Sampler.WrapModes)
                 {
-                    case SamplerWrapType.All:
-                        texture.wrapMode = value;
-                        break;
+                    switch (key)
+                    {
+                        case SamplerWrapType.All:
+                            texture.wrapMode = value;
+                            break;
 
-                    case SamplerWrapType.U:
-                        texture.wrapModeU = value;
-                        break;
+                        case SamplerWrapType.U:
+                            texture.wrapModeU = value;
+                            break;
 
-                    case SamplerWrapType.V:
-                        texture.wrapModeV = value;
-                        break;
+                        case SamplerWrapType.V:
+                            texture.wrapModeV = value;
+                            break;
 
-                    case SamplerWrapType.W:
-                        texture.wrapModeW = value;
-                        break;
+                        case SamplerWrapType.W:
+                            texture.wrapModeW = value;
+                            break;
 
-                    default:
-                        throw new NotImplementedException();
+                        default:
+                            throw new NotImplementedException();
+                    }
                 }
             }
 
@@ -229,12 +232,12 @@ namespace VRMShaders
                         if (!m_textureCache.TryGetValue(param.ConvertedName, out TextureLoadInfo info))
                         {
                             TextureLoadInfo baseTexture = default;
-                            if (param.Index0!=null)
+                            if (param.Index0 != null)
                             {
                                 baseTexture = await GetOrCreateBaseTexture(param, param.Index0, RenderTextureReadWrite.Linear, false);
                             }
                             TextureLoadInfo occlusionBaseTexture = default;
-                            if (param.Index1!=null)
+                            if (param.Index1 != null)
                             {
                                 occlusionBaseTexture = await GetOrCreateBaseTexture(param, param.Index1, RenderTextureReadWrite.Linear, false);
                             }
