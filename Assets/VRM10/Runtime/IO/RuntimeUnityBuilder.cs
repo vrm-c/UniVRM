@@ -211,10 +211,23 @@ namespace UniVRM10
             // VrmController
             var controller = Root.AddComponent<VRM10Controller>();
 
-            // meta
-            if (m_vrm.Meta != null)
+            // vrm
+            await LoadVrmAsync(awaitCaller, controller, m_vrm);
+            // springBone
+            if (UniGLTF.Extensions.VRMC_springBone.GltfDeserializer.TryGet(Parser.GLTF.extensions, out UniGLTF.Extensions.VRMC_springBone.VRMC_springBone springBone))
             {
-                var src = m_vrm.Meta;
+                await LoadSpringBoneAsync(awaitCaller, controller, springBone);
+            }
+            // constraint
+            await LoadConstraintAsync(awaitCaller, controller);
+        }
+
+        async Task LoadVrmAsync(IAwaitCaller awaitCaller, VRM10Controller controller, UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm)
+        {
+            // meta
+            if (vrm.Meta != null)
+            {
+                var src = vrm.Meta;
                 m_meta = ScriptableObject.CreateInstance<VRM10MetaObject>();
                 m_meta.name = VRM10MetaObject.ExtractKey;
                 controller.Meta = m_meta;
@@ -241,7 +254,7 @@ namespace UniVRM10
                 {
                     m_meta.Authors.AddRange(src.Authors);
                 }
-                if (Vrm10MToonMaterialImporter.TryGetMetaThumbnailTextureImportParam(Parser, m_vrm, out VRMShaders.TextureImportParam param))
+                if (Vrm10MToonMaterialImporter.TryGetMetaThumbnailTextureImportParam(Parser, vrm, out VRMShaders.TextureImportParam param))
                 {
                     var texture = await TextureFactory.GetTextureAsync(param);
                     if (texture != null)
@@ -252,14 +265,14 @@ namespace UniVRM10
             }
 
             // expression
-            if (m_vrm.Expressions != null)
+            if (vrm.Expressions != null)
             {
                 controller.Expression.ExpressionAvatar = ScriptableObject.CreateInstance<VRM10ExpressionAvatar>();
 
                 m_exressionAvatar = controller.Expression.ExpressionAvatar;
                 m_exressionAvatar.name = VRM10ExpressionAvatar.ExtractKey;
 
-                foreach (var expression in m_vrm.Expressions)
+                foreach (var expression in vrm.Expressions)
                 {
                     var clip = ScriptableObject.CreateInstance<UniVRM10.VRM10Expression>();
                     clip.Preset = expression.Preset;
@@ -286,9 +299,9 @@ namespace UniVRM10
             }
 
             // lookat
-            if (m_vrm.LookAt != null)
+            if (vrm.LookAt != null)
             {
-                var src = m_vrm.LookAt;
+                var src = vrm.LookAt;
                 controller.LookAt.LookAtType = src.LookAtType;
                 controller.LookAt.OffsetFromHead = new Vector3(src.OffsetFromHeadBone[0], src.OffsetFromHeadBone[1], src.OffsetFromHeadBone[2]);
                 controller.LookAt.HorizontalInner = new CurveMapper(src.LookAtHorizontalInner.InputMaxValue.Value, src.LookAtHorizontalInner.OutputScale.Value);
@@ -298,9 +311,9 @@ namespace UniVRM10
             }
 
             // firstPerson
-            if (m_vrm.FirstPerson != null && m_vrm.FirstPerson.MeshAnnotations != null)
+            if (vrm.FirstPerson != null && vrm.FirstPerson.MeshAnnotations != null)
             {
-                var fp = m_vrm.FirstPerson;
+                var fp = vrm.FirstPerson;
                 foreach (var x in fp.MeshAnnotations)
                 {
                     var node = Nodes[x.Node.Value];
@@ -311,11 +324,84 @@ namespace UniVRM10
                     });
                 }
             }
+        }
 
-            // springBone
+        async Task LoadSpringBoneAsync(IAwaitCaller awaitCaller, VRM10Controller controller, UniGLTF.Extensions.VRMC_springBone.VRMC_springBone gltfVrmSpringBone)
+        {
+            await awaitCaller.NextFrame();
 
-            // constraint
+            var springBoneManager = controller.SpringBone;
 
+            // springs
+            if (gltfVrmSpringBone.Springs != null)
+            {
+                foreach (var gltfSpring in gltfVrmSpringBone.Springs)
+                {
+                    var springBone = new VRM10SpringBone();
+                    springBone.Comment = gltfSpring.Name;
+
+                    // joint
+                    foreach (var gltfJoint in gltfSpring.Joints)
+                    {
+                        var joint = new VRM10SpringJoint(Nodes[gltfJoint.Node.Value]);
+                        joint.m_jointRadius = gltfJoint.HitRadius.Value;
+                        joint.m_dragForce = gltfJoint.DragForce.Value;
+                        joint.m_gravityDir = new Vector3(gltfJoint.GravityDir[0], gltfJoint.GravityDir[1], gltfJoint.GravityDir[2]);
+                        joint.m_gravityPower = gltfJoint.GravityPower.Value;
+                        joint.m_stiffnessForce = gltfJoint.Stiffness.Value;
+                        // joint.m_exclude = gltfJoint.Exclude.GetValueOrDefault();
+                        springBone.Joints.Add(joint);
+                    }
+
+                    // collider
+                    springBone.ColliderGroups.AddRange(gltfSpring.Colliders.Select(colliderNode =>
+                    {
+                        if (UniGLTF.Extensions.VRMC_node_collider.GltfDeserializer.TryGet(Parser.GLTF.nodes[colliderNode].extensions,
+                            out UniGLTF.Extensions.VRMC_node_collider.VRMC_node_collider extension))
+                        {
+                            var node = Nodes[colliderNode];
+                            var colliderGroup = node.gameObject.AddComponent<VRM10SpringBoneColliderGroup>();
+                            colliderGroup.Colliders.AddRange(extension.Shapes.Select(x =>
+                            {
+                                if (x.Sphere != null)
+                                {
+                                    return new VRM10SpringBoneCollider
+                                    {
+                                        ColliderType = VRM10SpringBoneColliderTypes.Sphere,
+                                        Offset = new Vector3(x.Sphere.Offset[0], x.Sphere.Offset[1], x.Sphere.Offset[2]),
+                                        Radius = x.Sphere.Radius.Value,
+                                    };
+                                }
+                                else if (x.Capsule != null)
+                                {
+                                    return new VRM10SpringBoneCollider
+                                    {
+                                        ColliderType = VRM10SpringBoneColliderTypes.Capsule,
+                                        Offset = new Vector3(x.Capsule.Offset[0], x.Capsule.Offset[1], x.Capsule.Offset[2]),
+                                        Radius = x.Capsule.Radius.Value,
+                                        Tail = new Vector3(x.Capsule.Tail[0], x.Capsule.Tail[1], x.Capsule.Tail[2]),
+                                    };
+                                }
+                                else
+                                {
+                                    throw new NotImplementedException();
+                                }
+                            }));
+                            return colliderGroup;
+                        }
+                        else
+                        {
+                            return null;
+                        }
+                    }).Where(x => x != null));
+
+                    springBoneManager.Springs.Add(springBone);
+                }
+            }
+        }
+
+        async Task LoadConstraintAsync(IAwaitCaller awaitCaller, VRM10Controller controller)
+        {
             await awaitCaller.NextFrame();
         }
 
