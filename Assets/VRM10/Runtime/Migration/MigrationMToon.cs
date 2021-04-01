@@ -146,7 +146,8 @@ namespace UniVRM10
                 var gltfMaterial = gltf.materials[i];
                 if (!glTF_KHR_materials_unlit.IsEnable(gltfMaterial))
                 {
-                    throw new Exception($"[{i}]{gltfMaterial.name} has no extensions");
+                    // 古いモデルは無い場合がある                    
+                    // throw new Exception($"[{i}]{gltfMaterial.name} has no extensions");
                 }
 
                 var extensions = new glTFExtensionExport();
