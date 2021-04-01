@@ -1,32 +1,32 @@
-﻿using UnityEngine;
-
+﻿using UniGLTF.Extensions.VRMC_constraints;
+using UnityEngine;
 
 namespace UniVRM10
 {
     /// <summary>
-    /// 対象の初期回転と現在回転の差分(delta)を、自身の初期回転と自身の初期回転にdeltaを乗算したものに対してWeightでSlerpする。
+    /// 対象の初期位置と現在位置の差分(delta)を、自身の初期位置に対してWeightを乗算して加算する。
     /// </summary>
     [DisallowMultipleComponent]
-    public class VRMRotationConstraint : VRMConstraint
+    public class VRM10PositionConstraint : VRM10Constraint
     {
         [SerializeField]
-        Transform Source = default;
+        public Transform Source = default;
 
         [SerializeField]
-        SourceCoordinates SourceCoordinate = default;
+        public ObjectSpace SourceCoordinate = default;
 
         [SerializeField]
-        DestinationCoordinates DestinationCoordinate = default;
+        public ObjectSpace DestinationCoordinate = default;
 
         [SerializeField]
-        AxesMask FreezeAxes = default;
+        public AxisMask FreezeAxes = default;
 
         [SerializeField]
         [Range(0, 10.0f)]
-        float Weight = 1.0f;
+        public float Weight = 1.0f;
 
         [SerializeField]
-        Transform ModelRoot = default;
+        public Transform ModelRoot = default;
 
         ConstraintSource m_src;
 
@@ -42,10 +42,6 @@ namespace UniVRM10
             m_dst = null;
         }
 
-        /// <summary>
-        /// SourceのUpdateよりも先か後かはその時による。
-        /// 厳密に制御するのは無理。
-        /// </summary>
         public override void Process()
         {
             if (Source == null)
@@ -63,13 +59,8 @@ namespace UniVRM10
                 m_dst = new ConstraintDestination(transform, DestinationCoordinate);
             }
 
-            // 軸制限をしたオイラー角
-            var delta = m_src.RotationDelta;
-            var fleezed = FreezeAxes.Freeze(delta.eulerAngles);
-            var rotation = Quaternion.Euler(fleezed);
-            // Debug.Log($"{delta} => {rotation}");
-            // オイラー角を再度Quaternionへ。weight を加味してSlerpする
-            m_dst.ApplyRotation(rotation, Weight);
+            var delta = FreezeAxes.Freeze(m_src.TranslationDelta);
+            m_dst.ApplyTranslation(delta, Weight);
         }
     }
 }

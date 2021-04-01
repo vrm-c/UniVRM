@@ -346,7 +346,7 @@ namespace UniVRM10
                         var joint = new VRM10SpringJoint(Nodes[gltfJoint.Node.Value]);
                         joint.m_jointRadius = gltfJoint.HitRadius.Value;
                         joint.m_dragForce = gltfJoint.DragForce.Value;
-                        joint.m_gravityDir = new Vector3(gltfJoint.GravityDir[0], gltfJoint.GravityDir[1], gltfJoint.GravityDir[2]);
+                        joint.m_gravityDir = Vector3(gltfJoint.GravityDir);
                         joint.m_gravityPower = gltfJoint.GravityPower.Value;
                         joint.m_stiffnessForce = gltfJoint.Stiffness.Value;
                         // joint.m_exclude = gltfJoint.Exclude.GetValueOrDefault();
@@ -368,7 +368,7 @@ namespace UniVRM10
                                     return new VRM10SpringBoneCollider
                                     {
                                         ColliderType = VRM10SpringBoneColliderTypes.Sphere,
-                                        Offset = new Vector3(x.Sphere.Offset[0], x.Sphere.Offset[1], x.Sphere.Offset[2]),
+                                        Offset = Vector3(x.Sphere.Offset),
                                         Radius = x.Sphere.Radius.Value,
                                     };
                                 }
@@ -377,9 +377,9 @@ namespace UniVRM10
                                     return new VRM10SpringBoneCollider
                                     {
                                         ColliderType = VRM10SpringBoneColliderTypes.Capsule,
-                                        Offset = new Vector3(x.Capsule.Offset[0], x.Capsule.Offset[1], x.Capsule.Offset[2]),
+                                        Offset = Vector3(x.Capsule.Offset),
                                         Radius = x.Capsule.Radius.Value,
-                                        Tail = new Vector3(x.Capsule.Tail[0], x.Capsule.Tail[1], x.Capsule.Tail[2]),
+                                        Tail = Vector3(x.Capsule.Tail),
                                     };
                                 }
                                 else
@@ -400,8 +400,71 @@ namespace UniVRM10
             }
         }
 
+        static AxisMask FreezeAxis(bool[] flags)
+        {
+            var mask = default(AxisMask);
+            if (flags != null && flags.Length == 3)
+            {
+                if (flags[0]) mask |= AxisMask.X;
+                if (flags[1]) mask |= AxisMask.Y;
+                if (flags[2]) mask |= AxisMask.Z;
+            }
+            return mask;
+        }
+
+        static Vector3 Vector3(float[] f)
+        {
+            var v = default(Vector3);
+            if (f != null && f.Length == 3)
+            {
+                v.x = f[0];
+                v.y = f[1];
+                v.z = f[2];
+            }
+            return v;
+        }
+
         async Task LoadConstraintAsync(IAwaitCaller awaitCaller, VRM10Controller controller)
         {
+            for (int i = 0; i < Parser.GLTF.nodes.Count; ++i)
+            {
+                var gltfNode = Parser.GLTF.nodes[i];
+                if (UniGLTF.Extensions.VRMC_constraints.GltfDeserializer.TryGet(gltfNode.extensions, out UniGLTF.Extensions.VRMC_constraints.VRMC_constraints constraint))
+                {
+                    var node = Nodes[i];
+                    if (constraint.Position != null)
+                    {
+                        var p = constraint.Position;
+                        var positionConstraint = node.gameObject.AddComponent<VRM10PositionConstraint>();
+                        positionConstraint.SourceCoordinate = p.SourceSpace;
+                        positionConstraint.Source = Nodes[p.Source.Value];
+                        positionConstraint.DestinationCoordinate = p.DestinationSpace;
+                        positionConstraint.FreezeAxes = FreezeAxis(p.FreezeAxes);
+                        positionConstraint.Weight = p.Weight.Value;
+                        positionConstraint.ModelRoot = Root.transform;
+                    }
+                    else if (constraint.Rotation != null)
+                    {
+                        var r = constraint.Rotation;
+                        var rotationConstraint = node.gameObject.AddComponent<VRM10RotationConstraint>();
+                        rotationConstraint.SourceCoordinate = r.SourceSpace;
+                        rotationConstraint.Source = Nodes[r.Source.Value];
+                        rotationConstraint.DestinationCoordinate = r.DestinationSpace;
+                        rotationConstraint.FreezeAxes = FreezeAxis(r.FreezeAxes);
+                        rotationConstraint.Weight = r.Weight.Value;
+                        rotationConstraint.ModelRoot = Root.transform;
+                    }
+                    else if (constraint.Aim != null)
+                    {
+                        var a = constraint.Aim;
+                        var aimConstraint = node.gameObject.AddComponent<VRM10AimConstraint>();
+                        aimConstraint.Source = Nodes[a.Source.Value];
+                        aimConstraint.AimVector = Vector3(a.AimVector);
+                        aimConstraint.UpVector = Vector3(a.UpVector);
+                    }
+                }
+            }
+
             await awaitCaller.NextFrame();
         }
 

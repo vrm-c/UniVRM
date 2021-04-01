@@ -11,10 +11,10 @@ namespace UniVRM10
     /// 
     /// </summary>
     [DisallowMultipleComponent]
-    public class VRMAimConstraint : VRMConstraint
+    public class VRM10AimConstraint : VRM10Constraint
     {
         [SerializeField]
-        Transform Source = default;
+        public Transform Source = default;
 
         // [SerializeField]
         // [Range(0, 10.0f)]
@@ -24,12 +24,13 @@ namespace UniVRM10
         /// Forward
         /// </summary>
         [SerializeField]
-        Vector3 AimVector = Vector3.forward;
+        public Vector3 AimVector = Vector3.forward;
 
         [SerializeField]
-        Vector3 UpVector = Vector3.up;
+        public Vector3 UpVector = Vector3.up;
 
-        Vector3 RightVector;
+        [SerializeField]
+        public Vector3 RightVector;
 
         Quaternion m_selfInitial;
         Matrix4x4 m_coords;

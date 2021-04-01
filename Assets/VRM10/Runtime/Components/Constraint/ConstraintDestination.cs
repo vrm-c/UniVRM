@@ -1,33 +1,28 @@
 using System;
+using UniGLTF.Extensions.VRMC_constraints;
 using UnityEngine;
 
 namespace UniVRM10
 {
-    public enum DestinationCoordinates
-    {
-        World,
-        Local,
-    }
-
     class ConstraintDestination
     {
         readonly Transform m_transform;
-        readonly DestinationCoordinates m_coords;
+        readonly ObjectSpace m_coords;
 
         readonly TRS m_initial;
 
-        public ConstraintDestination(Transform t, DestinationCoordinates coords)
+        public ConstraintDestination(Transform t, ObjectSpace coords)
         {
             m_transform = t;
             m_coords = coords;
 
             switch (m_coords)
             {
-                case DestinationCoordinates.World:
-                    m_initial = TRS.GetWorld(t);
-                    break;
+                // case ObjectSpace.World:
+                //     m_initial = TRS.GetWorld(t);
+                //     break;
 
-                case DestinationCoordinates.Local:
+                case ObjectSpace.local:
                     m_initial = TRS.GetLocal(t);
                     break;
 
@@ -41,11 +36,11 @@ namespace UniVRM10
             var value = m_initial.Translation + delta * weight;
             switch (m_coords)
             {
-                case DestinationCoordinates.World:
-                    m_transform.position = value;
-                    break;
+                // case DestinationCoordinates.World:
+                //     m_transform.position = value;
+                //     break;
 
-                case DestinationCoordinates.Local:
+                case ObjectSpace.local:
                     m_transform.localPosition = value;
                     break;
 
@@ -60,11 +55,11 @@ namespace UniVRM10
             var value = Quaternion.LerpUnclamped(Quaternion.identity, delta, weight) * m_initial.Rotation;
             switch (m_coords)
             {
-                case DestinationCoordinates.World:
-                    m_transform.rotation = value;
-                    break;
+                // case DestinationCoordinates.World:
+                //     m_transform.rotation = value;
+                //     break;
 
-                case DestinationCoordinates.Local:
+                case ObjectSpace.local:
                     m_transform.localRotation = value;
                     break;
 

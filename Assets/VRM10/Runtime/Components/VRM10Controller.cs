@@ -55,7 +55,7 @@ namespace UniVRM10
             }
         }
 
-        VRMConstraint[] m_constraints;
+        VRM10Constraint[] m_constraints;
 
         Transform m_head;
         public Transform Head
@@ -113,7 +113,7 @@ namespace UniVRM10
             //
             if (m_constraints == null)
             {
-                m_constraints = GetComponentsInChildren<VRMConstraint>();
+                m_constraints = GetComponentsInChildren<VRM10Constraint>();
             }
             foreach (var constraint in m_constraints)
             {
