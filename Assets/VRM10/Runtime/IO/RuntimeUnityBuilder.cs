@@ -251,8 +251,6 @@ namespace UniVRM10
                 }
             }
 
-            // firstPerson
-
             // expression
             if (m_vrm.Expressions != null)
             {
@@ -288,6 +286,21 @@ namespace UniVRM10
             }
 
             // lookat
+            if (m_vrm.LookAt != null)
+            {
+                var src = m_vrm.LookAt;
+                controller.LookAt = new VRM10ControllerLookAt
+                {
+                    LookAtType = src.LookAtType,
+                    HorizontalInner = new CurveMapper(src.LookAtHorizontalInner.InputMaxValue.Value, src.LookAtHorizontalInner.OutputScale.Value),
+                    HorizontalOuter = new CurveMapper(src.LookAtHorizontalOuter.InputMaxValue.Value, src.LookAtHorizontalOuter.OutputScale.Value),
+                    VerticalUp = new CurveMapper(src.LookAtVerticalUp.InputMaxValue.Value, src.LookAtHorizontalOuter.OutputScale.Value),
+                    VerticalDown = new CurveMapper(src.LookAtVerticalDown.InputMaxValue.Value, src.LookAtHorizontalOuter.OutputScale.Value),
+                };
+                controller.LookAt.OffsetFromHead = new Vector3(src.OffsetFromHeadBone[0], src.OffsetFromHeadBone[1], src.OffsetFromHeadBone[2]);
+            }
+
+            // firstPerson
 
             // springBone
 
