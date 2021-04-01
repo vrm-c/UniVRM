@@ -289,18 +289,28 @@ namespace UniVRM10
             if (m_vrm.LookAt != null)
             {
                 var src = m_vrm.LookAt;
-                controller.LookAt = new VRM10ControllerLookAt
-                {
-                    LookAtType = src.LookAtType,
-                    HorizontalInner = new CurveMapper(src.LookAtHorizontalInner.InputMaxValue.Value, src.LookAtHorizontalInner.OutputScale.Value),
-                    HorizontalOuter = new CurveMapper(src.LookAtHorizontalOuter.InputMaxValue.Value, src.LookAtHorizontalOuter.OutputScale.Value),
-                    VerticalUp = new CurveMapper(src.LookAtVerticalUp.InputMaxValue.Value, src.LookAtHorizontalOuter.OutputScale.Value),
-                    VerticalDown = new CurveMapper(src.LookAtVerticalDown.InputMaxValue.Value, src.LookAtHorizontalOuter.OutputScale.Value),
-                };
+                controller.LookAt.LookAtType = src.LookAtType;
                 controller.LookAt.OffsetFromHead = new Vector3(src.OffsetFromHeadBone[0], src.OffsetFromHeadBone[1], src.OffsetFromHeadBone[2]);
+                controller.LookAt.HorizontalInner = new CurveMapper(src.LookAtHorizontalInner.InputMaxValue.Value, src.LookAtHorizontalInner.OutputScale.Value);
+                controller.LookAt.HorizontalOuter = new CurveMapper(src.LookAtHorizontalOuter.InputMaxValue.Value, src.LookAtHorizontalOuter.OutputScale.Value);
+                controller.LookAt.VerticalUp = new CurveMapper(src.LookAtVerticalUp.InputMaxValue.Value, src.LookAtHorizontalOuter.OutputScale.Value);
+                controller.LookAt.VerticalDown = new CurveMapper(src.LookAtVerticalDown.InputMaxValue.Value, src.LookAtHorizontalOuter.OutputScale.Value);
             }
 
             // firstPerson
+            if (m_vrm.FirstPerson != null && m_vrm.FirstPerson.MeshAnnotations != null)
+            {
+                var fp = m_vrm.FirstPerson;
+                foreach (var x in fp.MeshAnnotations)
+                {
+                    var node = Nodes[x.Node.Value];
+                    controller.FirstPerson.Renderers.Add(new RendererFirstPersonFlags
+                    {
+                        FirstPersonFlag = x.FirstPersonType,
+                        Renderer = node.GetComponent<Renderer>()
+                    });
+                }
+            }
 
             // springBone
 
