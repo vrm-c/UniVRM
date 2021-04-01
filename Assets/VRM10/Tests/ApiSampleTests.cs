@@ -55,8 +55,10 @@ namespace UniVRM10.Test
             var path = "Tests/Models/Alicia_vrm-0.51/AliciaSolid_vrm-0.51.vrm";
             Debug.Log($"load: {path}");
 
+            var migrated = MigrationVrm.Migrate(File.ReadAllBytes(path));
+
             var parser = new GltfParser();
-            parser.ParsePath(path);
+            parser.Parse(path, migrated);
 
             var asset = BuildGameObject(parser, true);
             Debug.Log(asset);
