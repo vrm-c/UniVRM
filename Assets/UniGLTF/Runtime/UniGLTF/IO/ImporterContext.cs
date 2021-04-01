@@ -110,7 +110,7 @@ namespace UniGLTF
 
             using (MeasureTime("AnimationImporter"))
             {
-                AnimationImporter.Import(this);
+                AnimationClips.AddRange(AnimationImporter.Import(GLTF, Root, InvertAxis));
             }
 
             await OnLoadHierarchy(awaitCaller, MeasureTime);
