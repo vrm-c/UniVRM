@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using UniGLTF;
 using UnityEngine;
@@ -9,6 +10,36 @@ namespace UniVRM10
 {
     public static class Vrm10MToonMaterialImporter
     {
+        public static Color ToColor4(this float[] src, Color defaultValue = default)
+        {
+            if (src == null || src.Length != 4)
+            {
+                throw new NotImplementedException();
+            }
+
+            var v = new Vector4(
+                src[0],
+                src[1],
+                src[2],
+                src[3]
+            );
+            return v;
+        }
+        public static Color ToColor3(this float[] src, Color defaultValue = default)
+        {
+            if (src == null || src.Length != 3)
+            {
+                throw new NotImplementedException();
+            }
+
+            var v = new Vector4(
+                src[0],
+                src[1],
+                src[2]
+            );
+            return v;
+        }
+
         /// <summary>
         /// VMRC_materials_mtoon の場合にマテリアル生成情報を作成する
         /// </summary>
@@ -28,8 +59,69 @@ namespace UniVRM10
             }
 
             // use material.name, because material name may renamed in GltfParser.
-            var name = m.name;
-            param = new MaterialImportParam(name, MToon.Utils.ShaderName);
+            param = new MaterialImportParam(m.name, MToon.Utils.ShaderName);
+
+            param.Actions.Add(material =>
+            {
+                // Texture 以外をここで設定。Texture は TextureSlots へ
+                {
+                    // material.SetFloat(PropVersion, mtoon.Version);
+                }
+                {
+                    // var rendering = mtoon.Rendering;
+                    // SetRenderMode(material, rendering.RenderMode, rendering.RenderQueueOffsetNumber,
+                    //     useDefaultRenderQueue: false);
+                    // SetCullMode(material, rendering.CullMode);
+                }
+                {
+                    // var color = mtoon.Color;
+                    material.SetColor(MToon.Utils.PropColor, m.pbrMetallicRoughness.baseColorFactor.ToColor4());
+                    material.SetColor(MToon.Utils.PropShadeColor, mtoon.ShadeFactor.ToColor3());
+                    material.SetFloat(MToon.Utils.PropCutoff, m.alphaCutoff);
+                }
+                {
+                    {
+                        material.SetFloat(MToon.Utils.PropShadeShift, mtoon.ShadingShiftFactor.Value);
+                        material.SetFloat(MToon.Utils.PropShadeToony, mtoon.ShadingToonyFactor.Value);
+                        // material.SetFloat(PropReceiveShadowRate, mtoon.prop.ShadowReceiveMultiplierValue);
+                        // material.SetFloat(PropShadingGradeRate, mtoon.mix  prop.LitAndShadeMixingMultiplierValue);
+                    }
+                    {
+                        material.SetFloat(MToon.Utils.PropLightColorAttenuation, mtoon.LightColorAttenuationFactor.Value);
+                        material.SetFloat(MToon.Utils.PropIndirectLightIntensity, mtoon.GiIntensityFactor.Value);
+                    }
+                }
+                {
+                    material.SetColor(MToon.Utils.PropEmissionColor, m.emissiveFactor.ToColor3());
+                }
+                {
+                    material.SetColor(MToon.Utils.PropRimColor, mtoon.RimFactor.ToColor3());
+                    material.SetFloat(MToon.Utils.PropRimLightingMix, mtoon.RimLightingMixFactor.Value);
+                    material.SetFloat(MToon.Utils.PropRimFresnelPower, mtoon.RimFresnelPowerFactor.Value);
+                    material.SetFloat(MToon.Utils.PropRimLift, mtoon.RimLiftFactor.Value);
+                }
+                {
+                    material.SetFloat(MToon.Utils.PropOutlineWidth, mtoon.OutlineWidthFactor.Value);
+                    material.SetFloat(MToon.Utils.PropOutlineScaledMaxDistance, mtoon.OutlineScaledMaxDistanceFactor.Value);
+                    material.SetColor(MToon.Utils.PropOutlineColor, mtoon.OutlineFactor.ToColor3());
+                    material.SetFloat(MToon.Utils.PropOutlineLightingMix, mtoon.OutlineLightingMixFactor.Value);
+                    // private
+                    // MToon.Utils.SetOutlineMode(material, outline.OutlineWidthMode, outline.OutlineColorMode);
+                }
+                {
+                    // material.SetTextureScale(PropMainTex, mtoon.MainTextureLeftBottomOriginScale);
+                    // material.SetTextureOffset(PropMainTex, mtoon.MainTextureLeftBottomOriginOffset);
+                    material.SetFloat(MToon.Utils.PropUvAnimScrollX, mtoon.UvAnimationScrollXSpeedFactor.Value);
+                    material.SetFloat(MToon.Utils.PropUvAnimScrollY, mtoon.UvAnimationScrollYSpeedFactor.Value);
+                    material.SetFloat(MToon.Utils.PropUvAnimRotation, mtoon.UvAnimationRotationSpeedFactor.Value);
+                }
+
+                MToon.Utils.ValidateProperties(material, isBlendModeChangedByUser: false);
+            });
+
+            // SetTexture(material, PropMainTex, color.LitMultiplyTexture);
+            // SetNormalMapping(material, prop.NormalTexture, prop.NormalScaleValue);
+            // SetTexture(material, PropEmissionMap, emission.EmissionMultiplyTexture);
 
             if (m.pbrMetallicRoughness != null)
             {
@@ -46,7 +138,7 @@ namespace UniVRM10
                 param.Actions.Add(material => material.EnableKeyword("_NORMALMAP"));
                 var textureParam = GltfPBRMaterial.NormalTexture(parser, m);
                 param.TextureSlots.Add("_BumpMap", textureParam);
-                // param.FloatValues.Add("_BumpScale", m.normalTexture.scale);
+                param.FloatValues.Add("_BumpScale", m.normalTexture.scale);
             }
 
             if (m.emissiveTexture != null && m.emissiveTexture.index != -1)
@@ -57,6 +149,31 @@ namespace UniVRM10
             }
 
             // TODO:
+            if (mtoon.ShadeMultiplyTexture.HasValue)
+            {
+                var textureParam = GltfTextureImporter.CreateSRGB(parser, mtoon.ShadeMultiplyTexture.Value, Vector2.zero, Vector2.one);
+                param.TextureSlots.Add("_ShadeTexture", textureParam);
+            }
+            if (mtoon.OutlineWidthMultiplyTexture.HasValue)
+            {
+                var textureParam = GltfTextureImporter.CreateSRGB(parser, mtoon.OutlineWidthMultiplyTexture.Value, Vector2.zero, Vector2.one);
+                param.TextureSlots.Add("_OutlineWidthTexture", textureParam);
+            }
+            if (mtoon.AdditiveTexture.HasValue)
+            {
+                var textureParam = GltfTextureImporter.CreateSRGB(parser, mtoon.AdditiveTexture.Value, Vector2.zero, Vector2.one);
+                param.TextureSlots.Add("_SphereAdd", textureParam);
+            }
+            if (mtoon.RimMultiplyTexture.HasValue)
+            {
+                var textureParam = GltfTextureImporter.CreateSRGB(parser, mtoon.RimMultiplyTexture.Value, Vector2.zero, Vector2.one);
+                param.TextureSlots.Add("_RimTexture", textureParam); ;
+            }
+            if (mtoon.UvAnimationMaskTexture.HasValue)
+            {
+                var textureParam = GltfTextureImporter.CreateSRGB(parser, mtoon.UvAnimationMaskTexture.Value, Vector2.zero, Vector2.one);
+                param.TextureSlots.Add("_UvAnimMaskTexture", textureParam);
+            }
 
             return true;
         }
