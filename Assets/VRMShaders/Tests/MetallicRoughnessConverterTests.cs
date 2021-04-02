@@ -89,5 +89,28 @@ namespace VRMShaders
                     Is.EqualTo(new Color32(255, 0, 0, 255)));
             }
         }
+
+        [Test]
+        public void ExportMetallicSmoothnessOcclusion_Test()
+        {
+            var metallic = new Texture2D(4, 4, TextureFormat.ARGB32, false, true);
+            var occlusion = new Texture2D(4, 4, TextureFormat.ARGB32, false, true);
+
+            {
+                var exporter = new TextureExporter(AssetTextureUtil.UseAsset);
+                Assert.AreEqual(-1, exporter.ExportMetallicSmoothnessOcclusion(null, 0, null));
+            }
+            {
+                var exporter = new TextureExporter(AssetTextureUtil.UseAsset);
+                Assert.AreEqual(0, exporter.ExportMetallicSmoothnessOcclusion(null, 0, occlusion));
+                Assert.AreEqual(1, exporter.ExportMetallicSmoothnessOcclusion(metallic, 0, null));
+            }
+            {
+                var exporter = new TextureExporter(AssetTextureUtil.UseAsset);
+                Assert.AreEqual(0, exporter.ExportMetallicSmoothnessOcclusion(metallic, 0, occlusion));
+                Assert.AreEqual(0, exporter.ExportMetallicSmoothnessOcclusion(null, 0, occlusion));
+                Assert.AreEqual(0, exporter.ExportMetallicSmoothnessOcclusion(metallic, 0, null));
+            }
+        }
     }
 }

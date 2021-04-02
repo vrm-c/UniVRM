@@ -5,6 +5,7 @@ using System.Reflection;
 using UniGLTF.Animation;
 using UnityEditor;
 using UnityEngine;
+using VRMShaders;
 
 namespace UniGLTF
 {

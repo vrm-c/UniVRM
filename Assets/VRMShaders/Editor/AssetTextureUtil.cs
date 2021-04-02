@@ -2,7 +2,7 @@ using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
-namespace UniGLTF
+namespace VRMShaders
 {
     public static class AssetTextureUtil
     {
@@ -13,7 +13,8 @@ namespace UniGLTF
         /// <returns></returns>
         public static bool CopyIfMaxTextureSizeIsSmaller(Texture src)
         {
-            var textureImporter = AssetImporter.GetAtPath(UnityPath.FromAsset(src).Value) as TextureImporter;
+            var path = AssetDatabase.GetAssetPath(src);
+            var textureImporter = AssetImporter.GetAtPath(path) as TextureImporter;
 
             // private メソッド TextureImporter.GetWidthAndHeight を無理やり呼ぶ
             var getSizeMethod = typeof(TextureImporter).GetMethod("GetWidthAndHeight", BindingFlags.NonPublic | BindingFlags.Instance);

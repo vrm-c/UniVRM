@@ -6,6 +6,7 @@ using System.Text;
 using UniGLTF;
 using UnityEditor;
 using UnityEngine;
+using VRMShaders;
 
 namespace VRM
 {

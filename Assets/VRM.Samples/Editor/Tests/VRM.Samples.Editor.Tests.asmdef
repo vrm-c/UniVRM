@@ -8,7 +8,7 @@
         "UniVRM.Editor",
         "VRM.Tests",
         "VRMShaders",
-        "UniGLTF.Editor"
+        "VRMShaders.Editor"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

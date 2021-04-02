@@ -5,6 +5,7 @@ using UniJSON;
 using UnityEngine;
 using MeshUtility;
 using System;
+using VRMShaders;
 
 namespace VRM.Samples
 {
