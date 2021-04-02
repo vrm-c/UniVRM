@@ -82,34 +82,6 @@ namespace VrmLib
             }
 
             Model.Nodes.Remove(remove);
-
-            if (Model.Vrm != null)
-            {
-                if (Model.Vrm.ExpressionManager != null)
-                {
-                    foreach (var b in Model.Vrm.ExpressionManager.ExpressionList)
-                    {
-                        foreach (var v in b.MorphTargetBinds)
-                        {
-                            if (v.Node == remove)
-                            {
-                                throw new NotImplementedException("referenced from morphtargetbind");
-                            }
-                        }
-                    }
-                }
-
-                if (Model.Vrm.FirstPerson != null)
-                {
-                    foreach (var a in Model.Vrm.FirstPerson.Annotations)
-                    {
-                        if (a.Node == remove)
-                        {
-                            throw new NotImplementedException("referenced from firstPerson");
-                        }
-                    }
-                }
-            }
         }
 
         /// <summary>
@@ -161,54 +133,8 @@ namespace VrmLib
             }
             Model.Nodes.Add(dst);
 
-            // fix VRM
-            if (Model.Vrm != null)
-            {
-                // replace: VrmMorphTargetBind.Mesh
-                if (Model.Vrm.ExpressionManager != null)
-                {
-                    foreach (var x in Model.Vrm.ExpressionManager.ExpressionList)
-                    {
-                        for (int i = 0; i < x.MorphTargetBinds.Count; ++i)
-                        {
-                            var v = x.MorphTargetBinds[i];
-                            if (src == v.Node)
-                            {
-                                v.Node = dst;
-                            }
-                        }
-                    }
-                }
-
-                // replace: VrmFirstPerson.MeshAnnotations
-                Model.Vrm.FirstPerson.Annotations.RemoveAll(x => x.Node == src);
-                if (!Model.Vrm.FirstPerson.Annotations.Any(x => x.Node == dst))
-                {
-                    Model.Vrm.FirstPerson.Annotations.Add(
-                        new FirstPersonMeshAnnotation(dst, FirstPersonMeshType.Auto));
-                }
-            }
-
             // TODO: SpringBone
         }
         #endregion
-
-        public void MaterialReplace(Material src, Material dst)
-        {
-            // replace material of submesh
-            foreach (var group in Model.MeshGroups)
-            {
-                foreach (var mesh in group.Meshes)
-                {
-                    foreach (var submesh in mesh.Submeshes)
-                    {
-                        if (submesh.Material == src)
-                        {
-                            submesh.Material = dst;
-                        }
-                    }
-                }
-            }
-        }
     }
 }

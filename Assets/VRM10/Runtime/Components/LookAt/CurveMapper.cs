@@ -31,20 +31,6 @@ namespace UniVRM10
             }
         }
 
-        public void Apply(VrmLib.LookAtRangeMap map)
-        {
-            CurveXRangeDegree = map.InputMaxValue;
-            CurveYRangeDegree = map.OutputScaling;
-        }
-
-        IEnumerable<Keyframe> ToKeys(float[] values)
-        {
-            for (int i = 0; i < values.Length; i += 4)
-            {
-                yield return new Keyframe(values[i], values[i + 1], values[i + 2], values[i + 3]);
-            }
-        }
-
         public float Map(float src)
         {
             if (src < 0)

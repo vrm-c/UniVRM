@@ -1,7 +1,10 @@
-﻿namespace UniGLTF
+﻿using System.Collections.Generic;
+using UnityEngine;
+
+namespace UniGLTF
 {
     public interface IAnimationImporter
     {
-        void Import(ImporterContext context);
+        List<AnimationClip> Import(glTF gltf, GameObject root, Axises invertAxis);
     }
 }

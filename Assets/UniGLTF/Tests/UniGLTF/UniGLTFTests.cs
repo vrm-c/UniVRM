@@ -185,12 +185,12 @@ namespace UniGLTF
         [Test]
         public void VersionChecker()
         {
-            Assert.False(GltfParser.IsGeneratedUniGLTFAndOlderThan("hoge", 1, 16));
-            Assert.False(GltfParser.IsGeneratedUniGLTFAndOlderThan("UniGLTF-1.16", 1, 16));
-            Assert.True(GltfParser.IsGeneratedUniGLTFAndOlderThan("UniGLTF-1.15", 1, 16));
-            Assert.False(GltfParser.IsGeneratedUniGLTFAndOlderThan("UniGLTF-11.16", 1, 16));
-            Assert.True(GltfParser.IsGeneratedUniGLTFAndOlderThan("UniGLTF-0.16", 1, 16));
-            Assert.True(GltfParser.IsGeneratedUniGLTFAndOlderThan("UniGLTF", 1, 16));
+            Assert.False(glTFExtensions.IsGeneratedUniGLTFAndOlderThan("hoge", 1, 16));
+            Assert.False(glTFExtensions.IsGeneratedUniGLTFAndOlderThan("UniGLTF-1.16", 1, 16));
+            Assert.True(glTFExtensions.IsGeneratedUniGLTFAndOlderThan("UniGLTF-1.15", 1, 16));
+            Assert.False(glTFExtensions.IsGeneratedUniGLTFAndOlderThan("UniGLTF-11.16", 1, 16));
+            Assert.True(glTFExtensions.IsGeneratedUniGLTFAndOlderThan("UniGLTF-0.16", 1, 16));
+            Assert.True(glTFExtensions.IsGeneratedUniGLTFAndOlderThan("UniGLTF", 1, 16));
         }
 
         [Test]

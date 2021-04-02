@@ -13,6 +13,8 @@ namespace UniVRM10
     [CreateAssetMenu(menuName = "VRM10/ExpressionAvatar")]
     public sealed class VRM10ExpressionAvatar : ScriptableObject
     {
+        public const string ExtractKey = ".ExpressionAvatar";
+
         [SerializeField]
         public List<VRM10Expression> Clips = new List<VRM10Expression>();
 
@@ -79,15 +81,15 @@ namespace UniVRM10
         /// </summary>
         public void CreateDefaultPreset()
         {
-            foreach (var preset in ((VrmLib.ExpressionPreset[])Enum.GetValues(typeof(VrmLib.ExpressionPreset)))
-                .Where(x => x != VrmLib.ExpressionPreset.Custom)
+            foreach (var preset in ((UniGLTF.Extensions.VRMC_vrm.ExpressionPreset[])Enum.GetValues(typeof(UniGLTF.Extensions.VRMC_vrm.ExpressionPreset)))
+                .Where(x => x != UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.custom)
                 )
             {
                 CreateDefaultPreset(preset);
             }
         }
 
-        void CreateDefaultPreset(VrmLib.ExpressionPreset preset)
+        void CreateDefaultPreset(UniGLTF.Extensions.VRMC_vrm.ExpressionPreset preset)
         {
             var clip = GetClip(new ExpressionKey(preset));
             if (clip != null) return;

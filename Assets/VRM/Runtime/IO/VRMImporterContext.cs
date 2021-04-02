@@ -26,7 +26,7 @@ namespace VRM
             {
                 VRM = vrm;
                 // override material importer
-                GltfMaterialImporter.GltfMaterialParamProcessors.Insert(0, new MToonMaterialImporter(VRM.materialProperties).TryCreateParam);
+                GltfMaterialImporter.GltfMaterialParamProcessors.Insert(0, new VRMMtoonMaterialImporter(VRM).TryCreateParam);
             }
             else
             {
@@ -35,7 +35,7 @@ namespace VRM
         }
 
         #region OnLoad
-        protected override async Task OnLoadModel(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime)
+        protected override async Task OnLoadHierarchy(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime)
         {
             Root.name = "VRM";
 

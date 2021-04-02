@@ -25,51 +25,6 @@ namespace UniGLTF
         /// </summary>
         public IStorage Storage;
 
-        public static bool IsGeneratedUniGLTFAndOlderThan(string generatorVersion, int major, int minor)
-        {
-            if (string.IsNullOrEmpty(generatorVersion)) return false;
-            if (generatorVersion == "UniGLTF") return true;
-            if (!generatorVersion.FastStartsWith("UniGLTF-")) return false;
-
-            try
-            {
-                var splitted = generatorVersion.Substring(8).Split('.');
-                var generatorMajor = int.Parse(splitted[0]);
-                var generatorMinor = int.Parse(splitted[1]);
-
-                if (generatorMajor < major)
-                {
-                    return true;
-                }
-                else if (generatorMajor > major)
-                {
-                    return false;
-                }
-                else
-                {
-                    if (generatorMinor >= minor)
-                    {
-                        return false;
-                    }
-                    else
-                    {
-                        return true;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.LogWarningFormat("{0}: {1}", generatorVersion, ex);
-                return false;
-            }
-        }
-
-        public bool IsGeneratedUniGLTFAndOlder(int major, int minor)
-        {
-            if (GLTF == null) return false;
-            if (GLTF.asset == null) return false;
-            return IsGeneratedUniGLTFAndOlderThan(GLTF.asset.generator, major, minor);
-        }
 
         #region Parse
         public void ParsePath(string path)

@@ -6,11 +6,12 @@ namespace UniGLTF
     [Serializable]
     public class glTFBuffer
     {
-        IBytesBuffer Storage;
+        IBytesBuffer m_buffer;
+        public IBytesBuffer Buffer => m_buffer;
 
         public void OpenStorage(IStorage storage)
         {
-            Storage = new ArraySegmentByteBuffer(storage.Get(uri));
+            m_buffer = new ArraySegmentByteBuffer(storage.Get(uri));
         }
 
         public glTFBuffer()
@@ -20,7 +21,7 @@ namespace UniGLTF
 
         public glTFBuffer(IBytesBuffer storage)
         {
-            Storage = storage;
+            m_buffer = storage;
         }
 
         public string uri;
@@ -39,14 +40,14 @@ namespace UniGLTF
         }
         public glTFBufferView Append<T>(ArraySegment<T> segment, glBufferTarget target) where T : struct
         {
-            var view = Storage.Extend(segment, target);
-            byteLength = Storage.GetBytes().Count;
+            var view = m_buffer.Extend(segment, target);
+            byteLength = m_buffer.Bytes.Count;
             return view;
         }
 
         public ArraySegment<Byte> GetBytes()
         {
-            return Storage.GetBytes();
+            return m_buffer.Bytes;
         }
     }
 

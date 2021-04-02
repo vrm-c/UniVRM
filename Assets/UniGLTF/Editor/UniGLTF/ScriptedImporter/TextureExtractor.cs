@@ -102,7 +102,7 @@ namespace UniGLTF
         /// <param name="dirName"></param>
         /// <param name="onCompleted"></param>
         public static void ExtractTextures(GltfParser parser, UnityPath textureDirectory,
-            TextureEnumerator textureEnumerator, Texture2D[] subAssets, Action<Texture2D> addRemap,
+            EnumerateAllTexturesDistinctFunc textureEnumerator, Texture2D[] subAssets, Action<Texture2D> addRemap,
             Action<IEnumerable<UnityPath>> onCompleted = null)
         {
             var extractor = new TextureExtractor(parser, textureDirectory, subAssets);

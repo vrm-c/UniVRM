@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UniGLTF.Extensions.VRMC_vrm;
 using UnityEngine;
 
 namespace UniVRM10
@@ -9,6 +10,40 @@ namespace UniVRM10
     ///
     internal sealed class MaterialValueBindingMerger
     {
+        public const string UV_PROPERTY = "_MainTex_ST";
+        public const string COLOR_PROPERTY = "_Color";
+        public const string EMISSION_COLOR_PROPERTY = "_EmissionColor";
+        public const string RIM_COLOR_PROPERTY = "_RimColor";
+        public const string OUTLINE_COLOR_PROPERTY = "_OutlineColor";
+        public const string SHADE_COLOR_PROPERTY = "_ShadeColor";
+
+        public static string GetProperty(MaterialColorType bindType)
+        {
+            switch (bindType)
+            {
+                // case MaterialBindType.UvOffset:
+                // case MaterialBindType.UvScale:
+                //     return UV_PROPERTY;
+
+                case MaterialColorType.color:
+                    return COLOR_PROPERTY;
+
+                case MaterialColorType.emissionColor:
+                    return EMISSION_COLOR_PROPERTY;
+
+                case MaterialColorType.shadeColor:
+                    return SHADE_COLOR_PROPERTY;
+
+                case MaterialColorType.rimColor:
+                    return RIM_COLOR_PROPERTY;
+
+                case MaterialColorType.outlineColor:
+                    return OUTLINE_COLOR_PROPERTY;
+            }
+
+            throw new NotImplementedException();
+        }
+
         #region MaterialMap
         /// <summary>
         /// MaterialValueBinding の対象になるマテリアルの情報を記録する
@@ -44,7 +79,7 @@ namespace UniVRM10
                         item = new PreviewMaterialItem(material);
                         m_materialMap.Add(binding.MaterialName, item);
                     }
-                    var propName = VrmLib.MaterialBindTypeExtensions.GetProperty(binding.BindType);
+                    var propName = GetProperty(binding.BindType);
                     item.PropMap.Add(binding.BindType, new PropItem
                     {
                         Name = propName,
@@ -179,7 +214,7 @@ namespace UniVRM10
                 return new MaterialTarget
                 {
                     MaterialName = binding.MaterialName,
-                    ValueName = VrmLib.MaterialBindTypeExtensions.GetProperty(binding.BindType),
+                    ValueName = GetProperty(binding.BindType),
                 };
             }
         }

@@ -5,6 +5,7 @@ using UniJSON;
 using System;
 using UniGLTF;
 using System.Runtime.InteropServices;
+using System.Collections.Generic;
 
 namespace UniVRM10
 {
@@ -153,6 +154,64 @@ namespace UniVRM10
                 Marshal.Copy(pin.Ptr, bytes, 0, 64);
             }
             Assert.AreEqual(1.0f, BitConverter.ToSingle(bytes, 4));
+        }
+
+        static IEnumerable<FileInfo> EnumerateGltfFiles(DirectoryInfo dir)
+        {
+            if (dir.Name == ".git")
+            {
+                yield break;
+            }
+
+            foreach (var child in dir.EnumerateDirectories())
+            {
+                foreach (var x in EnumerateGltfFiles(child))
+                {
+                    yield return x;
+                }
+            }
+
+            foreach (var child in dir.EnumerateFiles())
+            {
+                switch (child.Extension.ToLower())
+                {
+                    case ".vrm":
+                        yield return child;
+                        break;
+                }
+            }
+        }
+
+        [Test]
+        public void Migrate_VrmTestModels()
+        {
+            var env = System.Environment.GetEnvironmentVariable("VRM_TEST_MODELS");
+            if (string.IsNullOrEmpty(env))
+            {
+                return;
+            }
+            var root = new DirectoryInfo(env);
+            if (!root.Exists)
+            {
+                return;
+            }
+
+            foreach (var gltf in EnumerateGltfFiles(root))
+            {
+                var bytes = File.ReadAllBytes(gltf.FullName);
+                try
+                {
+                    var migrated = MigrationVrm.Migrate(bytes);
+                    var parser = new GltfParser();
+                    parser.Parse(gltf.FullName, migrated);
+                    UniGLTF.Extensions.VRMC_vrm.GltfDeserializer.TryGet(parser.GLTF.extensions, out UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm);
+                    Assert.NotNull(vrm);
+                }
+                catch (UnNormalizedException)
+                {
+                    Debug.LogWarning($"[Not Normalized] {gltf}");
+                }
+            }
         }
     }
 }

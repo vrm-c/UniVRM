@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
+using UniGLTF;
 using UnityEngine;
 using UnityEngine.TestTools;
 using UniVRM10;
 using VrmLib;
-using VrmLib.Diff;
 
 namespace UniVRM10.Test
 {
@@ -15,21 +16,7 @@ namespace UniVRM10.Test
     {
         const string _vrmPath = "Tests/Models/Alicia_vrm-0.51/AliciaSolid_vrm-0.51.vrm";
 
-        string[] _mtooSrgbTextureProperties = {
-            VrmLib.MToon.Utils.PropMainTex,
-            VrmLib.MToon.Utils.PropShadeTexture,
-            VrmLib.MToon.Utils.PropEmissionMap,
-            VrmLib.MToon.Utils.PropSphereAdd,
-            VrmLib.MToon.Utils.PropRimTexture,
-        };
-
-        string[] _mtoonLinearTextureProperties = {
-            VrmLib.MToon.Utils.PropBumpMap,
-            VrmLib.MToon.Utils.PropOutlineWidthTexture,
-            VrmLib.MToon.Utils.PropUvAnimMaskTexture
-        };
-
-        private ModelAsset ToUnity(string path)
+        private (GameObject, IReadOnlyList<VRMShaders.MaterialFactory.MaterialLoadInfo>) ToUnity(string path)
         {
             var fi = new FileInfo(_vrmPath);
             var bytes = File.ReadAllBytes(fi.FullName);
@@ -40,21 +27,24 @@ namespace UniVRM10.Test
             return ToUnity(bytes);
         }
 
-        private ModelAsset ToUnity(byte[] bytes)
+        private (GameObject, IReadOnlyList<VRMShaders.MaterialFactory.MaterialLoadInfo>) ToUnity(byte[] bytes)
         {
             // Vrm => Model
-            var model = VrmLoader.CreateVrmModel(bytes, new FileInfo("tmp.vrm"));
-            model.RemoveSecondary();
+            var parser = new UniGLTF.GltfParser();
+            parser.Parse("tmp.vrm", bytes);
 
-            return ToUnity(model);
+            return ToUnity(parser);
         }
 
-        private ModelAsset ToUnity(Model model)
+        private (GameObject, IReadOnlyList<VRMShaders.MaterialFactory.MaterialLoadInfo>) ToUnity(GltfParser parser)
         {
             // Model => Unity
-            var assets = RuntimeUnityBuilder.ToUnityAsset(model);
-            UniVRM10.ComponentBuilder.Build10(model, assets);
-            return assets;
+            using (var loader = new RuntimeUnityBuilder(parser))
+            {
+                loader.Load();
+                loader.DisposeOnGameObjectDestroyed();
+                return (loader.Root, loader.MaterialFactory.Materials);
+            }
         }
 
         private Model ToVrmModel(GameObject root)
@@ -87,232 +77,231 @@ namespace UniVRM10.Test
         [UnityTest]
         public IEnumerator ColorSpace_UnityBaseColorToLiner()
         {
-            var assets = ToUnity(_vrmPath);
-            var srcMaterial = assets.Map.Materials.First();
-            var key = srcMaterial.Key;
+            var (root, materials) = ToUnity(_vrmPath);
+            var srcMaterial = materials.First();
             var srcColor = new Color(0.5f, 0.5f, 0.5f, 0.5f);
             var srcGammaColor = srcColor;
             var srclinerColor = srcColor.linear;
 
-            srcMaterial.Value.color = srcColor;
+            srcMaterial.Asset.color = srcColor;
 
-            var model = ToVrmModel(assets.Root);
-            var dstMaterial = model.Materials.First(x => x.Name == key.Name);
+            var model = ToVrmModel(root);
+            var dstMaterial = model.Materials.First(x => x is UnityEngine.Material m && m.name == srcMaterial.Asset.name) as UnityEngine.Material;
 
-            EqualColor(srclinerColor, dstMaterial.BaseColorFactor.RGBA.ToUnityColor());
-
-            yield return null;
-        }
-
-        [UnityTest]
-        public IEnumerator ColorSpace_GltfBaseColorToGamma()
-        {
-            var assets = ToUnity(_vrmPath);
-            var srcMaterial = assets.Map.Materials.First();
-            var key = srcMaterial.Key;
-            var srcColor = new Color(0.5f, 0.5f, 0.5f, 0.5f);
-            var srclinerColor = srcColor.ToVector4();
-            var srcGammaColor = srcColor.gamma.ToVector4();
-
-
-            var model = ToVrmModel(assets.Root);
-            var gltfMaterial = model.Materials.First(x => x.Name == key.Name);
-            gltfMaterial.BaseColorFactor = new LinearColor
-            {
-                RGBA = srclinerColor
-            };
-
-            var bytes = model.ToGlb();
-
-            var dstAssets = ToUnity(bytes);
-            var dstMaterial = dstAssets.Map.Materials.First(x => x.Value.name == key.Name);
-
-            EqualColor(srcGammaColor.ToUnityColor(), dstMaterial.Value.color);
+            EqualColor(srclinerColor, dstMaterial.color);
 
             yield return null;
         }
 
-        [UnityTest]
-        public IEnumerator MToonUnityColorToGltf()
-        {
-            var assets = ToUnity(_vrmPath);
-            var srcMaterial = assets.Map.Materials.First();
-            var key = srcMaterial.Key;
-            var srcColor = new Color(0.5f, 0.5f, 0.5f, 0.5f);
-            var srcGammaColor = srcColor;
-            var srclinerColor = srcColor.linear;
+        // [UnityTest]
+        // public IEnumerator ColorSpace_GltfBaseColorToGamma()
+        // {
+        //     var assets = ToUnity(_vrmPath);
+        //     var srcMaterial = assets.Map.Materials.First();
+        //     var key = srcMaterial.Key;
+        //     var srcColor = new Color(0.5f, 0.5f, 0.5f, 0.5f);
+        //     var srclinerColor = srcColor.ToVector4();
+        //     var srcGammaColor = srcColor.gamma.ToVector4();
 
-            srcMaterial.Value.SetColor(VrmLib.MToon.Utils.PropColor, srcColor);
-            srcMaterial.Value.SetColor(VrmLib.MToon.Utils.PropShadeColor, srcColor);
-            srcMaterial.Value.SetColor(VrmLib.MToon.Utils.PropEmissionColor, srcColor);
-            srcMaterial.Value.SetColor(VrmLib.MToon.Utils.PropRimColor, srcColor);
-            srcMaterial.Value.SetColor(VrmLib.MToon.Utils.PropOutlineColor, srcColor);
 
-            var model = ToVrmModel(assets.Root);
-            var dstMaterial = model.Materials.First(x => x.Name == key.Name) as VrmLib.MToonMaterial;
+        //     var model = ToVrmModel(assets.Root);
+        //     var gltfMaterial = model.Materials.First(x => x.Name == key.Name);
+        //     gltfMaterial.BaseColorFactor = new LinearColor
+        //     {
+        //         RGBA = srclinerColor
+        //     };
 
-            // sRGB
-            EqualColor(srclinerColor, dstMaterial.Definition.Color.LitColor.RGBA.ToUnityColor());
-            EqualColor(srclinerColor, dstMaterial.Definition.Color.ShadeColor.RGBA.ToUnityColor());
-            EqualColor(srclinerColor, dstMaterial.Definition.Outline.OutlineColor.RGBA.ToUnityColor());
-            // HDR Color
-            EqualColor(srcColor, dstMaterial.Definition.Emission.EmissionColor.RGBA.ToUnityColor());
-            EqualColor(srcColor, dstMaterial.Definition.Rim.RimColor.RGBA.ToUnityColor());
+        //     var bytes = model.ToGlb();
 
-            yield return null;
-        }
+        //     var dstAssets = ToUnity(bytes);
+        //     var dstMaterial = dstAssets.Map.Materials.First(x => x.Value.name == key.Name);
 
-        [UnityTest]
-        public IEnumerator MtoonGltfColorToUnity()
-        {
-            var assets = ToUnity(_vrmPath);
-            var srcMaterial = assets.Map.Materials.First();
-            var key = srcMaterial.Key;
-            var srcColor = new Color(0.5f, 0.5f, 0.5f, 0.5f);
-            var srclinerColor = srcColor.ToVector4();
-            var srcGammaColor = srcColor.gamma.ToVector4();
+        //     EqualColor(srcGammaColor.ToUnityColor(), dstMaterial.Value.color);
 
-            var model = ToVrmModel(assets.Root);
-            var gltfMaterial = model.Materials.First(x => x.Name == key.Name) as VrmLib.MToonMaterial;
-            if (gltfMaterial == null)
-            {
-                throw new NotImplementedException();
-            }
+        //     yield return null;
+        // }
 
-            gltfMaterial.Definition = new VrmLib.MToon.MToonDefinition
-            {
-                Color = new VrmLib.MToon.ColorDefinition
-                {
-                    LitColor = new LinearColor { RGBA = srclinerColor },
-                    ShadeColor = new LinearColor { RGBA = srclinerColor },
-                },
-                Outline = new VrmLib.MToon.OutlineDefinition
-                {
-                    OutlineColor = new LinearColor { RGBA = srclinerColor },
-                },
-                Emission = new VrmLib.MToon.EmissionDefinition
-                {
-                    EmissionColor = new LinearColor { RGBA = srclinerColor },
-                },
-                Rim = new VrmLib.MToon.RimDefinition
-                {
-                    RimColor = new LinearColor { RGBA = srclinerColor },
-                }
-            };
+        // [UnityTest]
+        // public IEnumerator MToonUnityColorToGltf()
+        // {
+        //     var assets = ToUnity(_vrmPath);
+        //     var srcMaterial = assets.Map.Materials.First();
+        //     var key = srcMaterial.Key;
+        //     var srcColor = new Color(0.5f, 0.5f, 0.5f, 0.5f);
+        //     var srcGammaColor = srcColor;
+        //     var srclinerColor = srcColor.linear;
 
-            var bytes = model.ToGlb();
+        //     srcMaterial.Value.SetColor(VrmLib.MToon.Utils.PropColor, srcColor);
+        //     srcMaterial.Value.SetColor(VrmLib.MToon.Utils.PropShadeColor, srcColor);
+        //     srcMaterial.Value.SetColor(VrmLib.MToon.Utils.PropEmissionColor, srcColor);
+        //     srcMaterial.Value.SetColor(VrmLib.MToon.Utils.PropRimColor, srcColor);
+        //     srcMaterial.Value.SetColor(VrmLib.MToon.Utils.PropOutlineColor, srcColor);
 
-            var dstAssets = ToUnity(bytes);
-            var dstMaterial = dstAssets.Map.Materials.First(x => x.Value.name == key.Name).Value;
-            // sRGB
-            EqualColor(srcGammaColor.ToUnityColor(), dstMaterial.GetColor(VrmLib.MToon.Utils.PropColor));
-            EqualColor(srcGammaColor.ToUnityColor(), dstMaterial.GetColor(VrmLib.MToon.Utils.PropShadeColor));
-            EqualColor(srcGammaColor.ToUnityColor(), dstMaterial.GetColor(VrmLib.MToon.Utils.PropOutlineColor));
-            // HDR Color
-            EqualColor(srcColor, dstMaterial.GetColor(VrmLib.MToon.Utils.PropEmissionColor));
-            EqualColor(srcColor, dstMaterial.GetColor(VrmLib.MToon.Utils.PropRimColor));
+        //     var model = ToVrmModel(assets.Root);
+        //     var dstMaterial = model.Materials.First(x => x.Name == key.Name) as VrmLib.MToonMaterial;
 
-            yield return null;
-        }
-        #endregion
+        //     // sRGB
+        //     EqualColor(srclinerColor, dstMaterial.Definition.Color.LitColor.RGBA.ToUnityColor());
+        //     EqualColor(srclinerColor, dstMaterial.Definition.Color.ShadeColor.RGBA.ToUnityColor());
+        //     EqualColor(srclinerColor, dstMaterial.Definition.Outline.OutlineColor.RGBA.ToUnityColor());
+        //     // HDR Color
+        //     EqualColor(srcColor, dstMaterial.Definition.Emission.EmissionColor.RGBA.ToUnityColor());
+        //     EqualColor(srcColor, dstMaterial.Definition.Rim.RimColor.RGBA.ToUnityColor());
 
-        #region Texture
+        //     yield return null;
+        // }
 
-        Texture2D CreateMonoTexture(float mono, float alpha, bool isLinear)
-        {
-            Texture2D texture = new Texture2D(128, 128, TextureFormat.ARGB32, mipChain: false, linear: isLinear);
-            Color col = new Color(mono, mono, mono, alpha);
-            for (int y = 0; y < texture.height; y++)
-            {
-                for (int x = 0; x < texture.width; x++)
-                {
-                    texture.SetPixel(x, y, col);
-                }
-            }
-            texture.Apply();
-            return texture;
-        }
+        // [UnityTest]
+        // public IEnumerator MtoonGltfColorToUnity()
+        // {
+        //     var assets = ToUnity(_vrmPath);
+        //     var srcMaterial = assets.Map.Materials.First();
+        //     var key = srcMaterial.Key;
+        //     var srcColor = new Color(0.5f, 0.5f, 0.5f, 0.5f);
+        //     var srclinerColor = srcColor.ToVector4();
+        //     var srcGammaColor = srcColor.gamma.ToVector4();
 
-        void EqualTextureColor(Texture2D texture, VrmLib.ImageTexture imageTexture, bool isLinear)
-        {
-            var srcColor = texture.GetPixel(0, 0);
+        //     var model = ToVrmModel(assets.Root);
+        //     var gltfMaterial = model.Materials.First(x => x.Name == key.Name) as VrmLib.MToonMaterial;
+        //     if (gltfMaterial == null)
+        //     {
+        //         throw new NotImplementedException();
+        //     }
 
-            var dstTexture = new Texture2D(2, 2, TextureFormat.ARGB32, mipChain: false, linear: isLinear);
-            dstTexture.LoadImage(imageTexture.Image.Bytes.ToArray());
-            var dstColor = dstTexture.GetPixel(0, 0);
+        //     gltfMaterial.Definition = new VrmLib.MToon.MToonDefinition
+        //     {
+        //         Color = new VrmLib.MToon.ColorDefinition
+        //         {
+        //             LitColor = new LinearColor { RGBA = srclinerColor },
+        //             ShadeColor = new LinearColor { RGBA = srclinerColor },
+        //         },
+        //         Outline = new VrmLib.MToon.OutlineDefinition
+        //         {
+        //             OutlineColor = new LinearColor { RGBA = srclinerColor },
+        //         },
+        //         Emission = new VrmLib.MToon.EmissionDefinition
+        //         {
+        //             EmissionColor = new LinearColor { RGBA = srclinerColor },
+        //         },
+        //         Rim = new VrmLib.MToon.RimDefinition
+        //         {
+        //             RimColor = new LinearColor { RGBA = srclinerColor },
+        //         }
+        //     };
 
-            Debug.LogFormat("src:{0}, dst{1}", srcColor, dstColor);
-            EqualColor(srcColor, dstColor);
-        }
+        //     var bytes = model.ToGlb();
 
-        [UnityTest]
-        public IEnumerator MToonTextureToGltf_BaseColorTexture()
-        {
-            var assets = ToUnity(_vrmPath);
-            var srcMaterial = assets.Map.Materials.First();
-            var key = srcMaterial.Key;
-            var srcSrgbTexture = CreateMonoTexture(0.5f, 0.5f, false);
+        //     var dstAssets = ToUnity(bytes);
+        //     var dstMaterial = dstAssets.Map.Materials.First(x => x.Value.name == key.Name).Value;
+        //     // sRGB
+        //     EqualColor(srcGammaColor.ToUnityColor(), dstMaterial.GetColor(VrmLib.MToon.Utils.PropColor));
+        //     EqualColor(srcGammaColor.ToUnityColor(), dstMaterial.GetColor(VrmLib.MToon.Utils.PropShadeColor));
+        //     EqualColor(srcGammaColor.ToUnityColor(), dstMaterial.GetColor(VrmLib.MToon.Utils.PropOutlineColor));
+        //     // HDR Color
+        //     EqualColor(srcColor, dstMaterial.GetColor(VrmLib.MToon.Utils.PropEmissionColor));
+        //     EqualColor(srcColor, dstMaterial.GetColor(VrmLib.MToon.Utils.PropRimColor));
 
-            srcMaterial.Value.SetTexture(VrmLib.MToon.Utils.PropMainTex, srcSrgbTexture);
+        //     yield return null;
+        // }
+        // #endregion
 
-            var model = ToVrmModel(assets.Root);
-            var dstMaterial = model.Materials.First(x => x.Name == key.Name) as VrmLib.MToonMaterial;
+        // #region Texture
 
-            var imageTexture = dstMaterial.Definition.Color.LitMultiplyTexture.Texture as VrmLib.ImageTexture;
-            EqualTextureColor(srcSrgbTexture, imageTexture, false);
+        // Texture2D CreateMonoTexture(float mono, float alpha, bool isLinear)
+        // {
+        //     Texture2D texture = new Texture2D(128, 128, TextureFormat.ARGB32, mipChain: false, linear: isLinear);
+        //     Color col = new Color(mono, mono, mono, alpha);
+        //     for (int y = 0; y < texture.height; y++)
+        //     {
+        //         for (int x = 0; x < texture.width; x++)
+        //         {
+        //             texture.SetPixel(x, y, col);
+        //         }
+        //     }
+        //     texture.Apply();
+        //     return texture;
+        // }
 
-            yield return null;
-        }
+        // void EqualTextureColor(Texture2D texture, VrmLib.ImageTexture imageTexture, bool isLinear)
+        // {
+        //     var srcColor = texture.GetPixel(0, 0);
 
-        [UnityTest]
-        public IEnumerator MToonTextureToGltf_OutlineWidthTexture()
-        {
-            var assets = ToUnity(_vrmPath);
-            var srcMaterial = assets.Map.Materials.First();
-            var key = srcMaterial.Key;
-            var srcLinearTexture = CreateMonoTexture(0.5f, 0.5f, true);
+        //     var dstTexture = new Texture2D(2, 2, TextureFormat.ARGB32, mipChain: false, linear: isLinear);
+        //     dstTexture.LoadImage(imageTexture.Image.Bytes.ToArray());
+        //     var dstColor = dstTexture.GetPixel(0, 0);
 
-            srcMaterial.Value.SetTexture(VrmLib.MToon.Utils.PropOutlineWidthTexture, srcLinearTexture);
+        //     Debug.LogFormat("src:{0}, dst{1}", srcColor, dstColor);
+        //     EqualColor(srcColor, dstColor);
+        // }
 
-            var model = ToVrmModel(assets.Root);
-            var dstMaterial = model.Materials.First(x => x.Name == key.Name) as VrmLib.MToonMaterial;
+        // [UnityTest]
+        // public IEnumerator MToonTextureToGltf_BaseColorTexture()
+        // {
+        //     var assets = ToUnity(_vrmPath);
+        //     var srcMaterial = assets.Map.Materials.First();
+        //     var key = srcMaterial.Key;
+        //     var srcSrgbTexture = CreateMonoTexture(0.5f, 0.5f, false);
 
-            var imageTexture = dstMaterial.Definition.Outline.OutlineWidthMultiplyTexture.Texture as VrmLib.ImageTexture;
-            EqualTextureColor(srcLinearTexture, imageTexture, true);
+        //     srcMaterial.Value.SetTexture(VrmLib.MToon.Utils.PropMainTex, srcSrgbTexture);
 
-            yield return null;
-        }
+        //     var model = ToVrmModel(assets.Root);
+        //     var dstMaterial = model.Materials.First(x => x.Name == key.Name) as VrmLib.MToonMaterial;
 
-        [UnityTest]
-        public IEnumerator GetOrCreateTextureTest()
-        {
-            var converter = new RuntimeVrmConverter();
-            var material = new UnityEngine.Material(Shader.Find("VRM/MToon"));
-            var srcLinearTexture = CreateMonoTexture(0.5f, 1.0f, true);
-            var srcSRGBTexture = CreateMonoTexture(0.5f, 1.0f, false);
+        //     var imageTexture = dstMaterial.Definition.Color.LitMultiplyTexture.Texture as VrmLib.ImageTexture;
+        //     EqualTextureColor(srcSrgbTexture, imageTexture, false);
 
-            {
-                material.SetTexture(VrmLib.MToon.Utils.PropOutlineWidthTexture, srcSRGBTexture);
-                var textureInfo = converter.GetOrCreateTexture(material, srcSRGBTexture, VrmLib.Texture.ColorSpaceTypes.Srgb, VrmLib.Texture.TextureTypes.Default);
-                var imageTexture = textureInfo.Texture as VrmLib.ImageTexture;
-                EqualTextureColor(srcSRGBTexture, imageTexture, false);
-            }
+        //     yield return null;
+        // }
 
-            {
-                material.SetTexture(VrmLib.MToon.Utils.PropOutlineWidthTexture, srcLinearTexture);
-                var textureInfo = converter.GetOrCreateTexture(material, srcLinearTexture, VrmLib.Texture.ColorSpaceTypes.Linear, VrmLib.Texture.TextureTypes.Default);
-                var imageTexture = textureInfo.Texture as VrmLib.ImageTexture;
-                EqualTextureColor(srcLinearTexture, imageTexture, true);
-            }
+        // [UnityTest]
+        // public IEnumerator MToonTextureToGltf_OutlineWidthTexture()
+        // {
+        //     var assets = ToUnity(_vrmPath);
+        //     var srcMaterial = assets.Map.Materials.First();
+        //     var key = srcMaterial.Key;
+        //     var srcLinearTexture = CreateMonoTexture(0.5f, 0.5f, true);
 
-            yield return null;
-        }
+        //     srcMaterial.Value.SetTexture(VrmLib.MToon.Utils.PropOutlineWidthTexture, srcLinearTexture);
 
-        [UnityTest]
-        public IEnumerator MToonTextureToUnity()
-        {
-            yield return null;
-        }
+        //     var model = ToVrmModel(assets.Root);
+        //     var dstMaterial = model.Materials.First(x => x.Name == key.Name) as VrmLib.MToonMaterial;
+
+        //     var imageTexture = dstMaterial.Definition.Outline.OutlineWidthMultiplyTexture.Texture as VrmLib.ImageTexture;
+        //     EqualTextureColor(srcLinearTexture, imageTexture, true);
+
+        //     yield return null;
+        // }
+
+        // [UnityTest]
+        // public IEnumerator GetOrCreateTextureTest()
+        // {
+        //     var converter = new RuntimeVrmConverter();
+        //     var material = new UnityEngine.Material(Shader.Find("VRM/MToon"));
+        //     var srcLinearTexture = CreateMonoTexture(0.5f, 1.0f, true);
+        //     var srcSRGBTexture = CreateMonoTexture(0.5f, 1.0f, false);
+
+        //     {
+        //         material.SetTexture(VrmLib.MToon.Utils.PropOutlineWidthTexture, srcSRGBTexture);
+        //         var textureInfo = converter.GetOrCreateTexture(material, srcSRGBTexture, VrmLib.Texture.ColorSpaceTypes.Srgb, VrmLib.Texture.TextureTypes.Default);
+        //         var imageTexture = textureInfo.Texture as VrmLib.ImageTexture;
+        //         EqualTextureColor(srcSRGBTexture, imageTexture, false);
+        //     }
+
+        //     {
+        //         material.SetTexture(VrmLib.MToon.Utils.PropOutlineWidthTexture, srcLinearTexture);
+        //         var textureInfo = converter.GetOrCreateTexture(material, srcLinearTexture, VrmLib.Texture.ColorSpaceTypes.Linear, VrmLib.Texture.TextureTypes.Default);
+        //         var imageTexture = textureInfo.Texture as VrmLib.ImageTexture;
+        //         EqualTextureColor(srcLinearTexture, imageTexture, true);
+        //     }
+
+        //     yield return null;
+        // }
+
+        // [UnityTest]
+        // public IEnumerator MToonTextureToUnity()
+        // {
+        //     yield return null;
+        // }
         #endregion
     }
 }

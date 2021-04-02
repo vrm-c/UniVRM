@@ -149,9 +149,9 @@ namespace VRM
                     .Where(x => x.IsUsed)
                     .Select(x => x.Texture)
                     .ToArray();
-            var vrmTextures = new VRMTextureEnumerator(m_context.VRM);
+            var vrmTextures = new VRMMtoonMaterialImporter(m_context.VRM);
             var dirName = $"{m_prefabPath.FileNameWithoutExtension}.Textures";
-            TextureExtractor.ExtractTextures(m_context.Parser, m_prefabPath.Parent.Child(dirName), vrmTextures.Enumerate, subAssets, _ => { }, onTextureReloaded);
+            TextureExtractor.ExtractTextures(m_context.Parser, m_prefabPath.Parent.Child(dirName), vrmTextures.EnumerateAllTexturesDistinct, subAssets, _ => { }, onTextureReloaded);
         }
 
         bool SaveAsAsset(UnityEngine.Object o)

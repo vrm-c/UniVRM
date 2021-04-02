@@ -1,7 +1,6 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
-using VrmLib;
+using UniGLTF.Extensions.VRMC_vrm;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -11,14 +10,6 @@ namespace UniVRM10
     [Serializable]
     public class VRM10ControllerLookAt : ILookAtEyeDirectionProvider
     {
-        public enum LookAtTypes
-        {
-            // Gaze control by bone (leftEye, rightEye)
-            Bone,
-            // Gaze control by blend shape (lookUp, lookDown, lookLeft, lookRight)
-            Expression,
-        }
-
         public enum LookAtTargetTypes
         {
             CalcYawPitchToGaze,
@@ -32,7 +23,7 @@ namespace UniVRM10
         public Vector3 OffsetFromHead = new Vector3(0, 0.06f, 0);
 
         [SerializeField]
-        public LookAtTypes LookAtType;
+        public LookAtType LookAtType;
 
         [SerializeField]
         public CurveMapper HorizontalOuter = new CurveMapper(90.0f, 10.0f);
@@ -55,7 +46,7 @@ namespace UniVRM10
         private ILookAtEyeDirectionApplicable _eyeDirectionApplicable;
 
         internal ILookAtEyeDirectionApplicable EyeDirectionApplicable => _eyeDirectionApplicable;
-        
+
         public LookAtEyeDirection EyeDirection { get; private set; }
 
         #region LookAtTargetTypes.CalcYawPitchToGaze
@@ -150,10 +141,10 @@ namespace UniVRM10
             }
             switch (LookAtType)
             {
-                case LookAtTypes.Bone:
+                case LookAtType.bone:
                     _eyeDirectionApplicable = new LookAtEyeDirectionApplicableToBone(m_leftEye, m_rightEye, HorizontalOuter, HorizontalInner, VerticalDown, VerticalUp);
                     break;
-                case LookAtTypes.Expression:
+                case LookAtType.expression:
                     _eyeDirectionApplicable = new LookAtEyeDirectionApplicableToExpression(HorizontalOuter, HorizontalInner, VerticalDown, VerticalUp);
                     break;
                 default:

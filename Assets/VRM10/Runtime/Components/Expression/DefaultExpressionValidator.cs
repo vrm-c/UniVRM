@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using UniGLTF.Extensions.VRMC_vrm;
 using UnityEngine;
 using VrmLib;
 
@@ -88,11 +89,11 @@ namespace UniVRM10
         {
             switch (type)
             {
-                case ExpressionOverrideType.None:
+                case ExpressionOverrideType.none:
                     return 0f;
-                case ExpressionOverrideType.Block:
+                case ExpressionOverrideType.block:
                     return weight > 0f ? 1f : 0f;
-                case ExpressionOverrideType.Blend:
+                case ExpressionOverrideType.blend:
                     return weight;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);

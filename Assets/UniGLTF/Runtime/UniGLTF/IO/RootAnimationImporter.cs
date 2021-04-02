@@ -6,28 +6,28 @@ namespace UniGLTF
 {
     public sealed class RootAnimationImporter : IAnimationImporter
     {
-        public void Import(ImporterContext context)
+        public List<AnimationClip> Import(glTF gltf, GameObject root, Axises invertAxis)
         {
-            // animation
-            if (context.GLTF.animations != null && context.GLTF.animations.Any())
+            var animationClips = new List<AnimationClip>();
+            if (gltf.animations != null && gltf.animations.Any())
             {
-                var animation = context.Root.AddComponent<Animation>();
-                context.AnimationClips = ImportAnimationClips(context.GLTF, context.InvertAxis);
+                var animation = root.AddComponent<Animation>();
+                animationClips.AddRange(ImportAnimationClips(gltf, invertAxis));
 
-                foreach (var clip in context.AnimationClips)
+                foreach (var clip in animationClips)
                 {
                     animation.AddClip(clip, clip.name);
                 }
-                if (context.AnimationClips.Count > 0)
+                if (animationClips.Count > 0)
                 {
-                    animation.clip = context.AnimationClips.First();
+                    animation.clip = animationClips.First();
                 }
             }
+            return animationClips;
         }
 
-        private List<AnimationClip> ImportAnimationClips(glTF gltf, Axises invertAxis)
+        private IEnumerable<AnimationClip> ImportAnimationClips(glTF gltf, Axises invertAxis)
         {
-            var animationClips = new List<AnimationClip>();
             for (var i = 0; i < gltf.animations.Count; ++i)
             {
                 var clip = new AnimationClip();
@@ -46,10 +46,8 @@ namespace UniGLTF
                     animation.name = $"animation:{i}";
                 }
 
-                animationClips.Add(AnimationImporterUtil.ConvertAnimationClip(gltf, animation, invertAxis.Create()));
+                yield return AnimationImporterUtil.ConvertAnimationClip(gltf, animation, invertAxis.Create());
             }
-
-            return animationClips;
         }
     }
 }

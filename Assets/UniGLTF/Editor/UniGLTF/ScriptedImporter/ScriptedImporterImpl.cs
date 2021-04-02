@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -37,32 +36,28 @@ namespace UniGLTF
             // Import(create unity objects)
             //
             var externalObjectMap = scriptedImporter.GetExternalObjectMap().Select(kv => (kv.Value.name, kv.Value)).ToArray();
-            
+
             var externalTextures = EnumerateTexturesFromUri(externalObjectMap, parser, UnityPath.FromUnityPath(scriptedImporter.assetPath).Parent).ToArray();
 
-            using (var loaded = new ImporterContext(parser, externalObjectMap.Concat(externalTextures)))
+            using (var loader = new ImporterContext(parser, externalObjectMap.Concat(externalTextures)))
             {
                 // settings TextureImporters
-                foreach (var textureInfo in GltfTextureEnumerator.Enumerate(parser))
+                foreach (var textureInfo in GltfTextureEnumerator.EnumerateAllTexturesDistinct(parser))
                 {
-                    TextureImporterConfigurator.Configure(textureInfo, loaded.TextureFactory.ExternalMap);
+                    TextureImporterConfigurator.Configure(textureInfo, loader.TextureFactory.ExternalMap);
                 }
 
-                loaded.InvertAxis = reverseAxis;
-                loaded.Load();
-                loaded.ShowMeshes();
+                loader.InvertAxis = reverseAxis;
+                loader.Load();
+                loader.ShowMeshes();
 
-                loaded.TransferOwnership(o =>
+                loader.TransferOwnership(o =>
                 {
-#if VRM_DEVELOP
-                    Debug.Log($"[{o.GetType().Name}] {o.name} will not destroy");
-#endif
-
                     context.AddObjectToAsset(o.name, o);
                     if (o is GameObject)
                     {
                         // Root GameObject is main object
-                        context.SetMainObject(loaded.Root);
+                        context.SetMainObject(loader.Root);
                     }
 
                     return true;
@@ -74,7 +69,7 @@ namespace UniGLTF
             GltfParser parser, UnityPath dir)
         {
             var used = new HashSet<Texture2D>();
-            foreach (var texParam in GltfTextureEnumerator.Enumerate(parser))
+            foreach (var texParam in GltfTextureEnumerator.EnumerateAllTexturesDistinct(parser))
             {
                 switch (texParam.TextureType)
                 {
@@ -96,8 +91,10 @@ namespace UniGLTF
                                 {
                                     // exclude. skip
                                 }
-                                else{
-                                    if(used.Add(asset)){
+                                else
+                                {
+                                    if (used.Add(asset))
+                                    {
                                         yield return (asset.name, asset);
                                     }
                                 }

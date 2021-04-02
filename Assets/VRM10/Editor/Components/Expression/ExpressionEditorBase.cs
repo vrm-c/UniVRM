@@ -275,24 +275,5 @@ namespace UniVRM10
                 }
             }
         }
-
-        public override string GetInfoString()
-        {
-            var expression = CurrentExpression();
-            if (expression == null)
-            {
-                return "no expression";
-            }
-
-            var key = ExpressionKey.CreateFromClip(expression);
-            if (key.Preset != VrmLib.ExpressionPreset.Custom)
-            {
-                return string.Format("Preset: {0}", key.Preset);
-            }
-            else
-            {
-                return string.Format("Custom: {0}", key.Name);
-            }
-        }
     }
 }

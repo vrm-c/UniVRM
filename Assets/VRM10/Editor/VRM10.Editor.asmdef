@@ -6,7 +6,8 @@
         "MeshUtility",
         "MeshUtility.Editor",
         "UniGLTF.Editor",
-        "UniGLTF"
+        "UniGLTF",
+        "VRMShaders"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [

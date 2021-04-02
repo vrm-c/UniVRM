@@ -653,7 +653,7 @@ namespace VrmLib
             {
                 // 連続して同じMaterialのSubMeshを連結する
                 mesh.Submeshes.Clear();
-                Material current = null;
+                int current = -1;
                 foreach (var submesh in order)
                 {
                     if (current != submesh.Material)

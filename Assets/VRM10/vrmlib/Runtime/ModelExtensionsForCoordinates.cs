@@ -217,51 +217,6 @@ namespace VrmLib
             {
                 // TODO:
             }
-
-            if (model.Vrm != null)
-            {
-                if (!ignoreVrm)
-                {
-                    // LookAt
-                    if (model.Vrm.LookAt != null)
-                    {
-                        model.Vrm.LookAt.OffsetFromHeadBone = reverser.ReverseVector3(model.Vrm.LookAt.OffsetFromHeadBone);
-                    }
-
-                    // SpringBone
-                    if (model.Vrm.SpringBone != null)
-                    {
-                        foreach (var b in model.Vrm.SpringBone.Springs)
-                        {
-                            foreach (var c in b.Colliders)
-                            {
-                                for (int i = 0; i < c.Colliders.Count; ++i)
-                                {
-                                    var s = c.Colliders[i];
-                                    switch (s.ColliderType)
-                                    {
-                                        case VrmSpringBoneColliderTypes.Sphere:
-                                            c.Colliders[i] = VrmSpringBoneCollider.CreateSphere(reverser.ReverseVector3(s.Offset), s.Radius);
-                                            break;
-
-                                        case VrmSpringBoneColliderTypes.Capsule:
-                                            c.Colliders[i] = VrmSpringBoneCollider.CreateCapsule(reverser.ReverseVector3(s.Offset), s.Radius, reverser.ReverseVector3(s.CapsuleTail));
-                                            break;
-
-                                        default:
-                                            throw new NotImplementedException();
-                                    }
-                                }
-                            }
-
-                            foreach (var j in b.Joints)
-                            {
-                                j.GravityDir = reverser.ReverseVector3(j.GravityDir);
-                            }
-                        }
-                    }
-                }
-            }
         }
 
         static void FlipTriangle(SpanLike<byte> indices)

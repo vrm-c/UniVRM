@@ -52,7 +52,7 @@ namespace UniVRM10
 
                 // 対象のプロパティを enum から選択する
                 var bindTypeProp = property.FindPropertyRelative("BindType");
-                var bindTypes = (VrmLib.MaterialBindType[])Enum.GetValues(typeof(VrmLib.MaterialBindType));
+                var bindTypes = (UniGLTF.Extensions.VRMC_vrm.MaterialColorType[])Enum.GetValues(typeof(UniGLTF.Extensions.VRMC_vrm.MaterialColorType));
                 var bindType = bindTypes[bindTypeProp.enumValueIndex];
                 var newBindType = ExpressionEditorHelper.EnumPopup(rect, bindType);
                 if (newBindType != bindType)

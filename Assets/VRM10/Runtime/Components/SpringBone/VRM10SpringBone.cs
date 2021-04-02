@@ -13,7 +13,7 @@ namespace UniVRM10
     public class VRM10SpringBone
     {
         [SerializeField]
-        public string m_comment;
+        public string Comment;
 
         [SerializeField]
         public List<VRM10SpringJoint> Joints = new List<VRM10SpringJoint>();

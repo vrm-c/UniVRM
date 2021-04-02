@@ -10,6 +10,8 @@ namespace UniVRM10
     [CreateAssetMenu(menuName = "VRM10/MetaObject")]
     public class VRM10MetaObject : ScriptableObject
     {
+        public const string ExtractKey = ".Meta";
+
         [SerializeField]
         public string ExporterVersion;
 
@@ -24,13 +26,13 @@ namespace UniVRM10
         public string CopyrightInformation;
 
         [SerializeField]
-        public string[] Authors;
+        public List<string> Authors = new List<string>();
 
         [SerializeField]
         public string ContactInformation;
 
         [SerializeField]
-        public string Reference;
+        public List<string> References = new List<string>();
 
         [SerializeField]
         public Texture2D Thumbnail;
@@ -38,7 +40,7 @@ namespace UniVRM10
 
         #region AvatarPermission
         [SerializeField, Tooltip("A person who can perform with this avatar")]
-        public VrmLib.AvatarUsageType AllowedUser;
+        public UniGLTF.Extensions.VRMC_vrm.AvatarPermissionType AllowedUser;
 
         [SerializeField, Tooltip("Violent acts using this avatar")]
         public bool ViolentUsage;
@@ -47,7 +49,7 @@ namespace UniVRM10
         public bool SexualUsage;
 
         [SerializeField, Tooltip("For commercial use")]
-        public VrmLib.CommercialUsageType CommercialUsage;
+        public UniGLTF.Extensions.VRMC_vrm.CommercialUsageType CommercialUsage;
 
         [SerializeField]
         public bool GameUsage;
@@ -61,13 +63,13 @@ namespace UniVRM10
 
         #region Distribution License
         [SerializeField]
-        public VrmLib.CreditNotationType CreditNotation;
+        public UniGLTF.Extensions.VRMC_vrm.CreditNotationType CreditNotation;
 
         [SerializeField]
         public bool Redistribution;
 
         [SerializeField]
-        public VrmLib.ModificationLicenseType ModificationLicense;
+        public UniGLTF.Extensions.VRMC_vrm.ModificationType ModificationLicense;
 
         [SerializeField]
         public string OtherLicenseUrl;
@@ -80,7 +82,7 @@ namespace UniVRM10
                 yield return Validation.Error("Require Name. ");
             }
 
-            if (Authors == null || Authors.Length == 0)
+            if (Authors == null || Authors.Count == 0)
             {
                 yield return Validation.Error("Require at leaset one Author.");
             }
@@ -99,14 +101,14 @@ namespace UniVRM10
             dst.CopyrightInformation = CopyrightInformation;
             if (Authors != null)
             {
-                dst.Authors = Authors.Select(x => x).ToArray();
+                dst.Authors = Authors.Select(x => x).ToList();
             }
             else
             {
-                dst.Authors = new string[] { };
+                dst.Authors = new List<string>();
             }
             dst.ContactInformation = ContactInformation;
-            dst.Reference = Reference;
+            dst.References = References;
             dst.Thumbnail = Thumbnail;
             dst.AllowedUser = AllowedUser;
             dst.ViolentUsage = ViolentUsage;

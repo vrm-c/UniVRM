@@ -44,7 +44,7 @@ namespace VrmLib
 
             static IEnumerable<T> GetValues()
             {
-                foreach (var t in Enum.GetValues(typeof(Texture)))
+                foreach (var t in Enum.GetValues(typeof(T)))
                 {
                     yield return (T)t;
                 }

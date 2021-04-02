@@ -18,8 +18,6 @@ namespace VrmLib
             Coordinates = coordinates;
         }
 
-        public ArraySegment<byte> OriginalJson;
-
         public Coordinates Coordinates;
 
         public string AssetVersion = "2.0";
@@ -27,14 +25,8 @@ namespace VrmLib
         public string AssetCopyright;
         public string AssetMinVersion;
 
-        // gltf/images
-        public readonly List<Image> Images = new List<Image>();
-
-        // gltf/textures
-        public readonly List<Texture> Textures = new List<Texture>();
-
         // gltf/materials
-        public readonly List<Material> Materials = new List<Material>();
+        public readonly List<object> Materials = new List<object>();
 
         // gltf/skins
         public readonly List<Skin> Skins = new List<Skin>();
@@ -80,8 +72,6 @@ namespace VrmLib
             Root.CalcWorldMatrix();
         }
 
-        public Vrm Vrm;
-
         public Dictionary<HumanoidBones, Node> GetBoneMap()
         {
             return Root.Traverse()
@@ -94,16 +84,6 @@ namespace VrmLib
             var sb = new StringBuilder();
             sb.Append($"[GLTF] generator: {AssetGenerator}\n");
 
-            for (int i = 0; i < Images.Count; ++i)
-            {
-                var x = Images[i];
-                sb.Append($"[Image#{i:00}] {x}\n");
-            }
-            // for (int i = 0; i < Textures.Count; ++i)
-            // {
-            //     var t = Textures[i];
-            //     sb.Append($"[Texture#{i:00}] {t}\n");
-            // }
             for (int i = 0; i < Materials.Count; ++i)
             {
                 var m = Materials[i];
@@ -126,38 +106,6 @@ namespace VrmLib
                 sb.Append($"[Skin] {skin}\n");
             }
 
-            //
-            // VRM
-            //
-            if (Vrm != null)
-            {
-                sb.Append($"[VRM] export: {Vrm.ExporterVersion}, spec: {Vrm.SpecVersion}\n");
-                sb.Append($"[VRM][meta] {Vrm.Meta}\n");
-                var boneMap = GetBoneMap();
-                if (boneMap.Any())
-                {
-                    sb.Append($"[VRM][humanoid] {boneMap.Count}/{Enum.GetValues(typeof(HumanoidBones)).Length - 1}\n");
-                    if (boneMap.Keys.Contains(HumanoidBones.unknown))
-                    {
-                        sb.Append($"[VRM][humanoid] {boneMap.Count} contains 'unknown'\n");
-                    }
-                    if (boneMap.TryGetValue(HumanoidBones.jaw, out Node jaw))
-                    {
-                        sb.Append($"[VRM][humanoid] contains 'jaw' => {jaw.Name}\n");
-                    }
-                }
-                if (Vrm.ExpressionManager != null
-                    && Vrm.ExpressionManager.ExpressionList != null
-                    && Vrm.ExpressionManager.ExpressionList.Any())
-                {
-                    sb.Append("[VRM][expression] ");
-                    foreach (var ex in Vrm.ExpressionManager.ExpressionList)
-                    {
-                        sb.Append($"[{ex.Preset}]");
-                    }
-                    sb.Append($"\n");
-                }
-            }
             return sb.ToString();
         }
 

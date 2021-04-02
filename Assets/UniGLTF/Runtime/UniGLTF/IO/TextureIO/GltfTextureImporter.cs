@@ -13,7 +13,7 @@ namespace UniGLTF
     /// </summary>
     public static class GltfTextureImporter
     {
-        static Byte[] ToArray(ArraySegment<byte> bytes)
+        public static Byte[] ToArray(ArraySegment<byte> bytes)
         {
             if (bytes.Array == null)
             {

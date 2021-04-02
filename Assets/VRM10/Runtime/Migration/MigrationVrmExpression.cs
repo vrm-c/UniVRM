@@ -113,6 +113,7 @@ namespace UniVRM10
                 var targetValue = x["targetValue"].ArrayItems().Select(y => y.GetSingle()).ToArray();
                 if (propertyName.EndsWith("_ST"))
                 {
+                    var scaling = new float[] { targetValue[0], targetValue[1] };
                     expression.TextureTransformBinds.Add(new UniGLTF.Extensions.VRMC_vrm.TextureTransformBind
                     {
                         Material = materialIndex,
@@ -156,14 +157,27 @@ namespace UniVRM10
             foreach (var blendShapeClip in json["blendShapeGroups"].ArrayItems())
             {
                 var name = blendShapeClip["name"].GetString();
+                var isBinary = false;
+                if (blendShapeClip.TryGet("isBinary", out JsonNode isBinaryNode))
+                {
+                    isBinary = isBinaryNode.GetBoolean();
+                }
                 var expression = new UniGLTF.Extensions.VRMC_vrm.Expression
                 {
                     Name = name,
                     Preset = ToPreset(blendShapeClip["presetName"]),
-                    IsBinary = blendShapeClip["isBinary"].GetBoolean(),
+                    IsBinary = isBinary,
+                    MorphTargetBinds = new List<UniGLTF.Extensions.VRMC_vrm.MorphTargetBind>(),
+                    MaterialColorBinds = new List<UniGLTF.Extensions.VRMC_vrm.MaterialColorBind>(),
+                    TextureTransformBinds = new List<UniGLTF.Extensions.VRMC_vrm.TextureTransformBind>(),
                 };
                 expression.MorphTargetBinds = ToMorphTargetBinds(gltf, blendShapeClip["binds"]).ToList();
-                ToMaterialColorBinds(gltf, blendShapeClip["materialValues"], expression);
+
+                if (blendShapeClip.TryGet("materialValues", out JsonNode materialValues))
+                {
+                    ToMaterialColorBinds(gltf, materialValues, expression);
+                }
+
                 yield return expression;
             }
         }

@@ -4,21 +4,16 @@ using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using VrmLib;
-using UniJSON;
 
 
 namespace UniVRM10
 {
-    public class Vrm10Storage : IVrmStorage
+    public class Vrm10Storage
     {
-        public ArraySegment<Byte> OriginalJson { get; private set; }
-        public UniGLTF.glTF Gltf
-        {
-            get;
-            private set;
-        }
+        UniGLTF.GltfParser m_parser;
+        public UniGLTF.glTF Gltf => m_parser.GLTF;
 
-        public readonly List<ArrayByteBuffer10> Buffers;
+        public List<UniGLTF.IBytesBuffer> Buffers;
 
         public UniGLTF.Extensions.VRMC_vrm.VRMC_vrm gltfVrm;
 
@@ -29,13 +24,16 @@ namespace UniVRM10
         /// </summary>
         public Vrm10Storage()
         {
-            Gltf = new UniGLTF.glTF()
+            m_parser = new UniGLTF.GltfParser
             {
-                extensionsUsed = new List<string>(),
+                GLTF = new UniGLTF.glTF()
+                {
+                    extensionsUsed = new List<string>(),
+                }
             };
-            Buffers = new List<ArrayByteBuffer10>()
+            Buffers = new List<UniGLTF.IBytesBuffer>()
             {
-                new ArrayByteBuffer10()
+                new UniGLTF.ArrayByteBuffer()
             };
         }
 
@@ -44,10 +42,9 @@ namespace UniVRM10
         /// </summary>
         /// <param name="json"></param>
         /// <param name="bin"></param>
-        public Vrm10Storage(ArraySegment<byte> json, ArraySegment<byte> bin)
+        public Vrm10Storage(UniGLTF.GltfParser parser)
         {
-            OriginalJson = json;
-            Gltf = UniGLTF.GltfDeserializer.Deserialize(json.ParseAsJson());
+            m_parser = parser;
 
             if (UniGLTF.Extensions.VRMC_vrm.GltfDeserializer.TryGet(Gltf.extensions,
                 out UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm))
@@ -61,10 +58,9 @@ namespace UniVRM10
                 gltfVrmSpringBone = springBone;
             }
 
-            var array = bin.ToArray();
-            Buffers = new List<ArrayByteBuffer10>()
+            Buffers = new List<UniGLTF.IBytesBuffer>()
             {
-                new ArrayByteBuffer10(array, bin.Count)
+                Gltf.buffers[0].Buffer,
             };
         }
 
@@ -73,16 +69,11 @@ namespace UniVRM10
             Buffers[0].ExtendCapacity(bytesLength);
         }
 
-        public int AppendToBuffer(int bufferIndex, ArraySegment<byte> segment, int stride)
+        public int AppendToBuffer(int bufferIndex, ArraySegment<byte> segment)
         {
-            Buffers[bufferIndex].Extend(segment, stride, out int offset, out int length);
+            var gltfBufferView = Buffers[bufferIndex].Extend(segment);
             var viewIndex = Gltf.bufferViews.Count;
-            Gltf.bufferViews.Add(new UniGLTF.glTFBufferView
-            {
-                buffer = 0,
-                byteOffset = offset,
-                byteLength = length,
-            });
+            Gltf.bufferViews.Add(gltfBufferView);
             return viewIndex;
         }
 
@@ -327,14 +318,6 @@ namespace UniVRM10
             }
         }
 
-        public void CreateBufferAccessorAndAdd(int? accessorIndex, VertexBuffer b, string key)
-        {
-            if (accessorIndex.HasValue)
-            {
-                CreateBufferAccessorAndAdd(accessorIndex.Value, b, key);
-            }
-        }
-
         public void CreateBufferAccessorAndAdd(int accessorIndex, VertexBuffer b, string key)
         {
             var a = CreateAccessor(accessorIndex);
@@ -381,24 +364,11 @@ namespace UniVRM10
 
         public int NodeCount => Gltf.nodes.Count;
 
-        public int ImageCount => Gltf.images.Count;
-
         public int TextureCount => Gltf.textures.Count;
-
-        public int MaterialCount => Gltf.materials.Count;
 
         public int SkinCount => Gltf.skins.Count;
 
         public int MeshCount => Gltf.meshes.Count;
-
-        // TODO:
-        public int AnimationCount => 0;
-
-        public string VrmExporterVersion => Gltf.asset.generator;
-
-        public bool HasVrm => gltfVrm != null;
-
-        public string VrmSpecVersion => gltfVrm?.SpecVersion;
 
         public Node CreateNode(int index)
         {
@@ -449,114 +419,6 @@ namespace UniVRM10
             }
         }
 
-        public Image CreateImage(int index)
-        {
-            return Gltf.images[index].FromGltf(this);
-        }
-
-        /// <summary>
-        /// sRGB でないテクスチャーを検出する
-        /// </summary>
-        /// <param name="textureIndex"></param>
-        /// <returns></returns>
-        private (Texture.TextureTypes, UniGLTF.glTFMaterial) GetTextureType(int textureIndex)
-        {
-            foreach (var material in Gltf.materials)
-            {
-                if (UniGLTF.Extensions.VRMC_materials_mtoon.GltfDeserializer.TryGet(material.extensions,
-                    out UniGLTF.Extensions.VRMC_materials_mtoon.VRMC_materials_mtoon mtoon))
-                {
-                    if (material.normalTexture?.index == textureIndex) return (Texture.TextureTypes.NormalMap, material);
-                }
-                else if (UniGLTF.glTF_KHR_materials_unlit.IsEnable(material))
-                {
-                }
-                else
-                {
-                    if (material.pbrMetallicRoughness?.baseColorTexture?.index == textureIndex) return (Texture.TextureTypes.Default, material);
-                    if (material.pbrMetallicRoughness?.metallicRoughnessTexture?.index == textureIndex) return (Texture.TextureTypes.MetallicRoughness, material);
-                    if (material.occlusionTexture?.index == textureIndex) return (Texture.TextureTypes.Occlusion, material);
-                    if (material.emissiveTexture?.index == textureIndex) return (Texture.TextureTypes.Emissive, material);
-                    if (material.normalTexture?.index == textureIndex) return (Texture.TextureTypes.NormalMap, material);
-                }
-            }
-
-            return (Texture.TextureTypes.Default, null);
-        }
-
-        private Texture.ColorSpaceTypes GetTextureColorSpaceType(int textureIndex)
-        {
-            foreach (var material in Gltf.materials)
-            {
-                if (UniGLTF.Extensions.VRMC_materials_mtoon.GltfDeserializer.TryGet(material.extensions,
-                    out UniGLTF.Extensions.VRMC_materials_mtoon.VRMC_materials_mtoon mtoon))
-                {
-                    // mtoon
-                    if (material.pbrMetallicRoughness.baseColorTexture.index == textureIndex) return Texture.ColorSpaceTypes.Srgb;
-                    if (mtoon.ShadeMultiplyTexture == textureIndex) return Texture.ColorSpaceTypes.Srgb;
-                    if (material.emissiveTexture?.index == textureIndex) return Texture.ColorSpaceTypes.Srgb;
-                    if (mtoon.RimMultiplyTexture == textureIndex) return Texture.ColorSpaceTypes.Srgb;
-                    if (mtoon.AdditiveTexture == textureIndex) return Texture.ColorSpaceTypes.Srgb;
-
-                    if (mtoon.OutlineWidthMultiplyTexture == textureIndex) return Texture.ColorSpaceTypes.Linear;
-                    if (mtoon.UvAnimationMaskTexture == textureIndex) return Texture.ColorSpaceTypes.Linear;
-
-                    if (material.normalTexture?.index == textureIndex) return Texture.ColorSpaceTypes.Linear;
-                }
-                else if (UniGLTF.glTF_KHR_materials_unlit.IsEnable(material))
-                {
-                    // unlit
-                    if (material.pbrMetallicRoughness.baseColorTexture?.index == textureIndex) return Texture.ColorSpaceTypes.Srgb;
-                }
-                else
-                {
-                    // Pbr
-                    if (material.pbrMetallicRoughness?.baseColorTexture?.index == textureIndex) return Texture.ColorSpaceTypes.Srgb;
-                    if (material.pbrMetallicRoughness?.metallicRoughnessTexture?.index == textureIndex) return Texture.ColorSpaceTypes.Linear;
-                    if (material.occlusionTexture?.index == textureIndex) return Texture.ColorSpaceTypes.Linear;
-                    if (material.emissiveTexture?.index == textureIndex) return Texture.ColorSpaceTypes.Srgb;
-                    if (material.normalTexture?.index == textureIndex) return Texture.ColorSpaceTypes.Linear;
-                }
-            }
-
-            return Texture.ColorSpaceTypes.Srgb;
-        }
-
-        public Texture CreateTexture(int index, List<Image> images)
-        {
-            var texture = Gltf.textures[index];
-            var textureType = GetTextureType(index);
-            var colorSpace = GetTextureColorSpaceType(index);
-
-            var sampler = (texture.sampler >= 0 && texture.sampler < Gltf.samplers.Count)
-            ? Gltf.samplers[texture.sampler]
-            : new UniGLTF.glTFTextureSampler()
-            ;
-
-            if (textureType.Item1 == Texture.TextureTypes.MetallicRoughness && textureType.Item2.pbrMetallicRoughness != null)
-            {
-                var roughnessFactor = textureType.Item2.pbrMetallicRoughness.roughnessFactor;
-                var name = !string.IsNullOrEmpty(texture.name) ? texture.name : images[texture.source].Name;
-                return new MetallicRoughnessImageTexture(
-                    name,
-                    sampler.FromGltf(),
-                    images[texture.source],
-                    roughnessFactor,
-                    colorSpace,
-                    textureType.Item1);
-            }
-            else
-            {
-                return texture.FromGltf(sampler, images, colorSpace, textureType.Item1);
-            }
-        }
-
-        public Material CreateMaterial(int index, List<Texture> textures)
-        {
-            var x = Gltf.materials[index];
-            return x.FromGltf(textures);
-        }
-
         public Skin CreateSkin(int index, List<Node> nodes)
         {
             var x = Gltf.skins[index];
@@ -577,10 +439,10 @@ namespace UniVRM10
             return skin;
         }
 
-        public MeshGroup CreateMesh(int index, List<Material> materials)
+        public MeshGroup CreateMesh(int index)
         {
             var x = Gltf.meshes[index];
-            var group = x.FromGltf(this, materials);
+            var group = x.FromGltf(this);
             return group;
         }
 
@@ -601,197 +463,6 @@ namespace UniVRM10
             }
 
             return (meshIndex, skinIndex);
-        }
-
-        public Animation CreateAnimation(int index, List<Node> nodes)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Meta CreateVrmMeta(List<Texture> textures)
-        {
-            return gltfVrm.Meta.FromGltf(textures);
-        }
-
-        static void AssignHumanoid(List<Node> nodes, UniGLTF.Extensions.VRMC_vrm.HumanBone humanBone, VrmLib.HumanoidBones key)
-        {
-            if (humanBone != null && humanBone.Node.HasValue)
-            {
-                nodes[humanBone.Node.Value].HumanoidBone = key;
-            }
-        }
-
-        public void LoadVrmHumanoid(List<Node> nodes)
-        {
-            if (gltfVrm.Humanoid != null)
-            {
-                AssignHumanoid(nodes, gltfVrm.Humanoid.HumanBones.Hips, HumanoidBones.hips);
-                AssignHumanoid(nodes, gltfVrm.Humanoid.HumanBones.LeftUpperLeg, HumanoidBones.leftUpperLeg);
-                AssignHumanoid(nodes, gltfVrm.Humanoid.HumanBones.RightUpperLeg, HumanoidBones.rightUpperLeg);
-                AssignHumanoid(nodes, gltfVrm.Humanoid.HumanBones.LeftLowerLeg, HumanoidBones.leftLowerLeg);
-                AssignHumanoid(nodes, gltfVrm.Humanoid.HumanBones.RightLowerLeg, HumanoidBones.rightLowerLeg);
-                AssignHumanoid(nodes, gltfVrm.Humanoid.HumanBones.LeftFoot, HumanoidBones.leftFoot);
-                AssignHumanoid(nodes, gltfVrm.Humanoid.HumanBones.RightFoot, HumanoidBones.rightFoot);
-                AssignHumanoid(nodes, gltfVrm.Humanoid.HumanBones.Spine, HumanoidBones.spine);
-                AssignHumanoid(nodes, gltfVrm.Humanoid.HumanBones.Chest, HumanoidBones.chest);
-                AssignHumanoid(nodes, gltfVrm.Humanoid.HumanBones.Neck, HumanoidBones.neck);
-                AssignHumanoid(nodes, gltfVrm.Humanoid.HumanBones.Head, HumanoidBones.head);
-                AssignHumanoid(nodes, gltfVrm.Humanoid.HumanBones.LeftShoulder, HumanoidBones.leftShoulder);
-                AssignHumanoid(nodes, gltfVrm.Humanoid.HumanBones.RightShoulder, HumanoidBones.rightShoulder);
-                AssignHumanoid(nodes, gltfVrm.Humanoid.HumanBones.LeftUpperArm, HumanoidBones.leftUpperArm);
-                AssignHumanoid(nodes, gltfVrm.Humanoid.HumanBones.RightUpperArm, HumanoidBones.rightUpperArm);
-                AssignHumanoid(nodes, gltfVrm.Humanoid.HumanBones.LeftLowerArm, HumanoidBones.leftLowerArm);
-                AssignHumanoid(nodes, gltfVrm.Humanoid.HumanBones.RightLowerArm, HumanoidBones.rightLowerArm);
-                AssignHumanoid(nodes, gltfVrm.Humanoid.HumanBones.LeftHand, HumanoidBones.leftHand);
-                AssignHumanoid(nodes, gltfVrm.Humanoid.HumanBones.RightHand, HumanoidBones.rightHand);
-                AssignHumanoid(nodes, gltfVrm.Humanoid.HumanBones.LeftToes, HumanoidBones.leftToes);
-                AssignHumanoid(nodes, gltfVrm.Humanoid.HumanBones.RightToes, HumanoidBones.rightToes);
-                AssignHumanoid(nodes, gltfVrm.Humanoid.HumanBones.LeftEye, HumanoidBones.leftEye);
-                AssignHumanoid(nodes, gltfVrm.Humanoid.HumanBones.RightEye, HumanoidBones.rightEye);
-                AssignHumanoid(nodes, gltfVrm.Humanoid.HumanBones.Jaw, HumanoidBones.jaw);
-                AssignHumanoid(nodes, gltfVrm.Humanoid.HumanBones.LeftThumbProximal, HumanoidBones.leftThumbProximal);
-                AssignHumanoid(nodes, gltfVrm.Humanoid.HumanBones.LeftThumbIntermediate, HumanoidBones.leftThumbIntermediate);
-                AssignHumanoid(nodes, gltfVrm.Humanoid.HumanBones.LeftThumbDistal, HumanoidBones.leftThumbDistal);
-                AssignHumanoid(nodes, gltfVrm.Humanoid.HumanBones.LeftIndexProximal, HumanoidBones.leftIndexProximal);
-                AssignHumanoid(nodes, gltfVrm.Humanoid.HumanBones.LeftIndexIntermediate, HumanoidBones.leftIndexIntermediate);
-                AssignHumanoid(nodes, gltfVrm.Humanoid.HumanBones.LeftIndexDistal, HumanoidBones.leftIndexDistal);
-                AssignHumanoid(nodes, gltfVrm.Humanoid.HumanBones.LeftMiddleProximal, HumanoidBones.leftMiddleProximal);
-                AssignHumanoid(nodes, gltfVrm.Humanoid.HumanBones.LeftMiddleIntermediate, HumanoidBones.leftMiddleIntermediate);
-                AssignHumanoid(nodes, gltfVrm.Humanoid.HumanBones.LeftMiddleDistal, HumanoidBones.leftMiddleDistal);
-                AssignHumanoid(nodes, gltfVrm.Humanoid.HumanBones.LeftRingProximal, HumanoidBones.leftRingProximal);
-                AssignHumanoid(nodes, gltfVrm.Humanoid.HumanBones.LeftRingIntermediate, HumanoidBones.leftRingIntermediate);
-                AssignHumanoid(nodes, gltfVrm.Humanoid.HumanBones.LeftRingDistal, HumanoidBones.leftRingDistal);
-                AssignHumanoid(nodes, gltfVrm.Humanoid.HumanBones.LeftLittleProximal, HumanoidBones.leftLittleProximal);
-                AssignHumanoid(nodes, gltfVrm.Humanoid.HumanBones.LeftLittleIntermediate, HumanoidBones.leftLittleIntermediate);
-                AssignHumanoid(nodes, gltfVrm.Humanoid.HumanBones.LeftLittleDistal, HumanoidBones.leftLittleDistal);
-                AssignHumanoid(nodes, gltfVrm.Humanoid.HumanBones.RightThumbProximal, HumanoidBones.rightThumbProximal);
-                AssignHumanoid(nodes, gltfVrm.Humanoid.HumanBones.RightThumbIntermediate, HumanoidBones.rightThumbIntermediate);
-                AssignHumanoid(nodes, gltfVrm.Humanoid.HumanBones.RightThumbDistal, HumanoidBones.rightThumbDistal);
-                AssignHumanoid(nodes, gltfVrm.Humanoid.HumanBones.RightIndexProximal, HumanoidBones.rightIndexProximal);
-                AssignHumanoid(nodes, gltfVrm.Humanoid.HumanBones.RightIndexIntermediate, HumanoidBones.rightIndexIntermediate);
-                AssignHumanoid(nodes, gltfVrm.Humanoid.HumanBones.RightIndexDistal, HumanoidBones.rightIndexDistal);
-                AssignHumanoid(nodes, gltfVrm.Humanoid.HumanBones.RightMiddleProximal, HumanoidBones.rightMiddleProximal);
-                AssignHumanoid(nodes, gltfVrm.Humanoid.HumanBones.RightMiddleIntermediate, HumanoidBones.rightMiddleIntermediate);
-                AssignHumanoid(nodes, gltfVrm.Humanoid.HumanBones.RightMiddleDistal, HumanoidBones.rightMiddleDistal);
-                AssignHumanoid(nodes, gltfVrm.Humanoid.HumanBones.RightRingProximal, HumanoidBones.rightRingProximal);
-                AssignHumanoid(nodes, gltfVrm.Humanoid.HumanBones.RightRingIntermediate, HumanoidBones.rightRingIntermediate);
-                AssignHumanoid(nodes, gltfVrm.Humanoid.HumanBones.RightRingDistal, HumanoidBones.rightRingDistal);
-                AssignHumanoid(nodes, gltfVrm.Humanoid.HumanBones.RightLittleProximal, HumanoidBones.rightLittleProximal);
-                AssignHumanoid(nodes, gltfVrm.Humanoid.HumanBones.RightLittleIntermediate, HumanoidBones.rightLittleIntermediate);
-                AssignHumanoid(nodes, gltfVrm.Humanoid.HumanBones.RightLittleDistal, HumanoidBones.rightLittleDistal);
-                AssignHumanoid(nodes, gltfVrm.Humanoid.HumanBones.UpperChest, HumanoidBones.upperChest);
-            }
-        }
-
-        public ExpressionManager CreateVrmExpression(List<MeshGroup> _, List<Material> materials, List<Node> nodes)
-        {
-            if (gltfVrm.Expressions != null)
-            {
-                var expressionManager = new ExpressionManager();
-                foreach (var x in gltfVrm.Expressions)
-                {
-                    expressionManager.ExpressionList.Add(x.FromGltf(nodes, materials));
-                }
-                return expressionManager;
-            }
-
-            return null;
-        }
-
-        static VrmSpringBoneCollider CreateCollider(UniGLTF.Extensions.VRMC_node_collider.ColliderShape z)
-        {
-            if (z.Sphere != null)
-            {
-                return VrmSpringBoneCollider.CreateSphere(z.Sphere.Offset.ToVector3(), z.Sphere.Radius.Value);
-            }
-            if (z.Capsule != null)
-            {
-                return VrmSpringBoneCollider.CreateCapsule(z.Capsule.Offset.ToVector3(), z.Capsule.Radius.Value, z.Capsule.Tail.ToVector3());
-            }
-            throw new NotImplementedException();
-        }
-
-        public SpringBoneManager CreateVrmSpringBone(List<Node> nodes)
-        {
-            if ((gltfVrmSpringBone is null))
-            {
-                return null;
-            }
-
-            var springBoneManager = new SpringBoneManager();
-
-            // springs
-            if (gltfVrmSpringBone.Springs != null)
-            {
-                foreach (var gltfSpring in gltfVrmSpringBone.Springs)
-                {
-                    var springBone = new SpringBone();
-                    springBone.Comment = gltfSpring.Name;
-
-                    // joint
-                    foreach (var gltfJoint in gltfSpring.Joints)
-                    {
-                        var joint = new SpringJoint(nodes[gltfJoint.Node.Value]);
-                        joint.HitRadius = gltfJoint.HitRadius.Value;
-                        joint.DragForce = gltfJoint.DragForce.Value;
-                        joint.GravityDir = gltfJoint.GravityDir.ToVector3();
-                        joint.GravityPower = gltfJoint.GravityPower.Value;
-                        joint.Stiffness = gltfJoint.Stiffness.Value;
-                        springBone.Joints.Add(joint);
-                    }
-
-                    // collider
-                    springBone.Colliders.AddRange(gltfSpring.Colliders.Select(colliderNode =>
-                    {
-                        if (UniGLTF.Extensions.VRMC_node_collider.GltfDeserializer.TryGet(Gltf.nodes[colliderNode].extensions,
-                            out UniGLTF.Extensions.VRMC_node_collider.VRMC_node_collider extension))
-                        {
-                            var collider = new SpringBoneColliderGroup(nodes[colliderNode], extension.Shapes.Select(x =>
-                            {
-                                if (x.Sphere != null)
-                                {
-                                    return VrmSpringBoneCollider.CreateSphere(x.Sphere.Offset.ToVector3(), x.Sphere.Radius.Value);
-                                }
-                                else if (x.Capsule != null)
-                                {
-                                    return VrmSpringBoneCollider.CreateCapsule(x.Capsule.Offset.ToVector3(), x.Capsule.Radius.Value, x.Capsule.Tail.ToVector3());
-                                }
-                                else
-                                {
-                                    throw new NotImplementedException();
-                                }
-                            }));
-                            return collider;
-                        }
-                        else
-                        {
-                            return null;
-                        }
-                    }).Where(x => x != null));
-
-                    springBoneManager.Springs.Add(springBone);
-                }
-            }
-
-            return springBoneManager;
-        }
-
-        public FirstPerson CreateVrmFirstPerson(List<Node> nodes, List<MeshGroup> meshGroups)
-        {
-            if (gltfVrm.FirstPerson == null)
-            {
-                return null;
-            }
-            return gltfVrm.FirstPerson.FromGltf(nodes);
-        }
-
-        public LookAt CreateVrmLookAt()
-        {
-            if (gltfVrm.LookAt == null)
-            {
-                return null;
-            }
-            return gltfVrm.LookAt.FromGltf();
         }
 
         public ArraySegment<byte> GetBufferBytes(UniGLTF.glTFBufferView bufferView)

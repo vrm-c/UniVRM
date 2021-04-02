@@ -34,14 +34,14 @@ namespace UniGLTF
         static bool s_foldMaterials = true;
         static bool s_foldTextures = true;
 
-        public static void OnGUIMaterial(ScriptedImporter importer, GltfParser parser)
+        public static void OnGUIMaterial(ScriptedImporter importer, GltfParser parser, EnumerateAllTexturesDistinctFunc enumTextures)
         {
             var canExtract = !importer.GetExternalObjectMap().Any(x => x.Value is Material || x.Value is Texture2D);
             using (new TmpGuiEnable(canExtract))
             {
                 if (GUILayout.Button("Extract Materials And Textures ..."))
                 {
-                    ExtractMaterialsAndTextures(importer, parser);
+                    ExtractMaterialsAndTextures(importer, parser, enumTextures);
                 }
             }
 
@@ -57,7 +57,7 @@ namespace UniGLTF
             s_foldTextures = EditorGUILayout.Foldout(s_foldTextures, "Remapped Textures");
             if (s_foldTextures)
             {
-                var names = GltfTextureEnumerator.Enumerate(parser)
+                var names = enumTextures(parser)
                     .Select(x =>
                     {
                         if (x.TextureType != TextureImportTypes.StandardMap && !string.IsNullOrEmpty(x.Uri))
@@ -122,7 +122,7 @@ namespace UniGLTF
             AssetDatabase.ImportAsset(self.assetPath, ImportAssetOptions.ForceUpdate);
         }
 
-        static void ExtractMaterialsAndTextures(ScriptedImporter self, GltfParser parser)
+        static void ExtractMaterialsAndTextures(ScriptedImporter self, GltfParser parser, EnumerateAllTexturesDistinctFunc enumTextures)
         {
             if (string.IsNullOrEmpty(self.assetPath))
             {
@@ -143,7 +143,7 @@ namespace UniGLTF
             var assetPath = UnityPath.FromFullpath(parser.TargetPath);
             var dirName = $"{assetPath.FileNameWithoutExtension}.Textures";
             TextureExtractor.ExtractTextures(parser, assetPath.Parent.Child(dirName),
-                GltfTextureEnumerator.Enumerate,
+                enumTextures,
                 self.GetSubAssets<UnityEngine.Texture2D>(self.assetPath).ToArray(),
                 addRemap,
                 onCompleted

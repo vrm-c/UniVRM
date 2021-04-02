@@ -7,7 +7,7 @@ namespace UniVRM10
     /// FreezeAxesで使う。bitマスク
     /// </summary>
     [Flags]
-    public enum AxesMask
+    public enum AxisMask
     {
         X = 1,
         Y = 2,
@@ -16,17 +16,17 @@ namespace UniVRM10
 
     public static class AxesMaskExtensions
     {
-        public static Vector3 Freeze(this AxesMask mask, Vector3 src)
+        public static Vector3 Freeze(this AxisMask mask, Vector3 src)
         {
-            if (mask.HasFlag(AxesMask.X))
+            if (mask.HasFlag(AxisMask.X))
             {
                 src.x = 0;
             }
-            if (mask.HasFlag(AxesMask.Y))
+            if (mask.HasFlag(AxisMask.Y))
             {
                 src.y = 0;
             }
-            if (mask.HasFlag(AxesMask.Z))
+            if (mask.HasFlag(AxisMask.Z))
             {
                 src.z = 0;
             }

@@ -35,7 +35,9 @@ namespace UniVRM10
                     vrm1.Meta = MigrationVrmMeta.Migrate(vrm0["meta"]);
                     vrm1.Humanoid = MigrationVrmHumanoid.Migrate(vrm0["humanoid"]);
                     vrm1.Expressions = MigrationVrmExpression.Migrate(gltf, vrm0["blendShapeMaster"]).ToList();
+
                     // lookat
+
                     // firstperson
 
                     var f = new JsonFormatter();
@@ -51,10 +53,8 @@ namespace UniVRM10
                     extensions.Add(UniGLTF.Extensions.VRMC_springBone.VRMC_springBone.ExtensionName, f.GetStoreBytes());
                 }
                 {
-                    // MToon
-                }
-                {
-                    // constraint
+                    // MToon                    
+                    MigrationMToon.Migrate(gltf, json);
                 }
             }
 

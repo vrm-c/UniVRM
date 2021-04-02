@@ -92,7 +92,7 @@ namespace UniVRM10
             {
                 switch (x.FirstPersonFlag)
                 {
-                    case VrmLib.FirstPersonMeshType.Auto:
+                    case UniGLTF.Extensions.VRMC_vrm.FirstPersonType.auto:
                         {
                             if (x.Renderer is SkinnedMeshRenderer smr)
                             {
@@ -131,17 +131,17 @@ namespace UniVRM10
                         }
                         break;
 
-                    case VrmLib.FirstPersonMeshType.FirstPersonOnly:
+                    case UniGLTF.Extensions.VRMC_vrm.FirstPersonType.firstPersonOnly:
                         // １人称のカメラでだけ描画されるようにする
                         x.Renderer.gameObject.layer = FIRSTPERSON_ONLY_LAYER;
                         break;
 
-                    case VrmLib.FirstPersonMeshType.ThirdPersonOnly:
+                    case UniGLTF.Extensions.VRMC_vrm.FirstPersonType.thirdPersonOnly:
                         // ３人称のカメラでだけ描画されるようにする
                         x.Renderer.gameObject.layer = THIRDPERSON_ONLY_LAYER;
                         break;
 
-                    case VrmLib.FirstPersonMeshType.Both:
+                    case UniGLTF.Extensions.VRMC_vrm.FirstPersonType.both:
                         // 特に何もしない。すべてのカメラで描画される
                         break;
                 }

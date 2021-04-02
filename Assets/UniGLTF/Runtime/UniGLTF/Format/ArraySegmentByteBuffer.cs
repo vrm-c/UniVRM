@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 
 
 namespace UniGLTF
@@ -27,9 +26,11 @@ namespace UniGLTF
             throw new NotImplementedException();
         }
 
-        public ArraySegment<byte> GetBytes()
+        public void ExtendCapacity(int capacity)
         {
-            return m_bytes;
+            throw new NotImplementedException();
         }
+
+        public ArraySegment<byte> Bytes => m_bytes;
     }
 }
