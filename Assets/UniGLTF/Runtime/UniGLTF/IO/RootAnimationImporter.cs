@@ -6,7 +6,7 @@ namespace UniGLTF
 {
     public sealed class RootAnimationImporter : IAnimationImporter
     {
-        public List<AnimationClip> Import(glTF gltf, GameObject root, Axises invertAxis)
+        public List<AnimationClip> Import(glTF gltf, GameObject root, List<Transform> _nodes, List<AnimationClip> _clips, Axises invertAxis)
         {
             var animationClips = new List<AnimationClip>();
             if (gltf.animations != null && gltf.animations.Any())

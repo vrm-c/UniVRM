@@ -110,7 +110,7 @@ namespace UniGLTF
 
             using (MeasureTime("AnimationImporter"))
             {
-                AnimationClips.AddRange(AnimationImporter.Import(GLTF, Root, InvertAxis));
+                AnimationClips.AddRange(AnimationImporter.Import(GLTF, Root, null, null, InvertAxis));
             }
 
             await OnLoadHierarchy(awaitCaller, MeasureTime);
@@ -149,12 +149,12 @@ namespace UniGLTF
                     nodes.Add(NodeImporter.BuildHierarchy(GLTF, i, Nodes, Meshes));
                 }
 
-                NodeImporter.FixCoordinate(this, nodes, inverter);
+                NodeImporter.FixCoordinate(GLTF, nodes, inverter);
 
                 // skinning
                 for (int i = 0; i < nodes.Count; ++i)
                 {
-                    NodeImporter.SetupSkinning(this, nodes, i, inverter);
+                    NodeImporter.SetupSkinning(GLTF, nodes, i, inverter);
                 }
 
                 if (Root == null)
@@ -202,7 +202,7 @@ namespace UniGLTF
         {
             using (MeasureTime("BuildMesh"))
             {
-                var meshWithMaterials = await MeshImporter.BuildMeshAsync(awaitCaller, MaterialFactory, x);
+                var meshWithMaterials = await MeshImporter.BuildMeshAsync(awaitCaller, MaterialFactory.GetMaterial, x);
                 var mesh = meshWithMaterials.Mesh;
 
                 // mesh name

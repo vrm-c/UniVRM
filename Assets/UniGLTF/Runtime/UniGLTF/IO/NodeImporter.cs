@@ -131,9 +131,9 @@ namespace UniGLTF
         //
         // fix node's coordinate. z-back to z-forward
         //
-        public static void FixCoordinate(ImporterContext context, List<TransformWithSkin> nodes, IAxisInverter inverter)
+        public static void FixCoordinate(glTF gltf, List<TransformWithSkin> nodes, IAxisInverter inverter)
         {
-            if (context.GLTF.rootnodes == null)
+            if (gltf.rootnodes == null)
             {
                 return;
             }
@@ -142,7 +142,7 @@ namespace UniGLTF
                 Position = x.Transform.position,
                 Rotation = x.Transform.rotation,
             });
-            foreach (var x in context.GLTF.rootnodes)
+            foreach (var x in gltf.rootnodes)
             {
                 // fix nodes coordinate
                 // reverse Z in global
@@ -158,7 +158,7 @@ namespace UniGLTF
             }
         }
 
-        public static void SetupSkinning(ImporterContext context, List<TransformWithSkin> nodes, int i, IAxisInverter inverter)
+        public static void SetupSkinning(glTF gltf,  List<TransformWithSkin> nodes, int i, IAxisInverter inverter)
         {
             var x = nodes[i];
             var skinnedMeshRenderer = x.Transform.GetComponent<SkinnedMeshRenderer>();
@@ -170,12 +170,12 @@ namespace UniGLTF
                     if (mesh == null) throw new Exception();
                     if (skinnedMeshRenderer == null) throw new Exception();
 
-                    if (x.SkinIndex.Value < context.GLTF.skins.Count)
+                    if (x.SkinIndex.Value < gltf.skins.Count)
                     {
                         // calculate internal values(boundingBox etc...) when sharedMesh assigned ?
                         skinnedMeshRenderer.sharedMesh = null;
 
-                        var skin = context.GLTF.skins[x.SkinIndex.Value];
+                        var skin = gltf.skins[x.SkinIndex.Value];
                         var joints = skin.joints.Select(y => nodes[y].Transform).ToArray();
                         if (joints.Any())
                         {
@@ -184,7 +184,7 @@ namespace UniGLTF
 
                             if (skin.inverseBindMatrices != -1)
                             {
-                                var bindPoses = context.GLTF.GetArrayFromAccessor<Matrix4x4>(skin.inverseBindMatrices)
+                                var bindPoses = gltf.GetArrayFromAccessor<Matrix4x4>(skin.inverseBindMatrices)
                                     .Select(inverter.InvertMat4)
                                     .ToArray()
                                     ;
