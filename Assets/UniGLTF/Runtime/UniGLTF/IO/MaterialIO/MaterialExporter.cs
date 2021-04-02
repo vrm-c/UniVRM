@@ -1,7 +1,7 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using UniGLTF.UniUnlit;
 using UnityEngine;
+using VRMShaders;
 
 
 namespace UniGLTF

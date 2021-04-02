@@ -14,13 +14,13 @@ namespace VRM
             return new VRMMaterialExporter();
         }
 
-        public static glTF Export(MeshExportSettings configuration, GameObject go)
+        public static glTF Export(MeshExportSettings configuration, GameObject go, Func<Texture, bool> useAsset)
         {
             var gltf = new glTF();
             using (var exporter = new VRMExporter(gltf))
             {
                 exporter.Prepare(go);
-                exporter.Export(configuration);
+                exporter.Export(configuration, useAsset);
             }
             return gltf;
         }

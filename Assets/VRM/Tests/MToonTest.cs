@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using UniGLTF;
 using UnityEngine;
+using VRMShaders;
 
 namespace VRM
 {
@@ -15,7 +16,7 @@ namespace VRM
                 filterMode = FilterMode.Bilinear,
             };
 
-            var textureManager = new TextureExporter();
+            var textureManager = new TextureExporter(AssetTextureUtil.UseAsset);
             var srcMaterial = new Material(Shader.Find("VRM/MToon"));
 
             var offset = new Vector2(0.3f, 0.2f);

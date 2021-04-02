@@ -105,7 +105,7 @@ namespace VRM
                 try
                 {
                     // export
-                    var vrm = VRMExporter.Export(UniGLTF.MeshExportSettings.Default, go);
+                    var vrm = VRMExporter.Export(UniGLTF.MeshExportSettings.Default, go, AssetTextureUtil.UseAsset);
 
                     // re import
                     if (vrm != null)

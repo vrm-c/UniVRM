@@ -6,7 +6,9 @@
         "MeshUtility",
         "UniGLTF",
         "UniVRM.Editor",
-        "VRM.Tests"
+        "VRM.Tests",
+        "VRMShaders",
+        "UniGLTF.Editor"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

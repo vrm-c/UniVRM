@@ -124,7 +124,10 @@ namespace UniVRM10
                             break;
 
                         default:
-                            throw new NotImplementedException($"{kv.Key}: {kv.Value}");
+#if VRM_DEVELOP                        
+                            Debug.LogWarning($"vectorProperties: {kv.Key}: {kv.Value}");
+#endif
+                            break;
                     }
                 }
 
@@ -225,7 +228,10 @@ namespace UniVRM10
                             break;
 
                         default:
-                            throw new NotImplementedException($"floatProperties: {kv.Key} is unknown");
+#if VRM_DEVELOP                        
+                            Debug.LogWarning($"floatProperties: {kv.Key} is unknown");
+#endif
+                            break;
                     }
                 }
 
@@ -247,7 +253,10 @@ namespace UniVRM10
                         case "_OutlineWidthTexture": map.OutlineWidthTexture = index; break;
                         case "_UvAnimMaskTexture": map.UvAnimMaskTexture = index; break;
                         default:
-                            throw new NotImplementedException($"textureProperties: {kv.Key} is unknown");
+#if VRM_DEVELOP                        
+                            Debug.LogWarning($"textureProperties: {kv.Key} is unknown");
+#endif
+                            break;
                     }
                 }
 
@@ -313,7 +322,10 @@ namespace UniVRM10
                     {
                         index = mtoon.TextureIndexMap.MainTex.Value
                     };
-                    var value = mtoon.OffsetScale["_MainTex"];
+                    if (!mtoon.OffsetScale.TryGetValue("_MainTex", out float[] value))
+                    {
+                        value = new float[] { 0, 0, 1, 1 };
+                    }
                     glTF_KHR_texture_transform.Serialize(
                         gltfMaterial.pbrMetallicRoughness.baseColorTexture,
                         (value[0], value[1]),

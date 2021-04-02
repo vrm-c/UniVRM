@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
+using UniGLTF;
 using UnityEngine;
-
+using VRMShaders;
 
 namespace VRM.Samples
 {
@@ -10,7 +11,7 @@ namespace VRM.Samples
         {
             var material = Resources.Load<Material>(resourceName);
             var exporter = new VRMMaterialExporter();
-            var textureManager = new UniGLTF.TextureExporter();
+            var textureManager = new TextureExporter(AssetTextureUtil.UseAsset);
             var exported = exporter.ExportMaterial(material, textureManager);
 
             // parse glTFExtensionExport to glTFExtensionImport

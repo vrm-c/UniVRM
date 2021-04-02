@@ -18,7 +18,7 @@ namespace UniGLTF
                 filterMode = FilterMode.Bilinear,
             };
 
-            var textureManager = new TextureExporter();
+            var textureManager = new TextureExporter(AssetTextureUtil.UseAsset);
             var srcMaterial = new Material(Shader.Find("Standard"));
 
             var offset = new Vector2(0.3f, 0.2f);
@@ -242,7 +242,7 @@ namespace UniGLTF
             material.SetColor("_EmissionColor", new Color(0, 1, 2, 1));
             material.EnableKeyword("_EMISSION");
             var materialExporter = new MaterialExporter();
-            var textureExportManager = new TextureExporter();
+            var textureExportManager = new TextureExporter(AssetTextureUtil.UseAsset);
             var gltfMaterial = materialExporter.ExportMaterial(material, textureExportManager);
 
             Assert.AreEqual(gltfMaterial.emissiveFactor, new float[] { 0, 0.5f, 1 });

@@ -224,7 +224,7 @@ namespace VRM
             using (var exporter = new VRMExporter(gltf))
             {
                 exporter.Prepare(target);
-                exporter.Export(settings.MeshExportSettings);
+                exporter.Export(settings.MeshExportSettings, AssetTextureUtil.UseAsset);
             }
             var bytes = gltf.ToGlbBytes();
             File.WriteAllBytes(path, bytes);
