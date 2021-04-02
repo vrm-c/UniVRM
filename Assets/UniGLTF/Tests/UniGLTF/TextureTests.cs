@@ -54,14 +54,24 @@ namespace UniGLTF
         [Test]
         public void ExportMetallicSmoothnessOcclusion_Test()
         {
-            var exporter = new TextureExporter();
             var metallic = new Texture2D(4, 4, TextureFormat.ARGB32, false, true);
             var occlusion = new Texture2D(4, 4, TextureFormat.ARGB32, false, true);
 
-            Assert.AreEqual(-1, exporter.ExportMetallicSmoothnessOcclusion(null, 0, null));
-            Assert.AreEqual(0, exporter.ExportMetallicSmoothnessOcclusion(null, 0, occlusion));
-            Assert.AreEqual(0, exporter.ExportMetallicSmoothnessOcclusion(metallic, 0, null));
-            Assert.AreEqual(0, exporter.ExportMetallicSmoothnessOcclusion(metallic, 0, occlusion));
+            {
+                var exporter = new TextureExporter();
+                Assert.AreEqual(-1, exporter.ExportMetallicSmoothnessOcclusion(null, 0, null));
+            }
+            {
+                var exporter = new TextureExporter();
+                Assert.AreEqual(0, exporter.ExportMetallicSmoothnessOcclusion(null, 0, occlusion));
+                Assert.AreEqual(1, exporter.ExportMetallicSmoothnessOcclusion(metallic, 0, null));
+            }
+            {
+                var exporter = new TextureExporter();
+                Assert.AreEqual(0, exporter.ExportMetallicSmoothnessOcclusion(metallic, 0, occlusion));
+                Assert.AreEqual(0, exporter.ExportMetallicSmoothnessOcclusion(null, 0, occlusion));
+                Assert.AreEqual(0, exporter.ExportMetallicSmoothnessOcclusion(metallic, 0, null));
+            }
         }
     }
 }

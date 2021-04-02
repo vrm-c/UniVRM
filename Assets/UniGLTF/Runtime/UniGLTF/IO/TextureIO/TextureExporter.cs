@@ -10,7 +10,8 @@ using UnityEditor;
 namespace UniGLTF
 {
     /// <summary>
-    /// glTF にエクスポートする Texture2D を蓄えて index を確定させる
+    /// glTF にエクスポートする Texture2D を蓄えて index を確定させる。
+    /// Exporter の最後でまとめて Texture2D から bytes 列を得て出力する。
     /// </summary>
     public class TextureExporter
     {
@@ -160,11 +161,11 @@ namespace UniGLTF
             }
 
             // cache
-            if (m_exportMap.TryGetValue(new ExportKey(metallicSmoothTexture, glTFTextureTypes.OcclusionMetallicRoughness), out var index))
+            if (metallicSmoothTexture != null && m_exportMap.TryGetValue(new ExportKey(metallicSmoothTexture, glTFTextureTypes.OcclusionMetallicRoughness), out var index))
             {
                 return index;
             }
-            if (m_exportMap.TryGetValue(new ExportKey(occlusionTexture, glTFTextureTypes.OcclusionMetallicRoughness), out index))
+            if (occlusionTexture != null && m_exportMap.TryGetValue(new ExportKey(occlusionTexture, glTFTextureTypes.OcclusionMetallicRoughness), out index))
             {
                 return index;
             }
@@ -176,8 +177,11 @@ namespace UniGLTF
             var texture2D = OcclusionMetallicRoughnessConverter.Export(metallicSmoothTexture, smoothness, occlusionTexture);
 
             Exported.Add(texture2D);
-            m_exportMap.Add(new ExportKey(metallicSmoothTexture, glTFTextureTypes.OcclusionMetallicRoughness), index);
-            if (occlusionTexture != metallicSmoothTexture && occlusionTexture != null)
+            if (metallicSmoothTexture != null)
+            {
+                m_exportMap.Add(new ExportKey(metallicSmoothTexture, glTFTextureTypes.OcclusionMetallicRoughness), index);
+            }
+            if (occlusionTexture != null && occlusionTexture != metallicSmoothTexture)
             {
                 m_exportMap.Add(new ExportKey(occlusionTexture, glTFTextureTypes.OcclusionMetallicRoughness), index);
             }
