@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
+using VRMShaders;
 
 namespace UniGLTF
 {
@@ -54,7 +55,22 @@ namespace UniGLTF
             }
         }
 
-        static void RuntimeLoad(FileInfo gltf, int subStrStart)
+        static Byte[] Export(GameObject root)
+        {
+            var gltf = new glTF();
+            using (var exporter = new gltfExporter(gltf))
+            {
+                exporter.Prepare(root);
+                exporter.Export(MeshExportSettings.Default, AssetTextureUtil.IsTextureEditorAsset);
+
+                // remove empty buffer
+                gltf.buffers.Clear();
+
+                return gltf.ToGlbBytes();
+            }
+        }
+
+        static void RuntimeLoadExport(FileInfo gltf, int subStrStart)
         {
             var parser = new GltfParser();
             try
@@ -67,16 +83,18 @@ namespace UniGLTF
                 Debug.LogException(ex);
             }
 
-            try
+            using (var loader = new ImporterContext(parser))
             {
-                using (var importer = new ImporterContext(parser))
+                try
                 {
-                    importer.Load();
+                    loader.Load();
                 }
-            }
-            catch (Exception ex)
-            {
-                Message(gltf.FullName.Substring(subStrStart), ex);
+                catch (Exception ex)
+                {
+                    Message(gltf.FullName.Substring(subStrStart), ex);
+                }
+
+                Export(loader.Root);
             }
         }
 
@@ -120,7 +138,7 @@ namespace UniGLTF
 
             foreach (var gltf in EnumerateGltfFiles(root))
             {
-                RuntimeLoad(gltf, root.FullName.Length);
+                RuntimeLoadExport(gltf, root.FullName.Length);
 
                 EditorLoad(gltf, root.FullName.Length);
             }
