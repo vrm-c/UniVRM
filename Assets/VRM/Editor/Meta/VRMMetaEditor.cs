@@ -6,6 +6,7 @@ namespace VRM
     [CustomEditor(typeof(VRMMeta))]
     public class VRMMetaEditor : Editor
     {
+        VRMMeta m_target;
         Editor m_Inspector;
         SerializedProperty m_VRMMetaObjectProp;
 
@@ -16,14 +17,21 @@ namespace VRM
 
         private void OnEnable()
         {
+            m_target = target as VRMMeta;
             m_VRMMetaObjectProp = serializedObject.FindProperty(nameof(VRMMeta.Meta));
-            m_Inspector = Editor.CreateEditor(m_VRMMetaObjectProp.objectReferenceValue);
+            if (m_target.Meta != null)
+            {
+                m_Inspector = Editor.CreateEditor(m_VRMMetaObjectProp.objectReferenceValue);
+            }
         }
 
         public override void OnInspectorGUI()
         {
             EditorGUILayout.PropertyField(m_VRMMetaObjectProp);
-            m_Inspector.OnInspectorGUI();
+            if (m_Inspector != null)
+            {
+                m_Inspector.OnInspectorGUI();
+            }
         }
     }
 }
