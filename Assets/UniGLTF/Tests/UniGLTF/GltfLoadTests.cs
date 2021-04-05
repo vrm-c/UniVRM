@@ -143,5 +143,28 @@ namespace UniGLTF
                 EditorLoad(gltf, root.FullName.Length);
             }
         }
+
+        [Test]
+        public void GltfSampleModelsTest_BrainStem()
+        {
+            var env = System.Environment.GetEnvironmentVariable("GLTF_SAMPLE_MODELS");
+            if (string.IsNullOrEmpty(env))
+            {
+                return;
+            }
+            var root = new DirectoryInfo($"{env}/2.0");
+            if (!root.Exists)
+            {
+                return;
+            }
+
+            // foreach (var gltf in EnumerateGltfFiles(root))
+            {
+                var gltf = new FileInfo(Path.Combine(root.FullName, "BrainStem/glTF-Binary/BrainStem.glb"));
+                RuntimeLoadExport(gltf, root.FullName.Length);
+
+                EditorLoad(gltf, root.FullName.Length);
+            }
+        }
     }
 }
