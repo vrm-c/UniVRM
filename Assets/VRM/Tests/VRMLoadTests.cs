@@ -4,6 +4,7 @@ using System.IO;
 using NUnit.Framework;
 using UniGLTF;
 using UnityEngine;
+using VRMShaders;
 
 namespace VRM
 {
@@ -105,7 +106,7 @@ namespace VRM
                 try
                 {
                     // export
-                    var vrm = VRMExporter.Export(UniGLTF.MeshExportSettings.Default, go);
+                    var vrm = VRMExporter.Export(UniGLTF.MeshExportSettings.Default, go, AssetTextureUtil.IsTextureEditorAsset );
 
                     // re import
                     if (vrm != null)

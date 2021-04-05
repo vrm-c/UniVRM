@@ -8,7 +8,8 @@
         "UniUnlit",
         "UniGLTF",
         "UniGLTF.Editor",
-        "VRMShaders"
+        "VRMShaders",
+        "VRMShaders.Editor"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [

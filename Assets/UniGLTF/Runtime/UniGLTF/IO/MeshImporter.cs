@@ -225,7 +225,7 @@ namespace UniGLTF
                         for (int j = 0; j < jointsLength; ++j)
                         {
                             var bw = new BoneWeight();
-                            
+
                             var joints = joints0(j);
                             var weights = weights0(j);
 
@@ -240,7 +240,7 @@ namespace UniGLTF
 
                             bw.boneIndex3 = joints.w;
                             bw.weight3 = weights.w;
-                            
+
                             bw = NormalizeBoneWeight(bw);
 
                             m_boneWeights.Add(bw);
@@ -389,7 +389,7 @@ namespace UniGLTF
                         for (int j = 0; j < jointsLength; ++j)
                         {
                             var bw = new BoneWeight();
-                            
+
                             var joints = joints0(j);
                             var weights = weights0(j);
 
@@ -406,7 +406,7 @@ namespace UniGLTF
                             bw.weight3 = weights.w;
 
                             bw = NormalizeBoneWeight(bw);
-                            
+
                             m_boneWeights.Add(bw);
                         }
                     }
@@ -648,7 +648,7 @@ namespace UniGLTF
             }
         }
 
-        public static async Task<MeshWithMaterials> BuildMeshAsync(IAwaitCaller awaitCaller, MaterialFactory ctx, MeshImporter.MeshContext meshContext)
+        public static async Task<MeshWithMaterials> BuildMeshAsync(IAwaitCaller awaitCaller, Func<int, Material> ctx, MeshImporter.MeshContext meshContext)
         {
             var (mesh, recalculateTangents) = _BuildMesh(meshContext);
 
@@ -663,7 +663,7 @@ namespace UniGLTF
             var result = new MeshWithMaterials
             {
                 Mesh = mesh,
-                Materials = meshContext.MaterialIndices.Select(x => ctx.GetMaterial(x)).ToArray()
+                Materials = meshContext.MaterialIndices.Select(ctx).ToArray()
             };
 
             await awaitCaller.NextFrame();

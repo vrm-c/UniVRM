@@ -15,7 +15,7 @@ namespace UniGLTF
                 wrapMode = TextureWrapMode.Clamp,
                 filterMode = FilterMode.Trilinear,
             };
-            var textureManager = new TextureExporter();
+            var textureManager = new TextureExporter(AssetTextureUtil.IsTextureEditorAsset );
 
             var material = new Material(Shader.Find("Standard"));
             material.mainTexture = tex0;
@@ -49,29 +49,6 @@ namespace UniGLTF
             Assert.False(readonlyTexture.isReadable);
             var (bytes, mime) = GltfTextureExporter.GetBytesWithMime(readonlyTexture);
             Assert.NotNull(bytes);
-        }
-
-        [Test]
-        public void ExportMetallicSmoothnessOcclusion_Test()
-        {
-            var metallic = new Texture2D(4, 4, TextureFormat.ARGB32, false, true);
-            var occlusion = new Texture2D(4, 4, TextureFormat.ARGB32, false, true);
-
-            {
-                var exporter = new TextureExporter();
-                Assert.AreEqual(-1, exporter.ExportMetallicSmoothnessOcclusion(null, 0, null));
-            }
-            {
-                var exporter = new TextureExporter();
-                Assert.AreEqual(0, exporter.ExportMetallicSmoothnessOcclusion(null, 0, occlusion));
-                Assert.AreEqual(1, exporter.ExportMetallicSmoothnessOcclusion(metallic, 0, null));
-            }
-            {
-                var exporter = new TextureExporter();
-                Assert.AreEqual(0, exporter.ExportMetallicSmoothnessOcclusion(metallic, 0, occlusion));
-                Assert.AreEqual(0, exporter.ExportMetallicSmoothnessOcclusion(null, 0, occlusion));
-                Assert.AreEqual(0, exporter.ExportMetallicSmoothnessOcclusion(metallic, 0, null));
-            }
         }
     }
 }

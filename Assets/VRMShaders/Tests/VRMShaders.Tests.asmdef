@@ -1,7 +1,8 @@
 {
     "name": "VRMShaders.Tests",
     "references": [
-        "VRMShaders"
+        "VRMShaders",
+        "VRMShaders.Editor"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

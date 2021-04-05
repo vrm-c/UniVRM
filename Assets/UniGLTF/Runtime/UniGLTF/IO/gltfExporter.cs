@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-
+using VRMShaders;
 
 namespace UniGLTF
 {
@@ -173,7 +173,7 @@ namespace UniGLTF
 
         }
 
-        public virtual void Export(MeshExportSettings meshExportSettings)
+        public virtual void Export(MeshExportSettings meshExportSettings, Func<Texture, bool> useAsset)
         {
             var bytesBuffer = new ArrayByteBuffer(new byte[50 * 1024 * 1024]);
             var bufferIndex = glTF.AddBuffer(bytesBuffer);
@@ -185,7 +185,7 @@ namespace UniGLTF
             #region Materials and Textures
             Materials = Nodes.SelectMany(x => x.GetSharedMaterials()).Where(x => x != null).Distinct().ToList();
 
-            TextureManager = new TextureExporter();
+            TextureManager = new TextureExporter(useAsset);
 
             var materialExporter = CreateMaterialExporter();
             glTF.materials = Materials.Select(x => materialExporter.ExportMaterial(x, TextureManager)).ToList();

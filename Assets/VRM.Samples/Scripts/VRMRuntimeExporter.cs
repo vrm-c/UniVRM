@@ -95,7 +95,7 @@ namespace VRM.Samples
                 return;
             }
 
-            var vrm = VRMExporter.Export(UniGLTF.MeshExportSettings.Default, m_model);
+            var vrm = VRMExporter.Export(UniGLTF.MeshExportSettings.Default, m_model, _ => false);
             var bytes = vrm.ToGlbBytes();
             File.WriteAllBytes(path, bytes);
             Debug.LogFormat("export to {0}", path);

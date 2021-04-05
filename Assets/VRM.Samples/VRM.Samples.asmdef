@@ -3,7 +3,8 @@
     "references": [
         "VRM",
         "UniHumanoid",
-        "UniGLTF"
+        "UniGLTF",
+        "VRMShaders"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],

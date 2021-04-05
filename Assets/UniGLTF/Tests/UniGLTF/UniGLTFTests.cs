@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UniJSON;
 using UnityEngine;
-
+using VRMShaders;
 
 namespace UniGLTF
 {
@@ -106,7 +106,7 @@ namespace UniGLTF
             using (var exporter = new gltfExporter(gltf))
             {
                 exporter.Prepare(go);
-                exporter.Export(MeshExportSettings.Default);
+                exporter.Export(MeshExportSettings.Default, AssetTextureUtil.IsTextureEditorAsset );
 
                 // remove empty buffer
                 gltf.buffers.Clear();
@@ -298,7 +298,7 @@ namespace UniGLTF
             using (var exporter = new gltfExporter(gltf))
             {
                 exporter.Prepare(CreateSimpleScene());
-                exporter.Export(MeshExportSettings.Default);
+                exporter.Export(MeshExportSettings.Default, AssetTextureUtil.IsTextureEditorAsset );
             }
 
             var expected = gltf.ToJson().ParseAsJson();
@@ -534,7 +534,7 @@ namespace UniGLTF
                 using (var exporter = new gltfExporter(gltf))
                 {
                     exporter.Prepare(go);
-                    exporter.Export(UniGLTF.MeshExportSettings.Default);
+                    exporter.Export(UniGLTF.MeshExportSettings.Default, AssetTextureUtil.IsTextureEditorAsset );
 
                     json = gltf.ToJson();
                 }
