@@ -170,7 +170,7 @@ namespace VRM.Samples
                     */
                     importedJson.RemoveValue(Utf8String.From("/bufferViews/*/byteStride"));
 
-                    var vrm = VRMExporter.Export(UniGLTF.MeshExportSettings.Default, context.Root, AssetTextureUtil.UseAsset);
+                    var vrm = VRMExporter.Export(UniGLTF.MeshExportSettings.Default, context.Root, AssetTextureUtil.IsTextureEditorAsset );
 
                     // TODO: Check contents in JSON
                     /*var exportJson = */

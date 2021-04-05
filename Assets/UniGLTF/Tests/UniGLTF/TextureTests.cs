@@ -15,7 +15,7 @@ namespace UniGLTF
                 wrapMode = TextureWrapMode.Clamp,
                 filterMode = FilterMode.Trilinear,
             };
-            var textureManager = new TextureExporter(AssetTextureUtil.UseAsset);
+            var textureManager = new TextureExporter(AssetTextureUtil.IsTextureEditorAsset );
 
             var material = new Material(Shader.Find("Standard"));
             material.mainTexture = tex0;

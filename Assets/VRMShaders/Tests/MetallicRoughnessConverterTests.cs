@@ -97,16 +97,16 @@ namespace VRMShaders
             var occlusion = new Texture2D(4, 4, TextureFormat.ARGB32, false, true);
 
             {
-                var exporter = new TextureExporter(AssetTextureUtil.UseAsset);
+                var exporter = new TextureExporter(AssetTextureUtil.IsTextureEditorAsset );
                 Assert.AreEqual(-1, exporter.ExportMetallicSmoothnessOcclusion(null, 0, null));
             }
             {
-                var exporter = new TextureExporter(AssetTextureUtil.UseAsset);
+                var exporter = new TextureExporter(AssetTextureUtil.IsTextureEditorAsset );
                 Assert.AreEqual(0, exporter.ExportMetallicSmoothnessOcclusion(null, 0, occlusion));
                 Assert.AreEqual(1, exporter.ExportMetallicSmoothnessOcclusion(metallic, 0, null));
             }
             {
-                var exporter = new TextureExporter(AssetTextureUtil.UseAsset);
+                var exporter = new TextureExporter(AssetTextureUtil.IsTextureEditorAsset );
                 Assert.AreEqual(0, exporter.ExportMetallicSmoothnessOcclusion(metallic, 0, occlusion));
                 Assert.AreEqual(0, exporter.ExportMetallicSmoothnessOcclusion(null, 0, occlusion));
                 Assert.AreEqual(0, exporter.ExportMetallicSmoothnessOcclusion(metallic, 0, null));

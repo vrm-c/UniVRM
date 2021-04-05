@@ -7,11 +7,11 @@ namespace VRMShaders
     public static class AssetTextureUtil
     {
         /// <summary>
-        /// TextureImporter.maxTextureSize が元のテクスチャーより小さいか否かの判定
+        /// TextureImporter.maxTextureSize が オリジナルの画像Sizeより小さいか
         /// </summary>
         /// <param name="src"></param>
         /// <returns></returns>
-        public static bool CopyIfMaxTextureSizeIsSmaller(Texture src)
+        public static bool IsMaxTextureSizeSmallerThanOriginalTextureSize(Texture2D src)
         {
             var path = AssetDatabase.GetAssetPath(src);
             var textureImporter = AssetImporter.GetAtPath(path) as TextureImporter;
@@ -35,21 +35,36 @@ namespace VRMShaders
         }
 
         /// <summary>
-        /// 元の Asset が存在して、 TextureImporter に設定された画像サイズが小さくない
+        /// Export するときに オリジナルのテクスチャーアセット(png/jpg)を使用するか否か。
+        /// 条件は、
+        /// 
+        /// * TextureAsset が存在する
+        /// * TextureImporter の maxSize
+        /// 
         /// </summary>
         /// <param name="src"></param>
         /// <param name="texture2D"></param>
         /// <returns></returns>
-        public static bool UseAsset(Texture texture)
+        public static bool IsTextureEditorAsset(Texture texture)
         {
-            if (texture != null && !string.IsNullOrEmpty(UnityEditor.AssetDatabase.GetAssetPath(texture)))
+            if (texture is Texture2D texture2D && !string.IsNullOrEmpty(UnityEditor.AssetDatabase.GetAssetPath(texture2D)))
             {
-                if (CopyIfMaxTextureSizeIsSmaller(texture))
+                // exists Texture2D asset
+                if (IsMaxTextureSizeSmallerThanOriginalTextureSize(texture2D))
                 {
+                    // Texture Inspector の MaxSize 設定で、テクスチャをオリジナルサイズよりも小さいサイズで Texture 化する指示を行っているため
+                    // glTF Exporter もそれにしたがって、解釈をする
+                    //
+                    // 4096x4096 のような巨大なテクスチャーがそのまま出力されることを、Unityの TextureImporter.maxSize により防止する
+                    //
                     return false;
                 }
+
+                // use Texture2D asset. EncodeToPng
                 return true;
             }
+
+            // not Texture2D or not exists Texture2D asset. EncodeToPng
             return false;
         }
     }

@@ -16,7 +16,7 @@ namespace VRM
                 filterMode = FilterMode.Bilinear,
             };
 
-            var textureManager = new TextureExporter(AssetTextureUtil.UseAsset);
+            var textureManager = new TextureExporter(AssetTextureUtil.IsTextureEditorAsset );
             var srcMaterial = new Material(Shader.Find("VRM/MToon"));
 
             var offset = new Vector2(0.3f, 0.2f);
