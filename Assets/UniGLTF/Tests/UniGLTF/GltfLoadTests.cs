@@ -66,6 +66,16 @@ namespace UniGLTF
             }
         }
 
+        // Unsolved Animation Export issue
+        //
+        // QuaternionToEuler: Input quaternion was not normalized
+        //
+        static string[] Skip = new string[]
+        {
+            "BrainStem",
+            "RiggedSimple"
+        };
+
         static void RuntimeLoadExport(FileInfo gltf, int subStrStart)
         {
             var parser = new GltfParser();
@@ -88,6 +98,19 @@ namespace UniGLTF
                 catch (Exception ex)
                 {
                     Message(gltf.FullName.Substring(subStrStart), ex);
+                }
+
+                if (Skip.Contains(gltf.Directory.Parent.Name))
+                {
+                    // Export issue:                   
+                    // skip
+                    return;
+                }
+
+                if (loader.Root == null)
+                {
+                    Debug.LogWarning($"root is null: ${gltf}");
+                    return;
                 }
 
                 Export(loader.Root);
@@ -136,13 +159,6 @@ namespace UniGLTF
             {
                 RuntimeLoadExport(gltf, root.FullName.Length);
 
-                if (gltf.Directory.Parent.Name == "BrainStem")
-                {
-                    // Export issue:                   
-                    // skip
-                    continue;
-                }
-
                 EditorLoad(gltf, root.FullName.Length);
             }
         }
@@ -163,7 +179,6 @@ namespace UniGLTF
 
             // foreach (var gltf in EnumerateGltfFiles(root))
             {
-                // QuaternionToEuler: Input quaternion was not normalized
                 var gltf = new FileInfo(Path.Combine(root.FullName, "BrainStem/glTF-Binary/BrainStem.glb"));
                 RuntimeLoadExport(gltf, root.FullName.Length);
 
