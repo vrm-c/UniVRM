@@ -7,11 +7,11 @@ assignees: ''
 
 ---
 
-**Describe the bug**
+## Describe the bug
 
 A clear and concise description of what the bug is.
 
-**To Reproduce**
+## To Reproduce
 
 e.g. Steps to reproduce the behavior:
 
@@ -22,20 +22,20 @@ e.g. Steps to reproduce the behavior:
 
 If there are some minimal examples(e.g. model files) to reproduce the behavior, please attach them to this issue.
 
-**Expected behavior**
+## Expected behavior
 
 A clear and concise description of what you expected to happen.
 
-**Screenshots**
+## Screenshots
 
 If applicable, add screenshots to help explain your problem.
 
-**Environments (please complete the following information):**
+## Environments (please complete the following information):
 
  - OS: [e.g. `Windows 10`]
  - Unity version: [e.g. `Unity-2018.4`]
  - UniVRM version: [e.g. `0.52.0`]
 
-**Additional context**
+## Additional context
 
 Add any other context about the problem here.
