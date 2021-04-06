@@ -18,14 +18,17 @@ namespace UniVRM10
         VrmLib.Model m_model;
         UniGLTF.Extensions.VRMC_vrm.VRMC_vrm m_vrm;
 
+        string m_message;
+
         public override void OnEnable()
         {
             base.OnEnable();
 
             m_importer = target as VrmScriptedImporter;
-            m_parser = VrmScriptedImporterImpl.Parse(m_importer.assetPath, m_importer.MigrateToVrm1);
-            if (m_parser == null)
+            m_message = VrmScriptedImporterImpl.TryParseOrMigrate(m_importer.assetPath, m_importer.MigrateToVrm1, out m_parser);
+            if (string.IsNullOrEmpty(m_message))
             {
+                // ok
                 return;
             }
             if (!UniGLTF.Extensions.VRMC_vrm.GltfDeserializer.TryGet(m_parser.GLTF.extensions, out m_vrm))
@@ -45,6 +48,11 @@ namespace UniVRM10
 
         public override void OnInspectorGUI()
         {
+            if (!string.IsNullOrEmpty(m_message))
+            {
+                EditorGUILayout.HelpBox(m_message, MessageType.Error);
+            }
+
             s_currentTab = MeshUtility.TabBar.OnGUI(s_currentTab);
             GUILayout.Space(10);
 

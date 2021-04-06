@@ -2,6 +2,8 @@
 using UnityEngine;
 using UniGLTF;
 using System.IO;
+using System;
+using UniJSON;
 #if UNITY_2020_2_OR_NEWER
 using UnityEditor.AssetImporters;
 #else
@@ -19,38 +21,71 @@ namespace UniVRM10
         /// <param name="path"></param>
         /// <param name="migrateToVrm1"></param>
         /// <returns></returns>
-        public static GltfParser Parse(string path, bool migrateToVrm1)
+        public static string TryParseOrMigrate(string path, bool migrateToVrm1, out GltfParser parser)
         {
             //
             // Parse(parse glb, parser gltf json)
             //
-            var parser = new GltfParser();
+            parser = new GltfParser();
             parser.ParsePath(path);
             if (UniGLTF.Extensions.VRMC_vrm.GltfDeserializer.TryGet(parser.GLTF.extensions, out UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm))
             {
-                return parser;
+                // success
+                return default;
             }
 
-            if (migrateToVrm1)
+            if (!migrateToVrm1)
             {
-                // try migrateion
-                var migrated = MigrationVrm.Migrate(File.ReadAllBytes(path));
-                parser = new GltfParser();
-                parser.Parse(path, migrated);
-                return parser;
+                return "vrm1 not found";
             }
 
-            return null;
+            // try migrateion            
+            Byte[] migrated = default;
+            try
+            {
+                var src = File.ReadAllBytes(path);
+                var glb = UniGLTF.Glb.Parse(src);
+                var json = glb.Json.Bytes.ParseAsJson();
+                if (!json.TryGet("extensions", out JsonNode extensions))
+                {
+                    return "no gltf.extensions";
+                }
+                if (!extensions.TryGet("VRM", out JsonNode vrm0))
+                {
+                    return "vrm0 not found";
+                }
+
+                migrated = MigrationVrm.Migrate(json, glb.Binary.Bytes);
+                if (migrated == null)
+                {
+                    return "cannot migrate";
+                }
+            }
+            catch (Exception ex)
+            {
+                return "migration error";
+            }
+
+            parser = new GltfParser();
+            parser.Parse(path, migrated);
+            if (UniGLTF.Extensions.VRMC_vrm.GltfDeserializer.TryGet(parser.GLTF.extensions, out vrm))
+            {
+                // success
+                return default;
+            }
+
+            parser = default;
+            return "migrate but no vrm1. unknown";
         }
 
         public static void Import(ScriptedImporter scriptedImporter, AssetImportContext context, bool migrateToVrm1)
         {
-#if VRM_DEVELOP            
+#if VRM_DEVELOP
             Debug.Log("OnImportAsset to " + scriptedImporter.assetPath);
 #endif
 
-            var parser = Parse(scriptedImporter.assetPath, migrateToVrm1);
-            if (parser == null)
+            var message = TryParseOrMigrate(scriptedImporter.assetPath, migrateToVrm1, out GltfParser parser);
+            if (string.IsNullOrEmpty(message))
             {
                 // fail to parse vrm1
                 return;
