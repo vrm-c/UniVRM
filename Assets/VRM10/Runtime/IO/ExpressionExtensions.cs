@@ -11,14 +11,14 @@ namespace UniVRM10
         /// for SubAssetName
         /// </summary>
         /// <returns></returns>
-        public static string ExtractName(this Expression expression)
+        public static string ExtractKey(this Expression expression)
         {
             ExpressionKey key =
             (expression.Preset == ExpressionPreset.custom)
             ? ExpressionKey.CreateCustom(expression.Name)
             : ExpressionKey.CreateFromPreset(expression.Preset)
             ;
-            return $"Expression.{key}";
+            return key.ExtractKey;
         }
 
         public static UniVRM10.MorphTargetBinding Build10(this MorphTargetBind bind, GameObject root, RuntimeUnityBuilder.ModelMap loader, VrmLib.Model model)

@@ -14,30 +14,29 @@ using UnityEditor.Experimental.AssetImporters;
 
 namespace UniGLTF
 {
-    public static class EditorMaterial
+    public class TmpGuiEnable : IDisposable
     {
-        class TmpGuiEnable : IDisposable
+        bool m_backup;
+        public TmpGuiEnable(bool enable)
         {
-            bool m_backup;
-            public TmpGuiEnable(bool enable)
-            {
-                m_backup = GUI.enabled;
-                GUI.enabled = enable;
-            }
-
-            public void Dispose()
-            {
-                GUI.enabled = m_backup;
-            }
+            m_backup = GUI.enabled;
+            GUI.enabled = enable;
         }
 
+        public void Dispose()
+        {
+            GUI.enabled = m_backup;
+        }
+    }
+    public static class EditorMaterial
+    {
         static bool s_foldMaterials = true;
         static bool s_foldTextures = true;
 
-        public static void OnGUIMaterial(ScriptedImporter importer, GltfParser parser, EnumerateAllTexturesDistinctFunc enumTextures)
+        public static void OnGUI(ScriptedImporter importer, GltfParser parser, EnumerateAllTexturesDistinctFunc enumTextures)
         {
-            var canExtract = !importer.GetExternalObjectMap().Any(x => x.Value is Material || x.Value is Texture2D);
-            using (new TmpGuiEnable(canExtract))
+            var hasExternal = importer.GetExternalObjectMap().Any(x => x.Value is Material || x.Value is Texture2D);
+            using (new TmpGuiEnable(!hasExternal))
             {
                 if (GUILayout.Button("Extract Materials And Textures ..."))
                 {
@@ -51,7 +50,7 @@ namespace UniGLTF
             s_foldMaterials = EditorGUILayout.Foldout(s_foldMaterials, "Remapped Materials");
             if (s_foldMaterials)
             {
-                DrawRemapGUI<UnityEngine.Material>(importer, parser.GLTF.materials.Select(x => x.name));
+                importer.DrawRemapGUI<UnityEngine.Material>(parser.GLTF.materials.Select(x => x.name));
             }
 
             s_foldTextures = EditorGUILayout.Foldout(s_foldTextures, "Remapped Textures");
@@ -77,7 +76,7 @@ namespace UniGLTF
                     })
                     .Where(x => !string.IsNullOrEmpty(x))
                     ;
-                DrawRemapGUI<UnityEngine.Texture2D>(importer, names);
+                importer.DrawRemapGUI<UnityEngine.Texture2D>(names);
             }
 
             if (GUILayout.Button("Clear"))
@@ -85,34 +84,6 @@ namespace UniGLTF
                 importer.ClearExternalObjects<UnityEngine.Material>();
                 importer.ClearExternalObjects<UnityEngine.Texture2D>();
             }
-        }
-
-        static void DrawRemapGUI<T>(ScriptedImporter importer, IEnumerable<string> names) where T : UnityEngine.Object
-        {
-            EditorGUI.indentLevel++;
-            var map = importer.GetExternalObjectMap()
-                .Select(x => (x.Key.name, x.Value as T))
-                .Where(x => x.Item2 != null)
-                .ToDictionary(x => x.Item1, x => x.Item2)
-                ;
-            foreach (var name in names)
-            {
-                if (string.IsNullOrEmpty(name))
-                {
-                    throw new System.ArgumentNullException();
-                }
-
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.PrefixLabel(name);
-                map.TryGetValue(name, out T value);
-                var asset = EditorGUILayout.ObjectField(value, typeof(T), true) as T;
-                if (asset != value)
-                {
-                    importer.SetExternalUnityObject(new AssetImporter.SourceAssetIdentifier(value), asset);
-                }
-                EditorGUILayout.EndHorizontal();
-            }
-            EditorGUI.indentLevel--;
         }
 
         public static void SetExternalUnityObject<T>(this ScriptedImporter self, UnityEditor.AssetImporter.SourceAssetIdentifier sourceAssetIdentifier, T obj) where T : UnityEngine.Object
@@ -157,28 +128,14 @@ namespace UniGLTF
                 return;
             }
             var path = $"{Path.GetDirectoryName(importer.assetPath)}/{Path.GetFileNameWithoutExtension(importer.assetPath)}.Materials";
-            var info = TextureExtractor.SafeCreateDirectory(path);
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
 
             foreach (var asset in importer.GetSubAssets<Material>(importer.assetPath))
             {
-                ExtractSubAsset(asset, $"{path}/{asset.name}.mat", false);
-            }
-        }
-
-        private static void ExtractSubAsset(UnityEngine.Object subAsset, string destinationPath, bool isForceUpdate)
-        {
-            string assetPath = AssetDatabase.GetAssetPath(subAsset);
-
-            var clone = UnityEngine.Object.Instantiate(subAsset);
-            AssetDatabase.CreateAsset(clone, destinationPath);
-
-            var assetImporter = AssetImporter.GetAtPath(assetPath);
-            assetImporter.AddRemap(new AssetImporter.SourceAssetIdentifier(clone), clone);
-
-            if (isForceUpdate)
-            {
-                AssetDatabase.WriteImportSettingsIfDirty(assetPath);
-                AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceUpdate);
+                asset.ExtractSubAsset($"{path}/{asset.name}.mat", false);
             }
         }
     }

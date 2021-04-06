@@ -10,7 +10,7 @@ namespace UniVRM10
     [CreateAssetMenu(menuName = "VRM10/MetaObject")]
     public class VRM10MetaObject : ScriptableObject
     {
-        public const string ExtractKey = ".Meta";
+        public const string ExtractKey = "Meta";
 
         [SerializeField]
         public string ExporterVersion;
