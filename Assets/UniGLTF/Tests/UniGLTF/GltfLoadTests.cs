@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
+using VRMShaders;
 
 namespace UniGLTF
 {
@@ -54,7 +55,28 @@ namespace UniGLTF
             }
         }
 
-        static void RuntimeLoad(FileInfo gltf, int subStrStart)
+        static Byte[] Export(GameObject root)
+        {
+            var gltf = new glTF();
+            using (var exporter = new gltfExporter(gltf))
+            {
+                exporter.Prepare(root);
+                exporter.Export(MeshExportSettings.Default, AssetTextureUtil.IsTextureEditorAsset);
+                return gltf.ToGlbBytes();
+            }
+        }
+
+        // Unsolved Animation Export issue
+        //
+        // QuaternionToEuler: Input quaternion was not normalized
+        //
+        static string[] Skip = new string[]
+        {
+            "BrainStem",
+            "RiggedSimple"
+        };
+
+        static void RuntimeLoadExport(FileInfo gltf, int subStrStart)
         {
             var parser = new GltfParser();
             try
@@ -67,16 +89,31 @@ namespace UniGLTF
                 Debug.LogException(ex);
             }
 
-            try
+            using (var loader = new ImporterContext(parser))
             {
-                using (var importer = new ImporterContext(parser))
+                try
                 {
-                    importer.Load();
+                    loader.Load();
                 }
-            }
-            catch (Exception ex)
-            {
-                Message(gltf.FullName.Substring(subStrStart), ex);
+                catch (Exception ex)
+                {
+                    Message(gltf.FullName.Substring(subStrStart), ex);
+                }
+
+                if (Skip.Contains(gltf.Directory.Parent.Name))
+                {
+                    // Export issue:                   
+                    // skip
+                    return;
+                }
+
+                if (loader.Root == null)
+                {
+                    Debug.LogWarning($"root is null: ${gltf}");
+                    return;
+                }
+
+                Export(loader.Root);
             }
         }
 
@@ -120,7 +157,30 @@ namespace UniGLTF
 
             foreach (var gltf in EnumerateGltfFiles(root))
             {
-                RuntimeLoad(gltf, root.FullName.Length);
+                RuntimeLoadExport(gltf, root.FullName.Length);
+
+                EditorLoad(gltf, root.FullName.Length);
+            }
+        }
+
+        // [Test]
+        public void GltfSampleModelsTest_BrainStem()
+        {
+            var env = System.Environment.GetEnvironmentVariable("GLTF_SAMPLE_MODELS");
+            if (string.IsNullOrEmpty(env))
+            {
+                return;
+            }
+            var root = new DirectoryInfo($"{env}/2.0");
+            if (!root.Exists)
+            {
+                return;
+            }
+
+            // foreach (var gltf in EnumerateGltfFiles(root))
+            {
+                var gltf = new FileInfo(Path.Combine(root.FullName, "BrainStem/glTF-Binary/BrainStem.glb"));
+                RuntimeLoadExport(gltf, root.FullName.Length);
 
                 EditorLoad(gltf, root.FullName.Length);
             }
