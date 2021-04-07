@@ -15,21 +15,21 @@ namespace UniGLTF
 
     public interface IMaterialExporter
     {
-        glTFMaterial ExportMaterial(Material m, TextureExporter textureManager);
+        glTFMaterial ExportMaterial(Material m, TextureExporter textureExporter);
     }
 
     public class MaterialExporter : IMaterialExporter
     {
-        public virtual glTFMaterial ExportMaterial(Material m, TextureExporter textureManager)
+        public virtual glTFMaterial ExportMaterial(Material m, TextureExporter textureExporter)
         {
             var material = CreateMaterial(m);
 
             // common params
             material.name = m.name;
-            Export_Color(m, textureManager, material);
-            Export_Emission(m, textureManager, material);
-            Export_Normal(m, textureManager, material);
-            Export_OcclusionMetallicRoughness(m, textureManager, material);
+            Export_Color(m, textureExporter, material);
+            Export_Emission(m, textureExporter, material);
+            Export_Normal(m, textureExporter, material);
+            Export_OcclusionMetallicRoughness(m, textureExporter, material);
 
             return material;
         }

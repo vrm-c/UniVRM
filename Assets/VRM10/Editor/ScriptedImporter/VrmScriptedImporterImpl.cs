@@ -85,7 +85,7 @@ namespace UniVRM10
 #endif
 
             var message = TryParseOrMigrate(scriptedImporter.assetPath, migrateToVrm1, out GltfParser parser);
-            if (string.IsNullOrEmpty(message))
+            if (!string.IsNullOrEmpty(message))
             {
                 // fail to parse vrm1
                 return;

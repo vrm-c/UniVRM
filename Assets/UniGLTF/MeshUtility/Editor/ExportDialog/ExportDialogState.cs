@@ -41,8 +41,16 @@ namespace MeshUtility
                 if (value != null && AssetDatabase.IsMainAsset(value))
                 {
                     assetPath = AssetDatabase.GetAssetPath(value);
-                    isPrefab = true;
-                    value = PrefabUtility.LoadPrefabContents(assetPath);
+                    try
+                    {
+                        var prefab = PrefabUtility.LoadPrefabContents(assetPath);
+                        value = prefab;
+                        isPrefab = true;
+                    }
+                    catch (ArgumentException ex)
+                    {
+                        // Debug.LogWarning(ex);
+                    }
                 }
                 if (m_root.GameObject == value)
                 {
