@@ -32,7 +32,7 @@ glTF2.0をベースとしており、誰でも自由に利用することがで�
 
 * [MIT License](./LICENSE.txt)
 
-## Install
+## Installation
 
 https://vrm.dev/docs/univrm/install/
 ### 安定版
@@ -74,6 +74,8 @@ $ git submodule update --init --recursive
 [コントリビューションガイド](https://github.com/vrm-c/UniVRM/wiki/コントリビューションガイド(ja))を参照してください。
 
 ## UPM
+
+https://vrm.dev/docs/univrm/install/univrm_upm/
 
 `v0.66.0` を任意のバージョンに読み替えてください。
 
