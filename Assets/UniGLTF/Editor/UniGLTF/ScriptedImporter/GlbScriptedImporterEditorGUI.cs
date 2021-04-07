@@ -48,7 +48,7 @@ namespace UniGLTF
                     break;
 
                 case Tabs.Materials:
-                    EditorMaterial.OnGUIMaterial(m_importer, m_parser, GltfTextureEnumerator.EnumerateAllTexturesDistinct);
+                    EditorMaterial.OnGUI(m_importer, m_parser, GltfTextureEnumerator.EnumerateAllTexturesDistinct);
                     break;
             }
         }

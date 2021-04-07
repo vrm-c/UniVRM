@@ -21,13 +21,13 @@ namespace UniVRM10
         /// Preset of this ExpressionKey.
         /// </summary>
         public readonly UniGLTF.Extensions.VRMC_vrm.ExpressionPreset Preset;
-        
+
         /// <summary>
         /// Custom Name of this ExpressionKey.
         /// This works if Preset was Custom.
         /// </summary>
         public readonly string Name;
-        
+
         /// <summary>
         /// Id for comparison of ExpressionKey.
         /// </summary>
@@ -172,6 +172,13 @@ namespace UniVRM10
 
             return 0;
         }
-    }
 
+        public string ExtractKey
+        {
+            get
+            {
+                return $"Expression.{this}";
+            }
+        }
+    }
 }

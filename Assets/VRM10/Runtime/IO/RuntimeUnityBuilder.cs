@@ -18,9 +18,16 @@ namespace UniVRM10
 
         UniGLTF.Extensions.VRMC_vrm.VRMC_vrm m_vrm;
 
+        List<(string, UnityEngine.Object)> m_external = new List<(string, UnityEngine.Object)>();
+
         public RuntimeUnityBuilder(UniGLTF.GltfParser parser, IEnumerable<(string, UnityEngine.Object)> externalObjectMap = null) : base(parser, externalObjectMap)
         {
             m_model = VrmLoader.CreateVrmModel(parser);
+
+            if (externalObjectMap != null)
+            {
+                m_external.AddRange(externalObjectMap);
+            }
 
             // for `VRMC_materials_mtoon`
             this.GltfMaterialImporter.GltfMaterialParamProcessors.Insert(0, Vrm10MToonMaterialImporter.TryCreateParam);
@@ -229,7 +236,17 @@ namespace UniVRM10
         async Task LoadVrmAsync(IAwaitCaller awaitCaller, VRM10Controller controller, UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm)
         {
             // meta
-            if (vrm.Meta != null)
+            controller.Meta = m_external.Select(x => x.Item2 as VRM10MetaObject).FirstOrDefault(x => x != null);
+            // external meta != null のとき m_meta は null になる
+            if (controller.Meta != null)
+            {
+                // texture の 取得
+                if (Vrm10MToonMaterialImporter.TryGetMetaThumbnailTextureImportParam(Parser, vrm, out VRMShaders.TextureImportParam param))
+                {
+                    var texture = await TextureFactory.GetTextureAsync(param);
+                }
+            }
+            else if (vrm.Meta != null)
             {
                 var src = vrm.Meta;
                 m_meta = ScriptableObject.CreateInstance<VRM10MetaObject>();
@@ -269,7 +286,8 @@ namespace UniVRM10
             }
 
             // expression
-            if (vrm.Expressions != null)
+            controller.Expression.ExpressionAvatar = m_external.Select(x => x.Item2 as VRM10ExpressionAvatar).FirstOrDefault(x => x != null);
+            if (controller.Expression.ExpressionAvatar == null && vrm.Expressions != null)
             {
                 controller.Expression.ExpressionAvatar = ScriptableObject.CreateInstance<VRM10ExpressionAvatar>();
 
@@ -281,7 +299,7 @@ namespace UniVRM10
                     var clip = ScriptableObject.CreateInstance<UniVRM10.VRM10Expression>();
                     clip.Preset = expression.Preset;
                     clip.ExpressionName = expression.Name;
-                    clip.name = expression.ExtractName();
+                    clip.name = expression.ExtractKey();
                     clip.IsBinary = expression.IsBinary.GetValueOrDefault();
                     clip.OverrideBlink = expression.OverrideBlink;
                     clip.OverrideLookAt = expression.OverrideLookAt;
@@ -555,22 +573,28 @@ namespace UniVRM10
                 m_humanoid = null;
             }
 
-            if (take(m_meta))
+            if (m_meta != null)
             {
-                m_meta = null;
-            }
-
-            foreach (var x in m_exressionAvatar.Clips)
-            {
-                if (take(x))
+                if (take(m_meta))
                 {
-                    // do nothing
+                    m_meta = null;
                 }
             }
 
-            if (take(m_exressionAvatar))
+            if (m_exressionAvatar != null)
             {
-                m_exressionAvatar = null;
+                foreach (var x in m_exressionAvatar.Clips)
+                {
+                    if (take(x))
+                    {
+                        // do nothing
+                    }
+                }
+
+                if (take(m_exressionAvatar))
+                {
+                    m_exressionAvatar = null;
+                }
             }
 
             // GLTF のリソース

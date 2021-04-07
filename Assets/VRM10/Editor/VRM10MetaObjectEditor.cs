@@ -193,6 +193,11 @@ namespace UniVRM10
 
         public override void OnInspectorGUI()
         {
+            if (target == null)
+            {
+                return;
+            }
+
             serializedObject.Update();
 
             if (VRMVersion.IsNewer(m_exporterVersion.stringValue))

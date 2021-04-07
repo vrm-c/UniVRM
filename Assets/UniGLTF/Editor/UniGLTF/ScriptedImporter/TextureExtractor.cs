@@ -82,15 +82,6 @@ namespace UniGLTF
             Textures.Add(targetPath, param);
         }
 
-        public static DirectoryInfo SafeCreateDirectory(string path)
-        {
-            if (Directory.Exists(path))
-            {
-                return null;
-            }
-            return Directory.CreateDirectory(path);
-        }
-
         /// <summary>
         /// 
         /// * Texture(.png etc...)をディスクに書き出す
