@@ -28,18 +28,6 @@ namespace UniVRM10
             });
         }
 
-        public byte[] ToBytes()
-        {
-            Storage.Gltf.buffers[0].byteLength = Storage.Buffers[0].Bytes.Count;
-
-            var f = new JsonFormatter();
-            UniGLTF.GltfSerializer.Serialize(f, Storage.Gltf);
-            var json = f.GetStoreBytes();
-
-            var glb = UniGLTF.Glb.Create(json, Storage.Buffers[0].Bytes);
-            return glb.ToBytes();
-        }
-
         public void ExportAsset(Model model)
         {
             Storage.Gltf.asset = new glTFAssets
@@ -117,6 +105,47 @@ namespace UniVRM10
             {
                 nodes = root.Children.Select(child => nodes.IndexOfThrow(child)).ToArray()
             });
+        }
+
+        public void Export(Model m, ExportArgs option)
+        {
+            ExportAsset(m);
+
+            ///
+            /// 必要な容量を先に確保
+            /// (sparseは考慮してないので大きめ)
+            ///
+            {
+                var reserveBytes = 0;
+                // mesh
+                foreach (var g in m.MeshGroups)
+                {
+                    foreach (var mesh in g.Meshes)
+                    {
+                        // 頂点バッファ
+                        reserveBytes += mesh.IndexBuffer.ByteLength;
+                        foreach (var kv in mesh.VertexBuffer)
+                        {
+                            reserveBytes += kv.Value.ByteLength;
+                        }
+                        // morph
+                        foreach (var morph in mesh.MorphTargets)
+                        {
+                            foreach (var kv in morph.VertexBuffer)
+                            {
+                                reserveBytes += kv.Value.ByteLength;
+                            }
+                        }
+                    }
+                }
+                Reserve(reserveBytes);
+            }
+
+            // mesh
+            ExportMeshes(m.MeshGroups, m.Materials, option);
+
+            // node
+            ExportNodes(m.Root, m.Nodes, m.MeshGroups, option);
         }
     }
 }

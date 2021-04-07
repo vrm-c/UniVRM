@@ -7,6 +7,7 @@ using MeshUtility;
 using UnityEditor;
 using UnityEngine;
 using VrmLib;
+using VRMShaders;
 
 namespace UniVRM10
 {
@@ -300,8 +301,7 @@ namespace UniVRM10
 
             try
             {
-                var exporter = new UniVRM10.RuntimeVrmConverter();
-                var model = exporter.ToModelFrom10(root, Meta ? Meta : m_tmpMeta);
+                var model = new UniVRM10.RuntimeVrmConverter().ToModelFrom10(root, Meta ? Meta : m_tmpMeta);
 
                 // if (MeshUtility.Validators.HumanoidValidator.HasRotationOrScale(root))
                 // {
@@ -315,7 +315,24 @@ namespace UniVRM10
                 m_logLabel += $"convert to right handed coordinate...\n";
                 model.ConvertCoordinate(VrmLib.Coordinates.Vrm1, ignoreVrm: false);
 
-                var exportedBytes = GetGlb(model);
+                // var exportedBytes = GetGlb(model);
+                // export vrm-1.0
+                var exporter = new UniVRM10.Vrm10Exporter();
+                var option = new VrmLib.ExportArgs();
+                exporter.Export(model, option);
+
+                // material
+                // var textureExporter = new TextureExporter(AssetTextureUtil.IsTextureEditorAsset);
+                // var materialExporter = new Vrm10MaterialExporter();
+                // foreach (var m in materials)
+                // {
+
+                // }
+
+                // export VRM extensions
+
+                var exportedBytes = exporter.Storage.ToBytes();
+
                 m_logLabel += $"write to {path}...\n";
                 File.WriteAllBytes(path, exportedBytes);
                 Debug.Log("exportedBytes: " + exportedBytes.Length);
@@ -332,20 +349,6 @@ namespace UniVRM10
                 // rethrow
                 throw;
             }
-        }
-
-        static byte[] GetGlb(VrmLib.Model model)
-        {
-            // export vrm-1.0
-            var exporter = new UniVRM10.Vrm10Exporter();
-            var option = new VrmLib.ExportArgs
-            {
-                // vrm = false
-            };
-            var glbBytes10 = exporter.Export(model, option);
-            // ?
-            var glb10 = UniGLTF.Glb.Parse(glbBytes10);
-            return glb10.ToBytes();
         }
 
         static string ToAssetPath(string path)

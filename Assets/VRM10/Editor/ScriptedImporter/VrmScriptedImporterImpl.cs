@@ -61,7 +61,7 @@ namespace UniVRM10
                     return "cannot migrate";
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return "migration error";
             }
