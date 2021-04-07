@@ -31,12 +31,17 @@ namespace UniVRM10
         public float LookAtOverrideRate { get; private set; }
         public float MouthOverrideRate { get; private set; }
 
+        int m_debugCount;
+
         internal void Setup(Transform transform, ILookAtEyeDirectionProvider eyeDirectionProvider, ILookAtEyeDirectionApplicable eyeDirectionApplicable)
         {
             if (ExpressionAvatar == null)
             {
-#if VRM_DEVELOP                
-                Debug.LogWarning($"{nameof(VRM10ControllerExpression)}.{nameof(ExpressionAvatar)} is null.");
+#if VRM_DEVELOP          
+                if (m_debugCount++ == 0)
+                {
+                    Debug.LogWarning($"{nameof(VRM10ControllerExpression)}.{nameof(ExpressionAvatar)} is null.");
+                }
 #endif                
                 return;
             }
