@@ -222,10 +222,38 @@ namespace UniVRM10
             {
                 ExportExpression(vrm, vrmController, model, converter);
                 ExportLookAt(vrm, vrmController);
-                // firstPerson
+                ExportFirstPerson(vrm, vrmController, model, converter);
             }
 
             return (vrm, thumbnailTextureIndex);
+        }
+
+        static UniGLTF.Extensions.VRMC_vrm.MeshAnnotation ExportMeshAnnotation(RendererFirstPersonFlags flags, Func<Renderer, int> getIndex)
+        {
+            return new UniGLTF.Extensions.VRMC_vrm.MeshAnnotation
+            {
+                Node = getIndex(flags.Renderer),
+                FirstPersonType = flags.FirstPersonFlag,
+            };
+        }
+
+        void ExportFirstPerson(UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm, VRM10Controller vrmController, Model model, RuntimeVrmConverter converter)
+        {
+            if (vrmController?.FirstPerson != null)
+            {
+                return;
+            }
+
+            vrm.FirstPerson = new UniGLTF.Extensions.VRMC_vrm.FirstPerson();
+            Func<Renderer, int> getIndex = r =>
+            {
+                var node = converter.Nodes[r.gameObject];
+                return model.Nodes.IndexOf(node);
+            };
+            foreach (var f in vrmController.FirstPerson.Renderers)
+            {
+                vrm.FirstPerson.MeshAnnotations.Add(ExportMeshAnnotation(f, getIndex));
+            }
         }
 
         UniGLTF.Extensions.VRMC_vrm.LookAtRangeMap ExportLookAtRangeMap(CurveMapper mapper)
@@ -296,6 +324,25 @@ namespace UniVRM10
                 return;
             }
 
+            Func<string, int> getIndexFromRelativePath = relativePath =>
+            {
+                var rendererNode = vrmController.transform.GetFromPath(relativePath);
+                var node = converter.Nodes[rendererNode.gameObject];
+                return model.Nodes.IndexOf(node);
+            };
+            Func<string, int> getIndexFromMaterialName = materialName =>
+            {
+                for (int i = 0; i < model.Materials.Count; ++i)
+                {
+                    var m = model.Materials[i] as Material;
+                    if (m.name == materialName)
+                    {
+                        return i;
+                    }
+                }
+                throw new KeyNotFoundException();
+            };
+
             vrm.Expressions = new List<UniGLTF.Extensions.VRMC_vrm.Expression>();
             foreach (var e in vrmController.Expression.ExpressionAvatar.Clips)
             {
@@ -315,13 +362,7 @@ namespace UniVRM10
                 {
                     try
                     {
-                        Func<string, int> getIndex = relativePath =>
-                        {
-                            var rendererNode = vrmController.transform.GetFromPath(relativePath);
-                            var node = converter.Nodes[rendererNode.gameObject];
-                            return model.Nodes.IndexOf(node);
-                        };
-                        vrmExpression.MorphTargetBinds.Add(ExportMorphTargetBinding(b, getIndex));
+                        vrmExpression.MorphTargetBinds.Add(ExportMorphTargetBinding(b, getIndexFromRelativePath));
                     }
                     catch (Exception ex)
                     {
@@ -332,19 +373,7 @@ namespace UniVRM10
                 {
                     try
                     {
-                        Func<string, int> getIndex = materialName =>
-                        {
-                            for (int i = 0; i < model.Materials.Count; ++i)
-                            {
-                                var m = model.Materials[i] as Material;
-                                if (m.name == materialName)
-                                {
-                                    return i;
-                                }
-                            }
-                            throw new KeyNotFoundException();
-                        };
-                        vrmExpression.MaterialColorBinds.Add(ExportMaterialColorBinding(b, getIndex));
+                        vrmExpression.MaterialColorBinds.Add(ExportMaterialColorBinding(b, getIndexFromMaterialName));
                     }
                     catch (Exception ex)
                     {
@@ -355,19 +384,7 @@ namespace UniVRM10
                 {
                     try
                     {
-                        Func<string, int> getIndex = materialName =>
-                        {
-                            for (int i = 0; i < model.Materials.Count; ++i)
-                            {
-                                var m = model.Materials[i] as Material;
-                                if (m.name == materialName)
-                                {
-                                    return i;
-                                }
-                            }
-                            throw new KeyNotFoundException();
-                        };
-                        vrmExpression.TextureTransformBinds.Add(ExportTextureTransformBinding(b, getIndex));
+                        vrmExpression.TextureTransformBinds.Add(ExportTextureTransformBinding(b, getIndexFromMaterialName));
                     }
                     catch (Exception ex)
                     {
