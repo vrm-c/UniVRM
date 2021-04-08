@@ -1,13 +1,12 @@
 {
     "name": "VRM",
     "references": [
-        "MToon",
         "UniHumanoid",
         "MeshUtility",
         "UniGLTF",
         "VRMShaders.GLTF.IO.Runtime",
-        "UniUnlit",
-        "VRMShaders.VRM.IO.Runtime"
+        "VRMShaders.VRM.IO.Runtime",
+        "MToon"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

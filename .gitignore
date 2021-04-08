@@ -50,4 +50,6 @@ Assets/StreamingAssets/crashlytics-build.properties
 # Manually appended
 #
 .idea/
+Assets/Private/
+Assets/Private.meta
 

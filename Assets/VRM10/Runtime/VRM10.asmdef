@@ -2,7 +2,6 @@
     "name": "VRM10",
     "references": [
         "VrmLib",
-        "UniUnlit",
         "MToon",
         "MeshUtility",
         "MeshUtility.Editor",

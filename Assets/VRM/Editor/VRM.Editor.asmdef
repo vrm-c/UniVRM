@@ -5,7 +5,6 @@
         "UniHumanoid",
         "MeshUtility",
         "MeshUtility.Editor",
-        "UniUnlit",
         "VRMShaders.GLTF.IO.Runtime",
         "VRMShaders.GLTF.IO.Editor",
         "UniGLTF",
