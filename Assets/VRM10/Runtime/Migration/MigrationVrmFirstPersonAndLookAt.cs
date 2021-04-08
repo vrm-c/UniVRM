@@ -10,6 +10,8 @@ namespace UniVRM10
     {
         static LookAtRangeMap MigrateLookAtRangeMap(JsonNode vrm0)
         {
+            // VRM1
+            // curve は廃止されます
             return new LookAtRangeMap
             {
                 InputMaxValue = vrm0["xRange"].GetSingle(),
@@ -29,6 +31,8 @@ namespace UniVRM10
 
         public static (LookAt, FirstPerson) Migrate(glTF gltf, JsonNode vrm0)
         {
+            // VRM1
+            // firstPerson に同居していた LookAt は独立します
             var lookAt = new LookAt
             {
                 LookAtHorizontalInner = MigrateLookAtRangeMap(vrm0["lookAtHorizontalInner"]),
@@ -41,6 +45,9 @@ namespace UniVRM10
 
             var firstPerson = new FirstPerson
             {
+                // VRM1
+                // firstPersonBoneOffset は廃止されます。LookAt.OffsetFromHeadBone を使ってください。
+                // firstPersonBone は廃止されます。Head 固定です。
                 MeshAnnotations = new System.Collections.Generic.List<MeshAnnotation>(),
             };
             if (vrm0.TryGet("meshAnnotations", out JsonNode meshAnnotations))
