@@ -1,15 +1,7 @@
 {
-    "name": "UniVRM.Editor",
+    "name": "VRMShaders.GLTF.UniUnlit.Editor",
     "references": [
-        "VRM",
-        "UniHumanoid",
-        "MeshUtility",
-        "MeshUtility.Editor",
-        "UniUnlit",
-        "VRMShaders.GLTF.IO.Runtime",
-        "VRMShaders.GLTF.IO.Editor",
-        "UniGLTF",
-        "UniGLTF.Editor"
+        "VRMShaders.GLTF.UniUnlit.Runtime"
     ],
     "includePlatforms": [
         "Editor"
@@ -18,7 +10,7 @@
     "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
-    "autoReferenced": true,
+    "autoReferenced": false,
     "defineConstraints": [],
     "versionDefines": [],
     "noEngineReferences": false

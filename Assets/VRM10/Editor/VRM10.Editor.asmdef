@@ -7,9 +7,9 @@
         "MeshUtility.Editor",
         "UniGLTF.Editor",
         "UniGLTF",
-        "VRMShaders"
+        "VRMShaders.GLTF.IO.Runtime",
+        "VRMShaders.GLTF.IO.Editor"
     ],
-    "optionalUnityReferences": [],
     "includePlatforms": [
         "Editor"
     ],
@@ -18,5 +18,7 @@
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
-    "defineConstraints": []
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

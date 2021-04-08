@@ -1,14 +1,10 @@
 {
-    "name": "VRM.Tests",
+    "name": "VRMShaders.GLTF.IO.Tests",
     "references": [
-        "VRM",
-        "UniGLTF",
-        "MeshUtility",
-        "MeshUtility.Editor",
-        "UnityEngine.TestRunner",
-        "UnityEditor.TestRunner",
         "VRMShaders.GLTF.IO.Runtime",
-        "VRMShaders.GLTF.IO.Editor"
+        "VRMShaders.GLTF.IO.Editor",
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner"
     ],
     "includePlatforms": [
         "Editor"

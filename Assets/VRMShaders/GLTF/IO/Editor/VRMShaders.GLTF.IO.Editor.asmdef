@@ -1,12 +1,6 @@
 {
-    "name": "VRMShaders.Tests",
-    "references": [
-        "VRMShaders",
-        "VRMShaders.Editor"
-    ],
-    "optionalUnityReferences": [
-        "TestAssemblies"
-    ],
+    "name": "VRMShaders.GLTF.IO.Editor",
+    "references": [],
     "includePlatforms": [
         "Editor"
     ],
@@ -15,5 +9,7 @@
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": false,
-    "defineConstraints": []
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }
