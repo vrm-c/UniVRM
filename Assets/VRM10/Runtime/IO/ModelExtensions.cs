@@ -12,7 +12,7 @@ namespace UniVRM10
             {
                 // vrm = false
             };
-            exporter10.Export(model, option);
+            exporter10.Export(model, option, _ => false);
             var glb10 = UniGLTF.Glb.Parse(exporter10.Storage.ToBytes());
             return glb10.ToBytes();
         }
