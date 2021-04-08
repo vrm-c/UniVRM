@@ -19,15 +19,6 @@ namespace UniVRM10
             }
         }
 
-        static float[] ReverseZ(JsonNode xyz)
-        {
-            return new float[]{
-                xyz["x"].GetSingle(),
-                xyz["y"].GetSingle(),
-                -xyz["z"].GetSingle(),
-            };
-        }
-
         public static UniGLTF.Extensions.VRMC_springBone.VRMC_springBone Migrate(UniGLTF.glTF gltf, JsonNode sa)
         {
             var colliderNodes = new List<int>();
@@ -78,7 +69,7 @@ namespace UniVRM10
                     {
                         Sphere = new UniGLTF.Extensions.VRMC_node_collider.ColliderShapeSphere
                         {
-                            Offset = ReverseZ(y["offset"]),
+                            Offset = MigrateVector3.Migrate(y["offset"]),
                             Radius = y["radius"].GetSingle()
                         }
                     });
@@ -142,7 +133,7 @@ namespace UniVRM10
                         {
                             Node = gltf.nodes.IndexOf(z),
                             DragForce = x["dragForce"].GetSingle(),
-                            GravityDir = ReverseZ(x["gravityDir"]),
+                            GravityDir = MigrateVector3.Migrate(x["gravityDir"]),
                             GravityPower = x["gravityPower"].GetSingle(),
                             HitRadius = x["hitRadius"].GetSingle(),
                             Stiffness = x["stiffiness"].GetSingle(),
