@@ -27,7 +27,7 @@ public static class ExportDebugUtil
         {
             // vrm = false
         };
-        exporter10.Export(null, model, option);
+        exporter10.Export(null, model, null, option);
         var glbBytes10 = exporter10.Storage.ToBytes();
         var glb10 = UniGLTF.Glb.Parse(glbBytes10);
         return System.Text.Encoding.UTF8.GetString(glb10.Json.Bytes.Array, glb10.Json.Bytes.Offset, glb10.Json.Bytes.Count);

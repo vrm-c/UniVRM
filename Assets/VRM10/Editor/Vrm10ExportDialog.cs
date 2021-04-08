@@ -302,7 +302,8 @@ namespace UniVRM10
 
             try
             {
-                var model = new UniVRM10.RuntimeVrmConverter().ToModelFrom10(root);
+                var converter = new UniVRM10.RuntimeVrmConverter();
+                var model = converter.ToModelFrom10(root);
 
                 // if (MeshUtility.Validators.HumanoidValidator.HasRotationOrScale(root))
                 // {
@@ -316,11 +317,10 @@ namespace UniVRM10
                 m_logLabel += $"convert to right handed coordinate...\n";
                 model.ConvertCoordinate(VrmLib.Coordinates.Vrm1, ignoreVrm: false);
 
-                // var exportedBytes = GetGlb(model);
                 // export vrm-1.0
                 var exporter = new UniVRM10.Vrm10Exporter(AssetTextureUtil.IsTextureEditorAsset);
                 var option = new VrmLib.ExportArgs();
-                exporter.Export(root, model, option, Meta ? Meta : m_tmpMeta);
+                exporter.Export(root, model, converter, option, Meta ? Meta : m_tmpMeta);
 
                 var exportedBytes = exporter.Storage.ToBytes();
 
