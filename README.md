@@ -5,7 +5,7 @@
 
 https://github.com/vrm-c/UniVRM
 
-`UniVRM` is a Unity implementation of [VRM](https://vrm.dev/en/vrm_about/). It can import/export VRM models.
+`UniVRM` is a Unity implementation of [VRM](https://vrm.dev/en/vrm_about/). It can create, import and export VRM models.
 
 * [Unity Version](https://vrm.dev/en/docs/univrm/install/unity_version/)
 * [UniVRM Version](https://vrm.dev/en/docs/univrm/install/univrm_version/)
@@ -58,7 +58,7 @@ The latest version is marked as `Pre-release`:
 
 ## Contributing to UniVRM
 
-Use the commands below to clone UniVRM repository, and open the UniVRM folder by Unity.
+Use the commands below to clone UniVRM repository and then open the UniVRM folder by Unity.
 
 ```console
 $ git clone https://github.com/vrm-c/UniVRM.git
