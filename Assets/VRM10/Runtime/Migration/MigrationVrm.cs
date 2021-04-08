@@ -25,48 +25,52 @@ namespace UniVRM10
             // https://github.com/vrm-c/vrm-specification/issues/205
             RotateY180.Rotate(gltf);
 
-            var extensions = new UniGLTF.glTFExtensionExport();
+            var vrm0 = json["extensions"]["VRM"];
+            gltf.extensions = null;
+
             {
-                var vrm0 = json["extensions"]["VRM"];
+                // vrm
+                var vrm1 = new UniGLTF.Extensions.VRMC_vrm.VRMC_vrm();
 
+                // meta (required)
+                vrm1.Meta = MigrationVrmMeta.Migrate(vrm0["meta"]);
+                // humanoid (required)
+                vrm1.Humanoid = MigrationVrmHumanoid.Migrate(vrm0["humanoid"]);
+
+                // blendshape (optional)
+                if (vrm0.TryGet("blendShapeMaster", out JsonNode vrm0BlendShape))
                 {
-                    // vrm
-                    var vrm1 = new UniGLTF.Extensions.VRMC_vrm.VRMC_vrm();
-                    vrm1.Meta = MigrationVrmMeta.Migrate(vrm0["meta"]);
-                    vrm1.Humanoid = MigrationVrmHumanoid.Migrate(vrm0["humanoid"]);
-                    vrm1.Expressions = MigrationVrmExpression.Migrate(gltf, vrm0["blendShapeMaster"]).ToList();
-
-                    // lookat
-
-                    // firstperson
-
-                    var f = new JsonFormatter();
-                    UniGLTF.Extensions.VRMC_vrm.GltfSerializer.Serialize(f, vrm1);
-                    extensions.Add(UniGLTF.Extensions.VRMC_vrm.VRMC_vrm.ExtensionName, f.GetStoreBytes());
+                    vrm1.Expressions = MigrationVrmExpression.Migrate(gltf, vrm0BlendShape).ToList();
                 }
+
+                // lookat & firstperson (optional)
+                if (vrm0.TryGet("firstPerson", out JsonNode vrm0FirstPerson))
                 {
-                    // springBone & collider
-                    var vrm1 = MigrationVrmSpringBone.Migrate(gltf, json["extensions"]["VRM"]["secondaryAnimation"]);
+                    (vrm1.LookAt, vrm1.FirstPerson) = MigrationVrmLookAtAndFirstPerson.Migrate(gltf, vrm0FirstPerson);
+                }
 
-                    var f = new JsonFormatter();
-                    UniGLTF.Extensions.VRMC_springBone.GltfSerializer.Serialize(f, vrm1);
-                    extensions.Add(UniGLTF.Extensions.VRMC_springBone.VRMC_springBone.ExtensionName, f.GetStoreBytes());
-                }
-                {
-                    // MToon                    
-                    MigrationMToon.Migrate(gltf, json);
-                }
+                UniGLTF.Extensions.VRMC_vrm.GltfSerializer.SerializeTo(ref gltf.extensions, vrm1);
             }
 
+            // springBone & collider (optional)
+            if (vrm0.TryGet("secondaryAnimation", out JsonNode vrm0SpringBone))
+            {
+                var springBone = MigrationVrmSpringBone.Migrate(gltf, vrm0SpringBone);
+                UniGLTF.Extensions.VRMC_springBone.GltfSerializer.SerializeTo(ref gltf.extensions, springBone);
+            }
+
+            // MToon                    
+            {
+                MigrationMToon.Migrate(gltf, json);
+            }
+
+            // Serialize whole glTF
             ArraySegment<byte> vrm1Json = default;
             {
-                gltf.extensions = extensions;
-
                 var f = new JsonFormatter();
                 UniGLTF.GltfSerializer.Serialize(f, gltf);
                 vrm1Json = f.GetStoreBytes();
             }
-
             return UniGLTF.Glb.Create(vrm1Json, glb.Binary.Bytes).ToBytes();
         }
 
