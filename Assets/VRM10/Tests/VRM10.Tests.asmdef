@@ -3,9 +3,10 @@
     "references": [
         "VrmLib",
         "VRM10",
-        "UniGLTF",
-        "UnityEngine.TestRunner",
-        "UnityEditor.TestRunner"
+        "UniGLTF"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
     ],
     "includePlatforms": [
         "Editor"
@@ -20,7 +21,5 @@
     "defineConstraints": [
         "UNITY_INCLUDE_TESTS",
         "UNITY_INCLUDE_TESTS"
-    ],
-    "versionDefines": [],
-    "noEngineReferences": false
+    ]
 }

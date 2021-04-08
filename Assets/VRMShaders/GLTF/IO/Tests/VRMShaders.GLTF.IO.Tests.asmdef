@@ -2,9 +2,10 @@
     "name": "VRMShaders.GLTF.IO.Tests",
     "references": [
         "VRMShaders.GLTF.IO.Runtime",
-        "VRMShaders.GLTF.IO.Editor",
-        "UnityEngine.TestRunner",
-        "UnityEditor.TestRunner"
+        "VRMShaders.GLTF.IO.Editor"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
     ],
     "includePlatforms": [
         "Editor"
@@ -18,7 +19,5 @@
     "autoReferenced": false,
     "defineConstraints": [
         "UNITY_INCLUDE_TESTS"
-    ],
-    "versionDefines": [],
-    "noEngineReferences": false
+    ]
 }

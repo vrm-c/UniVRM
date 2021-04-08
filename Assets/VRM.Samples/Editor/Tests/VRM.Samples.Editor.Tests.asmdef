@@ -7,10 +7,11 @@
         "UniGLTF",
         "UniVRM.Editor",
         "VRM.Tests",
-        "UnityEngine.TestRunner",
-        "UnityEditor.TestRunner",
         "VRMShaders.GLTF.IO.Runtime",
         "VRMShaders.GLTF.IO.Editor"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
     ],
     "includePlatforms": [
         "Editor"
@@ -24,7 +25,5 @@
     "autoReferenced": false,
     "defineConstraints": [
         "UNITY_INCLUDE_TESTS"
-    ],
-    "versionDefines": [],
-    "noEngineReferences": false
+    ]
 }

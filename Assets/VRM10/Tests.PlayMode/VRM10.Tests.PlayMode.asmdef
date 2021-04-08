@@ -4,9 +4,10 @@
         "VrmLib",
         "VRM10",
         "UniGLTF",
-        "UnityEngine.TestRunner",
-        "UnityEditor.TestRunner",
         "VRMShaders.GLTF.IO.Runtime"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -18,7 +19,5 @@
     "autoReferenced": false,
     "defineConstraints": [
         "UNITY_INCLUDE_TESTS"
-    ],
-    "versionDefines": [],
-    "noEngineReferences": false
+    ]
 }
