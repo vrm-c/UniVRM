@@ -3,11 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+
 namespace UniGLTF
 {
     [Serializable]
     public struct MeshExportSettings
     {
+        //
+        // https://github.com/vrm-c/UniVRM/issues/800
+        //
+        // VertexBuffer を共有バッファ方式にする
+        // UniVRM-0.71.0 までの挙動
+        //
+        public bool UseSharingVertexBuffer;
+
         // MorphTarget に Sparse Accessor を使う
         public bool UseSparseAccessorForMorphTarget;
 
@@ -144,7 +153,7 @@ namespace UniGLTF
                 }
 
                 gltfMesh.primitives.Add(primitives);
-                
+
             }
             return gltfMesh;
         }
@@ -453,65 +462,6 @@ namespace UniGLTF
 
                 yield return (unityMesh.Mesh, gltfMesh, blendShapeIndexMap);
             }
-        }
-
-        public static (glTFMesh gltfMesh, Dictionary<int, int> blendShapeIndexMap) ExportMesh(glTF gltf, int bufferIndex, Mesh mesh, Renderer renderer, List<Material> exportedMaterials, MeshExportSettings meshExportSettings, IAxisInverter axisInverter)
-        {
-            var meshMaterials = default(Material[]);
-            if (renderer != null)
-            {
-                meshMaterials = renderer.sharedMaterials;
-            }
-
-            var boneWeights = default(BoneWeight[]);
-            var jointIndexMap = default(int[]);
-            if (renderer is SkinnedMeshRenderer skin)
-            {
-                var bones = skin.bones;
-                var uniqueBones = bones.Distinct().ToArray();
-                jointIndexMap = new int[bones.Length];
-                for (var i = 0; i < bones.Length; i++)
-                {
-                    jointIndexMap[i] = Array.IndexOf(uniqueBones, bones[i]);
-                }
-
-                boneWeights = mesh.boneWeights;
-            }
-
-            var gltfMesh = ExportPrimitives(gltf, bufferIndex, mesh, meshMaterials, boneWeights, jointIndexMap, exportedMaterials);
-
-            var targetNames = new List<string>();
-
-            var blendShapeIndexMap = new Dictionary<int, int>();
-            int exportBlendShapes = 0;
-            for (int j = 0; j < mesh.blendShapeCount; ++j)
-            {
-                var morphTarget = ExportMorphTarget(gltf, bufferIndex,
-                    mesh, j,
-                    meshExportSettings.UseSparseAccessorForMorphTarget,
-                    meshExportSettings.ExportOnlyBlendShapePosition, axisInverter);
-                if (morphTarget.POSITION < 0 && morphTarget.NORMAL < 0 && morphTarget.TANGENT < 0)
-                {
-                    continue;
-                }
-
-                // maybe skip
-                var blendShapeName = mesh.GetBlendShapeName(j);
-                blendShapeIndexMap.Add(j, exportBlendShapes++);
-                targetNames.Add(blendShapeName);
-
-                //
-                // all primitive has same blendShape
-                //
-                for (int k = 0; k < gltfMesh.primitives.Count; ++k)
-                {
-                    gltfMesh.primitives[k].targets.Add(morphTarget);
-                }
-            }
-
-            gltf_mesh_extras_targetNames.Serialize(gltfMesh, targetNames);
-
-            return (gltfMesh, blendShapeIndexMap);
         }
     }
 }
