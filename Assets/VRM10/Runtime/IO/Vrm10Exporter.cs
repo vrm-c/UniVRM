@@ -221,11 +221,42 @@ namespace UniVRM10
             if (vrmController != null)
             {
                 ExportExpression(vrm, vrmController, model, converter);
-                // lookAt
+                ExportLookAt(vrm, vrmController);
                 // firstPerson
             }
 
             return (vrm, thumbnailTextureIndex);
+        }
+
+        UniGLTF.Extensions.VRMC_vrm.LookAtRangeMap ExportLookAtRangeMap(CurveMapper mapper)
+        {
+            return new UniGLTF.Extensions.VRMC_vrm.LookAtRangeMap
+            {
+                InputMaxValue = mapper.CurveXRangeDegree,
+                OutputScale = mapper.CurveYRangeDegree,
+            };
+        }
+
+        void ExportLookAt(UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm, VRM10Controller vrmController)
+        {
+            if (vrmController?.LookAt != null)
+            {
+                return;
+            }
+
+            vrm.LookAt = new UniGLTF.Extensions.VRMC_vrm.LookAt
+            {
+                LookAtType = vrmController.LookAt.LookAtType,
+                OffsetFromHeadBone = new float[]{
+                    vrmController.LookAt.OffsetFromHead.x ,
+                    vrmController.LookAt.OffsetFromHead.y ,
+                    vrmController.LookAt.OffsetFromHead.z ,
+                },
+                LookAtHorizontalInner = ExportLookAtRangeMap(vrmController.LookAt.HorizontalInner),
+                LookAtHorizontalOuter = ExportLookAtRangeMap(vrmController.LookAt.HorizontalOuter),
+                LookAtVerticalDown = ExportLookAtRangeMap(vrmController.LookAt.VerticalDown),
+                LookAtVerticalUp = ExportLookAtRangeMap(vrmController.LookAt.VerticalUp),
+            };
         }
 
         UniGLTF.Extensions.VRMC_vrm.MorphTargetBind ExportMorphTargetBinding(MorphTargetBinding binding, Func<string, int> getIndex)
