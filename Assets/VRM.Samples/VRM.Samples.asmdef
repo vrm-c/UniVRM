@@ -4,14 +4,15 @@
         "VRM",
         "UniHumanoid",
         "UniGLTF",
-        "VRMShaders"
+        "VRMShaders.GLTF.IO.Runtime"
     ],
-    "optionalUnityReferences": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
-    "defineConstraints": []
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

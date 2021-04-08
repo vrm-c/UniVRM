@@ -27,23 +27,6 @@ namespace UniGLTF.ShaderPropExporter
 
     public static partial class PreShaderPropExporter
     {
-        public static bool UseUnlit(string shaderName)
-        {
-            switch (shaderName)
-            {
-                case "Unlit/Color":
-                case "Unlit/Texture":
-                case "Unlit/Transparent":
-                case "Unlit/Transparent Cutout":
-                case "UniGLTF/UniUnlit":
-                case "VRM/UnlitTexture":
-                case "VRM/UnlitTransparent":
-                case "VRM/UnlitCutout":
-                    return true;
-            }
-            return false;
-        }
-
         public static readonly string[] VRMExtensionShaders = new string[]
         {
             "VRM/UnlitTransparentZWrite",
