@@ -9,13 +9,15 @@ using VRMShaders;
 
 namespace UniVRM10
 {
-    public class Vrm10Exporter
+    public class Vrm10Exporter : IDisposable
     {
         public readonly Vrm10Storage Storage = new Vrm10Storage();
 
         public readonly string VrmExtensionName = "VRMC_vrm";
 
-        public Vrm10Exporter()
+        TextureExporter m_textureExporter;
+
+        public Vrm10Exporter(Func<Texture, bool> useAsset)
         {
             Storage.Gltf.extensionsUsed.Add(glTF_KHR_materials_unlit.ExtensionName);
             Storage.Gltf.extensionsUsed.Add(glTF_KHR_texture_transform.ExtensionName);
@@ -28,6 +30,13 @@ namespace UniVRM10
             {
 
             });
+
+            m_textureExporter = new TextureExporter(useAsset);
+        }
+
+        public void Dispose()
+        {
+            m_textureExporter.Dispose();
         }
 
         public void ExportAsset(Model model)
@@ -109,9 +118,9 @@ namespace UniVRM10
             });
         }
 
-        public void Export(Model m, ExportArgs option, Func<Texture, bool> useAsset)
+        public void Export(GameObject root, Model model, ExportArgs option, VRM10MetaObject metaObject = null)
         {
-            ExportAsset(m);
+            ExportAsset(model);
 
             ///
             /// 必要な容量を先に確保
@@ -120,7 +129,7 @@ namespace UniVRM10
             {
                 var reserveBytes = 0;
                 // mesh
-                foreach (var g in m.MeshGroups)
+                foreach (var g in model.MeshGroups)
                 {
                     foreach (var mesh in g.Meshes)
                     {
@@ -144,32 +153,49 @@ namespace UniVRM10
             }
 
             // mesh
-            ExportMeshes(m.MeshGroups, m.Materials, option);
+            ExportMeshes(model.MeshGroups, model.Materials, option);
 
             // node
-            ExportNodes(m.Root, m.Nodes, m.MeshGroups, option);
+            ExportNodes(model.Root, model.Nodes, model.MeshGroups, option);
 
             // material
-            var textureExporter = new TextureExporter(useAsset);
             var materialExporter = new Vrm10MaterialExporter();
-            foreach (Material material in m.Materials)
+            foreach (Material material in model.Materials)
             {
-                var glTFMaterial = materialExporter.ExportMaterial(material, textureExporter);
+                var glTFMaterial = materialExporter.ExportMaterial(material, m_textureExporter);
                 Storage.Gltf.materials.Add(glTFMaterial);
             }
 
+            var (vrm, thumbnailTextureIndex) = ExportVrm(root, model, metaObject);
+
             // Extension で Texture が増える場合があるので最後に呼ぶ
-            for (int i = 0; i < textureExporter.Exported.Count; ++i)
+            for (int i = 0; i < m_textureExporter.Exported.Count; ++i)
             {
-                var unityTexture = textureExporter.Exported[i];
+                var unityTexture = m_textureExporter.Exported[i];
                 Storage.Gltf.PushGltfTexture(0, unityTexture);
             }
 
-            ExportVrm(m);
+            if (thumbnailTextureIndex.HasValue)
+            {
+                vrm.Meta.ThumbnailImage = Storage.Gltf.textures[thumbnailTextureIndex.Value].source;
+            }
+
+            UniGLTF.Extensions.VRMC_vrm.GltfSerializer.SerializeTo(ref Storage.Gltf.extensions, vrm);
+
         }
 
-        void ExportVrm(Model model)
+        (UniGLTF.Extensions.VRMC_vrm.VRMC_vrm, int?) ExportVrm(GameObject root, Model model, VRM10MetaObject meta)
         {
+            if (meta is null)
+            {
+                var vrmController = root.GetComponent<VRM10Controller>();
+                if (vrmController is null || vrmController.Meta is null)
+                {
+                    throw new NullReferenceException("metaObject is null");
+                }
+                meta = vrmController.Meta;
+            }
+
             var vrm = new UniGLTF.Extensions.VRMC_vrm.VRMC_vrm
             {
                 Humanoid = new UniGLTF.Extensions.VRMC_vrm.Humanoid
@@ -188,6 +214,7 @@ namespace UniVRM10
             };
 
             ExportHumanoid(vrm, model);
+            var thumbnailTextureIndex = ExportMeta(vrm, meta);
 
             // meta
 
@@ -197,7 +224,33 @@ namespace UniVRM10
 
             // firstPerson
 
-            UniGLTF.Extensions.VRMC_vrm.GltfSerializer.SerializeTo(ref Storage.Gltf.extensions, vrm);
+            return (vrm, thumbnailTextureIndex);
+        }
+
+        int? ExportMeta(UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm, VRM10MetaObject meta)
+        {
+            vrm.Meta.Name = meta.Name;
+            vrm.Meta.Version = meta.Version;
+            vrm.Meta.Authors = meta.Authors.ToList();
+            vrm.Meta.CopyrightInformation = meta.CopyrightInformation;
+            vrm.Meta.ContactInformation = meta.ContactInformation;
+            vrm.Meta.References = meta.References.ToList();
+            // vrm.Meta.ThirdPartyLicenses = 
+            vrm.Meta.AvatarPermission = meta.AllowedUser;
+            vrm.Meta.AllowExcessivelyViolentUsage = meta.ViolentUsage;
+            vrm.Meta.AllowExcessivelySexualUsage = meta.SexualUsage;
+            vrm.Meta.CommercialUsage = meta.CommercialUsage;
+            vrm.Meta.AllowPoliticalOrReligiousUsage = meta.PoliticalOrReligiousUsage;
+            vrm.Meta.CreditNotation = meta.CreditNotation;
+            vrm.Meta.AllowRedistribution = meta.Redistribution;
+            vrm.Meta.Modification = meta.ModificationLicense;
+            vrm.Meta.OtherLicenseUrl = meta.OtherLicenseUrl;
+            int? thumbnailTextureIndex = default;
+            if (meta.Thumbnail != null)
+            {
+                thumbnailTextureIndex = m_textureExporter.ExportSRGB(meta.Thumbnail);
+            }
+            return thumbnailTextureIndex;
         }
 
         void ExportHumanoid(UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm, Model model)

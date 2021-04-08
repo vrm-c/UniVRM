@@ -302,7 +302,7 @@ namespace UniVRM10
 
             try
             {
-                var model = new UniVRM10.RuntimeVrmConverter().ToModelFrom10(root, Meta ? Meta : m_tmpMeta);
+                var model = new UniVRM10.RuntimeVrmConverter().ToModelFrom10(root);
 
                 // if (MeshUtility.Validators.HumanoidValidator.HasRotationOrScale(root))
                 // {
@@ -318,9 +318,9 @@ namespace UniVRM10
 
                 // var exportedBytes = GetGlb(model);
                 // export vrm-1.0
-                var exporter = new UniVRM10.Vrm10Exporter();
+                var exporter = new UniVRM10.Vrm10Exporter(AssetTextureUtil.IsTextureEditorAsset);
                 var option = new VrmLib.ExportArgs();
-                exporter.Export(model, option, AssetTextureUtil.IsTextureEditorAsset);
+                exporter.Export(root, model, option, Meta ? Meta : m_tmpMeta);
 
                 var exportedBytes = exporter.Storage.ToBytes();
 

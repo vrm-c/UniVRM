@@ -22,12 +22,12 @@ public static class ExportDebugUtil
     public static string GetJsonString(VrmLib.Model model)
     {
         // export vrm-1.0
-        var exporter10 = new Vrm10Exporter();
+        var exporter10 = new Vrm10Exporter(_ => false);
         var option = new VrmLib.ExportArgs
         {
             // vrm = false
         };
-        exporter10.Export(model, option, _ => false);
+        exporter10.Export(null, model, option);
         var glbBytes10 = exporter10.Storage.ToBytes();
         var glb10 = UniGLTF.Glb.Parse(glbBytes10);
         return System.Text.Encoding.UTF8.GetString(glb10.Json.Bytes.Array, glb10.Json.Bytes.Offset, glb10.Json.Bytes.Count);
