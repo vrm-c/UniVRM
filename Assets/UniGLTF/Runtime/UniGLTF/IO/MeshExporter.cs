@@ -420,48 +420,56 @@ namespace UniGLTF
             };
         }
 
-        public static IEnumerable<(Mesh, glTFMesh, Dictionary<int, int>)> ExportMeshes(glTF gltf, int bufferIndex,
-            List<MeshWithRenderer> unityMeshes, List<Material> unityMaterials,
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="mesh"></param>
+        /// <param name="gltf"></param>
+        /// <param name="bufferIndex"></param>
+        /// <param name="unityMesh"></param>
+        /// <param name="unityMaterials"></param>
+        /// <param name="settings"></param>
+        /// <param name="axisInverter"></param>
+        /// <returns></returns>
+        public static (glTFMesh mesh, Dictionary<int, int> blendShapeIndexMap) ExportMesh(glTF gltf, int bufferIndex,
+            MeshWithRenderer unityMesh, List<Material> unityMaterials,
             MeshExportSettings settings, IAxisInverter axisInverter)
         {
-            foreach (var unityMesh in unityMeshes)
+            var gltfMesh = ExportPrimitives(gltf, bufferIndex,
+                unityMesh, unityMaterials, axisInverter);
+
+            var targetNames = new List<string>();
+
+            var blendShapeIndexMap = new Dictionary<int, int>();
+            int exportBlendShapes = 0;
+            for (int j = 0; j < unityMesh.Mesh.blendShapeCount; ++j)
             {
-                var gltfMesh = ExportPrimitives(gltf, bufferIndex,
-                    unityMesh, unityMaterials, axisInverter);
-
-                var targetNames = new List<string>();
-
-                var blendShapeIndexMap = new Dictionary<int, int>();
-                int exportBlendShapes = 0;
-                for (int j = 0; j < unityMesh.Mesh.blendShapeCount; ++j)
+                var morphTarget = ExportMorphTarget(gltf, bufferIndex,
+                    unityMesh.Mesh, j,
+                    settings.UseSparseAccessorForMorphTarget,
+                    settings.ExportOnlyBlendShapePosition, axisInverter);
+                if (morphTarget.POSITION < 0 && morphTarget.NORMAL < 0 && morphTarget.TANGENT < 0)
                 {
-                    var morphTarget = ExportMorphTarget(gltf, bufferIndex,
-                        unityMesh.Mesh, j,
-                        settings.UseSparseAccessorForMorphTarget,
-                        settings.ExportOnlyBlendShapePosition, axisInverter);
-                    if (morphTarget.POSITION < 0 && morphTarget.NORMAL < 0 && morphTarget.TANGENT < 0)
-                    {
-                        continue;
-                    }
-
-                    // maybe skip
-                    var blendShapeName = unityMesh.Mesh.GetBlendShapeName(j);
-                    blendShapeIndexMap.Add(j, exportBlendShapes++);
-                    targetNames.Add(blendShapeName);
-
-                    //
-                    // all primitive has same blendShape
-                    //
-                    for (int k = 0; k < gltfMesh.primitives.Count; ++k)
-                    {
-                        gltfMesh.primitives[k].targets.Add(morphTarget);
-                    }
+                    continue;
                 }
 
-                gltf_mesh_extras_targetNames.Serialize(gltfMesh, targetNames);
+                // maybe skip
+                var blendShapeName = unityMesh.Mesh.GetBlendShapeName(j);
+                blendShapeIndexMap.Add(j, exportBlendShapes++);
+                targetNames.Add(blendShapeName);
 
-                yield return (unityMesh.Mesh, gltfMesh, blendShapeIndexMap);
+                //
+                // all primitive has same blendShape
+                //
+                for (int k = 0; k < gltfMesh.primitives.Count; ++k)
+                {
+                    gltfMesh.primitives[k].targets.Add(morphTarget);
+                }
             }
+
+            gltf_mesh_extras_targetNames.Serialize(gltfMesh, targetNames);
+
+            return (gltfMesh, blendShapeIndexMap);
         }
     }
 }
