@@ -30,15 +30,164 @@ namespace UniGLTF
         {
             UseSparseAccessorForMorphTarget = false,
             ExportOnlyBlendShapePosition = false,
-            UseSharingVertexBuffer = true,
 #if GLTF_EXPORT_TANGENTS
             ExportTangents = true,
 #endif            
         };
     }
 
+    class MorphTarget
+    {
+        readonly string m_name;
+        readonly List<Vector3> m_positions;
+        readonly List<Vector3> m_normals;
+
+        public MorphTarget(string name, int reserve)
+        {
+            m_name = name;
+            m_positions = new List<Vector3>(reserve);
+            m_normals = new List<Vector3>(reserve);
+        }
+    }
+
+
+    class VertexBuffer
+    {
+        readonly IAxisInverter m_inverter;
+        readonly int m_indexCount;
+        readonly List<Vector3> m_positions;
+        readonly List<Vector3> m_normals;
+        readonly List<Vector2> m_uv;
+
+        readonly Func<int, int> m_getJointIndex;
+        readonly List<UShort4> m_joints;
+        readonly List<Vector4> m_weights;
+
+        readonly List<MorphTarget> m_morphs = new List<MorphTarget>();
+
+
+        public VertexBuffer(IAxisInverter inverter, int reserve, Func<int, int> getJointIndex)
+        {
+            m_inverter = inverter;
+            m_indexCount = reserve;
+            m_positions = new List<Vector3>(reserve);
+            m_normals = new List<Vector3>(reserve);
+            m_uv = new List<Vector2>();
+
+            m_getJointIndex = getJointIndex;
+            if (m_getJointIndex != null)
+            {
+                m_joints = new List<UShort4>(reserve);
+                m_weights = new List<Vector4>(reserve);
+            }
+        }
+
+        public void Push(Vector3 position, Vector3 normal, Vector2 uv)
+        {
+            m_positions.Add(m_inverter.InvertVector3(position));
+            m_normals.Add(m_inverter.InvertVector3(normal));
+            m_uv.Add(uv.ReverseUV());
+        }
+
+        public void Push(BoneWeight boneWeight)
+        {
+            m_joints.Add(new UShort4((ushort)boneWeight.boneIndex0, (ushort)boneWeight.boneIndex1, (ushort)boneWeight.boneIndex2, (ushort)boneWeight.boneIndex3));
+            m_weights.Add(new Vector4(boneWeight.weight0, boneWeight.weight1, boneWeight.weight2, boneWeight.weight3));
+        }
+
+        public glTFPrimitives ToGltf(glTF gltf, int bufferIndex, int materialIndex)
+        {
+            var indices = new List<uint>(m_indexCount);
+            // flip triangles
+            for (int i = 0; i < m_indexCount; i += 3)
+            {
+                // 2, 1, 0, 5, 4, 3, ...
+                indices.Add((uint)(i + 2));
+                indices.Add((uint)(i + 1));
+                indices.Add((uint)(i + 0));
+            }
+
+            var indicesAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, indices.ToArray(), glBufferTarget.ELEMENT_ARRAY_BUFFER);
+            var positionAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, m_positions.ToArray(), glBufferTarget.ARRAY_BUFFER);
+            var normalAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, m_normals.ToArray(), glBufferTarget.ARRAY_BUFFER);
+            var uvAccessorIndex0 = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, m_uv.ToArray(), glBufferTarget.ARRAY_BUFFER);
+            var jointsAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, m_joints.ToArray(), glBufferTarget.ARRAY_BUFFER);
+            var weightAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, m_weights.ToArray(), glBufferTarget.ARRAY_BUFFER);
+
+            var primitive = new glTFPrimitives
+            {
+                indices = indicesAccessorIndex,
+                attributes = new glTFAttributes
+                {
+                    POSITION = positionAccessorIndex,
+                    NORMAL = normalAccessorIndex,
+                    TEXCOORD_0 = uvAccessorIndex0,
+                    JOINTS_0 = jointsAccessorIndex,
+                    WEIGHTS_0 = weightAccessorIndex,
+                },
+                material = materialIndex,
+                mode = 4,
+                targets = null,
+            };
+            return primitive;
+        }
+    }
+
     public static class MeshExporter
     {
+        static glTFMesh ExportDividedVertexBuffer(glTF gltf, int bufferIndex,
+            MeshWithRenderer unityMesh, List<Material> unityMaterials,
+            IAxisInverter axisInverter, MeshExportSettings settings)
+        {
+            var mesh = unityMesh.Mesh;
+            var gltfMesh = new glTFMesh(mesh.name);
+
+            if (settings.ExportTangents)
+            {
+                // support しない
+                throw new NotImplementedException();
+            }
+
+            var positions = mesh.vertices;
+            var normals = mesh.normals;
+            var uv = mesh.uv;
+            var boneWeights = mesh.boneWeights;
+
+            Func<int, int> getJointIndex = null;
+            if (boneWeights != null && boneWeights.Length == positions.Length)
+            {
+                getJointIndex = unityMesh.GetJointIndex;
+            }
+
+            for (int i = 0; i < mesh.subMeshCount; ++i)
+            {
+                var indices = mesh.GetIndices(i);
+
+                // index の順に attributes を蓄える                
+                var buffer = new VertexBuffer(axisInverter, indices.Length, getJointIndex);
+                foreach (var j in indices)
+                {
+                    buffer.Push(positions[j], normals[j], uv[j]);
+                    if (getJointIndex != null)
+                    {
+                        buffer.Push(boneWeights[j]);
+                    }
+                }
+
+                var material = unityMesh.Renderer.sharedMaterials[i];
+                var materialIndex = -1;
+                if (material != null)
+                {
+                    materialIndex = unityMaterials.IndexOf(material);
+                }
+                gltfMesh.primitives.Add(buffer.ToGltf(gltf, bufferIndex, materialIndex));
+            }
+
+            // morphTarget
+
+            return gltfMesh;
+        }
+
         /// <summary>
         /// primitive 間で vertex を共有する形で Export する。
         /// 
@@ -334,45 +483,45 @@ namespace UniGLTF
             MeshExportSettings settings, IAxisInverter axisInverter)
         {
             glTFMesh gltfMesh = default;
+            var blendShapeIndexMap = new Dictionary<int, int>();
             if (settings.UseSharingVertexBuffer)
             {
                 gltfMesh = ExportSharedVertexBuffer(gltf, bufferIndex, unityMesh, unityMaterials, axisInverter, settings);
+
+                var targetNames = new List<string>();
+
+                int exportBlendShapes = 0;
+                for (int j = 0; j < unityMesh.Mesh.blendShapeCount; ++j)
+                {
+                    var morphTarget = ExportMorphTarget(gltf, bufferIndex,
+                        unityMesh.Mesh, j,
+                        settings.UseSparseAccessorForMorphTarget,
+                        settings.ExportOnlyBlendShapePosition, axisInverter);
+                    if (morphTarget.POSITION < 0 && morphTarget.NORMAL < 0 && morphTarget.TANGENT < 0)
+                    {
+                        continue;
+                    }
+
+                    // maybe skip
+                    var blendShapeName = unityMesh.Mesh.GetBlendShapeName(j);
+                    blendShapeIndexMap.Add(j, exportBlendShapes++);
+                    targetNames.Add(blendShapeName);
+
+                    //
+                    // all primitive has same blendShape
+                    //
+                    for (int k = 0; k < gltfMesh.primitives.Count; ++k)
+                    {
+                        gltfMesh.primitives[k].targets.Add(morphTarget);
+                    }
+                }
+
+                gltf_mesh_extras_targetNames.Serialize(gltfMesh, targetNames);
             }
             else
             {
-                throw new NotImplementedException();
+                gltfMesh = ExportDividedVertexBuffer(gltf, bufferIndex, unityMesh, unityMaterials, axisInverter, settings);
             }
-
-            var targetNames = new List<string>();
-
-            var blendShapeIndexMap = new Dictionary<int, int>();
-            int exportBlendShapes = 0;
-            for (int j = 0; j < unityMesh.Mesh.blendShapeCount; ++j)
-            {
-                var morphTarget = ExportMorphTarget(gltf, bufferIndex,
-                    unityMesh.Mesh, j,
-                    settings.UseSparseAccessorForMorphTarget,
-                    settings.ExportOnlyBlendShapePosition, axisInverter);
-                if (morphTarget.POSITION < 0 && morphTarget.NORMAL < 0 && morphTarget.TANGENT < 0)
-                {
-                    continue;
-                }
-
-                // maybe skip
-                var blendShapeName = unityMesh.Mesh.GetBlendShapeName(j);
-                blendShapeIndexMap.Add(j, exportBlendShapes++);
-                targetNames.Add(blendShapeName);
-
-                //
-                // all primitive has same blendShape
-                //
-                for (int k = 0; k < gltfMesh.primitives.Count; ++k)
-                {
-                    gltfMesh.primitives[k].targets.Add(morphTarget);
-                }
-            }
-
-            gltf_mesh_extras_targetNames.Serialize(gltfMesh, targetNames);
 
             return (gltfMesh, blendShapeIndexMap);
         }

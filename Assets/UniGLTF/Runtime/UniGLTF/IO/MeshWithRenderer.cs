@@ -37,6 +37,12 @@ namespace UniGLTF
             }
         }
 
+        /// <summary>
+        /// glTF は　skinning の boneList の重複を許可しない
+        /// (unity は ok)
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
         public int GetJointIndex(int index)
         {
             if (index < 0)
