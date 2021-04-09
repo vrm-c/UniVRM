@@ -39,137 +39,20 @@ namespace UniGLTF
 
     public static class MeshExporter
     {
-        static glTFMesh ExportPrimitives(glTF gltf, int bufferIndex, Mesh mesh, Material[] meshMaterials, BoneWeight[] boneWeights, int[] jointIndexMap,
-            List<Material> exportedMaterials, MeshExportSettings settings)
-        {
-            var positions = mesh.vertices.Select(y => y.ReverseZ()).ToArray();
-            var positionAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, positions, glBufferTarget.ARRAY_BUFFER);
-            gltf.accessors[positionAccessorIndex].min = positions.Aggregate(positions[0], (a, b) => new Vector3(Mathf.Min(a.x, b.x), Math.Min(a.y, b.y), Mathf.Min(a.z, b.z))).ToArray();
-            gltf.accessors[positionAccessorIndex].max = positions.Aggregate(positions[0], (a, b) => new Vector3(Mathf.Max(a.x, b.x), Math.Max(a.y, b.y), Mathf.Max(a.z, b.z))).ToArray();
-
-            var normalAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, mesh.normals.Select(y => y.normalized.ReverseZ()).ToArray(), glBufferTarget.ARRAY_BUFFER);
-
-            int? tangentAccessorIndex = default;
-            if (settings.ExportTangents)
-            {
-                tangentAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, mesh.tangents.Select(y => y.ReverseZ()).ToArray(), glBufferTarget.ARRAY_BUFFER);
-            }
-
-            var uvAccessorIndex0 = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, mesh.uv.Select(y => y.ReverseUV()).ToArray(), glBufferTarget.ARRAY_BUFFER);
-            var uvAccessorIndex1 = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, mesh.uv2.Select(y => y.ReverseUV()).ToArray(), glBufferTarget.ARRAY_BUFFER);
-
-            var colorAccessorIndex = -1;
-
-            var vColorState = MeshExportInfo.DetectVertexColor(mesh, meshMaterials);
-            if (vColorState == MeshExportInfo.VertexColorState.ExistsAndIsUsed // VColor使っている
-            || vColorState == MeshExportInfo.VertexColorState.ExistsAndMixed // VColorを使っているところと使っていないところが混在(とりあえずExportする)
-            )
-            {
-                // UniUnlit で Multiply 設定になっている
-                colorAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, mesh.colors, glBufferTarget.ARRAY_BUFFER);
-            }
-
-            var weightAccessorIndex = -1;
-            var jointsAccessorIndex = -1;
-
-            if (boneWeights != null && jointIndexMap != null)
-            {
-                weightAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, boneWeights.Select(y => new Vector4(y.weight0, y.weight1, y.weight2, y.weight3)).ToArray(), glBufferTarget.ARRAY_BUFFER);
-                jointsAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, boneWeights.Select(y =>
-                    new UShort4(
-                        (ushort)jointIndexMap[y.boneIndex0],
-                        (ushort)jointIndexMap[y.boneIndex1],
-                        (ushort)jointIndexMap[y.boneIndex2],
-                        (ushort)jointIndexMap[y.boneIndex3])
-                ).ToArray(), glBufferTarget.ARRAY_BUFFER);
-            }
-
-            var attributes = new glTFAttributes
-            {
-                POSITION = positionAccessorIndex,
-            };
-            if (normalAccessorIndex != -1)
-            {
-                attributes.NORMAL = normalAccessorIndex;
-            }
-
-            if (tangentAccessorIndex.HasValue)
-            {
-                attributes.TANGENT = tangentAccessorIndex.Value;
-            }
-
-            if (uvAccessorIndex0 != -1)
-            {
-                attributes.TEXCOORD_0 = uvAccessorIndex0;
-            }
-            if (uvAccessorIndex1 != -1)
-            {
-                attributes.TEXCOORD_1 = uvAccessorIndex1;
-            }
-            if (colorAccessorIndex != -1)
-            {
-                attributes.COLOR_0 = colorAccessorIndex;
-            }
-            if (weightAccessorIndex != -1)
-            {
-                attributes.WEIGHTS_0 = weightAccessorIndex;
-            }
-            if (jointsAccessorIndex != -1)
-            {
-                attributes.JOINTS_0 = jointsAccessorIndex;
-            }
-
-            var gltfMesh = new glTFMesh(mesh.name);
-            var indices = new List<uint>();
-            for (var j = 0; j < mesh.subMeshCount; ++j)
-            {
-                indices.Clear();
-
-                var triangles = mesh.GetIndices(j);
-                if (triangles.Length == 0)
-                {
-                    // https://github.com/vrm-c/UniVRM/issues/664                    
-                    continue;
-                }
-
-                for (var i = 0; i < triangles.Length; i += 3)
-                {
-                    var i0 = triangles[i];
-                    var i1 = triangles[i + 1];
-                    var i2 = triangles[i + 2];
-
-                    // flip triangle
-                    indices.Add((uint)i2);
-                    indices.Add((uint)i1);
-                    indices.Add((uint)i0);
-                }
-
-                var indicesAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, indices.ToArray(), glBufferTarget.ELEMENT_ARRAY_BUFFER);
-                if (indicesAccessorIndex < 0)
-                {
-                    // https://github.com/vrm-c/UniVRM/issues/664                    
-                    throw new Exception();
-                }
-
-                var primitives = new glTFPrimitives
-                {
-                    attributes = attributes,
-                    indices = indicesAccessorIndex,
-                    mode = 4, // triangles ?
-                };
-
-                if (meshMaterials != null)
-                {
-                    primitives.material = exportedMaterials.IndexOf(meshMaterials[j]);
-                }
-
-                gltfMesh.primitives.Add(primitives);
-
-            }
-            return gltfMesh;
-        }
-
-        static glTFMesh ExportPrimitives(glTF gltf, int bufferIndex,
+        /// <summary>
+        /// primitive 間で vertex を共有する形で Export する。
+        /// 
+        /// UniVRM-0.71.0 までの挙動
+        ///
+        /// /// </summary>
+        /// <param name="gltf"></param>
+        /// <param name="bufferIndex"></param>
+        /// <param name="unityMesh"></param>
+        /// <param name="unityMaterials"></param>
+        /// <param name="axisInverter"></param>
+        /// <param name="settings"></param>
+        /// <returns></returns>
+        static glTFMesh ExportSharedVertexBuffer(glTF gltf, int bufferIndex,
             MeshWithRenderer unityMesh, List<Material> unityMaterials,
             IAxisInverter axisInverter, MeshExportSettings settings)
         {
@@ -453,7 +336,7 @@ namespace UniGLTF
             glTFMesh gltfMesh = default;
             if (settings.UseSharingVertexBuffer)
             {
-                gltfMesh = ExportPrimitives(gltf, bufferIndex, unityMesh, unityMaterials, axisInverter, settings);
+                gltfMesh = ExportSharedVertexBuffer(gltf, bufferIndex, unityMesh, unityMaterials, axisInverter, settings);
             }
             else
             {
