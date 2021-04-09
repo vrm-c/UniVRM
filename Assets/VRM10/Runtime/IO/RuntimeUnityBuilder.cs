@@ -226,6 +226,18 @@ namespace UniVRM10
             await LoadConstraintAsync(awaitCaller, controller);
         }
 
+        static ExpressionKey Key(UniGLTF.Extensions.VRMC_vrm.Expression e)
+        {
+            if (e.Preset == UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.custom)
+            {
+                return ExpressionKey.CreateCustom(e.Name);
+            }
+            else
+            {
+                return ExpressionKey.CreateFromPreset(e.Preset);
+            }
+        }
+
         async Task LoadVrmAsync(IAwaitCaller awaitCaller, VRM10Controller controller, UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm)
         {
             // meta
@@ -281,7 +293,7 @@ namespace UniVRM10
                     var clip = ScriptableObject.CreateInstance<UniVRM10.VRM10Expression>();
                     clip.Preset = expression.Preset;
                     clip.ExpressionName = expression.Name;
-                    clip.name = expression.ExtractName();
+                    clip.name = Key(expression).ExtractKey;
                     clip.IsBinary = expression.IsBinary.GetValueOrDefault();
                     clip.OverrideBlink = expression.OverrideBlink;
                     clip.OverrideLookAt = expression.OverrideLookAt;
