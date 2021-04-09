@@ -156,5 +156,6 @@ namespace UniGLTF
             }
             return self.Slice(start, self.Count - start);
         }
+       
     }
 }

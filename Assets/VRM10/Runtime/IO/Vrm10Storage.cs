@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
+using UniGLTF;
+using UniJSON;
 using VrmLib;
 
 
@@ -35,6 +37,8 @@ namespace UniVRM10
             {
                 new UniGLTF.ArrayByteBuffer()
             };
+
+            Gltf.AddBuffer(Buffers[0]);
         }
 
         /// <summary>
@@ -478,6 +482,18 @@ namespace UniVRM10
         {
             int index = Gltf.buffers.IndexOf(buffer);
             return Buffers[index].Bytes;
+        }
+
+        public byte[] ToBytes()
+        {
+            Gltf.buffers[0].byteLength = Buffers[0].Bytes.Count;
+
+            var f = new JsonFormatter();
+            UniGLTF.GltfSerializer.Serialize(f, Gltf);
+            var json = f.GetStoreBytes();
+
+            var glb = UniGLTF.Glb.Create(json, Buffers[0].Bytes);
+            return glb.ToBytes();
         }
     }
 }

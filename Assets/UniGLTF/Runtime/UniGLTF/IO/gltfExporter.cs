@@ -4,11 +4,11 @@ using System.Linq;
 using UnityEngine;
 using VRMShaders;
 
+
 namespace UniGLTF
 {
     public class gltfExporter : IDisposable
     {
-
         protected glTF glTF;
 
         public GameObject Copy

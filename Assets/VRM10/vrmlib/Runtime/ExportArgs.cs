@@ -6,29 +6,6 @@ namespace VrmLib
     public struct ExportArgs
     {
         /// <summary>
-        /// VRM拡張をエクスポートするか
-        ///
-        /// struct で初期値をdefault以外にするために
-        /// nullableなpropertyを使っている
-        /// </summary>
-        bool? m_vrm;
-        public bool vrm
-        {
-            get
-            {
-                if (!m_vrm.HasValue)
-                {
-                    m_vrm = true;
-                }
-                return m_vrm.Value;
-            }
-            set
-            {
-                m_vrm = value;
-            }
-        }
-
-        /// <summary>
         /// 頂点バッファにsparse機能を使うか
         ///
         /// struct で初期値をdefault以外にするために

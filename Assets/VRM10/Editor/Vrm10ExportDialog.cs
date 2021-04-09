@@ -4,9 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using MeshUtility;
+using UniGLTF;
 using UnityEditor;
 using UnityEngine;
 using VrmLib;
+using VRMShaders;
 
 namespace UniVRM10
 {
@@ -300,8 +302,8 @@ namespace UniVRM10
 
             try
             {
-                var exporter = new UniVRM10.RuntimeVrmConverter();
-                var model = exporter.ToModelFrom10(root, Meta ? Meta : m_tmpMeta);
+                var converter = new UniVRM10.RuntimeVrmConverter();
+                var model = converter.ToModelFrom10(root);
 
                 // if (MeshUtility.Validators.HumanoidValidator.HasRotationOrScale(root))
                 // {
@@ -315,7 +317,13 @@ namespace UniVRM10
                 m_logLabel += $"convert to right handed coordinate...\n";
                 model.ConvertCoordinate(VrmLib.Coordinates.Vrm1, ignoreVrm: false);
 
-                var exportedBytes = GetGlb(model);
+                // export vrm-1.0
+                var exporter = new UniVRM10.Vrm10Exporter(AssetTextureUtil.IsTextureEditorAsset);
+                var option = new VrmLib.ExportArgs();
+                exporter.Export(root, model, converter, option, Meta ? Meta : m_tmpMeta);
+
+                var exportedBytes = exporter.Storage.ToBytes();
+
                 m_logLabel += $"write to {path}...\n";
                 File.WriteAllBytes(path, exportedBytes);
                 Debug.Log("exportedBytes: " + exportedBytes.Length);
@@ -334,23 +342,9 @@ namespace UniVRM10
             }
         }
 
-        static byte[] GetGlb(VrmLib.Model model)
-        {
-            // export vrm-1.0
-            var exporter = new UniVRM10.Vrm10Exporter();
-            var option = new VrmLib.ExportArgs
-            {
-                // vrm = false
-            };
-            var glbBytes10 = exporter.Export(model, option);
-            // ?
-            var glb10 = UniGLTF.Glb.Parse(glbBytes10);
-            return glb10.ToBytes();
-        }
-
         static string ToAssetPath(string path)
         {
-            var assetPath = UnityPath.FromFullpath(path);
+            var assetPath = UniGLTF.UnityPath.FromFullpath(path);
             return assetPath.Value;
         }
     }

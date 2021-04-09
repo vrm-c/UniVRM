@@ -14,12 +14,17 @@ namespace UniVRM10
         {
             var glb = UniGLTF.Glb.Parse(src);
             var json = glb.Json.Bytes.ParseAsJson();
+            return Migrate(json, glb.Binary.Bytes);
+        }
+
+        public static byte[] Migrate(JsonNode json, ArraySegment<byte> bin)
+        {
             var gltf = UniGLTF.GltfDeserializer.Deserialize(json);
 
             // attach glb bin to buffer
             foreach (var buffer in gltf.buffers)
             {
-                buffer.OpenStorage(new UniGLTF.SimpleStorage(glb.Binary.Bytes));
+                buffer.OpenStorage(new UniGLTF.SimpleStorage(bin));
             }
 
             // https://github.com/vrm-c/vrm-specification/issues/205
@@ -71,7 +76,8 @@ namespace UniVRM10
                 UniGLTF.GltfSerializer.Serialize(f, gltf);
                 vrm1Json = f.GetStoreBytes();
             }
-            return UniGLTF.Glb.Create(vrm1Json, glb.Binary.Bytes).ToBytes();
+            // JSON 部分だけが改変されて、BIN はそのまま
+            return UniGLTF.Glb.Create(vrm1Json, bin).ToBytes();
         }
 
         public static void Check(JsonNode vrm0, UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm1)

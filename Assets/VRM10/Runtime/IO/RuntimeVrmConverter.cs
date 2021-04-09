@@ -20,19 +20,9 @@ namespace UniVRM10
         /// <summary>
         /// metaObject が null のときは、root から取得する
         /// </summary>
-        public VrmLib.Model ToModelFrom10(GameObject root, VRM10MetaObject metaObject = null)
+        public VrmLib.Model ToModelFrom10(GameObject root)
         {
             Model = new VrmLib.Model(VrmLib.Coordinates.Unity);
-
-            if (metaObject is null)
-            {
-                var vrmController = root.GetComponent<VRM10Controller>();
-                if (vrmController is null || vrmController.Meta is null)
-                {
-                    throw new NullReferenceException("metaObject is null");
-                }
-                metaObject = vrmController.Meta;
-            }
 
             ToGlbModel(root);
 

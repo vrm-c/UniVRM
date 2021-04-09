@@ -214,7 +214,7 @@ namespace UniVRM10
         /// <returns></returns>
         public static bool TryGetMetaThumbnailTextureImportParam(GltfParser parser, UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm, out TextureImportParam value)
         {
-            if (!vrm.Meta.ThumbnailImage.HasValue)
+            if (vrm?.Meta == null || !vrm.Meta.ThumbnailImage.HasValue)
             {
                 value = default;
                 return false;

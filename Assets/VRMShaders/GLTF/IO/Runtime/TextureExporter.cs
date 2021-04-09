@@ -9,13 +9,18 @@ namespace VRMShaders
     /// glTF にエクスポートする Texture2D を蓄えて index を確定させる。
     /// Exporter の最後でまとめて Texture2D から bytes 列を得て出力する。
     /// </summary>
-    public class TextureExporter
+    public class TextureExporter : IDisposable
     {
         Func<Texture, bool> m_useAsset;
 
         public TextureExporter(Func<Texture, bool> useAsset)
         {
             m_useAsset = useAsset;
+        }
+
+        public void Dispose()
+        {
+            // TODO: export 用にコピー・変換したテクスチャーをここで解放したい
         }
 
         public enum ConvertTypes

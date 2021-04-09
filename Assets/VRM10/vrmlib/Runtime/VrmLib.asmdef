@@ -1,6 +1,8 @@
 {
     "name": "VrmLib",
-    "references": [],
+    "references": [
+        "UniGLTF"
+    ],
     "optionalUnityReferences": [],
     "includePlatforms": [],
     "excludePlatforms": [],
