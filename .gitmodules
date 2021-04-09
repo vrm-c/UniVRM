@@ -1,9 +1,9 @@
+[submodule "MToon"]
+	path = Assets/VRMShaders/MToon
+	url = https://github.com/Santarh/MToon.git
 [submodule "vrm-specification"]
 	path = vrm-specification
 	url = https://github.com/vrm-c/vrm-specification.git
 [submodule "glTF"]
 	path = glTF
 	url = https://github.com/KhronosGroup/glTF.git
-[submodule "Assets/VRMShaders/VRM/MToon"]
-	path = Assets/VRMShaders/VRM/MToon
-	url = https://github.com/Santarh/MToon.git
