@@ -23,17 +23,24 @@ namespace UniGLTF
         // MorphTarget を Position だけにする(normal とか捨てる)
         public bool ExportOnlyBlendShapePosition;
 
+        // tangent を出力する
+        public bool ExportTangents;
+
         public static MeshExportSettings Default => new MeshExportSettings
         {
             UseSparseAccessorForMorphTarget = false,
             ExportOnlyBlendShapePosition = false,
+            UseSharingVertexBuffer = true,
+#if GLTF_EXPORT_TANGENTS
+            ExportTangents = true,
+#endif            
         };
     }
 
     public static class MeshExporter
     {
         static glTFMesh ExportPrimitives(glTF gltf, int bufferIndex, Mesh mesh, Material[] meshMaterials, BoneWeight[] boneWeights, int[] jointIndexMap,
-            List<Material> exportedMaterials)
+            List<Material> exportedMaterials, MeshExportSettings settings)
         {
             var positions = mesh.vertices.Select(y => y.ReverseZ()).ToArray();
             var positionAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, positions, glBufferTarget.ARRAY_BUFFER);
@@ -41,9 +48,13 @@ namespace UniGLTF
             gltf.accessors[positionAccessorIndex].max = positions.Aggregate(positions[0], (a, b) => new Vector3(Mathf.Max(a.x, b.x), Math.Max(a.y, b.y), Mathf.Max(a.z, b.z))).ToArray();
 
             var normalAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, mesh.normals.Select(y => y.normalized.ReverseZ()).ToArray(), glBufferTarget.ARRAY_BUFFER);
-#if GLTF_EXPORT_TANGENTS
-            var tangentAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, mesh.tangents.Select(y => y.ReverseZ()).ToArray(), glBufferTarget.ARRAY_BUFFER);
-#endif
+
+            int? tangentAccessorIndex = default;
+            if (settings.ExportTangents)
+            {
+                tangentAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, mesh.tangents.Select(y => y.ReverseZ()).ToArray(), glBufferTarget.ARRAY_BUFFER);
+            }
+
             var uvAccessorIndex0 = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, mesh.uv.Select(y => y.ReverseUV()).ToArray(), glBufferTarget.ARRAY_BUFFER);
             var uvAccessorIndex1 = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, mesh.uv2.Select(y => y.ReverseUV()).ToArray(), glBufferTarget.ARRAY_BUFFER);
 
@@ -81,12 +92,12 @@ namespace UniGLTF
             {
                 attributes.NORMAL = normalAccessorIndex;
             }
-#if GLTF_EXPORT_TANGENTS
-            if (tangentAccessorIndex != -1)
+
+            if (tangentAccessorIndex.HasValue)
             {
-                attributes.TANGENT = tangentAccessorIndex;
+                attributes.TANGENT = tangentAccessorIndex.Value;
             }
-#endif
+
             if (uvAccessorIndex0 != -1)
             {
                 attributes.TEXCOORD_0 = uvAccessorIndex0;
@@ -160,7 +171,7 @@ namespace UniGLTF
 
         static glTFMesh ExportPrimitives(glTF gltf, int bufferIndex,
             MeshWithRenderer unityMesh, List<Material> unityMaterials,
-            IAxisInverter axisInverter)
+            IAxisInverter axisInverter, MeshExportSettings settings)
         {
             var mesh = unityMesh.Mesh;
             var materials = unityMesh.Renderer.sharedMaterials;
@@ -170,9 +181,13 @@ namespace UniGLTF
             gltf.accessors[positionAccessorIndex].max = positions.Aggregate(positions[0], (a, b) => new Vector3(Mathf.Max(a.x, b.x), Math.Max(a.y, b.y), Mathf.Max(a.z, b.z))).ToArray();
 
             var normalAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, mesh.normals.Select(y => axisInverter.InvertVector3(y.normalized)).ToArray(), glBufferTarget.ARRAY_BUFFER);
-#if GLTF_EXPORT_TANGENTS
-            var tangentAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, mesh.tangents.Select(axisInverter.InvertVector4()).ToArray(), glBufferTarget.ARRAY_BUFFER);
-#endif
+
+            int? tangentAccessorIndex = default;
+            if (settings.ExportTangents)
+            {
+                tangentAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, mesh.tangents.Select(axisInverter.InvertVector4).ToArray(), glBufferTarget.ARRAY_BUFFER);
+            }
+
             var uvAccessorIndex0 = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, mesh.uv.Select(y => y.ReverseUV()).ToArray(), glBufferTarget.ARRAY_BUFFER);
             var uvAccessorIndex1 = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, mesh.uv2.Select(y => y.ReverseUV()).ToArray(), glBufferTarget.ARRAY_BUFFER);
 
@@ -205,12 +220,12 @@ namespace UniGLTF
             {
                 attributes.NORMAL = normalAccessorIndex;
             }
-#if GLTF_EXPORT_TANGENTS
-            if (tangentAccessorIndex != -1)
+
+            if (tangentAccessorIndex.HasValue)
             {
-                attributes.TANGENT = tangentAccessorIndex;
+                attributes.TANGENT = tangentAccessorIndex.Value;
             }
-#endif
+
             if (uvAccessorIndex0 != -1)
             {
                 attributes.TEXCOORD_0 = uvAccessorIndex0;
@@ -435,8 +450,15 @@ namespace UniGLTF
             MeshWithRenderer unityMesh, List<Material> unityMaterials,
             MeshExportSettings settings, IAxisInverter axisInverter)
         {
-            var gltfMesh = ExportPrimitives(gltf, bufferIndex,
-                unityMesh, unityMaterials, axisInverter);
+            glTFMesh gltfMesh = default;
+            if (settings.UseSharingVertexBuffer)
+            {
+                gltfMesh = ExportPrimitives(gltf, bufferIndex, unityMesh, unityMaterials, axisInverter, settings);
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
 
             var targetNames = new List<string>();
 
