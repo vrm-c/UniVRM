@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Linq;
 using UniGLTF;
-// using UniGLTF.ShaderPropExporter;
 using UnityEngine;
 using VRMShaders;
 

@@ -239,12 +239,15 @@ namespace UniVRM10
 
         void ExportFirstPerson(UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm, VRM10Controller vrmController, Model model, RuntimeVrmConverter converter)
         {
-            if (vrmController?.FirstPerson != null)
+            if (vrmController?.FirstPerson == null)
             {
                 return;
             }
 
-            vrm.FirstPerson = new UniGLTF.Extensions.VRMC_vrm.FirstPerson();
+            vrm.FirstPerson = new UniGLTF.Extensions.VRMC_vrm.FirstPerson
+            {
+                MeshAnnotations = new List<UniGLTF.Extensions.VRMC_vrm.MeshAnnotation>(),
+            };
             Func<Renderer, int> getIndex = r =>
             {
                 var node = converter.Nodes[r.gameObject];
