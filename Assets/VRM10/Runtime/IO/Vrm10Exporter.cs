@@ -176,7 +176,7 @@ namespace UniVRM10
                 Storage.Gltf.materials.Add(glTFMaterial);
             }
 
-            var (vrm, thumbnailTextureIndex) = ExportVrm(root, model, converter, metaObject);
+            var (vrm, vrmSpringBone, thumbnailTextureIndex) = ExportVrm(root, model, converter, metaObject);
 
             // Extension で Texture が増える場合があるので最後に呼ぶ
             for (int i = 0; i < m_textureExporter.Exported.Count; ++i)
@@ -192,9 +192,13 @@ namespace UniVRM10
 
             UniGLTF.Extensions.VRMC_vrm.GltfSerializer.SerializeTo(ref Storage.Gltf.extensions, vrm);
 
+            if (vrmSpringBone != null)
+            {
+                UniGLTF.Extensions.VRMC_springBone.GltfSerializer.SerializeTo(ref Storage.Gltf.extensions, vrmSpringBone);
+            }
         }
 
-        (UniGLTF.Extensions.VRMC_vrm.VRMC_vrm, int?) ExportVrm(GameObject root, Model model, RuntimeVrmConverter converter, VRM10MetaObject meta)
+        (UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm, UniGLTF.Extensions.VRMC_springBone.VRMC_springBone springBone, int? thumbnailIndex) ExportVrm(GameObject root, Model model, RuntimeVrmConverter converter, VRM10MetaObject meta)
         {
             var vrmController = root.GetComponent<VRM10Controller>();
 
@@ -224,20 +228,69 @@ namespace UniVRM10
                 },
             };
 
+            //
+            // required
+            //
             ExportHumanoid(vrm, model);
-
             var thumbnailTextureIndex = ExportMeta(vrm, meta);
 
+            //
+            // optional
+            //
+            UniGLTF.Extensions.VRMC_springBone.VRMC_springBone vrmSpringBone = default;
             if (vrmController != null)
             {
                 ExportExpression(vrm, vrmController, model, converter);
                 ExportLookAt(vrm, vrmController);
                 ExportFirstPerson(vrm, vrmController, model, converter);
 
-                ExportSpringBone(vrmController, model, converter);
+                vrmSpringBone = ExportSpringBone(vrmController, model, converter);
             }
 
-            return (vrm, thumbnailTextureIndex);
+            return (vrm, vrmSpringBone, thumbnailTextureIndex);
+        }
+
+        UniGLTF.Extensions.VRMC_node_collider.ColliderShape ExportShape(VRM10SpringBoneCollider z)
+        {
+            var shape = new UniGLTF.Extensions.VRMC_node_collider.ColliderShape();
+            switch (z.ColliderType)
+            {
+                case VRM10SpringBoneColliderTypes.Sphere:
+                    {
+                        shape.Sphere = new UniGLTF.Extensions.VRMC_node_collider.ColliderShapeSphere
+                        {
+                            Radius = z.Radius,
+                            Offset = ReverseX(z.Offset),
+                        };
+                        break;
+                    }
+
+                case VRM10SpringBoneColliderTypes.Capsule:
+                    {
+                        shape.Capsule = new UniGLTF.Extensions.VRMC_node_collider.ColliderShapeCapsule
+                        {
+                            Radius = z.Radius,
+                            Offset = new float[] { z.Offset.x, z.Offset.y, z.Offset.z },
+                            Tail = new float[] { z.Tail.x, z.Tail.y, z.Tail.z },
+                        };
+                        break;
+                    }
+            }
+            return shape;
+        }
+
+        UniGLTF.Extensions.VRMC_springBone.SpringBoneJoint ExportJoint(VRM10SpringJoint y, Func<Transform, int> getIndexFromTransform)
+        {
+            var joint = new UniGLTF.Extensions.VRMC_springBone.SpringBoneJoint
+            {
+                Node = getIndexFromTransform(y.Transform),
+                HitRadius = y.m_jointRadius,
+                DragForce = y.m_dragForce,
+                Stiffness = y.m_stiffnessForce,
+                GravityDir = ReverseX(y.m_gravityDir),
+                GravityPower = y.m_gravityPower,
+            };
+            return joint;
         }
 
         UniGLTF.Extensions.VRMC_springBone.VRMC_springBone ExportSpringBone(VRM10Controller vrmController, Model model, RuntimeVrmConverter converter)
@@ -258,77 +311,28 @@ namespace UniVRM10
                 return model.Nodes.IndexOf(node);
             };
 
-            Func<VRM10SpringBoneColliderGroup, int> getIndex = colliderGroup =>
-            {
-
-            };
-
             foreach (var x in vrmController.SpringBone.Springs)
             {
                 var spring = new UniGLTF.Extensions.VRMC_springBone.Spring
                 {
                     Name = x.Comment,
-                    Joints = new List<UniGLTF.Extensions.VRMC_springBone.SpringBoneJoint>(),
+                    Joints = x.Joints.Select(y => ExportJoint(y, getIndexFromTransform)).ToList(),
                 };
                 springBone.Springs.Add(spring);
-
-                foreach (var y in x.Joints)
-                {
-                    var joint = new UniGLTF.Extensions.VRMC_springBone.SpringBoneJoint
-                    {
-                        Node = getIndexFromTransform(y.Transform),
-                        HitRadius = y.m_jointRadius,
-                        DragForce = y.m_dragForce,
-                        Stiffness = y.m_stiffnessForce,
-                        GravityDir = ReverseX(y.m_gravityDir),
-                        GravityPower = y.m_gravityPower,
-                    };
-                    spring.Joints.Add(joint);
-                }
 
                 List<int> colliders = new List<int>();
                 foreach (var y in x.ColliderGroups)
                 {
-                    var collider = new UniGLTF.Extensions.VRMC_node_collider.VRMC_node_collider
-                    {
-                        Shapes = new List<UniGLTF.Extensions.VRMC_node_collider.ColliderShape>(),
-                    };
-                    foreach (var z in y.Colliders)
-                    {
-                        var shape = new UniGLTF.Extensions.VRMC_node_collider.ColliderShape
-                        {
-
-                        };
-                        switch (z.ColliderType)
-                        {
-                            case VRM10SpringBoneColliderTypes.Sphere:
-                                {
-                                    shape.Sphere = new UniGLTF.Extensions.VRMC_node_collider.ColliderShapeSphere
-                                    {
-                                        Radius = z.Radius,
-                                        Offset = ReverseX(z.Offset),
-                                    };
-                                    break;
-                                }
-
-                            case VRM10SpringBoneColliderTypes.Capsule:
-                                {
-                                    shape.Capsule = new UniGLTF.Extensions.VRMC_node_collider.ColliderShapeCapsule
-                                    {
-                                        Radius = z.Radius,
-                                        Offset = new float[] { z.Offset.x, z.Offset.y, z.Offset.z },
-                                        Tail = new float[] { z.Tail.x, z.Tail.y, z.Tail.z },
-                                    };
-                                    break;
-                                }
-                        }
-                        collider.Shapes.Add(shape);
-                    }
-
                     // node
                     var node = converter.Nodes[y.gameObject];
                     var nodeIndex = model.Nodes.IndexOf(node);
                     var gltfNode = Storage.Gltf.nodes[nodeIndex];
+
+                    // VRMC_node_collider
+                    var collider = new UniGLTF.Extensions.VRMC_node_collider.VRMC_node_collider
+                    {
+                        Shapes = y.Colliders.Select(ExportShape).ToList(),
+                    };
 
                     // serialize
                     UniGLTF.Extensions.VRMC_node_collider.GltfSerializer.SerializeTo(ref gltfNode.extensions, collider);
