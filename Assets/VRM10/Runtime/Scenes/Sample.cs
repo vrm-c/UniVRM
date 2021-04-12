@@ -35,7 +35,7 @@ public class Sample : MonoBehaviour
         var model = exporter.ToModelFrom10(vrm0x);
         // 右手系に変換
         model.ConvertCoordinate(VrmLib.Coordinates.Vrm1);
-        var exportedBytes = model.ToGlb(TextureExporter.GetTextureBytesWithMime);
+        var exportedBytes = model.ToGlb(vrm0x, exporter, TextureExporter.GetTextureBytesWithMime);
 
         // Import 1.0
         var vrm10 = Import(exportedBytes, src);

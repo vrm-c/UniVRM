@@ -35,18 +35,11 @@ namespace UniVRM10.Test
             }
         }
 
-        VrmLib.Model ToModel(UnityEngine.GameObject target)
-        {
-            var exporter = new UniVRM10.RuntimeVrmConverter();
-            var model = exporter.ToModelFrom10(target);
-            return model;
-        }
-
-        byte[] ToVrm10(VrmLib.Model model)
+        byte[] ToVrm10(GameObject root, RuntimeVrmConverter converter, VrmLib.Model model)
         {
             // 右手系に変換
             VrmLib.ModelExtensionsForCoordinates.ConvertCoordinate(model, VrmLib.Coordinates.Vrm1);
-            var bytes = UniVRM10.ModelExtensions.ToGlb(model, AssetTextureUtil.GetTextureBytesWithMime);
+            var bytes = UniVRM10.ModelExtensions.ToGlb(model, root, converter, AssetTextureUtil.GetTextureBytesWithMime);
             return bytes;
         }
 
@@ -61,14 +54,18 @@ namespace UniVRM10.Test
             var parser = new GltfParser();
             parser.Parse(path, migrated);
 
-            var asset = BuildGameObject(parser, true);
-            Debug.Log(asset);
+            var go = BuildGameObject(parser, true);
+            Debug.Log(go);
 
             // export
-            var dstModel = ToModel(asset);
+            // var dstModel = ToModel(go);
+            var exporter = new UniVRM10.RuntimeVrmConverter();
+            var dstModel = exporter.ToModelFrom10(go);
+            // return model;
+
             Debug.Log(dstModel);
 
-            var vrmBytes = ToVrm10(dstModel);
+            var vrmBytes = ToVrm10(go, exporter, dstModel);
             Debug.Log($"export {vrmBytes.Length} bytes");
         }
     }

@@ -200,7 +200,7 @@ namespace UniVRM10
 
         (UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm, UniGLTF.Extensions.VRMC_springBone.VRMC_springBone springBone, int? thumbnailIndex) ExportVrm(GameObject root, Model model, RuntimeVrmConverter converter, VRM10MetaObject meta)
         {
-            var vrmController = root.GetComponent<VRM10Controller>();
+            var vrmController = root?.GetComponent<VRM10Controller>();
 
             if (meta == null)
             {
