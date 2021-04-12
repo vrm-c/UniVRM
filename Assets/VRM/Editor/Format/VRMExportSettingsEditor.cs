@@ -4,6 +4,9 @@ using UnityEditor;
 using UnityEngine;
 using MeshUtility.M17N;
 using System.Reflection;
+using System.Linq;
+using System.Collections.Generic;
+using UniGLTF;
 
 namespace VRM
 {
@@ -49,7 +52,7 @@ namespace VRM
             return MeshUtility.M17N.Getter.Msg(key);
         }
 
-        enum Options
+        public enum Options
         {
             [LangMsg(Languages.ja, "エクスポート時に強制的にT-Pose化する。これを使わずに手動でT-Poseを作っても問題ありません")]
             [LangMsg(Languages.en, "Force T-Pose before export. Manually making T-Pose for model without enabling this is ok")]
@@ -110,23 +113,6 @@ namespace VRM
             m_divideVertexBuffer = new CheckBoxProp(serializedObject.FindProperty(nameof(VRMExportSettings.DivideVertexBuffer)), Options.DIVIDE_VERTEX_BUFFER);
         }
 
-        static bool TrySampleBindPose(GameObject go)
-        {
-            // https://forum.unity.com/threads/mesh-bindposes.383752/
-            var type = Type.GetType("UnityEditor.AvatarSetupTool, UnityEditor");
-            if (type != null)
-            {
-                var info = type.GetMethod("SampleBindPose", BindingFlags.Static | BindingFlags.Public);
-                if (info != null)
-                {
-                    var clone = GameObject.Instantiate(go);
-                    info.Invoke(null, new object[] { clone });
-                    return true;
-                }
-            }
-
-            return false;
-        }
 
         public override void OnInspectorGUI()
         {
@@ -143,19 +129,26 @@ namespace VRM
             {
                 EditorGUILayout.HelpBox(Options.DISABLE_TPOSE_BUTTON.Msg(), MessageType.Warning);
             }
-            if (GUILayout.Button(Options.DO_TPOSE.Msg()))
+
+            //
+            // T-Pose
+            //
+            if (GUILayout.Button(VRMExportSettingsEditor.Options.DO_TPOSE.Msg()))
             {
                 if (settings.Root != null)
                 {
                     // fallback
+                    Undo.RecordObjects(settings.Root.GetComponentsInChildren<Transform>(), "tpose");
                     VRMBoneNormalizer.EnforceTPose(settings.Root);
                 }
             }
-            if (GUILayout.Button(Options.DO_TPOSE.Msg() + "(internal)"))
+
+            if (GUILayout.Button(VRMExportSettingsEditor.Options.DO_TPOSE.Msg() + "(internal)"))
             {
                 if (settings.Root != null)
                 {
-                    if (TrySampleBindPose(settings.Root))
+                    Undo.RecordObjects(settings.Root.GetComponentsInChildren<Transform>(), "tpose.internal");
+                    if (InternalTPose.TrySampleBindPose(settings.Root))
                     {
                         // done
                     }
@@ -165,6 +158,7 @@ namespace VRM
                     }
                 }
             }
+
             GUI.enabled = backup;
             GUILayout.Space(20);
 
