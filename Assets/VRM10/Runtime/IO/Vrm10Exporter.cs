@@ -658,5 +658,35 @@ namespace UniVRM10
                 }
             }
         }
+
+        /// <summary>
+        /// 便利関数
+        /// </summary>
+        /// <param name="go"></param>
+        /// <param name="getTextureBytes"></param>
+        /// <returns></returns>
+        public static byte[] Export(GameObject go, Func<Texture2D, (byte[], string)> getTextureBytes = null)
+        {
+            if (getTextureBytes == null)
+            {
+                // default for runtime export
+                getTextureBytes = TextureExporter.GetTextureBytesWithMime;
+            }
+
+            // ヒエラルキーからジオメトリーを収集
+            var converter = new UniVRM10.RuntimeVrmConverter();
+            var model = converter.ToModelFrom10(go);
+
+            // 右手系に変換
+            VrmLib.ModelExtensionsForCoordinates.ConvertCoordinate(model, VrmLib.Coordinates.Vrm1);
+
+            // Model と go から VRM-1.0 にExport
+            var exporter10 = new Vrm10Exporter(_ => false);
+            var option = new VrmLib.ExportArgs
+            {
+            };
+            exporter10.Export(go, model, converter, option, getTextureBytes);
+            return exporter10.Storage.ToBytes();
+        }
     }
 }

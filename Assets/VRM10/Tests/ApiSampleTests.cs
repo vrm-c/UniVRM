@@ -35,14 +35,6 @@ namespace UniVRM10.Test
             }
         }
 
-        byte[] ToVrm10(GameObject root, RuntimeVrmConverter converter, VrmLib.Model model)
-        {
-            // 右手系に変換
-            VrmLib.ModelExtensionsForCoordinates.ConvertCoordinate(model, VrmLib.Coordinates.Vrm1);
-            var bytes = UniVRM10.ModelExtensions.ToGlb(model, root, converter, AssetTextureUtil.GetTextureBytesWithMime);
-            return bytes;
-        }
-
         [Test]
         public void Sample()
         {
@@ -58,14 +50,8 @@ namespace UniVRM10.Test
             Debug.Log(go);
 
             // export
-            // var dstModel = ToModel(go);
-            var exporter = new UniVRM10.RuntimeVrmConverter();
-            var dstModel = exporter.ToModelFrom10(go);
-            // return model;
+            var vrmBytes = Vrm10Exporter.Export(go, AssetTextureUtil.GetTextureBytesWithMime);
 
-            Debug.Log(dstModel);
-
-            var vrmBytes = ToVrm10(go, exporter, dstModel);
             Debug.Log($"export {vrmBytes.Length} bytes");
         }
     }
