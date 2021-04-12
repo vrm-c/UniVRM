@@ -148,7 +148,7 @@ namespace VRM
                 if (settings.Root != null)
                 {
                     Undo.RecordObjects(settings.Root.GetComponentsInChildren<Transform>(), "tpose.internal");
-                    if (InternalTPose.TrySampleBindPose(settings.Root))
+                    if (InternalTPose.TryMakePoseValid(settings.Root))
                     {
                         // done
                     }

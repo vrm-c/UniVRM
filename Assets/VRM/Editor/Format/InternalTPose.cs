@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using UniGLTF;
 using UnityEngine;
@@ -90,6 +91,70 @@ namespace VRM
             }
 
             return false;
+        }
+
+        public static bool TryMakePoseValid(GameObject go)
+        {
+            var type = Type.GetType("UnityEditor.AvatarSetupTool, UnityEditor");
+            if (type == null)
+            {
+                return false;
+            }
+
+            // public static Dictionary<Transform, bool> GetModelBones(Transform root, bool includeAll, BoneWrapper[] humanBones)
+            var GetModelBones = type.GetMethod("GetModelBones", BindingFlags.Static | BindingFlags.Public);
+            if (GetModelBones == null)
+            {
+                return false;
+            }
+
+            // BoneWrapper[] humanBones = GetHumanBones(existingMappings, modelBones);
+            var GetHumanBones = type.GetMethods(BindingFlags.Static | BindingFlags.Public).First(x =>
+            {
+                if (x.Name != "GetHumanBones")
+                {
+                    return false;
+                }
+                if (x.GetParameters()[0].Name != "existingMappings")
+                {
+                    return false;
+                }
+
+                return true;
+            });
+            if (GetHumanBones == null)
+            {
+                return false;
+            }
+
+            // public static void MakePoseValid(BoneWrapper[] bones)
+            var MakePoseValid = type.GetMethod("MakePoseValid", BindingFlags.Static | BindingFlags.Public);
+            if (MakePoseValid == null)
+            {
+                return false;
+            }
+
+            var modelBones = GetModelBones.Invoke(null, new object[] { go.transform, false, null });
+            var existingMappings = new Dictionary<string, string>();
+
+            var animator = go.GetComponent<Animator>();
+            foreach (HumanBodyBones bone in Enum.GetValues(typeof(HumanBodyBones)))
+            {
+                if (bone == HumanBodyBones.LastBone)
+                {
+                    continue;
+                }
+                var t = animator.GetBoneTransform(bone);
+                if (t != null)
+                {
+                    existingMappings.Add(bone.ToString(), t.name);
+                }
+            }
+
+            var humanBones = GetHumanBones.Invoke(null, new object[] { existingMappings, modelBones });
+            MakePoseValid.Invoke(null, new object[] { humanBones });
+
+            return true;
         }
     }
 }
