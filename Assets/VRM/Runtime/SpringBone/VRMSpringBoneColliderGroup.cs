@@ -36,8 +36,8 @@ namespace VRM
             get
             {
                 return Mathf.Max(
-                    transform.lossyScale.x,
-                    transform.lossyScale.y,
+                    Mathf.Max(transform.lossyScale.x,
+                    transform.lossyScale.y),
                     transform.lossyScale.z
                 );
             }

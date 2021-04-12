@@ -267,7 +267,7 @@ namespace VRM
             {
                 Position = transform.TransformPoint(collider.Offset);
                 var ls = transform.lossyScale;
-                var scale = Mathf.Max(ls.x, ls.y, ls.z);
+                var scale = Mathf.Max(Mathf.Max(ls.x, ls.y), ls.z);
                 Radius = scale * collider.Radius;
             }
         }
