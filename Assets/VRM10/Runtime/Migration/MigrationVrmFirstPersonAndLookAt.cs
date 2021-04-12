@@ -21,7 +21,13 @@ namespace UniVRM10
 
         static LookAtType MigrateLookAtType(JsonNode vrm0)
         {
-            return (LookAtType)Enum.Parse(typeof(LookAtType), vrm0.GetString(), true);
+            switch (vrm0.GetString().ToLower())
+            {
+                case "bone": return LookAtType.bone;
+                case "blendshape": return LookAtType.expression;
+
+            }
+            throw new NotImplementedException();
         }
 
         static FirstPersonType MigrateFirstPersonType(JsonNode vrm0)
