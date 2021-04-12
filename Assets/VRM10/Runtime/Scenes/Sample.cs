@@ -28,14 +28,9 @@ public class Sample : MonoBehaviour
     void OnEnable()
     {
         var src = new FileInfo(m_vrmPath);
-        var vrm0x = Import(File.ReadAllBytes(m_vrmPath), src);
+        var go = Import(File.ReadAllBytes(m_vrmPath), src);
 
-        // Export 1.0
-        var exporter = new UniVRM10.RuntimeVrmConverter();
-        var model = exporter.ToModelFrom10(vrm0x);
-        // 右手系に変換
-        model.ConvertCoordinate(VrmLib.Coordinates.Vrm1);
-        var exportedBytes = model.ToGlb(TextureExporter.GetTextureBytesWithMime);
+        var exportedBytes = Vrm10Exporter.Export(go);
 
         // Import 1.0
         var vrm10 = Import(exportedBytes, src);
