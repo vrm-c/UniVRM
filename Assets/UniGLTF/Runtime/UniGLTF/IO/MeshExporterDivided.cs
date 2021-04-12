@@ -95,8 +95,17 @@ namespace UniGLTF
                 var positionAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, m_positions.ToArray(), glBufferTarget.ARRAY_BUFFER);
                 var normalAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, m_normals.ToArray(), glBufferTarget.ARRAY_BUFFER);
                 var uvAccessorIndex0 = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, m_uv.ToArray(), glBufferTarget.ARRAY_BUFFER);
-                var jointsAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, m_joints.ToArray(), glBufferTarget.ARRAY_BUFFER);
-                var weightAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, m_weights.ToArray(), glBufferTarget.ARRAY_BUFFER);
+
+                int? jointsAccessorIndex = default;
+                if (m_joints != null)
+                {
+                    jointsAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, m_joints.ToArray(), glBufferTarget.ARRAY_BUFFER);
+                }
+                int? weightAccessorIndex = default;
+                if (m_weights != null)
+                {
+                    weightAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, m_weights.ToArray(), glBufferTarget.ARRAY_BUFFER);
+                }
 
                 var primitive = new glTFPrimitives
                 {
@@ -106,8 +115,8 @@ namespace UniGLTF
                         POSITION = positionAccessorIndex,
                         NORMAL = normalAccessorIndex,
                         TEXCOORD_0 = uvAccessorIndex0,
-                        JOINTS_0 = jointsAccessorIndex,
-                        WEIGHTS_0 = weightAccessorIndex,
+                        JOINTS_0 = jointsAccessorIndex.GetValueOrDefault(-1),
+                        WEIGHTS_0 = weightAccessorIndex.GetValueOrDefault(-1),
                     },
                     material = materialIndex,
                     mode = 4,
