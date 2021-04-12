@@ -3,6 +3,7 @@ using System;
 using UnityEditor;
 using UnityEngine;
 using MeshUtility.M17N;
+using System.Reflection;
 
 namespace VRM
 {
@@ -109,6 +110,24 @@ namespace VRM
             m_divideVertexBuffer = new CheckBoxProp(serializedObject.FindProperty(nameof(VRMExportSettings.DivideVertexBuffer)), Options.DIVIDE_VERTEX_BUFFER);
         }
 
+        static bool TrySampleBindPose(GameObject go)
+        {
+            // https://forum.unity.com/threads/mesh-bindposes.383752/
+            var type = Type.GetType("UnityEditor.AvatarSetupTool, UnityEditor");
+            if (type != null)
+            {
+                var info = type.GetMethod("SampleBindPose", BindingFlags.Static | BindingFlags.Public);
+                if (info != null)
+                {
+                    var clone = GameObject.Instantiate(go);
+                    info.Invoke(null, new object[] { clone });
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public override void OnInspectorGUI()
         {
             GUILayout.Space(20);
@@ -126,9 +145,24 @@ namespace VRM
             }
             if (GUILayout.Button(Options.DO_TPOSE.Msg()))
             {
-                if (settings.Root)
+                if (settings.Root != null)
                 {
+                    // fallback
                     VRMBoneNormalizer.EnforceTPose(settings.Root);
+                }
+            }
+            if (GUILayout.Button(Options.DO_TPOSE.Msg() + "(internal)"))
+            {
+                if (settings.Root != null)
+                {
+                    if (TrySampleBindPose(settings.Root))
+                    {
+                        // done
+                    }
+                    else
+                    {
+                        Debug.LogWarning("not found");
+                    }
                 }
             }
             GUI.enabled = backup;
