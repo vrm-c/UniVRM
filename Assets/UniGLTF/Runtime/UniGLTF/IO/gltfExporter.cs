@@ -17,11 +17,7 @@ namespace UniGLTF
             protected set;
         }
 
-        public List<Mesh> Meshes
-        {
-            get;
-            private set;
-        }
+        public List<Mesh> Meshes { get; private set; } = new List<Mesh>();
 
         /// <summary>
         /// Mesh毎に、元のBlendShapeIndex => ExportされたBlendShapeIndex の対応を記録する
@@ -195,17 +191,17 @@ namespace UniGLTF
             var unityMeshes = MeshWithRenderer.FromNodes(Nodes).Where(x => x.Mesh.vertices.Any()).ToList();
 
             MeshBlendShapeIndexMap = new Dictionary<Mesh, Dictionary<int, int>>();
-            foreach (var (mesh, gltfMesh, blendShapeIndexMap) in MeshExporter.ExportMeshes(
-                    glTF, bufferIndex, unityMeshes, Materials, meshExportSettings, m_axisInverter))
+            foreach (var unityMesh in unityMeshes)
             {
+                var (gltfMesh, blendShapeIndexMap) = MeshExporter.ExportMesh(glTF, bufferIndex, unityMesh, Materials, meshExportSettings, m_axisInverter);
                 glTF.meshes.Add(gltfMesh);
-                if (!MeshBlendShapeIndexMap.ContainsKey(mesh))
+                Meshes.Add(unityMesh.Mesh);
+                if (!MeshBlendShapeIndexMap.ContainsKey(unityMesh.Mesh))
                 {
                     // 同じmeshが複数回現れた
-                    MeshBlendShapeIndexMap.Add(mesh, blendShapeIndexMap);
+                    MeshBlendShapeIndexMap.Add(unityMesh.Mesh, blendShapeIndexMap);
                 }
             }
-            Meshes = unityMeshes.Select(x => x.Mesh).ToList();
             #endregion
 
             #region Nodes and Skins

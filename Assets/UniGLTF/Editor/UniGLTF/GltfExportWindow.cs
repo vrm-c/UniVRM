@@ -36,7 +36,7 @@ namespace UniGLTF
             using (var exporter = new gltfExporter(gltf, inverseAxis))
             {
                 exporter.Prepare(go);
-                exporter.Export(settings, AssetTextureUtil.IsTextureEditorAsset );
+                exporter.Export(settings, AssetTextureUtil.IsTextureEditorAsset);
             }
 
 
@@ -244,6 +244,7 @@ namespace UniGLTF
             {
                 ExportOnlyBlendShapePosition = settings.DropNormal,
                 UseSparseAccessorForMorphTarget = settings.Sparse,
+                DivideVertexBuffer = settings.DivideVertexBuffer,
             }, settings.InverseAxis);
         }
     }
