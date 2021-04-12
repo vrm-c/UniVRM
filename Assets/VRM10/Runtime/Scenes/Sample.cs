@@ -4,6 +4,7 @@ using UnityEngine;
 using VrmLib;
 using UniVRM10;
 using UniGLTF;
+using VRMShaders;
 
 public class Sample : MonoBehaviour
 {
@@ -34,7 +35,7 @@ public class Sample : MonoBehaviour
         var model = exporter.ToModelFrom10(vrm0x);
         // 右手系に変換
         model.ConvertCoordinate(VrmLib.Coordinates.Vrm1);
-        var exportedBytes = model.ToGlb();
+        var exportedBytes = model.ToGlb(TextureExporter.GetTextureBytesWithMime);
 
         // Import 1.0
         var vrm10 = Import(exportedBytes, src);

@@ -128,7 +128,7 @@ namespace UniVRM10
             return new float[] { -v.x, v.y, v.z };
         }
 
-        public void Export(GameObject root, Model model, RuntimeVrmConverter converter, ExportArgs option, VRM10MetaObject metaObject = null)
+        public void Export(GameObject root, Model model, RuntimeVrmConverter converter, ExportArgs option, Func<Texture2D, (byte[], string)> getTextureBytes, VRM10MetaObject metaObject = null)
         {
             ExportAsset(model);
 
@@ -182,7 +182,7 @@ namespace UniVRM10
             for (int i = 0; i < m_textureExporter.Exported.Count; ++i)
             {
                 var unityTexture = m_textureExporter.Exported[i];
-                Storage.Gltf.PushGltfTexture(0, unityTexture);
+                Storage.Gltf.PushGltfTexture(0, unityTexture, getTextureBytes);
             }
 
             if (thumbnailTextureIndex.HasValue)

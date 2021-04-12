@@ -1,10 +1,12 @@
-using VrmLib;
+using System;
+using UnityEngine;
+
 
 namespace UniVRM10
 {
     public static class ModelExtensions
     {
-        public static byte[] ToGlb(this VrmLib.Model model)
+        public static byte[] ToGlb(this VrmLib.Model model, Func<Texture2D, (byte[], string)> getTextureBytes)
         {
             // export vrm-1.0
             var exporter10 = new Vrm10Exporter(_ => false);
@@ -12,7 +14,7 @@ namespace UniVRM10
             {
                 // vrm = false
             };
-            exporter10.Export(null, model, null, option);
+            exporter10.Export(null, model, null, option, getTextureBytes);
             var glb10 = UniGLTF.Glb.Parse(exporter10.Storage.ToBytes());
             return glb10.ToBytes();
         }

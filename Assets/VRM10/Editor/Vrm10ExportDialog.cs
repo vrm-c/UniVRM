@@ -320,7 +320,7 @@ namespace UniVRM10
                 // export vrm-1.0
                 var exporter = new UniVRM10.Vrm10Exporter(AssetTextureUtil.IsTextureEditorAsset);
                 var option = new VrmLib.ExportArgs();
-                exporter.Export(root, model, converter, option, Meta ? Meta : m_tmpMeta);
+                exporter.Export(root, model, converter, option, AssetTextureUtil.GetTextureBytesWithMime, Meta ? Meta : m_tmpMeta);
 
                 var exportedBytes = exporter.Storage.ToBytes();
 

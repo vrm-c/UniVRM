@@ -14,13 +14,13 @@ namespace VRM
             return new VRMMaterialExporter();
         }
 
-        public static glTF Export(MeshExportSettings configuration, GameObject go, Func<Texture, bool> useAsset)
+        public static glTF Export(MeshExportSettings configuration, GameObject go, Func<Texture, bool> useAsset, Func<Texture2D, (byte[], string)> getTextureBytes)
         {
             var gltf = new glTF();
             using (var exporter = new VRMExporter(gltf))
             {
                 exporter.Prepare(go);
-                exporter.Export(configuration, useAsset);
+                exporter.Export(configuration, useAsset, getTextureBytes);
             }
             return gltf;
         }
@@ -32,7 +32,7 @@ namespace VRM
             gltf.extensionsUsed.Add(glTF_VRM_extensions.ExtensionName);
         }
 
-        public override void ExportExtensions()
+        public override void ExportExtensions(Func<Texture2D, (byte[], string)> getTextureBytes)
         {
             // avatar
             var animator = Copy.GetComponent<Animator>();
@@ -110,7 +110,7 @@ namespace VRM
                     VRM.meta.title = meta.Title;
                     if (meta.Thumbnail != null)
                     {
-                        VRM.meta.texture = glTF.PushGltfTexture(glTF.buffers.Count - 1, meta.Thumbnail);
+                        VRM.meta.texture = glTF.PushGltfTexture(glTF.buffers.Count - 1, meta.Thumbnail, getTextureBytes);
                     }
 
                     VRM.meta.licenseType = meta.LicenseType;

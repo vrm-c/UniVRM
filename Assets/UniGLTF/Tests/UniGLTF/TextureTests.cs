@@ -15,7 +15,7 @@ namespace UniGLTF
                 wrapMode = TextureWrapMode.Clamp,
                 filterMode = FilterMode.Trilinear,
             };
-            var textureManager = new TextureExporter(AssetTextureUtil.IsTextureEditorAsset );
+            var textureManager = new TextureExporter(AssetTextureUtil.IsTextureEditorAsset);
 
             var material = new Material(Shader.Find("Standard"));
             material.mainTexture = tex0;
@@ -30,25 +30,6 @@ namespace UniGLTF
             Assert.AreEqual(glWrap.CLAMP_TO_EDGE, sampler.wrapT);
             Assert.AreEqual(glFilter.LINEAR_MIPMAP_LINEAR, sampler.minFilter);
             Assert.AreEqual(glFilter.LINEAR_MIPMAP_LINEAR, sampler.magFilter);
-        }
-
-
-        [Test]
-        public void NotReadable()
-        {
-            var readonlyTexture = Resources.Load<Texture2D>("4x4");
-            Assert.False(readonlyTexture.isReadable);
-            var (bytes, mime) = GltfTextureExporter.GetBytesWithMime(readonlyTexture);
-            Assert.NotNull(bytes);
-        }
-
-        [Test]
-        public void Compressed()
-        {
-            var readonlyTexture = Resources.Load<Texture2D>("4x4compressed");
-            Assert.False(readonlyTexture.isReadable);
-            var (bytes, mime) = GltfTextureExporter.GetBytesWithMime(readonlyTexture);
-            Assert.NotNull(bytes);
         }
     }
 }

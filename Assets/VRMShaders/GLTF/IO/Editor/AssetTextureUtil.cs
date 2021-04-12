@@ -1,3 +1,4 @@
+using System.IO;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
@@ -66,6 +67,54 @@ namespace VRMShaders
 
             // not Texture2D or not exists Texture2D asset. EncodeToPng
             return false;
+        }
+
+        /// <summary>
+        /// Assetから画像のバイト列を得る
+        /// </summary>
+        /// <param name="bytes"></param>
+        /// <param name="texture"></param>
+        /// <returns></returns>
+        public static bool TryGetBytesWithMime(Texture2D texture, out byte[] bytes, out string mime)
+        {
+            var path = AssetDatabase.GetAssetOrScenePath(texture);
+            if (string.IsNullOrEmpty(path))
+            {
+                bytes = default;
+                mime = default;
+                return false;
+            }
+
+            var ext = Path.GetExtension(path).ToLower();
+
+            switch (ext)
+            {
+                case ".png":
+                    bytes = System.IO.File.ReadAllBytes(path);
+                    mime = "image/png";
+                    return true;
+
+                case ".jpg":
+                    bytes = System.IO.File.ReadAllBytes(path);
+                    mime = "image/jpeg";
+                    return true;
+            }
+
+            // dds ? astc ? tga ?
+
+            bytes = default;
+            mime = default;
+            return false;
+        }
+
+        public static (byte[], string) GetTextureBytesWithMime(Texture2D texture)
+        {
+            if (TryGetBytesWithMime(texture, out byte[] bytes, out string mime))
+            {
+                return (bytes, mime);
+            }
+
+            return TextureExporter.GetTextureBytesWithMime(texture);
         }
     }
 }

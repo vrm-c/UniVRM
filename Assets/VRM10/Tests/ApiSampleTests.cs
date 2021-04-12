@@ -4,6 +4,7 @@ using NUnit.Framework;
 using UniGLTF;
 using UnityEngine;
 using UnityEngine.TestTools;
+using VRMShaders;
 
 namespace UniVRM10.Test
 {
@@ -45,7 +46,7 @@ namespace UniVRM10.Test
         {
             // 右手系に変換
             VrmLib.ModelExtensionsForCoordinates.ConvertCoordinate(model, VrmLib.Coordinates.Vrm1);
-            var bytes = UniVRM10.ModelExtensions.ToGlb(model);
+            var bytes = UniVRM10.ModelExtensions.ToGlb(model, AssetTextureUtil.GetTextureBytesWithMime);
             return bytes;
         }
 

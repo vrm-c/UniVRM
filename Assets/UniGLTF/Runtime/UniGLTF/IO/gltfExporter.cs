@@ -164,12 +164,12 @@ namespace UniGLTF
             return node;
         }
 
-        public virtual void ExportExtensions()
+        public virtual void ExportExtensions(Func<Texture2D, (byte[], string)> getTextureBytes)
         {
 
         }
 
-        public virtual void Export(MeshExportSettings meshExportSettings, Func<Texture, bool> useAsset)
+        public virtual void Export(MeshExportSettings meshExportSettings, Func<Texture, bool> useAsset, Func<Texture2D, (byte[], string)> getTextureBytes)
         {
             var bytesBuffer = new ArrayByteBuffer(new byte[50 * 1024 * 1024]);
             var bufferIndex = glTF.AddBuffer(bytesBuffer);
@@ -302,13 +302,13 @@ namespace UniGLTF
             #endregion
 #endif
 
-            ExportExtensions();
+            ExportExtensions(getTextureBytes);
 
             // Extension で Texture が増える場合があるので最後に呼ぶ
             for (int i = 0; i < TextureManager.Exported.Count; ++i)
             {
                 var unityTexture = TextureManager.Exported[i];
-                glTF.PushGltfTexture(bufferIndex, unityTexture);
+                glTF.PushGltfTexture(bufferIndex, unityTexture, getTextureBytes);
             }
         }
         #endregion
