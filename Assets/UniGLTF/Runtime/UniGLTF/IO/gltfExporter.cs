@@ -17,8 +17,7 @@ namespace UniGLTF
             protected set;
         }
 
-        readonly List<Mesh> m_meshes = new List<Mesh>();
-        public List<Mesh> Meshes => m_meshes;
+        public List<Mesh> Meshes { get; private set; } = new List<Mesh>();
 
         /// <summary>
         /// Mesh毎に、元のBlendShapeIndex => ExportされたBlendShapeIndex の対応を記録する
