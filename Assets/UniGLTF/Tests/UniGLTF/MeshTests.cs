@@ -196,12 +196,12 @@ namespace UniGLTF
 
             {
                 var indices = glTF.GetIndices(gltfMesh.primitives[1].indices);
-                Assert.AreEqual(1, indices[0]);
-                Assert.AreEqual(2, indices[1]);
-                Assert.AreEqual(4, indices[2]);
-                Assert.AreEqual(4, indices[3]);
-                Assert.AreEqual(2, indices[4]);
-                Assert.AreEqual(3, indices[5]);
+                Assert.AreEqual(0, indices[0]);
+                Assert.AreEqual(1, indices[1]);
+                Assert.AreEqual(3, indices[2]);
+                Assert.AreEqual(3, indices[3]);
+                Assert.AreEqual(1, indices[4]);
+                Assert.AreEqual(2, indices[5]);
             }
             {
                 var positions = glTF.GetArrayFromAccessor<Vector3>(gltfMesh.primitives[1].attributes.POSITION);

@@ -42,7 +42,6 @@ namespace UniGLTF
 
         class VertexBuffer
         {
-            readonly int m_indexCount;
             readonly List<Vector3> m_positions;
             readonly List<Vector3> m_normals;
             readonly List<Vector2> m_uv;
@@ -53,7 +52,6 @@ namespace UniGLTF
 
             public VertexBuffer(int reserve, Func<int, int> getJointIndex)
             {
-                m_indexCount = reserve;
                 m_positions = new List<Vector3>(reserve);
                 m_normals = new List<Vector3>(reserve);
                 m_uv = new List<Vector2>();
@@ -79,18 +77,8 @@ namespace UniGLTF
                 m_weights.Add(new Vector4(boneWeight.weight0, boneWeight.weight1, boneWeight.weight2, boneWeight.weight3));
             }
 
-            public glTFPrimitives ToGltf(glTF gltf, int bufferIndex, int materialIndex)
+            public glTFPrimitives ToGltf(glTF gltf, int bufferIndex, int materialIndex, IReadOnlyList<uint> indices)
             {
-                var indices = new List<uint>(m_indexCount);
-                // flip triangles
-                for (int i = 0; i < m_indexCount; i += 3)
-                {
-                    // 2, 1, 0, 5, 4, 3, ...
-                    indices.Add((uint)(i + 2));
-                    indices.Add((uint)(i + 1));
-                    indices.Add((uint)(i + 0));
-                }
-
                 var indicesAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, indices.ToArray(), glBufferTarget.ELEMENT_ARRAY_BUFFER);
                 var positionAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, m_positions.ToArray(), glBufferTarget.ARRAY_BUFFER);
                 var normalAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, m_normals.ToArray(), glBufferTarget.ARRAY_BUFFER);
@@ -152,6 +140,7 @@ namespace UniGLTF
             Vector3[] blendShapePositions = new Vector3[mesh.vertexCount];
             Vector3[] blendShapeNormals = new Vector3[mesh.vertexCount];
 
+            var usedIndices = new List<int>();
             for (int i = 0; i < mesh.subMeshCount; ++i)
             {
                 var indices = mesh.GetIndices(i);
@@ -159,12 +148,26 @@ namespace UniGLTF
                 // mesh
                 // index の順に attributes を蓄える                
                 var buffer = new VertexBuffer(indices.Length, getJointIndex);
-                foreach (var k in indices)
+                // foreach (var k in indices)
+                // {
+                //     buffer.Push(axisInverter.InvertVector3(positions[k]), axisInverter.InvertVector3(normals[k]), uv[k].ReverseUV());
+                //     if (getJointIndex != null)
+                //     {
+                //         buffer.Push(boneWeights[k]);
+                //     }
+                // }
+                // indices から参照される頂点だけを蓄える
+                usedIndices.Clear();
+                for (int k = 0; k < positions.Length; ++k)
                 {
-                    buffer.Push(axisInverter.InvertVector3(positions[k]), axisInverter.InvertVector3(normals[k]), uv[k].ReverseUV());
-                    if (getJointIndex != null)
+                    if (indices.Contains(k))
                     {
-                        buffer.Push(boneWeights[k]);
+                        usedIndices.Add(k);
+                        buffer.Push(axisInverter.InvertVector3(positions[k]), axisInverter.InvertVector3(normals[k]), uv[k].ReverseUV());
+                        if (getJointIndex != null)
+                        {
+                            buffer.Push(boneWeights[k]);
+                        }
                     }
                 }
 
@@ -174,7 +177,16 @@ namespace UniGLTF
                 {
                     materialIndex = unityMaterials.IndexOf(material);
                 }
-                var gltfPrimitive = buffer.ToGltf(gltf, bufferIndex, materialIndex);
+                var indexMap = usedIndices.Select((used, index) => (used, index)).ToDictionary(x => x.used, x => (uint)x.index);
+
+                var flipped = new List<uint>();
+                for (int j = 0; j < indices.Length; j += 3)
+                {
+                    flipped.Add((uint)indexMap[indices[j + 2]]);
+                    flipped.Add((uint)indexMap[indices[j + 1]]);
+                    flipped.Add((uint)indexMap[indices[j]]);
+                }
+                var gltfPrimitive = buffer.ToGltf(gltf, bufferIndex, materialIndex, flipped);
 
                 // blendShape
                 for (int j = 0; j < mesh.blendShapeCount; ++j)
@@ -183,7 +195,7 @@ namespace UniGLTF
 
                     // index の順に attributes を蓄える                
                     mesh.GetBlendShapeFrameVertices(j, 0, blendShapePositions, blendShapeNormals, null);
-                    foreach (var k in indices)
+                    foreach (var k in usedIndices)
                     {
                         blendShape.Push(
                             axisInverter.InvertVector3(blendShapePositions[k]),
