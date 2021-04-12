@@ -14,5 +14,7 @@ namespace UniGLTF
         public bool Sparse;
 
         public bool DropNormal;
+
+        public bool DivideVertexBuffer;
     }
 }

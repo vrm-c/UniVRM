@@ -305,7 +305,11 @@ namespace UniGLTF
         {
             glTFMesh gltfMesh = default;
             var blendShapeIndexMap = new Dictionary<int, int>();
-            if (settings.UseSharingVertexBuffer)
+            if (settings.DivideVertexBuffer)
+            {
+                gltfMesh = MeshExporterDivided.Export(gltf, bufferIndex, unityMesh, unityMaterials, axisInverter, settings);
+            }
+            else
             {
                 gltfMesh = ExportSharedVertexBuffer(gltf, bufferIndex, unityMesh, unityMaterials, axisInverter, settings);
 
@@ -338,10 +342,6 @@ namespace UniGLTF
                 }
 
                 gltf_mesh_extras_targetNames.Serialize(gltfMesh, targetNames);
-            }
-            else
-            {
-                gltfMesh = MeshExporterDivided.Export(gltf, bufferIndex, unityMesh, unityMaterials, axisInverter, settings);
             }
 
             return (gltfMesh, blendShapeIndexMap);

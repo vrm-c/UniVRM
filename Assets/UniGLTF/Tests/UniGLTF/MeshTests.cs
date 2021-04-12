@@ -130,7 +130,7 @@ namespace UniGLTF
             var (go, unityMesh) = CreateMesh(Materials.ToArray());
             var meshExportSettings = new MeshExportSettings
             {
-                UseSharingVertexBuffer = true
+                DivideVertexBuffer = false
             };
             var axisInverter = Axises.X.Create();
 
@@ -174,7 +174,7 @@ namespace UniGLTF
             var (go, unityMesh) = CreateMesh(Materials.ToArray());
             var meshExportSettings = new MeshExportSettings
             {
-                UseSharingVertexBuffer = false
+                DivideVertexBuffer = true
             };
             var axisInverter = Axises.X.Create();
 

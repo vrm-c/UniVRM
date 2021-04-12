@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using UniGLTF;
 using UnityEngine;
 
 namespace VRM
@@ -7,6 +7,7 @@ namespace VRM
     [Serializable]
     public class VRMExportSettings : ScriptableObject
     {
+
         /// <summary>
         /// エクスポート時に強制的にT-Pose化する
         /// </summary>
@@ -43,10 +44,17 @@ namespace VRM
         [Tooltip("Remove blendShapeClip that preset is Unknown")]
         public bool ReduceBlendshapeClip = false;
 
-        public UniGLTF.MeshExportSettings MeshExportSettings => new UniGLTF.MeshExportSettings
+        /// <summary>
+        /// Export時に頂点バッファをsubmeshで分割する。GLTF互換性
+        /// </summary>
+        [Tooltip("Divide vertex buffer. For more gltf compatibility")]
+        public bool DivideVertexBuffer = false;
+
+        public MeshExportSettings MeshExportSettings => new MeshExportSettings
         {
             UseSparseAccessorForMorphTarget = UseSparseAccessor,
             ExportOnlyBlendShapePosition = OnlyBlendshapePosition,
+            DivideVertexBuffer = DivideVertexBuffer,
         };
 
         public GameObject Root { get; set; }

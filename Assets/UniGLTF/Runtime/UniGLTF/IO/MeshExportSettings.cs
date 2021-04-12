@@ -11,7 +11,7 @@ namespace UniGLTF
         // VertexBuffer を共有バッファ方式にする
         // UniVRM-0.71.0 までの挙動
         //
-        public bool UseSharingVertexBuffer;
+        public bool DivideVertexBuffer;
 
         // MorphTarget に Sparse Accessor を使う
         public bool UseSparseAccessorForMorphTarget;
@@ -26,8 +26,7 @@ namespace UniGLTF
         {
             UseSparseAccessorForMorphTarget = false,
             ExportOnlyBlendShapePosition = false,
-            // WIP
-            UseSharingVertexBuffer = true,
+            DivideVertexBuffer = false,
 #if GLTF_EXPORT_TANGENTS
             ExportTangents = true,
 #endif            

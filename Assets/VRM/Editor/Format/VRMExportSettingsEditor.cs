@@ -36,47 +36,12 @@ namespace VRM
             }
         }
 
-        /// <summary>
-        /// エクスポート時にヒエラルキーの正規化を実施する
-        /// </summary>
-        [Tooltip("Require only first time")]
-        public bool PoseFreeze = true;
-
-        /// <summary>
-        /// エクスポート時に新しいJsonSerializerを使う
-        /// </summary>
-        [Tooltip("Use new JSON serializer")]
-        public bool UseExperimentalExporter = false;
-
-        /// <summary>
-        /// BlendShapeのシリアライズにSparseAccessorを使う
-        /// </summary>
-        [Tooltip("Use sparse accessor for blendshape. This may reduce vrm size")]
-        public bool UseSparseAccessor = false;
-
-        /// <summary>
-        /// BlendShapeのPositionのみをエクスポートする
-        /// </summary>
-        [Tooltip("UniVRM-0.54 or later can load it. Otherwise fail to load")]
-        public bool OnlyBlendshapePosition = false;
-
-        /// <summary>
-        /// エクスポート時にBlendShapeClipから参照されないBlendShapeを削除する
-        /// </summary>
-        [Tooltip("Remove blendshape that is not used from BlendShapeClip")]
-        public bool ReduceBlendshape = false;
-
-        /// <summary>
-        /// skip if BlendShapeClip.Preset == Unknown
-        /// </summary>
-        [Tooltip("Remove blendShapeClip that preset is Unknown")]
-        public bool ReduceBlendshapeClip = false;
-
         CheckBoxProp m_poseFreeze;
         CheckBoxProp m_useSparseAccessor;
         CheckBoxProp m_onlyBlendShapePosition;
         CheckBoxProp m_reduceBlendShape;
         CheckBoxProp m_reduceBlendShapeClip;
+        CheckBoxProp m_divideVertexBuffer;
 
         static string Msg(Options key)
         {
@@ -128,15 +93,20 @@ namespace VRM
             [LangMsg(Languages.ja, "T-Pose にする")]
             [LangMsg(Languages.en, "Make T-Pose")]
             DO_TPOSE,
+
+            [LangMsg(Languages.ja, "頂点バッファをsubmeshで分割する。GLTF互換性のため。UniVRM-0.72 からロードできる。")]
+            [LangMsg(Languages.en, "Divide vertex buffer by submesh。For more gltf compatibility。UniVRM-0.72 or later can load.")]
+            DIVIDE_VERTEX_BUFFER,
         }
 
         private void OnEnable()
         {
-            m_poseFreeze = new CheckBoxProp(serializedObject.FindProperty(nameof(PoseFreeze)), Options.NORMALIZE);
-            m_useSparseAccessor = new CheckBoxProp(serializedObject.FindProperty(nameof(UseSparseAccessor)), Options.BLENDSHAPE_USE_SPARSE);
-            m_onlyBlendShapePosition = new CheckBoxProp(serializedObject.FindProperty(nameof(OnlyBlendshapePosition)), Options.BLENDSHAPE_EXCLUDE_NORMAL_AND_TANGENT);
-            m_reduceBlendShape = new CheckBoxProp(serializedObject.FindProperty(nameof(ReduceBlendshape)), Options.BLENDSHAPE_ONLY_CLIP_USE);
-            m_reduceBlendShapeClip = new CheckBoxProp(serializedObject.FindProperty(nameof(ReduceBlendshapeClip)), Options.BLENDSHAPE_EXCLUDE_UNKNOWN);
+            m_poseFreeze = new CheckBoxProp(serializedObject.FindProperty(nameof(VRMExportSettings.PoseFreeze)), Options.NORMALIZE);
+            m_useSparseAccessor = new CheckBoxProp(serializedObject.FindProperty(nameof(VRMExportSettings.UseSparseAccessor)), Options.BLENDSHAPE_USE_SPARSE);
+            m_onlyBlendShapePosition = new CheckBoxProp(serializedObject.FindProperty(nameof(VRMExportSettings.OnlyBlendshapePosition)), Options.BLENDSHAPE_EXCLUDE_NORMAL_AND_TANGENT);
+            m_reduceBlendShape = new CheckBoxProp(serializedObject.FindProperty(nameof(VRMExportSettings.ReduceBlendshape)), Options.BLENDSHAPE_ONLY_CLIP_USE);
+            m_reduceBlendShapeClip = new CheckBoxProp(serializedObject.FindProperty(nameof(VRMExportSettings.ReduceBlendshapeClip)), Options.BLENDSHAPE_EXCLUDE_UNKNOWN);
+            m_divideVertexBuffer = new CheckBoxProp(serializedObject.FindProperty(nameof(VRMExportSettings.DivideVertexBuffer)), Options.DIVIDE_VERTEX_BUFFER);
         }
 
         public override void OnInspectorGUI()
@@ -173,6 +143,8 @@ namespace VRM
             m_onlyBlendShapePosition.Draw();
             m_reduceBlendShape.Draw();
             m_reduceBlendShapeClip.Draw();
+            m_divideVertexBuffer.Draw();
+
             serializedObject.ApplyModifiedProperties();
         }
     }
