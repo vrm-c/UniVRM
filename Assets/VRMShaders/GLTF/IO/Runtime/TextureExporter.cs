@@ -196,5 +196,37 @@ namespace VRMShaders
 
             return index;
         }
+
+        /// <summary>
+        /// 画像のバイト列を得る
+        /// </summary>
+        /// <param name="bytes"></param>
+        /// <param name="texture"></param>
+        /// <returns></returns>
+        public static (byte[] bytes, string mime) GetTextureBytesWithMime(Texture2D texture)
+        {
+            try
+            {
+                var png = texture.EncodeToPNG();
+                if (png != null)
+                {
+                    return (png, "image/png");
+                }
+            }
+            catch (Exception ex)
+            {
+                // fail to EncodeToPng
+                // System.ArgumentException: not readable, the texture memory can not be accessed from scripts. You can make the texture readable in the Texture Import Settings.
+                Debug.LogWarning(ex);
+            }
+
+            {
+                // try copy and EncodeToPng
+                var copy = TextureConverter.CopyTexture(texture, TextureImportTypes.sRGB, null);
+                var png = copy.EncodeToPNG();
+                UnityEngine.Object.DestroyImmediate(copy);
+                return (png, "image/png");
+            }
+        }
     }
 }

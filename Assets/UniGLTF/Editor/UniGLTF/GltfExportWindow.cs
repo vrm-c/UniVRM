@@ -36,9 +36,8 @@ namespace UniGLTF
             using (var exporter = new gltfExporter(gltf, inverseAxis))
             {
                 exporter.Prepare(go);
-                exporter.Export(settings, AssetTextureUtil.IsTextureEditorAsset);
+                exporter.Export(settings, AssetTextureUtil.IsTextureEditorAsset, AssetTextureUtil.GetTextureBytesWithMime);
             }
-
 
             if (isGlb)
             {

@@ -6,64 +6,6 @@ namespace UniGLTF
 {
     public static class GltfTextureExporter
     {
-
-        /// <summary>
-        /// 画像のバイト列を得る
-        /// </summary>
-        /// <param name="bytes"></param>
-        /// <param name="texture"></param>
-        /// <returns></returns>
-        public static (byte[] bytes, string mine) GetBytesWithMime(Texture2D texture)
-        {
-#if UNITY_EDITOR
-            var path = UnityPath.FromAsset(texture);
-            if (path.IsUnderAssetsFolder)
-            {
-                if (path.Extension == ".png")
-                {
-                    return
-                    (
-                        System.IO.File.ReadAllBytes(path.FullPath),
-                        "image/png"
-                    );
-                }
-                if (path.Extension == ".jpg")
-                {
-                    return
-                    (
-                        System.IO.File.ReadAllBytes(path.FullPath),
-                        "image/jpeg"
-                    );
-                }
-            }
-#endif
-
-            try
-            {
-                var png = texture.EncodeToPNG();
-                if (png != null)
-                {
-                    return (png, "image/png");
-                }
-            }
-            catch (Exception ex)
-            {
-                // fail to EncodeToPng
-                // System.ArgumentException: not readable, the texture memory can not be accessed from scripts. You can make the texture readable in the Texture Import Settings.
-
-                Debug.LogWarning(ex);
-            }
-
-            {
-                // try copy and EncodeToPng
-                var copy = TextureConverter.CopyTexture(texture, TextureImportTypes.sRGB, null);
-                var png = copy.EncodeToPNG();
-                UnityEngine.Object.DestroyImmediate(copy);
-
-                return (png, "image/png");
-            }
-        }
-
         /// <summary>
         /// gltf に texture を足す
         /// 
@@ -79,9 +21,9 @@ namespace UniGLTF
         /// <param name="bufferIndex"></param>
         /// <param name="texture"></param>
         /// <returns>gltf texture index</returns>
-        public static int PushGltfTexture(this glTF gltf, int bufferIndex, Texture2D texture)
+        public static int PushGltfTexture(this glTF gltf, int bufferIndex, Texture2D texture, Func<Texture2D, (byte[] bytes, string mime)> getTextureBytes)
         {
-            var bytesWithMime = GetBytesWithMime(texture);
+            var bytesWithMime = getTextureBytes(texture);
 
             // add view
             var view = gltf.buffers[bufferIndex].Append(bytesWithMime.bytes, glBufferTarget.NONE);
@@ -93,7 +35,7 @@ namespace UniGLTF
             {
                 name = TextureImportName.RemoveSuffix(texture.name),
                 bufferView = viewIndex,
-                mimeType = bytesWithMime.mine,
+                mimeType = bytesWithMime.mime,
             });
 
             // add sampler
