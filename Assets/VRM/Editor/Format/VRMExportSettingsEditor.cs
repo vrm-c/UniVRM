@@ -143,7 +143,7 @@ namespace VRM
                 }
             }
 
-            if (GUILayout.Button(VRMExportSettingsEditor.Options.DO_TPOSE.Msg() + "(internal)"))
+            if (GUILayout.Button(VRMExportSettingsEditor.Options.DO_TPOSE.Msg() + "(unity internal)"))
             {
                 if (settings.Root != null)
                 {
