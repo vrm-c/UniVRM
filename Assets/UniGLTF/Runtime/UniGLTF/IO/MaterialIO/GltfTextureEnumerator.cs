@@ -4,7 +4,7 @@ using VRMShaders;
 
 namespace UniGLTF
 {
-    public delegate IEnumerable<TextureImportParam> EnumerateAllTexturesDistinctFunc(GltfParser parser);
+    public delegate IEnumerable<(SubAssetKey, TextureImportParam)> EnumerateAllTexturesDistinctFunc(GltfParser parser);
 
     /// <summary>
     /// Texture 生成に関して
@@ -12,29 +12,22 @@ namespace UniGLTF
     ///
     /// * (gltf/glb/vrm-1): AssetImporterContext.AddObjectToAsset(SubAsset) 
     /// * (gltf/glb/vrm-1): ScriptedImporter.GetExternalObjectMap(Extracted) 
-    /// * (vrm-0): (Extracted) ScriptedImporter では無いので ScriptedImporter.AddRemap が無い 
+    /// * (vrm-0): (Extracted) ScriptedImporter では無いので ScriptedImporter.AddRemap, GetExternalObjectMap が無い 
     ///
-    /// Extract は外部ファイルに png/jpg のバイト列を出力して、TextureImporter を設定すること。ScriptedImporter.AddRemap
-    /// Extracted は、
+    /// AddRemap, GetExternalObjectMap は Dictionary[SourceAssetIdentifier, UnityEngine.Object] に対する API で
+    /// SourceAssetIdentifier 型がリソースを識別するキーとなる。
     /// 
-    /// ファイル名もしくはSubAsset名を介してテクスチャーアセットにアクセスるので、文字列をユニークなキーとしてテクスチャーを識別できる必要がある。
-    /// 基本的に、gltf.textures と Texture2D が１対１に対応するので、 gltfTexture.name のユニーク性を確保した上で
-    /// これを用いればよいが以下の例外がある。
-    ///
-    /// * PBR の MetallicSmoothness と Occlusion が合体する場合
-    /// * (gltf)外部テクスチャーファイルの uri 参照が同じになる場合(同じイメージファイルが異なるテクスチャー設定を保持するケースをサポートしない)
-    ///   * 異なる gltfTexture.source が 同じ gltfImage を参照する場合
-    ///   * 異なる gltfImage.uri が 同じ ファイルを参照する場合
-    ///
-    /// 例外に対処した上で、ユニークなテクスチャー生成情報を列挙するのが
+    /// gltfTexture から SourceAssetIdentifier を作り出すことで、GetExternalObjectMap との対応関係を作る。
     /// 
-    /// GltfTextureEnumerator.Enumerate
-    ///
-    /// である。
+    /// [例外]
+    /// glTF で外部ファイルを uri 参照する場合
+    /// * sRGB 外部ファイルをそのまま使うので SubAsset にしない
+    /// * normal 外部ライルをそのまま使うので SubAsset にしない(normalとしてロードするためにAssetImporterの設定は必用)
+    /// * metallicRoughnessOcclusion 変換結果を SubAsset 化する
     /// </summary>
     public static class GltfTextureEnumerator
     {
-        public static IEnumerable<TextureImportParam> EnumerateTexturesForMaterial(GltfParser parser, int i)
+        public static IEnumerable<(SubAssetKey, TextureImportParam)> EnumerateTexturesForMaterial(GltfParser parser, int i)
         {
             var m = parser.GLTF.materials[i];
 
@@ -86,16 +79,16 @@ namespace UniGLTF
         /// </summary>
         /// <param name="parser"></param>
         /// <returns></returns>
-        public static IEnumerable<TextureImportParam> EnumerateAllTexturesDistinct(GltfParser parser)
+        public static IEnumerable<(SubAssetKey, TextureImportParam)> EnumerateAllTexturesDistinct(GltfParser parser)
         {
             var used = new HashSet<string>();
             for (int i = 0; i < parser.GLTF.materials.Count; ++i)
             {
-                foreach (var textureInfo in EnumerateTexturesForMaterial(parser, i))
+                foreach (var (key, textureInfo) in EnumerateTexturesForMaterial(parser, i))
                 {
                     if (used.Add(textureInfo.ExtractKey))
                     {
-                        yield return textureInfo;
+                        yield return (key, textureInfo);
                     }
                 }
             }

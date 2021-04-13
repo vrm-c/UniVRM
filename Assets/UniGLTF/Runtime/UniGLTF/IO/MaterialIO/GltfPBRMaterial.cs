@@ -49,13 +49,13 @@ namespace UniGLTF
             Transparent
         }
 
-        public static TextureImportParam BaseColorTexture(GltfParser parser, glTFMaterial src)
+        public static (SubAssetKey, TextureImportParam Param) BaseColorTexture(GltfParser parser, glTFMaterial src)
         {
             var (offset, scale) = GltfMaterialImporter.GetTextureOffsetAndScale(src.pbrMetallicRoughness.baseColorTexture);
             return GltfTextureImporter.CreateSRGB(parser, src.pbrMetallicRoughness.baseColorTexture.index, offset, scale);
         }
 
-        public static TextureImportParam StandardTexture(GltfParser parser, glTFMaterial src)
+        public static (SubAssetKey, TextureImportParam) StandardTexture(GltfParser parser, glTFMaterial src)
         {
             var metallicFactor = 1.0f;
             var roughnessFactor = 1.0f;
@@ -65,15 +65,17 @@ namespace UniGLTF
                 roughnessFactor = src.pbrMetallicRoughness.roughnessFactor;
             }
             var (offset, scale) = GltfMaterialImporter.GetTextureOffsetAndScale(src.pbrMetallicRoughness.metallicRoughnessTexture);
-            return GltfTextureImporter.CreateStandard(parser,
+            var param = GltfTextureImporter.CreateStandard(parser,
                             src.pbrMetallicRoughness?.metallicRoughnessTexture?.index,
                             src.occlusionTexture?.index,
                             offset, scale,
                             metallicFactor,
                             roughnessFactor);
+            var key = new SubAssetKey(typeof(Texture2D), param.ConvertedName);
+            return (key, param);
         }
 
-        public static TextureImportParam NormalTexture(GltfParser parser, glTFMaterial src)
+        public static (SubAssetKey, TextureImportParam Param) NormalTexture(GltfParser parser, glTFMaterial src)
         {
             var (offset, scale) = GltfMaterialImporter.GetTextureOffsetAndScale(src.normalTexture);
             return GltfTextureImporter.CreateNormal(parser, src.normalTexture.index, offset, scale);
@@ -95,7 +97,8 @@ namespace UniGLTF
             {
                 if (src.pbrMetallicRoughness.metallicRoughnessTexture != null || src.occlusionTexture != null)
                 {
-                    standardParam = StandardTexture(parser, src);
+                    SubAssetKey key;
+                    (key, standardParam) = StandardTexture(parser, src);
                 }
 
                 if (src.pbrMetallicRoughness.baseColorFactor != null && src.pbrMetallicRoughness.baseColorFactor.Length == 4)
@@ -106,7 +109,7 @@ namespace UniGLTF
 
                 if (src.pbrMetallicRoughness.baseColorTexture != null && src.pbrMetallicRoughness.baseColorTexture.index != -1)
                 {
-                    var textureParam = BaseColorTexture(parser, src);
+                    var (key, textureParam) = BaseColorTexture(parser, src);
                     param.TextureSlots.Add("_MainTex", textureParam);
                 }
 
@@ -128,7 +131,7 @@ namespace UniGLTF
             if (src.normalTexture != null && src.normalTexture.index != -1)
             {
                 param.Actions.Add(material => material.EnableKeyword("_NORMALMAP"));
-                var textureParam = NormalTexture(parser, src);
+                var (key, textureParam) = NormalTexture(parser, src);
                 param.TextureSlots.Add("_BumpMap", textureParam);
                 param.FloatValues.Add("_BumpScale", src.normalTexture.scale);
             }
@@ -142,7 +145,8 @@ namespace UniGLTF
             if (src.emissiveFactor != null
                 || (src.emissiveTexture != null && src.emissiveTexture.index != -1))
             {
-                param.Actions.Add(material => {
+                param.Actions.Add(material =>
+                {
                     material.EnableKeyword("_EMISSION");
                     material.globalIlluminationFlags &= ~MaterialGlobalIlluminationFlags.EmissiveIsBlack;
                 });
@@ -155,12 +159,13 @@ namespace UniGLTF
                 if (src.emissiveTexture != null && src.emissiveTexture.index != -1)
                 {
                     var (offset, scale) = GltfMaterialImporter.GetTextureOffsetAndScale(src.emissiveTexture);
-                    var textureParam = GltfTextureImporter.CreateSRGB(parser, src.emissiveTexture.index, offset, scale);
+                    var (key, textureParam) = GltfTextureImporter.CreateSRGB(parser, src.emissiveTexture.index, offset, scale);
                     param.TextureSlots.Add("_EmissionMap", textureParam);
                 }
             }
 
-            param.Actions.Add(material => {
+            param.Actions.Add(material =>
+            {
                 BlendMode blendMode = BlendMode.Opaque;
                 // https://forum.unity.com/threads/standard-material-shader-ignoring-setfloat-property-_mode.344557/#post-2229980
                 switch (src.alphaMode)

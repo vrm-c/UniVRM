@@ -270,9 +270,9 @@ namespace UniVRM10
                 {
                     m_meta.Authors.AddRange(src.Authors);
                 }
-                if (Vrm10MToonMaterialImporter.TryGetMetaThumbnailTextureImportParam(Parser, vrm, out VRMShaders.TextureImportParam param))
+                if (Vrm10MToonMaterialImporter.TryGetMetaThumbnailTextureImportParam(Parser, vrm, out (SubAssetKey, VRMShaders.TextureImportParam Param) kv))
                 {
-                    var texture = await TextureFactory.GetTextureAsync(param);
+                    var texture = await TextureFactory.GetTextureAsync(kv.Param);
                     if (texture != null)
                     {
                         m_meta.Thumbnail = texture;

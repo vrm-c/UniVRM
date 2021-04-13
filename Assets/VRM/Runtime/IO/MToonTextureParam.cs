@@ -8,7 +8,7 @@ namespace VRM
 {
     public static class MToonTextureParam
     {
-        public static TextureImportParam Create(GltfParser parser, int index, Vector2 offset, Vector2 scale, string prop, float metallicFactor, float roughnessFactor)
+        public static (SubAssetKey, TextureImportParam) Create(GltfParser parser, int index, Vector2 offset, Vector2 scale, string prop, float metallicFactor, float roughnessFactor)
         {
             switch (prop)
             {

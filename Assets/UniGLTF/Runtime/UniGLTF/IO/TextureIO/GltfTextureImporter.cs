@@ -31,20 +31,25 @@ namespace UniGLTF
             }
         }
 
-        public static TextureImportParam CreateSRGB(GltfParser parser, int textureIndex, Vector2 offset, Vector2 scale)
+        public static (SubAssetKey, TextureImportParam Param) CreateSRGB(GltfParser parser, int textureIndex, Vector2 offset, Vector2 scale)
         {
             var name = CreateNameExt(parser.GLTF, textureIndex, TextureImportTypes.sRGB);
             var sampler = CreateSampler(parser.GLTF, textureIndex);
             GetTextureBytesAsync getTextureBytesAsync = () => Task.FromResult(ToArray(parser.GLTF.GetImageBytesFromTextureIndex(parser.Storage, textureIndex)));
-            return new TextureImportParam(name, offset, scale, sampler, TextureImportTypes.sRGB, default, default, getTextureBytesAsync, default, default, default, default, default);
+
+            var key = new SubAssetKey(typeof(Texture2D), name.GltfName);
+            var param = new TextureImportParam(name, offset, scale, sampler, TextureImportTypes.sRGB, default, default, getTextureBytesAsync, default, default, default, default, default);
+            return (key, param);
         }
 
-        public static TextureImportParam CreateNormal(GltfParser parser, int textureIndex, Vector2 offset, Vector2 scale)
+        public static (SubAssetKey, TextureImportParam Param) CreateNormal(GltfParser parser, int textureIndex, Vector2 offset, Vector2 scale)
         {
             var name = CreateNameExt(parser.GLTF, textureIndex, TextureImportTypes.NormalMap);
             var sampler = CreateSampler(parser.GLTF, textureIndex);
             GetTextureBytesAsync getTextureBytesAsync = () => Task.FromResult(ToArray(parser.GLTF.GetImageBytesFromTextureIndex(parser.Storage, textureIndex)));
-            return new TextureImportParam(name, offset, scale, sampler, TextureImportTypes.NormalMap, default, default, getTextureBytesAsync, default, default, default, default, default);
+            var key = new SubAssetKey(typeof(Texture2D), name.GltfName);
+            var param = new TextureImportParam(name, offset, scale, sampler, TextureImportTypes.NormalMap, default, default, getTextureBytesAsync, default, default, default, default, default);
+            return (key, param);
         }
 
         public static TextureImportParam CreateStandard(GltfParser parser, int? metallicRoughnessTextureIndex, int? occlusionTextureIndex, Vector2 offset, Vector2 scale, float metallicFactor, float roughnessFactor)

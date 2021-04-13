@@ -57,8 +57,9 @@ namespace UniGLTF
             if (s_foldTextures)
             {
                 var names = enumTextures(parser)
-                    .Select(x =>
+                    .Select(((SubAssetKey, TextureImportParam) kv) =>
                     {
+                        var x = kv.Item2;
                         if (x.TextureType != TextureImportTypes.StandardMap && !string.IsNullOrEmpty(x.Uri))
                         {
                             // GLTF の 無変換テクスチャーをスキップする

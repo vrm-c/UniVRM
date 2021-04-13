@@ -62,7 +62,7 @@ namespace VRM
                     scale = new Vector2(value[2], value[3]);
                 }
 
-                var textureParam = MToonTextureParam.Create(parser, kv.Value, offset, scale, kv.Key, 1, 1);
+                var (key, textureParam) = MToonTextureParam.Create(parser, kv.Value, offset, scale, kv.Key, 1, 1);
                 param.TextureSlots.Add(kv.Key, textureParam);
             }
 
@@ -93,7 +93,7 @@ namespace VRM
             return true;
         }
 
-        public IEnumerable<TextureImportParam> EnumerateTexturesForMaterial(GltfParser parser, int i)
+        public IEnumerable<(SubAssetKey, TextureImportParam)> EnumerateTexturesForMaterial(GltfParser parser, int i)
         {
             // mtoon
             if (!TryCreateParam(parser, i, out MaterialImportParam param))
@@ -108,11 +108,12 @@ namespace VRM
 
             foreach (var kv in param.TextureSlots)
             {
-                yield return kv.Value;
+                var key = new SubAssetKey(typeof(Texture2D), kv.Key);
+                yield return (key, kv.Value);
             }
         }
 
-        public IEnumerable<TextureImportParam> EnumerateAllTexturesDistinct(GltfParser parser)
+        public IEnumerable<(SubAssetKey, TextureImportParam)> EnumerateAllTexturesDistinct(GltfParser parser)
         {
             var used = new HashSet<string>();
             for (int i = 0; i < parser.GLTF.materials.Count; ++i)
@@ -121,22 +122,22 @@ namespace VRM
                 if (vrmMaterial.shader == MToon.Utils.ShaderName)
                 {
                     // MToon
-                    foreach (var textureInfo in EnumerateTexturesForMaterial(parser, i))
+                    foreach (var (key, textureInfo) in EnumerateTexturesForMaterial(parser, i))
                     {
                         if (used.Add(textureInfo.ExtractKey))
                         {
-                            yield return textureInfo;
+                            yield return (key, textureInfo);
                         }
                     }
                 }
                 else
                 {
                     // PBR or Unlit
-                    foreach (var textureInfo in GltfTextureEnumerator.EnumerateTexturesForMaterial(parser, i))
+                    foreach (var (key, textureInfo) in GltfTextureEnumerator.EnumerateTexturesForMaterial(parser, i))
                     {
                         if (used.Add(textureInfo.ExtractKey))
                         {
-                            yield return textureInfo;
+                            yield return (key, textureInfo);
                         }
                     }
                 }
@@ -145,10 +146,10 @@ namespace VRM
             // thumbnail
             if (m_vrm.meta != null && m_vrm.meta.texture != -1)
             {
-                var textureInfo = GltfTextureImporter.CreateSRGB(parser, m_vrm.meta.texture, Vector2.zero, Vector2.one);
+                var (key, textureInfo) = GltfTextureImporter.CreateSRGB(parser, m_vrm.meta.texture, Vector2.zero, Vector2.one);
                 if (used.Add(textureInfo.ExtractKey))
                 {
-                    yield return textureInfo;
+                    yield return (key, textureInfo);
                 }
             }
         }
