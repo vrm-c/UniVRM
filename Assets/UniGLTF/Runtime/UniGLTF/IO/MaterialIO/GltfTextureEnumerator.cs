@@ -5,7 +5,7 @@ using VRMShaders;
 
 namespace UniGLTF
 {
-    public delegate IEnumerable<(SubAssetKey, TextureImportParam)> EnumerateAllTexturesDistinctFunc(GltfParser parser);
+    public delegate IEnumerable<(SubAssetKey Key, TextureImportParam Param)> EnumerateAllTexturesDistinctFunc(GltfParser parser);
 
     /// <summary>
     /// Texture 生成に関して
@@ -86,10 +86,6 @@ namespace UniGLTF
             Func<(SubAssetKey, TextureImportParam), bool> add = (kv) =>
             {
                 var (key, textureInfo) = kv;
-                if (string.IsNullOrEmpty(textureInfo.Uri) && key.Name != textureInfo.ExtractKey)
-                {
-                    throw new System.Exception();
-                }
                 return used.Add(key);
             };
             for (int i = 0; i < parser.GLTF.materials.Count; ++i)

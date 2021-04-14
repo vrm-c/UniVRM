@@ -97,7 +97,7 @@ namespace VRM
         public IEnumerable<(SubAssetKey, TextureImportParam)> EnumerateTexturesForMaterial(GltfParser parser, int i)
         {
             // mtoon
-            if (!TryCreateParam(parser, i, out MaterialImportParam param))
+            if (TryCreateParam(parser, i, out MaterialImportParam param))
             {
                 // unlit
                 if (!GltfUnlitMaterial.TryCreateParam(parser, i, out param))
@@ -109,7 +109,7 @@ namespace VRM
 
             foreach (var kv in param.TextureSlots)
             {
-                var key = new SubAssetKey(typeof(Texture2D), kv.Key);
+                var key = new SubAssetKey(typeof(Texture2D), kv.Value.UnityObjectName);
                 yield return (key, kv.Value);
             }
         }
@@ -120,10 +120,6 @@ namespace VRM
             Func<(SubAssetKey, TextureImportParam), bool> add = (kv) =>
             {
                 var (key, textureInfo) = kv;
-                if (key.Name != textureInfo.ExtractKey)
-                {
-                    throw new System.Exception();
-                }
                 return used.Add(key);
             };
 

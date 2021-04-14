@@ -68,7 +68,7 @@ namespace UniGLTF
             {
                 case TextureImportTypes.NormalMap:
                     {
-                        if (ExternalMap.TryGetValue(textureInfo.GltfName, out Texture2D external))
+                        if (ExternalMap.TryGetValue(textureInfo.UnityObjectName, out Texture2D external))
                         {
                             ConfigureSize(external);
                             ConfigureNormalMap(external);
@@ -78,7 +78,7 @@ namespace UniGLTF
 
                 case TextureImportTypes.StandardMap:
                     {
-                        if (ExternalMap.TryGetValue(textureInfo.ConvertedName, out Texture2D external))
+                        if (ExternalMap.TryGetValue(textureInfo.UnityObjectName, out Texture2D external))
                         {
                             ConfigureSize(external);
                             ConfigureLinear(external);
@@ -88,7 +88,7 @@ namespace UniGLTF
 
                 case TextureImportTypes.sRGB:
                     {
-                        if (ExternalMap.TryGetValue(textureInfo.GltfName, out Texture2D external))
+                        if (ExternalMap.TryGetValue(textureInfo.UnityObjectName, out Texture2D external))
                         {
                             ConfigureSize(external);
                         }

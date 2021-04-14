@@ -118,9 +118,8 @@ namespace VRMShaders
         public IEnumerable<TextureLoadInfo> Textures => m_textureCache.Values;
 
 
-        async Task<TextureLoadInfo> GetOrCreateBaseTexture(TextureImportParam param, GetTextureBytesAsync getTextureBytesAsync, RenderTextureReadWrite colorSpace, bool used)
+        async Task<TextureLoadInfo> GetOrCreateBaseTexture(string name, TextureImportParam param, GetTextureBytesAsync getTextureBytesAsync, RenderTextureReadWrite colorSpace, bool used)
         {
-            var name = param.GltfName;
             if (m_textureCache.TryGetValue(name, out TextureLoadInfo cacheInfo))
             {
                 return cacheInfo;
@@ -194,17 +193,9 @@ namespace VRMShaders
         /// <returns></returns>
         public async Task<Texture2D> GetTextureAsync(TextureImportParam param)
         {
-            //
-            // ExtractKey で External とのマッチングを試みる
-            // 
-            // Normal => GltfName
-            // Standard => ConvertedName
-            // sRGB => GltfName 
-            // Linear => GltfName 
-            //
             if (param.Index0 != null && ExternalMap != null)
             {
-                if (ExternalMap.TryGetValue(param.ExtractKey, out Texture2D external))
+                if (ExternalMap.TryGetValue(param.UnityObjectName, out Texture2D external))
                 {
                     return external;
                 }
@@ -215,11 +206,11 @@ namespace VRMShaders
                 case TextureImportTypes.NormalMap:
                     // Runtime/SubAsset 用に変換する
                     {
-                        if (!m_textureCache.TryGetValue(param.ConvertedName, out TextureLoadInfo info))
+                        if (!m_textureCache.TryGetValue(param.UnityObjectName, out TextureLoadInfo info))
                         {
-                            var baseTexture = await GetOrCreateBaseTexture(param, param.Index0, RenderTextureReadWrite.Linear, false);
+                            var baseTexture = await GetOrCreateBaseTexture(param.UnityObjectName + ".normal_base", param, param.Index0, RenderTextureReadWrite.Linear, false);
                             var converted = NormalConverter.Import(baseTexture.Texture);
-                            converted.name = param.ConvertedName;
+                            converted.name = param.UnityObjectName;
                             info = new TextureLoadInfo(converted, true, false);
                             m_textureCache.Add(converted.name, info);
                         }
@@ -229,20 +220,20 @@ namespace VRMShaders
                 case TextureImportTypes.StandardMap:
                     // 変換する
                     {
-                        if (!m_textureCache.TryGetValue(param.ConvertedName, out TextureLoadInfo info))
+                        if (!m_textureCache.TryGetValue(param.UnityObjectName, out TextureLoadInfo info))
                         {
                             TextureLoadInfo baseTexture = default;
                             if (param.Index0 != null)
                             {
-                                baseTexture = await GetOrCreateBaseTexture(param, param.Index0, RenderTextureReadWrite.Linear, false);
+                                baseTexture = await GetOrCreateBaseTexture(param.UnityObjectName + ".metallicRoughness", param, param.Index0, RenderTextureReadWrite.Linear, false);
                             }
                             TextureLoadInfo occlusionBaseTexture = default;
                             if (param.Index1 != null)
                             {
-                                occlusionBaseTexture = await GetOrCreateBaseTexture(param, param.Index1, RenderTextureReadWrite.Linear, false);
+                                occlusionBaseTexture = await GetOrCreateBaseTexture(param.UnityObjectName + ".occlusion", param, param.Index1, RenderTextureReadWrite.Linear, false);
                             }
                             var converted = OcclusionMetallicRoughnessConverter.Import(baseTexture.Texture, param.MetallicFactor, param.RoughnessFactor, occlusionBaseTexture.Texture);
-                            converted.name = param.ConvertedName;
+                            converted.name = param.UnityObjectName;
                             info = new TextureLoadInfo(converted, true, false);
                             m_textureCache.Add(converted.name, info);
                         }
@@ -251,14 +242,12 @@ namespace VRMShaders
 
                 default:
                     {
-                        var baseTexture = await GetOrCreateBaseTexture(param, param.Index0, RenderTextureReadWrite.sRGB, true);
+                        var baseTexture = await GetOrCreateBaseTexture(param.UnityObjectName, param, param.Index0, RenderTextureReadWrite.sRGB, true);
                         return baseTexture.Texture;
                     }
             }
 
             throw new NotImplementedException();
         }
-
-
     }
 }

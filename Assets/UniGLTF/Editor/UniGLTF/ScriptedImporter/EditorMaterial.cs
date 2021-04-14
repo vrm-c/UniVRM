@@ -50,34 +50,25 @@ namespace UniGLTF
             s_foldMaterials = EditorGUILayout.Foldout(s_foldMaterials, "Remapped Materials");
             if (s_foldMaterials)
             {
-                importer.DrawRemapGUI<UnityEngine.Material>(parser.GLTF.materials.Select(x => x.name));
+                importer.DrawRemapGUI<UnityEngine.Material>(parser.GLTF.materials.Select(x => new SubAssetKey(typeof(Material), x.name)));
             }
 
             s_foldTextures = EditorGUILayout.Foldout(s_foldTextures, "Remapped Textures");
             if (s_foldTextures)
             {
-                var names = enumTextures(parser)
-                    .Select(((SubAssetKey, TextureImportParam) kv) =>
+                importer.DrawRemapGUI<UnityEngine.Texture2D>(enumTextures(parser)
+                    .Where(x =>
                     {
-                        var x = kv.Item2;
-                        if (x.TextureType != TextureImportTypes.StandardMap && !string.IsNullOrEmpty(x.Uri))
+                        var (key, param) = x;
+                        if ((param.TextureType == TextureImportTypes.sRGB || param.TextureType == TextureImportTypes.NormalMap) && !string.IsNullOrEmpty(param.Uri))
                         {
                             // GLTF の 無変換テクスチャーをスキップする
-                            return null;
+                            return false;
                         }
-
-                        switch (x.TextureType)
-                        {
-                            case TextureImportTypes.NormalMap:
-                                return x.GltfName;
-
-                            default:
-                                return x.ConvertedName;
-                        }
+                        return true;
                     })
-                    .Where(x => !string.IsNullOrEmpty(x))
-                    ;
-                importer.DrawRemapGUI<UnityEngine.Texture2D>(names);
+                    .Select(x => x.Key)
+                    );
             }
 
             if (GUILayout.Button("Clear"))
@@ -101,9 +92,9 @@ namespace UniGLTF
                 return;
             }
 
-            Action<Texture2D> addRemap = externalObject =>
+            Action<SubAssetKey, Texture2D> addRemap = (key, externalObject) =>
                 {
-                    self.AddRemap(new AssetImporter.SourceAssetIdentifier(typeof(UnityEngine.Texture2D), externalObject.name), externalObject);
+                    self.AddRemap(new AssetImporter.SourceAssetIdentifier(key.Type, key.Name), externalObject);
                 };
             Action<IEnumerable<UnityPath>> onCompleted = _ =>
                 {
@@ -134,9 +125,9 @@ namespace UniGLTF
                 Directory.CreateDirectory(path);
             }
 
-            foreach (var asset in importer.GetSubAssets<Material>(importer.assetPath))
+            foreach (var (key, asset) in importer.GetSubAssets<Material>(importer.assetPath))
             {
-                asset.ExtractSubAsset($"{path}/{asset.name}.mat", false);
+                asset.ExtractSubAsset($"{path}/{key.Name}.mat", false);
             }
         }
     }

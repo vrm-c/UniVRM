@@ -23,37 +23,34 @@ namespace UniGLTF
             AssetDatabase.ImportAsset(importer.assetPath, ImportAssetOptions.ForceUpdate);
         }
 
-        public static IEnumerable<T> GetSubAssets<T>(this ScriptedImporter importer, string assetPath) where T : UnityEngine.Object
+        public static IEnumerable<(SubAssetKey, T)> GetSubAssets<T>(this ScriptedImporter importer, string assetPath) where T : UnityEngine.Object
         {
             return AssetDatabase
                 .LoadAllAssetsAtPath(assetPath)
                 .Where(x => AssetDatabase.IsSubAsset(x))
                 .Where(x => x is T)
-                .Select(x => x as T);
+                .Select(x => (new SubAssetKey(typeof(T), x.name), x as T));
         }
 
-        public static void DrawRemapGUI<T>(this ScriptedImporter importer, IEnumerable<string> names) where T : UnityEngine.Object
+        public static void DrawRemapGUI<T>(this ScriptedImporter importer, IEnumerable<SubAssetKey> keys) where T : UnityEngine.Object
         {
             EditorGUI.indentLevel++;
             {
-                var map = importer.GetExternalObjectMap()
-                    .Select(x => (x.Key.name, x.Value as T))
-                    .Where(x => x.Item2 != null)
-                    .ToDictionary(x => x.Item1, x => x.Item2)
-                    ;
-                foreach (var name in names)
+                var map = importer.GetExternalObjectMap();
+                foreach (var key in keys)
                 {
-                    if (string.IsNullOrEmpty(name))
+                    if (string.IsNullOrEmpty(key.Name))
                     {
-                        throw new System.ArgumentNullException();
+                        continue;
                     }
 
                     EditorGUILayout.BeginHorizontal();
-                    EditorGUILayout.PrefixLabel(name);
-                    map.TryGetValue(name, out T value);
+                    EditorGUILayout.PrefixLabel(key.Name);
+                    map.TryGetValue(new AssetImporter.SourceAssetIdentifier(key.Type, key.Name), out UnityEngine.Object value);
                     var asset = EditorGUILayout.ObjectField(value, typeof(T), true) as T;
                     if (asset != value)
                     {
+                        // update
                         importer.SetExternalUnityObject(new AssetImporter.SourceAssetIdentifier(value), asset);
                     }
                     EditorGUILayout.EndHorizontal();

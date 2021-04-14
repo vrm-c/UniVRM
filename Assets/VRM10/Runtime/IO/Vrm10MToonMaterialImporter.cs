@@ -224,18 +224,18 @@ namespace UniVRM10
             // thumbnail
             var imageIndex = vrm.Meta.ThumbnailImage.Value;
             var gltfImage = parser.GLTF.images[imageIndex];
-            var name = new TextureImportName(TextureImportTypes.sRGB, gltfImage.name, gltfImage.GetExt(), "");
+            var name = TextureImportName.GetExtractKey(TextureImportTypes.sRGB, gltfImage.name, null, gltfImage.uri);
 
             GetTextureBytesAsync getBytesAsync = () =>
             {
                 var bytes = parser.GLTF.GetImageBytes(parser.Storage, imageIndex);
                 return Task.FromResult(GltfTextureImporter.ToArray(bytes));
             };
-            var param = new TextureImportParam(name, Vector2.zero, Vector2.one, default, TextureImportTypes.sRGB, default, default,
+            var param = new TextureImportParam(name, gltfImage.GetExt(), gltfImage.uri, Vector2.zero, Vector2.one, default, TextureImportTypes.sRGB, default, default,
                getBytesAsync, default, default,
                default, default, default
                );
-            var key = new SubAssetKey(typeof(Texture2D), name.GltfName);
+            var key = new SubAssetKey(typeof(Texture2D), name);
             value = (key, param);
             return true;
         }
@@ -261,10 +261,6 @@ namespace UniVRM10
             Func<(SubAssetKey, TextureImportParam), bool> add = (kv) =>
             {
                 var (key, textureInfo) = kv;
-                if (key.Name != textureInfo.ExtractKey)
-                {
-                    throw new System.Exception();
-                }
                 return used.Add(key);
             };
             for (int i = 0; i < parser.GLTF.materials.Count; ++i)

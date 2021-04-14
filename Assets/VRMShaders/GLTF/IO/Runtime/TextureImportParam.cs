@@ -22,17 +22,10 @@ namespace VRMShaders
         public const string METALLIC_GLOSS_PROP = "_MetallicGlossMap";
         public const string OCCLUSION_PROP = "_OcclusionMap";
 
-       
-        public readonly TextureImportName Name;
-        public string GltfName => Name.GltfName;
-        public string GltfFileName => Name.GltfFileName; 
-        public string ConvertedName => Name.ConvertedName;
-        public string ConvertedFileName => Name.ConvertedFileName;
-        public string Uri => Name.Uri;
+        public readonly string UnityObjectName;
+        public readonly string Ext;
+        public readonly string Uri;
 
-        public string ExtractKey => Name.ExtractKey;
-
-        
         public Vector2 Offset;
         public Vector2 Scale;
 
@@ -41,7 +34,7 @@ namespace VRMShaders
         public readonly TextureImportTypes TextureType;
         public readonly float MetallicFactor;
         public readonly float RoughnessFactor;
-        
+
         public readonly GetTextureBytesAsync Index0;
         public readonly GetTextureBytesAsync Index1;
         public readonly GetTextureBytesAsync Index2;
@@ -54,7 +47,7 @@ namespace VRMShaders
         /// </summary>
         public bool ExtractConverted => TextureType == TextureImportTypes.StandardMap;
 
-        public TextureImportParam(TextureImportName name, Vector2 offset, Vector2 scale, SamplerParam sampler, TextureImportTypes textureType, float metallicFactor, float roughnessFactor,
+        public TextureImportParam(string name, string ext, string uri, Vector2 offset, Vector2 scale, SamplerParam sampler, TextureImportTypes textureType, float metallicFactor, float roughnessFactor,
             GetTextureBytesAsync i0,
             GetTextureBytesAsync i1,
             GetTextureBytesAsync i2,
@@ -62,7 +55,9 @@ namespace VRMShaders
             GetTextureBytesAsync i4,
             GetTextureBytesAsync i5)
         {
-            Name = name;
+            UnityObjectName = name;
+            Ext = ext;
+            Uri = uri;
             Offset = offset;
             Scale = scale;
             Sampler = sampler;

@@ -71,7 +71,7 @@ namespace UniGLTF
                             offset, scale,
                             metallicFactor,
                             roughnessFactor);
-            var key = new SubAssetKey(typeof(Texture2D), param.ConvertedName);
+            var key = new SubAssetKey(typeof(Texture2D), param.UnityObjectName);
             return (key, param);
         }
 
