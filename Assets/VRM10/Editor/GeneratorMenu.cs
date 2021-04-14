@@ -43,15 +43,15 @@ namespace UniVRM10
                 "vrm-specification/specification/VRMC_vrm-1.0_draft/schema/VRMC_vrm.schema.json",
                 "Assets/VRM10/Runtime/Format/Vrm", // dst
                 // VRMC_constraints
-                "vrm-specification/specification/VRMC_constraints-1.0_draft/schema/VRMC_constraints.schema.json",
+                "vrm-specification/specification/VRMC_node_constraint-1.0_draft/schema/VRMC_node_constraint.schema.json",
                 "Assets/VRM10/Runtime/Format/Constraints", // dst
-                //
+                // VRMC_materials_mtoon
                 "vrm-specification/specification/VRMC_materials_mtoon-1.0_draft/schema/VRMC_materials_mtoon.schema.json",
                 "Assets/VRM10/Runtime/Format/MaterialsMToon", // dst
-                //
+                // VRMC_node_collider
                 "vrm-specification/specification/VRMC_node_collider_1.0_draft/schema/VRMC_node_collider.json",
                 "Assets/VRM10/Runtime/Format/NodeCollider", // dst
-                //
+                // VRMC_springBone
                 "vrm-specification/specification/VRMC_springBone-1.0_draft/schema/VRMC_springBone.schema.json",
                 "Assets/VRM10/Runtime/Format/SpringBone", // dst
             };
@@ -61,15 +61,18 @@ namespace UniVRM10
                 var extensionSchemaPath = new FileInfo(Path.Combine(projectRoot.FullName, args[i]));
                 var parser = new UniGLTF.JsonSchema.JsonSchemaParser(gltf.Directory, extensionSchemaPath.Directory);
                 var extensionSchema = parser.Load(extensionSchemaPath, "");
-                if (debug)
-                {
-                    extensionSchema.Dump();
-                    continue;
-                }
 
                 var dst = new DirectoryInfo(Path.Combine(projectRoot.FullName, args[i + 1]));
                 Debug.Log(dst);
-                GenerateUniGLTFSerialization.Generator.GenerateTo(extensionSchema, dst, clearFolder: true);
+
+                if (debug)
+                {
+                    Debug.Log(extensionSchema.Dump());
+                }
+                else
+                {
+                    GenerateUniGLTFSerialization.Generator.GenerateTo(extensionSchema, dst, clearFolder: true);
+                }
             }
         }
     }

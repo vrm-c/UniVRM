@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
+using UnityEngine;
 
 namespace UniGLTF.JsonSchema
 {
@@ -261,14 +263,21 @@ namespace UniGLTF.JsonSchema
             }
         }
 
-        public void Dump(string indent = "")
+        public void Dump(StringBuilder sb, string indent = "")
         {
-            Console.WriteLine($"{indent}{JsonPath}: {type}");
+            sb.AppendLine($"{indent}{JsonPath}: {type}");
 
             foreach (var x in Children())
             {
-                x.Dump(indent + "  ");
+                x.Dump(sb, indent + "  ");
             }
+        }
+
+        public string Dump()
+        {
+            var sb = new StringBuilder();
+            Dump(sb);
+            return sb.ToString();
         }
     }
 }
