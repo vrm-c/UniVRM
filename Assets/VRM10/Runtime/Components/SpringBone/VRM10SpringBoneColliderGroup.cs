@@ -11,16 +11,6 @@ namespace UniVRM10
     [AddComponentMenu("VRM10/VRM10SpringBoneColliderGroup")]
     public class VRM10SpringBoneColliderGroup : MonoBehaviour
     {
-        void Reset()
-        {
-            // default shape
-            Colliders.Add(new VRM10SpringBoneCollider
-            {
-                ColliderType = VRM10SpringBoneColliderTypes.Capsule,
-                Radius = 0.1f
-            });
-        }
-
         [SerializeField]
         public List<VRM10SpringBoneCollider> Colliders = new List<VRM10SpringBoneCollider>();
 
