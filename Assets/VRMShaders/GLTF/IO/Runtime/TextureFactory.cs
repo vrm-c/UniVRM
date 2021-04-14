@@ -208,7 +208,7 @@ namespace VRMShaders
                     {
                         if (!m_textureCache.TryGetValue(param.UnityObjectName, out TextureLoadInfo info))
                         {
-                            var baseTexture = await GetOrCreateBaseTexture(param.UnityObjectName + ".normal_base", param, param.Index0, RenderTextureReadWrite.Linear, false);
+                            var baseTexture = await GetOrCreateBaseTexture($"{param.UnityObjectName}.normal_base", param, param.Index0, RenderTextureReadWrite.Linear, false);
                             var converted = NormalConverter.Import(baseTexture.Texture);
                             converted.name = param.UnityObjectName;
                             info = new TextureLoadInfo(converted, true, false);
@@ -225,12 +225,12 @@ namespace VRMShaders
                             TextureLoadInfo baseTexture = default;
                             if (param.Index0 != null)
                             {
-                                baseTexture = await GetOrCreateBaseTexture(param.UnityObjectName + ".metallicRoughness", param, param.Index0, RenderTextureReadWrite.Linear, false);
+                                baseTexture = await GetOrCreateBaseTexture($"{param.UnityObjectName}.metallicRoughness", param, param.Index0, RenderTextureReadWrite.Linear, false);
                             }
                             TextureLoadInfo occlusionBaseTexture = default;
                             if (param.Index1 != null)
                             {
-                                occlusionBaseTexture = await GetOrCreateBaseTexture(param.UnityObjectName + ".occlusion", param, param.Index1, RenderTextureReadWrite.Linear, false);
+                                occlusionBaseTexture = await GetOrCreateBaseTexture($"{param.UnityObjectName}.occlusion", param, param.Index1, RenderTextureReadWrite.Linear, false);
                             }
                             var converted = OcclusionMetallicRoughnessConverter.Import(baseTexture.Texture, param.MetallicFactor, param.RoughnessFactor, occlusionBaseTexture.Texture);
                             converted.name = param.UnityObjectName;
