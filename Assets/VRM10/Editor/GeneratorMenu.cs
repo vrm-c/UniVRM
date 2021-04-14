@@ -20,7 +20,18 @@ namespace UniVRM10
     public static class Menu
     {
         [MenuItem(UniVRM10.VRMVersion.MENU + "/Generate from JsonSchema")]
-        public static void Main()
+        public static void Generate()
+        {
+            Run(false);
+        }
+
+        [MenuItem(UniVRM10.VRMVersion.MENU + "/Generate from JsonSchema(debug)")]
+        public static void Parse()
+        {
+            Run(true);
+        }
+
+        static void Run(bool debug)
         {
             var projectRoot = new DirectoryInfo(Path.GetFullPath(Path.Combine(Application.dataPath, "../")));
 
@@ -50,7 +61,11 @@ namespace UniVRM10
                 var extensionSchemaPath = new FileInfo(Path.Combine(projectRoot.FullName, args[i]));
                 var parser = new UniGLTF.JsonSchema.JsonSchemaParser(gltf.Directory, extensionSchemaPath.Directory);
                 var extensionSchema = parser.Load(extensionSchemaPath, "");
-                // extensionSchema.Dump();
+                if (debug)
+                {
+                    extensionSchema.Dump();
+                    continue;
+                }
 
                 var dst = new DirectoryInfo(Path.Combine(projectRoot.FullName, args[i + 1]));
                 Debug.Log(dst);

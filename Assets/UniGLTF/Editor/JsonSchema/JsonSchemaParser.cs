@@ -187,7 +187,12 @@ namespace UniGLTF.JsonSchema
                         // source.properties = new Dictionary<string, JsonSchemaSource>();
                         foreach (var prop in kv.Value.ObjectItems())
                         {
-                            var propJsonPath = $"{jsonPath}.{prop.Key.GetString()}";
+                            var key = prop.Key.GetString();
+                            if (key == "scale")
+                            {
+                                var a = 0;
+                            }
+                            var propJsonPath = $"{jsonPath}.{key}";
                             var propSchema = Parse(prop.Value, propJsonPath);
                             if (propSchema is null)
                             {
