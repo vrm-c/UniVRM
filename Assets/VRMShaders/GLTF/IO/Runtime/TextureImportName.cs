@@ -20,7 +20,7 @@ namespace VRMShaders
             }
             else
             {
-                if (!string.IsNullOrEmpty(uri))
+                if (!string.IsNullOrEmpty(uri) && !uri.StartsWith("data:"))
                 {
                     // external image
                     return Path.GetFileNameWithoutExtension(uri);

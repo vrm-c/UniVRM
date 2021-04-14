@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UniGLTF;
 using UnityEngine;
 using VRMShaders;
@@ -115,29 +116,39 @@ namespace VRM
 
         public IEnumerable<(SubAssetKey, TextureImportParam)> EnumerateAllTexturesDistinct(GltfParser parser)
         {
-            var used = new HashSet<string>();
+            var used = new HashSet<SubAssetKey>();
+            Func<(SubAssetKey, TextureImportParam), bool> add = (kv) =>
+            {
+                var (key, textureInfo) = kv;
+                if (key.Name != textureInfo.ExtractKey)
+                {
+                    throw new System.Exception();
+                }
+                return used.Add(key);
+            };
+
             for (int i = 0; i < parser.GLTF.materials.Count; ++i)
             {
                 var vrmMaterial = m_vrm.materialProperties[i];
                 if (vrmMaterial.shader == MToon.Utils.ShaderName)
                 {
                     // MToon
-                    foreach (var (key, textureInfo) in EnumerateTexturesForMaterial(parser, i))
+                    foreach (var kv in EnumerateTexturesForMaterial(parser, i))
                     {
-                        if (used.Add(textureInfo.ExtractKey))
+                        if (add(kv))
                         {
-                            yield return (key, textureInfo);
+                            yield return kv;
                         }
                     }
                 }
                 else
                 {
                     // PBR or Unlit
-                    foreach (var (key, textureInfo) in GltfTextureEnumerator.EnumerateTexturesForMaterial(parser, i))
+                    foreach (var kv in GltfTextureEnumerator.EnumerateTexturesForMaterial(parser, i))
                     {
-                        if (used.Add(textureInfo.ExtractKey))
+                        if (add(kv))
                         {
-                            yield return (key, textureInfo);
+                            yield return kv;
                         }
                     }
                 }
@@ -146,10 +157,10 @@ namespace VRM
             // thumbnail
             if (m_vrm.meta != null && m_vrm.meta.texture != -1)
             {
-                var (key, textureInfo) = GltfTextureImporter.CreateSRGB(parser, m_vrm.meta.texture, Vector2.zero, Vector2.one);
-                if (used.Add(textureInfo.ExtractKey))
+                var kv = GltfTextureImporter.CreateSRGB(parser, m_vrm.meta.texture, Vector2.zero, Vector2.one);
+                if (add(kv))
                 {
-                    yield return (key, textureInfo);
+                    yield return kv;
                 }
             }
         }

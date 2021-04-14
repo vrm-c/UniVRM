@@ -257,14 +257,23 @@ namespace UniVRM10
                 yield return thumbnail;
             }
 
-            var used = new HashSet<string>();
+            var used = new HashSet<SubAssetKey>();
+            Func<(SubAssetKey, TextureImportParam), bool> add = (kv) =>
+            {
+                var (key, textureInfo) = kv;
+                if (key.Name != textureInfo.ExtractKey)
+                {
+                    throw new System.Exception();
+                }
+                return used.Add(key);
+            };
             for (int i = 0; i < parser.GLTF.materials.Count; ++i)
             {
-                foreach (var (key, textureInfo) in EnumerateTexturesForMaterial(parser, i))
+                foreach (var kv in EnumerateTexturesForMaterial(parser, i))
                 {
-                    if (used.Add(textureInfo.ExtractKey))
+                    if (add(kv))
                     {
-                        yield return (key, textureInfo);
+                        yield return kv;
                     }
                 }
             }
