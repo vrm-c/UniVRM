@@ -384,33 +384,37 @@ namespace UniVRM10
                             out UniGLTF.Extensions.VRMC_node_collider.VRMC_node_collider extension))
                         {
                             var node = Nodes[colliderNode];
-                            var colliderGroup = node.gameObject.GetOrAddComponent<VRM10SpringBoneColliderGroup>();
-                            colliderGroup.Colliders.AddRange(extension.Shapes.Select(x =>
+                            var colliderGroup = node.gameObject.GetComponent<VRM10SpringBoneColliderGroup>();
+                            if (colliderGroup == null)
                             {
-                                if (x.Sphere != null)
+                                colliderGroup = node.gameObject.AddComponent<VRM10SpringBoneColliderGroup>();
+                                colliderGroup.Colliders.AddRange(extension.Shapes.Select(x =>
                                 {
-                                    return new VRM10SpringBoneCollider
+                                    if (x.Sphere != null)
                                     {
-                                        ColliderType = VRM10SpringBoneColliderTypes.Sphere,
-                                        Offset = Vector3(x.Sphere.Offset),
-                                        Radius = x.Sphere.Radius.Value,
-                                    };
-                                }
-                                else if (x.Capsule != null)
-                                {
-                                    return new VRM10SpringBoneCollider
+                                        return new VRM10SpringBoneCollider
+                                        {
+                                            ColliderType = VRM10SpringBoneColliderTypes.Sphere,
+                                            Offset = Vector3(x.Sphere.Offset),
+                                            Radius = x.Sphere.Radius.Value,
+                                        };
+                                    }
+                                    else if (x.Capsule != null)
                                     {
-                                        ColliderType = VRM10SpringBoneColliderTypes.Capsule,
-                                        Offset = Vector3(x.Capsule.Offset),
-                                        Radius = x.Capsule.Radius.Value,
-                                        Tail = Vector3(x.Capsule.Tail),
-                                    };
-                                }
-                                else
-                                {
-                                    throw new NotImplementedException();
-                                }
-                            }));
+                                        return new VRM10SpringBoneCollider
+                                        {
+                                            ColliderType = VRM10SpringBoneColliderTypes.Capsule,
+                                            Offset = Vector3(x.Capsule.Offset),
+                                            Radius = x.Capsule.Radius.Value,
+                                            Tail = Vector3(x.Capsule.Tail),
+                                        };
+                                    }
+                                    else
+                                    {
+                                        throw new NotImplementedException();
+                                    }
+                                }));
+                            }
                             return colliderGroup;
                         }
                         else
