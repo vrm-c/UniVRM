@@ -47,7 +47,7 @@ namespace MeshUtility
                         value = prefab;
                         isPrefab = true;
                     }
-                    catch (ArgumentException ex)
+                    catch (ArgumentException)
                     {
                         // Debug.LogWarning(ex);
                     }

@@ -7,20 +7,6 @@ namespace UniVRM10
 {
     public static class ExpressionExtensions
     {
-        /// <summary>
-        /// for SubAssetName
-        /// </summary>
-        /// <returns></returns>
-        public static string ExtractKey(this Expression expression)
-        {
-            ExpressionKey key =
-            (expression.Preset == ExpressionPreset.custom)
-            ? ExpressionKey.CreateCustom(expression.Name)
-            : ExpressionKey.CreateFromPreset(expression.Preset)
-            ;
-            return key.ExtractKey;
-        }
-
         public static UniVRM10.MorphTargetBinding Build10(this MorphTargetBind bind, GameObject root, RuntimeUnityBuilder.ModelMap loader, VrmLib.Model model)
         {
             var libNode = model.Nodes[bind.Node.Value];

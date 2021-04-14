@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEditor;
+using UniGLTF;
 using System.Linq;
 using VRMShaders;
 
@@ -18,11 +19,11 @@ namespace UniGLTF
         public glTF GLTF => m_parser.GLTF;
         public IStorage Storage => m_parser.Storage;
 
-        public readonly Dictionary<UnityPath, TextureImportParam> Textures = new Dictionary<UnityPath, TextureImportParam>();
-        UnityEngine.Texture2D[] m_subAssets;
+        public readonly Dictionary<SubAssetKey, UnityPath> Textures = new Dictionary<SubAssetKey, UnityPath>();
+        (SubAssetKey Key, UnityEngine.Texture2D Value)[] m_subAssets;
         UnityPath m_textureDirectory;
 
-        public TextureExtractor(GltfParser parser, UnityPath textureDirectory, UnityEngine.Texture2D[] subAssets)
+        public TextureExtractor(GltfParser parser, UnityPath textureDirectory, (SubAssetKey, UnityEngine.Texture2D)[] subAssets)
         {
             m_parser = parser;
             m_textureDirectory = textureDirectory;
@@ -41,28 +42,29 @@ namespace UniGLTF
             return Path.GetExtension(uri).ToLower();
         }
 
-        public void Extract(TextureImportParam param)
+        public void Extract(SubAssetKey key, TextureImportParam param)
         {
-            if (Textures.Values.Contains(param))
+            if (Textures.ContainsKey(key))
             {
                 return;
             }
 
-            UnityPath targetPath = default;
             if (!string.IsNullOrEmpty(param.Uri) && !param.ExtractConverted)
             {
-                targetPath = m_textureDirectory.Child(param.GltfFileName);
+                // use GLTF external
+                // targetPath = m_textureDirectory.Child(key.Name);
             }
             else
             {
+                UnityPath targetPath = default;
 
                 switch (param.TextureType)
                 {
                     case TextureImportTypes.StandardMap:
                         {
                             // write converted texture
-                            var subAsset = m_subAssets.FirstOrDefault(x => x.name == param.ConvertedName);
-                            targetPath = m_textureDirectory.Child(param.ConvertedFileName);
+                            var (_, subAsset) = m_subAssets.FirstOrDefault(x => x.Equals(key));
+                            targetPath = m_textureDirectory.Child($"{key.Name}.png");
                             File.WriteAllBytes(targetPath.FullPath, subAsset.EncodeToPNG().ToArray());
                             targetPath.ImportAsset();
                             break;
@@ -71,15 +73,14 @@ namespace UniGLTF
                     default:
                         {
                             // write original bytes
-                            targetPath = m_textureDirectory.Child(param.GltfFileName);
+                            targetPath = m_textureDirectory.Child($"{key.Name}{param.Ext}");
                             File.WriteAllBytes(targetPath.FullPath, param.Index0().Result.ToArray());
                             targetPath.ImportAsset();
                             break;
                         }
                 }
+                Textures.Add(key, targetPath);
             }
-
-            Textures.Add(targetPath, param);
         }
 
         /// <summary>
@@ -93,37 +94,44 @@ namespace UniGLTF
         /// <param name="dirName"></param>
         /// <param name="onCompleted"></param>
         public static void ExtractTextures(GltfParser parser, UnityPath textureDirectory,
-            EnumerateAllTexturesDistinctFunc textureEnumerator, Texture2D[] subAssets, Action<Texture2D> addRemap,
+            EnumerateAllTexturesDistinctFunc textureEnumerator, (SubAssetKey, Texture2D)[] subAssets,
+            Action<SubAssetKey, Texture2D> addRemap,
             Action<IEnumerable<UnityPath>> onCompleted = null)
         {
             var extractor = new TextureExtractor(parser, textureDirectory, subAssets);
-            foreach (var x in textureEnumerator(parser))
+            foreach (var (key, x) in textureEnumerator(parser))
             {
-                extractor.Extract(x);
+                extractor.Extract(key, x);
             }
 
             EditorApplication.delayCall += () =>
             {
                 // Wait for the texture assets to be imported
 
-                foreach (var kv in extractor.Textures)
+                foreach (var (key, targetPath) in extractor.Textures)
                 {
-                    var targetPath = kv.Key;
-                    var param = kv.Value;
-
                     // remap
                     var externalObject = targetPath.LoadAsset<Texture2D>();
                     if (externalObject != null)
                     {
-                        addRemap(externalObject);
+                        addRemap(key, externalObject);
                     }
                 }
 
                 if (onCompleted != null)
                 {
-                    onCompleted(extractor.Textures.Keys);
+                    onCompleted(extractor.Textures.Values);
                 }
             };
+        }
+    }
+
+    public static class KeyValuePariExtensions
+    {
+        public static void Deconstruct<T, U>(this KeyValuePair<T, U> pair, out T key, out U value)
+        {
+            key = pair.Key;
+            value = pair.Value;
         }
     }
 }

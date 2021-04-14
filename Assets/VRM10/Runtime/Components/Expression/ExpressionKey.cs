@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UniGLTF;
 
 namespace UniVRM10
 {
@@ -173,11 +174,11 @@ namespace UniVRM10
             return 0;
         }
 
-        public string ExtractKey
+        public SubAssetKey SubAssetKey
         {
             get
             {
-                return $"Expression.{this}";
+                return new SubAssetKey(typeof(VRM10Expression), this.ToString());
             }
         }
     }
