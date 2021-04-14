@@ -84,21 +84,6 @@ namespace UniGLTF
             return new TextureImportParam(name, ".png", null, offset, scale, sampler, TextureImportTypes.StandardMap, metallicFactor, roughnessFactor, getMetallicRoughnessAsync, getOcclusionAsync, default, default, default, default);
         }
 
-        public static TextureImportName CreateNameExt(glTF gltf, int textureIndex, TextureImportTypes textureType)
-        {
-            if (textureIndex < 0 || textureIndex >= gltf.textures.Count)
-            {
-                throw new ArgumentOutOfRangeException();
-            }
-            var gltfTexture = gltf.textures[textureIndex];
-            if (gltfTexture.source < 0 || gltfTexture.source >= gltf.images.Count)
-            {
-                throw new ArgumentOutOfRangeException();
-            }
-            var gltfImage = gltf.images[gltfTexture.source];
-            return new TextureImportName(textureType, gltfTexture.name, gltfImage.GetExt(), gltfImage.uri);
-        }
-
         public static SamplerParam CreateSampler(glTF gltf, int index)
         {
             var gltfTexture = gltf.textures[index];
