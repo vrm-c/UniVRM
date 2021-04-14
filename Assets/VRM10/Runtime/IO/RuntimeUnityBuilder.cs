@@ -245,7 +245,7 @@ namespace UniVRM10
             {
                 var src = vrm.Meta;
                 m_meta = ScriptableObject.CreateInstance<VRM10MetaObject>();
-                m_meta.name = VRM10MetaObject.ExtractKey.Name;
+                m_meta.name = VRM10MetaObject.SubAssetKey.Name;
                 controller.Meta = m_meta;
                 m_meta.Name = src.Name;
                 m_meta.Version = src.Version;
@@ -286,14 +286,14 @@ namespace UniVRM10
                 controller.Expression.ExpressionAvatar = ScriptableObject.CreateInstance<VRM10ExpressionAvatar>();
 
                 m_exressionAvatar = controller.Expression.ExpressionAvatar;
-                m_exressionAvatar.name = VRM10ExpressionAvatar.ExtractKey.Name;
+                m_exressionAvatar.name = VRM10ExpressionAvatar.SubAssetKey.Name;
 
                 foreach (var expression in vrm.Expressions)
                 {
                     var clip = ScriptableObject.CreateInstance<UniVRM10.VRM10Expression>();
                     clip.Preset = expression.Preset;
                     clip.ExpressionName = expression.Name;
-                    clip.name = Key(expression).ExtractKey.Name;
+                    clip.name = Key(expression).SubAssetKey.Name;
                     clip.IsBinary = expression.IsBinary.GetValueOrDefault();
                     clip.OverrideBlink = expression.OverrideBlink;
                     clip.OverrideLookAt = expression.OverrideLookAt;

@@ -174,7 +174,7 @@ namespace UniVRM10
             return 0;
         }
 
-        public SubAssetKey ExtractKey
+        public SubAssetKey SubAssetKey
         {
             get
             {

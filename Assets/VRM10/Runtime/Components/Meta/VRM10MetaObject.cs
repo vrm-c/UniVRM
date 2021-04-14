@@ -11,7 +11,7 @@ namespace UniVRM10
     [CreateAssetMenu(menuName = "VRM10/MetaObject")]
     public class VRM10MetaObject : ScriptableObject
     {
-        public static SubAssetKey ExtractKey => new SubAssetKey(typeof(VRM10MetaObject), "Meta");
+        public static SubAssetKey SubAssetKey => new SubAssetKey(typeof(VRM10MetaObject), "Meta");
 
         [SerializeField]
         public string ExporterVersion;

@@ -5,12 +5,12 @@ namespace VRMShaders
 {
     public static class TextureImportName
     {
-        public static string GetExtractKey(TextureImportTypes type, string gltfName, string convertedName, string uri)
+        public static string GetUnityObjectName(TextureImportTypes type, string gltfName, string uri)
         {
             if (type == TextureImportTypes.StandardMap)
             {
                 // metallic, smooth, occlusion
-                return convertedName;
+                return $"{gltfName}{STANDARD_SUFFIX}";
             }
             else
             {

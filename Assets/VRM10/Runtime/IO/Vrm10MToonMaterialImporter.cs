@@ -224,7 +224,7 @@ namespace UniVRM10
             // thumbnail
             var imageIndex = vrm.Meta.ThumbnailImage.Value;
             var gltfImage = parser.GLTF.images[imageIndex];
-            var name = TextureImportName.GetExtractKey(TextureImportTypes.sRGB, gltfImage.name, null, gltfImage.uri);
+            var name = TextureImportName.GetUnityObjectName(TextureImportTypes.sRGB, gltfImage.name, gltfImage.uri);
 
             GetTextureBytesAsync getBytesAsync = () =>
             {

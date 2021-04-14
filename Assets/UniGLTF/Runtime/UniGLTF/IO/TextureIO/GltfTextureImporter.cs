@@ -35,7 +35,7 @@ namespace UniGLTF
         {
             var gltfTexture = parser.GLTF.textures[textureIndex];
             var gltfImage = parser.GLTF.images[gltfTexture.source];
-            var name = TextureImportName.GetExtractKey(TextureImportTypes.sRGB, gltfTexture.name, null, gltfImage.uri);
+            var name = TextureImportName.GetUnityObjectName(TextureImportTypes.sRGB, gltfTexture.name, gltfImage.uri);
             var sampler = CreateSampler(parser.GLTF, textureIndex);
             GetTextureBytesAsync getTextureBytesAsync = () => Task.FromResult(ToArray(parser.GLTF.GetImageBytesFromTextureIndex(parser.Storage, textureIndex)));
             var key = new SubAssetKey(typeof(Texture2D), name);
@@ -47,7 +47,7 @@ namespace UniGLTF
         {
             var gltfTexture = parser.GLTF.textures[textureIndex];
             var gltfImage = parser.GLTF.images[gltfTexture.source];
-            var name = TextureImportName.GetExtractKey(TextureImportTypes.NormalMap, gltfTexture.name, null, gltfImage.uri);
+            var name = TextureImportName.GetUnityObjectName(TextureImportTypes.NormalMap, null, gltfImage.uri);
             var sampler = CreateSampler(parser.GLTF, textureIndex);
             GetTextureBytesAsync getTextureBytesAsync = () => Task.FromResult(ToArray(parser.GLTF.GetImageBytesFromTextureIndex(parser.Storage, textureIndex)));
             var key = new SubAssetKey(typeof(Texture2D), name);
@@ -64,7 +64,7 @@ namespace UniGLTF
             if (metallicRoughnessTextureIndex.HasValue)
             {
                 var gltfTexture = parser.GLTF.textures[metallicRoughnessTextureIndex.Value];
-                name = TextureImportName.GetExtractKey(TextureImportTypes.StandardMap, gltfTexture.name, gltfTexture.name + ".standard", parser.GLTF.images[gltfTexture.source].uri);
+                name = TextureImportName.GetUnityObjectName(TextureImportTypes.StandardMap, gltfTexture.name, parser.GLTF.images[gltfTexture.source].uri);
                 sampler = CreateSampler(parser.GLTF, metallicRoughnessTextureIndex.Value);
                 getMetallicRoughnessAsync = () => Task.FromResult(ToArray(parser.GLTF.GetImageBytesFromTextureIndex(parser.Storage, metallicRoughnessTextureIndex.Value)));
             }
@@ -75,7 +75,7 @@ namespace UniGLTF
                 var gltfTexture = parser.GLTF.textures[occlusionTextureIndex.Value];
                 if (string.IsNullOrEmpty(name))
                 {
-                    name = TextureImportName.GetExtractKey(TextureImportTypes.StandardMap, gltfTexture.name, gltfTexture.name + ".standard", parser.GLTF.images[gltfTexture.source].uri);
+                    name = TextureImportName.GetUnityObjectName(TextureImportTypes.StandardMap, gltfTexture.name, parser.GLTF.images[gltfTexture.source].uri);
                 }
                 sampler = CreateSampler(parser.GLTF, occlusionTextureIndex.Value);
                 getOcclusionAsync = () => Task.FromResult(ToArray(parser.GLTF.GetImageBytesFromTextureIndex(parser.Storage, occlusionTextureIndex.Value)));
