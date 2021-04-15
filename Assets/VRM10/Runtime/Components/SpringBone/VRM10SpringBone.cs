@@ -8,9 +8,16 @@ namespace UniVRM10
     /// <summary>
     /// The base algorithm is http://rocketjump.skr.jp/unity3d/109/ of @ricopin416
     /// DefaultExecutionOrder(11000) means calculate springbone after FinalIK( VRIK )
+    /// 
+    /// Setup の Editor の都合から、VRM10SpringBone は MonoBehaviour にする。
+    /// Data置き場。Updateは使わない。
+    /// 
+    /// Springの根元のTranform (Joints.First()) に AddComponent して使う。
+    /// 
     /// </summary>
+    [DisallowMultipleComponent]
     [Serializable]
-    public class VRM10SpringBone
+    public class VRM10SpringBone : MonoBehaviour
     {
         [SerializeField]
         public string Comment;
