@@ -36,6 +36,16 @@ public static VRMC_materials_mtoon Deserialize(JsonNode parsed)
     {
         var key = kv.Key.GetString();
 
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
         if(key=="version"){
             value.Version = kv.Value.GetString();
             continue;
@@ -51,13 +61,13 @@ public static VRMC_materials_mtoon Deserialize(JsonNode parsed)
             continue;
         }
 
-        if(key=="shadeFactor"){
-            value.ShadeFactor = Deserialize_ShadeFactor(kv.Value);
+        if(key=="shadeColorFactor"){
+            value.ShadeColorFactor = Deserialize_ShadeColorFactor(kv.Value);
             continue;
         }
 
         if(key=="shadeMultiplyTexture"){
-            value.ShadeMultiplyTexture = kv.Value.GetInt32();
+            value.ShadeMultiplyTexture = Deserialize_ShadeMultiplyTexture(kv.Value);
             continue;
         }
 
@@ -66,13 +76,13 @@ public static VRMC_materials_mtoon Deserialize(JsonNode parsed)
             continue;
         }
 
-        if(key=="shadingToonyFactor"){
-            value.ShadingToonyFactor = kv.Value.GetSingle();
+        if(key=="shadingShiftTexture"){
+            value.ShadingShiftTexture = Deserialize_ShadingShiftTexture(kv.Value);
             continue;
         }
 
-        if(key=="lightColorAttenuationFactor"){
-            value.LightColorAttenuationFactor = kv.Value.GetSingle();
+        if(key=="shadingToonyFactor"){
+            value.ShadingToonyFactor = kv.Value.GetSingle();
             continue;
         }
 
@@ -81,18 +91,18 @@ public static VRMC_materials_mtoon Deserialize(JsonNode parsed)
             continue;
         }
 
-        if(key=="additiveTexture"){
-            value.AdditiveTexture = kv.Value.GetInt32();
+        if(key=="matcapTexture"){
+            value.MatcapTexture = Deserialize_MatcapTexture(kv.Value);
             continue;
         }
 
-        if(key=="rimFactor"){
-            value.RimFactor = Deserialize_RimFactor(kv.Value);
+        if(key=="parametricRimColorFactor"){
+            value.ParametricRimColorFactor = Deserialize_ParametricRimColorFactor(kv.Value);
             continue;
         }
 
         if(key=="rimMultiplyTexture"){
-            value.RimMultiplyTexture = kv.Value.GetInt32();
+            value.RimMultiplyTexture = Deserialize_RimMultiplyTexture(kv.Value);
             continue;
         }
 
@@ -101,13 +111,13 @@ public static VRMC_materials_mtoon Deserialize(JsonNode parsed)
             continue;
         }
 
-        if(key=="rimFresnelPowerFactor"){
-            value.RimFresnelPowerFactor = kv.Value.GetSingle();
+        if(key=="parametricRimFresnelPowerFactor"){
+            value.ParametricRimFresnelPowerFactor = kv.Value.GetSingle();
             continue;
         }
 
-        if(key=="rimLiftFactor"){
-            value.RimLiftFactor = kv.Value.GetSingle();
+        if(key=="parametricRimLiftFactor"){
+            value.ParametricRimLiftFactor = kv.Value.GetSingle();
             continue;
         }
 
@@ -122,22 +132,12 @@ public static VRMC_materials_mtoon Deserialize(JsonNode parsed)
         }
 
         if(key=="outlineWidthMultiplyTexture"){
-            value.OutlineWidthMultiplyTexture = kv.Value.GetInt32();
+            value.OutlineWidthMultiplyTexture = Deserialize_OutlineWidthMultiplyTexture(kv.Value);
             continue;
         }
 
-        if(key=="outlineScaledMaxDistanceFactor"){
-            value.OutlineScaledMaxDistanceFactor = kv.Value.GetSingle();
-            continue;
-        }
-
-        if(key=="outlineColorMode"){
-            value.OutlineColorMode = (OutlineColorMode)Enum.Parse(typeof(OutlineColorMode), kv.Value.GetString(), true);
-            continue;
-        }
-
-        if(key=="outlineFactor"){
-            value.OutlineFactor = Deserialize_OutlineFactor(kv.Value);
+        if(key=="outlineColorFactor"){
+            value.OutlineColorFactor = Deserialize_OutlineColorFactor(kv.Value);
             continue;
         }
 
@@ -147,7 +147,7 @@ public static VRMC_materials_mtoon Deserialize(JsonNode parsed)
         }
 
         if(key=="uvAnimationMaskTexture"){
-            value.UvAnimationMaskTexture = kv.Value.GetInt32();
+            value.UvAnimationMaskTexture = Deserialize_UvAnimationMaskTexture(kv.Value);
             continue;
         }
 
@@ -170,7 +170,7 @@ public static VRMC_materials_mtoon Deserialize(JsonNode parsed)
     return value;
 }
 
-public static float[] Deserialize_ShadeFactor(JsonNode parsed)
+public static float[] Deserialize_ShadeColorFactor(JsonNode parsed)
 {
     var value = new float[parsed.GetArrayCount()];
     int i=0;
@@ -181,7 +181,108 @@ public static float[] Deserialize_ShadeFactor(JsonNode parsed)
 	return value;
 } 
 
-public static float[] Deserialize_RimFactor(JsonNode parsed)
+public static TextureInfo Deserialize_ShadeMultiplyTexture(JsonNode parsed)
+{
+    var value = new TextureInfo();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="index"){
+            value.Index = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="texCoord"){
+            value.TexCoord = kv.Value.GetInt32();
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static ShadingShiftTextureInfo Deserialize_ShadingShiftTexture(JsonNode parsed)
+{
+    var value = new ShadingShiftTextureInfo();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="index"){
+            value.Index = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="texCoord"){
+            value.TexCoord = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="scale"){
+            value.Scale = kv.Value.GetSingle();
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static TextureInfo Deserialize_MatcapTexture(JsonNode parsed)
+{
+    var value = new TextureInfo();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="index"){
+            value.Index = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="texCoord"){
+            value.TexCoord = kv.Value.GetInt32();
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static float[] Deserialize_ParametricRimColorFactor(JsonNode parsed)
 {
     var value = new float[parsed.GetArrayCount()];
     int i=0;
@@ -192,7 +293,71 @@ public static float[] Deserialize_RimFactor(JsonNode parsed)
 	return value;
 } 
 
-public static float[] Deserialize_OutlineFactor(JsonNode parsed)
+public static TextureInfo Deserialize_RimMultiplyTexture(JsonNode parsed)
+{
+    var value = new TextureInfo();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="index"){
+            value.Index = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="texCoord"){
+            value.TexCoord = kv.Value.GetInt32();
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static TextureInfo Deserialize_OutlineWidthMultiplyTexture(JsonNode parsed)
+{
+    var value = new TextureInfo();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="index"){
+            value.Index = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="texCoord"){
+            value.TexCoord = kv.Value.GetInt32();
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static float[] Deserialize_OutlineColorFactor(JsonNode parsed)
 {
     var value = new float[parsed.GetArrayCount()];
     int i=0;
@@ -202,6 +367,38 @@ public static float[] Deserialize_OutlineFactor(JsonNode parsed)
     }
 	return value;
 } 
+
+public static TextureInfo Deserialize_UvAnimationMaskTexture(JsonNode parsed)
+{
+    var value = new TextureInfo();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="index"){
+            value.Index = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="texCoord"){
+            value.TexCoord = kv.Value.GetInt32();
+            continue;
+        }
+
+    }
+    return value;
+}
 
 } // GltfDeserializer
 } // UniGLTF 

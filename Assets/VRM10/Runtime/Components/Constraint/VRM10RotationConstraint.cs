@@ -1,4 +1,4 @@
-﻿using UniGLTF.Extensions.VRMC_constraints;
+﻿using UniGLTF.Extensions.VRMC_node_constraint;
 using UnityEngine;
 
 

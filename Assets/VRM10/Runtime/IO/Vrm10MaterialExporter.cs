@@ -127,7 +127,7 @@ namespace UniVRM10
 
                 RenderQueueOffsetNumber = 0,
 
-                ShadeFactor = new float[] { 0, 0, 0 },
+                ShadeColorFactor = new float[] { 0, 0, 0 },
 
                 // ShadeMultiplyTexture;
 
@@ -136,23 +136,21 @@ namespace UniVRM10
 
                 ShadingToonyFactor = 0,
 
-                LightColorAttenuationFactor = 0,
-
                 GiIntensityFactor = 0,
 
                 // MatCap
                 // AdditiveTexture;
 
                 // Rim
-                RimFactor = new float[] { 0, 0, 0 },
+                ParametricRimColorFactor = new float[] { 0, 0, 0 },
 
                 // public int? RimMultiplyTexture;
 
                 RimLightingMixFactor = 0,
 
-                RimFresnelPowerFactor = 0,
+                ParametricRimFresnelPowerFactor = 0,
 
-                RimLiftFactor = 0,
+                ParametricRimLiftFactor = 0,
 
                 // Outline
                 OutlineWidthMode = UniGLTF.Extensions.VRMC_materials_mtoon.OutlineWidthMode.none,
@@ -161,11 +159,7 @@ namespace UniVRM10
 
                 // public int? OutlineWidthMultiplyTexture;
 
-                OutlineScaledMaxDistanceFactor = 0,
-
-                OutlineColorMode = UniGLTF.Extensions.VRMC_materials_mtoon.OutlineColorMode.fixedColor,
-
-                OutlineFactor = new float[] { 0, 0, 0 },
+                OutlineColorFactor = new float[] { 0, 0, 0 },
 
                 OutlineLightingMixFactor = 0,
 
