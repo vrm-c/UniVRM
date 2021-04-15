@@ -47,7 +47,7 @@ namespace UniGLTF
         {
             var gltfTexture = parser.GLTF.textures[textureIndex];
             var gltfImage = parser.GLTF.images[gltfTexture.source];
-            var name = TextureImportName.GetUnityObjectName(TextureImportTypes.NormalMap, null, gltfImage.uri);
+            var name = TextureImportName.GetUnityObjectName(TextureImportTypes.NormalMap, gltfTexture.name, gltfImage.uri);
             var sampler = CreateSampler(parser.GLTF, textureIndex);
             GetTextureBytesAsync getTextureBytesAsync = () => Task.FromResult(ToArray(parser.GLTF.GetImageBytesFromTextureIndex(parser.Storage, textureIndex)));
             var key = new SubAssetKey(typeof(Texture2D), name);
