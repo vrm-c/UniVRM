@@ -97,7 +97,7 @@ namespace VRM
         public IEnumerable<(SubAssetKey, TextureImportParam)> EnumerateTexturesForMaterial(GltfParser parser, int i)
         {
             // mtoon
-            if (TryCreateParam(parser, i, out MaterialImportParam param))
+            if (!TryCreateParam(parser, i, out MaterialImportParam param))
             {
                 // unlit
                 if (!GltfUnlitMaterial.TryCreateParam(parser, i, out param))

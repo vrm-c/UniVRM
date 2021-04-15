@@ -16,7 +16,7 @@ namespace VRM
                 filterMode = FilterMode.Bilinear,
             };
 
-            var textureManager = new TextureExporter(AssetTextureUtil.IsTextureEditorAsset );
+            var textureManager = new TextureExporter(AssetTextureUtil.IsTextureEditorAsset);
             var srcMaterial = new Material(Shader.Find("VRM/MToon"));
 
             var offset = new Vector2(0.3f, 0.2f);
@@ -34,6 +34,25 @@ namespace VRM
             {
                 materialProperties = new System.Collections.Generic.List<glTF_VRM_Material> { vrmMaterial }
             });
+        }
+
+        [Test]
+        public void MToonMaterialParamTest()
+        {
+            if (!VRMTestAssets.TryGetPath("Models/VRoid/VictoriaRubin/VictoriaRubin.vrm", out string path))
+            {
+                return;
+            }
+
+            var parser = new GltfParser();
+            parser.ParsePath(path);
+
+            var importer = new VRMImporterContext(parser, null);
+
+            var materialImporter = new VRMMtoonMaterialImporter(importer.VRM);
+
+            Assert.AreEqual(73, parser.GLTF.materials.Count);
+            Assert.True(materialImporter.TryCreateParam(parser, 0, out MaterialImportParam param));
         }
     }
 }
