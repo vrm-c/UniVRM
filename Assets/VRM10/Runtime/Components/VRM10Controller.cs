@@ -44,9 +44,6 @@ namespace UniVRM10
         [SerializeField]
         public VRM10ControllerFirstPerson FirstPerson = new VRM10ControllerFirstPerson();
 
-        [SerializeField]
-        public VRM10SpringBoneManager SpringBone = new VRM10SpringBoneManager();
-
         void OnDestroy()
         {
             if (Expression != null)
@@ -54,6 +51,8 @@ namespace UniVRM10
                 Expression.Restore();
             }
         }
+
+        VRM10SpringBone[] m_springs;
 
         VRM10Constraint[] m_constraints;
 
@@ -123,7 +122,14 @@ namespace UniVRM10
             //
             // spring
             //
-            SpringBone.Process();
+            if (m_springs == null)
+            {
+                m_springs = GetComponentsInChildren<VRM10SpringBone>();
+            }
+            foreach (var spring in m_springs)
+            {
+                spring.Process();
+            }
 
             //
             // gaze control
@@ -155,11 +161,6 @@ namespace UniVRM10
             {
                 Process();
             }
-        }
-
-        private void OnDrawGizmos()
-        {
-            SpringBone.DrawGizmos();
         }
     }
 }

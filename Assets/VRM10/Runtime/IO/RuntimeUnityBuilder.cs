@@ -346,8 +346,6 @@ namespace UniVRM10
         {
             await awaitCaller.NextFrame();
 
-            var springBoneManager = controller.SpringBone;
-
             // springs
             if (gltfVrmSpringBone.Springs != null)
             {
@@ -427,8 +425,6 @@ namespace UniVRM10
                             return null;
                         }
                     }).Where(x => x != null));
-
-                    springBoneManager.Springs.Add(springBone);
                 }
             }
         }

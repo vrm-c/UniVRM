@@ -295,11 +295,6 @@ namespace UniVRM10
 
         UniGLTF.Extensions.VRMC_springBone.VRMC_springBone ExportSpringBone(VRM10Controller vrmController, Model model, RuntimeVrmConverter converter)
         {
-            if (vrmController?.SpringBone?.Springs == null || vrmController.SpringBone.Springs.Count == 0)
-            {
-                return null;
-            }
-
             var springBone = new UniGLTF.Extensions.VRMC_springBone.VRMC_springBone
             {
                 Springs = new List<UniGLTF.Extensions.VRMC_springBone.Spring>(),
@@ -311,7 +306,7 @@ namespace UniVRM10
                 return model.Nodes.IndexOf(node);
             };
 
-            foreach (var x in vrmController.SpringBone.Springs)
+            foreach (var x in vrmController.GetComponentsInChildren<VRM10SpringBone>())
             {
                 var spring = new UniGLTF.Extensions.VRMC_springBone.Spring
                 {

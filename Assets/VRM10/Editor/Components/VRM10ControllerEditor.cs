@@ -2,7 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 using System.Linq;
-using VrmLib;
+
 
 namespace UniVRM10
 {
@@ -57,7 +57,6 @@ namespace UniVRM10
             m_expression = PropGui.FromObject(serializedObject, nameof(m_target.Expression));
             m_lookAt = PropGui.FromObject(serializedObject, nameof(m_target.LookAt));
             m_firstPerson = PropGui.FromObject(serializedObject, nameof(m_target.FirstPerson));
-            m_springBone = PropGui.FromObject(serializedObject, nameof(m_target.SpringBone));
         }
 
         void OnDisable()
@@ -76,7 +75,6 @@ namespace UniVRM10
             Expression,
             LookAt,
             FirstPerson,
-            SpringBone,
         }
         Tabs _tab;
 
@@ -118,7 +116,6 @@ namespace UniVRM10
         PropGui m_expression;
         PropGui m_lookAt;
         PropGui m_firstPerson;
-        PropGui m_springBone;
         PropGui m_asset;
 
         public override void OnInspectorGUI()
@@ -160,10 +157,6 @@ namespace UniVRM10
 
                 case Tabs.FirstPerson:
                     m_firstPerson.RecursiveProperty();
-                    break;
-
-                case Tabs.SpringBone:
-                    m_springBone.RecursiveProperty();
                     break;
             }
 
