@@ -42,7 +42,7 @@ namespace UniVRM10
                 // VRMC_vrm
                 "vrm-specification/specification/VRMC_vrm-1.0_draft/schema/VRMC_vrm.schema.json",
                 "Assets/VRM10/Runtime/Format/Vrm", // dst
-                // VRMC_constraints
+                // VRMC_node_constraint
                 "vrm-specification/specification/VRMC_node_constraint-1.0_draft/schema/VRMC_node_constraint.schema.json",
                 "Assets/VRM10/Runtime/Format/Constraints", // dst
                 // VRMC_materials_mtoon

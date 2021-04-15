@@ -332,23 +332,21 @@ namespace UniVRM10
                         (value[2], value[3])
                         );
                 }
-                dst.ShadeFactor = mtoon.Definition.Color.ShadeColor.ToFloat3();
+                dst.ShadeColorFactor = mtoon.Definition.Color.ShadeColor.ToFloat3();
                 if (mtoon.TextureIndexMap.ShadeTexture.HasValue)
                 {
-                    dst.ShadeMultiplyTexture = mtoon.TextureIndexMap.ShadeTexture.Value;
+                    dst.ShadeMultiplyTexture = new TextureInfo { Index = mtoon.TextureIndexMap.ShadeTexture.Value };
                 }
                 gltfMaterial.alphaCutoff = mtoon.Definition.Color.CutoutThresholdValue;
 
                 // Outline
-                dst.OutlineColorMode = (UniGLTF.Extensions.VRMC_materials_mtoon.OutlineColorMode)mtoon.Definition.Outline.OutlineColorMode;
-                dst.OutlineFactor = ToFloat3(mtoon.Definition.Outline.OutlineColor);
+                dst.OutlineColorFactor = ToFloat3(mtoon.Definition.Outline.OutlineColor);
                 dst.OutlineLightingMixFactor = mtoon.Definition.Outline.OutlineLightingMixValue;
-                dst.OutlineScaledMaxDistanceFactor = mtoon.Definition.Outline.OutlineScaledMaxDistanceValue;
                 dst.OutlineWidthMode = (UniGLTF.Extensions.VRMC_materials_mtoon.OutlineWidthMode)mtoon.Definition.Outline.OutlineWidthMode;
                 dst.OutlineWidthFactor = mtoon.Definition.Outline.OutlineWidthValue;
                 if (mtoon.TextureIndexMap.OutlineWidthTexture.HasValue)
                 {
-                    dst.OutlineWidthMultiplyTexture = mtoon.TextureIndexMap.OutlineWidthTexture.Value;
+                    dst.OutlineWidthMultiplyTexture = new TextureInfo { Index = mtoon.TextureIndexMap.OutlineWidthTexture.Value };
                 }
 
                 // Emission
@@ -369,7 +367,6 @@ namespace UniVRM10
 
                 // Light
                 dst.GiIntensityFactor = mtoon.Definition.Lighting.LightingInfluence.GiIntensityValue;
-                dst.LightColorAttenuationFactor = mtoon.Definition.Lighting.LightingInfluence.LightColorAttenuationValue;
                 dst.ShadingShiftFactor = mtoon.Definition.Lighting.LitAndShadeMixing.ShadingShiftValue;
                 dst.ShadingToonyFactor = mtoon.Definition.Lighting.LitAndShadeMixing.ShadingToonyValue;
                 if (mtoon.TextureIndexMap.BumpMap.HasValue)
@@ -390,7 +387,7 @@ namespace UniVRM10
                 // matcap
                 if (mtoon.TextureIndexMap.SphereAdd.HasValue)
                 {
-                    dst.AdditiveTexture = mtoon.TextureIndexMap.SphereAdd.Value;
+                    dst.MatcapTexture = new TextureInfo { Index = mtoon.TextureIndexMap.SphereAdd.Value };
                 }
 
                 // rendering
@@ -416,19 +413,19 @@ namespace UniVRM10
                 dst.RenderQueueOffsetNumber = mtoon.Definition.Rendering.RenderQueueOffsetNumber;
 
                 // rim
-                dst.RimFactor = mtoon.Definition.Rim.RimColor.ToFloat3();
+                dst.ParametricRimColorFactor = mtoon.Definition.Rim.RimColor.ToFloat3();
                 if (mtoon.TextureIndexMap.RimTexture.HasValue)
                 {
-                    dst.RimMultiplyTexture = mtoon.TextureIndexMap.RimTexture.Value;
+                    dst.RimMultiplyTexture = new TextureInfo { Index = mtoon.TextureIndexMap.RimTexture.Value };
                 }
-                dst.RimLiftFactor = mtoon.Definition.Rim.RimLiftValue;
-                dst.RimFresnelPowerFactor = mtoon.Definition.Rim.RimFresnelPowerValue;
+                dst.ParametricRimLiftFactor = mtoon.Definition.Rim.RimLiftValue;
+                dst.ParametricRimFresnelPowerFactor = mtoon.Definition.Rim.RimFresnelPowerValue;
                 dst.RimLightingMixFactor = mtoon.Definition.Rim.RimLightingMixValue;
 
                 // texture option
                 if (mtoon.TextureIndexMap.UvAnimMaskTexture.HasValue)
                 {
-                    dst.UvAnimationMaskTexture = mtoon.TextureIndexMap.UvAnimMaskTexture.Value;
+                    dst.UvAnimationMaskTexture = new TextureInfo { Index = mtoon.TextureIndexMap.UvAnimMaskTexture.Value };
                 }
                 dst.UvAnimationRotationSpeedFactor = mtoon.Definition.TextureOption.UvAnimationRotationSpeedValue;
                 dst.UvAnimationScrollXSpeedFactor = mtoon.Definition.TextureOption.UvAnimationScrollXSpeedValue;

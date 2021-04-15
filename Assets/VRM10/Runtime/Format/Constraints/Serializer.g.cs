@@ -4,12 +4,12 @@ using System.Collections.Generic;
 using System.Linq;
 using UniJSON;
 
-namespace UniGLTF.Extensions.VRMC_constraints {
+namespace UniGLTF.Extensions.VRMC_node_constraint {
 
     static public class GltfSerializer
     {
 
-        public static void SerializeTo(ref UniGLTF.glTFExtension dst, VRMC_constraints extension)
+        public static void SerializeTo(ref UniGLTF.glTFExtension dst, VRMC_node_constraint extension)
         {
             if (dst is glTFExtensionImport)
             {
@@ -24,11 +24,34 @@ namespace UniGLTF.Extensions.VRMC_constraints {
 
             var f = new JsonFormatter();
             Serialize(f, extension);
-            extensions.Add(VRMC_constraints.ExtensionName, f.GetStoreBytes());
+            extensions.Add(VRMC_node_constraint.ExtensionName, f.GetStoreBytes());
         }
 
 
-public static void Serialize(JsonFormatter f, VRMC_constraints value)
+public static void Serialize(JsonFormatter f, VRMC_node_constraint value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        value.Extensions.Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        value.Extras.Serialize(f);
+    }
+
+    if(value.Constraint!=null){
+        f.Key("constraint");                
+        Serialize_Constraint(f, value.Constraint);
+    }
+
+    f.EndMap();
+}
+
+public static void Serialize_Constraint(JsonFormatter f, Constraint value)
 {
     f.BeginMap();
 

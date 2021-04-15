@@ -1,6 +1,6 @@
 using UnityEngine;
 using System;
-using UniGLTF.Extensions.VRMC_constraints;
+using UniGLTF.Extensions.VRMC_node_constraint;
 
 namespace UniVRM10
 {

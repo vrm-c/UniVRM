@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UniGLTF;
 using UniJSON;
 
-namespace UniGLTF.Extensions.VRMC_constraints
+namespace UniGLTF.Extensions.VRMC_node_constraint
 {
 
     public enum ObjectSpace
@@ -94,7 +94,7 @@ namespace UniGLTF.Extensions.VRMC_constraints
         [JsonSchema(EnumSerializationType = EnumSerializationType.AsString)]
         public ObjectSpace DestinationSpace;
 
-        // An axis which faces the direction of its sources.
+        // An axis which faces the direction of its source.
         public float[] AimVector;
 
         // An up axis of the constraint.
@@ -107,9 +107,27 @@ namespace UniGLTF.Extensions.VRMC_constraints
         public float? Weight;
     }
 
-    public class VRMC_constraints
+    public class Constraint
     {
-        public const string ExtensionName = "VRMC_constraints";
+        // Dictionary object with extension-specific objects.
+        public glTFExtension Extensions;
+
+        // Application-specific data.
+        public glTFExtension Extras;
+
+        // A constraint that links the position with a source.
+        public PositionConstraint Position;
+
+        // A constraint that links the rotation with a source.
+        public RotationConstraint Rotation;
+
+        // A constraint that rotates the node to face a source.
+        public AimConstraint Aim;
+    }
+
+    public class VRMC_node_constraint
+    {
+        public const string ExtensionName = "VRMC_node_constraint";
         public static readonly Utf8String ExtensionNameUtf8 = Utf8String.From(ExtensionName);
 
         // Dictionary object with extension-specific objects.
@@ -118,13 +136,7 @@ namespace UniGLTF.Extensions.VRMC_constraints
         // Application-specific data.
         public glTFExtension Extras;
 
-        // A constraint that links the position with sources.
-        public PositionConstraint Position;
-
-        // A constraint that links the rotation with sources.
-        public RotationConstraint Rotation;
-
-        // A constraint that rotates the node to face sources.
-        public AimConstraint Aim;
+        // Contains position, rotation, or aim
+        public Constraint Constraint;
     }
 }

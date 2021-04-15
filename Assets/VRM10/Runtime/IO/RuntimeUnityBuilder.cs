@@ -453,8 +453,9 @@ namespace UniVRM10
             for (int i = 0; i < Parser.GLTF.nodes.Count; ++i)
             {
                 var gltfNode = Parser.GLTF.nodes[i];
-                if (UniGLTF.Extensions.VRMC_constraints.GltfDeserializer.TryGet(gltfNode.extensions, out UniGLTF.Extensions.VRMC_constraints.VRMC_constraints constraint))
+                if (UniGLTF.Extensions.VRMC_node_constraint.GltfDeserializer.TryGet(gltfNode.extensions, out UniGLTF.Extensions.VRMC_node_constraint.VRMC_node_constraint ext))
                 {
+                    var constraint = ext.Constraint;
                     var node = Nodes[i];
                     if (constraint.Position != null)
                     {

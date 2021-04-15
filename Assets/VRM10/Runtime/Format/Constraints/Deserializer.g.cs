@@ -4,18 +4,18 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace UniGLTF.Extensions.VRMC_constraints {
+namespace UniGLTF.Extensions.VRMC_node_constraint {
 
 public static class GltfDeserializer
 {
 
-public static bool TryGet(UniGLTF.glTFExtension src, out VRMC_constraints extension)
+public static bool TryGet(UniGLTF.glTFExtension src, out VRMC_node_constraint extension)
 {
     if(src is UniGLTF.glTFExtensionImport extensions)
     {
         foreach(var kv in extensions.ObjectItems())
         {
-            if(kv.Key.GetUtf8String() == VRMC_constraints.ExtensionNameUtf8)
+            if(kv.Key.GetUtf8String() == VRMC_node_constraint.ExtensionNameUtf8)
             {
                 extension = Deserialize(kv.Value);
                 return true;
@@ -28,9 +28,36 @@ public static bool TryGet(UniGLTF.glTFExtension src, out VRMC_constraints extens
 }
 
 
-public static VRMC_constraints Deserialize(JsonNode parsed)
+public static VRMC_node_constraint Deserialize(JsonNode parsed)
 {
-    var value = new VRMC_constraints();
+    var value = new VRMC_node_constraint();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="constraint"){
+            value.Constraint = Deserialize_Constraint(kv.Value);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static Constraint Deserialize_Constraint(JsonNode parsed)
+{
+    var value = new Constraint();
 
     foreach(var kv in parsed.ObjectItems())
     {

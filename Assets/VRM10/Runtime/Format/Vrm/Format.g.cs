@@ -480,6 +480,7 @@ namespace UniGLTF.Extensions.VRMC_vrm
         public const string ExtensionName = "VRMC_vrm";
         public static readonly Utf8String ExtensionNameUtf8 = Utf8String.From(ExtensionName);
 
+        // Specification version of the VRM
         public string SpecVersion;
 
         public Meta Meta;

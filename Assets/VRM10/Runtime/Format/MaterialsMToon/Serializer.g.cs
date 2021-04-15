@@ -33,6 +33,16 @@ public static void Serialize(JsonFormatter f, VRMC_materials_mtoon value)
     f.BeginMap();
 
 
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        value.Extensions.Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        value.Extras.Serialize(f);
+    }
+
     if(!string.IsNullOrEmpty(value.Version)){
         f.Key("version");                
         f.Value(value.Version);
@@ -48,14 +58,14 @@ public static void Serialize(JsonFormatter f, VRMC_materials_mtoon value)
         f.Value(value.RenderQueueOffsetNumber.GetValueOrDefault());
     }
 
-    if(value.ShadeFactor!=null&&value.ShadeFactor.Count()>=0){
-        f.Key("shadeFactor");                
-        Serialize_ShadeFactor(f, value.ShadeFactor);
+    if(value.ShadeColorFactor!=null&&value.ShadeColorFactor.Count()>=3){
+        f.Key("shadeColorFactor");                
+        Serialize_ShadeColorFactor(f, value.ShadeColorFactor);
     }
 
-    if(value.ShadeMultiplyTexture.HasValue){
+    if(value.ShadeMultiplyTexture!=null){
         f.Key("shadeMultiplyTexture");                
-        f.Value(value.ShadeMultiplyTexture.GetValueOrDefault());
+        Serialize_ShadeMultiplyTexture(f, value.ShadeMultiplyTexture);
     }
 
     if(value.ShadingShiftFactor.HasValue){
@@ -63,14 +73,14 @@ public static void Serialize(JsonFormatter f, VRMC_materials_mtoon value)
         f.Value(value.ShadingShiftFactor.GetValueOrDefault());
     }
 
+    if(value.ShadingShiftTexture!=null){
+        f.Key("shadingShiftTexture");                
+        Serialize_ShadingShiftTexture(f, value.ShadingShiftTexture);
+    }
+
     if(value.ShadingToonyFactor.HasValue){
         f.Key("shadingToonyFactor");                
         f.Value(value.ShadingToonyFactor.GetValueOrDefault());
-    }
-
-    if(value.LightColorAttenuationFactor.HasValue){
-        f.Key("lightColorAttenuationFactor");                
-        f.Value(value.LightColorAttenuationFactor.GetValueOrDefault());
     }
 
     if(value.GiIntensityFactor.HasValue){
@@ -78,19 +88,19 @@ public static void Serialize(JsonFormatter f, VRMC_materials_mtoon value)
         f.Value(value.GiIntensityFactor.GetValueOrDefault());
     }
 
-    if(value.AdditiveTexture.HasValue){
-        f.Key("additiveTexture");                
-        f.Value(value.AdditiveTexture.GetValueOrDefault());
+    if(value.MatcapTexture!=null){
+        f.Key("matcapTexture");                
+        Serialize_MatcapTexture(f, value.MatcapTexture);
     }
 
-    if(value.RimFactor!=null&&value.RimFactor.Count()>=0){
-        f.Key("rimFactor");                
-        Serialize_RimFactor(f, value.RimFactor);
+    if(value.ParametricRimColorFactor!=null&&value.ParametricRimColorFactor.Count()>=3){
+        f.Key("parametricRimColorFactor");                
+        Serialize_ParametricRimColorFactor(f, value.ParametricRimColorFactor);
     }
 
-    if(value.RimMultiplyTexture.HasValue){
+    if(value.RimMultiplyTexture!=null){
         f.Key("rimMultiplyTexture");                
-        f.Value(value.RimMultiplyTexture.GetValueOrDefault());
+        Serialize_RimMultiplyTexture(f, value.RimMultiplyTexture);
     }
 
     if(value.RimLightingMixFactor.HasValue){
@@ -98,14 +108,14 @@ public static void Serialize(JsonFormatter f, VRMC_materials_mtoon value)
         f.Value(value.RimLightingMixFactor.GetValueOrDefault());
     }
 
-    if(value.RimFresnelPowerFactor.HasValue){
-        f.Key("rimFresnelPowerFactor");                
-        f.Value(value.RimFresnelPowerFactor.GetValueOrDefault());
+    if(value.ParametricRimFresnelPowerFactor.HasValue){
+        f.Key("parametricRimFresnelPowerFactor");                
+        f.Value(value.ParametricRimFresnelPowerFactor.GetValueOrDefault());
     }
 
-    if(value.RimLiftFactor.HasValue){
-        f.Key("rimLiftFactor");                
-        f.Value(value.RimLiftFactor.GetValueOrDefault());
+    if(value.ParametricRimLiftFactor.HasValue){
+        f.Key("parametricRimLiftFactor");                
+        f.Value(value.ParametricRimLiftFactor.GetValueOrDefault());
     }
 
     if(true){
@@ -118,24 +128,14 @@ public static void Serialize(JsonFormatter f, VRMC_materials_mtoon value)
         f.Value(value.OutlineWidthFactor.GetValueOrDefault());
     }
 
-    if(value.OutlineWidthMultiplyTexture.HasValue){
+    if(value.OutlineWidthMultiplyTexture!=null){
         f.Key("outlineWidthMultiplyTexture");                
-        f.Value(value.OutlineWidthMultiplyTexture.GetValueOrDefault());
+        Serialize_OutlineWidthMultiplyTexture(f, value.OutlineWidthMultiplyTexture);
     }
 
-    if(value.OutlineScaledMaxDistanceFactor.HasValue){
-        f.Key("outlineScaledMaxDistanceFactor");                
-        f.Value(value.OutlineScaledMaxDistanceFactor.GetValueOrDefault());
-    }
-
-    if(true){
-        f.Key("outlineColorMode");                
-        f.Value(value.OutlineColorMode.ToString());
-    }
-
-    if(value.OutlineFactor!=null&&value.OutlineFactor.Count()>=0){
-        f.Key("outlineFactor");                
-        Serialize_OutlineFactor(f, value.OutlineFactor);
+    if(value.OutlineColorFactor!=null&&value.OutlineColorFactor.Count()>=3){
+        f.Key("outlineColorFactor");                
+        Serialize_OutlineColorFactor(f, value.OutlineColorFactor);
     }
 
     if(value.OutlineLightingMixFactor.HasValue){
@@ -143,9 +143,9 @@ public static void Serialize(JsonFormatter f, VRMC_materials_mtoon value)
         f.Value(value.OutlineLightingMixFactor.GetValueOrDefault());
     }
 
-    if(value.UvAnimationMaskTexture.HasValue){
+    if(value.UvAnimationMaskTexture!=null){
         f.Key("uvAnimationMaskTexture");                
-        f.Value(value.UvAnimationMaskTexture.GetValueOrDefault());
+        Serialize_UvAnimationMaskTexture(f, value.UvAnimationMaskTexture);
     }
 
     if(value.UvAnimationScrollXSpeedFactor.HasValue){
@@ -166,7 +166,7 @@ public static void Serialize(JsonFormatter f, VRMC_materials_mtoon value)
     f.EndMap();
 }
 
-public static void Serialize_ShadeFactor(JsonFormatter f, float[] value)
+public static void Serialize_ShadeColorFactor(JsonFormatter f, float[] value)
 {
     f.BeginList();
 
@@ -178,7 +178,96 @@ public static void Serialize_ShadeFactor(JsonFormatter f, float[] value)
     f.EndList();
 }
 
-public static void Serialize_RimFactor(JsonFormatter f, float[] value)
+public static void Serialize_ShadeMultiplyTexture(JsonFormatter f, TextureInfo value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        value.Extensions.Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        value.Extras.Serialize(f);
+    }
+
+    if(value.Index.HasValue){
+        f.Key("index");                
+        f.Value(value.Index.GetValueOrDefault());
+    }
+
+    if(value.TexCoord.HasValue){
+        f.Key("texCoord");                
+        f.Value(value.TexCoord.GetValueOrDefault());
+    }
+
+    f.EndMap();
+}
+
+public static void Serialize_ShadingShiftTexture(JsonFormatter f, ShadingShiftTextureInfo value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        value.Extensions.Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        value.Extras.Serialize(f);
+    }
+
+    if(value.Index.HasValue){
+        f.Key("index");                
+        f.Value(value.Index.GetValueOrDefault());
+    }
+
+    if(value.TexCoord.HasValue){
+        f.Key("texCoord");                
+        f.Value(value.TexCoord.GetValueOrDefault());
+    }
+
+    if(value.Scale.HasValue){
+        f.Key("scale");                
+        f.Value(value.Scale.GetValueOrDefault());
+    }
+
+    f.EndMap();
+}
+
+public static void Serialize_MatcapTexture(JsonFormatter f, TextureInfo value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        value.Extensions.Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        value.Extras.Serialize(f);
+    }
+
+    if(value.Index.HasValue){
+        f.Key("index");                
+        f.Value(value.Index.GetValueOrDefault());
+    }
+
+    if(value.TexCoord.HasValue){
+        f.Key("texCoord");                
+        f.Value(value.TexCoord.GetValueOrDefault());
+    }
+
+    f.EndMap();
+}
+
+public static void Serialize_ParametricRimColorFactor(JsonFormatter f, float[] value)
 {
     f.BeginList();
 
@@ -190,7 +279,63 @@ public static void Serialize_RimFactor(JsonFormatter f, float[] value)
     f.EndList();
 }
 
-public static void Serialize_OutlineFactor(JsonFormatter f, float[] value)
+public static void Serialize_RimMultiplyTexture(JsonFormatter f, TextureInfo value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        value.Extensions.Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        value.Extras.Serialize(f);
+    }
+
+    if(value.Index.HasValue){
+        f.Key("index");                
+        f.Value(value.Index.GetValueOrDefault());
+    }
+
+    if(value.TexCoord.HasValue){
+        f.Key("texCoord");                
+        f.Value(value.TexCoord.GetValueOrDefault());
+    }
+
+    f.EndMap();
+}
+
+public static void Serialize_OutlineWidthMultiplyTexture(JsonFormatter f, TextureInfo value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        value.Extensions.Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        value.Extras.Serialize(f);
+    }
+
+    if(value.Index.HasValue){
+        f.Key("index");                
+        f.Value(value.Index.GetValueOrDefault());
+    }
+
+    if(value.TexCoord.HasValue){
+        f.Key("texCoord");                
+        f.Value(value.TexCoord.GetValueOrDefault());
+    }
+
+    f.EndMap();
+}
+
+public static void Serialize_OutlineColorFactor(JsonFormatter f, float[] value)
 {
     f.BeginList();
 
@@ -200,6 +345,34 @@ public static void Serialize_OutlineFactor(JsonFormatter f, float[] value)
 
     }
     f.EndList();
+}
+
+public static void Serialize_UvAnimationMaskTexture(JsonFormatter f, TextureInfo value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        value.Extensions.Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        value.Extras.Serialize(f);
+    }
+
+    if(value.Index.HasValue){
+        f.Key("index");                
+        f.Value(value.Index.GetValueOrDefault());
+    }
+
+    if(value.TexCoord.HasValue){
+        f.Key("texCoord");                
+        f.Value(value.TexCoord.GetValueOrDefault());
+    }
+
+    f.EndMap();
 }
 
     } // class
