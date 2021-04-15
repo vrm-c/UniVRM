@@ -6,10 +6,10 @@ using VRMShaders;
 
 namespace VRM
 {
-    public class VRMMtoonMaterialImporter
+    public class VRMMaterialImporter
     {
         readonly glTF_VRM_extensions m_vrm;
-        public VRMMtoonMaterialImporter(glTF_VRM_extensions vrm)
+        public VRMMaterialImporter(glTF_VRM_extensions vrm)
         {
             m_vrm = vrm;
         }

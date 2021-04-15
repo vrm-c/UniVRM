@@ -30,7 +30,7 @@ namespace VRM
             var vrmMaterial = VRMMaterialExporter.CreateFromMaterial(srcMaterial, textureManager);
             Assert.AreEqual(vrmMaterial.vectorProperties["_MainTex"], new float[] { 0.3f, 0.2f, 0.5f, 0.6f });
 
-            var materialImporter = new VRMMtoonMaterialImporter(new glTF_VRM_extensions
+            var materialImporter = new VRMMaterialImporter(new glTF_VRM_extensions
             {
                 materialProperties = new System.Collections.Generic.List<glTF_VRM_Material> { vrmMaterial }
             });
@@ -49,7 +49,7 @@ namespace VRM
 
             var importer = new VRMImporterContext(parser, null);
 
-            var materialImporter = new VRMMtoonMaterialImporter(importer.VRM);
+            var materialImporter = new VRMMaterialImporter(importer.VRM);
 
             Assert.AreEqual(73, parser.GLTF.materials.Count);
             Assert.True(materialImporter.TryCreateParam(parser, 0, out MaterialImportParam param));

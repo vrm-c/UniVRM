@@ -149,7 +149,7 @@ namespace VRM
                     .Where(x => x.IsUsed)
                     .Select(x => (new SubAssetKey(typeof(Texture2D), x.Texture.name), x.Texture))
                     .ToArray();
-            var vrmTextures = new VRMMtoonMaterialImporter(m_context.VRM);
+            var vrmTextures = new VRMMaterialImporter(m_context.VRM);
             var dirName = $"{m_prefabPath.FileNameWithoutExtension}.Textures";
             TextureExtractor.ExtractTextures(m_context.Parser, m_prefabPath.Parent.Child(dirName), vrmTextures.EnumerateAllTexturesDistinct, subAssets, (_x, _y) => { }, onTextureReloaded);
         }
