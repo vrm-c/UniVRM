@@ -20,51 +20,6 @@ namespace VRM
             m_prefabPath = prefabPath;
         }
 
-        public bool AvoidOverwriteAndLoad(UnityPath assetPath, UnityEngine.Object o)
-        {
-            if (o is BlendShapeAvatar)
-            {
-                var loaded = assetPath.LoadAsset<BlendShapeAvatar>();
-                var proxy = m_context.Root.GetComponent<VRMBlendShapeProxy>();
-                proxy.BlendShapeAvatar = loaded;
-
-                return true;
-            }
-
-            if (o is BlendShapeClip)
-            {
-                return true;
-            }
-
-            if (o is Material)
-            {
-                var loaded = assetPath.LoadAsset<Material>();
-                if (loaded == null)
-                {
-                    throw new Exception();
-                }
-
-                // replace component reference
-                foreach (var mesh in m_context.Meshes)
-                {
-                    foreach (var r in mesh.Renderers)
-                    {
-                        for (int i = 0; i < r.sharedMaterials.Length; ++i)
-                        {
-                            if (r.sharedMaterials.Contains(o))
-                            {
-                                r.sharedMaterials = r.sharedMaterials.Select(x => x == o ? loaded : x).ToArray();
-                            }
-                        }
-                    }
-                }
-
-                return true;
-            }
-
-            return false;
-        }
-
         public UnityPath GetAssetPath(UnityPath prefabPath, UnityEngine.Object o)
         {
             if (o is BlendShapeAvatar
@@ -98,13 +53,6 @@ namespace VRM
                 var materialPath = materialDir.Child(o.name.EscapeFilePath() + ".asset");
                 return materialPath;
             }
-            // texture is already extracted
-            // else if (o is Texture2D)
-            // {
-            //     var textureDir = prefabPath.GetAssetFolder(".Textures");
-            //     var texturePath = textureDir.Child(o.name.EscapeFilePath() + ".asset");
-            //     return texturePath;
-            // }
             else if (o is Mesh)
             {
                 var meshDir = prefabPath.GetAssetFolder(".Meshes");
@@ -176,18 +124,6 @@ namespace VRM
                 // not dispose
                 return true;
             }
-
-            //             if (assetPath.IsFileExists)
-            //             {
-            //                 if (AvoidOverwriteAndLoad(assetPath, o))
-            //                 {
-            // #if VRM_DEVELOP                    
-            //                     Debug.Log($"AvoidOverwriteAndLoad: {assetPath}");
-            // #endif
-            //                     // 上書きせずに既存のアセットからロードして置き換えた
-            //                     return true;
-            //                 }
-            //             }
 
             // アセットとして書き込む
             assetPath.Parent.EnsureFolder();
