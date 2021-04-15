@@ -188,10 +188,6 @@ namespace UniGLTF.JsonSchema
                         foreach (var prop in kv.Value.ObjectItems())
                         {
                             var key = prop.Key.GetString();
-                            if (key == "scale")
-                            {
-                                var a = 0;
-                            }
                             var propJsonPath = $"{jsonPath}.{key}";
                             var propSchema = Parse(prop.Value, propJsonPath);
                             if (propSchema is null)
