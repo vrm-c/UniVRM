@@ -353,7 +353,12 @@ namespace UniVRM10
             {
                 foreach (var gltfSpring in gltfVrmSpringBone.Springs)
                 {
-                    var springBone = new VRM10SpringBone();
+                    if (gltfSpring.Joints == null || gltfSpring.Joints.Count == 0)
+                    {
+                        continue;
+                    }
+                    var firstJointNode = Nodes[gltfSpring.Joints.First().Node.Value];
+                    var springBone = firstJointNode.gameObject.AddComponent<VRM10SpringBone>();
                     springBone.Comment = gltfSpring.Name;
 
                     // joint
