@@ -39,13 +39,13 @@ namespace UniVRM10
             }
 
             // meta
-            importer.DrawRemapGUI<VRM10MetaObject>(new string[] { VRM10MetaObject.ExtractKey });
+            importer.DrawRemapGUI<VRM10MetaObject>(new SubAssetKey[] { VRM10MetaObject.SubAssetKey });
 
             // expression avatar
-            importer.DrawRemapGUI<VRM10ExpressionAvatar>(new string[] { VRM10ExpressionAvatar.ExtractKey });
+            importer.DrawRemapGUI<VRM10ExpressionAvatar>(new SubAssetKey[] { VRM10ExpressionAvatar.SubAssetKey });
 
             // expressions
-            importer.DrawRemapGUI<VRM10Expression>(vrm.Expressions.Select(x => CreateKey(x).ExtractKey));
+            importer.DrawRemapGUI<VRM10Expression>(vrm.Expressions.Select(x => CreateKey(x).SubAssetKey));
 
             if (GUILayout.Button("Clear"))
             {
@@ -73,7 +73,7 @@ namespace UniVRM10
 
             // meta
             {
-                foreach (var asset in importer.GetSubAssets<VRM10MetaObject>(importer.assetPath))
+                foreach (var (key, asset) in importer.GetSubAssets<VRM10MetaObject>(importer.assetPath))
                 {
                     asset.ExtractSubAsset($"{path}/{asset.name}.asset", false);
                 }
@@ -81,13 +81,13 @@ namespace UniVRM10
 
             {
                 // expressions
-                foreach (var asset in importer.GetSubAssets<VRM10Expression>(importer.assetPath))
+                foreach (var (key, asset) in importer.GetSubAssets<VRM10Expression>(importer.assetPath))
                 {
                     asset.ExtractSubAsset($"{path}/{asset.name}.asset", false);
                 }
 
                 // expressions
-                foreach (var asset in importer.GetSubAssets<VRM10ExpressionAvatar>(importer.assetPath))
+                foreach (var (key, asset) in importer.GetSubAssets<VRM10ExpressionAvatar>(importer.assetPath))
                 {
                     asset.ExtractSubAsset($"{path}/{asset.name}.asset", false);
                 }

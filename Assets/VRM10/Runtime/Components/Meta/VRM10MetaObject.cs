@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using MeshUtility;
+using UniGLTF;
 using UnityEngine;
 
 
@@ -10,7 +11,7 @@ namespace UniVRM10
     [CreateAssetMenu(menuName = "VRM10/MetaObject")]
     public class VRM10MetaObject : ScriptableObject
     {
-        public const string ExtractKey = "Meta";
+        public static SubAssetKey SubAssetKey => new SubAssetKey(typeof(VRM10MetaObject), "Meta");
 
         [SerializeField]
         public string ExporterVersion;

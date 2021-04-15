@@ -29,6 +29,7 @@ namespace VRM
                         textures = new List<glTFTexture>
                         {
                             new glTFTexture{
+                                name = "texture0",
                                 source = 0,
                             }
                         },

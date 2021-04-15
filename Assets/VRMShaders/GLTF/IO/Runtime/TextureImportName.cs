@@ -1,26 +1,20 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace VRMShaders
 {
-    public struct TextureImportName
+    public static class TextureImportName
     {
-        public readonly string GltfName;
-        public readonly string ConvertedName;
-
-        public readonly string Ext;
-        public readonly string Uri;
-        public readonly string ExtractKey;
-
-        public static string GetExtractKey(TextureImportTypes type, string gltfName, string convertedName, string uri)
+        public static string GetUnityObjectName(TextureImportTypes type, string gltfName, string uri)
         {
             if (type == TextureImportTypes.StandardMap)
             {
                 // metallic, smooth, occlusion
-                return convertedName;
+                return $"{gltfName}{STANDARD_SUFFIX}";
             }
             else
             {
-                if (!string.IsNullOrEmpty(uri))
+                if (!string.IsNullOrEmpty(uri) && !uri.StartsWith("data:", StringComparison.Ordinal))
                 {
                     // external image
                     return Path.GetFileNameWithoutExtension(uri);
@@ -33,30 +27,9 @@ namespace VRMShaders
             }
         }
 
-        public TextureImportName(TextureImportTypes textureType, string gltfName, string ext, string uri)
-        {
-            GltfName = gltfName;
-            ConvertedName = TextureImportName.Convert(gltfName, textureType);
-            Ext = ext;
-            Uri = uri;
-            ExtractKey = GetExtractKey(textureType, gltfName, ConvertedName, uri);
-        }
-
-        public string GltfFileName => $"{GltfName}{Ext}";
-
-        public string ConvertedFileName => $"{ConvertedName}.png";
-
         public const string NORMAL_SUFFIX = ".normal";
         public const string STANDARD_SUFFIX = ".standard";
-        public static string Convert(string name, TextureImportTypes textureType)
-        {
-            switch (textureType)
-            {
-                case TextureImportTypes.StandardMap: return $"{name}{STANDARD_SUFFIX}";
-                case TextureImportTypes.NormalMap: return $"{name}{NORMAL_SUFFIX}";
-                default: return name;
-            }
-        }
+
         public static string RemoveSuffix(string src)
         {
             if (src.EndsWith(NORMAL_SUFFIX))

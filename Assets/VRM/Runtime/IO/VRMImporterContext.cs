@@ -297,7 +297,8 @@ namespace VRM
             meta.Title = gltfMeta.title;
             if (gltfMeta.texture >= 0)
             {
-                meta.Thumbnail = await TextureFactory.GetTextureAsync(GltfTextureImporter.CreateSRGB(Parser, gltfMeta.texture, Vector2.zero, Vector2.one));
+                var (key, param) = GltfTextureImporter.CreateSRGB(Parser, gltfMeta.texture, Vector2.zero, Vector2.one);
+                meta.Thumbnail = await TextureFactory.GetTextureAsync(param);
             }
             meta.AllowedUser = gltfMeta.allowedUser;
             meta.ViolentUssage = gltfMeta.violentUssage;

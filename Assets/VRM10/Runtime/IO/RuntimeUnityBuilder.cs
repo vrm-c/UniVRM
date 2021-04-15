@@ -245,7 +245,7 @@ namespace UniVRM10
             {
                 var src = vrm.Meta;
                 m_meta = ScriptableObject.CreateInstance<VRM10MetaObject>();
-                m_meta.name = VRM10MetaObject.ExtractKey;
+                m_meta.name = VRM10MetaObject.SubAssetKey.Name;
                 controller.Meta = m_meta;
                 m_meta.Name = src.Name;
                 m_meta.Version = src.Version;
@@ -270,9 +270,9 @@ namespace UniVRM10
                 {
                     m_meta.Authors.AddRange(src.Authors);
                 }
-                if (Vrm10MToonMaterialImporter.TryGetMetaThumbnailTextureImportParam(Parser, vrm, out VRMShaders.TextureImportParam param))
+                if (Vrm10MToonMaterialImporter.TryGetMetaThumbnailTextureImportParam(Parser, vrm, out (SubAssetKey, VRMShaders.TextureImportParam Param) kv))
                 {
-                    var texture = await TextureFactory.GetTextureAsync(param);
+                    var texture = await TextureFactory.GetTextureAsync(kv.Param);
                     if (texture != null)
                     {
                         m_meta.Thumbnail = texture;
@@ -286,14 +286,14 @@ namespace UniVRM10
                 controller.Expression.ExpressionAvatar = ScriptableObject.CreateInstance<VRM10ExpressionAvatar>();
 
                 m_exressionAvatar = controller.Expression.ExpressionAvatar;
-                m_exressionAvatar.name = VRM10ExpressionAvatar.ExtractKey;
+                m_exressionAvatar.name = VRM10ExpressionAvatar.SubAssetKey.Name;
 
                 foreach (var expression in vrm.Expressions)
                 {
                     var clip = ScriptableObject.CreateInstance<UniVRM10.VRM10Expression>();
                     clip.Preset = expression.Preset;
                     clip.ExpressionName = expression.Name;
-                    clip.name = Key(expression).ExtractKey;
+                    clip.name = Key(expression).SubAssetKey.Name;
                     clip.IsBinary = expression.IsBinary.GetValueOrDefault();
                     clip.OverrideBlink = expression.OverrideBlink;
                     clip.OverrideLookAt = expression.OverrideLookAt;
@@ -384,33 +384,37 @@ namespace UniVRM10
                             out UniGLTF.Extensions.VRMC_node_collider.VRMC_node_collider extension))
                         {
                             var node = Nodes[colliderNode];
-                            var colliderGroup = node.gameObject.GetOrAddComponent<VRM10SpringBoneColliderGroup>();
-                            colliderGroup.Colliders.AddRange(extension.Shapes.Select(x =>
+                            var colliderGroup = node.gameObject.GetComponent<VRM10SpringBoneColliderGroup>();
+                            if (colliderGroup == null)
                             {
-                                if (x.Sphere != null)
+                                colliderGroup = node.gameObject.AddComponent<VRM10SpringBoneColliderGroup>();
+                                colliderGroup.Colliders.AddRange(extension.Shapes.Select(x =>
                                 {
-                                    return new VRM10SpringBoneCollider
+                                    if (x.Sphere != null)
                                     {
-                                        ColliderType = VRM10SpringBoneColliderTypes.Sphere,
-                                        Offset = Vector3(x.Sphere.Offset),
-                                        Radius = x.Sphere.Radius.Value,
-                                    };
-                                }
-                                else if (x.Capsule != null)
-                                {
-                                    return new VRM10SpringBoneCollider
+                                        return new VRM10SpringBoneCollider
+                                        {
+                                            ColliderType = VRM10SpringBoneColliderTypes.Sphere,
+                                            Offset = Vector3(x.Sphere.Offset),
+                                            Radius = x.Sphere.Radius.Value,
+                                        };
+                                    }
+                                    else if (x.Capsule != null)
                                     {
-                                        ColliderType = VRM10SpringBoneColliderTypes.Capsule,
-                                        Offset = Vector3(x.Capsule.Offset),
-                                        Radius = x.Capsule.Radius.Value,
-                                        Tail = Vector3(x.Capsule.Tail),
-                                    };
-                                }
-                                else
-                                {
-                                    throw new NotImplementedException();
-                                }
-                            }));
+                                        return new VRM10SpringBoneCollider
+                                        {
+                                            ColliderType = VRM10SpringBoneColliderTypes.Capsule,
+                                            Offset = Vector3(x.Capsule.Offset),
+                                            Radius = x.Capsule.Radius.Value,
+                                            Tail = Vector3(x.Capsule.Tail),
+                                        };
+                                    }
+                                    else
+                                    {
+                                        throw new NotImplementedException();
+                                    }
+                                }));
+                            }
                             return colliderGroup;
                         }
                         else

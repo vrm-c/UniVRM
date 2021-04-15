@@ -126,7 +126,7 @@ namespace UniVRM10
                 // base color
                 if (m.pbrMetallicRoughness?.baseColorTexture != null)
                 {
-                    param.TextureSlots.Add("_MainTex", GltfPBRMaterial.BaseColorTexture(parser, m));
+                    param.TextureSlots.Add("_MainTex", GltfPBRMaterial.BaseColorTexture(parser, m).Param);
                 }
             }
 
@@ -134,7 +134,7 @@ namespace UniVRM10
             {
                 // normal map
                 param.Actions.Add(material => material.EnableKeyword("_NORMALMAP"));
-                var textureParam = GltfPBRMaterial.NormalTexture(parser, m);
+                var textureParam = GltfPBRMaterial.NormalTexture(parser, m).Param;
                 param.TextureSlots.Add("_BumpMap", textureParam);
                 param.FloatValues.Add("_BumpScale", m.normalTexture.scale);
             }
@@ -142,34 +142,34 @@ namespace UniVRM10
             if (m.emissiveTexture != null && m.emissiveTexture.index != -1)
             {
                 var (offset, scale) = GltfMaterialImporter.GetTextureOffsetAndScale(m.emissiveTexture);
-                var textureParam = GltfTextureImporter.CreateSRGB(parser, m.emissiveTexture.index, offset, scale);
+                var textureParam = GltfTextureImporter.CreateSRGB(parser, m.emissiveTexture.index, offset, scale).Param;
                 param.TextureSlots.Add("_EmissionMap", textureParam);
             }
 
             // TODO:
             if (mtoon.ShadeMultiplyTexture != null)
             {
-                var textureParam = GltfTextureImporter.CreateSRGB(parser, mtoon.ShadeMultiplyTexture.Index.Value, Vector2.zero, Vector2.one);
+                var textureParam = GltfTextureImporter.CreateSRGB(parser, mtoon.ShadeMultiplyTexture.Index.Value, Vector2.zero, Vector2.one).Param;
                 param.TextureSlots.Add("_ShadeTexture", textureParam);
             }
             if (mtoon.OutlineWidthMultiplyTexture != null)
             {
-                var textureParam = GltfTextureImporter.CreateSRGB(parser, mtoon.OutlineWidthMultiplyTexture.Index.Value, Vector2.zero, Vector2.one);
+                var textureParam = GltfTextureImporter.CreateSRGB(parser, mtoon.OutlineWidthMultiplyTexture.Index.Value, Vector2.zero, Vector2.one).Param;
                 param.TextureSlots.Add("_OutlineWidthTexture", textureParam);
             }
             if (mtoon.MatcapTexture != null)
             {
-                var textureParam = GltfTextureImporter.CreateSRGB(parser, mtoon.MatcapTexture.Index.Value, Vector2.zero, Vector2.one);
+                var textureParam = GltfTextureImporter.CreateSRGB(parser, mtoon.MatcapTexture.Index.Value, Vector2.zero, Vector2.one).Param;
                 param.TextureSlots.Add("_SphereAdd", textureParam);
             }
             if (mtoon.RimMultiplyTexture != null)
             {
-                var textureParam = GltfTextureImporter.CreateSRGB(parser, mtoon.RimMultiplyTexture.Index.Value, Vector2.zero, Vector2.one);
+                var textureParam = GltfTextureImporter.CreateSRGB(parser, mtoon.RimMultiplyTexture.Index.Value, Vector2.zero, Vector2.one).Param;
                 param.TextureSlots.Add("_RimTexture", textureParam); ;
             }
             if (mtoon.UvAnimationMaskTexture != null)
             {
-                var textureParam = GltfTextureImporter.CreateSRGB(parser, mtoon.UvAnimationMaskTexture.Index.Value, Vector2.zero, Vector2.one);
+                var textureParam = GltfTextureImporter.CreateSRGB(parser, mtoon.UvAnimationMaskTexture.Index.Value, Vector2.zero, Vector2.one).Param;
                 param.TextureSlots.Add("_UvAnimMaskTexture", textureParam);
             }
 
@@ -182,7 +182,7 @@ namespace UniVRM10
         /// <param name="parser"></param>
         /// <param name="m"></param>
         /// <returns></returns>
-        public static IEnumerable<TextureImportParam> EnumerateTexturesForMaterial(GltfParser parser, int i)
+        public static IEnumerable<(SubAssetKey, TextureImportParam)> EnumerateTexturesForMaterial(GltfParser parser, int i)
         {
             // mtoon
             if (!TryCreateParam(parser, i, out MaterialImportParam param))
@@ -197,7 +197,8 @@ namespace UniVRM10
 
             foreach (var kv in param.TextureSlots)
             {
-                yield return kv.Value;
+                var key = new SubAssetKey(typeof(Texture2D), kv.Key);
+                yield return (key, kv.Value);
             }
         }
 
@@ -210,7 +211,7 @@ namespace UniVRM10
         /// <param name="vrm"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static bool TryGetMetaThumbnailTextureImportParam(GltfParser parser, UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm, out TextureImportParam value)
+        public static bool TryGetMetaThumbnailTextureImportParam(GltfParser parser, UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm, out (SubAssetKey, TextureImportParam) value)
         {
             if (vrm?.Meta == null || !vrm.Meta.ThumbnailImage.HasValue)
             {
@@ -221,17 +222,19 @@ namespace UniVRM10
             // thumbnail
             var imageIndex = vrm.Meta.ThumbnailImage.Value;
             var gltfImage = parser.GLTF.images[imageIndex];
-            var name = new TextureImportName(TextureImportTypes.sRGB, gltfImage.name, gltfImage.GetExt(), "");
+            var name = TextureImportName.GetUnityObjectName(TextureImportTypes.sRGB, gltfImage.name, gltfImage.uri);
 
             GetTextureBytesAsync getBytesAsync = () =>
             {
                 var bytes = parser.GLTF.GetImageBytes(parser.Storage, imageIndex);
                 return Task.FromResult(GltfTextureImporter.ToArray(bytes));
             };
-            value = new TextureImportParam(name, Vector2.zero, Vector2.one, default, TextureImportTypes.sRGB, default, default,
+            var param = new TextureImportParam(name, gltfImage.GetExt(), gltfImage.uri, Vector2.zero, Vector2.one, default, TextureImportTypes.sRGB, default, default,
                getBytesAsync, default, default,
                default, default, default
                );
+            var key = new SubAssetKey(typeof(Texture2D), name);
+            value = (key, param);
             return true;
         }
 
@@ -240,26 +243,31 @@ namespace UniVRM10
         /// </summary>
         /// <param name="parser"></param>
         /// <returns></returns>
-        public static IEnumerable<TextureImportParam> EnumerateAllTexturesDistinct(GltfParser parser)
+        public static IEnumerable<(SubAssetKey, TextureImportParam)> EnumerateAllTexturesDistinct(GltfParser parser)
         {
             if (!UniGLTF.Extensions.VRMC_vrm.GltfDeserializer.TryGet(parser.GLTF.extensions, out UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm))
             {
                 throw new System.Exception("not vrm");
             }
 
-            if (TryGetMetaThumbnailTextureImportParam(parser, vrm, out TextureImportParam thumbnail))
+            if (TryGetMetaThumbnailTextureImportParam(parser, vrm, out (SubAssetKey, TextureImportParam) thumbnail))
             {
                 yield return thumbnail;
             }
 
-            var used = new HashSet<string>();
+            var used = new HashSet<SubAssetKey>();
+            Func<(SubAssetKey, TextureImportParam), bool> add = (kv) =>
+            {
+                var (key, textureInfo) = kv;
+                return used.Add(key);
+            };
             for (int i = 0; i < parser.GLTF.materials.Count; ++i)
             {
-                foreach (var textureInfo in EnumerateTexturesForMaterial(parser, i))
+                foreach (var kv in EnumerateTexturesForMaterial(parser, i))
                 {
-                    if (used.Add(textureInfo.ExtractKey))
+                    if (add(kv))
                     {
-                        yield return textureInfo;
+                        yield return kv;
                     }
                 }
             }
