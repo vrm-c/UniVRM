@@ -8,7 +8,7 @@ using VRMShaders;
 
 namespace UniVRM10
 {
-    public static class Vrm10MToonMaterialImporter
+    public static class Vrm10MaterialImporter
     {
         public static Color ToColor4(this float[] src, Color defaultValue = default)
         {
@@ -76,42 +76,43 @@ namespace UniVRM10
                 {
                     // var color = mtoon.Color;
                     material.SetColor(MToon.Utils.PropColor, m.pbrMetallicRoughness.baseColorFactor.ToColor4());
-                    material.SetColor(MToon.Utils.PropShadeColor, mtoon.ShadeColorFactor.ToColor3());
+                    if (mtoon.ShadeColorFactor != null) material.SetColor(MToon.Utils.PropShadeColor, mtoon.ShadeColorFactor.ToColor3());
                     material.SetFloat(MToon.Utils.PropCutoff, m.alphaCutoff);
                 }
                 {
                     {
-                        material.SetFloat(MToon.Utils.PropShadeShift, mtoon.ShadingShiftFactor.Value);
-                        material.SetFloat(MToon.Utils.PropShadeToony, mtoon.ShadingToonyFactor.Value);
+                        if (mtoon.ShadingShiftFactor.HasValue) material.SetFloat(MToon.Utils.PropShadeShift, mtoon.ShadingShiftFactor.Value);
+                        if (mtoon.ShadingToonyFactor.HasValue) material.SetFloat(MToon.Utils.PropShadeToony, mtoon.ShadingToonyFactor.Value);
                         // material.SetFloat(PropReceiveShadowRate, mtoon.prop.ShadowReceiveMultiplierValue);
                         // material.SetFloat(PropShadingGradeRate, mtoon.mix  prop.LitAndShadeMixingMultiplierValue);
                     }
                     {
-                        material.SetFloat(MToon.Utils.PropIndirectLightIntensity, mtoon.GiIntensityFactor.Value);
+                        if (mtoon.GiIntensityFactor.HasValue) material.SetFloat(MToon.Utils.PropIndirectLightIntensity, mtoon.GiIntensityFactor.Value);
                     }
                 }
                 {
                     material.SetColor(MToon.Utils.PropEmissionColor, m.emissiveFactor.ToColor3());
                 }
                 {
-                    material.SetColor(MToon.Utils.PropRimColor, mtoon.ParametricRimColorFactor.ToColor3());
-                    material.SetFloat(MToon.Utils.PropRimLightingMix, mtoon.RimLightingMixFactor.Value);
-                    material.SetFloat(MToon.Utils.PropRimFresnelPower, mtoon.ParametricRimFresnelPowerFactor.Value);
-                    material.SetFloat(MToon.Utils.PropRimLift, mtoon.ParametricRimLiftFactor.Value);
+                    if (mtoon.ParametricRimColorFactor != null) material.SetColor(MToon.Utils.PropRimColor, mtoon.ParametricRimColorFactor.ToColor3());
+                    if (mtoon.RimLightingMixFactor.HasValue) material.SetFloat(MToon.Utils.PropRimLightingMix, mtoon.RimLightingMixFactor.Value);
+                    if (mtoon.ParametricRimFresnelPowerFactor.HasValue) material.SetFloat(MToon.Utils.PropRimFresnelPower, mtoon.ParametricRimFresnelPowerFactor.Value);
+                    if (mtoon.ParametricRimLiftFactor.HasValue) material.SetFloat(MToon.Utils.PropRimLift, mtoon.ParametricRimLiftFactor.Value);
                 }
                 {
-                    material.SetFloat(MToon.Utils.PropOutlineWidth, mtoon.OutlineWidthFactor.Value);
-                    material.SetColor(MToon.Utils.PropOutlineColor, mtoon.OutlineColorFactor.ToColor3());
-                    material.SetFloat(MToon.Utils.PropOutlineLightingMix, mtoon.OutlineLightingMixFactor.Value);
+                    if (mtoon.OutlineWidthFactor.HasValue) material.SetFloat(MToon.Utils.PropOutlineWidth, mtoon.OutlineWidthFactor.Value);
+                    if (mtoon.OutlineColorFactor != null) material.SetColor(MToon.Utils.PropOutlineColor, mtoon.OutlineColorFactor.ToColor3());
+                    if (mtoon.OutlineLightingMixFactor.HasValue) material.SetFloat(MToon.Utils.PropOutlineLightingMix, mtoon.OutlineLightingMixFactor.Value);
+
                     // private
                     // MToon.Utils.SetOutlineMode(material, outline.OutlineWidthMode, outline.OutlineColorMode);
                 }
                 {
                     // material.SetTextureScale(PropMainTex, mtoon.MainTextureLeftBottomOriginScale);
                     // material.SetTextureOffset(PropMainTex, mtoon.MainTextureLeftBottomOriginOffset);
-                    material.SetFloat(MToon.Utils.PropUvAnimScrollX, mtoon.UvAnimationScrollXSpeedFactor.Value);
-                    material.SetFloat(MToon.Utils.PropUvAnimScrollY, mtoon.UvAnimationScrollYSpeedFactor.Value);
-                    material.SetFloat(MToon.Utils.PropUvAnimRotation, mtoon.UvAnimationRotationSpeedFactor.Value);
+                    if (mtoon.UvAnimationScrollXSpeedFactor.HasValue) material.SetFloat(MToon.Utils.PropUvAnimScrollX, mtoon.UvAnimationScrollXSpeedFactor.Value);
+                    if (mtoon.UvAnimationScrollYSpeedFactor.HasValue) material.SetFloat(MToon.Utils.PropUvAnimScrollY, mtoon.UvAnimationScrollYSpeedFactor.Value);
+                    if (mtoon.UvAnimationRotationSpeedFactor.HasValue) material.SetFloat(MToon.Utils.PropUvAnimRotation, mtoon.UvAnimationRotationSpeedFactor.Value);
                 }
 
                 MToon.Utils.ValidateProperties(material, isBlendModeChangedByUser: false);
