@@ -24,7 +24,7 @@ namespace UniVRM10
             var parser = new GltfParser();
             parser.Parse(AliciaPath, migratedBytes);
 
-            var materialParam = Vrm10MaterialImporter.GetMaterialImportParam(parser, 0);
+            var materialParam = Vrm10MaterialImporter.GetMaterialParam(parser, 0);
             Assert.AreEqual("VRM/MToon", materialParam.ShaderName);
             Assert.AreEqual("Alicia_body", materialParam.TextureSlots["_MainTex"].UnityObjectName);
 

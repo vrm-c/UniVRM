@@ -177,7 +177,7 @@ namespace UniVRM10
             return true;
         }
 
-        public static MaterialImportParam GetMaterialImportParam(GltfParser parser, int i)
+        public static MaterialImportParam GetMaterialParam(GltfParser parser, int i)
         {
             // mtoon
             if (!TryCreateParam(parser, i, out MaterialImportParam param))
@@ -248,7 +248,7 @@ namespace UniVRM10
             var used = new HashSet<SubAssetKey>();
             for (int i = 0; i < parser.GLTF.materials.Count; ++i)
             {
-                var param = GetMaterialImportParam(parser, i);
+                var param = GetMaterialParam(parser, i);
                 foreach (var (key, value) in param.EnumerateSubAssetKeyValue())
                 {
                     if (used.Add(key))
