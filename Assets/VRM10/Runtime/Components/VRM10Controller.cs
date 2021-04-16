@@ -27,6 +27,9 @@ namespace UniVRM10
 
             [SerializeField, Header("UpdateSetting")]
             public UpdateTypes UpdateType = UpdateTypes.LateUpdate;
+
+            [SerializeField, Header("SpringBone")]
+            public Transform SpringBoneCenter;
         }
 
         [SerializeField]
@@ -128,7 +131,7 @@ namespace UniVRM10
             }
             foreach (var spring in m_springs)
             {
-                spring.Process();
+                spring.Process(Controller.SpringBoneCenter);
             }
 
             //

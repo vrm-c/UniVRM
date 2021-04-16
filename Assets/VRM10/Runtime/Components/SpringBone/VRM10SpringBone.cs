@@ -31,9 +31,6 @@ namespace UniVRM10
         [SerializeField]
         public List<VRM10SpringBoneColliderGroup> ColliderGroups = new List<VRM10SpringBoneColliderGroup>();
 
-        [SerializeField]
-        public Transform m_center;
-
         [ContextMenu("Reset bones")]
         public void ResetJoints()
         {
@@ -46,9 +43,12 @@ namespace UniVRM10
             }
         }
 
+        Transform m_center;
+
         List<SpringBoneLogic.InternalCollider> m_colliderList = new List<SpringBoneLogic.InternalCollider>();
-        public void Process()
+        public void Process(Transform center)
         {
+            m_center = center;
             if (Joints == null)
             {
                 return;
@@ -96,10 +96,10 @@ namespace UniVRM10
                 VRM10SpringJoint lastJoint = Joints.FirstOrDefault(x => x != null);
                 foreach (var joint in Joints.Where(x => x != null).Skip(1))
                 {
-                    lastJoint.Update(m_center, Time.deltaTime, m_colliderList, joint);
+                    lastJoint.Update(center, Time.deltaTime, m_colliderList, joint);
                     lastJoint = joint;
                 }
-                lastJoint.Update(m_center, Time.deltaTime, m_colliderList, null);
+                lastJoint.Update(center, Time.deltaTime, m_colliderList, null);
             }
         }
 
