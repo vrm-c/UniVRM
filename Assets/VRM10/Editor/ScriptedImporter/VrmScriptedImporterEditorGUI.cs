@@ -65,7 +65,7 @@ namespace UniVRM10
                 case Tabs.Materials:
                     if (m_parser != null)
                     {
-                        EditorMaterial.OnGUI(m_importer, m_parser, Vrm10MToonMaterialImporter.EnumerateAllTexturesDistinct);
+                        EditorMaterial.OnGUI(m_importer, m_parser, Vrm10MaterialImporter.EnumerateAllTexturesDistinct);
                     }
                     break;
 
