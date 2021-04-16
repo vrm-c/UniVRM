@@ -372,7 +372,7 @@ namespace UniVRM10
                             var joint = new VRM10SpringJoint(Nodes[gltfJoint.Node.Value]);
                             joint.m_jointRadius = gltfJoint.HitRadius.Value;
                             joint.m_dragForce = gltfJoint.DragForce.Value;
-                            joint.m_gravityDir = Vector3(gltfJoint.GravityDir);
+                            joint.m_gravityDir = Vector3InvertX(gltfJoint.GravityDir);
                             joint.m_gravityPower = gltfJoint.GravityPower.Value;
                             joint.m_stiffnessForce = gltfJoint.Stiffness.Value;
                             // joint.m_exclude = gltfJoint.Exclude.GetValueOrDefault();
@@ -398,7 +398,7 @@ namespace UniVRM10
                                         return new VRM10SpringBoneCollider
                                         {
                                             ColliderType = VRM10SpringBoneColliderTypes.Sphere,
-                                            Offset = Vector3(x.Sphere.Offset),
+                                            Offset = Vector3InvertX(x.Sphere.Offset),
                                             Radius = x.Sphere.Radius.Value,
                                         };
                                     }
@@ -407,9 +407,9 @@ namespace UniVRM10
                                         return new VRM10SpringBoneCollider
                                         {
                                             ColliderType = VRM10SpringBoneColliderTypes.Capsule,
-                                            Offset = Vector3(x.Capsule.Offset),
+                                            Offset = Vector3InvertX(x.Capsule.Offset),
                                             Radius = x.Capsule.Radius.Value,
-                                            Tail = Vector3(x.Capsule.Tail),
+                                            Tail = Vector3InvertX(x.Capsule.Tail),
                                         };
                                     }
                                     else
@@ -441,12 +441,12 @@ namespace UniVRM10
             return mask;
         }
 
-        static Vector3 Vector3(float[] f)
+        static Vector3 Vector3InvertX(float[] f)
         {
             var v = default(Vector3);
             if (f != null && f.Length == 3)
             {
-                v.x = f[0];
+                v.x = -f[0];
                 v.y = f[1];
                 v.z = f[2];
             }
@@ -489,8 +489,8 @@ namespace UniVRM10
                         var a = constraint.Aim;
                         var aimConstraint = node.gameObject.AddComponent<VRM10AimConstraint>();
                         aimConstraint.Source = Nodes[a.Source.Value];
-                        aimConstraint.AimVector = Vector3(a.AimVector);
-                        aimConstraint.UpVector = Vector3(a.UpVector);
+                        aimConstraint.AimVector = Vector3InvertX(a.AimVector);
+                        aimConstraint.UpVector = Vector3InvertX(a.UpVector);
                     }
                 }
             }

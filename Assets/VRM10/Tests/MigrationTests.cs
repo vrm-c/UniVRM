@@ -213,5 +213,43 @@ namespace UniVRM10
                 }
             }
         }
+
+        /// <summary>
+        /// migration で x が反転することを確認
+        /// </summary>
+        [Test]
+        public void Migrate_SpringBoneTest()
+        {
+            //
+            // vrm0 のオリジナルの値
+            //
+            var VALUE = new Vector3(-0.0359970331f, -0.0188314915f, 0.00566166639f);
+            var parser0 = new GltfParser();
+            var bytes0 = File.ReadAllBytes(AliciaPath);
+            parser0.Parse(AliciaPath, bytes0);
+            var json0 = parser0.Json.ParseAsJson();
+            var colliderIndex = json0["extensions"]["VRM"]["secondaryAnimation"]["boneGroups"][0]["colliderGroups"][0].GetInt32();
+            var x = json0["extensions"]["VRM"]["secondaryAnimation"]["colliderGroups"][colliderIndex]["colliders"][0]["offset"]["x"].GetSingle();
+            var y = json0["extensions"]["VRM"]["secondaryAnimation"]["colliderGroups"][colliderIndex]["colliders"][0]["offset"]["y"].GetSingle();
+            var z = json0["extensions"]["VRM"]["secondaryAnimation"]["colliderGroups"][colliderIndex]["colliders"][0]["offset"]["z"].GetSingle();
+            Assert.AreEqual(VALUE.x, x);
+            Assert.AreEqual(VALUE.y, y);
+            Assert.AreEqual(VALUE.z, z);
+
+            //
+            // vrm1 に migrate
+            //
+            var bytes1 = MigrationVrm.Migrate(bytes0);
+            var parser1 = new GltfParser();
+            parser1.Parse(AliciaPath, bytes1);
+            Assert.True(UniGLTF.Extensions.VRMC_springBone.GltfDeserializer.TryGet(parser1.GLTF.extensions, out UniGLTF.Extensions.VRMC_springBone.VRMC_springBone springBone));
+            var spring = springBone.Springs[0];
+            var colliderNodeIndex = spring.Colliders[0];
+            Assert.True(UniGLTF.Extensions.VRMC_node_collider.GltfDeserializer.TryGet(parser1.GLTF.nodes[colliderNodeIndex].extensions, out UniGLTF.Extensions.VRMC_node_collider.VRMC_node_collider colliderGroup));
+            // x軸だけが反転する
+            Assert.AreEqual(-VALUE.x, colliderGroup.Shapes[0].Sphere.Offset[0]);
+            Assert.AreEqual(VALUE.y, colliderGroup.Shapes[0].Sphere.Offset[1]);
+            Assert.AreEqual(VALUE.z, colliderGroup.Shapes[0].Sphere.Offset[2]);
+        }
     }
 }
