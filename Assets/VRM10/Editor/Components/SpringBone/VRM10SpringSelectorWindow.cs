@@ -9,7 +9,7 @@ namespace UniVRM10
     /// </summary>
     public class VRM10SpringSelectorWindow : EditorWindow
     {
-        const string MENU_KEY = VRMVersion.MENU + "/SpringBone";
+        const string MENU_KEY = VRMVersion.MENU + "/SpringBone Window";
 
         [MenuItem(MENU_KEY, false, 0)]
         private static void ExportFromMenu()
@@ -17,6 +17,7 @@ namespace UniVRM10
             var window = (VRM10SpringSelectorWindow)GetWindow(typeof(VRM10SpringSelectorWindow));
             window.titleContent = new GUIContent("SpringBone selector");
             window.Show();
+            window.Root = Selection.activeTransform;
         }
 
         void OnEnable()
@@ -70,6 +71,8 @@ namespace UniVRM10
             Root = backup;
         }
 
+        Vector2 m_scrollPosition;
+
         private void OnGUI()
         {
             Root = (Transform)EditorGUILayout.ObjectField("vrm1 root", m_root, typeof(Transform), true);
@@ -79,6 +82,13 @@ namespace UniVRM10
                 Reload();
             }
 
+            m_scrollPosition = EditorGUILayout.BeginScrollView(m_scrollPosition);
+            DrawContent();
+            EditorGUILayout.EndScrollView();
+        }
+
+        void DrawContent()
+        {
             GUI.enabled = false;
             s_foldSprings = EditorGUILayout.Foldout(s_foldSprings, "springs");
             if (s_foldSprings)
