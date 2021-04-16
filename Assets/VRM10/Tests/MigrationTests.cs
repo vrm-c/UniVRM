@@ -213,5 +213,31 @@ namespace UniVRM10
                 }
             }
         }
+
+        /// <summary>
+        /// migration で x が反転することを確認
+        /// </summary>
+        [Test]
+        public void Migrate_SpringBoneTest()
+        {
+            const float VALUE = -0.0359970331f;
+            var parser0 = new GltfParser();
+            var bytes0 = File.ReadAllBytes(AliciaPath);
+            parser0.Parse(AliciaPath, bytes0);
+            var json0 = parser0.Json.ParseAsJson();
+            var x = json0["extensions"]["VRM"]["secondaryAnimation"]["colliderGroups"][3]["colliders"][0]["offset"]["x"].GetSingle();
+            Assert.AreEqual(VALUE, x);
+
+            var bytes1 = MigrationVrm.Migrate(bytes0);
+            var parser1 = new GltfParser();
+            parser1.Parse(AliciaPath, bytes1);
+
+            Assert.True(UniGLTF.Extensions.VRMC_springBone.GltfDeserializer.TryGet(parser1.GLTF.extensions, out UniGLTF.Extensions.VRMC_springBone.VRMC_springBone springBone));
+            var spring = springBone.Springs[0];
+            var colliderNodeIndex = spring.Colliders[0];
+
+            Assert.True(UniGLTF.Extensions.VRMC_node_collider.GltfDeserializer.TryGet(parser1.GLTF.nodes[colliderNodeIndex].extensions, out UniGLTF.Extensions.VRMC_node_collider.VRMC_node_collider colliderGroup));
+            Assert.AreEqual(-VALUE, colliderGroup.Shapes[0].Sphere.Offset[0]);
+        }
     }
 }
