@@ -185,5 +185,32 @@ namespace UniGLTF
                 EditorLoad(gltf, root.FullName.Length);
             }
         }
+
+        [Test]
+        public void GltfSampleModelsTest_DamagedHelmet()
+        {
+            var env = System.Environment.GetEnvironmentVariable("GLTF_SAMPLE_MODELS");
+            if (string.IsNullOrEmpty(env))
+            {
+                return;
+            }
+            var root = new DirectoryInfo($"{env}/2.0");
+            if (!root.Exists)
+            {
+                return;
+            }
+
+            {
+                var path = Path.Combine(root.FullName, "DamagedHelmet/glTF-Binary/DamagedHelmet.glb");
+                var parser = new GltfParser();
+                parser.ParsePath(path);
+
+                var materialParam = new GltfMaterialImporter().GetMaterialParam(parser, 0);
+                Assert.AreEqual("Standard", materialParam.ShaderName);
+                Assert.AreEqual(5, materialParam.TextureSlots.Count);
+                var (key, value) = materialParam.EnumerateSubAssetKeyValue().First();
+                Assert.AreEqual(new SubAssetKey(typeof(Texture2D), "texture_0"), key);
+            }
+        }
     }
 }

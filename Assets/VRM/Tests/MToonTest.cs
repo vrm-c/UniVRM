@@ -1,3 +1,5 @@
+using System.IO;
+using System.Linq;
 using NUnit.Framework;
 using UniGLTF;
 using UnityEngine;
@@ -53,6 +55,29 @@ namespace VRM
 
             Assert.AreEqual(73, parser.GLTF.materials.Count);
             Assert.True(materialImporter.TryCreateParam(parser, 0, out MaterialImportParam param));
+        }
+
+        static string AliciaPath
+        {
+            get
+            {
+                return Path.GetFullPath(Application.dataPath + "/../Tests/Models/Alicia_vrm-0.51/AliciaSolid_vrm-0.51.vrm")
+                    .Replace("\\", "/");
+            }
+        }
+
+        [Test]
+        public void MaterialImporterTest()
+        {
+            var parser = new GltfParser();
+            parser.ParsePath(AliciaPath);
+            var vrmImporter = new VRMImporterContext(parser, null);
+            var materialParam = new VRMMaterialImporter(vrmImporter.VRM).GetMaterialParam(parser, 0);
+            Assert.AreEqual("VRM/MToon", materialParam.ShaderName);
+            Assert.AreEqual("Alicia_body", materialParam.TextureSlots["_MainTex"].UnityObjectName);
+
+            var (key, value) = materialParam.EnumerateSubAssetKeyValue().First();
+            Assert.AreEqual(new SubAssetKey(typeof(Texture2D), "Alicia_body"), key);
         }
     }
 }

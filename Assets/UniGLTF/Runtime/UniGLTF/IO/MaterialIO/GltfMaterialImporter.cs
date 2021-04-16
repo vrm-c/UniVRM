@@ -34,7 +34,7 @@ namespace UniGLTF
             return $"material_{index:00}";
         }
 
-        public MaterialImportParam CreateParam(GltfParser parser, int i)
+        public MaterialImportParam GetMaterialParam(GltfParser parser, int i)
         {
             foreach (var tryCreate in GltfMaterialParamProcessors)
             {

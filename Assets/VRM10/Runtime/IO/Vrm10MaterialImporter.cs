@@ -177,13 +177,7 @@ namespace UniVRM10
             return true;
         }
 
-        /// <summary>
-        /// Material一つ分のテクスチャーを列挙する。重複する場合がある
-        /// </summary>
-        /// <param name="parser"></param>
-        /// <param name="m"></param>
-        /// <returns></returns>
-        public static IEnumerable<(SubAssetKey, TextureImportParam)> EnumerateTexturesForMaterial(GltfParser parser, int i)
+        public static MaterialImportParam GetMaterialParam(GltfParser parser, int i)
         {
             // mtoon
             if (!TryCreateParam(parser, i, out MaterialImportParam param))
@@ -195,12 +189,7 @@ namespace UniVRM10
                     GltfPBRMaterial.TryCreateParam(parser, i, out param);
                 }
             }
-
-            foreach (var kv in param.TextureSlots)
-            {
-                var key = new SubAssetKey(typeof(Texture2D), kv.Key);
-                yield return (key, kv.Value);
-            }
+            return param;
         }
 
         /// <summary>
@@ -257,18 +246,14 @@ namespace UniVRM10
             }
 
             var used = new HashSet<SubAssetKey>();
-            Func<(SubAssetKey, TextureImportParam), bool> add = (kv) =>
-            {
-                var (key, textureInfo) = kv;
-                return used.Add(key);
-            };
             for (int i = 0; i < parser.GLTF.materials.Count; ++i)
             {
-                foreach (var kv in EnumerateTexturesForMaterial(parser, i))
+                var param = GetMaterialParam(parser, i);
+                foreach (var (key, value) in param.EnumerateSubAssetKeyValue())
                 {
-                    if (add(kv))
+                    if (used.Add(key))
                     {
-                        yield return kv;
+                        yield return (key, value);
                     }
                 }
             }

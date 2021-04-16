@@ -31,5 +31,10 @@ namespace UniGLTF
             Type = t;
             Name = name;
         }
+
+        public override string ToString()
+        {
+            return $"{Type}:{Name}";
+        }
     }
 }
