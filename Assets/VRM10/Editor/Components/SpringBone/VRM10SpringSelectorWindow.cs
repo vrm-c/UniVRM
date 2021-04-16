@@ -63,10 +63,21 @@ namespace UniVRM10
         static bool s_foldColliders = true;
         public VRM10SpringBoneColliderGroup[] m_colliderGroups;
 
+        void Reload()
+        {
+            var backup = Root;
+            Root = null;
+            Root = backup;
+        }
 
         private void OnGUI()
         {
-            Root = (Transform)EditorGUILayout.ObjectField(m_root, typeof(Transform), true);
+            Root = (Transform)EditorGUILayout.ObjectField("vrm1 root", m_root, typeof(Transform), true);
+
+            if (m_springs != null && m_springs.Length > 0 && m_springs[0] == null)
+            {
+                Reload();
+            }
 
             GUI.enabled = false;
             s_foldSprings = EditorGUILayout.Foldout(s_foldSprings, "springs");
