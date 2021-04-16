@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace UniVRM10
 {
@@ -43,7 +46,11 @@ namespace UniVRM10
             }
             else
             {
-                // TODO
+#if UNITY_EDITOR                
+                // Gizmos.matrix = Transform.localToWorldMatrix;
+                Gizmos.color = color;
+                Gizmos.DrawSphere(Transform.position, m_jointRadius);
+#endif
             }
         }
 

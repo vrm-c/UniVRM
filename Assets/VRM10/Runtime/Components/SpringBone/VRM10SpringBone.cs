@@ -20,6 +20,9 @@ namespace UniVRM10
     public class VRM10SpringBone : MonoBehaviour
     {
         [SerializeField]
+        Color m_gizmoColor = Color.yellow;
+
+        [SerializeField]
         public string Comment;
 
         [SerializeField]
@@ -100,13 +103,13 @@ namespace UniVRM10
             }
         }
 
-        public void DrawGizmo(Color color)
+        public void OnDrawGizmosSelected()
         {
             foreach (var joint in Joints)
             {
                 if (joint != null)
                 {
-                    joint.DrawGizmo(m_center, color);
+                    joint.DrawGizmo(m_center, m_gizmoColor);
                 }
             }
         }
