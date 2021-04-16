@@ -11,6 +11,9 @@ namespace UniVRM10
     public class VRM10SpringBoneColliderGroup : MonoBehaviour
     {
         [SerializeField]
+        Color m_gizmoColor = Color.cyan;
+
+        [SerializeField]
         public List<VRM10SpringBoneCollider> Colliders = new List<VRM10SpringBoneCollider>();
 
         public static void DrawWireCapsule(Vector3 headPos, Vector3 tailPos, float radius)
@@ -61,9 +64,9 @@ namespace UniVRM10
             }
         }
 
-        public void DrawGizmos(Color color)
+        public void OnDrawGizmosSelected()
         {
-            Gizmos.color = color;
+            Gizmos.color = m_gizmoColor;
             Matrix4x4 mat = transform.localToWorldMatrix;
             Gizmos.matrix = mat * Matrix4x4.Scale(new Vector3(
                 1.0f / transform.lossyScale.x,
