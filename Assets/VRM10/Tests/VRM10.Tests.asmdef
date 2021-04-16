@@ -4,6 +4,7 @@
         "VrmLib",
         "VRM10",
         "UniGLTF",
+        "VRMShaders.GLTF.IO.Runtime",
         "VRMShaders.GLTF.IO.Editor"
     ],
     "optionalUnityReferences": [
