@@ -179,14 +179,14 @@ namespace UniGLTF
             if (m_parser.GLTF.materials == null || m_parser.GLTF.materials.Count == 0)
             {
                 // no material. work around.
-                var param = GltfMaterialImporter.CreateParam(m_parser, 0);
+                var param = GltfMaterialImporter.GetMaterialParam(m_parser, 0);
                 var material = await MaterialFactory.LoadAsync(param, TextureFactory.GetTextureAsync);
             }
             else
             {
                 for (int i = 0; i < m_parser.GLTF.materials.Count; ++i)
                 {
-                    var param = GltfMaterialImporter.CreateParam(m_parser, i);
+                    var param = GltfMaterialImporter.GetMaterialParam(m_parser, i);
                     var material = await MaterialFactory.LoadAsync(param, TextureFactory.GetTextureAsync);
                 }
             }
