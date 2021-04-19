@@ -1,6 +1,5 @@
 using System.Collections.Generic;
-using MeshUtility;
-using MeshUtility.M17N;
+using UniGLTF;
 using UnityEngine;
 
 namespace VRM
@@ -32,9 +31,9 @@ namespace VRM
             if (vrmMeta != null && vrmMeta.Meta != null && vrmMeta.Meta.Thumbnail != null)
             {
                 var thumbnailName = vrmMeta.Meta.Thumbnail.name;
-                if (MeshUtility.Validators.NameValidator.IsFileNameLengthTooLong(thumbnailName))
+                if (NameValidator.IsFileNameLengthTooLong(thumbnailName))
                 {
-                    yield return Validation.Error(MeshUtility.Validators.NameValidator.ValidationMessages.FILENAME_TOO_LONG.Msg() + thumbnailName);
+                    yield return Validation.Error(NameValidator.ValidationMessages.FILENAME_TOO_LONG.Msg() + thumbnailName);
                 }
             }
         }

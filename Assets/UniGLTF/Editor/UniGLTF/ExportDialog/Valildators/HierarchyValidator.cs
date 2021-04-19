@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
-using MeshUtility.M17N;
 using UnityEngine;
 
-namespace MeshUtility.Validators
+namespace UniGLTF
 {
     public static class HierarchyValidator
     {

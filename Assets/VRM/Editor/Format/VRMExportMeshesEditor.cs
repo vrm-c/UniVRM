@@ -2,7 +2,6 @@
 using System;
 using UnityEditor;
 using UnityEngine;
-using MeshUtility.M17N;
 
 namespace VRM
 {

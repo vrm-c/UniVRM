@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace MeshUtility
+namespace UniGLTF
 {
     public delegate IEnumerable<Validation> Validator(GameObject root);
 

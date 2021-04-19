@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using System.Linq;
 using System.IO;
+using UniGLTF;
 
 namespace VRM
 {
@@ -14,7 +15,7 @@ namespace VRM
         [TestCase("AliciaAliciaAliciaAliciaAliciaAliciaAliciaAliciaAliciaAliciaAliciaAlicia", true)]
         public void DetectFileNameLength(string fileName, bool isIllegal)
         {
-            var result = MeshUtility.Validators.NameValidator.IsFileNameLengthTooLong(fileName);
+            var result = NameValidator.IsFileNameLengthTooLong(fileName);
             Assert.AreEqual(result, isIllegal);
         }
 

@@ -85,7 +85,7 @@ namespace VRM
                     var editor = new VRMEditorImporterContext(context, prefabPath);
                     foreach (var (key, textureInfo) in new VRMMaterialImporter(context.VRM).EnumerateAllTexturesDistinct(parser))
                     {
-                        TextureImporterConfigurator.Configure(textureInfo, map.ToDictionary(x => x.name, x => x.texture as Texture2D));
+                        VRMShaders.TextureImporterConfigurator.Configure(textureInfo, map.ToDictionary(x => x.name, x => x.texture as Texture2D));
                     }
                     context.Load();
                     editor.SaveAsAsset();

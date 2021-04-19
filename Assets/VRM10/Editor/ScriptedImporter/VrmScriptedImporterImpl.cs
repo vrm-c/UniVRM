@@ -101,7 +101,7 @@ namespace UniVRM10
                 // settings TextureImporters
                 foreach (var (key, textureInfo) in Vrm10MaterialImporter.EnumerateAllTexturesDistinct(parser))
                 {
-                    TextureImporterConfigurator.Configure(textureInfo, loader.TextureFactory.ExternalMap);
+                    VRMShaders.TextureImporterConfigurator.Configure(textureInfo, loader.TextureFactory.ExternalMap);
                 }
 
                 loader.Load();
