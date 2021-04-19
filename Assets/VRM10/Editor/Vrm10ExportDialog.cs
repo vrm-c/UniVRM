@@ -12,7 +12,7 @@ using VRMShaders;
 
 namespace UniVRM10
 {
-    public class VRM10ExportDialog : EditorWindow
+    public class VRM10ExportDialog : ExportDialogBase
     {
         const string CONVERT_HUMANOID_KEY = VRMVersion.MENU + "/Export VRM-1.0";
 
@@ -31,8 +31,6 @@ namespace UniVRM10
             ExportSettings,
         }
         Tabs _tab;
-
-        ExporterDialogState m_state;
 
         VRM10MetaObject m_meta;
         VRM10MetaObject Meta
@@ -59,21 +57,23 @@ namespace UniVRM10
                 m_meta = value;
             }
         }
+
+        protected override string SaveTitle => "Vrm1";
+
+        protected override string SaveName => $"{State.ExportRoot.name}.vrm";
+        protected override string[] SaveExtensions => new string[] { "vrm" };
+
+
         VRM10MetaObject m_tmpMeta;
 
         Editor m_metaEditor;
 
-        void OnEnable()
+        protected override void Initialize()
         {
-            // Debug.Log("OnEnable");
-            Undo.willFlushUndoRecord += Repaint;
-            Selection.selectionChanged += Repaint;
-
             m_tmpMeta = ScriptableObject.CreateInstance<VRM10MetaObject>();
             m_tmpMeta.Authors = new List<string> { "" };
 
-            m_state = new ExporterDialogState();
-            m_state.ExportRootChanged += (root) =>
+            State.ExportRootChanged += (root) =>
             {
                 // update meta
                 if (root == null)
@@ -98,42 +98,19 @@ namespace UniVRM10
                     // || m_meshes.Meshes.Any(x => x.ExportBlendShapeCount > 0 && !x.HasSkinning)
                     // ;
                 }
-
-                Repaint();
             };
-            m_state.ExportRoot = Selection.activeObject as GameObject;
         }
 
-        void OnDisable()
+        protected override void Clear()
         {
-            m_state.Dispose();
-
-            // Debug.Log("OnDisable");
-            Selection.selectionChanged -= Repaint;
-            Undo.willFlushUndoRecord -= Repaint;
+            ScriptableObject.DestroyImmediate(m_tmpMeta);
+            m_tmpMeta = null;
         }
 
-        public delegate Vector2 BeginVerticalScrollViewFunc(Vector2 scrollPosition, bool alwaysShowVertical, GUIStyle verticalScrollbar, GUIStyle background, params GUILayoutOption[] options);
-        static BeginVerticalScrollViewFunc s_func;
-        static BeginVerticalScrollViewFunc BeginVerticalScrollView
-        {
-            get
-            {
-                if (s_func == null)
-                {
-                    var methods = typeof(EditorGUILayout).GetMethods(BindingFlags.Static | BindingFlags.NonPublic).Where(x => x.Name == "BeginVerticalScrollView").ToArray();
-                    var method = methods.First(x => x.GetParameters()[1].ParameterType == typeof(bool));
-                    s_func = (BeginVerticalScrollViewFunc)method.CreateDelegate(typeof(BeginVerticalScrollViewFunc));
-                }
-                return s_func;
-            }
-        }
-        private Vector2 m_ScrollPosition;
-
-        IEnumerable<Validator> ValidatorFactory()
+        protected override IEnumerable<Validator> ValidatorFactory()
         {
             yield return HierarchyValidator.Validate;
-            if (!m_state.ExportRoot)
+            if (!State.ExportRoot)
             {
                 yield break;
             }
@@ -144,13 +121,13 @@ namespace UniVRM10
             // yield return VRMExporterValidator.Validate;
             // yield return VRMSpringBoneValidator.Validate;
 
-            // var firstPerson = m_state.ExportRoot.GetComponent<VRMFirstPerson>();
+            // var firstPerson = State.ExportRoot.GetComponent<VRMFirstPerson>();
             // if (firstPerson != null)
             // {
             //     yield return firstPerson.Validate;
             // }
 
-            // var proxy = m_state.ExportRoot.GetComponent<VRMBlendShapeProxy>();
+            // var proxy = State.ExportRoot.GetComponent<VRMBlendShapeProxy>();
             // if (proxy != null)
             // {
             //     yield return proxy.Validate;
@@ -160,87 +137,36 @@ namespace UniVRM10
             yield return meta.Validate;
         }
 
-        private void OnGUI()
+        // private void OnGUI()
+        // {
+        //             {
+        //                 var path = SaveFileDialog.GetPath("Save vrm1", $"{State.ExportRoot.name}.vrm", "vrm");
+        //                 if (!string.IsNullOrEmpty(path))
+        //                 {
+        //                     // export
+        //                     Export(State.ExportRoot, path);
+        //                     // close
+        //                     Close();
+        //                     GUIUtility.ExitGUI();
+        //                 }
+        //             }
+        //             GUI.enabled = true;
+
+        //             GUILayout.EndHorizontal();
+        //         }
+        //         GUILayout.EndVertical();
+        //     }
+
+        //     GUILayout.Space(8);
+
+        //     if (modified)
+        //     {
+        //         State.Invalidate();
+        //     }
+        // }
+
+        protected override bool DoGUI()
         {
-            // ArgumentException: Getting control 1's position in a group with only 1 controls when doing repaint Aborting
-            // Validation により GUI の表示項目が変わる場合があるので、
-            // EventType.Layout と EventType.Repaint 間で内容が変わらないようしている。
-            if (Event.current.type == EventType.Layout)
-            {
-                m_state.Validate(ValidatorFactory());
-            }
-
-            EditorGUIUtility.labelWidth = 150;
-
-            // lang
-            Getter.OnGuiSelectLang();
-
-            EditorGUILayout.LabelField("ExportRoot");
-            {
-                m_state.ExportRoot = (GameObject)EditorGUILayout.ObjectField(m_state.ExportRoot, typeof(GameObject), true);
-            }
-
-            // Render contents using Generic Inspector GUI
-            m_ScrollPosition = BeginVerticalScrollView(m_ScrollPosition, false, GUI.skin.verticalScrollbar, "OL Box");
-            GUIUtility.GetControlID(645789, FocusType.Passive);
-
-            bool modified = ScrollArea();
-
-            EditorGUILayout.EndScrollView();
-
-            // Create and Other Buttons
-            {
-                // errors            
-                GUILayout.BeginVertical();
-                // GUILayout.FlexibleSpace();
-
-                {
-                    GUILayout.BeginHorizontal();
-                    GUILayout.FlexibleSpace();
-                    GUI.enabled = m_state.Validations.All(x => x.CanExport);
-
-                    if (GUILayout.Button("Export", GUILayout.MinWidth(100)))
-                    {
-                        var path = SaveFileDialog.GetPath("Save vrm1", $"{m_state.ExportRoot.name}.vrm", "vrm");
-                        if (!string.IsNullOrEmpty(path))
-                        {
-                            // export
-                            Export(m_state.ExportRoot, path);
-                            // close
-                            Close();
-                            GUIUtility.ExitGUI();
-                        }
-                    }
-                    GUI.enabled = true;
-
-                    GUILayout.EndHorizontal();
-                }
-                GUILayout.EndVertical();
-            }
-
-            GUILayout.Space(8);
-
-            if (modified)
-            {
-                m_state.Invalidate();
-            }
-        }
-
-        bool ScrollArea()
-        {
-            //
-            // Validation
-            //
-            foreach (var v in m_state.Validations)
-            {
-                v.DrawGUI();
-                if (v.ErrorLevel == ErrorLevels.Critical)
-                {
-                    // Export UI を表示しない
-                    return false;
-                }
-            }
-
             if (m_tmpMeta == null)
             {
                 // disabled
@@ -280,11 +206,13 @@ namespace UniVRM10
 
         string m_logLabel;
 
-        void Export(GameObject root, string path)
+        protected override void ExportPath(string path)
         {
             m_logLabel = "";
 
             m_logLabel += $"export...\n";
+
+            var root = State.ExportRoot;
 
             try
             {

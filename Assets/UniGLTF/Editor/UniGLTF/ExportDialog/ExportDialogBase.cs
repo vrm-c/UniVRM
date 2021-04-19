@@ -24,13 +24,14 @@ namespace UniGLTF
             Selection.selectionChanged += Repaint;
 
             m_state = new ExporterDialogState();
+
+            Initialize();
+
             m_state.ExportRootChanged += (root) =>
             {
                 Repaint();
             };
             m_state.ExportRoot = Selection.activeObject as GameObject;
-
-            Initialize();
         }
 
         protected abstract void Initialize();
