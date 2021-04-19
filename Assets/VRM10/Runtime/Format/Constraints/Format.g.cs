@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using UniGLTF;
-using UniJSON;
+
 
 namespace UniGLTF.Extensions.VRMC_node_constraint
 {
@@ -128,7 +128,6 @@ namespace UniGLTF.Extensions.VRMC_node_constraint
     public class VRMC_node_constraint
     {
         public const string ExtensionName = "VRMC_node_constraint";
-        public static readonly Utf8String ExtensionNameUtf8 = Utf8String.From(ExtensionName);
 
         // Dictionary object with extension-specific objects.
         public glTFExtension Extensions;

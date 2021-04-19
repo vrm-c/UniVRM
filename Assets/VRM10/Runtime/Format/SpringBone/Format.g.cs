@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using UniGLTF;
-using UniJSON;
+
 
 namespace UniGLTF.Extensions.VRMC_springBone
 {
@@ -114,7 +114,6 @@ namespace UniGLTF.Extensions.VRMC_springBone
     public class VRMC_springBone
     {
         public const string ExtensionName = "VRMC_springBone";
-        public static readonly Utf8String ExtensionNameUtf8 = Utf8String.From(ExtensionName);
 
         // Dictionary object with extension-specific objects.
         public glTFExtension Extensions;

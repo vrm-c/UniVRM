@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using UniGLTF;
-using UniJSON;
+
 
 namespace UniGLTF.Extensions.VRMC_materials_mtoon
 {
@@ -51,7 +51,6 @@ namespace UniGLTF.Extensions.VRMC_materials_mtoon
     public class VRMC_materials_mtoon
     {
         public const string ExtensionName = "VRMC_materials_mtoon";
-        public static readonly Utf8String ExtensionNameUtf8 = Utf8String.From(ExtensionName);
 
         // Dictionary object with extension-specific objects.
         public glTFExtension Extensions;

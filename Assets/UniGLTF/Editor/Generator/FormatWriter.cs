@@ -81,7 +81,6 @@ namespace GenerateUniGLTFSerialization
             {
                 var indent = "        ";
                 m_w.WriteLine($"{indent}public const string ExtensionName = \"{rootName}\";");
-                m_w.WriteLine($"{indent}public static readonly Utf8String ExtensionNameUtf8 = Utf8String.From(ExtensionName);");
                 m_w.WriteLine();
             }
 
@@ -179,7 +178,7 @@ namespace GenerateUniGLTFSerialization
 using System;
 using System.Collections.Generic;
 using UniGLTF;
-using UniJSON;
+
 
 namespace UniGLTF.Extensions.{rootName}
 {{

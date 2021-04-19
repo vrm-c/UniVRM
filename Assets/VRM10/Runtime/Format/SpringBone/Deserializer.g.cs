@@ -8,6 +8,7 @@ namespace UniGLTF.Extensions.VRMC_springBone {
 
 public static class GltfDeserializer
 {
+    public static readonly Utf8String ExtensionNameUtf8 = Utf8String.From(VRMC_springBone.ExtensionName);
 
 public static bool TryGet(UniGLTF.glTFExtension src, out VRMC_springBone extension)
 {
@@ -15,7 +16,7 @@ public static bool TryGet(UniGLTF.glTFExtension src, out VRMC_springBone extensi
     {
         foreach(var kv in extensions.ObjectItems())
         {
-            if(kv.Key.GetUtf8String() == VRMC_springBone.ExtensionNameUtf8)
+            if(kv.Key.GetUtf8String() == ExtensionNameUtf8)
             {
                 extension = Deserialize(kv.Value);
                 return true;

@@ -54,9 +54,9 @@ namespace UniVRM10
             var json = glb.Json.Bytes.ParseAsJson();
             var gltf = UniGLTF.GltfDeserializer.Deserialize(json);
 
-            MigrationVrm.Check(vrm0Json, GetExtension(gltf.extensions, UniGLTF.Extensions.VRMC_vrm.VRMC_vrm.ExtensionNameUtf8,
+            MigrationVrm.Check(vrm0Json, GetExtension(gltf.extensions, UniGLTF.Extensions.VRMC_vrm.GltfDeserializer.ExtensionNameUtf8,
                 UniGLTF.Extensions.VRMC_vrm.GltfDeserializer.Deserialize));
-            MigrationVrm.Check(vrm0Json, GetExtension(gltf.extensions, UniGLTF.Extensions.VRMC_springBone.VRMC_springBone.ExtensionNameUtf8,
+            MigrationVrm.Check(vrm0Json, GetExtension(gltf.extensions, UniGLTF.Extensions.VRMC_springBone.GltfDeserializer.ExtensionNameUtf8,
                 UniGLTF.Extensions.VRMC_springBone.GltfDeserializer.Deserialize), gltf.nodes);
         }
 

@@ -16,6 +16,7 @@ namespace UniGLTF.Extensions.$0 {
 
 public static class GltfDeserializer
 {
+    public static readonly Utf8String ExtensionNameUtf8 = Utf8String.From($0.ExtensionName);
 
 public static bool TryGet(UniGLTF.glTFExtension src, out $0 extension)
 {
@@ -23,7 +24,7 @@ public static bool TryGet(UniGLTF.glTFExtension src, out $0 extension)
     {
         foreach(var kv in extensions.ObjectItems())
         {
-            if(kv.Key.GetUtf8String() == $0.ExtensionNameUtf8)
+            if(kv.Key.GetUtf8String() == ExtensionNameUtf8)
             {
                 extension = Deserialize(kv.Value);
                 return true;
