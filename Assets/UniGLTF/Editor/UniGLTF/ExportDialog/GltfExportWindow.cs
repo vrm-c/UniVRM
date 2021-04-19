@@ -30,6 +30,7 @@ namespace UniGLTF
         protected override void Initialize()
         {
             m_settings = ScriptableObject.CreateInstance<GltfExportSettings>();
+            m_settings.InverseAxis = UniGLTFPreference.GltfIOAxis;
             m_settingsInspector = Editor.CreateEditor(m_settings);
         }
 
