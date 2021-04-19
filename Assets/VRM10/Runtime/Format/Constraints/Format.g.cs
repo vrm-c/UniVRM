@@ -28,11 +28,9 @@ namespace UniGLTF.Extensions.VRMC_node_constraint
         public int? Source;
 
         // The source node will be evaluated in this space.
-        [JsonSchema(EnumSerializationType = EnumSerializationType.AsString)]
         public ObjectSpace SourceSpace;
 
         // The destination node will be evaluated in this space.
-        [JsonSchema(EnumSerializationType = EnumSerializationType.AsString)]
         public ObjectSpace DestinationSpace;
 
         // Axes be constrained by this constraint, in X-Y-Z order.
@@ -57,11 +55,9 @@ namespace UniGLTF.Extensions.VRMC_node_constraint
         public int? Source;
 
         // The source node will be evaluated in this space.
-        [JsonSchema(EnumSerializationType = EnumSerializationType.AsString)]
         public ObjectSpace SourceSpace;
 
         // The destination node will be evaluated in this space.
-        [JsonSchema(EnumSerializationType = EnumSerializationType.AsString)]
         public ObjectSpace DestinationSpace;
 
         // Axes be constrained by this constraint, in X-Y-Z order.
@@ -86,11 +82,9 @@ namespace UniGLTF.Extensions.VRMC_node_constraint
         public int? Source;
 
         // The source node will be evaluated in this space.
-        [JsonSchema(EnumSerializationType = EnumSerializationType.AsString)]
         public ObjectSpace SourceSpace;
 
         // The destination node will be evaluated in this space.
-        [JsonSchema(EnumSerializationType = EnumSerializationType.AsString)]
         public ObjectSpace DestinationSpace;
 
         // An axis which faces the direction of its source.

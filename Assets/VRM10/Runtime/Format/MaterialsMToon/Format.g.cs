@@ -94,7 +94,6 @@ namespace UniGLTF.Extensions.VRMC_materials_mtoon
         public float? ParametricRimLiftFactor;
 
         // Outline
-        [JsonSchema(EnumSerializationType = EnumSerializationType.AsString)]
         public OutlineWidthMode OutlineWidthMode;
 
         public float? OutlineWidthFactor;
