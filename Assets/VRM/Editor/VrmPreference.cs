@@ -2,14 +2,14 @@ using UnityEngine;
 using UnityEditor;
 using System.Linq;
 
-namespace UniVRM10
+namespace VRM
 {
     public static class VrmInfo
     {
         const string KEY_STOP_VRMASSETPOSTPROCESSOR = "StopVrmAssetPostProcessor";
         const string ASSETPOSTPROCESSOR_STOP_SYMBOL = "VRM_STOP_ASSETPOSTPROCESSOR";
 
-        [PreferenceItem("UniVRM")]
+        [PreferenceItem("VRM0")]
         private static void OnPreferenceGUI()
         {
             EditorGUI.BeginChangeCheck();
