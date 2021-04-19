@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 
-namespace UniGLTF
+namespace UniGLTF.M17N
 {
     /// <summary>
     /// 多言語対応
@@ -68,7 +68,7 @@ namespace UniGLTF
             return map[key];
         }
     }
-    public static class Getter
+    public static class LanguageGetter
     {
         const string LANG_KEY = "VRM_LANG";
 
@@ -93,7 +93,7 @@ namespace UniGLTF
             if (lang != Lang)
             {
                 m_lang = lang;
-                EditorPrefs.SetString(LANG_KEY, Getter.Lang.ToString());
+                EditorPrefs.SetString(LANG_KEY, LanguageGetter.Lang.ToString());
             }
         }
     }

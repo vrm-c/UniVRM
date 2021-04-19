@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using UniGLTF.M17N;
 using UnityEditor;
 using UnityEngine;
 
@@ -103,7 +104,7 @@ namespace UniGLTF
             EditorGUIUtility.labelWidth = 150;
 
             // lang
-            Getter.OnGuiSelectLang();
+            LanguageGetter.OnGuiSelectLang();
 
             EditorGUILayout.LabelField("ExportRoot");
             {

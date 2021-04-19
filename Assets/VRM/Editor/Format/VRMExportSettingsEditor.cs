@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Linq;
 using System.Collections.Generic;
 using UniGLTF;
+using UniGLTF.M17N;
 
 namespace VRM
 {
@@ -48,7 +49,7 @@ namespace VRM
 
         static string Msg(Options key)
         {
-            return Getter.Msg(key);
+            return LanguageGetter.Msg(key);
         }
 
         public enum Options
