@@ -2,16 +2,16 @@
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using VRMShaders;
 
-namespace UniGLTF
+
+namespace VRMShaders
 {
     public static class TextureImporterConfigurator
     {
         public static void ConfigureSize(Texture2D texture)
         {
-            var path = UnityPath.FromAsset(texture);
-            if (AssetImporter.GetAtPath(path.Value) is TextureImporter textureImporter)
+            var path = AssetDatabase.GetAssetPath(texture);
+            if (AssetImporter.GetAtPath(path) is TextureImporter textureImporter)
             {
                 var maxSize = Mathf.Max(texture.width, texture.height);
                 textureImporter.maxTextureSize
@@ -30,8 +30,8 @@ namespace UniGLTF
 
         public static void ConfigureNormalMap(Texture2D texture)
         {
-            var path = UnityPath.FromAsset(texture);
-            if (AssetImporter.GetAtPath(path.Value) is TextureImporter textureImporter)
+            var path = AssetDatabase.GetAssetPath(texture);
+            if (AssetImporter.GetAtPath(path) is TextureImporter textureImporter)
             {
 #if VRM_DEVELOP
                 Debug.Log($"{path} => normalmap");
@@ -47,8 +47,8 @@ namespace UniGLTF
 
         public static void ConfigureLinear(Texture2D texture)
         {
-            var path = UnityPath.FromAsset(texture);
-            if (AssetImporter.GetAtPath(path.Value) is TextureImporter textureImporter)
+            var path = AssetDatabase.GetAssetPath(texture);
+            if (AssetImporter.GetAtPath(path) is TextureImporter textureImporter)
             {
 #if VRM_DEVELOP
                 Debug.Log($"{path} => linear");
