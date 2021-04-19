@@ -171,9 +171,20 @@ namespace UniGLTF
 
                     if (GUILayout.Button("Export", GUILayout.MinWidth(100)))
                     {
-                        OnExportClicked(m_state.ExportRoot, m_settings);
-                        Close();
-                        GUIUtility.ExitGUI();
+                        var path = SaveFileDialog.GetPath("Save gltf", $"{m_state.ExportRoot.name}.glb", "glb", "gltf");
+                        if (!string.IsNullOrEmpty(path))
+                        {
+                            // export
+                            Export(m_state.ExportRoot, path, new MeshExportSettings
+                            {
+                                ExportOnlyBlendShapePosition = m_settings.DropNormal,
+                                UseSparseAccessorForMorphTarget = m_settings.Sparse,
+                                DivideVertexBuffer = m_settings.DivideVertexBuffer,
+                            }, m_settings.InverseAxis);
+                            // close
+                            Close();
+                            GUIUtility.ExitGUI();
+                        }
                     }
                     GUI.enabled = true;
 
@@ -211,40 +222,6 @@ namespace UniGLTF
             m_settings.Root = m_state.ExportRoot;
             m_settingsInspector.OnInspectorGUI();
             return true;
-        }
-
-        private static string m_lastExportDir;
-        static void OnExportClicked(GameObject root, GltfExportSettings settings)
-        {
-            string directory;
-            if (string.IsNullOrEmpty(m_lastExportDir))
-            {
-                directory = Directory.GetParent(Application.dataPath).ToString();
-            }
-            else
-            {
-                directory = m_lastExportDir;
-            }
-
-            // save dialog
-            var path = EditorUtility.SaveFilePanel(
-                    "Save vrm",
-                    directory,
-                    root.name + ".glb",
-                    "glb,gltf");
-            if (string.IsNullOrEmpty(path))
-            {
-                return;
-            }
-            m_lastExportDir = Path.GetDirectoryName(path).Replace("\\", "/");
-
-            // export
-            Export(root, path, new MeshExportSettings
-            {
-                ExportOnlyBlendShapePosition = settings.DropNormal,
-                UseSparseAccessorForMorphTarget = settings.Sparse,
-                DivideVertexBuffer = settings.DivideVertexBuffer,
-            }, settings.InverseAxis);
         }
     }
 }

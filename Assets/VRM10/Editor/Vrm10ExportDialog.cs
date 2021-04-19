@@ -201,9 +201,15 @@ namespace UniVRM10
 
                     if (GUILayout.Button("Export", GUILayout.MinWidth(100)))
                     {
-                        OnExportClicked(m_state.ExportRoot);
-                        Close();
-                        GUIUtility.ExitGUI();
+                        var path = SaveFileDialog.GetPath("Save vrm1", $"{m_state.ExportRoot.name}.vrm", "vrm");
+                        if (!string.IsNullOrEmpty(path))
+                        {
+                            // export
+                            Export(m_state.ExportRoot, path);
+                            // close
+                            Close();
+                            GUIUtility.ExitGUI();
+                        }
                     }
                     GUI.enabled = true;
 
@@ -274,29 +280,9 @@ namespace UniVRM10
 
         string m_logLabel;
 
-        const string EXTENSION = ".vrm";
-        private static string m_lastExportDir;
-        void OnExportClicked(GameObject root)
+        void Export(GameObject root, string path)
         {
             m_logLabel = "";
-
-            string directory;
-            if (string.IsNullOrEmpty(m_lastExportDir))
-                directory = Directory.GetParent(Application.dataPath).ToString();
-            else
-                directory = m_lastExportDir;
-
-            // save dialog
-            var path = EditorUtility.SaveFilePanel(
-                    "Save vrm",
-                    directory,
-                    root.name + EXTENSION,
-                    EXTENSION.Substring(1));
-            if (string.IsNullOrEmpty(path))
-            {
-                return;
-            }
-            m_lastExportDir = Path.GetDirectoryName(path).Replace("\\", "/");
 
             m_logLabel += $"export...\n";
 

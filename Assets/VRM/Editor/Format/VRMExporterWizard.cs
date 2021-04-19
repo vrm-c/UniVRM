@@ -226,9 +226,15 @@ namespace VRM
 
                     if (GUILayout.Button("Export", GUILayout.MinWidth(100)))
                     {
-                        OnExportClicked(m_state.ExportRoot, Meta != null ? Meta : m_tmpMeta, m_settings, m_meshes);
-                        Close();
-                        GUIUtility.ExitGUI();
+                        var path = SaveFileDialog.GetPath("Save vrm", $"{m_state.ExportRoot.name}.vrm", "vrm");
+                        if (!string.IsNullOrEmpty(path))
+                        {
+                            // export
+                            VRMEditorExporter.Export(path, m_state.ExportRoot, Meta != null ? Meta : m_tmpMeta, m_settings, m_meshes.Meshes);
+                            // close
+                            Close();
+                            GUIUtility.ExitGUI();
+                        }
                     }
                     GUI.enabled = true;
 
@@ -385,32 +391,6 @@ namespace VRM
                 m_merger.SetValues(avatar.Clips.Select(x => new KeyValuePair<BlendShapeKey, float>(x.Key, 0)));
                 m_merger.Apply();
             }
-        }
-
-        const string EXTENSION = ".vrm";
-        private static string m_lastExportDir;
-        static void OnExportClicked(GameObject root, VRMMetaObject meta, VRMExportSettings settings, VRMExportMeshes meshes)
-        {
-            string directory;
-            if (string.IsNullOrEmpty(m_lastExportDir))
-                directory = Directory.GetParent(Application.dataPath).ToString();
-            else
-                directory = m_lastExportDir;
-
-            // save dialog
-            var path = EditorUtility.SaveFilePanel(
-                    "Save vrm",
-                    directory,
-                    root.name + EXTENSION,
-                    EXTENSION.Substring(1));
-            if (string.IsNullOrEmpty(path))
-            {
-                return;
-            }
-            m_lastExportDir = Path.GetDirectoryName(path).Replace("\\", "/");
-
-            // export
-            VRMEditorExporter.Export(path, root, meta, settings, meshes.Meshes);
         }
     }
 }
