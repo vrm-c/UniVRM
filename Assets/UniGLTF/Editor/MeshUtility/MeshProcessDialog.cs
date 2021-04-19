@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using UnityEditor;
-using MeshUtility.M17N;
+using UniGLTF;
 
 namespace MeshUtility
 {

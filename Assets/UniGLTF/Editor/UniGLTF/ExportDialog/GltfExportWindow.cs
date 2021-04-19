@@ -66,7 +66,7 @@ namespace UniGLTF
             }
         }
 
-        MeshUtility.ExporterDialogState m_state;
+        ExporterDialogState m_state;
         GltfExportSettings m_settings;
         Editor m_settingsInspector;
 
@@ -79,7 +79,7 @@ namespace UniGLTF
             m_settings = ScriptableObject.CreateInstance<GltfExportSettings>();
             m_settingsInspector = Editor.CreateEditor(m_settings);
 
-            m_state = new MeshUtility.ExporterDialogState();
+            m_state = new ExporterDialogState();
             m_state.ExportRootChanged += (root) =>
             {
                 Repaint();
@@ -120,9 +120,9 @@ namespace UniGLTF
         }
         private Vector2 m_ScrollPosition;
 
-        IEnumerable<MeshUtility.Validator> ValidatorFactory()
+        IEnumerable<Validator> ValidatorFactory()
         {
-            yield return MeshUtility.Validators.HierarchyValidator.ValidateRoot;
+            yield return HierarchyValidator.ValidateRoot;
             yield return AnimationValidator.Validate;
             if (!m_state.ExportRoot)
             {
@@ -143,7 +143,7 @@ namespace UniGLTF
             EditorGUIUtility.labelWidth = 150;
 
             // lang
-            MeshUtility.M17N.Getter.OnGuiSelectLang();
+            Getter.OnGuiSelectLang();
 
             EditorGUILayout.LabelField("ExportRoot");
             {
@@ -198,7 +198,7 @@ namespace UniGLTF
             foreach (var v in m_state.Validations)
             {
                 v.DrawGUI();
-                if (v.ErrorLevel == MeshUtility.ErrorLevels.Critical)
+                if (v.ErrorLevel == ErrorLevels.Critical)
                 {
                     // Export UI を表示しない
                     return false;

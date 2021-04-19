@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEditor;
 #endif
 
-namespace MeshUtility
+namespace UniGLTF
 {
     public enum ErrorLevels
     {

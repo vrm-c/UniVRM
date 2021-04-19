@@ -1,6 +1,6 @@
 using UnityEditor;
 using UnityEngine;
-using MeshUtility.M17N;
+using UniGLTF;
 
 namespace UniVRM10
 {
@@ -39,7 +39,7 @@ namespace UniVRM10
                             depth = iterator.depth;
 
                             // using (new EditorGUI.DisabledScope("m_Script" == iterator.propertyPath))
-                                EditorGUILayout.PropertyField(iterator, true);
+                            EditorGUILayout.PropertyField(iterator, true);
                         }
                     }
                     else
@@ -82,12 +82,12 @@ namespace UniVRM10
 
         static string RequiredMessage(string name)
         {
-            switch (MeshUtility.M17N.Getter.Lang)
+            switch (Getter.Lang)
             {
-                case MeshUtility.M17N.Languages.ja:
+                case Languages.ja:
                     return $"必須項目。{name} を入力してください";
 
-                case MeshUtility.M17N.Languages.en:
+                case Languages.en:
                     return $"{name} is required";
 
                 default:
@@ -184,7 +184,7 @@ namespace UniVRM10
 
         static string Msg(MessageKeys key)
         {
-            return MeshUtility.M17N.Getter.Msg(key);
+            return Getter.Msg(key);
         }
 
         bool m_foldoutInfo = true;

@@ -1,5 +1,4 @@
-﻿using MeshUtility.M17N;
-using UnityEditor;
+﻿using UnityEditor;
 
 namespace UniGLTF.EditorSettingsValidator
 {

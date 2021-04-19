@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using MeshUtility.M17N;
 using UnityEditor;
 using UnityEngine;
 
-namespace MeshUtility.Validators
+namespace UniGLTF
 {
     public class NameValidator
     {

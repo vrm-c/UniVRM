@@ -2,9 +2,9 @@
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using MeshUtility.M17N;
 using UnityEditor;
 using UnityEngine;
+using UniGLTF;
 
 namespace VRM
 {
@@ -29,7 +29,7 @@ namespace VRM
         }
         Tabs _tab;
 
-        MeshUtility.ExporterDialogState m_state;
+        ExporterDialogState m_state;
 
         VRMExportSettings m_settings;
         VRMExportMeshes m_meshes;
@@ -73,7 +73,7 @@ namespace VRM
             m_meshes = ScriptableObject.CreateInstance<VRMExportMeshes>();
             m_meshesInspector = Editor.CreateEditor(m_meshes);
 
-            m_state = new MeshUtility.ExporterDialogState();
+            m_state = new ExporterDialogState();
             m_state.ExportRootChanged += (root) =>
             {
                 // update meta
@@ -151,13 +151,13 @@ namespace VRM
         }
         private Vector2 m_ScrollPosition;
 
-        IEnumerable<MeshUtility.Validator> ValidatorFactory()
+        IEnumerable<Validator> ValidatorFactory()
         {
             HumanoidValidator.MeshInformations = m_meshes.Meshes;
             HumanoidValidator.EnableFreeze = m_settings.PoseFreeze;
             VRMExporterValidator.ReduceBlendshape = m_settings.ReduceBlendshape;
 
-            yield return MeshUtility.Validators.HierarchyValidator.Validate;
+            yield return HierarchyValidator.Validate;
             if (!m_state.ExportRoot)
             {
                 yield break;
@@ -198,7 +198,7 @@ namespace VRM
             EditorGUIUtility.labelWidth = 150;
 
             // lang
-            MeshUtility.M17N.Getter.OnGuiSelectLang();
+            Getter.OnGuiSelectLang();
 
             EditorGUILayout.LabelField("ExportRoot");
             {
@@ -253,7 +253,7 @@ namespace VRM
             foreach (var v in m_state.Validations)
             {
                 v.DrawGUI();
-                if (v.ErrorLevel == MeshUtility.ErrorLevels.Critical)
+                if (v.ErrorLevel == ErrorLevels.Critical)
                 {
                     // Export UI を表示しない
                     return false;
@@ -270,7 +270,7 @@ namespace VRM
                 switch (meshInfo.VertexColor)
                 {
                     case UniGLTF.MeshExportInfo.VertexColorState.ExistsAndMixed:
-                        MeshUtility.Validation.Warning($"{meshInfo.Renderer}: Both vcolor.multiply and not multiply unlit materials exist").DrawGUI();
+                        Validation.Warning($"{meshInfo.Renderer}: Both vcolor.multiply and not multiply unlit materials exist").DrawGUI();
                         break;
                 }
             }

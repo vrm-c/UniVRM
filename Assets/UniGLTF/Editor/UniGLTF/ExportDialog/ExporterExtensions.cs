@@ -1,7 +1,7 @@
 using System.Linq;
 using UnityEngine;
 
-namespace MeshUtility
+namespace UniGLTF
 {
     public static class ExporterExtensions
     {

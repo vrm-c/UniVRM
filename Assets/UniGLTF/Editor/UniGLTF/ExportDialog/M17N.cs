@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 
-namespace MeshUtility.M17N
+namespace UniGLTF
 {
     /// <summary>
     /// 多言語対応
@@ -84,16 +84,16 @@ namespace MeshUtility.M17N
 
         public static string Msg<T>(this T key) where T : Enum
         {
-            return M17N.MsgCache<T>.Get(Lang, key);
+            return MsgCache<T>.Get(Lang, key);
         }
 
         public static void OnGuiSelectLang()
         {
-            var lang = (M17N.Languages)EditorGUILayout.EnumPopup("lang", Lang);
+            var lang = (Languages)EditorGUILayout.EnumPopup("lang", Lang);
             if (lang != Lang)
             {
                 m_lang = lang;
-                EditorPrefs.SetString(LANG_KEY, M17N.Getter.Lang.ToString());
+                EditorPrefs.SetString(LANG_KEY, Getter.Lang.ToString());
             }
         }
     }

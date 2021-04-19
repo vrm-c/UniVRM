@@ -1,5 +1,4 @@
-﻿using MeshUtility.M17N;
-
+﻿
 namespace UniGLTF.EditorSettingsValidator
 {
     public enum Messages

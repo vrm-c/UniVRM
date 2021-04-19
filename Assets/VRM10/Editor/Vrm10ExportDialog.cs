@@ -32,7 +32,7 @@ namespace UniVRM10
         }
         Tabs _tab;
 
-        MeshUtility.ExporterDialogState m_state;
+        ExporterDialogState m_state;
 
         VRM10MetaObject m_meta;
         VRM10MetaObject Meta
@@ -72,7 +72,7 @@ namespace UniVRM10
             m_tmpMeta = ScriptableObject.CreateInstance<VRM10MetaObject>();
             m_tmpMeta.Authors = new List<string> { "" };
 
-            m_state = new MeshUtility.ExporterDialogState();
+            m_state = new ExporterDialogState();
             m_state.ExportRootChanged += (root) =>
             {
                 // update meta
@@ -130,9 +130,9 @@ namespace UniVRM10
         }
         private Vector2 m_ScrollPosition;
 
-        IEnumerable<MeshUtility.Validator> ValidatorFactory()
+        IEnumerable<Validator> ValidatorFactory()
         {
-            yield return MeshUtility.Validators.HierarchyValidator.Validate;
+            yield return HierarchyValidator.Validate;
             if (!m_state.ExportRoot)
             {
                 yield break;
@@ -173,7 +173,7 @@ namespace UniVRM10
             EditorGUIUtility.labelWidth = 150;
 
             // lang
-            MeshUtility.M17N.Getter.OnGuiSelectLang();
+            Getter.OnGuiSelectLang();
 
             EditorGUILayout.LabelField("ExportRoot");
             {
@@ -228,7 +228,7 @@ namespace UniVRM10
             foreach (var v in m_state.Validations)
             {
                 v.DrawGUI();
-                if (v.ErrorLevel == MeshUtility.ErrorLevels.Critical)
+                if (v.ErrorLevel == ErrorLevels.Critical)
                 {
                     // Export UI を表示しない
                     return false;
