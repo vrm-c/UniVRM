@@ -1,7 +1,6 @@
 // This file is generated from JsonSchema. Don't modify this source code.
 using System;
 using System.Collections.Generic;
-using UniGLTF;
 
 
 namespace UniGLTF.Extensions.VRMC_materials_mtoon
@@ -10,10 +9,10 @@ namespace UniGLTF.Extensions.VRMC_materials_mtoon
     public class TextureInfo
     {
         // Dictionary object with extension-specific objects.
-        public glTFExtension Extensions;
+        public object Extensions;
 
         // Application-specific data.
-        public glTFExtension Extras;
+        public object Extras;
 
         // The index of the texture.
         public int? Index;
@@ -25,10 +24,10 @@ namespace UniGLTF.Extensions.VRMC_materials_mtoon
     public class ShadingShiftTextureInfo
     {
         // Dictionary object with extension-specific objects.
-        public glTFExtension Extensions;
+        public object Extensions;
 
         // Application-specific data.
-        public glTFExtension Extras;
+        public object Extras;
 
         // The index of the texture.
         public int? Index;
@@ -53,10 +52,10 @@ namespace UniGLTF.Extensions.VRMC_materials_mtoon
         public const string ExtensionName = "VRMC_materials_mtoon";
 
         // Dictionary object with extension-specific objects.
-        public glTFExtension Extensions;
+        public object Extensions;
 
         // Application-specific data.
-        public glTFExtension Extras;
+        public object Extras;
 
         // Meta
         public string Version;

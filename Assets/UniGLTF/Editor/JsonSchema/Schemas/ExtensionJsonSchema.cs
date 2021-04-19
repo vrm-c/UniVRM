@@ -9,7 +9,7 @@ namespace UniGLTF.JsonSchema.Schemas
         {
         }
 
-        public override string ValueType => "glTFExtension";
+        public override string ValueType => "object";
 
         public override bool IsInline => true;
 
@@ -25,7 +25,7 @@ namespace UniGLTF.JsonSchema.Schemas
 
         public override string GenerateSerializerCall(string callName, string argName)
         {
-            return $"{argName}.Serialize(f)";
+            return $"({argName} as glTFExtension).Serialize(f)";
         }
     }
 }

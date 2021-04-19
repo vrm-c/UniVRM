@@ -1,7 +1,6 @@
 // This file is generated from JsonSchema. Don't modify this source code.
 using System;
 using System.Collections.Generic;
-using UniGLTF;
 
 
 namespace UniGLTF.Extensions.VRMC_vrm
@@ -366,10 +365,10 @@ namespace UniGLTF.Extensions.VRMC_vrm
     public class MorphTargetBind
     {
         // Dictionary object with extension-specific objects.
-        public glTFExtension Extensions;
+        public object Extensions;
 
         // Application-specific data.
-        public glTFExtension Extras;
+        public object Extras;
 
         // The index of the node that attached to target mesh.
         public int? Node;
@@ -394,10 +393,10 @@ namespace UniGLTF.Extensions.VRMC_vrm
     public class MaterialColorBind
     {
         // Dictionary object with extension-specific objects.
-        public glTFExtension Extensions;
+        public object Extensions;
 
         // Application-specific data.
-        public glTFExtension Extras;
+        public object Extras;
 
         // target material
         public int? Material;
@@ -412,10 +411,10 @@ namespace UniGLTF.Extensions.VRMC_vrm
     public class TextureTransformBind
     {
         // Dictionary object with extension-specific objects.
-        public glTFExtension Extensions;
+        public object Extensions;
 
         // Application-specific data.
-        public glTFExtension Extras;
+        public object Extras;
 
         // target material
         public int? Material;
@@ -438,10 +437,10 @@ namespace UniGLTF.Extensions.VRMC_vrm
     public class Expression
     {
         // Dictionary object with extension-specific objects.
-        public glTFExtension Extensions;
+        public object Extensions;
 
         // Application-specific data.
-        public glTFExtension Extras;
+        public object Extras;
 
         // Use only if the preset is custom. Unique within the model
         public string Name;

@@ -35,12 +35,12 @@ public static void Serialize(JsonFormatter f, VRMC_materials_mtoon value)
 
     if(value.Extensions!=null){
         f.Key("extensions");                
-        value.Extensions.Serialize(f);
+        (value.Extensions as glTFExtension).Serialize(f);
     }
 
     if(value.Extras!=null){
         f.Key("extras");                
-        value.Extras.Serialize(f);
+        (value.Extras as glTFExtension).Serialize(f);
     }
 
     if(!string.IsNullOrEmpty(value.Version)){
@@ -185,12 +185,12 @@ public static void Serialize_ShadeMultiplyTexture(JsonFormatter f, TextureInfo v
 
     if(value.Extensions!=null){
         f.Key("extensions");                
-        value.Extensions.Serialize(f);
+        (value.Extensions as glTFExtension).Serialize(f);
     }
 
     if(value.Extras!=null){
         f.Key("extras");                
-        value.Extras.Serialize(f);
+        (value.Extras as glTFExtension).Serialize(f);
     }
 
     if(value.Index.HasValue){
@@ -213,12 +213,12 @@ public static void Serialize_ShadingShiftTexture(JsonFormatter f, ShadingShiftTe
 
     if(value.Extensions!=null){
         f.Key("extensions");                
-        value.Extensions.Serialize(f);
+        (value.Extensions as glTFExtension).Serialize(f);
     }
 
     if(value.Extras!=null){
         f.Key("extras");                
-        value.Extras.Serialize(f);
+        (value.Extras as glTFExtension).Serialize(f);
     }
 
     if(value.Index.HasValue){
@@ -246,12 +246,12 @@ public static void Serialize_MatcapTexture(JsonFormatter f, TextureInfo value)
 
     if(value.Extensions!=null){
         f.Key("extensions");                
-        value.Extensions.Serialize(f);
+        (value.Extensions as glTFExtension).Serialize(f);
     }
 
     if(value.Extras!=null){
         f.Key("extras");                
-        value.Extras.Serialize(f);
+        (value.Extras as glTFExtension).Serialize(f);
     }
 
     if(value.Index.HasValue){
@@ -286,12 +286,12 @@ public static void Serialize_RimMultiplyTexture(JsonFormatter f, TextureInfo val
 
     if(value.Extensions!=null){
         f.Key("extensions");                
-        value.Extensions.Serialize(f);
+        (value.Extensions as glTFExtension).Serialize(f);
     }
 
     if(value.Extras!=null){
         f.Key("extras");                
-        value.Extras.Serialize(f);
+        (value.Extras as glTFExtension).Serialize(f);
     }
 
     if(value.Index.HasValue){
@@ -314,12 +314,12 @@ public static void Serialize_OutlineWidthMultiplyTexture(JsonFormatter f, Textur
 
     if(value.Extensions!=null){
         f.Key("extensions");                
-        value.Extensions.Serialize(f);
+        (value.Extensions as glTFExtension).Serialize(f);
     }
 
     if(value.Extras!=null){
         f.Key("extras");                
-        value.Extras.Serialize(f);
+        (value.Extras as glTFExtension).Serialize(f);
     }
 
     if(value.Index.HasValue){
@@ -354,12 +354,12 @@ public static void Serialize_UvAnimationMaskTexture(JsonFormatter f, TextureInfo
 
     if(value.Extensions!=null){
         f.Key("extensions");                
-        value.Extensions.Serialize(f);
+        (value.Extensions as glTFExtension).Serialize(f);
     }
 
     if(value.Extras!=null){
         f.Key("extras");                
-        value.Extras.Serialize(f);
+        (value.Extras as glTFExtension).Serialize(f);
     }
 
     if(value.Index.HasValue){

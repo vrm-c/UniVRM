@@ -1,7 +1,6 @@
 // This file is generated from JsonSchema. Don't modify this source code.
 using System;
 using System.Collections.Generic;
-using UniGLTF;
 
 
 namespace UniGLTF.Extensions.VRMC_springBone
@@ -69,10 +68,10 @@ namespace UniGLTF.Extensions.VRMC_springBone
     public class SpringBoneJoint
     {
         // Dictionary object with extension-specific objects.
-        public glTFExtension Extensions;
+        public object Extensions;
 
         // Application-specific data.
-        public glTFExtension Extras;
+        public object Extras;
 
         // The node index.
         public int? Node;
@@ -96,10 +95,10 @@ namespace UniGLTF.Extensions.VRMC_springBone
     public class Spring
     {
         // Dictionary object with extension-specific objects.
-        public glTFExtension Extensions;
+        public object Extensions;
 
         // Application-specific data.
-        public glTFExtension Extras;
+        public object Extras;
 
         // Name of the Spring
         public string Name;
@@ -116,10 +115,10 @@ namespace UniGLTF.Extensions.VRMC_springBone
         public const string ExtensionName = "VRMC_springBone";
 
         // Dictionary object with extension-specific objects.
-        public glTFExtension Extensions;
+        public object Extensions;
 
         // Application-specific data.
-        public glTFExtension Extras;
+        public object Extras;
 
         // An array of colliderGroups.
         public List<ColliderGroup> ColliderGroups;

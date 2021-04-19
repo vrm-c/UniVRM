@@ -35,12 +35,12 @@ public static void Serialize(JsonFormatter f, VRMC_springBone value)
 
     if(value.Extensions!=null){
         f.Key("extensions");                
-        value.Extensions.Serialize(f);
+        (value.Extensions as glTFExtension).Serialize(f);
     }
 
     if(value.Extras!=null){
         f.Key("extras");                
-        value.Extras.Serialize(f);
+        (value.Extras as glTFExtension).Serialize(f);
     }
 
     if(value.ColliderGroups!=null&&value.ColliderGroups.Count()>=0){
@@ -255,12 +255,12 @@ public static void Serialize_Springs_ITEM(JsonFormatter f, Spring value)
 
     if(value.Extensions!=null){
         f.Key("extensions");                
-        value.Extensions.Serialize(f);
+        (value.Extensions as glTFExtension).Serialize(f);
     }
 
     if(value.Extras!=null){
         f.Key("extras");                
-        value.Extras.Serialize(f);
+        (value.Extras as glTFExtension).Serialize(f);
     }
 
     if(!string.IsNullOrEmpty(value.Name)){
@@ -300,12 +300,12 @@ public static void __springs_ITEM_Serialize_Joints_ITEM(JsonFormatter f, SpringB
 
     if(value.Extensions!=null){
         f.Key("extensions");                
-        value.Extensions.Serialize(f);
+        (value.Extensions as glTFExtension).Serialize(f);
     }
 
     if(value.Extras!=null){
         f.Key("extras");                
-        value.Extras.Serialize(f);
+        (value.Extras as glTFExtension).Serialize(f);
     }
 
     if(value.Node.HasValue){

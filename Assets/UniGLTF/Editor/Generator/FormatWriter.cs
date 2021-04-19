@@ -177,7 +177,6 @@ namespace GenerateUniGLTFSerialization
             w.Write($@"// This file is generated from JsonSchema. Don't modify this source code.
 using System;
 using System.Collections.Generic;
-using UniGLTF;
 
 
 namespace UniGLTF.Extensions.{rootName}
