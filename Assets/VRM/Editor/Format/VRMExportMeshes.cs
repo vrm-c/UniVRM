@@ -64,13 +64,15 @@ namespace VRM
         {
             VRMExportSettings = settings;
             Clips = new List<BlendShapeClip>();
-            var proxy = ExportRoot.GetComponent<VRMBlendShapeProxy>();
-            if (proxy != null)
+            if (ExportRoot != null)
             {
-                // Export サイズ の 計算
-                if (proxy.BlendShapeAvatar != null)
+                var proxy = ExportRoot.GetComponent<VRMBlendShapeProxy>();
+                if (proxy != null)
                 {
-                    Clips.AddRange(proxy.BlendShapeAvatar.Clips);
+                    if (proxy.BlendShapeAvatar != null)
+                    {
+                        Clips.AddRange(proxy.BlendShapeAvatar.Clips);
+                    }
                 }
             }
 
