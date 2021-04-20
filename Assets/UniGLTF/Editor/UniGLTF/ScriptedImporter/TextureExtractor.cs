@@ -63,7 +63,11 @@ namespace UniGLTF
                     case TextureImportTypes.StandardMap:
                         {
                             // write converted texture
-                            var (_, subAsset) = m_subAssets.FirstOrDefault(x => x.Equals(key));
+                            var (_, subAsset) = m_subAssets.FirstOrDefault(kv => kv.Key.Equals(key));
+                            if (subAsset == null)
+                            {
+                                throw new KeyNotFoundException();
+                            }
                             targetPath = m_textureDirectory.Child($"{key.Name}.png");
                             File.WriteAllBytes(targetPath.FullPath, subAsset.EncodeToPNG().ToArray());
                             targetPath.ImportAsset();
