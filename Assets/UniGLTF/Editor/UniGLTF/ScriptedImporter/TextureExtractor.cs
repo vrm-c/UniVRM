@@ -63,7 +63,7 @@ namespace UniGLTF
                     case TextureImportTypes.StandardMap:
                         {
                             // write converted texture
-                            var (_, subAsset) = m_subAssets.FirstOrDefault(kv => kv.Key.Equals(key));
+                            var (_, subAsset) = m_subAssets.FirstOrDefault(kv => kv.Key == key);
                             if (subAsset == null)
                             {
                                 throw new KeyNotFoundException();

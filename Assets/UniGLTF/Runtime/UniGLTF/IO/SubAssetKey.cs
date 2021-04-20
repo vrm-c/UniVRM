@@ -1,5 +1,5 @@
 using System;
-
+using System.Collections.Generic;
 
 namespace UniGLTF
 {
@@ -17,7 +17,7 @@ namespace UniGLTF
     /// の呼び出し時に、identifier.name と externalObject.name が同じでない運用にしてみる。
     /// 
     /// </summary>
-    public struct SubAssetKey
+    public struct SubAssetKey : IEquatable<SubAssetKey>
     {
         public readonly Type Type;
         public readonly string Name;
@@ -35,6 +35,38 @@ namespace UniGLTF
         public override string ToString()
         {
             return $"{Type}:{Name}";
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is SubAssetKey key)
+            {
+                return this == key;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        public bool Equals(SubAssetKey other)
+        {
+            return Type == other.Type && Name == other.Name;
+        }
+
+        public static bool operator ==(SubAssetKey l, SubAssetKey r)
+        {
+            return l.Equals(r);
+        }
+
+        public static bool operator !=(SubAssetKey l, SubAssetKey r)
+        {
+            return !(l == r);
+        }
+
+        public override int GetHashCode()
+        {
+            return Name.GetHashCode();
         }
     }
 }
