@@ -1,32 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 
 namespace UniGLTF
 {
     public enum ErrorLevels
     {
-        // Exportできる。お知らせ
+        /// <summary>
+        /// Exportできる。お知らせ       
+        /// </summary>
         Info,
-        // Exportできる。不具合の可能性
+
+        /// <summary>
+        /// Exportできる。不具合の可能性
+        /// </summary>
         Warning,
-        // Exportするために修正が必用
+
+        /// <summary>
+        /// Exportするために修正が必用
+        /// </summary>
         Error,
-        // Exportの前提を満たさない
+
+        /// <summary>
+        /// Exportの前提を満たさない
+        /// </summary>
         Critical,
     }
 
     public struct Validation
     {
-        /// <summary>
-        /// エクスポート可能か否か。
-        /// true のメッセージは警告
-        /// false のメッセージはエラー
-        /// </summary>
         public readonly ErrorLevels ErrorLevel;
 
+        /// <summary>
+        /// エクスポート可能か否か
+        /// </summary>
         public bool CanExport
         {
             get
@@ -46,48 +52,17 @@ namespace UniGLTF
 
         public readonly String Message;
 
+        /// <summary>
+        /// DrawGUIから呼び出す。追加のGUIボタンなどを実装する
+        /// </summary>
+        public Action Extended;
+
         Validation(ErrorLevels canExport, string message, Action extended = null)
         {
             ErrorLevel = canExport;
             Message = message;
-#if UNITY_EDITOR
             Extended = extended;
-#endif
         }
-
-#if UNITY_EDITOR
-        public void DrawGUI()
-        {
-            if (string.IsNullOrEmpty(Message))
-            {
-                return;
-            }
-
-            switch (ErrorLevel)
-            {
-                case ErrorLevels.Info:
-                    EditorGUILayout.HelpBox(Message, MessageType.Info);
-                    break;
-                case ErrorLevels.Warning:
-                    EditorGUILayout.HelpBox(Message, MessageType.Warning);
-                    break;
-                case ErrorLevels.Critical:
-                case ErrorLevels.Error:
-                    EditorGUILayout.HelpBox(Message, MessageType.Error);
-                    break;
-
-                default:
-                    throw new NotImplementedException();
-            }
-
-            if (Extended != null)
-            {
-                Extended();
-            }
-        }
-
-        public Action Extended;
-#endif
 
         public static Validation Critical(string msg)
         {
