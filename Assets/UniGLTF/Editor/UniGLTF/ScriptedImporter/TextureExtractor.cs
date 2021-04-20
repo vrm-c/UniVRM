@@ -66,7 +66,7 @@ namespace UniGLTF
                             var (_, subAsset) = m_subAssets.FirstOrDefault(x => x.Equals(key));
                             targetPath = m_textureDirectory.Child($"{key.Name}.png");
                             File.WriteAllBytes(targetPath.FullPath, subAsset.EncodeToPNG().ToArray());
-                            targetPath.ImportAsset();
+                            // targetPath.ImportAsset();
                             break;
                         }
 
@@ -75,7 +75,7 @@ namespace UniGLTF
                             // write original bytes
                             targetPath = m_textureDirectory.Child($"{key.Name}{param.Ext}");
                             File.WriteAllBytes(targetPath.FullPath, param.Index0().Result.ToArray());
-                            targetPath.ImportAsset();
+                            // targetPath.ImportAsset();
                             break;
                         }
                 }
