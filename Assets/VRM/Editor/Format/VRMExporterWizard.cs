@@ -1,14 +1,13 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 using UniGLTF;
+using UniGLTF.M17N;
 
 namespace VRM
 {
-    public class VRMExporterWizard : EditorWindow
+    public class VRMExporterWizard : ExportDialogBase
     {
         const string CONVERT_HUMANOID_KEY = VRMVersion.MENU + "/Export " + VRMVersion.VRM_VERSION;
 
@@ -28,8 +27,6 @@ namespace VRM
             ExportSettings,
         }
         Tabs _tab;
-
-        ExporterDialogState m_state;
 
         VRMExportSettings m_settings;
         VRMExportMeshes m_meshes;
@@ -59,12 +56,8 @@ namespace VRM
         Editor m_settingsInspector;
         Editor m_meshesInspector;
 
-        void OnEnable()
+        protected override void Initialize()
         {
-            // Debug.Log("OnEnable");
-            Undo.willFlushUndoRecord += Repaint;
-            Selection.selectionChanged += Repaint;
-
             m_tmpMeta = ScriptableObject.CreateInstance<VRMMetaObject>();
 
             m_settings = ScriptableObject.CreateInstance<VRMExportSettings>();
@@ -73,8 +66,7 @@ namespace VRM
             m_meshes = ScriptableObject.CreateInstance<VRMExportMeshes>();
             m_meshesInspector = Editor.CreateEditor(m_meshes);
 
-            m_state = new ExporterDialogState();
-            m_state.ExportRootChanged += (root) =>
+            State.ExportRootChanged += (root) =>
             {
                 // update meta
                 if (root == null)
@@ -99,20 +91,11 @@ namespace VRM
                     || m_meshes.Meshes.Any(x => x.ExportBlendShapeCount > 0 && !x.HasSkinning)
                     ;
                 }
-
-                Repaint();
             };
-            m_state.ExportRoot = Selection.activeObject as GameObject;
         }
 
-        void OnDisable()
+        protected override void Clear()
         {
-            m_state.Dispose();
-
-            // Debug.Log("OnDisable");
-            Selection.selectionChanged -= Repaint;
-            Undo.willFlushUndoRecord -= Repaint;
-
             // m_metaEditor
             UnityEditor.Editor.DestroyImmediate(m_metaEditor);
             m_metaEditor = null;
@@ -134,31 +117,20 @@ namespace VRM
             m_meshes = null;
         }
 
-        public delegate Vector2 BeginVerticalScrollViewFunc(Vector2 scrollPosition, bool alwaysShowVertical, GUIStyle verticalScrollbar, GUIStyle background, params GUILayoutOption[] options);
-        static BeginVerticalScrollViewFunc s_func;
-        static BeginVerticalScrollViewFunc BeginVerticalScrollView
-        {
-            get
-            {
-                if (s_func == null)
-                {
-                    var methods = typeof(EditorGUILayout).GetMethods(BindingFlags.Static | BindingFlags.NonPublic).Where(x => x.Name == "BeginVerticalScrollView").ToArray();
-                    var method = methods.First(x => x.GetParameters()[1].ParameterType == typeof(bool));
-                    s_func = (BeginVerticalScrollViewFunc)method.CreateDelegate(typeof(BeginVerticalScrollViewFunc));
-                }
-                return s_func;
-            }
-        }
-        private Vector2 m_ScrollPosition;
+        protected override string SaveTitle => "Save vrm0";
 
-        IEnumerable<Validator> ValidatorFactory()
+        protected override string SaveName => $"{State.ExportRoot.name}.vrm";
+
+        protected override string[] SaveExtensions => new string[] { "vrm" };
+
+        protected override IEnumerable<Validator> ValidatorFactory()
         {
             HumanoidValidator.MeshInformations = m_meshes.Meshes;
             HumanoidValidator.EnableFreeze = m_settings.PoseFreeze;
             VRMExporterValidator.ReduceBlendshape = m_settings.ReduceBlendshape;
 
             yield return HierarchyValidator.Validate;
-            if (!m_state.ExportRoot)
+            if (!State.ExportRoot)
             {
                 yield break;
             }
@@ -167,13 +139,13 @@ namespace VRM
             yield return VRMExporterValidator.Validate;
             yield return VRMSpringBoneValidator.Validate;
 
-            var firstPerson = m_state.ExportRoot.GetComponent<VRMFirstPerson>();
+            var firstPerson = State.ExportRoot.GetComponent<VRMFirstPerson>();
             if (firstPerson != null)
             {
                 yield return firstPerson.Validate;
             }
 
-            var proxy = m_state.ExportRoot.GetComponent<VRMBlendShapeProxy>();
+            var proxy = State.ExportRoot.GetComponent<VRMBlendShapeProxy>();
             if (proxy != null)
             {
                 yield return proxy.Validate;
@@ -183,82 +155,13 @@ namespace VRM
             yield return meta.Validate;
         }
 
-        private void OnGUI()
+        protected override void ExportPath(string path)
         {
-            // ArgumentException: Getting control 1's position in a group with only 1 controls when doing repaint Aborting
-            // Validation により GUI の表示項目が変わる場合があるので、
-            // EventType.Layout と EventType.Repaint 間で内容が変わらないようしている。
-            if (Event.current.type == EventType.Layout)
-            {
-                // m_settings, m_meshes.Meshes                
-                m_meshes.SetRoot(m_state.ExportRoot, m_settings);
-                m_state.Validate(ValidatorFactory());
-            }
-
-            EditorGUIUtility.labelWidth = 150;
-
-            // lang
-            Getter.OnGuiSelectLang();
-
-            EditorGUILayout.LabelField("ExportRoot");
-            {
-                m_state.ExportRoot = (GameObject)EditorGUILayout.ObjectField(m_state.ExportRoot, typeof(GameObject), true);
-            }
-
-            // Render contents using Generic Inspector GUI
-            m_ScrollPosition = BeginVerticalScrollView(m_ScrollPosition, false, GUI.skin.verticalScrollbar, "OL Box");
-            GUIUtility.GetControlID(645789, FocusType.Passive);
-
-            bool modified = ScrollArea();
-
-            EditorGUILayout.EndScrollView();
-
-            // Create and Other Buttons
-            {
-                // errors            
-                GUILayout.BeginVertical();
-                // GUILayout.FlexibleSpace();
-
-                {
-                    GUILayout.BeginHorizontal();
-                    GUILayout.FlexibleSpace();
-                    GUI.enabled = m_state.Validations.All(x => x.CanExport);
-
-                    if (GUILayout.Button("Export", GUILayout.MinWidth(100)))
-                    {
-                        OnExportClicked(m_state.ExportRoot, Meta != null ? Meta : m_tmpMeta, m_settings, m_meshes);
-                        Close();
-                        GUIUtility.ExitGUI();
-                    }
-                    GUI.enabled = true;
-
-                    GUILayout.EndHorizontal();
-                }
-                GUILayout.EndVertical();
-            }
-
-            GUILayout.Space(8);
-
-            if (modified)
-            {
-                m_state.Invalidate();
-            }
+            VRMEditorExporter.Export(path, State.ExportRoot, Meta != null ? Meta : m_tmpMeta, m_settings, m_meshes.Meshes);
         }
 
-        bool ScrollArea()
+        protected override bool DoGUI()
         {
-            //
-            // Validation
-            //
-            foreach (var v in m_state.Validations)
-            {
-                v.DrawGUI();
-                if (v.ErrorLevel == ErrorLevels.Critical)
-                {
-                    // Export UI を表示しない
-                    return false;
-                }
-            }
             EditorGUILayout.HelpBox($"Mesh size: {m_meshes.ExpectedExportByteSize / 1000000.0f:0.0} MByte", MessageType.Info);
 
             //
@@ -308,14 +211,14 @@ namespace VRM
                     break;
 
                 case Tabs.BlendShape:
-                    if (m_state.ExportRoot)
+                    if (State.ExportRoot)
                     {
-                        OnBlendShapeGUI(m_state.ExportRoot.GetComponent<VRMBlendShapeProxy>());
+                        OnBlendShapeGUI(State.ExportRoot.GetComponent<VRMBlendShapeProxy>());
                     }
                     break;
 
                 case Tabs.ExportSettings:
-                    m_settings.Root = m_state.ExportRoot;
+                    m_settings.Root = State.ExportRoot;
                     m_settingsInspector.OnInspectorGUI();
                     break;
             }
@@ -347,7 +250,7 @@ namespace VRM
         int m_selected = 0;
         void OnBlendShapeGUI(VRMBlendShapeProxy proxy)
         {
-            if (!m_state.ExportRoot.scene.IsValid())
+            if (!State.ExportRoot.scene.IsValid())
             {
                 EditorGUILayout.HelpBox(BlendShapeTabMessages.CANNOT_MANIPULATE_PREFAB.Msg(), MessageType.Warning);
                 return;
@@ -385,32 +288,6 @@ namespace VRM
                 m_merger.SetValues(avatar.Clips.Select(x => new KeyValuePair<BlendShapeKey, float>(x.Key, 0)));
                 m_merger.Apply();
             }
-        }
-
-        const string EXTENSION = ".vrm";
-        private static string m_lastExportDir;
-        static void OnExportClicked(GameObject root, VRMMetaObject meta, VRMExportSettings settings, VRMExportMeshes meshes)
-        {
-            string directory;
-            if (string.IsNullOrEmpty(m_lastExportDir))
-                directory = Directory.GetParent(Application.dataPath).ToString();
-            else
-                directory = m_lastExportDir;
-
-            // save dialog
-            var path = EditorUtility.SaveFilePanel(
-                    "Save vrm",
-                    directory,
-                    root.name + EXTENSION,
-                    EXTENSION.Substring(1));
-            if (string.IsNullOrEmpty(path))
-            {
-                return;
-            }
-            m_lastExportDir = Path.GetDirectoryName(path).Replace("\\", "/");
-
-            // export
-            VRMEditorExporter.Export(path, root, meta, settings, meshes.Meshes);
         }
     }
 }

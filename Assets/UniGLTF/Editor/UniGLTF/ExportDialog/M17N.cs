@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using UnityEditor;
 
-namespace UniGLTF
+namespace UniGLTF.M17N
 {
     /// <summary>
     /// 多言語対応
@@ -68,17 +69,41 @@ namespace UniGLTF
             return map[key];
         }
     }
-    public static class Getter
+    public static class LanguageGetter
     {
         const string LANG_KEY = "VRM_LANG";
 
-        static Languages? m_lang;
+        static Dictionary<CultureInfo, Languages> CultureMap = new Dictionary<CultureInfo, Languages>
+        {
+            {new CultureInfo("ja-JP",false), Languages.ja},
+        };
+
+        static Languages? s_lang;
 
         public static Languages Lang
         {
             get
             {
-                return m_lang.GetValueOrDefault();
+                if (!s_lang.HasValue)
+                {
+                    var value = EditorPrefs.GetString(LANG_KEY);
+                    if (!string.IsNullOrEmpty(value) && Enum.TryParse<Languages>(value, true, out Languages parsed))
+                    {
+                        s_lang = parsed;
+                    }
+                    else
+                    {
+                        if (CultureMap.TryGetValue(CultureInfo.CurrentCulture, out Languages lang))
+                        {
+                            s_lang = lang;
+                        }
+                        else
+                        {
+                            s_lang = default(Languages);
+                        }
+                    }
+                }
+                return s_lang.GetValueOrDefault();
             }
         }
 
@@ -92,8 +117,8 @@ namespace UniGLTF
             var lang = (Languages)EditorGUILayout.EnumPopup("lang", Lang);
             if (lang != Lang)
             {
-                m_lang = lang;
-                EditorPrefs.SetString(LANG_KEY, Getter.Lang.ToString());
+                s_lang = lang;
+                EditorPrefs.SetString(LANG_KEY, LanguageGetter.Lang.ToString());
             }
         }
     }

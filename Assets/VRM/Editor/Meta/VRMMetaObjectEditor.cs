@@ -2,6 +2,7 @@ using UnityEditor;
 using UnityEngine;
 using System.IO;
 using UniGLTF;
+using UniGLTF.M17N;
 
 namespace VRM
 {
@@ -55,7 +56,7 @@ namespace VRM
 
         static string RequiredMessage(string name)
         {
-            switch (Getter.Lang)
+            switch (LanguageGetter.Lang)
             {
                 case Languages.ja:
                     return $"必須項目。{name} を入力してください";
@@ -162,7 +163,7 @@ namespace VRM
 
         static string Msg(MessageKeys key)
         {
-            return Getter.Msg(key);
+            return LanguageGetter.Msg(key);
         }
 
         bool m_foldoutInfo = true;

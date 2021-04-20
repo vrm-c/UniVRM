@@ -5,6 +5,7 @@ using System.Reflection;
 using UnityEngine;
 using UnityEditor;
 using UniGLTF;
+using UniGLTF.M17N;
 
 namespace MeshUtility
 {
@@ -133,7 +134,7 @@ namespace MeshUtility
             _scrollPos = EditorGUILayout.BeginScrollView(_scrollPos);
             EditorGUIUtility.labelWidth = 150;
             // lang
-            Getter.OnGuiSelectLang();
+            LanguageGetter.OnGuiSelectLang();
 
             _tab = TabBar.OnGUI(_tab, _tabButtonStyle, _tabButtonSize);
 

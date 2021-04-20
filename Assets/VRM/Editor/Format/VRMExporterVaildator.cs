@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UniGLTF;
+using UniGLTF.M17N;
 using UnityEngine;
 
 namespace VRM
