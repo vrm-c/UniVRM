@@ -214,6 +214,30 @@ namespace VRM
                     src.CopyTo(root, map);
                 }
             }
+            {
+                // look at
+                var src = go.GetComponent<VRMLookAtHead>();
+                if (src != null)
+                {
+                    var dst = root.AddComponent<VRMLookAtHead>();
+                }
+            }
+            {
+                // bone applier
+                var src = go.GetComponent<VRMLookAtBoneApplyer>();
+                if (src != null)
+                {
+                    var dst = root.AddComponent<VRMLookAtBoneApplyer>();
+                }
+            }
+            {
+                // blendshape applier
+                var src = go.GetComponent<VRMLookAtBlendShapeApplyer>();
+                if (src != null)
+                {
+                    var dst = root.AddComponent<VRMLookAtBlendShapeApplyer>();
+                }
+            }
 
             {
                 // humanoid
