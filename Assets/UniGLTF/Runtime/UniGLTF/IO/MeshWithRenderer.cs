@@ -91,5 +91,21 @@ namespace UniGLTF
                 yield return x;
             }
         }
+
+        public bool IsSameMeshAndMaterials(MeshWithRenderer other)
+        {
+            return IsSameMeshAndMaterials(other.Mesh, other.Renderer.sharedMaterials);
+        }
+
+        public bool IsSameMeshAndMaterials(Mesh mesh, Material[] materials)
+        {
+            if (Mesh != mesh) return false;
+            if (Renderer.sharedMaterials.Length != materials.Length) return false;
+            for (var i = 0; i < Renderer.sharedMaterials.Length; i++)
+            {
+                if (Renderer.sharedMaterials[i] != materials[i]) return false;
+            }
+            return true;
+        }
     }
 }

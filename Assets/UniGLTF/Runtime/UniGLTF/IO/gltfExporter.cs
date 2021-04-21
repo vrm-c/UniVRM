@@ -134,7 +134,7 @@ namespace UniGLTF
         }
 
         #region Export
-        static glTFNode ExportNode(Transform x, List<Transform> nodes, List<Renderer> renderers, List<SkinnedMeshRenderer> skins)
+        static glTFNode ExportNode(Transform x, List<Transform> nodes, List<MeshWithRenderer> meshWithRenderers, List<SkinnedMeshRenderer> skins)
         {
             var node = new glTFNode
             {
@@ -148,20 +148,60 @@ namespace UniGLTF
             if (x.gameObject.activeInHierarchy)
             {
                 var meshRenderer = x.GetComponent<MeshRenderer>();
+                
                 if (meshRenderer != null)
                 {
-                    node.mesh = renderers.IndexOf(meshRenderer);
+                    var meshFilter = x.GetComponent<MeshFilter>();
+                    if(meshFilter != null)
+                    {
+                        var mesh = meshFilter.sharedMesh;
+                        var materials = meshRenderer.sharedMaterials;
+                        if (TryGetSameMeshIndex(meshWithRenderers, mesh, materials, out int meshIndex))
+                        {
+                            node.mesh = meshIndex;
+                        }
+                        else
+                        {
+                            // MeshとMaterialが一致するものが見つからなかった
+                            throw new Exception("Mesh not found.");
+                        }
+                    }
                 }
 
                 var skinnedMeshRenderer = x.GetComponent<SkinnedMeshRenderer>();
                 if (skinnedMeshRenderer != null)
                 {
-                    node.mesh = renderers.IndexOf(skinnedMeshRenderer);
-                    node.skin = skins.IndexOf(skinnedMeshRenderer);
+                    var mesh = skinnedMeshRenderer.sharedMesh;
+                    var materials = skinnedMeshRenderer.sharedMaterials;
+                    if(TryGetSameMeshIndex(meshWithRenderers, mesh, materials, out int meshIndex))
+                    {
+                        node.mesh = meshIndex;
+                        node.skin = skins.IndexOf(skinnedMeshRenderer);
+                    }
+                    else
+                    {
+                        // MeshとMaterialが一致するものが見つからなかった
+                        throw new Exception("Mesh not found.");
+                    }
                 }
             }
 
             return node;
+        }
+
+        private static bool TryGetSameMeshIndex(List<MeshWithRenderer> meshWithRenderers, Mesh mesh, Material[] materials, out int meshIndex)
+        {
+            for (var i = 0; i < meshWithRenderers.Count; i++)
+            {
+                if (meshWithRenderers[i].IsSameMeshAndMaterials(mesh, materials))
+                {
+                    meshIndex = i;
+                    return true;
+                }
+            }
+
+            meshIndex = -1;
+            return false;
         }
 
         public virtual void ExportExtensions(Func<Texture2D, (byte[], string)> getTextureBytes)
@@ -189,9 +229,14 @@ namespace UniGLTF
 
             #region Meshes
             var unityMeshes = MeshWithRenderer.FromNodes(Nodes).Where(x => x.Mesh.vertices.Any()).ToList();
+            var uniqueUnityMeshes = new List<MeshWithRenderer>();
+            foreach (var um in unityMeshes)
+            {
+                if (!uniqueUnityMeshes.Any(x => x.IsSameMeshAndMaterials(um))) uniqueUnityMeshes.Add(um);
+            }
 
             MeshBlendShapeIndexMap = new Dictionary<Mesh, Dictionary<int, int>>();
-            foreach (var unityMesh in unityMeshes)
+            foreach (var unityMesh in uniqueUnityMeshes)
             {
                 var (gltfMesh, blendShapeIndexMap) = MeshExporter.ExportMesh(glTF, bufferIndex, unityMesh, Materials, meshExportSettings, m_axisInverter);
                 glTF.meshes.Add(gltfMesh);
@@ -205,10 +250,10 @@ namespace UniGLTF
             #endregion
 
             #region Nodes and Skins
-            var unitySkins = unityMeshes
+            var unitySkins = uniqueUnityMeshes
                 .Where(x => x.UniqueBones != null)
                 .ToList();
-            glTF.nodes = Nodes.Select(x => ExportNode(x, Nodes, unityMeshes.Select(y => y.Renderer).ToList(), unitySkins.Select(y => y.Renderer as SkinnedMeshRenderer).ToList())).ToList();
+            glTF.nodes = Nodes.Select(x => ExportNode(x, Nodes, uniqueUnityMeshes, unitySkins.Select(y => y.Renderer as SkinnedMeshRenderer).ToList())).ToList();
             glTF.scenes = new List<gltfScene>
                 {
                     new gltfScene
