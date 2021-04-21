@@ -316,7 +316,7 @@ namespace UniVRM10
                 var prim = new glTFPrimitives
                 {
                     mode = (int)mesh.Topology,
-                    material = materials.IndexOf(y.Material),
+                    material = y.Material,
                     indices = indicesAccessorIndex,
                     attributes = new glTFAttributes(),
                 };
