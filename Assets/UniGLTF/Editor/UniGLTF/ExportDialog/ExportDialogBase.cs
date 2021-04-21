@@ -77,10 +77,8 @@ namespace UniGLTF
         void OnGUI()
         {
             var modified = false;
-            if (BeginGUI())
-            {
-                modified = DoGUI();
-            }
+            var isValid = BeginGUI();
+            modified = DoGUI(isValid);
             EndGUI();
 
             if (modified)
@@ -89,7 +87,7 @@ namespace UniGLTF
             }
         }
 
-        protected abstract bool DoGUI();
+        protected abstract bool DoGUI(bool isValid);
 
         protected virtual void OnLayout()
         {
