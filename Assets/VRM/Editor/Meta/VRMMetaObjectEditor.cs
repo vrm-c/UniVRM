@@ -117,7 +117,7 @@ namespace VRM
             m_ViolentUssage = serializedObject.FindProperty(nameof(m_target.ViolentUssage));
             m_SexualUssage = serializedObject.FindProperty(nameof(m_target.SexualUssage));
             m_CommercialUssage = serializedObject.FindProperty(nameof(m_target.CommercialUssage));
-            m_OtherPermissionUrl = serializedObject.FindProperty(nameof(m_target.OtherLicenseUrl));
+            m_OtherPermissionUrl = serializedObject.FindProperty(nameof(m_target.OtherPermissionUrl));
 
             m_LicenseType = serializedObject.FindProperty(nameof(m_target.LicenseType));
             m_OtherLicenseUrl = serializedObject.FindProperty(nameof(m_target.OtherLicenseUrl));
@@ -223,7 +223,7 @@ namespace VRM
                 RightFixedPropField(m_ViolentUssage, Msg(MessageKeys.VIOLENT_USAGE));
                 RightFixedPropField(m_SexualUssage, Msg(MessageKeys.SEXUAL_USAGE));
                 RightFixedPropField(m_CommercialUssage, Msg(MessageKeys.COMMERCIAL_USAGE));
-                EditorGUILayout.PropertyField(m_OtherPermissionUrl, new GUIContent("Other License Url"));
+                EditorGUILayout.PropertyField(m_OtherPermissionUrl, new GUIContent("Other Permission Url"));
                 EditorGUIUtility.labelWidth = backup;
             }
 
