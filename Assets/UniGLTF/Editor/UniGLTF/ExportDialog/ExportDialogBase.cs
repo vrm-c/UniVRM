@@ -91,6 +91,10 @@ namespace UniGLTF
 
         protected abstract bool DoGUI();
 
+        protected virtual void OnLayout()
+        {
+        }
+
         bool BeginGUI()
         {
             // ArgumentException: Getting control 1's position in a group with only 1 controls when doing repaint Aborting
@@ -98,6 +102,7 @@ namespace UniGLTF
             // EventType.Layout と EventType.Repaint 間で内容が変わらないようしている。
             if (Event.current.type == EventType.Layout)
             {
+                OnLayout();
                 State.Validate(ValidatorFactory());
             }
 

@@ -160,6 +160,12 @@ namespace VRM
             VRMEditorExporter.Export(path, State.ExportRoot, Meta != null ? Meta : m_tmpMeta, m_settings, m_meshes.Meshes);
         }
 
+        protected override void OnLayout()
+        {
+            // m_settings, m_meshes.Meshes                
+            m_meshes.SetRoot(State.ExportRoot, m_settings);
+        }
+
         protected override bool DoGUI()
         {
             EditorGUILayout.HelpBox($"Mesh size: {m_meshes.ExpectedExportByteSize / 1000000.0f:0.0} MByte", MessageType.Info);
