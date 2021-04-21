@@ -223,7 +223,7 @@ namespace VRM
                 RightFixedPropField(m_ViolentUssage, Msg(MessageKeys.VIOLENT_USAGE));
                 RightFixedPropField(m_SexualUssage, Msg(MessageKeys.SEXUAL_USAGE));
                 RightFixedPropField(m_CommercialUssage, Msg(MessageKeys.COMMERCIAL_USAGE));
-                EditorGUILayout.PropertyField(m_OtherPermissionUrl, new GUIContent("Other License Url"));
+                EditorGUILayout.PropertyField(m_OtherPermissionUrl, new GUIContent("Other Permission Url"));
                 EditorGUIUtility.labelWidth = backup;
             }
 
