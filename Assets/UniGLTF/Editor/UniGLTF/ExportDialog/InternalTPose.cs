@@ -2,11 +2,22 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using UniGLTF;
+using UniGLTF.M17N;
 using UnityEngine;
 
-namespace VRM
+namespace UniGLTF
 {
+    public enum EnableTPose
+    {
+        [LangMsg(Languages.ja, "このボタンで自動で T-Pose にできます。手動で T-Pose にしたり、ボタンの後で手直ししてもOKです。")]
+        [LangMsg(Languages.en, "T-Pose can be made automatically with this button, or you can make the model as T-Pose manually. Adjusting T-Pose manually after applying this function is also OK")]
+        ENALBE_TPOSE_BUTTON,
+
+        [LangMsg(Languages.ja, "このボタンで自動で T-Pose にできます。prefab には実行できません。")]
+        [LangMsg(Languages.en, "T-Pose can be made automatically with this button. It cannot be run on prefabs.")]
+        DISABLE_TPOSE_BUTTON,
+    }
+
     public static class InternalTPose
     {
         struct TRS

@@ -2,10 +2,6 @@
 using System;
 using UnityEditor;
 using UnityEngine;
-using System.Reflection;
-using System.Linq;
-using System.Collections.Generic;
-using UniGLTF;
 using UniGLTF.M17N;
 
 namespace VRM
@@ -86,14 +82,6 @@ namespace VRM
             [LangMsg(Languages.en, "Vertex color will not be exported")]
             REMOVE_VERTEX_COLOR,
 
-            [LangMsg(Languages.ja, "このボタンで自動で T-Pose にできます。手動で T-Pose にしたり、ボタンの後で手直ししてもOKです。")]
-            [LangMsg(Languages.en, "T-Pose can be made automatically with this button, or you can make the model as T-Pose manually. Adjusting T-Pose manually after applying this function is also OK")]
-            ENALBE_TPOSE_BUTTON,
-
-            [LangMsg(Languages.ja, "このボタンで自動で T-Pose にできます。prefab には実行できません。")]
-            [LangMsg(Languages.en, "T-Pose can be made automatically with this button. It cannot be run on prefabs.")]
-            DISABLE_TPOSE_BUTTON,
-
             [LangMsg(Languages.ja, "T-Pose にする")]
             [LangMsg(Languages.en, "Make T-Pose")]
             DO_TPOSE,
@@ -119,48 +107,6 @@ namespace VRM
             GUILayout.Space(20);
             var settings = (VRMExportSettings)target;
             var root = settings.Root;
-            var backup = GUI.enabled;
-            GUI.enabled = root.scene.IsValid();
-            if (GUI.enabled)
-            {
-                EditorGUILayout.HelpBox(Options.ENALBE_TPOSE_BUTTON.Msg(), MessageType.Info);
-            }
-            else
-            {
-                EditorGUILayout.HelpBox(Options.DISABLE_TPOSE_BUTTON.Msg(), MessageType.Warning);
-            }
-
-            //
-            // T-Pose
-            //
-            if (GUILayout.Button(VRMExportSettingsEditor.Options.DO_TPOSE.Msg()))
-            {
-                if (settings.Root != null)
-                {
-                    // fallback
-                    Undo.RecordObjects(settings.Root.GetComponentsInChildren<Transform>(), "tpose");
-                    VRMBoneNormalizer.EnforceTPose(settings.Root);
-                }
-            }
-
-            if (GUILayout.Button(VRMExportSettingsEditor.Options.DO_TPOSE.Msg() + "(unity internal)"))
-            {
-                if (settings.Root != null)
-                {
-                    Undo.RecordObjects(settings.Root.GetComponentsInChildren<Transform>(), "tpose.internal");
-                    if (InternalTPose.TryMakePoseValid(settings.Root))
-                    {
-                        // done
-                    }
-                    else
-                    {
-                        Debug.LogWarning("not found");
-                    }
-                }
-            }
-
-            GUI.enabled = backup;
-            GUILayout.Space(20);
 
             // ToDo: 任意の BlendShapeClip を適用する
 

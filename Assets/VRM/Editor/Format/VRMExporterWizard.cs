@@ -24,6 +24,7 @@ namespace VRM
         {
             Meta,
             Mesh,
+            Humanoid,
             BlendShape,
             ExportSettings,
         }
@@ -223,6 +224,52 @@ namespace VRM
 
                 case Tabs.Mesh:
                     m_meshesInspector.OnInspectorGUI();
+                    break;
+
+                case Tabs.Humanoid:
+                    {
+                        var backup = GUI.enabled;
+                        GUI.enabled = State.ExportRoot.scene.IsValid();
+                        if (GUI.enabled)
+                        {
+                            EditorGUILayout.HelpBox(EnableTPose.ENALBE_TPOSE_BUTTON.Msg(), MessageType.Info);
+                        }
+                        else
+                        {
+                            EditorGUILayout.HelpBox(EnableTPose.DISABLE_TPOSE_BUTTON.Msg(), MessageType.Warning);
+                        }
+
+                        //
+                        // T-Pose
+                        //
+                        if (GUILayout.Button(VRMExportSettingsEditor.Options.DO_TPOSE.Msg()))
+                        {
+                            if (State.ExportRoot != null)
+                            {
+                                // fallback
+                                Undo.RecordObjects(State.ExportRoot.GetComponentsInChildren<Transform>(), "tpose");
+                                VRMBoneNormalizer.EnforceTPose(State.ExportRoot);
+                            }
+                        }
+
+                        if (GUILayout.Button(VRMExportSettingsEditor.Options.DO_TPOSE.Msg() + "(unity internal)"))
+                        {
+                            if (State.ExportRoot != null)
+                            {
+                                Undo.RecordObjects(State.ExportRoot.GetComponentsInChildren<Transform>(), "tpose.internal");
+                                if (InternalTPose.TryMakePoseValid(State.ExportRoot))
+                                {
+                                    // done
+                                }
+                                else
+                                {
+                                    Debug.LogWarning("not found");
+                                }
+                            }
+                        }
+
+                        GUI.enabled = backup;
+                    }
                     break;
 
                 case Tabs.BlendShape:
