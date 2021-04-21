@@ -27,7 +27,7 @@ namespace UniVRM10
         }
         public static Color ToColor3(this float[] src, Color defaultValue = default)
         {
-            if (src == null || src.Length != 3)
+            if (src == null || src.Length < 3)
             {
                 throw new NotImplementedException();
             }
