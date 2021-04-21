@@ -162,12 +162,6 @@ namespace UniVRM10
                 Reserve(reserveBytes);
             }
 
-            // mesh
-            ExportMeshes(model.MeshGroups, model.Materials, option);
-
-            // node
-            ExportNodes(model.Root, model.Nodes, model.MeshGroups, option);
-
             // material
             var materialExporter = new Vrm10MaterialExporter();
             foreach (Material material in model.Materials)
@@ -175,6 +169,12 @@ namespace UniVRM10
                 var glTFMaterial = materialExporter.ExportMaterial(material, m_textureExporter);
                 Storage.Gltf.materials.Add(glTFMaterial);
             }
+
+            // mesh
+            ExportMeshes(model.MeshGroups, model.Materials, option);
+
+            // node
+            ExportNodes(model.Root, model.Nodes, model.MeshGroups, option);
 
             var (vrm, vrmSpringBone, thumbnailTextureIndex) = ExportVrm(root, model, converter, metaObject);
 
