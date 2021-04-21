@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 using UniGLTF;
-using UnityEditor;
 using UnityEngine;
 using VRMShaders;
 
@@ -17,12 +15,12 @@ namespace VRM
         /// </summary>
         /// <param name="path">出力先</param>
         /// <param name="settings">エクスポート設定</param>
-        public static void Export(string path, GameObject exportRoot, VRMMetaObject meta, VRMExportSettings settings, IReadOnlyList<MeshExportInfo> info)
+        public static byte[] Export(GameObject exportRoot, VRMMetaObject meta, VRMExportSettings settings)
         {
             List<GameObject> destroy = new List<GameObject>();
             try
             {
-                Export(path, exportRoot, meta, settings, info, destroy);
+                return Export(exportRoot, meta, settings, destroy);
             }
             finally
             {
@@ -137,8 +135,8 @@ namespace VRM
         /// <param name="path"></param>
         /// <param name="settings"></param>
         /// <param name="destroy">作業が終わったらDestoryするべき一時オブジェクト</param>
-        static void Export(string path, GameObject exportRoot, VRMMetaObject meta,
-                    VRMExportSettings settings, IReadOnlyList<UniGLTF.MeshExportInfo> info,
+        static byte[] Export(GameObject exportRoot, VRMMetaObject meta,
+                    VRMExportSettings settings,
                     List<GameObject> destroy)
         {
             var target = exportRoot;
@@ -201,6 +199,8 @@ namespace VRM
                 destroy.Add(target);
             }
 
+            var fp = target.GetComponent<VRMFirstPerson>();
+
             // 元のBlendShapeClipに変更を加えないように複製
             var proxy = target.GetComponent<VRMBlendShapeProxy>();
             if (proxy != null)
@@ -228,14 +228,8 @@ namespace VRM
                 exporter.Export(settings.MeshExportSettings, AssetTextureUtil.IsTextureEditorAsset, AssetTextureUtil.GetTextureBytesWithMime);
             }
             var bytes = gltf.ToGlbBytes();
-            File.WriteAllBytes(path, bytes);
             Debug.LogFormat("Export elapsed {0}", sw.Elapsed);
-
-            if (path.StartsWithUnityAssetPath())
-            {
-                // 出力ファイルのインポートを発動
-                AssetDatabase.ImportAsset(path.ToUnityRelativePath());
-            }
+            return bytes;
         }
     }
 }

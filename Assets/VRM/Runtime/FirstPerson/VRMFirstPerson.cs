@@ -57,7 +57,8 @@ namespace VRM
             dst.FirstPersonOffset = FirstPersonOffset;
             dst.Renderers = Renderers.Select(x =>
             {
-                var renderer = map[x.Renderer.transform].GetComponent<Renderer>();
+                var mapped = map[x.Renderer.transform];
+                var renderer = mapped.GetComponent<Renderer>();
                 return new VRMFirstPerson.RendererFirstPersonFlags
                 {
                     Renderer = renderer,

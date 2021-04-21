@@ -4,6 +4,7 @@ using UnityEditor;
 using UnityEngine;
 using UniGLTF;
 using UniGLTF.M17N;
+using System.IO;
 
 namespace VRM
 {
@@ -157,7 +158,15 @@ namespace VRM
 
         protected override void ExportPath(string path)
         {
-            VRMEditorExporter.Export(path, State.ExportRoot, Meta != null ? Meta : m_tmpMeta, m_settings, m_meshes.Meshes);
+            var bytes = VRMEditorExporter.Export(State.ExportRoot, Meta != null ? Meta : m_tmpMeta, m_settings);
+
+            File.WriteAllBytes(path, bytes);
+
+            if (path.StartsWithUnityAssetPath())
+            {
+                // 出力ファイルのインポートを発動
+                AssetDatabase.ImportAsset(path.ToUnityRelativePath());
+            }
         }
 
         protected override bool DoGUI()

@@ -2,10 +2,9 @@
     "name": "VRM.Tests",
     "references": [
         "VRM",
+        "UniVRM.Editor",
         "UniGLTF",
         "UniGLTF.Editor",
-        "MeshUtility",
-        "MeshUtility.Editor",
         "VRMShaders.GLTF.IO.Runtime",
         "VRMShaders.GLTF.IO.Editor"
     ],
