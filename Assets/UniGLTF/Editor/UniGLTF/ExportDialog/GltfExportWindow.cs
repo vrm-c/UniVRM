@@ -50,8 +50,13 @@ namespace UniGLTF
                 yield break;
             }
         }
-        protected override bool DoGUI()
+        protected override bool DoGUI(bool isValid)
         {
+            if (!isValid)
+            {
+                return false;
+            }
+
             m_settings.Root = State.ExportRoot;
             m_settingsInspector.OnInspectorGUI();
             return true;

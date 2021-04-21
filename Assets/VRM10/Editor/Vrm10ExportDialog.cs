@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using UniGLTF;
+using UniGLTF.M17N;
 using UnityEditor;
 using UnityEngine;
 using VrmLib;
@@ -134,36 +135,64 @@ namespace UniVRM10
             yield return meta.Validate;
         }
 
-        // private void OnGUI()
-        // {
-        //             {
-        //                 var path = SaveFileDialog.GetPath("Save vrm1", $"{State.ExportRoot.name}.vrm", "vrm");
-        //                 if (!string.IsNullOrEmpty(path))
-        //                 {
-        //                     // export
-        //                     Export(State.ExportRoot, path);
-        //                     // close
-        //                     Close();
-        //                     GUIUtility.ExitGUI();
-        //                 }
-        //             }
-        //             GUI.enabled = true;
-
-        //             GUILayout.EndHorizontal();
-        //         }
-        //         GUILayout.EndVertical();
-        //     }
-
-        //     GUILayout.Space(8);
-
-        //     if (modified)
-        //     {
-        //         State.Invalidate();
-        //     }
-        // }
-
-        protected override bool DoGUI()
+        protected override bool DoGUI(bool isValid)
         {
+            if (State.ExportRoot == null)
+            {
+                return false;
+            }
+
+            if (State.ExportRoot.GetComponent<Animator>() != null)
+            {
+                //
+                // T-Pose
+                //
+                // if (GUILayout.Button("T-Pose"))
+                // {
+                //     if (State.ExportRoot != null)
+                //     {
+                //         // fallback
+                //         Undo.RecordObjects(State.ExportRoot.GetComponentsInChildren<Transform>(), "tpose");
+                //         VRMBoneNormalizer.EnforceTPose(State.ExportRoot);
+                //     }
+                // }
+
+                var backup = GUI.enabled;
+                GUI.enabled = State.ExportRoot.scene.IsValid();
+                if (GUI.enabled)
+                {
+                    EditorGUILayout.HelpBox(EnableTPose.ENALBE_TPOSE_BUTTON.Msg(), MessageType.Info);
+                }
+                else
+                {
+                    EditorGUILayout.HelpBox(EnableTPose.DISABLE_TPOSE_BUTTON.Msg(), MessageType.Warning);
+                }
+
+                if (GUILayout.Button("T-Pose" + "(unity internal)"))
+                {
+                    if (State.ExportRoot != null)
+                    {
+                        Undo.RecordObjects(State.ExportRoot.GetComponentsInChildren<Transform>(), "tpose.internal");
+                        if (InternalTPose.TryMakePoseValid(State.ExportRoot))
+                        {
+                            // done
+                            Repaint();
+                        }
+                        else
+                        {
+                            Debug.LogWarning("not found");
+                        }
+                    }
+                }
+
+                GUI.enabled = backup;
+            }
+
+            if (!isValid)
+            {
+                return false;
+            }
+
             if (m_tmpMeta == null)
             {
                 // disabled
