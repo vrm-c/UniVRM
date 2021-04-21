@@ -117,7 +117,7 @@ namespace VRM
             m_ViolentUssage = serializedObject.FindProperty(nameof(m_target.ViolentUssage));
             m_SexualUssage = serializedObject.FindProperty(nameof(m_target.SexualUssage));
             m_CommercialUssage = serializedObject.FindProperty(nameof(m_target.CommercialUssage));
-            m_OtherPermissionUrl = serializedObject.FindProperty(nameof(m_target.OtherLicenseUrl));
+            m_OtherPermissionUrl = serializedObject.FindProperty(nameof(m_target.OtherPermissionUrl));
 
             m_LicenseType = serializedObject.FindProperty(nameof(m_target.LicenseType));
             m_OtherLicenseUrl = serializedObject.FindProperty(nameof(m_target.OtherLicenseUrl));
