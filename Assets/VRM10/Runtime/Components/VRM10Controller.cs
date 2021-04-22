@@ -36,7 +36,7 @@ namespace UniVRM10
         public VRM10ControllerImpl Controller = new VRM10ControllerImpl();
 
         [SerializeField]
-        public VRM10MetaObject Meta;
+        public VRM10ControllerMeta Meta = new VRM10ControllerMeta();
 
         [SerializeField]
         public VRM10ControllerExpression Expression = new VRM10ControllerExpression();

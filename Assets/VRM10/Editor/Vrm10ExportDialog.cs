@@ -83,7 +83,7 @@ namespace UniVRM10
                     var controller = root.GetComponent<VRM10Controller>();
                     if (controller != null)
                     {
-                        Meta = controller.Meta;
+                        Meta = controller.Meta.Meta;
                     }
                     else
                     {

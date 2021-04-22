@@ -246,7 +246,7 @@ namespace UniVRM10
                 var src = vrm.Meta;
                 m_meta = ScriptableObject.CreateInstance<VRM10MetaObject>();
                 m_meta.name = VRM10MetaObject.SubAssetKey.Name;
-                controller.Meta = m_meta;
+                controller.Meta.Meta = m_meta;
                 m_meta.Name = src.Name;
                 m_meta.Version = src.Version;
                 m_meta.ContactInformation = src.ContactInformation;

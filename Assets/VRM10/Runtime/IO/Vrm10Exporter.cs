@@ -208,7 +208,7 @@ namespace UniVRM10
                 {
                     throw new NullReferenceException("metaObject is null");
                 }
-                meta = vrmController.Meta;
+                meta = vrmController.Meta.Meta;
             }
 
             var vrm = new UniGLTF.Extensions.VRMC_vrm.VRMC_vrm

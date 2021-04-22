@@ -382,7 +382,7 @@ namespace UniVRM10.Samples
                 if (m_controller != null)
                 {
 
-                    m_texts.UpdateMeta(m_controller.Meta);
+                    m_texts.UpdateMeta(m_controller.Meta.Meta);
 
                     m_controller.Controller.UpdateType = VRM10Controller.VRM10ControllerImpl.UpdateTypes.LateUpdate; // after HumanPoseTransfer's setPose
                     {

@@ -49,11 +49,12 @@ namespace UniVRM10
                     ;
             }
 
-            if (m_target.Meta)
+            if (m_target?.Meta.Meta != null)
             {
-                m_metaEditor = Editor.CreateEditor(m_target.Meta);
+                m_metaEditor = Editor.CreateEditor(m_target.Meta.Meta);
             }
             m_controller = PropGui.FromObject(serializedObject, nameof(m_target.Controller));
+            m_meta = PropGui.FromObject(serializedObject, nameof(m_target.Meta));
             m_expression = PropGui.FromObject(serializedObject, nameof(m_target.Expression));
             m_lookAt = PropGui.FromObject(serializedObject, nameof(m_target.LookAt));
             m_firstPerson = PropGui.FromObject(serializedObject, nameof(m_target.FirstPerson));
@@ -70,13 +71,13 @@ namespace UniVRM10
 
         enum Tabs
         {
-            Meta,
             Controller,
+            Meta,
             Expression,
             LookAt,
             FirstPerson,
         }
-        Tabs _tab;
+        Tabs _tab = Tabs.Meta;
 
         Editor m_metaEditor;
 
@@ -113,6 +114,7 @@ namespace UniVRM10
         }
 
         PropGui m_controller;
+        PropGui m_meta;
         PropGui m_expression;
         PropGui m_lookAt;
         PropGui m_firstPerson;
@@ -139,6 +141,7 @@ namespace UniVRM10
             switch (_tab)
             {
                 case Tabs.Meta:
+                    m_meta.RecursiveProperty();
                     m_metaEditor?.OnInspectorGUI();
                     break;
 
@@ -147,8 +150,8 @@ namespace UniVRM10
                     break;
 
                 case Tabs.Expression:
-                    ExpressionGUI();
                     m_expression.RecursiveProperty();
+                    ExpressionGUI();
                     break;
 
                 case Tabs.LookAt:
