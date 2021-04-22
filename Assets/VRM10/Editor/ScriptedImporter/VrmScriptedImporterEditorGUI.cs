@@ -26,13 +26,16 @@ namespace UniVRM10
 
             m_importer = target as VrmScriptedImporter;
             m_message = VrmScriptedImporterImpl.TryParseOrMigrate(m_importer.assetPath, m_importer.MigrateToVrm1, out m_parser);
-            if (string.IsNullOrEmpty(m_message))
+            if (!string.IsNullOrEmpty(m_message))
             {
-                // ok
+                // error
                 return;
             }
             if (!UniGLTF.Extensions.VRMC_vrm.GltfDeserializer.TryGet(m_parser.GLTF.extensions, out m_vrm))
             {
+                // error
+                m_message = "no vrm1";
+                m_parser = null;
                 return;
             }
             m_model = VrmLoader.CreateVrmModel(m_parser);
