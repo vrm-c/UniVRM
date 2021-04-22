@@ -14,7 +14,7 @@ namespace UniVRM10
     {
         const string CONVERT_HUMANOID_KEY = VRMVersion.MENU + "/Export VRM-1.0";
 
-        [MenuItem(CONVERT_HUMANOID_KEY, false, 1)]
+        [MenuItem(CONVERT_HUMANOID_KEY, false, 0)]
         private static void ExportFromMenu()
         {
             var window = (VRM10ExportDialog)GetWindow(typeof(VRM10ExportDialog));
@@ -284,13 +284,13 @@ namespace UniVRM10
                 var converter = new UniVRM10.RuntimeVrmConverter();
                 var model = converter.ToModelFrom10(root);
 
-                // if (MeshUtility.Validators.HumanoidValidator.HasRotationOrScale(root))
-                // {
-                //     // 正規化
-                //     m_logLabel += $"normalize...\n";
-                //     var modifier = new ModelModifier(model);
-                //     modifier.SkinningBake();
-                // }
+                if (HumanoidValidator.HasRotationOrScale(root))
+                {
+                    // 正規化
+                    m_logLabel += $"normalize...\n";
+                    var modifier = new ModelModifier(model);
+                    modifier.SkinningBake();
+                }
 
                 // 右手系に変換
                 m_logLabel += $"convert to right handed coordinate...\n";

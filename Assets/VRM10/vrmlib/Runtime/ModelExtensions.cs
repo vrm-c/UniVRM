@@ -72,6 +72,6 @@ namespace VrmLib
             CheckIndex(model.Skins, nameof(model.Skins));
             CheckIndex(model.MeshGroups, nameof(model.MeshGroups));
             CheckIndex(model.Animations, nameof(model.Animations));
-        }
+        }       
     }
 }
