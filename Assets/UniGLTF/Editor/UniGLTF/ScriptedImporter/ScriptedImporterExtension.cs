@@ -51,7 +51,7 @@ namespace UniGLTF
                     if (asset != value)
                     {
                         // update
-                        importer.SetExternalUnityObject(new AssetImporter.SourceAssetIdentifier(value), asset);
+                        importer.SetExternalUnityObject(new AssetImporter.SourceAssetIdentifier(key.Type, key.Name), asset);
                     }
                     EditorGUILayout.EndHorizontal();
                 }

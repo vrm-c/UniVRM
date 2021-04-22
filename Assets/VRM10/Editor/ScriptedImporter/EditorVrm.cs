@@ -3,7 +3,6 @@ using UnityEngine;
 using System.Linq;
 using System.IO;
 using UnityEditor;
-using VRMShaders;
 #if UNITY_2020_2_OR_NEWER
 using UnityEditor.AssetImporters;
 #else
@@ -56,6 +55,22 @@ namespace UniVRM10
         }
 
         /// <summary>
+        /// $"{assetPath without extension}.{folderName}"
+        /// </summary>
+        /// <param name="assetPath"></param>
+        /// <param name="folderName"></param>
+        /// <returns></returns>
+        static string GetAndCreateFolder(string assetPath, string suffix)
+        {
+            var path = $"{Path.GetDirectoryName(assetPath)}/{Path.GetFileNameWithoutExtension(assetPath)}{suffix}";
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+            return path;
+        }
+
+        /// <summary>
         /// SubAssetを外部ファイルに展開する
         /// </summary>
         public static void Extract(ScriptedImporter importer, GltfParser parser)
@@ -65,14 +80,9 @@ namespace UniVRM10
                 return;
             }
 
-            var path = $"{Path.GetDirectoryName(importer.assetPath)}/{Path.GetFileNameWithoutExtension(importer.assetPath)}.Extracted";
-            if (!Directory.Exists(path))
-            {
-                Directory.CreateDirectory(path);
-            }
-
             // meta
             {
+                var path = GetAndCreateFolder(importer.assetPath, ".Meta");
                 foreach (var (key, asset) in importer.GetSubAssets<VRM10MetaObject>(importer.assetPath))
                 {
                     asset.ExtractSubAsset($"{path}/{asset.name}.asset", false);
@@ -81,12 +91,15 @@ namespace UniVRM10
 
             {
                 // expressions
+                var path = GetAndCreateFolder(importer.assetPath, ".Expressions");
                 foreach (var (key, asset) in importer.GetSubAssets<VRM10Expression>(importer.assetPath))
                 {
                     asset.ExtractSubAsset($"{path}/{asset.name}.asset", false);
                 }
-
+            }
+            {
                 // expressions
+                var path = GetAndCreateFolder(importer.assetPath, ".ExpressionAvatar");
                 foreach (var (key, asset) in importer.GetSubAssets<VRM10ExpressionAvatar>(importer.assetPath))
                 {
                     asset.ExtractSubAsset($"{path}/{asset.name}.asset", false);

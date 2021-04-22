@@ -18,8 +18,12 @@ namespace UniVRM10
 
         UniGLTF.Extensions.VRMC_vrm.VRMC_vrm m_vrm;
 
-        public RuntimeUnityBuilder(UniGLTF.GltfParser parser, IEnumerable<(string, UnityEngine.Object)> externalObjectMap = null) : base(parser, externalObjectMap)
+        IDictionary<SubAssetKey, UnityEngine.Object> m_externalMap;
+
+        public RuntimeUnityBuilder(UniGLTF.GltfParser parser, IDictionary<SubAssetKey, UnityEngine.Object> externalObjectMap = null)
+        : base(parser, externalObjectMap.Select(kv => (kv.Key.Name, kv.Value)))
         {
+            m_externalMap = externalObjectMap;
             m_model = VrmLoader.CreateVrmModel(parser);
 
             // for `VRMC_materials_mtoon`
@@ -241,12 +245,16 @@ namespace UniVRM10
         async Task LoadVrmAsync(IAwaitCaller awaitCaller, VRM10Controller controller, UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm)
         {
             // meta
-            if (vrm.Meta != null)
+            if (m_externalMap.TryGetValue(VRM10MetaObject.SubAssetKey, out UnityEngine.Object meta))
+            {
+                controller.Meta.Meta = meta as VRM10MetaObject;
+            }
+            else if (vrm.Meta != null)
             {
                 var src = vrm.Meta;
                 m_meta = ScriptableObject.CreateInstance<VRM10MetaObject>();
                 m_meta.name = VRM10MetaObject.SubAssetKey.Name;
-                controller.Meta = m_meta;
+                controller.Meta.Meta = m_meta;
                 m_meta.Name = src.Name;
                 m_meta.Version = src.Version;
                 m_meta.ContactInformation = src.ContactInformation;
@@ -281,7 +289,11 @@ namespace UniVRM10
             }
 
             // expression
-            if (vrm.Expressions != null)
+            if (m_externalMap.TryGetValue(VRM10ExpressionAvatar.SubAssetKey, out UnityEngine.Object expressionAvatar))
+            {
+                controller.Expression.ExpressionAvatar = expressionAvatar as VRM10ExpressionAvatar;
+            }
+            else if (vrm.Expressions != null)
             {
                 controller.Expression.ExpressionAvatar = ScriptableObject.CreateInstance<VRM10ExpressionAvatar>();
 
@@ -573,9 +585,12 @@ namespace UniVRM10
                 m_humanoid = null;
             }
 
-            if (take(m_meta))
+            if (m_meta != null)
             {
-                m_meta = null;
+                if (take(m_meta))
+                {
+                    m_meta = null;
+                }
             }
 
             if (m_exressionAvatar != null && m_exressionAvatar.Clips != null)

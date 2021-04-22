@@ -94,7 +94,7 @@ namespace UniVRM10
             //
             // Import(create unity objects)
             //
-            var externalObjectMap = scriptedImporter.GetExternalObjectMap().Select(kv => (kv.Value.name, kv.Value)).ToArray();
+            var externalObjectMap = scriptedImporter.GetExternalObjectMap().ToDictionary(kv => new SubAssetKey(kv.Key.type, kv.Key.name), kv => kv.Value);
 
             using (var loader = new RuntimeUnityBuilder(parser, externalObjectMap))
             {
