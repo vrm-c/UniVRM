@@ -336,6 +336,7 @@ namespace VRM
 
             if (!proxy)
             {
+                EditorGUILayout.HelpBox("no BlendShapeProxy", MessageType.Warning);
                 return;
             }
             var avatar = proxy.BlendShapeAvatar;

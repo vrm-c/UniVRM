@@ -31,7 +31,10 @@ namespace UniVRM10
         }
         Tabs _tab;
 
-        // export settings
+
+        VRM10ExportSettings m_settings;
+        Editor m_settingsInspector;
+
 
         MeshExportValidator m_meshes;
         Editor m_meshesInspector;
@@ -72,6 +75,9 @@ namespace UniVRM10
             m_tmpMeta = ScriptableObject.CreateInstance<VRM10MetaObject>();
             m_tmpMeta.Authors = new List<string> { "" };
 
+            m_settings = ScriptableObject.CreateInstance<VRM10ExportSettings>();
+            m_settingsInspector = Editor.CreateEditor(m_settings);
+
             m_meshes = ScriptableObject.CreateInstance<MeshExportValidator>();
             m_meshesInspector = Editor.CreateEditor(m_meshes);
 
@@ -105,6 +111,9 @@ namespace UniVRM10
 
         protected override void Clear()
         {
+            // m_settingsInspector
+            UnityEditor.Editor.DestroyImmediate(m_settingsInspector);
+            m_settingsInspector = null;
             // m_meshesInspector
             UnityEditor.Editor.DestroyImmediate(m_meshesInspector);
             m_meshesInspector = null;
@@ -112,11 +121,18 @@ namespace UniVRM10
             Meta = null;
             ScriptableObject.DestroyImmediate(m_tmpMeta);
             m_tmpMeta = null;
+            // m_settings
+            ScriptableObject.DestroyImmediate(m_settings);
+            m_settings = null;
+            // m_meshes
+            ScriptableObject.DestroyImmediate(m_meshes);
+            m_meshes = null;
         }
 
         protected override IEnumerable<Validator> ValidatorFactory()
         {
             HumanoidValidator.MeshInformations = m_meshes.Meshes;
+            // HumanoidValidator.EnableFreeze = m_settings.PoseFreeze;
 
             yield return HierarchyValidator.Validate;
             if (!State.ExportRoot)
@@ -242,7 +258,7 @@ namespace UniVRM10
                     break;
 
                 case Tabs.ExportSettings:
-                    // m_settingsInspector.OnInspectorGUI();
+                    m_settingsInspector.OnInspectorGUI();
                     break;
             }
 
