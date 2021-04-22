@@ -20,6 +20,7 @@ namespace VRM
             window.Show();
         }
 
+
         enum Tabs
         {
             Meta,
@@ -29,8 +30,14 @@ namespace VRM
         }
         Tabs _tab;
 
+
         VRMExportSettings m_settings;
+        Editor m_settingsInspector;
+
+
         VRMExportMeshes m_meshes;
+        Editor m_meshesInspector;
+
 
         VRMMetaObject m_meta;
         VRMMetaObject Meta
@@ -50,12 +57,9 @@ namespace VRM
                 m_meta = value;
             }
         }
-
         VRMMetaObject m_tmpMeta;
-
         Editor m_metaEditor;
-        Editor m_settingsInspector;
-        Editor m_meshesInspector;
+
 
         protected override void Initialize()
         {
@@ -118,12 +122,6 @@ namespace VRM
             m_meshes = null;
         }
 
-        protected override string SaveTitle => "Save vrm0";
-
-        protected override string SaveName => $"{State.ExportRoot.name}.vrm";
-
-        protected override string[] SaveExtensions => new string[] { "vrm" };
-
         protected override IEnumerable<Validator> ValidatorFactory()
         {
             HumanoidValidator.MeshInformations = m_meshes.Meshes;
@@ -154,19 +152,6 @@ namespace VRM
 
             var meta = Meta ? Meta : m_tmpMeta;
             yield return meta.Validate;
-        }
-
-        protected override void ExportPath(string path)
-        {
-            var bytes = VRMEditorExporter.Export(State.ExportRoot, Meta != null ? Meta : m_tmpMeta, m_settings);
-
-            File.WriteAllBytes(path, bytes);
-
-            if (path.StartsWithUnityAssetPath())
-            {
-                // 出力ファイルのインポートを発動
-                AssetDatabase.ImportAsset(path.ToUnityRelativePath());
-            }
         }
 
         protected override void OnLayout()
@@ -254,6 +239,23 @@ namespace VRM
                 }
             }
             return DrawWizardGUI();
+        }
+
+        protected override string SaveTitle => "Save vrm0";
+        protected override string SaveName => $"{State.ExportRoot.name}.vrm";
+        protected override string[] SaveExtensions => new string[] { "vrm" };
+
+        protected override void ExportPath(string path)
+        {
+            var bytes = VRMEditorExporter.Export(State.ExportRoot, Meta != null ? Meta : m_tmpMeta, m_settings);
+
+            File.WriteAllBytes(path, bytes);
+
+            if (path.StartsWithUnityAssetPath())
+            {
+                // 出力ファイルのインポートを発動
+                AssetDatabase.ImportAsset(path.ToUnityRelativePath());
+            }
         }
 
         bool DrawWizardGUI()

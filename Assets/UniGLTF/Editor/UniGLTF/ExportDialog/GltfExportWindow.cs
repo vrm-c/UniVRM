@@ -20,9 +20,14 @@ namespace UniGLTF
             window.Show();
         }
 
-        private static void Export(GameObject go, string path, MeshExportSettings settings, Axises inverseAxis)
+
+        enum Tabs
         {
+            Mesh,
+            ExportSettings,
         }
+        Tabs _tab;
+
 
         GltfExportSettings m_settings;
         Editor m_settingsInspector;
@@ -57,8 +62,19 @@ namespace UniGLTF
                 return false;
             }
 
-            m_settings.Root = State.ExportRoot;
-            m_settingsInspector.OnInspectorGUI();
+            // tabbar
+            _tab = MeshUtility.TabBar.OnGUI(_tab);
+            switch (_tab)
+            {
+                case Tabs.Mesh:
+                    break;
+
+                case Tabs.ExportSettings:
+                    m_settings.Root = State.ExportRoot;
+                    m_settingsInspector.OnInspectorGUI();
+                    break;
+            }
+
             return true;
         }
 
