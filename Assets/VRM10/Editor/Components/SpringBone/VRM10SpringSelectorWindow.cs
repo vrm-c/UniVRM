@@ -11,7 +11,7 @@ namespace UniVRM10
     {
         const string MENU_KEY = VRMVersion.MENU + "/SpringBone Window";
 
-        [MenuItem(MENU_KEY, false, 0)]
+        [MenuItem(MENU_KEY, false, 1)]
         private static void ExportFromMenu()
         {
             var window = (VRM10SpringSelectorWindow)GetWindow(typeof(VRM10SpringSelectorWindow));

@@ -14,13 +14,14 @@ namespace UniVRM10
     {
         const string CONVERT_HUMANOID_KEY = VRMVersion.MENU + "/Export VRM-1.0";
 
-        [MenuItem(CONVERT_HUMANOID_KEY, false, 1)]
+        [MenuItem(CONVERT_HUMANOID_KEY, false, 0)]
         private static void ExportFromMenu()
         {
             var window = (VRM10ExportDialog)GetWindow(typeof(VRM10ExportDialog));
             window.titleContent = new GUIContent("VRM-1.0 Exporter");
             window.Show();
         }
+
 
         enum Tabs
         {
@@ -29,6 +30,15 @@ namespace UniVRM10
             ExportSettings,
         }
         Tabs _tab;
+
+
+        VRM10ExportSettings m_settings;
+        Editor m_settingsInspector;
+
+
+        MeshExportValidator m_meshes;
+        Editor m_meshesInspector;
+
 
         VRM10MetaObject m_meta;
         VRM10MetaObject Meta
@@ -55,21 +65,21 @@ namespace UniVRM10
                 m_meta = value;
             }
         }
-
-        protected override string SaveTitle => "Vrm1";
-
-        protected override string SaveName => $"{State.ExportRoot.name}.vrm";
-        protected override string[] SaveExtensions => new string[] { "vrm" };
-
-
         VRM10MetaObject m_tmpMeta;
-
         Editor m_metaEditor;
+
+
 
         protected override void Initialize()
         {
             m_tmpMeta = ScriptableObject.CreateInstance<VRM10MetaObject>();
             m_tmpMeta.Authors = new List<string> { "" };
+
+            m_settings = ScriptableObject.CreateInstance<VRM10ExportSettings>();
+            m_settingsInspector = Editor.CreateEditor(m_settings);
+
+            m_meshes = ScriptableObject.CreateInstance<MeshExportValidator>();
+            m_meshesInspector = Editor.CreateEditor(m_meshes);
 
             State.ExportRootChanged += (root) =>
             {
@@ -101,17 +111,36 @@ namespace UniVRM10
 
         protected override void Clear()
         {
+            // m_settingsInspector
+            UnityEditor.Editor.DestroyImmediate(m_settingsInspector);
+            m_settingsInspector = null;
+            // m_meshesInspector
+            UnityEditor.Editor.DestroyImmediate(m_meshesInspector);
+            m_meshesInspector = null;
+            // Meta
+            Meta = null;
             ScriptableObject.DestroyImmediate(m_tmpMeta);
             m_tmpMeta = null;
+            // m_settings
+            ScriptableObject.DestroyImmediate(m_settings);
+            m_settings = null;
+            // m_meshes
+            ScriptableObject.DestroyImmediate(m_meshes);
+            m_meshes = null;
         }
 
         protected override IEnumerable<Validator> ValidatorFactory()
         {
+            HumanoidValidator.MeshInformations = m_meshes.Meshes;
+            // HumanoidValidator.EnableFreeze = m_settings.PoseFreeze;
+
             yield return HierarchyValidator.Validate;
             if (!State.ExportRoot)
             {
                 yield break;
             }
+
+            yield return HumanoidValidator.Validate;
 
             // MeshUtility.Validators.HumanoidValidator.EnableFreeze = false;
             // yield return MeshUtility.Validators.HumanoidValidator.Validate;
@@ -133,6 +162,12 @@ namespace UniVRM10
 
             var meta = Meta ? Meta : m_tmpMeta;
             yield return meta.Validate;
+        }
+
+        protected override void OnLayout()
+        {
+            // m_settings, m_meshes.Meshes                
+            m_meshes.SetRoot(State.ExportRoot, default);
         }
 
         protected override bool DoGUI(bool isValid)
@@ -218,17 +253,21 @@ namespace UniVRM10
                     m_metaEditor.OnInspectorGUI();
                     break;
 
-                case Tabs.ExportSettings:
-                    // m_settingsInspector.OnInspectorGUI();
+                case Tabs.Mesh:
+                    m_meshesInspector.OnInspectorGUI();
                     break;
 
-                case Tabs.Mesh:
-                    // m_meshesInspector.OnInspectorGUI();
+                case Tabs.ExportSettings:
+                    m_settingsInspector.OnInspectorGUI();
                     break;
             }
 
             return true;
         }
+
+        protected override string SaveTitle => "Vrm1";
+        protected override string SaveName => $"{State.ExportRoot.name}.vrm";
+        protected override string[] SaveExtensions => new string[] { "vrm" };
 
         string m_logLabel;
 
@@ -245,13 +284,13 @@ namespace UniVRM10
                 var converter = new UniVRM10.RuntimeVrmConverter();
                 var model = converter.ToModelFrom10(root);
 
-                // if (MeshUtility.Validators.HumanoidValidator.HasRotationOrScale(root))
-                // {
-                //     // 正規化
-                //     m_logLabel += $"normalize...\n";
-                //     var modifier = new ModelModifier(model);
-                //     modifier.SkinningBake();
-                // }
+                if (HumanoidValidator.HasRotationOrScale(root))
+                {
+                    // 正規化
+                    m_logLabel += $"normalize...\n";
+                    var modifier = new ModelModifier(model);
+                    modifier.SkinningBake();
+                }
 
                 // 右手系に変換
                 m_logLabel += $"convert to right handed coordinate...\n";
@@ -268,10 +307,11 @@ namespace UniVRM10
                 File.WriteAllBytes(path, exportedBytes);
                 Debug.Log("exportedBytes: " + exportedBytes.Length);
 
-                var assetPath = ToAssetPath(path);
-                if (!string.IsNullOrEmpty(assetPath))
+                var assetPath = UniGLTF.UnityPath.FromFullpath(path);
+                if (assetPath.IsUnderAssetsFolder)
                 {
-                    AssetDatabase.ImportAsset(assetPath);
+                    // asset folder 内。import を発動
+                    assetPath.ImportAsset();
                 }
             }
             catch (Exception ex)
@@ -280,12 +320,6 @@ namespace UniVRM10
                 // rethrow
                 throw;
             }
-        }
-
-        static string ToAssetPath(string path)
-        {
-            var assetPath = UniGLTF.UnityPath.FromFullpath(path);
-            return assetPath.Value;
         }
     }
 }
