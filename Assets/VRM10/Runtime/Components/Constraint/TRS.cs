@@ -27,5 +27,15 @@ namespace UniVRM10
                 Scale = t.localScale,
             };
         }
+
+        public static TRS GetRelative(Transform t, Matrix4x4 toRelative)
+        {
+            return new TRS
+            {
+                Translation = toRelative.MultiplyPoint(t.position),
+                Rotation = toRelative.rotation * t.rotation,
+                Scale = toRelative.MultiplyVector(t.lossyScale),
+            };
+        }
     }
 }
