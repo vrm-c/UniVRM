@@ -160,11 +160,6 @@ namespace UniGLTF
                         {
                             node.mesh = meshIndex;
                         }
-                        else
-                        {
-                            // MeshとMaterialが一致するものが見つからなかった
-                            throw new Exception("Mesh not found.");
-                        }
                     }
                 }
 
@@ -177,11 +172,6 @@ namespace UniGLTF
                     {
                         node.mesh = meshIndex;
                         node.skin = skins.IndexOf(skinnedMeshRenderer);
-                    }
-                    else
-                    {
-                        // MeshとMaterialが一致するものが見つからなかった
-                        throw new Exception("Mesh not found.");
                     }
                 }
             }

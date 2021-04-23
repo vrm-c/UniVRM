@@ -4,7 +4,8 @@
         "UniGLTF",
         "UniGLTF.Editor",
         "VRMShaders.GLTF.IO.Runtime",
-        "VRMShaders.GLTF.IO.Editor"
+        "VRMShaders.GLTF.IO.Editor",
+        "Unity.TextMeshPro"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

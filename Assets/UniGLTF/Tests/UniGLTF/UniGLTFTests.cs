@@ -6,6 +6,10 @@ using UniJSON;
 using UnityEngine;
 using VRMShaders;
 
+#if GLTF_TESTS_PECULIAR_NODES
+using TMPro;
+#endif
+
 namespace UniGLTF
 {
     static class ToJsonExtensions
@@ -599,6 +603,169 @@ namespace UniGLTF
                 GameObject.DestroyImmediate(go);
             }
         }
+
+        [Test]
+        public void SameMeshAndMaterialExport()
+        {
+            var go = new GameObject("same_mesh_and_material");
+            try
+            {
+                var shader = Shader.Find("Unlit/Color");
+                var same_material = new Material(shader);
+                same_material.name = "red";
+                same_material.color = Color.red;
+
+                var cubeA = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                {
+                    cubeA.transform.SetParent(go.transform);
+                    cubeA.GetComponent<Renderer>().sharedMaterial = same_material;
+                }
+
+                {
+                    var cubeB = GameObject.Instantiate(cubeA);
+                    cubeB.transform.SetParent(go.transform);
+                    cubeB.GetComponent<Renderer>().sharedMaterial = same_material;
+
+                    Assert.AreEqual(cubeB.GetComponent<MeshFilter>().sharedMesh, cubeA.GetComponent<MeshFilter>().sharedMesh);
+                }
+
+                {
+                    var cubeC = GameObject.Instantiate(cubeA);
+                    cubeC.transform.SetParent(go.transform);
+                    cubeC.GetComponent<Renderer>().sharedMaterials = new Material[0];
+                }
+
+                {
+                    var cubeS = new GameObject("cubeS");
+                    cubeS.transform.SetParent(go.transform);
+                    var skinnedMesh = cubeS.AddComponent<SkinnedMeshRenderer>();
+                    skinnedMesh.sharedMesh = cubeA.GetComponent<MeshFilter>().sharedMesh;
+                    skinnedMesh.sharedMaterials = new Material[0];
+                }
+
+                // export
+                var gltf = new glTF();
+                var json = default(string);
+                using (var exporter = new gltfExporter(gltf))
+                {
+                    exporter.Prepare(go);
+                    exporter.Export(UniGLTF.MeshExportSettings.Default, AssetTextureUtil.IsTextureEditorAsset, AssetTextureUtil.GetTextureBytesWithMime);
+
+                    json = gltf.ToJson();
+                }
+
+                Assert.AreEqual(1, gltf.meshes.Count);
+
+                var red = gltf.materials[gltf.meshes[0].primitives[0].material];
+                Assert.AreEqual(new float[] { 1, 0, 0, 1 }, red.pbrMetallicRoughness.baseColorFactor);
+
+                Assert.AreEqual(4, gltf.nodes.Count);
+
+                Assert.AreEqual(gltf.nodes[0].mesh, gltf.nodes[1].mesh);
+
+                Assert.AreEqual(-1, gltf.nodes[2].mesh);
+                Assert.AreEqual(-1, gltf.nodes[3].mesh);
+
+                // import
+                {
+                    var parser = new GltfParser();
+                    parser.ParseJson(json, new SimpleStorage(new ArraySegment<byte>(new byte[1024 * 1024])));
+
+                    using (var context = new ImporterContext(parser))
+                    {
+                        //Debug.LogFormat("{0}", context.Json);
+                        context.Load();
+
+                        var importedA = context.Root.transform.GetChild(0);
+                        var importedAMaterial = importedA.GetComponent<Renderer>().sharedMaterial;
+                        Assert.AreEqual("red", importedAMaterial.name);
+                        Assert.AreEqual(Color.red, importedAMaterial.color);
+
+                        var importedB = context.Root.transform.GetChild(1);
+                        var importedBMaterial = importedB.GetComponent<Renderer>().sharedMaterial;
+
+                        Assert.AreEqual(importedA.GetSharedMesh(), importedB.GetSharedMesh());
+                        Assert.AreEqual(importedAMaterial, importedBMaterial);
+
+                        var importedC = context.Root.transform.GetChild(2);
+                        Assert.IsNull(importedC.GetSharedMesh());
+
+                        var importedS = context.Root.transform.GetChild(3);
+                        Assert.IsNull(importedS.GetSharedMesh());
+                    }
+                }
+            }
+            finally
+            {
+                GameObject.DestroyImmediate(go);
+            }
+        }
+
+#if GLTF_TESTS_PECULIAR_NODES
+        [Test]
+        public void PeculiarNodesExport()
+        {
+            var go = new GameObject("peculiar_nodes");
+            try
+            {
+                {
+                    var cylinderD = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                    cylinderD.transform.SetParent(go.transform);
+                    cylinderD.GetComponent<Renderer>().sharedMaterials = new Material[0];
+                }
+
+                {
+                    var textE = new GameObject("Text");
+                    textE.transform.SetParent(go.transform);
+                    textE.AddComponent<RectTransform>();
+                    var tmp = textE.AddComponent<TextMeshPro>();
+                    tmp.text = "test";
+                }
+
+                // export
+                var gltf = new glTF();
+                var json = default(string);
+                using (var exporter = new gltfExporter(gltf))
+                {
+                    exporter.Prepare(go);
+                    exporter.Export(UniGLTF.MeshExportSettings.Default, AssetTextureUtil.IsTextureEditorAsset, AssetTextureUtil.GetTextureBytesWithMime);
+
+                    json = gltf.ToJson();
+                }
+
+                Assert.AreEqual(0, gltf.meshes.Count);
+
+                Assert.AreEqual(2, gltf.nodes.Count);
+
+                Assert.AreEqual(-1, gltf.nodes[0].mesh);
+                Assert.AreEqual(-1, gltf.nodes[1].mesh);
+
+                // import
+                {
+                    var parser = new GltfParser();
+                    parser.ParseJson(json, new SimpleStorage(new ArraySegment<byte>(new byte[1024 * 1024])));
+
+                    using (var context = new ImporterContext(parser))
+                    {
+                        //Debug.LogFormat("{0}", context.Json);
+                        context.Load();
+
+                        var importedD = context.Root.transform.GetChild(0);
+                        Assert.IsNull(importedD.GetSharedMesh());
+                        Assert.IsNull(importedD.GetComponent<Renderer>());
+
+                        var importedE = context.Root.transform.GetChild(1);
+                        Assert.IsNull(importedE.GetSharedMesh());
+                        Assert.IsNull(importedE.GetComponent<Renderer>());
+                    }
+                }
+            }
+            finally
+            {
+                GameObject.DestroyImmediate(go);
+            }
+        }
+#endif
 
         [Serializable]
         class CantConstruct
