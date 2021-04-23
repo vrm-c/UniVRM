@@ -321,6 +321,7 @@ namespace UniVRM10
                     // node
                     var node = converter.Nodes[y.gameObject];
                     var nodeIndex = model.Nodes.IndexOf(node);
+                    colliders.Add(nodeIndex);
                     var gltfNode = Storage.Gltf.nodes[nodeIndex];
 
                     // VRMC_node_collider
