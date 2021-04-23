@@ -198,7 +198,20 @@ namespace UniVRM10
             }
         }
 
-        (UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm, UniGLTF.Extensions.VRMC_springBone.VRMC_springBone springBone, int? thumbnailIndex) ExportVrm(GameObject root, Model model, RuntimeVrmConverter converter, VRM10MetaObject meta)
+        /// <summary>
+        /// VRMコンポーネントのエクスポート
+        /// </summary>
+        /// <param name="vrm"></param>
+        /// <param name="springBone"></param>
+        /// <param name="constraint"></param>
+        /// <param name="root"></param>
+        /// <param name="model"></param>
+        /// <param name="converter"></param>
+        /// <param name="meta"></param>
+        /// <returns></returns>
+        (UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm,
+        UniGLTF.Extensions.VRMC_springBone.VRMC_springBone springBone,
+        int? thumbnailIndex) ExportVrm(GameObject root, Model model, RuntimeVrmConverter converter, VRM10MetaObject meta)
         {
             var vrmController = root?.GetComponent<VRM10Controller>();
 
@@ -245,6 +258,7 @@ namespace UniVRM10
                 ExportFirstPerson(vrm, vrmController, model, converter);
 
                 vrmSpringBone = ExportSpringBone(vrmController, model, converter);
+                ExportConstraints(vrmController, model, converter);
             }
 
             return (vrm, vrmSpringBone, thumbnailTextureIndex);
@@ -337,6 +351,75 @@ namespace UniVRM10
             }
 
             return springBone;
+        }
+
+        void ExportConstraints(VRM10Controller vrmController, Model model, RuntimeVrmConverter converter)
+        {
+            var constraints = vrmController.GetComponentsInChildren<VRM10Constraint>();
+            foreach (var constraint in constraints)
+            {
+                switch (constraint)
+                {
+                    case VRM10PositionConstraint positionConstraint:
+                        ExportPostionConstraint(positionConstraint, model, converter);
+                        break;
+
+                    case VRM10RotationConstraint rotationConstraint:
+                        ExportRotationConstraint(rotationConstraint, model, converter);
+                        break;
+
+                    case VRM10AimConstraint aimConstraint:
+                        ExportAimConstraint(aimConstraint, model, converter);
+                        break;
+
+                    default:
+                        throw new NotImplementedException();
+                }
+            }
+        }
+
+        void ExportPostionConstraint(VRM10PositionConstraint c, Model model, RuntimeVrmConverter converter)
+        {
+            throw new NotImplementedException();
+        }
+
+        static bool[] ToArray(AxisMask mask)
+        {
+            return new bool[]
+            {
+                mask.HasFlag(AxisMask.X),
+                mask.HasFlag(AxisMask.Y),
+                mask.HasFlag(AxisMask.Z),
+            };
+        }
+
+        void ExportRotationConstraint(VRM10RotationConstraint c, Model model, RuntimeVrmConverter converter)
+        {
+            var vrmConstraint = new UniGLTF.Extensions.VRMC_node_constraint.VRMC_node_constraint
+            {
+                Constraint = new UniGLTF.Extensions.VRMC_node_constraint.Constraint
+                {
+                    Rotation = new UniGLTF.Extensions.VRMC_node_constraint.RotationConstraint
+                    {
+                        Source = model.Nodes.IndexOf(converter.Nodes[c.Source.gameObject]),
+                        SourceSpace = c.SourceCoordinate,
+                        DestinationSpace = c.DestinationCoordinate,
+                        FreezeAxes = ToArray(c.FreezeAxes),
+                        Weight = c.Weight,
+                    },
+                },
+            };
+
+            // serialize to gltfNode
+            var node = converter.Nodes[c.gameObject];
+            var nodeIndex = model.Nodes.IndexOf(node);
+            var gltfNode = Storage.Gltf.nodes[nodeIndex];
+            UniGLTF.Extensions.VRMC_node_constraint.GltfSerializer.SerializeTo(ref gltfNode.extensions, vrmConstraint);
+        }
+
+        static void ExportAimConstraint(VRM10AimConstraint c, Model model, RuntimeVrmConverter converter)
+        {
+            throw new NotImplementedException();
         }
 
         static UniGLTF.Extensions.VRMC_vrm.MeshAnnotation ExportMeshAnnotation(RendererFirstPersonFlags flags, Func<Renderer, int> getIndex)
