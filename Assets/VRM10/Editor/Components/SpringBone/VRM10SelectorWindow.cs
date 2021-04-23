@@ -70,6 +70,9 @@ namespace UniVRM10
         static bool s_foldColliders = true;
         public VRM10SpringBoneColliderGroup[] m_colliderGroups;
 
+        static bool s_foldConstraints = true;
+        public VRM10Constraint[] m_constraints;
+
         void Reload()
         {
             var backup = Root;
@@ -83,13 +86,14 @@ namespace UniVRM10
         {
             Root = (Transform)EditorGUILayout.ObjectField("vrm1 root", m_root, typeof(Transform), true);
 
-            if (m_springs != null && m_springs.Length > 0 && m_springs[0] == null)
+            if (m_springs != null && m_springs.Length > 0 && m_springs.Any(x => x == null))
             {
                 Reload();
             }
 
             m_scrollPosition = EditorGUILayout.BeginScrollView(m_scrollPosition);
 
+            // mouse wheel scroll part 1
             var isScroll = Event.current.isScrollWheel;
             if (isScroll)
             {
@@ -99,7 +103,10 @@ namespace UniVRM10
                     m_scrollPosition = Vector2.zero;
                 }
             }
+
             DrawContent();
+
+            // mouse wheel scroll part 2
             var bottom = EditorGUILayout.GetControlRect();
             if (isScroll)
             {
@@ -111,6 +118,7 @@ namespace UniVRM10
                 }
                 Repaint();
             }
+
             EditorGUILayout.EndScrollView();
         }
 
@@ -155,10 +163,14 @@ namespace UniVRM10
                 {
                     m_colliderGroups = m_root.GetComponentsInChildren<VRM10SpringBoneColliderGroup>();
                 }
+                if (m_constraints == null)
+                {
+                    m_constraints = m_root.GetComponentsInChildren<VRM10Constraint>();
+                }
             }
 
             GUI.enabled = false;
-            s_foldHumanoidBones = EditorGUILayout.Foldout(s_foldHumanoidBones, "human bones");
+            s_foldHumanoidBones = EditorGUILayout.Foldout(s_foldHumanoidBones, "humanoid bones");
             if (s_foldHumanoidBones)
             {
                 if (m_boneMap != null)
@@ -194,6 +206,18 @@ namespace UniVRM10
                     foreach (var c in m_colliderGroups)
                     {
                         EditorGUILayout.ObjectField(c, typeof(VRM10SpringBoneColliderGroup), true);
+                    }
+                }
+            }
+
+            s_foldConstraints = EditorGUILayout.Foldout(s_foldConstraints, "constraints");
+            if (s_foldConstraints)
+            {
+                if (m_constraints != null)
+                {
+                    foreach (var c in m_constraints)
+                    {
+                        EditorGUILayout.ObjectField(c, typeof(VRM10Constraint), true);
                     }
                 }
             }
