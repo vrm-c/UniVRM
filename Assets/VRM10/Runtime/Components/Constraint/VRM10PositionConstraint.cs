@@ -70,7 +70,7 @@ namespace UniVRM10
             }
 
             var delta = FreezeAxes.Freeze(m_src.TranslationDelta);
-            m_dst.ApplyTranslation(delta, Weight);
+            m_dst.ApplyTranslation(delta, Weight, ModelRoot);
         }
     }
 }

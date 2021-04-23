@@ -16,9 +16,9 @@ namespace UniVRM10
         [SerializeField]
         public Transform Source = default;
 
-        // [SerializeField]
-        // [Range(0, 10.0f)]
-        // float Weight = 1.0f;
+        [SerializeField]
+        [Range(0, 10.0f)]
+        public float Weight = 1.0f;
 
         /// <summary>
         /// Forward

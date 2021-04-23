@@ -35,7 +35,7 @@ namespace UniVRM10
             }
         }
 
-        public void ApplyTranslation(Vector3 delta, float weight)
+        public void ApplyTranslation(Vector3 delta, float weight, Transform modelRoot = null)
         {
             var value = m_initial.Translation + delta * weight;
             switch (m_coords)
@@ -46,6 +46,10 @@ namespace UniVRM10
 
                 case ObjectSpace.local:
                     m_transform.localPosition = value;
+                    break;
+
+                case ObjectSpace.model:
+                    m_transform.position = modelRoot.localToWorldMatrix.MultiplyPoint(value);
                     break;
 
                 default:
