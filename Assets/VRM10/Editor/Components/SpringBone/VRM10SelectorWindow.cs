@@ -54,9 +54,10 @@ namespace UniVRM10
                 }
                 m_root = value;
 
+                m_boneMap = null;
                 m_springs = null;
                 m_colliderGroups = null;
-                m_boneMap = null;
+                m_constraints = null;
             }
         }
 
