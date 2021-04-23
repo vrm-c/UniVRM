@@ -112,7 +112,10 @@ namespace UniVRM10
                             var mesh = CreateMesh(filter.sharedMesh, meshRenderer, Materials);
                             Model.MeshGroups.Add(mesh);
                             Nodes[renderer.gameObject].MeshGroup = mesh;
-                            Meshes.Add(filter.sharedMesh, mesh);
+                            if (!Meshes.ContainsKey(filter.sharedMesh))
+                            {
+                                Meshes.Add(filter.sharedMesh, mesh);
+                            }
                         }
                     }
                 }

@@ -42,6 +42,16 @@ namespace UniVRM10
             m_dst = null;
         }
 
+        void Reset()
+        {
+            var current = transform;
+            while (current.parent != null)
+            {
+                current = current.parent;
+            }
+            ModelRoot = current;
+        }
+
         public override void Process()
         {
             if (Source == null)
@@ -56,11 +66,11 @@ namespace UniVRM10
             }
             if (m_dst == null)
             {
-                m_dst = new ConstraintDestination(transform, DestinationCoordinate);
+                m_dst = new ConstraintDestination(transform, DestinationCoordinate, ModelRoot);
             }
 
             var delta = FreezeAxes.Freeze(m_src.TranslationDelta);
-            m_dst.ApplyTranslation(delta, Weight);
+            m_dst.ApplyTranslation(delta, Weight, ModelRoot);
         }
     }
 }

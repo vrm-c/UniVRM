@@ -43,6 +43,16 @@ namespace UniVRM10
             m_dst = null;
         }
 
+        void Reset()
+        {
+            var current = transform;
+            while (current.parent != null)
+            {
+                current = current.parent;
+            }
+            ModelRoot = current;
+        }
+
         /// <summary>
         /// SourceのUpdateよりも先か後かはその時による。
         /// 厳密に制御するのは無理。
@@ -61,7 +71,7 @@ namespace UniVRM10
             }
             if (m_dst == null)
             {
-                m_dst = new ConstraintDestination(transform, DestinationCoordinate);
+                m_dst = new ConstraintDestination(transform, DestinationCoordinate, ModelRoot);
             }
 
             // 軸制限をしたオイラー角
@@ -70,7 +80,7 @@ namespace UniVRM10
             var rotation = Quaternion.Euler(fleezed);
             // Debug.Log($"{delta} => {rotation}");
             // オイラー角を再度Quaternionへ。weight を加味してSlerpする
-            m_dst.ApplyRotation(rotation, Weight);
+            m_dst.ApplyRotation(rotation, Weight, ModelRoot);
         }
     }
 }
