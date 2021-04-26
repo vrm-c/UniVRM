@@ -22,9 +22,13 @@ namespace UniVRM10
         IDictionary<SubAssetKey, UnityEngine.Object> m_externalMap;
 
         public Vrm10Importer(UniGLTF.GltfParser parser, IDictionary<SubAssetKey, UnityEngine.Object> externalObjectMap = null)
-        : base(parser, externalObjectMap.Select(kv => (kv.Key.Name, kv.Value)))
+        : base(parser, externalObjectMap?.Select(kv => (kv.Key.Name, kv.Value)))
         {
             m_externalMap = externalObjectMap;
+            if (m_externalMap == null)
+            {
+                m_externalMap = new Dictionary<SubAssetKey, UnityEngine.Object>();
+            }
             m_model = ModelReader.Read(parser);
 
             // for `VRMC_materials_mtoon`
