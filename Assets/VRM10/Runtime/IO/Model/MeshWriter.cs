@@ -2,16 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using System.Runtime.InteropServices;
 using UniGLTF;
 using VrmLib;
 
 namespace UniVRM10
 {
-    public static class MeshAdapter
+    /// <summary>
+    /// VrmLib.MeshGroup => GLTF
+    /// </summary>
+    public static class MeshWriter
     {
-
-
         static void Vec3MinMax(ArraySegment<byte> bytes, glTFAccessor accessor)
         {
             var positions = SpanLike.Wrap<Vector3>(bytes);
@@ -54,7 +54,7 @@ namespace UniVRM10
             }
         }
 
-        static void ExportMesh(this Mesh mesh, List<object> materials, Vrm10Storage storage, glTFMesh gltfMesh, ExportArgs option)
+        static void ExportMesh(this VrmLib.Mesh mesh, List<object> materials, Vrm10Storage storage, glTFMesh gltfMesh, ExportArgs option)
         {
             //
             // primitive share vertex buffer
