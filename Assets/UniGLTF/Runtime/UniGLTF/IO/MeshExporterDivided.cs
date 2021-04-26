@@ -197,20 +197,22 @@ namespace UniGLTF
                 {
                     materialIndex = unityMaterials.IndexOf(material);
                 }
-                var indexMap = usedIndices.Select((used, index) => (used, index)).ToDictionary(x => x.used, x => x.index);
 
                 var flipped = new List<int>();
                 for (int j = 0; j < indices.Length; j += 3)
                 {
-                    if (buffer.ContainsTriangle(j, j + 1, j + 2))
+                    var t0 = indices[j];
+                    var t1 = indices[j + 1];
+                    var t2 = indices[j + 2];
+                    if (buffer.ContainsTriangle(t0, t1, t2))
                     {
-                        flipped.Add(indexMap[indices[j + 2]]);
-                        flipped.Add(indexMap[indices[j + 1]]);
-                        flipped.Add(indexMap[indices[j]]);
+                        flipped.Add(t2);
+                        flipped.Add(t1);
+                        flipped.Add(t0);
                     }
                     else
                     {
-                        Debug.LogWarning($"triangle not contains [{j}, {j + 1}, {j + 2}]");
+                        Debug.LogWarning($"triangle not contains [{t0}, {t1}, {t2}]");
                     }
                 }
                 var gltfPrimitive = buffer.ToGltfPrimitive(gltf, bufferIndex, materialIndex, flipped);
