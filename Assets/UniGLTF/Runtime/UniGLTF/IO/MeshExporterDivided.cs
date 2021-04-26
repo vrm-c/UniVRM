@@ -42,6 +42,30 @@ namespace UniGLTF
 
         public class VertexBuffer
         {
+            /// <summary>
+            /// SubMeshで分割するので index が変わる。対応表
+            /// </summary>
+            /// <typeparam name="int"></typeparam>
+            /// <typeparam name="int"></typeparam>
+            /// <returns></returns>
+            readonly Dictionary<int, int> m_vertexIndexMap = new Dictionary<int, int>();
+            public bool ContainsTriangle(int v0, int v1, int v2)
+            {
+                if (!m_vertexIndexMap.ContainsKey(v0))
+                {
+                    return false;
+                }
+                if (!m_vertexIndexMap.ContainsKey(v1))
+                {
+                    return false;
+                }
+                if (!m_vertexIndexMap.ContainsKey(v2))
+                {
+                    return false;
+                }
+                return true;
+            }
+
             readonly List<Vector3> m_positions;
             readonly List<Vector3> m_normals;
             readonly List<Vector2> m_uv;
@@ -64,8 +88,11 @@ namespace UniGLTF
                 }
             }
 
-            public void Push(Vector3 position, Vector3 normal, Vector2 uv)
+            public void Push(int index, Vector3 position, Vector3 normal, Vector2 uv)
             {
+                var newIndex = m_positions.Count;
+                m_vertexIndexMap.Add(index, newIndex);
+
                 m_positions.Add(position);
                 m_normals.Add(normal);
                 m_uv.Add(uv);
@@ -77,11 +104,9 @@ namespace UniGLTF
                 m_weights.Add(new Vector4(boneWeight.weight0, boneWeight.weight1, boneWeight.weight2, boneWeight.weight3));
             }
 
-            public (glTFPrimitives, int) ToGltfPrimitive(glTF gltf, int bufferIndex, int materialIndex, IEnumerable<int> indices, int vertexOffset)
+            public glTFPrimitives ToGltfPrimitive(glTF gltf, int bufferIndex, int materialIndex, IEnumerable<int> indices)
             {
-                var vertexCount = m_positions.Count;
-
-                var indicesAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, indices.Select(x => (uint)(x - vertexOffset)).ToArray(), glBufferTarget.ELEMENT_ARRAY_BUFFER);
+                var indicesAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, indices.Select(x => (uint)m_vertexIndexMap[x]).ToArray(), glBufferTarget.ELEMENT_ARRAY_BUFFER);
                 var positionAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, m_positions.ToArray(), glBufferTarget.ARRAY_BUFFER);
                 var normalAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, m_normals.ToArray(), glBufferTarget.ARRAY_BUFFER);
                 var uvAccessorIndex0 = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, m_uv.ToArray(), glBufferTarget.ARRAY_BUFFER);
@@ -112,7 +137,7 @@ namespace UniGLTF
                     mode = 4,
                 };
 
-                return (primitive, vertexCount);
+                return primitive;
             }
         }
 
@@ -144,7 +169,6 @@ namespace UniGLTF
             Vector3[] blendShapeNormals = new Vector3[mesh.vertexCount];
 
             var usedIndices = new List<int>();
-            var vertexOffset = 0;
             for (int i = 0; i < mesh.subMeshCount; ++i)
             {
                 var indices = mesh.GetIndices(i);
@@ -152,14 +176,6 @@ namespace UniGLTF
                 // mesh
                 // index の順に attributes を蓄える                
                 var buffer = new VertexBuffer(indices.Length, getJointIndex);
-                // foreach (var k in indices)
-                // {
-                //     buffer.Push(axisInverter.InvertVector3(positions[k]), axisInverter.InvertVector3(normals[k]), uv[k].ReverseUV());
-                //     if (getJointIndex != null)
-                //     {
-                //         buffer.Push(boneWeights[k]);
-                //     }
-                // }
                 // indices から参照される頂点だけを蓄える
                 usedIndices.Clear();
                 for (int k = 0; k < positions.Length; ++k)
@@ -167,7 +183,7 @@ namespace UniGLTF
                     if (indices.Contains(k))
                     {
                         usedIndices.Add(k);
-                        buffer.Push(axisInverter.InvertVector3(positions[k]), axisInverter.InvertVector3(normals[k]), uv[k].ReverseUV());
+                        buffer.Push(k, axisInverter.InvertVector3(positions[k]), axisInverter.InvertVector3(normals[k]), uv[k].ReverseUV());
                         if (getJointIndex != null)
                         {
                             buffer.Push(boneWeights[k]);
@@ -186,12 +202,18 @@ namespace UniGLTF
                 var flipped = new List<int>();
                 for (int j = 0; j < indices.Length; j += 3)
                 {
-                    flipped.Add(indexMap[indices[j + 2]]);
-                    flipped.Add(indexMap[indices[j + 1]]);
-                    flipped.Add(indexMap[indices[j]]);
+                    if (buffer.ContainsTriangle(j, j + 1, j + 2))
+                    {
+                        flipped.Add(indexMap[indices[j + 2]]);
+                        flipped.Add(indexMap[indices[j + 1]]);
+                        flipped.Add(indexMap[indices[j]]);
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"triangle not contains [{j}, {j + 1}, {j + 2}]");
+                    }
                 }
-                var (gltfPrimitive, vertexCount) = buffer.ToGltfPrimitive(gltf, bufferIndex, materialIndex, flipped, vertexOffset);
-                vertexOffset += vertexCount;
+                var gltfPrimitive = buffer.ToGltfPrimitive(gltf, bufferIndex, materialIndex, flipped);
 
                 // blendShape
                 for (int j = 0; j < mesh.blendShapeCount; ++j)

@@ -27,20 +27,18 @@ namespace UniGLTF
 
             {
                 var buffer = new UniGLTF.MeshExporterDivided.VertexBuffer(6, null);
-                buffer.Push(new Vector3(1, 1, 0), Vector3.up, Vector2.zero);
-                buffer.Push(new Vector3(1, 1, 1), Vector3.up, Vector2.zero);
-                buffer.Push(new Vector3(1, 1, 2), Vector3.up, Vector2.zero);
-                var (prim, count) = buffer.ToGltfPrimitive(gltf, 0, 0, new[] { 0, 1, 2 }, 0);
-                Assert.AreEqual(3, count);
+                buffer.Push(0, new Vector3(1, 1, 0), Vector3.up, Vector2.zero);
+                buffer.Push(1, new Vector3(1, 1, 1), Vector3.up, Vector2.zero);
+                buffer.Push(2, new Vector3(1, 1, 2), Vector3.up, Vector2.zero);
+                var prim = buffer.ToGltfPrimitive(gltf, 0, 0, new[] { 0, 1, 2 });
             }
 
             {
                 var buffer = new UniGLTF.MeshExporterDivided.VertexBuffer(6, null);
-                buffer.Push(new Vector3(1, 1, 3), Vector3.up, Vector2.zero);
-                buffer.Push(new Vector3(1, 1, 4), Vector3.up, Vector2.zero);
-                buffer.Push(new Vector3(1, 1, 5), Vector3.up, Vector2.zero);
-                var (prim, count) = buffer.ToGltfPrimitive(gltf, 0, 0, new[] { 3, 4, 5 }, 3);
-                Assert.AreEqual(3, count);
+                buffer.Push(3, new Vector3(1, 1, 3), Vector3.up, Vector2.zero);
+                buffer.Push(4, new Vector3(1, 1, 4), Vector3.up, Vector2.zero);
+                buffer.Push(5, new Vector3(1, 1, 5), Vector3.up, Vector2.zero);
+                var prim = buffer.ToGltfPrimitive(gltf, 0, 0, new[] { 3, 4, 5 });
             }
         }
     }
