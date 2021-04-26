@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using UniGLTF;
@@ -150,7 +149,6 @@ namespace UniVRM10
                     // 頂点バッファの連結が必用
                     // VRM-1 はこっち
                     // https://github.com/vrm-c/UniVRM/issues/800
-
                     mesh = MeshImporterDivided.LoadDivided(src);
                 }
                 mesh.name = src.Name;
@@ -199,7 +197,7 @@ namespace UniVRM10
                     continue;
                 }
 
-                var renderer = CreateRenderer(node, go, map, MaterialFactory.Materials);
+                CreateRenderer(node, go, map, MaterialFactory.Materials);
                 await awaitCaller.NextFrame();
             }
         }
@@ -551,10 +549,8 @@ namespace UniVRM10
         public static Renderer CreateRenderer(VrmLib.Node node, GameObject go, ModelMap map,
             IReadOnlyList<VRMShaders.MaterialFactory.MaterialLoadInfo> materialLoadInfos)
         {
-            var mesh = node.MeshGroup.Meshes[0];
-
             Renderer renderer = null;
-            var hasBlendShape = mesh.MorphTargets.Any();
+            var hasBlendShape = node.MeshGroup.Meshes[0].MorphTargets.Any();
             if (node.MeshGroup.Skin != null || hasBlendShape)
             {
                 var skinnedMeshRenderer = go.AddComponent<SkinnedMeshRenderer>();
@@ -575,8 +571,21 @@ namespace UniVRM10
                 renderer = go.AddComponent<MeshRenderer>();
                 meshFilter.sharedMesh = map.Meshes[node.MeshGroup];
             }
-            var materials = mesh.Submeshes.Select(x => materialLoadInfos[x.Material].Asset).ToArray();
-            renderer.sharedMaterials = materials;
+
+            if (node.MeshGroup.Meshes.Count == 0)
+            {
+                throw new NotImplementedException();
+            }
+            else if (node.MeshGroup.Meshes.Count == 1)
+            {
+                var materials = node.MeshGroup.Meshes[0].Submeshes.Select(x => materialLoadInfos[x.Material].Asset).ToArray();
+                renderer.sharedMaterials = materials;
+            }
+            else
+            {
+                var materials = node.MeshGroup.Meshes.Select(x => materialLoadInfos[x.Submeshes[0].Material].Asset).ToArray();
+                renderer.sharedMaterials = materials;
+            }
 
             return renderer;
         }

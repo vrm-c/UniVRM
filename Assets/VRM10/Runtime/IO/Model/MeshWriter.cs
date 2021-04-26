@@ -65,28 +65,32 @@ namespace UniVRM10
         /// <param name="storage"></param>
         /// <param name="gltfMesh"></param>
         /// <param name="option"></param>
-        static void ExportMesh(this VrmLib.Mesh mesh, List<object> materials, Vrm10Storage storage, glTFMesh gltfMesh, ExportArgs option)
+        static IEnumerable<glTFPrimitives> ExportMeshDivided(this VrmLib.Mesh mesh, List<object> materials, Vrm10Storage storage, ExportArgs option)
         {
             var bufferIndex = 0;
-            var axisInverter = Axises.X.Create();
             var usedIndices = new List<int>();
             var meshIndices = SpanLike.CopyFrom(mesh.IndexBuffer.GetAsIntArray());
-            var positions = mesh.VertexBuffer.Positions.GetSpan<UnityEngine.Vector3>();
-            var normals = mesh.VertexBuffer.Normals.GetSpan<UnityEngine.Vector3>();
-            var uv = mesh.VertexBuffer.TexCoords.GetSpan<UnityEngine.Vector2>();
-            var weights = mesh.VertexBuffer.Weights.GetSpan<UnityEngine.Vector4>();
-            var joints = mesh.VertexBuffer.Joints.GetSpan<SkinJoints>();
-            Func<int, int> getJointIndex = i =>
+            var positions = mesh.VertexBuffer.Positions.GetSpan<UnityEngine.Vector3>().ToArray();
+            var normals = mesh.VertexBuffer.Normals.GetSpan<UnityEngine.Vector3>().ToArray();
+            var uv = mesh.VertexBuffer.TexCoords.GetSpan<UnityEngine.Vector2>().ToArray();
+            var hasSkin = mesh.VertexBuffer.Weights != null;
+            var weights = mesh.VertexBuffer.Weights?.GetSpan<UnityEngine.Vector4>().ToArray();
+            var joints = mesh.VertexBuffer.Joints?.GetSpan<SkinJoints>().ToArray();
+            Func<int, int> getJointIndex = default;
+            if (hasSkin)
             {
-                return i;
-            };
+                getJointIndex = i =>
+                {
+                    return i;
+                };
+            }
 
             foreach (var submesh in mesh.Submeshes)
             {
-                var indices = meshIndices.Slice(submesh.Offset, submesh.DrawCount);
+                var indices = meshIndices.Slice(submesh.Offset, submesh.DrawCount).ToArray();
 
                 // mesh
-                // index の順に attributes を蓄える                
+                // index の順に attributes を蓄える     
                 var buffer = new MeshExportUtil.VertexBuffer(indices.Length, getJointIndex);
                 usedIndices.Clear();
                 for (int k = 0; k < positions.Length; ++k)
@@ -95,7 +99,7 @@ namespace UniVRM10
                     {
                         // indices から参照される頂点だけを蓄える
                         usedIndices.Add(k);
-                        buffer.Push(axisInverter.InvertVector3(positions[k]), axisInverter.InvertVector3(normals[k]), uv[k].ReverseUV());
+                        buffer.Push(positions[k], normals[k], uv[k]);
                         if (getJointIndex != null)
                         {
                             var j = joints[k];
@@ -115,18 +119,9 @@ namespace UniVRM10
                         }
                     }
                 }
-
                 var materialIndex = submesh.Material;
                 var indexMap = usedIndices.Select((used, index) => (used, index)).ToDictionary(x => x.used, x => (uint)x.index);
-
-                var flipped = new List<uint>();
-                for (int j = 0; j < indices.Length; j += 3)
-                {
-                    flipped.Add((uint)indexMap[indices[j + 2]]);
-                    flipped.Add((uint)indexMap[indices[j + 1]]);
-                    flipped.Add((uint)indexMap[indices[j]]);
-                }
-                var gltfPrimitive = buffer.ToGltf(storage.Gltf, bufferIndex, materialIndex, flipped);
+                var gltfPrimitive = buffer.ToGltf(storage.Gltf, bufferIndex, materialIndex, indices.Select(x => (uint)x).ToArray());
 
                 // blendShape
                 for (int j = 0; j < mesh.MorphTargets.Count; ++j)
@@ -144,19 +139,16 @@ namespace UniVRM10
                     foreach (var k in usedIndices)
                     {
                         blendShape.Push(
-                            axisInverter.InvertVector3(blendShapePositions[k]),
-                            blendShapeNormals.HasValue ? axisInverter.InvertVector3(blendShapeNormals.Value[k]) : UnityEngine.Vector3.zero
+                            blendShapePositions[k],
+                            blendShapeNormals.HasValue ? blendShapeNormals.Value[k] : UnityEngine.Vector3.zero
                             );
                     }
 
                     gltfPrimitive.targets.Add(blendShape.ToGltf(storage.Gltf, bufferIndex, !option.removeMorphNormal));
                 }
 
-                gltfMesh.primitives.Add(gltfPrimitive);
+                yield return gltfPrimitive;
             }
-
-            var targetNames = mesh.MorphTargets.Select(x => x.Name).ToArray();
-            gltf_mesh_extras_targetNames.Serialize(gltfMesh, targetNames);
         }
 
         /// <summary>
@@ -169,7 +161,7 @@ namespace UniVRM10
         /// <returns></returns>
         public static glTFMesh ExportMeshGroup(this MeshGroup src, List<object> materials, Vrm10Storage storage, ExportArgs option)
         {
-            var mesh = new glTFMesh
+            var gltfMesh = new glTFMesh
             {
                 name = src.Name
             };
@@ -179,9 +171,15 @@ namespace UniVRM10
                 throw new NotImplementedException();
             }
 
-            src.Meshes[0].ExportMesh(materials, storage, mesh, option);
+            foreach (var prim in src.Meshes[0].ExportMeshDivided(materials, storage, option))
+            {
+                gltfMesh.primitives.Add(prim);
+            }
 
-            return mesh;
+            var targetNames = src.Meshes[0].MorphTargets.Select(x => x.Name).ToArray();
+            gltf_mesh_extras_targetNames.Serialize(gltfMesh, targetNames);
+
+            return gltfMesh;
         }
     }
 }
