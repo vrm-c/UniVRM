@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace UniVRM10
 {
-    public static class MeshLoader
+    public static class MeshImporter
     {
         /// <summary>
         /// VrmLib.Mesh => UnityEngine.Mesh
@@ -11,7 +11,7 @@ namespace UniVRM10
         /// <param name="mesh"></param>
         /// <param name="src"></param>
         /// <param name="skin"></param>
-        public static void LoadMesh(this UnityEngine.Mesh mesh, VrmLib.Mesh src, VrmLib.Skin skin = null)
+        public static void LoadSharedMesh(UnityEngine.Mesh mesh, VrmLib.Mesh src, VrmLib.Skin skin = null)
         {
             mesh.vertices = src.VertexBuffer.Positions.GetSpan<Vector3>().ToArray();
             mesh.normals = src.VertexBuffer.Normals?.GetSpan<Vector3>().ToArray();

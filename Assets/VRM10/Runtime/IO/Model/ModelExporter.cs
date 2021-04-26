@@ -28,7 +28,7 @@ namespace UniVRM10
         {
             Model = new VrmLib.Model(VrmLib.Coordinates.Unity);
 
-            ToGlbModel(root);
+            Export(root);
 
             // humanoid
             {
@@ -52,7 +52,7 @@ namespace UniVRM10
             return Model;
         }
 
-        public VrmLib.Model ToGlbModel(GameObject root)
+        VrmLib.Model Export(GameObject root)
         {
             if (Model == null)
             {

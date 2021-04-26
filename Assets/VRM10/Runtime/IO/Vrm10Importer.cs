@@ -141,7 +141,7 @@ namespace UniVRM10
                     // submesh 方式
                     var mesh = new UnityEngine.Mesh();
                     mesh.name = src.Name;
-                    mesh.LoadMesh(src.Meshes[0], src.Skin);
+                    MeshImporter.LoadSharedMesh(mesh, src.Meshes[0], src.Skin);
                     m_map.Meshes.Add(src, mesh);
                     Meshes.Add(new MeshWithMaterials
                     {
