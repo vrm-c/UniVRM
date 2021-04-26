@@ -52,7 +52,6 @@ namespace UniGLTF
             readonly List<Vector3> m_normals;
             readonly List<Vector2> m_uv;
 
-            readonly Func<int, int> m_getJointIndex;
             readonly List<UShort4> m_joints;
             readonly List<Vector4> m_weights;
 
@@ -62,8 +61,8 @@ namespace UniGLTF
                 m_normals = new List<Vector3>(reserve);
                 m_uv = new List<Vector2>();
 
-                m_getJointIndex = getJointIndex;
-                if (m_getJointIndex != null)
+                // m_getJointIndex = getJointIndex;
+                if (getJointIndex != null)
                 {
                     m_joints = new List<UShort4>(reserve);
                     m_weights = new List<Vector4>(reserve);
