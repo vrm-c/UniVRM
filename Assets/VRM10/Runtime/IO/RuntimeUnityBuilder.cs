@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using UniGLTF;
@@ -24,7 +25,7 @@ namespace UniVRM10
         : base(parser, externalObjectMap.Select(kv => (kv.Key.Name, kv.Value)))
         {
             m_externalMap = externalObjectMap;
-            m_model = VrmLoader.CreateVrmModel(parser);
+            m_model = ModelReader.Read(parser);
 
             // for `VRMC_materials_mtoon`
             this.GltfMaterialImporter.GltfMaterialParamProcessors.Insert(0, Vrm10MaterialImporter.TryCreateParam);

@@ -16,7 +16,6 @@ namespace UniVRM10
         public List<UnityEngine.Material> Materials = new List<UnityEngine.Material>();
         public Dictionary<UnityEngine.Mesh, VrmLib.MeshGroup> Meshes = new Dictionary<UnityEngine.Mesh, VrmLib.MeshGroup>();
 
-        #region Export 1.0
         /// <summary>
         /// metaObject が null のときは、root から取得する
         /// </summary>
@@ -123,9 +122,6 @@ namespace UniVRM10
 
             return Model;
         }
-        #endregion
-
-
 
         private static void CreateNodes(
             Transform parentTransform,

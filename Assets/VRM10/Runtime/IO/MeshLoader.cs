@@ -1,12 +1,17 @@
 ﻿using System;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace UniVRM10
 {
     public static class MeshLoader
     {
-        public static void LoadMesh(this Mesh mesh, VrmLib.Mesh src, VrmLib.Skin skin = null)
+        /// <summary>
+        /// VrmLib.Mesh => UnityEngine.Mesh
+        /// </summary>
+        /// <param name="mesh"></param>
+        /// <param name="src"></param>
+        /// <param name="skin"></param>
+        public static void LoadMesh(this UnityEngine.Mesh mesh, VrmLib.Mesh src, VrmLib.Skin skin = null)
         {
             mesh.vertices = src.VertexBuffer.Positions.GetSpan<Vector3>().ToArray();
             mesh.normals = src.VertexBuffer.Normals?.GetSpan<Vector3>().ToArray();
