@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using UniGLTF;
@@ -12,7 +13,7 @@ namespace UniVRM10
     /// <summary>
     /// VrmLib.Model から UnityPrefab を構築する
     /// </summary>
-    public class RuntimeUnityBuilder : UniGLTF.ImporterContext
+    public class Vrm10Importer : UniGLTF.ImporterContext
     {
         readonly Model m_model;
 
@@ -20,11 +21,15 @@ namespace UniVRM10
 
         IDictionary<SubAssetKey, UnityEngine.Object> m_externalMap;
 
-        public RuntimeUnityBuilder(UniGLTF.GltfParser parser, IDictionary<SubAssetKey, UnityEngine.Object> externalObjectMap = null)
-        : base(parser, externalObjectMap.Select(kv => (kv.Key.Name, kv.Value)))
+        public Vrm10Importer(UniGLTF.GltfParser parser, IDictionary<SubAssetKey, UnityEngine.Object> externalObjectMap = null)
+        : base(parser, externalObjectMap?.Select(kv => (kv.Key.Name, kv.Value)))
         {
             m_externalMap = externalObjectMap;
-            m_model = VrmLoader.CreateVrmModel(parser);
+            if (m_externalMap == null)
+            {
+                m_externalMap = new Dictionary<SubAssetKey, UnityEngine.Object>();
+            }
+            m_model = ModelReader.Read(parser);
 
             // for `VRMC_materials_mtoon`
             this.GltfMaterialImporter.GltfMaterialParamProcessors.Insert(0, Vrm10MaterialImporter.TryCreateParam);
@@ -140,7 +145,7 @@ namespace UniVRM10
                     // submesh 方式
                     var mesh = new UnityEngine.Mesh();
                     mesh.name = src.Name;
-                    mesh.LoadMesh(src.Meshes[0], src.Skin);
+                    MeshImporter.LoadSharedMesh(mesh, src.Meshes[0], src.Skin);
                     m_map.Meshes.Add(src, mesh);
                     Meshes.Add(new MeshWithMaterials
                     {

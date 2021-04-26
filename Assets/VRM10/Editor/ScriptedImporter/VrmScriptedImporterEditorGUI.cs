@@ -38,7 +38,7 @@ namespace UniVRM10
                 m_parser = null;
                 return;
             }
-            m_model = VrmLoader.CreateVrmModel(m_parser);
+            m_model = ModelReader.Read(m_parser);
         }
 
         enum Tabs

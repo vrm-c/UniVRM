@@ -1,9 +1,7 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using NUnit.Framework;
 using UniGLTF;
 using UnityEngine;
-using UnityEngine.TestTools;
 using VRMShaders;
 
 namespace UniVRM10.Test
@@ -17,13 +15,13 @@ namespace UniVRM10.Test
             var parser = new GltfParser();
             parser.Parse("migrated", bytes);
 
-            var model = UniVRM10.VrmLoader.CreateVrmModel(parser);
+            var model = ModelReader.Read(parser);
             return model;
         }
 
         GameObject BuildGameObject(GltfParser parser, bool showMesh)
         {
-            using (var loader = new RuntimeUnityBuilder(parser))
+            using (var loader = new Vrm10Importer(parser))
             {
                 loader.Load();
                 if (showMesh)

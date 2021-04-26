@@ -1,12 +1,15 @@
-using System;
+using System.IO;
 using System.Linq;
 using VrmLib;
 
 namespace UniVRM10
 {
-    public static class ModelLoader
+    /// <summary>
+    /// GLTF => VrmLib.Model
+    /// </summary>
+    public static class ModelReader
     {
-        public static Model Load(Vrm10Storage storage, string rootName)
+        static Model Load(Vrm10Storage storage, string rootName)
         {
             if (storage == null)
             {
@@ -68,6 +71,14 @@ namespace UniVRM10
                 }
             }
 
+            return model;
+        }
+
+        public static Model Read(UniGLTF.GltfParser parser)
+        {
+            var storage = new Vrm10Storage(parser);
+            var model = Load(storage, Path.GetFileName(parser.TargetPath));
+            model.ConvertCoordinate(Coordinates.Unity);
             return model;
         }
     }

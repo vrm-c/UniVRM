@@ -96,7 +96,7 @@ namespace UniVRM10
             //
             var externalObjectMap = scriptedImporter.GetExternalObjectMap().ToDictionary(kv => new SubAssetKey(kv.Key.type, kv.Key.name), kv => kv.Value);
 
-            using (var loader = new RuntimeUnityBuilder(parser, externalObjectMap))
+            using (var loader = new Vrm10Importer(parser, externalObjectMap))
             {
                 // settings TextureImporters
                 foreach (var (key, textureInfo) in Vrm10MaterialImporter.EnumerateAllTexturesDistinct(parser))

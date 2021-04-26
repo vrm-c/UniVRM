@@ -8,7 +8,10 @@ using VrmLib;
 
 namespace UniVRM10
 {
-    public class RuntimeVrmConverter
+    /// <summary>
+    /// UnityEngine.GameObject hierarchy => GLTF.Nodes, GLTF.Meshes, GLTF.Skins
+    /// </summary>
+    public class ModelExporter
     {
         public VrmLib.Model Model;
 
@@ -16,15 +19,16 @@ namespace UniVRM10
         public List<UnityEngine.Material> Materials = new List<UnityEngine.Material>();
         public Dictionary<UnityEngine.Mesh, VrmLib.MeshGroup> Meshes = new Dictionary<UnityEngine.Mesh, VrmLib.MeshGroup>();
 
-        #region Export 1.0
         /// <summary>
-        /// metaObject が null のときは、root から取得する
+        /// GameObject to VrmLib.Model
         /// </summary>
+        /// <param name="root"></param>
+        /// <returns></returns>
         public VrmLib.Model ToModelFrom10(GameObject root)
         {
             Model = new VrmLib.Model(VrmLib.Coordinates.Unity);
 
-            ToGlbModel(root);
+            Export(root);
 
             // humanoid
             {
@@ -48,7 +52,7 @@ namespace UniVRM10
             return Model;
         }
 
-        public VrmLib.Model ToGlbModel(GameObject root)
+        VrmLib.Model Export(GameObject root)
         {
             if (Model == null)
             {
@@ -123,9 +127,6 @@ namespace UniVRM10
 
             return Model;
         }
-        #endregion
-
-
 
         private static void CreateNodes(
             Transform parentTransform,
