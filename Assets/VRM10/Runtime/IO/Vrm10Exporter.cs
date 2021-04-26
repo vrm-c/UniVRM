@@ -780,7 +780,7 @@ namespace UniVRM10
 
             // ヒエラルキーからジオメトリーを収集
             var converter = new UniVRM10.ModelExporter();
-            var model = converter.ToModelFrom10(go);
+            var model = converter.Export(go);
 
             // 右手系に変換
             VrmLib.ModelExtensionsForCoordinates.ConvertCoordinate(model, VrmLib.Coordinates.Vrm1);

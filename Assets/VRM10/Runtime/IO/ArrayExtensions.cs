@@ -1,3 +1,4 @@
+using System;
 using System.Numerics;
 
 namespace UniVRM10
@@ -21,6 +22,12 @@ namespace UniVRM10
 
             var v = new Quaternion(src[0], src[1], src[2], src[3]);
             return v;
+        }
+
+        public static T Get<T>(this ArraySegment<T> self, int i)
+        {
+            var index = self.Offset + i;
+            return self.Array[index];
         }
     }
 }

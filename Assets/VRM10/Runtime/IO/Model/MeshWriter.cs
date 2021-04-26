@@ -54,145 +54,131 @@ namespace UniVRM10
             }
         }
 
-        static void ExportMesh(this VrmLib.Mesh mesh, List<object> materials, Vrm10Storage storage, glTFMesh gltfMesh, ExportArgs option)
+        /// <summary>
+        /// https://github.com/vrm-c/UniVRM/issues/800
+        /// 
+        /// SubMesh 単位に分割する。
+        /// SubMesh を Gltf の Primitive に対応させる。
+        /// </summary>
+        /// <param name="mesh"></param>
+        /// <param name="materials"></param>
+        /// <param name="storage"></param>
+        /// <param name="gltfMesh"></param>
+        /// <param name="option"></param>
+        static IEnumerable<glTFPrimitives> ExportMeshDivided(this VrmLib.Mesh mesh, List<object> materials, Vrm10Storage storage, ExportArgs option)
         {
-            //
-            // primitive share vertex buffer
-            //
-            var attributeAccessorIndexMap = mesh.VertexBuffer
-                .ToDictionary(
-                    kv => kv.Key,
-                    kv => kv.Value.AddAccessorTo(
-                        storage, 0, option.sparse,
-                        kv.Key == VertexBuffer.PositionKey ? (Action<ArraySegment<byte>, glTFAccessor>)Vec3MinMax : null
-                    )
-                );
-
-            List<Dictionary<string, int>> morphTargetAccessorIndexMapList = null;
-            if (mesh.MorphTargets.Any())
+            var bufferIndex = 0;
+            var usedIndices = new List<int>();
+            var meshIndices = SpanLike.CopyFrom(mesh.IndexBuffer.GetAsIntArray());
+            var positions = mesh.VertexBuffer.Positions.GetSpan<UnityEngine.Vector3>().ToArray();
+            var normals = mesh.VertexBuffer.Normals.GetSpan<UnityEngine.Vector3>().ToArray();
+            var uv = mesh.VertexBuffer.TexCoords.GetSpan<UnityEngine.Vector2>().ToArray();
+            var hasSkin = mesh.VertexBuffer.Weights != null;
+            var weights = mesh.VertexBuffer.Weights?.GetSpan<UnityEngine.Vector4>().ToArray();
+            var joints = mesh.VertexBuffer.Joints?.GetSpan<SkinJoints>().ToArray();
+            Func<int, int> getJointIndex = default;
+            if (hasSkin)
             {
-                morphTargetAccessorIndexMapList = new List<Dictionary<string, int>>();
-                foreach (var morphTarget in mesh.MorphTargets)
+                getJointIndex = i =>
                 {
-                    var dict = new Dictionary<string, int>();
-
-                    foreach (var kv in morphTarget.VertexBuffer)
-                    {
-                        if (option.removeTangent && kv.Key == VertexBuffer.TangentKey)
-                        {
-                            // remove tangent
-                            continue;
-                        }
-                        if (option.removeMorphNormal && kv.Key == VertexBuffer.NormalKey)
-                        {
-                            // normal normal
-                            continue;
-                        }
-                        if (kv.Value.Count != mesh.VertexBuffer.Count)
-                        {
-                            throw new Exception("inavlid data");
-                        }
-                        var accessorIndex = kv.Value.AddAccessorTo(storage, 0,
-                        option.sparse,
-                        kv.Key == VertexBuffer.PositionKey ? (Action<ArraySegment<byte>, glTFAccessor>)Vec3MinMax : null);
-                        dict.Add(kv.Key, accessorIndex);
-                    }
-
-                    morphTargetAccessorIndexMapList.Add(dict);
-                }
-            }
-
-            var drawCountOffset = 0;
-            foreach (var y in mesh.Submeshes)
-            {
-                // index
-                // slide index buffer accessor
-                var indicesAccessorIndex = ExportIndices(storage, mesh.IndexBuffer, drawCountOffset, y.DrawCount, option);
-                drawCountOffset += y.DrawCount;
-
-                var prim = new glTFPrimitives
-                {
-                    mode = (int)mesh.Topology,
-                    material = y.Material,
-                    indices = indicesAccessorIndex,
-                    attributes = new glTFAttributes(),
+                    return i;
                 };
-                gltfMesh.primitives.Add(prim);
-
-                // attribute
-                foreach (var kv in mesh.VertexBuffer)
-                {
-                    var attributeAccessorIndex = attributeAccessorIndexMap[kv.Key];
-
-                    switch (kv.Key)
-                    {
-                        case VertexBuffer.PositionKey: prim.attributes.POSITION = attributeAccessorIndex; break;
-                        case VertexBuffer.NormalKey: prim.attributes.NORMAL = attributeAccessorIndex; break;
-                        case VertexBuffer.ColorKey: prim.attributes.COLOR_0 = attributeAccessorIndex; break;
-                        case VertexBuffer.TexCoordKey: prim.attributes.TEXCOORD_0 = attributeAccessorIndex; break;
-                        case VertexBuffer.TexCoordKey2: prim.attributes.TEXCOORD_1 = attributeAccessorIndex; break;
-                        case VertexBuffer.JointKey: prim.attributes.JOINTS_0 = attributeAccessorIndex; break;
-                        case VertexBuffer.WeightKey: prim.attributes.WEIGHTS_0 = attributeAccessorIndex; break;
-                    }
-                }
-
-                // morph target
-                if (mesh.MorphTargets.Any())
-                {
-                    foreach (var (t, accessorIndexMap) in
-                        Enumerable.Zip(mesh.MorphTargets, morphTargetAccessorIndexMapList, (t, v) => (t, v)))
-                    {
-                        var target = new gltfMorphTarget();
-                        prim.targets.Add(target);
-
-                        foreach (var kv in t.VertexBuffer)
-                        {
-                            if (!accessorIndexMap.TryGetValue(kv.Key, out int targetAccessorIndex))
-                            {
-                                continue;
-                            }
-                            switch (kv.Key)
-                            {
-                                case VertexBuffer.PositionKey:
-                                    target.POSITION = targetAccessorIndex;
-                                    break;
-                                case VertexBuffer.NormalKey:
-                                    target.NORMAL = targetAccessorIndex;
-                                    break;
-                                case VertexBuffer.TangentKey:
-                                    target.TANGENT = targetAccessorIndex;
-                                    break;
-
-                                default:
-                                    throw new NotImplementedException();
-                            }
-                        }
-                    }
-
-                }
             }
 
-            // target name
-            if (mesh.MorphTargets.Any())
+            foreach (var submesh in mesh.Submeshes)
             {
-                gltf_mesh_extras_targetNames.Serialize(gltfMesh, mesh.MorphTargets.Select(z => z.Name));
+                var indices = meshIndices.Slice(submesh.Offset, submesh.DrawCount).ToArray();
+
+                // mesh
+                // index の順に attributes を蓄える     
+                var buffer = new MeshExportUtil.VertexBuffer(indices.Length, getJointIndex);
+                usedIndices.Clear();
+                for (int k = 0; k < positions.Length; ++k)
+                {
+                    if (indices.Contains(k))
+                    {
+                        // indices から参照される頂点だけを蓄える
+                        usedIndices.Add(k);
+                        buffer.Push(k, positions[k], normals[k], uv[k]);
+                        if (getJointIndex != null)
+                        {
+                            var j = joints[k];
+                            var w = weights[k];
+                            var boneWeight = new UnityEngine.BoneWeight
+                            {
+                                boneIndex0 = j.Joint0,
+                                boneIndex1 = j.Joint1,
+                                boneIndex2 = j.Joint2,
+                                boneIndex3 = j.Joint3,
+                                weight0 = w.x,
+                                weight1 = w.y,
+                                weight2 = w.z,
+                                weight3 = w.w,
+                            };
+                            buffer.Push(boneWeight);
+                        }
+                    }
+                }
+                var materialIndex = submesh.Material;
+                var gltfPrimitive = buffer.ToGltfPrimitive(storage.Gltf, bufferIndex, materialIndex, indices);
+
+                // blendShape
+                for (int j = 0; j < mesh.MorphTargets.Count; ++j)
+                {
+                    var blendShape = new MeshExportUtil.BlendShapeBuffer(indices.Length);
+
+                    // index の順に attributes を蓄える                
+                    var morph = mesh.MorphTargets[j];
+                    var blendShapePositions = morph.VertexBuffer.Positions.GetSpan<UnityEngine.Vector3>();
+                    SpanLike<UnityEngine.Vector3>? blendShapeNormals = default;
+                    if (morph.VertexBuffer.Normals != null)
+                    {
+                        blendShapeNormals = morph.VertexBuffer.Normals.GetSpan<UnityEngine.Vector3>();
+                    }
+                    foreach (var k in usedIndices)
+                    {
+                        blendShape.Push(
+                            blendShapePositions[k],
+                            blendShapeNormals.HasValue ? blendShapeNormals.Value[k] : UnityEngine.Vector3.zero
+                            );
+                    }
+
+                    gltfPrimitive.targets.Add(blendShape.ToGltf(storage.Gltf, bufferIndex, !option.removeMorphNormal));
+                }
+
+                yield return gltfPrimitive;
             }
         }
 
+        /// <summary>
+        /// ModelExporter.Export で作られた Model.MeshGroups[*] を GLTF 化する
+        /// </summary>
+        /// <param name="src"></param>
+        /// <param name="materials"></param>
+        /// <param name="storage"></param>
+        /// <param name="option"></param>
+        /// <returns></returns>
         public static glTFMesh ExportMeshGroup(this MeshGroup src, List<object> materials, Vrm10Storage storage, ExportArgs option)
         {
-            var mesh = new glTFMesh
+            var gltfMesh = new glTFMesh
             {
                 name = src.Name
             };
 
-            foreach (var x in src.Meshes)
+            if (src.Meshes.Count != 1)
             {
-                // MeshとSubmeshがGltfのPrimitiveに相当する？
-                x.ExportMesh(materials, storage, mesh, option);
+                throw new NotImplementedException();
             }
 
-            return mesh;
+            foreach (var prim in src.Meshes[0].ExportMeshDivided(materials, storage, option))
+            {
+                gltfMesh.primitives.Add(prim);
+            }
+
+            var targetNames = src.Meshes[0].MorphTargets.Select(x => x.Name).ToArray();
+            gltf_mesh_extras_targetNames.Serialize(gltfMesh, targetNames);
+
+            return gltfMesh;
         }
     }
 }
