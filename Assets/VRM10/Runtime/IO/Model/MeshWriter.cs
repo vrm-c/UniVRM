@@ -54,6 +54,17 @@ namespace UniVRM10
             }
         }
 
+        /// <summary>
+        /// https://github.com/vrm-c/UniVRM/issues/800
+        /// 
+        /// SubMesh 単位に分割する。
+        /// SubMesh を Gltf の Primitive に対応させる。
+        /// </summary>
+        /// <param name="mesh"></param>
+        /// <param name="materials"></param>
+        /// <param name="storage"></param>
+        /// <param name="gltfMesh"></param>
+        /// <param name="option"></param>
         static void ExportMesh(this VrmLib.Mesh mesh, List<object> materials, Vrm10Storage storage, glTFMesh gltfMesh, ExportArgs option)
         {
             //
@@ -179,6 +190,14 @@ namespace UniVRM10
             }
         }
 
+        /// <summary>
+        /// ModelExporter.Export で作られた Model.MeshGroups[*] を GLTF 化する
+        /// </summary>
+        /// <param name="src"></param>
+        /// <param name="materials"></param>
+        /// <param name="storage"></param>
+        /// <param name="option"></param>
+        /// <returns></returns>
         public static glTFMesh ExportMeshGroup(this MeshGroup src, List<object> materials, Vrm10Storage storage, ExportArgs option)
         {
             var mesh = new glTFMesh
@@ -186,11 +205,12 @@ namespace UniVRM10
                 name = src.Name
             };
 
-            foreach (var x in src.Meshes)
+            if (src.Meshes.Count != 1)
             {
-                // MeshとSubmeshがGltfのPrimitiveに相当する？
-                x.ExportMesh(materials, storage, mesh, option);
+                throw new NotImplementedException();
             }
+
+            src.Meshes[0].ExportMesh(materials, storage, mesh, option);
 
             return mesh;
         }

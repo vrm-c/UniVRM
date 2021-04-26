@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using MeshUtility;
 using UnityEngine;
@@ -24,11 +23,11 @@ namespace UniVRM10
         /// </summary>
         /// <param name="root"></param>
         /// <returns></returns>
-        public VrmLib.Model ToModelFrom10(GameObject root)
+        public VrmLib.Model Export(GameObject root)
         {
             Model = new VrmLib.Model(VrmLib.Coordinates.Unity);
 
-            Export(root);
+            _Export(root);
 
             // humanoid
             {
@@ -52,7 +51,7 @@ namespace UniVRM10
             return Model;
         }
 
-        VrmLib.Model Export(GameObject root)
+        VrmLib.Model _Export(GameObject root)
         {
             if (Model == null)
             {

@@ -50,7 +50,7 @@ namespace UniVRM10.Test
         private Model ToVrmModel(GameObject root)
         {
             var exporter = new UniVRM10.ModelExporter();
-            var model = exporter.ToModelFrom10(root);
+            var model = exporter.Export(root);
 
             model.ConvertCoordinate(VrmLib.Coordinates.Vrm1, ignoreVrm: false);
             return model;
