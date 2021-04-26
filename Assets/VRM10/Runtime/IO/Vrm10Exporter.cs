@@ -128,7 +128,7 @@ namespace UniVRM10
             return new float[] { -v.x, v.y, v.z };
         }
 
-        public void Export(GameObject root, Model model, RuntimeVrmConverter converter, ExportArgs option, Func<Texture2D, (byte[], string)> getTextureBytes, VRM10MetaObject metaObject = null)
+        public void Export(GameObject root, Model model, ModelExporter converter, ExportArgs option, Func<Texture2D, (byte[], string)> getTextureBytes, VRM10MetaObject metaObject = null)
         {
             ExportAsset(model);
 
@@ -211,7 +211,7 @@ namespace UniVRM10
         /// <returns></returns>
         (UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm,
         UniGLTF.Extensions.VRMC_springBone.VRMC_springBone springBone,
-        int? thumbnailIndex) ExportVrm(GameObject root, Model model, RuntimeVrmConverter converter, VRM10MetaObject meta)
+        int? thumbnailIndex) ExportVrm(GameObject root, Model model, ModelExporter converter, VRM10MetaObject meta)
         {
             var vrmController = root?.GetComponent<VRM10Controller>();
 
@@ -307,7 +307,7 @@ namespace UniVRM10
             return joint;
         }
 
-        UniGLTF.Extensions.VRMC_springBone.VRMC_springBone ExportSpringBone(VRM10Controller vrmController, Model model, RuntimeVrmConverter converter)
+        UniGLTF.Extensions.VRMC_springBone.VRMC_springBone ExportSpringBone(VRM10Controller vrmController, Model model, ModelExporter converter)
         {
             var springBone = new UniGLTF.Extensions.VRMC_springBone.VRMC_springBone
             {
@@ -353,7 +353,7 @@ namespace UniVRM10
             return springBone;
         }
 
-        void ExportConstraints(VRM10Controller vrmController, Model model, RuntimeVrmConverter converter)
+        void ExportConstraints(VRM10Controller vrmController, Model model, ModelExporter converter)
         {
             var constraints = vrmController.GetComponentsInChildren<VRM10Constraint>();
             foreach (var constraint in constraints)
@@ -395,7 +395,7 @@ namespace UniVRM10
             };
         }
 
-        static UniGLTF.Extensions.VRMC_node_constraint.VRMC_node_constraint ExportPostionConstraint(VRM10PositionConstraint c, Model model, RuntimeVrmConverter converter)
+        static UniGLTF.Extensions.VRMC_node_constraint.VRMC_node_constraint ExportPostionConstraint(VRM10PositionConstraint c, Model model, ModelExporter converter)
         {
             return new UniGLTF.Extensions.VRMC_node_constraint.VRMC_node_constraint
             {
@@ -413,7 +413,7 @@ namespace UniVRM10
             };
         }
 
-        static UniGLTF.Extensions.VRMC_node_constraint.VRMC_node_constraint ExportRotationConstraint(VRM10RotationConstraint c, Model model, RuntimeVrmConverter converter)
+        static UniGLTF.Extensions.VRMC_node_constraint.VRMC_node_constraint ExportRotationConstraint(VRM10RotationConstraint c, Model model, ModelExporter converter)
         {
             return new UniGLTF.Extensions.VRMC_node_constraint.VRMC_node_constraint
             {
@@ -431,7 +431,7 @@ namespace UniVRM10
             };
         }
 
-        static UniGLTF.Extensions.VRMC_node_constraint.VRMC_node_constraint ExportAimConstraint(VRM10AimConstraint c, Model model, RuntimeVrmConverter converter)
+        static UniGLTF.Extensions.VRMC_node_constraint.VRMC_node_constraint ExportAimConstraint(VRM10AimConstraint c, Model model, ModelExporter converter)
         {
             return new UniGLTF.Extensions.VRMC_node_constraint.VRMC_node_constraint
             {
@@ -457,7 +457,7 @@ namespace UniVRM10
             };
         }
 
-        void ExportFirstPerson(UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm, VRM10Controller vrmController, Model model, RuntimeVrmConverter converter)
+        void ExportFirstPerson(UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm, VRM10Controller vrmController, Model model, ModelExporter converter)
         {
             if (vrmController?.FirstPerson == null)
             {
@@ -540,7 +540,7 @@ namespace UniVRM10
             };
         }
 
-        void ExportExpression(UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm, VRM10Controller vrmController, Model model, RuntimeVrmConverter converter)
+        void ExportExpression(UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm, VRM10Controller vrmController, Model model, ModelExporter converter)
         {
             if (vrmController?.Expression?.ExpressionAvatar?.Clips == null)
             {
@@ -779,7 +779,7 @@ namespace UniVRM10
             }
 
             // ヒエラルキーからジオメトリーを収集
-            var converter = new UniVRM10.RuntimeVrmConverter();
+            var converter = new UniVRM10.ModelExporter();
             var model = converter.ToModelFrom10(go);
 
             // 右手系に変換

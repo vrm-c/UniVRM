@@ -281,7 +281,7 @@ namespace UniVRM10
 
             try
             {
-                var converter = new UniVRM10.RuntimeVrmConverter();
+                var converter = new UniVRM10.ModelExporter();
                 var model = converter.ToModelFrom10(root);
 
                 if (HumanoidValidator.HasRotationOrScale(root))

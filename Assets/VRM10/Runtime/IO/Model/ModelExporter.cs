@@ -8,7 +8,10 @@ using VrmLib;
 
 namespace UniVRM10
 {
-    public class RuntimeVrmConverter
+    /// <summary>
+    /// UnityEngine.GameObject hierarchy => GLTF.Nodes, GLTF.Meshes, GLTF.Skins
+    /// </summary>
+    public class ModelExporter
     {
         public VrmLib.Model Model;
 
@@ -17,8 +20,10 @@ namespace UniVRM10
         public Dictionary<UnityEngine.Mesh, VrmLib.MeshGroup> Meshes = new Dictionary<UnityEngine.Mesh, VrmLib.MeshGroup>();
 
         /// <summary>
-        /// metaObject が null のときは、root から取得する
+        /// GameObject to VrmLib.Model
         /// </summary>
+        /// <param name="root"></param>
+        /// <returns></returns>
         public VrmLib.Model ToModelFrom10(GameObject root)
         {
             Model = new VrmLib.Model(VrmLib.Coordinates.Unity);
