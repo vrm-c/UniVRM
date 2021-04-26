@@ -140,24 +140,28 @@ namespace UniVRM10
             for (int i = 0; i < m_model.MeshGroups.Count; ++i)
             {
                 var src = m_model.MeshGroups[i];
+                UnityEngine.Mesh mesh = default;
                 if (src.Meshes.Count == 1)
                 {
-                    // submesh 方式
-                    var mesh = new UnityEngine.Mesh();
-                    mesh.name = src.Name;
-                    MeshImporter.LoadSharedMesh(mesh, src.Meshes[0], src.Skin);
-                    m_map.Meshes.Add(src, mesh);
-                    Meshes.Add(new MeshWithMaterials
-                    {
-                        Mesh = mesh,
-                        Materials = src.Meshes[0].Submeshes.Select(x => MaterialFactory.Materials[x.Material].Asset).ToArray(),
-                    });
+                    mesh = MeshImporter.LoadSharedMesh(src.Meshes[0], src.Skin);
                 }
                 else
                 {
                     // 頂点バッファの連結が必用
-                    throw new NotImplementedException();
+                    // VRM-1 はこっち
+                    // https://github.com/vrm-c/UniVRM/issues/800
+
+                    mesh = MeshImporterDivided.LoadDivided(src);
                 }
+                mesh.name = src.Name;
+
+                m_map.Meshes.Add(src, mesh);
+                Meshes.Add(new MeshWithMaterials
+                {
+                    Mesh = mesh,
+                    Materials = src.Meshes[0].Submeshes.Select(x => MaterialFactory.Materials[x.Material].Asset).ToArray(),
+                });
+
 
                 await awaitCaller.NextFrame();
             }
@@ -193,11 +197,6 @@ namespace UniVRM10
                 if (node.MeshGroup is null)
                 {
                     continue;
-                }
-
-                if (node.MeshGroup.Meshes.Count > 1)
-                {
-                    throw new NotImplementedException("invalid isolated vertexbuffer");
                 }
 
                 var renderer = CreateRenderer(node, go, map, MaterialFactory.Materials);
