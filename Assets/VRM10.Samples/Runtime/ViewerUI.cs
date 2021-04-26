@@ -311,7 +311,7 @@ namespace UniVRM10.Samples
                         var parser = new UniGLTF.GltfParser();
                         parser.ParsePath(path);
 
-                        using (var loader = new RuntimeUnityBuilder(parser))
+                        using (var loader = new Vrm10Importer(parser))
                         {
                             loader.Load();
                             loader.ShowMeshes();

@@ -13,7 +13,7 @@ namespace UniVRM10
     /// <summary>
     /// VrmLib.Model から UnityPrefab を構築する
     /// </summary>
-    public class RuntimeUnityBuilder : UniGLTF.ImporterContext
+    public class Vrm10Importer : UniGLTF.ImporterContext
     {
         readonly Model m_model;
 
@@ -21,7 +21,7 @@ namespace UniVRM10
 
         IDictionary<SubAssetKey, UnityEngine.Object> m_externalMap;
 
-        public RuntimeUnityBuilder(UniGLTF.GltfParser parser, IDictionary<SubAssetKey, UnityEngine.Object> externalObjectMap = null)
+        public Vrm10Importer(UniGLTF.GltfParser parser, IDictionary<SubAssetKey, UnityEngine.Object> externalObjectMap = null)
         : base(parser, externalObjectMap.Select(kv => (kv.Key.Name, kv.Value)))
         {
             m_externalMap = externalObjectMap;

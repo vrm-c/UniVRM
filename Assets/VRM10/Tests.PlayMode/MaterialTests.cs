@@ -39,7 +39,7 @@ namespace UniVRM10.Test
         private (GameObject, IReadOnlyList<VRMShaders.MaterialFactory.MaterialLoadInfo>) ToUnity(GltfParser parser)
         {
             // Model => Unity
-            using (var loader = new RuntimeUnityBuilder(parser))
+            using (var loader = new Vrm10Importer(parser))
             {
                 loader.Load();
                 loader.DisposeOnGameObjectDestroyed();

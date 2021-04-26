@@ -16,7 +16,7 @@ public class Sample : MonoBehaviour
         var parser = new GltfParser();
         parser.Parse(path.FullName, bytes);
 
-        using (var loader = new RuntimeUnityBuilder(parser))
+        using (var loader = new Vrm10Importer(parser))
         {
             loader.Load();
             loader.ShowMeshes();

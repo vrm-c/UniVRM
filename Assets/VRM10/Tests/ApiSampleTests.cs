@@ -21,7 +21,7 @@ namespace UniVRM10.Test
 
         GameObject BuildGameObject(GltfParser parser, bool showMesh)
         {
-            using (var loader = new RuntimeUnityBuilder(parser))
+            using (var loader = new Vrm10Importer(parser))
             {
                 loader.Load();
                 if (showMesh)
