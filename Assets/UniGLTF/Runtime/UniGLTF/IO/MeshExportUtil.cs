@@ -48,29 +48,57 @@ namespace UniGLTF
 
         public class VertexBuffer
         {
+            /// <summary>
+            /// SubMeshで分割するので index が変わる。対応表
+            /// </summary>
+            /// <typeparam name="int"></typeparam>
+            /// <typeparam name="int"></typeparam>
+            /// <returns></returns>
+            readonly Dictionary<int, int> m_vertexIndexMap = new Dictionary<int, int>();
+            public bool ContainsTriangle(int v0, int v1, int v2)
+            {
+                if (!m_vertexIndexMap.ContainsKey(v0))
+                {
+                    return false;
+                }
+                if (!m_vertexIndexMap.ContainsKey(v1))
+                {
+                    return false;
+                }
+                if (!m_vertexIndexMap.ContainsKey(v2))
+                {
+                    return false;
+                }
+                return true;
+            }
+
             readonly List<Vector3> m_positions;
             readonly List<Vector3> m_normals;
             readonly List<Vector2> m_uv;
 
+            readonly Func<int, int> m_getJointIndex;
             readonly List<UShort4> m_joints;
             readonly List<Vector4> m_weights;
 
-            public VertexBuffer(int reserve, Func<int, int> getJointIndex)
+            public VertexBuffer(int vertexCount, Func<int, int> getJointIndex)
             {
-                m_positions = new List<Vector3>(reserve);
-                m_normals = new List<Vector3>(reserve);
+                m_positions = new List<Vector3>(vertexCount);
+                m_normals = new List<Vector3>(vertexCount);
                 m_uv = new List<Vector2>();
 
-                // m_getJointIndex = getJointIndex;
-                if (getJointIndex != null)
+                m_getJointIndex = getJointIndex;
+                if (m_getJointIndex != null)
                 {
-                    m_joints = new List<UShort4>(reserve);
-                    m_weights = new List<Vector4>(reserve);
+                    m_joints = new List<UShort4>(vertexCount);
+                    m_weights = new List<Vector4>(vertexCount);
                 }
             }
 
-            public void Push(Vector3 position, Vector3 normal, Vector2 uv)
+            public void Push(int index, Vector3 position, Vector3 normal, Vector2 uv)
             {
+                var newIndex = m_positions.Count;
+                m_vertexIndexMap.Add(index, newIndex);
+
                 m_positions.Add(position);
                 m_normals.Add(normal);
                 m_uv.Add(uv);
@@ -82,9 +110,9 @@ namespace UniGLTF
                 m_weights.Add(new Vector4(boneWeight.weight0, boneWeight.weight1, boneWeight.weight2, boneWeight.weight3));
             }
 
-            public glTFPrimitives ToGltf(glTF gltf, int bufferIndex, int materialIndex, IReadOnlyList<uint> indices)
+            public glTFPrimitives ToGltfPrimitive(glTF gltf, int bufferIndex, int materialIndex, IEnumerable<int> indices)
             {
-                var indicesAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, indices.ToArray(), glBufferTarget.ELEMENT_ARRAY_BUFFER);
+                var indicesAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, indices.Select(x => (uint)m_vertexIndexMap[x]).ToArray(), glBufferTarget.ELEMENT_ARRAY_BUFFER);
                 var positionAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, m_positions.ToArray(), glBufferTarget.ARRAY_BUFFER);
                 var normalAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, m_normals.ToArray(), glBufferTarget.ARRAY_BUFFER);
                 var uvAccessorIndex0 = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, m_uv.ToArray(), glBufferTarget.ARRAY_BUFFER);
@@ -114,6 +142,7 @@ namespace UniGLTF
                     material = materialIndex,
                     mode = 4,
                 };
+
                 return primitive;
             }
         }

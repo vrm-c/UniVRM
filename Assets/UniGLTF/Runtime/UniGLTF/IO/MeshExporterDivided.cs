@@ -49,7 +49,7 @@ namespace UniGLTF
                     {
                         // indices から参照される頂点だけを蓄える
                         usedIndices.Add(k);
-                        buffer.Push(axisInverter.InvertVector3(positions[k]), axisInverter.InvertVector3(normals[k]), uv[k].ReverseUV());
+                        buffer.Push(k, axisInverter.InvertVector3(positions[k]), axisInverter.InvertVector3(normals[k]), uv[k].ReverseUV());
                         if (getJointIndex != null)
                         {
                             buffer.Push(boneWeights[k]);
@@ -63,16 +63,18 @@ namespace UniGLTF
                 {
                     materialIndex = unityMaterials.IndexOf(material);
                 }
-                var indexMap = usedIndices.Select((used, index) => (used, index)).ToDictionary(x => x.used, x => (uint)x.index);
 
-                var flipped = new List<uint>();
+                var flipped = new List<int>();
                 for (int j = 0; j < indices.Length; j += 3)
                 {
-                    flipped.Add((uint)indexMap[indices[j + 2]]);
-                    flipped.Add((uint)indexMap[indices[j + 1]]);
-                    flipped.Add((uint)indexMap[indices[j]]);
+                    var t0 = indices[j];
+                    var t1 = indices[j + 1];
+                    var t2 = indices[j + 2];
+                    flipped.Add(t2);
+                    flipped.Add(t1);
+                    flipped.Add(t0);
                 }
-                var gltfPrimitive = buffer.ToGltf(gltf, bufferIndex, materialIndex, flipped);
+                var gltfPrimitive = buffer.ToGltfPrimitive(gltf, bufferIndex, materialIndex, flipped);
 
                 // blendShape
                 for (int j = 0; j < mesh.blendShapeCount; ++j)

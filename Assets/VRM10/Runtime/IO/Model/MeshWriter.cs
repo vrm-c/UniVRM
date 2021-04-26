@@ -99,7 +99,7 @@ namespace UniVRM10
                     {
                         // indices から参照される頂点だけを蓄える
                         usedIndices.Add(k);
-                        buffer.Push(positions[k], normals[k], uv[k]);
+                        buffer.Push(k, positions[k], normals[k], uv[k]);
                         if (getJointIndex != null)
                         {
                             var j = joints[k];
@@ -120,8 +120,7 @@ namespace UniVRM10
                     }
                 }
                 var materialIndex = submesh.Material;
-                var indexMap = usedIndices.Select((used, index) => (used, index)).ToDictionary(x => x.used, x => (uint)x.index);
-                var gltfPrimitive = buffer.ToGltf(storage.Gltf, bufferIndex, materialIndex, indices.Select(x => (uint)x).ToArray());
+                var gltfPrimitive = buffer.ToGltfPrimitive(storage.Gltf, bufferIndex, materialIndex, indices);
 
                 // blendShape
                 for (int j = 0; j < mesh.MorphTargets.Count; ++j)
