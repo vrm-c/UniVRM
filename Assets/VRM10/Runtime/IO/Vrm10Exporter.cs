@@ -542,7 +542,8 @@ namespace UniVRM10
 
         void ExportExpression(UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm, VRM10Controller vrmController, Model model, ModelExporter converter)
         {
-            if (vrmController?.Expression?.ExpressionAvatar?.Clips == null)
+            var expressionAvatar = vrmController.GetComponent<VRM10ExpressionAvatar>();
+            if (expressionAvatar?.Clips == null)
             {
                 return;
             }
@@ -567,7 +568,7 @@ namespace UniVRM10
             };
 
             vrm.Expressions = new List<UniGLTF.Extensions.VRMC_vrm.Expression>();
-            foreach (var e in vrmController.Expression.ExpressionAvatar.Clips)
+            foreach (var e in expressionAvatar.Clips)
             {
                 var vrmExpression = new UniGLTF.Extensions.VRMC_vrm.Expression
                 {
