@@ -8,6 +8,8 @@ namespace UniVRM10
         public Quaternion Rotation;
         public Vector3 Scale;
 
+        public Matrix4x4 Matrix => Matrix4x4.TRS(Translation, Rotation, Scale);
+
         public static TRS GetWorld(Transform t)
         {
             return new TRS

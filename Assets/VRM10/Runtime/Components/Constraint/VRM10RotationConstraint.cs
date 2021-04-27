@@ -34,6 +34,27 @@ namespace UniVRM10
         public Transform ModelRoot = default;
 
         ConstraintSource m_src;
+        public Matrix4x4 GetSourceLocalInit()
+        {
+            if (m_src != null)
+            {
+                var parent = Matrix4x4.identity;
+                if (Source != null && Source.parent != null)
+                {
+                    parent = Source.parent.localToWorldMatrix;
+                }
+                return parent * m_src.LocalInitial.Matrix;
+            }
+            else if (Source != null)
+            {
+                return Source.localToWorldMatrix;
+            }
+            else
+            {
+                return Matrix4x4.identity;
+            }
+        }
+
         public Quaternion Delta
         {
             get;
@@ -41,6 +62,22 @@ namespace UniVRM10
         }
 
         ConstraintDestination m_dst;
+        public Matrix4x4 GetDstLocalInit()
+        {
+            if (m_src != null)
+            {
+                var parent = Matrix4x4.identity;
+                if (transform.parent != null)
+                {
+                    parent = transform.parent.localToWorldMatrix;
+                }
+                return parent * m_dst.LocalInitial.Matrix;
+            }
+            else
+            {
+                return transform.localToWorldMatrix;
+            }
+        }
 
         /// <summary>
         /// Editorで設定値の変更を反映するために、クリアする

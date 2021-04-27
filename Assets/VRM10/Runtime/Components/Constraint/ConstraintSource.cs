@@ -9,14 +9,14 @@ namespace UniVRM10
         public readonly Transform ModelRoot;
         readonly Transform m_transform;
         readonly TRS m_modelInitial;
-        readonly TRS m_localInitial;
+        public readonly TRS LocalInitial;
 
         public Vector3 TranslationDelta(ObjectSpace coords)
         {
             switch (coords)
             {
                 // case ObjectSpace.World: return m_transform.position - m_initial.Translation;
-                case ObjectSpace.local: return m_transform.localPosition - m_localInitial.Translation;
+                case ObjectSpace.local: return m_transform.localPosition - LocalInitial.Translation;
                 case ObjectSpace.model: return ModelRoot.worldToLocalMatrix.MultiplyPoint(m_transform.position) - m_modelInitial.Translation;
                 default: throw new NotImplementedException();
             }
@@ -28,7 +28,7 @@ namespace UniVRM10
             {
                 // 右からかけるか、左からかけるか、それが問題なのだ
                 // case SourceCoordinates.World: return m_transform.rotation * Quaternion.Inverse(m_initial.Rotation);
-                case ObjectSpace.local: return m_transform.localRotation * Quaternion.Inverse(m_localInitial.Rotation);
+                case ObjectSpace.local: return m_transform.localRotation * Quaternion.Inverse(LocalInitial.Rotation);
                 case ObjectSpace.model: return m_transform.rotation * Quaternion.Inverse(ModelRoot.rotation) * Quaternion.Inverse(m_modelInitial.Rotation);
                 default: throw new NotImplementedException();
             }
@@ -39,7 +39,7 @@ namespace UniVRM10
             m_transform = t;
 
             {
-                m_localInitial = TRS.GetLocal(t);
+                LocalInitial = TRS.GetLocal(t);
             }
 
             {

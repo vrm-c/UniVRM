@@ -8,7 +8,7 @@ namespace UniVRM10
     {
         readonly Transform m_transform;
         readonly TRS m_modelInitial;
-        readonly TRS m_localInitial;
+        public readonly TRS LocalInitial;
         public readonly Transform ModelRoot;
 
         public ConstraintDestination(Transform t, Transform modelRoot = null)
@@ -16,7 +16,7 @@ namespace UniVRM10
             ModelRoot = modelRoot;
             m_transform = t;
 
-            m_localInitial = TRS.GetLocal(t);
+            LocalInitial = TRS.GetLocal(t);
             m_modelInitial = TRS.GetRelative(t, modelRoot.worldToLocalMatrix);
         }
 
@@ -30,7 +30,7 @@ namespace UniVRM10
 
                 case ObjectSpace.local:
                     {
-                        var value = m_localInitial.Translation + delta * weight;
+                        var value = LocalInitial.Translation + delta * weight;
                         m_transform.localPosition = value;
                     }
                     break;
@@ -58,7 +58,7 @@ namespace UniVRM10
 
                 case ObjectSpace.local:
                     {
-                        var value = Quaternion.LerpUnclamped(Quaternion.identity, delta, weight) * m_localInitial.Rotation;
+                        var value = Quaternion.LerpUnclamped(Quaternion.identity, delta, weight) * LocalInitial.Rotation;
                         m_transform.localRotation = value;
                     }
                     break;

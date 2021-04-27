@@ -1,3 +1,4 @@
+using System;
 using System.Text;
 using UniGLTF.Extensions.VRMC_node_constraint;
 using UnityEditor;
@@ -36,11 +37,32 @@ namespace UniVRM10
 
         void DrawSrcLocal()
         {
+            Handles.color = Color.green;
+
             // init 
+            Handles.matrix = m_target.GetSourceLocalInit();
+            Handles.CubeHandleCap(0, Vector3.zero, Quaternion.identity, 0.02f, EventType.Repaint);
 
             // current
+            Handles.matrix = m_target.Source.localToWorldMatrix;
+            var size = 0.04f;
+            Handles.DrawWireCube(Vector3.zero, new Vector3(size, size, size));
+        }
 
-            // delta
+        void DrawDstLocal()
+        {
+            Handles.color = Color.red;
+
+            var s = m_target.transform.lossyScale;
+
+            // init 
+            Handles.matrix = m_target.GetDstLocalInit();
+            Handles.CubeHandleCap(0, Vector3.zero, Quaternion.identity, 0.02f / s.x, EventType.Repaint);
+
+            // current
+            Handles.matrix = m_target.transform.localToWorldMatrix;
+            var size = 0.04f / s.x;
+            Handles.DrawWireCube(Vector3.zero, new Vector3(size, size, size));
         }
 
         static GUIStyle s_style;
@@ -84,6 +106,8 @@ namespace UniVRM10
             // show source
             {
                 var sb = new StringBuilder();
+                sb.AppendLine();
+                sb.AppendLine();
                 sb.AppendLine($"source: {m_target.SourceCoordinate}");
                 sb.AppendLine($"{euler.x:0.}");
                 sb.AppendLine($"{euler.y:0.}");
@@ -112,7 +136,20 @@ namespace UniVRM10
                     break;
 
                 default:
-                    throw new System.NotImplementedException();
+                    throw new NotImplementedException();
+            }
+
+            switch (m_target.DestinationCoordinate)
+            {
+                case ObjectSpace.model:
+                    break;
+
+                case ObjectSpace.local:
+                    DrawDstLocal();
+                    break;
+
+                default:
+                    throw new NotImplementedException();
             }
         }
     }
