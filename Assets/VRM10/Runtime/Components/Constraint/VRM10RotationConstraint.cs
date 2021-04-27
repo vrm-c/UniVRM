@@ -23,6 +23,7 @@ namespace UniVRM10
         public ObjectSpace DestinationCoordinate = default;
 
         [SerializeField]
+        [EnumFlags]
         public AxisMask FreezeAxes = default;
 
         [SerializeField]
@@ -33,6 +34,11 @@ namespace UniVRM10
         public Transform ModelRoot = default;
 
         ConstraintSource m_src;
+        public Quaternion Delta
+        {
+            get;
+            private set;
+        }
 
         ConstraintDestination m_dst;
 
@@ -42,8 +48,14 @@ namespace UniVRM10
         void OnValidate()
         {
             // Debug.Log("Validate");
-            m_src = null;
-            m_dst = null;
+            if (m_src != null && m_src.ModelRoot != ModelRoot)
+            {
+                m_src = null;
+            }
+            if (m_dst != null && m_dst.ModelRoot != ModelRoot)
+            {
+                m_dst = null;
+            }
         }
 
         void Reset()
@@ -70,20 +82,20 @@ namespace UniVRM10
 
             if (m_src == null)
             {
-                m_src = new ConstraintSource(Source, SourceCoordinate, ModelRoot);
+                m_src = new ConstraintSource(Source, ModelRoot);
             }
             if (m_dst == null)
             {
-                m_dst = new ConstraintDestination(transform, DestinationCoordinate, ModelRoot);
+                m_dst = new ConstraintDestination(transform, ModelRoot);
             }
 
             // 軸制限をしたオイラー角
-            var delta = m_src.RotationDelta;
-            var fleezed = FreezeAxes.Freeze(delta.eulerAngles);
+            Delta = m_src.RotationDelta(SourceCoordinate);
+            var fleezed = FreezeAxes.Freeze(Delta.eulerAngles);
             var rotation = Quaternion.Euler(fleezed);
             // Debug.Log($"{delta} => {rotation}");
             // オイラー角を再度Quaternionへ。weight を加味してSlerpする
-            m_dst.ApplyRotation(rotation, Weight, ModelRoot);
+            m_dst.ApplyRotation(rotation, Weight, DestinationCoordinate, ModelRoot);
         }
     }
 }

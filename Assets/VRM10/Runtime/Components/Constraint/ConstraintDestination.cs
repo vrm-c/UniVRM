@@ -7,49 +7,39 @@ namespace UniVRM10
     class ConstraintDestination
     {
         readonly Transform m_transform;
-        readonly ObjectSpace m_coords;
+        readonly TRS m_modelInitial;
+        readonly TRS m_localInitial;
+        public readonly Transform ModelRoot;
 
-        readonly TRS m_initial;
-
-        public ConstraintDestination(Transform t, ObjectSpace coords, Transform modelRoot = null)
+        public ConstraintDestination(Transform t, Transform modelRoot = null)
         {
+            ModelRoot = modelRoot;
             m_transform = t;
-            m_coords = coords;
 
-            switch (m_coords)
-            {
-                // case ObjectSpace.World:
-                //     m_initial = TRS.GetWorld(t);
-                //     break;
-
-                case ObjectSpace.local:
-                    m_initial = TRS.GetLocal(t);
-                    break;
-
-                case ObjectSpace.model:
-                    m_initial = TRS.GetRelative(t, modelRoot.worldToLocalMatrix);
-                    break;
-
-                default:
-                    throw new NotImplementedException();
-            }
+            m_localInitial = TRS.GetLocal(t);
+            m_modelInitial = TRS.GetRelative(t, modelRoot.worldToLocalMatrix);
         }
 
-        public void ApplyTranslation(Vector3 delta, float weight, Transform modelRoot = null)
+        public void ApplyTranslation(Vector3 delta, float weight, ObjectSpace coords, Transform modelRoot = null)
         {
-            var value = m_initial.Translation + delta * weight;
-            switch (m_coords)
+            switch (coords)
             {
                 // case DestinationCoordinates.World:
                 //     m_transform.position = value;
                 //     break;
 
                 case ObjectSpace.local:
-                    m_transform.localPosition = value;
+                    {
+                        var value = m_localInitial.Translation + delta * weight;
+                        m_transform.localPosition = value;
+                    }
                     break;
 
                 case ObjectSpace.model:
-                    m_transform.position = modelRoot.localToWorldMatrix.MultiplyPoint(value);
+                    {
+                        var value = m_modelInitial.Translation + delta * weight;
+                        m_transform.position = modelRoot.localToWorldMatrix.MultiplyPoint(value);
+                    }
                     break;
 
                 default:
@@ -57,22 +47,27 @@ namespace UniVRM10
             }
         }
 
-        public void ApplyRotation(Quaternion delta, float weight, Transform modelRoot = null)
+        public void ApplyRotation(Quaternion delta, float weight, ObjectSpace coords, Transform modelRoot = null)
         {
             // 0~1 で clamp しない slerp
-            var value = Quaternion.LerpUnclamped(Quaternion.identity, delta, weight) * m_initial.Rotation;
-            switch (m_coords)
+            switch (coords)
             {
                 // case DestinationCoordinates.World:
                 //     m_transform.rotation = value;
                 //     break;
 
                 case ObjectSpace.local:
-                    m_transform.localRotation = value;
+                    {
+                        var value = Quaternion.LerpUnclamped(Quaternion.identity, delta, weight) * m_localInitial.Rotation;
+                        m_transform.localRotation = value;
+                    }
                     break;
 
                 case ObjectSpace.model:
-                    m_transform.rotation = modelRoot.rotation * value;
+                    {
+                        var value = Quaternion.LerpUnclamped(Quaternion.identity, delta, weight) * m_modelInitial.Rotation;
+                        m_transform.rotation = modelRoot.rotation * value;
+                    }
                     break;
 
                 default:

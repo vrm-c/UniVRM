@@ -38,8 +38,14 @@ namespace UniVRM10
         void OnValidate()
         {
             // Debug.Log("Validate");
-            m_src = null;
-            m_dst = null;
+            if (m_src != null && m_src.ModelRoot != ModelRoot)
+            {
+                m_src = null;
+            }
+            if (m_dst != null && m_dst.ModelRoot != ModelRoot)
+            {
+                m_dst = null;
+            }
         }
 
         void Reset()
@@ -62,15 +68,15 @@ namespace UniVRM10
 
             if (m_src == null)
             {
-                m_src = new ConstraintSource(Source, SourceCoordinate, ModelRoot);
+                m_src = new ConstraintSource(Source, ModelRoot);
             }
             if (m_dst == null)
             {
-                m_dst = new ConstraintDestination(transform, DestinationCoordinate, ModelRoot);
+                m_dst = new ConstraintDestination(transform, ModelRoot);
             }
 
-            var delta = FreezeAxes.Freeze(m_src.TranslationDelta);
-            m_dst.ApplyTranslation(delta, Weight, ModelRoot);
+            var delta = FreezeAxes.Freeze(m_src.TranslationDelta(SourceCoordinate));
+            m_dst.ApplyTranslation(delta, Weight, DestinationCoordinate, ModelRoot);
         }
     }
 }
