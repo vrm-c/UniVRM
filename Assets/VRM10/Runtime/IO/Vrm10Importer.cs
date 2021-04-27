@@ -204,7 +204,7 @@ namespace UniVRM10
 
         UnityEngine.Avatar m_humanoid;
         VRM10MetaObject m_meta;
-        VRM10ExpressionAvatar m_exressionAvatar;
+        List<VRM10Expression> m_expressions = new List<VRM10Expression>();
 
         protected override async Task OnLoadHierarchy(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime)
         {
@@ -291,40 +291,42 @@ namespace UniVRM10
             }
 
             // expression
-            if (m_externalMap.TryGetValue(VRM10ExpressionAvatar.SubAssetKey, out UnityEngine.Object expressionAvatar))
+            if (vrm.Expressions != null)
             {
-                controller.Expression.ExpressionAvatar = expressionAvatar as VRM10ExpressionAvatar;
-            }
-            else if (vrm.Expressions != null)
-            {
-                controller.Expression.ExpressionAvatar = ScriptableObject.CreateInstance<VRM10ExpressionAvatar>();
-
-                m_exressionAvatar = controller.Expression.ExpressionAvatar;
-                m_exressionAvatar.name = VRM10ExpressionAvatar.SubAssetKey.Name;
+                var expressionAvatar = Root.AddComponent<VRM10ExpressionAvatar>();
 
                 foreach (var expression in vrm.Expressions)
                 {
-                    var clip = ScriptableObject.CreateInstance<UniVRM10.VRM10Expression>();
-                    clip.Preset = expression.Preset;
-                    clip.ExpressionName = expression.Name;
-                    clip.name = Key(expression).SubAssetKey.Name;
-                    clip.IsBinary = expression.IsBinary.GetValueOrDefault();
-                    clip.OverrideBlink = expression.OverrideBlink;
-                    clip.OverrideLookAt = expression.OverrideLookAt;
-                    clip.OverrideMouth = expression.OverrideMouth;
+                    VRM10Expression clip = default;
+                    if (m_externalMap.TryGetValue(Key(expression).SubAssetKey, out UnityEngine.Object expressionObj))
+                    {
+                        clip = expressionObj as VRM10Expression;
+                    }
+                    else
+                    {
+                        clip = ScriptableObject.CreateInstance<UniVRM10.VRM10Expression>();
+                        clip.Preset = expression.Preset;
+                        clip.ExpressionName = expression.Name;
+                        clip.name = Key(expression).SubAssetKey.Name;
+                        clip.IsBinary = expression.IsBinary.GetValueOrDefault();
+                        clip.OverrideBlink = expression.OverrideBlink;
+                        clip.OverrideLookAt = expression.OverrideLookAt;
+                        clip.OverrideMouth = expression.OverrideMouth;
 
-                    clip.MorphTargetBindings = expression.MorphTargetBinds.Select(x => x.Build10(Root, m_map, m_model))
-                        .ToArray();
-                    clip.MaterialColorBindings = expression.MaterialColorBinds.Select(x => x.Build10(MaterialFactory.Materials))
-                        .Where(x => x.HasValue)
-                        .Select(x => x.Value)
-                        .ToArray();
-                    clip.MaterialUVBindings = expression.TextureTransformBinds.Select(x => x.Build10(MaterialFactory.Materials))
-                        .Where(x => x.HasValue)
-                        .Select(x => x.Value)
-                        .ToArray();
+                        clip.MorphTargetBindings = expression.MorphTargetBinds.Select(x => x.Build10(Root, m_map, m_model))
+                            .ToArray();
+                        clip.MaterialColorBindings = expression.MaterialColorBinds.Select(x => x.Build10(MaterialFactory.Materials))
+                            .Where(x => x.HasValue)
+                            .Select(x => x.Value)
+                            .ToArray();
+                        clip.MaterialUVBindings = expression.TextureTransformBinds.Select(x => x.Build10(MaterialFactory.Materials))
+                            .Where(x => x.HasValue)
+                            .Select(x => x.Value)
+                            .ToArray();
+                        m_expressions.Add(clip);
+                    }
 
-                    m_exressionAvatar.Clips.Add(clip);
+                    expressionAvatar.Clips.Add(clip);
                 }
             }
 
@@ -606,21 +608,14 @@ namespace UniVRM10
                 }
             }
 
-            if (m_exressionAvatar != null && m_exressionAvatar.Clips != null)
+            foreach (var x in m_expressions)
             {
-                foreach (var x in m_exressionAvatar.Clips)
+                if (take(x))
                 {
-                    if (take(x))
-                    {
-                        // do nothing
-                    }
-                }
-
-                if (take(m_exressionAvatar))
-                {
-                    m_exressionAvatar = null;
+                    // do nothing
                 }
             }
+            m_expressions.Clear();
 
             // GLTF のリソース
             base.TransferOwnership(take);
@@ -639,13 +634,10 @@ namespace UniVRM10
             {
                 destroy(m_meta);
             }
-            if (m_exressionAvatar != null)
+
+            foreach (var clip in m_expressions)
             {
-                foreach (var clip in m_exressionAvatar.Clips)
-                {
-                    destroy(clip);
-                }
-                destroy(m_exressionAvatar);
+                destroy(clip);
             }
 
             base.Dispose();

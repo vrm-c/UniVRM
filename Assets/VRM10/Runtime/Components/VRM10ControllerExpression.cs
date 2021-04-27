@@ -11,8 +11,18 @@ namespace UniVRM10
     {
         public static IExpressionValidatorFactory ExpressionValidatorFactory = new DefaultExpressionValidator.Factory();
 
-        [SerializeField]
-        public VRM10ExpressionAvatar ExpressionAvatar;
+        VRM10ExpressionAvatar m_expressionAvatar;
+        public IEnumerable<VRM10Expression> Clips
+        {
+            get
+            {
+                if (m_expressionAvatar == null || m_expressionAvatar.Clips == null)
+                {
+                    return Enumerable.Empty<VRM10Expression>();
+                }
+                return m_expressionAvatar.Clips;
+            }
+        }
 
         private List<ExpressionKey> _keys = new List<ExpressionKey>();
         private Dictionary<ExpressionKey, float> _inputWeights = new Dictionary<ExpressionKey, float>();
@@ -35,12 +45,13 @@ namespace UniVRM10
 
         internal void Setup(Transform transform, ILookAtEyeDirectionProvider eyeDirectionProvider, ILookAtEyeDirectionApplicable eyeDirectionApplicable)
         {
-            if (ExpressionAvatar == null)
+            m_expressionAvatar = transform.GetComponent<VRM10ExpressionAvatar>();
+            if (m_expressionAvatar == null)
             {
 #if VRM_DEVELOP          
                 if (m_debugCount++ == 0)
                 {
-                    Debug.LogWarning($"{nameof(VRM10ControllerExpression)}.{nameof(ExpressionAvatar)} is null.");
+                    Debug.LogWarning($"{nameof(VRM10ControllerExpression)}.{nameof(m_expressionAvatar)} is null.");
                 }
 #endif                
                 return;
@@ -48,8 +59,8 @@ namespace UniVRM10
 
             Restore();
 
-            _merger = new ExpressionMerger(ExpressionAvatar.Clips, transform);
-            _keys = ExpressionAvatar.Clips.Select(ExpressionKey.CreateFromClip).ToList();
+            _merger = new ExpressionMerger(m_expressionAvatar.Clips, transform);
+            _keys = m_expressionAvatar.Clips.Select(ExpressionKey.CreateFromClip).ToList();
             var oldInputWeights = _inputWeights;
             _inputWeights = _keys.ToDictionary(x => x, x => 0f);
             foreach (var key in _keys)
@@ -58,7 +69,7 @@ namespace UniVRM10
                 if (oldInputWeights.ContainsKey(key)) _inputWeights[key] = oldInputWeights[key];
             }
             _actualWeights = _keys.ToDictionary(x => x, x => 0f);
-            _validator = ExpressionValidatorFactory.Create(ExpressionAvatar);
+            _validator = ExpressionValidatorFactory.Create(m_expressionAvatar);
             _eyeDirectionProvider = eyeDirectionProvider;
             _eyeDirectionApplicable = eyeDirectionApplicable;
         }

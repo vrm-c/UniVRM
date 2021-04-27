@@ -39,15 +39,13 @@ namespace UniVRM10
         void OnEnable()
         {
             m_target = (VRM10Controller)target;
-            if (m_target.Expression.ExpressionAvatar != null && m_target.Expression.ExpressionAvatar.Clips != null)
-            {
-                m_expressionKeyWeights = m_target.Expression.ExpressionAvatar.Clips.ToDictionary(x => ExpressionKey.CreateFromClip(x), x => 0.0f);
-                m_sliders = m_target.Expression.ExpressionAvatar.Clips
-                    .Where(x => x != null)
-                    .Select(x => new ExpressionSlider(m_expressionKeyWeights, ExpressionKey.CreateFromClip(x)))
-                    .ToList()
-                    ;
-            }
+
+            m_expressionKeyWeights = m_target.Expression.Clips.ToDictionary(x => ExpressionKey.CreateFromClip(x), x => 0.0f);
+            m_sliders = m_target.Expression.Clips
+                .Where(x => x != null)
+                .Select(x => new ExpressionSlider(m_expressionKeyWeights, ExpressionKey.CreateFromClip(x)))
+                .ToList()
+                ;
 
             if (m_target?.Meta.Meta != null)
             {
@@ -173,11 +171,6 @@ namespace UniVRM10
             if (!Application.isPlaying)
             {
                 EditorGUILayout.HelpBox("Enable when playing", MessageType.Info);
-            }
-
-            if (m_target.Expression.ExpressionAvatar == null)
-            {
-                return;
             }
 
             if (m_sliders != null)

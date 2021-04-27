@@ -40,9 +40,6 @@ namespace UniVRM10
             // meta
             importer.DrawRemapGUI<VRM10MetaObject>(new SubAssetKey[] { VRM10MetaObject.SubAssetKey });
 
-            // expression avatar
-            importer.DrawRemapGUI<VRM10ExpressionAvatar>(new SubAssetKey[] { VRM10ExpressionAvatar.SubAssetKey });
-
             // expressions
             importer.DrawRemapGUI<VRM10Expression>(vrm.Expressions.Select(x => CreateKey(x).SubAssetKey));
 
