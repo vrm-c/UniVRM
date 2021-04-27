@@ -41,6 +41,9 @@ namespace UniVRM10
                 Modification = UniGLTF.Extensions.VRMC_vrm.ModificationType.prohibited,
             };
 
+            string otherLicenseUrl = default;
+            string otherPermissionUrl = default;
+
             foreach (var kv in vrm0.ObjectItems())
             {
                 var key = kv.Key.GetString();
@@ -124,18 +127,8 @@ namespace UniVRM10
                         }
                         break;
 
-                    case "otherPermissionUrl":
-                        {
-                            // TODO
-                            // var url = kv.Value.GetString();
-                            // if (!String.IsNullOrWhiteSpace(url))
-                            // {
-                            //     throw new NotImplementedException("otherPermissionUrl not allowd");
-                            // }
-                        }
-                        break;
-
-                    case "otherLicenseUrl": meta.OtherLicenseUrl = kv.Value.GetString(); break;
+                    case "otherPermissionUrl": otherPermissionUrl = kv.Value.GetString(); break;
+                    case "otherLicenseUrl": otherLicenseUrl = kv.Value.GetString(); break;
 
                     case "licenseName":
                         {
@@ -146,7 +139,38 @@ namespace UniVRM10
 
                     default:
                         throw new NotImplementedException(key);
+                } // switch
+            } // foreach
+
+            //
+            // OtherLicenseUrl migrate
+            // OtherPermissionURL removed
+            //
+            if (!string.IsNullOrEmpty(otherLicenseUrl) && !string.IsNullOrEmpty(otherPermissionUrl))
+            {
+                if (otherLicenseUrl == otherPermissionUrl)
+                {
+                    // OK
+                    meta.OtherLicenseUrl = otherLicenseUrl;
                 }
+                else
+                {
+                    // different otherLicenseUrl & otherPermissionUrl
+                    throw new MigrationException("otherPermissionUrl", "can not migrate");
+                }
+            }
+            else if (!string.IsNullOrEmpty(otherLicenseUrl))
+            {
+                meta.OtherLicenseUrl = otherLicenseUrl;
+            }
+            else if (!string.IsNullOrEmpty(otherPermissionUrl))
+            {
+                // otherPermissionUrl => otherLicenseUrl
+                meta.OtherLicenseUrl = otherPermissionUrl;
+            }
+            else
+            {
+                // null
             }
 
             return meta;
