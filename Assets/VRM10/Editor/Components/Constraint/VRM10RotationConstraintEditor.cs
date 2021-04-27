@@ -43,7 +43,26 @@ namespace UniVRM10
             // delta
         }
 
-        private GUIStyle _style;
+        static GUIStyle s_style;
+
+        /// <summary>
+        /// Euler各を +- 180 にクランプする
+        /// </summary>
+        /// <param name="v"></param>
+        /// <returns></returns>
+        static Vector3 Clamp180(Vector3 v)
+        {
+            var x = v.x;
+            while (x < -180) x += 360;
+            while (x > 180) x -= 360;
+            var y = v.y;
+            while (y < -180) y += 360;
+            while (y > 180) y -= 360;
+            var z = v.z;
+            while (z < -180) z += 360;
+            while (z > 180) z -= 360;
+            return new Vector3(x, y, z);
+        }
 
         public void OnSceneGUI()
         {
@@ -51,25 +70,36 @@ namespace UniVRM10
             {
                 return;
             }
+            if (s_style == null)
+            {
+                s_style = new GUIStyle("box");
+            }
 
             // this to target line
             Handles.color = Color.yellow;
-            var rot = Quaternion.LookRotation(m_target.Source.position - m_target.transform.position, Vector3.up);
-            var len = (m_target.Source.position - m_target.transform.position).magnitude;
-            Handles.ArrowHandleCap(0, m_target.transform.position, rot, len, EventType.Repaint);
+            Handles.DrawLine(m_target.Source.position, m_target.transform.position);
 
-            // show delta
-            if (_style == null)
+            var euler = Clamp180(m_target.Delta.eulerAngles);
+
+            // show source
             {
-                _style = new GUIStyle("box");
+                var sb = new StringBuilder();
+                sb.AppendLine($"source: {m_target.SourceCoordinate}");
+                sb.AppendLine($"{euler.x:0.}");
+                sb.AppendLine($"{euler.y:0.}");
+                sb.Append($"{euler.z:0.}");
+                Handles.Label(m_target.Source.position, sb.ToString(), s_style);
             }
-            var euler = m_target.Delta.eulerAngles;
-            var sb = new StringBuilder();
-            sb.AppendLine(m_target.SourceCoordinate.ToString());
-            sb.AppendLine(m_target.FreezeAxes.HasFlag(AxisMask.X) ? $"{euler.x:0.} => 0" : $"{euler.x:0.}");
-            sb.AppendLine(m_target.FreezeAxes.HasFlag(AxisMask.Y) ? $"{euler.y:0.} => 0" : $"{euler.y:0.}");
-            sb.AppendLine(m_target.FreezeAxes.HasFlag(AxisMask.Z) ? $"{euler.z:0.} => 0" : $"{euler.z:0.}");
-            Handles.Label(m_target.Source.position, sb.ToString(), _style);
+
+            // show dst
+            {
+                var sb = new StringBuilder();
+                sb.AppendLine($"constraint: {m_target.DestinationCoordinate}");
+                sb.AppendLine(m_target.FreezeAxes.HasFlag(AxisMask.X) ? $"freeze" : $"{euler.x:0.}");
+                sb.AppendLine(m_target.FreezeAxes.HasFlag(AxisMask.Y) ? $"freeze" : $"{euler.y:0.}");
+                sb.Append(m_target.FreezeAxes.HasFlag(AxisMask.Z) ? $"freeze" : $"{euler.z:0.}");
+                Handles.Label(m_target.transform.position, sb.ToString(), s_style);
+            }
 
             switch (m_target.SourceCoordinate)
             {
@@ -85,6 +115,5 @@ namespace UniVRM10
                     throw new System.NotImplementedException();
             }
         }
-
     }
 }
