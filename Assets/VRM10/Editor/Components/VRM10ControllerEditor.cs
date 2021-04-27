@@ -148,7 +148,7 @@ namespace UniVRM10
                     break;
 
                 case Tabs.Expression:
-                    m_expression.RecursiveProperty();
+                    // m_expression.RecursiveProperty();
                     ExpressionGUI();
                     break;
 
