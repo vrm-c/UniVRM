@@ -37,31 +37,29 @@ namespace UniVRM10
 
         void DrawSrcLocal()
         {
-            Handles.color = Color.green;
+            var s = m_target.transform.lossyScale.x;
 
             // init 
-            Handles.matrix = m_target.GetSourceLocalInit();
-            Handles.CubeHandleCap(0, Vector3.zero, Quaternion.identity, 0.02f, EventType.Repaint);
+            Coords.Write(m_target.GetSourceLocalInit(), 0.2f / s);
 
             // current
             Handles.matrix = m_target.Source.localToWorldMatrix;
-            var size = 0.04f;
+            Handles.color = Color.yellow;
+            var size = 0.05f / s;
             Handles.DrawWireCube(Vector3.zero, new Vector3(size, size, size));
         }
 
         void DrawDstLocal()
         {
-            Handles.color = Color.red;
+            var s = m_target.transform.lossyScale.x;
 
-            var s = m_target.transform.lossyScale;
-
-            // init 
-            Handles.matrix = m_target.GetDstLocalInit();
-            Handles.CubeHandleCap(0, Vector3.zero, Quaternion.identity, 0.02f / s.x, EventType.Repaint);
+            // init
+            Coords.Write(m_target.GetDstLocalInit(), 0.2f / s);
 
             // current
             Handles.matrix = m_target.transform.localToWorldMatrix;
-            var size = 0.04f / s.x;
+            Handles.color = Color.yellow;
+            var size = 0.05f / s;
             Handles.DrawWireCube(Vector3.zero, new Vector3(size, size, size));
         }
 
