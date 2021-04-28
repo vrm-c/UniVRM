@@ -269,6 +269,11 @@ namespace UniGLTF
                         {
                             node.mesh = meshIndex;
                         }
+                        else if (mesh != null && !mesh.vertices.Any())
+                        {
+                            // 頂点データが無い場合
+                            node.mesh = -1;
+                        }
                         else
                         {
                             // MeshとMaterialが一致するものが見つからなかった
@@ -286,6 +291,11 @@ namespace UniGLTF
                     {
                         node.mesh = meshIndex;
                         node.skin = skins.IndexOf(skinnedMeshRenderer);
+                    }
+                    else if (mesh != null && !mesh.vertices.Any())
+                    {
+                        // 頂点データが無い場合
+                        node.mesh = -1;
                     }
                     else
                     {
@@ -322,8 +332,15 @@ namespace UniGLTF
                 .Skip(1) // exclude root object for the symmetry with the importer
                 .ToList();
 
+            var unityMeshes = MeshWithRenderer.FromNodes(Nodes).Where(x => x.Mesh.vertices.Any()).ToList();
+            var uniqueUnityMeshes = new List<MeshWithRenderer>();
+            foreach (var um in unityMeshes)
+            {
+                if (!uniqueUnityMeshes.Any(x => x.IsSameMeshAndMaterials(um))) uniqueUnityMeshes.Add(um);
+            }
+
             #region Materials and Textures
-            Materials = Nodes.SelectMany(x => x.GetSharedMaterials()).Where(x => x != null).Distinct().ToList();
+            Materials = uniqueUnityMeshes.SelectMany(x => x.Renderer.sharedMaterials).Where(x => x != null).Distinct().ToList();
             var unityTextures = Materials.SelectMany(x => TextureExporter.GetTextures(x)).Where(x => x.texture != null).Distinct().ToList();
 
             TextureManager = new TextureExportManager(unityTextures.Select(x => x.texture));
@@ -339,13 +356,6 @@ namespace UniGLTF
             #endregion
 
             #region Meshes
-            var unityMeshes = MeshWithRenderer.FromNodes(Nodes).Where(x=> x.Mesh.vertices.Any()).ToList();
-            var uniqueUnityMeshes = new List<MeshWithRenderer>();
-            foreach (var um in unityMeshes)
-            {
-                if (!uniqueUnityMeshes.Any(x => x.IsSameMeshAndMaterials(um))) uniqueUnityMeshes.Add(um);
-            }
-
             MeshBlendShapeIndexMap = new Dictionary<Mesh, Dictionary<int, int>>();
             foreach (var (mesh, gltfMesh, blendShapeIndexMap) in MeshExporter.ExportMeshes(
                     glTF, bufferIndex, uniqueUnityMeshes, Materials, meshExportSettings))
