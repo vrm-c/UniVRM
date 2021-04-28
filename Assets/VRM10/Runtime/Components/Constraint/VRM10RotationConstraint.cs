@@ -41,15 +41,19 @@ namespace UniVRM10
         /// <returns></returns>
         public Matrix4x4 GetSourceModelCoords()
         {
+            Matrix4x4 m = Matrix4x4.identity;
             if (Source != null)
             {
                 if (ModelRoot != null)
                 {
-                    return ModelRoot.localToWorldMatrix * Matrix4x4.Translate(Source.position);
+                    m = Matrix4x4.Rotate(ModelRoot.rotation);
                 }
             }
-
-            return Matrix4x4.identity;
+            if (Source != null)
+            {
+                m *= Matrix4x4.Translate(Source.position);
+            }
+            return m;
         }
 
         /// <summary>
@@ -86,7 +90,16 @@ namespace UniVRM10
         }
 
         ConstraintDestination m_dst;
-        public Matrix4x4 GetDstLocalInit()
+        public Matrix4x4 GetDstModelCoords()
+        {
+            Matrix4x4 m = Matrix4x4.identity;
+            if (ModelRoot != null)
+            {
+                m = Matrix4x4.Rotate(ModelRoot.rotation);
+            }
+            return m * Matrix4x4.Translate(transform.position);
+        }
+        public Matrix4x4 GetDstLocalCoords()
         {
             if (m_src != null)
             {

@@ -59,7 +59,10 @@ namespace UniVRM10
 
         void DstDrawModelCoords()
         {
+            var s = m_target.transform.lossyScale.x;
 
+            // init 
+            Coords.Write(m_target.GetDstModelCoords(), 0.2f / s);
         }
 
         void DstDrawLocalCoords()
@@ -67,7 +70,7 @@ namespace UniVRM10
             var s = m_target.transform.lossyScale.x;
 
             // init
-            Coords.Write(m_target.GetDstLocalInit(), 0.2f / s);
+            Coords.Write(m_target.GetDstLocalCoords(), 0.2f / s);
         }
         #endregion
 
