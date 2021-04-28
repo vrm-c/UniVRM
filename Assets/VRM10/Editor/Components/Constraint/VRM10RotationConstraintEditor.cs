@@ -16,31 +16,10 @@ namespace UniVRM10
             m_target = (VRM10RotationConstraint)target;
         }
 
-        void DrawSrcModel()
-        {
-            var model = m_target.ModelRoot;
-            var src = m_target.Source;
-            if (model == null)
-            {
-                Handles.Label(src.position, "ModelRoot required");
-                return;
-            }
-
-            const float size = 0.05f;
-            Handles.color = Color.red;
-            Handles.DrawLine(src.position, src.position + model.right * size);
-            Handles.color = Color.green;
-            Handles.DrawLine(src.position, src.position + model.up * size);
-            Handles.color = Color.black;
-            Handles.DrawLine(src.position, src.position + model.forward * size);
-        }
-
-        void DrawSrcLocal()
+        #region SRC
+        void SrcDrawCurrent()
         {
             var s = m_target.transform.lossyScale.x;
-
-            // init 
-            Coords.Write(m_target.GetSourceLocalInit(), 0.2f / s);
 
             // current
             Handles.matrix = m_target.Source.localToWorldMatrix;
@@ -49,12 +28,27 @@ namespace UniVRM10
             Handles.DrawWireCube(Vector3.zero, new Vector3(size, size, size));
         }
 
-        void DrawDstLocal()
+        void SrcDrawModelCoords()
         {
             var s = m_target.transform.lossyScale.x;
 
-            // init
-            Coords.Write(m_target.GetDstLocalInit(), 0.2f / s);
+            // init 
+            Coords.Write(m_target.GetSourceModelCoords(), 0.2f / s);
+        }
+
+        void SrcDrawLocalCoords()
+        {
+            var s = m_target.transform.lossyScale.x;
+
+            // init 
+            Coords.Write(m_target.GetSourceLocalCoords(), 0.2f / s);
+        }
+        #endregion
+
+        #region Dst
+        void DstDrawCurrent()
+        {
+            var s = m_target.transform.lossyScale.x;
 
             // current
             Handles.matrix = m_target.transform.localToWorldMatrix;
@@ -62,6 +56,20 @@ namespace UniVRM10
             var size = 0.05f / s;
             Handles.DrawWireCube(Vector3.zero, new Vector3(size, size, size));
         }
+
+        void DstDrawModelCoords()
+        {
+
+        }
+
+        void DstDrawLocalCoords()
+        {
+            var s = m_target.transform.lossyScale.x;
+
+            // init
+            Coords.Write(m_target.GetDstLocalInit(), 0.2f / s);
+        }
+        #endregion
 
         static GUIStyle s_style;
 
@@ -126,29 +134,32 @@ namespace UniVRM10
             switch (m_target.SourceCoordinate)
             {
                 case ObjectSpace.model:
-                    DrawSrcModel();
+                    SrcDrawModelCoords();
                     break;
 
                 case ObjectSpace.local:
-                    DrawSrcLocal();
+                    SrcDrawLocalCoords();
                     break;
 
                 default:
                     throw new NotImplementedException();
             }
+            SrcDrawCurrent();
 
             switch (m_target.DestinationCoordinate)
             {
                 case ObjectSpace.model:
+                    DstDrawModelCoords();
                     break;
 
                 case ObjectSpace.local:
-                    DrawDstLocal();
+                    DstDrawLocalCoords();
                     break;
 
                 default:
                     throw new NotImplementedException();
             }
+            DstDrawCurrent();
         }
     }
 }

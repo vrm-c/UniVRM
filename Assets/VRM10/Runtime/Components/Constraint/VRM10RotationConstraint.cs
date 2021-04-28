@@ -34,25 +34,49 @@ namespace UniVRM10
         public Transform ModelRoot = default;
 
         ConstraintSource m_src;
-        public Matrix4x4 GetSourceLocalInit()
+
+        /// <summary>
+        /// Model の座標系
+        /// </summary>
+        /// <returns></returns>
+        public Matrix4x4 GetSourceModelCoords()
         {
-            if (m_src != null)
+            if (Source != null)
             {
-                var parent = Matrix4x4.identity;
-                if (Source != null && Source.parent != null)
+                if (ModelRoot != null)
                 {
-                    parent = Source.parent.localToWorldMatrix;
+                    return ModelRoot.localToWorldMatrix * Matrix4x4.Translate(Source.position);
                 }
-                return parent * m_src.LocalInitial.Matrix;
             }
-            else if (Source != null)
+
+            return Matrix4x4.identity;
+        }
+
+        /// <summary>
+        /// Local の座標系。つまり親座標系
+        /// </summary>
+        /// <returns></returns>
+        public Matrix4x4 GetSourceLocalCoords()
+        {
+            if (Source != null)
             {
-                return Source.localToWorldMatrix;
+                if (m_src != null)
+                {
+                    // runtime
+                    var parent = Matrix4x4.identity;
+                    if (Source.parent != null)
+                    {
+                        parent = Source.parent.localToWorldMatrix;
+                    }
+                    return parent * m_src.LocalInitial.Matrix;
+                }
+                else
+                {
+                    return Source.localToWorldMatrix;
+                }
             }
-            else
-            {
-                return Matrix4x4.identity;
-            }
+
+            return Matrix4x4.identity;
         }
 
         public Quaternion Delta
@@ -66,6 +90,7 @@ namespace UniVRM10
         {
             if (m_src != null)
             {
+                // runtime
                 var parent = Matrix4x4.identity;
                 if (transform.parent != null)
                 {
