@@ -24,7 +24,6 @@ namespace UniVRM10
             Storage.Gltf.extensionsUsed.Add(UniGLTF.Extensions.VRMC_vrm.VRMC_vrm.ExtensionName);
             Storage.Gltf.extensionsUsed.Add(UniGLTF.Extensions.VRMC_materials_mtoon.VRMC_materials_mtoon.ExtensionName);
             Storage.Gltf.extensionsUsed.Add(UniGLTF.Extensions.VRMC_springBone.VRMC_springBone.ExtensionName);
-            Storage.Gltf.extensionsUsed.Add(UniGLTF.Extensions.VRMC_node_collider.VRMC_node_collider.ExtensionName);
             Storage.Gltf.extensionsUsed.Add(UniGLTF.Extensions.VRMC_node_constraint.VRMC_node_constraint.ExtensionName);
             Storage.Gltf.buffers.Add(new glTFBuffer
             {
@@ -264,14 +263,14 @@ namespace UniVRM10
             return (vrm, vrmSpringBone, thumbnailTextureIndex);
         }
 
-        UniGLTF.Extensions.VRMC_node_collider.ColliderShape ExportShape(VRM10SpringBoneCollider z)
+        UniGLTF.Extensions.VRMC_springBone.ColliderShape ExportShape(VRM10SpringBoneCollider z)
         {
-            var shape = new UniGLTF.Extensions.VRMC_node_collider.ColliderShape();
+            var shape = new UniGLTF.Extensions.VRMC_springBone.ColliderShape();
             switch (z.ColliderType)
             {
                 case VRM10SpringBoneColliderTypes.Sphere:
                     {
-                        shape.Sphere = new UniGLTF.Extensions.VRMC_node_collider.ColliderShapeSphere
+                        shape.Sphere = new UniGLTF.Extensions.VRMC_springBone.ColliderShapeSphere
                         {
                             Radius = z.Radius,
                             Offset = ReverseX(z.Offset),
@@ -281,7 +280,7 @@ namespace UniVRM10
 
                 case VRM10SpringBoneColliderTypes.Capsule:
                     {
-                        shape.Capsule = new UniGLTF.Extensions.VRMC_node_collider.ColliderShapeCapsule
+                        shape.Capsule = new UniGLTF.Extensions.VRMC_springBone.ColliderShapeCapsule
                         {
                             Radius = z.Radius,
                             Offset = new float[] { z.Offset.x, z.Offset.y, z.Offset.z },
@@ -311,43 +310,48 @@ namespace UniVRM10
         {
             var springBone = new UniGLTF.Extensions.VRMC_springBone.VRMC_springBone
             {
+                ColliderGroups = new List<UniGLTF.Extensions.VRMC_springBone.ColliderGroup>(),
                 Springs = new List<UniGLTF.Extensions.VRMC_springBone.Spring>(),
             };
 
-            Func<Transform, int> getIndexFromTransform = t =>
+            Func<Transform, int> getNodeIndexFromTransform = t =>
             {
                 var node = converter.Nodes[t.gameObject];
                 return model.Nodes.IndexOf(node);
             };
+
+            var colliderGroups = vrmController.GetComponentsInChildren<VRM10SpringBoneColliderGroup>();
+            foreach (var x in colliderGroups)
+            {
+                var colliderGroup = new UniGLTF.Extensions.VRMC_springBone.ColliderGroup
+                {
+                    Colliders = new List<UniGLTF.Extensions.VRMC_springBone.Collider>(),
+                };
+                springBone.ColliderGroups.Add(colliderGroup);
+
+                foreach (var y in x.Colliders)
+                {
+                    if (y == null)
+                    {
+                        continue;
+                    }
+                    colliderGroup.Colliders.Add(new UniGLTF.Extensions.VRMC_springBone.Collider
+                    {
+                        Node = getNodeIndexFromTransform(y.transform),
+                        Shape = ExportShape(y),
+                    });
+                }
+            }
 
             foreach (var x in vrmController.GetComponentsInChildren<VRM10SpringBone>())
             {
                 var spring = new UniGLTF.Extensions.VRMC_springBone.Spring
                 {
                     Name = x.Comment,
-                    Joints = x.Joints.Select(y => ExportJoint(y, getIndexFromTransform)).ToList(),
+                    Joints = x.Joints.Select(y => ExportJoint(y, getNodeIndexFromTransform)).ToList(),
+                    ColliderGroups = x.ColliderGroups.Select(y => Array.IndexOf(colliderGroups, y)).ToArray(),
                 };
                 springBone.Springs.Add(spring);
-
-                List<int> colliders = new List<int>();
-                foreach (var y in x.ColliderGroups)
-                {
-                    // node
-                    var node = converter.Nodes[y.gameObject];
-                    var nodeIndex = model.Nodes.IndexOf(node);
-                    colliders.Add(nodeIndex);
-                    var gltfNode = Storage.Gltf.nodes[nodeIndex];
-
-                    // VRMC_node_collider
-                    var collider = new UniGLTF.Extensions.VRMC_node_collider.VRMC_node_collider
-                    {
-                        Shapes = y.Colliders.Select(ExportShape).ToList(),
-                    };
-
-                    // serialize
-                    UniGLTF.Extensions.VRMC_node_collider.GltfSerializer.SerializeTo(ref gltfNode.extensions, collider);
-                }
-                spring.Colliders = colliders.ToArray();
             }
 
             return springBone;
@@ -453,7 +457,7 @@ namespace UniVRM10
             return new UniGLTF.Extensions.VRMC_vrm.MeshAnnotation
             {
                 Node = getIndex(flags.Renderer),
-                FirstPersonType = flags.FirstPersonFlag,
+                Type = flags.FirstPersonFlag,
             };
         }
 
@@ -497,16 +501,16 @@ namespace UniVRM10
 
             vrm.LookAt = new UniGLTF.Extensions.VRMC_vrm.LookAt
             {
-                LookAtType = vrmController.LookAt.LookAtType,
+                Type = vrmController.LookAt.LookAtType,
                 OffsetFromHeadBone = new float[]{
                     vrmController.LookAt.OffsetFromHead.x ,
                     vrmController.LookAt.OffsetFromHead.y ,
                     vrmController.LookAt.OffsetFromHead.z ,
                 },
-                LookAtHorizontalInner = ExportLookAtRangeMap(vrmController.LookAt.HorizontalInner),
-                LookAtHorizontalOuter = ExportLookAtRangeMap(vrmController.LookAt.HorizontalOuter),
-                LookAtVerticalDown = ExportLookAtRangeMap(vrmController.LookAt.VerticalDown),
-                LookAtVerticalUp = ExportLookAtRangeMap(vrmController.LookAt.VerticalUp),
+                RangeMapHorizontalInner = ExportLookAtRangeMap(vrmController.LookAt.HorizontalInner),
+                RangeMapHorizontalOuter = ExportLookAtRangeMap(vrmController.LookAt.HorizontalOuter),
+                RangeMapVerticalDown = ExportLookAtRangeMap(vrmController.LookAt.VerticalDown),
+                RangeMapVerticalUp = ExportLookAtRangeMap(vrmController.LookAt.VerticalUp),
             };
         }
 

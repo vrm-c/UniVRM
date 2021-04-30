@@ -41,11 +41,11 @@ namespace UniVRM10
             // firstPerson に同居していた LookAt は独立します
             var lookAt = new LookAt
             {
-                LookAtHorizontalInner = MigrateLookAtRangeMap(vrm0["lookAtHorizontalInner"]),
-                LookAtHorizontalOuter = MigrateLookAtRangeMap(vrm0["lookAtHorizontalOuter"]),
-                LookAtVerticalDown = MigrateLookAtRangeMap(vrm0["lookAtVerticalDown"]),
-                LookAtVerticalUp = MigrateLookAtRangeMap(vrm0["lookAtVerticalUp"]),
-                LookAtType = MigrateLookAtType(vrm0["lookAtTypeName"]),
+                RangeMapHorizontalInner = MigrateLookAtRangeMap(vrm0["lookAtHorizontalInner"]),
+                RangeMapHorizontalOuter = MigrateLookAtRangeMap(vrm0["lookAtHorizontalOuter"]),
+                RangeMapVerticalDown = MigrateLookAtRangeMap(vrm0["lookAtVerticalDown"]),
+                RangeMapVerticalUp = MigrateLookAtRangeMap(vrm0["lookAtVerticalUp"]),
+                Type = MigrateLookAtType(vrm0["lookAtTypeName"]),
                 OffsetFromHeadBone = MigrateVector3.Migrate(vrm0["firstPersonBoneOffset"]),
             };
 
@@ -75,7 +75,7 @@ namespace UniVRM10
                     var a = new MeshAnnotation
                     {
                         Node = meshIndexToRenderNodeIndex(x["mesh"].GetInt32()),
-                        FirstPersonType = MigrateFirstPersonType(x["firstPersonFlag"]),
+                        Type = MigrateFirstPersonType(x["firstPersonFlag"]),
                     };
                     firstPerson.MeshAnnotations.Add(a);
                 }
