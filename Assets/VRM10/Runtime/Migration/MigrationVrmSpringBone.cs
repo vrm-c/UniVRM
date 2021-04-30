@@ -73,6 +73,7 @@ namespace UniVRM10
                 {
                     colliderGroup.Colliders.Add(new UniGLTF.Extensions.VRMC_springBone.Collider
                     {
+                        Node = x["node"].GetInt32(),
                         Shape = new UniGLTF.Extensions.VRMC_springBone.ColliderShape
                         {
                             Sphere = new UniGLTF.Extensions.VRMC_springBone.ColliderShapeSphere

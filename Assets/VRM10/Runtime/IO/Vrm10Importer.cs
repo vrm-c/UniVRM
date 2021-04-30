@@ -365,6 +365,47 @@ namespace UniVRM10
             // springs
             if (gltfVrmSpringBone.Springs != null)
             {
+                var secondary = Root.transform.Find("secondary");
+                if (secondary == null)
+                {
+                    secondary = new GameObject("secondary").transform;
+                    secondary.SetParent(Root.transform, false);
+                }
+
+                // colliderGroup
+                var list = new List<VRM10SpringBoneColliderGroup>();
+                foreach (var g in gltfVrmSpringBone.ColliderGroups)
+                {
+                    var colliderGroup = secondary.gameObject.AddComponent<VRM10SpringBoneColliderGroup>();
+                    list.Add(colliderGroup);
+
+                    foreach (var c in g.Colliders)
+                    {
+                        var node = Nodes[c.Node.Value];
+
+                        var collider = node.gameObject.AddComponent<VRM10SpringBoneCollider>();
+                        colliderGroup.Colliders.Add(collider);
+
+                        if (c.Shape.Sphere is UniGLTF.Extensions.VRMC_springBone.ColliderShapeSphere sphere)
+                        {
+                            collider.ColliderType = VRM10SpringBoneColliderTypes.Sphere;
+                            collider.Radius = sphere.Radius.Value;
+                            collider.Offset = Vector3InvertX(sphere.Offset);
+                        }
+                        else if (c.Shape.Capsule is UniGLTF.Extensions.VRMC_springBone.ColliderShapeCapsule capsule)
+                        {
+                            collider.ColliderType = VRM10SpringBoneColliderTypes.Capsule;
+                            collider.Radius = capsule.Radius.Value;
+                            collider.Offset = Vector3InvertX(capsule.Offset);
+                            collider.Tail = Vector3InvertX(capsule.Tail);
+                        }
+                        else
+                        {
+                            throw new NotImplementedException();
+                        }
+                    }
+                }
+
                 foreach (var gltfSpring in gltfVrmSpringBone.Springs)
                 {
                     if (gltfSpring.Joints == null || gltfSpring.Joints.Count == 0)
@@ -374,6 +415,7 @@ namespace UniVRM10
                     var firstJointNode = Nodes[gltfSpring.Joints.First().Node.Value];
                     var springBone = firstJointNode.gameObject.AddComponent<VRM10SpringBone>();
                     springBone.Comment = gltfSpring.Name;
+                    springBone.ColliderGroups = gltfSpring.ColliderGroups.Select(x => list[x]).ToList();
 
                     // joint
                     foreach (var gltfJoint in gltfSpring.Joints)
@@ -395,52 +437,6 @@ namespace UniVRM10
                             springBone.Joints.Add(joint);
                         }
                     }
-
-                    // // collider
-                    // springBone.ColliderGroups.AddRange(gltfSpring.ColliderGroups.Select(colliderNode =>
-                    // {
-                    //     if (UniGLTF.Extensions.VRMC_node_collider.GltfDeserializer.TryGet(Parser.GLTF.nodes[colliderNode].extensions,
-                    //         out UniGLTF.Extensions.VRMC_node_collider.VRMC_node_collider extension))
-                    //     {
-                    //         var node = Nodes[colliderNode];
-                    //         var colliderGroup = node.gameObject.GetComponent<VRM10SpringBoneColliderGroup>();
-                    //         if (colliderGroup == null)
-                    //         {
-                    //             colliderGroup = node.gameObject.AddComponent<VRM10SpringBoneColliderGroup>();
-                    //             colliderGroup.Colliders.AddRange(extension.Shapes.Select(x =>
-                    //             {
-                    //                 if (x.Sphere != null)
-                    //                 {
-                    //                     return new VRM10SpringBoneCollider
-                    //                     {
-                    //                         ColliderType = VRM10SpringBoneColliderTypes.Sphere,
-                    //                         Offset = Vector3InvertX(x.Sphere.Offset),
-                    //                         Radius = x.Sphere.Radius.Value,
-                    //                     };
-                    //                 }
-                    //                 else if (x.Capsule != null)
-                    //                 {
-                    //                     return new VRM10SpringBoneCollider
-                    //                     {
-                    //                         ColliderType = VRM10SpringBoneColliderTypes.Capsule,
-                    //                         Offset = Vector3InvertX(x.Capsule.Offset),
-                    //                         Radius = x.Capsule.Radius.Value,
-                    //                         Tail = Vector3InvertX(x.Capsule.Tail),
-                    //                     };
-                    //                 }
-                    //                 else
-                    //                 {
-                    //                     throw new NotImplementedException();
-                    //                 }
-                    //             }));
-                    //         }
-                    //         return colliderGroup;
-                    //     }
-                    //     else
-                    //     {
-                    //         return null;
-                    //     }
-                    // }).Where(x => x != null));
                 }
             }
         }

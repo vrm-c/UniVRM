@@ -314,40 +314,44 @@ namespace UniVRM10
                 Springs = new List<UniGLTF.Extensions.VRMC_springBone.Spring>(),
             };
 
-            Func<Transform, int> getIndexFromTransform = t =>
+            Func<Transform, int> getNodeIndexFromTransform = t =>
             {
                 var node = converter.Nodes[t.gameObject];
                 return model.Nodes.IndexOf(node);
             };
+
+            var colliderGroups = vrmController.GetComponentsInChildren<VRM10SpringBoneColliderGroup>();
+            foreach (var x in colliderGroups)
+            {
+                var colliderGroup = new UniGLTF.Extensions.VRMC_springBone.ColliderGroup
+                {
+                    Colliders = new List<UniGLTF.Extensions.VRMC_springBone.Collider>(),
+                };
+                springBone.ColliderGroups.Add(colliderGroup);
+
+                foreach (var y in x.Colliders)
+                {
+                    if (y == null)
+                    {
+                        continue;
+                    }
+                    colliderGroup.Colliders.Add(new UniGLTF.Extensions.VRMC_springBone.Collider
+                    {
+                        Node = getNodeIndexFromTransform(y.transform),
+                        Shape = ExportShape(y),
+                    });
+                }
+            }
 
             foreach (var x in vrmController.GetComponentsInChildren<VRM10SpringBone>())
             {
                 var spring = new UniGLTF.Extensions.VRMC_springBone.Spring
                 {
                     Name = x.Comment,
-                    Joints = x.Joints.Select(y => ExportJoint(y, getIndexFromTransform)).ToList(),
+                    Joints = x.Joints.Select(y => ExportJoint(y, getNodeIndexFromTransform)).ToList(),
+                    ColliderGroups = x.ColliderGroups.Select(y => Array.IndexOf(colliderGroups, y)).ToArray(),
                 };
                 springBone.Springs.Add(spring);
-
-                List<int> colliders = new List<int>();
-                foreach (var y in x.ColliderGroups)
-                {
-                    // node
-                    var node = converter.Nodes[y.gameObject];
-                    var nodeIndex = model.Nodes.IndexOf(node);
-                    colliders.Add(nodeIndex);
-                    var gltfNode = Storage.Gltf.nodes[nodeIndex];
-
-                    // // VRMC_node_collider
-                    // var collider = new UniGLTF.Extensions.VRMC_node_collider.VRMC_node_collider
-                    // {
-                    //     Shapes = y.Colliders.Select(ExportShape).ToList(),
-                    // };
-
-                    // // serialize
-                    // UniGLTF.Extensions.VRMC_node_collider.GltfSerializer.SerializeTo(ref gltfNode.extensions, collider);
-                }
-                spring.ColliderGroups = colliders.ToArray();
             }
 
             return springBone;
