@@ -48,9 +48,6 @@ namespace UniVRM10
                 // VRMC_materials_mtoon
                 "vrm-specification/specification/VRMC_materials_mtoon-1.0_draft/schema/VRMC_materials_mtoon.schema.json",
                 "Assets/VRM10/Runtime/Format/MaterialsMToon", // dst
-                // VRMC_node_collider
-                "vrm-specification/specification/VRMC_node_collider_1.0_draft/schema/VRMC_node_collider.json",
-                "Assets/VRM10/Runtime/Format/NodeCollider", // dst
                 // VRMC_springBone
                 "vrm-specification/specification/VRMC_springBone-1.0_draft/schema/VRMC_springBone.schema.json",
                 "Assets/VRM10/Runtime/Format/SpringBone", // dst
