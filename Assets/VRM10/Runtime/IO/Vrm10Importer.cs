@@ -12,7 +12,7 @@ namespace UniVRM10
     /// <summary>
     /// VrmLib.Model から UnityPrefab を構築する
     /// </summary>
-    public class RuntimeUnityBuilder : UniGLTF.ImporterContext
+    public class Vrm10Importer : UniGLTF.ImporterContext
     {
         readonly Model m_model;
 
@@ -20,11 +20,15 @@ namespace UniVRM10
 
         IDictionary<SubAssetKey, UnityEngine.Object> m_externalMap;
 
-        public RuntimeUnityBuilder(UniGLTF.GltfParser parser, IDictionary<SubAssetKey, UnityEngine.Object> externalObjectMap = null)
-        : base(parser, externalObjectMap.Select(kv => (kv.Key.Name, kv.Value)))
+        public Vrm10Importer(UniGLTF.GltfParser parser, IDictionary<SubAssetKey, UnityEngine.Object> externalObjectMap = null)
+        : base(parser, externalObjectMap?.Select(kv => (kv.Key.Name, kv.Value)))
         {
             m_externalMap = externalObjectMap;
-            m_model = VrmLoader.CreateVrmModel(parser);
+            if (m_externalMap == null)
+            {
+                m_externalMap = new Dictionary<SubAssetKey, UnityEngine.Object>();
+            }
+            m_model = ModelReader.Read(parser);
 
             // for `VRMC_materials_mtoon`
             this.GltfMaterialImporter.GltfMaterialParamProcessors.Insert(0, Vrm10MaterialImporter.TryCreateParam);
@@ -135,24 +139,27 @@ namespace UniVRM10
             for (int i = 0; i < m_model.MeshGroups.Count; ++i)
             {
                 var src = m_model.MeshGroups[i];
+                UnityEngine.Mesh mesh = default;
                 if (src.Meshes.Count == 1)
                 {
-                    // submesh 方式
-                    var mesh = new UnityEngine.Mesh();
-                    mesh.name = src.Name;
-                    mesh.LoadMesh(src.Meshes[0], src.Skin);
-                    m_map.Meshes.Add(src, mesh);
-                    Meshes.Add(new MeshWithMaterials
-                    {
-                        Mesh = mesh,
-                        Materials = src.Meshes[0].Submeshes.Select(x => MaterialFactory.Materials[x.Material].Asset).ToArray(),
-                    });
+                    mesh = MeshImporter.LoadSharedMesh(src.Meshes[0], src.Skin);
                 }
                 else
                 {
                     // 頂点バッファの連結が必用
-                    throw new NotImplementedException();
+                    // VRM-1 はこっち
+                    // https://github.com/vrm-c/UniVRM/issues/800
+                    mesh = MeshImporterDivided.LoadDivided(src);
                 }
+                mesh.name = src.Name;
+
+                m_map.Meshes.Add(src, mesh);
+                Meshes.Add(new MeshWithMaterials
+                {
+                    Mesh = mesh,
+                    Materials = src.Meshes[0].Submeshes.Select(x => MaterialFactory.Materials[x.Material].Asset).ToArray(),
+                });
+
 
                 await awaitCaller.NextFrame();
             }
@@ -190,19 +197,14 @@ namespace UniVRM10
                     continue;
                 }
 
-                if (node.MeshGroup.Meshes.Count > 1)
-                {
-                    throw new NotImplementedException("invalid isolated vertexbuffer");
-                }
-
-                var renderer = CreateRenderer(node, go, map, MaterialFactory.Materials);
+                CreateRenderer(node, go, map, MaterialFactory.Materials);
                 await awaitCaller.NextFrame();
             }
         }
 
         UnityEngine.Avatar m_humanoid;
         VRM10MetaObject m_meta;
-        VRM10ExpressionAvatar m_exressionAvatar;
+        List<VRM10Expression> m_expressions = new List<VRM10Expression>();
 
         protected override async Task OnLoadHierarchy(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime)
         {
@@ -289,40 +291,42 @@ namespace UniVRM10
             }
 
             // expression
-            if (m_externalMap.TryGetValue(VRM10ExpressionAvatar.SubAssetKey, out UnityEngine.Object expressionAvatar))
+            if (vrm.Expressions != null)
             {
-                controller.Expression.ExpressionAvatar = expressionAvatar as VRM10ExpressionAvatar;
-            }
-            else if (vrm.Expressions != null)
-            {
-                controller.Expression.ExpressionAvatar = ScriptableObject.CreateInstance<VRM10ExpressionAvatar>();
-
-                m_exressionAvatar = controller.Expression.ExpressionAvatar;
-                m_exressionAvatar.name = VRM10ExpressionAvatar.SubAssetKey.Name;
+                var expressionAvatar = Root.AddComponent<VRM10ExpressionAvatar>();
 
                 foreach (var expression in vrm.Expressions)
                 {
-                    var clip = ScriptableObject.CreateInstance<UniVRM10.VRM10Expression>();
-                    clip.Preset = expression.Preset;
-                    clip.ExpressionName = expression.Name;
-                    clip.name = Key(expression).SubAssetKey.Name;
-                    clip.IsBinary = expression.IsBinary.GetValueOrDefault();
-                    clip.OverrideBlink = expression.OverrideBlink;
-                    clip.OverrideLookAt = expression.OverrideLookAt;
-                    clip.OverrideMouth = expression.OverrideMouth;
+                    VRM10Expression clip = default;
+                    if (m_externalMap.TryGetValue(Key(expression).SubAssetKey, out UnityEngine.Object expressionObj))
+                    {
+                        clip = expressionObj as VRM10Expression;
+                    }
+                    else
+                    {
+                        clip = ScriptableObject.CreateInstance<UniVRM10.VRM10Expression>();
+                        clip.Preset = expression.Preset;
+                        clip.ExpressionName = expression.Name;
+                        clip.name = Key(expression).SubAssetKey.Name;
+                        clip.IsBinary = expression.IsBinary.GetValueOrDefault();
+                        clip.OverrideBlink = expression.OverrideBlink;
+                        clip.OverrideLookAt = expression.OverrideLookAt;
+                        clip.OverrideMouth = expression.OverrideMouth;
 
-                    clip.MorphTargetBindings = expression.MorphTargetBinds.Select(x => x.Build10(Root, m_map, m_model))
-                        .ToArray();
-                    clip.MaterialColorBindings = expression.MaterialColorBinds.Select(x => x.Build10(MaterialFactory.Materials))
-                        .Where(x => x.HasValue)
-                        .Select(x => x.Value)
-                        .ToArray();
-                    clip.MaterialUVBindings = expression.TextureTransformBinds.Select(x => x.Build10(MaterialFactory.Materials))
-                        .Where(x => x.HasValue)
-                        .Select(x => x.Value)
-                        .ToArray();
+                        clip.MorphTargetBindings = expression.MorphTargetBinds.Select(x => x.Build10(Root, m_map, m_model))
+                            .ToArray();
+                        clip.MaterialColorBindings = expression.MaterialColorBinds.Select(x => x.Build10(MaterialFactory.Materials))
+                            .Where(x => x.HasValue)
+                            .Select(x => x.Value)
+                            .ToArray();
+                        clip.MaterialUVBindings = expression.TextureTransformBinds.Select(x => x.Build10(MaterialFactory.Materials))
+                            .Where(x => x.HasValue)
+                            .Select(x => x.Value)
+                            .ToArray();
+                        m_expressions.Add(clip);
+                    }
 
-                    m_exressionAvatar.Clips.Add(clip);
+                    expressionAvatar.Clips.Add(clip);
                 }
             }
 
@@ -330,12 +334,12 @@ namespace UniVRM10
             if (vrm.LookAt != null)
             {
                 var src = vrm.LookAt;
-                controller.LookAt.LookAtType = src.LookAtType;
+                controller.LookAt.LookAtType = src.Type;
                 controller.LookAt.OffsetFromHead = new Vector3(src.OffsetFromHeadBone[0], src.OffsetFromHeadBone[1], src.OffsetFromHeadBone[2]);
-                controller.LookAt.HorizontalInner = new CurveMapper(src.LookAtHorizontalInner.InputMaxValue.Value, src.LookAtHorizontalInner.OutputScale.Value);
-                controller.LookAt.HorizontalOuter = new CurveMapper(src.LookAtHorizontalOuter.InputMaxValue.Value, src.LookAtHorizontalOuter.OutputScale.Value);
-                controller.LookAt.VerticalUp = new CurveMapper(src.LookAtVerticalUp.InputMaxValue.Value, src.LookAtHorizontalOuter.OutputScale.Value);
-                controller.LookAt.VerticalDown = new CurveMapper(src.LookAtVerticalDown.InputMaxValue.Value, src.LookAtHorizontalOuter.OutputScale.Value);
+                controller.LookAt.HorizontalInner = new CurveMapper(src.RangeMapHorizontalInner.InputMaxValue.Value, src.RangeMapHorizontalInner.OutputScale.Value);
+                controller.LookAt.HorizontalOuter = new CurveMapper(src.RangeMapHorizontalOuter.InputMaxValue.Value, src.RangeMapHorizontalOuter.OutputScale.Value);
+                controller.LookAt.VerticalUp = new CurveMapper(src.RangeMapVerticalUp.InputMaxValue.Value, src.RangeMapVerticalUp.OutputScale.Value);
+                controller.LookAt.VerticalDown = new CurveMapper(src.RangeMapVerticalDown.InputMaxValue.Value, src.RangeMapVerticalDown.OutputScale.Value);
             }
 
             // firstPerson
@@ -347,7 +351,7 @@ namespace UniVRM10
                     var node = Nodes[x.Node.Value];
                     controller.FirstPerson.Renderers.Add(new RendererFirstPersonFlags
                     {
-                        FirstPersonFlag = x.FirstPersonType,
+                        FirstPersonFlag = x.Type,
                         Renderer = node.GetComponent<Renderer>()
                     });
                 }
@@ -361,6 +365,47 @@ namespace UniVRM10
             // springs
             if (gltfVrmSpringBone.Springs != null)
             {
+                var secondary = Root.transform.Find("secondary");
+                if (secondary == null)
+                {
+                    secondary = new GameObject("secondary").transform;
+                    secondary.SetParent(Root.transform, false);
+                }
+
+                // colliderGroup
+                var list = new List<VRM10SpringBoneColliderGroup>();
+                foreach (var g in gltfVrmSpringBone.ColliderGroups)
+                {
+                    var colliderGroup = secondary.gameObject.AddComponent<VRM10SpringBoneColliderGroup>();
+                    list.Add(colliderGroup);
+
+                    foreach (var c in g.Colliders)
+                    {
+                        var node = Nodes[c.Node.Value];
+
+                        var collider = node.gameObject.AddComponent<VRM10SpringBoneCollider>();
+                        colliderGroup.Colliders.Add(collider);
+
+                        if (c.Shape.Sphere is UniGLTF.Extensions.VRMC_springBone.ColliderShapeSphere sphere)
+                        {
+                            collider.ColliderType = VRM10SpringBoneColliderTypes.Sphere;
+                            collider.Radius = sphere.Radius.Value;
+                            collider.Offset = Vector3InvertX(sphere.Offset);
+                        }
+                        else if (c.Shape.Capsule is UniGLTF.Extensions.VRMC_springBone.ColliderShapeCapsule capsule)
+                        {
+                            collider.ColliderType = VRM10SpringBoneColliderTypes.Capsule;
+                            collider.Radius = capsule.Radius.Value;
+                            collider.Offset = Vector3InvertX(capsule.Offset);
+                            collider.Tail = Vector3InvertX(capsule.Tail);
+                        }
+                        else
+                        {
+                            throw new NotImplementedException();
+                        }
+                    }
+                }
+
                 foreach (var gltfSpring in gltfVrmSpringBone.Springs)
                 {
                     if (gltfSpring.Joints == null || gltfSpring.Joints.Count == 0)
@@ -370,6 +415,7 @@ namespace UniVRM10
                     var firstJointNode = Nodes[gltfSpring.Joints.First().Node.Value];
                     var springBone = firstJointNode.gameObject.AddComponent<VRM10SpringBone>();
                     springBone.Comment = gltfSpring.Name;
+                    springBone.ColliderGroups = gltfSpring.ColliderGroups.Select(x => list[x]).ToList();
 
                     // joint
                     foreach (var gltfJoint in gltfSpring.Joints)
@@ -391,52 +437,6 @@ namespace UniVRM10
                             springBone.Joints.Add(joint);
                         }
                     }
-
-                    // collider
-                    springBone.ColliderGroups.AddRange(gltfSpring.Colliders.Select(colliderNode =>
-                    {
-                        if (UniGLTF.Extensions.VRMC_node_collider.GltfDeserializer.TryGet(Parser.GLTF.nodes[colliderNode].extensions,
-                            out UniGLTF.Extensions.VRMC_node_collider.VRMC_node_collider extension))
-                        {
-                            var node = Nodes[colliderNode];
-                            var colliderGroup = node.gameObject.GetComponent<VRM10SpringBoneColliderGroup>();
-                            if (colliderGroup == null)
-                            {
-                                colliderGroup = node.gameObject.AddComponent<VRM10SpringBoneColliderGroup>();
-                                colliderGroup.Colliders.AddRange(extension.Shapes.Select(x =>
-                                {
-                                    if (x.Sphere != null)
-                                    {
-                                        return new VRM10SpringBoneCollider
-                                        {
-                                            ColliderType = VRM10SpringBoneColliderTypes.Sphere,
-                                            Offset = Vector3InvertX(x.Sphere.Offset),
-                                            Radius = x.Sphere.Radius.Value,
-                                        };
-                                    }
-                                    else if (x.Capsule != null)
-                                    {
-                                        return new VRM10SpringBoneCollider
-                                        {
-                                            ColliderType = VRM10SpringBoneColliderTypes.Capsule,
-                                            Offset = Vector3InvertX(x.Capsule.Offset),
-                                            Radius = x.Capsule.Radius.Value,
-                                            Tail = Vector3InvertX(x.Capsule.Tail),
-                                        };
-                                    }
-                                    else
-                                    {
-                                        throw new NotImplementedException();
-                                    }
-                                }));
-                            }
-                            return colliderGroup;
-                        }
-                        else
-                        {
-                            return null;
-                        }
-                    }).Where(x => x != null));
                 }
             }
         }
@@ -547,10 +547,8 @@ namespace UniVRM10
         public static Renderer CreateRenderer(VrmLib.Node node, GameObject go, ModelMap map,
             IReadOnlyList<VRMShaders.MaterialFactory.MaterialLoadInfo> materialLoadInfos)
         {
-            var mesh = node.MeshGroup.Meshes[0];
-
             Renderer renderer = null;
-            var hasBlendShape = mesh.MorphTargets.Any();
+            var hasBlendShape = node.MeshGroup.Meshes[0].MorphTargets.Any();
             if (node.MeshGroup.Skin != null || hasBlendShape)
             {
                 var skinnedMeshRenderer = go.AddComponent<SkinnedMeshRenderer>();
@@ -571,8 +569,21 @@ namespace UniVRM10
                 renderer = go.AddComponent<MeshRenderer>();
                 meshFilter.sharedMesh = map.Meshes[node.MeshGroup];
             }
-            var materials = mesh.Submeshes.Select(x => materialLoadInfos[x.Material].Asset).ToArray();
-            renderer.sharedMaterials = materials;
+
+            if (node.MeshGroup.Meshes.Count == 0)
+            {
+                throw new NotImplementedException();
+            }
+            else if (node.MeshGroup.Meshes.Count == 1)
+            {
+                var materials = node.MeshGroup.Meshes[0].Submeshes.Select(x => materialLoadInfos[x.Material].Asset).ToArray();
+                renderer.sharedMaterials = materials;
+            }
+            else
+            {
+                var materials = node.MeshGroup.Meshes.Select(x => materialLoadInfos[x.Submeshes[0].Material].Asset).ToArray();
+                renderer.sharedMaterials = materials;
+            }
 
             return renderer;
         }
@@ -593,21 +604,14 @@ namespace UniVRM10
                 }
             }
 
-            if (m_exressionAvatar != null && m_exressionAvatar.Clips != null)
+            foreach (var x in m_expressions)
             {
-                foreach (var x in m_exressionAvatar.Clips)
+                if (take(x))
                 {
-                    if (take(x))
-                    {
-                        // do nothing
-                    }
-                }
-
-                if (take(m_exressionAvatar))
-                {
-                    m_exressionAvatar = null;
+                    // do nothing
                 }
             }
+            m_expressions.Clear();
 
             // GLTF のリソース
             base.TransferOwnership(take);
@@ -626,13 +630,10 @@ namespace UniVRM10
             {
                 destroy(m_meta);
             }
-            if (m_exressionAvatar != null)
+
+            foreach (var clip in m_expressions)
             {
-                foreach (var clip in m_exressionAvatar.Clips)
-                {
-                    destroy(clip);
-                }
-                destroy(m_exressionAvatar);
+                destroy(clip);
             }
 
             base.Dispose();

@@ -10,11 +10,8 @@ using UnityEditor;
 
 namespace UniVRM10
 {
-    [CreateAssetMenu(menuName = "VRM10/ExpressionAvatar")]
-    public sealed class VRM10ExpressionAvatar : ScriptableObject
+    public sealed class VRM10ExpressionAvatar : MonoBehaviour
     {
-        public static UniGLTF.SubAssetKey SubAssetKey => new UniGLTF.SubAssetKey(typeof(VRM10ExpressionAvatar), "ExpressionAvatar");
-
         [SerializeField]
         public List<VRM10Expression> Clips = new List<VRM10Expression>();
 

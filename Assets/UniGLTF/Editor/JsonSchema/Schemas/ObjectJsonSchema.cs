@@ -71,6 +71,8 @@ public static $0 $2(JsonNode parsed)
 .Replace("$2", callName)
 );
 
+            var prefix = string.IsNullOrEmpty(ClassName) ? "Deserialize_" : $"{ClassName}_Deserialize_";
+
             foreach (var kv in Properties)
             {
                 writer.Write(@"
@@ -80,7 +82,7 @@ public static $0 $2(JsonNode parsed)
         }
 "
 .Replace("$0", kv.Key)
-.Replace("$1", kv.Value.GenerateDeserializerCall($"Deserialize_{kv.Key.ToUpperCamel()}", "kv.Value"))
+.Replace("$1", kv.Value.GenerateDeserializerCall($"{prefix}{kv.Key.ToUpperCamel()}", "kv.Value"))
 .Replace("$2", kv.Key.ToUpperCamel())
 );
             }
@@ -95,7 +97,7 @@ public static $0 $2(JsonNode parsed)
             {
                 if (!kv.Value.IsInline)
                 {
-                    kv.Value.GenerateDeserializer(writer, $"Deserialize_{kv.Key.ToUpperCamel()}");
+                    kv.Value.GenerateDeserializer(writer, $"{prefix}{kv.Key.ToUpperCamel()}");
                 }
             }
         }
@@ -131,6 +133,9 @@ public static void {callName}(JsonFormatter f, {ValueType} value)
 "
 );
 
+
+            var prefix = string.IsNullOrEmpty(ClassName) ? "Serialize_" : $"{ClassName}_Serialize_";
+
             foreach (var kv in Properties)
             {
                 var valueName = $"value.{kv.Key.ToUpperCamel()}";
@@ -138,7 +143,7 @@ public static void {callName}(JsonFormatter f, {ValueType} value)
                 writer.Write($@"
     if({kv.Value.CreateSerializationCondition(valueName)}{condition}){{
         f.Key(""{kv.Key}"");                
-        {kv.Value.GenerateSerializerCall($"Serialize_{kv.Key.ToUpperCamel()}", valueName)};
+        {kv.Value.GenerateSerializerCall($"{prefix}{kv.Key.ToUpperCamel()}", valueName)};
     }}
 ");
             }
@@ -152,7 +157,7 @@ public static void {callName}(JsonFormatter f, {ValueType} value)
             {
                 if (!kv.Value.IsInline)
                 {
-                    kv.Value.GenerateSerializer(writer, $"Serialize_{kv.Key.ToUpperCamel()}");
+                    kv.Value.GenerateSerializer(writer, $"{prefix}{kv.Key.ToUpperCamel()}");
                 }
             }
         }

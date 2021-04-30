@@ -1,13 +1,21 @@
 ﻿using System;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace UniVRM10
 {
-    public static class MeshLoader
+    public static class MeshImporter
     {
-        public static void LoadMesh(this Mesh mesh, VrmLib.Mesh src, VrmLib.Skin skin = null)
+        /// <summary>
+        /// VrmLib.Mesh => UnityEngine.Mesh
+        /// </summary>
+        /// <param name="mesh"></param>
+        /// <param name="src"></param>
+        /// <param name="skin"></param>
+        public static UnityEngine.Mesh LoadSharedMesh(VrmLib.Mesh src, VrmLib.Skin skin = null)
         {
+            // submesh 方式
+            var mesh = new UnityEngine.Mesh();
+
             mesh.vertices = src.VertexBuffer.Positions.GetSpan<Vector3>().ToArray();
             mesh.normals = src.VertexBuffer.Normals?.GetSpan<Vector3>().ToArray();
             mesh.uv = src.VertexBuffer.TexCoords?.GetSpan<Vector2>().ToArray();
@@ -65,6 +73,8 @@ namespace UniVRM10
 
             mesh.RecalculateBounds();
             mesh.RecalculateTangents();
+
+            return mesh;
         }
     }
 }

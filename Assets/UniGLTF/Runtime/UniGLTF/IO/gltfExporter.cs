@@ -208,8 +208,15 @@ namespace UniGLTF
                 .Skip(1) // exclude root object for the symmetry with the importer
                 .ToList();
 
+            var unityMeshes = MeshWithRenderer.FromNodes(Nodes).Where(x => x.Mesh.vertices.Any()).ToList();
+            var uniqueUnityMeshes = new List<MeshWithRenderer>();
+            foreach (var um in unityMeshes)
+            {
+                if (!uniqueUnityMeshes.Any(x => x.IsSameMeshAndMaterials(um))) uniqueUnityMeshes.Add(um);
+            }
+
             #region Materials and Textures
-            Materials = Nodes.SelectMany(x => x.GetSharedMaterials()).Where(x => x != null).Distinct().ToList();
+            Materials = uniqueUnityMeshes.SelectMany(x => x.Renderer.sharedMaterials).Where(x => x != null).Distinct().ToList();
 
             TextureManager = new TextureExporter(useAsset);
 
@@ -218,13 +225,6 @@ namespace UniGLTF
             #endregion
 
             #region Meshes
-            var unityMeshes = MeshWithRenderer.FromNodes(Nodes).Where(x => x.Mesh.vertices.Any()).ToList();
-            var uniqueUnityMeshes = new List<MeshWithRenderer>();
-            foreach (var um in unityMeshes)
-            {
-                if (!uniqueUnityMeshes.Any(x => x.IsSameMeshAndMaterials(um))) uniqueUnityMeshes.Add(um);
-            }
-
             MeshBlendShapeIndexMap = new Dictionary<Mesh, Dictionary<int, int>>();
             foreach (var unityMesh in uniqueUnityMeshes)
             {

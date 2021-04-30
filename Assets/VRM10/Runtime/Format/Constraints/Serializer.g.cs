@@ -68,23 +68,23 @@ public static void Serialize_Constraint(JsonFormatter f, Constraint value)
 
     if(value.Position!=null){
         f.Key("position");                
-        Serialize_Position(f, value.Position);
+        __constraint_Serialize_Position(f, value.Position);
     }
 
     if(value.Rotation!=null){
         f.Key("rotation");                
-        Serialize_Rotation(f, value.Rotation);
+        __constraint_Serialize_Rotation(f, value.Rotation);
     }
 
     if(value.Aim!=null){
         f.Key("aim");                
-        Serialize_Aim(f, value.Aim);
+        __constraint_Serialize_Aim(f, value.Aim);
     }
 
     f.EndMap();
 }
 
-public static void Serialize_Position(JsonFormatter f, PositionConstraint value)
+public static void __constraint_Serialize_Position(JsonFormatter f, PositionConstraint value)
 {
     f.BeginMap();
 
@@ -121,7 +121,7 @@ public static void Serialize_Position(JsonFormatter f, PositionConstraint value)
 
     if(value.FreezeAxes!=null&&value.FreezeAxes.Count()>=3){
         f.Key("freezeAxes");                
-        Serialize_FreezeAxes(f, value.FreezeAxes);
+        __constraint__position_Serialize_FreezeAxes(f, value.FreezeAxes);
     }
 
     if(value.Weight.HasValue){
@@ -132,7 +132,7 @@ public static void Serialize_Position(JsonFormatter f, PositionConstraint value)
     f.EndMap();
 }
 
-public static void Serialize_FreezeAxes(JsonFormatter f, bool[] value)
+public static void __constraint__position_Serialize_FreezeAxes(JsonFormatter f, bool[] value)
 {
     f.BeginList();
 
@@ -144,7 +144,7 @@ public static void Serialize_FreezeAxes(JsonFormatter f, bool[] value)
     f.EndList();
 }
 
-public static void Serialize_Rotation(JsonFormatter f, RotationConstraint value)
+public static void __constraint_Serialize_Rotation(JsonFormatter f, RotationConstraint value)
 {
     f.BeginMap();
 
@@ -181,7 +181,7 @@ public static void Serialize_Rotation(JsonFormatter f, RotationConstraint value)
 
     if(value.FreezeAxes!=null&&value.FreezeAxes.Count()>=3){
         f.Key("freezeAxes");                
-        Serialize_FreezeAxes(f, value.FreezeAxes);
+        __constraint__rotation_Serialize_FreezeAxes(f, value.FreezeAxes);
     }
 
     if(value.Weight.HasValue){
@@ -192,7 +192,19 @@ public static void Serialize_Rotation(JsonFormatter f, RotationConstraint value)
     f.EndMap();
 }
 
-public static void Serialize_Aim(JsonFormatter f, AimConstraint value)
+public static void __constraint__rotation_Serialize_FreezeAxes(JsonFormatter f, bool[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
+}
+
+public static void __constraint_Serialize_Aim(JsonFormatter f, AimConstraint value)
 {
     f.BeginMap();
 
@@ -229,17 +241,17 @@ public static void Serialize_Aim(JsonFormatter f, AimConstraint value)
 
     if(value.AimVector!=null&&value.AimVector.Count()>=3){
         f.Key("aimVector");                
-        Serialize_AimVector(f, value.AimVector);
+        __constraint__aim_Serialize_AimVector(f, value.AimVector);
     }
 
     if(value.UpVector!=null&&value.UpVector.Count()>=3){
         f.Key("upVector");                
-        Serialize_UpVector(f, value.UpVector);
+        __constraint__aim_Serialize_UpVector(f, value.UpVector);
     }
 
     if(value.FreezeAxes!=null&&value.FreezeAxes.Count()>=2){
         f.Key("freezeAxes");                
-        Serialize_FreezeAxes(f, value.FreezeAxes);
+        __constraint__aim_Serialize_FreezeAxes(f, value.FreezeAxes);
     }
 
     if(value.Weight.HasValue){
@@ -250,7 +262,7 @@ public static void Serialize_Aim(JsonFormatter f, AimConstraint value)
     f.EndMap();
 }
 
-public static void Serialize_AimVector(JsonFormatter f, float[] value)
+public static void __constraint__aim_Serialize_AimVector(JsonFormatter f, float[] value)
 {
     f.BeginList();
 
@@ -262,7 +274,19 @@ public static void Serialize_AimVector(JsonFormatter f, float[] value)
     f.EndList();
 }
 
-public static void Serialize_UpVector(JsonFormatter f, float[] value)
+public static void __constraint__aim_Serialize_UpVector(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
+}
+
+public static void __constraint__aim_Serialize_FreezeAxes(JsonFormatter f, bool[] value)
 {
     f.BeginList();
 

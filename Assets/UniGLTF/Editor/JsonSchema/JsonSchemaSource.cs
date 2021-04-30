@@ -265,7 +265,7 @@ namespace UniGLTF.JsonSchema
 
         public void Dump(StringBuilder sb, string indent = "")
         {
-            sb.AppendLine($"{indent}{JsonPath}: {type}");
+            sb.AppendLine($"{JsonPath}: {type}");
 
             foreach (var x in Children())
             {
