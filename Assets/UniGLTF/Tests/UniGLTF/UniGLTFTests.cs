@@ -5,10 +5,7 @@ using System.Linq;
 using UniJSON;
 using UnityEngine;
 using VRMShaders;
-
-#if GLTF_TESTS_PECULIAR_NODES
 using TMPro;
-#endif
 
 namespace UniGLTF
 {
@@ -605,7 +602,7 @@ namespace UniGLTF
         }
 
         [Test]
-        public void SameMeshAndMaterialExport()
+        public void SameMeshAndMaterialTest()
         {
             var go = new GameObject("same_mesh_and_material");
             try
@@ -701,24 +698,54 @@ namespace UniGLTF
             }
         }
 
-#if GLTF_TESTS_PECULIAR_NODES
         [Test]
-        public void PeculiarNodesExport()
+        public void PeculiarNodesTest()
         {
             var go = new GameObject("peculiar_nodes");
             try
             {
+                var redMaterial = new Material(Shader.Find("Unlit/Color"));
+                redMaterial.name = "red";
+                redMaterial.color = Color.red;
+
                 {
-                    var cylinderD = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                    cylinderD.transform.SetParent(go.transform);
-                    cylinderD.GetComponent<Renderer>().sharedMaterials = new Material[0];
+                    var child = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                    child.transform.SetParent(go.transform);
+
+                    child.GetComponent<Renderer>().sharedMaterials = new Material[0];
                 }
 
                 {
-                    var textE = new GameObject("Text");
-                    textE.transform.SetParent(go.transform);
-                    textE.AddComponent<RectTransform>();
-                    var tmp = textE.AddComponent<TextMeshPro>();
+                    var child = new GameObject("mesh_filter_has_none");
+                    child.transform.SetParent(go.transform);
+
+                    var mf = child.AddComponent<MeshFilter>();
+                    Assert.IsNull(mf.sharedMesh);
+
+                    var renderer = child.AddComponent<MeshRenderer>();
+                    renderer.sharedMaterial = redMaterial;
+                }
+
+                {
+                    var child = new GameObject("zero_vertex");
+                    child.transform.SetParent(go.transform);
+
+                    var mesh = new Mesh();
+                    mesh.name = "zero_vertex";
+
+                    var mf = child.AddComponent<MeshFilter>();
+                    mf.sharedMesh = mesh;
+
+                    var renderer = child.AddComponent<MeshRenderer>();
+                    renderer.sharedMaterial = redMaterial;
+                }
+
+                {
+                    var child = new GameObject("Text");
+                    child.transform.SetParent(go.transform);
+                    child.AddComponent<RectTransform>();
+
+                    var tmp = child.AddComponent<TextMeshPro>();
                     tmp.text = "test";
                 }
 
@@ -735,10 +762,8 @@ namespace UniGLTF
 
                 Assert.AreEqual(0, gltf.meshes.Count);
 
-                Assert.AreEqual(2, gltf.nodes.Count);
-
-                Assert.AreEqual(-1, gltf.nodes[0].mesh);
-                Assert.AreEqual(-1, gltf.nodes[1].mesh);
+                Assert.AreEqual(4, gltf.nodes.Count);
+                Assert.IsTrue(gltf.nodes.All(node => node.mesh == -1));
 
                 // import
                 {
@@ -750,13 +775,11 @@ namespace UniGLTF
                         //Debug.LogFormat("{0}", context.Json);
                         context.Load();
 
-                        var importedD = context.Root.transform.GetChild(0);
-                        Assert.IsNull(importedD.GetSharedMesh());
-                        Assert.IsNull(importedD.GetComponent<Renderer>());
-
-                        var importedE = context.Root.transform.GetChild(1);
-                        Assert.IsNull(importedE.GetSharedMesh());
-                        Assert.IsNull(importedE.GetComponent<Renderer>());
+                        Assert.IsTrue(
+                            context.Root.transform.GetChildren().All(child =>
+                                child.GetSharedMesh() == null && child.GetComponent<Renderer>() == null
+                            )
+                        );
                     }
                 }
             }
@@ -765,7 +788,6 @@ namespace UniGLTF
                 GameObject.DestroyImmediate(go);
             }
         }
-#endif
 
         [Serializable]
         class CantConstruct

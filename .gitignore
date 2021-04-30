@@ -52,4 +52,5 @@ Assets/StreamingAssets/crashlytics-build.properties
 .idea/
 Assets/Private/
 Assets/Private.meta
-
+Assets/TextMesh\ Pro/
+Assets/TextMesh\ Pro.meta
