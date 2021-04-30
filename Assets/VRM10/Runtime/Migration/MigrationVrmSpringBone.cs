@@ -123,7 +123,7 @@ namespace UniVRM10
                     var spring = new UniGLTF.Extensions.VRMC_springBone.Spring
                     {
                         Name = comment,
-                        Colliders = x["colliderGroups"].ArrayItems().Select(z => colliderNodes[z.GetInt32()]).ToArray(),
+                        ColliderGroups = x["colliderGroups"].ArrayItems().Select(z => colliderNodes[z.GetInt32()]).ToArray(),
                         Joints = new List<UniGLTF.Extensions.VRMC_springBone.SpringBoneJoint>(),
                     };
 

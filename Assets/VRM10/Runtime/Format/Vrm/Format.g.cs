@@ -293,12 +293,12 @@ namespace UniGLTF.Extensions.VRMC_vrm
 
         // How the camera interprets the mesh.
         [JsonSchema(EnumSerializationType = EnumSerializationType.AsString)]
-        public FirstPersonType FirstPersonType;
+        public FirstPersonType Type;
     }
 
     public class FirstPerson
     {
-        // Mesh rendering annotation for cameras. 'required' :   [  'mesh' ,  'firstPersonType'  ]
+        // Mesh rendering annotation for cameras.
         public List<MeshAnnotation> MeshAnnotations;
     }
 
@@ -324,19 +324,19 @@ namespace UniGLTF.Extensions.VRMC_vrm
         public float[] OffsetFromHeadBone;
 
         [JsonSchema(EnumSerializationType = EnumSerializationType.AsString)]
-        public LookAtType LookAtType;
+        public LookAtType Type;
 
         // Horizontal inward movement. The left eye moves right. The right eye moves left.
-        public LookAtRangeMap LookAtHorizontalInner;
+        public LookAtRangeMap RangeMapHorizontalInner;
 
         // Horizontal outward movement. The left eye moves left. The right eye moves right.
-        public LookAtRangeMap LookAtHorizontalOuter;
+        public LookAtRangeMap RangeMapHorizontalOuter;
 
         // Vertical downward movement. Both eyes move upwards
-        public LookAtRangeMap LookAtVerticalDown;
+        public LookAtRangeMap RangeMapVerticalDown;
 
         // Vertical upward movement. Both eyes move downwards
-        public LookAtRangeMap LookAtVerticalUp;
+        public LookAtRangeMap RangeMapVerticalUp;
     }
 
     public enum ExpressionPreset

@@ -347,7 +347,7 @@ namespace UniVRM10
                     // serialize
                     UniGLTF.Extensions.VRMC_node_collider.GltfSerializer.SerializeTo(ref gltfNode.extensions, collider);
                 }
-                spring.Colliders = colliders.ToArray();
+                spring.ColliderGroups = colliders.ToArray();
             }
 
             return springBone;
@@ -453,7 +453,7 @@ namespace UniVRM10
             return new UniGLTF.Extensions.VRMC_vrm.MeshAnnotation
             {
                 Node = getIndex(flags.Renderer),
-                FirstPersonType = flags.FirstPersonFlag,
+                Type = flags.FirstPersonFlag,
             };
         }
 
@@ -497,16 +497,16 @@ namespace UniVRM10
 
             vrm.LookAt = new UniGLTF.Extensions.VRMC_vrm.LookAt
             {
-                LookAtType = vrmController.LookAt.LookAtType,
+                Type = vrmController.LookAt.LookAtType,
                 OffsetFromHeadBone = new float[]{
                     vrmController.LookAt.OffsetFromHead.x ,
                     vrmController.LookAt.OffsetFromHead.y ,
                     vrmController.LookAt.OffsetFromHead.z ,
                 },
-                LookAtHorizontalInner = ExportLookAtRangeMap(vrmController.LookAt.HorizontalInner),
-                LookAtHorizontalOuter = ExportLookAtRangeMap(vrmController.LookAt.HorizontalOuter),
-                LookAtVerticalDown = ExportLookAtRangeMap(vrmController.LookAt.VerticalDown),
-                LookAtVerticalUp = ExportLookAtRangeMap(vrmController.LookAt.VerticalUp),
+                RangeMapHorizontalInner = ExportLookAtRangeMap(vrmController.LookAt.HorizontalInner),
+                RangeMapHorizontalOuter = ExportLookAtRangeMap(vrmController.LookAt.HorizontalOuter),
+                RangeMapVerticalDown = ExportLookAtRangeMap(vrmController.LookAt.VerticalDown),
+                RangeMapVerticalUp = ExportLookAtRangeMap(vrmController.LookAt.VerticalUp),
             };
         }
 

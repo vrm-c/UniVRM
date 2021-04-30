@@ -334,12 +334,12 @@ namespace UniVRM10
             if (vrm.LookAt != null)
             {
                 var src = vrm.LookAt;
-                controller.LookAt.LookAtType = src.LookAtType;
+                controller.LookAt.LookAtType = src.Type;
                 controller.LookAt.OffsetFromHead = new Vector3(src.OffsetFromHeadBone[0], src.OffsetFromHeadBone[1], src.OffsetFromHeadBone[2]);
-                controller.LookAt.HorizontalInner = new CurveMapper(src.LookAtHorizontalInner.InputMaxValue.Value, src.LookAtHorizontalInner.OutputScale.Value);
-                controller.LookAt.HorizontalOuter = new CurveMapper(src.LookAtHorizontalOuter.InputMaxValue.Value, src.LookAtHorizontalOuter.OutputScale.Value);
-                controller.LookAt.VerticalUp = new CurveMapper(src.LookAtVerticalUp.InputMaxValue.Value, src.LookAtHorizontalOuter.OutputScale.Value);
-                controller.LookAt.VerticalDown = new CurveMapper(src.LookAtVerticalDown.InputMaxValue.Value, src.LookAtHorizontalOuter.OutputScale.Value);
+                controller.LookAt.HorizontalInner = new CurveMapper(src.RangeMapHorizontalInner.InputMaxValue.Value, src.RangeMapHorizontalInner.OutputScale.Value);
+                controller.LookAt.HorizontalOuter = new CurveMapper(src.RangeMapHorizontalOuter.InputMaxValue.Value, src.RangeMapHorizontalOuter.OutputScale.Value);
+                controller.LookAt.VerticalUp = new CurveMapper(src.RangeMapVerticalUp.InputMaxValue.Value, src.RangeMapVerticalUp.OutputScale.Value);
+                controller.LookAt.VerticalDown = new CurveMapper(src.RangeMapVerticalDown.InputMaxValue.Value, src.RangeMapVerticalDown.OutputScale.Value);
             }
 
             // firstPerson
@@ -351,7 +351,7 @@ namespace UniVRM10
                     var node = Nodes[x.Node.Value];
                     controller.FirstPerson.Renderers.Add(new RendererFirstPersonFlags
                     {
-                        FirstPersonFlag = x.FirstPersonType,
+                        FirstPersonFlag = x.Type,
                         Renderer = node.GetComponent<Renderer>()
                     });
                 }
@@ -397,7 +397,7 @@ namespace UniVRM10
                     }
 
                     // collider
-                    springBone.ColliderGroups.AddRange(gltfSpring.Colliders.Select(colliderNode =>
+                    springBone.ColliderGroups.AddRange(gltfSpring.ColliderGroups.Select(colliderNode =>
                     {
                         if (UniGLTF.Extensions.VRMC_node_collider.GltfDeserializer.TryGet(Parser.GLTF.nodes[colliderNode].extensions,
                             out UniGLTF.Extensions.VRMC_node_collider.VRMC_node_collider extension))

@@ -46,6 +46,11 @@ public static VRMC_springBone Deserialize(JsonNode parsed)
             continue;
         }
 
+        if(key=="colliderGroups"){
+            value.ColliderGroups = Deserialize_ColliderGroups(kv.Value);
+            continue;
+        }
+
         if(key=="springs"){
             value.Springs = Deserialize_Springs(kv.Value);
             continue;
@@ -54,6 +59,199 @@ public static VRMC_springBone Deserialize(JsonNode parsed)
     }
     return value;
 }
+
+public static List<ColliderGroup> Deserialize_ColliderGroups(JsonNode parsed)
+{
+    var value = new List<ColliderGroup>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(Deserialize_ColliderGroups_ITEM(x));
+    }
+	return value;
+} 
+
+public static ColliderGroup Deserialize_ColliderGroups_ITEM(JsonNode parsed)
+{
+    var value = new ColliderGroup();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="colliders"){
+            value.Colliders = __colliderGroups_ITEM_Deserialize_Colliders(kv.Value);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static List<Collider> __colliderGroups_ITEM_Deserialize_Colliders(JsonNode parsed)
+{
+    var value = new List<Collider>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(__colliderGroups_ITEM_Deserialize_Colliders_ITEM(x));
+    }
+	return value;
+} 
+
+public static Collider __colliderGroups_ITEM_Deserialize_Colliders_ITEM(JsonNode parsed)
+{
+    var value = new Collider();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="node"){
+            value.Node = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="shape"){
+            value.Shape = __colliderGroups_ITEM__colliders_ITEM_Deserialize_Shape(kv.Value);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static ColliderShape __colliderGroups_ITEM__colliders_ITEM_Deserialize_Shape(JsonNode parsed)
+{
+    var value = new ColliderShape();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="sphere"){
+            value.Sphere = __colliderGroups_ITEM__colliders_ITEM__shape_Deserialize_Sphere(kv.Value);
+            continue;
+        }
+
+        if(key=="capsule"){
+            value.Capsule = __colliderGroups_ITEM__colliders_ITEM__shape_Deserialize_Capsule(kv.Value);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static ColliderShapeSphere __colliderGroups_ITEM__colliders_ITEM__shape_Deserialize_Sphere(JsonNode parsed)
+{
+    var value = new ColliderShapeSphere();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="offset"){
+            value.Offset = __colliderGroups_ITEM__colliders_ITEM__shape__sphere_Deserialize_Offset(kv.Value);
+            continue;
+        }
+
+        if(key=="radius"){
+            value.Radius = kv.Value.GetSingle();
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static float[] __colliderGroups_ITEM__colliders_ITEM__shape__sphere_Deserialize_Offset(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static ColliderShapeCapsule __colliderGroups_ITEM__colliders_ITEM__shape_Deserialize_Capsule(JsonNode parsed)
+{
+    var value = new ColliderShapeCapsule();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="offset"){
+            value.Offset = __colliderGroups_ITEM__colliders_ITEM__shape__capsule_Deserialize_Offset(kv.Value);
+            continue;
+        }
+
+        if(key=="radius"){
+            value.Radius = kv.Value.GetSingle();
+            continue;
+        }
+
+        if(key=="tail"){
+            value.Tail = __colliderGroups_ITEM__colliders_ITEM__shape__capsule_Deserialize_Tail(kv.Value);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static float[] __colliderGroups_ITEM__colliders_ITEM__shape__capsule_Deserialize_Offset(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static float[] __colliderGroups_ITEM__colliders_ITEM__shape__capsule_Deserialize_Tail(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
 
 public static List<Spring> Deserialize_Springs(JsonNode parsed)
 {
@@ -89,12 +287,12 @@ public static Spring Deserialize_Springs_ITEM(JsonNode parsed)
         }
 
         if(key=="joints"){
-            value.Joints = Deserialize_Joints(kv.Value);
+            value.Joints = __springs_ITEM_Deserialize_Joints(kv.Value);
             continue;
         }
 
-        if(key=="colliders"){
-            value.Colliders = Deserialize_Colliders(kv.Value);
+        if(key=="colliderGroups"){
+            value.ColliderGroups = __springs_ITEM_Deserialize_ColliderGroups(kv.Value);
             continue;
         }
 
@@ -102,17 +300,17 @@ public static Spring Deserialize_Springs_ITEM(JsonNode parsed)
     return value;
 }
 
-public static List<SpringBoneJoint> Deserialize_Joints(JsonNode parsed)
+public static List<SpringBoneJoint> __springs_ITEM_Deserialize_Joints(JsonNode parsed)
 {
     var value = new List<SpringBoneJoint>();
     foreach(var x in parsed.ArrayItems())
     {
-        value.Add(Deserialize_Joints_ITEM(x));
+        value.Add(__springs_ITEM_Deserialize_Joints_ITEM(x));
     }
 	return value;
 } 
 
-public static SpringBoneJoint Deserialize_Joints_ITEM(JsonNode parsed)
+public static SpringBoneJoint __springs_ITEM_Deserialize_Joints_ITEM(JsonNode parsed)
 {
     var value = new SpringBoneJoint();
 
@@ -151,7 +349,7 @@ public static SpringBoneJoint Deserialize_Joints_ITEM(JsonNode parsed)
         }
 
         if(key=="gravityDir"){
-            value.GravityDir = Deserialize_GravityDir(kv.Value);
+            value.GravityDir = __springs_ITEM__joints_ITEM_Deserialize_GravityDir(kv.Value);
             continue;
         }
 
@@ -164,7 +362,7 @@ public static SpringBoneJoint Deserialize_Joints_ITEM(JsonNode parsed)
     return value;
 }
 
-public static float[] Deserialize_GravityDir(JsonNode parsed)
+public static float[] __springs_ITEM__joints_ITEM_Deserialize_GravityDir(JsonNode parsed)
 {
     var value = new float[parsed.GetArrayCount()];
     int i=0;
@@ -175,7 +373,7 @@ public static float[] Deserialize_GravityDir(JsonNode parsed)
 	return value;
 } 
 
-public static int[] Deserialize_Colliders(JsonNode parsed)
+public static int[] __springs_ITEM_Deserialize_ColliderGroups(JsonNode parsed)
 {
     var value = new int[parsed.GetArrayCount()];
     int i=0;
