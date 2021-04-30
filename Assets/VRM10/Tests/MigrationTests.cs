@@ -245,11 +245,10 @@ namespace UniVRM10
             Assert.True(UniGLTF.Extensions.VRMC_springBone.GltfDeserializer.TryGet(parser1.GLTF.extensions, out UniGLTF.Extensions.VRMC_springBone.VRMC_springBone springBone));
             var spring = springBone.Springs[0];
             var colliderNodeIndex = spring.ColliderGroups[0];
-            Assert.True(UniGLTF.Extensions.VRMC_node_collider.GltfDeserializer.TryGet(parser1.GLTF.nodes[colliderNodeIndex].extensions, out UniGLTF.Extensions.VRMC_node_collider.VRMC_node_collider colliderGroup));
             // x軸だけが反転する
-            Assert.AreEqual(-VALUE.x, colliderGroup.Shapes[0].Sphere.Offset[0]);
-            Assert.AreEqual(VALUE.y, colliderGroup.Shapes[0].Sphere.Offset[1]);
-            Assert.AreEqual(VALUE.z, colliderGroup.Shapes[0].Sphere.Offset[2]);
+            Assert.AreEqual(-VALUE.x, springBone.ColliderGroups[0].Colliders[0].Shape.Sphere.Offset[0]);
+            Assert.AreEqual(VALUE.y, springBone.ColliderGroups[0].Colliders[0].Shape.Sphere.Offset[1]);
+            Assert.AreEqual(VALUE.z, springBone.ColliderGroups[0].Colliders[0].Shape.Sphere.Offset[2]);
         }
     }
 }

@@ -24,7 +24,6 @@ namespace UniVRM10
             Storage.Gltf.extensionsUsed.Add(UniGLTF.Extensions.VRMC_vrm.VRMC_vrm.ExtensionName);
             Storage.Gltf.extensionsUsed.Add(UniGLTF.Extensions.VRMC_materials_mtoon.VRMC_materials_mtoon.ExtensionName);
             Storage.Gltf.extensionsUsed.Add(UniGLTF.Extensions.VRMC_springBone.VRMC_springBone.ExtensionName);
-            Storage.Gltf.extensionsUsed.Add(UniGLTF.Extensions.VRMC_node_collider.VRMC_node_collider.ExtensionName);
             Storage.Gltf.extensionsUsed.Add(UniGLTF.Extensions.VRMC_node_constraint.VRMC_node_constraint.ExtensionName);
             Storage.Gltf.buffers.Add(new glTFBuffer
             {
@@ -264,14 +263,14 @@ namespace UniVRM10
             return (vrm, vrmSpringBone, thumbnailTextureIndex);
         }
 
-        UniGLTF.Extensions.VRMC_node_collider.ColliderShape ExportShape(VRM10SpringBoneCollider z)
+        UniGLTF.Extensions.VRMC_springBone.ColliderShape ExportShape(VRM10SpringBoneCollider z)
         {
-            var shape = new UniGLTF.Extensions.VRMC_node_collider.ColliderShape();
+            var shape = new UniGLTF.Extensions.VRMC_springBone.ColliderShape();
             switch (z.ColliderType)
             {
                 case VRM10SpringBoneColliderTypes.Sphere:
                     {
-                        shape.Sphere = new UniGLTF.Extensions.VRMC_node_collider.ColliderShapeSphere
+                        shape.Sphere = new UniGLTF.Extensions.VRMC_springBone.ColliderShapeSphere
                         {
                             Radius = z.Radius,
                             Offset = ReverseX(z.Offset),
@@ -281,7 +280,7 @@ namespace UniVRM10
 
                 case VRM10SpringBoneColliderTypes.Capsule:
                     {
-                        shape.Capsule = new UniGLTF.Extensions.VRMC_node_collider.ColliderShapeCapsule
+                        shape.Capsule = new UniGLTF.Extensions.VRMC_springBone.ColliderShapeCapsule
                         {
                             Radius = z.Radius,
                             Offset = new float[] { z.Offset.x, z.Offset.y, z.Offset.z },
@@ -311,6 +310,7 @@ namespace UniVRM10
         {
             var springBone = new UniGLTF.Extensions.VRMC_springBone.VRMC_springBone
             {
+                ColliderGroups = new List<UniGLTF.Extensions.VRMC_springBone.ColliderGroup>(),
                 Springs = new List<UniGLTF.Extensions.VRMC_springBone.Spring>(),
             };
 
@@ -338,14 +338,14 @@ namespace UniVRM10
                     colliders.Add(nodeIndex);
                     var gltfNode = Storage.Gltf.nodes[nodeIndex];
 
-                    // VRMC_node_collider
-                    var collider = new UniGLTF.Extensions.VRMC_node_collider.VRMC_node_collider
-                    {
-                        Shapes = y.Colliders.Select(ExportShape).ToList(),
-                    };
+                    // // VRMC_node_collider
+                    // var collider = new UniGLTF.Extensions.VRMC_node_collider.VRMC_node_collider
+                    // {
+                    //     Shapes = y.Colliders.Select(ExportShape).ToList(),
+                    // };
 
-                    // serialize
-                    UniGLTF.Extensions.VRMC_node_collider.GltfSerializer.SerializeTo(ref gltfNode.extensions, collider);
+                    // // serialize
+                    // UniGLTF.Extensions.VRMC_node_collider.GltfSerializer.SerializeTo(ref gltfNode.extensions, collider);
                 }
                 spring.ColliderGroups = colliders.ToArray();
             }
