@@ -600,6 +600,57 @@ namespace UniGLTF
             }
         }
 
+        [Test]
+        public void MeshHasNoRendererTest()
+        {
+            var go = new GameObject("mesh_has_no_renderer");
+            try
+            {
+                {
+                    var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                    cube.transform.SetParent(go.transform);
+                    UnityEngine.Object.DestroyImmediate(cube.GetComponent<MeshRenderer>());
+                }
+
+                // export
+                var gltf = new glTF();
+                string json;
+                using (var exporter = new gltfExporter(gltf))
+                {
+                    exporter.Prepare(go);
+                    exporter.Export(UniGLTF.MeshExportSettings.Default, AssetTextureUtil.IsTextureEditorAsset, AssetTextureUtil.GetTextureBytesWithMime);
+
+                    json = gltf.ToJson();
+                }
+
+                Assert.AreEqual(0, gltf.meshes.Count);
+                Assert.AreEqual(1, gltf.nodes.Count);
+                Assert.AreEqual(-1, gltf.nodes[0].mesh);
+
+                // import
+                {
+                    var parser = new GltfParser();
+                    parser.ParseJson(json, new SimpleStorage(new ArraySegment<byte>(new byte[1024 * 1024])));
+
+                    using (var context = new ImporterContext(parser))
+                    {
+                        context.Load();
+
+                        Assert.AreEqual(1, context.Root.transform.GetChildren().Count());
+
+                        {
+                            var child = context.Root.transform.GetChild(0);
+                            Assert.IsNull(child.GetSharedMesh());
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                GameObject.DestroyImmediate(go);
+            }
+        }
+
         [Serializable]
         class CantConstruct
         {
