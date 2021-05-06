@@ -19,29 +19,6 @@ namespace GenerateUniGLTFSerialization
             m_prefix = prefix;
         }
 
-        // static string UpperCamelCase(string src)
-        // {
-        //     if(string.IsNullOrEmpty(src))
-        //     {
-        //         return "";
-        //     }
-        //     return src.Substring(0, 1).ToUpper() + src.Substring(1);
-        // }
-
-        // string ClassName(string src)
-        // {
-        //     if(string.IsNullOrEmpty(src))
-        //     {
-        //         // root
-        //         return m_prefix;
-        //     }
-        //     else{
-        //         return String.Join("", src.Split("__").Select(x => UpperCamelCase(x)));
-        //     }
-        // }
-
-        const string EnumStringAttr = "[JsonSchema(EnumSerializationType = EnumSerializationType.AsString)]";
-
         static (string, string) PropType(JsonSchemaBase schema)
         {
             switch (schema.JsonSchemaType)
@@ -55,7 +32,7 @@ namespace GenerateUniGLTFSerialization
                     return (null, schema.ValueType);
 
                 case JsonSchemaType.EnumString:
-                    return (EnumStringAttr, schema.ValueType);
+                    return (null, schema.ValueType);
             }
 
             throw new NotImplementedException();
@@ -81,7 +58,6 @@ namespace GenerateUniGLTFSerialization
             {
                 var indent = "        ";
                 m_w.WriteLine($"{indent}public const string ExtensionName = \"{rootName}\";");
-                m_w.WriteLine($"{indent}public static readonly Utf8String ExtensionNameUtf8 = Utf8String.From(ExtensionName);");
                 m_w.WriteLine();
             }
 
@@ -178,8 +154,7 @@ namespace GenerateUniGLTFSerialization
             w.Write($@"// This file is generated from JsonSchema. Don't modify this source code.
 using System;
 using System.Collections.Generic;
-using UniGLTF;
-using UniJSON;
+
 
 namespace UniGLTF.Extensions.{rootName}
 {{

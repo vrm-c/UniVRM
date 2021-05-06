@@ -1,8 +1,7 @@
 // This file is generated from JsonSchema. Don't modify this source code.
 using System;
 using System.Collections.Generic;
-using UniGLTF;
-using UniJSON;
+
 
 namespace UniGLTF.Extensions.VRMC_node_constraint
 {
@@ -17,10 +16,10 @@ namespace UniGLTF.Extensions.VRMC_node_constraint
     public class PositionConstraint
     {
         // Dictionary object with extension-specific objects.
-        public glTFExtension Extensions;
+        public object Extensions;
 
         // Application-specific data.
-        public glTFExtension Extras;
+        public object Extras;
 
         // The user-defined name of this object.
         public string Name;
@@ -29,11 +28,9 @@ namespace UniGLTF.Extensions.VRMC_node_constraint
         public int? Source;
 
         // The source node will be evaluated in this space.
-        [JsonSchema(EnumSerializationType = EnumSerializationType.AsString)]
         public ObjectSpace SourceSpace;
 
         // The destination node will be evaluated in this space.
-        [JsonSchema(EnumSerializationType = EnumSerializationType.AsString)]
         public ObjectSpace DestinationSpace;
 
         // Axes be constrained by this constraint, in X-Y-Z order.
@@ -46,10 +43,10 @@ namespace UniGLTF.Extensions.VRMC_node_constraint
     public class RotationConstraint
     {
         // Dictionary object with extension-specific objects.
-        public glTFExtension Extensions;
+        public object Extensions;
 
         // Application-specific data.
-        public glTFExtension Extras;
+        public object Extras;
 
         // The user-defined name of this object.
         public string Name;
@@ -58,11 +55,9 @@ namespace UniGLTF.Extensions.VRMC_node_constraint
         public int? Source;
 
         // The source node will be evaluated in this space.
-        [JsonSchema(EnumSerializationType = EnumSerializationType.AsString)]
         public ObjectSpace SourceSpace;
 
         // The destination node will be evaluated in this space.
-        [JsonSchema(EnumSerializationType = EnumSerializationType.AsString)]
         public ObjectSpace DestinationSpace;
 
         // Axes be constrained by this constraint, in X-Y-Z order.
@@ -75,10 +70,10 @@ namespace UniGLTF.Extensions.VRMC_node_constraint
     public class AimConstraint
     {
         // Dictionary object with extension-specific objects.
-        public glTFExtension Extensions;
+        public object Extensions;
 
         // Application-specific data.
-        public glTFExtension Extras;
+        public object Extras;
 
         // The user-defined name of this object.
         public string Name;
@@ -87,11 +82,9 @@ namespace UniGLTF.Extensions.VRMC_node_constraint
         public int? Source;
 
         // The source node will be evaluated in this space.
-        [JsonSchema(EnumSerializationType = EnumSerializationType.AsString)]
         public ObjectSpace SourceSpace;
 
         // The destination node will be evaluated in this space.
-        [JsonSchema(EnumSerializationType = EnumSerializationType.AsString)]
         public ObjectSpace DestinationSpace;
 
         // An axis which faces the direction of its source.
@@ -110,10 +103,10 @@ namespace UniGLTF.Extensions.VRMC_node_constraint
     public class Constraint
     {
         // Dictionary object with extension-specific objects.
-        public glTFExtension Extensions;
+        public object Extensions;
 
         // Application-specific data.
-        public glTFExtension Extras;
+        public object Extras;
 
         // A constraint that links the position with a source.
         public PositionConstraint Position;
@@ -128,13 +121,12 @@ namespace UniGLTF.Extensions.VRMC_node_constraint
     public class VRMC_node_constraint
     {
         public const string ExtensionName = "VRMC_node_constraint";
-        public static readonly Utf8String ExtensionNameUtf8 = Utf8String.From(ExtensionName);
 
         // Dictionary object with extension-specific objects.
-        public glTFExtension Extensions;
+        public object Extensions;
 
         // Application-specific data.
-        public glTFExtension Extras;
+        public object Extras;
 
         // Contains position, rotation, or aim
         public Constraint Constraint;

@@ -8,6 +8,7 @@ namespace UniGLTF.Extensions.VRMC_node_constraint {
 
 public static class GltfDeserializer
 {
+    public static readonly Utf8String ExtensionNameUtf8 = Utf8String.From(VRMC_node_constraint.ExtensionName);
 
 public static bool TryGet(UniGLTF.glTFExtension src, out VRMC_node_constraint extension)
 {
@@ -15,7 +16,7 @@ public static bool TryGet(UniGLTF.glTFExtension src, out VRMC_node_constraint ex
     {
         foreach(var kv in extensions.ObjectItems())
         {
-            if(kv.Key.GetUtf8String() == VRMC_node_constraint.ExtensionNameUtf8)
+            if(kv.Key.GetUtf8String() == ExtensionNameUtf8)
             {
                 extension = Deserialize(kv.Value);
                 return true;

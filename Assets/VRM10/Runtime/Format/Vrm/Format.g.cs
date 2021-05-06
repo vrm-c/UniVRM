@@ -1,8 +1,7 @@
 // This file is generated from JsonSchema. Don't modify this source code.
 using System;
 using System.Collections.Generic;
-using UniGLTF;
-using UniJSON;
+
 
 namespace UniGLTF.Extensions.VRMC_vrm
 {
@@ -66,7 +65,6 @@ namespace UniGLTF.Extensions.VRMC_vrm
         public int? ThumbnailImage;
 
         // A person who can perform with this avatars
-        [JsonSchema(EnumSerializationType = EnumSerializationType.AsString)]
         public AvatarPermissionType AvatarPermission;
 
         // A flag that permits to use this avatar in excessively violent contents
@@ -76,21 +74,18 @@ namespace UniGLTF.Extensions.VRMC_vrm
         public bool? AllowExcessivelySexualUsage;
 
         // An option that permits to use this avatar in commercial products
-        [JsonSchema(EnumSerializationType = EnumSerializationType.AsString)]
         public CommercialUsageType CommercialUsage;
 
         // A flag that permits to use this avatar in political or religious contents
         public bool? AllowPoliticalOrReligiousUsage;
 
         // An option that forces or abandons to display the credit of this avatar
-        [JsonSchema(EnumSerializationType = EnumSerializationType.AsString)]
         public CreditNotationType CreditNotation;
 
         // A flag that permits to redistribute this avatar
         public bool? AllowRedistribution;
 
         // An option that controls the condition to modify this avatar
-        [JsonSchema(EnumSerializationType = EnumSerializationType.AsString)]
         public ModificationType Modification;
 
         // Describe the URL links of other license
@@ -292,7 +287,6 @@ namespace UniGLTF.Extensions.VRMC_vrm
         public int? Node;
 
         // How the camera interprets the mesh.
-        [JsonSchema(EnumSerializationType = EnumSerializationType.AsString)]
         public FirstPersonType Type;
     }
 
@@ -323,7 +317,6 @@ namespace UniGLTF.Extensions.VRMC_vrm
         // The origin of LookAt. Position offset from the head bone
         public float[] OffsetFromHeadBone;
 
-        [JsonSchema(EnumSerializationType = EnumSerializationType.AsString)]
         public LookAtType Type;
 
         // Horizontal inward movement. The left eye moves right. The right eye moves left.
@@ -366,10 +359,10 @@ namespace UniGLTF.Extensions.VRMC_vrm
     public class MorphTargetBind
     {
         // Dictionary object with extension-specific objects.
-        public glTFExtension Extensions;
+        public object Extensions;
 
         // Application-specific data.
-        public glTFExtension Extras;
+        public object Extras;
 
         // The index of the node that attached to target mesh.
         public int? Node;
@@ -394,15 +387,14 @@ namespace UniGLTF.Extensions.VRMC_vrm
     public class MaterialColorBind
     {
         // Dictionary object with extension-specific objects.
-        public glTFExtension Extensions;
+        public object Extensions;
 
         // Application-specific data.
-        public glTFExtension Extras;
+        public object Extras;
 
         // target material
         public int? Material;
 
-        [JsonSchema(EnumSerializationType = EnumSerializationType.AsString)]
         public MaterialColorType Type;
 
         // target color
@@ -412,10 +404,10 @@ namespace UniGLTF.Extensions.VRMC_vrm
     public class TextureTransformBind
     {
         // Dictionary object with extension-specific objects.
-        public glTFExtension Extensions;
+        public object Extensions;
 
         // Application-specific data.
-        public glTFExtension Extras;
+        public object Extras;
 
         // target material
         public int? Material;
@@ -438,16 +430,15 @@ namespace UniGLTF.Extensions.VRMC_vrm
     public class Expression
     {
         // Dictionary object with extension-specific objects.
-        public glTFExtension Extensions;
+        public object Extensions;
 
         // Application-specific data.
-        public glTFExtension Extras;
+        public object Extras;
 
         // Use only if the preset is custom. Unique within the model
         public string Name;
 
         // Functions of Expression
-        [JsonSchema(EnumSerializationType = EnumSerializationType.AsString)]
         public ExpressionPreset Preset;
 
         // Specify a morph target
@@ -463,22 +454,18 @@ namespace UniGLTF.Extensions.VRMC_vrm
         public bool? IsBinary;
 
         // Override values of Blink expressions when this Expression is enabled
-        [JsonSchema(EnumSerializationType = EnumSerializationType.AsString)]
         public ExpressionOverrideType OverrideBlink;
 
         // Override values of LookAt expressions when this Expression is enabled
-        [JsonSchema(EnumSerializationType = EnumSerializationType.AsString)]
         public ExpressionOverrideType OverrideLookAt;
 
         // Override values of Mouth expressions when this Expression is enabled
-        [JsonSchema(EnumSerializationType = EnumSerializationType.AsString)]
         public ExpressionOverrideType OverrideMouth;
     }
 
     public class VRMC_vrm
     {
         public const string ExtensionName = "VRMC_vrm";
-        public static readonly Utf8String ExtensionNameUtf8 = Utf8String.From(ExtensionName);
 
         // Specification version of the VRM
         public string SpecVersion;

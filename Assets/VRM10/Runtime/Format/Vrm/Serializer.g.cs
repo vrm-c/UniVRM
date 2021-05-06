@@ -1378,12 +1378,12 @@ public static void Serialize_Expressions_ITEM(JsonFormatter f, Expression value)
 
     if(value.Extensions!=null){
         f.Key("extensions");                
-        value.Extensions.Serialize(f);
+        (value.Extensions as glTFExtension).Serialize(f);
     }
 
     if(value.Extras!=null){
         f.Key("extras");                
-        value.Extras.Serialize(f);
+        (value.Extras as glTFExtension).Serialize(f);
     }
 
     if(!string.IsNullOrEmpty(value.Name)){
@@ -1453,12 +1453,12 @@ public static void __expressions_ITEM_Serialize_MorphTargetBinds_ITEM(JsonFormat
 
     if(value.Extensions!=null){
         f.Key("extensions");                
-        value.Extensions.Serialize(f);
+        (value.Extensions as glTFExtension).Serialize(f);
     }
 
     if(value.Extras!=null){
         f.Key("extras");                
-        value.Extras.Serialize(f);
+        (value.Extras as glTFExtension).Serialize(f);
     }
 
     if(value.Node.HasValue){
@@ -1498,12 +1498,12 @@ public static void __expressions_ITEM_Serialize_MaterialColorBinds_ITEM(JsonForm
 
     if(value.Extensions!=null){
         f.Key("extensions");                
-        value.Extensions.Serialize(f);
+        (value.Extensions as glTFExtension).Serialize(f);
     }
 
     if(value.Extras!=null){
         f.Key("extras");                
-        value.Extras.Serialize(f);
+        (value.Extras as glTFExtension).Serialize(f);
     }
 
     if(value.Material.HasValue){
@@ -1555,12 +1555,12 @@ public static void __expressions_ITEM_Serialize_TextureTransformBinds_ITEM(JsonF
 
     if(value.Extensions!=null){
         f.Key("extensions");                
-        value.Extensions.Serialize(f);
+        (value.Extensions as glTFExtension).Serialize(f);
     }
 
     if(value.Extras!=null){
         f.Key("extras");                
-        value.Extras.Serialize(f);
+        (value.Extras as glTFExtension).Serialize(f);
     }
 
     if(value.Material.HasValue){
