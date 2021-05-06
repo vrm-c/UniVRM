@@ -35,7 +35,7 @@ namespace VRM
         Editor m_settingsInspector;
 
 
-        VRMExportMeshes m_meshes;
+        VRMMeshExportValidator m_meshes;
         Editor m_meshesInspector;
 
 
@@ -68,7 +68,7 @@ namespace VRM
             m_settings = ScriptableObject.CreateInstance<VRMExportSettings>();
             m_settingsInspector = Editor.CreateEditor(m_settings);
 
-            m_meshes = ScriptableObject.CreateInstance<VRMExportMeshes>();
+            m_meshes = ScriptableObject.CreateInstance<VRMMeshExportValidator>();
             m_meshesInspector = Editor.CreateEditor(m_meshes);
 
             State.ExportRootChanged += (root) =>
@@ -101,25 +101,36 @@ namespace VRM
 
         protected override void Clear()
         {
-            // m_metaEditor
-            UnityEditor.Editor.DestroyImmediate(m_metaEditor);
-            m_metaEditor = null;
             // m_settingsInspector
             UnityEditor.Editor.DestroyImmediate(m_settingsInspector);
             m_settingsInspector = null;
             // m_meshesInspector
             UnityEditor.Editor.DestroyImmediate(m_meshesInspector);
             m_meshesInspector = null;
+            // m_settings
+            ScriptableObject.DestroyImmediate(m_settings);
+            m_settings = null;
+
+            // m_metaEditor
+            UnityEditor.Editor.DestroyImmediate(m_metaEditor);
+            m_metaEditor = null;
             // Meta
             Meta = null;
             ScriptableObject.DestroyImmediate(m_tmpMeta);
             m_tmpMeta = null;
-            // m_settings
-            ScriptableObject.DestroyImmediate(m_settings);
-            m_settings = null;
             // m_meshes
             ScriptableObject.DestroyImmediate(m_meshes);
             m_meshes = null;
+        }
+
+        static string GltfMaterialFromUnityShaderName(string shaderName)
+        {
+            var name = VRMMaterialExporter.VrmMaterialName(shaderName);
+            if (!string.IsNullOrEmpty(name))
+            {
+                return name;
+            }
+            return MeshExportValidator.DefaultGltfMaterialType(shaderName);
         }
 
         protected override IEnumerable<Validator> ValidatorFactory()
@@ -133,15 +144,7 @@ namespace VRM
             }
 
             // Mesh/Renderer のチェック
-            m_meshes.GltfMaterialFromUnityShaderName = (string shaderName) =>
-            {
-                var name = VRMMaterialExporter.VrmMaterialName(shaderName);
-                if (!string.IsNullOrEmpty(name))
-                {
-                    return name;
-                }
-                return MeshExportValidator.DefaultGltfMaterialType(shaderName);
-            };
+            m_meshes.GltfMaterialFromUnityShaderName = GltfMaterialFromUnityShaderName;
             yield return m_meshes.Validate;
 
             // Humanoid のチェック
@@ -175,7 +178,6 @@ namespace VRM
 
         protected override void OnLayout()
         {
-            // m_settings, m_meshes.Meshes                
             m_meshes.SetRoot(State.ExportRoot, m_settings);
         }
 
@@ -307,7 +309,6 @@ namespace VRM
                     break;
 
                 case Tabs.Mesh:
-                    EditorGUILayout.HelpBox($"Mesh size: {m_meshes.ExpectedExportByteSize / 1000000.0f:0.0} MByte", MessageType.Info);
                     m_meshesInspector.OnInspectorGUI();
                     break;
 

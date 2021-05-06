@@ -17,6 +17,8 @@ namespace UniGLTF
 
         public override void OnInspectorGUI()
         {
+            EditorGUILayout.HelpBox($"Mesh size: {m_target.ExpectedExportByteSize / 1000000.0f:0.0} MByte", MessageType.Info);
+
             for (int i = 0; i < m_target.Meshes.Count; ++i)
             {
                 DrawElement(i, m_target.Meshes[i]);

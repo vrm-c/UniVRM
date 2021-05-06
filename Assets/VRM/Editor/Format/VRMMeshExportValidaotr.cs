@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UniGLTF;
 using UnityEngine;
 
@@ -14,7 +12,7 @@ namespace VRM
     /// Meshのエクスポートサイズを試算する。
     /// </summary>
     [Serializable]
-    public class VRMExportMeshes : MeshExportValidator
+    public class VRMMeshExportValidator : MeshExportValidator
     {
         static bool ClipsContainsName(IReadOnlyList<BlendShapeClip> clips, bool onlyPreset, BlendShapeBinding binding)
         {

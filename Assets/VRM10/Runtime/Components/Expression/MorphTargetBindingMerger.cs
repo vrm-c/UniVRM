@@ -64,7 +64,7 @@ namespace UniVRM10
                             }
                             else
                             {
-                                Debug.LogWarningFormat("Invalid morphTarget binding: {0}: {1}", target.name, binding);
+                                Debug.LogWarningFormat("Invalid morphTarget binding: {0}: {1}", target.name, binding.Index);
                             }
 
                         }

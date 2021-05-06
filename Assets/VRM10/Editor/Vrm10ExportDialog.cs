@@ -167,7 +167,7 @@ namespace UniVRM10
         protected override void OnLayout()
         {
             // m_settings, m_meshes.Meshes                
-            m_meshes.SetRoot(State.ExportRoot, default);
+            m_meshes.SetRoot(State.ExportRoot, m_settings.MeshExportSettings);
         }
 
         protected override bool DoGUI(bool isValid)

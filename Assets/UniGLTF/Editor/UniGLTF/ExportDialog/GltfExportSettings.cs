@@ -16,5 +16,12 @@ namespace UniGLTF
         public bool DropNormal;
 
         public bool DivideVertexBuffer;
+
+        public MeshExportSettings MeshExportSettings => new MeshExportSettings
+        {
+            UseSparseAccessorForMorphTarget = Sparse,
+            ExportOnlyBlendShapePosition = DropNormal,
+            DivideVertexBuffer = DivideVertexBuffer,
+        };
     }
 }
