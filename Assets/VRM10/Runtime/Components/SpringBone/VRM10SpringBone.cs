@@ -58,34 +58,31 @@ namespace UniVRM10
             m_colliderList.Clear();
             if (ColliderGroups != null)
             {
-                foreach (var group in ColliderGroups)
+                foreach (var group in ColliderGroups.Where(x => x != null))
                 {
-                    if (group != null)
+                    foreach (var collider in group.Colliders)
                     {
-                        foreach (var collider in group.Colliders)
+                        switch (collider.ColliderType)
                         {
-                            switch (collider.ColliderType)
-                            {
-                                case VRM10SpringBoneColliderTypes.Sphere:
-                                    m_colliderList.Add(new SpringBoneLogic.InternalCollider
-                                    {
-                                        ColliderTypes = VRM10SpringBoneColliderTypes.Sphere,
-                                        WorldPosition = group.transform.TransformPoint(collider.Offset),
-                                        Radius = collider.Radius,
+                            case VRM10SpringBoneColliderTypes.Sphere:
+                                m_colliderList.Add(new SpringBoneLogic.InternalCollider
+                                {
+                                    ColliderTypes = VRM10SpringBoneColliderTypes.Sphere,
+                                    WorldPosition = group.transform.TransformPoint(collider.Offset),
+                                    Radius = collider.Radius,
 
-                                    });
-                                    break;
+                                });
+                                break;
 
-                                case VRM10SpringBoneColliderTypes.Capsule:
-                                    m_colliderList.Add(new SpringBoneLogic.InternalCollider
-                                    {
-                                        ColliderTypes = VRM10SpringBoneColliderTypes.Capsule,
-                                        WorldPosition = group.transform.TransformPoint(collider.Offset),
-                                        Radius = collider.Radius,
-                                        WorldTail = group.transform.TransformPoint(collider.Tail)
-                                    });
-                                    break;
-                            }
+                            case VRM10SpringBoneColliderTypes.Capsule:
+                                m_colliderList.Add(new SpringBoneLogic.InternalCollider
+                                {
+                                    ColliderTypes = VRM10SpringBoneColliderTypes.Capsule,
+                                    WorldPosition = group.transform.TransformPoint(collider.Offset),
+                                    Radius = collider.Radius,
+                                    WorldTail = group.transform.TransformPoint(collider.Tail)
+                                });
+                                break;
                         }
                     }
                 }

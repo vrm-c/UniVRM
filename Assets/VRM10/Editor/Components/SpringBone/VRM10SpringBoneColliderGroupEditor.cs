@@ -64,7 +64,7 @@ namespace UniVRM10
 
             Undo.RecordObject(target, "Sort Colliders by Radius");
 
-            target.Colliders = target.Colliders.OrderBy(x => -x.Radius).ToList();
+            target.Colliders = target.Colliders.OrderBy(x => -x.Radius);
         }
 
         [MenuItem("CONTEXT/VRM10SpringBoneColliderGroup/Sort Colliders by Offset Y")]
@@ -75,7 +75,7 @@ namespace UniVRM10
 
             Undo.RecordObject(target, "Sort Colliders by Offset Y");
 
-            target.Colliders = target.Colliders.OrderBy(x => -x.Offset.y).ToList();
+            target.Colliders = target.Colliders.OrderBy(x => -x.Offset.y);
         }
     }
 }
