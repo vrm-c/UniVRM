@@ -10,12 +10,6 @@ namespace UniGLTF
     [Serializable]
     public class MeshExportValidator : ScriptableObject
     {
-        public enum Messages
-        {
-            MATERIALS_CONTAINS_NULL,
-            UNKNOWN_SHADER,
-        }
-
         public static Mesh GetMesh(Renderer r)
         {
             if (r is SkinnedMeshRenderer smr)
@@ -197,15 +191,31 @@ namespace UniGLTF
             return null;
         }
 
+        public enum Messages
+        {
+            DIFFERENT_MATERIAL_COUNT,
+            MATERIALS_CONTAINS_NULL,
+            UNKNOWN_SHADER,
+        }
+
         public IEnumerable<Validation> Validate(GameObject ExportRoot)
         {
             foreach (var info in Meshes)
             {
                 // invalid materials.len
-
-                // material null
-                if (info.Renderer.sharedMaterials.Any(x => x == null))
+                if (info.Renderer.sharedMaterials.Length < info.Mesh.subMeshCount)
                 {
+                    // すべての submesh に material が割り当てられていない
+                    yield return Validation.Error(Messages.DIFFERENT_MATERIAL_COUNT.Msg());
+                }
+                else if (info.Renderer.sharedMaterials.Length > info.Mesh.subMeshCount)
+                {
+                    // 未使用の material がある
+                    yield return Validation.Warning(Messages.DIFFERENT_MATERIAL_COUNT.Msg());
+                }
+                else if (info.Renderer.sharedMaterials.Any(x => x == null))
+                {
+                    // material に null が含まれる(unity で magenta になっているはず)
                     yield return Validation.Error($"{info.Renderer}: {Messages.MATERIALS_CONTAINS_NULL.Msg()}");
                 }
             }
