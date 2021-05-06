@@ -263,12 +263,12 @@ namespace UniVRM10
             return (vrm, vrmSpringBone, thumbnailTextureIndex);
         }
 
-        UniGLTF.Extensions.VRMC_springBone.ColliderShape ExportShape(VRM10SpringBoneCollider z)
+        UniGLTF.Extensions.VRMC_springBone.ColliderShape ExportShape(VRM10SpringBoneCollider.Shape z)
         {
             var shape = new UniGLTF.Extensions.VRMC_springBone.ColliderShape();
-            switch (z.ColliderType)
+            switch (z.ShapeType)
             {
-                case VRM10SpringBoneColliderTypes.Sphere:
+                case VRM10SpringBoneColliderShapeTypes.Sphere:
                     {
                         shape.Sphere = new UniGLTF.Extensions.VRMC_springBone.ColliderShapeSphere
                         {
@@ -278,7 +278,7 @@ namespace UniVRM10
                         break;
                     }
 
-                case VRM10SpringBoneColliderTypes.Capsule:
+                case VRM10SpringBoneColliderShapeTypes.Capsule:
                     {
                         shape.Capsule = new UniGLTF.Extensions.VRMC_springBone.ColliderShapeCapsule
                         {
@@ -335,11 +335,14 @@ namespace UniVRM10
                     {
                         continue;
                     }
-                    colliderGroup.Colliders.Add(new UniGLTF.Extensions.VRMC_springBone.Collider
+                    foreach (var z in y.Shapes)
                     {
-                        Node = getNodeIndexFromTransform(y.transform),
-                        Shape = ExportShape(y),
-                    });
+                        colliderGroup.Colliders.Add(new UniGLTF.Extensions.VRMC_springBone.Collider
+                        {
+                            Node = getNodeIndexFromTransform(y.transform),
+                            Shape = ExportShape(z),
+                        });
+                    }
                 }
             }
 

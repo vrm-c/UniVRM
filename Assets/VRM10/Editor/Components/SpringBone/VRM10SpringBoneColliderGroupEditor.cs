@@ -23,14 +23,16 @@ namespace UniVRM10
             Gizmos.color = Color.green;
 
             bool changed = false;
-
             foreach (var x in m_target.Colliders)
             {
-                var offset = Handles.PositionHandle(x.Offset, Quaternion.identity);
-                if (offset != x.Offset)
+                foreach (var y in x.Shapes)
                 {
-                    changed = true;
-                    x.Offset = offset;
+                    var offset = Handles.PositionHandle(y.Offset, Quaternion.identity);
+                    if (offset != y.Offset)
+                    {
+                        changed = true;
+                        y.Offset = offset;
+                    }
                 }
             }
 
@@ -48,34 +50,15 @@ namespace UniVRM10
 
             Undo.RecordObject(target, "X Mirror");
 
-            foreach (var sphereCollider in target.Colliders)
+            foreach (var collider in target.Colliders)
             {
-                var offset = sphereCollider.Offset;
-                offset.x *= -1f;
-                sphereCollider.Offset = offset;
+                foreach (var shape in collider.Shapes)
+                {
+                    var offset = shape.Offset;
+                    offset.x *= -1f;
+                    shape.Offset = offset;
+                }
             }
-        }
-
-        [MenuItem("CONTEXT/VRM10SpringBoneColliderGroup/Sort Colliders by Radius")]
-        private static void SortByRadius(MenuCommand command)
-        {
-            var target = command.context as VRM10SpringBoneColliderGroup;
-            if (target == null) return;
-
-            Undo.RecordObject(target, "Sort Colliders by Radius");
-
-            target.Colliders = target.Colliders.OrderBy(x => -x.Radius);
-        }
-
-        [MenuItem("CONTEXT/VRM10SpringBoneColliderGroup/Sort Colliders by Offset Y")]
-        private static void SortByOffsetY(MenuCommand command)
-        {
-            var target = command.context as VRM10SpringBoneColliderGroup;
-            if (target == null) return;
-
-            Undo.RecordObject(target, "Sort Colliders by Offset Y");
-
-            target.Colliders = target.Colliders.OrderBy(x => -x.Offset.y);
         }
     }
 }

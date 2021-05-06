@@ -389,21 +389,28 @@ namespace UniVRM10
                     {
                         var node = Nodes[c.Node.Value];
 
-                        var collider = node.gameObject.AddComponent<VRM10SpringBoneCollider>();
-                        colliderGroup.AddCollider(collider);
+                        var collider = node.gameObject.GetComponent<VRM10SpringBoneCollider>();
+                        if (collider == null)
+                        {
+                            // 各ノードにひとつだけ
+                            collider = node.gameObject.AddComponent<VRM10SpringBoneCollider>();
+                            colliderGroup.AddCollider(collider);
+                        }
 
+                        var shape = new VRM10SpringBoneCollider.Shape();
+                        collider.Shapes.Add(shape);
                         if (c.Shape.Sphere is UniGLTF.Extensions.VRMC_springBone.ColliderShapeSphere sphere)
                         {
-                            collider.ColliderType = VRM10SpringBoneColliderTypes.Sphere;
-                            collider.Radius = sphere.Radius.Value;
-                            collider.Offset = Vector3InvertX(sphere.Offset);
+                            shape.ShapeType = VRM10SpringBoneColliderShapeTypes.Sphere;
+                            shape.Radius = sphere.Radius.Value;
+                            shape.Offset = Vector3InvertX(sphere.Offset);
                         }
                         else if (c.Shape.Capsule is UniGLTF.Extensions.VRMC_springBone.ColliderShapeCapsule capsule)
                         {
-                            collider.ColliderType = VRM10SpringBoneColliderTypes.Capsule;
-                            collider.Radius = capsule.Radius.Value;
-                            collider.Offset = Vector3InvertX(capsule.Offset);
-                            collider.Tail = Vector3InvertX(capsule.Tail);
+                            shape.ShapeType = VRM10SpringBoneColliderShapeTypes.Capsule;
+                            shape.Radius = capsule.Radius.Value;
+                            shape.Offset = Vector3InvertX(capsule.Offset);
+                            shape.Tail = Vector3InvertX(capsule.Tail);
                         }
                         else
                         {

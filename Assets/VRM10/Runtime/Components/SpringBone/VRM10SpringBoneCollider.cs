@@ -1,27 +1,36 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace UniVRM10
 {
-    public enum VRM10SpringBoneColliderTypes
+    public enum VRM10SpringBoneColliderShapeTypes
     {
         Sphere,
         Capsule,
     }
 
-    [Serializable]
+    [AddComponentMenu("VRM10/VRM10SpringBoneCollider")]
+    [DisallowMultipleComponent]
     public class VRM10SpringBoneCollider : MonoBehaviour
     {
-        public VRM10SpringBoneColliderTypes ColliderType;
+        [Serializable]
+        public class Shape
+        {
+            public VRM10SpringBoneColliderShapeTypes ShapeType;
 
-        /// <summary>bone local position</summary>
-        public Vector3 Offset;
+            /// <summary>bone local position</summary>
+            public Vector3 Offset;
 
-        [Range(0, 1.0f)]
-        public float Radius;
+            [Range(0, 1.0f)]
+            public float Radius;
 
-        /// <summary>bone local position</summary>
-        public Vector3 Tail;
+            /// <summary>bone local position</summary>
+            public Vector3 Tail;
+        }
+
+        [SerializeField]
+        public List<Shape> Shapes = new List<Shape>();
 
         public static void DrawWireCapsule(Vector3 headPos, Vector3 tailPos, float radius)
         {
@@ -80,15 +89,19 @@ namespace UniVRM10
                 1.0f / transform.lossyScale.y,
                 1.0f / transform.lossyScale.z
                 ));
-            switch (ColliderType)
-            {
-                case VRM10SpringBoneColliderTypes.Sphere:
-                    Gizmos.DrawWireSphere(Offset, Radius);
-                    break;
 
-                case VRM10SpringBoneColliderTypes.Capsule:
-                    DrawWireCapsule(Offset, Tail, Radius);
-                    break;
+            foreach (var shape in Shapes)
+            {
+                switch (shape.ShapeType)
+                {
+                    case VRM10SpringBoneColliderShapeTypes.Sphere:
+                        Gizmos.DrawWireSphere(shape.Offset, shape.Radius);
+                        break;
+
+                    case VRM10SpringBoneColliderShapeTypes.Capsule:
+                        DrawWireCapsule(shape.Offset, shape.Tail, shape.Radius);
+                        break;
+                }
             }
         }
     }

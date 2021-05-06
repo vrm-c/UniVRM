@@ -8,6 +8,8 @@ namespace UniVRM10
     /// <summary>
     /// VRMC_node_collider
     /// </summary>
+    [DisallowMultipleComponent]
+
     [AddComponentMenu("VRM10/VRM10SpringBoneColliderGroup")]
     public class VRM10SpringBoneColliderGroup : MonoBehaviour
     {
