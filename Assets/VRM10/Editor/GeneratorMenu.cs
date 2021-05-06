@@ -7,18 +7,15 @@ namespace UniVRM10
     /// <summary>
     /// JsonSchema から vrm10 のシリアライザーを生成する。
     /// 
-    /// * https://github.com/KhronosGroup/glTF
-    /// * https://github.com/vrm-c/vrm-specification
-    /// 
-    /// を UniVRM の隣に clone しておくこと。
-    /// 
-    /// * UniVRM
     /// * glTF
     /// * vrm-specification
+    /// 
+    /// は SubModuleになった。 `$ git submodule update --init` しておくこと。
     /// 
     /// </summary>
     public static class Menu
     {
+#if VRM_DEVELOP        
         [MenuItem(UniVRM10.VRMVersion.MENU + "/Generate from JsonSchema")]
         public static void Generate()
         {
@@ -30,6 +27,7 @@ namespace UniVRM10
         {
             Run(true);
         }
+#endif
 
         static void Run(bool debug)
         {

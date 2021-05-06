@@ -35,12 +35,12 @@ public static void Serialize(JsonFormatter f, VRMC_node_constraint value)
 
     if(value.Extensions!=null){
         f.Key("extensions");                
-        value.Extensions.Serialize(f);
+        (value.Extensions as glTFExtension).Serialize(f);
     }
 
     if(value.Extras!=null){
         f.Key("extras");                
-        value.Extras.Serialize(f);
+        (value.Extras as glTFExtension).Serialize(f);
     }
 
     if(value.Constraint!=null){
@@ -58,12 +58,12 @@ public static void Serialize_Constraint(JsonFormatter f, Constraint value)
 
     if(value.Extensions!=null){
         f.Key("extensions");                
-        value.Extensions.Serialize(f);
+        (value.Extensions as glTFExtension).Serialize(f);
     }
 
     if(value.Extras!=null){
         f.Key("extras");                
-        value.Extras.Serialize(f);
+        (value.Extras as glTFExtension).Serialize(f);
     }
 
     if(value.Position!=null){
@@ -91,12 +91,12 @@ public static void __constraint_Serialize_Position(JsonFormatter f, PositionCons
 
     if(value.Extensions!=null){
         f.Key("extensions");                
-        value.Extensions.Serialize(f);
+        (value.Extensions as glTFExtension).Serialize(f);
     }
 
     if(value.Extras!=null){
         f.Key("extras");                
-        value.Extras.Serialize(f);
+        (value.Extras as glTFExtension).Serialize(f);
     }
 
     if(!string.IsNullOrEmpty(value.Name)){
@@ -151,12 +151,12 @@ public static void __constraint_Serialize_Rotation(JsonFormatter f, RotationCons
 
     if(value.Extensions!=null){
         f.Key("extensions");                
-        value.Extensions.Serialize(f);
+        (value.Extensions as glTFExtension).Serialize(f);
     }
 
     if(value.Extras!=null){
         f.Key("extras");                
-        value.Extras.Serialize(f);
+        (value.Extras as glTFExtension).Serialize(f);
     }
 
     if(!string.IsNullOrEmpty(value.Name)){
@@ -211,12 +211,12 @@ public static void __constraint_Serialize_Aim(JsonFormatter f, AimConstraint val
 
     if(value.Extensions!=null){
         f.Key("extensions");                
-        value.Extensions.Serialize(f);
+        (value.Extensions as glTFExtension).Serialize(f);
     }
 
     if(value.Extras!=null){
         f.Key("extras");                
-        value.Extras.Serialize(f);
+        (value.Extras as glTFExtension).Serialize(f);
     }
 
     if(!string.IsNullOrEmpty(value.Name)){
