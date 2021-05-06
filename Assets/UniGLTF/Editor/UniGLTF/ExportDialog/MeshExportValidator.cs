@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UniGLTF.M17N;
 using UnityEngine;
 
 namespace UniGLTF
@@ -9,6 +10,12 @@ namespace UniGLTF
     [Serializable]
     public class MeshExportValidator : ScriptableObject
     {
+        public enum Messages
+        {
+            MATERIALS_CONTAINS_NULL,
+            UNKNOWN_SHADER,
+        }
+
         public static Mesh GetMesh(Renderer r)
         {
             if (r is SkinnedMeshRenderer smr)
@@ -29,10 +36,6 @@ namespace UniGLTF
         public List<MeshExportInfo> Meshes = new List<MeshExportInfo>();
 
         public int ExpectedExportByteSize => Meshes.Where(x => x.IsRendererActive).Sum(x => x.ExportByteSize);
-
-        List<Validation> m_validations = new List<Validation>();
-
-        public IEnumerable<Validation> Validations => m_validations;
 
         public MeshExportSettings Settings;
 
@@ -164,7 +167,6 @@ namespace UniGLTF
         public void SetRoot(GameObject ExportRoot, MeshExportSettings settings)
         {
             Settings = settings;
-            m_validations.Clear();
             Meshes.Clear();
             if (ExportRoot == null)
             {
@@ -178,6 +180,50 @@ namespace UniGLTF
                     Meshes.Add(info);
                 }
             }
+        }
+
+        public Func<string, string> GltfMaterialFromUnityShaderName = DefaultGltfMaterialType;
+
+        public static string DefaultGltfMaterialType(string shaderName)
+        {
+            if (shaderName == "Standard")
+            {
+                return "pbr";
+            }
+            if (MaterialExporter.IsUnlit(shaderName))
+            {
+                return "unlit";
+            }
+            return null;
+        }
+
+        public IEnumerable<Validation> Validate(GameObject ExportRoot)
+        {
+            foreach (var info in Meshes)
+            {
+                // invalid materials.len
+
+                // material null
+                if (info.Renderer.sharedMaterials.Any(x => x == null))
+                {
+                    yield return Validation.Error($"{info.Renderer}: {Messages.MATERIALS_CONTAINS_NULL.Msg()}");
+                }
+            }
+
+            foreach (var m in Meshes.SelectMany(x => x.Renderer.sharedMaterials).Distinct())
+            {
+                if (m == null)
+                {
+                    continue;
+                }
+                var gltfMaterial = GltfMaterialFromUnityShaderName(m.shader.name);
+                if (string.IsNullOrEmpty(gltfMaterial))
+                {
+                    yield return Validation.Warning($"{m}: unknown shader: {m.shader.name} => export as gltf default");
+                }
+            }
+
+            yield break;
         }
     }
 }

@@ -124,18 +124,37 @@ namespace VRM
 
         protected override IEnumerable<Validator> ValidatorFactory()
         {
-            HumanoidValidator.MeshInformations = m_meshes.Meshes;
-            HumanoidValidator.EnableFreeze = m_settings.PoseFreeze;
-            VRMExporterValidator.ReduceBlendshape = m_settings.ReduceBlendshape;
-
+            // ヒエラルキー　のチェック
             yield return HierarchyValidator.Validate;
             if (!State.ExportRoot)
             {
+                // Root が無い
                 yield break;
             }
 
+            // Mesh/Renderer のチェック
+            m_meshes.GltfMaterialFromUnityShaderName = (string shaderName) =>
+            {
+                var name = VRMMaterialExporter.VrmMaterialName(shaderName);
+                if (!string.IsNullOrEmpty(name))
+                {
+                    return name;
+                }
+                return MeshExportValidator.DefaultGltfMaterialType(shaderName);
+            };
+            yield return m_meshes.Validate;
+
+            // Humanoid のチェック
+            HumanoidValidator.MeshInformations = m_meshes.Meshes;
+            HumanoidValidator.EnableFreeze = m_settings.PoseFreeze;
             yield return HumanoidValidator.Validate;
+
+            //
+            // VRM のチェック
+            //
+            VRMExporterValidator.ReduceBlendshape = m_settings.ReduceBlendshape;
             yield return VRMExporterValidator.Validate;
+
             yield return VRMSpringBoneValidator.Validate;
 
             var firstPerson = State.ExportRoot.GetComponent<VRMFirstPerson>();
@@ -160,6 +179,8 @@ namespace VRM
             m_meshes.SetRoot(State.ExportRoot, m_settings);
         }
 
+        static bool s_foldT = true;
+
         protected override bool DoGUI(bool isValid)
         {
             if (State.ExportRoot == null)
@@ -174,42 +195,46 @@ namespace VRM
             {
                 var backup = GUI.enabled;
                 GUI.enabled = State.ExportRoot.scene.IsValid();
-                if (GUI.enabled)
-                {
-                    EditorGUILayout.HelpBox(EnableTPose.ENALBE_TPOSE_BUTTON.Msg(), MessageType.Info);
-                }
-                else
-                {
-                    EditorGUILayout.HelpBox(EnableTPose.DISABLE_TPOSE_BUTTON.Msg(), MessageType.Warning);
-                }
 
-                //
-                // T-Pose
-                //
-                if (GUILayout.Button(VRMExportSettingsEditor.Options.DO_TPOSE.Msg()))
+                if (s_foldT = EditorGUILayout.Foldout(s_foldT, "T-Pose"))
                 {
-                    if (State.ExportRoot != null)
+                    if (GUI.enabled)
                     {
-                        // fallback
-                        Undo.RecordObjects(State.ExportRoot.GetComponentsInChildren<Transform>(), "tpose");
-                        VRMBoneNormalizer.EnforceTPose(State.ExportRoot);
-                        Repaint();
+                        EditorGUILayout.HelpBox(EnableTPose.ENALBE_TPOSE_BUTTON.Msg(), MessageType.Info);
                     }
-                }
-
-                if (GUILayout.Button(VRMExportSettingsEditor.Options.DO_TPOSE.Msg() + "(unity internal)"))
-                {
-                    if (State.ExportRoot != null)
+                    else
                     {
-                        Undo.RecordObjects(State.ExportRoot.GetComponentsInChildren<Transform>(), "tpose.internal");
-                        if (InternalTPose.TryMakePoseValid(State.ExportRoot))
+                        EditorGUILayout.HelpBox(EnableTPose.DISABLE_TPOSE_BUTTON.Msg(), MessageType.Warning);
+                    }
+
+                    //
+                    // T-Pose
+                    //
+                    if (GUILayout.Button(VRMExportSettingsEditor.Options.DO_TPOSE.Msg()))
+                    {
+                        if (State.ExportRoot != null)
                         {
-                            // done
+                            // fallback
+                            Undo.RecordObjects(State.ExportRoot.GetComponentsInChildren<Transform>(), "tpose");
+                            VRMBoneNormalizer.EnforceTPose(State.ExportRoot);
                             Repaint();
                         }
-                        else
+                    }
+
+                    if (GUILayout.Button(VRMExportSettingsEditor.Options.DO_TPOSE.Msg() + "(unity internal)"))
+                    {
+                        if (State.ExportRoot != null)
                         {
-                            Debug.LogWarning("not found");
+                            Undo.RecordObjects(State.ExportRoot.GetComponentsInChildren<Transform>(), "tpose.internal");
+                            if (InternalTPose.TryMakePoseValid(State.ExportRoot))
+                            {
+                                // done
+                                Repaint();
+                            }
+                            else
+                            {
+                                Debug.LogWarning("not found");
+                            }
                         }
                     }
                 }
@@ -221,9 +246,6 @@ namespace VRM
             {
                 return false;
             }
-
-            EditorGUILayout.HelpBox($"Mesh size: {m_meshes.ExpectedExportByteSize / 1000000.0f:0.0} MByte", MessageType.Info);
-
 
             //
             // GUI
@@ -285,6 +307,7 @@ namespace VRM
                     break;
 
                 case Tabs.Mesh:
+                    EditorGUILayout.HelpBox($"Mesh size: {m_meshes.ExpectedExportByteSize / 1000000.0f:0.0} MByte", MessageType.Info);
                     m_meshesInspector.OnInspectorGUI();
                     break;
 
