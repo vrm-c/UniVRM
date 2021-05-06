@@ -216,7 +216,7 @@ namespace UniGLTF
 
         public virtual void ExportExtensions(Func<Texture2D, (byte[], string)> getTextureBytes)
         {
-
+            // do nothing
         }
 
         public virtual void Export(MeshExportSettings meshExportSettings, Func<Texture, bool> useAsset, Func<Texture2D, (byte[], string)> getTextureBytes)

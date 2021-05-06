@@ -10,6 +10,24 @@ namespace VRM
 {
     public class VRMMaterialExporter : MaterialExporter
     {
+        public static string VrmMaterialName(string shaderName)
+        {
+            switch (shaderName)
+            {
+                case "VRM/UnlitTexture":
+                case "VRM/UnlitTransparent":
+                case "VRM/UnlitCutout":
+                case "VRM/UnlitTransparentZWrite":
+                    return "KHR_materials_unlit";
+
+                case "VRM/MToon":
+                    return "MToon";
+
+                default:
+                    return null;
+            }
+        }
+
         protected override glTFMaterial CreateMaterial(Material m)
         {
             switch (m.shader.name)

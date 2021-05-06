@@ -3,7 +3,7 @@ using UnityEditor;
 
 namespace VRM
 {
-    [CustomEditor(typeof(VRMExportMeshes))]
+    [CustomEditor(typeof(VRMMeshExportValidator))]
     public class VRMExportMeshesEditor : MeshExportValidatorEditor
     {
     }

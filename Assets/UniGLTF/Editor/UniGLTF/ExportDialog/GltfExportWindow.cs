@@ -32,11 +32,17 @@ namespace UniGLTF
         GltfExportSettings m_settings;
         Editor m_settingsInspector;
 
+        MeshExportValidator m_meshes;
+        Editor m_meshesInspector;
+
         protected override void Initialize()
         {
             m_settings = ScriptableObject.CreateInstance<GltfExportSettings>();
             m_settings.InverseAxis = UniGLTFPreference.GltfIOAxis;
             m_settingsInspector = Editor.CreateEditor(m_settings);
+
+            m_meshes = ScriptableObject.CreateInstance<MeshExportValidator>();
+            m_meshesInspector = Editor.CreateEditor(m_meshes);
         }
 
         protected override void Clear()
@@ -44,6 +50,12 @@ namespace UniGLTF
             // m_settingsInspector
             UnityEditor.Editor.DestroyImmediate(m_settingsInspector);
             m_settingsInspector = null;
+            // m_meshesInspector
+            UnityEditor.Editor.DestroyImmediate(m_meshesInspector);
+            m_meshesInspector = null;
+            // m_settings
+            ScriptableObject.DestroyImmediate(m_settings);
+            m_settings = null;
         }
 
         protected override IEnumerable<Validator> ValidatorFactory()
@@ -54,7 +66,16 @@ namespace UniGLTF
             {
                 yield break;
             }
+
+            // Mesh/Renderer のチェック
+            yield return m_meshes.Validate;
         }
+
+        protected override void OnLayout()
+        {
+            m_meshes.SetRoot(State.ExportRoot, m_settings.MeshExportSettings);
+        }
+
         protected override bool DoGUI(bool isValid)
         {
             if (!isValid)
@@ -67,6 +88,7 @@ namespace UniGLTF
             switch (_tab)
             {
                 case Tabs.Mesh:
+                    m_meshesInspector.OnInspectorGUI();
                     break;
 
                 case Tabs.ExportSettings:
@@ -131,7 +153,6 @@ namespace UniGLTF
                 AssetDatabase.ImportAsset(path.ToUnityRelativePath());
                 AssetDatabase.Refresh();
             }
-
         }
     }
 }

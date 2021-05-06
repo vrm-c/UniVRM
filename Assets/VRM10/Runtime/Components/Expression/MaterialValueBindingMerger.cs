@@ -57,7 +57,7 @@ namespace UniVRM10
             {
                 foreach (var material in renderer.sharedMaterials)
                 {
-                    if (!materialNameMap.ContainsKey(material.name))
+                    if (material != null && !materialNameMap.ContainsKey(material.name))
                     {
                         materialNameMap.Add(material.name, material);
                     }
