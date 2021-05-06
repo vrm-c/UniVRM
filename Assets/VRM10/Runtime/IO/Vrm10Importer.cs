@@ -384,7 +384,7 @@ namespace UniVRM10
                         var node = Nodes[c.Node.Value];
 
                         var collider = node.gameObject.AddComponent<VRM10SpringBoneCollider>();
-                        colliderGroup.Colliders.Add(collider);
+                        colliderGroup.AddCollider(collider);
 
                         if (c.Shape.Sphere is UniGLTF.Extensions.VRMC_springBone.ColliderShapeSphere sphere)
                         {
