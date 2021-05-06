@@ -65,7 +65,6 @@ namespace UniGLTF.Extensions.VRMC_vrm
         public int? ThumbnailImage;
 
         // A person who can perform with this avatars
-        [JsonSchema(EnumSerializationType = EnumSerializationType.AsString)]
         public AvatarPermissionType AvatarPermission;
 
         // A flag that permits to use this avatar in excessively violent contents
@@ -75,21 +74,18 @@ namespace UniGLTF.Extensions.VRMC_vrm
         public bool? AllowExcessivelySexualUsage;
 
         // An option that permits to use this avatar in commercial products
-        [JsonSchema(EnumSerializationType = EnumSerializationType.AsString)]
         public CommercialUsageType CommercialUsage;
 
         // A flag that permits to use this avatar in political or religious contents
         public bool? AllowPoliticalOrReligiousUsage;
 
         // An option that forces or abandons to display the credit of this avatar
-        [JsonSchema(EnumSerializationType = EnumSerializationType.AsString)]
         public CreditNotationType CreditNotation;
 
         // A flag that permits to redistribute this avatar
         public bool? AllowRedistribution;
 
         // An option that controls the condition to modify this avatar
-        [JsonSchema(EnumSerializationType = EnumSerializationType.AsString)]
         public ModificationType Modification;
 
         // Describe the URL links of other license
@@ -291,7 +287,6 @@ namespace UniGLTF.Extensions.VRMC_vrm
         public int? Node;
 
         // How the camera interprets the mesh.
-        [JsonSchema(EnumSerializationType = EnumSerializationType.AsString)]
         public FirstPersonType Type;
     }
 
@@ -322,7 +317,6 @@ namespace UniGLTF.Extensions.VRMC_vrm
         // The origin of LookAt. Position offset from the head bone
         public float[] OffsetFromHeadBone;
 
-        [JsonSchema(EnumSerializationType = EnumSerializationType.AsString)]
         public LookAtType Type;
 
         // Horizontal inward movement. The left eye moves right. The right eye moves left.
@@ -401,7 +395,6 @@ namespace UniGLTF.Extensions.VRMC_vrm
         // target material
         public int? Material;
 
-        [JsonSchema(EnumSerializationType = EnumSerializationType.AsString)]
         public MaterialColorType Type;
 
         // target color
@@ -446,7 +439,6 @@ namespace UniGLTF.Extensions.VRMC_vrm
         public string Name;
 
         // Functions of Expression
-        [JsonSchema(EnumSerializationType = EnumSerializationType.AsString)]
         public ExpressionPreset Preset;
 
         // Specify a morph target
@@ -462,15 +454,12 @@ namespace UniGLTF.Extensions.VRMC_vrm
         public bool? IsBinary;
 
         // Override values of Blink expressions when this Expression is enabled
-        [JsonSchema(EnumSerializationType = EnumSerializationType.AsString)]
         public ExpressionOverrideType OverrideBlink;
 
         // Override values of LookAt expressions when this Expression is enabled
-        [JsonSchema(EnumSerializationType = EnumSerializationType.AsString)]
         public ExpressionOverrideType OverrideLookAt;
 
         // Override values of Mouth expressions when this Expression is enabled
-        [JsonSchema(EnumSerializationType = EnumSerializationType.AsString)]
         public ExpressionOverrideType OverrideMouth;
     }
 

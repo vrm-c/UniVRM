@@ -30,10 +30,10 @@ namespace UniGLTF.Extensions.VRMC_springBone
     public class ColliderShape
     {
         // Dictionary object with extension-specific objects.
-        public glTFExtension Extensions;
+        public object Extensions;
 
         // Application-specific data.
-        public glTFExtension Extras;
+        public object Extras;
 
         public ColliderShapeSphere Sphere;
 
@@ -43,10 +43,10 @@ namespace UniGLTF.Extensions.VRMC_springBone
     public class Collider
     {
         // Dictionary object with extension-specific objects.
-        public glTFExtension Extensions;
+        public object Extensions;
 
         // Application-specific data.
-        public glTFExtension Extras;
+        public object Extras;
 
         // The node index.
         public int? Node;
@@ -57,10 +57,10 @@ namespace UniGLTF.Extensions.VRMC_springBone
     public class ColliderGroup
     {
         // Dictionary object with extension-specific objects.
-        public glTFExtension Extensions;
+        public object Extensions;
 
         // Application-specific data.
-        public glTFExtension Extras;
+        public object Extras;
 
         public List<Collider> Colliders;
     }
