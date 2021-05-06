@@ -1,4 +1,4 @@
-// This file is generated from JsonSchema. Don't modify this source code.
+﻿// This file is generated from JsonSchema. Don't modify this source code.
 using UniJSON;
 using System;
 using System.Collections.Generic;
