@@ -82,7 +82,8 @@ namespace UniGLTF
                 {
                     continue; ;
                 }
-                if (x.Renderer.sharedMaterials == null
+                if (x.Renderer == null
+                || x.Renderer.sharedMaterials == null
                 || x.Renderer.sharedMaterials.Length == 0)
                 {
                     continue;
