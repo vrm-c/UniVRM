@@ -1,13 +1,14 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Text;
 using UniGLTF.JsonSchema;
 
 namespace GenerateUniGLTFSerialization
 {
     public class Generator
     {
-        static void ClearFolder(DirectoryInfo dir)
+        static void DeleteAllInDirectory(DirectoryInfo dir)
         {
             Console.WriteLine($"clear: {dir}");
 
@@ -19,6 +20,23 @@ namespace GenerateUniGLTFSerialization
             foreach (DirectoryInfo child in dir.GetDirectories())
             {
                 child.Delete(true);
+            }
+        }
+
+        static void CleanDirectory(DirectoryInfo dir)
+        {
+            // clear or create folder
+            if (dir.Exists)
+            {
+                if (dir.EnumerateFileSystemInfos().Any())
+                {
+                    DeleteAllInDirectory(dir);
+                }
+            }
+            else
+            {
+                Console.WriteLine($"create: {dir}");
+                dir.Create();
             }
         }
 
@@ -43,29 +61,32 @@ namespace GenerateUniGLTFSerialization
             return filename.Split('.').First();
         }
 
-        public static void GenerateTo(JsonSchemaSource root, DirectoryInfo dir, bool clearFolder)
+        static void WriteAllTextForce(string path, string contents)
         {
-            // clear or create folder
-            if (dir.Exists)
+            if (string.IsNullOrEmpty(path)) return;
+            
+            var dir = Path.GetDirectoryName(path);
+            if (string.IsNullOrEmpty(dir)) return;
+            
+            var dirInfo = new DirectoryInfo(dir);
+            if (!dirInfo.Exists)
             {
-                if (dir.EnumerateFileSystemInfos().Any())
-                {
-                    if (!clearFolder)
-                    {
-                        Console.WriteLine($"{dir} is not empty.");
-                        return;
-                    }
-
-                    // clear
-                    ClearFolder(dir);
-                }
-            }
-            else
-            {
-                Console.WriteLine($"create: {dir}");
-                dir.Create();
+                dirInfo.Create();
             }
 
+            if (File.Exists(path))
+            {
+                File.Delete(path);
+            }
+            
+            File.WriteAllText(path, contents, Encoding.UTF8);
+        }
+        
+        public static void GenerateTo(JsonSchemaSource root, DirectoryInfo formatDir, DirectoryInfo serializerDir)
+        {
+            CleanDirectory(formatDir);
+            CleanDirectory(serializerDir);
+            
             foreach (var s in root.Traverse())
             {
                 // title を掃除
@@ -73,30 +94,30 @@ namespace GenerateUniGLTFSerialization
             }
 
             {
-                var dst = Path.Combine(dir.FullName, "Format.g.cs");
+                var dst = Path.Combine(formatDir.FullName, "Format.g.cs");
                 Console.WriteLine(dst);
                 using (var w = new StringWriter())
                 {
                     FormatWriter.Write(w, root, GetStem(root.FilePath.Name));
-                    File.WriteAllText(dst, w.ToString().Replace("\r\n", "\n"));
+                    WriteAllTextForce(dst, w.ToString().Replace("\r\n", "\n"));
                 }
             }
             {
-                var dst = Path.Combine(dir.FullName, "Deserializer.g.cs");
+                var dst = Path.Combine(serializerDir.FullName, "Deserializer.g.cs");
                 Console.WriteLine(dst);
                 using (var w = new StringWriter())
                 {
                     DeserializerWriter.Write(w, root, GetStem(root.FilePath.Name));
-                    File.WriteAllText(dst, w.ToString().Replace("\r\n", "\n"));
+                    WriteAllTextForce(dst, w.ToString().Replace("\r\n", "\n"));
                 }
             }
             {
-                var dst = Path.Combine(dir.FullName, "Serializer.g.cs");
+                var dst = Path.Combine(serializerDir.FullName, "Serializer.g.cs");
                 Console.WriteLine(dst);
                 using (var w = new StringWriter())
                 {
                     SerializerWriter.Write(w, root, GetStem(root.FilePath.Name));
-                    File.WriteAllText(dst, w.ToString().Replace("\r\n", "\n"));
+                    WriteAllTextForce(dst, w.ToString().Replace("\r\n", "\n"));
                 }
             }
         }
