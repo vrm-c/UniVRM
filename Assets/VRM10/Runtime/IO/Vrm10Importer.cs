@@ -358,7 +358,7 @@ namespace UniVRM10
             }
         }
 
-        const string NODE_NAME = "colliderGroups";
+        public const string COLLIDER_GROUPS_NODE_NAME = "colliderGroups";
         async Task LoadSpringBoneAsync(IAwaitCaller awaitCaller, VRM10Controller controller, UniGLTF.Extensions.VRMC_springBone.VRMC_springBone gltfVrmSpringBone)
         {
             await awaitCaller.NextFrame();
@@ -366,10 +366,10 @@ namespace UniVRM10
             // springs
             if (gltfVrmSpringBone.Springs != null)
             {
-                var colliderGroupsNode = Root.transform.Find(NODE_NAME);
+                var colliderGroupsNode = Root.transform.Find(COLLIDER_GROUPS_NODE_NAME);
                 if (colliderGroupsNode == null)
                 {
-                    colliderGroupsNode = new GameObject(NODE_NAME).transform;
+                    colliderGroupsNode = new GameObject(COLLIDER_GROUPS_NODE_NAME).transform;
                     colliderGroupsNode.SetParent(Root.transform, false);
                 }
 

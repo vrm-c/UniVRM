@@ -127,11 +127,27 @@ namespace UniVRM10
             return Model;
         }
 
-        private static void CreateNodes(
+        /// <summary>
+        /// 再帰的に Node を収集する
+        /// </summary>
+        /// <param name="parentTransform"></param>
+        /// <param name="parentNode"></param>
+        /// <param name="nodes"></param>
+        private static bool CreateNodes(
             Transform parentTransform,
             VrmLib.Node parentNode,
             Dictionary<GameObject, VrmLib.Node> nodes)
         {
+            if (parentTransform.parent != null && parentTransform.parent.name == Vrm10Importer.COLLIDER_GROUPS_NODE_NAME && parentTransform.childCount == 0)
+            {
+                var components = parentTransform.GetComponents<MonoBehaviour>();
+                if (components.Length == 1 && components[0] is VRM10SpringBoneColliderGroup)
+                {
+                    // nodeGroup 用の node をスキップする: TODO
+                    return false;
+                }
+            }
+
             // parentNode.SetMatrix(parentTransform.localToWorldMatrix.ToNumericsMatrix4x4(), false);
             parentNode.LocalTranslation = parentTransform.localPosition.ToNumericsVector3();
             parentNode.LocalRotation = parentTransform.localRotation.ToNumericsQuaternion();
@@ -141,9 +157,13 @@ namespace UniVRM10
             foreach (Transform child in parentTransform)
             {
                 var childNode = new VrmLib.Node(child.gameObject.name);
-                CreateNodes(child, childNode, nodes);
-                parentNode.Add(childNode);
+                if (CreateNodes(child, childNode, nodes))
+                {
+                    parentNode.Add(childNode);
+                }
             }
+
+            return true;
         }
 
         private static Transform GetTransformFromRelativePath(Transform root, Queue<string> relativePath)
