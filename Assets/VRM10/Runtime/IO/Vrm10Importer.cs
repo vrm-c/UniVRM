@@ -358,6 +358,7 @@ namespace UniVRM10
             }
         }
 
+        const string NODE_NAME = "colliderGroups";
         async Task LoadSpringBoneAsync(IAwaitCaller awaitCaller, VRM10Controller controller, UniGLTF.Extensions.VRMC_springBone.VRMC_springBone gltfVrmSpringBone)
         {
             await awaitCaller.NextFrame();
@@ -365,18 +366,23 @@ namespace UniVRM10
             // springs
             if (gltfVrmSpringBone.Springs != null)
             {
-                var secondary = Root.transform.Find("secondary");
-                if (secondary == null)
+                var colliderGroupsNode = Root.transform.Find(NODE_NAME);
+                if (colliderGroupsNode == null)
                 {
-                    secondary = new GameObject("secondary").transform;
-                    secondary.SetParent(Root.transform, false);
+                    colliderGroupsNode = new GameObject(NODE_NAME).transform;
+                    colliderGroupsNode.SetParent(Root.transform, false);
                 }
 
                 // colliderGroup
                 var list = new List<VRM10SpringBoneColliderGroup>();
-                foreach (var g in gltfVrmSpringBone.ColliderGroups)
+                for (var i = 0; i < gltfVrmSpringBone.ColliderGroups.Count; ++i)
                 {
-                    var colliderGroup = secondary.gameObject.AddComponent<VRM10SpringBoneColliderGroup>();
+                    var g = gltfVrmSpringBone.ColliderGroups[i];
+                    var name = string.IsNullOrEmpty(g.Name) ? $"group_{i:00}" : g.Name;
+                    var colliderGroupNode = new GameObject(name).transform;
+                    colliderGroupNode.SetParent(colliderGroupsNode, colliderGroupNode);
+
+                    var colliderGroup = colliderGroupNode.gameObject.AddComponent<VRM10SpringBoneColliderGroup>();
                     list.Add(colliderGroup);
 
                     foreach (var c in g.Colliders)

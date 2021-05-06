@@ -62,6 +62,9 @@ namespace UniGLTF.Extensions.VRMC_springBone
         // Application-specific data.
         public object Extras;
 
+        // Name of the Spring
+        public string Name;
+
         public List<Collider> Colliders;
     }
 
@@ -119,6 +122,9 @@ namespace UniGLTF.Extensions.VRMC_springBone
 
         // Application-specific data.
         public object Extras;
+
+        // Name of the Spring
+        public string Name;
 
         // An array of colliderGroups.
         public List<ColliderGroup> ColliderGroups;
