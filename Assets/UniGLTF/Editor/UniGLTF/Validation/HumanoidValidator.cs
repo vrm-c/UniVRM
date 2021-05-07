@@ -169,7 +169,7 @@ namespace UniGLTF
             var jaw = animator.GetBoneTransform(HumanBodyBones.Jaw);
             if (jaw != null)
             {
-                yield return Validation.Warning(ValidationMessages.JAW_BONE_IS_INCLUDED.Msg());
+                yield return Validation.Warning(ValidationMessages.JAW_BONE_IS_INCLUDED.Msg(), ValidationContext.Create(jaw));
             }
         }
     }
