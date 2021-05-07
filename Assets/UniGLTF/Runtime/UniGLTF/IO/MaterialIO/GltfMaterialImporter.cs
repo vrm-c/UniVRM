@@ -78,6 +78,7 @@ namespace UniGLTF
                 }
                 
                 // Coordinate Conversion: GL (top-left origin) to DX (bottom-left origin)
+                // Formula: https://github.com/vrm-c/UniVRM/issues/930
                 offset.y = 1.0f - offset.y - scale.y;
             }
 
