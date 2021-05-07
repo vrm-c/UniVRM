@@ -38,7 +38,7 @@ namespace UniGLTF
         {
             if (m.HasProperty("_Color"))
             {
-                material.pbrMetallicRoughness.baseColorFactor = m.color.linear.ToArray();
+                material.pbrMetallicRoughness.baseColorFactor = m.GetColor("_Color").ToFloat4(ColorSpace.sRGB, ColorSpace.Linear);
             }
 
             if (m.HasProperty("_MainTex"))
@@ -161,7 +161,7 @@ namespace UniGLTF
                 {
                     color /= color.maxColorComponent;
                 }
-                material.emissiveFactor = new float[] { color.r, color.g, color.b };
+                material.emissiveFactor = color.ToFloat3(ColorSpace.Linear, ColorSpace.Linear);
             }
 
             if (m.HasProperty("_EmissionMap"))
