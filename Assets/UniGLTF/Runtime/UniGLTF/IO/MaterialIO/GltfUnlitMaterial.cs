@@ -36,8 +36,9 @@ namespace UniGLTF
             // color
             if (src.pbrMetallicRoughness.baseColorFactor != null && src.pbrMetallicRoughness.baseColorFactor.Length == 4)
             {
-                var color = src.pbrMetallicRoughness.baseColorFactor;
-                param.Colors.Add("_Color", (new Color(color[0], color[1], color[2], color[3])).gamma);
+                param.Colors.Add("_Color",
+                    src.pbrMetallicRoughness.baseColorFactor.ToColor4(ColorSpace.Linear, ColorSpace.sRGB)
+                );
             }
 
             //renderMode
