@@ -92,7 +92,7 @@ namespace UniGLTF
 
             // extractor
             var extractor = new TextureExtractor(parser, UnityPath.FromUnityPath(""), loader.TextureFactory.Textures.Select(x => (new SubAssetKey(typeof(Texture2D), x.Texture.name), x.Texture)).ToArray());
-            var m = GltfTextureEnumerator.EnumerateTexturesForMaterial(parser, 0).FirstOrDefault(x => x.Item1.Name == "texture_1.standard");
+            var m = GltfTextureEnumerator.EnumerateTexturesReferencedByMaterials(parser, 0).FirstOrDefault(x => x.Item1.Name == "texture_1.standard");
 
             Assert.Catch<NotImplementedException>(() => extractor.Extract(m.Item1, m.Item2));
         }

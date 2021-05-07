@@ -134,7 +134,7 @@ namespace VRM
                 else
                 {
                     // PBR or Unlit
-                    foreach (var (key, value) in GltfTextureEnumerator.EnumerateTexturesForMaterial(parser, i))
+                    foreach (var (key, value) in GltfTextureEnumerator.EnumerateTexturesReferencedByMaterials(parser, i))
                     {
                         if (used.Add(key))
                         {

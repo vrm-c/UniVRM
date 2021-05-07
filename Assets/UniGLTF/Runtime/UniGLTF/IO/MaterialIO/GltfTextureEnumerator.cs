@@ -28,7 +28,7 @@ namespace UniGLTF
     /// </summary>
     public static class GltfTextureEnumerator
     {
-        public static IEnumerable<(SubAssetKey, TextureImportParam)> EnumerateTexturesForMaterial(GltfParser parser, int i)
+        public static IEnumerable<(SubAssetKey, TextureImportParam)> EnumerateTexturesReferencedByMaterials(GltfParser parser, int i)
         {
             var m = parser.GLTF.materials[i];
 
@@ -82,17 +82,12 @@ namespace UniGLTF
         /// <returns></returns>
         public static IEnumerable<(SubAssetKey, TextureImportParam)> EnumerateAllTexturesDistinct(GltfParser parser)
         {
-            var used = new HashSet<SubAssetKey>();
-            Func<(SubAssetKey, TextureImportParam), bool> add = (kv) =>
-            {
-                var (key, textureInfo) = kv;
-                return used.Add(key);
-            };
+            var usedTextures = new HashSet<SubAssetKey>();
             for (int i = 0; i < parser.GLTF.materials.Count; ++i)
             {
-                foreach (var kv in EnumerateTexturesForMaterial(parser, i))
+                foreach ((SubAssetKey key, TextureImportParam) kv in EnumerateTexturesReferencedByMaterials(parser, i))
                 {
-                    if (add(kv))
+                    if (usedTextures.Add(kv.key))
                     {
                         yield return kv;
                     }
