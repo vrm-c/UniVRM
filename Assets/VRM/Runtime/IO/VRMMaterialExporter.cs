@@ -5,6 +5,7 @@ using UniGLTF;
 using UniGLTF.ShaderPropExporter;
 using UnityEngine;
 using VRMShaders;
+using ColorSpace = UniGLTF.ColorSpace;
 
 namespace VRM
 {
@@ -160,7 +161,8 @@ namespace VRM
                     {
                         case ShaderPropertyType.Color:
                             {
-                                var value = m.GetColor(kv.Key).ToArray();
+                                // No color conversion. Because color property is serialized to raw float array.
+                                var value = m.GetColor(kv.Key).ToFloat4(ColorSpace.Linear, ColorSpace.Linear);
                                 material.vectorProperties.Add(kv.Key, value);
                             }
                             break;
