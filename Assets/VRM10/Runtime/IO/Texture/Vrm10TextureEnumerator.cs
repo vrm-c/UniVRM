@@ -32,12 +32,11 @@ namespace UniVRM10
             // Textures referenced by Materials.
             for (int i = 0; i < parser.GLTF.materials.Count; ++i)
             {
-                var param = Vrm10MaterialImporter.GetMaterialParam(parser, i);
-                foreach (var (key, value) in param.EnumerateSubAssetKeyValue())
+                foreach ((SubAssetKey key, TextureImportParam) kv in EnumerateTexturesReferencedByMaterials(parser, i))
                 {
-                    if (usedTextures.Add(key))
+                    if (usedTextures.Add(kv.key))
                     {
-                        yield return (key, value);
+                        yield return kv;
                     }
                 }
             }
@@ -78,12 +77,22 @@ namespace UniVRM10
         /// </summary>
         public static IEnumerable<(SubAssetKey, TextureImportParam)> EnumerateTexturesReferencedByMaterials(GltfParser parser, int i)
         {
-            // VRM
-            
-            // Fallback to GLTF
-            foreach (var kv in GltfTextureEnumerator.EnumerateTexturesReferencedByMaterials(parser, i))
+            var m = parser.GLTF.materials[i];
+            if (UniGLTF.Extensions.VRMC_materials_mtoon.GltfDeserializer.TryGet(m.extensions, out var mToon))
             {
-                yield return kv;
+                // Enumerate VRM MToon Textures
+                if (Vrm10MToonMaterialImporter.TryGetBaseColorTexture(parser, m, out var litTex))
+                    yield return litTex;
+                if (Vrm10MToonMaterialImporter.TryGetShadeMultiplyTexture(parser, mToon, out var shadeTex))
+                    yield return shadeTex;
+            }
+            else
+            {
+                // Fallback to glTF PBR & glTF Unlit
+                foreach (var kv in GltfTextureEnumerator.EnumerateTexturesReferencedByMaterials(parser, i))
+                {
+                    yield return kv;
+                }
             }
         }
     }
