@@ -53,21 +53,34 @@ namespace UniGLTF
 
         public static (Vector2, Vector2) GetTextureOffsetAndScale(glTFTextureInfo textureInfo)
         {
-            Vector2 offset = new Vector2(0, 0);
-            Vector2 scale = new Vector2(1, 1);
-            if (glTF_KHR_texture_transform.TryGet(textureInfo, out glTF_KHR_texture_transform textureTransform))
+            if (glTF_KHR_texture_transform.TryGet(textureInfo, out var textureTransform))
+            {
+                return GetTextureOffsetAndScale(textureTransform);
+            }
+            return (new Vector2(0, 0), new Vector2(1, 1));
+        }
+        
+        public static (Vector2, Vector2) GetTextureOffsetAndScale(glTF_KHR_texture_transform textureTransform)
+        {
+            var offset = new Vector2(0, 0);
+            var scale = new Vector2(1, 1);
+
+            if (textureTransform != null)
             {
                 if (textureTransform.offset != null && textureTransform.offset.Length == 2)
                 {
                     offset = new Vector2(textureTransform.offset[0], textureTransform.offset[1]);
                 }
+
                 if (textureTransform.scale != null && textureTransform.scale.Length == 2)
                 {
                     scale = new Vector2(textureTransform.scale[0], textureTransform.scale[1]);
                 }
-
-                offset.y = (offset.y + scale.y - 1.0f) * -1.0f;
+                
+                // Coordinate Conversion: GL (top-left origin) to DX (bottom-left origin)
+                offset.y = 1.0f - offset.y - scale.y;
             }
+
             return (offset, scale);
         }
 
