@@ -20,14 +20,18 @@ namespace UniVRM10
                 pair = default;
                 return false;
             }
+            catch (ArgumentOutOfRangeException)
+            {
+                pair = default;
+                return false;
+            }
         }
-
-        public static bool TryGetShadeMultiplyTexture(GltfParser parser, VRMC_materials_mtoon mToon, out (SubAssetKey, TextureImportParam) pair)
+        
+        public static bool TryGetNormalTexture(GltfParser parser, glTFMaterial src, out (SubAssetKey, TextureImportParam) pair)
         {
             try
             {
-                var (offset, scale) = GetTextureOffsetAndScale(mToon.ShadeMultiplyTexture);
-                pair = GltfTextureImporter.CreateSRGB(parser, mToon.ShadeMultiplyTexture.Index ?? -1, offset, scale);
+                pair = GltfPBRMaterial.NormalTexture(parser, src);
                 return true;
             }
             catch (NullReferenceException)
@@ -35,11 +39,85 @@ namespace UniVRM10
                 pair = default;
                 return false;
             }
+            catch (ArgumentOutOfRangeException)
+            {
+                pair = default;
+                return false;
+            }
         }
 
-        private static (Vector2, Vector2) GetTextureOffsetAndScale(TextureInfo textureInfo)
+        public static bool TryGetShadeMultiplyTexture(GltfParser parser, VRMC_materials_mtoon mToon, out (SubAssetKey, TextureImportParam) pair)
         {
-            if (glTF_KHR_texture_transform.TryGet(new Vrm10TextureInfo(textureInfo), out var textureTransform))
+            return TryGetSRGBTexture(parser, new Vrm10TextureInfo(mToon.ShadeMultiplyTexture), out pair);
+        }
+
+        public static bool TryGetShadingShiftTexture(GltfParser parser, VRMC_materials_mtoon mToon, out (SubAssetKey, TextureImportParam) pair)
+        {
+            return TryGetLinearTexture(parser, new Vrm10TextureInfo(mToon.ShadingShiftTexture), out pair);
+        }
+        
+        public static bool TryGetMatcapTexture(GltfParser parser, VRMC_materials_mtoon mToon, out (SubAssetKey, TextureImportParam) pair)
+        {
+            return TryGetSRGBTexture(parser, new Vrm10TextureInfo(mToon.ShadingShiftTexture), out pair);
+        }
+        
+        public static bool TryGetRimMultiplyTexture(GltfParser parser, VRMC_materials_mtoon mToon, out (SubAssetKey, TextureImportParam) pair)
+        {
+            return TryGetSRGBTexture(parser, new Vrm10TextureInfo(mToon.RimMultiplyTexture), out pair);
+        }
+
+        public static bool TryGetOutlineWidthMultiplyTexture(GltfParser parser, VRMC_materials_mtoon mToon, out (SubAssetKey, TextureImportParam) pair)
+        {
+            return TryGetLinearTexture(parser, new Vrm10TextureInfo(mToon.OutlineWidthMultiplyTexture), out pair);
+        }
+
+        public static bool TryGetUvAnimationMaskTexture(GltfParser parser, VRMC_materials_mtoon mToon, out (SubAssetKey, TextureImportParam) pair)
+        {
+            return TryGetLinearTexture(parser, new Vrm10TextureInfo(mToon.UvAnimationMaskTexture), out pair);
+        }
+
+        private static bool TryGetSRGBTexture(GltfParser parser, Vrm10TextureInfo info, out (SubAssetKey, TextureImportParam) pair)
+        {
+            try
+            {
+                var (offset, scale) = GetTextureOffsetAndScale(info);
+                pair = GltfTextureImporter.CreateSRGB(parser, info.index, offset, scale);
+                return true;
+            }
+            catch (NullReferenceException)
+            {
+                pair = default;
+                return false;
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                pair = default;
+                return false;
+            }
+        }
+        private static bool TryGetLinearTexture(GltfParser parser, Vrm10TextureInfo info, out (SubAssetKey, TextureImportParam) pair)
+        {
+            try
+            {
+                var (offset, scale) = GetTextureOffsetAndScale(info);
+                pair = GltfTextureImporter.CreateLinear(parser, info.index, offset, scale);
+                return true;
+            }
+            catch (NullReferenceException)
+            {
+                pair = default;
+                return false;
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                pair = default;
+                return false;
+            }
+        }
+
+        private static (Vector2, Vector2) GetTextureOffsetAndScale(Vrm10TextureInfo textureInfo)
+        {
+            if (glTF_KHR_texture_transform.TryGet(textureInfo, out var textureTransform))
             {
                 return GltfMaterialImporter.GetTextureOffsetAndScale(textureTransform);
             }
@@ -53,6 +131,18 @@ namespace UniVRM10
         {
             public Vrm10TextureInfo(TextureInfo info)
             {
+                if (info == null) return;
+                
+                index = info.Index ?? -1;
+                texCoord = info.TexCoord ?? -1;
+                extensions = info.Extensions as glTFExtension;
+                extras = info.Extras as glTFExtension;
+            }
+
+            public Vrm10TextureInfo(ShadingShiftTextureInfo info)
+            {
+                if (info == null) return;
+                
                 index = info.Index ?? -1;
                 texCoord = info.TexCoord ?? -1;
                 extensions = info.Extensions as glTFExtension;
