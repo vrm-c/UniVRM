@@ -26,6 +26,37 @@ namespace UniGLTF
         Critical,
     }
 
+    public struct ValidationContext
+    {
+        /// <summary>
+        /// Messageの発生個所にジャンプするための情報
+        /// </summary>
+        public Type Type;
+        public UnityEngine.Component Context;
+
+        /// <summary>
+        /// DrawGUIから呼び出す。追加のGUIボタンなどを実装する
+        /// </summary>
+        public Action Extended;
+
+        public static ValidationContext Create<T>(T c) where T : UnityEngine.Component
+        {
+            return new ValidationContext
+            {
+                Type = typeof(T),
+                Context = c,
+            };
+        }
+
+        public static ValidationContext Create(Action extended)
+        {
+            return new ValidationContext
+            {
+                Extended = extended,
+            };
+        }
+    }
+
     public struct Validation
     {
         public readonly ErrorLevels ErrorLevel;
@@ -52,34 +83,31 @@ namespace UniGLTF
 
         public readonly String Message;
 
-        /// <summary>
-        /// DrawGUIから呼び出す。追加のGUIボタンなどを実装する
-        /// </summary>
-        public Action Extended;
+        public ValidationContext Context;
 
-        Validation(ErrorLevels canExport, string message, Action extended = null)
+        Validation(ErrorLevels canExport, string message, ValidationContext context = default)
         {
             ErrorLevel = canExport;
             Message = message;
-            Extended = extended;
+            Context = context;
         }
 
-        public static Validation Critical(string msg)
+        public static Validation Critical(string msg, ValidationContext context = default)
         {
-            return new Validation(ErrorLevels.Critical, msg);
+            return new Validation(ErrorLevels.Critical, msg, context);
         }
 
-        public static Validation Error(string msg, Action action = null)
+        public static Validation Error(string msg, ValidationContext context = default)
         {
-            return new Validation(ErrorLevels.Error, msg, action);
+            return new Validation(ErrorLevels.Error, msg, context);
         }
 
-        public static Validation Warning(string msg)
+        public static Validation Warning(string msg, ValidationContext context = default)
         {
-            return new Validation(ErrorLevels.Warning, msg);
+            return new Validation(ErrorLevels.Warning, msg, context);
         }
 
-        public static Validation Info(string msg)
+        public static Validation Info(string msg, ValidationContext context = default)
         {
             return new Validation(ErrorLevels.Info, msg);
         }
