@@ -1,45 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using UniGLTF;
+﻿using UniGLTF;
 using UnityEngine;
 using VRMShaders;
-
 
 namespace UniVRM10
 {
     public static class Vrm10MaterialImporter
     {
-        public static Color ToColor4(this float[] src, Color defaultValue = default)
-        {
-            if (src == null || src.Length != 4)
-            {
-                throw new NotImplementedException();
-            }
-
-            var v = new Vector4(
-                src[0],
-                src[1],
-                src[2],
-                src[3]
-            );
-            return v;
-        }
-        public static Color ToColor3(this float[] src, Color defaultValue = default)
-        {
-            if (src == null || src.Length < 3)
-            {
-                throw new NotImplementedException();
-            }
-
-            var v = new Vector4(
-                src[0],
-                src[1],
-                src[2]
-            );
-            return v;
-        }
-
         /// <summary>
         /// VMRC_materials_mtoon の場合にマテリアル生成情報を作成する
         /// </summary>
@@ -75,8 +41,15 @@ namespace UniVRM10
                 }
                 {
                     // var color = mtoon.Color;
-                    material.SetColor(MToon.Utils.PropColor, m.pbrMetallicRoughness.baseColorFactor.ToColor4());
-                    if (mtoon.ShadeColorFactor != null) material.SetColor(MToon.Utils.PropShadeColor, mtoon.ShadeColorFactor.ToColor3());
+                    material.SetColor(MToon.Utils.PropColor, m.pbrMetallicRoughness.baseColorFactor
+                        .ToColor4(UniGLTF.ColorSpace.Linear, UniGLTF.ColorSpace.sRGB)
+                    );
+                    if (mtoon.ShadeColorFactor != null)
+                    {
+                        material.SetColor(MToon.Utils.PropShadeColor, mtoon.ShadeColorFactor
+                            .ToColor3(UniGLTF.ColorSpace.Linear, UniGLTF.ColorSpace.sRGB)
+                        );
+                    }
                     material.SetFloat(MToon.Utils.PropCutoff, m.alphaCutoff);
                 }
                 {
@@ -91,17 +64,29 @@ namespace UniVRM10
                     }
                 }
                 {
-                    material.SetColor(MToon.Utils.PropEmissionColor, m.emissiveFactor.ToColor3());
+                    material.SetColor(MToon.Utils.PropEmissionColor,
+                        m.emissiveFactor.ToColor3(UniGLTF.ColorSpace.Linear, UniGLTF.ColorSpace.Linear)
+                    );
                 }
                 {
-                    if (mtoon.ParametricRimColorFactor != null) material.SetColor(MToon.Utils.PropRimColor, mtoon.ParametricRimColorFactor.ToColor3());
+                    if (mtoon.ParametricRimColorFactor != null)
+                    {
+                        material.SetColor(MToon.Utils.PropRimColor, mtoon.ParametricRimColorFactor
+                            .ToColor3(UniGLTF.ColorSpace.Linear, UniGLTF.ColorSpace.sRGB)
+                        );
+                    }
                     if (mtoon.RimLightingMixFactor.HasValue) material.SetFloat(MToon.Utils.PropRimLightingMix, mtoon.RimLightingMixFactor.Value);
                     if (mtoon.ParametricRimFresnelPowerFactor.HasValue) material.SetFloat(MToon.Utils.PropRimFresnelPower, mtoon.ParametricRimFresnelPowerFactor.Value);
                     if (mtoon.ParametricRimLiftFactor.HasValue) material.SetFloat(MToon.Utils.PropRimLift, mtoon.ParametricRimLiftFactor.Value);
                 }
                 {
                     if (mtoon.OutlineWidthFactor.HasValue) material.SetFloat(MToon.Utils.PropOutlineWidth, mtoon.OutlineWidthFactor.Value);
-                    if (mtoon.OutlineColorFactor != null) material.SetColor(MToon.Utils.PropOutlineColor, mtoon.OutlineColorFactor.ToColor3());
+                    if (mtoon.OutlineColorFactor != null)
+                    {
+                        material.SetColor(MToon.Utils.PropOutlineColor, mtoon.OutlineColorFactor
+                            .ToColor3(UniGLTF.ColorSpace.Linear, UniGLTF.ColorSpace.sRGB)
+                        );
+                    }
                     if (mtoon.OutlineLightingMixFactor.HasValue) material.SetFloat(MToon.Utils.PropOutlineLightingMix, mtoon.OutlineLightingMixFactor.Value);
 
                     // private
