@@ -1,7 +1,5 @@
-﻿using System.Threading.Tasks;
-using UnityEngine;
+﻿using UnityEngine;
 using VRMShaders;
-
 
 namespace UniGLTF
 {
@@ -103,8 +101,9 @@ namespace UniGLTF
 
                 if (src.pbrMetallicRoughness.baseColorFactor != null && src.pbrMetallicRoughness.baseColorFactor.Length == 4)
                 {
-                    var color = src.pbrMetallicRoughness.baseColorFactor;
-                    param.Colors.Add("_Color", (new Color(color[0], color[1], color[2], color[3])).gamma);
+                    param.Colors.Add("_Color",
+                        src.pbrMetallicRoughness.baseColorFactor.ToColor4(ColorSpace.Linear, ColorSpace.sRGB)
+                    );
                 }
 
                 if (src.pbrMetallicRoughness.baseColorTexture != null && src.pbrMetallicRoughness.baseColorTexture.index != -1)
@@ -153,7 +152,9 @@ namespace UniGLTF
 
                 if (src.emissiveFactor != null && src.emissiveFactor.Length == 3)
                 {
-                    param.Colors.Add("_EmissionColor", new Color(src.emissiveFactor[0], src.emissiveFactor[1], src.emissiveFactor[2]));
+                    param.Colors.Add("_EmissionColor",
+                        src.emissiveFactor.ToColor3(ColorSpace.Linear, ColorSpace.Linear)
+                    );
                 }
 
                 if (src.emissiveTexture != null && src.emissiveTexture.index != -1)

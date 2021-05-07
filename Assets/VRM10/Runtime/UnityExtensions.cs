@@ -273,11 +273,6 @@ namespace UniVRM10
             return new float[] { v.x, v.y, v.z, v.w };
         }
 
-        public static float[] ToArray(this Color c)
-        {
-            return new float[] { c.r, c.g, c.b, c.a };
-        }
-
         public static void ReverseZRecursive(this Transform root)
         {
             var globalMap = root.Traverse().ToDictionary(x => x, x => PosRot.FromGlobalTransform(x));

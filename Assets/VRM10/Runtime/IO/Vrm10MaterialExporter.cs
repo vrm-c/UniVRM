@@ -1,6 +1,7 @@
 ﻿using UniGLTF;
 using UnityEngine;
 using VRMShaders;
+using ColorSpace = UniGLTF.ColorSpace;
 
 namespace UniVRM10
 {
@@ -23,14 +24,14 @@ namespace UniVRM10
 
                 pbrMetallicRoughness = new glTFPbrMetallicRoughness
                 {
-                    baseColorFactor = def.Color.LitColor.ToArray(),
+                    baseColorFactor = def.Color.LitColor.ToFloat4(ColorSpace.sRGB, ColorSpace.Linear),
                     baseColorTexture = new glTFMaterialBaseColorTextureInfo
                     {
                         index = textureExporter.ExportSRGB(def.Color.LitMultiplyTexture),
                     },
                 },
 
-                emissiveFactor = def.Emission.EmissionColor.ToArray(),
+                emissiveFactor = def.Emission.EmissionColor.ToFloat3(ColorSpace.Linear, ColorSpace.Linear),
             };
 
             // VRMC_materials_mtoon

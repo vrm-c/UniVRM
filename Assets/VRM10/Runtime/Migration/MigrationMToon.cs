@@ -5,25 +5,15 @@ using UniGLTF;
 using UniGLTF.Extensions.VRMC_materials_mtoon;
 using UniJSON;
 using UnityEngine;
-
+using ColorSpace = UniGLTF.ColorSpace;
 
 namespace UniVRM10
 {
     public static class MigrationMToon
     {
-        static float[] ToFloat4(this Color color)
+        static Color ToColor(JsonNode node, ColorSpace srcColorSpace, ColorSpace dstColorSpace)
         {
-            return new float[] { color.r, color.g, color.b, color.a };
-        }
-
-        static float[] ToFloat3(this Color color)
-        {
-            return new float[] { color.r, color.g, color.b };
-        }
-
-        static Color ToColor(JsonNode node)
-        {
-            return node.ArrayItems().Select(x => x.GetSingle()).ToArray().ToColor4();
+            return node.ArrayItems().Select(x => x.GetSingle()).ToArray().ToColor4(srcColorSpace, dstColorSpace);
         }
 
         static float[] ToFloat4(JsonNode node)
@@ -90,23 +80,23 @@ namespace UniVRM10
                     switch (key)
                     {
                         case "_Color":
-                            definition.Color.LitColor = ToColor(kv.Value);
+                            definition.Color.LitColor = ToColor(kv.Value, ColorSpace.sRGB, ColorSpace.sRGB);
                             break;
 
                         case "_ShadeColor":
-                            definition.Color.ShadeColor = ToColor(kv.Value);
+                            definition.Color.ShadeColor = ToColor(kv.Value, ColorSpace.sRGB, ColorSpace.sRGB);
                             break;
 
                         case "_EmissionColor":
-                            definition.Emission.EmissionColor = ToColor(kv.Value);
+                            definition.Emission.EmissionColor = ToColor(kv.Value, ColorSpace.Linear, ColorSpace.Linear);
                             break;
 
                         case "_OutlineColor":
-                            definition.Outline.OutlineColor = ToColor(kv.Value);
+                            definition.Outline.OutlineColor = ToColor(kv.Value, ColorSpace.sRGB, ColorSpace.sRGB);
                             break;
 
                         case "_RimColor":
-                            definition.Rim.RimColor = ToColor(kv.Value);
+                            definition.Rim.RimColor = ToColor(kv.Value, ColorSpace.sRGB, ColorSpace.sRGB);
                             break;
 
                         case "_MainTex":
@@ -315,7 +305,7 @@ namespace UniVRM10
                 var dst = new VRMC_materials_mtoon();
 
                 // Color
-                gltfMaterial.pbrMetallicRoughness.baseColorFactor = mtoon.Definition.Color.LitColor.ToFloat4();
+                gltfMaterial.pbrMetallicRoughness.baseColorFactor = mtoon.Definition.Color.LitColor.ToFloat4(ColorSpace.sRGB, ColorSpace.Linear);
                 if (mtoon.TextureIndexMap.MainTex.HasValue)
                 {
                     gltfMaterial.pbrMetallicRoughness.baseColorTexture = new glTFMaterialBaseColorTextureInfo
@@ -332,7 +322,7 @@ namespace UniVRM10
                         (value[2], value[3])
                         );
                 }
-                dst.ShadeColorFactor = mtoon.Definition.Color.ShadeColor.ToFloat3();
+                dst.ShadeColorFactor = mtoon.Definition.Color.ShadeColor.ToFloat3(ColorSpace.sRGB, ColorSpace.Linear);
                 if (mtoon.TextureIndexMap.ShadeTexture.HasValue)
                 {
                     dst.ShadeMultiplyTexture = new TextureInfo { Index = mtoon.TextureIndexMap.ShadeTexture.Value };
@@ -340,7 +330,7 @@ namespace UniVRM10
                 gltfMaterial.alphaCutoff = mtoon.Definition.Color.CutoutThresholdValue;
 
                 // Outline
-                dst.OutlineColorFactor = ToFloat3(mtoon.Definition.Outline.OutlineColor);
+                dst.OutlineColorFactor = mtoon.Definition.Outline.OutlineColor.ToFloat3(ColorSpace.sRGB, ColorSpace.Linear);
                 dst.OutlineLightingMixFactor = mtoon.Definition.Outline.OutlineLightingMixValue;
                 dst.OutlineWidthMode = (UniGLTF.Extensions.VRMC_materials_mtoon.OutlineWidthMode)mtoon.Definition.Outline.OutlineWidthMode;
                 dst.OutlineWidthFactor = mtoon.Definition.Outline.OutlineWidthValue;
@@ -350,7 +340,7 @@ namespace UniVRM10
                 }
 
                 // Emission
-                gltfMaterial.emissiveFactor = mtoon.Definition.Emission.EmissionColor.ToFloat3();
+                gltfMaterial.emissiveFactor = mtoon.Definition.Emission.EmissionColor.ToFloat3(ColorSpace.Linear, ColorSpace.Linear);
                 if (mtoon.TextureIndexMap.EmissionMap.HasValue)
                 {
                     gltfMaterial.emissiveTexture = new glTFMaterialEmissiveTextureInfo
@@ -413,7 +403,7 @@ namespace UniVRM10
                 dst.RenderQueueOffsetNumber = mtoon.Definition.Rendering.RenderQueueOffsetNumber;
 
                 // rim
-                dst.ParametricRimColorFactor = mtoon.Definition.Rim.RimColor.ToFloat3();
+                dst.ParametricRimColorFactor = mtoon.Definition.Rim.RimColor.ToFloat3(ColorSpace.sRGB, ColorSpace.Linear);
                 if (mtoon.TextureIndexMap.RimTexture.HasValue)
                 {
                     dst.RimMultiplyTexture = new TextureInfo { Index = mtoon.TextureIndexMap.RimTexture.Value };
