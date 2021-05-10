@@ -222,26 +222,29 @@ namespace VRM
 
         private void SetupRecursive(Transform center, Transform parent)
         {
+            Vector3 localPosition = default;
+            Vector3 scale = default;
             if (parent.childCount == 0)
             {
+                // 子ノードが無い。7cm 固定
                 var delta = parent.position - parent.parent.position;
-                var childPosition = parent.position + delta.normalized * 0.07f;
-                m_verlet.Add(new VRMSpringBoneLogic(center, parent,
-                    parent.worldToLocalMatrix.MultiplyPoint(childPosition)));
+                var childPosition = parent.position + delta.normalized * 0.07f * parent.UniformedLossyScale();
+                localPosition = parent.worldToLocalMatrix.MultiplyPoint(childPosition); // cancel scale
+                scale = parent.lossyScale;
             }
             else
             {
                 var firstChild = GetChildren(parent).First();
-                var localPosition = firstChild.localPosition;
-                var scale = firstChild.lossyScale;
-                m_verlet.Add(new VRMSpringBoneLogic(center, parent,
-                        new Vector3(
-                            localPosition.x * scale.x,
-                            localPosition.y * scale.y,
-                            localPosition.z * scale.z
-                        )))
-                    ;
+                localPosition = firstChild.localPosition;
+                scale = firstChild.lossyScale;
             }
+            m_verlet.Add(new VRMSpringBoneLogic(center, parent,
+                    new Vector3(
+                        localPosition.x * scale.x,
+                        localPosition.y * scale.y,
+                        localPosition.z * scale.z
+                    )))
+                ;
 
             foreach (Transform child in parent) SetupRecursive(center, child);
         }
