@@ -39,48 +39,51 @@ namespace UniVRM10
         /// Model の座標系
         /// </summary>
         /// <returns></returns>
-        public Matrix4x4 GetSourceModelCoords()
+        public TR GetSourceModelCoords()
         {
-            Matrix4x4 m = Matrix4x4.identity;
+            var r = Quaternion.identity;
             if (Source != null)
             {
                 if (ModelRoot != null)
                 {
-                    m = Matrix4x4.Rotate(ModelRoot.rotation);
+                    r = ModelRoot.rotation;
                 }
             }
+
+            var t = Vector3.zero;
             if (Source != null)
             {
-                m *= Matrix4x4.Translate(Source.position);
+                t = Source.position;
             }
-            return m;
+
+            return new TR(r, t);
         }
 
         /// <summary>
         /// Local の座標系。つまり親座標系
         /// </summary>
         /// <returns></returns>
-        public Matrix4x4 GetSourceLocalCoords()
+        public TR GetSourceLocalCoords()
         {
             if (Source != null)
             {
                 if (m_src != null)
                 {
                     // runtime
-                    var parent = Matrix4x4.identity;
+                    var parent = TR.Identity;
                     if (Source.parent != null)
                     {
-                        parent = Source.parent.localToWorldMatrix;
+                        parent = TR.FromWorld(Source.parent);
                     }
-                    return parent * m_src.LocalInitial.Matrix;
+                    return parent * m_src.LocalInitial;
                 }
                 else
                 {
-                    return Source.localToWorldMatrix;
+                    return TR.FromWorld(Source);
                 }
             }
 
-            return Matrix4x4.identity;
+            return TR.Identity;
         }
 
         public Quaternion Delta
@@ -90,30 +93,30 @@ namespace UniVRM10
         }
 
         ConstraintDestination m_dst;
-        public Matrix4x4 GetDstModelCoords()
+        public TR GetDstModelCoords()
         {
-            Matrix4x4 m = Matrix4x4.identity;
+            var r = Quaternion.identity;
             if (ModelRoot != null)
             {
-                m = Matrix4x4.Rotate(ModelRoot.rotation);
+                r = ModelRoot.rotation;
             }
-            return m * Matrix4x4.Translate(transform.position);
+            return new TR(r, transform.position);
         }
-        public Matrix4x4 GetDstLocalCoords()
+        public TR GetDstLocalCoords()
         {
             if (m_src != null)
             {
                 // runtime
-                var parent = Matrix4x4.identity;
+                var parent = TR.Identity;
                 if (transform.parent != null)
                 {
-                    parent = transform.parent.localToWorldMatrix;
+                    parent = TR.FromWorld(transform.parent);
                 }
-                return parent * m_dst.LocalInitial.Matrix;
+                return parent * m_dst.LocalInitial;
             }
             else
             {
-                return transform.localToWorldMatrix;
+                return TR.FromWorld(transform);
             }
         }
 

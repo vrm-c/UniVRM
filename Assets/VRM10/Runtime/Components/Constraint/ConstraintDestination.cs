@@ -7,8 +7,8 @@ namespace UniVRM10
     class ConstraintDestination
     {
         readonly Transform m_transform;
-        readonly TRS m_modelInitial;
-        public readonly TRS LocalInitial;
+        readonly TR m_modelInitial;
+        public readonly TR LocalInitial;
         public readonly Transform ModelRoot;
 
         public ConstraintDestination(Transform t, Transform modelRoot = null)
@@ -16,8 +16,8 @@ namespace UniVRM10
             ModelRoot = modelRoot;
             m_transform = t;
 
-            LocalInitial = TRS.GetLocal(t);
-            m_modelInitial = TRS.GetRelative(t, modelRoot.worldToLocalMatrix);
+            LocalInitial = TR.FromLocal(t);
+            m_modelInitial = TR.FromRelative(t, modelRoot);
         }
 
         public void ApplyTranslation(Vector3 delta, float weight, ObjectSpace coords, Transform modelRoot = null)

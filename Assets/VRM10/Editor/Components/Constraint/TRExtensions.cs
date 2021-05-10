@@ -3,11 +3,11 @@ using UnityEngine;
 
 namespace UniVRM10
 {
-    public static class Coords
+    public static class TRExtensions
     {
-        public static void Draw(Matrix4x4 m, float size)
+        public static void Draw(this TR tr, float size)
         {
-            Handles.matrix = m * Matrix4x4.Scale(new Vector3(size, size, size));
+            Handles.matrix = tr.TRS(size);
 
             // Handles.CubeHandleCap(0, Vector3.zero, Quaternion.identity, size, EventType.Repaint);
             Handles.color = Color.red;

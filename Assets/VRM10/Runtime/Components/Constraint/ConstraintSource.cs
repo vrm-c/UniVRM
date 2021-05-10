@@ -12,12 +12,12 @@ namespace UniVRM10
         /// <summary>
         /// initial: ModelRoot.localToWorldMatrix^-1 * t.localToWorldMatrix
         /// </summary>
-        public readonly TRS ModelInitial;
+        public readonly TR ModelInitial;
 
         /// <summary>
         /// initial: t.localPosition, t.localRotation, t.localScale
         /// </summary>
-        public readonly TRS LocalInitial;
+        public readonly TR LocalInitial;
 
         public Vector3 TranslationDelta(ObjectSpace coords)
         {
@@ -47,17 +47,13 @@ namespace UniVRM10
             m_transform = t;
 
             {
-                LocalInitial = TRS.GetLocal(t);
+                LocalInitial = TR.FromLocal(t);
             }
 
             {
-                var world = TRS.GetWorld(t);
+                var world = TR.FromWorld(t);
                 ModelRoot = modelRoot;
-                ModelInitial = new TRS
-                {
-                    Translation = modelRoot.worldToLocalMatrix.MultiplyPoint(world.Translation),
-                    Rotation = world.Rotation * Quaternion.Inverse(ModelRoot.rotation),
-                };
+                ModelInitial = new TR(world.Rotation * Quaternion.Inverse(ModelRoot.rotation), modelRoot.worldToLocalMatrix.MultiplyPoint(world.Translation));
             }
         }
     }

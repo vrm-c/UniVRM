@@ -33,7 +33,7 @@ namespace UniVRM10
             var s = m_target.transform.lossyScale.x;
 
             // init 
-            Coords.Draw(m_target.GetSourceModelCoords(), 0.2f / s);
+            m_target.GetSourceModelCoords().Draw(0.2f / s);
         }
 
         void SrcDrawLocalCoords()
@@ -41,7 +41,7 @@ namespace UniVRM10
             var s = m_target.transform.lossyScale.x;
 
             // init 
-            Coords.Draw(m_target.GetSourceLocalCoords(), 0.2f / s);
+            m_target.GetSourceLocalCoords().Draw(0.2f / s);
         }
         #endregion
 
@@ -62,7 +62,7 @@ namespace UniVRM10
             var s = m_target.transform.lossyScale.x;
 
             // init 
-            Coords.Draw(m_target.GetDstModelCoords(), 0.2f / s);
+            m_target.GetDstModelCoords().Draw(0.2f / s);
         }
 
         void DstDrawLocalCoords()
@@ -70,7 +70,7 @@ namespace UniVRM10
             var s = m_target.transform.lossyScale.x;
 
             // init
-            Coords.Draw(m_target.GetDstLocalCoords(), 0.2f / s);
+            m_target.GetDstLocalCoords().Draw(0.2f / s);
         }
         #endregion
 
