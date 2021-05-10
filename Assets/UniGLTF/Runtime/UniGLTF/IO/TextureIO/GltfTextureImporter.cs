@@ -42,6 +42,18 @@ namespace UniGLTF
             var param = new TextureImportParam(name, gltfImage.GetExt(), gltfImage.uri, offset, scale, sampler, TextureImportTypes.sRGB, default, default, getTextureBytesAsync, default, default, default, default, default);
             return (key, param);
         }
+        
+        public static (SubAssetKey, TextureImportParam Param) CreateLinear(GltfParser parser, int textureIndex, Vector2 offset, Vector2 scale)
+        {
+            var gltfTexture = parser.GLTF.textures[textureIndex];
+            var gltfImage = parser.GLTF.images[gltfTexture.source];
+            var name = TextureImportName.GetUnityObjectName(TextureImportTypes.Linear, gltfTexture.name, gltfImage.uri);
+            var sampler = CreateSampler(parser.GLTF, textureIndex);
+            GetTextureBytesAsync getTextureBytesAsync = () => Task.FromResult(ToArray(parser.GLTF.GetImageBytesFromTextureIndex(parser.Storage, textureIndex)));
+            var key = new SubAssetKey(typeof(Texture2D), name);
+            var param = new TextureImportParam(name, gltfImage.GetExt(), gltfImage.uri, offset, scale, sampler, TextureImportTypes.Linear, default, default, getTextureBytesAsync, default, default, default, default, default);
+            return (key, param);
+        }
 
         public static (SubAssetKey, TextureImportParam Param) CreateNormal(GltfParser parser, int textureIndex, Vector2 offset, Vector2 scale)
         {

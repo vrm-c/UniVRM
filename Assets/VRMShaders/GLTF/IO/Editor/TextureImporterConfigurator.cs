@@ -95,6 +95,16 @@ namespace VRMShaders
                     }
                     break;
 
+                case TextureImportTypes.Linear:
+                    {
+                        if (ExternalMap.TryGetValue(textureInfo.UnityObjectName, out Texture2D external))
+                        {
+                            ConfigureSize(external);
+                            ConfigureLinear(external);
+                        }
+                    }
+                    break;
+                
                 default:
                     throw new NotImplementedException();
             }
