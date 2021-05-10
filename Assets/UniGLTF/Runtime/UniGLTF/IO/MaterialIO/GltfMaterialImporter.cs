@@ -77,7 +77,7 @@ namespace UniGLTF
                     scale = new Vector2(textureTransform.scale[0], textureTransform.scale[1]);
                 }
                 
-                // Coordinate Conversion: GL (top-left origin) to DX (bottom-left origin)
+                // UV Coordinate Conversion: glTF(top-left origin) to Unity(bottom-left origin)
                 // Formula: https://github.com/vrm-c/UniVRM/issues/930
                 offset.y = 1.0f - offset.y - scale.y;
             }
