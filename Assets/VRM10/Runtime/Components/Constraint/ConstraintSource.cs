@@ -34,10 +34,9 @@ namespace UniVRM10
         {
             switch (coords)
             {
-                // 右からかけるか、左からかけるか、それが問題なのだ
                 // case SourceCoordinates.World: return m_transform.rotation * Quaternion.Inverse(m_initial.Rotation);
                 case ObjectSpace.local: return m_transform.localRotation * Quaternion.Inverse(LocalInitial.Rotation);
-                case ObjectSpace.model: return m_transform.rotation * Quaternion.Inverse(ModelRoot.rotation) * Quaternion.Inverse(ModelInitial.Rotation);
+                case ObjectSpace.model: return m_transform.rotation * Quaternion.Inverse(ModelInitial.Rotation) * Quaternion.Inverse(ModelRoot.rotation);
                 default: throw new NotImplementedException();
             }
         }

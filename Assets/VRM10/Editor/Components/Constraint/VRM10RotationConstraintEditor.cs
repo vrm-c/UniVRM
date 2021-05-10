@@ -20,12 +20,9 @@ namespace UniVRM10
         void DrawSourceCurrent()
         {
             var s = m_target.transform.lossyScale.x;
-
-            // current
-            Handles.matrix = m_target.Source.localToWorldMatrix;
+            Handles.matrix = m_target.GetSourceCurrent().TRS(0.05f * s);
             Handles.color = Color.yellow;
-            var size = 0.05f / s;
-            Handles.DrawWireCube(Vector3.zero, new Vector3(size, size, size));
+            Handles.DrawWireCube(Vector3.zero, Vector3.one);
         }
 
         void DrawSourceCoords()

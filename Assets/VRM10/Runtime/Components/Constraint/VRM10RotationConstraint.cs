@@ -92,6 +92,61 @@ namespace UniVRM10
             throw new NotImplementedException();
         }
 
+        public TR GetSourceCurrent()
+        {
+            switch (SourceCoordinate)
+            {
+                case ObjectSpace.model:
+                    {
+                        var r = Quaternion.identity;
+                        if (Source != null)
+                        {
+                            if (ModelRoot != null)
+                            {
+                                r = ModelRoot.rotation;
+                                if (m_src != null)
+                                {
+                                    r *= m_src.RotationDelta(ObjectSpace.model);
+                                }
+                            }
+                        }
+
+                        var t = Vector3.zero;
+                        if (Source != null)
+                        {
+                            t = Source.position;
+                        }
+
+                        return new TR(r, t);
+                    }
+
+                case ObjectSpace.local:
+                    {
+                        if (Source != null)
+                        {
+                            if (m_src != null)
+                            {
+                                // runtime
+                                var parent = TR.Identity;
+                                if (Source.parent != null)
+                                {
+                                    parent = TR.FromWorld(Source.parent);
+                                }
+                                return parent * m_src.LocalInitial;
+                            }
+                            else
+                            {
+                                return TR.FromWorld(Source);
+                            }
+                        }
+
+                        return TR.Identity;
+                    }
+            }
+
+            throw new NotImplementedException();
+        }
+
         public Quaternion Delta
         {
             get;
