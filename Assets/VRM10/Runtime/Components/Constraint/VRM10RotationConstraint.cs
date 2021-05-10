@@ -1,4 +1,5 @@
-﻿using UniGLTF.Extensions.VRMC_node_constraint;
+﻿using System;
+using UniGLTF.Extensions.VRMC_node_constraint;
 using UnityEngine;
 
 
@@ -36,54 +37,59 @@ namespace UniVRM10
         ConstraintSource m_src;
 
         /// <summary>
-        /// Model の座標系
+        /// Source の座標系
         /// </summary>
         /// <returns></returns>
-        public TR GetSourceModelCoords()
+        public TR GetSourceCoords()
         {
-            var r = Quaternion.identity;
-            if (Source != null)
+            switch (SourceCoordinate)
             {
-                if (ModelRoot != null)
-                {
-                    r = ModelRoot.rotation;
-                }
-            }
-
-            var t = Vector3.zero;
-            if (Source != null)
-            {
-                t = Source.position;
-            }
-
-            return new TR(r, t);
-        }
-
-        /// <summary>
-        /// Local の座標系。つまり親座標系
-        /// </summary>
-        /// <returns></returns>
-        public TR GetSourceLocalCoords()
-        {
-            if (Source != null)
-            {
-                if (m_src != null)
-                {
-                    // runtime
-                    var parent = TR.Identity;
-                    if (Source.parent != null)
+                case ObjectSpace.model:
                     {
-                        parent = TR.FromWorld(Source.parent);
+
+                        var r = Quaternion.identity;
+                        if (Source != null)
+                        {
+                            if (ModelRoot != null)
+                            {
+                                r = ModelRoot.rotation;
+                            }
+                        }
+
+                        var t = Vector3.zero;
+                        if (Source != null)
+                        {
+                            t = Source.position;
+                        }
+
+                        return new TR(r, t);
                     }
-                    return parent * m_src.LocalInitial;
-                }
-                else
-                {
-                    return TR.FromWorld(Source);
-                }
+
+                case ObjectSpace.local:
+                    {
+                        if (Source != null)
+                        {
+                            if (m_src != null)
+                            {
+                                // runtime
+                                var parent = TR.Identity;
+                                if (Source.parent != null)
+                                {
+                                    parent = TR.FromWorld(Source.parent);
+                                }
+                                return parent * m_src.LocalInitial;
+                            }
+                            else
+                            {
+                                return TR.FromWorld(Source);
+                            }
+                        }
+
+                        return TR.Identity;
+                    }
             }
 
-            return TR.Identity;
+            throw new NotImplementedException();
         }
 
         public Quaternion Delta
@@ -93,31 +99,40 @@ namespace UniVRM10
         }
 
         ConstraintDestination m_dst;
-        public TR GetDstModelCoords()
+        public TR GetDstCoords()
         {
-            var r = Quaternion.identity;
-            if (ModelRoot != null)
+            switch (DestinationCoordinate)
             {
-                r = ModelRoot.rotation;
+                case ObjectSpace.model:
+                    {
+                        var r = Quaternion.identity;
+                        if (ModelRoot != null)
+                        {
+                            r = ModelRoot.rotation;
+                        }
+                        return new TR(r, transform.position);
+                    }
+
+                case ObjectSpace.local:
+                    {
+                        if (m_src != null)
+                        {
+                            // runtime
+                            var parent = TR.Identity;
+                            if (transform.parent != null)
+                            {
+                                parent = TR.FromWorld(transform.parent);
+                            }
+                            return parent * m_dst.LocalInitial;
+                        }
+                        else
+                        {
+                            return TR.FromWorld(transform);
+                        }
+                    }
             }
-            return new TR(r, transform.position);
-        }
-        public TR GetDstLocalCoords()
-        {
-            if (m_src != null)
-            {
-                // runtime
-                var parent = TR.Identity;
-                if (transform.parent != null)
-                {
-                    parent = TR.FromWorld(transform.parent);
-                }
-                return parent * m_dst.LocalInitial;
-            }
-            else
-            {
-                return TR.FromWorld(transform);
-            }
+
+            throw new NotImplementedException();
         }
 
         /// <summary>

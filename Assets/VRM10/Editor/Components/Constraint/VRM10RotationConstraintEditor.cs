@@ -17,7 +17,7 @@ namespace UniVRM10
         }
 
         #region SRC
-        void SrcDrawCurrent()
+        void DrawSourceCurrent()
         {
             var s = m_target.transform.lossyScale.x;
 
@@ -28,25 +28,15 @@ namespace UniVRM10
             Handles.DrawWireCube(Vector3.zero, new Vector3(size, size, size));
         }
 
-        void SrcDrawModelCoords()
+        void DrawSourceCoords()
         {
             var s = m_target.transform.lossyScale.x;
-
-            // init 
-            m_target.GetSourceModelCoords().Draw(0.2f / s);
-        }
-
-        void SrcDrawLocalCoords()
-        {
-            var s = m_target.transform.lossyScale.x;
-
-            // init 
-            m_target.GetSourceLocalCoords().Draw(0.2f / s);
+            m_target.GetSourceCoords().Draw(0.2f / s);
         }
         #endregion
 
         #region Dst
-        void DstDrawCurrent()
+        void DrawDstCurrent()
         {
             var s = m_target.transform.lossyScale.x;
 
@@ -57,20 +47,10 @@ namespace UniVRM10
             Handles.DrawWireCube(Vector3.zero, new Vector3(size, size, size));
         }
 
-        void DstDrawModelCoords()
+        void DrawDstCoords()
         {
             var s = m_target.transform.lossyScale.x;
-
-            // init 
-            m_target.GetDstModelCoords().Draw(0.2f / s);
-        }
-
-        void DstDrawLocalCoords()
-        {
-            var s = m_target.transform.lossyScale.x;
-
-            // init
-            m_target.GetDstLocalCoords().Draw(0.2f / s);
+            m_target.GetDstCoords().Draw(0.2f / s);
         }
         #endregion
 
@@ -134,35 +114,10 @@ namespace UniVRM10
                 Handles.Label(m_target.transform.position, sb.ToString(), s_style);
             }
 
-            switch (m_target.SourceCoordinate)
-            {
-                case ObjectSpace.model:
-                    SrcDrawModelCoords();
-                    break;
-
-                case ObjectSpace.local:
-                    SrcDrawLocalCoords();
-                    break;
-
-                default:
-                    throw new NotImplementedException();
-            }
-            SrcDrawCurrent();
-
-            switch (m_target.DestinationCoordinate)
-            {
-                case ObjectSpace.model:
-                    DstDrawModelCoords();
-                    break;
-
-                case ObjectSpace.local:
-                    DstDrawLocalCoords();
-                    break;
-
-                default:
-                    throw new NotImplementedException();
-            }
-            DstDrawCurrent();
+            DrawSourceCoords();
+            DrawSourceCurrent();
+            DrawDstCoords();
+            DrawDstCurrent();
         }
     }
 }
