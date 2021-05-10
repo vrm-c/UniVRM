@@ -5,7 +5,7 @@ namespace UniVRM10
 {
     public static class Coords
     {
-        public static void Write(Matrix4x4 m, float size)
+        public static void Draw(Matrix4x4 m, float size)
         {
             Handles.matrix = m * Matrix4x4.Scale(new Vector3(size, size, size));
 
