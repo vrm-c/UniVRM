@@ -13,6 +13,7 @@ namespace VRMShaders
         public readonly Dictionary<string, float> FloatValues = new Dictionary<string, float>();
         public readonly Dictionary<string, Color> Colors = new Dictionary<string, Color>();
         public readonly Dictionary<string, Vector4> Vectors = new Dictionary<string, Vector4>();
+        public int? RenderQueue;
         public readonly List<Action<Material>> Actions = new List<Action<Material>>();
 
         public MaterialImportParam(string name, string shaderName)
