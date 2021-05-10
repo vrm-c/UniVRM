@@ -274,6 +274,8 @@ namespace UniVRM10
 
         public static void Migrate(glTF gltf, JsonNode json)
         {
+            const float centimeterToMeter = 0.01f;
+            
             for (int i = 0; i < gltf.materials.Count; ++i)
             {
                 var vrmMaterial = json["extensions"]["VRM"]["materialProperties"][i];
@@ -331,9 +333,16 @@ namespace UniVRM10
 
                 // Outline
                 dst.OutlineColorFactor = mtoon.Definition.Outline.OutlineColor.ToFloat3(ColorSpace.sRGB, ColorSpace.Linear);
-                dst.OutlineLightingMixFactor = mtoon.Definition.Outline.OutlineLightingMixValue;
+                if (mtoon.Definition.Outline.OutlineColorMode == MToon.OutlineColorMode.MixedLighting)
+                {
+                    dst.OutlineLightingMixFactor = mtoon.Definition.Outline.OutlineLightingMixValue;
+                }
+                else
+                {
+                    dst.OutlineLightingMixFactor = 0.0f;
+                }
                 dst.OutlineWidthMode = (UniGLTF.Extensions.VRMC_materials_mtoon.OutlineWidthMode)mtoon.Definition.Outline.OutlineWidthMode;
-                dst.OutlineWidthFactor = mtoon.Definition.Outline.OutlineWidthValue;
+                dst.OutlineWidthFactor = mtoon.Definition.Outline.OutlineWidthValue * centimeterToMeter;
                 if (mtoon.TextureIndexMap.OutlineWidthTexture.HasValue)
                 {
                     dst.OutlineWidthMultiplyTexture = new TextureInfo { Index = mtoon.TextureIndexMap.OutlineWidthTexture.Value };
