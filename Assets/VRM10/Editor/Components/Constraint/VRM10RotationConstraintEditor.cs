@@ -1,6 +1,5 @@
 using System;
 using System.Text;
-using UniGLTF.Extensions.VRMC_node_constraint;
 using UnityEditor;
 using UnityEngine;
 
@@ -36,12 +35,9 @@ namespace UniVRM10
         void DrawDstCurrent()
         {
             var s = m_target.transform.lossyScale.x;
-
-            // current
-            Handles.matrix = m_target.transform.localToWorldMatrix;
+            Handles.matrix = m_target.GetDstCurrent().TRS(0.05f * s);
             Handles.color = Color.yellow;
-            var size = 0.05f / s;
-            Handles.DrawWireCube(Vector3.zero, new Vector3(size, size, size));
+            Handles.DrawWireCube(Vector3.zero, Vector3.one);
         }
 
         void DrawDstCoords()

@@ -18,7 +18,7 @@ namespace UniVRM10
             var toRelative = from.worldToLocalMatrix;
             return new TR(toRelative.rotation * t.rotation, toRelative.MultiplyPoint(t.position));
         }
-        
+
         public TR(Quaternion r, Vector3 t)
         {
             Rotation = r;
@@ -31,6 +31,6 @@ namespace UniVRM10
 
         public Matrix4x4 TRS(float s) => Matrix4x4.TRS(Translation, Rotation, new Vector3(s, s, s));
 
-        public static TR operator *(TR a, TR b) => new TR(a.Rotation * b.Rotation, b.Rotation * a.Translation + b.Translation);
+        public static TR operator *(TR a, TR b) => new TR(a.Rotation * b.Rotation, a.Rotation * b.Translation + a.Translation);
     }
 }

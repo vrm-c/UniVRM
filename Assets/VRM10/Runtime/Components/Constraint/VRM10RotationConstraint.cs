@@ -94,59 +94,15 @@ namespace UniVRM10
 
         public TR GetSourceCurrent()
         {
-            switch (SourceCoordinate)
+            var coords = GetSourceCoords();
+            if (m_src != null)
             {
-                case ObjectSpace.model:
-                    {
-                        var r = Quaternion.identity;
-                        if (Source != null)
-                        {
-                            if (ModelRoot != null)
-                            {
-                                r = ModelRoot.rotation;
-                                if (m_src != null)
-                                {
-                                    r *= m_src.RotationDelta(ObjectSpace.model);
-                                }
-                            }
-                        }
-
-                        var t = Vector3.zero;
-                        if (Source != null)
-                        {
-                            t = Source.position;
-                        }
-
-                        return new TR(r, t);
-                    }
-
-                case ObjectSpace.local:
-                    {
-                        if (Source != null)
-                        {
-                            if (m_src != null)
-                            {
-                                // runtime
-                                var parent = Quaternion.identity;
-                                if (Source.parent != null)
-                                {
-                                    parent = Source.parent.rotation;
-                                }
-                                var delta = m_src.RotationDelta(ObjectSpace.local);
-
-                                return new TR(parent * m_src.LocalInitial.Rotation * delta, Source.position);
-                            }
-                            else
-                            {
-                                return TR.FromWorld(Source);
-                            }
-                        }
-
-                        return TR.Identity;
-                    }
+                return coords * new TR(m_src.RotationDelta(SourceCoordinate));
             }
-
-            throw new NotImplementedException();
+            else
+            {
+                return coords;
+            }
         }
 
         public Quaternion Delta
@@ -180,7 +136,7 @@ namespace UniVRM10
                             {
                                 parent = TR.FromWorld(transform.parent);
                             }
-                            return m_dst.LocalInitial * parent;
+                            return parent * m_dst.LocalInitial;
                         }
                         else
                         {
@@ -190,6 +146,51 @@ namespace UniVRM10
             }
 
             throw new NotImplementedException();
+        }
+
+        public TR GetDstCurrent()
+        {
+            var coords = GetDstCoords();
+            if (m_src != null)
+            {
+                return coords * new TR(m_src.RotationDelta(SourceCoordinate));
+            }
+            else
+            {
+                return coords;
+            }
+            // switch (DestinationCoordinate)
+            // {
+            //     case ObjectSpace.model:
+            //         {
+            //             var r = Quaternion.identity;
+            //             if (ModelRoot != null)
+            //             {
+            //                 r = ModelRoot.rotation;
+            //             }
+            //             return new TR(r, transform.position);
+            //         }
+
+            //     case ObjectSpace.local:
+            //         {
+            //             if (m_src != null)
+            //             {
+            //                 // runtime
+            //                 var parent = TR.Identity;
+            //                 if (transform.parent != null)
+            //                 {
+            //                     parent = TR.FromWorld(transform.parent);
+            //                 }
+            //                 return parent * m_dst.LocalInitial;
+            //             }
+            //             else
+            //             {
+            //                 return TR.FromWorld(transform);
+            //             }
+            //         }
+            // }
+
+            // throw new NotImplementedException();
         }
 
         /// <summary>
