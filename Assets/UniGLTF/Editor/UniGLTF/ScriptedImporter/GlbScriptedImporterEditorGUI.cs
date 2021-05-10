@@ -1,5 +1,6 @@
 using UnityEditor;
 using UnityEngine;
+using System.IO;
 #if UNITY_2020_2_OR_NEWER
 using UnityEditor.AssetImporters;
 #else
@@ -48,7 +49,9 @@ namespace UniGLTF
                     break;
 
                 case Tabs.Materials:
-                    EditorMaterial.OnGUI(m_importer, m_parser, GltfTextureEnumerator.EnumerateAllTexturesDistinct);
+                    EditorMaterial.OnGUI(m_importer, m_parser, GltfTextureEnumerator.EnumerateAllTexturesDistinct,
+                    assetPath => $"{Path.GetFileNameWithoutExtension(assetPath)}.Textures",
+                    assetPath => $"{Path.GetFileNameWithoutExtension(assetPath)}.Materials");
                     break;
             }
         }

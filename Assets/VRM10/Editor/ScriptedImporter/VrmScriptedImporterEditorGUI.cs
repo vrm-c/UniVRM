@@ -1,6 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
 using UniGLTF;
+using System.IO;
 #if UNITY_2020_2_OR_NEWER
 using UnityEditor.AssetImporters;
 #else
@@ -68,7 +69,9 @@ namespace UniVRM10
                 case Tabs.Materials:
                     if (m_parser != null)
                     {
-                        EditorMaterial.OnGUI(m_importer, m_parser, Vrm10TextureEnumerator.EnumerateAllTexturesDistinct);
+                        EditorMaterial.OnGUI(m_importer, m_parser, Vrm10TextureEnumerator.EnumerateAllTexturesDistinct,
+                            assetPath => $"{Path.GetFileNameWithoutExtension(assetPath)}.vrm1.Textures",
+                            assetPath => $"{Path.GetFileNameWithoutExtension(assetPath)}.vrm1.Materials");
                     }
                     break;
 

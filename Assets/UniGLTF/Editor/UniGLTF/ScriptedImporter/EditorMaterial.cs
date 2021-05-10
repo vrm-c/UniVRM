@@ -33,14 +33,14 @@ namespace UniGLTF
         static bool s_foldMaterials = true;
         static bool s_foldTextures = true;
 
-        public static void OnGUI(ScriptedImporter importer, GltfParser parser, EnumerateAllTexturesDistinctFunc enumTextures)
+        public static void OnGUI(ScriptedImporter importer, GltfParser parser, EnumerateAllTexturesDistinctFunc enumTextures, Func<string, string> textureDir, Func<string, string> materialDir)
         {
             var hasExternal = importer.GetExternalObjectMap().Any(x => x.Value is Material || x.Value is Texture2D);
             using (new TmpGuiEnable(!hasExternal))
             {
                 if (GUILayout.Button("Extract Materials And Textures ..."))
                 {
-                    ExtractMaterialsAndTextures(importer, parser, enumTextures);
+                    ExtractMaterialsAndTextures(importer, parser, enumTextures, textureDir, materialDir);
                 }
             }
 
@@ -85,7 +85,7 @@ namespace UniGLTF
             AssetDatabase.ImportAsset(self.assetPath, ImportAssetOptions.ForceUpdate);
         }
 
-        static void ExtractMaterialsAndTextures(ScriptedImporter self, GltfParser parser, EnumerateAllTexturesDistinctFunc enumTextures)
+        static void ExtractMaterialsAndTextures(ScriptedImporter self, GltfParser parser, EnumerateAllTexturesDistinctFunc enumTextures, Func<string, string> textureDir, Func<string, string> materialDir)
         {
             if (string.IsNullOrEmpty(self.assetPath))
             {
@@ -99,12 +99,12 @@ namespace UniGLTF
             Action<IEnumerable<UnityPath>> onCompleted = _ =>
                 {
                     AssetDatabase.ImportAsset(self.assetPath, ImportAssetOptions.ForceUpdate);
-                    self.ExtractMaterials();
+                    self.ExtractMaterials(materialDir);
                     AssetDatabase.ImportAsset(self.assetPath, ImportAssetOptions.ForceUpdate);
                 };
 
             var assetPath = UnityPath.FromFullpath(parser.TargetPath);
-            var dirName = $"{assetPath.FileNameWithoutExtension}.Textures";
+            var dirName = textureDir(assetPath.Value); // $"{assetPath.FileNameWithoutExtension}.Textures";
             TextureExtractor.ExtractTextures(parser, assetPath.Parent.Child(dirName),
                 enumTextures,
                 self.GetSubAssets<UnityEngine.Texture2D>(self.assetPath).ToArray(),
@@ -113,13 +113,13 @@ namespace UniGLTF
                 );
         }
 
-        public static void ExtractMaterials(this ScriptedImporter importer)
+        public static void ExtractMaterials(this ScriptedImporter importer, Func<string, string> materialDir)
         {
             if (string.IsNullOrEmpty(importer.assetPath))
             {
                 return;
             }
-            var path = $"{Path.GetDirectoryName(importer.assetPath)}/{Path.GetFileNameWithoutExtension(importer.assetPath)}.Materials";
+            var path = $"{Path.GetDirectoryName(importer.assetPath)}/{materialDir(importer.assetPath)}"; //  Path.GetFileNameWithoutExtension(importer.assetPath)}.Materials
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);
