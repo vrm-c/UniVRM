@@ -27,6 +27,11 @@ namespace UniVRM10
             // use material.name, because material name may renamed in GltfParser.
             param = new MaterialImportParam(m.name, MToon.Utils.ShaderName);
 
+            foreach (var (key, (subAssetKey, value)) in Vrm10MToonMaterialTextureImporter.TryGetAllTextures(parser, m, mtoon))
+            {
+                param.TextureSlots.Add(key, value);
+            }
+
             foreach (var (key, value) in Vrm10MToonMaterialParameterImporter.TryGetAllColors(m, mtoon))
             {
                 param.Colors.Add(key, value);
