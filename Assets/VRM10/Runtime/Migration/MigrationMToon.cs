@@ -6,6 +6,7 @@ using UniGLTF.Extensions.VRMC_materials_mtoon;
 using UniJSON;
 using UnityEngine;
 using ColorSpace = UniGLTF.ColorSpace;
+using RenderMode = MToon.RenderMode;
 
 namespace UniVRM10
 {
@@ -43,7 +44,7 @@ namespace UniVRM10
         /// Texture2D は作成せずに、直接 index を操作する。
         /// 
         /// </summary>
-        struct MToonValue
+        sealed class MToonValue
         {
             public MToon.MToonDefinition Definition;
 
@@ -250,6 +251,10 @@ namespace UniVRM10
                     }
                 }
 
+                definition.Rendering.RenderQueueOffsetNumber =
+                    vrmMaterial["renderQueue"].GetInt32() -
+                    MToon.Utils.GetRenderQueueRequirement(definition.Rendering.RenderMode).DefaultValue;
+
                 return new MToonValue
                 {
                     Definition = definition,
@@ -276,6 +281,8 @@ namespace UniVRM10
         {
             const float centimeterToMeter = 0.01f;
             
+            // Create MToonDefinition(0.x) from JSON(0.x)
+            var sourceMaterials = new (MToonValue, glTFMaterial)[gltf.materials.Count];
             for (int i = 0; i < gltf.materials.Count; ++i)
             {
                 var vrmMaterial = json["extensions"]["VRM"]["materialProperties"][i];
@@ -283,10 +290,9 @@ namespace UniVRM10
                 {
                     continue;
                 }
-
                 // VRM-0 MToon の情報
                 var mtoon = MToonValue.Create(vrmMaterial);
-
+                
                 // KHR_materials_unlit として fallback した情報が入っている
                 var gltfMaterial = gltf.materials[i];
                 if (!glTF_KHR_materials_unlit.IsEnable(gltfMaterial))
@@ -294,7 +300,47 @@ namespace UniVRM10
                     // 古いモデルは無い場合がある                    
                     // throw new Exception($"[{i}]{gltfMaterial.name} has no extensions");
                 }
+                sourceMaterials[i] = (mtoon, gltfMaterial);
+            }
 
+            // Collect RenderQueues Pass
+            // 元の描画順序をできるだけ保つようにして RenderQueue を変換する
+            var transparentRenderQueues = new SortedSet<int>();
+            var transparentZWriteRenderQueues = new SortedSet<int>();
+            foreach (var (mtoon, gltfMaterial) in sourceMaterials)
+            {
+                switch (mtoon.Definition.Rendering.RenderMode)
+                {
+                    case RenderMode.Opaque:
+                        break;
+                    case RenderMode.Cutout:
+                        break;
+                    case RenderMode.Transparent:
+                        transparentRenderQueues.Add(mtoon.Definition.Rendering.RenderQueueOffsetNumber);
+                        break;
+                    case RenderMode.TransparentWithZWrite:
+                        transparentZWriteRenderQueues.Add(mtoon.Definition.Rendering.RenderQueueOffsetNumber);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+            var defaultTransparentQueue = 0;
+            var transparentRenderQueueMap = new Dictionary<int, int>();
+            foreach (var srcQueue in transparentRenderQueues.Reverse())
+            {
+                transparentRenderQueueMap.Add(srcQueue, defaultTransparentQueue--);
+            }
+            var defaultTransparentZWriteQueue = 0;
+            var transparentZWriteRenderQueueMap = new Dictionary<int, int>();
+            foreach (var srcQueue in transparentZWriteRenderQueues)
+            {
+                transparentZWriteRenderQueueMap.Add(srcQueue, defaultTransparentZWriteQueue++);
+            }
+            
+            // Main Pass
+            foreach (var (mtoon, gltfMaterial) in sourceMaterials)
+            {
                 var extensions = new glTFExtensionExport();
                 gltfMaterial.extensions = extensions;
                 extensions.Add(
@@ -409,7 +455,25 @@ namespace UniVRM10
                         throw new NotImplementedException();
                 }
                 (gltfMaterial.alphaMode, dst.TransparentWithZWrite) = GetRenderMode(mtoon.Definition.Rendering.RenderMode);
-                dst.RenderQueueOffsetNumber = mtoon.Definition.Rendering.RenderQueueOffsetNumber;
+                var renderQueueOffset = mtoon.Definition.Rendering.RenderQueueOffsetNumber;
+                switch (mtoon.Definition.Rendering.RenderMode)
+                {
+                    case RenderMode.Opaque:
+                        renderQueueOffset = 0;
+                        break;
+                    case RenderMode.Cutout:
+                        renderQueueOffset = 0;
+                        break;
+                    case RenderMode.Transparent:
+                        renderQueueOffset = Mathf.Clamp(transparentRenderQueueMap[renderQueueOffset], -9, 0);
+                        break;
+                    case RenderMode.TransparentWithZWrite:
+                        renderQueueOffset = Mathf.Clamp(transparentZWriteRenderQueueMap[renderQueueOffset], 0, +9);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+                dst.RenderQueueOffsetNumber = renderQueueOffset;
 
                 // rim
                 dst.ParametricRimColorFactor = mtoon.Definition.Rim.RimColor.ToFloat3(ColorSpace.sRGB, ColorSpace.Linear);
