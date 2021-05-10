@@ -46,7 +46,6 @@ namespace UniVRM10
             if (GUILayout.Button("Clear"))
             {
                 importer.ClearExternalObjects<VRM10MetaObject>();
-                importer.ClearExternalObjects<VRM10ExpressionAvatar>();
                 importer.ClearExternalObjects<VRM10Expression>();
             }
         }
@@ -79,7 +78,7 @@ namespace UniVRM10
 
             // meta
             {
-                var path = GetAndCreateFolder(importer.assetPath, ".Meta");
+                var path = GetAndCreateFolder(importer.assetPath, ".vrm1.Meta");
                 foreach (var (key, asset) in importer.GetSubAssets<VRM10MetaObject>(importer.assetPath))
                 {
                     asset.ExtractSubAsset($"{path}/{asset.name}.asset", false);
@@ -88,30 +87,12 @@ namespace UniVRM10
 
             {
                 // expressions
-                var path = GetAndCreateFolder(importer.assetPath, ".Expressions");
+                var path = GetAndCreateFolder(importer.assetPath, ".vrm1.Expressions");
                 foreach (var (key, asset) in importer.GetSubAssets<VRM10Expression>(importer.assetPath))
                 {
                     asset.ExtractSubAsset($"{path}/{asset.name}.asset", false);
                 }
-            }
-            {
-                // expressions
-                var path = GetAndCreateFolder(importer.assetPath, ".ExpressionAvatar");
-                foreach (var (key, asset) in importer.GetSubAssets<VRM10ExpressionAvatar>(importer.assetPath))
-                {
-                    asset.ExtractSubAsset($"{path}/{asset.name}.asset", false);
-                }
 
-                // external な expressionAvatar.Clips に 再代入する
-                var expressionAvatar = importer.GetExternalObjectMap().Select(x => x.Value as VRM10ExpressionAvatar).FirstOrDefault(x => x != null);
-                var expressions = importer.GetExternalObjectMap().Select(x => x.Value as VRM10Expression).Where(x => x != null).ToList();
-                expressionAvatar.Clips = expressions;
-                var avatarPath = AssetDatabase.GetAssetPath(expressionAvatar);
-                if (!string.IsNullOrEmpty(avatarPath))
-                {
-                    EditorUtility.SetDirty(expressionAvatar);
-                    AssetDatabase.WriteImportSettingsIfDirty(avatarPath);
-                }
             }
 
             AssetDatabase.ImportAsset(importer.assetPath, ImportAssetOptions.ForceUpdate);
