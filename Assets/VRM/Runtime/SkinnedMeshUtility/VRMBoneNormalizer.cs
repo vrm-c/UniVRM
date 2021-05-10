@@ -152,7 +152,7 @@ namespace VRM
                     dstColliderGroup.Colliders = src.Colliders.Select(y =>
                     {
                         var offset = dst.worldToLocalMatrix.MultiplyPoint(src.transform.localToWorldMatrix.MultiplyPoint(y.Offset));
-                        var ls = src.UniformedLossyScale;
+                        var ls = src.transform.UniformedLossyScale();
                         return new VRMSpringBoneColliderGroup.SphereCollider
                         {
                             Offset = offset,

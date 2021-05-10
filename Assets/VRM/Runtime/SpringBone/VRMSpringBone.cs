@@ -85,7 +85,11 @@ namespace VRM
 
             private Quaternion LocalRotation { get; }
 
-            public float Radius { get; set; }
+            float m_radius;
+            public void SetRadius(float radius)
+            {
+                m_radius = radius * m_transform.UniformedLossyScale();
+            }
 
             private Quaternion ParentRotation =>
                 m_transform.parent != null
@@ -139,12 +143,12 @@ namespace VRM
             {
                 foreach (var collider in colliders)
                 {
-                    var r = Radius + collider.Radius;
+                    var r = m_radius + collider.Radius;
                     if (Vector3.SqrMagnitude(nextTail - collider.Position) <= (r * r))
                     {
                         // ヒット。Colliderの半径方向に押し出す
                         var normal = (nextTail - collider.Position).normalized;
-                        var posFromCollider = collider.Position + normal * (Radius + collider.Radius);
+                        var posFromCollider = collider.Position + normal * (m_radius + collider.Radius);
                         // 長さをboneLengthに強制
                         nextTail = m_transform.position + (posFromCollider - m_transform.position).normalized * m_length;
                     }
@@ -152,7 +156,7 @@ namespace VRM
                 return nextTail;
             }
 
-            public void DrawGizmo(Transform center, float radius, Color color)
+            public void DrawGizmo(Transform center, Color color)
             {
                 var currentTail = center != null
                         ? center.TransformPoint(m_currentTail)
@@ -163,13 +167,14 @@ namespace VRM
 
                 Gizmos.color = Color.gray;
                 Gizmos.DrawLine(currentTail, prevTail);
-                Gizmos.DrawWireSphere(prevTail, radius);
+                Gizmos.DrawWireSphere(prevTail, m_radius);
 
                 Gizmos.color = color;
                 Gizmos.DrawLine(currentTail, m_transform.position);
-                Gizmos.DrawWireSphere(currentTail, radius);
+                Gizmos.DrawWireSphere(currentTail, m_radius);
             }
         }
+
         List<VRMSpringBoneLogic> m_verlet = new List<VRMSpringBoneLogic>();
 
         void Awake()
@@ -302,7 +307,7 @@ namespace VRM
 
             foreach (var verlet in m_verlet)
             {
-                verlet.Radius = m_hitRadius;
+                verlet.SetRadius(m_hitRadius);
                 verlet.Update(m_center,
                     stiffness,
                     m_dragForce,
@@ -317,7 +322,9 @@ namespace VRM
             if (!m_drawGizmo) return;
 
             foreach (var verlet in m_verlet)
-                verlet.DrawGizmo(m_center, m_hitRadius, m_gizmoColor);
+            {
+                verlet.DrawGizmo(m_center, m_gizmoColor);
+            }
         }
     }
 }
