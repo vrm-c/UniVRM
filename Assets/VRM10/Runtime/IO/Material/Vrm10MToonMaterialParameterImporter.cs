@@ -110,7 +110,7 @@ namespace UniVRM10
                 yield return (MToon.Utils.PropRimFresnelPower, rimFresnelPower.Value);
             }
 
-            var rimLift = mToon?.RimLightingMixFactor;
+            var rimLift = mToon?.ParametricRimLiftFactor;
             if (rimLift.HasValue)
             {
                 yield return (MToon.Utils.PropRimLift, rimLift.Value);
