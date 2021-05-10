@@ -127,12 +127,14 @@ namespace UniVRM10
                             if (m_src != null)
                             {
                                 // runtime
-                                var parent = TR.Identity;
+                                var parent = Quaternion.identity;
                                 if (Source.parent != null)
                                 {
-                                    parent = TR.FromWorld(Source.parent);
+                                    parent = Source.parent.rotation;
                                 }
-                                return parent * m_src.LocalInitial;
+                                var delta = m_src.RotationDelta(ObjectSpace.local);
+
+                                return new TR(parent * m_src.LocalInitial.Rotation * delta, Source.position);
                             }
                             else
                             {
@@ -178,7 +180,7 @@ namespace UniVRM10
                             {
                                 parent = TR.FromWorld(transform.parent);
                             }
-                            return parent * m_dst.LocalInitial;
+                            return m_dst.LocalInitial * parent;
                         }
                         else
                         {
