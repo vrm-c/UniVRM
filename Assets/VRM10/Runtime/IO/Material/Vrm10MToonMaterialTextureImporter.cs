@@ -6,7 +6,7 @@ using VRMShaders;
 
 namespace UniVRM10
 {
-    public static class Vrm10MToonMaterialImporter
+    public static class Vrm10MToonMaterialTextureImporter
     {
         public static bool TryGetBaseColorTexture(GltfParser parser, glTFMaterial src, out (SubAssetKey, TextureImportParam) pair)
         {
