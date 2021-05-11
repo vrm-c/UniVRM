@@ -144,6 +144,11 @@ namespace VRMShaders
                 material.SetFloat(kv.Key, kv.Value);
             }
 
+            if (param.RenderQueue.HasValue)
+            {
+                material.renderQueue = param.RenderQueue.Value;
+            }
+
             foreach(var action in param.Actions)
             {
                 action(material);

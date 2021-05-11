@@ -78,6 +78,12 @@ namespace UniGLTF
             var (offset, scale) = GltfMaterialImporter.GetTextureOffsetAndScale(src.normalTexture);
             return GltfTextureImporter.CreateNormal(parser, src.normalTexture.index, offset, scale);
         }
+        
+        public static (SubAssetKey, TextureImportParam Param) EmissiveTexture(GltfParser parser, glTFMaterial src)
+        {
+            var (offset, scale) = GltfMaterialImporter.GetTextureOffsetAndScale(src.emissiveTexture);
+            return GltfTextureImporter.CreateSRGB(parser, src.emissiveTexture.index, offset, scale);
+        }
 
         public static bool TryCreateParam(GltfParser parser, int i, out MaterialImportParam param)
         {
@@ -159,8 +165,7 @@ namespace UniGLTF
 
                 if (src.emissiveTexture != null && src.emissiveTexture.index != -1)
                 {
-                    var (offset, scale) = GltfMaterialImporter.GetTextureOffsetAndScale(src.emissiveTexture);
-                    var (key, textureParam) = GltfTextureImporter.CreateSRGB(parser, src.emissiveTexture.index, offset, scale);
+                    var (key, textureParam) = EmissiveTexture(parser, src);
                     param.TextureSlots.Add("_EmissionMap", textureParam);
                 }
             }

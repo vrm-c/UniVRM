@@ -240,11 +240,18 @@ namespace VRMShaders
                         return info.Texture;
                     }
 
-                default:
+                case TextureImportTypes.sRGB:
                     {
                         var baseTexture = await GetOrCreateBaseTexture(param.UnityObjectName, param, param.Index0, RenderTextureReadWrite.sRGB, true);
                         return baseTexture.Texture;
                     }
+                case TextureImportTypes.Linear:
+                    {
+                        var baseTexture = await GetOrCreateBaseTexture(param.UnityObjectName, param, param.Index0, RenderTextureReadWrite.Linear, true);
+                        return baseTexture.Texture;
+                    }
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
 
             throw new NotImplementedException();

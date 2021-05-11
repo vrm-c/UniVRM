@@ -31,7 +31,7 @@ namespace VRM
             var name = parser.GLTF.materials[i].name;
             param = new MaterialImportParam(name, vrmMaterial.shader);
 
-            param.Actions.Add(material => material.renderQueue = vrmMaterial.renderQueue);
+            param.RenderQueue = vrmMaterial.renderQueue;
 
             foreach (var kv in vrmMaterial.floatProperties)
             {

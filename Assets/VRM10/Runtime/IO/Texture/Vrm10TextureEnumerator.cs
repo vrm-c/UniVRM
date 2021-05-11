@@ -80,23 +80,10 @@ namespace UniVRM10
             var m = parser.GLTF.materials[i];
             if (UniGLTF.Extensions.VRMC_materials_mtoon.GltfDeserializer.TryGet(m.extensions, out var mToon))
             {
-                // Enumerate VRM MToon Textures
-                if (Vrm10MToonMaterialImporter.TryGetBaseColorTexture(parser, m, out var litTex))
-                    yield return litTex;
-                if (Vrm10MToonMaterialImporter.TryGetNormalTexture(parser, m, out var normalTex))
-                    yield return normalTex;
-                if (Vrm10MToonMaterialImporter.TryGetShadeMultiplyTexture(parser, mToon, out var shadeTex))
-                    yield return shadeTex;
-                if (Vrm10MToonMaterialImporter.TryGetShadingShiftTexture(parser, mToon, out var shadeShiftTex))
-                    yield return shadeShiftTex;
-                if (Vrm10MToonMaterialImporter.TryGetMatcapTexture(parser, mToon, out var matcapTex))
-                    yield return matcapTex;
-                if (Vrm10MToonMaterialImporter.TryGetRimMultiplyTexture(parser, mToon, out var rimTex))
-                    yield return rimTex;
-                if (Vrm10MToonMaterialImporter.TryGetOutlineWidthMultiplyTexture(parser, mToon, out var outlineTex))
-                    yield return outlineTex;
-                if (Vrm10MToonMaterialImporter.TryGetUvAnimationMaskTexture(parser, mToon, out var uvAnimMaskTex))
-                    yield return uvAnimMaskTex;
+                foreach (var (key, tex) in Vrm10MToonMaterialTextureImporter.TryGetAllTextures(parser, m, mToon))
+                {
+                    yield return tex;
+                }
             }
             else
             {

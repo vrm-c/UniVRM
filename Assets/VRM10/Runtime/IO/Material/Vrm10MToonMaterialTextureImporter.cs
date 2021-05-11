@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UniGLTF;
 using UniGLTF.Extensions.VRMC_materials_mtoon;
 using UnityEngine;
@@ -6,9 +7,58 @@ using VRMShaders;
 
 namespace UniVRM10
 {
-    public static class Vrm10MToonMaterialImporter
+    public static class Vrm10MToonMaterialTextureImporter
     {
-        public static bool TryGetBaseColorTexture(GltfParser parser, glTFMaterial src, out (SubAssetKey, TextureImportParam) pair)
+        public static IEnumerable<(string key, (SubAssetKey, TextureImportParam))> TryGetAllTextures(GltfParser parser, glTFMaterial material, VRMC_materials_mtoon mToon)
+        {
+            if (TryGetBaseColorTexture(parser, material, out var litTex))
+            {
+                yield return (MToon.Utils.PropMainTex, litTex);
+            }
+
+            if (TryGetEmissiveTexture(parser, material, out var emissiveTex))
+            {
+                yield return (MToon.Utils.PropEmissionMap, emissiveTex);
+            }
+            
+            if (TryGetNormalTexture(parser, material, out var normalTex))
+            {
+                yield return ("_BumpMap", normalTex);
+            }
+            
+            if (TryGetShadeMultiplyTexture(parser, mToon, out var shadeTex))
+            {
+                yield return (MToon.Utils.PropShadeTexture, shadeTex);
+            }
+            
+            if (TryGetShadingShiftTexture(parser, mToon, out var shadeShiftTex))
+            {
+                Debug.LogWarning("Need VRM 1.0 MToon implementation.");
+                yield return ("_NEED_IMPLEMENTATION_MTOON_1_0", shadeShiftTex);
+            }
+
+            if (TryGetMatcapTexture(parser, mToon, out var matcapTex))
+            {
+                yield return (MToon.Utils.PropSphereAdd, matcapTex);
+            }
+
+            if (TryGetRimMultiplyTexture(parser, mToon, out var rimTex))
+            {
+                yield return (MToon.Utils.PropRimTexture, rimTex);
+            }
+
+            if (TryGetOutlineWidthMultiplyTexture(parser, mToon, out var outlineTex))
+            {
+                yield return (MToon.Utils.PropOutlineWidthTexture, outlineTex);
+            }
+
+            if (TryGetUvAnimationMaskTexture(parser, mToon, out var uvAnimMaskTex))
+            {
+                yield return (MToon.Utils.PropUvAnimMaskTexture, uvAnimMaskTex);
+            }
+        }
+
+        private static bool TryGetBaseColorTexture(GltfParser parser, glTFMaterial src, out (SubAssetKey, TextureImportParam) pair)
         {
             try
             {
@@ -26,8 +76,28 @@ namespace UniVRM10
                 return false;
             }
         }
-        
-        public static bool TryGetNormalTexture(GltfParser parser, glTFMaterial src, out (SubAssetKey, TextureImportParam) pair)
+
+        private static bool TryGetEmissiveTexture(GltfParser parser, glTFMaterial src, out (SubAssetKey, TextureImportParam) pair)
+        {
+            try
+            {
+                pair = GltfPBRMaterial.EmissiveTexture(parser, src);
+                return true;
+            }
+            catch (NullReferenceException)
+            {
+                pair = default;
+                return false;
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                pair = default;
+                return false;
+            }
+            
+        }
+
+        private static bool TryGetNormalTexture(GltfParser parser, glTFMaterial src, out (SubAssetKey, TextureImportParam) pair)
         {
             try
             {
@@ -46,32 +116,32 @@ namespace UniVRM10
             }
         }
 
-        public static bool TryGetShadeMultiplyTexture(GltfParser parser, VRMC_materials_mtoon mToon, out (SubAssetKey, TextureImportParam) pair)
+        private static bool TryGetShadeMultiplyTexture(GltfParser parser, VRMC_materials_mtoon mToon, out (SubAssetKey, TextureImportParam) pair)
         {
             return TryGetSRGBTexture(parser, new Vrm10TextureInfo(mToon.ShadeMultiplyTexture), out pair);
         }
 
-        public static bool TryGetShadingShiftTexture(GltfParser parser, VRMC_materials_mtoon mToon, out (SubAssetKey, TextureImportParam) pair)
+        private static bool TryGetShadingShiftTexture(GltfParser parser, VRMC_materials_mtoon mToon, out (SubAssetKey, TextureImportParam) pair)
         {
             return TryGetLinearTexture(parser, new Vrm10TextureInfo(mToon.ShadingShiftTexture), out pair);
         }
-        
-        public static bool TryGetMatcapTexture(GltfParser parser, VRMC_materials_mtoon mToon, out (SubAssetKey, TextureImportParam) pair)
+
+        private static bool TryGetMatcapTexture(GltfParser parser, VRMC_materials_mtoon mToon, out (SubAssetKey, TextureImportParam) pair)
         {
             return TryGetSRGBTexture(parser, new Vrm10TextureInfo(mToon.ShadingShiftTexture), out pair);
         }
-        
-        public static bool TryGetRimMultiplyTexture(GltfParser parser, VRMC_materials_mtoon mToon, out (SubAssetKey, TextureImportParam) pair)
+
+        private static bool TryGetRimMultiplyTexture(GltfParser parser, VRMC_materials_mtoon mToon, out (SubAssetKey, TextureImportParam) pair)
         {
             return TryGetSRGBTexture(parser, new Vrm10TextureInfo(mToon.RimMultiplyTexture), out pair);
         }
 
-        public static bool TryGetOutlineWidthMultiplyTexture(GltfParser parser, VRMC_materials_mtoon mToon, out (SubAssetKey, TextureImportParam) pair)
+        private static bool TryGetOutlineWidthMultiplyTexture(GltfParser parser, VRMC_materials_mtoon mToon, out (SubAssetKey, TextureImportParam) pair)
         {
             return TryGetLinearTexture(parser, new Vrm10TextureInfo(mToon.OutlineWidthMultiplyTexture), out pair);
         }
 
-        public static bool TryGetUvAnimationMaskTexture(GltfParser parser, VRMC_materials_mtoon mToon, out (SubAssetKey, TextureImportParam) pair)
+        private static bool TryGetUvAnimationMaskTexture(GltfParser parser, VRMC_materials_mtoon mToon, out (SubAssetKey, TextureImportParam) pair)
         {
             return TryGetLinearTexture(parser, new Vrm10TextureInfo(mToon.UvAnimationMaskTexture), out pair);
         }
