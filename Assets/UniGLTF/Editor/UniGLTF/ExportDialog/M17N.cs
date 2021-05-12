@@ -61,7 +61,7 @@ namespace UniGLTF.M17N
                 {
                     var match = GetAttribute(value, language);
                     // Attribute。無かったら enum の ToString
-                    map.Add(value, match != null ? match.Message : key.ToString());
+                    map.Add(value, match != null ? match.Message : value.ToString());
                 }
 
                 s_cache.Add(language, map);
