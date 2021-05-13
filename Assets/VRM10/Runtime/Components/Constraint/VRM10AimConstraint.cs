@@ -33,7 +33,8 @@ namespace UniVRM10
                 InitialLocalRotation = initialLocalRotation;
             }
         }
-        AimLogic m_runtime;
+        public AimLogic Logic { get; private set; }
+
 
         void Start()
         {
@@ -43,9 +44,9 @@ namespace UniVRM10
                 return;
             }
 
-            if (m_runtime == null)
+            if (Logic == null)
             {
-                m_runtime = new AimLogic(DestinationOffset);
+                Logic = new AimLogic(transform.localRotation);
             }
         }
 
@@ -120,13 +121,20 @@ namespace UniVRM10
         /// </summary>
         public override void Process()
         {
-            if (Source == null)
+            if (Logic == null)
             {
                 return;
             }
 
-            // var localPosition = transform.worldToLocalMatrix.MultiplyPoint(Source.position);
-            // var (yaw, pitch) = CalcYawPitch(m_coords, localPosition);
+            var m = Matrix4x4.TRS(transform.position, ParentRotation * Logic.InitialLocalRotation, Vector3.one);
+            m.CalcYawPitch(Source.position, out Yaw, out Pitch);
+            // Delta = Quaternion.Euler(0, Yaw, 0) * Quaternion.Euler(Pitch, 0, 0);
+            Delta = m.YawPitchRotation(Yaw, Pitch);
+            transform.rotation = ParentRotation * Logic.InitialLocalRotation * Delta;
         }
+
+        public float Yaw;
+        public float Pitch;
+        public Quaternion Delta;
     }
 }
