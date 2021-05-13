@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using ColorSpace = UniGLTF.ColorSpace;
 
 
 namespace VRMShaders
@@ -55,7 +56,7 @@ namespace VRMShaders
         /// </summary>
         /// <typeparam name="Texture2D"></typeparam>
         /// <returns></returns>
-        public readonly List<Texture2D> Exported = new List<Texture2D>();
+        public readonly List<(Texture2D, ColorSpace)> Exported = new List<(Texture2D, ColorSpace)>();
 
         /// <summary>
         /// Texture の export index を得る
@@ -101,7 +102,7 @@ namespace VRMShaders
             {
                 texture2D = TextureConverter.CopyTexture(src, TextureImportTypes.sRGB, null);
             }
-            Exported.Add(texture2D);
+            Exported.Add((texture2D, ColorSpace.sRGB));
             m_exportMap.Add(new ExportKey(src, ConvertTypes.None), index);
 
             return index;
@@ -114,7 +115,33 @@ namespace VRMShaders
         /// <returns></returns>
         public int ExportLinear(Texture src)
         {
-            throw new NotImplementedException();
+            if (src == null)
+            {
+                return -1;
+            }
+            
+            var exportKey = new ExportKey(src, ConvertTypes.None);
+
+            // search cache
+            if (m_exportMap.TryGetValue(exportKey, out var index))
+            {
+                return index;
+            }
+
+            index = Exported.Count;
+            var texture2d = src as Texture2D;
+            if (m_useAsset(texture2d))
+            {
+                // do nothing
+            }
+            else
+            {
+                texture2d = TextureConverter.CopyTexture(src, TextureImportTypes.Linear, null);
+            }
+            Exported.Add((texture2d, ColorSpace.Linear));
+            m_exportMap.Add(exportKey, index);
+
+            return index;
         }
 
         /// <summary>
@@ -147,7 +174,7 @@ namespace VRMShaders
             index = Exported.Count;
             var texture2D = OcclusionMetallicRoughnessConverter.Export(metallicSmoothTexture, smoothness, occlusionTexture);
 
-            Exported.Add(texture2D);
+            Exported.Add((texture2D, ColorSpace.Linear));
             if (metallicSmoothTexture != null)
             {
                 m_exportMap.Add(new ExportKey(metallicSmoothTexture, ConvertTypes.OcclusionMetallicRoughness), index);
@@ -191,7 +218,7 @@ namespace VRMShaders
                 texture2D = NormalConverter.Export(src);
             }
 
-            Exported.Add(texture2D);
+            Exported.Add((texture2D, ColorSpace.Linear));
             m_exportMap.Add(new ExportKey(src, ConvertTypes.Normal), index);
 
             return index;
@@ -200,9 +227,7 @@ namespace VRMShaders
         /// <summary>
         /// 画像のバイト列を得る
         /// </summary>
-        /// <param name="texture"></param>
-        /// <returns></returns>
-        public static (byte[] bytes, string mime) GetTextureBytesWithMime(Texture2D texture)
+        public static (byte[] bytes, string mime) GetTextureBytesWithMime(Texture2D texture, ColorSpace colorSpace)
         {
             try
             {
@@ -211,22 +236,38 @@ namespace VRMShaders
                 {
                     return (png, "image/png");
                 }
+                else
+                {
+                    // 単純に EncodeToPNG できないため、コピーしてから EncodeToPNG する。
+                    return CopyTextureAndGetBytesWithMime(texture, colorSpace);
+                }
             }
             catch (ArgumentException ex)
             {
                 // fail to EncodeToPng
                 // System.ArgumentException: not readable, the texture memory can not be accessed from scripts. You can make the texture readable in the Texture Import Settings.
+                // example, ".DDS" Texture object in Editor.
                 Debug.LogWarning(ex);
-                
-                // Read/Write が許可されていない Texture2D オブジェクトはこの関数に渡されるべきではない。
-                // なぜなら Texture2D の色空間は、対応する glTF プロパティ指定の色空間と一致していなければならないが
-                // Read/Write が許可されていない場合、その条件を守って変換することができないからである。
-                // したがって、この関数に渡す前に glTF プロパティ指定の色空間を加味して Copy Texture して、それを渡すべきである。
 
-                throw;
+                // 単純に EncodeToPNG できないため、コピーしてから EncodeToPNG する。
+                return CopyTextureAndGetBytesWithMime(texture, colorSpace);
+            }
+        }
+
+        private static (byte[] bytes, string mime) CopyTextureAndGetBytesWithMime(Texture2D texture, ColorSpace colorSpace)
+        {
+            var copiedTex = TextureConverter.CopyTexture(texture, colorSpace, null);
+            var bytes = copiedTex.EncodeToPNG();
+            if (Application.isPlaying)
+            {
+                UnityEngine.Object.Destroy(copiedTex);
+            }
+            else
+            {
+                UnityEngine.Object.DestroyImmediate(copiedTex);
             }
 
-            throw new ArgumentException("Invalid Texture2D");
+            return (bytes, "image/png");
         }
     }
 }

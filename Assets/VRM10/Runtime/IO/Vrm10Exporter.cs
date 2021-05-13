@@ -127,7 +127,7 @@ namespace UniVRM10
             return new float[] { -v.x, v.y, v.z };
         }
 
-        public void Export(GameObject root, Model model, ModelExporter converter, ExportArgs option, Func<Texture2D, (byte[], string)> getTextureBytes, VRM10MetaObject metaObject = null)
+        public void Export(GameObject root, Model model, ModelExporter converter, ExportArgs option, gltfExporter.GetBytesWithMimeFromTexture2D getTextureBytes, VRM10MetaObject metaObject = null)
         {
             ExportAsset(model);
 
@@ -180,8 +180,8 @@ namespace UniVRM10
             // Extension で Texture が増える場合があるので最後に呼ぶ
             for (int i = 0; i < m_textureExporter.Exported.Count; ++i)
             {
-                var unityTexture = m_textureExporter.Exported[i];
-                Storage.Gltf.PushGltfTexture(0, unityTexture, getTextureBytes);
+                var (unityTexture, texColorSpace) = m_textureExporter.Exported[i];
+                Storage.Gltf.PushGltfTexture(0, unityTexture, texColorSpace, getTextureBytes);
             }
 
             if (thumbnailTextureIndex.HasValue)
@@ -775,7 +775,7 @@ namespace UniVRM10
         /// <param name="go"></param>
         /// <param name="getTextureBytes"></param>
         /// <returns></returns>
-        public static byte[] Export(GameObject go, Func<Texture2D, (byte[], string)> getTextureBytes = null)
+        public static byte[] Export(GameObject go, gltfExporter.GetBytesWithMimeFromTexture2D getTextureBytes = null)
         {
             if (getTextureBytes == null)
             {

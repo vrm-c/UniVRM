@@ -26,7 +26,7 @@ namespace UniGLTF
             var materialExporter = new MaterialExporter();
             materialExporter.ExportMaterial(material, textureManager);
 
-            var convTex0 = textureManager.Exported[0];
+            var (convTex0, colorSpace) = textureManager.Exported[0];
             var sampler = TextureSamplerUtil.Export(convTex0);
 
             Assert.AreEqual(glWrap.CLAMP_TO_EDGE, sampler.wrapS);
