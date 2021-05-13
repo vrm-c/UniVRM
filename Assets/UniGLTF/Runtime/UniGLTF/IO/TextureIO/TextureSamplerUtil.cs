@@ -8,7 +8,24 @@ namespace UniGLTF
     public static class TextureSamplerUtil
     {
         #region Export
-        public static glFilter ExportFilterMode(Texture texture)
+        // MagFilter は ２種類だけ
+        public static glFilter ExportMagFilter(Texture texture)
+        {
+            switch (texture.filterMode)
+            {
+                case FilterMode.Point:
+                    return glFilter.NEAREST;
+
+                case FilterMode.Bilinear:
+                case FilterMode.Trilinear:
+                    return glFilter.LINEAR;
+
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
+        public static glFilter ExportMinFilter(Texture texture)
         {
             switch (texture.filterMode)
             {
@@ -68,13 +85,14 @@ namespace UniGLTF
 
         public static glTFTextureSampler Export(Texture texture)
         {
-            var filter = ExportFilterMode(texture);
+            var magFilter = ExportMagFilter(texture);
+            var minFilter = ExportMinFilter(texture);
             var wrapS = ExportWrapMode(GetWrapS(texture));
             var wrapT = ExportWrapMode(GetWrapT(texture));
             return new glTFTextureSampler
             {
-                magFilter = filter,
-                minFilter = filter,
+                magFilter = magFilter,
+                minFilter = minFilter,
                 wrapS = wrapS,
                 wrapT = wrapT,
             };
