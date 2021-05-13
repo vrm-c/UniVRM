@@ -9,7 +9,7 @@ namespace UniVRM10
     /// 対象の初期回転と現在回転の差分(delta)を、自身の初期回転と自身の初期回転にdeltaを乗算したものに対してWeightでSlerpする。
     /// </summary>
     [DisallowMultipleComponent]
-    public class VRM10RotationConstraint : VRM10Constraint
+    public class VRM10RotationConstraint : VRM10Constraint, IVRM10ConstraintSourceDestination
     {
         [SerializeField]
         public Transform Source = default;
@@ -36,10 +36,6 @@ namespace UniVRM10
 
         ConstraintSource m_src;
 
-        /// <summary>
-        /// Source の座標系
-        /// </summary>
-        /// <returns></returns>
         public TR GetSourceCoords()
         {
             switch (SourceCoordinate)
