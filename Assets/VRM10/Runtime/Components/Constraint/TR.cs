@@ -29,6 +29,10 @@ namespace UniVRM10
         {
         }
 
+        public TR(Vector3 t) : this(Quaternion.identity, t)
+        {
+        }
+
         public Matrix4x4 TRS(float s) => Matrix4x4.TRS(Translation, Rotation, new Vector3(s, s, s));
 
         public static TR operator *(TR a, TR b) => new TR(a.Rotation * b.Rotation, a.Rotation * b.Translation + a.Translation);
