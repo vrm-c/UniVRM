@@ -33,6 +33,9 @@ namespace UniGLTF
             public gltfMorphTarget ToGltf(glTF gltf, int bufferIndex, bool useNormal)
             {
                 var positionAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, m_positions.ToArray(), glBufferTarget.ARRAY_BUFFER);
+                gltf.accessors[positionAccessorIndex].min = m_positions.Aggregate(m_positions[0], (a, b) => new Vector3(Mathf.Min(a.x, b.x), Math.Min(a.y, b.y), Mathf.Min(a.z, b.z))).ToArray();
+                gltf.accessors[positionAccessorIndex].max = m_positions.Aggregate(m_positions[0], (a, b) => new Vector3(Mathf.Max(a.x, b.x), Math.Max(a.y, b.y), Mathf.Max(a.z, b.z))).ToArray();
+
                 var normalAccessorIndex = -1;
                 if (useNormal)
                 {
