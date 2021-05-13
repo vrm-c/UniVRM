@@ -38,6 +38,7 @@ namespace UniGLTF
             for (int i = 0; i < mesh.subMeshCount; ++i)
             {
                 var indices = mesh.GetIndices(i);
+                var hash = new HashSet<int>(indices);
 
                 // mesh
                 // index の順に attributes を蓄える                
@@ -45,7 +46,7 @@ namespace UniGLTF
                 usedIndices.Clear();
                 for (int k = 0; k < positions.Length; ++k)
                 {
-                    if (indices.Contains(k))
+                    if (hash.Contains(k))
                     {
                         // indices から参照される頂点だけを蓄える
                         usedIndices.Add(k);
