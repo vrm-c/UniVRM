@@ -444,8 +444,8 @@ namespace UniVRM10
                     Aim = new UniGLTF.Extensions.VRMC_node_constraint.AimConstraint
                     {
                         Source = model.Nodes.IndexOf(converter.Nodes[c.Source.gameObject]),
-                        AimVector = ReverseX(c.AimVector),
-                        UpVector = ReverseX(c.UpVector),
+                        // AimVector = ReverseX(c.AimVector),
+                        // UpVector = ReverseX(c.UpVector),
                         Weight = c.Weight,
                     },
                 },
