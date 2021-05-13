@@ -21,53 +21,19 @@ namespace VRMShaders
             return copyTexture;
         }
 
-        struct ColorSpaceScope : IDisposable
-        {
-            bool m_sRGBWrite;
-
-            public ColorSpaceScope(RenderTextureReadWrite colorSpace)
-            {
-                m_sRGBWrite = GL.sRGBWrite;
-                switch (colorSpace)
-                {
-                    case RenderTextureReadWrite.Linear:
-                        GL.sRGBWrite = false;
-                        break;
-
-                    case RenderTextureReadWrite.sRGB:
-                    default:
-                        GL.sRGBWrite = true;
-                        break;
-                }
-            }
-            public ColorSpaceScope(bool sRGBWrite)
-            {
-                m_sRGBWrite = GL.sRGBWrite;
-                GL.sRGBWrite = sRGBWrite;
-            }
-
-            public void Dispose()
-            {
-                GL.sRGBWrite = m_sRGBWrite;
-            }
-        }
-
         public static Texture2D CopyTexture(Texture src, TextureImportTypes textureType, Material material)
         {
             Texture2D dst = null;
             RenderTextureReadWrite colorSpace = textureType.GetColorSpace();
             var renderTexture = new RenderTexture(src.width, src.height, 0, RenderTextureFormat.ARGB32, colorSpace);
 
-            using (var scope = new ColorSpaceScope(colorSpace))
+            if (material != null)
             {
-                if (material != null)
-                {
-                    Graphics.Blit(src, renderTexture, material);
-                }
-                else
-                {
-                    Graphics.Blit(src, renderTexture);
-                }
+                Graphics.Blit(src, renderTexture, material);
+            }
+            else
+            {
+                Graphics.Blit(src, renderTexture);
             }
 
             dst = new Texture2D(src.width, src.height, TextureFormat.ARGB32, false, colorSpace == RenderTextureReadWrite.Linear);
