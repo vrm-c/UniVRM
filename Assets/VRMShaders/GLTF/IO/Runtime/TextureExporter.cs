@@ -200,7 +200,6 @@ namespace VRMShaders
         /// <summary>
         /// 画像のバイト列を得る
         /// </summary>
-        /// <param name="bytes"></param>
         /// <param name="texture"></param>
         /// <returns></returns>
         public static (byte[] bytes, string mime) GetTextureBytesWithMime(Texture2D texture)
@@ -213,20 +212,21 @@ namespace VRMShaders
                     return (png, "image/png");
                 }
             }
-            catch (Exception ex)
+            catch (ArgumentException ex)
             {
                 // fail to EncodeToPng
                 // System.ArgumentException: not readable, the texture memory can not be accessed from scripts. You can make the texture readable in the Texture Import Settings.
                 Debug.LogWarning(ex);
+                
+                // Read/Write が許可されていない Texture2D オブジェクトはこの関数に渡されるべきではない。
+                // なぜなら Texture2D の色空間は、対応する glTF プロパティ指定の色空間と一致していなければならないが
+                // Read/Write が許可されていない場合、その条件を守って変換することができないからである。
+                // したがって、この関数に渡す前に glTF プロパティ指定の色空間を加味して Copy Texture して、それを渡すべきである。
+
+                throw;
             }
 
-            {
-                // try copy and EncodeToPng
-                var copy = TextureConverter.CopyTexture(texture, TextureImportTypes.sRGB, null);
-                var png = copy.EncodeToPNG();
-                UnityEngine.Object.DestroyImmediate(copy);
-                return (png, "image/png");
-            }
+            throw new ArgumentException("Invalid Texture2D");
         }
     }
 }
