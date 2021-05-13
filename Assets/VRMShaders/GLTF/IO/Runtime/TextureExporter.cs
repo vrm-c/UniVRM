@@ -238,15 +238,16 @@ namespace VRMShaders
                 }
                 else
                 {
-                    // 単純に EncodeToPNG できないため、コピーしてから EncodeToPNG する。
+                    // Failed, because texture is compressed.
+                    // ex. ".DDS" file, or Compression is enabled in Texture Import Settings.
                     return CopyTextureAndGetBytesWithMime(texture, colorSpace);
                 }
             }
             catch (ArgumentException ex)
             {
-                // fail to EncodeToPng
                 // System.ArgumentException: not readable, the texture memory can not be accessed from scripts. You can make the texture readable in the Texture Import Settings.
-                // example, ".DDS" Texture object in Editor.
+                
+                // Failed, because texture is not readable.
                 Debug.LogWarning(ex);
 
                 // 単純に EncodeToPNG できないため、コピーしてから EncodeToPNG する。
