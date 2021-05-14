@@ -21,13 +21,43 @@ namespace UniVRM10
             var yaxis = Vector3.Project(localPosition, Vector3.up);
             var xaxis = Vector3.Project(localPosition, Vector3.right);
 
-            // y z plane
-            var pitchPlusMinus = Vector3.Dot(yaxis, m.GetColumn(1)) < 0 ? 1.0f : -1.0f;
-            var pitch = (float)Math.Atan2(yaxis.magnitude, zaxis.magnitude) * pitchPlusMinus * Mathf.Rad2Deg;
+            var xDot = Vector3.Dot(xaxis, Vector3.right) > 0;
+            var yDot = Vector3.Dot(yaxis, Vector3.up) > 0;
+            var zDot = Vector3.Dot(zaxis, Vector3.forward) > 0;
 
-            // y+z x plane
-            var yawPlusMinus = Vector3.Dot(xaxis, m.GetColumn(0)) > 0 ? 1.0f : -1.0f;
-            var yaw = (float)Math.Atan2(xaxis.magnitude, (yaxis + zaxis).magnitude) * yawPlusMinus * Mathf.Rad2Deg;
+            // x z plane
+            var yaw = (float)Math.Atan2(xaxis.magnitude, zaxis.magnitude) * Mathf.Rad2Deg;
+            if (xDot && zDot)
+            {
+                // 1st(0-90)
+
+            }
+            else if (xDot && !zDot)
+            {
+                // 2nd(90-180)
+                yaw = 180 - yaw;
+            }
+            else if (!xDot && !zDot)
+            {
+                // 3rd
+                yaw = -180 + yaw;
+            }
+            else if (!xDot && zDot)
+            {
+                // 4th
+                yaw = -yaw;
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+
+            // x+y z plane
+            var pitch = (float)Math.Atan2(yaxis.magnitude, (xaxis + zaxis).magnitude) * Mathf.Rad2Deg;
+            if (yDot)
+            {
+                pitch = -pitch;
+            }
 
             return (yaw, pitch);
         }

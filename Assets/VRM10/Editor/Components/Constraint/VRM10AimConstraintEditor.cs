@@ -76,7 +76,7 @@ namespace UniVRM10
                 var init = m_target.ParentRotation * m_target.Logic.InitialLocalRotation;
                 DrawAimUp(init * m_target.DestinationOffset, m_target.transform.position, Color.yellow);
                 new TR(init, m_target.transform.position).Draw(0.2f);
-                DrawAimUp(m_target.transform.rotation, m_target.transform.position, Color.magenta);
+                DrawAimUp(init * m_target.DestinationOffset * m_target.Delta, m_target.transform.position, Color.magenta);
 
                 var sb = new StringBuilder();
                 sb.AppendLine($"yaw: {m_target.Yaw:0.}");
