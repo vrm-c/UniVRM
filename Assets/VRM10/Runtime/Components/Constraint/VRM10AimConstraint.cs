@@ -22,19 +22,18 @@ namespace UniVRM10
 
         public Quaternion ParentRotation => transform.parent == null ? Quaternion.identity : transform.parent.rotation;
 
-        // [SerializeField]
-        // public Quaternion DestinationOffset = Quaternion.identity;
+        [SerializeField]
+        public Quaternion DestinationOffset = Quaternion.identity;
 
-        // public class AimLogic
-        // {
-        //     public readonly Quaternion InitialLocalRotation;
-        //     public AimLogic(Quaternion initialLocalRotation)
-        //     {
-        //         InitialLocalRotation = initialLocalRotation;
-        //     }
-        // }
-        // public AimLogic Logic { get; private set; }
-
+        public class AimLogic
+        {
+            public readonly Quaternion InitialLocalRotation;
+            public AimLogic(Quaternion initialLocalRotation)
+            {
+                InitialLocalRotation = initialLocalRotation;
+            }
+        }
+        public AimLogic Logic { get; private set; }
 
         void Start()
         {
@@ -44,10 +43,10 @@ namespace UniVRM10
                 return;
             }
 
-            // if (Logic == null)
-            // {
-            //     Logic = new AimLogic(transform.localRotation);
-            // }
+            if (Logic == null)
+            {
+                Logic = new AimLogic(transform.localRotation);
+            }
         }
 
         /// <summary>
@@ -56,14 +55,15 @@ namespace UniVRM10
         /// </summary>
         public override void Process()
         {
-            // if (Logic == null)
-            // {
-            //     return;
-            // }
+            if (Logic == null)
+            {
+                return;
+            }
 
-            var m = Matrix4x4.Rotate(ParentRotation);
-            m.CalcYawPitch(Source.position - transform.position, out Yaw, out Pitch);
-            Delta = Quaternion.Euler(0, Yaw, 0) * Quaternion.Euler(-Pitch, 0, 0);
+            // var init = ParentRotation * Logic.InitialLocalRotation;
+            var m = Matrix4x4.TRS(transform.position, ParentRotation * DestinationOffset, Vector3.one);
+            (Yaw, Pitch) = m.CalcYawPitch(Source.position);
+            Delta = Quaternion.Euler(0, Yaw, 0) * Quaternion.Euler(Pitch, 0, 0);
             transform.rotation = ParentRotation * Delta;
         }
 

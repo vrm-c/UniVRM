@@ -29,6 +29,7 @@ namespace UniVRM10
 
         static void DrawAimUp(Quaternion rot, Vector3 pos, Color c)
         {
+            Handles.matrix = Matrix4x4.identity;
             Handles.color = c;
             // aim
             var aim = pos + rot * Vector3.forward * 0.3f;
@@ -52,36 +53,36 @@ namespace UniVRM10
             Handles.DrawLine(m_target.Source.position, m_target.transform.position);
 
             var pos = m_target.transform.position;
-            TR.FromWorld(m_target.transform).Draw(0.2f);
 
-            // EditorGUI.BeginChangeCheck();
-            // var pr = m_target.ParentRotation;
+            var pr = m_target.ParentRotation;
 
-            // if (m_target.Logic == null)
-            // {
-            //     TR.FromWorld(m_target.transform).Draw(0.2f);
+            if (m_target.Logic == null)
+            {
+                EditorGUI.BeginChangeCheck();
+                TR.FromWorld(m_target.transform).Draw(0.2f);
 
-            //     Handles.matrix = Matrix4x4.identity;
-            //     var rot = Handles.RotationHandle(pr * m_target.DestinationOffset, pos);
-            //     if (EditorGUI.EndChangeCheck())
-            //     {
-            //         Undo.RecordObject(m_target, "Rotated RotateAt Point");
-            //         m_target.DestinationOffset = Quaternion.Inverse(pr) * rot;
-            //     }
+                Handles.matrix = Matrix4x4.identity;
+                var rot = Handles.RotationHandle(pr * m_target.DestinationOffset, pos);
+                if (EditorGUI.EndChangeCheck())
+                {
+                    Undo.RecordObject(m_target, "Rotated RotateAt Point");
+                    m_target.DestinationOffset = Quaternion.Inverse(pr) * rot;
+                }
 
-            //     DrawAimUp(rot, pos, Color.yellow);
-            // }
-            // else
-            // {
-            //     var rot = m_target.ParentRotation * m_target.Logic.InitialLocalRotation * m_target.DestinationOffset;
-            //     DrawAimUp(rot, m_target.transform.position, Color.yellow);
-            //     DrawAimUp(m_target.transform.rotation * m_target.Delta, m_target.transform.position, Color.magenta);
+                DrawAimUp(rot, pos, Color.yellow);
+            }
+            else
+            {
+                var init = m_target.ParentRotation * m_target.Logic.InitialLocalRotation;
+                DrawAimUp(init * m_target.DestinationOffset, m_target.transform.position, Color.yellow);
+                new TR(init, m_target.transform.position).Draw(0.2f);
+                DrawAimUp(m_target.transform.rotation, m_target.transform.position, Color.magenta);
 
-            //     var sb = new StringBuilder();
-            //     sb.AppendLine($"yaw: {m_target.Yaw:0.}");
-            //     sb.AppendLine($"pitch: {m_target.Pitch:0.}");
-            //     Handles.Label(m_target.transform.position, sb.ToString(), Style);
-            // }
+                var sb = new StringBuilder();
+                sb.AppendLine($"yaw: {m_target.Yaw:0.}");
+                sb.AppendLine($"pitch: {m_target.Pitch:0.}");
+                Handles.Label(m_target.transform.position, sb.ToString(), Style);
+            }
         }
     }
 }
