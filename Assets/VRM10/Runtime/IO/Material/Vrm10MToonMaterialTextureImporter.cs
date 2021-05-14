@@ -34,7 +34,7 @@ namespace UniVRM10
             if (TryGetShadingShiftTexture(parser, mToon, out var shadeShiftTex))
             {
                 Debug.LogWarning("Need VRM 1.0 MToon implementation.");
-                yield return ("_NEED_IMPLEMENTATION_MTOON_1_0", shadeShiftTex);
+                yield return ("_NEED_IMPLEMENTATION_MTOON_1_0_shadingShiftTexture", shadeShiftTex);
             }
 
             if (TryGetMatcapTexture(parser, mToon, out var matcapTex))
