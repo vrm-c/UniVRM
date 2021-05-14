@@ -15,17 +15,19 @@ namespace UniVRM10
         /// <returns></returns>
         public static (float Yaw, float Pitch) CalcYawPitch(this Matrix4x4 m, Vector3 target)
         {
-            var p = m.GetColumn(3);
-            target -= new Vector3(p.x, p.y, p.z);
-            var zaxis = Vector3.Project(target, m.GetColumn(2));
-            var yaxis = Vector3.Project(target, m.GetColumn(1));
-            var xaxis = Vector3.Project(target, m.GetColumn(0));
+            var localPosition = m.inverse.MultiplyPoint(target);
 
-            var yawPlusMinus = Vector3.Dot(xaxis, m.GetColumn(0)) > 0 ? 1.0f : -1.0f;
-            var yaw = (float)Math.Atan2(xaxis.magnitude, zaxis.magnitude) * yawPlusMinus * Mathf.Rad2Deg;
+            var zaxis = Vector3.Project(localPosition, Vector3.forward);
+            var yaxis = Vector3.Project(localPosition, Vector3.up);
+            var xaxis = Vector3.Project(localPosition, Vector3.right);
 
+            // y z plane
             var pitchPlusMinus = Vector3.Dot(yaxis, m.GetColumn(1)) < 0 ? 1.0f : -1.0f;
-            var pitch = (float)Math.Atan2(yaxis.magnitude, (xaxis + zaxis).magnitude) * pitchPlusMinus * Mathf.Rad2Deg;
+            var pitch = (float)Math.Atan2(yaxis.magnitude, zaxis.magnitude) * pitchPlusMinus * Mathf.Rad2Deg;
+
+            // y+z x plane
+            var yawPlusMinus = Vector3.Dot(xaxis, m.GetColumn(0)) > 0 ? 1.0f : -1.0f;
+            var yaw = (float)Math.Atan2(xaxis.magnitude, (yaxis + zaxis).magnitude) * yawPlusMinus * Mathf.Rad2Deg;
 
             return (yaw, pitch);
         }

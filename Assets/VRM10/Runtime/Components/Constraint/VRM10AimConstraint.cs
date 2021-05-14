@@ -60,11 +60,10 @@ namespace UniVRM10
                 return;
             }
 
-            // var init = ParentRotation * Logic.InitialLocalRotation;
-            var m = Matrix4x4.TRS(transform.position, ParentRotation * DestinationOffset, Vector3.one);
+            var m = Matrix4x4.TRS(transform.position, ParentRotation * Logic.InitialLocalRotation * DestinationOffset, Vector3.one);
             (Yaw, Pitch) = m.CalcYawPitch(Source.position);
             Delta = Quaternion.Euler(0, Yaw, 0) * Quaternion.Euler(Pitch, 0, 0);
-            transform.rotation = ParentRotation * Delta;
+            transform.rotation = ParentRotation * Logic.InitialLocalRotation * DestinationOffset * Delta;
         }
 
         public float Yaw;
