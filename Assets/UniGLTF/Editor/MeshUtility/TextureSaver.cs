@@ -1,6 +1,8 @@
 ﻿using System.IO;
 using UnityEditor;
 using UnityEngine;
+using VRMShaders;
+using ColorSpace = UniGLTF.ColorSpace;
 
 namespace MeshUtility
 {
@@ -34,7 +36,9 @@ namespace MeshUtility
                 return;
             }
 
-            File.WriteAllBytes(path, texture.EncodeToPNG());
+            var (tex, mime) = TextureExporter.GetTextureBytesWithMime(texture, sRGB ? ColorSpace.sRGB : ColorSpace.Linear);
+
+            File.WriteAllBytes(path, tex);
             Debug.Log($"save: {path}");
 
             var assetsPath = AssetsPath.FromFullpath(path);

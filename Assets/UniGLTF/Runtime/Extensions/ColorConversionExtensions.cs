@@ -3,12 +3,6 @@ using UnityEngine;
 
 namespace UniGLTF
 {
-    public enum ColorSpace
-    {
-        sRGB,
-        Linear,
-    }
-    
     public static class ColorConversionExtensions
     {
         public static float[] ToFloat4(this Color src, ColorSpace srcColorSpace, ColorSpace dstColorSpace)

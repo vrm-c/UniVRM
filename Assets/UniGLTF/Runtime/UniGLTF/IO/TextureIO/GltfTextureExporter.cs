@@ -21,9 +21,9 @@ namespace UniGLTF
         /// <param name="bufferIndex"></param>
         /// <param name="texture"></param>
         /// <returns>gltf texture index</returns>
-        public static int PushGltfTexture(this glTF gltf, int bufferIndex, Texture2D texture, Func<Texture2D, (byte[] bytes, string mime)> getTextureBytes)
+        public static int PushGltfTexture(this glTF gltf, int bufferIndex, Texture2D texture, ColorSpace textureColorSpace, gltfExporter.GetBytesWithMimeFromTexture2D getTextureBytes)
         {
-            var bytesWithMime = getTextureBytes(texture);
+            var bytesWithMime = getTextureBytes(texture, textureColorSpace);
 
             // add view
             var view = gltf.buffers[bufferIndex].Append(bytesWithMime.bytes, glBufferTarget.NONE);

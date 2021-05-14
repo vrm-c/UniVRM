@@ -214,12 +214,21 @@ namespace UniGLTF
             return false;
         }
 
-        public virtual void ExportExtensions(Func<Texture2D, (byte[], string)> getTextureBytes)
+        public virtual void ExportExtensions(GetBytesWithMimeFromTexture2D getTextureBytes)
         {
             // do nothing
         }
 
-        public virtual void Export(MeshExportSettings meshExportSettings, Func<Texture, bool> useAsset, Func<Texture2D, (byte[], string)> getTextureBytes)
+        /// <summary>
+        /// Texture2D から実際のバイト列を取得するデリゲート。
+        /// 
+        /// textureColorSpace は Texture2D をコピーする際に用いる。
+        /// Texture2D 単体では、色空間を知ることができないため。
+        /// 一般には、その Texture2D がアサインされる glTF のプロパティの仕様が定める色空間と一致する。
+        /// </summary>
+        public delegate (byte[] bytes, string mime) GetBytesWithMimeFromTexture2D(Texture2D texture, ColorSpace textureColorSpace);
+
+        public virtual void Export(MeshExportSettings meshExportSettings, Func<Texture, bool> useAsset, GetBytesWithMimeFromTexture2D getTextureBytes)
         {
             var bytesBuffer = new ArrayByteBuffer(new byte[50 * 1024 * 1024]);
             var bufferIndex = glTF.AddBuffer(bytesBuffer);
@@ -362,8 +371,8 @@ namespace UniGLTF
             // Extension で Texture が増える場合があるので最後に呼ぶ
             for (int i = 0; i < TextureManager.Exported.Count; ++i)
             {
-                var unityTexture = TextureManager.Exported[i];
-                glTF.PushGltfTexture(bufferIndex, unityTexture, getTextureBytes);
+                var (unityTexture, colorSpace) = TextureManager.Exported[i];
+                glTF.PushGltfTexture(bufferIndex, unityTexture, colorSpace, getTextureBytes);
             }
         }
         #endregion

@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using UnityEngine;
+using ColorSpace = UniGLTF.ColorSpace;
 
 
 namespace VRMShaders
@@ -23,9 +24,26 @@ namespace VRMShaders
 
         public static Texture2D CopyTexture(Texture src, TextureImportTypes textureType, Material material)
         {
+            return CopyTexture(src, textureType.GetColorSpace(), material);
+        }
+
+        public static Texture2D CopyTexture(Texture src, ColorSpace colorSpace, Material material)
+        {
             Texture2D dst = null;
-            RenderTextureReadWrite colorSpace = textureType.GetColorSpace();
-            var renderTexture = new RenderTexture(src.width, src.height, 0, RenderTextureFormat.ARGB32, colorSpace);
+            RenderTextureReadWrite readWrite;
+            switch (colorSpace)
+            {
+                case ColorSpace.sRGB:
+                    readWrite = RenderTextureReadWrite.sRGB;
+                    break;
+                case ColorSpace.Linear:
+                    readWrite = RenderTextureReadWrite.Linear;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(colorSpace), colorSpace, null);
+            }
+
+            var renderTexture = new RenderTexture(src.width, src.height, 0, RenderTextureFormat.ARGB32, readWrite);
 
             if (material != null)
             {
@@ -36,7 +54,7 @@ namespace VRMShaders
                 Graphics.Blit(src, renderTexture);
             }
 
-            dst = new Texture2D(src.width, src.height, TextureFormat.ARGB32, false, colorSpace == RenderTextureReadWrite.Linear);
+            dst = new Texture2D(src.width, src.height, TextureFormat.ARGB32, false, readWrite == RenderTextureReadWrite.Linear);
             dst.ReadPixels(new Rect(0, 0, src.width, src.height), 0, 0);
             dst.name = src.name;
             dst.anisoLevel = src.anisoLevel;

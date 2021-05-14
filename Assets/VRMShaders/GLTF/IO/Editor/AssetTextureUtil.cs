@@ -2,6 +2,7 @@ using System.IO;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
+using ColorSpace = UniGLTF.ColorSpace;
 
 namespace VRMShaders
 {
@@ -107,14 +108,14 @@ namespace VRMShaders
             return false;
         }
 
-        public static (byte[], string) GetTextureBytesWithMime(Texture2D texture)
+        public static (byte[], string) GetTextureBytesWithMime(Texture2D texture, ColorSpace colorSpace)
         {
             if (TryGetBytesWithMime(texture, out byte[] bytes, out string mime))
             {
                 return (bytes, mime);
             }
 
-            return TextureExporter.GetTextureBytesWithMime(texture);
+            return TextureExporter.GetTextureBytesWithMime(texture, colorSpace);
         }
     }
 }

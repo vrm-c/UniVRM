@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
+using ColorSpace = UniGLTF.ColorSpace;
 
 namespace VRMShaders
 {
@@ -9,20 +10,20 @@ namespace VRMShaders
         static string AssetPath = "Assets/VRMShaders/GLTF/IO/Tests";
 
         [Test]
-        public void NotReadable()
+        public void NonReadablePng()
         {
-            var readonlyTexture = AssetDatabase.LoadAssetAtPath<Texture2D>($"{AssetPath}/4x4.png");
-            Assert.False(readonlyTexture.isReadable);
-            var (bytes, mime) = AssetTextureUtil.GetTextureBytesWithMime(readonlyTexture);
+            var nonReadableTex = AssetDatabase.LoadAssetAtPath<Texture2D>($"{AssetPath}/4x4.png");
+            Assert.False(nonReadableTex.isReadable);
+            var (bytes, mime) = AssetTextureUtil.GetTextureBytesWithMime(nonReadableTex, ColorSpace.sRGB);
             Assert.NotNull(bytes);
         }
 
         [Test]
-        public void Compressed()
+        public void NonReadableDds()
         {
             var readonlyTexture = AssetDatabase.LoadAssetAtPath<Texture2D>($"{AssetPath}/4x4compressed.dds");
             Assert.False(readonlyTexture.isReadable);
-            var (bytes, mime) = AssetTextureUtil.GetTextureBytesWithMime(readonlyTexture);
+            var (bytes, mime) = AssetTextureUtil.GetTextureBytesWithMime(readonlyTexture, ColorSpace.sRGB);
             Assert.NotNull(bytes);
         }
     }
