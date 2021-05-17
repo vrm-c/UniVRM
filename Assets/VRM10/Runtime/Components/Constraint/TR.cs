@@ -40,7 +40,7 @@ namespace UniVRM10
         public TR Inverse()
         {
             var inv = Quaternion.Inverse(Rotation);
-            return new TR(inv, inv * Translation);
+            return new TR(inv, inv * -Translation);
         }
     }
 }
