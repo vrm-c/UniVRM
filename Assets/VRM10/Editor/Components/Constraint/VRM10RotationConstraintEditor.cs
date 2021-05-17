@@ -57,11 +57,23 @@ namespace UniVRM10
             if (!Application.isPlaying)
             {
                 EditorGUI.BeginChangeCheck();
-                Quaternion sourceOffset = Handles.RotationHandle(m_target.SourceOffset.Rotation, m_target.Source.position);
+                Quaternion offset = Handles.RotationHandle(m_target.SourceOffset.Rotation, m_target.Source.position);
                 if (EditorGUI.EndChangeCheck())
                 {
                     Undo.RecordObject(m_target, "source offset");
-                    m_target.SourceOffset.Rotation = sourceOffset;
+                    m_target.SourceOffset.Rotation = offset;
+                }
+            }
+
+            // dest offset
+            if (!Application.isPlaying)
+            {
+                EditorGUI.BeginChangeCheck();
+                Quaternion offset = Handles.RotationHandle(m_target.DestinationOffset.Rotation, m_target.transform.position);
+                if (EditorGUI.EndChangeCheck())
+                {
+                    Undo.RecordObject(m_target, "dest offset");
+                    m_target.DestinationOffset.Rotation = offset;
                 }
             }
 

@@ -12,18 +12,6 @@ namespace UniVRM10
     public class VRM10RotationConstraint : VRM10Constraint, IVRM10ConstraintSourceDestination
     {
         [SerializeField]
-        public Transform Source = default;
-
-        [SerializeField]
-        public ObjectSpace SourceCoordinate = default;
-
-        [SerializeField]
-        public VRM10RotationOffset SourceOffset = VRM10RotationOffset.Identity;
-
-        [SerializeField]
-        public ObjectSpace DestinationCoordinate = default;
-
-        [SerializeField]
         [EnumFlags]
         public AxisMask FreezeAxes = default;
 
@@ -33,6 +21,23 @@ namespace UniVRM10
 
         [SerializeField]
         public Transform ModelRoot = default;
+
+        [Header("Source")]
+        [SerializeField]
+        public Transform Source = default;
+
+        [SerializeField]
+        public ObjectSpace SourceCoordinate = default;
+
+        [SerializeField]
+        public VRM10RotationOffset SourceOffset = VRM10RotationOffset.Identity;
+
+        [Header("Destination")]
+        [SerializeField]
+        public ObjectSpace DestinationCoordinate = default;
+
+        [SerializeField]
+        public VRM10RotationOffset DestinationOffset = VRM10RotationOffset.Identity;
 
         ConstraintSource m_src;
 
@@ -103,23 +108,23 @@ namespace UniVRM10
                         {
                             throw new ConstraintException(ConstraintException.ExceptionTypes.NoModelWithModelSpace);
                         }
-                        return new TR(ModelRoot.rotation, transform.position);
+                        return new TR(ModelRoot.rotation * DestinationOffset.Rotation, transform.position);
                     }
 
                 case ObjectSpace.local:
                     {
                         if (m_src == null)
                         {
-                            return TR.FromWorld(transform);
+                            return new TR(transform.rotation * DestinationOffset.Rotation, transform.position);
                         }
 
                         // runtime
-                        var parent = TR.Identity;
+                        var parent = Quaternion.identity;
                         if (transform.parent != null)
                         {
-                            parent = TR.FromWorld(transform.parent);
+                            parent = transform.parent.rotation;
                         }
-                        return parent * m_dst.LocalInitial;
+                        return new TR(parent * m_dst.LocalInitial.Rotation * DestinationOffset.Rotation, transform.position);
                     }
 
                 default:
@@ -190,7 +195,7 @@ namespace UniVRM10
 
             // Debug.Log($"{delta} => {rotation}");
             // オイラー角を再度Quaternionへ。weight を加味してSlerpする
-            m_dst.ApplyRotation(rotation, Weight, DestinationCoordinate, ModelRoot);
+            m_dst.ApplyRotation(DestinationOffset.Rotation * rotation, Weight, DestinationCoordinate, ModelRoot);
         }
     }
 }
