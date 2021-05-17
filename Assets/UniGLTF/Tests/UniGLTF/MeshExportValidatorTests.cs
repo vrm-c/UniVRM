@@ -6,20 +6,26 @@ namespace UniGLTF
 {
     public class MeshExportValidatorTests
     {
+        static GameObject CreateTestObject(Material[] materials)
+        {
+            var root = new GameObject("root");
+            var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            cube.transform.SetParent(root.transform);
+
+            var renderer = cube.GetComponent<Renderer>();
+            renderer.sharedMaterials = materials;
+            return root;
+        }
+
         [Test]
         public void NoMaterialTest()
         {
             var validator = ScriptableObject.CreateInstance<MeshExportValidator>();
-            var root = new GameObject("root");
+            // 0 material
+            var root = CreateTestObject(new Material[0]);
 
             try
             {
-                var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                cube.transform.SetParent(root.transform);
-
-                var renderer = cube.GetComponent<Renderer>();
-                renderer.sharedMaterials = new Material[0];
-
                 validator.SetRoot(root, MeshExportSettings.Default);
                 var vs = validator.Validate(root);
                 Assert.False(vs.All(x => x.CanExport));
@@ -35,16 +41,11 @@ namespace UniGLTF
         public void NullMaterialTest()
         {
             var validator = ScriptableObject.CreateInstance<MeshExportValidator>();
-            var root = new GameObject("root");
+            // null を含む
+            var root = CreateTestObject(new Material[] { null });
 
             try
             {
-                var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                cube.transform.SetParent(root.transform);
-
-                var renderer = cube.GetComponent<Renderer>();
-                renderer.sharedMaterials = new Material[] { null };
-
                 validator.SetRoot(root, MeshExportSettings.Default);
                 var vs = validator.Validate(root);
                 Assert.False(vs.All(x => x.CanExport));
@@ -60,16 +61,11 @@ namespace UniGLTF
         public void NullMaterialsTest()
         {
             var validator = ScriptableObject.CreateInstance<MeshExportValidator>();
-            var root = new GameObject("root");
+            // null を含むかつ submeshCount より多い
+            var root = CreateTestObject(new Material[] { null, null });
 
             try
             {
-                var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                cube.transform.SetParent(root.transform);
-
-                var renderer = cube.GetComponent<Renderer>();
-                renderer.sharedMaterials = new Material[] { null, null };
-
                 validator.SetRoot(root, MeshExportSettings.Default);
                 var vs = validator.Validate(root);
                 Assert.False(vs.All(x => x.CanExport));

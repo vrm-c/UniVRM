@@ -193,7 +193,8 @@ namespace UniGLTF
 
         public enum Messages
         {
-            DIFFERENT_MATERIAL_COUNT,
+            MATERIALS_LESS_THAN_SUBMESH_COUNT,
+            MATERIALS_GREATER_THAN_SUBMESH_COUNT,
             MATERIALS_CONTAINS_NULL,
             UNKNOWN_SHADER,
         }
@@ -205,18 +206,22 @@ namespace UniGLTF
                 // invalid materials.len
                 if (info.Renderer.sharedMaterials.Length < info.Mesh.subMeshCount)
                 {
-                    // すべての submesh に material が割り当てられていない
-                    yield return Validation.Error(Messages.DIFFERENT_MATERIAL_COUNT.Msg());
+                    // submesh より material の方が少ない
+                    yield return Validation.Error(Messages.MATERIALS_LESS_THAN_SUBMESH_COUNT.Msg());
                 }
-                else if (info.Renderer.sharedMaterials.Length > info.Mesh.subMeshCount)
+                else
                 {
-                    // 未使用の material がある
-                    yield return Validation.Warning(Messages.DIFFERENT_MATERIAL_COUNT.Msg());
-                }
-                else if (info.Renderer.sharedMaterials.Any(x => x == null))
-                {
-                    // material に null が含まれる(unity で magenta になっているはず)
-                    yield return Validation.Error($"{info.Renderer}: {Messages.MATERIALS_CONTAINS_NULL.Msg()}");
+                    if (info.Renderer.sharedMaterials.Length > info.Mesh.subMeshCount)
+                    {
+                        // submesh より material の方が多い
+                        yield return Validation.Warning(Messages.MATERIALS_GREATER_THAN_SUBMESH_COUNT.Msg());
+                    }
+
+                    if (info.Renderer.sharedMaterials.Take(info.Mesh.subMeshCount).Any(x => x == null))
+                    {
+                        // material に null が含まれる(unity で magenta になっているはず)
+                        yield return Validation.Error($"{info.Renderer}: {Messages.MATERIALS_CONTAINS_NULL.Msg()}");
+                    }
                 }
             }
 
