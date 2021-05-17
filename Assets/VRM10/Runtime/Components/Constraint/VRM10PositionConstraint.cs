@@ -17,6 +17,9 @@ namespace UniVRM10
         public ObjectSpace SourceCoordinate = default;
 
         [SerializeField]
+        public VRM10RotationOffset SourceOffset = VRM10RotationOffset.Identity;
+
+        [SerializeField]
         public ObjectSpace DestinationCoordinate = default;
 
         [SerializeField]

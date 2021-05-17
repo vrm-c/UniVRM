@@ -53,6 +53,18 @@ namespace UniVRM10
                 return;
             }
 
+            // source offset
+            if (!Application.isPlaying)
+            {
+                EditorGUI.BeginChangeCheck();
+                Quaternion sourceOffset = Handles.RotationHandle(m_target.SourceOffset.Rotation, m_target.Source.position);
+                if (EditorGUI.EndChangeCheck())
+                {
+                    Undo.RecordObject(m_target, "source offset");
+                    m_target.SourceOffset.Rotation = sourceOffset;
+                }
+            }
+
             // this to target line
             Handles.color = Color.yellow;
             Handles.DrawLine(m_target.Source.position, m_target.transform.position);

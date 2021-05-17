@@ -30,13 +30,13 @@ namespace UniVRM10
             }
         }
 
-        public Quaternion RotationDelta(ObjectSpace coords)
+        public Quaternion RotationDelta(ObjectSpace coords, Quaternion sourceRotationOffset)
         {
             switch (coords)
             {
                 // case SourceCoordinates.World: return m_transform.rotation * Quaternion.Inverse(m_initial.Rotation);
-                case ObjectSpace.local: return m_transform.localRotation * Quaternion.Inverse(LocalInitial.Rotation);
-                case ObjectSpace.model: return m_transform.rotation * Quaternion.Inverse(ModelInitial.Rotation) * Quaternion.Inverse(ModelRoot.rotation);
+                case ObjectSpace.local: return m_transform.localRotation * Quaternion.Inverse(LocalInitial.Rotation * sourceRotationOffset);
+                case ObjectSpace.model: return m_transform.rotation * Quaternion.Inverse(ModelInitial.Rotation * sourceRotationOffset) * Quaternion.Inverse(ModelRoot.rotation);
                 default: throw new NotImplementedException();
             }
         }
@@ -49,6 +49,7 @@ namespace UniVRM10
                 LocalInitial = TR.FromLocal(t);
             }
 
+            if (modelRoot != null)
             {
                 var world = TR.FromWorld(t);
                 ModelRoot = modelRoot;

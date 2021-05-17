@@ -15,10 +15,10 @@ namespace UniVRM10
         public Transform Source = default;
 
         [SerializeField]
-        public VRM10RotationOffset SourceOffset = VRM10RotationOffset.Identity;
+        public ObjectSpace SourceCoordinate = default;
 
         [SerializeField]
-        public ObjectSpace SourceCoordinate = default;
+        public VRM10RotationOffset SourceOffset = VRM10RotationOffset.Identity;
 
         [SerializeField]
         public ObjectSpace DestinationCoordinate = default;
@@ -38,67 +38,52 @@ namespace UniVRM10
 
         public TR GetSourceCoords()
         {
+            if (Source == null)
+            {
+                throw new ConstraintException(ConstraintException.ExceptionTypes.NoSource);
+            }
+
             switch (SourceCoordinate)
             {
                 case ObjectSpace.model:
                     {
-
-                        var r = Quaternion.identity;
-                        if (Source != null)
+                        if (ModelRoot == null)
                         {
-                            if (ModelRoot != null)
-                            {
-                                r = ModelRoot.rotation;
-                            }
+                            throw new ConstraintException(ConstraintException.ExceptionTypes.NoModelWithModelSpace);
                         }
-
-                        var t = Vector3.zero;
-                        if (Source != null)
-                        {
-                            t = Source.position;
-                        }
-
-                        return new TR(r, t);
+                        return new TR(ModelRoot.rotation * SourceOffset.Rotation, Source.position);
                     }
 
                 case ObjectSpace.local:
                     {
-                        if (Source != null)
+                        if (m_src == null)
                         {
-                            if (m_src != null)
-                            {
-                                // runtime
-                                var parent = TR.Identity;
-                                if (Source.parent != null)
-                                {
-                                    parent = TR.FromWorld(Source.parent);
-                                }
-                                return parent * m_src.LocalInitial;
-                            }
-                            else
-                            {
-                                return TR.FromWorld(Source);
-                            }
+                            return new TR(Source.rotation * SourceOffset.Rotation, Source.position);
                         }
 
-                        return TR.Identity;
+                        // runtime
+                        var parent = Quaternion.identity;
+                        if (Source.parent != null)
+                        {
+                            parent = Source.parent.rotation;
+                        }
+                        return new TR(parent * m_src.LocalInitial.Rotation * SourceOffset.Rotation, Source.position);
                     }
-            }
 
-            throw new NotImplementedException();
+                default:
+                    throw new NotImplementedException();
+            }
         }
 
         public TR GetSourceCurrent()
         {
             var coords = GetSourceCoords();
-            if (m_src != null)
-            {
-                return coords * new TR(m_src.RotationDelta(SourceCoordinate));
-            }
-            else
+            if (m_src == null)
             {
                 return coords;
             }
+
+            return coords * new TR(Delta);
         }
 
         public Quaternion Delta
@@ -114,79 +99,43 @@ namespace UniVRM10
             {
                 case ObjectSpace.model:
                     {
-                        var r = Quaternion.identity;
-                        if (ModelRoot != null)
+                        if (ModelRoot == null)
                         {
-                            r = ModelRoot.rotation;
+                            throw new ConstraintException(ConstraintException.ExceptionTypes.NoModelWithModelSpace);
                         }
-                        return new TR(r, transform.position);
+                        return new TR(ModelRoot.rotation, transform.position);
                     }
 
                 case ObjectSpace.local:
                     {
-                        if (m_src != null)
-                        {
-                            // runtime
-                            var parent = TR.Identity;
-                            if (transform.parent != null)
-                            {
-                                parent = TR.FromWorld(transform.parent);
-                            }
-                            return parent * m_dst.LocalInitial;
-                        }
-                        else
+                        if (m_src == null)
                         {
                             return TR.FromWorld(transform);
                         }
-                    }
-            }
 
-            throw new NotImplementedException();
+                        // runtime
+                        var parent = TR.Identity;
+                        if (transform.parent != null)
+                        {
+                            parent = TR.FromWorld(transform.parent);
+                        }
+                        return parent * m_dst.LocalInitial;
+                    }
+
+                default:
+                    throw new NotImplementedException();
+            }
         }
 
         public TR GetDstCurrent()
         {
             var coords = GetDstCoords();
-            if (m_src != null)
-            {
-                return coords * new TR(m_src.RotationDelta(SourceCoordinate));
-            }
-            else
+            if (m_src == null)
             {
                 return coords;
             }
-            // switch (DestinationCoordinate)
-            // {
-            //     case ObjectSpace.model:
-            //         {
-            //             var r = Quaternion.identity;
-            //             if (ModelRoot != null)
-            //             {
-            //                 r = ModelRoot.rotation;
-            //             }
-            //             return new TR(r, transform.position);
-            //         }
 
-            //     case ObjectSpace.local:
-            //         {
-            //             if (m_src != null)
-            //             {
-            //                 // runtime
-            //                 var parent = TR.Identity;
-            //                 if (transform.parent != null)
-            //                 {
-            //                     parent = TR.FromWorld(transform.parent);
-            //                 }
-            //                 return parent * m_dst.LocalInitial;
-            //             }
-            //             else
-            //             {
-            //                 return TR.FromWorld(transform);
-            //             }
-            //         }
-            // }
-
-            // throw new NotImplementedException();
+            return coords * new TR(Delta);
         }
 
         /// <summary>
@@ -215,10 +164,6 @@ namespace UniVRM10
             ModelRoot = current;
         }
 
-        /// <summary>
-        /// SourceのUpdateよりも先か後かはその時による。
-        /// 厳密に制御するのは無理。
-        /// </summary>
         public override void Process()
         {
             if (Source == null)
@@ -236,10 +181,13 @@ namespace UniVRM10
                 m_dst = new ConstraintDestination(transform, ModelRoot);
             }
 
-            // 軸制限をしたオイラー角
-            Delta = m_src.RotationDelta(SourceCoordinate);
+            // 回転差分
+            Delta = m_src.RotationDelta(SourceCoordinate, SourceOffset.Rotation);
+
+            // 軸制限
             var fleezed = FreezeAxes.Freeze(Delta.eulerAngles);
             var rotation = Quaternion.Euler(fleezed);
+
             // Debug.Log($"{delta} => {rotation}");
             // オイラー角を再度Quaternionへ。weight を加味してSlerpする
             m_dst.ApplyRotation(rotation, Weight, DestinationCoordinate, ModelRoot);
