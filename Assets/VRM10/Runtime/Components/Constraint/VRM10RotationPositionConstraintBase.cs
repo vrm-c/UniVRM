@@ -68,8 +68,6 @@ namespace UniVRM10
         }
         #endregion
 
-        public abstract Vector3 Delta { get; }
-
         protected ConstraintSource m_src;
 
         public TR GetSourceCoords()
@@ -87,14 +85,21 @@ namespace UniVRM10
                         {
                             throw new ConstraintException(ConstraintException.ExceptionTypes.NoModelWithModelSpace);
                         }
-                        return new TR(ModelRoot.rotation * SourceOffset, Source.position);
+
+                        if (m_src == null)
+                        {
+                            return TR.FromWorld(Source) * new TR(SourceOffset);
+                        }
+
+                        // runtime
+                        return TR.FromWorld(ModelRoot) * new TR(SourceOffset, Source.position);
                     }
 
                 case ObjectSpace.local:
                     {
                         if (m_src == null)
                         {
-                            return new TR(Source.rotation * SourceOffset, Source.position);
+                            return TR.FromWorld(Source) * new TR(SourceOffset);
                         }
 
                         // runtime
@@ -125,23 +130,30 @@ namespace UniVRM10
                         {
                             throw new ConstraintException(ConstraintException.ExceptionTypes.NoModelWithModelSpace);
                         }
-                        return new TR(ModelRoot.rotation * DestinationOffset, transform.position);
+
+                        if (m_dst == null)
+                        {
+                            return TR.FromWorld(transform) * new TR(DestinationOffset);
+                        }
+
+                        // runtime
+                        return TR.FromWorld(ModelRoot) * m_dst.ModelInitial * new TR(DestinationOffset);
                     }
 
                 case ObjectSpace.local:
                     {
-                        if (m_src == null)
+                        if (m_dst == null)
                         {
-                            return new TR(transform.rotation * DestinationOffset, transform.position);
+                            return TR.FromWorld(transform) * new TR(DestinationOffset);
                         }
 
                         // runtime
-                        var parent = Quaternion.identity;
+                        var parent = TR.Identity;
                         if (transform.parent != null)
                         {
-                            parent = transform.parent.rotation;
+                            parent = TR.FromWorld(transform.parent);
                         }
-                        return new TR(parent * m_dst.LocalInitial.Rotation * DestinationOffset, transform.position);
+                        return parent * m_dst.LocalInitial * new TR(DestinationOffset);
                     }
 
                 default:
@@ -183,7 +195,10 @@ namespace UniVRM10
             return this;
         }
 
-        protected abstract void UpdateDelta();
+        protected TR m_delta;
+        public abstract Vector3 Delta { get; }
+
+        protected abstract void ApplyDelta();
 
         public override void Process()
         {
@@ -202,8 +217,8 @@ namespace UniVRM10
                 m_dst = new ConstraintDestination(transform, ModelRoot);
             }
 
-            // 回転差分
-            UpdateDelta();
+            m_delta = m_src.Delta(SourceCoordinate, SourceOffset);
+            ApplyDelta();
         }
     }
 }

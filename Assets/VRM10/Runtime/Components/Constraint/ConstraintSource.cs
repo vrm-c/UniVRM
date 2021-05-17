@@ -30,30 +30,6 @@ namespace UniVRM10
             }
         }
 
-        public Vector3 TranslationDelta(ObjectSpace coords)
-        {
-            switch (coords)
-            {
-                // case ObjectSpace.World: return m_transform.position - m_initial.Translation;
-                case ObjectSpace.local: return m_transform.localPosition - LocalInitial.Translation;
-                case ObjectSpace.model: return ModelRoot.worldToLocalMatrix.MultiplyPoint(m_transform.position) - ModelInitial.Translation;
-                default: throw new NotImplementedException();
-            }
-        }
-
-        // public Quaternion RotationDelta(ObjectSpace coords, Quaternion sourceRotationOffset)
-        // {
-        //     return Delta(coords, sourceRotationOffset).Rotation;
-
-        //     switch (coords)
-        //     {
-        //         // case SourceCoordinates.World: return m_transform.rotation * Quaternion.Inverse(m_initial.Rotation);
-        //         case ObjectSpace.local: return m_transform.localRotation * Quaternion.Inverse(LocalInitial.Rotation * sourceRotationOffset);
-        //         case ObjectSpace.model: return m_transform.rotation * Quaternion.Inverse(ModelInitial.Rotation * sourceRotationOffset) * Quaternion.Inverse(ModelRoot.rotation);
-        //         default: throw new NotImplementedException();
-        //     }
-        // }
-
         public ConstraintSource(Transform t, Transform modelRoot = null)
         {
             {
@@ -64,7 +40,7 @@ namespace UniVRM10
             if (modelRoot != null)
             {
                 ModelRoot = modelRoot;
-                ModelInitial = TR.FromWorld(t) * TR.FromWorld(ModelRoot).Inverse();
+                ModelInitial = TR.FromLocal(t);
             }
         }
     }

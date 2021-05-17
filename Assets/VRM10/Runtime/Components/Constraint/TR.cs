@@ -35,8 +35,22 @@ namespace UniVRM10
 
         public Matrix4x4 TRS(float s) => Matrix4x4.TRS(Translation, Rotation, new Vector3(s, s, s));
 
+
+        /// <summary>
+        /// R1|T1 R2|T2 x    R1R2|R1T2+T1 x
+        /// --+-- --+-- y => ----+------- y
+        ///  0| 1  0| 1 z       0|      1 z
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         public static TR operator *(TR a, TR b) => new TR(a.Rotation * b.Rotation, a.Rotation * b.Translation + a.Translation);
 
+        /// <summary>
+        /// R|0 1|T    R|RT
+        /// -+- -+- => -+--
+        /// 0|1 0|1    0| 1
+        /// </summary>
         public TR Inverse()
         {
             var inv = Quaternion.Inverse(Rotation);

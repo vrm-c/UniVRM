@@ -9,9 +9,7 @@ namespace UniVRM10
     [DisallowMultipleComponent]
     public class VRM10RotationConstraint : VRM10RotationPositionConstraintBase
     {
-        Quaternion m_delta;
-
-        public override Vector3 Delta => m_delta.eulerAngles;
+        public override Vector3 Delta => m_delta.Rotation.eulerAngles;
 
         public override TR GetSourceCurrent()
         {
@@ -21,7 +19,7 @@ namespace UniVRM10
                 return coords;
             }
 
-            return coords * new TR(m_delta);
+            return coords * new TR(m_delta.Rotation);
         }
 
         public override TR GetDstCurrent()
@@ -32,20 +30,17 @@ namespace UniVRM10
                 return coords;
             }
 
-            return coords * new TR(m_delta);
+            return coords * new TR(m_delta.Rotation);
         }
 
-        protected override void UpdateDelta()
+        protected override void ApplyDelta()
         {
-            m_delta = m_src.Delta(SourceCoordinate, SourceOffset).Rotation;
-
             // 軸制限
             var fleezed = FreezeAxes.Freeze(Delta);
             var rotation = Quaternion.Euler(fleezed);
 
-            // Debug.Log($"{delta} => {rotation}");
             // オイラー角を再度Quaternionへ。weight を加味してSlerpする
-            m_dst.ApplyRotation(DestinationOffset * rotation, Weight, DestinationCoordinate, ModelRoot);
+            m_dst.ApplyRotation(rotation, Weight, DestinationCoordinate, DestinationOffset, ModelRoot);
         }
     }
 }

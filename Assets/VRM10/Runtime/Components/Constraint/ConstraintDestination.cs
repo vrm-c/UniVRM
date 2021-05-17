@@ -7,7 +7,7 @@ namespace UniVRM10
     public class ConstraintDestination
     {
         readonly Transform m_transform;
-        readonly TR m_modelInitial;
+        public readonly TR ModelInitial;
         public readonly TR LocalInitial;
         public readonly Transform ModelRoot;
 
@@ -17,10 +17,10 @@ namespace UniVRM10
             m_transform = t;
 
             LocalInitial = TR.FromLocal(t);
-            m_modelInitial = TR.FromRelative(t, modelRoot);
+            ModelInitial = TR.FromRelative(t, modelRoot);
         }
 
-        public void ApplyTranslation(Vector3 delta, float weight, ObjectSpace coords, Transform modelRoot = null)
+        public void ApplyTranslation(Vector3 delta, float weight, ObjectSpace coords, Quaternion offset, Transform modelRoot = null)
         {
             switch (coords)
             {
@@ -30,14 +30,14 @@ namespace UniVRM10
 
                 case ObjectSpace.local:
                     {
-                        var value = LocalInitial.Translation + delta * weight;
+                        var value = LocalInitial.Translation + offset * delta * weight;
                         m_transform.localPosition = value;
                     }
                     break;
 
                 case ObjectSpace.model:
                     {
-                        var value = m_modelInitial.Translation + delta * weight;
+                        var value = ModelInitial.Translation + offset * delta * weight;
                         m_transform.position = modelRoot.localToWorldMatrix.MultiplyPoint(value);
                     }
                     break;
@@ -47,7 +47,7 @@ namespace UniVRM10
             }
         }
 
-        public void ApplyRotation(Quaternion delta, float weight, ObjectSpace coords, Transform modelRoot = null)
+        public void ApplyRotation(Quaternion delta, float weight, ObjectSpace coords, Quaternion offset, Transform modelRoot = null)
         {
             // 0~1 で clamp しない slerp
             switch (coords)
@@ -58,14 +58,14 @@ namespace UniVRM10
 
                 case ObjectSpace.local:
                     {
-                        var value = Quaternion.LerpUnclamped(Quaternion.identity, delta, weight) * LocalInitial.Rotation;
+                        var value = Quaternion.LerpUnclamped(Quaternion.identity, delta * offset, weight) * LocalInitial.Rotation;
                         m_transform.localRotation = value;
                     }
                     break;
 
                 case ObjectSpace.model:
                     {
-                        var value = Quaternion.LerpUnclamped(Quaternion.identity, delta, weight) * m_modelInitial.Rotation;
+                        var value = Quaternion.LerpUnclamped(Quaternion.identity, delta * offset, weight) * ModelInitial.Rotation;
                         m_transform.rotation = modelRoot.rotation * value;
                     }
                     break;

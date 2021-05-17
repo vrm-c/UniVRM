@@ -10,8 +10,7 @@ namespace UniVRM10
     [DisallowMultipleComponent]
     public class VRM10PositionConstraint : VRM10RotationPositionConstraintBase
     {
-        Vector3 m_delta;
-        public override Vector3 Delta => m_delta;
+        public override Vector3 Delta => m_delta.Translation;
 
         public override TR GetSourceCurrent()
         {
@@ -21,7 +20,7 @@ namespace UniVRM10
                 return coords;
             }
 
-            return new TR(Delta) * coords;
+            return coords * new TR(m_delta.Translation);
         }
 
         public override TR GetDstCurrent()
@@ -32,13 +31,13 @@ namespace UniVRM10
                 return coords;
             }
 
-            return new TR(Delta) * coords;
+            return coords * new TR(m_delta.Translation);
         }
 
-        protected override void UpdateDelta()
+        protected override void ApplyDelta()
         {
-            m_delta = FreezeAxes.Freeze(m_src.TranslationDelta(SourceCoordinate));
-            m_dst.ApplyTranslation(Delta, Weight, DestinationCoordinate, ModelRoot);
+            var freezed = FreezeAxes.Freeze(Delta);
+            m_dst.ApplyTranslation(freezed, Weight, DestinationCoordinate, DestinationOffset, ModelRoot);
         }
     }
 }
