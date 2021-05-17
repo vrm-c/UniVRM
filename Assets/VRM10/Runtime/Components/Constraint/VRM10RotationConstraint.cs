@@ -37,7 +37,7 @@ namespace UniVRM10
 
         protected override void UpdateDelta()
         {
-            m_delta = m_src.RotationDelta(SourceCoordinate, SourceOffset);
+            m_delta = m_src.Delta(SourceCoordinate, SourceOffset).Rotation;
 
             // 軸制限
             var fleezed = FreezeAxes.Freeze(Delta);

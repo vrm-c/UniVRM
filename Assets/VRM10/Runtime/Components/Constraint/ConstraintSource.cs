@@ -19,6 +19,17 @@ namespace UniVRM10
         /// </summary>
         public readonly TR LocalInitial;
 
+        public TR Delta(ObjectSpace coords, Quaternion sourceRotationOffset)
+        {
+            switch (coords)
+            {
+                // case SourceCoordinates.World: return m_transform.rotation * Quaternion.Inverse(m_initial.Rotation);
+                case ObjectSpace.local: return TR.FromLocal(m_transform) * (LocalInitial * new TR(sourceRotationOffset)).Inverse();
+                case ObjectSpace.model: return TR.FromWorld(m_transform) * (TR.FromWorld(ModelRoot) * ModelInitial * new TR(sourceRotationOffset)).Inverse();
+                default: throw new NotImplementedException();
+            }
+        }
+
         public Vector3 TranslationDelta(ObjectSpace coords)
         {
             switch (coords)
@@ -30,30 +41,30 @@ namespace UniVRM10
             }
         }
 
-        public Quaternion RotationDelta(ObjectSpace coords, Quaternion sourceRotationOffset)
-        {
-            switch (coords)
-            {
-                // case SourceCoordinates.World: return m_transform.rotation * Quaternion.Inverse(m_initial.Rotation);
-                case ObjectSpace.local: return m_transform.localRotation * Quaternion.Inverse(LocalInitial.Rotation * sourceRotationOffset);
-                case ObjectSpace.model: return m_transform.rotation * Quaternion.Inverse(ModelInitial.Rotation * sourceRotationOffset) * Quaternion.Inverse(ModelRoot.rotation);
-                default: throw new NotImplementedException();
-            }
-        }
+        // public Quaternion RotationDelta(ObjectSpace coords, Quaternion sourceRotationOffset)
+        // {
+        //     return Delta(coords, sourceRotationOffset).Rotation;
+
+        //     switch (coords)
+        //     {
+        //         // case SourceCoordinates.World: return m_transform.rotation * Quaternion.Inverse(m_initial.Rotation);
+        //         case ObjectSpace.local: return m_transform.localRotation * Quaternion.Inverse(LocalInitial.Rotation * sourceRotationOffset);
+        //         case ObjectSpace.model: return m_transform.rotation * Quaternion.Inverse(ModelInitial.Rotation * sourceRotationOffset) * Quaternion.Inverse(ModelRoot.rotation);
+        //         default: throw new NotImplementedException();
+        //     }
+        // }
 
         public ConstraintSource(Transform t, Transform modelRoot = null)
         {
-            m_transform = t;
-
             {
+                m_transform = t;
                 LocalInitial = TR.FromLocal(t);
             }
 
             if (modelRoot != null)
             {
-                var world = TR.FromWorld(t);
                 ModelRoot = modelRoot;
-                ModelInitial = new TR(world.Rotation * Quaternion.Inverse(ModelRoot.rotation), modelRoot.worldToLocalMatrix.MultiplyPoint(world.Translation));
+                ModelInitial = TR.FromWorld(t) * TR.FromWorld(ModelRoot).Inverse();
             }
         }
     }
