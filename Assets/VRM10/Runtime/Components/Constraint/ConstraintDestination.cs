@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace UniVRM10
 {
-    class ConstraintDestination
+    public class ConstraintDestination
     {
         readonly Transform m_transform;
         readonly TR m_modelInitial;

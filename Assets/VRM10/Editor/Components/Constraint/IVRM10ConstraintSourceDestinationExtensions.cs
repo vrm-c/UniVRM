@@ -3,9 +3,9 @@ using UnityEngine;
 
 namespace UniVRM10
 {
-    public static class IVRM10ConstraintSourceDestinationExtensions
+    public static class VRM10PositionRotationConstraintBaseExtensions
     {
-        public static void DrawSourceCoords(this IVRM10ConstraintSourceDestination self)
+        public static void DrawSourceCoords(this VRM10RotationPositionConstraintBase self)
         {
             try
             {
@@ -16,7 +16,7 @@ namespace UniVRM10
 
             }
         }
-        public static void DrawSourceCurrent(this IVRM10ConstraintSourceDestination self)
+        public static void DrawSourceCurrent(this VRM10RotationPositionConstraintBase self)
         {
             try
             {
@@ -30,7 +30,7 @@ namespace UniVRM10
             }
         }
 
-        public static void DrawDstCoords(this IVRM10ConstraintSourceDestination self)
+        public static void DrawDstCoords(this VRM10RotationPositionConstraintBase self)
         {
             try
             {
@@ -42,7 +42,7 @@ namespace UniVRM10
             }
         }
 
-        public static void DrawDstCurrent(this IVRM10ConstraintSourceDestination self)
+        public static void DrawDstCurrent(this VRM10RotationPositionConstraintBase self)
         {
             try
             {

@@ -4,7 +4,7 @@ using UniGLTF.Extensions.VRMC_node_constraint;
 
 namespace UniVRM10
 {
-    class ConstraintSource
+    public class ConstraintSource
     {
         public readonly Transform ModelRoot;
         readonly Transform m_transform;
