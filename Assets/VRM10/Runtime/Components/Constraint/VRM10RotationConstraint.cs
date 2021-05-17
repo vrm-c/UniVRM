@@ -13,11 +13,6 @@ namespace UniVRM10
 
         public override Vector3 Delta => m_delta.eulerAngles;
 
-        protected override void UpdateDelta()
-        {
-            m_delta = m_src.RotationDelta(SourceCoordinate, SourceOffset);
-        }
-
         public override TR GetSourceCurrent()
         {
             var coords = GetSourceCoords();
@@ -38,6 +33,19 @@ namespace UniVRM10
             }
 
             return coords * new TR(m_delta);
+        }
+
+        protected override void UpdateDelta()
+        {
+            m_delta = m_src.RotationDelta(SourceCoordinate, SourceOffset);
+
+            // 軸制限
+            var fleezed = FreezeAxes.Freeze(Delta);
+            var rotation = Quaternion.Euler(fleezed);
+
+            // Debug.Log($"{delta} => {rotation}");
+            // オイラー角を再度Quaternionへ。weight を加味してSlerpする
+            m_dst.ApplyRotation(DestinationOffset * rotation, Weight, DestinationCoordinate, ModelRoot);
         }
     }
 }

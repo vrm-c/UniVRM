@@ -204,15 +204,6 @@ namespace UniVRM10
 
             // 回転差分
             UpdateDelta();
-
-            // 軸制限
-            var fleezed = FreezeAxes.Freeze(Delta);
-            var rotation = Quaternion.Euler(fleezed);
-
-            // Debug.Log($"{delta} => {rotation}");
-            // オイラー角を再度Quaternionへ。weight を加味してSlerpする
-            m_dst.ApplyRotation(DestinationOffset * rotation, Weight, DestinationCoordinate, ModelRoot);
-
         }
     }
 }

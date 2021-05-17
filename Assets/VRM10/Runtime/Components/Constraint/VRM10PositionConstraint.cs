@@ -13,27 +13,6 @@ namespace UniVRM10
         Vector3 m_delta;
         public override Vector3 Delta => m_delta;
 
-        protected override void UpdateDelta()
-        {
-            if (Source == null)
-            {
-                enabled = false;
-                return;
-            }
-
-            if (m_src == null)
-            {
-                m_src = new ConstraintSource(Source, ModelRoot);
-            }
-            if (m_dst == null)
-            {
-                m_dst = new ConstraintDestination(transform, ModelRoot);
-            }
-
-            m_delta = FreezeAxes.Freeze(m_src.TranslationDelta(SourceCoordinate));
-            m_dst.ApplyTranslation(Delta, Weight, DestinationCoordinate, ModelRoot);
-        }
-
         public override TR GetSourceCurrent()
         {
             var coords = GetSourceCoords();
@@ -54,6 +33,12 @@ namespace UniVRM10
             }
 
             return new TR(Delta) * coords;
+        }
+
+        protected override void UpdateDelta()
+        {
+            m_delta = FreezeAxes.Freeze(m_src.TranslationDelta(SourceCoordinate));
+            m_dst.ApplyTranslation(Delta, Weight, DestinationCoordinate, ModelRoot);
         }
     }
 }
