@@ -280,7 +280,7 @@ namespace UniVRM10
         public static void Migrate(glTF gltf, JsonNode json)
         {
             const float centimeterToMeter = 0.01f;
-            
+
             // Create MToonDefinition(0.x) from JSON(0.x)
             var sourceMaterials = new (MToonValue, glTFMaterial)[gltf.materials.Count];
             for (int i = 0; i < gltf.materials.Count; ++i)
@@ -292,7 +292,7 @@ namespace UniVRM10
                 }
                 // VRM-0 MToon の情報
                 var mtoon = MToonValue.Create(vrmMaterial);
-                
+
                 // KHR_materials_unlit として fallback した情報が入っている
                 var gltfMaterial = gltf.materials[i];
                 if (!glTF_KHR_materials_unlit.IsEnable(gltfMaterial))
@@ -309,6 +309,10 @@ namespace UniVRM10
             var transparentZWriteRenderQueues = new SortedSet<int>();
             foreach (var (mtoon, gltfMaterial) in sourceMaterials)
             {
+                if (mtoon == null)
+                {
+                    continue;
+                }
                 switch (mtoon.Definition.Rendering.RenderMode)
                 {
                     case RenderMode.Opaque:
@@ -337,10 +341,14 @@ namespace UniVRM10
             {
                 transparentZWriteRenderQueueMap.Add(srcQueue, defaultTransparentZWriteQueue++);
             }
-            
+
             // Main Pass
             foreach (var (mtoon, gltfMaterial) in sourceMaterials)
             {
+                if (mtoon == null)
+                {
+                    continue;
+                }
                 var extensions = new glTFExtensionExport();
                 gltfMaterial.extensions = extensions;
                 extensions.Add(
