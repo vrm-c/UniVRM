@@ -80,7 +80,7 @@ namespace UniVRM10
             }
 
             // Target UPVector
-            Handles.color = Color.red;
+            Handles.color = Color.green;
             Handles.DrawLine(m_target.transform.position, m_target.transform.position + m_target.UpVector);
         }
     }
