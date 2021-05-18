@@ -104,10 +104,21 @@ namespace UniVRM10
                 Handles.Label(m_target.GetComponent().transform.position, sb.ToString(), Style);
             }
 
-            m_target.DrawSourceCoords();
-            m_target.DrawSourceCurrent();
-            m_target.DrawDstCoords();
-            m_target.DrawDstCurrent();
+            m_target.GetSourceCoords().Draw(0.2f);
+            if (Application.isPlaying)
+            {
+                Handles.matrix = m_target.GetSourceCurrent().TRS(0.05f);
+                Handles.color = Color.yellow;
+                Handles.DrawWireCube(Vector3.zero, Vector3.one);
+            }
+
+            m_target.GetDstCoords().Draw(0.2f);
+            if (Application.isPlaying)
+            {
+                Handles.matrix = m_target.GetDstCurrent().TRS(0.05f);
+                Handles.color = Color.yellow;
+                Handles.DrawWireCube(Vector3.zero, Vector3.one);
+            }
         }
     }
 }
