@@ -70,7 +70,7 @@ namespace UniVRM10
 
         protected ConstraintSource m_src;
 
-        TR ModelCoords
+        TR SourceModelCoords
         {
             get
             {
@@ -115,7 +115,7 @@ namespace UniVRM10
                         {
                             throw new ConstraintException(ConstraintException.ExceptionTypes.NoModelWithModelSpace);
                         }
-                        return new TR(ModelCoords.Rotation * SourceOffset, SourceCoords.Translation);
+                        return new TR(SourceModelCoords.Rotation * SourceOffset, SourceCoords.Translation);
                     }
 
                 case ObjectSpace.local:
@@ -132,6 +132,36 @@ namespace UniVRM10
 
         protected ConstraintDestination m_dst;
 
+        TR DestinationModelCoords
+        {
+            get
+            {
+                if (m_dst == null)
+                {
+                    return TR.FromWorld(ModelRoot);
+                }
+                else
+                {
+                    return TR.FromParent(ModelRoot) * m_dst.ModelInitial;
+                }
+            }
+        }
+
+        TR DestinationCoords
+        {
+            get
+            {
+                if (m_dst == null)
+                {
+                    return TR.FromWorld(transform);
+                }
+                else
+                {
+                    return TR.FromParent(transform) * m_dst.LocalInitial;
+                }
+            }
+        }
+
         public TR GetDstCoords()
         {
             switch (DestinationCoordinate)
@@ -142,30 +172,12 @@ namespace UniVRM10
                         {
                             throw new ConstraintException(ConstraintException.ExceptionTypes.NoModelWithModelSpace);
                         }
-
-                        if (m_dst == null)
-                        {
-                            return TR.FromWorld(transform) * new TR(DestinationOffset);
-                        }
-
-                        // runtime
-                        return TR.FromWorld(ModelRoot) * m_dst.ModelInitial * new TR(DestinationOffset);
+                        return new TR(DestinationModelCoords.Rotation * DestinationOffset, DestinationCoords.Translation);
                     }
 
                 case ObjectSpace.local:
                     {
-                        if (m_dst == null)
-                        {
-                            return TR.FromWorld(transform) * new TR(DestinationOffset);
-                        }
-
-                        // runtime
-                        var parent = TR.Identity;
-                        if (transform.parent != null)
-                        {
-                            parent = TR.FromWorld(transform.parent);
-                        }
-                        return parent * m_dst.LocalInitial * new TR(DestinationOffset);
+                        return new TR(DestinationCoords.Rotation * DestinationOffset, DestinationCoords.Translation);
                     }
 
                 default:
