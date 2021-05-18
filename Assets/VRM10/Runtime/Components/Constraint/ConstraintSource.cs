@@ -4,74 +4,37 @@ using UniGLTF.Extensions.VRMC_node_constraint;
 
 namespace UniVRM10
 {
-    class ConstraintSource
+    public class ConstraintSource
     {
-        readonly Transform m_modelRoot;
+        public readonly Transform ModelRoot;
+        readonly Transform Source;
 
-        readonly Transform m_transform;
+        public readonly TR ModelInitial;
 
-        readonly ObjectSpace m_coords;
+        public readonly TR LocalInitial;
 
-        readonly TRS m_initial;
-
-        public Vector3 TranslationDelta
+        public TR Delta(ObjectSpace coords, Quaternion sourceRotationOffset)
         {
-            get
-            {
-                switch (m_coords)
-                {
-                    // case ObjectSpace.World: return m_transform.position - m_initial.Translation;
-                    case ObjectSpace.local: return m_transform.localPosition - m_initial.Translation;
-                    case ObjectSpace.model: return m_modelRoot.worldToLocalMatrix.MultiplyPoint(m_transform.position) - m_initial.Translation;
-                    default: throw new NotImplementedException();
-                }
-            }
-        }
-
-        public Quaternion RotationDelta
-        {
-            get
-            {
-                switch (m_coords)
-                {
-                    // 右からかけるか、左からかけるか、それが問題なのだ
-                    // case SourceCoordinates.World: return m_transform.rotation * Quaternion.Inverse(m_initial.Rotation);
-                    case ObjectSpace.local: return m_transform.localRotation * Quaternion.Inverse(m_initial.Rotation);
-                    case ObjectSpace.model: return m_transform.rotation * Quaternion.Inverse(m_modelRoot.rotation) * Quaternion.Inverse(m_initial.Rotation);
-                    default: throw new NotImplementedException();
-                }
-            }
-        }
-
-        public ConstraintSource(Transform t, ObjectSpace coords, Transform modelRoot = null)
-        {
-            m_transform = t;
-            m_coords = coords;
-
             switch (coords)
             {
-                // case SourceCoordinates.World:
-                //     m_initial = TRS.GetWorld(t);
-                //     break;
+                // case SourceCoordinates.World: return m_transform.rotation * Quaternion.Inverse(m_initial.Rotation);
+                case ObjectSpace.local: return TR.FromLocal(Source) * (LocalInitial * new TR(sourceRotationOffset)).Inverse();
+                case ObjectSpace.model: return TR.FromWorld(Source) * (TR.FromWorld(ModelRoot) * ModelInitial * new TR(sourceRotationOffset)).Inverse();
+                default: throw new NotImplementedException();
+            }
+        }
 
-                case ObjectSpace.local:
-                    m_initial = TRS.GetLocal(t);
-                    break;
+        public ConstraintSource(Transform t, Transform modelRoot = null)
+        {
+            {
+                Source = t;
+                LocalInitial = TR.FromLocal(t);
+            }
 
-                case ObjectSpace.model:
-                    {
-                        var world = TRS.GetWorld(t);
-                        m_modelRoot = modelRoot;
-                        m_initial = new TRS
-                        {
-                            Translation = modelRoot.worldToLocalMatrix.MultiplyPoint(world.Translation),
-                            Rotation = world.Rotation * Quaternion.Inverse(m_modelRoot.rotation),
-                        };
-                    }
-                    break;
-
-                default:
-                    throw new NotImplementedException();
+            if (modelRoot != null)
+            {
+                ModelRoot = modelRoot;
+                ModelInitial = TR.FromLocal(t);
             }
         }
     }

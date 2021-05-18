@@ -1,6 +1,6 @@
-﻿using UniGLTF.Extensions.VRMC_node_constraint;
+﻿using System;
+using UniGLTF.Extensions.VRMC_node_constraint;
 using UnityEngine;
-
 
 namespace UniVRM10
 {
@@ -8,79 +8,45 @@ namespace UniVRM10
     /// 対象の初期回転と現在回転の差分(delta)を、自身の初期回転と自身の初期回転にdeltaを乗算したものに対してWeightでSlerpする。
     /// </summary>
     [DisallowMultipleComponent]
-    public class VRM10RotationConstraint : VRM10Constraint
+    public class VRM10RotationConstraint : VRM10RotationPositionConstraintBase
     {
-        [SerializeField]
-        public Transform Source = default;
+        public override Vector3 Delta => FreezeAxes.Freeze(Quaternion.Slerp(Quaternion.identity, m_delta.Rotation, Weight).eulerAngles);
 
-        [SerializeField]
-        public ObjectSpace SourceCoordinate = default;
-
-        [SerializeField]
-        public ObjectSpace DestinationCoordinate = default;
-
-        [SerializeField]
-        public AxisMask FreezeAxes = default;
-
-        [SerializeField]
-        [Range(0, 10.0f)]
-        public float Weight = 1.0f;
-
-        [SerializeField]
-        public Transform ModelRoot = default;
-
-        ConstraintSource m_src;
-
-        ConstraintDestination m_dst;
-
-        /// <summary>
-        /// Editorで設定値の変更を反映するために、クリアする
-        /// </summary>
-        void OnValidate()
+        public override TR GetSourceCurrent()
         {
-            // Debug.Log("Validate");
-            m_src = null;
-            m_dst = null;
-        }
-
-        void Reset()
-        {
-            var current = transform;
-            while (current.parent != null)
-            {
-                current = current.parent;
-            }
-            ModelRoot = current;
-        }
-
-        /// <summary>
-        /// SourceのUpdateよりも先か後かはその時による。
-        /// 厳密に制御するのは無理。
-        /// </summary>
-        public override void Process()
-        {
-            if (Source == null)
-            {
-                enabled = false;
-                return;
-            }
-
+            var coords = GetSourceCoords();
             if (m_src == null)
             {
-                m_src = new ConstraintSource(Source, SourceCoordinate, ModelRoot);
+                return coords;
             }
-            if (m_dst == null)
-            {
-                m_dst = new ConstraintDestination(transform, DestinationCoordinate, ModelRoot);
-            }
+            return coords * new TR(m_delta.Rotation);
+        }
 
-            // 軸制限をしたオイラー角
-            var delta = m_src.RotationDelta;
-            var fleezed = FreezeAxes.Freeze(delta.eulerAngles);
-            var rotation = Quaternion.Euler(fleezed);
-            // Debug.Log($"{delta} => {rotation}");
-            // オイラー角を再度Quaternionへ。weight を加味してSlerpする
-            m_dst.ApplyRotation(rotation, Weight, ModelRoot);
+        public override TR GetDstCurrent()
+        {
+            var coords = GetDstCoords();
+            if (m_src == null)
+            {
+                return coords;
+            }
+            return coords * new TR(m_delta.Rotation);
+        }
+
+        protected override void ApplyDelta()
+        {
+            switch (DestinationCoordinate)
+            {
+                case ObjectSpace.local:
+                    m_dst.ApplyLocal(m_dst.LocalInitial * new TR(DestinationOffset) * new TR(Quaternion.Euler(Delta)));
+                    break;
+
+                case ObjectSpace.model:
+                    m_dst.ApplyModel(DestinationInitialCoords * new TR(DestinationOffset) * new TR(Quaternion.Euler(Delta)));
+                    break;
+
+                default:
+                    throw new NotImplementedException();
+            }
         }
     }
 }
