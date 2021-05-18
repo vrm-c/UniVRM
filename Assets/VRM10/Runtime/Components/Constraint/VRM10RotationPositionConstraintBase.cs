@@ -70,6 +70,36 @@ namespace UniVRM10
 
         protected ConstraintSource m_src;
 
+        TR ModelCoords
+        {
+            get
+            {
+                if (m_src == null)
+                {
+                    return TR.FromWorld(ModelRoot);
+                }
+                else
+                {
+                    return TR.FromParent(ModelRoot) * m_src.ModelInitial;
+                }
+            }
+        }
+
+        TR SourceCoords
+        {
+            get
+            {
+                if (m_src == null)
+                {
+                    return TR.FromWorld(Source);
+                }
+                else
+                {
+                    return TR.FromParent(Source) * m_src.LocalInitial;
+                }
+            }
+        }
+
         public TR GetSourceCoords()
         {
             if (Source == null)
@@ -85,30 +115,12 @@ namespace UniVRM10
                         {
                             throw new ConstraintException(ConstraintException.ExceptionTypes.NoModelWithModelSpace);
                         }
-
-                        if (m_src == null)
-                        {
-                            return TR.FromWorld(Source) * new TR(SourceOffset);
-                        }
-
-                        // runtime
-                        return TR.FromWorld(ModelRoot) * new TR(SourceOffset, Source.position);
+                        return new TR(ModelCoords.Rotation * SourceOffset, SourceCoords.Translation);
                     }
 
                 case ObjectSpace.local:
                     {
-                        if (m_src == null)
-                        {
-                            return TR.FromWorld(Source) * new TR(SourceOffset);
-                        }
-
-                        // runtime
-                        var parent = Quaternion.identity;
-                        if (Source.parent != null)
-                        {
-                            parent = Source.parent.rotation;
-                        }
-                        return new TR(parent * m_src.LocalInitial.Rotation * SourceOffset, Source.position);
+                        return new TR(SourceCoords.Rotation * SourceOffset, SourceCoords.Translation);
                     }
 
                 default:

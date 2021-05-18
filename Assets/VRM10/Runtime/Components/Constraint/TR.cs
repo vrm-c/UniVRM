@@ -11,6 +11,8 @@ namespace UniVRM10
 
         public static TR FromWorld(Transform t) => new TR(t.rotation, t.position);
 
+        public static TR FromParent(Transform t) => t.parent != null ? FromWorld(t.parent) : TR.Identity;
+
         public static TR FromLocal(Transform t) => new TR(t.localRotation, t.localPosition);
 
         public static TR FromRelative(Transform t, Transform from)
