@@ -78,6 +78,10 @@ namespace UniVRM10
                 new TR(init, m_target.transform.position).Draw(0.2f);
                 DrawAimUp(init * m_target.DestinationOffset * m_target.Delta, m_target.transform.position, Color.magenta);
             }
+
+            // Target UPVector
+            Handles.color = Color.red;
+            Handles.DrawLine(m_target.transform.position, m_target.transform.position + m_target.UpVector);
         }
     }
 }

@@ -15,19 +15,11 @@ namespace UniVRM10
             set => m_freezeAxes = value;
         }
 
-        [SerializeField]
-        [Range(0, 10.0f)]
-        public float Weight = 1.0f;
-
-        [SerializeField]
-        public Transform ModelRoot = default;
-
         #region Source
         [Header("Source")]
         [SerializeField]
-        public Transform Source = default;
-
-        public Transform GetSource() => Source;
+        public Transform m_source = default;
+        public override Transform Source => m_source;
 
         [SerializeField]
         ObjectSpace m_sourceCoordinate = default;
@@ -68,38 +60,6 @@ namespace UniVRM10
         }
         #endregion
 
-        protected ConstraintSource m_src;
-
-        TR SourceModelCoords
-        {
-            get
-            {
-                if (m_src == null)
-                {
-                    return TR.FromWorld(ModelRoot);
-                }
-                else
-                {
-                    return TR.FromParent(ModelRoot) * m_src.ModelInitial;
-                }
-            }
-        }
-
-        TR SourceInitialCoords
-        {
-            get
-            {
-                if (m_src == null)
-                {
-                    return TR.FromWorld(Source);
-                }
-                else
-                {
-                    return TR.FromParent(Source) * m_src.LocalInitial;
-                }
-            }
-        }
-
         public TR GetSourceCoords()
         {
             if (Source == null)
@@ -130,38 +90,6 @@ namespace UniVRM10
 
         public abstract TR GetSourceCurrent();
 
-        protected ConstraintDestination m_dst;
-
-        TR DestinationModelCoords
-        {
-            get
-            {
-                if (m_dst == null)
-                {
-                    return TR.FromWorld(ModelRoot);
-                }
-                else
-                {
-                    return TR.FromParent(ModelRoot) * m_dst.ModelInitial;
-                }
-            }
-        }
-
-        public TR DestinationInitialCoords
-        {
-            get
-            {
-                if (m_dst == null)
-                {
-                    return TR.FromWorld(transform);
-                }
-                else
-                {
-                    return TR.FromParent(transform) * m_dst.LocalInitial;
-                }
-            }
-        }
-
         public TR GetDstCoords()
         {
             switch (DestinationCoordinate)
@@ -187,7 +115,6 @@ namespace UniVRM10
 
         public abstract TR GetDstCurrent();
 
-
         /// <summary>
         /// Editorで設定値の変更を反映するために、クリアする
         /// </summary>
@@ -204,16 +131,6 @@ namespace UniVRM10
             }
         }
 
-        void Reset()
-        {
-            var current = transform;
-            while (current.parent != null)
-            {
-                current = current.parent;
-            }
-            ModelRoot = current;
-        }
-
         public Component GetComponent()
         {
             return this;
@@ -224,23 +141,8 @@ namespace UniVRM10
 
         protected abstract void ApplyDelta();
 
-        public override void Process()
+        public override void OnProcess()
         {
-            if (Source == null)
-            {
-                enabled = false;
-                return;
-            }
-
-            if (m_src == null)
-            {
-                m_src = new ConstraintSource(Source, ModelRoot);
-            }
-            if (m_dst == null)
-            {
-                m_dst = new ConstraintDestination(transform, ModelRoot);
-            }
-
             m_delta = m_src.Delta(SourceCoordinate, SourceOffset);
             ApplyDelta();
         }

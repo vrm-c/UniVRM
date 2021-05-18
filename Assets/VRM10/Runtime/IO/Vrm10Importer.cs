@@ -479,7 +479,7 @@ namespace UniVRM10
                         var p = constraint.Position;
                         var positionConstraint = node.gameObject.AddComponent<VRM10PositionConstraint>();
                         positionConstraint.SourceCoordinate = p.SourceSpace;
-                        positionConstraint.Source = Nodes[p.Source.Value];
+                        positionConstraint.m_source = Nodes[p.Source.Value];
                         positionConstraint.DestinationCoordinate = p.DestinationSpace;
                         positionConstraint.FreezeAxes = FreezeAxis(p.FreezeAxes);
                         positionConstraint.Weight = p.Weight.Value;
@@ -490,7 +490,7 @@ namespace UniVRM10
                         var r = constraint.Rotation;
                         var rotationConstraint = node.gameObject.AddComponent<VRM10RotationConstraint>();
                         rotationConstraint.SourceCoordinate = r.SourceSpace;
-                        rotationConstraint.Source = Nodes[r.Source.Value];
+                        rotationConstraint.m_source = Nodes[r.Source.Value];
                         rotationConstraint.DestinationCoordinate = r.DestinationSpace;
                         rotationConstraint.FreezeAxes = FreezeAxis(r.FreezeAxes);
                         rotationConstraint.Weight = r.Weight.Value;
@@ -500,7 +500,7 @@ namespace UniVRM10
                     {
                         var a = constraint.Aim;
                         var aimConstraint = node.gameObject.AddComponent<VRM10AimConstraint>();
-                        aimConstraint.Source = Nodes[a.Source.Value];
+                        aimConstraint.m_source = Nodes[a.Source.Value];
                         // aimConstraint.AimVector = Vector3InvertX(a.AimVector);
                         // aimConstraint.UpVector = Vector3InvertX(a.UpVector);
                     }

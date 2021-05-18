@@ -47,7 +47,7 @@ namespace UniVRM10
 
         public void OnSceneGUI()
         {
-            if (m_target.GetSource() == null)
+            if (m_target.Source == null)
             {
                 return;
             }
@@ -56,7 +56,7 @@ namespace UniVRM10
             if (!Application.isPlaying)
             {
                 EditorGUI.BeginChangeCheck();
-                Quaternion offset = Handles.RotationHandle(m_target.SourceOffset, m_target.GetSource().position);
+                Quaternion offset = Handles.RotationHandle(m_target.SourceOffset, m_target.Source.position);
                 if (EditorGUI.EndChangeCheck())
                 {
                     Undo.RecordObject(m_target.GetComponent(), "source offset");
@@ -78,7 +78,7 @@ namespace UniVRM10
 
             // this to target line
             Handles.color = Color.yellow;
-            Handles.DrawLine(m_target.GetSource().position, m_target.GetComponent().transform.position);
+            Handles.DrawLine(m_target.Source.position, m_target.GetComponent().transform.position);
 
             var delta = Clamp180(m_target.Delta);
 
@@ -91,7 +91,7 @@ namespace UniVRM10
                 sb.AppendLine($"{delta.x:0.00}");
                 sb.AppendLine($"{delta.y:0.00}");
                 sb.Append($"{delta.z:0.00}");
-                Handles.Label(m_target.GetSource().position, sb.ToString(), Style);
+                Handles.Label(m_target.Source.position, sb.ToString(), Style);
             }
 
             // show dst
