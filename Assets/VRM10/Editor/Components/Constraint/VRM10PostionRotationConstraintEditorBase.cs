@@ -88,9 +88,9 @@ namespace UniVRM10
                 sb.AppendLine();
                 sb.AppendLine();
                 sb.AppendLine($"source: {m_target.SourceCoordinate}");
-                sb.AppendLine($"{delta.x:0.}");
-                sb.AppendLine($"{delta.y:0.}");
-                sb.Append($"{delta.z:0.}");
+                sb.AppendLine($"{delta.x:0.00}");
+                sb.AppendLine($"{delta.y:0.00}");
+                sb.Append($"{delta.z:0.00}");
                 Handles.Label(m_target.GetSource().position, sb.ToString(), Style);
             }
 
@@ -98,9 +98,9 @@ namespace UniVRM10
             {
                 var sb = new StringBuilder();
                 sb.AppendLine($"constraint: {m_target.DestinationCoordinate}");
-                sb.AppendLine(m_target.FreezeAxes.HasFlag(AxisMask.X) ? $"freeze" : $"{delta.x:0.}");
-                sb.AppendLine(m_target.FreezeAxes.HasFlag(AxisMask.Y) ? $"freeze" : $"{delta.y:0.}");
-                sb.Append(m_target.FreezeAxes.HasFlag(AxisMask.Z) ? $"freeze" : $"{delta.z:0.}");
+                sb.AppendLine(m_target.FreezeAxes.HasFlag(AxisMask.X) ? $"freeze" : $"{delta.x:0.00}");
+                sb.AppendLine(m_target.FreezeAxes.HasFlag(AxisMask.Y) ? $"freeze" : $"{delta.y:0.00}");
+                sb.Append(m_target.FreezeAxes.HasFlag(AxisMask.Z) ? $"freeze" : $"{delta.z:0.00}");
                 Handles.Label(m_target.GetComponent().transform.position, sb.ToString(), Style);
             }
 
