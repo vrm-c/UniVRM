@@ -56,7 +56,7 @@ namespace UniVRM10
 
         /// <summary>
         /// https://github.com/vrm-c/UniVRM/issues/800
-        /// 
+        ///
         /// SubMesh 単位に分割する。
         /// SubMesh を Gltf の Primitive に対応させる。
         /// </summary>
@@ -88,14 +88,15 @@ namespace UniVRM10
             foreach (var submesh in mesh.Submeshes)
             {
                 var indices = meshIndices.Slice(submesh.Offset, submesh.DrawCount).ToArray();
+                var hash = new HashSet<int>(indices);
 
                 // mesh
-                // index の順に attributes を蓄える     
+                // index の順に attributes を蓄える
                 var buffer = new MeshExportUtil.VertexBuffer(indices.Length, getJointIndex);
                 usedIndices.Clear();
                 for (int k = 0; k < positions.Length; ++k)
                 {
-                    if (indices.Contains(k))
+                    if (hash.Contains(k))
                     {
                         // indices から参照される頂点だけを蓄える
                         usedIndices.Add(k);
@@ -127,7 +128,7 @@ namespace UniVRM10
                 {
                     var blendShape = new MeshExportUtil.BlendShapeBuffer(indices.Length);
 
-                    // index の順に attributes を蓄える                
+                    // index の順に attributes を蓄える
                     var morph = mesh.MorphTargets[j];
                     var blendShapePositions = morph.VertexBuffer.Positions.GetSpan<UnityEngine.Vector3>();
                     SpanLike<UnityEngine.Vector3>? blendShapeNormals = default;
