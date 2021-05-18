@@ -40,9 +40,9 @@ namespace UniVRM10
 
         /// <summary>
         /// vrm-0 の json から vrm-0 の MToon.Definition を生成する。
-        /// 
+        ///
         /// Texture2D は作成せずに、直接 index を操作する。
-        /// 
+        ///
         /// </summary>
         sealed class MToonValue
         {
@@ -115,7 +115,7 @@ namespace UniVRM10
                             break;
 
                         default:
-#if VRM_DEVELOP                        
+#if VRM_DEVELOP
                             Debug.LogWarning($"vectorProperties: {kv.Key}: {kv.Value}");
 #endif
                             break;
@@ -219,7 +219,7 @@ namespace UniVRM10
                             break;
 
                         default:
-#if VRM_DEVELOP                        
+#if VRM_DEVELOP
                             Debug.LogWarning($"floatProperties: {kv.Key} is unknown");
 #endif
                             break;
@@ -244,7 +244,7 @@ namespace UniVRM10
                         case "_OutlineWidthTexture": map.OutlineWidthTexture = index; break;
                         case "_UvAnimMaskTexture": map.UvAnimMaskTexture = index; break;
                         default:
-#if VRM_DEVELOP                        
+#if VRM_DEVELOP
                             Debug.LogWarning($"textureProperties: {kv.Key} is unknown");
 #endif
                             break;
@@ -297,7 +297,7 @@ namespace UniVRM10
                 var gltfMaterial = gltf.materials[i];
                 if (!glTF_KHR_materials_unlit.IsEnable(gltfMaterial))
                 {
-                    // 古いモデルは無い場合がある                    
+                    // 古いモデルは無い場合がある
                     // throw new Exception($"[{i}]{gltfMaterial.name} has no extensions");
                 }
                 sourceMaterials[i] = (mtoon, gltfMaterial);
@@ -500,7 +500,7 @@ namespace UniVRM10
                 }
                 dst.UvAnimationRotationSpeedFactor = mtoon.Definition.TextureOption.UvAnimationRotationSpeedValue;
                 dst.UvAnimationScrollXSpeedFactor = mtoon.Definition.TextureOption.UvAnimationScrollXSpeedValue;
-                dst.UvAnimationScrollYSpeedFactor = mtoon.Definition.TextureOption.UvAnimationScrollYSpeedValue;
+                dst.UvAnimationScrollYSpeedFactor = mtoon.Definition.TextureOption.UvAnimationScrollYSpeedValue * -1f;
 
                 UniGLTF.Extensions.VRMC_materials_mtoon.GltfSerializer.SerializeTo(ref gltfMaterial.extensions, dst);
             }
