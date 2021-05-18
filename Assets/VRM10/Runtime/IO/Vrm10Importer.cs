@@ -501,8 +501,8 @@ namespace UniVRM10
                         var a = constraint.Aim;
                         var aimConstraint = node.gameObject.AddComponent<VRM10AimConstraint>();
                         aimConstraint.Source = Nodes[a.Source.Value];
-                        aimConstraint.AimVector = Vector3InvertX(a.AimVector);
-                        aimConstraint.UpVector = Vector3InvertX(a.UpVector);
+                        // aimConstraint.AimVector = Vector3InvertX(a.AimVector);
+                        // aimConstraint.UpVector = Vector3InvertX(a.UpVector);
                     }
                 }
             }
