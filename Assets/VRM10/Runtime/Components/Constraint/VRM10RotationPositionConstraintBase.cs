@@ -85,7 +85,7 @@ namespace UniVRM10
             }
         }
 
-        TR SourceCoords
+        TR SourceInitialCoords
         {
             get
             {
@@ -115,12 +115,12 @@ namespace UniVRM10
                         {
                             throw new ConstraintException(ConstraintException.ExceptionTypes.NoModelWithModelSpace);
                         }
-                        return new TR(SourceModelCoords.Rotation * SourceOffset, SourceCoords.Translation);
+                        return new TR(SourceModelCoords.Rotation * SourceOffset, SourceInitialCoords.Translation);
                     }
 
                 case ObjectSpace.local:
                     {
-                        return new TR(SourceCoords.Rotation * SourceOffset, SourceCoords.Translation);
+                        return new TR(SourceInitialCoords.Rotation * SourceOffset, SourceInitialCoords.Translation);
                     }
 
                 default:
@@ -147,7 +147,7 @@ namespace UniVRM10
             }
         }
 
-        public TR DestinationCoords
+        public TR DestinationInitialCoords
         {
             get
             {
@@ -172,12 +172,12 @@ namespace UniVRM10
                         {
                             throw new ConstraintException(ConstraintException.ExceptionTypes.NoModelWithModelSpace);
                         }
-                        return new TR(DestinationModelCoords.Rotation * DestinationOffset, DestinationCoords.Translation);
+                        return new TR(DestinationModelCoords.Rotation * DestinationOffset, DestinationInitialCoords.Translation);
                     }
 
                 case ObjectSpace.local:
                     {
-                        return new TR(DestinationCoords.Rotation * DestinationOffset, DestinationCoords.Translation);
+                        return new TR(DestinationInitialCoords.Rotation * DestinationOffset, DestinationInitialCoords.Translation);
                     }
 
                 default:
