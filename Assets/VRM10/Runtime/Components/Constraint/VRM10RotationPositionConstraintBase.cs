@@ -147,7 +147,7 @@ namespace UniVRM10
             }
         }
 
-        TR DestinationCoords
+        public TR DestinationCoords
         {
             get
             {

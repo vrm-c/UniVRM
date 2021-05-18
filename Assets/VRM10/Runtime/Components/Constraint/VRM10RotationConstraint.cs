@@ -1,5 +1,6 @@
-﻿using UnityEngine;
-
+﻿using System;
+using UniGLTF.Extensions.VRMC_node_constraint;
+using UnityEngine;
 
 namespace UniVRM10
 {
@@ -9,7 +10,7 @@ namespace UniVRM10
     [DisallowMultipleComponent]
     public class VRM10RotationConstraint : VRM10RotationPositionConstraintBase
     {
-        public override Vector3 Delta => m_delta.Rotation.eulerAngles;
+        public override Vector3 Delta => FreezeAxes.Freeze(Quaternion.Slerp(Quaternion.identity, m_delta.Rotation, Weight).eulerAngles);
 
         public override TR GetSourceCurrent()
         {
@@ -18,7 +19,6 @@ namespace UniVRM10
             {
                 return coords;
             }
-
             return coords * new TR(m_delta.Rotation);
         }
 
@@ -29,18 +29,24 @@ namespace UniVRM10
             {
                 return coords;
             }
-
             return coords * new TR(m_delta.Rotation);
         }
 
         protected override void ApplyDelta()
         {
-            // 軸制限
-            var fleezed = FreezeAxes.Freeze(Delta);
-            var rotation = Quaternion.Euler(fleezed);
+            switch (DestinationCoordinate)
+            {
+                case ObjectSpace.local:
+                    m_dst.ApplyLocal(m_dst.LocalInitial * new TR(DestinationOffset) * new TR(Quaternion.Euler(Delta)));
+                    break;
 
-            // オイラー角を再度Quaternionへ。weight を加味してSlerpする
-            m_dst.ApplyRotation(rotation, Weight, DestinationCoordinate, DestinationOffset, ModelRoot);
+                case ObjectSpace.model:
+                    m_dst.ApplyModel(DestinationCoords * new TR(DestinationOffset) * new TR(Quaternion.Euler(Delta)));
+                    break;
+
+                default:
+                    throw new NotImplementedException();
+            }
         }
     }
 }

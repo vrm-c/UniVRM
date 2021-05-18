@@ -1,78 +1,36 @@
-using System;
-using UniGLTF.Extensions.VRMC_node_constraint;
 using UnityEngine;
 
 namespace UniVRM10
 {
     public class ConstraintDestination
     {
-        readonly Transform m_transform;
+        public readonly Transform Destination;
         public readonly TR ModelInitial;
         public readonly TR LocalInitial;
         public readonly Transform ModelRoot;
 
         public ConstraintDestination(Transform t, Transform modelRoot = null)
         {
-            ModelRoot = modelRoot;
-            m_transform = t;
-
+            Destination = t;
             LocalInitial = TR.FromLocal(t);
-            ModelInitial = TR.FromRelative(t, modelRoot);
-        }
 
-        public void ApplyTranslation(Vector3 delta, float weight, ObjectSpace coords, Quaternion offset, Transform modelRoot = null)
-        {
-            switch (coords)
+            if (modelRoot != null)
             {
-                // case DestinationCoordinates.World:
-                //     m_transform.position = value;
-                //     break;
-
-                case ObjectSpace.local:
-                    {
-                        var value = LocalInitial.Translation + offset * delta * weight;
-                        m_transform.localPosition = value;
-                    }
-                    break;
-
-                case ObjectSpace.model:
-                    {
-                        var value = ModelInitial.Translation + offset * delta * weight;
-                        m_transform.position = modelRoot.localToWorldMatrix.MultiplyPoint(value);
-                    }
-                    break;
-
-                default:
-                    throw new NotImplementedException();
+                ModelRoot = modelRoot;
+                ModelInitial = TR.FromRelative(t, modelRoot);
             }
         }
 
-        public void ApplyRotation(Quaternion delta, float weight, ObjectSpace coords, Quaternion offset, Transform modelRoot = null)
+        public void ApplyLocal(TR tr)
         {
-            // 0~1 で clamp しない slerp
-            switch (coords)
-            {
-                // case DestinationCoordinates.World:
-                //     m_transform.rotation = value;
-                //     break;
+            Destination.localPosition = tr.Translation;
+            Destination.localRotation = tr.Rotation;
+        }
 
-                case ObjectSpace.local:
-                    {
-                        var value = Quaternion.LerpUnclamped(Quaternion.identity, delta * offset, weight) * LocalInitial.Rotation;
-                        m_transform.localRotation = value;
-                    }
-                    break;
-
-                case ObjectSpace.model:
-                    {
-                        var value = Quaternion.LerpUnclamped(Quaternion.identity, delta * offset, weight) * ModelInitial.Rotation;
-                        m_transform.rotation = modelRoot.rotation * value;
-                    }
-                    break;
-
-                default:
-                    throw new NotImplementedException();
-            }
+        public void ApplyModel(TR tr)
+        {
+            Destination.position = tr.Translation;
+            Destination.rotation = tr.Rotation;
         }
     }
 }
