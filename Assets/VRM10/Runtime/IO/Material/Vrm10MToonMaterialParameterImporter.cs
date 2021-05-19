@@ -86,6 +86,13 @@ namespace UniVRM10
                 yield return (MToon.Utils.PropShadeShift, shadingShift.Value);
             }
 
+            var shadingShiftTextureScale = mToon?.ShadingShiftTexture?.Scale;
+            if (shadingShiftTextureScale.HasValue)
+            {
+                Debug.LogWarning("Need VRM 1.0 MToon implementation.");
+                yield return ("_NEED_IMPLEMENTATION_MTOON_1_0_shadingShiftTextureScale", shadingShiftTextureScale.Value);
+            }
+
             var shadingToony = mToon?.ShadingToonyFactor;
             if (shadingToony.HasValue)
             {

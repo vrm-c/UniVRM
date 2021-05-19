@@ -190,7 +190,7 @@ namespace UniGLTF
             {
                 var offset = m.GetTextureOffset(propertyName);
                 var scale = m.GetTextureScale(propertyName);
-                offset.y = (offset.y + scale.y - 1) * -1.0f;
+                offset.y = 1.0f - offset.y - scale.y;
 
                 glTF_KHR_texture_transform.Serialize(textureInfo, (offset.x, offset.y), (scale.x, scale.y));
             }
