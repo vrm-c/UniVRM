@@ -18,8 +18,12 @@ namespace UniVRM10
         #region Source
         [Header("Source")]
         [SerializeField]
-        public Transform m_source = default;
-        public override Transform Source => m_source;
+        Transform m_source = default;
+        public override Transform Source
+        {
+            get => m_source;
+            set => m_source = value;
+        }
 
         [SerializeField]
         ObjectSpace m_sourceCoordinate = default;

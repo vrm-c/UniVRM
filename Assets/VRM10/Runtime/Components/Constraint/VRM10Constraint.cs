@@ -34,7 +34,7 @@ namespace UniVRM10
         }
 
         #region Source
-        public abstract Transform Source { get; }
+        public abstract Transform Source { get; set; }
 
         public ConstraintSource m_src;
 
