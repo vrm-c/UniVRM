@@ -41,7 +41,7 @@ namespace UniVRM10
                     break;
 
                 case ObjectSpace.model:
-                    m_dst.ApplyModel(DestinationInitialCoords * new TR(DestinationOffset) * new TR(Quaternion.Euler(Delta)));
+                    m_dst.ApplyModel(DestinationInitialCoords(ObjectSpace.model) * new TR(DestinationOffset) * new TR(Quaternion.Euler(Delta)));
                     break;
 
                 default:
