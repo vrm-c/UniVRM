@@ -10,19 +10,12 @@ namespace UniGLTF
         [PreferenceItem("UniGLTF")]
         private static void OnPreferenceGUI()
         {
-            EditorGUI.BeginChangeCheck();
-
             // language
             M17N.LanguageGetter.OnGuiSelectLang();
             EditorGUILayout.HelpBox($"Custom editor language setting", MessageType.Info, true);
 
             // default axis
-            GltfIOAxis = (Axes)EditorGUILayout.EnumPopup("Default Invert axis", GltfIOAxis);
-            EditorGUILayout.HelpBox($"Default invert axis when glb/gltf import/export", MessageType.Info, true);
-
-            if (EditorGUI.EndChangeCheck())
-            {
-            }
+            ToggleSymbol("Use X axis for default invert axis", "UNIGLTF_DEFAULT_AXES_X");
         }
 
         const string AXIS_KEY = "UNIGLTF_IO_AXIS";
@@ -64,9 +57,8 @@ namespace UniGLTF
             var target = EditorUserBuildSettings.selectedBuildTargetGroup;
             var current = PlayerSettings.GetScriptingDefineSymbolsForGroup(target).Split(';');
             PlayerSettings.SetScriptingDefineSymbolsForGroup(target,
-            string.Join(";", current.Concat(new[] { symbol }))
+                string.Join(";", current.Concat(new[] { symbol }))
             );
-
         }
 
         public static void RemoveSymbol(string symbol)
