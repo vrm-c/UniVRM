@@ -5,8 +5,13 @@ namespace UniGLTF
 {
     public enum Axes
     {
+#if UNIGLTF_DEFAULT_AXES_X
+        X,
+        Z,
+#else
         Z,
         X,
+#endif
     }
 
     public interface IAxisInverter

@@ -51,5 +51,50 @@ namespace UniGLTF
                 return s_axis.Value;
             }
         }
+
+        public static bool HasSymbol(string symbol)
+        {
+            var target = EditorUserBuildSettings.selectedBuildTargetGroup;
+            var current = PlayerSettings.GetScriptingDefineSymbolsForGroup(target).Split(';');
+            return current.Contains(symbol);
+        }
+
+        public static void AddSymbol(string symbol)
+        {
+            var target = EditorUserBuildSettings.selectedBuildTargetGroup;
+            var current = PlayerSettings.GetScriptingDefineSymbolsForGroup(target).Split(';');
+            PlayerSettings.SetScriptingDefineSymbolsForGroup(target,
+            string.Join(";", current.Concat(new[] { symbol }))
+            );
+
+        }
+
+        public static void RemoveSymbol(string symbol)
+        {
+            var target = EditorUserBuildSettings.selectedBuildTargetGroup;
+            var current = PlayerSettings.GetScriptingDefineSymbolsForGroup(target).Split(';');
+            PlayerSettings.SetScriptingDefineSymbolsForGroup(target,
+                string.Join(";", current.Where(x => x != symbol))
+            );
+        }
+
+        public static void ToggleSymbol(string title, string symbol)
+        {
+            EditorGUI.BeginChangeCheck();
+            var isStop = HasSymbol(symbol);
+            var newValue = GUILayout.Toggle(isStop, title);
+            EditorGUILayout.HelpBox($"define C# symbol '{symbol}'", MessageType.Info, true);
+            if (EditorGUI.EndChangeCheck())
+            {
+                if (newValue)
+                {
+                    AddSymbol(symbol);
+                }
+                else
+                {
+                    RemoveSymbol(symbol);
+                }
+            }
+        }
     }
 }
