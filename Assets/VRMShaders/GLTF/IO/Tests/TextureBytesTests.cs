@@ -12,7 +12,7 @@ namespace VRMShaders
         [Test]
         public void NonReadablePng()
         {
-            var nonReadableTex = AssetDatabase.LoadAssetAtPath<Texture2D>($"{AssetPath}/4x4.png");
+            var nonReadableTex = AssetDatabase.LoadAssetAtPath<Texture2D>($"{AssetPath}/4x4_non_readable.png");
             Assert.False(nonReadableTex.isReadable);
             var (bytes, mime) = AssetTextureUtil.GetTextureBytesWithMime(nonReadableTex, ColorSpace.sRGB);
             Assert.NotNull(bytes);
@@ -21,7 +21,7 @@ namespace VRMShaders
         [Test]
         public void NonReadableDds()
         {
-            var readonlyTexture = AssetDatabase.LoadAssetAtPath<Texture2D>($"{AssetPath}/4x4compressed.dds");
+            var readonlyTexture = AssetDatabase.LoadAssetAtPath<Texture2D>($"{AssetPath}/4x4_non_readable_compressed.dds");
             Assert.False(readonlyTexture.isReadable);
             var (bytes, mime) = AssetTextureUtil.GetTextureBytesWithMime(readonlyTexture, ColorSpace.sRGB);
             Assert.NotNull(bytes);
