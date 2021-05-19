@@ -51,7 +51,7 @@ namespace UniVRM10
                     else
                     {
                         var r = (TR.FromParent(ModelRoot) * m_src.ModelInitial).Rotation;
-                        var t = (TR.FromParent(transform) * m_src.LocalInitial).Translation;
+                        var t = (TR.FromParent(Source) * m_src.LocalInitial).Translation;
                         return new TR(r, t);
                     }
 
