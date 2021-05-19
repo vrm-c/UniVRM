@@ -19,7 +19,7 @@ namespace UniVRM10
             {
                 // case SourceCoordinates.World: return m_transform.rotation * Quaternion.Inverse(m_initial.Rotation);
                 case ObjectSpace.local: return TR.FromLocal(Source) * (LocalInitial * new TR(sourceRotationOffset)).Inverse();
-                case ObjectSpace.model: return TR.FromWorld(Source) * (TR.FromWorld(ModelRoot) * ModelInitial * new TR(sourceRotationOffset)).Inverse();
+                case ObjectSpace.model: return TR.FromWorld(Source) * (TR.FromParent(ModelRoot) * ModelInitial * new TR(sourceRotationOffset)).Inverse();
                 default: throw new NotImplementedException();
             }
         }

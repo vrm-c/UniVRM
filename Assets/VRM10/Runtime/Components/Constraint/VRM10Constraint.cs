@@ -1,4 +1,5 @@
 using System;
+using UniGLTF.Extensions.VRMC_node_constraint;
 using UnityEngine;
 
 namespace UniVRM10
@@ -37,33 +38,35 @@ namespace UniVRM10
 
         public ConstraintSource m_src;
 
-        protected TR SourceModelCoords
-        {
-            get
-            {
-                if (m_src == null)
-                {
-                    return TR.FromWorld(ModelRoot);
-                }
-                else
-                {
-                    return TR.FromParent(ModelRoot) * m_src.ModelInitial;
-                }
-            }
-        }
 
-        protected TR SourceInitialCoords
+        protected TR SourceInitialCoords(ObjectSpace space)
         {
-            get
+            switch (space)
             {
-                if (m_src == null)
-                {
-                    return TR.FromWorld(Source);
-                }
-                else
-                {
-                    return TR.FromParent(Source) * m_src.LocalInitial;
-                }
+                case ObjectSpace.model:
+                    if (m_src == null)
+                    {
+                        return TR.FromWorld(ModelRoot);
+                    }
+                    else
+                    {
+                        var r = (TR.FromParent(ModelRoot) * m_src.ModelInitial).Rotation;
+                        var t = (TR.FromParent(transform) * m_src.LocalInitial).Translation;
+                        return new TR(r, t);
+                    }
+
+                case ObjectSpace.local:
+                    if (m_src == null)
+                    {
+                        return TR.FromWorld(Source);
+                    }
+                    else
+                    {
+                        return TR.FromParent(Source) * m_src.LocalInitial;
+                    }
+
+                default:
+                    throw new NotImplementedException();
             }
         }
         #endregion
@@ -71,33 +74,34 @@ namespace UniVRM10
         #region Destination
         protected ConstraintDestination m_dst;
 
-        protected TR DestinationModelCoords
+        protected TR DestinationInitialCoords(ObjectSpace space)
         {
-            get
+            switch (space)
             {
-                if (m_dst == null)
-                {
-                    return TR.FromWorld(ModelRoot);
-                }
-                else
-                {
-                    return TR.FromParent(ModelRoot) * m_dst.ModelInitial;
-                }
-            }
-        }
+                case ObjectSpace.model:
+                    if (m_dst == null)
+                    {
+                        return new TR(ModelRoot.rotation, transform.position);
+                    }
+                    else
+                    {
+                        var r = (TR.FromParent(ModelRoot) * m_dst.ModelInitial).Rotation;
+                        var t = (TR.FromParent(transform) * m_dst.LocalInitial).Translation;
+                        return new TR(r, t);
+                    }
 
-        public TR DestinationInitialCoords
-        {
-            get
-            {
-                if (m_dst == null)
-                {
-                    return TR.FromWorld(transform);
-                }
-                else
-                {
-                    return TR.FromParent(transform) * m_dst.LocalInitial;
-                }
+                case ObjectSpace.local:
+                    if (m_dst == null)
+                    {
+                        return TR.FromWorld(transform);
+                    }
+                    else
+                    {
+                        return TR.FromParent(transform) * m_dst.LocalInitial;
+                    }
+
+                default:
+                    throw new NotImplementedException();
             }
         }
         #endregion

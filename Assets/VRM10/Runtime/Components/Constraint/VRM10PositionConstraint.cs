@@ -37,11 +37,11 @@ namespace UniVRM10
             switch (DestinationCoordinate)
             {
                 case ObjectSpace.local:
-                    m_dst.ApplyLocal(m_dst.LocalInitial * new TR(DestinationOffset) * new TR(Delta));
+                    m_dst.ApplyLocal(DestinationInitialCoords(ObjectSpace.local) * new TR(DestinationOffset) * new TR(Delta));
                     break;
 
                 case ObjectSpace.model:
-                    m_dst.ApplyModel(DestinationInitialCoords * new TR(DestinationOffset) * new TR(Delta));
+                    m_dst.ApplyModel(DestinationInitialCoords(ObjectSpace.model) * new TR(DestinationOffset) * new TR(Delta));
                     break;
 
                 default:
