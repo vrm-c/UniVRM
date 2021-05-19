@@ -5,7 +5,6 @@ namespace UniGLTF
 {
     public enum Axes
     {
-        Default,
         Z,
         X,
     }
@@ -68,15 +67,6 @@ namespace UniGLTF
     {
         public static IAxisInverter Create(this Axes axis)
         {
-            if (axis == Axes.Default)
-            {
-#if UNIGLTF_DEFAULT_AXES_X
-                axis = Axes.X;
-#else
-                axis = Axes.Z;
-#endif
-            }
-
             switch (axis)
             {
                 case Axes.Z: return new ReverseZ();
