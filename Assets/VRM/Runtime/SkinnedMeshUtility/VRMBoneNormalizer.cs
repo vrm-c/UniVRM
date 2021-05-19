@@ -228,6 +228,10 @@ namespace VRM
                 if (src != null)
                 {
                     var dst = root.AddComponent<VRMLookAtBoneApplyer>();
+                    dst.HorizontalInner.Assign(src.HorizontalInner);
+                    dst.HorizontalOuter.Assign(src.HorizontalOuter);
+                    dst.VerticalUp.Assign(src.VerticalUp);
+                    dst.VerticalDown.Assign(src.VerticalDown);
                 }
             }
             {
@@ -236,6 +240,9 @@ namespace VRM
                 if (src != null)
                 {
                     var dst = root.AddComponent<VRMLookAtBlendShapeApplyer>();
+                    dst.Horizontal.Assign(src.Horizontal);
+                    dst.VerticalUp.Assign(src.VerticalUp);
+                    dst.VerticalDown.Assign(src.VerticalDown);
                 }
             }
 
