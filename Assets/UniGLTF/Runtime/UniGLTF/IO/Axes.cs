@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace UniGLTF
 {
-    public enum Axises
+    public enum Axes
     {
         Z,
         X,
@@ -65,12 +65,12 @@ namespace UniGLTF
 
     public static class AxisesExtensions
     {
-        public static IAxisInverter Create(this Axises axis)
+        public static IAxisInverter Create(this Axes axis)
         {
             switch (axis)
             {
-                case Axises.Z: return new ReverseZ();
-                case Axises.X: return new ReverseX();
+                case Axes.Z: return new ReverseZ();
+                case Axes.X: return new ReverseX();
                 default: throw new NotImplementedException();
             }
         }

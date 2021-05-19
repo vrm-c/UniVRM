@@ -62,7 +62,7 @@ namespace UniGLTF
         /// <summary>
         /// GLTF から Unity に変換するときに反転させる軸
         /// </summary>
-        public Axises InvertAxis = Axises.Z;
+        public Axes InvertAxis = Axes.Z;
 
         public static List<string> UnsupportedExtensions = new List<string>
         {
