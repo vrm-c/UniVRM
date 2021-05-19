@@ -46,7 +46,7 @@ namespace UniVRM10
                 case ObjectSpace.model:
                     if (m_src == null)
                     {
-                        return TR.FromWorld(ModelRoot);
+                        return new TR(ModelRoot.rotation, Source.position);
                     }
                     else
                     {
