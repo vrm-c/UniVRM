@@ -11,7 +11,7 @@ namespace VRMShaders
     /// glTF にエクスポートする Texture2D を蓄えて index を確定させる。
     /// Exporter の最後でまとめて Texture2D から bytes 列を得て出力する。
     /// </summary>
-    public class TextureExporter : IDisposable
+    public class TextureExporter : IDisposable, ITextureExporter
     {
         private ITextureSerializer m_textureSerializer;
 
@@ -25,22 +25,12 @@ namespace VRMShaders
             // TODO: export 用にコピー・変換したテクスチャーをここで解放したい
         }
 
-        public enum ConvertTypes
-        {
-            // 無変換
-            None,
-            // Unity Standard様式 から glTF PBR様式への変換
-            OcclusionMetallicRoughness,
-            // Assetを使うときはそのバイト列を無変換で、それ以外は DXT5nm 形式からのデコードを行う
-            Normal,
-        }
-
         struct ExportKey
         {
             public readonly Texture Src;
-            public readonly ConvertTypes TextureType;
+            public readonly TextureExportTypes TextureType;
 
-            public ExportKey(Texture src, ConvertTypes type)
+            public ExportKey(Texture src, TextureExportTypes type)
             {
                 if (src == null)
                 {
@@ -65,7 +55,7 @@ namespace VRMShaders
         /// <param name="src"></param>
         /// <param name="textureType"></param>
         /// <returns></returns>
-        public int GetTextureIndex(Texture src, ConvertTypes textureType)
+        public int GetTextureIndex(Texture src, TextureExportTypes textureType)
         {
             if (src == null)
             {
@@ -87,7 +77,7 @@ namespace VRMShaders
             }
 
             // cache
-            if (m_exportMap.TryGetValue(new ExportKey(src, ConvertTypes.None), out var index))
+            if (m_exportMap.TryGetValue(new ExportKey(src, TextureExportTypes.None), out var index))
             {
                 return index;
             }
@@ -104,7 +94,7 @@ namespace VRMShaders
                 texture2D = TextureConverter.CopyTexture(src, TextureImportTypes.sRGB, null);
             }
             Exported.Add((texture2D, ColorSpace.sRGB));
-            m_exportMap.Add(new ExportKey(src, ConvertTypes.None), index);
+            m_exportMap.Add(new ExportKey(src, TextureExportTypes.None), index);
 
             return index;
         }
@@ -121,7 +111,7 @@ namespace VRMShaders
                 return -1;
             }
 
-            var exportKey = new ExportKey(src, ConvertTypes.None);
+            var exportKey = new ExportKey(src, TextureExportTypes.None);
 
             // search cache
             if (m_exportMap.TryGetValue(exportKey, out var index))
@@ -160,11 +150,11 @@ namespace VRMShaders
             }
 
             // cache
-            if (metallicSmoothTexture != null && m_exportMap.TryGetValue(new ExportKey(metallicSmoothTexture, ConvertTypes.OcclusionMetallicRoughness), out var index))
+            if (metallicSmoothTexture != null && m_exportMap.TryGetValue(new ExportKey(metallicSmoothTexture, TextureExportTypes.OcclusionMetallicRoughness), out var index))
             {
                 return index;
             }
-            if (occlusionTexture != null && m_exportMap.TryGetValue(new ExportKey(occlusionTexture, ConvertTypes.OcclusionMetallicRoughness), out index))
+            if (occlusionTexture != null && m_exportMap.TryGetValue(new ExportKey(occlusionTexture, TextureExportTypes.OcclusionMetallicRoughness), out index))
             {
                 return index;
             }
@@ -178,11 +168,11 @@ namespace VRMShaders
             Exported.Add((texture2D, ColorSpace.Linear));
             if (metallicSmoothTexture != null)
             {
-                m_exportMap.Add(new ExportKey(metallicSmoothTexture, ConvertTypes.OcclusionMetallicRoughness), index);
+                m_exportMap.Add(new ExportKey(metallicSmoothTexture, TextureExportTypes.OcclusionMetallicRoughness), index);
             }
             if (occlusionTexture != null && occlusionTexture != metallicSmoothTexture)
             {
-                m_exportMap.Add(new ExportKey(occlusionTexture, ConvertTypes.OcclusionMetallicRoughness), index);
+                m_exportMap.Add(new ExportKey(occlusionTexture, TextureExportTypes.OcclusionMetallicRoughness), index);
             }
 
             return index;
@@ -201,7 +191,7 @@ namespace VRMShaders
             }
 
             // cache
-            if (m_exportMap.TryGetValue(new ExportKey(src, ConvertTypes.Normal), out var index))
+            if (m_exportMap.TryGetValue(new ExportKey(src, TextureExportTypes.Normal), out var index))
             {
                 return index;
             }
@@ -220,7 +210,7 @@ namespace VRMShaders
             }
 
             Exported.Add((texture2D, ColorSpace.Linear));
-            m_exportMap.Add(new ExportKey(src, ConvertTypes.Normal), index);
+            m_exportMap.Add(new ExportKey(src, TextureExportTypes.Normal), index);
 
             return index;
         }
