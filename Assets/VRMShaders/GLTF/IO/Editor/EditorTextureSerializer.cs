@@ -44,7 +44,7 @@ namespace VRMShaders
 
         public (byte[] bytes, string mime) ExportBytesWithMime(Texture2D texture, ColorSpace textureColorSpace)
         {
-            if (TryGetBytesWithMime(texture, out byte[] bytes, out string mime))
+            if (CanExportAsEditorAssetFile(texture) && TryGetBytesWithMime(texture, out byte[] bytes, out string mime))
             {
                 return (bytes, mime);
             }
