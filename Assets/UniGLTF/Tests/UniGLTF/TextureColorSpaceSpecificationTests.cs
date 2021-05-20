@@ -84,7 +84,7 @@ namespace UniGLTF
 
             // Export glTF
             var gltf = new glTF();
-            using (var exporter = new gltfExporter(gltf, Axises.X))
+            using (var exporter = new gltfExporter(gltf, Axes.X))
             {
                 exporter.Prepare(root);
                 var settings = new MeshExportSettings
