@@ -36,7 +36,7 @@ namespace MeshUtility
                 return;
             }
 
-            var (tex, mime) = TextureExporter.GetTextureBytesWithMime(texture, sRGB ? ColorSpace.sRGB : ColorSpace.Linear);
+            var (tex, mime) = new EditorTextureSerializer().ExportBytesWithMime(texture, sRGB ? ColorSpace.sRGB : ColorSpace.Linear);
 
             File.WriteAllBytes(path, tex);
             Debug.Log($"save: {path}");

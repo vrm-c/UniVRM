@@ -93,7 +93,7 @@ namespace UniGLTF
                     UseSparseAccessorForMorphTarget = false,
                     DivideVertexBuffer = false,
                 };
-                exporter.Export(settings, AssetTextureUtil.IsTextureEditorAsset, AssetTextureUtil.GetTextureBytesWithMime);
+                exporter.Export(settings, new EditorTextureSerializer());
             }
             Assert.AreEqual(1, gltf.images.Count);
             var exportedImage = gltf.images[0];

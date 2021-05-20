@@ -61,7 +61,7 @@ namespace UniGLTF
             using (var exporter = new gltfExporter(gltf))
             {
                 exporter.Prepare(root);
-                exporter.Export(MeshExportSettings.Default, AssetTextureUtil.IsTextureEditorAsset, AssetTextureUtil.GetTextureBytesWithMime);
+                exporter.Export(MeshExportSettings.Default, new EditorTextureSerializer());
                 return gltf.ToGlbBytes();
             }
         }
@@ -102,7 +102,7 @@ namespace UniGLTF
 
                 if (Skip.Contains(gltf.Directory.Parent.Name))
                 {
-                    // Export issue:                   
+                    // Export issue:
                     // skip
                     return;
                 }

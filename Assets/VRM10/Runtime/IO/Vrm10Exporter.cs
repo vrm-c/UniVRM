@@ -15,10 +15,16 @@ namespace UniVRM10
 
         public readonly string VrmExtensionName = "VRMC_vrm";
 
+        ITextureSerializer m_textureSerializer;
         TextureExporter m_textureExporter;
 
-        public Vrm10Exporter(Func<Texture, bool> useAsset)
+        public Vrm10Exporter(ITextureSerializer textureSerializer)
         {
+            if (textureSerializer == null)
+            {
+                throw new ArgumentException(nameof(textureSerializer));
+            }
+
             Storage.Gltf.extensionsUsed.Add(glTF_KHR_materials_unlit.ExtensionName);
             Storage.Gltf.extensionsUsed.Add(glTF_KHR_texture_transform.ExtensionName);
             Storage.Gltf.extensionsUsed.Add(UniGLTF.Extensions.VRMC_vrm.VRMC_vrm.ExtensionName);
@@ -30,7 +36,8 @@ namespace UniVRM10
 
             });
 
-            m_textureExporter = new TextureExporter(useAsset);
+            m_textureSerializer = textureSerializer;
+            m_textureExporter = new TextureExporter(m_textureSerializer);
         }
 
         public void Dispose()
@@ -127,7 +134,7 @@ namespace UniVRM10
             return new float[] { -v.x, v.y, v.z };
         }
 
-        public void Export(GameObject root, Model model, ModelExporter converter, ExportArgs option, gltfExporter.GetBytesWithMimeFromTexture2D getTextureBytes, VRM10MetaObject metaObject = null)
+        public void Export(GameObject root, Model model, ModelExporter converter, ExportArgs option, VRM10MetaObject metaObject = null)
         {
             ExportAsset(model);
 
@@ -181,7 +188,7 @@ namespace UniVRM10
             for (int i = 0; i < m_textureExporter.Exported.Count; ++i)
             {
                 var (unityTexture, texColorSpace) = m_textureExporter.Exported[i];
-                Storage.Gltf.PushGltfTexture(0, unityTexture, texColorSpace, getTextureBytes);
+                Storage.Gltf.PushGltfTexture(0, unityTexture, texColorSpace, m_textureSerializer);
             }
 
             if (thumbnailTextureIndex.HasValue)
@@ -631,7 +638,7 @@ namespace UniVRM10
             vrm.Meta.CopyrightInformation = meta.CopyrightInformation;
             vrm.Meta.ContactInformation = meta.ContactInformation;
             vrm.Meta.References = meta.References.ToList();
-            // vrm.Meta.ThirdPartyLicenses = 
+            // vrm.Meta.ThirdPartyLicenses =
             vrm.Meta.AvatarPermission = meta.AllowedUser;
             vrm.Meta.AllowExcessivelyViolentUsage = meta.ViolentUsage;
             vrm.Meta.AllowExcessivelySexualUsage = meta.SexualUsage;
@@ -775,14 +782,8 @@ namespace UniVRM10
         /// <param name="go"></param>
         /// <param name="getTextureBytes"></param>
         /// <returns></returns>
-        public static byte[] Export(GameObject go, gltfExporter.GetBytesWithMimeFromTexture2D getTextureBytes = null)
+        public static byte[] Export(GameObject go, ITextureSerializer textureSerializer = null)
         {
-            if (getTextureBytes == null)
-            {
-                // default for runtime export
-                getTextureBytes = TextureExporter.GetTextureBytesWithMime;
-            }
-
             // ヒエラルキーからジオメトリーを収集
             var converter = new UniVRM10.ModelExporter();
             var model = converter.Export(go);
@@ -791,11 +792,11 @@ namespace UniVRM10
             VrmLib.ModelExtensionsForCoordinates.ConvertCoordinate(model, VrmLib.Coordinates.Vrm1);
 
             // Model と go から VRM-1.0 にExport
-            var exporter10 = new Vrm10Exporter(_ => false);
+            var exporter10 = new Vrm10Exporter(textureSerializer ?? new RuntimeTextureSerializer());
             var option = new VrmLib.ExportArgs
             {
             };
-            exporter10.Export(go, model, converter, option, getTextureBytes);
+            exporter10.Export(go, model, converter, option);
             return exporter10.Storage.ToBytes();
         }
     }

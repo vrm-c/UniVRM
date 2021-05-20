@@ -130,7 +130,7 @@ namespace VRM
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="path"></param>
         /// <param name="settings"></param>
@@ -225,7 +225,7 @@ namespace VRM
             using (var exporter = new VRMExporter(gltf))
             {
                 exporter.Prepare(target);
-                exporter.Export(settings.MeshExportSettings, AssetTextureUtil.IsTextureEditorAsset, AssetTextureUtil.GetTextureBytesWithMime);
+                exporter.Export(settings.MeshExportSettings, new EditorTextureSerializer());
             }
             var bytes = gltf.ToGlbBytes();
             Debug.LogFormat("Export elapsed {0}", sw.Elapsed);

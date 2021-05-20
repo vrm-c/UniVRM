@@ -106,7 +106,7 @@ namespace UniGLTF
             using (var exporter = new gltfExporter(gltf))
             {
                 exporter.Prepare(go);
-                exporter.Export(MeshExportSettings.Default, AssetTextureUtil.IsTextureEditorAsset, AssetTextureUtil.GetTextureBytesWithMime);
+                exporter.Export(MeshExportSettings.Default, new EditorTextureSerializer());
 
                 // remove empty buffer
                 gltf.buffers.Clear();
@@ -298,7 +298,7 @@ namespace UniGLTF
             using (var exporter = new gltfExporter(gltf))
             {
                 exporter.Prepare(CreateSimpleScene());
-                exporter.Export(MeshExportSettings.Default, AssetTextureUtil.IsTextureEditorAsset, AssetTextureUtil.GetTextureBytesWithMime);
+                exporter.Export(MeshExportSettings.Default, new EditorTextureSerializer());
             }
 
             var expected = gltf.ToJson().ParseAsJson();
@@ -534,7 +534,7 @@ namespace UniGLTF
                 using (var exporter = new gltfExporter(gltf))
                 {
                     exporter.Prepare(go);
-                    exporter.Export(UniGLTF.MeshExportSettings.Default, AssetTextureUtil.IsTextureEditorAsset, AssetTextureUtil.GetTextureBytesWithMime);
+                    exporter.Export(UniGLTF.MeshExportSettings.Default, new EditorTextureSerializer());
 
                     json = gltf.ToJson();
                 }
@@ -618,7 +618,7 @@ namespace UniGLTF
                 using (var exporter = new gltfExporter(gltf))
                 {
                     exporter.Prepare(go);
-                    exporter.Export(UniGLTF.MeshExportSettings.Default, AssetTextureUtil.IsTextureEditorAsset, AssetTextureUtil.GetTextureBytesWithMime);
+                    exporter.Export(UniGLTF.MeshExportSettings.Default, new EditorTextureSerializer());
 
                     json = gltf.ToJson();
                 }

@@ -125,7 +125,7 @@ namespace UniGLTF
                     UseSparseAccessorForMorphTarget = m_settings.Sparse,
                     DivideVertexBuffer = m_settings.DivideVertexBuffer,
                 };
-                exporter.Export(settings, AssetTextureUtil.IsTextureEditorAsset, AssetTextureUtil.GetTextureBytesWithMime);
+                exporter.Export(settings, new EditorTextureSerializer());
             }
 
             if (isGlb)
