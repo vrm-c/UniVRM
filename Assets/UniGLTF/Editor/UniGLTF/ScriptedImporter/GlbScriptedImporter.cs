@@ -13,7 +13,7 @@ namespace UniGLTF
     public class GlbScriptedImporter : ScriptedImporter
     {
         [SerializeField]
-        ScriptedImporterAxes m_reverseAxis;
+        public ScriptedImporterAxes m_reverseAxis;
 
         public override void OnImportAsset(AssetImportContext ctx)
         {

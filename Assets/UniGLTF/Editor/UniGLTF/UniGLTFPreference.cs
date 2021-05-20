@@ -2,11 +2,38 @@ using UnityEngine;
 using UnityEditor;
 using System.Linq;
 using System;
+using System.IO;
+using System.Collections.Generic;
 
 namespace UniGLTF
 {
     public static class UniGLTFPreference
     {
+        static IEnumerable<string> GetReimportPaths()
+        {
+            String[] guids = AssetDatabase.FindAssets("t:GameObject", null);
+            foreach (var guid in guids)
+            {
+                var assetPath = AssetDatabase.GUIDToAssetPath(guid);
+                if (AssetImporter.GetAtPath(assetPath) is GlbScriptedImporter glb)
+                {
+                    if (glb.m_reverseAxis == ScriptedImporterAxes.Default)
+                    {
+                        Debug.Log($"[reimport] {assetPath}");
+                        yield return assetPath;
+                    }
+                }
+                else if (AssetImporter.GetAtPath(assetPath) is GltfScriptedImporter gltf)
+                {
+                    if (gltf.m_reverseAxis == ScriptedImporterAxes.Default)
+                    {
+                        Debug.Log($"[reimport] {assetPath}");
+                        yield return assetPath;
+                    }
+                }
+            }
+        }
+
         [PreferenceItem("UniGLTF")]
         private static void OnPreferenceGUI()
         {
@@ -20,7 +47,14 @@ namespace UniGLTF
             EditorGUILayout.HelpBox($"Default invert axis when glb/gltf import/export", MessageType.Info, true);
             if (EditorGUI.EndChangeCheck())
             {
+                // global setting
                 GltfIOAxis = gltfIOAxis;
+
+                // apply assets
+                foreach (var path in GetReimportPaths().ToArray())
+                {
+                    AssetDatabase.ImportAsset(path, default);
+                }
             }
         }
 
