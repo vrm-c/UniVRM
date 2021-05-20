@@ -8,7 +8,7 @@ namespace UniGLTF
     {
         public GameObject Root { get; set; }
 
-        public Axises InverseAxis;
+        public Axes InverseAxis;
 
         [Header("MorphTarget(BlendShape)")]
         public bool Sparse;

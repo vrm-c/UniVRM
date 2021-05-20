@@ -132,7 +132,7 @@ namespace UniGLTF
             {
                 DivideVertexBuffer = false
             };
-            var axisInverter = Axises.X.Create();
+            var axisInverter = Axes.X.Create();
 
             var (gltfMesh, blendShapeIndexMap) = MeshExporter.ExportMesh(glTF, bufferIndex, new MeshWithRenderer(go.transform), Materials, meshExportSettings, axisInverter);
 
@@ -176,7 +176,7 @@ namespace UniGLTF
             {
                 DivideVertexBuffer = true
             };
-            var axisInverter = Axises.X.Create();
+            var axisInverter = Axes.X.Create();
 
             var (gltfMesh, blendShapeIndexMap) = MeshExporter.ExportMesh(glTF, bufferIndex, new MeshWithRenderer(go.transform), Materials, meshExportSettings, axisInverter);
 

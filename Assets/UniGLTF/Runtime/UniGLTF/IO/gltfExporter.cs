@@ -64,7 +64,7 @@ namespace UniGLTF
 
         IAxisInverter m_axisInverter;
 
-        public gltfExporter(glTF gltf, Axises invertAxis = Axises.Z)
+        public gltfExporter(glTF gltf, Axes invertAxis = Axes.Z)
         {
             glTF = gltf;
 

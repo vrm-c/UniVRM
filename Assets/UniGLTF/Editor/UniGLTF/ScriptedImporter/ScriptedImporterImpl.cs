@@ -20,7 +20,7 @@ namespace UniGLTF
         /// <param name="scriptedImporter"></param>
         /// <param name="context"></param>
         /// <param name="reverseAxis"></param>
-        public static void Import(ScriptedImporter scriptedImporter, AssetImportContext context, Axises reverseAxis)
+        public static void Import(ScriptedImporter scriptedImporter, AssetImportContext context, Axes reverseAxis)
         {
 #if VRM_DEVELOP            
             Debug.Log("OnImportAsset to " + scriptedImporter.assetPath);

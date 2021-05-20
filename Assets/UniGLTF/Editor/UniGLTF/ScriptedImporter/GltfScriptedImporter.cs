@@ -13,17 +13,11 @@ namespace UniGLTF
     public class GltfScriptedImporter : ScriptedImporter
     {
         [SerializeField]
-        Axises m_reverseAxis = default;
+        public ScriptedImporterAxes m_reverseAxis = default;
 
         public override void OnImportAsset(AssetImportContext ctx)
         {
-            var asset = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(ctx.assetPath);
-            if (asset == null)
-            {
-                // first time. set default setting
-                m_reverseAxis = UniGLTFPreference.GltfIOAxis;
-            }
-            ScriptedImporterImpl.Import(this, ctx, m_reverseAxis);
+            ScriptedImporterImpl.Import(this, ctx, m_reverseAxis.ToAxes());
         }
     }
 }
