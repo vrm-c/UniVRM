@@ -15,12 +15,12 @@ namespace UniGLTF
 
     public interface IMaterialExporter
     {
-        glTFMaterial ExportMaterial(Material m, TextureExporter textureExporter);
+        glTFMaterial ExportMaterial(Material m, ITextureExporter textureExporter);
     }
 
     public class MaterialExporter : IMaterialExporter
     {
-        public virtual glTFMaterial ExportMaterial(Material m, TextureExporter textureExporter)
+        public virtual glTFMaterial ExportMaterial(Material m, ITextureExporter textureExporter)
         {
             var material = CreateMaterial(m);
 
@@ -34,7 +34,7 @@ namespace UniGLTF
             return material;
         }
 
-        static void Export_Color(Material m, TextureExporter textureManager, glTFMaterial material)
+        static void Export_Color(Material m, ITextureExporter textureManager, glTFMaterial material)
         {
             if (m.HasProperty("_Color"))
             {
@@ -60,9 +60,9 @@ namespace UniGLTF
         /// Occlusion, Metallic, Roughness
         /// </summary>
         /// <param name="m"></param>
-        /// <param name="textureManager"></param>
+        /// <param name="textureExporter"></param>
         /// <param name="material"></param>
-        static void Export_OcclusionMetallicRoughness(Material m, TextureExporter textureManager, glTFMaterial material)
+        static void Export_OcclusionMetallicRoughness(Material m, ITextureExporter textureExporter, glTFMaterial material)
         {
             Texture metallicSmoothTexture = default;
             float smoothness = 1.0f;
@@ -88,7 +88,7 @@ namespace UniGLTF
                 }
             }
 
-            int index = textureManager.ExportMetallicSmoothnessOcclusion(metallicSmoothTexture, smoothness, occlusionTexture);
+            int index = textureExporter.ExportMetallicSmoothnessOcclusion(metallicSmoothTexture, smoothness, occlusionTexture);
 
             if (index != -1 && metallicSmoothTexture != null)
             {
@@ -127,11 +127,11 @@ namespace UniGLTF
             }
         }
 
-        static void Export_Normal(Material m, TextureExporter textureManager, glTFMaterial material)
+        static void Export_Normal(Material m, ITextureExporter textureExporter, glTFMaterial material)
         {
             if (m.HasProperty("_BumpMap"))
             {
-                var index = textureManager.ExportNormal(m.GetTexture("_BumpMap"));
+                var index = textureExporter.ExportNormal(m.GetTexture("_BumpMap"));
                 if (index != -1)
                 {
                     material.normalTexture = new glTFMaterialNormalTextureInfo()
@@ -149,7 +149,7 @@ namespace UniGLTF
             }
         }
 
-        static void Export_Emission(Material m, TextureExporter textureManager, glTFMaterial material)
+        static void Export_Emission(Material m, ITextureExporter textureExporter, glTFMaterial material)
         {
             if (m.IsKeywordEnabled("_EMISSION") == false)
                 return;
@@ -166,7 +166,7 @@ namespace UniGLTF
 
             if (m.HasProperty("_EmissionMap"))
             {
-                var index = textureManager.ExportSRGB(m.GetTexture("_EmissionMap"));
+                var index = textureExporter.ExportSRGB(m.GetTexture("_EmissionMap"));
                 if (index != -1)
                 {
                     material.emissiveTexture = new glTFMaterialEmissiveTextureInfo()

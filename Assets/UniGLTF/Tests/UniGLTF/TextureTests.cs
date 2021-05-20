@@ -18,15 +18,15 @@ namespace UniGLTF
                 wrapMode = TextureWrapMode.Clamp,
                 filterMode = FilterMode.Trilinear,
             };
-            var textureManager = new TextureExporter(new EditorTextureSerializer());
+            var textureExporter = new TextureExporter(new EditorTextureSerializer());
 
             var material = new Material(Shader.Find("Standard"));
             material.mainTexture = tex0;
 
             var materialExporter = new MaterialExporter();
-            materialExporter.ExportMaterial(material, textureManager);
+            materialExporter.ExportMaterial(material, textureExporter);
 
-            var (convTex0, colorSpace) = textureManager.Exported[0];
+            var (convTex0, colorSpace) = textureExporter.Exported[0];
             var sampler = TextureSamplerUtil.Export(convTex0);
 
             Assert.AreEqual(glWrap.CLAMP_TO_EDGE, sampler.wrapS);

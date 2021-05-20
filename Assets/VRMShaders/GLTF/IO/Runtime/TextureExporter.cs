@@ -11,7 +11,7 @@ namespace VRMShaders
     /// glTF にエクスポートする Texture2D を蓄えて index を確定させる。
     /// Exporter の最後でまとめて Texture2D から bytes 列を得て出力する。
     /// </summary>
-    public class TextureExporter : IDisposable, ITextureExporter
+    public sealed class TextureExporter : IDisposable, ITextureExporter
     {
         private readonly ITextureSerializer m_textureSerializer;
         private readonly Dictionary<ExportKey, int> m_exportMap = new Dictionary<ExportKey, int>();

@@ -12,7 +12,7 @@ namespace UniVRM10
 {
     public static class Vrm10MToonMaterialExporter
     {
-        public static bool TryExportMaterialAsMToon(Material src, TextureExporter textureExporter, out glTFMaterial dst)
+        public static bool TryExportMaterialAsMToon(Material src, ITextureExporter textureExporter, out glTFMaterial dst)
         {
             try
             {

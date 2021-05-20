@@ -126,7 +126,7 @@ namespace VRM
             // "Queue",
         };
 
-        public static glTF_VRM_Material CreateFromMaterial(Material m, TextureExporter textureExporter)
+        public static glTF_VRM_Material CreateFromMaterial(Material m, ITextureExporter textureExporter)
         {
             var material = new glTF_VRM_Material
             {
