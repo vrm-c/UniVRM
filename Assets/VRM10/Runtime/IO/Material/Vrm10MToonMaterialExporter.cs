@@ -41,13 +41,13 @@ namespace UniVRM10
                         baseColorFactor = def.Color.LitColor.ToFloat4(ColorSpace.sRGB, ColorSpace.Linear),
                         baseColorTexture = new glTFMaterialBaseColorTextureInfo
                         {
-                            index = textureExporter.ExportSRGB(def.Color.LitMultiplyTexture),
+                            index = textureExporter.ExportAsSRgb(def.Color.LitMultiplyTexture),
                         },
                     },
 
                     normalTexture = new glTFMaterialNormalTextureInfo
                     {
-                        index = textureExporter.ExportNormal(def.Lighting.Normal.NormalTexture),
+                        index = textureExporter.ExportAsNormal(def.Lighting.Normal.NormalTexture),
                         scale = def.Lighting.Normal.NormalScaleValue,
                     },
 
@@ -55,7 +55,7 @@ namespace UniVRM10
                     emissiveFactor = def.Emission.EmissionColor.ToFloat3(ColorSpace.Linear, ColorSpace.Linear),
                     emissiveTexture = new glTFMaterialEmissiveTextureInfo
                     {
-                        index = textureExporter.ExportSRGB(def.Emission.EmissionMultiplyTexture),
+                        index = textureExporter.ExportAsSRgb(def.Emission.EmissionMultiplyTexture),
                     },
                 };
 
@@ -75,7 +75,7 @@ namespace UniVRM10
                     ShadeColorFactor = def.Color.ShadeColor.ToFloat3(ColorSpace.sRGB, ColorSpace.Linear),
                     ShadeMultiplyTexture = new TextureInfo
                     {
-                        Index = textureExporter.ExportSRGB(def.Color.ShadeMultiplyTexture),
+                        Index = textureExporter.ExportAsSRgb(def.Color.ShadeMultiplyTexture),
                     },
                     ShadingToonyFactor = def.Lighting.LitAndShadeMixing.ShadingToonyValue,
                     ShadingShiftFactor = def.Lighting.LitAndShadeMixing.ShadingShiftValue,
@@ -87,14 +87,14 @@ namespace UniVRM10
                     // Rim Lighting
                     MatcapTexture = new TextureInfo
                     {
-                        Index = textureExporter.ExportSRGB(def.MatCap.AdditiveTexture),
+                        Index = textureExporter.ExportAsSRgb(def.MatCap.AdditiveTexture),
                     },
                     ParametricRimColorFactor = def.Rim.RimColor.ToFloat3(ColorSpace.Linear, ColorSpace.Linear),
                     ParametricRimFresnelPowerFactor = def.Rim.RimFresnelPowerValue,
                     ParametricRimLiftFactor = def.Rim.RimLiftValue,
                     RimMultiplyTexture = new TextureInfo
                     {
-                        Index = textureExporter.ExportSRGB(def.Rim.RimMultiplyTexture),
+                        Index = textureExporter.ExportAsSRgb(def.Rim.RimMultiplyTexture),
                     },
                     RimLightingMixFactor = def.Rim.RimLightingMixValue,
 
@@ -103,7 +103,7 @@ namespace UniVRM10
                     OutlineWidthFactor = def.Outline.OutlineWidthValue * centimeterToMeter,
                     OutlineWidthMultiplyTexture = new TextureInfo
                     {
-                        Index = textureExporter.ExportLinear(def.Outline.OutlineWidthMultiplyTexture),
+                        Index = textureExporter.ExportAsLinear(def.Outline.OutlineWidthMultiplyTexture),
                     },
                     OutlineColorFactor = def.Outline.OutlineColor.ToFloat3(ColorSpace.sRGB, ColorSpace.Linear),
                     OutlineLightingMixFactor = ExportOutlineLightingMixFactor(def.Outline.OutlineColorMode, def.Outline.OutlineLightingMixValue),
@@ -111,7 +111,7 @@ namespace UniVRM10
                     // UV Anim
                     UvAnimationMaskTexture = new TextureInfo
                     {
-                        Index = textureExporter.ExportLinear(def.TextureOption.UvAnimationMaskTexture),
+                        Index = textureExporter.ExportAsLinear(def.TextureOption.UvAnimationMaskTexture),
                     },
                     UvAnimationScrollXSpeedFactor = def.TextureOption.UvAnimationScrollXSpeedValue,
                     UvAnimationScrollYSpeedFactor = def.TextureOption.UvAnimationScrollYSpeedValue * invertY,

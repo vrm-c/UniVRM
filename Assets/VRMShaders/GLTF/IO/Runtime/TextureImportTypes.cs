@@ -29,22 +29,4 @@ namespace VRMShaders
         //   TextureImporter.sRGBTexture = false;
         Linear,
     }
-
-    public static class TextureImportTypesExtensions
-    {
-        public static ColorSpace GetColorSpace(this TextureImportTypes textureType)
-        {
-            switch (textureType)
-            {
-                case TextureImportTypes.sRGB:
-                    return ColorSpace.sRGB;
-                case TextureImportTypes.Linear:
-                case TextureImportTypes.StandardMap:
-                case TextureImportTypes.NormalMap:
-                    return ColorSpace.Linear;
-                default:
-                    throw new NotImplementedException();
-            }
-        }
-    }
 }

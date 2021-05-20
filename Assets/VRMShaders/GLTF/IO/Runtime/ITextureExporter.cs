@@ -15,9 +15,24 @@ namespace VRMShaders
         /// </summary>
         IReadOnlyList<(Texture2D, UniGLTF.ColorSpace)> Exported { get; }
 
-        int ExportSRGB(Texture src);
-        int ExportLinear(Texture src);
-        int ExportMetallicSmoothnessOcclusion(Texture metallicSmoothTexture, float smoothness, Texture occlusionTexture);
-        int ExportNormal(Texture src);
+        /// <summary>
+        /// 指定の Texture を、 sRGB 色空間の値を持つ Texture に出力するように指示する。
+        /// </summary>
+        int ExportAsSRgb(Texture src);
+
+        /// <summary>
+        /// 指定の Texture を、 Linear の値を持つ Texture に出力するように指示する。
+        /// </summary>
+        int ExportAsLinear(Texture src);
+
+        /// <summary>
+        /// 指定の Metallic, Roughness, Occlusion 情報を、 glTF 仕様に準拠した 1 枚の合成テクスチャとして出力するように指示する。
+        /// </summary>
+        int ExportAsGltfMetallicSmoothnessOcclusionCombined(Texture metallicSmoothTexture, float smoothness, Texture occlusionTexture);
+
+        /// <summary>
+        /// 指定の Texture を、glTF 仕様に準拠した Normal Texture に出力するように指示する。
+        /// </summary>
+        int ExportAsNormal(Texture src);
     }
 }

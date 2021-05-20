@@ -43,7 +43,7 @@ namespace UniGLTF
 
             if (m.HasProperty("_MainTex"))
             {
-                var index = textureManager.ExportSRGB(m.GetTexture("_MainTex"));
+                var index = textureManager.ExportAsSRgb(m.GetTexture("_MainTex"));
                 if (index != -1)
                 {
                     material.pbrMetallicRoughness.baseColorTexture = new glTFMaterialBaseColorTextureInfo()
@@ -88,7 +88,7 @@ namespace UniGLTF
                 }
             }
 
-            int index = textureExporter.ExportMetallicSmoothnessOcclusion(metallicSmoothTexture, smoothness, occlusionTexture);
+            int index = textureExporter.ExportAsGltfMetallicSmoothnessOcclusionCombined(metallicSmoothTexture, smoothness, occlusionTexture);
 
             if (index != -1 && metallicSmoothTexture != null)
             {
@@ -131,7 +131,7 @@ namespace UniGLTF
         {
             if (m.HasProperty("_BumpMap"))
             {
-                var index = textureExporter.ExportNormal(m.GetTexture("_BumpMap"));
+                var index = textureExporter.ExportAsNormal(m.GetTexture("_BumpMap"));
                 if (index != -1)
                 {
                     material.normalTexture = new glTFMaterialNormalTextureInfo()
@@ -166,7 +166,7 @@ namespace UniGLTF
 
             if (m.HasProperty("_EmissionMap"))
             {
-                var index = textureExporter.ExportSRGB(m.GetTexture("_EmissionMap"));
+                var index = textureExporter.ExportAsSRgb(m.GetTexture("_EmissionMap"));
                 if (index != -1)
                 {
                     material.emissiveTexture = new glTFMaterialEmissiveTextureInfo()

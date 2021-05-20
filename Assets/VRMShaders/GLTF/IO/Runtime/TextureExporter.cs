@@ -62,7 +62,7 @@ namespace VRMShaders
         /// </summary>
         /// <param name="src"></param>
         /// <returns></returns>
-        public int ExportSRGB(Texture src)
+        public int ExportAsSRgb(Texture src)
         {
             if (src == null)
             {
@@ -84,7 +84,7 @@ namespace VRMShaders
             }
             else
             {
-                texture2D = TextureConverter.CopyTexture(src, TextureImportTypes.sRGB, null);
+                texture2D = TextureConverter.CopyTexture(src, ColorSpace.sRGB, null);
             }
             m_exported.Add((texture2D, ColorSpace.sRGB));
             m_exportMap.Add(new ExportKey(src, ExportTypes.Srgb), index);
@@ -97,7 +97,7 @@ namespace VRMShaders
         /// </summary>
         /// <param name="src"></param>
         /// <returns></returns>
-        public int ExportLinear(Texture src)
+        public int ExportAsLinear(Texture src)
         {
             if (src == null)
             {
@@ -120,7 +120,7 @@ namespace VRMShaders
             }
             else
             {
-                texture2d = TextureConverter.CopyTexture(src, TextureImportTypes.Linear, null);
+                texture2d = TextureConverter.CopyTexture(src, ColorSpace.Linear, null);
             }
             m_exported.Add((texture2d, ColorSpace.Linear));
             m_exportMap.Add(exportKey, index);
@@ -135,7 +135,7 @@ namespace VRMShaders
         /// <param name="smoothness"></param>
         /// <param name="occlusionTexture"></param>
         /// <returns></returns>
-        public int ExportMetallicSmoothnessOcclusion(Texture metallicSmoothTexture, float smoothness, Texture occlusionTexture)
+        public int ExportAsGltfMetallicSmoothnessOcclusionCombined(Texture metallicSmoothTexture, float smoothness, Texture occlusionTexture)
         {
             if (metallicSmoothTexture == null && occlusionTexture == null)
             {
@@ -177,7 +177,7 @@ namespace VRMShaders
         /// </summary>
         /// <param name="normalTexture"></param>
         /// <returns></returns>
-        public int ExportNormal(Texture src)
+        public int ExportAsNormal(Texture src)
         {
             if (src == null)
             {
