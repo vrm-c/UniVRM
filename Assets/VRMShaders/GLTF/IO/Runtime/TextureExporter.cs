@@ -31,8 +31,10 @@ namespace VRMShaders
 
         enum ExportTypes
         {
-            // 無変換
-            None,
+            // sRGB テクスチャとして出力
+            Srgb,
+            // Linear テクスチャとして出力
+            Linear,
             // Unity Standard様式 から glTF PBR様式への変換
             OcclusionMetallicRoughness,
             // Assetを使うときはそのバイト列を無変換で、それ以外は DXT5nm 形式からのデコードを行う
@@ -68,7 +70,7 @@ namespace VRMShaders
             }
 
             // cache
-            if (m_exportMap.TryGetValue(new ExportKey(src, ExportTypes.None), out var index))
+            if (m_exportMap.TryGetValue(new ExportKey(src, ExportTypes.Srgb), out var index))
             {
                 return index;
             }
@@ -85,7 +87,7 @@ namespace VRMShaders
                 texture2D = TextureConverter.CopyTexture(src, TextureImportTypes.sRGB, null);
             }
             m_exported.Add((texture2D, ColorSpace.sRGB));
-            m_exportMap.Add(new ExportKey(src, ExportTypes.None), index);
+            m_exportMap.Add(new ExportKey(src, ExportTypes.Srgb), index);
 
             return index;
         }
@@ -102,7 +104,7 @@ namespace VRMShaders
                 return -1;
             }
 
-            var exportKey = new ExportKey(src, ExportTypes.None);
+            var exportKey = new ExportKey(src, ExportTypes.Linear);
 
             // search cache
             if (m_exportMap.TryGetValue(exportKey, out var index))
@@ -141,6 +143,7 @@ namespace VRMShaders
             }
 
             // cache
+            // TODO 厳密なチェックをしていない
             if (metallicSmoothTexture != null && m_exportMap.TryGetValue(new ExportKey(metallicSmoothTexture, ExportTypes.OcclusionMetallicRoughness), out var index))
             {
                 return index;
