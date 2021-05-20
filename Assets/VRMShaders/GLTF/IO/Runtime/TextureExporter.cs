@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UniGLTF;
 using UnityEngine;
 using ColorSpace = UniGLTF.ColorSpace;
 
@@ -12,11 +13,11 @@ namespace VRMShaders
     /// </summary>
     public class TextureExporter : IDisposable
     {
-        Func<Texture, bool> m_useAsset;
+        private ITextureSerializer m_textureSerializer;
 
-        public TextureExporter(Func<Texture, bool> useAsset)
+        public TextureExporter(ITextureSerializer textureSerializer)
         {
-            m_useAsset = useAsset;
+            m_textureSerializer = textureSerializer;
         }
 
         public void Dispose()
@@ -94,9 +95,9 @@ namespace VRMShaders
             // get Texture2D
             index = Exported.Count;
             var texture2D = src as Texture2D;
-            if (m_useAsset(texture2D))
+            if (m_textureSerializer.CanExportAsEditorAssetFile(texture2D))
             {
-                // do nothing                
+                // do nothing
             }
             else
             {
@@ -119,7 +120,7 @@ namespace VRMShaders
             {
                 return -1;
             }
-            
+
             var exportKey = new ExportKey(src, ConvertTypes.None);
 
             // search cache
@@ -130,7 +131,7 @@ namespace VRMShaders
 
             index = Exported.Count;
             var texture2d = src as Texture2D;
-            if (m_useAsset(texture2d))
+            if (m_textureSerializer.CanExportAsEditorAssetFile(texture2d))
             {
                 // do nothing
             }
@@ -208,7 +209,7 @@ namespace VRMShaders
             // get Texture2D
             index = Exported.Count;
             var texture2D = src as Texture2D;
-            if (m_useAsset(texture2D))
+            if (m_textureSerializer.CanExportAsEditorAssetFile(texture2D))
             {
                 // EditorAsset を使うので変換不要
             }
@@ -222,53 +223,6 @@ namespace VRMShaders
             m_exportMap.Add(new ExportKey(src, ConvertTypes.Normal), index);
 
             return index;
-        }
-
-        /// <summary>
-        /// 画像のバイト列を得る
-        /// </summary>
-        public static (byte[] bytes, string mime) GetTextureBytesWithMime(Texture2D texture, ColorSpace colorSpace)
-        {
-            try
-            {
-                var png = texture.EncodeToPNG();
-                if (png != null)
-                {
-                    return (png, "image/png");
-                }
-                else
-                {
-                    // Failed, because texture is compressed.
-                    // ex. ".DDS" file, or Compression is enabled in Texture Import Settings.
-                    return CopyTextureAndGetBytesWithMime(texture, colorSpace);
-                }
-            }
-            catch (ArgumentException ex)
-            {
-                // System.ArgumentException: not readable, the texture memory can not be accessed from scripts. You can make the texture readable in the Texture Import Settings.
-                
-                // Failed, because texture is not readable.
-                Debug.LogWarning(ex);
-
-                // 単純に EncodeToPNG できないため、コピーしてから EncodeToPNG する。
-                return CopyTextureAndGetBytesWithMime(texture, colorSpace);
-            }
-        }
-
-        private static (byte[] bytes, string mime) CopyTextureAndGetBytesWithMime(Texture2D texture, ColorSpace colorSpace)
-        {
-            var copiedTex = TextureConverter.CopyTexture(texture, colorSpace, null);
-            var bytes = copiedTex.EncodeToPNG();
-            if (Application.isPlaying)
-            {
-                UnityEngine.Object.Destroy(copiedTex);
-            }
-            else
-            {
-                UnityEngine.Object.DestroyImmediate(copiedTex);
-            }
-
-            return (bytes, "image/png");
         }
     }
 }

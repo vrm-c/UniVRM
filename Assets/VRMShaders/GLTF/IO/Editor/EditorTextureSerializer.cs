@@ -1,53 +1,25 @@
 using System.IO;
 using System.Reflection;
+using UniGLTF;
 using UnityEditor;
 using UnityEngine;
 using ColorSpace = UniGLTF.ColorSpace;
 
 namespace VRMShaders
 {
-    public static class AssetTextureUtil
+    public sealed class EditorTextureSerializer : ITextureSerializer
     {
-        /// <summary>
-        /// TextureImporter.maxTextureSize が オリジナルの画像Sizeより小さいか
-        /// </summary>
-        /// <param name="src"></param>
-        /// <returns></returns>
-        public static bool IsMaxTextureSizeSmallerThanOriginalTextureSize(Texture2D src)
-        {
-            var path = AssetDatabase.GetAssetPath(src);
-            var textureImporter = AssetImporter.GetAtPath(path) as TextureImporter;
-
-            // private メソッド TextureImporter.GetWidthAndHeight を無理やり呼ぶ
-            var getSizeMethod = typeof(TextureImporter).GetMethod("GetWidthAndHeight", BindingFlags.NonPublic | BindingFlags.Instance);
-            if (textureImporter != null && getSizeMethod != null)
-            {
-                var args = new object[2] { 0, 0 };
-                getSizeMethod.Invoke(textureImporter, args);
-                var originalWidth = (int)args[0];
-                var originalHeight = (int)args[1];
-                var originalSize = Mathf.Max(originalWidth, originalHeight);
-                if (textureImporter.maxTextureSize < originalSize)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
+        private readonly RuntimeTextureSerializer m_runtimeSerializer = new RuntimeTextureSerializer();
 
         /// <summary>
         /// Export するときに オリジナルのテクスチャーアセット(png/jpg)を使用するか否か。
         /// 条件は、
-        /// 
+        ///
         /// * TextureAsset が存在する
         /// * TextureImporter の maxSize
-        /// 
+        ///
         /// </summary>
-        /// <param name="src"></param>
-        /// <param name="texture2D"></param>
-        /// <returns></returns>
-        public static bool IsTextureEditorAsset(Texture texture)
+        public bool CanExportAsEditorAssetFile(Texture texture)
         {
             if (texture is Texture2D texture2D && !string.IsNullOrEmpty(UnityEditor.AssetDatabase.GetAssetPath(texture2D)))
             {
@@ -70,13 +42,20 @@ namespace VRMShaders
             return false;
         }
 
+        public (byte[] bytes, string mime) ExportBytesWithMime(Texture2D texture, ColorSpace textureColorSpace)
+        {
+            if (TryGetBytesWithMime(texture, out byte[] bytes, out string mime))
+            {
+                return (bytes, mime);
+            }
+
+            return m_runtimeSerializer.ExportBytesWithMime(texture, textureColorSpace);
+        }
+
         /// <summary>
         /// Assetから画像のバイト列を得る
         /// </summary>
-        /// <param name="bytes"></param>
-        /// <param name="texture"></param>
-        /// <returns></returns>
-        public static bool TryGetBytesWithMime(Texture2D texture, out byte[] bytes, out string mime)
+        private bool TryGetBytesWithMime(Texture2D texture, out byte[] bytes, out string mime)
         {
             var path = AssetDatabase.GetAssetOrScenePath(texture);
             if (string.IsNullOrEmpty(path))
@@ -108,14 +87,30 @@ namespace VRMShaders
             return false;
         }
 
-        public static (byte[], string) GetTextureBytesWithMime(Texture2D texture, ColorSpace colorSpace)
+        /// <summary>
+        /// TextureImporter.maxTextureSize が オリジナルの画像Sizeより小さいか
+        /// </summary>
+        private bool IsMaxTextureSizeSmallerThanOriginalTextureSize(Texture2D src)
         {
-            if (TryGetBytesWithMime(texture, out byte[] bytes, out string mime))
+            var path = AssetDatabase.GetAssetPath(src);
+            var textureImporter = AssetImporter.GetAtPath(path) as TextureImporter;
+
+            // private メソッド TextureImporter.GetWidthAndHeight を無理やり呼ぶ
+            var getSizeMethod = typeof(TextureImporter).GetMethod("GetWidthAndHeight", BindingFlags.NonPublic | BindingFlags.Instance);
+            if (textureImporter != null && getSizeMethod != null)
             {
-                return (bytes, mime);
+                var args = new object[2] { 0, 0 };
+                getSizeMethod.Invoke(textureImporter, args);
+                var originalWidth = (int)args[0];
+                var originalHeight = (int)args[1];
+                var originalSize = Mathf.Max(originalWidth, originalHeight);
+                if (textureImporter.maxTextureSize < originalSize)
+                {
+                    return true;
+                }
             }
 
-            return TextureExporter.GetTextureBytesWithMime(texture, colorSpace);
+            return false;
         }
     }
 }

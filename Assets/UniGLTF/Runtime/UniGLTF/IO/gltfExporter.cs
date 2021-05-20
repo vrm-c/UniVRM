@@ -21,7 +21,7 @@ namespace UniGLTF
 
         /// <summary>
         /// Mesh毎に、元のBlendShapeIndex => ExportされたBlendShapeIndex の対応を記録する
-        /// 
+        ///
         /// BlendShape が空の場合にスキップするので
         /// </summary>
         /// <value></value>
@@ -148,7 +148,7 @@ namespace UniGLTF
             if (x.gameObject.activeInHierarchy)
             {
                 var meshRenderer = x.GetComponent<MeshRenderer>();
-                
+
                 if (meshRenderer != null)
                 {
                     var meshFilter = x.GetComponent<MeshFilter>();
@@ -214,21 +214,12 @@ namespace UniGLTF
             return false;
         }
 
-        public virtual void ExportExtensions(GetBytesWithMimeFromTexture2D getTextureBytes)
+        public virtual void ExportExtensions(ITextureSerializer textureSerializer)
         {
             // do nothing
         }
 
-        /// <summary>
-        /// Texture2D から実際のバイト列を取得するデリゲート。
-        /// 
-        /// textureColorSpace は Texture2D をコピーする際に用いる。
-        /// Texture2D 単体では、色空間を知ることができないため。
-        /// 一般には、その Texture2D がアサインされる glTF のプロパティの仕様が定める色空間と一致する。
-        /// </summary>
-        public delegate (byte[] bytes, string mime) GetBytesWithMimeFromTexture2D(Texture2D texture, ColorSpace textureColorSpace);
-
-        public virtual void Export(MeshExportSettings meshExportSettings, Func<Texture, bool> useAsset, GetBytesWithMimeFromTexture2D getTextureBytes)
+        public virtual void Export(MeshExportSettings meshExportSettings, ITextureSerializer textureSerializer)
         {
             var bytesBuffer = new ArrayByteBuffer(new byte[50 * 1024 * 1024]);
             var bufferIndex = glTF.AddBuffer(bytesBuffer);
@@ -247,7 +238,7 @@ namespace UniGLTF
             #region Materials and Textures
             Materials = uniqueUnityMeshes.SelectMany(x => x.Renderer.sharedMaterials).Where(x => x != null).Distinct().ToList();
 
-            TextureManager = new TextureExporter(useAsset);
+            TextureManager = new TextureExporter(textureSerializer);
 
             var materialExporter = CreateMaterialExporter();
             glTF.materials = Materials.Select(x => materialExporter.ExportMaterial(x, TextureManager)).ToList();
@@ -366,13 +357,13 @@ namespace UniGLTF
             #endregion
 #endif
 
-            ExportExtensions(getTextureBytes);
+            ExportExtensions(textureSerializer);
 
             // Extension で Texture が増える場合があるので最後に呼ぶ
             for (int i = 0; i < TextureManager.Exported.Count; ++i)
             {
                 var (unityTexture, colorSpace) = TextureManager.Exported[i];
-                glTF.PushGltfTexture(bufferIndex, unityTexture, colorSpace, getTextureBytes);
+                glTF.PushGltfTexture(bufferIndex, unityTexture, colorSpace, textureSerializer);
             }
         }
         #endregion

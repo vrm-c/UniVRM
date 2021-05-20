@@ -96,7 +96,7 @@ namespace VRM.Samples
                 return;
             }
 
-            var vrm = VRMExporter.Export(UniGLTF.MeshExportSettings.Default, m_model, (Texture _) => false, TextureExporter.GetTextureBytesWithMime);
+            var vrm = VRMExporter.Export(UniGLTF.MeshExportSettings.Default, m_model, new RuntimeTextureSerializer());
             var bytes = vrm.ToGlbBytes();
             File.WriteAllBytes(path, bytes);
             Debug.LogFormat("export to {0}", path);

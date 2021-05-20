@@ -8,22 +8,22 @@ namespace UniGLTF
     {
         /// <summary>
         /// gltf に texture を足す
-        /// 
+        ///
         /// * textures
         /// * samplers
         /// * images
         /// * bufferViews
-        /// 
+        ///
         /// を更新し、textures の index を返す
-        /// 
+        ///
         /// </summary>
         /// <param name="gltf"></param>
         /// <param name="bufferIndex"></param>
         /// <param name="texture"></param>
         /// <returns>gltf texture index</returns>
-        public static int PushGltfTexture(this glTF gltf, int bufferIndex, Texture2D texture, ColorSpace textureColorSpace, gltfExporter.GetBytesWithMimeFromTexture2D getTextureBytes)
+        public static int PushGltfTexture(this glTF gltf, int bufferIndex, Texture2D texture, ColorSpace textureColorSpace, ITextureSerializer textureSerializer)
         {
-            var bytesWithMime = getTextureBytes(texture, textureColorSpace);
+            var bytesWithMime = textureSerializer.ExportBytesWithMime(texture, textureColorSpace);
 
             // add view
             var view = gltf.buffers[bufferIndex].Append(bytesWithMime.bytes, glBufferTarget.NONE);

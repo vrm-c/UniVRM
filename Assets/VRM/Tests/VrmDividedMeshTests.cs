@@ -49,12 +49,12 @@ namespace VRM
 
         /// <summary>
         /// positions: [
-        ///   {1, 1, 0}    
-        ///   {1, 1, 1}    
-        ///   {1, 1, 2}    
-        ///   {1, 1, 3}    
-        ///   {1, 1, 4}    
-        ///   {1, 1, 5}    
+        ///   {1, 1, 0}
+        ///   {1, 1, 1}
+        ///   {1, 1, 2}
+        ///   {1, 1, 3}
+        ///   {1, 1, 4}
+        ///   {1, 1, 5}
         /// ]
         /// submesh
         ///     0 1 2
@@ -73,7 +73,7 @@ namespace VRM
                 ExportOnlyBlendShapePosition = true,
                 ExportTangents = false,
                 UseSparseAccessorForMorphTarget = true,
-            }, loaded, AssetTextureUtil.IsTextureEditorAsset, AssetTextureUtil.GetTextureBytesWithMime);
+            }, loaded, new EditorTextureSerializer());
             var bytes = exported.ToGlbBytes();
             var divided = Load(bytes, path);
 

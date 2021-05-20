@@ -166,7 +166,7 @@ namespace UniVRM10
 
         protected override void OnLayout()
         {
-            // m_settings, m_meshes.Meshes                
+            // m_settings, m_meshes.Meshes
             m_meshes.SetRoot(State.ExportRoot, m_settings.MeshExportSettings);
         }
 
@@ -297,9 +297,9 @@ namespace UniVRM10
                 model.ConvertCoordinate(VrmLib.Coordinates.Vrm1, ignoreVrm: false);
 
                 // export vrm-1.0
-                var exporter = new UniVRM10.Vrm10Exporter(AssetTextureUtil.IsTextureEditorAsset);
+                var exporter = new UniVRM10.Vrm10Exporter(new EditorTextureSerializer());
                 var option = new VrmLib.ExportArgs();
-                exporter.Export(root, model, converter, option, AssetTextureUtil.GetTextureBytesWithMime, Meta ? Meta : m_tmpMeta);
+                exporter.Export(root, model, converter, option, Meta ? Meta : m_tmpMeta);
 
                 var exportedBytes = exporter.Storage.ToBytes();
 
