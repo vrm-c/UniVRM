@@ -15,7 +15,13 @@ namespace UniGLTF
             EditorGUILayout.HelpBox($"Custom editor language setting", MessageType.Info, true);
 
             // default axis
-            ToggleSymbol("Use X axis for default invert axis", "UNIGLTF_DEFAULT_AXES_X");
+            EditorGUI.BeginChangeCheck();
+            var gltfIOAxis = (Axes)EditorGUILayout.EnumPopup("Default Invert axis", GltfIOAxis);
+            EditorGUILayout.HelpBox($"Default invert axis when glb/gltf import/export", MessageType.Info, true);
+            if (EditorGUI.EndChangeCheck())
+            {
+                GltfIOAxis = gltfIOAxis;
+            }
         }
 
         const string AXIS_KEY = "UNIGLTF_IO_AXIS";

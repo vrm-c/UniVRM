@@ -20,11 +20,7 @@ namespace UniGLTF
                 case ScriptedImporterAxes.X: return Axes.X;
                 case ScriptedImporterAxes.Default:
                     {
-#if UNIGLTF_DEFAULT_AXES_X
-                        return Axes.X;
-#else
-                        return Axes.Z;
-#endif
+                        return UniGLTFPreference.GltfIOAxis;
                     }
 
                 default: throw new System.NotImplementedException();
