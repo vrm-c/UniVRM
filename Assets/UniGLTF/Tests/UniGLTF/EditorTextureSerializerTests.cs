@@ -8,7 +8,7 @@ using VRMShaders;
 
 namespace UniGLTF
 {
-    public sealed class TextureColorSpaceSpecificationTests
+    public sealed class EditorTextureSerializerTests
     {
         private static readonly string AssetPath = "Assets/UniGLTF/Tests/UniGLTF";
         private static readonly string SrgbGrayImageName = "4x4_gray_import_as_srgb";
