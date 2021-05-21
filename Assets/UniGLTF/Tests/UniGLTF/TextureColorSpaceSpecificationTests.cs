@@ -74,6 +74,26 @@ namespace UniGLTF
             UnityEngine.Object.DestroyImmediate(exportedTex);
         }
 
+        [Test]
+        public void AssignSrgbImageToLinearTextureProperty()
+        {
+            var exportedTex = AssignTextureToMaterialPropertyAndExportAndExtract(SrgbGrayTex, SrgbGrayImageName, "_BumpMap");
+            Assert.AreEqual(SrgbGrayInLinear.r, GetFirstPixelInTexture2D(exportedTex).r);
+            Assert.AreEqual(SrgbGrayInLinear.g, GetFirstPixelInTexture2D(exportedTex).g);
+            // B channel is different. Because it will be normalized as normal vector.
+            UnityEngine.Object.DestroyImmediate(exportedTex);
+        }
+
+        [Test]
+        public void AssignLinearImageToLinearTextureProperty()
+        {
+            var exportedTex = AssignTextureToMaterialPropertyAndExportAndExtract(LinearGrayTex, LinearGrayImageName, "_BumpMap");
+            Assert.AreEqual(LinearGrayInLinear.r, GetFirstPixelInTexture2D(exportedTex).r);
+            Assert.AreEqual(LinearGrayInLinear.g, GetFirstPixelInTexture2D(exportedTex).g);
+            // B channel is different. Because it will be normalized as normal vector.
+            UnityEngine.Object.DestroyImmediate(exportedTex);
+        }
+
         private static Texture2D AssignTextureToMaterialPropertyAndExportAndExtract(Texture2D srcTex, string srcImageName, string propertyName)
         {
             // Prepare
