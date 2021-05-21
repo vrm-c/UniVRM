@@ -43,24 +43,6 @@ namespace UniGLTF
             }
         }
 
-        public static TextureWrapMode GetWrapS(Texture texture)
-        {
-#if UNITY_2017_1_OR_NEWER
-            return texture.wrapModeU;
-#else
-            return texture.wrapMode;
-#endif
-        }
-
-        public static TextureWrapMode GetWrapT(Texture texture)
-        {
-#if UNITY_2017_1_OR_NEWER
-            return texture.wrapModeV;
-#else
-            return texture.wrapMode;
-#endif
-        }
-
         public static glWrap ExportWrapMode(TextureWrapMode wrapMode)
         {
             switch (wrapMode)
@@ -68,18 +50,14 @@ namespace UniGLTF
                 case TextureWrapMode.Clamp:
                     return glWrap.CLAMP_TO_EDGE;
 
-                case (TextureWrapMode)(-1):
-                case TextureWrapMode.Repeat:
-                    return glWrap.REPEAT;
-
-#if UNITY_2017_1_OR_NEWER
                 case TextureWrapMode.Mirror:
                 case TextureWrapMode.MirrorOnce:
                     return glWrap.MIRRORED_REPEAT;
-#endif
 
+                // case (TextureWrapMode)(-1):
+                // case TextureWrapMode.Repeat:
                 default:
-                    throw new NotImplementedException();
+                    return glWrap.REPEAT;
             }
         }
 
@@ -87,8 +65,8 @@ namespace UniGLTF
         {
             var magFilter = ExportMagFilter(texture);
             var minFilter = ExportMinFilter(texture);
-            var wrapS = ExportWrapMode(GetWrapS(texture));
-            var wrapT = ExportWrapMode(GetWrapT(texture));
+            var wrapS = ExportWrapMode(texture.wrapModeU);
+            var wrapT = ExportWrapMode(texture.wrapModeV);
             return new glTFTextureSampler
             {
                 magFilter = magFilter,

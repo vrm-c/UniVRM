@@ -138,49 +138,11 @@ namespace VRMShaders
                 texture.LoadImage(imageBytes);
             }
 
-            SetSampler(texture, param);
+            texture.SetSampler(param.Sampler);
 
             cacheInfo = new TextureLoadInfo(texture, used, false);
             m_textureCache.Add(name, cacheInfo);
             return cacheInfo;
-        }
-
-        public static void SetSampler(Texture2D texture, TextureImportParam param)
-        {
-            if (texture == null)
-            {
-                return;
-            }
-
-            if (param.Sampler.WrapModes != null)
-            {
-                foreach (var (key, value) in param.Sampler.WrapModes)
-                {
-                    switch (key)
-                    {
-                        case SamplerWrapType.All:
-                            texture.wrapMode = value;
-                            break;
-
-                        case SamplerWrapType.U:
-                            texture.wrapModeU = value;
-                            break;
-
-                        case SamplerWrapType.V:
-                            texture.wrapModeV = value;
-                            break;
-
-                        case SamplerWrapType.W:
-                            texture.wrapModeW = value;
-                            break;
-
-                        default:
-                            throw new NotImplementedException();
-                    }
-                }
-            }
-
-            texture.filterMode = param.Sampler.FilterMode;
         }
 
         /// <summary>
