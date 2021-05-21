@@ -78,7 +78,7 @@ namespace VRMShaders
             // get Texture2D
             index = m_exported.Count;
             var texture2D = src as Texture2D;
-            if (m_textureSerializer.CanExportAsEditorAssetFile(texture2D))
+            if (m_textureSerializer.CanExportAsEditorAssetFile(texture2D, ColorSpace.sRGB))
             {
                 // do nothing
             }
@@ -114,7 +114,7 @@ namespace VRMShaders
 
             index = m_exported.Count;
             var texture2d = src as Texture2D;
-            if (m_textureSerializer.CanExportAsEditorAssetFile(texture2d))
+            if (m_textureSerializer.CanExportAsEditorAssetFile(texture2d, ColorSpace.Linear))
             {
                 // do nothing
             }
@@ -193,7 +193,7 @@ namespace VRMShaders
             // get Texture2D
             index = m_exported.Count;
             var texture2D = src as Texture2D;
-            if (m_textureSerializer.CanExportAsEditorAssetFile(texture2D))
+            if (m_textureSerializer.CanExportAsEditorAssetFile(texture2D, ColorSpace.Linear))
             {
                 // EditorAsset を使うので変換不要
             }

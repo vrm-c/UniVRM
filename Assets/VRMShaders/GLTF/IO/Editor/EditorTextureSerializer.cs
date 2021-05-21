@@ -19,7 +19,7 @@ namespace VRMShaders
         /// * TextureImporter の maxSize
         ///
         /// </summary>
-        public bool CanExportAsEditorAssetFile(Texture texture)
+        public bool CanExportAsEditorAssetFile(Texture texture, ColorSpace exportColorSpace)
         {
             if (texture is Texture2D texture2D && !string.IsNullOrEmpty(UnityEditor.AssetDatabase.GetAssetPath(texture2D)))
             {
@@ -42,14 +42,14 @@ namespace VRMShaders
             return false;
         }
 
-        public (byte[] bytes, string mime) ExportBytesWithMime(Texture2D texture, ColorSpace textureColorSpace)
+        public (byte[] bytes, string mime) ExportBytesWithMime(Texture2D texture, ColorSpace exportColorSpace)
         {
-            if (CanExportAsEditorAssetFile(texture) && TryGetBytesWithMime(texture, out byte[] bytes, out string mime))
+            if (CanExportAsEditorAssetFile(texture, exportColorSpace) && TryGetBytesWithMime(texture, out byte[] bytes, out string mime))
             {
                 return (bytes, mime);
             }
 
-            return m_runtimeSerializer.ExportBytesWithMime(texture, textureColorSpace);
+            return m_runtimeSerializer.ExportBytesWithMime(texture, exportColorSpace);
         }
 
         /// <summary>
