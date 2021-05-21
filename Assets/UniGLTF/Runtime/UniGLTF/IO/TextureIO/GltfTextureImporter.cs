@@ -42,7 +42,7 @@ namespace UniGLTF
             var param = new TextureImportParam(name, gltfImage.GetExt(), gltfImage.uri, offset, scale, sampler, TextureImportTypes.sRGB, default, default, getTextureBytesAsync, default, default, default, default, default);
             return (key, param);
         }
-        
+
         public static (SubAssetKey, TextureImportParam Param) CreateLinear(GltfParser parser, int textureIndex, Vector2 offset, Vector2 scale)
         {
             var gltfTexture = parser.GLTF.textures[textureIndex];
@@ -102,91 +102,36 @@ namespace UniGLTF
             if (gltfTexture.sampler < 0 || gltfTexture.sampler >= gltf.samplers.Count)
             {
                 // default
-                return new SamplerParam
-                {
-                    FilterMode = FilterMode.Bilinear,
-                    WrapModes = new (SamplerWrapType, TextureWrapMode)[] { },
-                };
+                return SamplerParam.Default;
             }
 
             var gltfSampler = gltf.samplers[gltfTexture.sampler];
             return new SamplerParam
             {
-                WrapModes = GetUnityWrapMode(gltfSampler).ToArray(),
+                WrapModesU = GetUnityWrapMode(gltfSampler.wrapS),
+                WrapModesV = GetUnityWrapMode(gltfSampler.wrapT),
                 FilterMode = ImportFilterMode(gltfSampler.minFilter),
             };
         }
 
-        public static IEnumerable<(SamplerWrapType, TextureWrapMode)> GetUnityWrapMode(glTFTextureSampler sampler)
+        public static TextureWrapMode GetUnityWrapMode(glWrap wrap)
         {
-            if (sampler.wrapS == sampler.wrapT)
+            switch (wrap)
             {
-                switch (sampler.wrapS)
-                {
-                    case glWrap.NONE: // default
-                        yield return (SamplerWrapType.All, TextureWrapMode.Repeat);
-                        break;
+                case glWrap.NONE: // default
+                    return TextureWrapMode.Repeat;
 
-                    case glWrap.CLAMP_TO_EDGE:
-                        yield return (SamplerWrapType.All, TextureWrapMode.Clamp);
-                        break;
+                case glWrap.CLAMP_TO_EDGE:
+                    return TextureWrapMode.Clamp;
 
-                    case glWrap.REPEAT:
-                        yield return (SamplerWrapType.All, TextureWrapMode.Repeat);
-                        break;
+                case glWrap.REPEAT:
+                    return TextureWrapMode.Repeat;
 
-                    case glWrap.MIRRORED_REPEAT:
-                        yield return (SamplerWrapType.All, TextureWrapMode.Mirror);
-                        break;
+                case glWrap.MIRRORED_REPEAT:
+                    return TextureWrapMode.Mirror;
 
-                    default:
-                        throw new NotImplementedException();
-                }
-            }
-            else
-            {
-                switch (sampler.wrapS)
-                {
-                    case glWrap.NONE: // default
-                        yield return (SamplerWrapType.U, TextureWrapMode.Repeat);
-                        break;
-
-                    case glWrap.CLAMP_TO_EDGE:
-                        yield return (SamplerWrapType.U, TextureWrapMode.Clamp);
-                        break;
-
-                    case glWrap.REPEAT:
-                        yield return (SamplerWrapType.U, TextureWrapMode.Repeat);
-                        break;
-
-                    case glWrap.MIRRORED_REPEAT:
-                        yield return (SamplerWrapType.U, TextureWrapMode.Mirror);
-                        break;
-
-                    default:
-                        throw new NotImplementedException();
-                }
-                switch (sampler.wrapT)
-                {
-                    case glWrap.NONE: // default
-                        yield return (SamplerWrapType.V, TextureWrapMode.Repeat);
-                        break;
-
-                    case glWrap.CLAMP_TO_EDGE:
-                        yield return (SamplerWrapType.V, TextureWrapMode.Clamp);
-                        break;
-
-                    case glWrap.REPEAT:
-                        yield return (SamplerWrapType.V, TextureWrapMode.Repeat);
-                        break;
-
-                    case glWrap.MIRRORED_REPEAT:
-                        yield return (SamplerWrapType.V, TextureWrapMode.Mirror);
-                        break;
-
-                    default:
-                        throw new NotImplementedException();
-                }
+                default:
+                    throw new NotImplementedException();
             }
         }
 
