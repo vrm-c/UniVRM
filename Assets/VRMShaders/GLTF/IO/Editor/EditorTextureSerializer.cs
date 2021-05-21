@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Reflection;
 using UniGLTF;
@@ -23,20 +24,16 @@ namespace VRMShaders
         /// </summary>
         public bool CanExportAsEditorAssetFile(Texture texture, ColorSpace exportColorSpace)
         {
-            if (texture is Texture2D texture2D && !string.IsNullOrEmpty(UnityEditor.AssetDatabase.GetAssetPath(texture2D)))
-            {
-                // exists Texture2D asset
-                if (IsMaxTextureSizeSmallerThanOriginalTextureSize(texture2D))
-                {
-                    return false;
-                }
+            // Exists as UnityEditor Texture2D Assets ?
+            if (!TryGetAsEditorTexture2DAsset(texture, out var texture2D, out var textureImporter)) return false;
 
-                // use Texture2D asset. EncodeToPng
-                return true;
-            }
+            // Maintain original width/height ?
+            if (!IsTextureSizeMaintained(texture2D, textureImporter)) return false;
 
-            // not Texture2D or not exists Texture2D asset. EncodeToPng
-            return false;
+            // Equals color space ?
+            if (!IsFileColorSpaceSameWithExportColorSpace(texture2D, textureImporter, exportColorSpace)) return false;
+
+            return true;
         }
 
         public (byte[] bytes, string mime) ExportBytesWithMime(Texture2D texture, ColorSpace exportColorSpace)
@@ -84,14 +81,34 @@ namespace VRMShaders
             return false;
         }
 
-        /// <summary>
-        /// TextureImporter.maxTextureSize が オリジナルの画像Sizeより小さいか
-        /// </summary>
-        private bool IsMaxTextureSizeSmallerThanOriginalTextureSize(Texture2D src)
+        private bool TryGetAsEditorTexture2DAsset(Texture texture, out Texture2D texture2D, out TextureImporter assetImporter)
         {
-            var path = AssetDatabase.GetAssetPath(src);
-            var textureImporter = AssetImporter.GetAtPath(path) as TextureImporter;
+            texture2D = texture as Texture2D;
+            if (texture2D != null)
+            {
+                var path = AssetDatabase.GetAssetPath(texture2D);
+                if (string.IsNullOrEmpty(path))
+                {
+                    assetImporter = AssetImporter.GetAtPath(path) as TextureImporter;
+                    if (assetImporter != null)
+                    {
+                        return true;
+                    }
+                }
+            }
 
+            texture2D = null;
+            assetImporter = null;
+            return false;
+        }
+
+        /// <summary>
+        /// Texture2D の画像サイズが、オリジナルの画像サイズを維持しているかどうか
+        ///
+        /// TextureImporter の MaxTextureSize 設定によっては、Texture2D の画像サイズはオリジナルも小さくなりうる。
+        /// </summary>
+        private bool IsTextureSizeMaintained(Texture2D texture, TextureImporter textureImporter)
+        {
             // private メソッド TextureImporter.GetWidthAndHeight を無理やり呼ぶ
             var getSizeMethod = typeof(TextureImporter).GetMethod("GetWidthAndHeight", BindingFlags.NonPublic | BindingFlags.Instance);
             if (textureImporter != null && getSizeMethod != null)
@@ -101,13 +118,26 @@ namespace VRMShaders
                 var originalWidth = (int)args[0];
                 var originalHeight = (int)args[1];
                 var originalSize = Mathf.Max(originalWidth, originalHeight);
-                if (textureImporter.maxTextureSize < originalSize)
+                if (textureImporter.maxTextureSize >= originalSize)
                 {
                     return true;
                 }
             }
 
             return false;
+        }
+
+        private bool IsFileColorSpaceSameWithExportColorSpace(Texture2D texture, TextureImporter textureImporter, ColorSpace colorSpace)
+        {
+            switch (colorSpace)
+            {
+                case ColorSpace.sRGB:
+                    return textureImporter.sRGBTexture == true;
+                case ColorSpace.Linear:
+                    return textureImporter.sRGBTexture == false;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(colorSpace), colorSpace, null);
+            }
         }
     }
 }
