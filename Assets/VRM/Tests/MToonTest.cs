@@ -18,7 +18,7 @@ namespace VRM
                 filterMode = FilterMode.Bilinear,
             };
 
-            var textureManager = new TextureExporter(new EditorTextureSerializer());
+            var textureExporter = new TextureExporter(new EditorTextureSerializer());
             var srcMaterial = new Material(Shader.Find("VRM/MToon"));
 
             var offset = new Vector2(0.3f, 0.2f);
@@ -29,7 +29,7 @@ namespace VRM
             srcMaterial.mainTextureScale = scale;
 
             var materialExporter = new VRMMaterialExporter();
-            var vrmMaterial = VRMMaterialExporter.CreateFromMaterial(srcMaterial, textureManager);
+            var vrmMaterial = VRMMaterialExporter.CreateFromMaterial(srcMaterial, textureExporter);
             Assert.AreEqual(vrmMaterial.vectorProperties["_MainTex"], new float[] { 0.3f, 0.2f, 0.5f, 0.6f });
 
             var materialImporter = new VRMMaterialImporter(new glTF_VRM_extensions

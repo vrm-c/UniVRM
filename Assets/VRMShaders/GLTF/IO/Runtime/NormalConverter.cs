@@ -1,4 +1,5 @@
 using UnityEngine;
+using ColorSpace = UniGLTF.ColorSpace;
 
 
 namespace VRMShaders
@@ -35,14 +36,14 @@ namespace VRMShaders
         // ConvertToNormalValueFromRawColorWhenCompressionIsRequired
         public static Texture2D Import(Texture2D texture)
         {
-            return TextureConverter.Convert(texture, TextureImportTypes.NormalMap, null, Encoder);
+            return TextureConverter.Convert(texture, ColorSpace.Linear, null, Encoder);
         }
 
         // Unity texture to GLTF data
         // ConvertToRawColorWhenNormalValueIsCompressed
         public static Texture2D Export(Texture texture)
         {
-            return TextureConverter.Convert(texture, TextureImportTypes.NormalMap, null, Decoder);
+            return TextureConverter.Convert(texture, ColorSpace.Linear, null, Decoder);
         }
     }
 }

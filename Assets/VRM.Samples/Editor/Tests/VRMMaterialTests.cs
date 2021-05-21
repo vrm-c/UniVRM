@@ -11,8 +11,8 @@ namespace VRM.Samples
         {
             var material = Resources.Load<Material>(resourceName);
             var exporter = new VRMMaterialExporter();
-            var textureManager = new TextureExporter(new EditorTextureSerializer());
-            var exported = exporter.ExportMaterial(material, textureManager);
+            var textureExporter = new TextureExporter(new EditorTextureSerializer());
+            var exported = exporter.ExportMaterial(material, textureExporter);
 
             // parse glTFExtensionExport to glTFExtensionImport
             exported.extensions = exported.extensions.Deserialize();

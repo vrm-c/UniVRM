@@ -1,24 +1,25 @@
 using System;
 using System.Linq;
 using UnityEngine;
+using ColorSpace = UniGLTF.ColorSpace;
 
 
 namespace VRMShaders
 {
     /// <summary>
-    /// 
-    /// * https://github.com/vrm-c/UniVRM/issues/781 
-    /// 
+    ///
+    /// * https://github.com/vrm-c/UniVRM/issues/781
+    ///
     /// Unity = glTF
     /// Occlusion: unity.g = glTF.r
     /// Roughness: unity.a = 1 - glTF.g * roughnessFactor
     /// Metallic : unity.r = glTF.b * metallicFactor
-    /// 
+    ///
     /// glTF = Unity
     /// Occlusion: glTF.r = unity.g
     /// Roughness: glTF.g = 1 - unity.a * smoothness
     /// Metallic : glTF.b = unity.r
-    /// 
+    ///
     /// </summary>
     public static class OcclusionMetallicRoughnessConverter
     {
@@ -29,7 +30,7 @@ namespace VRMShaders
             {
                 if (metallicRoughnessTexture == occlusionTexture)
                 {
-                    var copyMetallicRoughness = TextureConverter.CopyTexture(metallicRoughnessTexture, TextureImportTypes.StandardMap, null);
+                    var copyMetallicRoughness = TextureConverter.CopyTexture(metallicRoughnessTexture, ColorSpace.Linear, null);
                     var metallicRoughnessPixels = copyMetallicRoughness.GetPixels32();
                     for (int i = 0; i < metallicRoughnessPixels.Length; ++i)
                     {
@@ -42,9 +43,9 @@ namespace VRMShaders
                 }
                 else
                 {
-                    var copyMetallicRoughness = TextureConverter.CopyTexture(metallicRoughnessTexture, TextureImportTypes.StandardMap, null);
+                    var copyMetallicRoughness = TextureConverter.CopyTexture(metallicRoughnessTexture, ColorSpace.Linear, null);
                     var metallicRoughnessPixels = copyMetallicRoughness.GetPixels32();
-                    var copyOcclusion = TextureConverter.CopyTexture(occlusionTexture, TextureImportTypes.StandardMap, null);
+                    var copyOcclusion = TextureConverter.CopyTexture(occlusionTexture, ColorSpace.Linear, null);
                     var occlusionPixels = copyOcclusion.GetPixels32();
                     if (metallicRoughnessPixels.Length != occlusionPixels.Length)
                     {
@@ -62,7 +63,7 @@ namespace VRMShaders
             }
             else if (metallicRoughnessTexture != null)
             {
-                var copyTexture = TextureConverter.CopyTexture(metallicRoughnessTexture, TextureImportTypes.StandardMap, null);
+                var copyTexture = TextureConverter.CopyTexture(metallicRoughnessTexture, ColorSpace.Linear, null);
                 copyTexture.SetPixels32(copyTexture.GetPixels32().Select(x => ImportPixel(x, metallicFactor, roughnessFactor, default)).ToArray());
                 copyTexture.Apply();
                 copyTexture.name = metallicRoughnessTexture.name;
@@ -70,7 +71,7 @@ namespace VRMShaders
             }
             else if (occlusionTexture != null)
             {
-                var copyTexture = TextureConverter.CopyTexture(occlusionTexture, TextureImportTypes.StandardMap, null);
+                var copyTexture = TextureConverter.CopyTexture(occlusionTexture, ColorSpace.Linear, null);
                 copyTexture.SetPixels32(copyTexture.GetPixels32().Select(x => ImportPixel(default, metallicFactor, roughnessFactor, x)).ToArray());
                 copyTexture.Apply();
                 copyTexture.name = occlusionTexture.name;
@@ -88,7 +89,7 @@ namespace VRMShaders
             {
                 r = (byte)(metallicRoughness.b * metallicFactor), // Metallic
                 g = occlusion.r, // Occlusion
-                b = 0, // not used               
+                b = 0, // not used
                 a = (byte)(255 - metallicRoughness.g * roughnessFactor), // Roughness to Smoothness
             };
 
@@ -101,7 +102,7 @@ namespace VRMShaders
             {
                 if (metallicSmoothTexture == occlusionTexture)
                 {
-                    var copyTexture = TextureConverter.CopyTexture(metallicSmoothTexture, TextureImportTypes.StandardMap, null);
+                    var copyTexture = TextureConverter.CopyTexture(metallicSmoothTexture, ColorSpace.Linear, null);
                     copyTexture.SetPixels32(copyTexture.GetPixels32().Select(x => ExportPixel(x, smoothness, x)).ToArray());
                     copyTexture.Apply();
                     copyTexture.name = metallicSmoothTexture.name;
@@ -109,9 +110,9 @@ namespace VRMShaders
                 }
                 else
                 {
-                    var copyMetallicSmooth = TextureConverter.CopyTexture(metallicSmoothTexture, TextureImportTypes.StandardMap, null);
+                    var copyMetallicSmooth = TextureConverter.CopyTexture(metallicSmoothTexture, ColorSpace.Linear, null);
                     var metallicSmoothPixels = copyMetallicSmooth.GetPixels32();
-                    var copyOcclusion = TextureConverter.CopyTexture(occlusionTexture, TextureImportTypes.StandardMap, null);
+                    var copyOcclusion = TextureConverter.CopyTexture(occlusionTexture, ColorSpace.Linear, null);
                     var occlusionPixels = copyOcclusion.GetPixels32();
                     if (metallicSmoothPixels.Length != occlusionPixels.Length)
                     {
@@ -129,7 +130,7 @@ namespace VRMShaders
             }
             else if (metallicSmoothTexture)
             {
-                var copyTexture = TextureConverter.CopyTexture(metallicSmoothTexture, TextureImportTypes.StandardMap, null);
+                var copyTexture = TextureConverter.CopyTexture(metallicSmoothTexture, ColorSpace.Linear, null);
                 copyTexture.SetPixels32(copyTexture.GetPixels32().Select(x => ExportPixel(x, smoothness, default)).ToArray());
                 copyTexture.Apply();
                 copyTexture.name = metallicSmoothTexture.name;
@@ -137,7 +138,7 @@ namespace VRMShaders
             }
             else if (occlusionTexture)
             {
-                var copyTexture = TextureConverter.CopyTexture(occlusionTexture, TextureImportTypes.StandardMap, null);
+                var copyTexture = TextureConverter.CopyTexture(occlusionTexture, ColorSpace.Linear, null);
                 copyTexture.SetPixels32(copyTexture.GetPixels32().Select(x => ExportPixel(default, smoothness, x)).ToArray());
                 copyTexture.Apply();
                 copyTexture.name = occlusionTexture.name;
@@ -153,7 +154,7 @@ namespace VRMShaders
         {
             var dst = new Color32
             {
-                r = occlusion.g, // Occlusion               
+                r = occlusion.g, // Occlusion
                 g = (byte)(255 - metallicSmooth.a * smoothness), // Roughness from Smoothness
                 b = metallicSmooth.r, // Metallic
                 a = 255, // not used
