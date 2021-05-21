@@ -57,11 +57,6 @@ namespace VRMShaders
             }
         }
 
-        /// <summary>
-        /// sRGBなテクスチャーを処理し、index を確定させる
-        /// </summary>
-        /// <param name="src"></param>
-        /// <returns></returns>
         public int ExportAsSRgb(Texture src)
         {
             if (src == null)
@@ -92,11 +87,6 @@ namespace VRMShaders
             return index;
         }
 
-        /// <summary>
-        /// Linearなテクスチャーを処理し、index を確定させる
-        /// </summary>
-        /// <param name="src"></param>
-        /// <returns></returns>
         public int ExportAsLinear(Texture src)
         {
             if (src == null)
@@ -128,14 +118,7 @@ namespace VRMShaders
             return index;
         }
 
-        /// <summary>
-        /// Standard の Metallic, Smoothness, Occlusion をまとめ、index を確定させる
-        /// </summary>
-        /// <param name="metallicSmoothTexture"></param>
-        /// <param name="smoothness"></param>
-        /// <param name="occlusionTexture"></param>
-        /// <returns></returns>
-        public int ExportAsGltfMetallicSmoothnessOcclusionCombined(Texture metallicSmoothTexture, float smoothness, Texture occlusionTexture)
+        public int ExportAsCombinedGltfPbrParameterTextureFromUnityStandardTextures(Texture metallicSmoothTexture, float smoothness, Texture occlusionTexture)
         {
             if (metallicSmoothTexture == null && occlusionTexture == null)
             {
@@ -172,11 +155,6 @@ namespace VRMShaders
             return index;
         }
 
-        /// <summary>
-        /// Normal のテクスチャを変換し index を確定させる
-        /// </summary>
-        /// <param name="normalTexture"></param>
-        /// <returns></returns>
         public int ExportAsNormal(Texture src)
         {
             if (src == null)

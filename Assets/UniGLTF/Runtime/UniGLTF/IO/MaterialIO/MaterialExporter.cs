@@ -88,7 +88,7 @@ namespace UniGLTF
                 }
             }
 
-            int index = textureExporter.ExportAsGltfMetallicSmoothnessOcclusionCombined(metallicSmoothTexture, smoothness, occlusionTexture);
+            int index = textureExporter.ExportAsCombinedGltfPbrParameterTextureFromUnityStandardTextures(metallicSmoothTexture, smoothness, occlusionTexture);
 
             if (index != -1 && metallicSmoothTexture != null)
             {

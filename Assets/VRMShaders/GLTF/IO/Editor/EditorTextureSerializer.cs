@@ -12,12 +12,14 @@ namespace VRMShaders
         private readonly RuntimeTextureSerializer m_runtimeSerializer = new RuntimeTextureSerializer();
 
         /// <summary>
-        /// Export するときに オリジナルのテクスチャーアセット(png/jpg)を使用するか否か。
-        /// 条件は、
+        /// Texture をオリジナルのテクスチャアセット(png/jpg)ファイルのバイト列そのまま出力してよいかどうか判断する。
+        /// 具体的な条件は以下
         ///
         /// * TextureAsset が存在する
-        /// * TextureImporter の maxSize
+        /// * TextureImporter の maxSize が画像の縦横サイズ以上
+        /// * TextureImporter の色空間設定が exportColorSpace と一致する
         ///
+        /// Unity の Texture2D のデータは、その参照元であるテクスチャアセットファイルのデータと一致することはむしろ稀。
         /// </summary>
         public bool CanExportAsEditorAssetFile(Texture texture, ColorSpace exportColorSpace)
         {
@@ -26,11 +28,6 @@ namespace VRMShaders
                 // exists Texture2D asset
                 if (IsMaxTextureSizeSmallerThanOriginalTextureSize(texture2D))
                 {
-                    // Texture Inspector の MaxSize 設定で、テクスチャをオリジナルサイズよりも小さいサイズで Texture 化する指示を行っているため
-                    // glTF Exporter もそれにしたがって、解釈をする
-                    //
-                    // 4096x4096 のような巨大なテクスチャーがそのまま出力されることを、Unityの TextureImporter.maxSize により防止する
-                    //
                     return false;
                 }
 

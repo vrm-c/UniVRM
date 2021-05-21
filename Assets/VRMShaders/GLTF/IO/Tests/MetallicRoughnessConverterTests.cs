@@ -99,18 +99,18 @@ namespace VRMShaders
 
             {
                 var exporter = new TextureExporter(new EditorTextureSerializer());
-                Assert.AreEqual(-1, exporter.ExportAsGltfMetallicSmoothnessOcclusionCombined(null, 0, null));
+                Assert.AreEqual(-1, exporter.ExportAsCombinedGltfPbrParameterTextureFromUnityStandardTextures(null, 0, null));
             }
             {
                 var exporter = new TextureExporter(new EditorTextureSerializer());
-                Assert.AreEqual(0, exporter.ExportAsGltfMetallicSmoothnessOcclusionCombined(null, 0, occlusion));
-                Assert.AreEqual(1, exporter.ExportAsGltfMetallicSmoothnessOcclusionCombined(metallic, 0, null));
+                Assert.AreEqual(0, exporter.ExportAsCombinedGltfPbrParameterTextureFromUnityStandardTextures(null, 0, occlusion));
+                Assert.AreEqual(1, exporter.ExportAsCombinedGltfPbrParameterTextureFromUnityStandardTextures(metallic, 0, null));
             }
             {
                 var exporter = new TextureExporter(new EditorTextureSerializer());
-                Assert.AreEqual(0, exporter.ExportAsGltfMetallicSmoothnessOcclusionCombined(metallic, 0, occlusion));
-                Assert.AreEqual(0, exporter.ExportAsGltfMetallicSmoothnessOcclusionCombined(null, 0, occlusion));
-                Assert.AreEqual(0, exporter.ExportAsGltfMetallicSmoothnessOcclusionCombined(metallic, 0, null));
+                Assert.AreEqual(0, exporter.ExportAsCombinedGltfPbrParameterTextureFromUnityStandardTextures(metallic, 0, occlusion));
+                Assert.AreEqual(0, exporter.ExportAsCombinedGltfPbrParameterTextureFromUnityStandardTextures(null, 0, occlusion));
+                Assert.AreEqual(0, exporter.ExportAsCombinedGltfPbrParameterTextureFromUnityStandardTextures(metallic, 0, null));
             }
         }
     }
