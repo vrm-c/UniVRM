@@ -33,6 +33,29 @@ namespace VRMShaders
             // Equals color space ?
             if (!IsFileColorSpaceSameWithExportColorSpace(texture2D, textureImporter, exportColorSpace)) return false;
 
+            // Each Texture Importer Type Validation
+            switch (textureImporter.textureType)
+            {
+                case TextureImporterType.Default:
+                    break;
+                case TextureImporterType.NormalMap:
+                    if (!IsCorrectNormalMap(texture2D, textureImporter)) return false;
+                    break;
+                case TextureImporterType.GUI:
+                case TextureImporterType.Sprite:
+                case TextureImporterType.Cursor:
+                case TextureImporterType.Cubemap:
+                case TextureImporterType.Cookie:
+                case TextureImporterType.Lightmap:
+                case TextureImporterType.HDRI:
+                case TextureImporterType.Advanced:
+                case TextureImporterType.SingleChannel:
+                    // Not Supported TextureImporterType
+                    return false;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
             return true;
         }
 
@@ -138,6 +161,16 @@ namespace VRMShaders
                 default:
                     throw new ArgumentOutOfRangeException(nameof(colorSpace), colorSpace, null);
             }
+        }
+
+        private bool IsCorrectNormalMap(Texture2D texture, TextureImporter textureImporter)
+        {
+            if (textureImporter.textureType != TextureImporterType.NormalMap) return false;
+
+            // Is Not generated from HeightMap ?
+            if (textureImporter.convertToNormalmap) return false;
+
+            return true;
         }
     }
 }
