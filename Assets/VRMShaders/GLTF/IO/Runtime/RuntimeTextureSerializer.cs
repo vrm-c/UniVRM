@@ -6,12 +6,12 @@ namespace UniGLTF
 {
     public sealed class RuntimeTextureSerializer : ITextureSerializer
     {
-        public bool CanExportAsEditorAssetFile(Texture texture)
+        public bool CanExportAsEditorAssetFile(Texture texture, ColorSpace exportColorSpace)
         {
             return false;
         }
 
-        public (byte[] bytes, string mime) ExportBytesWithMime(Texture2D texture, ColorSpace textureColorSpace)
+        public (byte[] bytes, string mime) ExportBytesWithMime(Texture2D texture, ColorSpace exportColorSpace)
         {
             try
             {
@@ -24,7 +24,7 @@ namespace UniGLTF
                 {
                     // Failed, because texture is compressed.
                     // ex. ".DDS" file, or Compression is enabled in Texture Import Settings.
-                    return CopyTextureAndGetBytesWithMime(texture, textureColorSpace);
+                    return CopyTextureAndGetBytesWithMime(texture, exportColorSpace);
                 }
             }
             catch (ArgumentException ex)
@@ -35,7 +35,7 @@ namespace UniGLTF
                 Debug.LogWarning(ex);
 
                 // 単純に EncodeToPNG できないため、コピーしてから EncodeToPNG する。
-                return CopyTextureAndGetBytesWithMime(texture, textureColorSpace);
+                return CopyTextureAndGetBytesWithMime(texture, exportColorSpace);
             }
         }
 

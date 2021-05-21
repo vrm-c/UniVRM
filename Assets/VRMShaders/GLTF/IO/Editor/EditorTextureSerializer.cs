@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Reflection;
 using UniGLTF;
@@ -12,44 +13,62 @@ namespace VRMShaders
         private readonly RuntimeTextureSerializer m_runtimeSerializer = new RuntimeTextureSerializer();
 
         /// <summary>
-        /// Export するときに オリジナルのテクスチャーアセット(png/jpg)を使用するか否か。
-        /// 条件は、
+        /// Texture をオリジナルのテクスチャアセット(png/jpg)ファイルのバイト列そのまま出力してよいかどうか判断する。
+        /// 具体的な条件は以下
         ///
         /// * TextureAsset が存在する
-        /// * TextureImporter の maxSize
+        /// * TextureImporter の maxSize が画像の縦横サイズ以上
+        /// * TextureImporter の色空間設定が exportColorSpace と一致する
+        /// * 各 Texture Type ごとの判定
         ///
+        /// Unity の Texture2D のデータは、その参照元であるテクスチャアセットファイルのデータと一致することはむしろ稀。
         /// </summary>
-        public bool CanExportAsEditorAssetFile(Texture texture)
+        public bool CanExportAsEditorAssetFile(Texture texture, ColorSpace exportColorSpace)
         {
-            if (texture is Texture2D texture2D && !string.IsNullOrEmpty(UnityEditor.AssetDatabase.GetAssetPath(texture2D)))
-            {
-                // exists Texture2D asset
-                if (IsMaxTextureSizeSmallerThanOriginalTextureSize(texture2D))
-                {
-                    // Texture Inspector の MaxSize 設定で、テクスチャをオリジナルサイズよりも小さいサイズで Texture 化する指示を行っているため
-                    // glTF Exporter もそれにしたがって、解釈をする
-                    //
-                    // 4096x4096 のような巨大なテクスチャーがそのまま出力されることを、Unityの TextureImporter.maxSize により防止する
-                    //
-                    return false;
-                }
+            // Exists as UnityEditor Texture2D Assets ?
+            if (!TryGetAsEditorTexture2DAsset(texture, out var texture2D, out var textureImporter)) return false;
 
-                // use Texture2D asset. EncodeToPng
-                return true;
+            // Maintain original width/height ?
+            if (!IsTextureSizeMaintained(texture2D, textureImporter)) return false;
+
+            // Equals color space ?
+            if (!IsFileColorSpaceSameWithExportColorSpace(texture2D, textureImporter, exportColorSpace)) return false;
+
+            // Each Texture Importer Type Validation
+            switch (textureImporter.textureType)
+            {
+                case TextureImporterType.Default:
+                    break;
+                case TextureImporterType.NormalMap:
+                    // A texture has "Normal map" TextureType is ALWAYS converted into normalized normal pixel by Unity.
+                    // So we must copy it.
+                    return false;
+                case TextureImporterType.GUI:
+                case TextureImporterType.Sprite:
+                case TextureImporterType.Cursor:
+                case TextureImporterType.Cubemap:
+                case TextureImporterType.Cookie:
+                case TextureImporterType.Lightmap:
+                case TextureImporterType.HDRI:
+                case TextureImporterType.Advanced:
+                case TextureImporterType.SingleChannel:
+                    // Not Supported TextureImporterType
+                    return false;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
 
-            // not Texture2D or not exists Texture2D asset. EncodeToPng
-            return false;
+            return true;
         }
 
-        public (byte[] bytes, string mime) ExportBytesWithMime(Texture2D texture, ColorSpace textureColorSpace)
+        public (byte[] bytes, string mime) ExportBytesWithMime(Texture2D texture, ColorSpace exportColorSpace)
         {
-            if (CanExportAsEditorAssetFile(texture) && TryGetBytesWithMime(texture, out byte[] bytes, out string mime))
+            if (CanExportAsEditorAssetFile(texture, exportColorSpace) && TryGetBytesWithMime(texture, out byte[] bytes, out string mime))
             {
                 return (bytes, mime);
             }
 
-            return m_runtimeSerializer.ExportBytesWithMime(texture, textureColorSpace);
+            return m_runtimeSerializer.ExportBytesWithMime(texture, exportColorSpace);
         }
 
         /// <summary>
@@ -87,14 +106,34 @@ namespace VRMShaders
             return false;
         }
 
-        /// <summary>
-        /// TextureImporter.maxTextureSize が オリジナルの画像Sizeより小さいか
-        /// </summary>
-        private bool IsMaxTextureSizeSmallerThanOriginalTextureSize(Texture2D src)
+        private bool TryGetAsEditorTexture2DAsset(Texture texture, out Texture2D texture2D, out TextureImporter assetImporter)
         {
-            var path = AssetDatabase.GetAssetPath(src);
-            var textureImporter = AssetImporter.GetAtPath(path) as TextureImporter;
+            texture2D = texture as Texture2D;
+            if (texture2D != null)
+            {
+                var path = AssetDatabase.GetAssetPath(texture2D);
+                if (!string.IsNullOrEmpty(path))
+                {
+                    assetImporter = AssetImporter.GetAtPath(path) as TextureImporter;
+                    if (assetImporter != null)
+                    {
+                        return true;
+                    }
+                }
+            }
 
+            texture2D = null;
+            assetImporter = null;
+            return false;
+        }
+
+        /// <summary>
+        /// Texture2D の画像サイズが、オリジナルの画像サイズを維持しているかどうか
+        ///
+        /// TextureImporter の MaxTextureSize 設定によっては、Texture2D の画像サイズはオリジナルも小さくなりうる。
+        /// </summary>
+        private bool IsTextureSizeMaintained(Texture2D texture, TextureImporter textureImporter)
+        {
             // private メソッド TextureImporter.GetWidthAndHeight を無理やり呼ぶ
             var getSizeMethod = typeof(TextureImporter).GetMethod("GetWidthAndHeight", BindingFlags.NonPublic | BindingFlags.Instance);
             if (textureImporter != null && getSizeMethod != null)
@@ -104,13 +143,26 @@ namespace VRMShaders
                 var originalWidth = (int)args[0];
                 var originalHeight = (int)args[1];
                 var originalSize = Mathf.Max(originalWidth, originalHeight);
-                if (textureImporter.maxTextureSize < originalSize)
+                if (textureImporter.maxTextureSize >= originalSize)
                 {
                     return true;
                 }
             }
 
             return false;
+        }
+
+        private bool IsFileColorSpaceSameWithExportColorSpace(Texture2D texture, TextureImporter textureImporter, ColorSpace colorSpace)
+        {
+            switch (colorSpace)
+            {
+                case ColorSpace.sRGB:
+                    return textureImporter.sRGBTexture == true;
+                case ColorSpace.Linear:
+                    return textureImporter.sRGBTexture == false;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(colorSpace), colorSpace, null);
+            }
         }
     }
 }

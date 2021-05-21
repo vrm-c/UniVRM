@@ -57,11 +57,6 @@ namespace VRMShaders
             }
         }
 
-        /// <summary>
-        /// sRGBなテクスチャーを処理し、index を確定させる
-        /// </summary>
-        /// <param name="src"></param>
-        /// <returns></returns>
         public int ExportAsSRgb(Texture src)
         {
             if (src == null)
@@ -78,7 +73,7 @@ namespace VRMShaders
             // get Texture2D
             index = m_exported.Count;
             var texture2D = src as Texture2D;
-            if (m_textureSerializer.CanExportAsEditorAssetFile(texture2D))
+            if (m_textureSerializer.CanExportAsEditorAssetFile(texture2D, ColorSpace.sRGB))
             {
                 // do nothing
             }
@@ -92,11 +87,6 @@ namespace VRMShaders
             return index;
         }
 
-        /// <summary>
-        /// Linearなテクスチャーを処理し、index を確定させる
-        /// </summary>
-        /// <param name="src"></param>
-        /// <returns></returns>
         public int ExportAsLinear(Texture src)
         {
             if (src == null)
@@ -114,7 +104,7 @@ namespace VRMShaders
 
             index = m_exported.Count;
             var texture2d = src as Texture2D;
-            if (m_textureSerializer.CanExportAsEditorAssetFile(texture2d))
+            if (m_textureSerializer.CanExportAsEditorAssetFile(texture2d, ColorSpace.Linear))
             {
                 // do nothing
             }
@@ -128,14 +118,7 @@ namespace VRMShaders
             return index;
         }
 
-        /// <summary>
-        /// Standard の Metallic, Smoothness, Occlusion をまとめ、index を確定させる
-        /// </summary>
-        /// <param name="metallicSmoothTexture"></param>
-        /// <param name="smoothness"></param>
-        /// <param name="occlusionTexture"></param>
-        /// <returns></returns>
-        public int ExportAsGltfMetallicSmoothnessOcclusionCombined(Texture metallicSmoothTexture, float smoothness, Texture occlusionTexture)
+        public int ExportAsCombinedGltfPbrParameterTextureFromUnityStandardTextures(Texture metallicSmoothTexture, float smoothness, Texture occlusionTexture)
         {
             if (metallicSmoothTexture == null && occlusionTexture == null)
             {
@@ -172,11 +155,6 @@ namespace VRMShaders
             return index;
         }
 
-        /// <summary>
-        /// Normal のテクスチャを変換し index を確定させる
-        /// </summary>
-        /// <param name="normalTexture"></param>
-        /// <returns></returns>
         public int ExportAsNormal(Texture src)
         {
             if (src == null)
@@ -190,18 +168,10 @@ namespace VRMShaders
                 return index;
             }
 
-            // get Texture2D
             index = m_exported.Count;
-            var texture2D = src as Texture2D;
-            if (m_textureSerializer.CanExportAsEditorAssetFile(texture2D))
-            {
-                // EditorAsset を使うので変換不要
-            }
-            else
-            {
-                // 後で Bitmap を使うために変換する
-                texture2D = NormalConverter.Export(src);
-            }
+            // NormalMap Property のテクスチャは必ず NormalMap として解釈してコピーする。
+            // Texture Asset の設定に依らず、Standard Shader で得られる見た目と同じ結果を得るため。
+            var texture2D = NormalConverter.Export(src);
 
             m_exported.Add((texture2D, ColorSpace.Linear));
             m_exportMap.Add(new ExportKey(src, ExportTypes.Normal), index);

@@ -8,18 +8,21 @@ using VRMShaders;
 
 namespace UniGLTF
 {
-    public sealed class TextureColorSpaceSpecificationTests
+    public sealed class EditorTextureSerializerTests
     {
         private static readonly string AssetPath = "Assets/UniGLTF/Tests/UniGLTF";
         private static readonly string SrgbGrayImageName = "4x4_gray_import_as_srgb";
         private static readonly string LinearGrayImageName = "4x4_gray_import_as_linear";
+        private static readonly string NormalMapGrayImageName = "4x4_gray_import_as_normal_map";
         private static readonly Texture2D SrgbGrayTex = AssetDatabase.LoadAssetAtPath<Texture2D>($"{AssetPath}/{SrgbGrayImageName}.png");
         private static readonly Texture2D LinearGrayTex = AssetDatabase.LoadAssetAtPath<Texture2D>($"{AssetPath}/{LinearGrayImageName}.png");
+        private static readonly Texture2D NormalMapGrayTex = AssetDatabase.LoadAssetAtPath<Texture2D>($"{AssetPath}/{NormalMapGrayImageName}.png");
         private static readonly Color32 JustGray = new Color32(127, 127, 127, 255);
         private static readonly Color32 SrgbGrayInSrgb = JustGray;
         private static readonly Color32 SrgbGrayInLinear = ((Color) SrgbGrayInSrgb).linear;
         private static readonly Color32 LinearGrayInLinear = JustGray;
         private static readonly Color32 LinearGrayInSrgb = ((Color) LinearGrayInLinear).gamma;
+        private static readonly Color32 NormalizedLinearGrayInLinear = new Color32(127, 127, 255, 255);
 
         [Test]
         public void InputAssetsRawImage()
@@ -71,6 +74,42 @@ namespace UniGLTF
         {
             var exportedTex = AssignTextureToMaterialPropertyAndExportAndExtract(LinearGrayTex, LinearGrayImageName, "_MainTex");
             Assert.AreEqual(LinearGrayInSrgb, GetFirstPixelInTexture2D(exportedTex));
+            UnityEngine.Object.DestroyImmediate(exportedTex);
+        }
+
+        [Test]
+        public void AssignSrgbImageToLinearTextureProperty()
+        {
+            var exportedTex = AssignTextureToMaterialPropertyAndExportAndExtract(SrgbGrayTex, SrgbGrayImageName, "_OcclusionMap");
+            // R channel is occlusion in glTF spec.
+            Assert.AreEqual(SrgbGrayInLinear.r, GetFirstPixelInTexture2D(exportedTex).r);
+            UnityEngine.Object.DestroyImmediate(exportedTex);
+        }
+
+        [Test]
+        public void AssignLinearImageToLinearTextureProperty()
+        {
+            var exportedTex = AssignTextureToMaterialPropertyAndExportAndExtract(LinearGrayTex, LinearGrayImageName, "_OcclusionMap");
+            // R channel is occlusion in glTF spec.
+            Assert.AreEqual(LinearGrayInLinear.r, GetFirstPixelInTexture2D(exportedTex).r);
+            UnityEngine.Object.DestroyImmediate(exportedTex);
+        }
+
+        [Test]
+        public void AssignLinearImageToNormalTextureProperty()
+        {
+            var exportedTex = AssignTextureToMaterialPropertyAndExportAndExtract(LinearGrayTex, LinearGrayImageName, "_BumpMap");
+            Assert.AreEqual(NormalizedLinearGrayInLinear, GetFirstPixelInTexture2D(exportedTex));
+            // B channel is different from 127. Because it will be normalized as normal vector.
+            UnityEngine.Object.DestroyImmediate(exportedTex);
+        }
+
+        [Test]
+        public void AssignLinearImageAsNormalMapSettingsToNormalTextureProperty()
+        {
+            var exportedTex = AssignTextureToMaterialPropertyAndExportAndExtract(NormalMapGrayTex, NormalMapGrayImageName, "_BumpMap");
+            Assert.AreEqual(NormalizedLinearGrayInLinear, GetFirstPixelInTexture2D(exportedTex));
+            // B channel is different from 127. Because it will be normalized as normal vector.
             UnityEngine.Object.DestroyImmediate(exportedTex);
         }
 
