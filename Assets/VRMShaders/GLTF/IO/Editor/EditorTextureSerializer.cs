@@ -87,7 +87,7 @@ namespace VRMShaders
             if (texture2D != null)
             {
                 var path = AssetDatabase.GetAssetPath(texture2D);
-                if (string.IsNullOrEmpty(path))
+                if (!string.IsNullOrEmpty(path))
                 {
                     assetImporter = AssetImporter.GetAtPath(path) as TextureImporter;
                     if (assetImporter != null)
