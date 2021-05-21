@@ -82,6 +82,11 @@ namespace UniGLTF
             Assert.AreEqual(SrgbGrayInLinear.g, GetFirstPixelInTexture2D(exportedTex).g);
             // B channel is different. Because it will be normalized as normal vector.
             UnityEngine.Object.DestroyImmediate(exportedTex);
+
+            var exportedTex2 = AssignTextureToMaterialPropertyAndExportAndExtract(SrgbGrayTex, SrgbGrayImageName, "_OcclusionMap");
+            // R channel is occlusion in glTF spec.
+            Assert.AreEqual(SrgbGrayInLinear.r, GetFirstPixelInTexture2D(exportedTex2).r);
+            UnityEngine.Object.DestroyImmediate(exportedTex2);
         }
 
         [Test]
@@ -92,6 +97,11 @@ namespace UniGLTF
             Assert.AreEqual(LinearGrayInLinear.g, GetFirstPixelInTexture2D(exportedTex).g);
             // B channel is different. Because it will be normalized as normal vector.
             UnityEngine.Object.DestroyImmediate(exportedTex);
+
+            var exportedTex2 = AssignTextureToMaterialPropertyAndExportAndExtract(LinearGrayTex, LinearGrayImageName, "_OcclusionMap");
+            // R channel is occlusion in glTF spec.
+            Assert.AreEqual(LinearGrayInLinear.r, GetFirstPixelInTexture2D(exportedTex2).r);
+            UnityEngine.Object.DestroyImmediate(exportedTex2);
         }
 
         private static Texture2D AssignTextureToMaterialPropertyAndExportAndExtract(Texture2D srcTex, string srcImageName, string propertyName)
