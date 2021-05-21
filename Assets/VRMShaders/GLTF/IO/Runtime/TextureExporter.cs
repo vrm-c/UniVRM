@@ -168,18 +168,10 @@ namespace VRMShaders
                 return index;
             }
 
-            // get Texture2D
             index = m_exported.Count;
-            var texture2D = src as Texture2D;
-            if (m_textureSerializer.CanExportAsEditorAssetFile(texture2D, ColorSpace.Linear))
-            {
-                // EditorAsset を使うので変換不要
-            }
-            else
-            {
-                // 後で Bitmap を使うために変換する
-                texture2D = NormalConverter.Export(src);
-            }
+            // NormalMap Property のテクスチャは必ず NormalMap として解釈してコピーする。
+            // Texture Asset の設定に依らず、Standard Shader で得られる見た目と同じ結果を得るため。
+            var texture2D = NormalConverter.Export(src);
 
             m_exported.Add((texture2D, ColorSpace.Linear));
             m_exportMap.Add(new ExportKey(src, ExportTypes.Normal), index);

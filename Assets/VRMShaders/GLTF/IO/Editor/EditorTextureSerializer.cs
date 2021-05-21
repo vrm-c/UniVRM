@@ -19,6 +19,7 @@ namespace VRMShaders
         /// * TextureAsset が存在する
         /// * TextureImporter の maxSize が画像の縦横サイズ以上
         /// * TextureImporter の色空間設定が exportColorSpace と一致する
+        /// * 各 Texture Type ごとの判定
         ///
         /// Unity の Texture2D のデータは、その参照元であるテクスチャアセットファイルのデータと一致することはむしろ稀。
         /// </summary>
@@ -39,8 +40,9 @@ namespace VRMShaders
                 case TextureImporterType.Default:
                     break;
                 case TextureImporterType.NormalMap:
-                    if (!IsCorrectNormalMap(texture2D, textureImporter)) return false;
-                    break;
+                    // A texture has "Normal map" TextureType is ALWAYS converted into normalized normal pixel by Unity.
+                    // So we must copy it.
+                    return false;
                 case TextureImporterType.GUI:
                 case TextureImporterType.Sprite:
                 case TextureImporterType.Cursor:
@@ -161,16 +163,6 @@ namespace VRMShaders
                 default:
                     throw new ArgumentOutOfRangeException(nameof(colorSpace), colorSpace, null);
             }
-        }
-
-        private bool IsCorrectNormalMap(Texture2D texture, TextureImporter textureImporter)
-        {
-            if (textureImporter.textureType != TextureImporterType.NormalMap) return false;
-
-            // Is Not generated from HeightMap ?
-            if (textureImporter.convertToNormalmap) return false;
-
-            return true;
         }
     }
 }
