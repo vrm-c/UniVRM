@@ -131,7 +131,7 @@ namespace VRMShaders
             //
             // texture from image(png etc) bytes
             //
-            var texture = new Texture2D(2, 2, TextureFormat.ARGB32, false, colorSpace == RenderTextureReadWrite.Linear);
+            var texture = new Texture2D(2, 2, TextureFormat.ARGB32, param.Sampler.EnableMipMap, colorSpace == RenderTextureReadWrite.Linear);
             texture.name = name;
             if (imageBytes != null)
             {

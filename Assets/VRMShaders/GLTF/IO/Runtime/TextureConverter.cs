@@ -49,7 +49,7 @@ namespace VRMShaders
                 Graphics.Blit(src, renderTexture);
             }
 
-            dst = new Texture2D(src.width, src.height, TextureFormat.ARGB32, false, readWrite == RenderTextureReadWrite.Linear);
+            dst = new Texture2D(src.width, src.height, TextureFormat.ARGB32, src.HasMipMap(), readWrite == RenderTextureReadWrite.Linear);
             dst.ReadPixels(new Rect(0, 0, src.width, src.height), 0, 0);
             dst.name = src.name;
             dst.anisoLevel = src.anisoLevel;
