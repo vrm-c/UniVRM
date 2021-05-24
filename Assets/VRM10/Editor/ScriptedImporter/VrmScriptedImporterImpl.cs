@@ -4,6 +4,7 @@ using UniGLTF;
 using System.IO;
 using System;
 using UniJSON;
+using VRMShaders;
 #if UNITY_2020_2_OR_NEWER
 using UnityEditor.AssetImporters;
 #else
@@ -39,7 +40,7 @@ namespace UniVRM10
                 return "vrm1 not found";
             }
 
-            // try migrateion            
+            // try migrateion
             Byte[] migrated = default;
             try
             {

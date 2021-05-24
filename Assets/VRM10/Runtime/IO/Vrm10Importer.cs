@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using UniGLTF;
 using UnityEngine;
 using VrmLib;
+using VRMShaders;
 
 
 namespace UniVRM10

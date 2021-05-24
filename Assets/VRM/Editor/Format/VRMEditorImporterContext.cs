@@ -4,6 +4,7 @@ using System.Linq;
 using UniGLTF;
 using UnityEditor;
 using UnityEngine;
+using VRMShaders;
 
 namespace VRM
 {
@@ -70,7 +71,7 @@ namespace VRM
         /// </summary>
         public void ConvertAndExtractImages(Action<IEnumerable<UnityPath>> onTextureReloaded)
         {
-            // 
+            //
             // convert images(metallic roughness, occlusion map)
             //
             var task = m_context.LoadMaterialsAsync();
@@ -112,7 +113,7 @@ namespace VRM
             if (!string.IsNullOrEmpty(AssetDatabase.GetAssetPath(o)))
             {
                 // already exists. not dispose
-#if VRM_DEVELOP                    
+#if VRM_DEVELOP
                 Debug.Log($"Loaded. skip: {o}");
 #endif
                 return true;
