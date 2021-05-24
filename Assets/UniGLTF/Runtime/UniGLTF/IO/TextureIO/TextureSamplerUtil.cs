@@ -8,7 +8,7 @@ namespace UniGLTF
     {
         #region FilterMode
         // MagFilter は ２種類だけ
-        public static glFilter ExportMagFilter(Texture texture)
+        public static glFilter ExportMagFilter(Texture2D texture)
         {
             switch (texture.filterMode)
             {
@@ -24,40 +24,58 @@ namespace UniGLTF
             }
         }
 
-        public static glFilter ExportMinFilter(Texture texture)
+        public static glFilter ExportMinFilter(Texture2D texture)
         {
-            switch (texture.filterMode)
+            if (texture.mipmapCount > 0)
             {
-                case FilterMode.Point:
-                    return glFilter.NEAREST;
+                switch (texture.filterMode)
+                {
+                    case FilterMode.Point:
+                        return glFilter.NEAREST_MIPMAP_LINEAR;
 
-                case FilterMode.Bilinear:
-                    return glFilter.LINEAR;
+                    case FilterMode.Bilinear:
+                    case FilterMode.Trilinear:
+                        return glFilter.LINEAR_MIPMAP_LINEAR;
 
-                case FilterMode.Trilinear:
-                    return glFilter.LINEAR_MIPMAP_LINEAR;
+                    default:
+                        throw new NotImplementedException();
+                }
+            }
+            else
+            {
+                switch (texture.filterMode)
+                {
+                    case FilterMode.Point:
+                        return glFilter.NEAREST;
 
-                default:
-                    throw new NotImplementedException();
+                    case FilterMode.Bilinear:
+                    case FilterMode.Trilinear:
+                        return glFilter.LINEAR;
+
+                    default:
+                        throw new NotImplementedException();
+                }
             }
         }
 
-        public static FilterMode ImportFilterMode(glFilter filterMode)
+        public static (FilterMode FilterMode, bool EnableMipMap) ImportFilterMode(glFilter filterMode)
         {
             switch (filterMode)
             {
                 case glFilter.NEAREST:
-                case glFilter.NEAREST_MIPMAP_LINEAR:
                 case glFilter.NEAREST_MIPMAP_NEAREST:
-                    return FilterMode.Point;
+                    return (FilterMode.Point, false);
+
+                case glFilter.NEAREST_MIPMAP_LINEAR:
+                    return (FilterMode.Point, true);
 
                 case glFilter.NONE:
                 case glFilter.LINEAR:
-                case glFilter.LINEAR_MIPMAP_NEAREST:
-                    return FilterMode.Bilinear;
+                    return (FilterMode.Bilinear, false);
 
+                case glFilter.LINEAR_MIPMAP_NEAREST:
                 case glFilter.LINEAR_MIPMAP_LINEAR:
-                    return FilterMode.Trilinear;
+                    return (FilterMode.Bilinear, true);
 
                 default:
                     throw new NotImplementedException();
@@ -106,7 +124,7 @@ namespace UniGLTF
         }
         #endregion
 
-        public static glTFTextureSampler Export(Texture texture)
+        public static glTFTextureSampler Export(Texture2D texture)
         {
             var magFilter = ExportMagFilter(texture);
             var minFilter = ExportMinFilter(texture);
@@ -131,11 +149,13 @@ namespace UniGLTF
             }
 
             var gltfSampler = gltf.samplers[gltfTexture.sampler];
+            var (filterMode, enableMipMap) = ImportFilterMode(gltfSampler.minFilter);
             return new SamplerParam
             {
                 WrapModesU = ImportWrapMode(gltfSampler.wrapS),
                 WrapModesV = ImportWrapMode(gltfSampler.wrapT),
-                FilterMode = ImportFilterMode(gltfSampler.minFilter),
+                FilterMode = filterMode,
+                EnableMipMap = enableMipMap,
             };
         }
     }
