@@ -34,6 +34,8 @@ namespace UniGLTF
                         return glFilter.NEAREST_MIPMAP_LINEAR;
 
                     case FilterMode.Bilinear:
+                        return glFilter.LINEAR_MIPMAP_NEAREST;
+
                     case FilterMode.Trilinear:
                         return glFilter.LINEAR_MIPMAP_LINEAR;
 
@@ -49,7 +51,10 @@ namespace UniGLTF
                         return glFilter.NEAREST;
 
                     case FilterMode.Bilinear:
+                        return glFilter.LINEAR;
+
                     case FilterMode.Trilinear:
+                        // ありえない？
                         return glFilter.LINEAR;
 
                     default:
@@ -80,8 +85,10 @@ namespace UniGLTF
                     return (FilterMode.Point, true);
 
                 case glFilter.LINEAR_MIPMAP_NEAREST:
-                case glFilter.LINEAR_MIPMAP_LINEAR:
                     return (FilterMode.Bilinear, true);
+
+                case glFilter.LINEAR_MIPMAP_LINEAR:
+                    return (FilterMode.Trilinear, true);
 
                 default:
                     throw new NotImplementedException();
