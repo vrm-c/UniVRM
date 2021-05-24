@@ -18,7 +18,7 @@ namespace VRMShaders
             FilterMode = FilterMode.Bilinear,
             WrapModesU = TextureWrapMode.Repeat,
             WrapModesV = TextureWrapMode.Repeat,
-            EnableMipMap = false,
+            EnableMipMap = true,
         };
     }
 

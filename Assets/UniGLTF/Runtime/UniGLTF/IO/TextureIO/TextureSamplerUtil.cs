@@ -88,7 +88,6 @@ namespace UniGLTF
                     return (FilterMode.Point, false);
 
                 // mipmap: disable
-                case glFilter.NONE:
                 case glFilter.LINEAR:
                     return (FilterMode.Bilinear, false);
 
@@ -109,6 +108,10 @@ namespace UniGLTF
                 // mipmap: blend
                 case glFilter.LINEAR_MIPMAP_LINEAR:
                     return (FilterMode.Trilinear, true);
+
+                // default
+                case glFilter.NONE:
+                    return (FilterMode.Bilinear, true);
 
                 default:
                     throw new NotImplementedException();
