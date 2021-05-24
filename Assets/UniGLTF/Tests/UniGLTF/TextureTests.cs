@@ -31,8 +31,12 @@ namespace UniGLTF
 
             Assert.AreEqual(glWrap.CLAMP_TO_EDGE, sampler.wrapS);
             Assert.AreEqual(glWrap.CLAMP_TO_EDGE, sampler.wrapT);
+
+            Assert.AreEqual(FilterMode.Trilinear, convTex0.filterMode);
+            Assert.IsTrue(convTex0.mipmapCount > 1);
+            // Tirilinear => LINEAR_MIPMAP_LINEAR
             Assert.AreEqual(glFilter.LINEAR_MIPMAP_LINEAR, sampler.minFilter);
-            Assert.AreEqual(glFilter.LINEAR_MIPMAP_LINEAR, sampler.magFilter);
+            Assert.AreEqual(glFilter.LINEAR, sampler.magFilter);
         }
 
         static FileInfo Find(DirectoryInfo current, string target)
