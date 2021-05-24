@@ -58,20 +58,26 @@ namespace UniGLTF
             }
         }
 
+        /// <summary>
+        /// https://www.khronos.org/registry/OpenGL-Refpages/es2.0/xhtml/glTexParameter.xml
+        /// </summary>
+        /// <param name="FilterMode"></param>
+        /// <param name="filterMode"></param>
+        /// <returns></returns>
         public static (FilterMode FilterMode, bool EnableMipMap) ImportFilterMode(glFilter filterMode)
         {
             switch (filterMode)
             {
                 case glFilter.NEAREST:
-                case glFilter.NEAREST_MIPMAP_NEAREST:
                     return (FilterMode.Point, false);
-
-                case glFilter.NEAREST_MIPMAP_LINEAR:
-                    return (FilterMode.Point, true);
 
                 case glFilter.NONE:
                 case glFilter.LINEAR:
                     return (FilterMode.Bilinear, false);
+
+                case glFilter.NEAREST_MIPMAP_NEAREST:
+                case glFilter.NEAREST_MIPMAP_LINEAR:
+                    return (FilterMode.Point, true);
 
                 case glFilter.LINEAR_MIPMAP_NEAREST:
                 case glFilter.LINEAR_MIPMAP_LINEAR:
