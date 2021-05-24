@@ -22,7 +22,7 @@ namespace UniGLTF
         /// <param name="reverseAxis"></param>
         public static void Import(ScriptedImporter scriptedImporter, AssetImportContext context, Axes reverseAxis)
         {
-#if VRM_DEVELOP            
+#if VRM_DEVELOP
             Debug.Log("OnImportAsset to " + scriptedImporter.assetPath);
 #endif
 
@@ -35,16 +35,12 @@ namespace UniGLTF
             //
             // Import(create unity objects)
             //
-            var externalObjectMap = scriptedImporter.GetExternalObjectMap().Select(kv => (kv.Value.name, kv.Value)).ToArray();
-
-            var externalTextures = EnumerateTexturesFromUri(externalObjectMap, parser, UnityPath.FromUnityPath(scriptedImporter.assetPath).Parent).ToArray();
-
-            using (var loader = new ImporterContext(parser, externalObjectMap.Concat(externalTextures)))
+            using (var loader = new ImporterContext(parser, GetExternalTextures(scriptedImporter, parser)))
             {
                 // settings TextureImporters
                 foreach (var (key, textureInfo) in GltfTextureEnumerator.EnumerateAllTexturesDistinct(parser))
                 {
-                    TextureImporterConfigurator.Configure(textureInfo, loader.TextureFactory.ExternalMap);
+                    TextureImporterConfigurator.Configure(textureInfo, loader.TextureFactory.ExternalTextures);
                 }
 
                 loader.InvertAxis = reverseAxis;
@@ -65,44 +61,54 @@ namespace UniGLTF
             }
         }
 
-        public static IEnumerable<(string, UnityEngine.Object)> EnumerateTexturesFromUri(IEnumerable<(string, UnityEngine.Object)> exclude,
-            GltfParser parser, UnityPath dir)
+        private static IReadOnlyDictionary<SubAssetKey, Object> GetExternalTextures(ScriptedImporter scriptedImporter, GltfParser parser)
+        {
+            // 2 回目以降の Asset Import において、 Importer の設定で Extract した Textures が入る
+            var externalTextures = scriptedImporter.GetExternalObjectMap()
+                .Where(kv => kv.Value is Texture)
+                .ToDictionary(kv => kv.Value.TextureSubAssetKey(), kv => kv.Value);
+
+            // return externalTextures;
+
+            var assetDirectoryPath = UnityPath.FromUnityPath(scriptedImporter.assetPath).Parent;
+            foreach (var (key, obj) in EnumerateExternalTexturesReferencedByMaterials(parser, assetDirectoryPath))
+            {
+                if (!externalTextures.ContainsKey(key))
+                {
+                    externalTextures.Add(key, obj);
+                }
+            }
+
+            return externalTextures;
+        }
+
+        /// <summary>
+        /// glTF image の uri が参照する外部テクスチャファイルのうち、存在するもの
+        /// </summary>
+        private static IEnumerable<(SubAssetKey, Object)> EnumerateExternalTexturesReferencedByMaterials(GltfParser parser, UnityPath dir)
         {
             var used = new HashSet<Texture2D>();
             foreach (var (key, texParam) in GltfTextureEnumerator.EnumerateAllTexturesDistinct(parser))
             {
-                switch (texParam.TextureType)
+                if (string.IsNullOrEmpty(texParam.Uri)) continue;
+                if (texParam.Uri.StartsWith("data:")) continue;
+
+                var texPath = dir.Child(texParam.Uri);
+                var asset = AssetDatabase.LoadAssetAtPath<Texture2D>(texPath.Value);
+                if (asset == null)
                 {
-                    case TextureImportTypes.StandardMap:
-                        break;
-
-                    default:
-                        {
-                            if (!string.IsNullOrEmpty(texParam.Uri) && !texParam.Uri.StartsWith("data:"))
-                            {
-                                var child = dir.Child(texParam.Uri);
-                                var asset = AssetDatabase.LoadAssetAtPath<Texture2D>(child.Value);
-                                if (asset == null)
-                                {
-                                    throw new System.IO.FileNotFoundException($"{child}");
-                                }
-
-                                if (exclude != null && exclude.Any(kv => kv.Item2.name == asset.name))
-                                {
-                                    // exclude. skip
-                                }
-                                else
-                                {
-                                    if (used.Add(asset))
-                                    {
-                                        yield return (asset.name, asset);
-                                    }
-                                }
-                            }
-                        }
-                        break;
+                    throw new System.IO.FileNotFoundException($"{texPath}");
+                }
+                if (used.Add(asset))
+                {
+                    yield return (key, asset);
                 }
             }
+        }
+
+        private static SubAssetKey TextureSubAssetKey(this Object obj)
+        {
+            return new SubAssetKey(typeof(Texture), obj.name);
         }
     }
 }

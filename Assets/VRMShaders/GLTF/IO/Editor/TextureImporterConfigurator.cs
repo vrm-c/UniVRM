@@ -8,7 +8,7 @@ namespace VRMShaders
 {
     public static class TextureImporterConfigurator
     {
-        public static void ConfigureSize(Texture2D texture, TextureImporter textureImporter)
+        public static void ConfigureSize(Texture texture, TextureImporter textureImporter)
         {
             var maxSize = Mathf.Max(texture.width, texture.height);
             textureImporter.maxTextureSize
@@ -20,7 +20,7 @@ namespace VRMShaders
             textureImporter.SaveAndReimport();
         }
 
-        public static void ConfigureNormalMap(Texture2D texture, TextureImporter textureImporter)
+        public static void ConfigureNormalMap(Texture texture, TextureImporter textureImporter)
         {
 #if VRM_DEVELOP
             Debug.Log($"{texture} => normalmap");
@@ -29,7 +29,7 @@ namespace VRMShaders
             textureImporter.SaveAndReimport();
         }
 
-        public static void ConfigureLinear(Texture2D texture, TextureImporter textureImporter)
+        public static void ConfigureLinear(Texture texture, TextureImporter textureImporter)
         {
 #if VRM_DEVELOP
             Debug.Log($"{texture} => linear");
@@ -60,7 +60,7 @@ namespace VRMShaders
                 Importer.SaveAndReimport();
             }
 
-            public static bool TryGetImporter(Texture2D texture, out ImporterGetter getter)
+            public static bool TryGetImporter(Texture texture, out ImporterGetter getter)
             {
                 var path = AssetDatabase.GetAssetPath(texture);
                 if (String.IsNullOrEmpty(path))
@@ -84,7 +84,7 @@ namespace VRMShaders
             }
         }
 
-        static void Configure(TextureImportParam textureInfo, Texture2D external, TextureImporter importer)
+        static void Configure(TextureImportParam textureInfo, Texture external, TextureImporter importer)
         {
             switch (textureInfo.TextureType)
             {
@@ -122,9 +122,9 @@ namespace VRMShaders
             ConfigureSampler(textureInfo, importer);
         }
 
-        public static void Configure(TextureImportParam textureInfo, IDictionary<string, Texture2D> ExternalMap)
+        public static void Configure(TextureImportParam textureInfo, IReadOnlyDictionary<SubAssetKey, Texture> ExternalMap)
         {
-            if (ExternalMap.TryGetValue(textureInfo.UnityObjectName, out Texture2D external))
+            if (ExternalMap.TryGetValue(textureInfo.SubAssetKey, out Texture external))
             {
                 if (ImporterGetter.TryGetImporter(external, out ImporterGetter getter))
                 {

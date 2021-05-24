@@ -5,6 +5,8 @@ using UniGLTF;
 using UnityEngine;
 using UniJSON;
 using System.Threading.Tasks;
+using VRMShaders;
+using Object = UnityEngine.Object;
 
 namespace VRM
 {
@@ -18,8 +20,8 @@ namespace VRM
 
         public VRM.glTF_VRM_extensions VRM { get; private set; }
 
-        public VRMImporterContext(GltfParser parser,
-            IEnumerable<(string, UnityEngine.Object)> externalObjectMap = null) : base(parser, externalObjectMap)
+        public VRMImporterContext(GltfParser parser, IReadOnlyDictionary<SubAssetKey, Object> externalObjectMap = null)
+            : base(parser, externalObjectMap)
         {
             // parse VRM part
             if (glTF_VRM_extensions.TryDeserialize(GLTF.extensions, out glTF_VRM_extensions vrm))
@@ -263,7 +265,7 @@ namespace VRM
             }
             animator.avatar = HumanoidAvatar;
 
-            // default としてとりあえず設定する            
+            // default としてとりあえず設定する
             // https://docs.unity3d.com/ScriptReference/Renderer-probeAnchor.html
             var head = animator.GetBoneTransform(HumanBodyBones.Head);
             foreach (var smr in animator.GetComponentsInChildren<SkinnedMeshRenderer>())
@@ -298,7 +300,7 @@ namespace VRM
             if (gltfMeta.texture >= 0)
             {
                 var (key, param) = GltfTextureImporter.CreateSRGB(Parser, gltfMeta.texture, Vector2.zero, Vector2.one);
-                meta.Thumbnail = await TextureFactory.GetTextureAsync(param);
+                meta.Thumbnail = await TextureFactory.GetTextureAsync(param) as Texture2D;
             }
             meta.AllowedUser = gltfMeta.allowedUser;
             meta.ViolentUssage = gltfMeta.violentUssage;

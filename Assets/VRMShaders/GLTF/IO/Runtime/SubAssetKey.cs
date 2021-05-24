@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace VRMShaders
 {
@@ -19,6 +20,26 @@ namespace VRMShaders
     /// </summary>
     public struct SubAssetKey : IEquatable<SubAssetKey>
     {
+        public static SubAssetKey FromTexture(Texture texture)
+        {
+            return FromTexture(texture.name);
+        }
+
+        public static SubAssetKey FromTexture(string textureName)
+        {
+            return new SubAssetKey(typeof(Texture2D), textureName);
+        }
+
+        public static SubAssetKey FromMaterial(Material material)
+        {
+            return FromMaterial(material.name);
+        }
+
+        public static SubAssetKey FromMaterial(string materialName)
+        {
+            return new SubAssetKey(typeof(Material), materialName);
+        }
+
         public readonly Type Type;
         public readonly string Name;
 

@@ -16,6 +16,8 @@ namespace VRMShaders
         public int? RenderQueue;
         public readonly List<Action<Material>> Actions = new List<Action<Material>>();
 
+        public SubAssetKey SubAssetKey => SubAssetKey.FromMaterial(Name);
+
         public MaterialImportParam(string name, string shaderName)
         {
             Name = name;

@@ -10,8 +10,7 @@ namespace UniGLTF
         {
             foreach (var kv in param.TextureSlots)
             {
-                var key = new SubAssetKey(typeof(Texture2D), kv.Value.UnityObjectName);
-                yield return (key, kv.Value);
+                yield return (kv.Value.SubAssetKey, kv.Value);
             }
         }
     }

@@ -94,10 +94,7 @@ namespace VRM
             //
             // extract converted textures
             //
-            var subAssets = m_context.TextureFactory.Textures
-                    .Where(x => x.IsUsed)
-                    .Select(x => (new SubAssetKey(typeof(Texture2D), x.Texture.name), x.Texture))
-                    .ToArray();
+            var subAssets = m_context.TextureFactory.ConvertedTextures;
             var vrmTextures = new VRMMaterialImporter(m_context.VRM);
             var dirName = $"{m_prefabPath.FileNameWithoutExtension}.Textures";
             TextureExtractor.ExtractTextures(m_context.Parser, m_prefabPath.Parent.Child(dirName), vrmTextures.EnumerateAllTexturesDistinct, subAssets, (_x, _y) => { }, onTextureReloaded);

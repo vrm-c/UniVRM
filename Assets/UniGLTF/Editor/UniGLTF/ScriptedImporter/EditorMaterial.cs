@@ -107,7 +107,7 @@ namespace UniGLTF
             var dirName = textureDir(assetPath.Value); // $"{assetPath.FileNameWithoutExtension}.Textures";
             TextureExtractor.ExtractTextures(parser, assetPath.Parent.Child(dirName),
                 enumTextures,
-                self.GetSubAssets<UnityEngine.Texture2D>(self.assetPath).ToArray(),
+                self.GetSubAssets<Texture>(self.assetPath).ToDictionary(kv => kv.Item1, kv => kv.Item2),
                 addRemap,
                 onCompleted
                 );

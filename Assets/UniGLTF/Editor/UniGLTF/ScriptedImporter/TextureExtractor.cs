@@ -20,10 +20,10 @@ namespace UniGLTF
         public IStorage Storage => m_parser.Storage;
 
         public readonly Dictionary<SubAssetKey, UnityPath> Textures = new Dictionary<SubAssetKey, UnityPath>();
-        (SubAssetKey Key, UnityEngine.Texture2D Value)[] m_subAssets;
+        private readonly IReadOnlyDictionary<SubAssetKey, Texture> m_subAssets;
         UnityPath m_textureDirectory;
 
-        public TextureExtractor(GltfParser parser, UnityPath textureDirectory, (SubAssetKey, UnityEngine.Texture2D)[] subAssets)
+        public TextureExtractor(GltfParser parser, UnityPath textureDirectory, IReadOnlyDictionary<SubAssetKey, Texture> subAssets)
         {
             m_parser = parser;
             m_textureDirectory = textureDirectory;
@@ -58,47 +58,40 @@ namespace UniGLTF
             {
                 UnityPath targetPath = default;
 
-                switch (param.TextureType)
+                var writeSubAssets = true;
+                if (writeSubAssets)
                 {
-                    case TextureImportTypes.StandardMap:
-                        {
-                            // write converted texture
-                            var (_, subAsset) = m_subAssets.FirstOrDefault(kv => kv.Key == key);
-                            if (subAsset == null)
-                            {
-                                throw new KeyNotFoundException();
-                            }
-                            targetPath = m_textureDirectory.Child($"{key.Name}.png");
-                            File.WriteAllBytes(targetPath.FullPath, subAsset.EncodeToPNG().ToArray());
-                            targetPath.ImportAsset();
-                            break;
-                        }
-
-                    default:
-                        {
-                            // write original bytes
-                            targetPath = m_textureDirectory.Child($"{key.Name}{param.Ext}");
-                            File.WriteAllBytes(targetPath.FullPath, param.Index0().Result.ToArray());
-                            targetPath.ImportAsset();
-                            break;
-                        }
+                    // write converted texture
+                    if (m_subAssets.TryGetValue(key, out var texture) && texture is Texture2D tex2D)
+                    {
+                        targetPath = m_textureDirectory.Child($"{key.Name}.png");
+                        File.WriteAllBytes(targetPath.FullPath, tex2D.EncodeToPNG().ToArray());
+                        targetPath.ImportAsset();
+                    }
+                }
+                else
+                {
+                    // write original bytes
+                    targetPath = m_textureDirectory.Child($"{key.Name}{param.Ext}");
+                    File.WriteAllBytes(targetPath.FullPath, param.Index0().Result.ToArray());
+                    targetPath.ImportAsset();
                 }
                 Textures.Add(key, targetPath);
             }
         }
 
         /// <summary>
-        /// 
+        ///
         /// * Texture(.png etc...)をディスクに書き出す
         /// * EditorApplication.delayCall で処理を進めて 書き出した画像が Asset として成立するのを待つ
         /// * 書き出した Asset から TextureImporter を取得して設定する
-        /// 
+        ///
         /// </summary>
         /// <param name="importer"></param>
         /// <param name="dirName"></param>
         /// <param name="onCompleted"></param>
         public static void ExtractTextures(GltfParser parser, UnityPath textureDirectory,
-            EnumerateAllTexturesDistinctFunc textureEnumerator, (SubAssetKey, Texture2D)[] subAssets,
+            EnumerateAllTexturesDistinctFunc textureEnumerator, IReadOnlyDictionary<SubAssetKey, Texture> subAssets,
             Action<SubAssetKey, Texture2D> addRemap,
             Action<IEnumerable<UnityPath>> onCompleted = null)
         {

@@ -7,23 +7,15 @@ using UnityEngine;
 
 namespace VRMShaders
 {
-    public delegate Task<Texture2D> GetTextureAsyncFunc(TextureImportParam param);
+    public delegate Task<Texture> GetTextureAsyncFunc(TextureImportParam param);
 
     public class MaterialFactory : IDisposable
     {
-        Dictionary<string, Material> m_externalMap;
+        private readonly IReadOnlyDictionary<SubAssetKey, Material> m_externalMap;
 
-        public MaterialFactory(IEnumerable<(string, UnityEngine.Object)> externalMap)
+        public MaterialFactory(IReadOnlyDictionary<SubAssetKey, Material> externalMaterialMap)
         {
-            if (externalMap == null)
-            {
-                externalMap = Enumerable.Empty<(string, UnityEngine.Object)>();
-            }
-            m_externalMap = externalMap
-                .Select(kv => (kv.Item1, kv.Item2 as Material))
-                .Where(kv => kv.Item2 != null)
-                .ToDictionary(kv => kv.Item1, kv => kv.Item2)
-                ;
+            m_externalMap = externalMaterialMap;
         }
 
         public struct MaterialLoadInfo
@@ -69,12 +61,12 @@ namespace VRMShaders
 
         /// <summary>
         /// 所有権(Dispose権)を移譲する
-        /// 
+        ///
         /// 所有権を移動する関数。
-        /// 
+        ///
         /// * 所有権が移動する。return true => ImporterContext.Dispose の対象から外れる
         /// * 所有権が移動しない。return false => Importer.Context.Dispose でDestroyされる
-        /// 
+        ///
         /// </summary>
         /// <param name="take"></param>
         public void TransferOwnership(Func<UnityEngine.Object, bool> take)
@@ -106,7 +98,7 @@ namespace VRMShaders
 
         public async Task<Material> LoadAsync(MaterialImportParam param, GetTextureAsyncFunc getTexture)
         {
-            if (m_externalMap.TryGetValue(param.Name, out Material material))
+            if (m_externalMap.TryGetValue(param.SubAssetKey, out Material material))
             {
                 m_materials.Add(new MaterialLoadInfo(material, true));
                 return material;
@@ -114,11 +106,11 @@ namespace VRMShaders
 
             if (getTexture == null)
             {
-                getTexture = (_) => Task.FromResult<Texture2D>(null);
+                getTexture = (_) => Task.FromResult<Texture>(null);
             }
 
             material = new Material(Shader.Find(param.ShaderName));
-            material.name = param.Name;
+            material.name = param.SubAssetKey.Name;
 
             foreach(var kv in param.TextureSlots)
             {

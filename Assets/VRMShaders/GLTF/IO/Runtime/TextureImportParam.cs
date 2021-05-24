@@ -6,7 +6,7 @@ namespace VRMShaders
 {
     /// <summary>
     /// get bytes for
-    /// 
+    ///
     /// runtime:
     ///   Texture2D.LoadImage
     /// extact:
@@ -46,6 +46,11 @@ namespace VRMShaders
         /// この種類は RGB チャンネルの組み換えが必用
         /// </summary>
         public bool ExtractConverted => TextureType == TextureImportTypes.StandardMap;
+
+        /// <summary>
+        /// この Texture が Unity に実アセットとして存在する際の一意な Key
+        /// </summary>
+        public SubAssetKey SubAssetKey => SubAssetKey.FromTexture(UnityObjectName);
 
         public TextureImportParam(string name, string ext, string uri, Vector2 offset, Vector2 scale, SamplerParam sampler, TextureImportTypes textureType, float metallicFactor, float roughnessFactor,
             GetTextureBytesAsync i0,
