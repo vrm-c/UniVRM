@@ -10,12 +10,15 @@ namespace VRMShaders
         public TextureWrapMode WrapModesV;
 
         public FilterMode FilterMode;        
+
+        public bool EnableMipMap;
         
         public static SamplerParam Default => new SamplerParam
         {
             FilterMode = FilterMode.Bilinear,
             WrapModesU = TextureWrapMode.Repeat,
             WrapModesV = TextureWrapMode.Repeat,
+            EnableMipMap = false,
         };
     }
 

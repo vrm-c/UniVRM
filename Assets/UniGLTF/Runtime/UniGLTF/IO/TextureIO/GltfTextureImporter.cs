@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 using VRMShaders;
@@ -36,7 +34,7 @@ namespace UniGLTF
             var gltfTexture = parser.GLTF.textures[textureIndex];
             var gltfImage = parser.GLTF.images[gltfTexture.source];
             var name = TextureImportName.GetUnityObjectName(TextureImportTypes.sRGB, gltfTexture.name, gltfImage.uri);
-            var sampler = CreateSampler(parser.GLTF, textureIndex);
+            var sampler = TextureSamplerUtil.CreateSampler(parser.GLTF, textureIndex);
             GetTextureBytesAsync getTextureBytesAsync = () => Task.FromResult(ToArray(parser.GLTF.GetImageBytesFromTextureIndex(parser.Storage, textureIndex)));
             var key = new SubAssetKey(typeof(Texture2D), name);
             var param = new TextureImportParam(name, gltfImage.GetExt(), gltfImage.uri, offset, scale, sampler, TextureImportTypes.sRGB, default, default, getTextureBytesAsync, default, default, default, default, default);
@@ -48,7 +46,7 @@ namespace UniGLTF
             var gltfTexture = parser.GLTF.textures[textureIndex];
             var gltfImage = parser.GLTF.images[gltfTexture.source];
             var name = TextureImportName.GetUnityObjectName(TextureImportTypes.Linear, gltfTexture.name, gltfImage.uri);
-            var sampler = CreateSampler(parser.GLTF, textureIndex);
+            var sampler = TextureSamplerUtil.CreateSampler(parser.GLTF, textureIndex);
             GetTextureBytesAsync getTextureBytesAsync = () => Task.FromResult(ToArray(parser.GLTF.GetImageBytesFromTextureIndex(parser.Storage, textureIndex)));
             var key = new SubAssetKey(typeof(Texture2D), name);
             var param = new TextureImportParam(name, gltfImage.GetExt(), gltfImage.uri, offset, scale, sampler, TextureImportTypes.Linear, default, default, getTextureBytesAsync, default, default, default, default, default);
@@ -60,7 +58,7 @@ namespace UniGLTF
             var gltfTexture = parser.GLTF.textures[textureIndex];
             var gltfImage = parser.GLTF.images[gltfTexture.source];
             var name = TextureImportName.GetUnityObjectName(TextureImportTypes.NormalMap, gltfTexture.name, gltfImage.uri);
-            var sampler = CreateSampler(parser.GLTF, textureIndex);
+            var sampler = TextureSamplerUtil.CreateSampler(parser.GLTF, textureIndex);
             GetTextureBytesAsync getTextureBytesAsync = () => Task.FromResult(ToArray(parser.GLTF.GetImageBytesFromTextureIndex(parser.Storage, textureIndex)));
             var key = new SubAssetKey(typeof(Texture2D), name);
             var param = new TextureImportParam(name, gltfImage.GetExt(), gltfImage.uri, offset, scale, sampler, TextureImportTypes.NormalMap, default, default, getTextureBytesAsync, default, default, default, default, default);
@@ -77,7 +75,7 @@ namespace UniGLTF
             {
                 var gltfTexture = parser.GLTF.textures[metallicRoughnessTextureIndex.Value];
                 name = TextureImportName.GetUnityObjectName(TextureImportTypes.StandardMap, gltfTexture.name, parser.GLTF.images[gltfTexture.source].uri);
-                sampler = CreateSampler(parser.GLTF, metallicRoughnessTextureIndex.Value);
+                sampler = TextureSamplerUtil.CreateSampler(parser.GLTF, metallicRoughnessTextureIndex.Value);
                 getMetallicRoughnessAsync = () => Task.FromResult(ToArray(parser.GLTF.GetImageBytesFromTextureIndex(parser.Storage, metallicRoughnessTextureIndex.Value)));
             }
 
@@ -89,72 +87,11 @@ namespace UniGLTF
                 {
                     name = TextureImportName.GetUnityObjectName(TextureImportTypes.StandardMap, gltfTexture.name, parser.GLTF.images[gltfTexture.source].uri);
                 }
-                sampler = CreateSampler(parser.GLTF, occlusionTextureIndex.Value);
+                sampler = TextureSamplerUtil.CreateSampler(parser.GLTF, occlusionTextureIndex.Value);
                 getOcclusionAsync = () => Task.FromResult(ToArray(parser.GLTF.GetImageBytesFromTextureIndex(parser.Storage, occlusionTextureIndex.Value)));
             }
 
             return new TextureImportParam(name, ".png", null, offset, scale, sampler, TextureImportTypes.StandardMap, metallicFactor, roughnessFactor, getMetallicRoughnessAsync, getOcclusionAsync, default, default, default, default);
-        }
-
-        public static SamplerParam CreateSampler(glTF gltf, int index)
-        {
-            var gltfTexture = gltf.textures[index];
-            if (gltfTexture.sampler < 0 || gltfTexture.sampler >= gltf.samplers.Count)
-            {
-                // default
-                return SamplerParam.Default;
-            }
-
-            var gltfSampler = gltf.samplers[gltfTexture.sampler];
-            return new SamplerParam
-            {
-                WrapModesU = GetUnityWrapMode(gltfSampler.wrapS),
-                WrapModesV = GetUnityWrapMode(gltfSampler.wrapT),
-                FilterMode = ImportFilterMode(gltfSampler.minFilter),
-            };
-        }
-
-        public static TextureWrapMode GetUnityWrapMode(glWrap wrap)
-        {
-            switch (wrap)
-            {
-                case glWrap.NONE: // default
-                    return TextureWrapMode.Repeat;
-
-                case glWrap.CLAMP_TO_EDGE:
-                    return TextureWrapMode.Clamp;
-
-                case glWrap.REPEAT:
-                    return TextureWrapMode.Repeat;
-
-                case glWrap.MIRRORED_REPEAT:
-                    return TextureWrapMode.Mirror;
-
-                default:
-                    throw new NotImplementedException();
-            }
-        }
-
-        public static FilterMode ImportFilterMode(glFilter filterMode)
-        {
-            switch (filterMode)
-            {
-                case glFilter.NEAREST:
-                case glFilter.NEAREST_MIPMAP_LINEAR:
-                case glFilter.NEAREST_MIPMAP_NEAREST:
-                    return FilterMode.Point;
-
-                case glFilter.NONE:
-                case glFilter.LINEAR:
-                case glFilter.LINEAR_MIPMAP_NEAREST:
-                    return FilterMode.Bilinear;
-
-                case glFilter.LINEAR_MIPMAP_LINEAR:
-                    return FilterMode.Trilinear;
-
-                default:
-                    throw new NotImplementedException();
-            }
         }
     }
 }

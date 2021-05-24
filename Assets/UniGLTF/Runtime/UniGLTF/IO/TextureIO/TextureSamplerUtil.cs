@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using UnityEngine;
-
+using VRMShaders;
 
 namespace UniGLTF
 {
     public static class TextureSamplerUtil
     {
-        #region Export
+        #region FilterMode
         // MagFilter は ２種類だけ
         public static glFilter ExportMagFilter(Texture texture)
         {
@@ -43,6 +42,30 @@ namespace UniGLTF
             }
         }
 
+        public static FilterMode ImportFilterMode(glFilter filterMode)
+        {
+            switch (filterMode)
+            {
+                case glFilter.NEAREST:
+                case glFilter.NEAREST_MIPMAP_LINEAR:
+                case glFilter.NEAREST_MIPMAP_NEAREST:
+                    return FilterMode.Point;
+
+                case glFilter.NONE:
+                case glFilter.LINEAR:
+                case glFilter.LINEAR_MIPMAP_NEAREST:
+                    return FilterMode.Bilinear;
+
+                case glFilter.LINEAR_MIPMAP_LINEAR:
+                    return FilterMode.Trilinear;
+
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+        #endregion
+
+        #region WrapMode
         public static glWrap ExportWrapMode(TextureWrapMode wrapMode)
         {
             switch (wrapMode)
@@ -61,6 +84,28 @@ namespace UniGLTF
             }
         }
 
+        public static TextureWrapMode ImportWrapMode(glWrap wrap)
+        {
+            switch (wrap)
+            {
+                case glWrap.NONE: // default
+                    return TextureWrapMode.Repeat;
+
+                case glWrap.CLAMP_TO_EDGE:
+                    return TextureWrapMode.Clamp;
+
+                case glWrap.REPEAT:
+                    return TextureWrapMode.Repeat;
+
+                case glWrap.MIRRORED_REPEAT:
+                    return TextureWrapMode.Mirror;
+
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+        #endregion
+
         public static glTFTextureSampler Export(Texture texture)
         {
             var magFilter = ExportMagFilter(texture);
@@ -75,6 +120,23 @@ namespace UniGLTF
                 wrapT = wrapT,
             };
         }
-        #endregion
+
+        public static SamplerParam CreateSampler(glTF gltf, int index)
+        {
+            var gltfTexture = gltf.textures[index];
+            if (gltfTexture.sampler < 0 || gltfTexture.sampler >= gltf.samplers.Count)
+            {
+                // default
+                return SamplerParam.Default;
+            }
+
+            var gltfSampler = gltf.samplers[gltfTexture.sampler];
+            return new SamplerParam
+            {
+                WrapModesU = ImportWrapMode(gltfSampler.wrapS),
+                WrapModesV = ImportWrapMode(gltfSampler.wrapT),
+                FilterMode = ImportFilterMode(gltfSampler.minFilter),
+            };
+        }
     }
 }
