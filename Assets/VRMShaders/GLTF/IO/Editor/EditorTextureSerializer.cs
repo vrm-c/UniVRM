@@ -43,18 +43,8 @@ namespace VRMShaders
                     // A texture has "Normal map" TextureType is ALWAYS converted into normalized normal pixel by Unity.
                     // So we must copy it.
                     return false;
-                case TextureImporterType.GUI:
-                case TextureImporterType.Sprite:
-                case TextureImporterType.Cursor:
-                case TextureImporterType.Cubemap:
-                case TextureImporterType.Cookie:
-                case TextureImporterType.Lightmap:
-                case TextureImporterType.HDRI:
-                case TextureImporterType.Advanced:
-                case TextureImporterType.SingleChannel:
-                    // Not Supported TextureImporterType
-                    return false;
                 default:
+                    // Not Supported TextureImporterType
                     throw new ArgumentOutOfRangeException();
             }
 
