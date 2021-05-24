@@ -22,17 +22,13 @@ namespace VRMShaders
             Black, Black, Black, Black,
         };
 
-        // DDS のテクスチャ圧縮によって別の色になっている
-        private static readonly Color32 CompressedBlack = new Color32(24, 24, 24, 255);
-        private static readonly Color32 CompressedGray = new Color32(101, 96, 101, 255);
-        private static readonly Color32 CompressedWhite = new Color32(255, 255, 255, 255);
-
+        // DDSは圧縮で微妙に色が変わるので単色にした
         private static readonly Color32[] DdsTextureValues = new Color32[]
         {
-            CompressedBlack, CompressedBlack, CompressedBlack, CompressedBlack,
-            CompressedGray, CompressedGray, CompressedGray, CompressedGray,
-            CompressedGray, CompressedGray, CompressedGray, CompressedGray,
-            CompressedWhite, CompressedWhite, CompressedWhite, CompressedWhite,
+            Gray, Gray, Gray, Gray,
+            Gray, Gray, Gray, Gray,
+            Gray, Gray, Gray, Gray,
+            Gray, Gray, Gray, Gray,
         };
 
         [Test]
