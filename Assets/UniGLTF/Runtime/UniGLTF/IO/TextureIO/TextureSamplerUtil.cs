@@ -24,18 +24,27 @@ namespace UniGLTF
             }
         }
 
+        /// <summary>
+        /// MIPMAP: disable, enable, blend
+        /// </summary>
+        /// <param name="texture"></param>
+        /// <returns></returns>
         public static glFilter ExportMinFilter(Texture2D texture)
         {
             if (texture.mipmapCount > 1)
             {
                 switch (texture.filterMode)
                 {
+                    // mipmap: enable
                     case FilterMode.Point:
-                        return glFilter.NEAREST_MIPMAP_LINEAR;
+                        return glFilter.NEAREST_MIPMAP_NEAREST;
 
+                    // mipmap: enable
                     case FilterMode.Bilinear:
                         return glFilter.LINEAR_MIPMAP_NEAREST;
 
+                    // mipmap: blend
+                    // glFilter.NEAREST_MIPMAP_LINEAR is not exists
                     case FilterMode.Trilinear:
                         return glFilter.LINEAR_MIPMAP_LINEAR;
 
@@ -45,6 +54,7 @@ namespace UniGLTF
             }
             else
             {
+                // mipmap: disable
                 switch (texture.filterMode)
                 {
                     case FilterMode.Point:
@@ -73,20 +83,30 @@ namespace UniGLTF
         {
             switch (filterMode)
             {
+                // mipmap: disable
                 case glFilter.NEAREST:
                     return (FilterMode.Point, false);
 
+                // mipmap: disable
                 case glFilter.NONE:
                 case glFilter.LINEAR:
                     return (FilterMode.Bilinear, false);
 
+                // mipmap: enable
                 case glFilter.NEAREST_MIPMAP_NEAREST:
-                case glFilter.NEAREST_MIPMAP_LINEAR:
                     return (FilterMode.Point, true);
 
+                // mipmap: enable
                 case glFilter.LINEAR_MIPMAP_NEAREST:
                     return (FilterMode.Bilinear, true);
 
+                // mipmap: blend
+                case glFilter.NEAREST_MIPMAP_LINEAR:
+                    // not exists in unity.
+                    // downgrade mipmap: blend => enable
+                    return (FilterMode.Point, true);
+
+                // mipmap: blend
                 case glFilter.LINEAR_MIPMAP_LINEAR:
                     return (FilterMode.Trilinear, true);
 
