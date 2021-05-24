@@ -26,7 +26,7 @@ namespace UniGLTF
 
         public static glFilter ExportMinFilter(Texture2D texture)
         {
-            if (texture.mipmapCount > 0)
+            if (texture.mipmapCount > 1)
             {
                 switch (texture.filterMode)
                 {

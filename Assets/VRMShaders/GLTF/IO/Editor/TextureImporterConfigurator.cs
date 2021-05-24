@@ -38,6 +38,14 @@ namespace VRMShaders
             textureImporter.SaveAndReimport();
         }
 
+        public static void ConfigureSampler(TextureImportParam param, TextureImporter textureImporter)
+        {
+            textureImporter.mipmapEnabled = param.Sampler.EnableMipMap;
+            textureImporter.filterMode = param.Sampler.FilterMode;
+            textureImporter.wrapModeU = param.Sampler.WrapModesU;
+            textureImporter.wrapModeV = param.Sampler.WrapModesV;
+        }
+
         class ImporterGetter : IDisposable
         {
             public TextureImporter Importer;
@@ -110,6 +118,8 @@ namespace VRMShaders
                 default:
                     throw new NotImplementedException();
             }
+
+            ConfigureSampler(textureInfo, importer);
         }
 
         public static void Configure(TextureImportParam textureInfo, IDictionary<string, Texture2D> ExternalMap)
