@@ -1,15 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using UnityEngine;
-
+using VRMShaders;
 
 namespace UniGLTF
 {
     public static class TextureSamplerUtil
     {
-        #region Export
+        #region FilterMode
         // MagFilter は ２種類だけ
-        public static glFilter ExportMagFilter(Texture texture)
+        public static glFilter ExportMagFilter(Texture2D texture)
         {
             switch (texture.filterMode)
             {
@@ -25,24 +24,102 @@ namespace UniGLTF
             }
         }
 
-        public static glFilter ExportMinFilter(Texture texture)
+        /// <summary>
+        /// MIPMAP: disable, enable, blend
+        /// </summary>
+        /// <param name="texture"></param>
+        /// <returns></returns>
+        public static glFilter ExportMinFilter(Texture2D texture)
         {
-            switch (texture.filterMode)
+            if (texture.mipmapCount > 1)
             {
-                case FilterMode.Point:
-                    return glFilter.NEAREST;
+                switch (texture.filterMode)
+                {
+                    // mipmap: enable
+                    case FilterMode.Point:
+                        return glFilter.NEAREST_MIPMAP_NEAREST;
 
-                case FilterMode.Bilinear:
-                    return glFilter.LINEAR;
+                    // mipmap: enable
+                    case FilterMode.Bilinear:
+                        return glFilter.LINEAR_MIPMAP_NEAREST;
 
-                case FilterMode.Trilinear:
-                    return glFilter.LINEAR_MIPMAP_LINEAR;
+                    // mipmap: blend
+                    // glFilter.NEAREST_MIPMAP_LINEAR is not exists
+                    case FilterMode.Trilinear:
+                        return glFilter.LINEAR_MIPMAP_LINEAR;
+
+                    default:
+                        throw new NotImplementedException();
+                }
+            }
+            else
+            {
+                // mipmap: disable
+                switch (texture.filterMode)
+                {
+                    case FilterMode.Point:
+                        return glFilter.NEAREST;
+
+                    case FilterMode.Bilinear:
+                        return glFilter.LINEAR;
+
+                    case FilterMode.Trilinear:
+                        // ありえない？
+                        return glFilter.LINEAR;
+
+                    default:
+                        throw new NotImplementedException();
+                }
+            }
+        }
+
+        /// <summary>
+        /// https://www.khronos.org/registry/OpenGL-Refpages/es2.0/xhtml/glTexParameter.xml
+        /// </summary>
+        /// <param name="FilterMode"></param>
+        /// <param name="filterMode"></param>
+        /// <returns></returns>
+        public static (FilterMode FilterMode, bool EnableMipMap) ImportFilterMode(glFilter filterMode)
+        {
+            switch (filterMode)
+            {
+                // mipmap: disable
+                case glFilter.NEAREST:
+                    return (FilterMode.Point, false);
+
+                // mipmap: disable
+                case glFilter.LINEAR:
+                    return (FilterMode.Bilinear, false);
+
+                // mipmap: enable
+                case glFilter.NEAREST_MIPMAP_NEAREST:
+                    return (FilterMode.Point, true);
+
+                // mipmap: enable
+                case glFilter.LINEAR_MIPMAP_NEAREST:
+                    return (FilterMode.Bilinear, true);
+
+                // mipmap: blend
+                case glFilter.NEAREST_MIPMAP_LINEAR:
+                    // not exists in unity.
+                    // downgrade mipmap: blend => enable
+                    return (FilterMode.Point, true);
+
+                // mipmap: blend
+                case glFilter.LINEAR_MIPMAP_LINEAR:
+                    return (FilterMode.Trilinear, true);
+
+                // default
+                case glFilter.NONE:
+                    return (FilterMode.Bilinear, true);
 
                 default:
                     throw new NotImplementedException();
             }
         }
+        #endregion
 
+        #region WrapMode
         public static glWrap ExportWrapMode(TextureWrapMode wrapMode)
         {
             switch (wrapMode)
@@ -61,7 +138,29 @@ namespace UniGLTF
             }
         }
 
-        public static glTFTextureSampler Export(Texture texture)
+        public static TextureWrapMode ImportWrapMode(glWrap wrap)
+        {
+            switch (wrap)
+            {
+                case glWrap.NONE: // default
+                    return TextureWrapMode.Repeat;
+
+                case glWrap.CLAMP_TO_EDGE:
+                    return TextureWrapMode.Clamp;
+
+                case glWrap.REPEAT:
+                    return TextureWrapMode.Repeat;
+
+                case glWrap.MIRRORED_REPEAT:
+                    return TextureWrapMode.Mirror;
+
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+        #endregion
+
+        public static glTFTextureSampler Export(Texture2D texture)
         {
             var magFilter = ExportMagFilter(texture);
             var minFilter = ExportMinFilter(texture);
@@ -75,6 +174,25 @@ namespace UniGLTF
                 wrapT = wrapT,
             };
         }
-        #endregion
+
+        public static SamplerParam CreateSampler(glTF gltf, int index)
+        {
+            var gltfTexture = gltf.textures[index];
+            if (gltfTexture.sampler < 0 || gltfTexture.sampler >= gltf.samplers.Count)
+            {
+                // default
+                return SamplerParam.Default;
+            }
+
+            var gltfSampler = gltf.samplers[gltfTexture.sampler];
+            var (filterMode, enableMipMap) = ImportFilterMode(gltfSampler.minFilter);
+            return new SamplerParam
+            {
+                WrapModesU = ImportWrapMode(gltfSampler.wrapS),
+                WrapModesV = ImportWrapMode(gltfSampler.wrapT),
+                FilterMode = filterMode,
+                EnableMipMap = enableMipMap,
+            };
+        }
     }
 }
