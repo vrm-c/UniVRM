@@ -8,105 +8,121 @@ namespace VRMShaders
 {
     public static class TextureImporterConfigurator
     {
-        public static void ConfigureSize(Texture2D texture)
+        public static void ConfigureSize(Texture2D texture, TextureImporter textureImporter)
         {
-            var path = AssetDatabase.GetAssetPath(texture);
-            if (AssetImporter.GetAtPath(path) is TextureImporter textureImporter)
-            {
-                var maxSize = Mathf.Max(texture.width, texture.height);
-                textureImporter.maxTextureSize
-                    = maxSize > 4096 ? 8192 :
-                    maxSize > 2048 ? 4096 :
-                    maxSize > 1024 ? 2048 :
-                    maxSize > 512 ? 1024 :
-                    512;
-                textureImporter.SaveAndReimport();
-            }
-            else
-            {
-                throw new System.IO.FileNotFoundException($"{path}");
-            }
+            var maxSize = Mathf.Max(texture.width, texture.height);
+            textureImporter.maxTextureSize
+                = maxSize > 4096 ? 8192 :
+                maxSize > 2048 ? 4096 :
+                maxSize > 1024 ? 2048 :
+                maxSize > 512 ? 1024 :
+                512;
+            textureImporter.SaveAndReimport();
         }
 
-        public static void ConfigureNormalMap(Texture2D texture)
+        public static void ConfigureNormalMap(Texture2D texture, TextureImporter textureImporter)
         {
-            var path = AssetDatabase.GetAssetPath(texture);
-            if (AssetImporter.GetAtPath(path) is TextureImporter textureImporter)
-            {
 #if VRM_DEVELOP
-                Debug.Log($"{path} => normalmap");
+            Debug.Log($"{texture} => normalmap");
 #endif
-                textureImporter.textureType = TextureImporterType.NormalMap;
-                textureImporter.SaveAndReimport();
-            }
-            else
-            {
-                throw new System.IO.FileNotFoundException($"{path}");
-            }
+            textureImporter.textureType = TextureImporterType.NormalMap;
+            textureImporter.SaveAndReimport();
         }
 
-        public static void ConfigureLinear(Texture2D texture)
+        public static void ConfigureLinear(Texture2D texture, TextureImporter textureImporter)
         {
-            var path = AssetDatabase.GetAssetPath(texture);
-            if (AssetImporter.GetAtPath(path) is TextureImporter textureImporter)
-            {
 #if VRM_DEVELOP
-                Debug.Log($"{path} => linear");
+            Debug.Log($"{texture} => linear");
 #endif
-                textureImporter.sRGBTexture = false;
-                textureImporter.SaveAndReimport();
-            }
-            else
+            textureImporter.sRGBTexture = false;
+            textureImporter.SaveAndReimport();
+        }
+
+        class ImporterGetter : IDisposable
+        {
+            public TextureImporter Importer;
+
+            ImporterGetter(TextureImporter importer)
             {
-                throw new System.IO.FileNotFoundException($"{path}");
+                Importer = importer;
+            }
+
+            public void Dispose()
+            {
+                Importer.SaveAndReimport();
+            }
+
+            public static bool TryGetImporter(Texture2D texture, out ImporterGetter getter)
+            {
+                var path = AssetDatabase.GetAssetPath(texture);
+                if (String.IsNullOrEmpty(path))
+                {
+                    Debug.LogWarning($"{path} is not asset");
+                }
+                else
+                {
+                    if (AssetImporter.GetAtPath(path) is TextureImporter importer)
+                    {
+                        getter = new ImporterGetter(importer);
+                        return true;
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"{path}: fail to get TextureImporter");
+                    }
+                }
+                getter = default;
+                return false;
             }
         }
 
-        public static void Configure(TextureImportParam textureInfo, IDictionary<string, Texture2D> ExternalMap)
+        static void Configure(TextureImportParam textureInfo, Texture2D external, TextureImporter importer)
         {
             switch (textureInfo.TextureType)
             {
                 case TextureImportTypes.NormalMap:
                     {
-                        if (ExternalMap.TryGetValue(textureInfo.UnityObjectName, out Texture2D external))
-                        {
-                            ConfigureSize(external);
-                            ConfigureNormalMap(external);
-                        }
+                        ConfigureSize(external, importer);
+                        ConfigureNormalMap(external, importer);
                     }
                     break;
 
                 case TextureImportTypes.StandardMap:
                     {
-                        if (ExternalMap.TryGetValue(textureInfo.UnityObjectName, out Texture2D external))
-                        {
-                            ConfigureSize(external);
-                            ConfigureLinear(external);
-                        }
+                        ConfigureSize(external, importer);
+                        ConfigureLinear(external, importer);
                     }
                     break;
 
                 case TextureImportTypes.sRGB:
                     {
-                        if (ExternalMap.TryGetValue(textureInfo.UnityObjectName, out Texture2D external))
-                        {
-                            ConfigureSize(external);
-                        }
+                        ConfigureSize(external, importer);
                     }
                     break;
 
                 case TextureImportTypes.Linear:
                     {
-                        if (ExternalMap.TryGetValue(textureInfo.UnityObjectName, out Texture2D external))
-                        {
-                            ConfigureSize(external);
-                            ConfigureLinear(external);
-                        }
+                        ConfigureSize(external, importer);
+                        ConfigureLinear(external, importer);
                     }
                     break;
-                
+
                 default:
                     throw new NotImplementedException();
+            }
+        }
+
+        public static void Configure(TextureImportParam textureInfo, IDictionary<string, Texture2D> ExternalMap)
+        {
+            if (ExternalMap.TryGetValue(textureInfo.UnityObjectName, out Texture2D external))
+            {
+                if (ImporterGetter.TryGetImporter(external, out ImporterGetter getter))
+                {
+                    using (getter)
+                    {
+                        Configure(textureInfo, external, getter.Importer);
+                    }
+                }
             }
         }
     }
