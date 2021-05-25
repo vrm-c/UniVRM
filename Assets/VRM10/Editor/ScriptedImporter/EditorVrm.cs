@@ -46,8 +46,9 @@ namespace UniVRM10
 
             if (GUILayout.Button("Clear"))
             {
-                importer.ClearExternalObjects<VRM10MetaObject>();
-                importer.ClearExternalObjects<VRM10Expression>();
+                importer.ClearExternalObjects(
+                    typeof(VRM10MetaObject),
+                    typeof(VRM10Expression));
             }
         }
 
