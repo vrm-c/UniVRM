@@ -39,7 +39,7 @@ namespace UniGLTF
             // 2 回目以降の Asset Import において、 Importer の設定で Extract した UnityEngine.Object が入る
             var extractedObjects = scriptedImporter.GetExternalObjectMap()
                 .Where(x => x.Value != null)
-                .ToDictionary(kv => new SubAssetKey(kv.Value.GetType(), kv.Value.name), kv => kv.Value);
+                .ToDictionary(kv => new SubAssetKey(kv.Value.GetType(), kv.Key.name), kv => kv.Value);
 
             using (var loader = new ImporterContext(parser, extractedObjects))
             {
