@@ -43,18 +43,23 @@
 			{
 				half4 col = tex2D(_MainTex, i.uv);
 
-#if defined(UNITY_NO_DXT5nm)
-				// This is a trick from UnpackNormal in UnityCG.cginc !!!!
-				return col;
-#endif
+				half4 packedNormal;
+				packedNormal.x = col.x;
+				packedNormal.y = col.y;
+				packedNormal.z = col.z;
+				packedNormal.w = 1.0;
 
-				half4 normal;
-				normal.x = 1.0;
-				normal.y = col.y;
-				normal.z = 1.0;
-				normal.w = col.x;
+				// normalize as normal vector
+				float3 normal;
+				normal.xy = packedNormal.xy * 2 - 1;
+				if (dot(normal.xy, normal.xy) > 1)
+				{
+					normal.xy = normalize(normal.xy);
+				}
+				normal.z = sqrt(1 - saturate(dot(normal.xy, normal.xy)));
 
-				return normal;
+				packedNormal.xyz = normal.xyz * 0.5 + 0.5;
+				return packedNormal;
 			}
 			ENDCG
 		}
