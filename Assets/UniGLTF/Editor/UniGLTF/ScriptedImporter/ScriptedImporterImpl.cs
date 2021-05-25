@@ -35,7 +35,12 @@ namespace UniGLTF
             //
             // Import(create unity objects)
             //
-            using (var loader = new ImporterContext(parser, GetExternalTextures(scriptedImporter, parser)))
+
+            // 2 回目以降の Asset Import において、 Importer の設定で Extract した UnityEngine.Object が入る
+            var extractedObjects = scriptedImporter.GetExternalObjectMap()
+                .ToDictionary(kv => new SubAssetKey(kv.Value.GetType(), kv.Value.name), kv => kv.Value);
+
+            using (var loader = new ImporterContext(parser, extractedObjects))
             {
                 // settings TextureImporters
                 foreach (var (key, textureInfo) in GltfTextureEnumerator.EnumerateAllTexturesDistinct(parser))
@@ -59,56 +64,6 @@ namespace UniGLTF
                     return true;
                 });
             }
-        }
-
-        private static IReadOnlyDictionary<SubAssetKey, Object> GetExternalTextures(ScriptedImporter scriptedImporter, GltfParser parser)
-        {
-            // 2 回目以降の Asset Import において、 Importer の設定で Extract した Textures が入る
-            var externalTextures = scriptedImporter.GetExternalObjectMap()
-                .Where(kv => kv.Value is Texture)
-                .ToDictionary(kv => kv.Value.TextureSubAssetKey(), kv => kv.Value);
-
-            // return externalTextures;
-
-            var assetDirectoryPath = UnityPath.FromUnityPath(scriptedImporter.assetPath).Parent;
-            foreach (var (key, obj) in EnumerateExternalTexturesReferencedByMaterials(parser, assetDirectoryPath))
-            {
-                if (!externalTextures.ContainsKey(key))
-                {
-                    externalTextures.Add(key, obj);
-                }
-            }
-
-            return externalTextures;
-        }
-
-        /// <summary>
-        /// glTF image の uri が参照する外部テクスチャファイルのうち、存在するもの
-        /// </summary>
-        private static IEnumerable<(SubAssetKey, Object)> EnumerateExternalTexturesReferencedByMaterials(GltfParser parser, UnityPath dir)
-        {
-            var used = new HashSet<Texture2D>();
-            foreach (var (key, texParam) in GltfTextureEnumerator.EnumerateAllTexturesDistinct(parser))
-            {
-                if (string.IsNullOrEmpty(texParam.Uri)) continue;
-                if (texParam.Uri.StartsWith("data:")) continue;
-
-                var texPath = dir.Child(texParam.Uri);
-                var asset = AssetDatabase.LoadAssetAtPath<Texture2D>(texPath.Value);
-                if (asset == null)
-                {
-                    throw new System.IO.FileNotFoundException($"{texPath}");
-                }
-                if (used.Add(asset))
-                {
-                    yield return (key, asset);
-                }
-            }
-        }
-
-        private static SubAssetKey TextureSubAssetKey(this Object obj)
-        {
-            return new SubAssetKey(typeof(Texture), obj.name);
         }
     }
 }

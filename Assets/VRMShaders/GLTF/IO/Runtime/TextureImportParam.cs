@@ -50,7 +50,7 @@ namespace VRMShaders
         /// <summary>
         /// この Texture が Unity に実アセットとして存在する際の一意な Key
         /// </summary>
-        public SubAssetKey SubAssetKey => SubAssetKey.FromTexture(UnityObjectName);
+        public SubAssetKey SubAssetKey => new SubAssetKey(SubAssetKey.TextureType, UnityObjectName);
 
         public TextureImportParam(string name, string ext, string uri, Vector2 offset, Vector2 scale, SamplerParam sampler, TextureImportTypes textureType, float metallicFactor, float roughnessFactor,
             GetTextureBytesAsync i0,

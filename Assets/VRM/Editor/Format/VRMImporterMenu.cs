@@ -78,7 +78,7 @@ namespace VRM
                 //
                 var map = texturePaths
                     .Select(x => x.LoadAsset<Texture2D>())
-                    .ToDictionary(SubAssetKey.FromTexture, x => x as Object);
+                    .ToDictionary(x => new SubAssetKey(x), x => x as Object);
 
                 using (var context = new VRMImporterContext(parser, map))
                 {

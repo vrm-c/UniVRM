@@ -54,7 +54,7 @@ namespace VRM
             {
                 var map = texturePaths
                     .Select(x => x.LoadAsset<Texture>())
-                    .ToDictionary(SubAssetKey.FromTexture, x => x as UnityEngine.Object);
+                    .ToDictionary(x => new SubAssetKey(x), x => x as UnityEngine.Object);
 
                 using (var context = new VRMImporterContext(parser, map))
                 {
