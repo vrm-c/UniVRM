@@ -6,7 +6,7 @@ namespace VRMShaders
 {
     /// <summary>
     /// get bytes for
-    /// 
+    ///
     /// runtime:
     ///   Texture2D.LoadImage
     /// extact:
@@ -15,7 +15,10 @@ namespace VRMShaders
     /// <returns></returns>
     public delegate Task<byte[]> GetTextureBytesAsync();
 
-    public struct TextureImportParam
+    /// <summary>
+    /// 入力 glTF ファイルを Import した結果生成される、UnityEngine.Texture のアセット 1 つを確定させる Import 情報。
+    /// </summary>
+    public readonly struct TextureImportParam
     {
         public const string NORMAL_PROP = "_BumpMap";
 
@@ -26,12 +29,13 @@ namespace VRMShaders
         public readonly string Ext;
         public readonly string Uri;
 
-        public Vector2 Offset;
-        public Vector2 Scale;
-
-        public SamplerParam Sampler;
+        public readonly Vector2 Offset;
+        public readonly Vector2 Scale;
+        public readonly SamplerParam Sampler;
 
         public readonly TextureImportTypes TextureType;
+
+        // Parameters for Type:StandardMap
         public readonly float MetallicFactor;
         public readonly float RoughnessFactor;
 
@@ -43,9 +47,9 @@ namespace VRMShaders
         public readonly GetTextureBytesAsync Index5;
 
         /// <summary>
-        /// この種類は RGB チャンネルの組み換えが必用
+        /// この Texture が Unity に実アセットとして存在する際の一意な Key
         /// </summary>
-        public bool ExtractConverted => TextureType == TextureImportTypes.StandardMap;
+        public SubAssetKey SubAssetKey => new SubAssetKey(SubAssetKey.TextureType, UnityObjectName);
 
         public TextureImportParam(string name, string ext, string uri, Vector2 offset, Vector2 scale, SamplerParam sampler, TextureImportTypes textureType, float metallicFactor, float roughnessFactor,
             GetTextureBytesAsync i0,

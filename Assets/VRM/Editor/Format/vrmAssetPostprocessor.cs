@@ -5,6 +5,7 @@ using System.Linq;
 using UniGLTF;
 using UnityEditor;
 using UnityEngine;
+using VRMShaders;
 
 
 namespace VRM
@@ -51,18 +52,16 @@ namespace VRM
 
             Action<IEnumerable<UnityPath>> onCompleted = texturePaths =>
             {
-                var map = texturePaths.Select(x =>
-                {
-                    var texture = x.LoadAsset<Texture2D>();
-                    return (texture.name, texture: texture as UnityEngine.Object);
-                }).ToArray();
+                var map = texturePaths
+                    .Select(x => x.LoadAsset<Texture>())
+                    .ToDictionary(x => new SubAssetKey(x), x => x as UnityEngine.Object);
 
                 using (var context = new VRMImporterContext(parser, map))
                 {
                     var editor = new VRMEditorImporterContext(context, prefabPath);
                     foreach (var (key, textureInfo) in new VRMMaterialImporter(context.VRM).EnumerateAllTexturesDistinct(parser))
                     {
-                        VRMShaders.TextureImporterConfigurator.Configure(textureInfo, map.ToDictionary(x => x.name, x => x.texture as Texture2D));
+                        VRMShaders.TextureImporterConfigurator.Configure(textureInfo, context.TextureFactory.ExternalTextures);
                     }
                     context.Load();
                     editor.SaveAsAsset();

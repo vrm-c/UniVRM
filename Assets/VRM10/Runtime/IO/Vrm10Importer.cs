@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using UniGLTF;
 using UnityEngine;
 using VrmLib;
+using VRMShaders;
 
 
 namespace UniVRM10
@@ -18,10 +19,10 @@ namespace UniVRM10
 
         UniGLTF.Extensions.VRMC_vrm.VRMC_vrm m_vrm;
 
-        IDictionary<SubAssetKey, UnityEngine.Object> m_externalMap;
+        IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> m_externalMap;
 
-        public Vrm10Importer(UniGLTF.GltfParser parser, IDictionary<SubAssetKey, UnityEngine.Object> externalObjectMap = null)
-        : base(parser, externalObjectMap?.Select(kv => (kv.Key.Name, kv.Value)))
+        public Vrm10Importer(UniGLTF.GltfParser parser, IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> externalObjectMap = null)
+        : base(parser, externalObjectMap)
         {
             m_externalMap = externalObjectMap;
             if (m_externalMap == null)
@@ -283,9 +284,9 @@ namespace UniVRM10
                 if (Vrm10TextureEnumerator.TryGetMetaThumbnailTextureImportParam(Parser, vrm, out (SubAssetKey, VRMShaders.TextureImportParam Param) kv))
                 {
                     var texture = await TextureFactory.GetTextureAsync(kv.Param);
-                    if (texture != null)
+                    if (texture is Texture2D tex2D)
                     {
-                        m_meta.Thumbnail = texture;
+                        m_meta.Thumbnail = tex2D;
                     }
                 }
             }

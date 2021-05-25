@@ -19,7 +19,7 @@ namespace UniVRM10
             }
 
             var usedTextures = new HashSet<SubAssetKey>();
-            
+
             // Thumbnail Texture referenced by VRM Meta.
             if (TryGetMetaThumbnailTextureImportParam(parser, vrm, out (SubAssetKey key, TextureImportParam) thumbnail))
             {
@@ -41,7 +41,7 @@ namespace UniVRM10
                 }
             }
         }
-        
+
         /// <summary>
         /// VRM-1 の thumbnail テクスチャー。gltf.textures ではなく gltf.images の参照であることに注意(sampler等の設定が無い)
         /// </summary>
@@ -66,16 +66,15 @@ namespace UniVRM10
                getThumbnailImageBytesAsync, default, default,
                default, default, default
                );
-            var key = new SubAssetKey(typeof(Texture2D), name);
-            value = (key, param);
+            value = (param.SubAssetKey, param);
             return true;
         }
-        
+
         /// <summary>
         /// Material によって参照されている Texture を Enumerate する.
         /// まず VRM Material だと仮定して処理し, 失敗すれば glTF Material だとして処理する.
         /// </summary>
-        public static IEnumerable<(SubAssetKey, TextureImportParam)> EnumerateTexturesReferencedByMaterials(GltfParser parser, int i)
+        private static IEnumerable<(SubAssetKey, TextureImportParam)> EnumerateTexturesReferencedByMaterials(GltfParser parser, int i)
         {
             var m = parser.GLTF.materials[i];
             if (UniGLTF.Extensions.VRMC_materials_mtoon.GltfDeserializer.TryGet(m.extensions, out var mToon))

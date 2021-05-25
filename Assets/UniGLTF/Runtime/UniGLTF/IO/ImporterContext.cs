@@ -5,7 +5,6 @@ using UnityEngine;
 using System.Threading.Tasks;
 using VRMShaders;
 
-
 namespace UniGLTF
 {
     /// <summary>
@@ -41,12 +40,17 @@ namespace UniGLTF
         TextureFactory m_textureFactory;
         public TextureFactory TextureFactory => m_textureFactory;
 
-        public ImporterContext(GltfParser parser,
-            IEnumerable<(string, UnityEngine.Object)> externalObjectMap = null)
+        public ImporterContext(GltfParser parser, IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> externalObjectMap = null)
         {
             m_parser = parser;
-            m_textureFactory = new TextureFactory(externalObjectMap);
-            m_materialFactory = new MaterialFactory(externalObjectMap);
+
+            externalObjectMap = externalObjectMap ?? new Dictionary<SubAssetKey, UnityEngine.Object>();
+            m_textureFactory = new TextureFactory(externalObjectMap
+                .Where(x => x.Value is Texture)
+                .ToDictionary(x => x.Key, x => (Texture) x.Value));
+            m_materialFactory = new MaterialFactory(externalObjectMap
+                .Where(x => x.Value is Material)
+                .ToDictionary(x => x.Key, x => (Material) x.Value));
         }
 
         #region Source
@@ -221,7 +225,7 @@ namespace UniGLTF
         }
         #endregion
 
-        #region Imported        
+        #region Imported
         public GameObject Root;
         bool m_ownRoot = true;
         public List<Transform> Nodes = new List<Transform>();

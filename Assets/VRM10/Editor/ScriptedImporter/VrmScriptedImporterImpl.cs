@@ -4,6 +4,7 @@ using UniGLTF;
 using System.IO;
 using System;
 using UniJSON;
+using VRMShaders;
 #if UNITY_2020_2_OR_NEWER
 using UnityEditor.AssetImporters;
 #else
@@ -39,7 +40,7 @@ namespace UniVRM10
                 return "vrm1 not found";
             }
 
-            // try migrateion            
+            // try migrateion
             Byte[] migrated = default;
             try
             {
@@ -94,14 +95,15 @@ namespace UniVRM10
             //
             // Import(create unity objects)
             //
-            var externalObjectMap = scriptedImporter.GetExternalObjectMap().ToDictionary(kv => new SubAssetKey(kv.Key.type, kv.Key.name), kv => kv.Value);
+            var extractedObjects = scriptedImporter.GetExternalObjectMap()
+                .ToDictionary(kv => new SubAssetKey(kv.Value.GetType(), kv.Key.name), kv => kv.Value);
 
-            using (var loader = new Vrm10Importer(parser, externalObjectMap))
+            using (var loader = new Vrm10Importer(parser, extractedObjects))
             {
                 // settings TextureImporters
                 foreach (var (key, textureInfo) in Vrm10TextureEnumerator.EnumerateAllTexturesDistinct(parser))
                 {
-                    VRMShaders.TextureImporterConfigurator.Configure(textureInfo, loader.TextureFactory.ExternalMap);
+                    VRMShaders.TextureImporterConfigurator.Configure(textureInfo, loader.TextureFactory.ExternalTextures);
                 }
 
                 loader.Load();

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UniGLTF;
+using VRMShaders;
 
 namespace UniVRM10
 {

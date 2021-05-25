@@ -12,6 +12,15 @@ namespace VRMShaders
                 // metallic, smooth, occlusion
                 return $"{gltfName}{STANDARD_SUFFIX}";
             }
+            else if (type == TextureImportTypes.NormalMap)
+            {
+                return $"{gltfName}{NORMAL_SUFFIX}";
+
+            }
+            else if (type == TextureImportTypes.Linear)
+            {
+                return $"{gltfName}{LINEAR_SUFFIX}";
+            }
             else
             {
                 if (!string.IsNullOrEmpty(uri) && !uri.StartsWith("data:", StringComparison.Ordinal))
@@ -27,8 +36,9 @@ namespace VRMShaders
             }
         }
 
-        public const string NORMAL_SUFFIX = ".normal";
-        public const string STANDARD_SUFFIX = ".standard";
+        private const string NORMAL_SUFFIX = ".normal";
+        private const string STANDARD_SUFFIX = ".standard";
+        private const string LINEAR_SUFFIX = ".linear";
 
         public static string RemoveSuffix(string src)
         {
@@ -39,6 +49,10 @@ namespace VRMShaders
             else if (src.EndsWith(STANDARD_SUFFIX))
             {
                 return src.Substring(0, src.Length - STANDARD_SUFFIX.Length);
+            }
+            else if (src.EndsWith(LINEAR_SUFFIX))
+            {
+                return src.Substring(0, src.Length - LINEAR_SUFFIX.Length);
             }
             else
             {

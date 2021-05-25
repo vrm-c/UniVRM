@@ -36,9 +36,8 @@ namespace UniGLTF
             var name = TextureImportName.GetUnityObjectName(TextureImportTypes.sRGB, gltfTexture.name, gltfImage.uri);
             var sampler = TextureSamplerUtil.CreateSampler(parser.GLTF, textureIndex);
             GetTextureBytesAsync getTextureBytesAsync = () => Task.FromResult(ToArray(parser.GLTF.GetImageBytesFromTextureIndex(parser.Storage, textureIndex)));
-            var key = new SubAssetKey(typeof(Texture2D), name);
             var param = new TextureImportParam(name, gltfImage.GetExt(), gltfImage.uri, offset, scale, sampler, TextureImportTypes.sRGB, default, default, getTextureBytesAsync, default, default, default, default, default);
-            return (key, param);
+            return (param.SubAssetKey, param);
         }
 
         public static (SubAssetKey, TextureImportParam Param) CreateLinear(GltfParser parser, int textureIndex, Vector2 offset, Vector2 scale)
@@ -48,9 +47,8 @@ namespace UniGLTF
             var name = TextureImportName.GetUnityObjectName(TextureImportTypes.Linear, gltfTexture.name, gltfImage.uri);
             var sampler = TextureSamplerUtil.CreateSampler(parser.GLTF, textureIndex);
             GetTextureBytesAsync getTextureBytesAsync = () => Task.FromResult(ToArray(parser.GLTF.GetImageBytesFromTextureIndex(parser.Storage, textureIndex)));
-            var key = new SubAssetKey(typeof(Texture2D), name);
             var param = new TextureImportParam(name, gltfImage.GetExt(), gltfImage.uri, offset, scale, sampler, TextureImportTypes.Linear, default, default, getTextureBytesAsync, default, default, default, default, default);
-            return (key, param);
+            return (param.SubAssetKey, param);
         }
 
         public static (SubAssetKey, TextureImportParam Param) CreateNormal(GltfParser parser, int textureIndex, Vector2 offset, Vector2 scale)
@@ -60,12 +58,11 @@ namespace UniGLTF
             var name = TextureImportName.GetUnityObjectName(TextureImportTypes.NormalMap, gltfTexture.name, gltfImage.uri);
             var sampler = TextureSamplerUtil.CreateSampler(parser.GLTF, textureIndex);
             GetTextureBytesAsync getTextureBytesAsync = () => Task.FromResult(ToArray(parser.GLTF.GetImageBytesFromTextureIndex(parser.Storage, textureIndex)));
-            var key = new SubAssetKey(typeof(Texture2D), name);
             var param = new TextureImportParam(name, gltfImage.GetExt(), gltfImage.uri, offset, scale, sampler, TextureImportTypes.NormalMap, default, default, getTextureBytesAsync, default, default, default, default, default);
-            return (key, param);
+            return (param.SubAssetKey, param);
         }
 
-        public static TextureImportParam CreateStandard(GltfParser parser, int? metallicRoughnessTextureIndex, int? occlusionTextureIndex, Vector2 offset, Vector2 scale, float metallicFactor, float roughnessFactor)
+        public static (SubAssetKey, TextureImportParam Param) CreateStandard(GltfParser parser, int? metallicRoughnessTextureIndex, int? occlusionTextureIndex, Vector2 offset, Vector2 scale, float metallicFactor, float roughnessFactor)
         {
             string name = default;
 
@@ -91,7 +88,8 @@ namespace UniGLTF
                 getOcclusionAsync = () => Task.FromResult(ToArray(parser.GLTF.GetImageBytesFromTextureIndex(parser.Storage, occlusionTextureIndex.Value)));
             }
 
-            return new TextureImportParam(name, ".png", null, offset, scale, sampler, TextureImportTypes.StandardMap, metallicFactor, roughnessFactor, getMetallicRoughnessAsync, getOcclusionAsync, default, default, default, default);
+            var param = new TextureImportParam(name, ".png", null, offset, scale, sampler, TextureImportTypes.StandardMap, metallicFactor, roughnessFactor, getMetallicRoughnessAsync, getOcclusionAsync, default, default, default, default);
+            return (param.SubAssetKey, param);
         }
     }
 }

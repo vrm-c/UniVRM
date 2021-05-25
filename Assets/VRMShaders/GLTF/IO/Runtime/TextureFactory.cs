@@ -3,82 +3,39 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using System.Threading.Tasks;
+using ColorSpace = UniGLTF.ColorSpace;
 
 
 namespace VRMShaders
 {
-    [Flags]
-    public enum TextureLoadFlags
-    {
-        None = 0,
-        Used = 1,
-        External = 1 << 1,
-    }
-
-    public struct TextureLoadInfo
-    {
-        public readonly Texture2D Texture;
-        public readonly TextureLoadFlags Flags;
-        public bool IsUsed => Flags.HasFlag(TextureLoadFlags.Used);
-        public bool IsExternal => Flags.HasFlag(TextureLoadFlags.External);
-
-        public bool IsSubAsset => IsUsed && !IsExternal;
-
-        public TextureLoadInfo(Texture2D texture, bool used, bool isExternal)
-        {
-            Texture = texture;
-            var flags = TextureLoadFlags.None;
-            if (used)
-            {
-                flags |= TextureLoadFlags.Used;
-            }
-            if (isExternal)
-            {
-                flags |= TextureLoadFlags.External;
-            }
-            Flags = flags;
-        }
-    }
-
     public class TextureFactory : IDisposable
     {
-        public readonly Dictionary<string, Texture2D> ExternalMap;
+        private readonly Dictionary<SubAssetKey, Texture> m_temporaryTextures = new Dictionary<SubAssetKey, Texture>();
+        private readonly Dictionary<SubAssetKey, Texture> m_textureCache = new Dictionary<SubAssetKey, Texture>();
+        private readonly IReadOnlyDictionary<SubAssetKey, Texture> m_externalMap;
 
-        public TextureFactory(IEnumerable<(string, UnityEngine.Object)> externalMap)
-        {
-            if (externalMap != null)
-            {
-                ExternalMap = externalMap
-                    .Select(kv => (kv.Item1, kv.Item2 as Texture2D))
-                    .Where(kv => kv.Item2 != null)
-                    .ToDictionary(kv => kv.Item1, kv => kv.Item2);
-            }
-        }
+        /// <summary>
+        /// Importer が動的に生成した Texture
+        /// </summary>
+        public IReadOnlyDictionary<SubAssetKey, Texture> ConvertedTextures => m_textureCache;
 
-        public static Action<UnityEngine.Object> DestroyResource()
+        /// <summary>
+        ///
+        /// </summary>
+        public IReadOnlyDictionary<SubAssetKey, Texture> ExternalTextures => m_externalMap;
+
+        public TextureFactory(IReadOnlyDictionary<SubAssetKey, Texture> externalTextures)
         {
-            Action<UnityEngine.Object> des = (UnityEngine.Object o) => UnityEngine.Object.Destroy(o);
-            Action<UnityEngine.Object> desi = (UnityEngine.Object o) => UnityEngine.Object.DestroyImmediate(o);
-            Action<UnityEngine.Object> func = Application.isPlaying
-                ? des
-                : desi
-                ;
-            return func;
+            m_externalMap = externalTextures;
         }
 
         public void Dispose()
         {
-            Action<UnityEngine.Object> destroy = DestroyResource();
-            foreach (var kv in m_textureCache)
+            foreach (var kv in m_temporaryTextures)
             {
-                if (!kv.Value.IsExternal)
-                {
-#if VRM_DEVELOP
-                    // Debug.Log($"Destroy {kv.Value.Texture}");
-#endif
-                    destroy(kv.Value.Texture);
-                }
+                DestroyResource(kv.Value);
             }
+            m_temporaryTextures.Clear();
             m_textureCache.Clear();
         }
 
@@ -88,61 +45,32 @@ namespace VRMShaders
         /// <param name="take"></param>
         public void TransferOwnership(Func<UnityEngine.Object, bool> take)
         {
-            var keys = new List<string>();
+            var transferredAssets = new HashSet<SubAssetKey>();
             foreach (var x in m_textureCache)
             {
-                if (x.Value.IsUsed && !x.Value.IsExternal)
+                if (take(x.Value))
                 {
-                    // マテリアルから参照されていて
-                    // 外部のAssetからロードしていない。
-                    if (take(x.Value.Texture))
-                    {
-                        keys.Add(x.Key);
-                    }
+                    transferredAssets.Add(x.Key);
                 }
             }
-            foreach (var x in keys)
+
+            foreach (var key in transferredAssets)
             {
-                m_textureCache.Remove(x);
+                m_textureCache.Remove(key);
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="string"></typeparam>
-        /// <typeparam name="TextureLoadInfo"></typeparam>
-        /// <returns></returns>
-        Dictionary<string, TextureLoadInfo> m_textureCache = new Dictionary<string, TextureLoadInfo>();
-
-        public IEnumerable<TextureLoadInfo> Textures => m_textureCache.Values;
-
-
-        async Task<TextureLoadInfo> GetOrCreateBaseTexture(string name, TextureImportParam param, GetTextureBytesAsync getTextureBytesAsync, RenderTextureReadWrite colorSpace, bool used)
+        async Task<Texture2D> LoadTextureAsync(GetTextureBytesAsync getTextureBytesAsync, bool useMipmap, ColorSpace colorSpace)
         {
-            if (m_textureCache.TryGetValue(name, out TextureLoadInfo cacheInfo))
-            {
-                return cacheInfo;
-            }
-
-            // not found. load new
             var imageBytes = await getTextureBytesAsync();
 
-            //
-            // texture from image(png etc) bytes
-            //
-            var texture = new Texture2D(2, 2, TextureFormat.ARGB32, param.Sampler.EnableMipMap, colorSpace == RenderTextureReadWrite.Linear);
-            texture.name = name;
+            var texture = new Texture2D(2, 2, TextureFormat.ARGB32, useMipmap, colorSpace == ColorSpace.Linear);
             if (imageBytes != null)
             {
                 texture.LoadImage(imageBytes);
             }
 
-            texture.SetSampler(param.Sampler);
-
-            cacheInfo = new TextureLoadInfo(texture, used, false);
-            m_textureCache.Add(name, cacheInfo);
-            return cacheInfo;
+            return texture;
         }
 
         /// <summary>
@@ -153,70 +81,91 @@ namespace VRMShaders
         /// <param name="roughnessFactor">METALLIC_GLOSS_PROPの追加パラメーター</param>
         /// <param name="indices">gltf の texture index</param>
         /// <returns></returns>
-        public async Task<Texture2D> GetTextureAsync(TextureImportParam param)
+        public async Task<Texture> GetTextureAsync(TextureImportParam param)
         {
-            if (param.Index0 != null && ExternalMap != null)
+            var subAssetKey = param.SubAssetKey;
+
+            if (m_externalMap != null && m_externalMap.TryGetValue(subAssetKey, out var externalTexture))
             {
-                if (ExternalMap.TryGetValue(param.UnityObjectName, out Texture2D external))
-                {
-                    return external;
-                }
+                return externalTexture;
+            }
+
+            if (m_textureCache.TryGetValue(subAssetKey, out var cachedTexture))
+            {
+                return cachedTexture;
             }
 
             switch (param.TextureType)
             {
                 case TextureImportTypes.NormalMap:
+                {
                     // Runtime/SubAsset 用に変換する
-                    {
-                        if (!m_textureCache.TryGetValue(param.UnityObjectName, out TextureLoadInfo info))
-                        {
-                            var baseTexture = await GetOrCreateBaseTexture($"{param.UnityObjectName}.normal_base", param, param.Index0, RenderTextureReadWrite.Linear, false);
-                            var converted = NormalConverter.Import(baseTexture.Texture);
-                            converted.name = param.UnityObjectName;
-                            info = new TextureLoadInfo(converted, true, false);
-                            m_textureCache.Add(converted.name, info);
-                        }
-                        return info.Texture;
-                    }
+                    var rawTexture = await LoadTextureAsync(param.Index0, param.Sampler.EnableMipMap, ColorSpace.Linear);
+                    var convertedTexture = NormalConverter.Import(rawTexture);
+                    convertedTexture.name = subAssetKey.Name;
+                    convertedTexture.SetSampler(param.Sampler);
+                    m_textureCache.Add(subAssetKey, convertedTexture);
+                    DestroyResource(rawTexture);
+                    return convertedTexture;
+                }
 
                 case TextureImportTypes.StandardMap:
-                    // 変換する
+                {
+                    Texture2D metallicRoughnessTexture = default;
+                    Texture2D occlusionTexture = default;
+
+                    if (param.Index0 != null)
                     {
-                        if (!m_textureCache.TryGetValue(param.UnityObjectName, out TextureLoadInfo info))
-                        {
-                            TextureLoadInfo baseTexture = default;
-                            if (param.Index0 != null)
-                            {
-                                baseTexture = await GetOrCreateBaseTexture($"{param.UnityObjectName}.metallicRoughness", param, param.Index0, RenderTextureReadWrite.Linear, false);
-                            }
-                            TextureLoadInfo occlusionBaseTexture = default;
-                            if (param.Index1 != null)
-                            {
-                                occlusionBaseTexture = await GetOrCreateBaseTexture($"{param.UnityObjectName}.occlusion", param, param.Index1, RenderTextureReadWrite.Linear, false);
-                            }
-                            var converted = OcclusionMetallicRoughnessConverter.Import(baseTexture.Texture, param.MetallicFactor, param.RoughnessFactor, occlusionBaseTexture.Texture);
-                            converted.name = param.UnityObjectName;
-                            info = new TextureLoadInfo(converted, true, false);
-                            m_textureCache.Add(converted.name, info);
-                        }
-                        return info.Texture;
+                        metallicRoughnessTexture = await LoadTextureAsync(param.Index0, param.Sampler.EnableMipMap, ColorSpace.Linear);
+                    }
+                    if (param.Index1 != null)
+                    {
+                        occlusionTexture = await LoadTextureAsync(param.Index1, param.Sampler.EnableMipMap, ColorSpace.Linear);
                     }
 
+                    var combinedTexture = OcclusionMetallicRoughnessConverter.Import(metallicRoughnessTexture,
+                        param.MetallicFactor, param.RoughnessFactor, occlusionTexture);
+                    combinedTexture.name = subAssetKey.Name;
+                    combinedTexture.SetSampler(param.Sampler);
+                    m_textureCache.Add(subAssetKey, combinedTexture);
+                    DestroyResource(metallicRoughnessTexture);
+                    DestroyResource(occlusionTexture);
+                    return combinedTexture;
+                }
+
                 case TextureImportTypes.sRGB:
-                    {
-                        var baseTexture = await GetOrCreateBaseTexture(param.UnityObjectName, param, param.Index0, RenderTextureReadWrite.sRGB, true);
-                        return baseTexture.Texture;
-                    }
+                {
+                    var rawTexture = await LoadTextureAsync(param.Index0, param.Sampler.EnableMipMap, ColorSpace.sRGB);
+                    rawTexture.name = subAssetKey.Name;
+                    rawTexture.SetSampler(param.Sampler);
+                    m_textureCache.Add(subAssetKey, rawTexture);
+                    return rawTexture;
+                }
                 case TextureImportTypes.Linear:
-                    {
-                        var baseTexture = await GetOrCreateBaseTexture(param.UnityObjectName, param, param.Index0, RenderTextureReadWrite.Linear, true);
-                        return baseTexture.Texture;
-                    }
+                {
+                    var rawTexture = await LoadTextureAsync(param.Index0, param.Sampler.EnableMipMap, ColorSpace.Linear);
+                    rawTexture.name = subAssetKey.Name;
+                    rawTexture.SetSampler(param.Sampler);
+                    m_textureCache.Add(subAssetKey, rawTexture);
+                    return rawTexture;
+                }
                 default:
                     throw new ArgumentOutOfRangeException();
             }
 
             throw new NotImplementedException();
+        }
+
+        private static void DestroyResource(UnityEngine.Object o)
+        {
+            if (Application.isPlaying)
+            {
+                UnityEngine.Object.Destroy(o);
+            }
+            else
+            {
+                UnityEngine.Object.DestroyImmediate(o);
+            }
         }
     }
 }

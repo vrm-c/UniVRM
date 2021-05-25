@@ -5,7 +5,7 @@ namespace UniGLTF
 {
     /// <summary>
     /// Gltf から MaterialImportParam に変換する
-    /// 
+    ///
     /// StandardShader variables
     ///
     /// _Color
@@ -33,7 +33,7 @@ namespace UniGLTF
     /// _SrcBlend
     /// _DstBlend
     /// _ZWrite
-    /// 
+    ///
     /// </summary>
     public static class GltfPBRMaterial
     {
@@ -63,14 +63,12 @@ namespace UniGLTF
                 roughnessFactor = src.pbrMetallicRoughness.roughnessFactor;
             }
             var (offset, scale) = GltfMaterialImporter.GetTextureOffsetAndScale(src.pbrMetallicRoughness.metallicRoughnessTexture);
-            var param = GltfTextureImporter.CreateStandard(parser,
+            return GltfTextureImporter.CreateStandard(parser,
                             src.pbrMetallicRoughness?.metallicRoughnessTexture?.index,
                             src.occlusionTexture?.index,
                             offset, scale,
                             metallicFactor,
                             roughnessFactor);
-            var key = new SubAssetKey(typeof(Texture2D), param.UnityObjectName);
-            return (key, param);
         }
 
         public static (SubAssetKey, TextureImportParam Param) NormalTexture(GltfParser parser, glTFMaterial src)
@@ -78,7 +76,7 @@ namespace UniGLTF
             var (offset, scale) = GltfMaterialImporter.GetTextureOffsetAndScale(src.normalTexture);
             return GltfTextureImporter.CreateNormal(parser, src.normalTexture.index, offset, scale);
         }
-        
+
         public static (SubAssetKey, TextureImportParam Param) EmissiveTexture(GltfParser parser, glTFMaterial src)
         {
             var (offset, scale) = GltfMaterialImporter.GetTextureOffsetAndScale(src.emissiveTexture);

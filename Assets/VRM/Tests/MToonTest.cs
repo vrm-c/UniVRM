@@ -77,7 +77,7 @@ namespace VRM
             Assert.AreEqual("Alicia_body", materialParam.TextureSlots["_MainTex"].UnityObjectName);
 
             var (key, value) = materialParam.EnumerateSubAssetKeyValue().First();
-            Assert.AreEqual(new SubAssetKey(typeof(Texture2D), "Alicia_body"), key);
+            Assert.AreEqual(new SubAssetKey(typeof(Texture), "Alicia_body"), key);
         }
     }
 }

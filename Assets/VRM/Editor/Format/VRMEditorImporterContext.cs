@@ -4,6 +4,7 @@ using System.Linq;
 using UniGLTF;
 using UnityEditor;
 using UnityEngine;
+using VRMShaders;
 
 namespace VRM
 {
@@ -70,7 +71,7 @@ namespace VRM
         /// </summary>
         public void ConvertAndExtractImages(Action<IEnumerable<UnityPath>> onTextureReloaded)
         {
-            // 
+            //
             // convert images(metallic roughness, occlusion map)
             //
             var task = m_context.LoadMaterialsAsync();
@@ -90,13 +91,17 @@ namespace VRM
                 }
             }
 
+            // Convert thumbnail image
+            var task2 = m_context.ReadMetaAsync();
+            if (!task2.IsCompleted || task2.IsCanceled || task2.IsFaulted)
+            {
+                throw new Exception();
+            }
+
             //
             // extract converted textures
             //
-            var subAssets = m_context.TextureFactory.Textures
-                    .Where(x => x.IsUsed)
-                    .Select(x => (new SubAssetKey(typeof(Texture2D), x.Texture.name), x.Texture))
-                    .ToArray();
+            var subAssets = m_context.TextureFactory.ConvertedTextures;
             var vrmTextures = new VRMMaterialImporter(m_context.VRM);
             var dirName = $"{m_prefabPath.FileNameWithoutExtension}.Textures";
             TextureExtractor.ExtractTextures(m_context.Parser, m_prefabPath.Parent.Child(dirName), vrmTextures.EnumerateAllTexturesDistinct, subAssets, (_x, _y) => { }, onTextureReloaded);
@@ -112,7 +117,7 @@ namespace VRM
             if (!string.IsNullOrEmpty(AssetDatabase.GetAssetPath(o)))
             {
                 // already exists. not dispose
-#if VRM_DEVELOP                    
+#if VRM_DEVELOP
                 Debug.Log($"Loaded. skip: {o}");
 #endif
                 return true;

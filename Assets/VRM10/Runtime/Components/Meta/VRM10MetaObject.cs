@@ -4,6 +4,7 @@ using System.Linq;
 using MeshUtility;
 using UniGLTF;
 using UnityEngine;
+using VRMShaders;
 
 
 namespace UniVRM10
