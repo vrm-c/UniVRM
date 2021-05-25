@@ -99,6 +99,17 @@ namespace UniVRM10
                 m_renderer.Dispose();
                 m_renderer = null;
             }
+            ClearScene();
+        }
+
+        protected virtual void OnDestroy()
+        {
+            // 2018/2019 で OnDisable/OnDestroy の呼ばれ方が違う？
+            ClearScene();
+        }
+
+        void ClearScene()
+        {
             if (m_scene != null)
             {
                 //Debug.LogFormat("OnDestroy");
