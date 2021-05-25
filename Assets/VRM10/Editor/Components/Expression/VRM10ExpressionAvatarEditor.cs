@@ -1,4 +1,5 @@
 ﻿using UnityEditor;
+using UnityEngine;
 
 namespace UniVRM10
 {
@@ -21,6 +22,11 @@ namespace UniVRM10
                 }
                 return m_selector;
             }
+        }
+
+        protected override GameObject GetPrefab()
+        {
+            return PrefabUtility.GetCorrespondingObjectFromSource(target as VRM10ExpressionAvatar)?.gameObject;
         }
 
         /// <summary>

@@ -83,34 +83,7 @@ namespace UniVRM10
             }
         }
 
-        protected virtual GameObject GetPrefab()
-        {
-            var assetPath = AssetDatabase.GetAssetPath(target);
-            if (string.IsNullOrEmpty(assetPath))
-            {
-                return null;
-            }
-
-            var mainObject = AssetDatabase.LoadMainAssetAtPath(assetPath);
-            if (mainObject != null)
-            {
-                //return mainObject;
-            }
-
-            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
-            if (prefab != null) return prefab;
-
-            var parent = UnityPath.FromUnityPath(assetPath).Parent;
-            var prefabPath = parent.Parent.Child(parent.FileNameWithoutExtension + ".prefab");
-            prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath.Value);
-            if (prefab != null) return prefab;
-
-            var parentParent = UnityPath.FromUnityPath(assetPath).Parent.Parent;
-            var vrmPath = parent.Parent.Child(parent.FileNameWithoutExtension + ".vrm");
-            prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(vrmPath.Value);
-
-            return prefab;
-        }
+        protected abstract GameObject GetPrefab();
 
         protected virtual void OnEnable()
         {
@@ -126,10 +99,6 @@ namespace UniVRM10
                 m_renderer.Dispose();
                 m_renderer = null;
             }
-        }
-
-        protected virtual void OnDestroy()
-        {
             if (m_scene != null)
             {
                 //Debug.LogFormat("OnDestroy");

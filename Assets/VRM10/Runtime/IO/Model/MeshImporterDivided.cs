@@ -45,9 +45,8 @@ namespace UniVRM10
                         });
                     }
                 }
-
-                // TODO: BlendShape
             }
+
             dst.name = src.Name;
             dst.vertices = positions.ToArray();
             dst.normals = normals.ToArray();
@@ -80,6 +79,25 @@ namespace UniVRM10
 
             dst.RecalculateBounds();
             dst.RecalculateTangents();
+
+            //
+            // blendshape
+            //
+            var blendShapeCount = src.Meshes[0].MorphTargets.Count;
+            for (int i = 0; i < blendShapeCount; ++i)
+            {
+                positions.Clear();
+                normals.Clear();
+                var name = src.Meshes[0].MorphTargets[i].Name;
+                for (int meshIndex = 0; meshIndex < src.Meshes.Count; ++meshIndex)
+                {
+                    var morphTarget = src.Meshes[meshIndex].MorphTargets[i];
+                    positions.AddRange(morphTarget.VertexBuffer.Positions.GetSpan<Vector3>());
+                    normals.AddRange(morphTarget.VertexBuffer.Normals.GetSpan<Vector3>());
+                }
+                dst.AddBlendShapeFrame(name, 100.0f, positions.ToArray(), normals.ToArray(), null);
+            }
+
             return dst;
         }
     }
