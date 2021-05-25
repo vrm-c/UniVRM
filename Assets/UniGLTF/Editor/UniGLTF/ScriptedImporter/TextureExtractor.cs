@@ -49,24 +49,16 @@ namespace UniGLTF
                 return;
             }
 
-            if (!string.IsNullOrEmpty(param.Uri) && !param.ExtractConverted)
+            // write converted texture
+            if (m_subAssets.TryGetValue(key, out var texture) && texture is Texture2D tex2D)
             {
-                // use GLTF external
-                // targetPath = m_textureDirectory.Child(key.Name);
-            }
-            else
-            {
-                // write converted texture
-                if (m_subAssets.TryGetValue(key, out var texture) && texture is Texture2D tex2D)
-                {
-                    var targetPath = m_textureDirectory.Child($"{key.Name}.png");
-                    File.WriteAllBytes(targetPath.FullPath, tex2D.EncodeToPNG().ToArray());
-                    targetPath.ImportAsset();
+                var targetPath = m_textureDirectory.Child($"{key.Name}.png");
+                File.WriteAllBytes(targetPath.FullPath, tex2D.EncodeToPNG().ToArray());
+                targetPath.ImportAsset();
 
-                    Textures.Add(key, targetPath);
-                }
-                throw new Exception($"{texture} is not converted.");
+                Textures.Add(key, targetPath);
             }
+            throw new Exception($"{texture} is not converted.");
         }
 
         /// <summary>

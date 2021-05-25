@@ -74,7 +74,7 @@ namespace UniVRM10
         /// Material によって参照されている Texture を Enumerate する.
         /// まず VRM Material だと仮定して処理し, 失敗すれば glTF Material だとして処理する.
         /// </summary>
-        public static IEnumerable<(SubAssetKey, TextureImportParam)> EnumerateTexturesReferencedByMaterials(GltfParser parser, int i)
+        private static IEnumerable<(SubAssetKey, TextureImportParam)> EnumerateTexturesReferencedByMaterials(GltfParser parser, int i)
         {
             var m = parser.GLTF.materials[i];
             if (UniGLTF.Extensions.VRMC_materials_mtoon.GltfDeserializer.TryGet(m.extensions, out var mToon))

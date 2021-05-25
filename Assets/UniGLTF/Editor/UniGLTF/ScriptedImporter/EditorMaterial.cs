@@ -56,19 +56,7 @@ namespace UniGLTF
             s_foldTextures = EditorGUILayout.Foldout(s_foldTextures, "Remapped Textures");
             if (s_foldTextures)
             {
-                importer.DrawRemapGUI<UnityEngine.Texture2D>(enumTextures(parser)
-                    .Where(x =>
-                    {
-                        var (key, param) = x;
-                        if ((param.TextureType == TextureImportTypes.sRGB || param.TextureType == TextureImportTypes.NormalMap) && !string.IsNullOrEmpty(param.Uri))
-                        {
-                            // GLTF の 無変換テクスチャーをスキップする
-                            return false;
-                        }
-                        return true;
-                    })
-                    .Select(x => x.Key)
-                    );
+                importer.DrawRemapGUI<UnityEngine.Texture2D>(enumTextures(parser).Select(x => x.Key));
             }
 
             if (GUILayout.Button("Clear"))
