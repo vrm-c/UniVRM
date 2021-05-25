@@ -23,7 +23,7 @@ namespace UniGLTF
 
                 foreach (var (key, obj) in importer.GetExternalObjectMap())
                 {
-                    if (key.type.IsAssignableFrom(targetType))
+                    if (targetType.IsAssignableFrom(key.type))
                     {
                         importer.RemoveRemap(key);
                     }
