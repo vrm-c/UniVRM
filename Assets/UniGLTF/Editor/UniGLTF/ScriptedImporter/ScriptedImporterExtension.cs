@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
+using UnityEngine;
 using VRMShaders;
 #if UNITY_2020_2_OR_NEWER
 using UnityEditor.AssetImporters;
@@ -13,11 +15,19 @@ namespace UniGLTF
 {
     public static class ScriptedImporterExtension
     {
-        public static void ClearExternalObjects<T>(this ScriptedImporter importer) where T : UnityEngine.Object
+        public static void ClearExternalObjects(this ScriptedImporter importer, params Type[] targetTypes)
         {
-            foreach (var externalObject in importer.GetExternalObjectMap().Where(x => x.Key.type == typeof(T)))
+            foreach (var targetType in targetTypes)
             {
-                importer.RemoveRemap(externalObject.Key);
+                if (!typeof(UnityEngine.Object).IsAssignableFrom(targetType)) continue;
+
+                foreach (var (key, obj) in importer.GetExternalObjectMap())
+                {
+                    if (key.type.IsAssignableFrom(targetType))
+                    {
+                        importer.RemoveRemap(key);
+                    }
+                }
             }
 
             AssetDatabase.WriteImportSettingsIfDirty(importer.assetPath);

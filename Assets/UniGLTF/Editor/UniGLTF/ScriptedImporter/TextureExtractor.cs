@@ -58,7 +58,10 @@ namespace UniGLTF
 
                 Textures.Add(key, targetPath);
             }
-            throw new Exception($"{texture} is not converted.");
+            else
+            {
+                throw new Exception($"{texture} is not converted.");
+            }
         }
 
         /// <summary>
