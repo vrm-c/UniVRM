@@ -76,5 +76,53 @@ namespace UniGLTF
                 ScriptableObject.DestroyImmediate(validator);
             }
         }
+
+        [Test]
+        public void NoMeshTest()
+        {
+            var validator = ScriptableObject.CreateInstance<MeshExportValidator>();
+            var root = new GameObject("root");
+
+            try
+            {
+                var child = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                child.transform.SetParent(root.transform);
+                // remove MeshFilter
+                Component.DestroyImmediate(child.GetComponent<MeshFilter>());
+
+                validator.SetRoot(root, MeshExportSettings.Default);
+                var vs = validator.Validate(root);
+                Assert.True(vs.All(x => x.CanExport));
+            }
+            finally
+            {
+                GameObject.DestroyImmediate(root);
+                ScriptableObject.DestroyImmediate(validator);
+            }
+        }
+
+        [Test]
+        public void NullMeshTest()
+        {
+            var validator = ScriptableObject.CreateInstance<MeshExportValidator>();
+            var root = new GameObject("root");
+
+            try
+            {
+                var child = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                child.transform.SetParent(root.transform);
+                // set null
+                child.GetComponent<MeshFilter>().sharedMesh = null;
+
+                validator.SetRoot(root, MeshExportSettings.Default);
+                var vs = validator.Validate(root);
+                Assert.True(vs.All(x => x.CanExport));
+            }
+            finally
+            {
+                GameObject.DestroyImmediate(root);
+                ScriptableObject.DestroyImmediate(validator);
+            }
+        }
     }
 }
