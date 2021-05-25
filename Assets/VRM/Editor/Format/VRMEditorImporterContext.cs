@@ -91,6 +91,13 @@ namespace VRM
                 }
             }
 
+            // Convert thumbnail image
+            var task2 = m_context.ReadMetaAsync();
+            if (!task2.IsCompleted || task2.IsCanceled || task2.IsFaulted)
+            {
+                throw new Exception();
+            }
+
             //
             // extract converted textures
             //

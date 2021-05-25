@@ -56,27 +56,16 @@ namespace UniGLTF
             }
             else
             {
-                UnityPath targetPath = default;
-
-                var writeSubAssets = true;
-                if (writeSubAssets)
+                // write converted texture
+                if (m_subAssets.TryGetValue(key, out var texture) && texture is Texture2D tex2D)
                 {
-                    // write converted texture
-                    if (m_subAssets.TryGetValue(key, out var texture) && texture is Texture2D tex2D)
-                    {
-                        targetPath = m_textureDirectory.Child($"{key.Name}.png");
-                        File.WriteAllBytes(targetPath.FullPath, tex2D.EncodeToPNG().ToArray());
-                        targetPath.ImportAsset();
-                    }
-                }
-                else
-                {
-                    // write original bytes
-                    targetPath = m_textureDirectory.Child($"{key.Name}{param.Ext}");
-                    File.WriteAllBytes(targetPath.FullPath, param.Index0().Result.ToArray());
+                    var targetPath = m_textureDirectory.Child($"{key.Name}.png");
+                    File.WriteAllBytes(targetPath.FullPath, tex2D.EncodeToPNG().ToArray());
                     targetPath.ImportAsset();
+
+                    Textures.Add(key, targetPath);
                 }
-                Textures.Add(key, targetPath);
+                throw new Exception($"{texture} is not converted.");
             }
         }
 
@@ -108,6 +97,7 @@ namespace UniGLTF
                 foreach (var (key, targetPath) in extractor.Textures)
                 {
                     // remap
+                    Debug.Log(targetPath);
                     var externalObject = targetPath.LoadAsset<Texture2D>();
                     if (externalObject != null)
                     {
