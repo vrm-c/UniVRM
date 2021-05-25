@@ -99,10 +99,6 @@ namespace UniVRM10
                 m_renderer.Dispose();
                 m_renderer = null;
             }
-        }
-
-        protected virtual void OnDestroy()
-        {
             if (m_scene != null)
             {
                 //Debug.LogFormat("OnDestroy");
