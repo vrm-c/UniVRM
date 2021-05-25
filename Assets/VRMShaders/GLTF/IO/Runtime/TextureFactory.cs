@@ -139,7 +139,6 @@ namespace VRMShaders
                     rawTexture.name = subAssetKey.Name;
                     rawTexture.SetSampler(param.Sampler);
                     m_textureCache.Add(subAssetKey, rawTexture);
-                    Debug.Log($"{rawTexture.name}:{param.Sampler.EnableMipMap}");
                     return rawTexture;
                 }
                 case TextureImportTypes.Linear:
