@@ -20,11 +20,6 @@ namespace VRMShaders
     /// </summary>
     public readonly struct TextureImportParam
     {
-        public const string NORMAL_PROP = "_BumpMap";
-
-        public const string METALLIC_GLOSS_PROP = "_MetallicGlossMap";
-        public const string OCCLUSION_PROP = "_OcclusionMap";
-
         public readonly string UnityObjectName;
         public readonly string Ext;
         public readonly string Uri;

@@ -91,14 +91,14 @@ namespace UniGLTF
             parser.ParsePath(path.FullName);
 
             // load
-            var loader = new ImporterContext(parser);
-            loader.Load();
+            var context = new ImporterContext(parser);
+            context.Load();
 
             // extractor
-            var extractor = new TextureExtractor(parser, UnityPath.FromUnityPath(""), loader.TextureFactory.ConvertedTextures);
-            var m = GltfTextureEnumerator.EnumerateTexturesReferencedByMaterials(parser, 0).FirstOrDefault(x => x.Item1.Name == "texture_1.standard");
+            var extractor = new TextureExtractor(parser, UnityPath.FromUnityPath(""), context.TextureFactory.ConvertedTextures);
+            var m = context.TextureSetImporter.GetTextureParamsDistinct().FirstOrDefault(x => x.SubAssetKey.Name == "texture_1.standard");
 
-            Assert.Catch<NotImplementedException>(() => extractor.Extract(m.Item1, m.Item2));
+            Assert.Catch<NotImplementedException>(() => extractor.Extract(m.SubAssetKey, m));
         }
     }
 }

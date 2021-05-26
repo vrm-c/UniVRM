@@ -7,7 +7,7 @@ using VRMShaders;
 
 namespace UniVRM10
 {
-    public static class Vrm10MToonMaterialTextureImporter
+    public static class Vrm10MToonTextureImporter
     {
         public static IEnumerable<(string key, (SubAssetKey, TextureImportParam))> TryGetAllTextures(GltfParser parser, glTFMaterial material, VRMC_materials_mtoon mToon)
         {
@@ -62,7 +62,7 @@ namespace UniVRM10
         {
             try
             {
-                pair = GltfPbrMaterialImporter.BaseColorTexture(parser, src);
+                pair = GltfPbrTextureImporter.BaseColorTexture(parser, src);
                 return true;
             }
             catch (NullReferenceException)
@@ -81,7 +81,7 @@ namespace UniVRM10
         {
             try
             {
-                pair = GltfPbrMaterialImporter.EmissiveTexture(parser, src);
+                pair = GltfPbrTextureImporter.EmissiveTexture(parser, src);
                 return true;
             }
             catch (NullReferenceException)
@@ -101,7 +101,7 @@ namespace UniVRM10
         {
             try
             {
-                pair = GltfPbrMaterialImporter.NormalTexture(parser, src);
+                pair = GltfPbrTextureImporter.NormalTexture(parser, src);
                 return true;
             }
             catch (NullReferenceException)

@@ -72,7 +72,7 @@ namespace VRM
                         },
                      }
                 };
-                var items = new VRMMaterialImporter(vrm).EnumerateAllTexturesDistinct(parser).ToArray();
+                var items = new VRMTextureSetImporter(parser, vrm).GetTextureParamsDistinct().ToArray();
                 Assert.AreEqual(1, items.Length);
             }
         }

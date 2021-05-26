@@ -51,10 +51,8 @@ namespace VRM
 
             var importer = new VRMImporterContext(parser, null);
 
-            var materialImporter = new VRMMaterialImporter(importer.VRM);
-
             Assert.AreEqual(73, parser.GLTF.materials.Count);
-            Assert.True(materialImporter.TryCreateParam(parser, 0, out MaterialImportParam param));
+            Assert.True(VRMMToonMaterialImporter.TryCreateParam(parser, importer.VRM, 0, out MaterialImportParam param));
         }
 
         static string AliciaPath
