@@ -49,7 +49,7 @@ namespace UniGLTF
                     break;
 
                 case Tabs.Materials:
-                    EditorMaterial.OnGUI(m_importer, m_parser, GltfTextureEnumerator.EnumerateAllTexturesDistinct,
+                    EditorMaterial.OnGUI(m_importer, m_parser, new GltfTextureSetImporter(m_parser),
                     assetPath => $"{Path.GetFileNameWithoutExtension(assetPath)}.Textures",
                     assetPath => $"{Path.GetFileNameWithoutExtension(assetPath)}.Materials");
                     break;

@@ -47,42 +47,6 @@ namespace UniGLTF
             Transparent
         }
 
-        public static (SubAssetKey, TextureImportParam Param) BaseColorTexture(GltfParser parser, glTFMaterial src)
-        {
-            var (offset, scale) = GltfTextureImporter.GetTextureOffsetAndScale(src.pbrMetallicRoughness.baseColorTexture);
-            return GltfTextureImporter.CreateSRGB(parser, src.pbrMetallicRoughness.baseColorTexture.index, offset, scale);
-        }
-
-        public static (SubAssetKey, TextureImportParam) StandardTexture(GltfParser parser, glTFMaterial src)
-        {
-            var metallicFactor = 1.0f;
-            var roughnessFactor = 1.0f;
-            if (src.pbrMetallicRoughness != null)
-            {
-                metallicFactor = src.pbrMetallicRoughness.metallicFactor;
-                roughnessFactor = src.pbrMetallicRoughness.roughnessFactor;
-            }
-            var (offset, scale) = GltfTextureImporter.GetTextureOffsetAndScale(src.pbrMetallicRoughness.metallicRoughnessTexture);
-            return GltfTextureImporter.CreateStandard(parser,
-                            src.pbrMetallicRoughness?.metallicRoughnessTexture?.index,
-                            src.occlusionTexture?.index,
-                            offset, scale,
-                            metallicFactor,
-                            roughnessFactor);
-        }
-
-        public static (SubAssetKey, TextureImportParam Param) NormalTexture(GltfParser parser, glTFMaterial src)
-        {
-            var (offset, scale) = GltfTextureImporter.GetTextureOffsetAndScale(src.normalTexture);
-            return GltfTextureImporter.CreateNormal(parser, src.normalTexture.index, offset, scale);
-        }
-
-        public static (SubAssetKey, TextureImportParam Param) EmissiveTexture(GltfParser parser, glTFMaterial src)
-        {
-            var (offset, scale) = GltfTextureImporter.GetTextureOffsetAndScale(src.emissiveTexture);
-            return GltfTextureImporter.CreateSRGB(parser, src.emissiveTexture.index, offset, scale);
-        }
-
         public static bool TryCreateParam(GltfParser parser, int i, out MaterialImportParam param)
         {
             if (i < 0 || i >= parser.GLTF.materials.Count)
@@ -100,7 +64,7 @@ namespace UniGLTF
                 if (src.pbrMetallicRoughness.metallicRoughnessTexture != null || src.occlusionTexture != null)
                 {
                     SubAssetKey key;
-                    (key, standardParam) = StandardTexture(parser, src);
+                    (key, standardParam) = GltfPbrTextureImporter.StandardTexture(parser, src);
                 }
 
                 if (src.pbrMetallicRoughness.baseColorFactor != null && src.pbrMetallicRoughness.baseColorFactor.Length == 4)
@@ -112,7 +76,7 @@ namespace UniGLTF
 
                 if (src.pbrMetallicRoughness.baseColorTexture != null && src.pbrMetallicRoughness.baseColorTexture.index != -1)
                 {
-                    var (key, textureParam) = BaseColorTexture(parser, src);
+                    var (key, textureParam) = GltfPbrTextureImporter.BaseColorTexture(parser, src);
                     param.TextureSlots.Add("_MainTex", textureParam);
                 }
 
@@ -134,7 +98,7 @@ namespace UniGLTF
             if (src.normalTexture != null && src.normalTexture.index != -1)
             {
                 param.Actions.Add(material => material.EnableKeyword("_NORMALMAP"));
-                var (key, textureParam) = NormalTexture(parser, src);
+                var (key, textureParam) = GltfPbrTextureImporter.NormalTexture(parser, src);
                 param.TextureSlots.Add("_BumpMap", textureParam);
                 param.FloatValues.Add("_BumpScale", src.normalTexture.scale);
             }
@@ -163,7 +127,7 @@ namespace UniGLTF
 
                 if (src.emissiveTexture != null && src.emissiveTexture.index != -1)
                 {
-                    var (key, textureParam) = EmissiveTexture(parser, src);
+                    var (key, textureParam) = GltfPbrTextureImporter.EmissiveTexture(parser, src);
                     param.TextureSlots.Add("_EmissionMap", textureParam);
                 }
             }

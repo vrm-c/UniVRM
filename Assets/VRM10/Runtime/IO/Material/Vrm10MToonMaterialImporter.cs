@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UniGLTF;
 using UniGLTF.Extensions.VRMC_materials_mtoon;
 using UnityEngine;
+using VRMShaders;
 using ColorSpace = UniGLTF.ColorSpace;
 using OutlineWidthMode = UniGLTF.Extensions.VRMC_materials_mtoon.OutlineWidthMode;
 
@@ -11,12 +12,60 @@ namespace UniVRM10
     /// <summary>
     /// Convert MToon parameters from glTF specification to Unity implementation.
     /// </summary>
-    public static class Vrm10MToonMaterialParameterImporter
+    public static class Vrm10MToonMaterialImporter
     {
+        /// <summary>
+        /// VMRC_materials_mtoon の場合にマテリアル生成情報を作成する
+        /// </summary>
+        public static bool TryCreateParam(GltfParser parser, int i, out MaterialImportParam param)
+        {
+            var m = parser.GLTF.materials[i];
+            if (!UniGLTF.Extensions.VRMC_materials_mtoon.GltfDeserializer.TryGet(m.extensions,
+                out UniGLTF.Extensions.VRMC_materials_mtoon.VRMC_materials_mtoon mtoon))
+            {
+                // Fallback to glTF, when MToon extension does not exist.
+                param = default;
+                return false;
+            }
+
+            // use material.name, because material name may renamed in GltfParser.
+            param = new MaterialImportParam(m.name, MToon.Utils.ShaderName);
+
+            foreach (var (key, (subAssetKey, value)) in Vrm10MToonTextureImporter.TryGetAllTextures(parser, m, mtoon))
+            {
+                param.TextureSlots.Add(key, value);
+            }
+
+            foreach (var (key, value) in TryGetAllColors(m, mtoon))
+            {
+                param.Colors.Add(key, value);
+            }
+
+            foreach (var (key, value) in TryGetAllFloats(m, mtoon))
+            {
+                param.FloatValues.Add(key, value);
+            }
+
+            foreach (var (key, value) in TryGetAllFloatArrays(m, mtoon))
+            {
+                param.Vectors.Add(key, value);
+            }
+
+            param.RenderQueue = TryGetRenderQueue(m, mtoon);
+
+            param.Actions.Add(material =>
+            {
+                // Set hidden properties, keywords from float properties.
+                MToon.Utils.ValidateProperties(material, isBlendModeChangedByUser: false);
+            });
+
+            return true;
+        }
+
         public static IEnumerable<(string key, Color value)> TryGetAllColors(glTFMaterial material, VRMC_materials_mtoon mToon)
         {
             const ColorSpace gltfColorSpace = ColorSpace.Linear;
-            
+
             var baseColor = material?.pbrMetallicRoughness?.baseColorFactor?.ToColor4(gltfColorSpace, ColorSpace.sRGB);
             if (baseColor.HasValue)
             {
@@ -63,23 +112,23 @@ namespace UniVRM10
             var outlineMode = GetMToonOutlineWidthMode(material, mToon);
             {
                 yield return (MToon.Utils.PropOutlineWidthMode, (float) outlineMode);
-                
+
                 // In case of VRM 1.0 MToon, outline color mode is always MixedLighting.
                 yield return (MToon.Utils.PropOutlineColorMode, (float) MToon.OutlineColorMode.MixedLighting);
             }
-            
+
             var cutoff = material?.alphaCutoff;
             if (cutoff.HasValue)
             {
                 yield return (MToon.Utils.PropCutoff, cutoff.Value);
             }
-            
+
             var normalScale = material?.normalTexture?.scale;
             if (normalScale.HasValue)
             {
                 yield return ("_BumpScale", normalScale.Value);
             }
-            
+
             var shadingShift = mToon?.ShadingShiftFactor;
             if (shadingShift.HasValue)
             {
@@ -144,14 +193,14 @@ namespace UniVRM10
             {
                 yield return (MToon.Utils.PropUvAnimScrollX, uvAnimSpeedScrollX.Value);
             }
-            
+
             // UV coords conversion.
             // glTF (top-left origin) to Unity (bottom-left origin)
             var uvAnimSpeedScrollY = mToon?.UvAnimationScrollYSpeedFactor;
             if (uvAnimSpeedScrollY.HasValue)
             {
                 const float invertY = -1f;
-                
+
                 yield return (MToon.Utils.PropUvAnimScrollY, uvAnimSpeedScrollY.Value * invertY);
             }
 

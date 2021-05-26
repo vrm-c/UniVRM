@@ -1,23 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using UniGLTF;
+﻿using UniGLTF;
 using UnityEngine;
 using VRMShaders;
 
-namespace VRM
+namespace UniVRM10
 {
-    public sealed class VRMMaterialImporter : IMaterialImporter
+    public sealed class Vrm10MaterialImporter : IMaterialImporter
     {
-        readonly glTF_VRM_extensions m_vrm;
-        public VRMMaterialImporter(glTF_VRM_extensions vrm)
-        {
-            m_vrm = vrm;
-        }
-
         public MaterialImportParam GetMaterialParam(GltfParser parser, int i)
         {
             // mtoon
-            if (!VRMMToonMaterialImporter.TryCreateParam(parser, m_vrm, i, out MaterialImportParam param))
+            if (!Vrm10MToonMaterialImporter.TryCreateParam(parser, i, out MaterialImportParam param))
             {
                 // unlit
                 if (!GltfUnlitMaterialImporter.TryCreateParam(parser, i, out param))
@@ -35,5 +27,6 @@ namespace VRM
             }
             return param;
         }
+
     }
 }

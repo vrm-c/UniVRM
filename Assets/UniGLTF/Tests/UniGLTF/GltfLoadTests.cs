@@ -136,8 +136,11 @@ namespace UniGLTF
             }
 
             // should unique
-            var gltfTextures = GltfTextureEnumerator.EnumerateAllTexturesDistinct(parser).ToArray();
+            var gltfTextures = new GltfTextureSetImporter(parser).GetTextureParamsDistinct()
+                .Select(x => x.SubAssetKey)
+                .ToArray();
             var distinct = gltfTextures.Distinct().ToArray();
+            Assert.True(gltfTextures.Length == distinct.Length);
             Assert.True(gltfTextures.SequenceEqual(distinct));
         }
 

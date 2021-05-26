@@ -32,14 +32,15 @@ namespace UniGLTF
 
         #endregion
 
+        public ITextureSetImporter TextureSetImporter { get; protected set; }
         public IMaterialImporter MaterialImporter { get; protected set; }
         public TextureFactory TextureFactory { get; }
         public MaterialFactory MaterialFactory { get; }
 
         public ImporterContext(GltfParser parser, IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> externalObjectMap = null)
         {
-            m_parser = parser;
-
+            Parser = parser;
+            TextureSetImporter = new GltfTextureSetImporter(Parser);
             MaterialImporter = new GltfMaterialImporter();
 
             externalObjectMap = externalObjectMap ?? new Dictionary<SubAssetKey, UnityEngine.Object>();
@@ -52,11 +53,10 @@ namespace UniGLTF
         }
 
         #region Source
-        GltfParser m_parser;
-        public GltfParser Parser => m_parser;
-        public String Json => m_parser.Json;
-        public glTF GLTF => m_parser.GLTF;
-        public IStorage Storage => m_parser.Storage;
+        public GltfParser Parser { get; }
+        public String Json => Parser.Json;
+        public glTF GLTF => Parser.GLTF;
+        public IStorage Storage => Parser.Storage;
         #endregion
 
         // configuration
@@ -101,6 +101,11 @@ namespace UniGLTF
                 {
                     throw new UniGLTFNotSupportedException(string.Join(", ", sb) + " is not supported");
                 }
+            }
+
+            using (MeasureTime("LoadTextures"))
+            {
+                await LoadTexturesAsync();
             }
 
             using (MeasureTime("LoadMaterials"))
@@ -176,19 +181,28 @@ namespace UniGLTF
             await awaitCaller.NextFrame();
         }
 
+        public async Task LoadTexturesAsync()
+        {
+            var textures = TextureSetImporter.GetTextureParamsDistinct();
+            foreach (var param in textures)
+            {
+                var tex = await TextureFactory.GetTextureAsync(param);
+            }
+        }
+
         public async Task LoadMaterialsAsync()
         {
-            if (m_parser.GLTF.materials == null || m_parser.GLTF.materials.Count == 0)
+            if (Parser.GLTF.materials == null || Parser.GLTF.materials.Count == 0)
             {
                 // no material. work around.
-                var param = MaterialImporter.GetMaterialParam(m_parser, 0);
+                var param = MaterialImporter.GetMaterialParam(Parser, 0);
                 var material = await MaterialFactory.LoadAsync(param, TextureFactory.GetTextureAsync);
             }
             else
             {
-                for (int i = 0; i < m_parser.GLTF.materials.Count; ++i)
+                for (int i = 0; i < Parser.GLTF.materials.Count; ++i)
                 {
-                    var param = MaterialImporter.GetMaterialParam(m_parser, i);
+                    var param = MaterialImporter.GetMaterialParam(Parser, i);
                     var material = await MaterialFactory.LoadAsync(param, TextureFactory.GetTextureAsync);
                 }
             }

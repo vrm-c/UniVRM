@@ -27,6 +27,7 @@ namespace VRM
             if (glTF_VRM_extensions.TryDeserialize(GLTF.extensions, out glTF_VRM_extensions vrm))
             {
                 VRM = vrm;
+                TextureSetImporter = new VRMTextureSetImporter(Parser, VRM);
                 MaterialImporter = new VRMMaterialImporter(VRM);
             }
             else

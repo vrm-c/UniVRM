@@ -280,7 +280,7 @@ namespace UniVRM10
                 {
                     m_meta.Authors.AddRange(src.Authors);
                 }
-                if (Vrm10TextureEnumerator.TryGetMetaThumbnailTextureImportParam(Parser, vrm, out (SubAssetKey, VRMShaders.TextureImportParam Param) kv))
+                if (Vrm10TextureSetImporter.TryGetMetaThumbnailTextureImportParam(Parser, vrm, out (SubAssetKey, VRMShaders.TextureImportParam Param) kv))
                 {
                     var texture = await TextureFactory.GetTextureAsync(kv.Param);
                     if (texture is Texture2D tex2D)
