@@ -24,6 +24,7 @@ namespace UniVRM10
         public Vrm10Importer(UniGLTF.GltfParser parser, IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> externalObjectMap = null)
         : base(parser, externalObjectMap)
         {
+            TextureSetImporter = new Vrm10TextureSetImporter(parser);
             MaterialImporter = new Vrm10MaterialImporter();
 
             m_externalMap = externalObjectMap;
