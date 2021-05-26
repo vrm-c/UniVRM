@@ -92,7 +92,7 @@ namespace UniGLTF
             }
 
             var src = parser.GLTF.materials[i];
-            param = new MaterialImportParam(GltfMaterialImporter.MaterialName(i, src), ShaderName);
+            param = new MaterialImportParam(GltfMaterialImporter.GetMaterialName(i, src), ShaderName);
 
             var standardParam = default(TextureImportParam);
             if (src.pbrMetallicRoughness != null || src.occlusionTexture != null)

@@ -23,7 +23,7 @@ namespace UniGLTF
                 return false;
             }
 
-            param = new MaterialImportParam(GltfMaterialImporter.MaterialName(i, src), ShaderName);
+            param = new MaterialImportParam(GltfMaterialImporter.GetMaterialName(i, src), ShaderName);
 
             // texture
             if (src.pbrMetallicRoughness.baseColorTexture != null)

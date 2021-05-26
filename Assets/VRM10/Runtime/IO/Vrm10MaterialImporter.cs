@@ -4,16 +4,34 @@ using VRMShaders;
 
 namespace UniVRM10
 {
-    public static class Vrm10MaterialImporter
+    public sealed class Vrm10MaterialImporter : IMaterialImporter
     {
+        public MaterialImportParam GetMaterialParam(GltfParser parser, int i)
+        {
+            // mtoon
+            if (!TryCreateMToonParam(parser, i, out MaterialImportParam param))
+            {
+                // unlit
+                if (!GltfUnlitMaterial.TryCreateParam(parser, i, out param))
+                {
+                    // pbr
+                    if (!GltfPBRMaterial.TryCreateParam(parser, i, out param))
+                    {
+                        // fallback
+#if VRM_DEVELOP
+                        Debug.LogWarning($"material: {i} out of range. fallback");
+#endif
+                        return new MaterialImportParam(GltfMaterialImporter.GetMaterialName(i, null), GltfPBRMaterial.ShaderName);
+                    }
+                }
+            }
+            return param;
+        }
+
         /// <summary>
         /// VMRC_materials_mtoon の場合にマテリアル生成情報を作成する
         /// </summary>
-        /// <param name="parser"></param>
-        /// <param name="i"></param>
-        /// <param name="param"></param>
-        /// <returns></returns>
-        public static bool TryCreateParam(GltfParser parser, int i, out MaterialImportParam param)
+        public bool TryCreateMToonParam(GltfParser parser, int i, out MaterialImportParam param)
         {
             var m = parser.GLTF.materials[i];
             if (!UniGLTF.Extensions.VRMC_materials_mtoon.GltfDeserializer.TryGet(m.extensions,
@@ -48,7 +66,7 @@ namespace UniVRM10
             }
 
             param.RenderQueue = Vrm10MToonMaterialParameterImporter.TryGetRenderQueue(m, mtoon);
-            
+
             param.Actions.Add(material =>
             {
                 // Set hidden properties, keywords from float properties.
@@ -56,21 +74,6 @@ namespace UniVRM10
             });
 
             return true;
-        }
-
-        public static MaterialImportParam GetMaterialParam(GltfParser parser, int i)
-        {
-            // mtoon
-            if (!TryCreateParam(parser, i, out MaterialImportParam param))
-            {
-                // unlit
-                if (!GltfUnlitMaterial.TryCreateParam(parser, i, out param))
-                {
-                    // pbr
-                    GltfPBRMaterial.TryCreateParam(parser, i, out param);
-                }
-            }
-            return param;
         }
     }
 }

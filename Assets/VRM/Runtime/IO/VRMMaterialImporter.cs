@@ -6,7 +6,7 @@ using VRMShaders;
 
 namespace VRM
 {
-    public class VRMMaterialImporter
+    public sealed class VRMMaterialImporter : IMaterialImporter
     {
         readonly glTF_VRM_extensions m_vrm;
         public VRMMaterialImporter(glTF_VRM_extensions vrm)
@@ -103,7 +103,14 @@ namespace VRM
                 if (!GltfUnlitMaterial.TryCreateParam(parser, i, out param))
                 {
                     // pbr
-                    GltfPBRMaterial.TryCreateParam(parser, i, out param);
+                    if (!GltfPBRMaterial.TryCreateParam(parser, i, out param))
+                    {
+                        // fallback
+#if VRM_DEVELOP
+                        Debug.LogWarning($"material: {i} out of range. fallback");
+#endif
+                        return new MaterialImportParam(GltfMaterialImporter.GetMaterialName(i, null), GltfPBRMaterial.ShaderName);
+                    }
                 }
             }
             return param;
