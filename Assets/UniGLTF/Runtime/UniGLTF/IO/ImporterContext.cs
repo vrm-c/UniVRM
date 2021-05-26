@@ -103,14 +103,6 @@ namespace UniGLTF
                 }
             }
 
-            using (MeasureTime("LoadTextures"))
-            {
-                foreach (var (key, param) in GltfTextureEnumerator.EnumerateAllTexturesDistinct(m_parser))
-                {
-
-                }
-            }
-
             using (MeasureTime("LoadMaterials"))
             {
                 await LoadMaterialsAsync();
@@ -182,11 +174,6 @@ namespace UniGLTF
                 }
             }
             await awaitCaller.NextFrame();
-        }
-
-        private async Task LoadTexturesAsync()
-        {
-
         }
 
         public async Task LoadMaterialsAsync()
