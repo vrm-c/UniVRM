@@ -1,6 +1,4 @@
 ﻿using UnityEditor;
-using UnityEngine;
-using System;
 
 namespace UniVRM10
 {
@@ -69,18 +67,20 @@ namespace UniVRM10
 
         public override void OnInspectorGUI()
         {
+            // select sub editor
             using (new EditorGUI.DisabledGroupScope(false))
             {
                 _tab = (Tabs)EditorGUILayout.EnumPopup("Select GUI", _tab);
                 EditorGUILayout.Separator();
             }
 
-            serializedObject.Update();
-
             // Setup runtime function.
-            m_target.Setup();
+            if (UnityEngine.Application.isPlaying)
+            {
+                m_target.Setup();
+            }
 
-            // base.OnInspectorGUI();
+            serializedObject.Update();
             switch (_tab)
             {
                 case Tabs.Meta:
@@ -104,103 +104,12 @@ namespace UniVRM10
                     m_firstPerson.RecursiveProperty();
                     break;
             }
-
             serializedObject.ApplyModifiedProperties();
-        }
-
-        enum VRMSceneUI
-        {
-            None,
-            LookAt,
-            SpringBone,
-        }
-        static VRMSceneUI s_ui = default;
-        static string[] s_selection;
-        static string[] Selection
-        {
-            get
-            {
-                if (s_selection == null)
-                {
-                    s_selection = Enum.GetNames(typeof(VRMSceneUI));
-                }
-                return s_selection;
-            }
-        }
-
-        static VRMSceneUI SelectUI(VRMSceneUI ui)
-        {
-            var size = SceneView.currentDrawingSceneView.position.size;
-
-            var rect = new Rect(0, 0, size.x, EditorGUIUtility.singleLineHeight);
-            return (VRMSceneUI)GUI.SelectionGrid(rect, (int)ui, Selection, 3);
         }
 
         void OnSceneGUI()
         {
-            Handles.BeginGUI();
-            s_ui = SelectUI(s_ui);
-            Handles.EndGUI();
-
-            switch (s_ui)
-            {
-                case VRMSceneUI.None:
-                    Tools.hidden = false;
-                    break;
-
-                case VRMSceneUI.LookAt:
-                    Tools.hidden = true;
-                    OnSceneGUIOffset();
-                    if (!Application.isPlaying)
-                    {
-                        // offset
-                        var p = m_target.LookAt.OffsetFromHead;
-                        Handles.Label(m_target.Head.position, $"fromHead: [{p.x:0.00}, {p.y:0.00}, {p.z:0.00}]");
-                    }
-                    else
-                    {
-                        m_target.LookAt.OnSceneGUILookAt(m_target.Head);
-                    }
-                    break;
-
-                case VRMSceneUI.SpringBone:
-                    Tools.hidden = true;
-                    break;
-
-                default:
-                    throw new NotImplementedException();
-            }
-        }
-
-        void OnSceneGUIOffset()
-        {
-            var component = target as VRM10Controller;
-            if (!component.LookAt.DrawGizmo)
-            {
-                return;
-            }
-
-            var head = component.Head;
-            if (head == null)
-            {
-                return;
-            }
-
-            EditorGUI.BeginChangeCheck();
-
-            var worldOffset = head.localToWorldMatrix.MultiplyPoint(component.LookAt.OffsetFromHead);
-            worldOffset = Handles.PositionHandle(worldOffset, head.rotation);
-
-            Handles.DrawDottedLine(head.position, worldOffset, 5);
-            Handles.SphereHandleCap(0, head.position, Quaternion.identity, 0.02f, Event.current.type);
-            Handles.SphereHandleCap(0, worldOffset, Quaternion.identity, 0.02f, Event.current.type);
-
-            if (EditorGUI.EndChangeCheck())
-            {
-                Undo.RecordObject(component, "Changed FirstPerson");
-
-                component.LookAt.OffsetFromHead = head.worldToLocalMatrix.MultiplyPoint(worldOffset);
-            }
+            VRM10ControllerSceneView.Draw(m_target);
         }
     }
 }
