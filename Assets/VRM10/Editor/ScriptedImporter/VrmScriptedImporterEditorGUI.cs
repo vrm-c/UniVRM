@@ -67,7 +67,7 @@ namespace UniVRM10
                     break;
 
                 case Tabs.Materials:
-                    if (m_parser != null)
+                    if (m_parser != null && m_vrm != null)
                     {
                         EditorMaterial.OnGUI(m_importer, m_parser, new Vrm10TextureSetImporter(m_parser),
                             assetPath => $"{Path.GetFileNameWithoutExtension(assetPath)}.vrm1.Textures",
@@ -76,7 +76,7 @@ namespace UniVRM10
                     break;
 
                 case Tabs.Vrm:
-                    if (m_parser != null)
+                    if (m_parser != null && m_vrm != null)
                     {
                         EditorVrm.OnGUI(m_importer, m_parser, m_vrm);
                     }
