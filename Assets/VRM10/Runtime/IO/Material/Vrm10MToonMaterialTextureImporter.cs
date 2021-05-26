@@ -62,7 +62,7 @@ namespace UniVRM10
         {
             try
             {
-                pair = GltfPBRMaterial.BaseColorTexture(parser, src);
+                pair = GltfPbrMaterialImporter.BaseColorTexture(parser, src);
                 return true;
             }
             catch (NullReferenceException)
@@ -81,7 +81,7 @@ namespace UniVRM10
         {
             try
             {
-                pair = GltfPBRMaterial.EmissiveTexture(parser, src);
+                pair = GltfPbrMaterialImporter.EmissiveTexture(parser, src);
                 return true;
             }
             catch (NullReferenceException)
@@ -101,7 +101,7 @@ namespace UniVRM10
         {
             try
             {
-                pair = GltfPBRMaterial.NormalTexture(parser, src);
+                pair = GltfPbrMaterialImporter.NormalTexture(parser, src);
                 return true;
             }
             catch (NullReferenceException)

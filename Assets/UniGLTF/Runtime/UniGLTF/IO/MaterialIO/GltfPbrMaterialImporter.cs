@@ -35,7 +35,7 @@ namespace UniGLTF
     /// _ZWrite
     ///
     /// </summary>
-    public static class GltfPBRMaterial
+    public static class GltfPbrMaterialImporter
     {
         public const string ShaderName = "Standard";
 

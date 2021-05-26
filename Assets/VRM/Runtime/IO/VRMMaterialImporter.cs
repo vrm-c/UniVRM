@@ -100,16 +100,16 @@ namespace VRM
             if (!TryCreateParam(parser, i, out MaterialImportParam param))
             {
                 // unlit
-                if (!GltfUnlitMaterial.TryCreateParam(parser, i, out param))
+                if (!GltfUnlitMaterialImporter.TryCreateParam(parser, i, out param))
                 {
                     // pbr
-                    if (!GltfPBRMaterial.TryCreateParam(parser, i, out param))
+                    if (!GltfPbrMaterialImporter.TryCreateParam(parser, i, out param))
                     {
                         // fallback
 #if VRM_DEVELOP
                         Debug.LogWarning($"material: {i} out of range. fallback");
 #endif
-                        return new MaterialImportParam(GltfMaterialImporter.GetMaterialName(i, null), GltfPBRMaterial.ShaderName);
+                        return new MaterialImportParam(GltfMaterialImporter.GetMaterialName(i, null), GltfPbrMaterialImporter.ShaderName);
                     }
                 }
             }

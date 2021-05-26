@@ -12,15 +12,15 @@ namespace UniGLTF
     {
         public MaterialImportParam GetMaterialParam(GltfParser parser, int i)
         {
-            if (!GltfUnlitMaterial.TryCreateParam(parser, i, out var param))
+            if (!GltfUnlitMaterialImporter.TryCreateParam(parser, i, out var param))
             {
-                if (!GltfPBRMaterial.TryCreateParam(parser, i, out param))
+                if (!GltfPbrMaterialImporter.TryCreateParam(parser, i, out param))
                 {
                     // fallback
 #if VRM_DEVELOP
                     Debug.LogWarning($"material: {i} out of range. fallback");
 #endif
-                    return new MaterialImportParam(GetMaterialName(i, null), GltfPBRMaterial.ShaderName);
+                    return new MaterialImportParam(GetMaterialName(i, null), GltfPbrMaterialImporter.ShaderName);
                 }
             }
 

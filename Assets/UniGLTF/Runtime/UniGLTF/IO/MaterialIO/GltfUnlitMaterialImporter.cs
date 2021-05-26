@@ -4,7 +4,7 @@ using VRMShaders;
 
 namespace UniGLTF
 {
-    public static class GltfUnlitMaterial
+    public static class GltfUnlitMaterialImporter
     {
         public const string ShaderName = "UniGLTF/UniUnlit";
 
