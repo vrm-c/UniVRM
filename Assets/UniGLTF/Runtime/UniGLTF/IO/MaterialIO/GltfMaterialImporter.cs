@@ -34,58 +34,6 @@ namespace UniGLTF
             return $"material_{index:00}";
         }
 
-        public MaterialImportParam GetMaterialParam(GltfParser parser, int i)
-        {
-            foreach (var tryCreate in GltfMaterialParamProcessors)
-            {
-                if (tryCreate(parser, i, out MaterialImportParam param))
-                {
-                    return param;
-                }
-            }
-
-            // fallback
-#if VRM_DEVELOP
-            Debug.LogWarning($"material: {i} out of range. fallback");
-#endif
-            return new MaterialImportParam(MaterialName(i, null), GltfPBRMaterial.ShaderName);
-        }
-
-        public static (Vector2, Vector2) GetTextureOffsetAndScale(glTFTextureInfo textureInfo)
-        {
-            if (glTF_KHR_texture_transform.TryGet(textureInfo, out var textureTransform))
-            {
-                return GetTextureOffsetAndScale(textureTransform);
-            }
-            return (new Vector2(0, 0), new Vector2(1, 1));
-        }
-        
-        public static (Vector2, Vector2) GetTextureOffsetAndScale(glTF_KHR_texture_transform textureTransform)
-        {
-            var offset = new Vector2(0, 0);
-            var scale = new Vector2(1, 1);
-
-            if (textureTransform != null)
-            {
-                if (textureTransform.offset != null && textureTransform.offset.Length == 2)
-                {
-                    offset = new Vector2(textureTransform.offset[0], textureTransform.offset[1]);
-                }
-
-                if (textureTransform.scale != null && textureTransform.scale.Length == 2)
-                {
-                    scale = new Vector2(textureTransform.scale[0], textureTransform.scale[1]);
-                }
-                
-                // UV Coordinate Conversion: glTF(top-left origin) to Unity(bottom-left origin)
-                // Formula: https://github.com/vrm-c/UniVRM/issues/930
-                offset.y = 1.0f - offset.y - scale.y;
-            }
-
-            return (offset, scale);
-        }
-
-
         /// <summary>
         /// for unittest
         /// </summary>

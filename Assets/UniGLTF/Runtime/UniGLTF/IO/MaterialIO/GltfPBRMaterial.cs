@@ -49,7 +49,7 @@ namespace UniGLTF
 
         public static (SubAssetKey, TextureImportParam Param) BaseColorTexture(GltfParser parser, glTFMaterial src)
         {
-            var (offset, scale) = GltfMaterialImporter.GetTextureOffsetAndScale(src.pbrMetallicRoughness.baseColorTexture);
+            var (offset, scale) = GltfTextureImporter.GetTextureOffsetAndScale(src.pbrMetallicRoughness.baseColorTexture);
             return GltfTextureImporter.CreateSRGB(parser, src.pbrMetallicRoughness.baseColorTexture.index, offset, scale);
         }
 
@@ -62,7 +62,7 @@ namespace UniGLTF
                 metallicFactor = src.pbrMetallicRoughness.metallicFactor;
                 roughnessFactor = src.pbrMetallicRoughness.roughnessFactor;
             }
-            var (offset, scale) = GltfMaterialImporter.GetTextureOffsetAndScale(src.pbrMetallicRoughness.metallicRoughnessTexture);
+            var (offset, scale) = GltfTextureImporter.GetTextureOffsetAndScale(src.pbrMetallicRoughness.metallicRoughnessTexture);
             return GltfTextureImporter.CreateStandard(parser,
                             src.pbrMetallicRoughness?.metallicRoughnessTexture?.index,
                             src.occlusionTexture?.index,
@@ -73,13 +73,13 @@ namespace UniGLTF
 
         public static (SubAssetKey, TextureImportParam Param) NormalTexture(GltfParser parser, glTFMaterial src)
         {
-            var (offset, scale) = GltfMaterialImporter.GetTextureOffsetAndScale(src.normalTexture);
+            var (offset, scale) = GltfTextureImporter.GetTextureOffsetAndScale(src.normalTexture);
             return GltfTextureImporter.CreateNormal(parser, src.normalTexture.index, offset, scale);
         }
 
         public static (SubAssetKey, TextureImportParam Param) EmissiveTexture(GltfParser parser, glTFMaterial src)
         {
-            var (offset, scale) = GltfMaterialImporter.GetTextureOffsetAndScale(src.emissiveTexture);
+            var (offset, scale) = GltfTextureImporter.GetTextureOffsetAndScale(src.emissiveTexture);
             return GltfTextureImporter.CreateSRGB(parser, src.emissiveTexture.index, offset, scale);
         }
 

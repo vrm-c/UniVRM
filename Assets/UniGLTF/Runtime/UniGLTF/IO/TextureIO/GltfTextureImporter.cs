@@ -91,5 +91,39 @@ namespace UniGLTF
             var param = new TextureImportParam(name, ".png", null, offset, scale, sampler, TextureImportTypes.StandardMap, metallicFactor, roughnessFactor, getMetallicRoughnessAsync, getOcclusionAsync, default, default, default, default);
             return (param.SubAssetKey, param);
         }
+
+        public static (Vector2, Vector2) GetTextureOffsetAndScale(glTFTextureInfo textureInfo)
+        {
+            if (glTF_KHR_texture_transform.TryGet(textureInfo, out var textureTransform))
+            {
+                return GetTextureOffsetAndScale(textureTransform);
+            }
+            return (new Vector2(0, 0), new Vector2(1, 1));
+        }
+
+        public static (Vector2, Vector2) GetTextureOffsetAndScale(glTF_KHR_texture_transform textureTransform)
+        {
+            var offset = new Vector2(0, 0);
+            var scale = new Vector2(1, 1);
+
+            if (textureTransform != null)
+            {
+                if (textureTransform.offset != null && textureTransform.offset.Length == 2)
+                {
+                    offset = new Vector2(textureTransform.offset[0], textureTransform.offset[1]);
+                }
+
+                if (textureTransform.scale != null && textureTransform.scale.Length == 2)
+                {
+                    scale = new Vector2(textureTransform.scale[0], textureTransform.scale[1]);
+                }
+
+                // UV Coordinate Conversion: glTF(top-left origin) to Unity(bottom-left origin)
+                // Formula: https://github.com/vrm-c/UniVRM/issues/930
+                offset.y = 1.0f - offset.y - scale.y;
+            }
+
+            return (offset, scale);
+        }
     }
 }
