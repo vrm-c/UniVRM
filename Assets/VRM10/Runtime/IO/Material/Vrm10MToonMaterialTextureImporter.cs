@@ -20,17 +20,17 @@ namespace UniVRM10
             {
                 yield return (MToon.Utils.PropEmissionMap, emissiveTex);
             }
-            
+
             if (TryGetNormalTexture(parser, material, out var normalTex))
             {
                 yield return ("_BumpMap", normalTex);
             }
-            
+
             if (TryGetShadeMultiplyTexture(parser, mToon, out var shadeTex))
             {
                 yield return (MToon.Utils.PropShadeTexture, shadeTex);
             }
-            
+
             if (TryGetShadingShiftTexture(parser, mToon, out var shadeShiftTex))
             {
                 Debug.LogWarning("Need VRM 1.0 MToon implementation.");
@@ -62,7 +62,7 @@ namespace UniVRM10
         {
             try
             {
-                pair = GltfPBRMaterial.BaseColorTexture(parser, src);
+                pair = GltfPbrMaterialImporter.BaseColorTexture(parser, src);
                 return true;
             }
             catch (NullReferenceException)
@@ -81,7 +81,7 @@ namespace UniVRM10
         {
             try
             {
-                pair = GltfPBRMaterial.EmissiveTexture(parser, src);
+                pair = GltfPbrMaterialImporter.EmissiveTexture(parser, src);
                 return true;
             }
             catch (NullReferenceException)
@@ -94,14 +94,14 @@ namespace UniVRM10
                 pair = default;
                 return false;
             }
-            
+
         }
 
         private static bool TryGetNormalTexture(GltfParser parser, glTFMaterial src, out (SubAssetKey, TextureImportParam) pair)
         {
             try
             {
-                pair = GltfPBRMaterial.NormalTexture(parser, src);
+                pair = GltfPbrMaterialImporter.NormalTexture(parser, src);
                 return true;
             }
             catch (NullReferenceException)
@@ -189,7 +189,7 @@ namespace UniVRM10
         {
             if (glTF_KHR_texture_transform.TryGet(textureInfo, out var textureTransform))
             {
-                return GltfMaterialImporter.GetTextureOffsetAndScale(textureTransform);
+                return GltfTextureImporter.GetTextureOffsetAndScale(textureTransform);
             }
             return (new Vector2(0, 0), new Vector2(1, 1));
         }
@@ -202,7 +202,7 @@ namespace UniVRM10
             public Vrm10TextureInfo(TextureInfo info)
             {
                 if (info == null) return;
-                
+
                 index = info.Index ?? -1;
                 texCoord = info.TexCoord ?? -1;
                 extensions = info.Extensions as glTFExtension;
@@ -212,7 +212,7 @@ namespace UniVRM10
             public Vrm10TextureInfo(ShadingShiftTextureInfo info)
             {
                 if (info == null) return;
-                
+
                 index = info.Index ?? -1;
                 texCoord = info.TexCoord ?? -1;
                 extensions = info.Extensions as glTFExtension;

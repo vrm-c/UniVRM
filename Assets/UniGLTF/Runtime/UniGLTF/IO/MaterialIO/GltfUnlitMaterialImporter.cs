@@ -4,7 +4,7 @@ using VRMShaders;
 
 namespace UniGLTF
 {
-    public static class GltfUnlitMaterial
+    public static class GltfUnlitMaterialImporter
     {
         public const string ShaderName = "UniGLTF/UniUnlit";
 
@@ -22,13 +22,13 @@ namespace UniGLTF
                 param = default;
                 return false;
             }
-            
-            param = new MaterialImportParam(GltfMaterialImporter.MaterialName(i, src), ShaderName);
+
+            param = new MaterialImportParam(GltfMaterialImporter.GetMaterialName(i, src), ShaderName);
 
             // texture
             if (src.pbrMetallicRoughness.baseColorTexture != null)
             {
-                var (offset, scale) = GltfMaterialImporter.GetTextureOffsetAndScale(src.pbrMetallicRoughness.baseColorTexture);
+                var (offset, scale) = GltfTextureImporter.GetTextureOffsetAndScale(src.pbrMetallicRoughness.baseColorTexture);
                 var (key, textureParam) = GltfTextureImporter.CreateSRGB(parser, src.pbrMetallicRoughness.baseColorTexture.index, offset, scale);
                 param.TextureSlots.Add("_MainTex", textureParam);
             }

@@ -13,11 +13,6 @@ namespace UniGLTF
         BLEND
     }
 
-    public interface IMaterialExporter
-    {
-        glTFMaterial ExportMaterial(Material m, ITextureExporter textureExporter);
-    }
-
     public class MaterialExporter : IMaterialExporter
     {
         public virtual glTFMaterial ExportMaterial(Material m, ITextureExporter textureExporter)

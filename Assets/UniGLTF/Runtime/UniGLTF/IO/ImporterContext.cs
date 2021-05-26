@@ -32,23 +32,21 @@ namespace UniGLTF
 
         #endregion
 
-        MaterialFactory m_materialFactory;
-        public MaterialFactory MaterialFactory => m_materialFactory;
-
-        public readonly GltfMaterialImporter GltfMaterialImporter = new GltfMaterialImporter();
-
-        TextureFactory m_textureFactory;
-        public TextureFactory TextureFactory => m_textureFactory;
+        public IMaterialImporter MaterialImporter { get; protected set; }
+        public TextureFactory TextureFactory { get; }
+        public MaterialFactory MaterialFactory { get; }
 
         public ImporterContext(GltfParser parser, IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> externalObjectMap = null)
         {
             m_parser = parser;
 
+            MaterialImporter = new GltfMaterialImporter();
+
             externalObjectMap = externalObjectMap ?? new Dictionary<SubAssetKey, UnityEngine.Object>();
-            m_textureFactory = new TextureFactory(externalObjectMap
+            TextureFactory = new TextureFactory(externalObjectMap
                 .Where(x => x.Value is Texture)
                 .ToDictionary(x => x.Key, x => (Texture) x.Value));
-            m_materialFactory = new MaterialFactory(externalObjectMap
+            MaterialFactory = new MaterialFactory(externalObjectMap
                 .Where(x => x.Value is Material)
                 .ToDictionary(x => x.Key, x => (Material) x.Value));
         }
@@ -183,14 +181,14 @@ namespace UniGLTF
             if (m_parser.GLTF.materials == null || m_parser.GLTF.materials.Count == 0)
             {
                 // no material. work around.
-                var param = GltfMaterialImporter.GetMaterialParam(m_parser, 0);
+                var param = MaterialImporter.GetMaterialParam(m_parser, 0);
                 var material = await MaterialFactory.LoadAsync(param, TextureFactory.GetTextureAsync);
             }
             else
             {
                 for (int i = 0; i < m_parser.GLTF.materials.Count; ++i)
                 {
-                    var param = GltfMaterialImporter.GetMaterialParam(m_parser, i);
+                    var param = MaterialImporter.GetMaterialParam(m_parser, i);
                     var material = await MaterialFactory.LoadAsync(param, TextureFactory.GetTextureAsync);
                 }
             }
@@ -293,8 +291,8 @@ namespace UniGLTF
             }
             Meshes.Clear();
 
-            m_materialFactory.Dispose();
-            m_textureFactory.Dispose();
+            MaterialFactory?.Dispose();
+            TextureFactory?.Dispose();
 
             if (m_ownRoot && Root != null)
             {

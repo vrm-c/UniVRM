@@ -24,15 +24,14 @@ namespace UniVRM10
         public Vrm10Importer(UniGLTF.GltfParser parser, IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> externalObjectMap = null)
         : base(parser, externalObjectMap)
         {
+            MaterialImporter = new Vrm10MaterialImporter();
+
             m_externalMap = externalObjectMap;
             if (m_externalMap == null)
             {
                 m_externalMap = new Dictionary<SubAssetKey, UnityEngine.Object>();
             }
             m_model = ModelReader.Read(parser);
-
-            // for `VRMC_materials_mtoon`
-            this.GltfMaterialImporter.GltfMaterialParamProcessors.Insert(0, Vrm10MaterialImporter.TryCreateParam);
 
             if (!UniGLTF.Extensions.VRMC_vrm.GltfDeserializer.TryGet(parser.GLTF.extensions, out m_vrm))
             {

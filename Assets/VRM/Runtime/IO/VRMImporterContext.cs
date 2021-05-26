@@ -27,8 +27,7 @@ namespace VRM
             if (glTF_VRM_extensions.TryDeserialize(GLTF.extensions, out glTF_VRM_extensions vrm))
             {
                 VRM = vrm;
-                // override material importer
-                GltfMaterialImporter.GltfMaterialParamProcessors.Insert(0, new VRMMaterialImporter(VRM).TryCreateParam);
+                MaterialImporter = new VRMMaterialImporter(VRM);
             }
             else
             {
