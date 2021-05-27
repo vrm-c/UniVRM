@@ -146,7 +146,7 @@ namespace VRMShaders
             }
             else if (occlusionTexture)
             {
-                var dst = TextureConverter.CreateEmptyTextureWithSettings(metallicSmoothTexture, ColorSpace.Linear, false);
+                var dst = TextureConverter.CreateEmptyTextureWithSettings(occlusionTexture, ColorSpace.Linear, false);
                 var linearOcclusion = TextureConverter.CopyTexture(occlusionTexture, ColorSpace.Linear, false, null);
                 dst.SetPixels32(linearOcclusion.GetPixels32().Select(x => ExportPixel(default, smoothness, x)).ToArray());
                 dst.Apply();
