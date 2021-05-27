@@ -8,9 +8,9 @@ namespace UniGLTF
     /// <summary>
     /// GLTF の MaterialImporter
     /// </summary>
-    public sealed class GltfMaterialImporter : IMaterialImporter
+    public sealed class GltfMaterialDescriptorGenerator : IMaterialDescriptorGenerator
     {
-        public MaterialDescriptor GetMaterialParam(GltfParser parser, int i)
+        public MaterialDescriptor Get(GltfParser parser, int i)
         {
             if (!GltfUnlitMaterialImporter.TryCreateParam(parser, i, out var param))
             {

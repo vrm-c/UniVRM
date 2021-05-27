@@ -28,7 +28,7 @@ namespace VRM
             {
                 VRM = vrm;
                 TextureDescriptorGenerator = new VrmTextureDescriptorGenerator(Parser, VRM);
-                MaterialImporter = new VRMMaterialImporter(VRM);
+                MaterialDescriptorGenerator = new VRMMaterialDescriptorGenerator(VRM);
             }
             else
             {

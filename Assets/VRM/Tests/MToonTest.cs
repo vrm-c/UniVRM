@@ -32,7 +32,7 @@ namespace VRM
             var vrmMaterial = VRMMaterialExporter.CreateFromMaterial(srcMaterial, textureExporter);
             Assert.AreEqual(vrmMaterial.vectorProperties["_MainTex"], new float[] { 0.3f, 0.2f, 0.5f, 0.6f });
 
-            var materialImporter = new VRMMaterialImporter(new glTF_VRM_extensions
+            var materialImporter = new VRMMaterialDescriptorGenerator(new glTF_VRM_extensions
             {
                 materialProperties = new System.Collections.Generic.List<glTF_VRM_Material> { vrmMaterial }
             });
@@ -70,7 +70,7 @@ namespace VRM
             var parser = new GltfParser();
             parser.ParsePath(AliciaPath);
             var vrmImporter = new VRMImporterContext(parser, null);
-            var materialParam = new VRMMaterialImporter(vrmImporter.VRM).GetMaterialParam(parser, 0);
+            var materialParam = new VRMMaterialDescriptorGenerator(vrmImporter.VRM).Get(parser, 0);
             Assert.AreEqual("VRM/MToon", materialParam.ShaderName);
             Assert.AreEqual("Alicia_body", materialParam.TextureSlots["_MainTex"].UnityObjectName);
 

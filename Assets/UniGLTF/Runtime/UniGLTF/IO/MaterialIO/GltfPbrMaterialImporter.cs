@@ -56,7 +56,7 @@ namespace UniGLTF
             }
 
             var src = parser.GLTF.materials[i];
-            matDesc = new MaterialDescriptor(GltfMaterialImporter.GetMaterialName(i, src), ShaderName);
+            matDesc = new MaterialDescriptor(GltfMaterialDescriptorGenerator.GetMaterialName(i, src), ShaderName);
 
             var standardTexDesc = default(TextureDescriptor);
             if (src.pbrMetallicRoughness != null || src.occlusionTexture != null)

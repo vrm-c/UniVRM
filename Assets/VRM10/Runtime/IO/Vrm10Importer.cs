@@ -25,7 +25,7 @@ namespace UniVRM10
         : base(parser, externalObjectMap)
         {
             TextureDescriptorGenerator = new Vrm10TextureDescriptorGenerator(parser);
-            MaterialImporter = new Vrm10MaterialImporter();
+            MaterialDescriptorGenerator = new Vrm10MaterialDescriptorGenerator();
 
             m_externalMap = externalObjectMap;
             if (m_externalMap == null)

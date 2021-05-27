@@ -33,7 +33,7 @@ namespace UniGLTF
         #endregion
 
         public ITextureDescriptorGenerator TextureDescriptorGenerator { get; protected set; }
-        public IMaterialImporter MaterialImporter { get; protected set; }
+        public IMaterialDescriptorGenerator MaterialDescriptorGenerator { get; protected set; }
         public TextureFactory TextureFactory { get; }
         public MaterialFactory MaterialFactory { get; }
 
@@ -41,7 +41,7 @@ namespace UniGLTF
         {
             Parser = parser;
             TextureDescriptorGenerator = new GltfTextureDescriptorGenerator(Parser);
-            MaterialImporter = new GltfMaterialImporter();
+            MaterialDescriptorGenerator = new GltfMaterialDescriptorGenerator();
 
             externalObjectMap = externalObjectMap ?? new Dictionary<SubAssetKey, UnityEngine.Object>();
             TextureFactory = new TextureFactory(externalObjectMap
@@ -195,14 +195,14 @@ namespace UniGLTF
             if (Parser.GLTF.materials == null || Parser.GLTF.materials.Count == 0)
             {
                 // no material. work around.
-                var param = MaterialImporter.GetMaterialParam(Parser, 0);
+                var param = MaterialDescriptorGenerator.Get(Parser, 0);
                 var material = await MaterialFactory.LoadAsync(param, TextureFactory.GetTextureAsync);
             }
             else
             {
                 for (int i = 0; i < Parser.GLTF.materials.Count; ++i)
                 {
-                    var param = MaterialImporter.GetMaterialParam(Parser, i);
+                    var param = MaterialDescriptorGenerator.Get(Parser, i);
                     var material = await MaterialFactory.LoadAsync(param, TextureFactory.GetTextureAsync);
                 }
             }
