@@ -44,7 +44,7 @@ namespace UniGLTF
             using (var loader = new ImporterContext(parser, extractedObjects))
             {
                 // Configure TextureImporter to Extracted Textures.
-                foreach (var textureInfo in loader.TextureSetImporter.GetTextureSet().GetTextureParamsDistinct())
+                foreach (var textureInfo in loader.TextureSetImporter.GetTextureImportParamSet().GetTextureParamsDistinct())
                 {
                     TextureImporterConfigurator.Configure(textureInfo, loader.TextureFactory.ExternalTextures);
                 }

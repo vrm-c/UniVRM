@@ -2,7 +2,7 @@
 
 namespace VRMShaders
 {
-    public sealed class TextureSet
+    public sealed class TextureImportParamSet
     {
         private readonly Dictionary<SubAssetKey, TextureImportParam> _params = new Dictionary<SubAssetKey, TextureImportParam>();
 

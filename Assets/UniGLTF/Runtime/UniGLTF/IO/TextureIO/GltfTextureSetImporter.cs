@@ -28,24 +28,24 @@ namespace UniGLTF
     public sealed class GltfTextureSetImporter : ITextureSetImporter
     {
         private readonly GltfParser m_parser;
-        private TextureSet _textureSet;
+        private TextureImportParamSet _textureImportParamSet;
 
         public GltfTextureSetImporter(GltfParser parser)
         {
             m_parser = parser;
         }
 
-        public TextureSet GetTextureSet()
+        public TextureImportParamSet GetTextureImportParamSet()
         {
-            if (_textureSet == null)
+            if (_textureImportParamSet == null)
             {
-                _textureSet = new TextureSet();
+                _textureImportParamSet = new TextureImportParamSet();
                 foreach (var (_, param) in EnumerateAllTextures(m_parser))
                 {
-                    _textureSet.Add(param);
+                    _textureImportParamSet.Add(param);
                 }
             }
-            return _textureSet;
+            return _textureImportParamSet;
         }
 
         /// <summary>
