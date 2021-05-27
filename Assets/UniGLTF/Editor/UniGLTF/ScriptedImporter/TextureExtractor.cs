@@ -80,7 +80,7 @@ namespace UniGLTF
             Action<IEnumerable<UnityPath>> onCompleted = null)
         {
             var extractor = new TextureExtractor(parser, textureDirectory, subAssets);
-            foreach (var param in textureSetImporter.GetTextureParamsDistinct())
+            foreach (var param in textureSetImporter.GetTextureSet().GetTextureParamsDistinct())
             {
                 extractor.Extract(param.SubAssetKey, param);
             }

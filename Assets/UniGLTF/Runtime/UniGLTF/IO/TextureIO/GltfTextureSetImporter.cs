@@ -28,22 +28,24 @@ namespace UniGLTF
     public sealed class GltfTextureSetImporter : ITextureSetImporter
     {
         private readonly GltfParser m_parser;
+        private TextureSet _textureSet;
 
         public GltfTextureSetImporter(GltfParser parser)
         {
             m_parser = parser;
         }
 
-        public IEnumerable<TextureImportParam> GetTextureParamsDistinct()
+        public TextureSet GetTextureSet()
         {
-            var usedTextures = new HashSet<SubAssetKey>();
-            foreach (var (key, param) in EnumerateAllTextures(m_parser))
+            if (_textureSet == null)
             {
-                if (usedTextures.Add(key))
+                _textureSet = new TextureSet();
+                foreach (var (_, param) in EnumerateAllTextures(m_parser))
                 {
-                    yield return param;
+                    _textureSet.Add(param);
                 }
             }
+            return _textureSet;
         }
 
         /// <summary>
@@ -53,7 +55,7 @@ namespace UniGLTF
         {
             for (int i = 0; i < parser.GLTF.materials.Count; ++i)
             {
-                foreach (var kv in GltfPbrTextureImporter.EnumerateTexturesReferencedByMaterial(parser, i))
+                foreach (var kv in GltfPbrTextureImporter.EnumerateAllTextures(parser, i))
                 {
                     yield return kv;
                 }

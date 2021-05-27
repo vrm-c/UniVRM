@@ -5,7 +5,7 @@ namespace UniGLTF
 {
     public sealed class GltfPbrTextureImporter
     {
-        public static IEnumerable<(SubAssetKey, TextureImportParam)> EnumerateTexturesReferencedByMaterial(GltfParser parser, int i)
+        public static IEnumerable<(SubAssetKey, TextureImportParam)> EnumerateAllTextures(GltfParser parser, int i)
         {
             var m = parser.GLTF.materials[i];
 

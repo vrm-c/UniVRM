@@ -10,28 +10,30 @@ namespace UniVRM10
     public sealed class Vrm10TextureSetImporter : ITextureSetImporter
     {
         private readonly GltfParser m_parser;
+        private TextureSet _textureSet;
 
         public Vrm10TextureSetImporter(GltfParser parser)
         {
             m_parser = parser;
         }
 
-        public IEnumerable<TextureImportParam> GetTextureParamsDistinct()
+        public TextureSet GetTextureSet()
         {
-            var usedTextures = new HashSet<SubAssetKey>();
-            foreach (var (_, param) in EnumerateAllTexturesDistinct(m_parser))
+            if (_textureSet == null)
             {
-                if (usedTextures.Add(param.SubAssetKey))
+                _textureSet = new TextureSet();
+                foreach (var (_, param) in EnumerateAllTextures(m_parser))
                 {
-                    yield return param;
+                    _textureSet.Add(param);
                 }
             }
+            return _textureSet;
         }
 
         /// <summary>
         /// glTF 全体で使うテクスチャーを列挙する
         /// </summary>
-        private static IEnumerable<(SubAssetKey, TextureImportParam)> EnumerateAllTexturesDistinct(GltfParser parser)
+        private static IEnumerable<(SubAssetKey, TextureImportParam)> EnumerateAllTextures(GltfParser parser)
         {
             if (!UniGLTF.Extensions.VRMC_vrm.GltfDeserializer.TryGet(parser.GLTF.extensions, out UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm))
             {
@@ -44,7 +46,7 @@ namespace UniVRM10
                 var m = parser.GLTF.materials[materialIdx];
                 if (UniGLTF.Extensions.VRMC_materials_mtoon.GltfDeserializer.TryGet(m.extensions, out var mToon))
                 {
-                    foreach (var (_, tex) in Vrm10MToonTextureImporter.TryGetAllTextures(parser, m, mToon))
+                    foreach (var (_, tex) in Vrm10MToonTextureImporter.EnumerateAllTextures(parser, m, mToon))
                     {
                         yield return tex;
                     }
@@ -52,7 +54,7 @@ namespace UniVRM10
                 else
                 {
                     // Fallback to glTF PBR & glTF Unlit
-                    foreach (var tex in GltfPbrTextureImporter.EnumerateTexturesReferencedByMaterial(parser, materialIdx))
+                    foreach (var tex in GltfPbrTextureImporter.EnumerateAllTextures(parser, materialIdx))
                     {
                         yield return tex;
                     }

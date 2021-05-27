@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using VRMShaders;
+﻿using VRMShaders;
 
 namespace UniGLTF
 {
@@ -10,6 +9,6 @@ namespace UniGLTF
     /// </summary>
     public interface ITextureSetImporter
     {
-        IEnumerable<TextureImportParam> GetTextureParamsDistinct();
+        TextureSet GetTextureSet();
     }
 }

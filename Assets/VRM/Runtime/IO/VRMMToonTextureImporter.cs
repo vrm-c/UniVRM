@@ -7,7 +7,7 @@ namespace VRM
 {
     public static class VRMMToonTextureImporter
     {
-        public static IEnumerable<(SubAssetKey, TextureImportParam)> EnumerateTexturesReferencedByMaterial(GltfParser parser, glTF_VRM_extensions vrm, int materialIdx)
+        public static IEnumerable<(SubAssetKey, TextureImportParam)> EnumerateAllTextures(GltfParser parser, glTF_VRM_extensions vrm, int materialIdx)
         {
             var vrmMaterial = vrm.materialProperties[materialIdx];
             foreach (var kv in vrmMaterial.textureProperties)

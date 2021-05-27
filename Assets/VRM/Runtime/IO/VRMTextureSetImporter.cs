@@ -10,6 +10,7 @@ namespace VRM
     {
         private readonly GltfParser m_parser;
         private readonly glTF_VRM_extensions m_vrm;
+        private TextureSet _textureSet;
 
         public VRMTextureSetImporter(GltfParser parser, glTF_VRM_extensions vrm)
         {
@@ -17,17 +18,19 @@ namespace VRM
             m_vrm = vrm;
         }
 
-        public IEnumerable<TextureImportParam> GetTextureParamsDistinct()
+        public TextureSet GetTextureSet()
         {
-            var usedTextures = new HashSet<SubAssetKey>();
-            foreach (var (_, param) in EnumerateAllTextures(m_parser, m_vrm))
+            if (_textureSet == null)
             {
-                if (usedTextures.Add(param.SubAssetKey))
+                _textureSet = new TextureSet();
+                foreach (var (_, param) in EnumerateAllTextures(m_parser, m_vrm))
                 {
-                    yield return param;
+                    _textureSet.Add(param);
                 }
             }
+            return _textureSet;
         }
+
 
         private static IEnumerable<(SubAssetKey, TextureImportParam)> EnumerateAllTextures(GltfParser parser, glTF_VRM_extensions vrm)
         {
@@ -40,7 +43,7 @@ namespace VRM
                 if (vrmMaterial.shader == MToon.Utils.ShaderName)
                 {
                     // MToon
-                    foreach (var kv in VRMMToonTextureImporter.EnumerateTexturesReferencedByMaterial(parser, vrm, materialIdx))
+                    foreach (var kv in VRMMToonTextureImporter.EnumerateAllTextures(parser, vrm, materialIdx))
                     {
                         yield return kv;
                     }
@@ -48,7 +51,7 @@ namespace VRM
                 else
                 {
                     // Unlit or PBR
-                    foreach (var kv in GltfPbrTextureImporter.EnumerateTexturesReferencedByMaterial(parser, materialIdx))
+                    foreach (var kv in GltfPbrTextureImporter.EnumerateAllTextures(parser, materialIdx))
                     {
                         yield return kv;
                     }

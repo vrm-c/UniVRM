@@ -183,7 +183,7 @@ namespace UniGLTF
 
         public async Task LoadTexturesAsync()
         {
-            var textures = TextureSetImporter.GetTextureParamsDistinct();
+            var textures = TextureSetImporter.GetTextureSet().GetTextureParamsDistinct();
             foreach (var param in textures)
             {
                 var tex = await TextureFactory.GetTextureAsync(param);

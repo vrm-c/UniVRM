@@ -9,7 +9,7 @@ namespace UniVRM10
 {
     public static class Vrm10MToonTextureImporter
     {
-        public static IEnumerable<(string key, (SubAssetKey, TextureImportParam))> TryGetAllTextures(GltfParser parser, glTFMaterial material, VRMC_materials_mtoon mToon)
+        public static IEnumerable<(string key, (SubAssetKey, TextureImportParam))> EnumerateAllTextures(GltfParser parser, glTFMaterial material, VRMC_materials_mtoon mToon)
         {
             if (TryGetBaseColorTexture(parser, material, out var litTex))
             {
