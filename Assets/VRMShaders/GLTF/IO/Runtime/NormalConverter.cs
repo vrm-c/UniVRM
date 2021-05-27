@@ -17,12 +17,6 @@ namespace VRMShaders
             }
         }
 
-        // GLTF data to Unity texture
-        public static Texture2D Import(Texture2D texture)
-        {
-            return texture;
-        }
-
         // Unity texture to GLTF data
         public static Texture2D Export(Texture texture)
         {
