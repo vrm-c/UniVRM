@@ -183,7 +183,7 @@ namespace UniGLTF
 
         public async Task LoadTexturesAsync()
         {
-            var textures = TextureDescriptorGenerator.GetTextureImportParamSet().GetEnumerable();
+            var textures = TextureDescriptorGenerator.Get().GetEnumerable();
             foreach (var param in textures)
             {
                 var tex = await TextureFactory.GetTextureAsync(param);

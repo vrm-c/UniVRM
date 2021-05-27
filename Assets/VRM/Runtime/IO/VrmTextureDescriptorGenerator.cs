@@ -18,7 +18,7 @@ namespace VRM
             m_vrm = vrm;
         }
 
-        public TextureImportParamSet GetTextureImportParamSet()
+        public TextureImportParamSet Get()
         {
             if (_textureImportParamSet == null)
             {

@@ -17,7 +17,7 @@ namespace UniVRM10
             m_parser = parser;
         }
 
-        public TextureImportParamSet GetTextureImportParamSet()
+        public TextureImportParamSet Get()
         {
             if (_textureImportParamSet == null)
             {

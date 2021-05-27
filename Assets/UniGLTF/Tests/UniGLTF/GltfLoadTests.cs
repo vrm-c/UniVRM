@@ -136,7 +136,7 @@ namespace UniGLTF
             }
 
             // should unique
-            var gltfTextures = new GltfTextureDescriptorGenerator(parser).GetTextureImportParamSet().GetEnumerable()
+            var gltfTextures = new GltfTextureDescriptorGenerator(parser).Get().GetEnumerable()
                 .Select(x => x.SubAssetKey)
                 .ToArray();
             var distinct = gltfTextures.Distinct().ToArray();
