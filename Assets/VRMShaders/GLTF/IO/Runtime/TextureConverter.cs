@@ -8,23 +8,24 @@ namespace VRMShaders
 {
     public static class TextureConverter
     {
-        public delegate Color32 ColorConversion(Color32 color);
-
-        public static Texture2D Convert(Texture texture, ColorSpace dstColorSpace, ColorConversion colorConversion, Material convertMaterial)
+        public static Texture2D CreateEmptyTextureWithSettings(Texture src, ColorSpace dstColorSpace, bool dstNeedsAlpha)
         {
-            var copyTexture = CopyTexture(texture, dstColorSpace, convertMaterial);
-            if (colorConversion != null)
-            {
-                copyTexture.SetPixels32(copyTexture.GetPixels32().Select(x => colorConversion(x)).ToArray());
-                copyTexture.Apply();
-            }
-            copyTexture.name = texture.name;
-            return copyTexture;
+            var texFormat = dstNeedsAlpha ? TextureFormat.ARGB32 : TextureFormat.RGB24;
+            var dst = new Texture2D(src.width, src.height, texFormat, src.HasMipMap(), dstColorSpace == ColorSpace.Linear);
+            dst.name = src.name;
+            dst.anisoLevel = src.anisoLevel;
+            dst.filterMode = src.filterMode;
+            dst.mipMapBias = src.mipMapBias;
+            dst.wrapMode = src.wrapMode;
+            dst.wrapModeU = src.wrapModeU;
+            dst.wrapModeV = src.wrapModeV;
+            dst.wrapModeW = src.wrapModeW;
+
+            return dst;
         }
 
-        public static Texture2D CopyTexture(Texture src, ColorSpace dstColorSpace, Material material)
+        public static Texture2D CopyTexture(Texture src, ColorSpace dstColorSpace, bool dstNeedsAlpha, Material material)
         {
-            Texture2D dst = null;
             RenderTextureReadWrite readWrite;
             switch (dstColorSpace)
             {
@@ -49,16 +50,8 @@ namespace VRMShaders
                 Graphics.Blit(src, renderTexture);
             }
 
-            dst = new Texture2D(src.width, src.height, TextureFormat.ARGB32, src.HasMipMap(), readWrite == RenderTextureReadWrite.Linear);
+            var dst = CreateEmptyTextureWithSettings(src, dstColorSpace, dstNeedsAlpha);
             dst.ReadPixels(new Rect(0, 0, src.width, src.height), 0, 0);
-            dst.name = src.name;
-            dst.anisoLevel = src.anisoLevel;
-            dst.filterMode = src.filterMode;
-            dst.mipMapBias = src.mipMapBias;
-            dst.wrapMode = src.wrapMode;
-            dst.wrapModeU = src.wrapModeU;
-            dst.wrapModeV = src.wrapModeV;
-            dst.wrapModeW = src.wrapModeW;
             dst.Apply();
 
             RenderTexture.active = null;
