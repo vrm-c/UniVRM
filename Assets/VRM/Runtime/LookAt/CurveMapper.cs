@@ -17,12 +17,6 @@ namespace VRM
         [Range(0, 90.0f)]
         public float CurveYRangeDegree;
 
-        /*
-        public CurveMapper() : this(90.0f, 10.0f)
-        {
-        }
-        */
-
         public CurveMapper(float xRange, float yRange)
         {
             CurveXRangeDegree = xRange;
@@ -92,6 +86,11 @@ namespace VRM
                 return Equals(mapper);
             }
             return base.Equals(obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
         }
     }
 }
