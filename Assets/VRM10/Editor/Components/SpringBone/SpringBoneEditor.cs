@@ -1,9 +1,12 @@
-using System.Collections.Generic;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
 namespace UniVRM10
 {
+    /// <summary>
+    /// TreeView でアクティブな SpringBone, ColliderGroup を管理して、
+    /// アクティブな SpringBone と ColliderGroup を SceneHandle で Edit する。
+    /// </summary>
     public static class SpringBoneEditor
     {
         public class SpringBoneTreeView : TreeView
@@ -27,7 +30,31 @@ namespace UniVRM10
                 springBone.AddChild(_colliderGroups);
 
                 _springs = new TreeViewItem(_nextNodeID++, 1, "Springs");
-                springBone.AddChild(_springs);                
+                springBone.AddChild(_springs);
+
+                // load
+                for (var i = 0; i < target.SpringBone.ColliderGroups.Count; ++i)
+                {
+                    var colliderGroup = target.SpringBone.ColliderGroups[i];
+                    var name = colliderGroup.Name;
+                    if (string.IsNullOrEmpty(name))
+                    {
+                        name = $"colliderGroup{i:00}";
+                    }
+                    var item = new TreeViewItem(_nextNodeID++, 2, name);
+                    _colliderGroups.AddChild(item);
+                }
+                for (var i = 0; i < target.SpringBone.Springs.Count; ++i)
+                {
+                    var spring = target.SpringBone.Springs[i];
+                    var name = spring.Name;
+                    if (string.IsNullOrEmpty(name))
+                    {
+                        name = spring.Joints[0].Transform.name;
+                    }
+                    var item = new TreeViewItem(_nextNodeID++, 2, name);
+                    _springs.AddChild(item);
+                }
             }
 
             protected override TreeViewItem BuildRoot()
@@ -54,6 +81,11 @@ namespace UniVRM10
         /// </summary>
         public static void Draw2D(VRM10Controller target)
         {
+            if (GUILayout.Button("Reload"))
+            {
+                GetTree(target).Reload();
+            }
+
             var r = GUILayoutUtility.GetRect(GUIContent.none, GUIStyle.none, GUILayout.Height(500));
             GetTree(target).OnGUI(r);
         }
@@ -65,5 +97,31 @@ namespace UniVRM10
         {
 
         }
+
+        //         private void OnSceneGUI()
+        //         {
+        //             Undo.RecordObject(m_target, "VRMSpringBoneColliderGroupEditor");
+
+        //             Handles.matrix = m_target.transform.localToWorldMatrix;
+        //             Gizmos.color = Color.green;
+
+        //             bool changed = false;
+
+        //             foreach (var x in m_target.Colliders)
+        //             {
+        //                 var offset = Handles.PositionHandle(x.Offset, Quaternion.identity);
+        //                 if (offset != x.Offset)
+        //                 {
+        //                     changed = true;
+        //                     x.Offset = offset;
+        //                 }
+        //             }
+
+        //             if (changed)
+        //             {
+        //                 EditorUtility.SetDirty(m_target);
+        //             }
+        //         }
+
     }
 }

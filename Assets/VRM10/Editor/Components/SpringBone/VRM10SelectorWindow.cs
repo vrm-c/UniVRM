@@ -55,8 +55,6 @@ namespace UniVRM10
                 m_root = value;
 
                 m_boneMap = null;
-                m_springs = null;
-                m_colliderGroups = null;
                 m_constraints = null;
             }
         }
@@ -64,12 +62,6 @@ namespace UniVRM10
         static bool s_foldHumanoidBones = true;
         static HumanBodyBones[] s_bones;
         public Dictionary<HumanBodyBones, Transform> m_boneMap;
-
-        static bool s_foldSprings = true;
-        public VRM10SpringBone[] m_springs;
-
-        static bool s_foldColliders = true;
-        public VRM10SpringBoneColliderGroup[] m_colliderGroups;
 
         static bool s_foldConstraints = true;
         public VRM10Constraint[] m_constraints;
@@ -86,11 +78,6 @@ namespace UniVRM10
         private void OnGUI()
         {
             Root = (Transform)EditorGUILayout.ObjectField("vrm1 root", m_root, typeof(Transform), true);
-
-            if (m_springs != null && m_springs.Length > 0 && m_springs.Any(x => x == null))
-            {
-                Reload();
-            }
 
             m_scrollPosition = EditorGUILayout.BeginScrollView(m_scrollPosition);
 
@@ -156,14 +143,6 @@ namespace UniVRM10
                         }
                     }
                 }
-                if (m_springs == null)
-                {
-                    m_springs = m_root.GetComponentsInChildren<VRM10SpringBone>();
-                }
-                if (m_colliderGroups == null)
-                {
-                    m_colliderGroups = m_root.GetComponentsInChildren<VRM10SpringBoneColliderGroup>();
-                }
                 if (m_constraints == null)
                 {
                     m_constraints = m_root.GetComponentsInChildren<VRM10Constraint>();
@@ -183,30 +162,6 @@ namespace UniVRM10
 
                         }
                         EditorGUILayout.ObjectField(bone.ToString(), t, typeof(Transform), true);
-                    }
-                }
-            }
-
-            s_foldSprings = EditorGUILayout.Foldout(s_foldSprings, "springs");
-            if (s_foldSprings)
-            {
-                if (m_springs != null)
-                {
-                    foreach (var s in m_springs)
-                    {
-                        EditorGUILayout.ObjectField(s, typeof(VRM10SpringBone), true);
-                    }
-                }
-            }
-
-            s_foldColliders = EditorGUILayout.Foldout(s_foldColliders, "colliders");
-            if (s_foldColliders)
-            {
-                if (m_colliderGroups != null)
-                {
-                    foreach (var c in m_colliderGroups)
-                    {
-                        EditorGUILayout.ObjectField(c, typeof(VRM10SpringBoneColliderGroup), true);
                     }
                 }
             }

@@ -374,18 +374,17 @@ namespace UniVRM10
                 }
 
                 // colliderGroup
-                var list = new List<VRM10SpringBoneColliderGroup>();
                 foreach (var g in gltfVrmSpringBone.ColliderGroups)
-                {
-                    var colliderGroup = secondary.gameObject.AddComponent<VRM10SpringBoneColliderGroup>();
-                    list.Add(colliderGroup);
+                {                    
+                    var colliderGroup = new VRM10ControllerSpringBone.ColliderGroup();
+                    controller.SpringBone.ColliderGroups.Add(colliderGroup);
 
                     foreach (var c in g.Colliders)
                     {
                         var node = Nodes[c.Node.Value];
 
                         var collider = node.gameObject.AddComponent<VRM10SpringBoneCollider>();
-                        colliderGroup.AddCollider(collider);
+                        colliderGroup.Colliders.Add(collider);
 
                         if (c.Shape.Sphere is UniGLTF.Extensions.VRMC_springBone.ColliderShapeSphere sphere)
                         {
@@ -413,11 +412,10 @@ namespace UniVRM10
                     {
                         continue;
                     }
-                    var firstJointNode = Nodes[gltfSpring.Joints.First().Node.Value];
-                    var springBone = firstJointNode.gameObject.AddComponent<VRM10SpringBone>();
-                    springBone.Comment = gltfSpring.Name;
-                    springBone.ColliderGroups = gltfSpring.ColliderGroups.Select(x => list[x]).ToList();
+                    var spring = new VRM10ControllerSpringBone.Spring(gltfSpring.Name);
+                    controller.SpringBone.Springs.Add(spring);
 
+                    spring.ColliderGroups = gltfSpring.ColliderGroups.Select(x => controller.SpringBone.ColliderGroups[x]).ToList();
                     // joint
                     foreach (var gltfJoint in gltfSpring.Joints)
                     {
@@ -435,7 +433,7 @@ namespace UniVRM10
                             joint.m_gravityPower = gltfJoint.GravityPower.Value;
                             joint.m_stiffnessForce = gltfJoint.Stiffness.Value;
                             // joint.m_exclude = gltfJoint.Exclude.GetValueOrDefault();
-                            springBone.Joints.Add(joint);
+                            spring.Joints.Add(joint);
                         }
                     }
                 }
