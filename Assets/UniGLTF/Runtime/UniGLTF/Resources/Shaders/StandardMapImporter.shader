@@ -49,15 +49,17 @@
 
                fixed4 frag (v2f i) : SV_Target
                {
-                    half4 metallicRoughness = tex2D(_GltfMetallicRoughnessTexture, i.uv);
-                    half metallic = metallicRoughness.b * _GltfMetallicFactor;
-                    half roughness = metallicRoughness.g * _GltfRoughnessFactor;
-                    half occlusion = tex2D(_GltfOcclusionTexture, i.uv).r;
+                    half4 metallicRoughnessTex = tex2D(_GltfMetallicRoughnessTexture, i.uv);
+                    half4 occlusionTex = tex2D(_GltfOcclusionTexture, i.uv);
+
+                    half occlusion = occlusionTex.r; // R: glTF Occlusion
+                    half roughness = metallicRoughnessTex.g * _GltfRoughnessFactor; // G: glTF Roughness
+                    half metallic = metallicRoughnessTex.b * _GltfMetallicFactor; // B: glTF Metallic
 
                     fixed4 result;
-                    result.r = metallic;        // R: Unity Metallic
-                    result.g = occlusion;       // G: Unity Occlusion
-                    result.b = 0;               // B: Unity Heightmap (no use)
+                    result.r = metallic;  // R: Unity Metallic
+                    result.g = occlusion;  // G: Unity Occlusion
+                    result.b = 0; // B: Unity Heightmap (no use)
                     result.a = 1.0 - roughness; // A: Unity Smoothness
 
                     return result;
