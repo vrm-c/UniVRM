@@ -87,7 +87,8 @@ namespace VRMShaders
                 case TextureImportTypes.NormalMap:
                 {
                     // Runtime/SubAsset 用に変換する
-                    var rawTexture = await _textureDeserializer.LoadTextureAsync(texDesc.Index0, texDesc.Sampler.EnableMipMap, ColorSpace.Linear);
+                    var data0 = await texDesc.Index0();
+                    var rawTexture = await _textureDeserializer.LoadTextureAsync(data0, texDesc.Sampler.EnableMipMap, ColorSpace.Linear);
                     var convertedTexture = NormalConverter.Import(rawTexture);
                     convertedTexture.name = subAssetKey.Name;
                     convertedTexture.SetSampler(texDesc.Sampler);
@@ -103,11 +104,13 @@ namespace VRMShaders
 
                     if (texDesc.Index0 != null)
                     {
-                        metallicRoughnessTexture = await _textureDeserializer.LoadTextureAsync(texDesc.Index0, texDesc.Sampler.EnableMipMap, ColorSpace.Linear);
+                        var data0 = await texDesc.Index0();
+                        metallicRoughnessTexture = await _textureDeserializer.LoadTextureAsync(data0, texDesc.Sampler.EnableMipMap, ColorSpace.Linear);
                     }
                     if (texDesc.Index1 != null)
                     {
-                        occlusionTexture = await _textureDeserializer.LoadTextureAsync(texDesc.Index1, texDesc.Sampler.EnableMipMap, ColorSpace.Linear);
+                        var data1 = await texDesc.Index1();
+                        occlusionTexture = await _textureDeserializer.LoadTextureAsync(data1, texDesc.Sampler.EnableMipMap, ColorSpace.Linear);
                     }
 
                     var combinedTexture = OcclusionMetallicRoughnessConverter.Import(metallicRoughnessTexture,
@@ -122,7 +125,8 @@ namespace VRMShaders
 
                 case TextureImportTypes.sRGB:
                 {
-                    var rawTexture = await _textureDeserializer.LoadTextureAsync(texDesc.Index0, texDesc.Sampler.EnableMipMap, ColorSpace.sRGB);
+                    var data0 = await texDesc.Index0();
+                    var rawTexture = await _textureDeserializer.LoadTextureAsync(data0, texDesc.Sampler.EnableMipMap, ColorSpace.sRGB);
                     rawTexture.name = subAssetKey.Name;
                     rawTexture.SetSampler(texDesc.Sampler);
                     _textureCache.Add(subAssetKey, rawTexture);
@@ -130,7 +134,8 @@ namespace VRMShaders
                 }
                 case TextureImportTypes.Linear:
                 {
-                    var rawTexture = await _textureDeserializer.LoadTextureAsync(texDesc.Index0, texDesc.Sampler.EnableMipMap, ColorSpace.Linear);
+                    var data0 = await texDesc.Index0();
+                    var rawTexture = await _textureDeserializer.LoadTextureAsync(data0, texDesc.Sampler.EnableMipMap, ColorSpace.Linear);
                     rawTexture.name = subAssetKey.Name;
                     rawTexture.SetSampler(texDesc.Sampler);
                     _textureCache.Add(subAssetKey, rawTexture);

@@ -37,14 +37,19 @@ namespace UniGLTF
         public TextureFactory TextureFactory { get; }
         public MaterialFactory MaterialFactory { get; }
 
-        public ImporterContext(GltfParser parser, IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> externalObjectMap = null)
+        public ImporterContext(
+            GltfParser parser,
+            IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> externalObjectMap = null,
+            ITextureDeserializer textureDeserializer = null)
         {
             Parser = parser;
             TextureDescriptorGenerator = new GltfTextureDescriptorGenerator(Parser);
             MaterialDescriptorGenerator = new GltfMaterialDescriptorGenerator();
 
             externalObjectMap = externalObjectMap ?? new Dictionary<SubAssetKey, UnityEngine.Object>();
-            TextureFactory = new TextureFactory(new RuntimeTextureDeserializer(), externalObjectMap
+            textureDeserializer = textureDeserializer ?? new UnityTextureDeserializer();
+
+            TextureFactory = new TextureFactory(textureDeserializer, externalObjectMap
                 .Where(x => x.Value is Texture)
                 .ToDictionary(x => x.Key, x => (Texture) x.Value));
             MaterialFactory = new MaterialFactory(externalObjectMap
