@@ -10,7 +10,7 @@ namespace VRM
     {
         private readonly GltfParser m_parser;
         private readonly glTF_VRM_extensions m_vrm;
-        private TextureImportParamSet _textureImportParamSet;
+        private TextureDescriptorSet _textureDescriptorSet;
 
         public VrmTextureDescriptorGenerator(GltfParser parser, glTF_VRM_extensions vrm)
         {
@@ -18,17 +18,17 @@ namespace VRM
             m_vrm = vrm;
         }
 
-        public TextureImportParamSet Get()
+        public TextureDescriptorSet Get()
         {
-            if (_textureImportParamSet == null)
+            if (_textureDescriptorSet == null)
             {
-                _textureImportParamSet = new TextureImportParamSet();
+                _textureDescriptorSet = new TextureDescriptorSet();
                 foreach (var (_, param) in EnumerateAllTextures(m_parser, m_vrm))
                 {
-                    _textureImportParamSet.Add(param);
+                    _textureDescriptorSet.Add(param);
                 }
             }
-            return _textureImportParamSet;
+            return _textureDescriptorSet;
         }
 
 

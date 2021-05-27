@@ -10,24 +10,24 @@ namespace UniVRM10
     public sealed class Vrm10TextureDescriptorGenerator : ITextureDescriptorGenerator
     {
         private readonly GltfParser m_parser;
-        private TextureImportParamSet _textureImportParamSet;
+        private TextureDescriptorSet _textureDescriptorSet;
 
         public Vrm10TextureDescriptorGenerator(GltfParser parser)
         {
             m_parser = parser;
         }
 
-        public TextureImportParamSet Get()
+        public TextureDescriptorSet Get()
         {
-            if (_textureImportParamSet == null)
+            if (_textureDescriptorSet == null)
             {
-                _textureImportParamSet = new TextureImportParamSet();
+                _textureDescriptorSet = new TextureDescriptorSet();
                 foreach (var (_, param) in EnumerateAllTextures(m_parser))
                 {
-                    _textureImportParamSet.Add(param);
+                    _textureDescriptorSet.Add(param);
                 }
             }
-            return _textureImportParamSet;
+            return _textureDescriptorSet;
         }
 
         /// <summary>

@@ -5,7 +5,7 @@ namespace VRMShaders
     /// <summary>
     /// TextureImportParam の集合を Unique な集合にする。
     /// </summary>
-    public sealed class TextureImportParamSet
+    public sealed class TextureDescriptorSet
     {
         private readonly Dictionary<SubAssetKey, TextureImportParam> _params = new Dictionary<SubAssetKey, TextureImportParam>();
 

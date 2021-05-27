@@ -9,6 +9,6 @@ namespace UniGLTF
     /// </summary>
     public interface ITextureDescriptorGenerator
     {
-        TextureImportParamSet Get();
+        TextureDescriptorSet Get();
     }
 }
