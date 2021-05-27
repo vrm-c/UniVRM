@@ -1,4 +1,7 @@
+using System.Collections.Generic;
+using UnityEditor;
 using UnityEditor.IMGUI.Controls;
+using UnityEditorInternal;
 using UnityEngine;
 
 namespace UniVRM10
@@ -12,15 +15,20 @@ namespace UniVRM10
         public class SpringBoneTreeView : TreeView
         {
             public VRM10Controller Target { get; private set; }
+            SerializedObject _so;
+
             TreeViewItem _root;
             TreeViewItem _colliderGroups;
             TreeViewItem _springs;
 
             int _nextNodeID = 0;
 
-            public SpringBoneTreeView(TreeViewState state, VRM10Controller target) : base(state)
+            Dictionary<int, object> _map = new Dictionary<int, object>();
+
+            public SpringBoneTreeView(TreeViewState state, VRM10Controller target, SerializedObject so) : base(state)
             {
                 Target = target;
+                _so = so;
 
                 _root = new TreeViewItem(_nextNodeID++, -1, "Root");
                 var springBone = new TreeViewItem(_nextNodeID++, 0, "SpringBone");
@@ -33,6 +41,7 @@ namespace UniVRM10
                 springBone.AddChild(_springs);
 
                 // load
+                _map = new Dictionary<int, object>();
                 for (var i = 0; i < target.SpringBone.ColliderGroups.Count; ++i)
                 {
                     var colliderGroup = target.SpringBone.ColliderGroups[i];
@@ -41,9 +50,12 @@ namespace UniVRM10
                     {
                         name = $"colliderGroup{i:00}";
                     }
-                    var item = new TreeViewItem(_nextNodeID++, 2, name);
+                    var id = _nextNodeID++;
+                    var item = new TreeViewItem(id, 2, name);
+                    _map.Add(id, colliderGroup);
                     _colliderGroups.AddChild(item);
                 }
+
                 for (var i = 0; i < target.SpringBone.Springs.Count; ++i)
                 {
                     var spring = target.SpringBone.Springs[i];
@@ -52,7 +64,9 @@ namespace UniVRM10
                     {
                         name = spring.Joints[0].Transform.name;
                     }
-                    var item = new TreeViewItem(_nextNodeID++, 2, name);
+                    var id = _nextNodeID++;
+                    var item = new TreeViewItem(id, 2, name);
+                    _map.Add(id, spring);
                     _springs.AddChild(item);
                 }
             }
@@ -61,33 +75,90 @@ namespace UniVRM10
             {
                 return _root;
             }
+
+            public ReorderableList Selected { get; private set; }
+
+            ReorderableList _colliderGroupList;
+            ReorderableList _springList;
+
+            protected override void SelectionChanged(IList<int> selectedIds)
+            {
+                if (selectedIds.Count > 0 && _map.TryGetValue(selectedIds[0], out object value))
+                {
+                    if (value is VRM10ControllerSpringBone.ColliderGroup colliderGroup)
+                    {
+                        var i = Target.SpringBone.ColliderGroups.IndexOf(colliderGroup);
+                        var prop = _so.FindProperty($"SpringBone.ColliderGroups.Array.data[{i}].Colliders");
+                        _colliderGroupList = new ReorderableList(_so, prop);
+
+                        _colliderGroupList.drawElementCallback = (rect, index, isActive, isFocused) =>
+                        {
+                            SerializedProperty element = prop.GetArrayElementAtIndex(index);
+                            rect.height -= 4;
+                            rect.y += 2;
+                            EditorGUI.PropertyField(rect, element);
+                        };
+
+                        Selected = _colliderGroupList;
+                    }
+                    else if (value is VRM10ControllerSpringBone.Spring spring)
+                    {
+                        var i = Target.SpringBone.Springs.IndexOf(spring);
+                        var prop = _so.FindProperty($"SpringBone.Springs.Array.data[{i}].Joints");
+                        _springList = new ReorderableList(_so, prop);
+
+                        Selected = _springList;
+                    }
+                    else
+                    {
+                        Selected = null;
+                    }
+                }
+                else
+                {
+                    Selected = null;
+                }
+            }
         }
 
         static SpringBoneTreeView s_treeView;
-        static SpringBoneTreeView GetTree(VRM10Controller target)
+        static SpringBoneTreeView GetTree(VRM10Controller target, SerializedObject so)
         {
             if (s_treeView == null || s_treeView.Target != target)
             {
                 var state = new TreeViewState();
-                s_treeView = new SpringBoneTreeView(state, target);
+                s_treeView = new SpringBoneTreeView(state, target, so);
                 s_treeView.Reload();
             }
             return s_treeView;
         }
 
+        public static void Disable()
+        {
+            s_treeView = null;
+        }
 
+        const int WINDOW_HEIGHT = 500;
+        const int TREE_WIDTH = 160;
         /// <summary>
         /// 2D の GUI 描画
         /// </summary>
-        public static void Draw2D(VRM10Controller target)
+        public static void Draw2D(VRM10Controller target, SerializedObject so)
         {
+            var tree = GetTree(target, so);
             if (GUILayout.Button("Reload"))
             {
-                GetTree(target).Reload();
+                tree.Reload();
             }
 
-            var r = GUILayoutUtility.GetRect(GUIContent.none, GUIStyle.none, GUILayout.Height(500));
-            GetTree(target).OnGUI(r);
+            var r = GUILayoutUtility.GetRect(GUIContent.none, GUIStyle.none, GUILayout.Height(WINDOW_HEIGHT));
+            tree.OnGUI(new Rect(r.x, r.y, TREE_WIDTH, r.height));
+
+            var ro = tree.Selected;
+            if (ro != null)
+            {
+                ro.DoList(new Rect(r.x + TREE_WIDTH, r.y, r.width - TREE_WIDTH, r.height));
+            }
         }
 
         /// <summary>

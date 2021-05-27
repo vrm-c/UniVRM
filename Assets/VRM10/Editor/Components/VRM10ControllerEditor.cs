@@ -62,6 +62,8 @@ namespace UniVRM10
                 m_metaEditor = null;
             }
 
+            VRM10ControllerSceneView.Disable();
+
             Tools.hidden = false;
         }
 
@@ -109,7 +111,7 @@ namespace UniVRM10
 
         void OnSceneGUI()
         {
-            VRM10ControllerSceneView.Draw(m_target);
+            VRM10ControllerSceneView.Draw(m_target, serializedObject);
         }
     }
 }

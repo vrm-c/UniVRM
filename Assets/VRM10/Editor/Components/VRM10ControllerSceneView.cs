@@ -37,7 +37,7 @@ namespace UniVRM10
         /// public entry point
         /// </summary>
         /// <param name="target"></param>
-        public static void Draw(VRM10Controller target)
+        public static void Draw(VRM10Controller target, SerializedObject so)
         {
             //
             // 2d window
@@ -57,7 +57,7 @@ namespace UniVRM10
                         break;
 
                     case VRMSceneUI.SpringBone:
-                        SpringBoneEditor.Draw2D(target);
+                        SpringBoneEditor.Draw2D(target, so);
                         break;
 
                     default:
@@ -90,6 +90,11 @@ namespace UniVRM10
                 default:
                     throw new NotImplementedException();
             }
+        }
+
+        public static void Disable()
+        {
+            SpringBoneEditor.Disable();
         }
     }
 }
