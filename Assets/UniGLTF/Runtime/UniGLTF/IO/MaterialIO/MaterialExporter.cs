@@ -2,7 +2,7 @@
 using UniGLTF.UniUnlit;
 using UnityEngine;
 using VRMShaders;
-
+using ColorSpace = VRMShaders.ColorSpace;
 
 namespace UniGLTF
 {

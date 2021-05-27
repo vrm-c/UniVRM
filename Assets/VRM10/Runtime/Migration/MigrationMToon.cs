@@ -5,7 +5,7 @@ using UniGLTF;
 using UniGLTF.Extensions.VRMC_materials_mtoon;
 using UniJSON;
 using UnityEngine;
-using ColorSpace = UniGLTF.ColorSpace;
+using ColorSpace = VRMShaders.ColorSpace;
 using RenderMode = MToon.RenderMode;
 
 namespace UniVRM10

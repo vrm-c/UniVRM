@@ -2,7 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 using VRMShaders;
-using ColorSpace = UniGLTF.ColorSpace;
+using ColorSpace = VRMShaders.ColorSpace;
 
 namespace MeshUtility
 {

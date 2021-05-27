@@ -2,7 +2,7 @@
 using UnityEngine;
 using VRMShaders;
 
-namespace UniGLTF
+namespace VRMShaders
 {
     public sealed class RuntimeTextureSerializer : ITextureSerializer
     {

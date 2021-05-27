@@ -1,8 +1,6 @@
 using System;
 using System.Linq;
 using UnityEngine;
-using ColorSpace = UniGLTF.ColorSpace;
-
 
 namespace VRMShaders
 {
@@ -11,6 +9,7 @@ namespace VRMShaders
         public static Texture2D CreateEmptyTextureWithSettings(Texture src, ColorSpace dstColorSpace, bool dstNeedsAlpha)
         {
             var texFormat = dstNeedsAlpha ? TextureFormat.ARGB32 : TextureFormat.RGB24;
+            texFormat = TextureFormat.ARGB32;
             var dst = new Texture2D(src.width, src.height, texFormat, src.HasMipMap(), dstColorSpace == ColorSpace.Linear);
             dst.name = src.name;
             dst.anisoLevel = src.anisoLevel;
