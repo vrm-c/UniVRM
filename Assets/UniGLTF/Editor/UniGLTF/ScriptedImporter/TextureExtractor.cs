@@ -42,7 +42,7 @@ namespace UniGLTF
             return Path.GetExtension(uri).ToLower();
         }
 
-        public void Extract(SubAssetKey key, TextureImportParam param)
+        public void Extract(SubAssetKey key, TextureDescriptor texDesc)
         {
             if (Textures.ContainsKey(key))
             {

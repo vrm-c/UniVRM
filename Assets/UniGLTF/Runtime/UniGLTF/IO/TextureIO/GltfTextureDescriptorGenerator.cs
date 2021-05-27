@@ -51,7 +51,7 @@ namespace UniGLTF
         /// <summary>
         /// glTF 全体で使うテクスチャーを列挙。
         /// </summary>
-        private static IEnumerable<(SubAssetKey, TextureImportParam)> EnumerateAllTextures(GltfParser parser)
+        private static IEnumerable<(SubAssetKey, TextureDescriptor)> EnumerateAllTextures(GltfParser parser)
         {
             for (int i = 0; i < parser.GLTF.materials.Count; ++i)
             {

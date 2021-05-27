@@ -7,18 +7,18 @@ namespace VRMShaders
     /// </summary>
     public sealed class TextureDescriptorSet
     {
-        private readonly Dictionary<SubAssetKey, TextureImportParam> _params = new Dictionary<SubAssetKey, TextureImportParam>();
+        private readonly Dictionary<SubAssetKey, TextureDescriptor> _texDescDict = new Dictionary<SubAssetKey, TextureDescriptor>();
 
-        public void Add(TextureImportParam param)
+        public void Add(TextureDescriptor texDesc)
         {
-            if (_params.ContainsKey(param.SubAssetKey)) return;
+            if (_texDescDict.ContainsKey(texDesc.SubAssetKey)) return;
 
-            _params.Add(param.SubAssetKey, param);
+            _texDescDict.Add(texDesc.SubAssetKey, texDesc);
         }
 
-        public IEnumerable<TextureImportParam> GetEnumerable()
+        public IEnumerable<TextureDescriptor> GetEnumerable()
         {
-            foreach (var kv in _params)
+            foreach (var kv in _texDescDict)
             {
                 yield return kv.Value;
             }

@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace VRMShaders
 {
-    public delegate Task<Texture> GetTextureAsyncFunc(TextureImportParam param);
+    public delegate Task<Texture> GetTextureAsyncFunc(TextureDescriptor texDesc);
 
     public class MaterialFactory : IDisposable
     {

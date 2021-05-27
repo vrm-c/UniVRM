@@ -32,7 +32,7 @@ namespace VRM
         }
 
 
-        private static IEnumerable<(SubAssetKey, TextureImportParam)> EnumerateAllTextures(GltfParser parser, glTF_VRM_extensions vrm)
+        private static IEnumerable<(SubAssetKey, TextureDescriptor)> EnumerateAllTextures(GltfParser parser, glTF_VRM_extensions vrm)
         {
             // Materials
             for (var materialIdx = 0; materialIdx < parser.GLTF.materials.Count; ++materialIdx)
@@ -65,7 +65,7 @@ namespace VRM
             }
         }
 
-        private static bool TryGetThumbnailTexture(GltfParser parser, glTF_VRM_extensions vrm, out (SubAssetKey, TextureImportParam) texture)
+        private static bool TryGetThumbnailTexture(GltfParser parser, glTF_VRM_extensions vrm, out (SubAssetKey, TextureDescriptor) texture)
         {
             if (vrm.meta.texture > -1)
             {

@@ -58,13 +58,13 @@ namespace UniGLTF
             var src = parser.GLTF.materials[i];
             param = new MaterialImportParam(GltfMaterialImporter.GetMaterialName(i, src), ShaderName);
 
-            var standardParam = default(TextureImportParam);
+            var standardTexDesc = default(TextureDescriptor);
             if (src.pbrMetallicRoughness != null || src.occlusionTexture != null)
             {
                 if (src.pbrMetallicRoughness.metallicRoughnessTexture != null || src.occlusionTexture != null)
                 {
                     SubAssetKey key;
-                    (key, standardParam) = GltfPbrTextureImporter.StandardTexture(parser, src);
+                    (key, standardTexDesc) = GltfPbrTextureImporter.StandardTexture(parser, src);
                 }
 
                 if (src.pbrMetallicRoughness.baseColorFactor != null && src.pbrMetallicRoughness.baseColorFactor.Length == 4)
@@ -83,7 +83,7 @@ namespace UniGLTF
                 if (src.pbrMetallicRoughness.metallicRoughnessTexture != null && src.pbrMetallicRoughness.metallicRoughnessTexture.index != -1)
                 {
                     param.Actions.Add(material => material.EnableKeyword("_METALLICGLOSSMAP"));
-                    param.TextureSlots.Add("_MetallicGlossMap", standardParam);
+                    param.TextureSlots.Add("_MetallicGlossMap", standardTexDesc);
                     // Set 1.0f as hard-coded. See: https://github.com/dwango/UniVRM/issues/212.
                     param.FloatValues.Add("_Metallic", 1.0f);
                     param.FloatValues.Add("_GlossMapScale", 1.0f);
@@ -105,7 +105,7 @@ namespace UniGLTF
 
             if (src.occlusionTexture != null && src.occlusionTexture.index != -1)
             {
-                param.TextureSlots.Add("_OcclusionMap", standardParam);
+                param.TextureSlots.Add("_OcclusionMap", standardTexDesc);
                 param.FloatValues.Add("_OcclusionStrength", src.occlusionTexture.strength);
             }
 

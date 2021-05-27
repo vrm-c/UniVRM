@@ -33,7 +33,7 @@ namespace UniVRM10
         /// <summary>
         /// glTF 全体で使うテクスチャーを列挙する
         /// </summary>
-        private static IEnumerable<(SubAssetKey, TextureImportParam)> EnumerateAllTextures(GltfParser parser)
+        private static IEnumerable<(SubAssetKey, TextureDescriptor)> EnumerateAllTextures(GltfParser parser)
         {
             if (!UniGLTF.Extensions.VRMC_vrm.GltfDeserializer.TryGet(parser.GLTF.extensions, out UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm))
             {
@@ -62,7 +62,7 @@ namespace UniVRM10
             }
 
             // Thumbnail Texture referenced by VRM Meta.
-            if (TryGetMetaThumbnailTextureImportParam(parser, vrm, out (SubAssetKey key, TextureImportParam) thumbnail))
+            if (TryGetMetaThumbnailTextureImportParam(parser, vrm, out (SubAssetKey key, TextureDescriptor) thumbnail))
             {
                 yield return thumbnail;
             }
@@ -71,7 +71,7 @@ namespace UniVRM10
         /// <summary>
         /// VRM-1 の thumbnail テクスチャー。gltf.textures ではなく gltf.images の参照であることに注意(sampler等の設定が無い)
         /// </summary>
-        public static bool TryGetMetaThumbnailTextureImportParam(GltfParser parser, UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm, out (SubAssetKey, TextureImportParam) value)
+        public static bool TryGetMetaThumbnailTextureImportParam(GltfParser parser, UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm, out (SubAssetKey, TextureDescriptor) value)
         {
             if (vrm?.Meta?.ThumbnailImage == null)
             {
@@ -88,11 +88,11 @@ namespace UniVRM10
                 var bytes = parser.GLTF.GetImageBytes(parser.Storage, imageIndex);
                 return Task.FromResult(GltfTextureImporter.ToArray(bytes));
             };
-            var param = new TextureImportParam(name, gltfImage.GetExt(), gltfImage.uri, Vector2.zero, Vector2.one, default, TextureImportTypes.sRGB, default, default,
+            var texDesc = new TextureDescriptor(name, gltfImage.GetExt(), gltfImage.uri, Vector2.zero, Vector2.one, default, TextureImportTypes.sRGB, default, default,
                getThumbnailImageBytesAsync, default, default,
                default, default, default
                );
-            value = (param.SubAssetKey, param);
+            value = (texDesc.SubAssetKey, texDesc);
             return true;
         }
     }

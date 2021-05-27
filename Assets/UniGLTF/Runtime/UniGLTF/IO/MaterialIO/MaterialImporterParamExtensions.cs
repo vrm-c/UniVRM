@@ -6,7 +6,7 @@ namespace UniGLTF
 {
     public static class MaterialImporterParamExtensions
     {
-        public static IEnumerable<(SubAssetKey, TextureImportParam)> EnumerateSubAssetKeyValue(this MaterialImportParam param)
+        public static IEnumerable<(SubAssetKey, TextureDescriptor)> EnumerateSubAssetKeyValue(this MaterialImportParam param)
         {
             foreach (var kv in param.TextureSlots)
             {
