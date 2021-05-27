@@ -29,20 +29,48 @@ namespace UniVRM10
             }
         }
 
-        static VRMSceneUI SelectUI(VRMSceneUI ui)
-        {
-            var size = SceneView.currentDrawingSceneView.position.size;
+        const int WINDOW_ID = 1234;
+        const string WINDOW_TITLE = "VRM1";
+        static Rect s_windowRect = new Rect(20, 20, 400, 50);
 
-            var rect = new Rect(0, 0, size.x, EditorGUIUtility.singleLineHeight);
-            return (VRMSceneUI)GUI.SelectionGrid(rect, (int)ui, Selection, 3);
-        }
-
-        public static void Draw(VRM10Controller m_target)
+        /// <summary>
+        /// public entry point
+        /// </summary>
+        /// <param name="target"></param>
+        public static void Draw(VRM10Controller target)
         {
+            //
+            // 2d window
+            //
             Handles.BeginGUI();
-            s_ui = SelectUI(s_ui);
+            s_windowRect = GUILayout.Window(WINDOW_ID, s_windowRect, id =>
+            {
+                s_ui = (VRMSceneUI)GUILayout.SelectionGrid((int)s_ui, Selection, 3);
+
+                switch (s_ui)
+                {
+                    case VRMSceneUI.None:
+                        break;
+
+                    case VRMSceneUI.LookAt:
+                        LookAtEditor.Draw2D(target);
+                        break;
+
+                    case VRMSceneUI.SpringBone:
+                        SpringBoneEditor.Draw2D(target);
+                        break;
+
+                    default:
+                        throw new NotImplementedException();
+                }
+
+                GUI.DragWindow();
+            }, WINDOW_TITLE);
             Handles.EndGUI();
 
+            //
+            // 3d handle
+            //
             switch (s_ui)
             {
                 case VRMSceneUI.None:
@@ -51,68 +79,16 @@ namespace UniVRM10
 
                 case VRMSceneUI.LookAt:
                     Tools.hidden = true;
-                    OnSceneGUIOffset(m_target);
-                    if (!Application.isPlaying)
-                    {
-                        // offset
-                        var p = m_target.LookAt.OffsetFromHead;
-                        Handles.Label(m_target.Head.position, $"fromHead: [{p.x:0.00}, {p.y:0.00}, {p.z:0.00}]");
-                    }
-                    else
-                    {
-                        m_target.LookAt.OnSceneGUILookAt(m_target.Head);
-                    }
+                    LookAtEditor.Draw3D(target);
                     break;
 
                 case VRMSceneUI.SpringBone:
                     Tools.hidden = true;
-                    windowRect = GUI.Window(0, windowRect, DoMyWindow, "My Window");
+                    SpringBoneEditor.Draw3D(target);
                     break;
 
                 default:
                     throw new NotImplementedException();
-            }
-        }
-
-        const int windowID = 1234;
-        static Rect windowHandle;
-        static Rect windowRect = new Rect(20, 20, 120, 50);
-        static void DoMyWindow(int windowID)
-        {
-            // Make a very long rect that is 20 pixels tall.
-            // This will make the window be resizable by the top
-            // title bar - no matter how wide it gets.
-            GUILayout.Button("hello");
-            // GUI.DragWindow(new Rect(0, 0, 10000, 20));
-        }
-
-        static void OnSceneGUIOffset(VRM10Controller m_target)
-        {
-            if (!m_target.LookAt.DrawGizmo)
-            {
-                return;
-            }
-
-            var head = m_target.Head;
-            if (head == null)
-            {
-                return;
-            }
-
-            EditorGUI.BeginChangeCheck();
-
-            var worldOffset = head.localToWorldMatrix.MultiplyPoint(m_target.LookAt.OffsetFromHead);
-            worldOffset = Handles.PositionHandle(worldOffset, head.rotation);
-
-            Handles.DrawDottedLine(head.position, worldOffset, 5);
-            Handles.SphereHandleCap(0, head.position, Quaternion.identity, 0.02f, Event.current.type);
-            Handles.SphereHandleCap(0, worldOffset, Quaternion.identity, 0.02f, Event.current.type);
-
-            if (EditorGUI.EndChangeCheck())
-            {
-                Undo.RecordObject(m_target, "Changed FirstPerson");
-
-                m_target.LookAt.OffsetFromHead = head.worldToLocalMatrix.MultiplyPoint(worldOffset);
             }
         }
     }
