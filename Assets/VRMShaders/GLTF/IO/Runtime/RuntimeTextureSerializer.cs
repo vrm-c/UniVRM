@@ -41,7 +41,8 @@ namespace UniGLTF
 
         private static (byte[] bytes, string mime) CopyTextureAndGetBytesWithMime(Texture2D texture, ColorSpace colorSpace)
         {
-            var copiedTex = TextureConverter.CopyTexture(texture, colorSpace, null);
+            var needsAlpha = texture.format != TextureFormat.RGB24;
+            var copiedTex = TextureConverter.CopyTexture(texture, colorSpace, needsAlpha, null);
             var bytes = copiedTex.EncodeToPNG();
             if (Application.isPlaying)
             {

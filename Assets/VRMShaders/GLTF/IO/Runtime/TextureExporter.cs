@@ -79,7 +79,7 @@ namespace VRMShaders
             }
             else
             {
-                texture2D = TextureConverter.CopyTexture(src, ColorSpace.sRGB, null);
+                texture2D = TextureConverter.CopyTexture(src, ColorSpace.sRGB, true, null);
             }
             m_exported.Add((texture2D, ColorSpace.sRGB));
             m_exportMap.Add(new ExportKey(src, ExportTypes.Srgb), index);
@@ -110,7 +110,7 @@ namespace VRMShaders
             }
             else
             {
-                texture2d = TextureConverter.CopyTexture(src, ColorSpace.Linear, null);
+                texture2d = TextureConverter.CopyTexture(src, ColorSpace.Linear, false, null);
             }
             m_exported.Add((texture2d, ColorSpace.Linear));
             m_exportMap.Add(exportKey, index);

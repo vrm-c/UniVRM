@@ -36,14 +36,14 @@ namespace VRMShaders
         // ConvertToNormalValueFromRawColorWhenCompressionIsRequired
         public static Texture2D Import(Texture2D texture)
         {
-            return TextureConverter.Convert(texture, ColorSpace.Linear, null, Encoder);
+            return TextureConverter.CopyTexture(texture, ColorSpace.Linear, false, Encoder);
         }
 
         // Unity texture to GLTF data
         // ConvertToRawColorWhenNormalValueIsCompressed
         public static Texture2D Export(Texture texture)
         {
-            return TextureConverter.Convert(texture, ColorSpace.Linear, null, Decoder);
+            return TextureConverter.CopyTexture(texture, ColorSpace.Linear, false, Decoder);
         }
     }
 }
