@@ -8,41 +8,41 @@ namespace UniGLTF
     {
         public const string ShaderName = "UniGLTF/UniUnlit";
 
-        public static bool TryCreateParam(GltfParser parser, int i, out MaterialImportParam param)
+        public static bool TryCreateParam(GltfParser parser, int i, out MaterialDescriptor matDesc)
         {
             if (i < 0 || i >= parser.GLTF.materials.Count)
             {
-                param = default;
+                matDesc = default;
                 return false;
             }
 
             var src = parser.GLTF.materials[i];
             if (!glTF_KHR_materials_unlit.IsEnable(src))
             {
-                param = default;
+                matDesc = default;
                 return false;
             }
 
-            param = new MaterialImportParam(GltfMaterialImporter.GetMaterialName(i, src), ShaderName);
+            matDesc = new MaterialDescriptor(GltfMaterialImporter.GetMaterialName(i, src), ShaderName);
 
             // texture
             if (src.pbrMetallicRoughness.baseColorTexture != null)
             {
                 var (offset, scale) = GltfTextureImporter.GetTextureOffsetAndScale(src.pbrMetallicRoughness.baseColorTexture);
                 var (key, textureParam) = GltfTextureImporter.CreateSRGB(parser, src.pbrMetallicRoughness.baseColorTexture.index, offset, scale);
-                param.TextureSlots.Add("_MainTex", textureParam);
+                matDesc.TextureSlots.Add("_MainTex", textureParam);
             }
 
             // color
             if (src.pbrMetallicRoughness.baseColorFactor != null && src.pbrMetallicRoughness.baseColorFactor.Length == 4)
             {
-                param.Colors.Add("_Color",
+                matDesc.Colors.Add("_Color",
                     src.pbrMetallicRoughness.baseColorFactor.ToColor4(ColorSpace.Linear, ColorSpace.sRGB)
                 );
             }
 
             //renderMode
-            param.Actions.Add(material =>
+            matDesc.Actions.Add(material =>
             {
                 if (src.alphaMode == "OPAQUE")
                 {

@@ -14,26 +14,26 @@ namespace VRM
             m_vrm = vrm;
         }
 
-        public MaterialImportParam GetMaterialParam(GltfParser parser, int i)
+        public MaterialDescriptor GetMaterialParam(GltfParser parser, int i)
         {
             // mtoon
-            if (!VRMMToonMaterialImporter.TryCreateParam(parser, m_vrm, i, out MaterialImportParam param))
+            if (!VRMMToonMaterialImporter.TryCreateParam(parser, m_vrm, i, out MaterialDescriptor matDesc))
             {
                 // unlit
-                if (!GltfUnlitMaterialImporter.TryCreateParam(parser, i, out param))
+                if (!GltfUnlitMaterialImporter.TryCreateParam(parser, i, out matDesc))
                 {
                     // pbr
-                    if (!GltfPbrMaterialImporter.TryCreateParam(parser, i, out param))
+                    if (!GltfPbrMaterialImporter.TryCreateParam(parser, i, out matDesc))
                     {
                         // fallback
 #if VRM_DEVELOP
                         Debug.LogWarning($"material: {i} out of range. fallback");
 #endif
-                        return new MaterialImportParam(GltfMaterialImporter.GetMaterialName(i, null), GltfPbrMaterialImporter.ShaderName);
+                        return new MaterialDescriptor(GltfMaterialImporter.GetMaterialName(i, null), GltfPbrMaterialImporter.ShaderName);
                     }
                 }
             }
-            return param;
+            return matDesc;
         }
     }
 }

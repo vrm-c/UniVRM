@@ -96,9 +96,9 @@ namespace VRMShaders
             return m_materials[index].Asset;
         }
 
-        public async Task<Material> LoadAsync(MaterialImportParam param, GetTextureAsyncFunc getTexture)
+        public async Task<Material> LoadAsync(MaterialDescriptor matDesc, GetTextureAsyncFunc getTexture)
         {
-            if (m_externalMap.TryGetValue(param.SubAssetKey, out Material material))
+            if (m_externalMap.TryGetValue(matDesc.SubAssetKey, out Material material))
             {
                 m_materials.Add(new MaterialLoadInfo(material, true));
                 return material;
@@ -109,10 +109,10 @@ namespace VRMShaders
                 getTexture = (_) => Task.FromResult<Texture>(null);
             }
 
-            material = new Material(Shader.Find(param.ShaderName));
-            material.name = param.SubAssetKey.Name;
+            material = new Material(Shader.Find(matDesc.ShaderName));
+            material.name = matDesc.SubAssetKey.Name;
 
-            foreach(var kv in param.TextureSlots)
+            foreach(var kv in matDesc.TextureSlots)
             {
                 var texture = await getTexture(kv.Value);
                 if(texture!=null){
@@ -121,27 +121,27 @@ namespace VRMShaders
                 }
             }
 
-            foreach(var kv in param.Colors)
+            foreach(var kv in matDesc.Colors)
             {
                 material.SetColor(kv.Key, kv.Value);
             }
 
-            foreach(var kv in param.Vectors)
+            foreach(var kv in matDesc.Vectors)
             {
                 material.SetVector(kv.Key, kv.Value);
             }
 
-            foreach(var kv in param.FloatValues)
+            foreach(var kv in matDesc.FloatValues)
             {
                 material.SetFloat(kv.Key, kv.Value);
             }
 
-            if (param.RenderQueue.HasValue)
+            if (matDesc.RenderQueue.HasValue)
             {
-                material.renderQueue = param.RenderQueue.Value;
+                material.renderQueue = matDesc.RenderQueue.Value;
             }
 
-            foreach(var action in param.Actions)
+            foreach(var action in matDesc.Actions)
             {
                 action(material);
             }

@@ -10,7 +10,7 @@ namespace UniGLTF
     /// </summary>
     public sealed class GltfMaterialImporter : IMaterialImporter
     {
-        public MaterialImportParam GetMaterialParam(GltfParser parser, int i)
+        public MaterialDescriptor GetMaterialParam(GltfParser parser, int i)
         {
             if (!GltfUnlitMaterialImporter.TryCreateParam(parser, i, out var param))
             {
@@ -20,7 +20,7 @@ namespace UniGLTF
 #if VRM_DEVELOP
                     Debug.LogWarning($"material: {i} out of range. fallback");
 #endif
-                    return new MaterialImportParam(GetMaterialName(i, null), GltfPbrMaterialImporter.ShaderName);
+                    return new MaterialDescriptor(GetMaterialName(i, null), GltfPbrMaterialImporter.ShaderName);
                 }
             }
 

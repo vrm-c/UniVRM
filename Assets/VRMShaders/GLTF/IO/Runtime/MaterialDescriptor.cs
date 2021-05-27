@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace VRMShaders
 {
-    public class MaterialImportParam
+    public class MaterialDescriptor
     {
         public readonly string Name;
         public readonly string ShaderName;
@@ -18,7 +18,7 @@ namespace VRMShaders
 
         public SubAssetKey SubAssetKey => new SubAssetKey(SubAssetKey.MaterialType, Name);
 
-        public MaterialImportParam(string name, string shaderName)
+        public MaterialDescriptor(string name, string shaderName)
         {
             Name = name;
             ShaderName = shaderName;

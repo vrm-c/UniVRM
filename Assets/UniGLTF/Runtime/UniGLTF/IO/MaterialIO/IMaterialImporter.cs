@@ -8,6 +8,6 @@ namespace UniGLTF
     /// </summary>
     public interface IMaterialImporter
     {
-        MaterialImportParam GetMaterialParam(GltfParser parser, int i);
+        MaterialDescriptor GetMaterialParam(GltfParser parser, int i);
     }
 }
