@@ -25,35 +25,37 @@ namespace UniGLTF
     /// * normal 外部ライルをそのまま使うので SubAsset にしない(normalとしてロードするためにAssetImporterの設定は必用)
     /// * metallicRoughnessOcclusion 変換結果を SubAsset 化する
     /// </summary>
-    public sealed class GltfTextureSetImporter : ITextureSetImporter
+    public sealed class GltfTextureDescriptorGenerator : ITextureDescriptorGenerator
     {
         private readonly GltfParser m_parser;
+        private TextureDescriptorSet _textureDescriptorSet;
 
-        public GltfTextureSetImporter(GltfParser parser)
+        public GltfTextureDescriptorGenerator(GltfParser parser)
         {
             m_parser = parser;
         }
 
-        public IEnumerable<TextureImportParam> GetTextureParamsDistinct()
+        public TextureDescriptorSet Get()
         {
-            var usedTextures = new HashSet<SubAssetKey>();
-            foreach (var (key, param) in EnumerateAllTextures(m_parser))
+            if (_textureDescriptorSet == null)
             {
-                if (usedTextures.Add(key))
+                _textureDescriptorSet = new TextureDescriptorSet();
+                foreach (var (_, param) in EnumerateAllTextures(m_parser))
                 {
-                    yield return param;
+                    _textureDescriptorSet.Add(param);
                 }
             }
+            return _textureDescriptorSet;
         }
 
         /// <summary>
         /// glTF 全体で使うテクスチャーを列挙。
         /// </summary>
-        private static IEnumerable<(SubAssetKey, TextureImportParam)> EnumerateAllTextures(GltfParser parser)
+        private static IEnumerable<(SubAssetKey, TextureDescriptor)> EnumerateAllTextures(GltfParser parser)
         {
             for (int i = 0; i < parser.GLTF.materials.Count; ++i)
             {
-                foreach (var kv in GltfPbrTextureImporter.EnumerateTexturesReferencedByMaterial(parser, i))
+                foreach (var kv in GltfPbrTextureImporter.EnumerateAllTextures(parser, i))
                 {
                     yield return kv;
                 }

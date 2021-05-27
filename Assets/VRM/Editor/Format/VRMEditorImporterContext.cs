@@ -14,7 +14,7 @@ namespace VRM
         UnityPath m_prefabPath;
         List<UnityPath> m_paths = new List<UnityPath>();
 
-        public ITextureSetImporter TextureSetImporter => m_context.TextureSetImporter;
+        public ITextureDescriptorGenerator TextureDescriptorGenerator => m_context.TextureDescriptorGenerator;
 
         public VRMEditorImporterContext(VRMImporterContext context, UnityPath prefabPath)
         {
@@ -103,9 +103,9 @@ namespace VRM
             // extract converted textures
             //
             var subAssets = m_context.TextureFactory.ConvertedTextures;
-            var vrmTextures = new VRMMaterialImporter(m_context.VRM);
+            var vrmTextures = new VRMMaterialDescriptorGenerator(m_context.VRM);
             var dirName = $"{m_prefabPath.FileNameWithoutExtension}.Textures";
-            TextureExtractor.ExtractTextures(m_context.Parser, m_prefabPath.Parent.Child(dirName), m_context.TextureSetImporter, subAssets, (_x, _y) => { }, onTextureReloaded);
+            TextureExtractor.ExtractTextures(m_context.Parser, m_prefabPath.Parent.Child(dirName), m_context.TextureDescriptorGenerator, subAssets, (_x, _y) => { }, onTextureReloaded);
         }
 
         bool SaveAsAsset(UnityEngine.Object o)

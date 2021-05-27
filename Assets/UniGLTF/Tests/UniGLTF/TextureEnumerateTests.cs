@@ -207,7 +207,7 @@ namespace UniGLTF
                 {
                     GLTF = TwoTexture(),
                 };
-                var items = new GltfTextureSetImporter(parser).GetTextureParamsDistinct().ToArray();
+                var items = new GltfTextureDescriptorGenerator(parser).Get().GetEnumerable().ToArray();
                 Assert.AreEqual(2, items.Length);
             }
 
@@ -216,7 +216,7 @@ namespace UniGLTF
                 {
                     GLTF = TwoTextureOneUri(),
                 };
-                var items = new GltfTextureSetImporter(parser).GetTextureParamsDistinct().ToArray();
+                var items = new GltfTextureDescriptorGenerator(parser).Get().GetEnumerable().ToArray();
                 Assert.AreEqual(1, items.Length);
             }
 
@@ -225,7 +225,7 @@ namespace UniGLTF
                 {
                     GLTF = TwoTextureOneImage(),
                 };
-                var items = new GltfTextureSetImporter(parser).GetTextureParamsDistinct().ToArray();
+                var items = new GltfTextureDescriptorGenerator(parser).Get().GetEnumerable().ToArray();
                 Assert.AreEqual(1, items.Length);
             }
 
@@ -234,7 +234,7 @@ namespace UniGLTF
                 {
                     GLTF = CombineMetallicSmoothOcclusion(),
                 };
-                var items = new GltfTextureSetImporter(parser).GetTextureParamsDistinct().ToArray();
+                var items = new GltfTextureDescriptorGenerator(parser).Get().GetEnumerable().ToArray();
                 Assert.AreEqual(1, items.Length);
             }
         }

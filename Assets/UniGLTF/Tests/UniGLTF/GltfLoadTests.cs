@@ -136,7 +136,7 @@ namespace UniGLTF
             }
 
             // should unique
-            var gltfTextures = new GltfTextureSetImporter(parser).GetTextureParamsDistinct()
+            var gltfTextures = new GltfTextureDescriptorGenerator(parser).Get().GetEnumerable()
                 .Select(x => x.SubAssetKey)
                 .ToArray();
             var distinct = gltfTextures.Distinct().ToArray();
@@ -208,10 +208,10 @@ namespace UniGLTF
                 var parser = new GltfParser();
                 parser.ParsePath(path);
 
-                var materialParam = new GltfMaterialImporter().GetMaterialParam(parser, 0);
-                Assert.AreEqual("Standard", materialParam.ShaderName);
-                Assert.AreEqual(5, materialParam.TextureSlots.Count);
-                var (key, value) = materialParam.EnumerateSubAssetKeyValue().First();
+                var matDesc = new GltfMaterialDescriptorGenerator().Get(parser, 0);
+                Assert.AreEqual("Standard", matDesc.ShaderName);
+                Assert.AreEqual(5, matDesc.TextureSlots.Count);
+                var (key, value) = matDesc.EnumerateSubAssetKeyValue().First();
                 Assert.AreEqual(new SubAssetKey(typeof(Texture2D), "texture_0"), key);
             }
         }

@@ -17,43 +17,43 @@ namespace UniVRM10
         /// <summary>
         /// VMRC_materials_mtoon の場合にマテリアル生成情報を作成する
         /// </summary>
-        public static bool TryCreateParam(GltfParser parser, int i, out MaterialImportParam param)
+        public static bool TryCreateParam(GltfParser parser, int i, out MaterialDescriptor matDesc)
         {
             var m = parser.GLTF.materials[i];
             if (!UniGLTF.Extensions.VRMC_materials_mtoon.GltfDeserializer.TryGet(m.extensions,
                 out UniGLTF.Extensions.VRMC_materials_mtoon.VRMC_materials_mtoon mtoon))
             {
                 // Fallback to glTF, when MToon extension does not exist.
-                param = default;
+                matDesc = default;
                 return false;
             }
 
             // use material.name, because material name may renamed in GltfParser.
-            param = new MaterialImportParam(m.name, MToon.Utils.ShaderName);
+            matDesc = new MaterialDescriptor(m.name, MToon.Utils.ShaderName);
 
-            foreach (var (key, (subAssetKey, value)) in Vrm10MToonTextureImporter.TryGetAllTextures(parser, m, mtoon))
+            foreach (var (key, (subAssetKey, value)) in Vrm10MToonTextureImporter.EnumerateAllTextures(parser, m, mtoon))
             {
-                param.TextureSlots.Add(key, value);
+                matDesc.TextureSlots.Add(key, value);
             }
 
             foreach (var (key, value) in TryGetAllColors(m, mtoon))
             {
-                param.Colors.Add(key, value);
+                matDesc.Colors.Add(key, value);
             }
 
             foreach (var (key, value) in TryGetAllFloats(m, mtoon))
             {
-                param.FloatValues.Add(key, value);
+                matDesc.FloatValues.Add(key, value);
             }
 
             foreach (var (key, value) in TryGetAllFloatArrays(m, mtoon))
             {
-                param.Vectors.Add(key, value);
+                matDesc.Vectors.Add(key, value);
             }
 
-            param.RenderQueue = TryGetRenderQueue(m, mtoon);
+            matDesc.RenderQueue = TryGetRenderQueue(m, mtoon);
 
-            param.Actions.Add(material =>
+            matDesc.Actions.Add(material =>
             {
                 // Set hidden properties, keywords from float properties.
                 MToon.Utils.ValidateProperties(material, isBlendModeChangedByUser: false);

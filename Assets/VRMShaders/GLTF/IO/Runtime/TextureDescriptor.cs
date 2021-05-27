@@ -18,7 +18,7 @@ namespace VRMShaders
     /// <summary>
     /// 入力 glTF ファイルを Import した結果生成される、UnityEngine.Texture のアセット 1 つを確定させる Import 情報。
     /// </summary>
-    public readonly struct TextureImportParam
+    public readonly struct TextureDescriptor
     {
         public readonly string UnityObjectName;
         public readonly string Ext;
@@ -46,7 +46,7 @@ namespace VRMShaders
         /// </summary>
         public SubAssetKey SubAssetKey => new SubAssetKey(SubAssetKey.TextureType, UnityObjectName);
 
-        public TextureImportParam(string name, string ext, string uri, Vector2 offset, Vector2 scale, SamplerParam sampler, TextureImportTypes textureType, float metallicFactor, float roughnessFactor,
+        public TextureDescriptor(string name, string ext, string uri, Vector2 offset, Vector2 scale, SamplerParam sampler, TextureImportTypes textureType, float metallicFactor, float roughnessFactor,
             GetTextureBytesAsync i0,
             GetTextureBytesAsync i1,
             GetTextureBytesAsync i2,

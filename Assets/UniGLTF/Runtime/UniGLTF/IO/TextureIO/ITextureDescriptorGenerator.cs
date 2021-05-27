@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using VRMShaders;
+﻿using VRMShaders;
 
 namespace UniGLTF
 {
@@ -8,8 +7,8 @@ namespace UniGLTF
     ///
     /// glTF Texture と Unity Texture の対応関係は N:M である。
     /// </summary>
-    public interface ITextureSetImporter
+    public interface ITextureDescriptorGenerator
     {
-        IEnumerable<TextureImportParam> GetTextureParamsDistinct();
+        TextureDescriptorSet Get();
     }
 }

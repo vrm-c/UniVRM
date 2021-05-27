@@ -38,12 +38,12 @@ namespace VRMShaders
             textureImporter.SaveAndReimport();
         }
 
-        public static void ConfigureSampler(TextureImportParam param, TextureImporter textureImporter)
+        public static void ConfigureSampler(TextureDescriptor texDesc, TextureImporter textureImporter)
         {
-            textureImporter.mipmapEnabled = param.Sampler.EnableMipMap;
-            textureImporter.filterMode = param.Sampler.FilterMode;
-            textureImporter.wrapModeU = param.Sampler.WrapModesU;
-            textureImporter.wrapModeV = param.Sampler.WrapModesV;
+            textureImporter.mipmapEnabled = texDesc.Sampler.EnableMipMap;
+            textureImporter.filterMode = texDesc.Sampler.FilterMode;
+            textureImporter.wrapModeU = texDesc.Sampler.WrapModesU;
+            textureImporter.wrapModeV = texDesc.Sampler.WrapModesV;
         }
 
         class ImporterGetter : IDisposable
@@ -84,9 +84,9 @@ namespace VRMShaders
             }
         }
 
-        static void Configure(TextureImportParam textureInfo, Texture external, TextureImporter importer)
+        static void Configure(TextureDescriptor texDesc, Texture external, TextureImporter importer)
         {
-            switch (textureInfo.TextureType)
+            switch (texDesc.TextureType)
             {
                 case TextureImportTypes.NormalMap:
                     {
@@ -119,18 +119,18 @@ namespace VRMShaders
                     throw new NotImplementedException();
             }
 
-            ConfigureSampler(textureInfo, importer);
+            ConfigureSampler(texDesc, importer);
         }
 
-        public static void Configure(TextureImportParam textureInfo, IReadOnlyDictionary<SubAssetKey, Texture> ExternalMap)
+        public static void Configure(TextureDescriptor texDesc, IReadOnlyDictionary<SubAssetKey, Texture> ExternalMap)
         {
-            if (ExternalMap.TryGetValue(textureInfo.SubAssetKey, out Texture external))
+            if (ExternalMap.TryGetValue(texDesc.SubAssetKey, out Texture external))
             {
                 if (ImporterGetter.TryGetImporter(external, out ImporterGetter getter))
                 {
                     using (getter)
                     {
-                        Configure(textureInfo, external, getter.Importer);
+                        Configure(texDesc, external, getter.Importer);
                     }
                 }
             }

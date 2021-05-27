@@ -81,9 +81,9 @@ namespace VRMShaders
         /// <param name="roughnessFactor">METALLIC_GLOSS_PROPの追加パラメーター</param>
         /// <param name="indices">gltf の texture index</param>
         /// <returns></returns>
-        public async Task<Texture> GetTextureAsync(TextureImportParam param)
+        public async Task<Texture> GetTextureAsync(TextureDescriptor texDesc)
         {
-            var subAssetKey = param.SubAssetKey;
+            var subAssetKey = texDesc.SubAssetKey;
 
             if (m_externalMap != null && m_externalMap.TryGetValue(subAssetKey, out var externalTexture))
             {
@@ -95,15 +95,15 @@ namespace VRMShaders
                 return cachedTexture;
             }
 
-            switch (param.TextureType)
+            switch (texDesc.TextureType)
             {
                 case TextureImportTypes.NormalMap:
                 {
                     // Runtime/SubAsset 用に変換する
-                    var rawTexture = await LoadTextureAsync(param.Index0, param.Sampler.EnableMipMap, ColorSpace.Linear);
+                    var rawTexture = await LoadTextureAsync(texDesc.Index0, texDesc.Sampler.EnableMipMap, ColorSpace.Linear);
                     var convertedTexture = NormalConverter.Import(rawTexture);
                     convertedTexture.name = subAssetKey.Name;
-                    convertedTexture.SetSampler(param.Sampler);
+                    convertedTexture.SetSampler(texDesc.Sampler);
                     m_textureCache.Add(subAssetKey, convertedTexture);
                     DestroyResource(rawTexture);
                     return convertedTexture;
@@ -114,19 +114,19 @@ namespace VRMShaders
                     Texture2D metallicRoughnessTexture = default;
                     Texture2D occlusionTexture = default;
 
-                    if (param.Index0 != null)
+                    if (texDesc.Index0 != null)
                     {
-                        metallicRoughnessTexture = await LoadTextureAsync(param.Index0, param.Sampler.EnableMipMap, ColorSpace.Linear);
+                        metallicRoughnessTexture = await LoadTextureAsync(texDesc.Index0, texDesc.Sampler.EnableMipMap, ColorSpace.Linear);
                     }
-                    if (param.Index1 != null)
+                    if (texDesc.Index1 != null)
                     {
-                        occlusionTexture = await LoadTextureAsync(param.Index1, param.Sampler.EnableMipMap, ColorSpace.Linear);
+                        occlusionTexture = await LoadTextureAsync(texDesc.Index1, texDesc.Sampler.EnableMipMap, ColorSpace.Linear);
                     }
 
                     var combinedTexture = OcclusionMetallicRoughnessConverter.Import(metallicRoughnessTexture,
-                        param.MetallicFactor, param.RoughnessFactor, occlusionTexture);
+                        texDesc.MetallicFactor, texDesc.RoughnessFactor, occlusionTexture);
                     combinedTexture.name = subAssetKey.Name;
-                    combinedTexture.SetSampler(param.Sampler);
+                    combinedTexture.SetSampler(texDesc.Sampler);
                     m_textureCache.Add(subAssetKey, combinedTexture);
                     DestroyResource(metallicRoughnessTexture);
                     DestroyResource(occlusionTexture);
@@ -135,17 +135,17 @@ namespace VRMShaders
 
                 case TextureImportTypes.sRGB:
                 {
-                    var rawTexture = await LoadTextureAsync(param.Index0, param.Sampler.EnableMipMap, ColorSpace.sRGB);
+                    var rawTexture = await LoadTextureAsync(texDesc.Index0, texDesc.Sampler.EnableMipMap, ColorSpace.sRGB);
                     rawTexture.name = subAssetKey.Name;
-                    rawTexture.SetSampler(param.Sampler);
+                    rawTexture.SetSampler(texDesc.Sampler);
                     m_textureCache.Add(subAssetKey, rawTexture);
                     return rawTexture;
                 }
                 case TextureImportTypes.Linear:
                 {
-                    var rawTexture = await LoadTextureAsync(param.Index0, param.Sampler.EnableMipMap, ColorSpace.Linear);
+                    var rawTexture = await LoadTextureAsync(texDesc.Index0, texDesc.Sampler.EnableMipMap, ColorSpace.Linear);
                     rawTexture.name = subAssetKey.Name;
-                    rawTexture.SetSampler(param.Sampler);
+                    rawTexture.SetSampler(texDesc.Sampler);
                     m_textureCache.Add(subAssetKey, rawTexture);
                     return rawTexture;
                 }

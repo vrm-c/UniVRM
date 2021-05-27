@@ -6,30 +6,33 @@ using VRMShaders;
 
 namespace VRM
 {
-    public sealed class VRMTextureSetImporter : ITextureSetImporter
+    public sealed class VrmTextureDescriptorGenerator : ITextureDescriptorGenerator
     {
         private readonly GltfParser m_parser;
         private readonly glTF_VRM_extensions m_vrm;
+        private TextureDescriptorSet _textureDescriptorSet;
 
-        public VRMTextureSetImporter(GltfParser parser, glTF_VRM_extensions vrm)
+        public VrmTextureDescriptorGenerator(GltfParser parser, glTF_VRM_extensions vrm)
         {
             m_parser = parser;
             m_vrm = vrm;
         }
 
-        public IEnumerable<TextureImportParam> GetTextureParamsDistinct()
+        public TextureDescriptorSet Get()
         {
-            var usedTextures = new HashSet<SubAssetKey>();
-            foreach (var (_, param) in EnumerateAllTextures(m_parser, m_vrm))
+            if (_textureDescriptorSet == null)
             {
-                if (usedTextures.Add(param.SubAssetKey))
+                _textureDescriptorSet = new TextureDescriptorSet();
+                foreach (var (_, param) in EnumerateAllTextures(m_parser, m_vrm))
                 {
-                    yield return param;
+                    _textureDescriptorSet.Add(param);
                 }
             }
+            return _textureDescriptorSet;
         }
 
-        private static IEnumerable<(SubAssetKey, TextureImportParam)> EnumerateAllTextures(GltfParser parser, glTF_VRM_extensions vrm)
+
+        private static IEnumerable<(SubAssetKey, TextureDescriptor)> EnumerateAllTextures(GltfParser parser, glTF_VRM_extensions vrm)
         {
             // Materials
             for (var materialIdx = 0; materialIdx < parser.GLTF.materials.Count; ++materialIdx)
@@ -40,7 +43,7 @@ namespace VRM
                 if (vrmMaterial.shader == MToon.Utils.ShaderName)
                 {
                     // MToon
-                    foreach (var kv in VRMMToonTextureImporter.EnumerateTexturesReferencedByMaterial(parser, vrm, materialIdx))
+                    foreach (var kv in VRMMToonTextureImporter.EnumerateAllTextures(parser, vrm, materialIdx))
                     {
                         yield return kv;
                     }
@@ -48,7 +51,7 @@ namespace VRM
                 else
                 {
                     // Unlit or PBR
-                    foreach (var kv in GltfPbrTextureImporter.EnumerateTexturesReferencedByMaterial(parser, materialIdx))
+                    foreach (var kv in GltfPbrTextureImporter.EnumerateAllTextures(parser, materialIdx))
                     {
                         yield return kv;
                     }
@@ -62,7 +65,7 @@ namespace VRM
             }
         }
 
-        private static bool TryGetThumbnailTexture(GltfParser parser, glTF_VRM_extensions vrm, out (SubAssetKey, TextureImportParam) texture)
+        private static bool TryGetThumbnailTexture(GltfParser parser, glTF_VRM_extensions vrm, out (SubAssetKey, TextureDescriptor) texture)
         {
             if (vrm.meta.texture > -1)
             {

@@ -84,7 +84,7 @@ namespace VRM
                 using (var context = new VRMImporterContext(parser, map))
                 {
                     var editor = new VRMEditorImporterContext(context, prefabPath);
-                    foreach (var textureInfo in editor.TextureSetImporter.GetTextureParamsDistinct())
+                    foreach (var textureInfo in editor.TextureDescriptorGenerator.Get().GetEnumerable())
                     {
                         VRMShaders.TextureImporterConfigurator.Configure(textureInfo, context.TextureFactory.ExternalTextures);
                     }

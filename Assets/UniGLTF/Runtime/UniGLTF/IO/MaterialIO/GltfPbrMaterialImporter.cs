@@ -47,29 +47,29 @@ namespace UniGLTF
             Transparent
         }
 
-        public static bool TryCreateParam(GltfParser parser, int i, out MaterialImportParam param)
+        public static bool TryCreateParam(GltfParser parser, int i, out MaterialDescriptor matDesc)
         {
             if (i < 0 || i >= parser.GLTF.materials.Count)
             {
-                param = default;
+                matDesc = default;
                 return false;
             }
 
             var src = parser.GLTF.materials[i];
-            param = new MaterialImportParam(GltfMaterialImporter.GetMaterialName(i, src), ShaderName);
+            matDesc = new MaterialDescriptor(GltfMaterialDescriptorGenerator.GetMaterialName(i, src), ShaderName);
 
-            var standardParam = default(TextureImportParam);
+            var standardTexDesc = default(TextureDescriptor);
             if (src.pbrMetallicRoughness != null || src.occlusionTexture != null)
             {
                 if (src.pbrMetallicRoughness.metallicRoughnessTexture != null || src.occlusionTexture != null)
                 {
                     SubAssetKey key;
-                    (key, standardParam) = GltfPbrTextureImporter.StandardTexture(parser, src);
+                    (key, standardTexDesc) = GltfPbrTextureImporter.StandardTexture(parser, src);
                 }
 
                 if (src.pbrMetallicRoughness.baseColorFactor != null && src.pbrMetallicRoughness.baseColorFactor.Length == 4)
                 {
-                    param.Colors.Add("_Color",
+                    matDesc.Colors.Add("_Color",
                         src.pbrMetallicRoughness.baseColorFactor.ToColor4(ColorSpace.Linear, ColorSpace.sRGB)
                     );
                 }
@@ -77,42 +77,42 @@ namespace UniGLTF
                 if (src.pbrMetallicRoughness.baseColorTexture != null && src.pbrMetallicRoughness.baseColorTexture.index != -1)
                 {
                     var (key, textureParam) = GltfPbrTextureImporter.BaseColorTexture(parser, src);
-                    param.TextureSlots.Add("_MainTex", textureParam);
+                    matDesc.TextureSlots.Add("_MainTex", textureParam);
                 }
 
                 if (src.pbrMetallicRoughness.metallicRoughnessTexture != null && src.pbrMetallicRoughness.metallicRoughnessTexture.index != -1)
                 {
-                    param.Actions.Add(material => material.EnableKeyword("_METALLICGLOSSMAP"));
-                    param.TextureSlots.Add("_MetallicGlossMap", standardParam);
+                    matDesc.Actions.Add(material => material.EnableKeyword("_METALLICGLOSSMAP"));
+                    matDesc.TextureSlots.Add("_MetallicGlossMap", standardTexDesc);
                     // Set 1.0f as hard-coded. See: https://github.com/dwango/UniVRM/issues/212.
-                    param.FloatValues.Add("_Metallic", 1.0f);
-                    param.FloatValues.Add("_GlossMapScale", 1.0f);
+                    matDesc.FloatValues.Add("_Metallic", 1.0f);
+                    matDesc.FloatValues.Add("_GlossMapScale", 1.0f);
                 }
                 else
                 {
-                    param.FloatValues.Add("_Metallic", src.pbrMetallicRoughness.metallicFactor);
-                    param.FloatValues.Add("_Glossiness", 1.0f - src.pbrMetallicRoughness.roughnessFactor);
+                    matDesc.FloatValues.Add("_Metallic", src.pbrMetallicRoughness.metallicFactor);
+                    matDesc.FloatValues.Add("_Glossiness", 1.0f - src.pbrMetallicRoughness.roughnessFactor);
                 }
             }
 
             if (src.normalTexture != null && src.normalTexture.index != -1)
             {
-                param.Actions.Add(material => material.EnableKeyword("_NORMALMAP"));
+                matDesc.Actions.Add(material => material.EnableKeyword("_NORMALMAP"));
                 var (key, textureParam) = GltfPbrTextureImporter.NormalTexture(parser, src);
-                param.TextureSlots.Add("_BumpMap", textureParam);
-                param.FloatValues.Add("_BumpScale", src.normalTexture.scale);
+                matDesc.TextureSlots.Add("_BumpMap", textureParam);
+                matDesc.FloatValues.Add("_BumpScale", src.normalTexture.scale);
             }
 
             if (src.occlusionTexture != null && src.occlusionTexture.index != -1)
             {
-                param.TextureSlots.Add("_OcclusionMap", standardParam);
-                param.FloatValues.Add("_OcclusionStrength", src.occlusionTexture.strength);
+                matDesc.TextureSlots.Add("_OcclusionMap", standardTexDesc);
+                matDesc.FloatValues.Add("_OcclusionStrength", src.occlusionTexture.strength);
             }
 
             if (src.emissiveFactor != null
                 || (src.emissiveTexture != null && src.emissiveTexture.index != -1))
             {
-                param.Actions.Add(material =>
+                matDesc.Actions.Add(material =>
                 {
                     material.EnableKeyword("_EMISSION");
                     material.globalIlluminationFlags &= ~MaterialGlobalIlluminationFlags.EmissiveIsBlack;
@@ -120,7 +120,7 @@ namespace UniGLTF
 
                 if (src.emissiveFactor != null && src.emissiveFactor.Length == 3)
                 {
-                    param.Colors.Add("_EmissionColor",
+                    matDesc.Colors.Add("_EmissionColor",
                         src.emissiveFactor.ToColor3(ColorSpace.Linear, ColorSpace.Linear)
                     );
                 }
@@ -128,11 +128,11 @@ namespace UniGLTF
                 if (src.emissiveTexture != null && src.emissiveTexture.index != -1)
                 {
                     var (key, textureParam) = GltfPbrTextureImporter.EmissiveTexture(parser, src);
-                    param.TextureSlots.Add("_EmissionMap", textureParam);
+                    matDesc.TextureSlots.Add("_EmissionMap", textureParam);
                 }
             }
 
-            param.Actions.Add(material =>
+            matDesc.Actions.Add(material =>
             {
                 BlendMode blendMode = BlendMode.Opaque;
                 // https://forum.unity.com/threads/standard-material-shader-ignoring-setfloat-property-_mode.344557/#post-2229980

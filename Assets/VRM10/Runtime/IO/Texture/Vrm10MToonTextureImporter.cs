@@ -9,7 +9,7 @@ namespace UniVRM10
 {
     public static class Vrm10MToonTextureImporter
     {
-        public static IEnumerable<(string key, (SubAssetKey, TextureImportParam))> TryGetAllTextures(GltfParser parser, glTFMaterial material, VRMC_materials_mtoon mToon)
+        public static IEnumerable<(string key, (SubAssetKey, TextureDescriptor))> EnumerateAllTextures(GltfParser parser, glTFMaterial material, VRMC_materials_mtoon mToon)
         {
             if (TryGetBaseColorTexture(parser, material, out var litTex))
             {
@@ -58,7 +58,7 @@ namespace UniVRM10
             }
         }
 
-        private static bool TryGetBaseColorTexture(GltfParser parser, glTFMaterial src, out (SubAssetKey, TextureImportParam) pair)
+        private static bool TryGetBaseColorTexture(GltfParser parser, glTFMaterial src, out (SubAssetKey, TextureDescriptor) pair)
         {
             try
             {
@@ -77,7 +77,7 @@ namespace UniVRM10
             }
         }
 
-        private static bool TryGetEmissiveTexture(GltfParser parser, glTFMaterial src, out (SubAssetKey, TextureImportParam) pair)
+        private static bool TryGetEmissiveTexture(GltfParser parser, glTFMaterial src, out (SubAssetKey, TextureDescriptor) pair)
         {
             try
             {
@@ -97,7 +97,7 @@ namespace UniVRM10
 
         }
 
-        private static bool TryGetNormalTexture(GltfParser parser, glTFMaterial src, out (SubAssetKey, TextureImportParam) pair)
+        private static bool TryGetNormalTexture(GltfParser parser, glTFMaterial src, out (SubAssetKey, TextureDescriptor) pair)
         {
             try
             {
@@ -116,37 +116,37 @@ namespace UniVRM10
             }
         }
 
-        private static bool TryGetShadeMultiplyTexture(GltfParser parser, VRMC_materials_mtoon mToon, out (SubAssetKey, TextureImportParam) pair)
+        private static bool TryGetShadeMultiplyTexture(GltfParser parser, VRMC_materials_mtoon mToon, out (SubAssetKey, TextureDescriptor) pair)
         {
             return TryGetSRGBTexture(parser, new Vrm10TextureInfo(mToon.ShadeMultiplyTexture), out pair);
         }
 
-        private static bool TryGetShadingShiftTexture(GltfParser parser, VRMC_materials_mtoon mToon, out (SubAssetKey, TextureImportParam) pair)
+        private static bool TryGetShadingShiftTexture(GltfParser parser, VRMC_materials_mtoon mToon, out (SubAssetKey, TextureDescriptor) pair)
         {
             return TryGetLinearTexture(parser, new Vrm10TextureInfo(mToon.ShadingShiftTexture), out pair);
         }
 
-        private static bool TryGetMatcapTexture(GltfParser parser, VRMC_materials_mtoon mToon, out (SubAssetKey, TextureImportParam) pair)
+        private static bool TryGetMatcapTexture(GltfParser parser, VRMC_materials_mtoon mToon, out (SubAssetKey, TextureDescriptor) pair)
         {
             return TryGetSRGBTexture(parser, new Vrm10TextureInfo(mToon.ShadingShiftTexture), out pair);
         }
 
-        private static bool TryGetRimMultiplyTexture(GltfParser parser, VRMC_materials_mtoon mToon, out (SubAssetKey, TextureImportParam) pair)
+        private static bool TryGetRimMultiplyTexture(GltfParser parser, VRMC_materials_mtoon mToon, out (SubAssetKey, TextureDescriptor) pair)
         {
             return TryGetSRGBTexture(parser, new Vrm10TextureInfo(mToon.RimMultiplyTexture), out pair);
         }
 
-        private static bool TryGetOutlineWidthMultiplyTexture(GltfParser parser, VRMC_materials_mtoon mToon, out (SubAssetKey, TextureImportParam) pair)
+        private static bool TryGetOutlineWidthMultiplyTexture(GltfParser parser, VRMC_materials_mtoon mToon, out (SubAssetKey, TextureDescriptor) pair)
         {
             return TryGetLinearTexture(parser, new Vrm10TextureInfo(mToon.OutlineWidthMultiplyTexture), out pair);
         }
 
-        private static bool TryGetUvAnimationMaskTexture(GltfParser parser, VRMC_materials_mtoon mToon, out (SubAssetKey, TextureImportParam) pair)
+        private static bool TryGetUvAnimationMaskTexture(GltfParser parser, VRMC_materials_mtoon mToon, out (SubAssetKey, TextureDescriptor) pair)
         {
             return TryGetLinearTexture(parser, new Vrm10TextureInfo(mToon.UvAnimationMaskTexture), out pair);
         }
 
-        private static bool TryGetSRGBTexture(GltfParser parser, Vrm10TextureInfo info, out (SubAssetKey, TextureImportParam) pair)
+        private static bool TryGetSRGBTexture(GltfParser parser, Vrm10TextureInfo info, out (SubAssetKey, TextureDescriptor) pair)
         {
             try
             {
@@ -165,7 +165,7 @@ namespace UniVRM10
                 return false;
             }
         }
-        private static bool TryGetLinearTexture(GltfParser parser, Vrm10TextureInfo info, out (SubAssetKey, TextureImportParam) pair)
+        private static bool TryGetLinearTexture(GltfParser parser, Vrm10TextureInfo info, out (SubAssetKey, TextureDescriptor) pair)
         {
             try
             {

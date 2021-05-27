@@ -25,11 +25,11 @@ namespace UniVRM10
             var parser = new GltfParser();
             parser.Parse(AliciaPath, migratedBytes);
 
-            var materialParam = new Vrm10MaterialImporter().GetMaterialParam(parser, 0);
-            Assert.AreEqual("VRM/MToon", materialParam.ShaderName);
-            Assert.AreEqual("Alicia_body", materialParam.TextureSlots["_MainTex"].UnityObjectName);
+            var matDesc = new Vrm10MaterialDescriptorGenerator().Get(parser, 0);
+            Assert.AreEqual("VRM/MToon", matDesc.ShaderName);
+            Assert.AreEqual("Alicia_body", matDesc.TextureSlots["_MainTex"].UnityObjectName);
 
-            var (key, value) = materialParam.EnumerateSubAssetKeyValue().First();
+            var (key, value) = matDesc.EnumerateSubAssetKeyValue().First();
             Assert.AreEqual(new SubAssetKey(typeof(Texture2D), "Alicia_body"), key);
         }
     }

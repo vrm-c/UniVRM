@@ -7,7 +7,7 @@ namespace VRM
 {
     public static class VRMMToonTextureImporter
     {
-        public static IEnumerable<(SubAssetKey, TextureImportParam)> EnumerateTexturesReferencedByMaterial(GltfParser parser, glTF_VRM_extensions vrm, int materialIdx)
+        public static IEnumerable<(SubAssetKey, TextureDescriptor)> EnumerateAllTextures(GltfParser parser, glTF_VRM_extensions vrm, int materialIdx)
         {
             var vrmMaterial = vrm.materialProperties[materialIdx];
             foreach (var kv in vrmMaterial.textureProperties)
@@ -19,7 +19,7 @@ namespace VRM
             }
         }
 
-        public static bool TryGetTextureFromMaterialProperty(GltfParser parser, glTF_VRM_extensions vrm, int materialIdx, string textureKey, out (SubAssetKey, TextureImportParam) texture)
+        public static bool TryGetTextureFromMaterialProperty(GltfParser parser, glTF_VRM_extensions vrm, int materialIdx, string textureKey, out (SubAssetKey, TextureDescriptor) texture)
         {
             var vrmMaterial = vrm.materialProperties[materialIdx];
             if (vrmMaterial.shader == MToon.Utils.ShaderName && vrmMaterial.textureProperties.TryGetValue(textureKey, out var textureIdx))
