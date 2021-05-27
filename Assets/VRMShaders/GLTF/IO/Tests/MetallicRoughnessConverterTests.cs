@@ -1,3 +1,4 @@
+using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -5,6 +6,32 @@ namespace VRMShaders
 {
     public class MetallicRoughnessConverterTests
     {
+        private Color32 ImportPixel(Color32 metallicRoughnessPixel, float metallicFactor, float roughnessFactor, Color32 occlusionPixel)
+        {
+            var metallicRoughnessTexture = new Texture2D(4, 4, TextureFormat.ARGB32, mipChain: false, linear: true);
+            metallicRoughnessTexture.SetPixels32(Enumerable.Range(0, 16).Select(_ => metallicRoughnessPixel).ToArray());
+            metallicRoughnessTexture.Apply();
+
+            var occlusionTexture = new Texture2D(4, 4, TextureFormat.ARGB32, mipChain: false, linear: true);
+            occlusionTexture.SetPixels32(Enumerable.Range(0, 16).Select(_ => occlusionPixel).ToArray());
+            occlusionTexture.Apply();
+
+            var converted = OcclusionMetallicRoughnessConverter.Import(
+                metallicRoughnessTexture,
+                metallicFactor,
+                roughnessFactor,
+                occlusionTexture
+            );
+
+            var result = converted.GetPixels32()[0];
+
+            UnityEngine.Object.DestroyImmediate(metallicRoughnessTexture);
+            UnityEngine.Object.DestroyImmediate(occlusionTexture);
+            UnityEngine.Object.DestroyImmediate(converted);
+
+            return result;
+        }
+
         [Test]
         public void ExportingColorTest()
         {
@@ -48,7 +75,7 @@ namespace VRMShaders
             {
                 var roughnessFactor = 1.0f;
                 Assert.That(
-                    OcclusionMetallicRoughnessConverter.ImportPixel(new Color32(255, 255, 255, 255), 1.0f, roughnessFactor, default),
+                    ImportPixel(new Color32(255, 255, 255, 255), 1.0f, roughnessFactor, default),
                     // r <- 255 : Same metallic (src.r)
                     // g <- 0   : (Unused)
                     // b <- 0   : (Unused)
@@ -59,7 +86,7 @@ namespace VRMShaders
             {
                 var roughnessFactor = 1.0f;
                 Assert.That(
-                    OcclusionMetallicRoughnessConverter.ImportPixel(new Color32(255, 128, 255, 255), 1.0f, roughnessFactor, default),
+                    ImportPixel(new Color32(255, 128, 255, 255), 1.0f, roughnessFactor, default),
                     // r <- 255 : Same metallic (src.r)
                     // g <- 0   : (Unused)
                     // b <- 0   : (Unused)
@@ -70,7 +97,7 @@ namespace VRMShaders
             {
                 var roughnessFactor = 0.5f;
                 Assert.That(
-                    OcclusionMetallicRoughnessConverter.ImportPixel(new Color32(255, 255, 255, 255), 1.0f, roughnessFactor, default),
+                    ImportPixel(new Color32(255, 255, 255, 255), 1.0f, roughnessFactor, default),
                     // r <- 255 : Same metallic (src.r)
                     // g <- 0   : (Unused)
                     // b <- 0   : (Unused)
@@ -81,7 +108,7 @@ namespace VRMShaders
             {
                 var roughnessFactor = 0.0f;
                 Assert.That(
-                    OcclusionMetallicRoughnessConverter.ImportPixel(new Color32(255, 255, 255, 255), 1.0f, roughnessFactor, default),
+                    ImportPixel(new Color32(255, 255, 255, 255), 1.0f, roughnessFactor, default),
                     // r <- 255 : Same metallic (src.r)
                     // g <- 0   : (Unused)
                     // b <- 0   : (Unused)
