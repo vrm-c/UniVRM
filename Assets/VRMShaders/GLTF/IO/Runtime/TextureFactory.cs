@@ -61,13 +61,9 @@ namespace VRMShaders
         }
 
         /// <summary>
-        /// テクスチャーをロード、必要であれば変換して返す。
-        /// 同じものはキャッシュを返す
+        /// テクスチャ生成情報を基に、テクスチャ生成を行う。
+        /// SubAssetKey が同じ場合はキャッシュを返す。
         /// </summary>
-        /// <param name="texture_type">変換の有無を判断する: METALLIC_GLOSS_PROP</param>
-        /// <param name="roughnessFactor">METALLIC_GLOSS_PROPの追加パラメーター</param>
-        /// <param name="indices">gltf の texture index</param>
-        /// <returns></returns>
         public async Task<Texture> GetTextureAsync(TextureDescriptor texDesc)
         {
             var subAssetKey = texDesc.SubAssetKey;
@@ -86,15 +82,16 @@ namespace VRMShaders
             {
                 case TextureImportTypes.NormalMap:
                 {
-                    // Runtime/SubAsset 用に変換する
+                    // no conversion. Unity's normal map is same with glTF's.
+                    //
+                    // > contrary to Unity’s usual convention of using Y as “up”
+                    // https://docs.unity3d.com/2018.4/Documentation/Manual/StandardShaderMaterialParameterNormalMap.html
                     var data0 = await texDesc.Index0();
                     var rawTexture = await _textureDeserializer.LoadTextureAsync(data0, texDesc.Sampler.EnableMipMap, ColorSpace.Linear);
-                    var convertedTexture = NormalConverter.Import(rawTexture);
-                    convertedTexture.name = subAssetKey.Name;
-                    convertedTexture.SetSampler(texDesc.Sampler);
-                    _textureCache.Add(subAssetKey, convertedTexture);
-                    DestroyResource(rawTexture);
-                    return convertedTexture;
+                    rawTexture.name = subAssetKey.Name;
+                    rawTexture.SetSampler(texDesc.Sampler);
+                    _textureCache.Add(subAssetKey, rawTexture);
+                    return rawTexture;
                 }
 
                 case TextureImportTypes.StandardMap:
