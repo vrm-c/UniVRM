@@ -101,7 +101,7 @@ namespace UniVRM10
             using (var loader = new Vrm10Importer(parser, extractedObjects))
             {
                 // settings TextureImporters
-                foreach (var textureInfo in loader.TextureSetImporter.GetTextureImportParamSet().GetEnumerable())
+                foreach (var textureInfo in loader.TextureDescriptorGenerator.GetTextureImportParamSet().GetEnumerable())
                 {
                     VRMShaders.TextureImporterConfigurator.Configure(textureInfo, loader.TextureFactory.ExternalTextures);
                 }

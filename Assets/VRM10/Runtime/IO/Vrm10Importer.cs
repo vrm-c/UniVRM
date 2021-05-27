@@ -24,7 +24,7 @@ namespace UniVRM10
         public Vrm10Importer(UniGLTF.GltfParser parser, IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> externalObjectMap = null)
         : base(parser, externalObjectMap)
         {
-            TextureSetImporter = new Vrm10TextureSetImporter(parser);
+            TextureDescriptorGenerator = new Vrm10TextureDescriptorGenerator(parser);
             MaterialImporter = new Vrm10MaterialImporter();
 
             m_externalMap = externalObjectMap;
@@ -281,7 +281,7 @@ namespace UniVRM10
                 {
                     m_meta.Authors.AddRange(src.Authors);
                 }
-                if (Vrm10TextureSetImporter.TryGetMetaThumbnailTextureImportParam(Parser, vrm, out (SubAssetKey, VRMShaders.TextureImportParam Param) kv))
+                if (Vrm10TextureDescriptorGenerator.TryGetMetaThumbnailTextureImportParam(Parser, vrm, out (SubAssetKey, VRMShaders.TextureImportParam Param) kv))
                 {
                     var texture = await TextureFactory.GetTextureAsync(kv.Param);
                     if (texture is Texture2D tex2D)

@@ -7,12 +7,12 @@ using VRMShaders;
 
 namespace UniVRM10
 {
-    public sealed class Vrm10TextureSetImporter : ITextureSetImporter
+    public sealed class Vrm10TextureDescriptorGenerator : ITextureDescriptorGenerator
     {
         private readonly GltfParser m_parser;
         private TextureImportParamSet _textureImportParamSet;
 
-        public Vrm10TextureSetImporter(GltfParser parser)
+        public Vrm10TextureDescriptorGenerator(GltfParser parser)
         {
             m_parser = parser;
         }

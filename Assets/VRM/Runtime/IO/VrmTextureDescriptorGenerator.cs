@@ -6,13 +6,13 @@ using VRMShaders;
 
 namespace VRM
 {
-    public sealed class VRMTextureSetImporter : ITextureSetImporter
+    public sealed class VrmTextureDescriptorGenerator : ITextureDescriptorGenerator
     {
         private readonly GltfParser m_parser;
         private readonly glTF_VRM_extensions m_vrm;
         private TextureImportParamSet _textureImportParamSet;
 
-        public VRMTextureSetImporter(GltfParser parser, glTF_VRM_extensions vrm)
+        public VrmTextureDescriptorGenerator(GltfParser parser, glTF_VRM_extensions vrm)
         {
             m_parser = parser;
             m_vrm = vrm;

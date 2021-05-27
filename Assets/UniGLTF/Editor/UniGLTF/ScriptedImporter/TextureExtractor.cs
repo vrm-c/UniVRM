@@ -75,12 +75,12 @@ namespace UniGLTF
         /// <param name="dirName"></param>
         /// <param name="onCompleted"></param>
         public static void ExtractTextures(GltfParser parser, UnityPath textureDirectory,
-            ITextureSetImporter textureSetImporter, IReadOnlyDictionary<SubAssetKey, Texture> subAssets,
+            ITextureDescriptorGenerator textureDescriptorGenerator, IReadOnlyDictionary<SubAssetKey, Texture> subAssets,
             Action<SubAssetKey, Texture2D> addRemap,
             Action<IEnumerable<UnityPath>> onCompleted = null)
         {
             var extractor = new TextureExtractor(parser, textureDirectory, subAssets);
-            foreach (var param in textureSetImporter.GetTextureImportParamSet().GetEnumerable())
+            foreach (var param in textureDescriptorGenerator.GetTextureImportParamSet().GetEnumerable())
             {
                 extractor.Extract(param.SubAssetKey, param);
             }

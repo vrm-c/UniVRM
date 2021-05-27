@@ -7,7 +7,7 @@ namespace UniGLTF
     ///
     /// glTF Texture と Unity Texture の対応関係は N:M である。
     /// </summary>
-    public interface ITextureSetImporter
+    public interface ITextureDescriptorGenerator
     {
         TextureImportParamSet GetTextureImportParamSet();
     }

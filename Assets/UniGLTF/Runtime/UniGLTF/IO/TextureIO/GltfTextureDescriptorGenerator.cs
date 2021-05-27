@@ -25,12 +25,12 @@ namespace UniGLTF
     /// * normal 外部ライルをそのまま使うので SubAsset にしない(normalとしてロードするためにAssetImporterの設定は必用)
     /// * metallicRoughnessOcclusion 変換結果を SubAsset 化する
     /// </summary>
-    public sealed class GltfTextureSetImporter : ITextureSetImporter
+    public sealed class GltfTextureDescriptorGenerator : ITextureDescriptorGenerator
     {
         private readonly GltfParser m_parser;
         private TextureImportParamSet _textureImportParamSet;
 
-        public GltfTextureSetImporter(GltfParser parser)
+        public GltfTextureDescriptorGenerator(GltfParser parser)
         {
             m_parser = parser;
         }

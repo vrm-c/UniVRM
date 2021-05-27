@@ -32,7 +32,7 @@ namespace UniGLTF
 
         #endregion
 
-        public ITextureSetImporter TextureSetImporter { get; protected set; }
+        public ITextureDescriptorGenerator TextureDescriptorGenerator { get; protected set; }
         public IMaterialImporter MaterialImporter { get; protected set; }
         public TextureFactory TextureFactory { get; }
         public MaterialFactory MaterialFactory { get; }
@@ -40,7 +40,7 @@ namespace UniGLTF
         public ImporterContext(GltfParser parser, IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> externalObjectMap = null)
         {
             Parser = parser;
-            TextureSetImporter = new GltfTextureSetImporter(Parser);
+            TextureDescriptorGenerator = new GltfTextureDescriptorGenerator(Parser);
             MaterialImporter = new GltfMaterialImporter();
 
             externalObjectMap = externalObjectMap ?? new Dictionary<SubAssetKey, UnityEngine.Object>();
@@ -183,7 +183,7 @@ namespace UniGLTF
 
         public async Task LoadTexturesAsync()
         {
-            var textures = TextureSetImporter.GetTextureImportParamSet().GetEnumerable();
+            var textures = TextureDescriptorGenerator.GetTextureImportParamSet().GetEnumerable();
             foreach (var param in textures)
             {
                 var tex = await TextureFactory.GetTextureAsync(param);
