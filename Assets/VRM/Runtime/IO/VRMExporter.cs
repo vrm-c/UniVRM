@@ -3,8 +3,8 @@ using System.Linq;
 using UniGLTF;
 using UniJSON;
 using UnityEngine;
-using ColorSpace = UniGLTF.ColorSpace;
-
+using VRMShaders;
+using ColorSpace = VRMShaders.ColorSpace;
 
 namespace VRM
 {

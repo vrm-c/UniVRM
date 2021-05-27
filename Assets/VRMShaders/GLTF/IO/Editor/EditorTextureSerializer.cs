@@ -1,10 +1,8 @@
 using System;
 using System.IO;
 using System.Reflection;
-using UniGLTF;
 using UnityEditor;
 using UnityEngine;
-using ColorSpace = UniGLTF.ColorSpace;
 
 namespace VRMShaders
 {

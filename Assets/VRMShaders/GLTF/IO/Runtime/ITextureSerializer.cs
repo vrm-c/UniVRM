@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace UniGLTF
+namespace VRMShaders
 {
     /// <summary>
     /// Texture2D を入力として byte[] を得る機能

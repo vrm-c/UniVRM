@@ -20,8 +20,11 @@ namespace VRM
 
         public VRM.glTF_VRM_extensions VRM { get; private set; }
 
-        public VRMImporterContext(GltfParser parser, IReadOnlyDictionary<SubAssetKey, Object> externalObjectMap = null)
-            : base(parser, externalObjectMap)
+        public VRMImporterContext(
+            GltfParser parser,
+            IReadOnlyDictionary<SubAssetKey, Object> externalObjectMap = null,
+            ITextureDeserializer textureDeserializer = null)
+            : base(parser, externalObjectMap, textureDeserializer)
         {
             // parse VRM part
             if (glTF_VRM_extensions.TryDeserialize(GLTF.extensions, out glTF_VRM_extensions vrm))

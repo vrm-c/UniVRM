@@ -4,7 +4,7 @@ using UniGLTF;
 using UniGLTF.Extensions.VRMC_materials_mtoon;
 using UnityEngine;
 using VRMShaders;
-using ColorSpace = UniGLTF.ColorSpace;
+using ColorSpace = VRMShaders.ColorSpace;
 using OutlineWidthMode = UniGLTF.Extensions.VRMC_materials_mtoon.OutlineWidthMode;
 
 namespace UniVRM10

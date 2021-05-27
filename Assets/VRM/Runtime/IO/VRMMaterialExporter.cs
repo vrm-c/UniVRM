@@ -5,7 +5,7 @@ using UniGLTF;
 using UniGLTF.ShaderPropExporter;
 using UnityEngine;
 using VRMShaders;
-using ColorSpace = UniGLTF.ColorSpace;
+using ColorSpace = VRMShaders.ColorSpace;
 
 namespace VRM
 {

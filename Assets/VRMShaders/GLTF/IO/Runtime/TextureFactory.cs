@@ -3,40 +3,40 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using System.Threading.Tasks;
-using ColorSpace = UniGLTF.ColorSpace;
-
 
 namespace VRMShaders
 {
     public class TextureFactory : IDisposable
     {
-        private readonly Dictionary<SubAssetKey, Texture> m_temporaryTextures = new Dictionary<SubAssetKey, Texture>();
-        private readonly Dictionary<SubAssetKey, Texture> m_textureCache = new Dictionary<SubAssetKey, Texture>();
-        private readonly IReadOnlyDictionary<SubAssetKey, Texture> m_externalMap;
+        private readonly ITextureDeserializer _textureDeserializer;
+        private readonly IReadOnlyDictionary<SubAssetKey, Texture> _externalMap;
+        private readonly Dictionary<SubAssetKey, Texture> _temporaryTextures = new Dictionary<SubAssetKey, Texture>();
+        private readonly Dictionary<SubAssetKey, Texture> _textureCache = new Dictionary<SubAssetKey, Texture>();
 
         /// <summary>
         /// Importer が動的に生成した Texture
         /// </summary>
-        public IReadOnlyDictionary<SubAssetKey, Texture> ConvertedTextures => m_textureCache;
+        public IReadOnlyDictionary<SubAssetKey, Texture> ConvertedTextures => _textureCache;
 
         /// <summary>
-        ///
+        /// 外部から渡された、すでに存在する Texture (ex. Extracted Editor Asset)
         /// </summary>
-        public IReadOnlyDictionary<SubAssetKey, Texture> ExternalTextures => m_externalMap;
+        public IReadOnlyDictionary<SubAssetKey, Texture> ExternalTextures => _externalMap;
 
-        public TextureFactory(IReadOnlyDictionary<SubAssetKey, Texture> externalTextures)
+        public TextureFactory(ITextureDeserializer textureDeserializer, IReadOnlyDictionary<SubAssetKey, Texture> externalTextures)
         {
-            m_externalMap = externalTextures;
+            _textureDeserializer = textureDeserializer;
+            _externalMap = externalTextures;
         }
 
         public void Dispose()
         {
-            foreach (var kv in m_temporaryTextures)
+            foreach (var kv in _temporaryTextures)
             {
                 DestroyResource(kv.Value);
             }
-            m_temporaryTextures.Clear();
-            m_textureCache.Clear();
+            _temporaryTextures.Clear();
+            _textureCache.Clear();
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace VRMShaders
         public void TransferOwnership(Func<UnityEngine.Object, bool> take)
         {
             var transferredAssets = new HashSet<SubAssetKey>();
-            foreach (var x in m_textureCache)
+            foreach (var x in _textureCache)
             {
                 if (take(x.Value))
                 {
@@ -56,41 +56,24 @@ namespace VRMShaders
 
             foreach (var key in transferredAssets)
             {
-                m_textureCache.Remove(key);
+                _textureCache.Remove(key);
             }
-        }
-
-        async Task<Texture2D> LoadTextureAsync(GetTextureBytesAsync getTextureBytesAsync, bool useMipmap, ColorSpace colorSpace)
-        {
-            var imageBytes = await getTextureBytesAsync();
-
-            var texture = new Texture2D(2, 2, TextureFormat.ARGB32, useMipmap, colorSpace == ColorSpace.Linear);
-            if (imageBytes != null)
-            {
-                texture.LoadImage(imageBytes);
-            }
-
-            return texture;
         }
 
         /// <summary>
-        /// テクスチャーをロード、必要であれば変換して返す。
-        /// 同じものはキャッシュを返す
+        /// テクスチャ生成情報を基に、テクスチャ生成を行う。
+        /// SubAssetKey が同じ場合はキャッシュを返す。
         /// </summary>
-        /// <param name="texture_type">変換の有無を判断する: METALLIC_GLOSS_PROP</param>
-        /// <param name="roughnessFactor">METALLIC_GLOSS_PROPの追加パラメーター</param>
-        /// <param name="indices">gltf の texture index</param>
-        /// <returns></returns>
         public async Task<Texture> GetTextureAsync(TextureDescriptor texDesc)
         {
             var subAssetKey = texDesc.SubAssetKey;
 
-            if (m_externalMap != null && m_externalMap.TryGetValue(subAssetKey, out var externalTexture))
+            if (_externalMap != null && _externalMap.TryGetValue(subAssetKey, out var externalTexture))
             {
                 return externalTexture;
             }
 
-            if (m_textureCache.TryGetValue(subAssetKey, out var cachedTexture))
+            if (_textureCache.TryGetValue(subAssetKey, out var cachedTexture))
             {
                 return cachedTexture;
             }
@@ -99,14 +82,16 @@ namespace VRMShaders
             {
                 case TextureImportTypes.NormalMap:
                 {
-                    // Runtime/SubAsset 用に変換する
-                    var rawTexture = await LoadTextureAsync(texDesc.Index0, texDesc.Sampler.EnableMipMap, ColorSpace.Linear);
-                    var convertedTexture = NormalConverter.Import(rawTexture);
-                    convertedTexture.name = subAssetKey.Name;
-                    convertedTexture.SetSampler(texDesc.Sampler);
-                    m_textureCache.Add(subAssetKey, convertedTexture);
-                    DestroyResource(rawTexture);
-                    return convertedTexture;
+                    // no conversion. Unity's normal map is same with glTF's.
+                    //
+                    // > contrary to Unity’s usual convention of using Y as “up”
+                    // https://docs.unity3d.com/2018.4/Documentation/Manual/StandardShaderMaterialParameterNormalMap.html
+                    var data0 = await texDesc.Index0();
+                    var rawTexture = await _textureDeserializer.LoadTextureAsync(data0, texDesc.Sampler.EnableMipMap, ColorSpace.Linear);
+                    rawTexture.name = subAssetKey.Name;
+                    rawTexture.SetSampler(texDesc.Sampler);
+                    _textureCache.Add(subAssetKey, rawTexture);
+                    return rawTexture;
                 }
 
                 case TextureImportTypes.StandardMap:
@@ -116,18 +101,20 @@ namespace VRMShaders
 
                     if (texDesc.Index0 != null)
                     {
-                        metallicRoughnessTexture = await LoadTextureAsync(texDesc.Index0, texDesc.Sampler.EnableMipMap, ColorSpace.Linear);
+                        var data0 = await texDesc.Index0();
+                        metallicRoughnessTexture = await _textureDeserializer.LoadTextureAsync(data0, texDesc.Sampler.EnableMipMap, ColorSpace.Linear);
                     }
                     if (texDesc.Index1 != null)
                     {
-                        occlusionTexture = await LoadTextureAsync(texDesc.Index1, texDesc.Sampler.EnableMipMap, ColorSpace.Linear);
+                        var data1 = await texDesc.Index1();
+                        occlusionTexture = await _textureDeserializer.LoadTextureAsync(data1, texDesc.Sampler.EnableMipMap, ColorSpace.Linear);
                     }
 
                     var combinedTexture = OcclusionMetallicRoughnessConverter.Import(metallicRoughnessTexture,
                         texDesc.MetallicFactor, texDesc.RoughnessFactor, occlusionTexture);
                     combinedTexture.name = subAssetKey.Name;
                     combinedTexture.SetSampler(texDesc.Sampler);
-                    m_textureCache.Add(subAssetKey, combinedTexture);
+                    _textureCache.Add(subAssetKey, combinedTexture);
                     DestroyResource(metallicRoughnessTexture);
                     DestroyResource(occlusionTexture);
                     return combinedTexture;
@@ -135,18 +122,20 @@ namespace VRMShaders
 
                 case TextureImportTypes.sRGB:
                 {
-                    var rawTexture = await LoadTextureAsync(texDesc.Index0, texDesc.Sampler.EnableMipMap, ColorSpace.sRGB);
+                    var data0 = await texDesc.Index0();
+                    var rawTexture = await _textureDeserializer.LoadTextureAsync(data0, texDesc.Sampler.EnableMipMap, ColorSpace.sRGB);
                     rawTexture.name = subAssetKey.Name;
                     rawTexture.SetSampler(texDesc.Sampler);
-                    m_textureCache.Add(subAssetKey, rawTexture);
+                    _textureCache.Add(subAssetKey, rawTexture);
                     return rawTexture;
                 }
                 case TextureImportTypes.Linear:
                 {
-                    var rawTexture = await LoadTextureAsync(texDesc.Index0, texDesc.Sampler.EnableMipMap, ColorSpace.Linear);
+                    var data0 = await texDesc.Index0();
+                    var rawTexture = await _textureDeserializer.LoadTextureAsync(data0, texDesc.Sampler.EnableMipMap, ColorSpace.Linear);
                     rawTexture.name = subAssetKey.Name;
                     rawTexture.SetSampler(texDesc.Sampler);
-                    m_textureCache.Add(subAssetKey, rawTexture);
+                    _textureCache.Add(subAssetKey, rawTexture);
                     return rawTexture;
                 }
                 default:

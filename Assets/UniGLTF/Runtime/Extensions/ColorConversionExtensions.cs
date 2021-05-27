@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using ColorSpace = VRMShaders.ColorSpace;
 
 namespace UniGLTF
 {
@@ -10,13 +11,13 @@ namespace UniGLTF
             var dst = src.ConvertColorSpace(srcColorSpace, dstColorSpace);
             return new float[] {dst.r, dst.g, dst.b, dst.a};
         }
-        
+
         public static float[] ToFloat3(this Color src, ColorSpace srcColorSpace, ColorSpace dstColorSpace)
         {
             var dst = src.ConvertColorSpace(srcColorSpace, dstColorSpace);
             return new float[] {dst.r, dst.g, dst.b};
         }
-        
+
         public static Color ToColor4(this float[] src, ColorSpace srcColorSpace, ColorSpace dstColorSpace)
         {
             if (src == null || src.Length < 4)
@@ -27,7 +28,7 @@ namespace UniGLTF
 
             return new Color(src[0], src[1], src[2], src[3]).ConvertColorSpace(srcColorSpace, dstColorSpace);
         }
-        
+
         public static Color ToColor3(this float[] src, ColorSpace srcColorSpace, ColorSpace dstColorSpace)
         {
             if (src == null || src.Length < 3)

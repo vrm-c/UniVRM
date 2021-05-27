@@ -1,4 +1,4 @@
-﻿namespace UniGLTF
+﻿namespace VRMShaders
 {
     public enum ColorSpace
     {

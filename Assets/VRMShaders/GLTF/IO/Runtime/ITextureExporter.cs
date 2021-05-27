@@ -13,7 +13,7 @@ namespace VRMShaders
         /// <summary>
         /// Export する Texture2D のリスト。これが gltf.textures になる
         /// </summary>
-        IReadOnlyList<(Texture2D, UniGLTF.ColorSpace)> Exported { get; }
+        IReadOnlyList<(Texture2D, ColorSpace)> Exported { get; }
 
         /// <summary>
         /// 指定の Texture を、 sRGB 色空間の値を持つ Texture に出力するように指示する。

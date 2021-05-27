@@ -1,7 +1,6 @@
 ﻿using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
-using ColorSpace = UniGLTF.ColorSpace;
 
 namespace VRMShaders
 {
