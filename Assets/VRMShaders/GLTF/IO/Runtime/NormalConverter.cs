@@ -4,23 +4,23 @@ namespace VRMShaders
 {
     public static class NormalConverter
     {
-        private static Material m_decoder;
-        private static Material Decoder
+        private static Material _exporter;
+        private static Material Exporter
         {
             get
             {
-                if (m_decoder == null)
+                if (_exporter == null)
                 {
-                    m_decoder = new Material(Shader.Find("UniGLTF/NormalMapDecoder"));
+                    _exporter = new Material(Shader.Find("Hidden/UniGLTF/NormalMapExporter"));
                 }
-                return m_decoder;
+                return _exporter;
             }
         }
 
         // Unity texture to GLTF data
         public static Texture2D Export(Texture texture)
         {
-            return TextureConverter.CopyTexture(texture, ColorSpace.Linear, false, Decoder);
+            return TextureConverter.CopyTexture(texture, ColorSpace.Linear, false, Exporter);
         }
     }
 }
