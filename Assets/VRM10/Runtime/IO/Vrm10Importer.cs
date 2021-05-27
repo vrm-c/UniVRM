@@ -21,8 +21,11 @@ namespace UniVRM10
 
         IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> m_externalMap;
 
-        public Vrm10Importer(UniGLTF.GltfParser parser, IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> externalObjectMap = null)
-        : base(parser, externalObjectMap)
+        public Vrm10Importer(
+            UniGLTF.GltfParser parser,
+            IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> externalObjectMap = null,
+            ITextureDeserializer textureDeserializer = null)
+            : base(parser, externalObjectMap, textureDeserializer)
         {
             TextureDescriptorGenerator = new Vrm10TextureDescriptorGenerator(parser);
             MaterialDescriptorGenerator = new Vrm10MaterialDescriptorGenerator();
