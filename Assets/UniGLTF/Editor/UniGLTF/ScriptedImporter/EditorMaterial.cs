@@ -56,7 +56,7 @@ namespace UniGLTF
             s_foldTextures = EditorGUILayout.Foldout(s_foldTextures, "Remapped Textures");
             if (s_foldTextures)
             {
-                importer.DrawRemapGUI<UnityEngine.Texture>(textureSetImporter.GetTextureImportParamSet().GetTextureParamsDistinct().Select(x => x.SubAssetKey));
+                importer.DrawRemapGUI<UnityEngine.Texture>(textureSetImporter.GetTextureImportParamSet().GetEnumerable().Select(x => x.SubAssetKey));
             }
 
             if (GUILayout.Button("Clear"))
