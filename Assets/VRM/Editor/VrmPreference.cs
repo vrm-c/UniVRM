@@ -1,4 +1,7 @@
 using UnityEditor;
+#if UNITY_2019_1_OR_NEWER
+using UnityEditor.Graphs;
+#endif
 
 namespace VRM
 {
@@ -13,7 +16,7 @@ namespace VRM
         {
             var provider = new SettingsProvider("Preferences/VRM0", 
                 SettingsScope.User, SettingsProvider.GetSearchKeywordsFromGUIContentProperties<Styles>());
-            provider.guiHandler = (sarchContext) => OnGUI();
+            provider.guiHandler = (sarchContext) => OnPreferenceGUI();
             return provider;
         }
 #else

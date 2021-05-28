@@ -2,8 +2,10 @@ using UnityEngine;
 using UnityEditor;
 using System.Linq;
 using System;
-using System.IO;
 using System.Collections.Generic;
+#if UNITY_2019_1_OR_NEWER
+using UnityEditor.Graphs;
+#endif
 
 namespace UniGLTF
 {
@@ -40,7 +42,7 @@ namespace UniGLTF
         {
             var provider = new SettingsProvider("Preferences/UniGLTF", 
                 SettingsScope.User, SettingsProvider.GetSearchKeywordsFromGUIContentProperties<Styles>());
-            provider.guiHandler = (sarchContext) => OnGUI();
+            provider.guiHandler = (sarchContext) => OnPreferenceGUI();
             return provider;
         }
 #else
