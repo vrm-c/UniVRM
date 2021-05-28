@@ -1,6 +1,4 @@
-using UnityEngine;
 using UnityEditor;
-using System.Linq;
 
 namespace VRM
 {
@@ -9,7 +7,18 @@ namespace VRM
         const string KEY_STOP_VRMASSETPOSTPROCESSOR = "StopVrmAssetPostProcessor";
         const string ASSETPOSTPROCESSOR_STOP_SYMBOL = "VRM_STOP_ASSETPOSTPROCESSOR";
 
+#if UNITY_2019_1_OR_NEWER
+        [SettingsProvider]
+        static SettingsProvider CreateProjectSettingsProvider()
+        {
+            var provider = new SettingsProvider("Preferences/VRM0", 
+                SettingsScope.User, SettingsProvider.GetSearchKeywordsFromGUIContentProperties<Styles>());
+            provider.guiHandler = (sarchContext) => OnGUI();
+            return provider;
+        }
+#else
         [PreferenceItem("VRM0")]
+#endif
         private static void OnPreferenceGUI()
         {
             UniGLTF.UniGLTFPreference.ToggleSymbol(KEY_STOP_VRMASSETPOSTPROCESSOR, ASSETPOSTPROCESSOR_STOP_SYMBOL);

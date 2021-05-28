@@ -34,7 +34,18 @@ namespace UniGLTF
             }
         }
 
+#if UNITY_2019_1_OR_NEWER
+        [SettingsProvider]
+        static SettingsProvider CreateProjectSettingsProvider()
+        {
+            var provider = new SettingsProvider("Preferences/UniGLTF", 
+                SettingsScope.User, SettingsProvider.GetSearchKeywordsFromGUIContentProperties<Styles>());
+            provider.guiHandler = (sarchContext) => OnGUI();
+            return provider;
+        }
+#else
         [PreferenceItem("UniGLTF")]
+#endif
         private static void OnPreferenceGUI()
         {
             // language
