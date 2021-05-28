@@ -51,10 +51,10 @@ namespace UniGLTF
 
             TextureFactory = new TextureFactory(textureDeserializer, externalObjectMap
                 .Where(x => x.Value is Texture)
-                .ToDictionary(x => x.Key, x => (Texture) x.Value));
+                .ToDictionary(x => x.Key, x => (Texture)x.Value));
             MaterialFactory = new MaterialFactory(externalObjectMap
                 .Where(x => x.Value is Material)
-                .ToDictionary(x => x.Key, x => (Material) x.Value));
+                .ToDictionary(x => x.Key, x => (Material)x.Value));
         }
 
         #region Source
@@ -122,7 +122,7 @@ namespace UniGLTF
 
             using (MeasureTime("AnimationImporter"))
             {
-                AnimationClips.AddRange(AnimationImporter.Import(GLTF, Root, null, null, InvertAxis));
+                AnimationClips.AddRange(AnimationImporter.Import(GLTF, Root, null, InvertAxis));
             }
 
             await OnLoadHierarchy(awaitCaller, MeasureTime);
