@@ -2,69 +2,82 @@ Shader "VRM10/vrmc_materials_mtoon"
 {
     Properties
     {
-        _Cutoff ("Alpha Cutoff", Range(0, 1)) = 0.5
-        _Color ("Lit Color + Alpha", Color) = (1,1,1,1)
-        _ShadeColor ("Shade Color", Color) = (0.97, 0.81, 0.86, 1)
-        [NoScaleOffset] _MainTex ("Lit Texture + Alpha", 2D) = "white" {}
-        [NoScaleOffset] _ShadeTexture ("Shade Texture", 2D) = "white" {}
-        _BumpScale ("Normal Scale", Float) = 1.0
-        [Normal] _BumpMap ("Normal Texture", 2D) = "bump" {}
-        _ReceiveShadowRate ("Receive Shadow", Range(0, 1)) = 1
-        [NoScaleOffset] _ReceiveShadowTexture ("Receive Shadow Texture", 2D) = "white" {}
-        _ShadingGradeRate ("Shading Grade", Range(0, 1)) = 1
-        [NoScaleOffset] _ShadingGradeTexture ("Shading Grade Texture", 2D) = "white" {}
-        _ShadeShift ("Shade Shift", Range(-1, 1)) = 0
-        _ShadeToony ("Shade Toony", Range(0, 1)) = 0.9
-        _LightColorAttenuation ("Light Color Attenuation", Range(0, 1)) = 0
-        _IndirectLightIntensity ("Indirect Light Intensity", Range(0, 1)) = 0.1
-        [HDR] _RimColor ("Rim Color", Color) = (0,0,0)
-        [NoScaleOffset] _RimTexture ("Rim Texture", 2D) = "white" {}
-        _RimLightingMix ("Rim Lighting Mix", Range(0, 1)) = 0
-        [PowerSlider(4.0)] _RimFresnelPower ("Rim Fresnel Power", Range(0, 100)) = 1
-        _RimLift ("Rim Lift", Range(0, 1)) = 0
-        [NoScaleOffset] _SphereAdd ("Sphere Texture(Add)", 2D) = "black" {}
-        [HDR] _EmissionColor ("Color", Color) = (0,0,0)
-        [NoScaleOffset] _EmissionMap ("Emission", 2D) = "white" {}
-        [NoScaleOffset] _OutlineWidthTexture ("Outline Width Tex", 2D) = "white" {}
-        _OutlineWidth ("Outline Width", Range(0.01, 1)) = 0.5
-        _OutlineScaledMaxDistance ("Outline Scaled Max Distance", Range(1, 10)) = 1
-        _OutlineColor ("Outline Color", Color) = (0,0,0,1)
-        _OutlineLightingMix ("Outline Lighting Mix", Range(0, 1)) = 1
-        [NoScaleOffset] _UvAnimMaskTexture ("UV Animation Mask", 2D) = "white" {}
-        _UvAnimScrollX ("UV Animation Scroll X", Float) = 0
-        _UvAnimScrollY ("UV Animation Scroll Y", Float) = 0
-        _UvAnimRotation ("UV Animation Rotation", Float) = 0
+        // Rendering
+        _AlphaMode ("alphaMode", Int) = 0
+        _TransparentWithZWrite ("mtoon.transparentWithZWrite", Int) = 0
+        _Cutoff ("alphaCutoff", Range(0, 1)) = 0.5 // Unity specified name
+        _RenderQueueOffset ("mtoon.renderQueueOffsetNumber", Int) = 0
+        _DoubleSided ("doubleSided", Int) = 0
 
-        [HideInInspector] _MToonVersion ("_MToonVersion", Float) = 35
-        [HideInInspector] _DebugMode ("_DebugMode", Float) = 0.0
-        [HideInInspector] _BlendMode ("_BlendMode", Float) = 0.0
-        [HideInInspector] _OutlineWidthMode ("_OutlineWidthMode", Float) = 0.0
-        [HideInInspector] _OutlineColorMode ("_OutlineColorMode", Float) = 0.0
-        [HideInInspector] _CullMode ("_CullMode", Float) = 2.0
-        [HideInInspector] _OutlineCullMode ("_OutlineCullMode", Float) = 1.0
-        [HideInInspector] _SrcBlend ("_SrcBlend", Float) = 1.0
-        [HideInInspector] _DstBlend ("_DstBlend", Float) = 0.0
-        [HideInInspector] _ZWrite ("_ZWrite", Float) = 1.0
-        [HideInInspector] _AlphaToMask ("_AlphaToMask", Float) = 0.0
+        // Lighting
+        _Color ("pbrMetallicRoughness.baseColorFactor", Color) = (1,1,1,1) // Unity specified name
+        _MainTex ("pbrMetallicRoughness.baseColorTexture", 2D) = "white" {} // Unity specified name
+        _ShadeColor ("mtoon.shadeColorFactor", Color) = (1, 1, 1, 1)
+        _ShadeTex ("mtoon.shadeMultiplyTexture", 2D) = "white" {}
+        [Normal] _BumpMap ("normalTexture", 2D) = "bump" {} // Unity specified name
+        _BumpScale ("normalTexture.scale", Float) = 1.0 // Unity specified name
+        _ShadingShiftColor ("mtoon.shadingShiftFactor", Range(0, 1)) = 0
+        _ShadingShiftTex ("mtoon.shadingShiftTexture", 2D) = "black" {} // channel R
+        _ShadingShiftTexScale ("mtoon.shadingShiftTexture.scale", Float) = 1
+        _ShadingToonyColor ("mtoon.shadingToonyFactor", Range(0, 1)) = 0.9
+//        _ShadingToonyTex ("mtoon.shadingToonyTexture", 2D) = "black" {} // parameter texture // need?
+//        _ShadingToonyTexScale ("mtoon.shadingToonyTexture.scale", Float) = 1 // need?
+
+        // GI
+        _GiEqualization ("mtoon.giEqualizationFactor", Range(0, 1)) = 0.9
+
+        // Emission
+        _EmissionColor ("emissiveFactor", Color) = (0, 0, 0) // Unity specified name
+        _EmissionMap ("emissiveTexture", 2D) = "white" {} // Unity specified name
+
+        // Rim Lighting
+        _RimMatcapTex ("mtoon.matcapTexture", 2D) = "black" {}
+        _RimColor ("mtoon.parametricRimColorFactor", Color) = (0, 0, 0)
+        _RimFresnelPower ("mtoon.parametricRimFresnelPowerFactor", Float) = 5.0
+        _RimLift ("mtoon.parametricRimLiftFactor", Float) = 0
+        _RimTex ("mtoon.rimMultiplyTexture", 2D) = "white" {}
+        _RimLightingMix ("mtoon.rimLightingMixFactor", Float) = 1
+
+        // Outline
+        _OutlineWidthMode ("mtoon.outlineWidthMode", Int) = 0
+        _OutlineWidth ("mtoon.outlineWidthFactor", Float) = 0
+        _OutlineWidthTex ("mtoon.outlineWidthMultiplyTexture", 2D) = "white" {} // channel G
+        _OutlineColor ("mtoon.outlineColorFactor", Color) = (0, 0, 0)
+        _OutlineLightingMix ("mtoon.outlineLightingMixFactor", Float) = 1 // default 0
+
+        // UV Animation
+        _UvAnimMaskTex ("mtoon.uvAnimationMaskTexture", 2D) = "white" {} // channel B
+        _UvAnimScrollXSpeed ("mtoon.uvAnimationScrollXSpeedFactor", Float) = 0
+        _UvAnimScrollYSpeed ("mtoon.uvAnimationScrollYSpeedFactor", Float) = 0
+        _UvAnimRotationSpeed ("mtoon.uvAnimationRotationSpeedFactor", Float) = 0
+
+        // Unity ShaderPass Mode
+        [HideInInspector] _M_CullMode ("_CullMode", Float) = 2.0
+        [HideInInspector] _M_SrcBlend ("_SrcBlend", Float) = 1.0
+        [HideInInspector] _M_DstBlend ("_DstBlend", Float) = 0.0
+        [HideInInspector] _M_ZWrite ("_ZWrite", Float) = 1.0
+        [HideInInspector] _M_AlphaToMask ("_AlphaToMask", Float) = 0.0
+
+        // etc
+        [HideInInspector] _M_DebugMode ("_DebugMode", Float) = 0.0
     }
 
-    // for SM 3.0
     SubShader
     {
         Tags { "RenderType" = "Opaque"  "Queue" = "Geometry" }
 
-        // Forward Base
+        // Built-in Forward Base Pass
         Pass
         {
             Name "FORWARD_BASE"
             Tags { "LightMode" = "ForwardBase" }
 
-            Cull [_CullMode]
-            Blend [_SrcBlend] [_DstBlend]
-            ZWrite [_ZWrite]
+            Cull [_M_CullMode]
+            Blend [_M_SrcBlend] [_M_DstBlend]
+            ZWrite [_M_ZWrite]
             ZTest LEqual
             BlendOp Add, Max
-            AlphaToMask [_AlphaToMask]
+            AlphaToMask [_M_AlphaToMask]
 
             CGPROGRAM
             #pragma target 3.0
@@ -81,19 +94,19 @@ Shader "VRM10/vrmc_materials_mtoon"
         }
 
 
-        // Forward Base Outline Pass
+        // Built-in Forward Base Outline Pass
         Pass
         {
             Name "FORWARD_BASE_ONLY_OUTLINE"
             Tags { "LightMode" = "ForwardBase" }
 
-            Cull [_OutlineCullMode]
-            Blend [_SrcBlend] [_DstBlend]
-            ZWrite [_ZWrite]
+            Cull Front
+            Blend [_M_SrcBlend] [_M_DstBlend]
+            ZWrite [_M_ZWrite]
             ZTest LEqual
             Offset 1, 1
             BlendOp Add, Max
-            AlphaToMask [_AlphaToMask]
+            AlphaToMask [_M_AlphaToMask]
 
             CGPROGRAM
             #pragma target 3.0
@@ -113,18 +126,18 @@ Shader "VRM10/vrmc_materials_mtoon"
         }
 
 
-        // Forward Add
+        // Built-in Forward Add Pass
         Pass
         {
             Name "FORWARD_ADD"
             Tags { "LightMode" = "ForwardAdd" }
 
-            Cull [_CullMode]
-            Blend [_SrcBlend] One
+            Cull [_M_CullMode]
+            Blend [_M_SrcBlend] One
             ZWrite Off
             ZTest LEqual
             BlendOp Add, Max
-            AlphaToMask [_AlphaToMask]
+            AlphaToMask [_M_AlphaToMask]
 
             CGPROGRAM
             #pragma target 3.0
@@ -140,13 +153,13 @@ Shader "VRM10/vrmc_materials_mtoon"
             ENDCG
         }
 
-        //  Shadow rendering pass
+        //  Built-in Shadow Rendering Pass
         Pass
         {
             Name "ShadowCaster"
             Tags { "LightMode" = "ShadowCaster" }
 
-            Cull [_CullMode]
+            Cull [_M_CullMode]
             ZWrite On
             ZTest LEqual
 
