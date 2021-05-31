@@ -23,6 +23,7 @@ namespace UniVRM10
             Meta,
             Expression,
             LookAt,
+            SpringBone,
             FirstPerson,
         }
         Tabs _tab = Tabs.Meta;
@@ -37,6 +38,7 @@ namespace UniVRM10
         PropGui m_controller;
         PropGui m_meta;
         PropGui m_lookAt;
+        PropGui m_springBone;
         PropGui m_firstPerson;
         PropGui m_asset;
 
@@ -51,6 +53,7 @@ namespace UniVRM10
             m_controller = new PropGui(serializedObject.FindProperty(nameof(m_target.Controller)));
             m_meta = new PropGui(serializedObject.FindProperty(nameof(m_target.Meta)));
             m_lookAt = new PropGui(serializedObject.FindProperty(nameof(m_target.LookAt)));
+            m_springBone = new PropGui(serializedObject.FindProperty(nameof(m_target.SpringBone)));
             m_firstPerson = new PropGui(serializedObject.FindProperty(nameof(m_target.FirstPerson)));
         }
 
@@ -61,8 +64,6 @@ namespace UniVRM10
                 UnityEditor.Editor.DestroyImmediate(m_metaEditor);
                 m_metaEditor = null;
             }
-
-            Tools.hidden = false;
         }
 
         public override void OnInspectorGUI()
@@ -98,6 +99,10 @@ namespace UniVRM10
 
                 case Tabs.LookAt:
                     m_lookAt.RecursiveProperty();
+                    break;
+
+                case Tabs.SpringBone:
+                    m_springBone.RecursiveProperty();
                     break;
 
                 case Tabs.FirstPerson:

@@ -71,9 +71,12 @@ namespace UniVRM10
             }
         }
 
+        public static int SelectedGuid;
+
         public void OnDrawGizmosSelected()
         {
-            Gizmos.color = Color.cyan;
+            Gizmos.color = GetInstanceID() == SelectedGuid ? Color.red : Color.cyan;
+
             Matrix4x4 mat = transform.localToWorldMatrix;
             Gizmos.matrix = mat * Matrix4x4.Scale(new Vector3(
                 1.0f / transform.lossyScale.x,

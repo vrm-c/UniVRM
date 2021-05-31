@@ -303,7 +303,7 @@ namespace UniVRM10
         {
             var joint = new UniGLTF.Extensions.VRMC_springBone.SpringBoneJoint
             {
-                Node = getIndexFromTransform(y.Transform),
+                Node = getIndexFromTransform(y.transform),
                 HitRadius = y.m_jointRadius,
                 DragForce = y.m_dragForce,
                 Stiffness = y.m_stiffnessForce,

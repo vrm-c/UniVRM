@@ -12,6 +12,10 @@ namespace UniVRM10
         
         public static void Draw3D(VRM10Controller target)
         {
+            if(target==null)
+            {
+                return;
+            }
             OnSceneGUIOffset(target);
             if (!Application.isPlaying)
             {

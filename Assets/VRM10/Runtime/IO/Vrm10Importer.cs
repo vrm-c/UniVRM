@@ -375,7 +375,7 @@ namespace UniVRM10
 
                 // colliderGroup
                 foreach (var g in gltfVrmSpringBone.ColliderGroups)
-                {                    
+                {
                     var colliderGroup = new VRM10ControllerSpringBone.ColliderGroup();
                     controller.SpringBone.ColliderGroups.Add(colliderGroup);
 
@@ -426,7 +426,7 @@ namespace UniVRM10
                             {
                                 throw new IndexOutOfRangeException($"{index} > {Nodes.Count}");
                             }
-                            var joint = new VRM10SpringJoint(Nodes[gltfJoint.Node.Value]);
+                            var joint = Nodes[gltfJoint.Node.Value].gameObject.AddComponent<VRM10SpringJoint>();
                             joint.m_jointRadius = gltfJoint.HitRadius.Value;
                             joint.m_dragForce = gltfJoint.DragForce.Value;
                             joint.m_gravityDir = Vector3InvertX(gltfJoint.GravityDir);

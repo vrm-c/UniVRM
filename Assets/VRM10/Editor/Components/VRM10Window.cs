@@ -40,8 +40,11 @@ namespace UniVRM10
             // Debug.Log("OnDisable");
             UnityEditor.Selection.selectionChanged -= Repaint;
             Undo.willFlushUndoRecord -= Repaint;
+
+            Tools.hidden = false;
         }
 
+        SerializedObject m_so;
         VRM10Controller m_root;
         VRM10Controller Root
         {
@@ -58,6 +61,7 @@ namespace UniVRM10
                     return;
                 }
                 m_root = value;
+                m_so = m_root != null ? new SerializedObject(m_root) : null;
 
                 m_boneMap = null;
                 m_constraints = null;
@@ -134,6 +138,8 @@ namespace UniVRM10
         //
         private void OnGUI()
         {
+            Root = (VRM10Controller)EditorGUILayout.ObjectField("vrm1", m_root, typeof(VRM10Controller), true);
+
             var ui = (VRMSceneUI)GUILayout.SelectionGrid((int)s_ui, Selection, 3);
             if (s_ui != ui)
             {
@@ -141,12 +147,20 @@ namespace UniVRM10
                 SceneView.RepaintAll();
             }
 
+            if (m_so == null)
+            {
+                m_so = new SerializedObject(Root);
+            }
+            if (m_so == null)
+            {
+                return;
+            }
+
+            m_so.Update();
             switch (s_ui)
             {
                 case VRMSceneUI.None:
                     {
-                        Root = (VRM10Controller)EditorGUILayout.ObjectField("vrm1", m_root, typeof(VRM10Controller), true);
-
                         m_scrollPosition = EditorGUILayout.BeginScrollView(m_scrollPosition);
 
                         // mouse wheel scroll part 1
@@ -185,12 +199,14 @@ namespace UniVRM10
                     break;
 
                 case VRMSceneUI.SpringBone:
-                    SpringBoneEditor.Draw2D(m_root, new SerializedObject(m_root));
+                    SpringBoneEditor.Draw2D(m_root, m_so);
                     break;
 
                 default:
                     throw new NotImplementedException();
             }
+
+            m_so.ApplyModifiedProperties();
         }
 
         void DrawContent()
