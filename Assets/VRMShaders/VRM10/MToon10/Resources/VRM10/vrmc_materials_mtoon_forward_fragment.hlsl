@@ -21,7 +21,7 @@ half4 MToonFragment(Varyings input) : SV_Target
 
     // Alpha Test
 #if defined(_ALPHATEST_ON)
-    const half rawAlpha = _Color.a;
+    const half rawAlpha = litColor.a;
     const half tmpAlpha = (rawAlpha - _Cutoff) / max(fwidth(rawAlpha), 0.00001) + 0.5; // Alpha to Coverage
     clip(tmpAlpha - _Cutoff);
     const half alpha = 1.0;
