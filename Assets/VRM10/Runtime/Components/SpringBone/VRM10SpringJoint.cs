@@ -8,7 +8,7 @@ using UnityEditor;
 namespace UniVRM10
 {
     [Serializable]
-    public class VRM10SpringJoint: MonoBehaviour
+    public class VRM10SpringJoint : MonoBehaviour
     {
         [SerializeField, Range(0, 4), Header("Settings")]
         public float m_stiffnessForce = 1.0f;

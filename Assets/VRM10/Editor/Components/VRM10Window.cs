@@ -63,16 +63,10 @@ namespace UniVRM10
                 m_root = value;
                 m_so = m_root != null ? new SerializedObject(m_root) : null;
 
-                m_boneMap = null;
                 m_constraints = null;
             }
         }
 
-        static bool s_foldHumanoidBones = true;
-        static HumanBodyBones[] s_bones;
-        public Dictionary<HumanBodyBones, Transform> m_boneMap;
-
-        static bool s_foldConstraints = true;
         public VRM10Constraint[] m_constraints;
 
         void Reload()
@@ -82,12 +76,11 @@ namespace UniVRM10
             Root = backup;
         }
 
-        Vector2 m_scrollPosition;
-
+        ScrollView m_scrollView = new ScrollView();
 
         enum VRMSceneUI
         {
-            None,
+            Constraints,
             LookAt,
             SpringBone,
         }
@@ -105,9 +98,6 @@ namespace UniVRM10
             }
         }
 
-        const int WINDOW_ID = 1234;
-        static Rect s_windowRect = new Rect(20, 20, 400, 50);
-
         /// <summary>
         /// public entry point
         /// </summary>
@@ -116,18 +106,18 @@ namespace UniVRM10
         {
             switch (s_ui)
             {
-                case VRMSceneUI.None:
+                case VRMSceneUI.Constraints:
                     Tools.hidden = false;
                     break;
 
                 case VRMSceneUI.LookAt:
                     Tools.hidden = true;
-                    LookAtEditor.Draw3D(m_root);
+                    LookAtEditor.Draw3D(Root);
                     break;
 
                 case VRMSceneUI.SpringBone:
                     Tools.hidden = true;
-                    SpringBoneEditor.Draw3D(m_root);
+                    SpringBoneEditor.Draw3D(Root);
                     break;
 
                 default:
@@ -138,7 +128,11 @@ namespace UniVRM10
         //
         private void OnGUI()
         {
-            Root = (VRM10Controller)EditorGUILayout.ObjectField("vrm1", m_root, typeof(VRM10Controller), true);
+            Root = (VRM10Controller)EditorGUILayout.ObjectField("vrm1", Root, typeof(VRM10Controller), true);
+            if (Root == null)
+            {
+                return;
+            }
 
             var ui = (VRMSceneUI)GUILayout.SelectionGrid((int)s_ui, Selection, 3);
             if (s_ui != ui)
@@ -159,47 +153,16 @@ namespace UniVRM10
             m_so.Update();
             switch (s_ui)
             {
-                case VRMSceneUI.None:
-                    {
-                        m_scrollPosition = EditorGUILayout.BeginScrollView(m_scrollPosition);
-
-                        // mouse wheel scroll part 1
-                        var isScroll = Event.current.isScrollWheel;
-                        if (isScroll)
-                        {
-                            m_scrollPosition += Event.current.delta * EditorGUIUtility.singleLineHeight;
-                            if (m_scrollPosition.y < 0)
-                            {
-                                m_scrollPosition = Vector2.zero;
-                            }
-                        }
-
-                        DrawContent();
-
-                        // mouse wheel scroll part 2
-                        var bottom = EditorGUILayout.GetControlRect();
-                        if (isScroll)
-                        {
-                            var maxScroll = bottom.y - (this.position.size.y - EditorGUIUtility.singleLineHeight * 2);
-                            // Debug.Log($"{bottom.y}: {this.position.size.y}: {maxScroll}");
-                            if (m_scrollPosition.y > maxScroll)
-                            {
-                                m_scrollPosition = new Vector2(0, maxScroll);
-                            }
-                            Repaint();
-                        }
-
-                        EditorGUILayout.EndScrollView();
-
-                    }
+                case VRMSceneUI.Constraints:
+                    m_scrollView.Draw(this.position.y, DrawConstraints, Repaint);
                     break;
 
                 case VRMSceneUI.LookAt:
-                    LookAtEditor.Draw2D(m_root);
+                    LookAtEditor.Draw2D(Root);
                     break;
 
                 case VRMSceneUI.SpringBone:
-                    SpringBoneEditor.Draw2D(m_root, m_so);
+                    SpringBoneEditor.Draw2D(Root, m_so);
                     break;
 
                 default:
@@ -209,64 +172,17 @@ namespace UniVRM10
             m_so.ApplyModifiedProperties();
         }
 
-        void DrawContent()
+        void DrawConstraints()
         {
-            if (m_root != null)
+            if (Root != null)
             {
-                if (s_bones == null)
-                {
-                    var values = Enum.GetValues(typeof(HumanBodyBones));
-                    s_bones = new HumanBodyBones[values.Length - 1];
-                    int j = 0;
-                    foreach (HumanBodyBones bone in values)
-                    {
-                        if (bone != HumanBodyBones.LastBone)
-                        {
-                            s_bones[j++] = bone;
-                        }
-                    }
-                }
-                if (m_boneMap == null)
-                {
-                    var animator = m_root.GetComponent<Animator>();
-                    if (animator != null)
-                    {
-                        m_boneMap = new Dictionary<HumanBodyBones, Transform>();
-                        foreach (var bone in s_bones)
-                        {
-                            var t = animator.GetBoneTransform(bone);
-                            if (t != null)
-                            {
-                                m_boneMap.Add(bone, t);
-                            }
-                        }
-                    }
-                }
                 if (m_constraints == null)
                 {
-                    m_constraints = m_root.GetComponentsInChildren<VRM10Constraint>();
+                    m_constraints = Root.GetComponentsInChildren<VRM10Constraint>();
                 }
             }
 
-            GUI.enabled = false;
-            s_foldHumanoidBones = EditorGUILayout.Foldout(s_foldHumanoidBones, "humanoid bones");
-            if (s_foldHumanoidBones)
-            {
-                if (m_boneMap != null)
-                {
-                    foreach (var bone in s_bones)
-                    {
-                        if (m_boneMap.TryGetValue(bone, out Transform t))
-                        {
-
-                        }
-                        EditorGUILayout.ObjectField(bone.ToString(), t, typeof(Transform), true);
-                    }
-                }
-            }
-
-            s_foldConstraints = EditorGUILayout.Foldout(s_foldConstraints, "constraints");
-            if (s_foldConstraints)
+            using (new EditorGUI.DisabledGroupScope(true))
             {
                 if (m_constraints != null)
                 {
