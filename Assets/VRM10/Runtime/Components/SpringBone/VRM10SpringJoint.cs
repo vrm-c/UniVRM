@@ -46,7 +46,7 @@ namespace UniVRM10
             }
         }
 
-        public void Update(Transform center, float deltaTime, List<SpringBoneLogic.InternalCollider> colliders, VRM10SpringJoint tail)
+        public void Process(Transform center, float deltaTime, List<SpringBoneLogic.InternalCollider> colliders, VRM10SpringJoint tail)
         {
             if (m_logic == null)
             {

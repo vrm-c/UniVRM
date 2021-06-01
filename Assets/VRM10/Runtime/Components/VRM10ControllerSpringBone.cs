@@ -94,10 +94,10 @@ namespace UniVRM10
                     VRM10SpringJoint lastJoint = Joints.FirstOrDefault(x => x != null);
                     foreach (var joint in Joints.Where(x => x != null).Skip(1))
                     {
-                        lastJoint.Update(center, Time.deltaTime, m_colliderList, joint);
+                        lastJoint.Process(center, Time.deltaTime, m_colliderList, joint);
                         lastJoint = joint;
                     }
-                    lastJoint.Update(center, Time.deltaTime, m_colliderList, null);
+                    lastJoint.Process(center, Time.deltaTime, m_colliderList, null);
                 }
             }
         }
