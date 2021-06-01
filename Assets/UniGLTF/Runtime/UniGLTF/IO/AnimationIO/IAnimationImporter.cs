@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using VRMShaders;
 
 namespace UniGLTF
 {
     public interface IAnimationImporter
     {
-        List<AnimationClip> Import(glTF gltf, GameObject root, List<Transform> nodes, Axes invertAxis);
+        AnimationClip Import(glTF gltf, int i, Axes invertAxis);
     }
 }
