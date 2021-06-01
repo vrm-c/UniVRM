@@ -22,7 +22,7 @@ namespace UniGLTF
         public static void OnGUI(ScriptedImporter importer, GltfParser parser, ITextureDescriptorGenerator textureDescriptorGenerator, Func<string, string> textureDir, Func<string, string> materialDir)
         {
             var hasExternal = importer.GetExternalObjectMap().Any(x => x.Value is Material || x.Value is Texture2D);
-            using (new EditorGUI.DisabledGroupScope(!hasExternal))
+            using (new EditorGUI.DisabledScope(hasExternal))
             {
                 if (GUILayout.Button("Extract Materials And Textures ..."))
                 {

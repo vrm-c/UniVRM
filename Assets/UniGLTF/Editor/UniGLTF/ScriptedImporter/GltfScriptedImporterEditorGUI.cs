@@ -45,7 +45,7 @@ namespace UniGLTF
                     break;
 
                 case Tabs.Animation:
-                    EditorAnimation.OnGUIAnimation(m_parser);
+                    EditorAnimation.OnGUIAnimation(m_importer, m_parser);
                     break;
 
                 case Tabs.Materials:
