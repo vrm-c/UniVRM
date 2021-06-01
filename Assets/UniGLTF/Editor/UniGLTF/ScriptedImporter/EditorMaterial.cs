@@ -14,20 +14,6 @@ using UnityEditor.Experimental.AssetImporters;
 
 namespace UniGLTF
 {
-    public class TmpGuiEnable : IDisposable
-    {
-        bool m_backup;
-        public TmpGuiEnable(bool enable)
-        {
-            m_backup = GUI.enabled;
-            GUI.enabled = enable;
-        }
-
-        public void Dispose()
-        {
-            GUI.enabled = m_backup;
-        }
-    }
     public static class EditorMaterial
     {
         static bool s_foldMaterials = true;
@@ -36,7 +22,7 @@ namespace UniGLTF
         public static void OnGUI(ScriptedImporter importer, GltfParser parser, ITextureDescriptorGenerator textureDescriptorGenerator, Func<string, string> textureDir, Func<string, string> materialDir)
         {
             var hasExternal = importer.GetExternalObjectMap().Any(x => x.Value is Material || x.Value is Texture2D);
-            using (new TmpGuiEnable(!hasExternal))
+            using (new EditorGUI.DisabledGroupScope(!hasExternal))
             {
                 if (GUILayout.Button("Extract Materials And Textures ..."))
                 {
