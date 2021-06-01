@@ -67,13 +67,6 @@ namespace UniVRM10
 
         public VRM10Constraint[] m_constraints;
 
-        void Reload()
-        {
-            var backup = Root;
-            Root = null;
-            Root = backup;
-        }
-
         ScrollView m_scrollView = new ScrollView();
 
         enum VRMSceneUI

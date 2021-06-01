@@ -35,7 +35,8 @@ namespace UniVRM10
             var tree = GetTree(target, so);
             if (GUILayout.Button("Reload"))
             {
-                tree.Reload();
+                Disable();
+                return;
             }
 
             tree.Draw();

@@ -6,6 +6,142 @@ using UnityEngine;
 
 namespace UniVRM10
 {
+    abstract class SelectedGUIBase
+    {
+        public abstract void Draw(Rect r);
+
+        /// <summary>
+        /// 領域を１行と残りに分割する
+        /// </summary>
+        /// <param name="rect"></param>
+        /// <returns></returns>
+        protected static (Rect line, Rect remain) LayoutLine(Rect rect)
+        {
+            return (
+                new Rect(
+                    rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight
+                ),
+                new Rect(
+                    rect.x, rect.y + EditorGUIUtility.singleLineHeight, rect.width, rect.height - EditorGUIUtility.singleLineHeight
+                )
+            );
+        }
+
+        /// <summary>
+        /// 領域を上下２分割
+        /// </summary>
+        /// <param name="layout"></param>
+        /// <param name="r"></param>
+        /// <returns></returns>
+        protected static (Rect layout, Rect remain) LayoutVerticalHalf(Rect r)
+        {
+            var half = r.height / 2;
+            return (
+                new Rect(
+                    r.x, r.y, r.width, half
+                ),
+                new Rect(
+                    r.x, r.y + half, r.width, r.height
+                )
+            );
+        }
+
+        // protected static void LabelList(Rect r, string label, ReorderableList l)
+        // {
+        //     GUI.Label(new Rect(r.x, r.y, r.width, EditorGUIUtility.singleLineHeight), label);
+        //     l.DoList(new Rect(r.x, r.y + EditorGUIUtility.singleLineHeight, r.width, r.height - EditorGUIUtility.singleLineHeight));
+        // }
+    }
+
+    class SelectedColliderGroupGUI : SelectedGUIBase
+    {
+        SerializedProperty _selectedProp;
+        ReorderableList _colliderGroupList;
+
+        public SelectedColliderGroupGUI(SerializedObject so, int i)
+        {
+            _selectedProp = so.FindProperty($"SpringBone.ColliderGroups.Array.data[{i}]");
+            var prop = _selectedProp.FindPropertyRelative("Colliders");
+            _colliderGroupList = new ReorderableList(so, prop);
+
+            _colliderGroupList.drawElementCallback = (rect, index, isActive, isFocused) =>
+            {
+                SerializedProperty element = prop.GetArrayElementAtIndex(index);
+                rect.height -= 4;
+                rect.y += 2;
+                EditorGUI.PropertyField(rect, element);
+
+                if (isFocused)
+                {
+                    var id = element.objectReferenceValue.GetInstanceID();
+                    if (id != VRM10SpringBoneCollider.SelectedGuid)
+                    {
+                        VRM10SpringBoneCollider.SelectedGuid = id;
+                        SceneView.RepaintAll();
+                        EditorUtility.SetDirty(element.objectReferenceValue);
+                    }
+                }
+            };
+        }
+
+        public override void Draw(Rect r)
+        {
+            Rect layout = default;
+            (layout, r) = LayoutLine(r);
+            EditorGUI.PropertyField(layout, _selectedProp.FindPropertyRelative("Name"));
+
+            (layout, r) = LayoutLine(r);
+            GUI.Label(layout, "colliders");
+            _colliderGroupList.DoList(r);
+        }
+    }
+
+    class SelectedSpringGUI : SelectedGUIBase
+    {
+        SerializedProperty _selectedProp;
+        ReorderableList _springColliderGroupList;
+        ReorderableList _springJointList;
+
+        public SelectedSpringGUI(SerializedObject so, int i)
+        {
+            _selectedProp = so.FindProperty($"SpringBone.Springs.Array.data[{i}]");
+
+            {
+                var prop = _selectedProp.FindPropertyRelative("ColliderGroups");
+                _springColliderGroupList = new ReorderableList(so, prop);
+            }
+
+            {
+                var prop = _selectedProp.FindPropertyRelative("Joints");
+                _springJointList = new ReorderableList(so, prop);
+                _springJointList.drawElementCallback = (rect, index, isActive, isFocused) =>
+                {
+                    SerializedProperty element = prop.GetArrayElementAtIndex(index);
+                    rect.height -= 4;
+                    rect.y += 2;
+                    EditorGUI.PropertyField(rect, element);
+                };
+            }
+        }
+
+        public override void Draw(Rect r)
+        {
+            Rect layout = default;
+            (layout, r) = LayoutLine(r);
+            EditorGUI.PropertyField(layout, _selectedProp.FindPropertyRelative("Name"));
+
+            var (top, bottom) = LayoutVerticalHalf(r);
+
+            (layout, r) = LayoutLine(top);
+            GUI.Label(layout, "collider groups");
+            _springColliderGroupList.DoList(r);
+
+            (layout, r) = LayoutLine(bottom);
+            GUI.Label(layout, "joints");
+            _springJointList.DoList(r);
+        }
+    }
+
     public class SpringBoneTreeView : TreeView
     {
         public VRM10Controller Target { get; private set; }
@@ -39,11 +175,7 @@ namespace UniVRM10
             for (var i = 0; i < target.SpringBone.ColliderGroups.Count; ++i)
             {
                 var colliderGroup = target.SpringBone.ColliderGroups[i];
-                var name = colliderGroup.Name;
-                if (string.IsNullOrEmpty(name))
-                {
-                    name = $"colliderGroup{i:00}";
-                }
+                var name = $"{i:00}:{colliderGroup.Name}";
                 var id = _nextNodeID++;
                 var item = new TreeViewItem(id, 2, name);
                 _map.Add(id, colliderGroup);
@@ -70,78 +202,28 @@ namespace UniVRM10
             return _root;
         }
 
-        object _selected;
+        SelectedGUIBase _selected;
 
-        ReorderableList _colliderGroupList;
-        ReorderableList _springColliderGroupList;
-        ReorderableList _springJointList;
         protected override void SelectionChanged(IList<int> selectedIds)
         {
+            _selected = null;
             if (selectedIds.Count > 0 && _map.TryGetValue(selectedIds[0], out object value))
             {
-                _selected = value;
                 if (value is VRM10ControllerSpringBone.ColliderGroup colliderGroup)
                 {
                     var i = Target.SpringBone.ColliderGroups.IndexOf(colliderGroup);
-                    var prop = _so.FindProperty($"SpringBone.ColliderGroups.Array.data[{i}].Colliders");
-                    _colliderGroupList = new ReorderableList(_so, prop);
-
-                    _colliderGroupList.drawElementCallback = (rect, index, isActive, isFocused) =>
-                    {
-                        SerializedProperty element = prop.GetArrayElementAtIndex(index);
-                        rect.height -= 4;
-                        rect.y += 2;
-                        EditorGUI.PropertyField(rect, element);
-
-                        if (isFocused)
-                        {
-                            var id = element.objectReferenceValue.GetInstanceID();
-                            if (id != VRM10SpringBoneCollider.SelectedGuid)
-                            {
-                                VRM10SpringBoneCollider.SelectedGuid = id;
-                                SceneView.RepaintAll();
-                                EditorUtility.SetDirty(element.objectReferenceValue);
-                            }
-                        }
-                    };
+                    _selected = new SelectedColliderGroupGUI(_so, i);
                 }
                 else if (value is VRM10ControllerSpringBone.Spring spring)
                 {
                     var i = Target.SpringBone.Springs.IndexOf(spring);
-
-                    {
-                        var prop = _so.FindProperty($"SpringBone.Springs.Array.data[{i}].ColliderGroups");
-                        _springColliderGroupList = new ReorderableList(_so, prop);
-                    }
-
-                    {
-                        var prop = _so.FindProperty($"SpringBone.Springs.Array.data[{i}].Joints");
-                        _springJointList = new ReorderableList(_so, prop);
-                        _springJointList.drawElementCallback = (rect, index, isActive, isFocused) =>
-                        {
-                            SerializedProperty element = prop.GetArrayElementAtIndex(index);
-                            rect.height -= 4;
-                            rect.y += 2;
-                            EditorGUI.PropertyField(rect, element);
-                        };
-                    }
-
+                    _selected = new SelectedSpringGUI(_so, i);
                 }
-            }
-            else
-            {
-                _selected = null;
             }
         }
 
         const int WINDOW_HEIGHT = 500;
         const int TREE_WIDTH = 160;
-
-        static void LabelList(Rect r, string label, ReorderableList l)
-        {
-            GUI.Label(new Rect(r.x, r.y, r.width, EditorGUIUtility.singleLineHeight), label);
-            l.DoList(new Rect(r.x, r.y + EditorGUIUtility.singleLineHeight, r.width, r.height - EditorGUIUtility.singleLineHeight));
-        }
 
         //      |
         // left | right
@@ -154,15 +236,13 @@ namespace UniVRM10
             OnGUI(new Rect(r.x, r.y, TREE_WIDTH, r.height));
 
             // right
-            if (_selected is VRM10ControllerSpringBone.ColliderGroup colliderGroup)
+            if (_selected is SelectedColliderGroupGUI colliderGroup)
             {
-                LabelList(new Rect(r.x + TREE_WIDTH, r.y, r.width - TREE_WIDTH, r.height), "colliders", _colliderGroupList);
+                colliderGroup.Draw(new Rect(r.x + TREE_WIDTH, r.y, r.width - TREE_WIDTH, r.height));
             }
-            else if (_selected is VRM10ControllerSpringBone.Spring spring)
+            else if (_selected is SelectedSpringGUI spring)
             {
-                LabelList(new Rect(r.x + TREE_WIDTH, r.y, r.width - TREE_WIDTH, r.height / 2), "collider groups",
-                _springColliderGroupList);
-                LabelList(new Rect(r.x + TREE_WIDTH, r.y + r.height / 2, r.width - TREE_WIDTH, r.height / 2), "joints", _springJointList);
+                spring.Draw(new Rect(r.x + TREE_WIDTH, r.y, r.width - TREE_WIDTH, r.height));
             }
         }
     }
