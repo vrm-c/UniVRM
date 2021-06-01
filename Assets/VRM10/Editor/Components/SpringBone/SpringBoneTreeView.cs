@@ -100,6 +100,7 @@ namespace UniVRM10
                             {
                                 VRM10SpringBoneCollider.SelectedGuid = id;
                                 SceneView.RepaintAll();
+                                EditorUtility.SetDirty(element.objectReferenceValue);
                             }
                         }
                     };
