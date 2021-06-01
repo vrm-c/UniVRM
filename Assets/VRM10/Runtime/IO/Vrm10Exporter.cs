@@ -299,7 +299,7 @@ namespace UniVRM10
             return shape;
         }
 
-        UniGLTF.Extensions.VRMC_springBone.SpringBoneJoint ExportJoint(VRM10SpringJoint y, Func<Transform, int> getIndexFromTransform)
+        UniGLTF.Extensions.VRMC_springBone.SpringBoneJoint ExportJoint(VRM10SpringBoneJoint y, Func<Transform, int> getIndexFromTransform)
         {
             var joint = new UniGLTF.Extensions.VRMC_springBone.SpringBoneJoint
             {

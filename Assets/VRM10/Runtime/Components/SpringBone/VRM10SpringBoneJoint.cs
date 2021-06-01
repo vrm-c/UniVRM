@@ -8,7 +8,7 @@ using UnityEditor;
 namespace UniVRM10
 {
     [Serializable]
-    public class VRM10SpringJoint : MonoBehaviour
+    public class VRM10SpringBoneJoint : MonoBehaviour
     {
         [SerializeField, Range(0, 4), Header("Settings")]
         public float m_stiffnessForce = 1.0f;
@@ -46,7 +46,7 @@ namespace UniVRM10
             }
         }
 
-        public void Process(Transform center, float deltaTime, List<SpringBoneLogic.InternalCollider> colliders, VRM10SpringJoint tail)
+        public void Process(Transform center, float deltaTime, List<SpringBoneLogic.InternalCollider> colliders, VRM10SpringBoneJoint tail)
         {
             if (m_logic == null)
             {
@@ -73,5 +73,6 @@ namespace UniVRM10
 
             m_logic.Update(center, m_stiffnessForce * deltaTime, m_dragForce, m_gravityDir * (m_gravityPower * deltaTime), colliders, m_jointRadius);
         }
+
     }
 }

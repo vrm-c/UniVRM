@@ -429,7 +429,7 @@ namespace UniVRM10
                             {
                                 throw new IndexOutOfRangeException($"{index} > {Nodes.Count}");
                             }
-                            var joint = Nodes[gltfJoint.Node.Value].gameObject.AddComponent<VRM10SpringJoint>();
+                            var joint = Nodes[gltfJoint.Node.Value].gameObject.AddComponent<VRM10SpringBoneJoint>();
                             joint.m_jointRadius = gltfJoint.HitRadius.Value;
                             joint.m_dragForce = gltfJoint.DragForce.Value;
                             joint.m_gravityDir = Vector3InvertX(gltfJoint.GravityDir);

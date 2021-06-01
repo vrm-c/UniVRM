@@ -32,10 +32,11 @@ namespace UniVRM10
             public List<VRM10SpringBoneColliderGroup> ColliderGroups = new List<VRM10SpringBoneColliderGroup>();
 
             [SerializeField]
-            public List<VRM10SpringJoint> Joints = new List<VRM10SpringJoint>();
+            public List<VRM10SpringBoneJoint> Joints = new List<VRM10SpringBoneJoint>();
 
             Transform m_center;
             List<SpringBoneLogic.InternalCollider> m_colliderList;
+            List<(VRM10SpringBoneJoint, SpringBoneLogic)> m_logics;
 
             public Spring(string name)
             {
@@ -90,7 +91,7 @@ namespace UniVRM10
 
                 {
                     // udpate joints
-                    VRM10SpringJoint lastJoint = Joints.FirstOrDefault(x => x != null);
+                    VRM10SpringBoneJoint lastJoint = Joints.FirstOrDefault(x => x != null);
                     foreach (var joint in Joints.Where(x => x != null).Skip(1))
                     {
                         lastJoint.Process(center, Time.deltaTime, m_colliderList, joint);
@@ -100,6 +101,7 @@ namespace UniVRM10
                 }
             }
         }
+
         [SerializeField]
         public List<Spring> Springs = new List<Spring>();
 
