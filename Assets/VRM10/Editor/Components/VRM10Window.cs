@@ -108,7 +108,7 @@ namespace UniVRM10
 
                 case VRMSceneUI.SpringBone:
                     Tools.hidden = true;
-                    SpringBoneEditor.Draw3D(Root);
+                    SpringBoneEditor.Draw3D(Root, m_so);
                     break;
 
                 default:
