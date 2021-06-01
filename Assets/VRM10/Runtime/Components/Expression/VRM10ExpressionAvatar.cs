@@ -3,7 +3,7 @@ using System.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using MeshUtility;
+using UniGLTF;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif

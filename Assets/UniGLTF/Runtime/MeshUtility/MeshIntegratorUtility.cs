@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace MeshUtility
+namespace UniGLTF.MeshUtility
 {
     public static class MeshIntegratorUtility
     {

@@ -1,9 +1,9 @@
 ﻿using NUnit.Framework;
 using System.IO;
 using UniGLTF;
+using UniGLTF.MeshUtility;
 using UniJSON;
 using UnityEngine;
-using MeshUtility;
 using System;
 using VRMShaders;
 

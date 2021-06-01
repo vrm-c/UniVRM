@@ -4,7 +4,7 @@ using UnityEngine;
 using System.Linq;
 using System;
 using System.Collections.Generic;
-
+using UniGLTF.MeshUtility;
 
 namespace VRM
 {
@@ -58,7 +58,7 @@ namespace VRM
         MaterialList[] m_duplicateMaterials;
 
         [Header("Result")]
-        public MeshUtility.MeshIntegrationResult[] integrationResults;
+        public MeshIntegrationResult[] integrationResults;
 
         [MenuItem(MENU_KEY)]
         static void CreateWizard()
@@ -124,7 +124,7 @@ namespace VRM
                 return;
             }
 
-            m_uniqueMaterials = MeshUtility.MeshIntegratorUtility.EnumerateSkinnedMeshRenderer(m_root.transform, false)
+            m_uniqueMaterials = MeshIntegratorUtility.EnumerateSkinnedMeshRenderer(m_root.transform, false)
                 .SelectMany(x => x.sharedMaterials)
                 .Distinct()
                 .ToArray();

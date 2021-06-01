@@ -2,7 +2,7 @@
 using System.Linq;
 
 
-namespace MeshUtility
+namespace UniGLTF.MeshUtility
 {
     public static class MeshExtensions
     {

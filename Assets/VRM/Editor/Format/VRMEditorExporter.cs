@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UniGLTF;
+using UniGLTF.MeshUtility;
 using UnityEngine;
 using VRMShaders;
 
@@ -76,7 +77,7 @@ namespace VRM
                 .Distinct()
                 .ToArray();
 
-            var copyMesh = MeshUtility.MeshExtensions.Copy(mesh, copyBlendShape: false);
+            var copyMesh = mesh.Copy(copyBlendShape: false);
             // 使われている BlendShape だけをコピーする
             foreach (var i in usedBlendshapeIndexArray)
             {

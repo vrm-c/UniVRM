@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using MeshUtility;
 using UnityEngine;
 using VrmLib;
 
@@ -31,10 +30,10 @@ namespace UniVRM10
 
             // humanoid
             {
-                var humanoid = root.GetComponent<MeshUtility.Humanoid>();
+                var humanoid = root.GetComponent<UniGLTF.MeshUtility.Humanoid>();
                 if (humanoid is null)
                 {
-                    humanoid = root.AddComponent<MeshUtility.Humanoid>();
+                    humanoid = root.AddComponent<UniGLTF.MeshUtility.Humanoid>();
                     humanoid.AssignBonesFromAnimator();
                 }
 

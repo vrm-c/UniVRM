@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UniGLTF;
+using UniGLTF.MeshUtility;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -44,7 +45,7 @@ namespace VRM
         //}
 
 
-        public static List<MeshUtility.MeshIntegrationResult> Integrate(GameObject prefab)
+        public static List<MeshIntegrationResult> Integrate(GameObject prefab)
         {
             Undo.RecordObject(prefab, "Mesh Integration");
             var instance = SkinnedMeshUtility.InstantiatePrefab(prefab);

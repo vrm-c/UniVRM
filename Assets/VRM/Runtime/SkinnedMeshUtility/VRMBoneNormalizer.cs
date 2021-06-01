@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using UniGLTF.MeshUtility;
 using UniHumanoid;
 using UnityEngine;
 
@@ -66,7 +67,7 @@ namespace VRM
             //
             // 正規化されたヒエラルキーを作る
             //
-            var (normalized, bMap) = MeshUtility.BoneNormalizer.Execute(go, (_src, dst, boneMap) =>
+            var (normalized, bMap) = BoneNormalizer.Execute(go, (_src, dst, boneMap) =>
             {
                 var src = _src.GetComponent<Animator>();
 
