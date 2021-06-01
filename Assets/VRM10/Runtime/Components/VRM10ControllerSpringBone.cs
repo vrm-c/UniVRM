@@ -17,24 +17,19 @@ namespace UniVRM10
     [Serializable]
     public sealed class VRM10ControllerSpringBone
     {
-        [Serializable]
-        public class ColliderGroup
-        {
-            [SerializeField]
-            public string Name;
-            [SerializeField]
-            public List<VRM10SpringBoneCollider> Colliders = new List<VRM10SpringBoneCollider>();
-        }
         [SerializeField]
-        public List<ColliderGroup> ColliderGroups = new List<ColliderGroup>();
+        public List<VRM10SpringBoneColliderGroup> ColliderGroups = new List<VRM10SpringBoneColliderGroup>();
 
         [Serializable]
         public class Spring
         {
             [SerializeField]
             public string Name;
+
+            public string GUIName(int i) => $"{i:00}:{Name}";
+
             [SerializeField]
-            public List<ColliderGroup> ColliderGroups = new List<ColliderGroup>();
+            public List<VRM10SpringBoneColliderGroup> ColliderGroups = new List<VRM10SpringBoneColliderGroup>();
 
             [SerializeField]
             public List<VRM10SpringJoint> Joints = new List<VRM10SpringJoint>();

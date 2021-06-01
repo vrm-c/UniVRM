@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
@@ -24,7 +25,7 @@ namespace UniVRM10
         /// </summary>
         /// <param name="rect"></param>
         /// <returns></returns>
-        protected static (Rect line, Rect remain) LayoutLine(Rect rect)
+        public static (Rect line, Rect remain) LayoutLine(Rect rect)
         {
             return (
                 new Rect(
@@ -42,7 +43,7 @@ namespace UniVRM10
         /// <param name="layout"></param>
         /// <param name="r"></param>
         /// <returns></returns>
-        protected static (Rect layout, Rect remain) LayoutVerticalHalf(Rect r)
+        public static (Rect layout, Rect remain) LayoutVerticalHalf(Rect r)
         {
             var half = r.height / 2;
             return (
@@ -56,15 +57,20 @@ namespace UniVRM10
         }
     }
 
-    class SelectedColliderGroupGUI : SelectedGUIBase
+    class SelectedColliderGroupGUI
     {
+        SerializedObject _so;
+        int _index;
         ReorderableList _colliderGroupList;
 
-        public SelectedColliderGroupGUI(SerializedObject so, int i) : base(so, i)
+        public SelectedColliderGroupGUI(SerializedObject so, int i)
         {
-            Property = so.FindProperty($"SpringBone.ColliderGroups.Array.data[{i}]");
-            var prop = Property.FindPropertyRelative("Colliders");
-            _colliderGroupList = new ReorderableList(so, prop);
+            var target_prop = so.FindProperty($"SpringBone.ColliderGroups.Array.data[{i}]");
+            _index = i;
+            _so = new SerializedObject(target_prop.objectReferenceValue);
+
+            var prop = _so.FindProperty("Colliders");
+            _colliderGroupList = new ReorderableList(_so, prop);
 
             _colliderGroupList.drawElementCallback = (rect, index, isActive, isFocused) =>
             {
@@ -86,13 +92,13 @@ namespace UniVRM10
             };
         }
 
-        public override void Draw2D(Rect r)
+        public void Draw2D(Rect r)
         {
             Rect layout = default;
-            (layout, r) = LayoutLine(r);
-            EditorGUI.PropertyField(layout, Property.FindPropertyRelative("Name"));
+            (layout, r) = SelectedGUIBase.LayoutLine(r);
+            EditorGUI.PropertyField(layout, _so.FindProperty("Name"));
 
-            (layout, r) = LayoutLine(r);
+            (layout, r) = SelectedGUIBase.LayoutLine(r);
             GUI.Label(layout, "colliders");
             _colliderGroupList.DoList(r);
         }
@@ -145,11 +151,11 @@ namespace UniVRM10
             }
         }
 
-        public override void Draw3D()
+        public void Draw3D()
         {
-            var target = _so.targetObject as VRM10Controller;
+            var target = _so.targetObject as VRM10SpringBoneColliderGroup;
 
-            foreach (var c in target.SpringBone.ColliderGroups[_index].Colliders)
+            foreach (var c in target.Colliders)
             {
                 Handles.color = c.IsSelected ? Color.red : Color.cyan;
 
@@ -192,13 +198,28 @@ namespace UniVRM10
         ReorderableList _springColliderGroupList;
         ReorderableList _springJointList;
 
-        public SelectedSpringGUI(SerializedObject so, int i) : base(so, i)
+        public SelectedSpringGUI(VRM10Controller target, SerializedObject so, int i) : base(so, i)
         {
             Property = so.FindProperty($"SpringBone.Springs.Array.data[{i}]");
 
             {
                 var prop = Property.FindPropertyRelative("ColliderGroups");
                 _springColliderGroupList = new ReorderableList(so, prop);
+                _springColliderGroupList.drawElementCallback = (rect, index, isActive, isFocused) =>
+                {
+                    rect.height -= 4;
+                    rect.y += 2;
+
+                    SerializedProperty element = prop.GetArrayElementAtIndex(index);
+                    var elements = target.SpringBone.ColliderGroups;
+                    var element_index = elements.IndexOf(element.objectReferenceValue as VRM10SpringBoneColliderGroup);
+                    var colliderGroups = target.SpringBone.ColliderGroups.Select((x, y) => x.GUIName(y)).ToArray();
+                    var new_index = EditorGUI.Popup(rect, element_index, colliderGroups);
+                    if (new_index != element_index)
+                    {
+                        element.objectReferenceValue = elements[new_index];
+                    }
+                };
             }
 
             {

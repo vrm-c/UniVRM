@@ -40,7 +40,7 @@ namespace UniVRM10
             for (var i = 0; i < target.SpringBone.ColliderGroups.Count; ++i)
             {
                 var colliderGroup = target.SpringBone.ColliderGroups[i];
-                var name = $"{i:00}:{colliderGroup.Name}";
+                var name = colliderGroup.GUIName(i);
                 var id = _nextNodeID++;
                 var item = new TreeViewItem(id, 2, name);
                 _map.Add(id, colliderGroup);
@@ -50,7 +50,7 @@ namespace UniVRM10
             for (var i = 0; i < target.SpringBone.Springs.Count; ++i)
             {
                 var spring = target.SpringBone.Springs[i];
-                var name = $"{i:00}:{spring.Name}";
+                var name = spring.GUIName(i);
                 var id = _nextNodeID++;
                 var item = new TreeViewItem(id, 2, name);
                 _map.Add(id, spring);
@@ -63,14 +63,14 @@ namespace UniVRM10
             return _root;
         }
 
-        SelectedGUIBase _selected;
+        object _selected;
 
         protected override void SelectionChanged(IList<int> selectedIds)
         {
             _selected = null;
             if (selectedIds.Count > 0 && _map.TryGetValue(selectedIds[0], out object value))
             {
-                if (value is VRM10ControllerSpringBone.ColliderGroup colliderGroup)
+                if (value is VRM10SpringBoneColliderGroup colliderGroup)
                 {
                     var i = Target.SpringBone.ColliderGroups.IndexOf(colliderGroup);
                     _selected = new SelectedColliderGroupGUI(_so, i);
@@ -78,7 +78,7 @@ namespace UniVRM10
                 else if (value is VRM10ControllerSpringBone.Spring spring)
                 {
                     var i = Target.SpringBone.Springs.IndexOf(spring);
-                    _selected = new SelectedSpringGUI(_so, i);
+                    _selected = new SelectedSpringGUI(Target, _so, i);
                 }
             }
         }
