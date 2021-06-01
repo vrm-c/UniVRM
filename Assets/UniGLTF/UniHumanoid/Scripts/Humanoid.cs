@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace UniGLTF.MeshUtility
+namespace UniHumanoid
 {
     /// <summary>
     /// Bone割り当てを保持する。

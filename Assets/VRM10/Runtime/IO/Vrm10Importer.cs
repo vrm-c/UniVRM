@@ -215,7 +215,7 @@ namespace UniVRM10
             Root.name = "VRM1";
 
             // humanoid
-            var humanoid = Root.AddComponent<UniGLTF.MeshUtility.Humanoid>();
+            var humanoid = Root.AddComponent<UniHumanoid.Humanoid>();
             humanoid.AssignBones(m_map.Nodes.Select(x => (ToUnity(x.Key.HumanoidBone.GetValueOrDefault()), x.Value.transform)));
             m_humanoid = humanoid.CreateAvatar();
             m_humanoid.name = "humanoid";

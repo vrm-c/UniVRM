@@ -6,7 +6,7 @@ using UnityEditor;
 using UnityEngine;
 using System;
 
-namespace UniGLTF.MeshUtility
+namespace UniHumanoid
 {
     [CustomEditor(typeof(Humanoid))]
     public class HumanoidEditor : Editor

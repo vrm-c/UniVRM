@@ -30,10 +30,10 @@ namespace UniVRM10
 
             // humanoid
             {
-                var humanoid = root.GetComponent<UniGLTF.MeshUtility.Humanoid>();
+                var humanoid = root.GetComponent<UniHumanoid.Humanoid>();
                 if (humanoid is null)
                 {
-                    humanoid = root.AddComponent<UniGLTF.MeshUtility.Humanoid>();
+                    humanoid = root.AddComponent<UniHumanoid.Humanoid>();
                     humanoid.AssignBonesFromAnimator();
                 }
 
