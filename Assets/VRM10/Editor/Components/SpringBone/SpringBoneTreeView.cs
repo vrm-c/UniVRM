@@ -45,12 +45,6 @@ namespace UniVRM10
                 )
             );
         }
-
-        // protected static void LabelList(Rect r, string label, ReorderableList l)
-        // {
-        //     GUI.Label(new Rect(r.x, r.y, r.width, EditorGUIUtility.singleLineHeight), label);
-        //     l.DoList(new Rect(r.x, r.y + EditorGUIUtility.singleLineHeight, r.width, r.height - EditorGUIUtility.singleLineHeight));
-        // }
     }
 
     class SelectedColliderGroupGUI : SelectedGUIBase
@@ -185,11 +179,7 @@ namespace UniVRM10
             for (var i = 0; i < target.SpringBone.Springs.Count; ++i)
             {
                 var spring = target.SpringBone.Springs[i];
-                var name = spring.Name;
-                if (string.IsNullOrEmpty(name))
-                {
-                    name = spring.Joints[0].transform.name;
-                }
+                var name = $"{i:00}:{spring.Name}";
                 var id = _nextNodeID++;
                 var item = new TreeViewItem(id, 2, name);
                 _map.Add(id, spring);
