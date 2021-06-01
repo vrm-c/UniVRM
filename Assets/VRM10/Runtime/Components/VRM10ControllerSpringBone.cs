@@ -89,15 +89,28 @@ namespace UniVRM10
                     }
                 }
 
+                if (m_logics == null)
                 {
-                    // udpate joints
-                    VRM10SpringBoneJoint lastJoint = Joints.FirstOrDefault(x => x != null);
-                    foreach (var joint in Joints.Where(x => x != null).Skip(1))
+                    m_logics = Enumerable.Zip(Joints, Joints.Skip(1), (head, tail) =>
                     {
-                        lastJoint.Process(center, Time.deltaTime, m_colliderList, joint);
-                        lastJoint = joint;
-                    }
-                    lastJoint.Process(center, Time.deltaTime, m_colliderList, null);
+                        var localPosition = tail.transform.localPosition;
+                        var scale = tail.transform.lossyScale;
+                        var logic = new SpringBoneLogic(center, head.transform,
+                            new Vector3(
+                                localPosition.x * scale.x,
+                                localPosition.y * scale.y,
+                                localPosition.z * scale.z
+                                ));
+                        return (head, logic);
+                    }).ToList();
+                }
+                foreach (var (head, logic) in m_logics)
+                {
+                    logic.Update(center,
+                        head.m_stiffnessForce * Time.deltaTime,
+                        head.m_dragForce,
+                        head.m_gravityDir * (head.m_gravityPower * Time.deltaTime),
+                        m_colliderList, head.m_jointRadius);
                 }
             }
         }

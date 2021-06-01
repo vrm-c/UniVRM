@@ -45,34 +45,5 @@ namespace UniVRM10
 #endif
             }
         }
-
-        public void Process(Transform center, float deltaTime, List<SpringBoneLogic.InternalCollider> colliders, VRM10SpringBoneJoint tail)
-        {
-            if (m_logic == null)
-            {
-                // 初期化
-                if (tail != null)
-                {
-                    var localPosition = tail.transform.localPosition;
-                    var scale = tail.transform.lossyScale;
-                    m_logic = new SpringBoneLogic(center, transform,
-                        new Vector3(
-                            localPosition.x * scale.x,
-                            localPosition.y * scale.y,
-                            localPosition.z * scale.z
-                            ));
-                }
-                else
-                {
-                    // 親からまっすぐの位置に tail を作成
-                    var delta = transform.position - transform.parent.position;
-                    var childPosition = transform.position + delta.normalized * 0.07f;
-                    m_logic = new SpringBoneLogic(center, transform, transform.worldToLocalMatrix.MultiplyPoint(childPosition));
-                }
-            }
-
-            m_logic.Update(center, m_stiffnessForce * deltaTime, m_dragForce, m_gravityDir * (m_gravityPower * deltaTime), colliders, m_jointRadius);
-        }
-
     }
 }
