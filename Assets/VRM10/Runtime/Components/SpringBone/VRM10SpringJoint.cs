@@ -8,16 +8,8 @@ using UnityEditor;
 namespace UniVRM10
 {
     [Serializable]
-    public class VRM10SpringJoint
+    public class VRM10SpringJoint : MonoBehaviour
     {
-        [SerializeField]
-        public Transform Transform;
-
-        public VRM10SpringJoint(Transform t)
-        {
-            Transform = t;
-        }
-
         [SerializeField, Range(0, 4), Header("Settings")]
         public float m_stiffnessForce = 1.0f;
 
@@ -49,21 +41,21 @@ namespace UniVRM10
 #if UNITY_EDITOR                
                 // Gizmos.matrix = Transform.localToWorldMatrix;
                 Gizmos.color = color;
-                Gizmos.DrawSphere(Transform.position, m_jointRadius);
+                Gizmos.DrawSphere(transform.position, m_jointRadius);
 #endif
             }
         }
 
-        public void Update(Transform center, float deltaTime, List<SpringBoneLogic.InternalCollider> colliders, VRM10SpringJoint tail)
+        public void Process(Transform center, float deltaTime, List<SpringBoneLogic.InternalCollider> colliders, VRM10SpringJoint tail)
         {
             if (m_logic == null)
             {
                 // 初期化
                 if (tail != null)
                 {
-                    var localPosition = tail.Transform.localPosition;
-                    var scale = tail.Transform.lossyScale;
-                    m_logic = new SpringBoneLogic(center, Transform,
+                    var localPosition = tail.transform.localPosition;
+                    var scale = tail.transform.lossyScale;
+                    m_logic = new SpringBoneLogic(center, transform,
                         new Vector3(
                             localPosition.x * scale.x,
                             localPosition.y * scale.y,
@@ -73,9 +65,9 @@ namespace UniVRM10
                 else
                 {
                     // 親からまっすぐの位置に tail を作成
-                    var delta = Transform.position - Transform.parent.position;
-                    var childPosition = Transform.position + delta.normalized * 0.07f;
-                    m_logic = new SpringBoneLogic(center, Transform, Transform.worldToLocalMatrix.MultiplyPoint(childPosition));
+                    var delta = transform.position - transform.parent.position;
+                    var childPosition = transform.position + delta.normalized * 0.07f;
+                    m_logic = new SpringBoneLogic(center, transform, transform.worldToLocalMatrix.MultiplyPoint(childPosition));
                 }
             }
 

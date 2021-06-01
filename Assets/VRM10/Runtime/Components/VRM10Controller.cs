@@ -47,6 +47,9 @@ namespace UniVRM10
         [SerializeField]
         public VRM10ControllerFirstPerson FirstPerson = new VRM10ControllerFirstPerson();
 
+        [SerializeField]
+        public VRM10ControllerSpringBone SpringBone = new VRM10ControllerSpringBone();
+
         void OnDestroy()
         {
             if (Expression != null)
@@ -54,8 +57,6 @@ namespace UniVRM10
                 Expression.Restore();
             }
         }
-
-        VRM10SpringBone[] m_springs;
 
         VRM10Constraint[] m_constraints;
 
@@ -125,14 +126,7 @@ namespace UniVRM10
             //
             // spring
             //
-            if (m_springs == null)
-            {
-                m_springs = GetComponentsInChildren<VRM10SpringBone>();
-            }
-            foreach (var spring in m_springs)
-            {
-                spring.Process(Controller.SpringBoneCenter);
-            }
+            SpringBone.Process(Controller.SpringBoneCenter);
 
             //
             // gaze control

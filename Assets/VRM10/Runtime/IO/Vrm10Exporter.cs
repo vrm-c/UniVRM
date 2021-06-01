@@ -263,7 +263,7 @@ namespace UniVRM10
                 ExportLookAt(vrm, vrmController);
                 ExportFirstPerson(vrm, vrmController, model, converter);
 
-                vrmSpringBone = ExportSpringBone(vrmController, model, converter);
+                vrmSpringBone = ExportSpringBone(vrmController.SpringBone, model, converter);
                 ExportConstraints(vrmController, model, converter);
             }
 
@@ -303,7 +303,7 @@ namespace UniVRM10
         {
             var joint = new UniGLTF.Extensions.VRMC_springBone.SpringBoneJoint
             {
-                Node = getIndexFromTransform(y.Transform),
+                Node = getIndexFromTransform(y.transform),
                 HitRadius = y.m_jointRadius,
                 DragForce = y.m_dragForce,
                 Stiffness = y.m_stiffnessForce,
@@ -313,7 +313,7 @@ namespace UniVRM10
             return joint;
         }
 
-        UniGLTF.Extensions.VRMC_springBone.VRMC_springBone ExportSpringBone(VRM10Controller vrmController, Model model, ModelExporter converter)
+        UniGLTF.Extensions.VRMC_springBone.VRMC_springBone ExportSpringBone(VRM10ControllerSpringBone src, Model model, ModelExporter converter)
         {
             var springBone = new UniGLTF.Extensions.VRMC_springBone.VRMC_springBone
             {
@@ -327,8 +327,7 @@ namespace UniVRM10
                 return model.Nodes.IndexOf(node);
             };
 
-            var colliderGroups = vrmController.GetComponentsInChildren<VRM10SpringBoneColliderGroup>();
-            foreach (var x in colliderGroups)
+            foreach (var x in src.ColliderGroups)
             {
                 var colliderGroup = new UniGLTF.Extensions.VRMC_springBone.ColliderGroup
                 {
@@ -350,13 +349,13 @@ namespace UniVRM10
                 }
             }
 
-            foreach (var x in vrmController.GetComponentsInChildren<VRM10SpringBone>())
+            foreach (var x in src.Springs)
             {
                 var spring = new UniGLTF.Extensions.VRMC_springBone.Spring
                 {
-                    Name = x.Comment,
+                    Name = x.Name,
                     Joints = x.Joints.Select(y => ExportJoint(y, getNodeIndexFromTransform)).ToList(),
-                    ColliderGroups = x.ColliderGroups.Select(y => Array.IndexOf(colliderGroups, y)).ToArray(),
+                    ColliderGroups = x.ColliderGroups.Select(y => src.ColliderGroups.IndexOf(y)).ToArray(),
                 };
                 springBone.Springs.Add(spring);
             }
