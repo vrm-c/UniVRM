@@ -20,15 +20,15 @@ float4 _MainTex_ST;
 // Colors
 half4 _Color;
 half4 _ShadeColor;
-half4 _ShadingShiftColor;
-half4 _ShadingToonyColor;
 half4 _EmissionColor;
 half4 _RimColor;
 half4 _OutlineColor;
 // Floats
 half _Cutoff;
 half _BumpScale;
+half _ShadingShiftFactor;
 half _ShadingShiftTexScale;
+half _ShadingToonyFactor;
 half _GiEqualization;
 half _RimFresnelPower;
 half _RimLift;

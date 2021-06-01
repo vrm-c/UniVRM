@@ -47,7 +47,12 @@ half4 MToonFragment(Varyings input) : SV_Target
     const UnityLighting unityLighting = GetUnityLighting(input, normalWS);
 
     // Get MToon Lighting
-    const half4 col = GetMToonLighting(unityLighting.directLight, unityLighting.indirectLight, uv, litColor, alpha);
+    MToonLightingInput lightingInput;
+    lightingInput.normalWS = normalWS;
+    lightingInput.uv = uv;
+    lightingInput.litColor = litColor.rgb;
+    lightingInput.alpha = alpha;
+    const half4 col = GetMToonLighting(unityLighting, lightingInput);
 
     UNITY_APPLY_FOG(i.fogCoord, col);
 

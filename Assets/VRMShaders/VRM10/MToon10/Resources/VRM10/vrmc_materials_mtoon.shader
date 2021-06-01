@@ -16,10 +16,10 @@ Shader "Hidden/VRM10/vrmc_materials_mtoon"
         _ShadeTex ("mtoon.shadeMultiplyTexture", 2D) = "white" {}
         [Normal] _BumpMap ("normalTexture", 2D) = "bump" {} // Unity specified name
         _BumpScale ("normalTexture.scale", Float) = 1.0 // Unity specified name
-        _ShadingShiftColor ("mtoon.shadingShiftFactor", Range(0, 1)) = 0
+        _ShadingShiftFactor ("mtoon.shadingShiftFactor", Range(-1, 1)) = 0
         _ShadingShiftTex ("mtoon.shadingShiftTexture", 2D) = "black" {} // channel R
         _ShadingShiftTexScale ("mtoon.shadingShiftTexture.scale", Float) = 1
-        _ShadingToonyColor ("mtoon.shadingToonyFactor", Range(0, 1)) = 0.9
+        _ShadingToonyFactor ("mtoon.shadingToonyFactor", Range(0, 1)) = 0.9
 //        _ShadingToonyTex ("mtoon.shadingToonyTexture", 2D) = "black" {} // parameter texture // need?
 //        _ShadingToonyTexScale ("mtoon.shadingToonyTexture.scale", Float) = 1 // need?
 

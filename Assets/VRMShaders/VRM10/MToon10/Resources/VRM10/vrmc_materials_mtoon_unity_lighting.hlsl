@@ -9,8 +9,11 @@
 
 struct UnityLighting
 {
-    half3 directLight;
     half3 indirectLight;
+    half3 indirectLightEqualized;
+    half3 directLightColor;
+    half3 directLightDirection;
+    half3 directLightAttenuation;
 };
 
 UnityLighting GetUnityLighting(Varyings input, half3 normalWS)
@@ -19,22 +22,23 @@ UnityLighting GetUnityLighting(Varyings input, half3 normalWS)
 
     const half3 lightDir = normalize(UnityWorldSpaceLightDir(input.positionWS));
     const half3 lightColor = _LightColor0.rgb;
-    const half dotNL = dot(lightDir, normalWS);
-
-#if defined(UNITY_PASS_FORWARDBASE)
-    const half3 indirect = ShadeSH9(half4(normalWS, 1));
-    const half3 direct = lightColor * max(0, dotNL) * atten;
-#elif defined(UNITY_PASS_FORWARDADD)
-    const half3 indirect = 0;
-    const half3 direct = lightColor * max(0, dotNL) * atten;
-#else
-    const half3 indirect = half3(1, 1, 0); // error
-    const half3 direct = 0;
-#endif
 
     UnityLighting output = (UnityLighting) 0;
-    output.directLight = direct;
-    output.indirectLight = indirect;
+
+#if defined(UNITY_PASS_FORWARDBASE)
+    output.indirectLight = ShadeSH9(half4(normalWS, 1));
+    output.indirectLightEqualized = (ShadeSH9(half4(0, 1, 0, 1)) + ShadeSH9(half4(0, -1, 0, 1))) * 0.5;
+    output.directLightColor = lightColor;
+    output.directLightDirection = lightDir;
+    output.directLightAttenuation = atten;
+#elif defined(UNITY_PASS_FORWARDADD)
+    output.indirectLight = 0;
+    output.indirectLightEqualized = 0;
+    output.directLightColor = lightColor;
+    output.directLightDirection = lightDir;
+    output.directLightAttenuation = atten;
+#endif
+
     return output;
 }
 
