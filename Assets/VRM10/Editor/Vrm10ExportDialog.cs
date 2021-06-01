@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using UniGLTF;
 using UniGLTF.M17N;
+using UniGLTF.MeshUtility;
 using UnityEditor;
 using UnityEngine;
 using VrmLib;
@@ -235,7 +236,7 @@ namespace UniVRM10
             }
 
             // tabbar
-            _tab = MeshUtility.TabBar.OnGUI(_tab);
+            _tab = TabBar.OnGUI(_tab);
             switch (_tab)
             {
                 case Tabs.Meta:

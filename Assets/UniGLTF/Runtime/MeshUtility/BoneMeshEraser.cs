@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace MeshUtility
+namespace UniGLTF.MeshUtility
 {
     public static class BoneMeshEraser
     {

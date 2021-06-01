@@ -6,7 +6,7 @@ using UnityEditor;
 using UnityEngine;
 
 
-namespace MeshUtility
+namespace UniGLTF.MeshUtility
 {
     [CustomPropertyDrawer(typeof(BoneMeshEraser.EraseBone))]
     public class EraseBoneDrawer : PropertyDrawer

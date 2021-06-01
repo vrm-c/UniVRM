@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace MeshUtility
+namespace UniGLTF.MeshUtility
 {
     [System.Serializable]
     public class MeshIntegrationResult

@@ -273,7 +273,7 @@ namespace VRM
                         break;
                 }
 
-                var assetPath = MeshUtility.UnityPath.FromFullpath(dst);
+                var assetPath = UnityPath.FromFullpath(dst);
                 EditorApplication.delayCall += () =>
                 {
                     assetPath.ImportAsset();

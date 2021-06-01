@@ -1,5 +1,4 @@
-﻿using MeshUtility;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
 
 namespace UniVRM10

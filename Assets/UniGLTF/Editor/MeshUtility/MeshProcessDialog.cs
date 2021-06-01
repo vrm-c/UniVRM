@@ -7,7 +7,7 @@ using UnityEditor;
 using UniGLTF;
 using UniGLTF.M17N;
 
-namespace MeshUtility
+namespace UniGLTF.MeshUtility
 {
     [CustomEditor(typeof(MeshProcessDialog), true)]
     public class BoneMeshEraserGUI : Editor

@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-namespace MeshUtility
+namespace UniGLTF.MeshUtility
 {
 
     public static class TabBar

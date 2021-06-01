@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UniGLTF;
+using UniGLTF.MeshUtility;
 using UnityEngine;
 
 namespace VRM
@@ -38,17 +39,17 @@ namespace VRM
             return true;
         }
 
-        public static List<MeshUtility.MeshIntegrationResult> Integrate(GameObject root, List<BlendShapeClip> blendshapeClips)
+        public static List<UniGLTF.MeshUtility.MeshIntegrationResult> Integrate(GameObject root, List<BlendShapeClip> blendshapeClips)
         {
-            var result = new List<MeshUtility.MeshIntegrationResult>();
+            var result = new List<UniGLTF.MeshUtility.MeshIntegrationResult>();
 
-            var withoutBlendShape = MeshUtility.MeshIntegratorUtility.Integrate(root, onlyBlendShapeRenderers: false);
+            var withoutBlendShape = MeshIntegratorUtility.Integrate(root, onlyBlendShapeRenderers: false);
             if (withoutBlendShape.IntegratedRenderer != null)
             {
                 result.Add(withoutBlendShape);
             }
 
-            var onlyBlendShape = MeshUtility.MeshIntegratorUtility.Integrate(root, onlyBlendShapeRenderers: true);
+            var onlyBlendShape = MeshIntegratorUtility.Integrate(root, onlyBlendShapeRenderers: true);
             if (onlyBlendShape.IntegratedRenderer != null)
             {
                 result.Add(onlyBlendShape);
@@ -58,7 +59,7 @@ namespace VRM
             return result;
         }
 
-        private static void FollowBlendshapeRendererChange(List<BlendShapeClip> clips, MeshUtility.MeshIntegrationResult result, GameObject root)
+        private static void FollowBlendshapeRendererChange(List<BlendShapeClip> clips, MeshIntegrationResult result, GameObject root)
         {
             if (clips == null || result == null || result.IntegratedRenderer == null || root == null) return;
 

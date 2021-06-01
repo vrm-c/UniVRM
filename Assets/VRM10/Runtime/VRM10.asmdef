@@ -5,15 +5,15 @@
         "MToon",
         "UniGLTF",
         "VRMShaders.GLTF.IO.Runtime",
-        "VRMShaders.VRM10.Format.Runtime"
+        "VRMShaders.VRM10.Format.Runtime",
+        "UniHumanoid"
     ],
+    "optionalUnityReferences": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
-    "defineConstraints": [],
-    "versionDefines": [],
-    "noEngineReferences": false
+    "defineConstraints": []
 }

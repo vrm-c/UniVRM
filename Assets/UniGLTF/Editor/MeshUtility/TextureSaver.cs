@@ -4,7 +4,7 @@ using UnityEngine;
 using VRMShaders;
 using ColorSpace = VRMShaders.ColorSpace;
 
-namespace MeshUtility
+namespace UniGLTF.MeshUtility
 {
     public static class EditorChangeTextureType
     {

@@ -2,6 +2,7 @@
 using UnityEngine;
 using UniGLTF;
 using System.IO;
+using UniGLTF.MeshUtility;
 #if UNITY_2020_2_OR_NEWER
 using UnityEditor.AssetImporters;
 #else
@@ -57,7 +58,7 @@ namespace UniVRM10
                 EditorGUILayout.HelpBox(m_message, MessageType.Error);
             }
 
-            s_currentTab = MeshUtility.TabBar.OnGUI(s_currentTab);
+            s_currentTab = TabBar.OnGUI(s_currentTab);
             GUILayout.Space(10);
 
             switch (s_currentTab)

@@ -5,6 +5,7 @@ using UnityEngine;
 using UniGLTF;
 using UniGLTF.M17N;
 using System.IO;
+using UniGLTF.MeshUtility;
 
 namespace VRM
 {
@@ -252,7 +253,7 @@ namespace VRM
             //
             // GUI
             //
-            _tab = MeshUtility.TabBar.OnGUI(_tab);
+            _tab = TabBar.OnGUI(_tab);
             foreach (var meshInfo in m_meshes.Meshes)
             {
                 switch (meshInfo.VertexColor)

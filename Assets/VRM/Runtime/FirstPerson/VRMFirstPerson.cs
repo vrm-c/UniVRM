@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UniGLTF;
+using UniGLTF.MeshUtility;
 using UnityEngine;
 
 
@@ -215,7 +216,7 @@ namespace VRM
             setVisibility(renderer, false, true);
 
             // 削除対象のボーンに対するウェイトを保持する三角形を除外して、一人称用のモデルを複製する
-            var headlessMesh = MeshUtility.BoneMeshEraser.CreateErasedMesh(renderer.sharedMesh, eraseBones);
+            var headlessMesh = BoneMeshEraser.CreateErasedMesh(renderer.sharedMesh, eraseBones);
             if (headlessMesh.triangles.Length == 0)
             {
                 // 一人称用のmeshには描画すべき部分が無い(全部削除された)

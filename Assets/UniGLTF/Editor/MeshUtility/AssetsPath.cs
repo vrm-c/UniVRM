@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEditor;
 
 
-namespace MeshUtility
+namespace UniGLTF.MeshUtility
 {
     /// <summary>
     /// Application.dataPath を root とするファイルパスを扱う。

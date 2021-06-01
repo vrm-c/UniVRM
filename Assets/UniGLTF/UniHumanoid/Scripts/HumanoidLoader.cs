@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace MeshUtility
+namespace UniHumanoid
 {
     public static class HumanoidLoader
     {
@@ -35,16 +35,6 @@ namespace MeshUtility
             };
 
             return AvatarBuilder.BuildHumanAvatar(root.gameObject, description);
-        }
-
-        static SkeletonBone ToSkeletonBone(this Transform t)
-        {
-            var sb = new SkeletonBone();
-            sb.name = t.name;
-            sb.position = t.localPosition;
-            sb.rotation = t.localRotation;
-            sb.scale = t.localScale;
-            return sb;
         }
 
         static HumanBodyBones TraitToHumanBone(string x)
