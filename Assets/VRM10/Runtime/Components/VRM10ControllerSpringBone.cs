@@ -35,7 +35,7 @@ namespace UniVRM10
             public List<VRM10SpringJoint> Joints = new List<VRM10SpringJoint>();
 
             Transform m_center;
-            List<SpringBoneLogic.InternalCollider> m_colliderList = new List<SpringBoneLogic.InternalCollider>();
+            List<SpringBoneLogic.InternalCollider> m_colliderList;
 
             public Spring(string name)
             {
@@ -51,6 +51,10 @@ namespace UniVRM10
                 }
 
                 // gather colliders
+                if (m_colliderList == null)
+                {
+                    m_colliderList = new List<SpringBoneLogic.InternalCollider>();
+                }
                 m_colliderList.Clear();
                 if (ColliderGroups != null)
                 {
