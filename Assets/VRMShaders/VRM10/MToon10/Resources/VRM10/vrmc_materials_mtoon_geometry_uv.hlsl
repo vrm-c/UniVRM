@@ -1,11 +1,12 @@
-﻿#ifndef VRMC_MATERIALS_MTOON_UV_INCLUDED
-#define VRMC_MATERIALS_MTOON_UV_INCLUDED
+﻿#ifndef VRMC_MATERIALS_MTOON_GEOMETRY_UV_INCLUDED
+#define VRMC_MATERIALS_MTOON_GEOMETRY_UV_INCLUDED
 
 #include <UnityCG.cginc>
 #include "./vrmc_materials_mtoon_define.hlsl"
+#include "./vrmc_materials_mtoon_utility.hlsl"
 #include "./vrmc_materials_mtoon_input.hlsl"
 
-float2 GetMToonUv(const float2 geometryUv)
+float2 GetMToonGeometry_Uv(const float2 geometryUv)
 {
     // get raw uv with _MainTex_ST
     const float2 uvRaw = TRANSFORM_TEX(geometryUv, _MainTex);

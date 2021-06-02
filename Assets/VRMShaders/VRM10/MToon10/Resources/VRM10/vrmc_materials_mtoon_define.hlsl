@@ -24,4 +24,14 @@ inline bool MToon_IsUvAnimationOn()
 #endif
 }
 
+// Compile-time constant
+inline bool MToon_IsNormalMapOn()
+{
+#if defined(_NORMALMAP)
+    return true;
+#else
+    return false;
+#endif
+}
+
 #endif

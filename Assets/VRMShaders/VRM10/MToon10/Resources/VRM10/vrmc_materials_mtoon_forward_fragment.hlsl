@@ -6,14 +6,15 @@
 #include "./vrmc_materials_mtoon_utility.hlsl"
 #include "./vrmc_materials_mtoon_input.hlsl"
 #include "./vrmc_materials_mtoon_attribute.hlsl"
-#include "./vrmc_materials_mtoon_lighting.hlsl"
-#include "./vrmc_materials_mtoon_uv.hlsl"
-#include "./vrmc_materials_mtoon_unity_lighting.hlsl"
+#include "./vrmc_materials_mtoon_geometry_uv.hlsl"
+#include "./vrmc_materials_mtoon_geometry_normal.hlsl"
+#include "./vrmc_materials_mtoon_lighting_unity.hlsl"
+#include "./vrmc_materials_mtoon_lighting_mtoon.hlsl"
 
 half4 MToonFragment(const Varyings input) : SV_Target
 {
     // Get MToon UV (with UVAnimation)
-    const float2 uv = GetMToonUv(input.uv);
+    const float2 uv = GetMToonGeometry_Uv(input.uv);
 
     // Get LitColor with Alpha
     const half4 litColor = UNITY_SAMPLE_TEX2D(_MainTex, uv) * _Color;
@@ -31,13 +32,8 @@ half4 MToonFragment(const Varyings input) : SV_Target
     const half alpha = 1.0;
 #endif
 
-    // Get Normal in WorldSpace from Normalmap if available
-#if defined(_NORMALMAP)
-    const half3 normalTS = normalize(UnpackNormalWithScale(UNITY_SAMPLE_TEX2D(_BumpMap, uv), _BumpScale));
-    const half3 normalWS = normalize(mul(normalTS, MToon_GetTangentToWorld(input.normalWS, input.tangentWS)));
-#else
-    const half3 normalWS = normalize(input.normalWS);
-#endif
+    // Get Normal
+    const float3 normalWS = GetMToonGeometry_Normal(input, uv);
 
     // Get Unity Lighting
     const UnityLighting unityLighting = GetUnityLighting(input, normalWS);
