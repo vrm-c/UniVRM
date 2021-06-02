@@ -62,8 +62,10 @@ inline half3 GetMToonLighting_Rim(const MToonInput input, const half3 lighting)
     if (MToon_IsForwardBasePass())
     {
         const half3 worldUpWS = half3(0, 1, 0);
-        const half3 matcapRightWS = cross(input.viewDirWS, worldUpWS);
-        const half2 matcapUv = float2(dot(matcapRightWS, input.normalWS), dot(worldUpWS, input.normalWS)) * 0.5 + 0.5;
+        // TODO: use view space axis if abs(dot(viewDir, worldUp)) == 1.0
+        const half3 matcapRightAxisWS = normalize(cross(input.viewDirWS, worldUpWS));
+        const half3 matcapUpAxisWS = normalize(cross(matcapRightAxisWS, input.viewDirWS));
+        const half2 matcapUv = float2(dot(matcapRightAxisWS, input.normalWS), dot(matcapUpAxisWS, input.normalWS)) * 0.5 + 0.5;
         const half3 matcapFactor = UNITY_SAMPLE_TEX2D(_MatcapTex, matcapUv).rgb;
         const half3 parametricRimFactor = pow(saturate(1.0 - dot(input.normalWS, input.viewDirWS) + _RimLift), _RimFresnelPower) * _RimColor.rgb;
         const half3 rimLightingFactor = lerp(half3(1, 1, 1), lighting, _RimLightingMix);
