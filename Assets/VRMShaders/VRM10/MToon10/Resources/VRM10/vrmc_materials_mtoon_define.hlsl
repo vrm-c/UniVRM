@@ -5,7 +5,7 @@
 static const float PI_2 = 6.28318530718;
 static const float EPS_COL = 0.00001;
 
-inline half3 mtoon_linearstep(half3 start, half3 end, half t)
+inline half3 mtoon_linearstep(const half3 start, const half3 end, const half t)
 {
     return min(max((t - start) / (end - start), 0.0), 1.0);
 }
@@ -15,7 +15,7 @@ inline bool MToon_IsPerspective()
     return unity_OrthoParams.w != 1.0;
 }
 
-inline float3 MToon_GetWorldSpaceNormalizedViewDir(float3 positionWS)
+inline float3 MToon_GetWorldSpaceNormalizedViewDir(const float3 positionWS)
 {
     if (MToon_IsPerspective())
     {
@@ -27,7 +27,7 @@ inline float3 MToon_GetWorldSpaceNormalizedViewDir(float3 positionWS)
     }
 }
 
-inline half3x3 MToon_GetTangentToWorld(half3 normalWS, half4 tangentWS)
+inline half3x3 MToon_GetTangentToWorld(const half3 normalWS, const half4 tangentWS)
 {
     const half3 normalizedNormalWS = normalize(normalWS);
     const half3 normalizedTangentWS = normalize(tangentWS.xyz);
@@ -37,6 +37,7 @@ inline half3x3 MToon_GetTangentToWorld(half3 normalWS, half4 tangentWS)
     return half3x3(normalizedTangentWS, normalizedBitangentWS, normalizedNormalWS);
 }
 
+// Compile-time constant
 inline bool MToon_IsForwardBasePass()
 {
 #if defined(UNITY_PASS_FORWARDBASE)
@@ -44,7 +45,17 @@ inline bool MToon_IsForwardBasePass()
 #elif defined(UNITY_PASS_FORWARDADD)
     return false;
 #else
-    // ????
+    // unexpected
+    return false;
+#endif
+}
+
+// Compile-time constant
+inline bool MToon_IsUvAnimationOn()
+{
+#if defined(_UVANIMATION)
+    return true;
+#else
     return false;
 #endif
 }

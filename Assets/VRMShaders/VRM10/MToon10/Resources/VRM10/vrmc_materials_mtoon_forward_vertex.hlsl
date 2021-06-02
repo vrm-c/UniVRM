@@ -8,7 +8,7 @@
 #include "./vrmc_materials_mtoon_input.hlsl"
 #include "./vrmc_materials_mtoon_attribute.hlsl"
 
-Varyings MToonVertex(Attributes v) // v is UnityCG macro specified name.
+Varyings MToonVertex(const Attributes v) // v is UnityCG macro specified name.
 {
     Varyings output = (Varyings)0;
 

@@ -14,7 +14,7 @@ struct MToonInput
     half alpha;
 };
 
-inline half GetMToonLighting_Reflectance(UnityLighting lighting, MToonInput input)
+inline half GetMToonLighting_Reflectance(const UnityLighting lighting, const MToonInput input)
 {
     const half dotNL = dot(input.normalWS, lighting.directLightDirection);
     const half shadingInput = lerp(-1, 1, mtoon_linearstep(-1, 1, dotNL) * lighting.directLightAttenuation);
@@ -23,7 +23,7 @@ inline half GetMToonLighting_Reflectance(UnityLighting lighting, MToonInput inpu
     return mtoon_linearstep(-1.0 + shadingToony, +1.0 - shadingToony, shadingInput + shadingShift);
 }
 
-inline half3 GetMToonLighting_BasicLighting(UnityLighting unityLight, MToonInput input, half reflectance)
+inline half3 GetMToonLighting_BasicLighting(const UnityLighting unityLight, const MToonInput input, const half reflectance)
 {
     if (MToon_IsForwardBasePass())
     {
@@ -43,7 +43,7 @@ inline half3 GetMToonLighting_BasicLighting(UnityLighting unityLight, MToonInput
     }
 }
 
-inline half3 GetMToonLighting_Emissive(MToonInput input)
+inline half3 GetMToonLighting_Emissive(const MToonInput input)
 {
     if (MToon_IsForwardBasePass())
     {
@@ -55,7 +55,7 @@ inline half3 GetMToonLighting_Emissive(MToonInput input)
     }
 }
 
-inline half3 GetMToonLighting_Rim(MToonInput input, half3 lighting)
+inline half3 GetMToonLighting_Rim(const MToonInput input, const half3 lighting)
 {
     if (MToon_IsForwardBasePass())
     {
@@ -73,7 +73,7 @@ inline half3 GetMToonLighting_Rim(MToonInput input, half3 lighting)
     }
 }
 
-half4 GetMToonLighting(UnityLighting unityLight, MToonInput input)
+half4 GetMToonLighting(const UnityLighting unityLight, const MToonInput input)
 {
     const half reflectance = GetMToonLighting_Reflectance(unityLight, input);
 

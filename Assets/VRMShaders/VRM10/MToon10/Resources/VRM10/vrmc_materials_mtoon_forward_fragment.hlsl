@@ -11,7 +11,7 @@
 #include "./vrmc_materials_mtoon_uv.hlsl"
 #include "./vrmc_materials_mtoon_unity_lighting.hlsl"
 
-half4 MToonFragment(Varyings input) : SV_Target
+half4 MToonFragment(const Varyings input) : SV_Target
 {
     // Get MToon UV (with UVAnimation)
     const float2 uv = GetMToonUv(input.uv);
@@ -44,13 +44,13 @@ half4 MToonFragment(Varyings input) : SV_Target
     const UnityLighting unityLighting = GetUnityLighting(input, normalWS);
 
     // Get MToon Lighting
-    MToonInput lightingInput;
-    lightingInput.uv = uv;
-    lightingInput.normalWS = normalWS;
-    lightingInput.viewDirWS = input.viewDirWS;
-    lightingInput.litColor = litColor.rgb;
-    lightingInput.alpha = alpha;
-    const half4 col = GetMToonLighting(unityLighting, lightingInput);
+    MToonInput mtoonInput;
+    mtoonInput.uv = uv;
+    mtoonInput.normalWS = normalWS;
+    mtoonInput.viewDirWS = input.viewDirWS;
+    mtoonInput.litColor = litColor.rgb;
+    mtoonInput.alpha = alpha;
+    const half4 col = GetMToonLighting(unityLighting, mtoonInput);
 
     UNITY_APPLY_FOG(i.fogCoord, col);
 

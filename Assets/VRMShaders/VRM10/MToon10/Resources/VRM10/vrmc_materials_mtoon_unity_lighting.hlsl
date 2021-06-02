@@ -16,30 +16,33 @@ struct UnityLighting
     half3 directLightAttenuation;
 };
 
-UnityLighting GetUnityLighting(Varyings input, half3 normalWS)
+UnityLighting GetUnityLighting(const Varyings input, const half3 normalWS)
 {
     UNITY_LIGHT_ATTENUATION(atten, input, input.positionWS);
 
     const half3 lightDir = normalize(UnityWorldSpaceLightDir(input.positionWS));
     const half3 lightColor = _LightColor0.rgb;
 
-    UnityLighting output = (UnityLighting) 0;
-
-#if defined(UNITY_PASS_FORWARDBASE)
-    output.indirectLight = ShadeSH9(half4(normalWS, 1));
-    output.indirectLightEqualized = (ShadeSH9(half4(0, 1, 0, 1)) + ShadeSH9(half4(0, -1, 0, 1))) * 0.5;
-    output.directLightColor = lightColor;
-    output.directLightDirection = lightDir;
-    output.directLightAttenuation = atten;
-#elif defined(UNITY_PASS_FORWARDADD)
-    output.indirectLight = 0;
-    output.indirectLightEqualized = 0;
-    output.directLightColor = lightColor;
-    output.directLightDirection = lightDir;
-    output.directLightAttenuation = atten;
-#endif
-
-    return output;
+    if (MToon_IsForwardBasePass())
+    {
+        UnityLighting output;
+        output.indirectLight = ShadeSH9(half4(normalWS, 1));
+        output.indirectLightEqualized = (ShadeSH9(half4(0, 1, 0, 1)) + ShadeSH9(half4(0, -1, 0, 1))) * 0.5;
+        output.directLightColor = lightColor;
+        output.directLightDirection = lightDir;
+        output.directLightAttenuation = atten;
+        return output;
+    }
+    else
+    {
+        UnityLighting output;
+        output.indirectLight = 0;
+        output.indirectLightEqualized = 0;
+        output.directLightColor = lightColor;
+        output.directLightDirection = lightDir;
+        output.directLightAttenuation = atten;
+        return output;
+    }
 }
 
 #endif
