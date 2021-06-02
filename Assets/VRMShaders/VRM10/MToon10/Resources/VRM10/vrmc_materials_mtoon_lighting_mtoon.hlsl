@@ -25,24 +25,31 @@ inline half GetMToonLighting_Reflectance(const UnityLighting lighting, const MTo
     return mtoon_linearstep(-1.0 + shadingToony, +1.0 - shadingToony, shadingInput + shadingShift);
 }
 
-inline half3 GetMToonLighting_BasicLighting(const UnityLighting unityLight, const MToonInput input, const half reflectance)
+inline half3 GetMToonLighting_DirectLighting(const UnityLighting unityLight, const MToonInput input, const half reflectance)
 {
     if (MToon_IsForwardBasePass())
     {
         const half3 shadeColor = UNITY_SAMPLE_TEX2D(_ShadeTex, input.uv).rgb * _ShadeColor.rgb;
 
-        const half3 direct = lerp(shadeColor, input.litColor, reflectance) * unityLight.directLightColor;
-        const half3 indirect = input.litColor * lerp(unityLight.indirectLight, unityLight.indirectLightEqualized, _GiEqualization);
-
-        return direct + indirect;
+        return lerp(shadeColor, input.litColor, reflectance) * unityLight.directLightColor;
     }
     else
     {
-        const half3 direct = input.litColor * reflectance * unityLight.directLightColor * 0.5;
-        const half3 indirect = 0;
-
-        return direct + indirect;
+        return input.litColor * reflectance * unityLight.directLightColor * 0.5;
     }
+}
+
+inline half3 GetMToonLighting_GlobalIllumination(const UnityLighting unityLight, const MToonInput input)
+{
+    if (MToon_IsForwardBasePass())
+    {
+        return input.litColor * lerp(unityLight.indirectLight, unityLight.indirectLightEqualized, _GiEqualization);
+    }
+    else
+    {
+        return 0;
+    }
+
 }
 
 inline half3 GetMToonLighting_Emissive(const MToonInput input)
@@ -81,8 +88,12 @@ half4 GetMToonLighting(const UnityLighting unityLight, const MToonInput input)
 {
     const half reflectance = GetMToonLighting_Reflectance(unityLight, input);
 
-    const half3 lighting = GetMToonLighting_BasicLighting(unityLight, input, reflectance);
+    const half3 direct = GetMToonLighting_DirectLighting(unityLight, input, reflectance);
+    const half3 indirect = GetMToonLighting_GlobalIllumination(unityLight, input);
+    const half3 lighting = direct + indirect;
+
     const half3 emissive = GetMToonLighting_Emissive(input);
+
     const half3 rim = GetMToonLighting_Rim(input, lighting);
 
     const half3 col = lighting + emissive + rim;
