@@ -29,7 +29,7 @@ half4 GetMToonLighting(UnityLighting lighting, MToonLightingInput input)
     const half3 indirect = input.litColor * lerp(lighting.indirectLight, lighting.indirectLightEqualized, _GiEqualization);
 
 #elif defined(UNITY_PASS_FORWARDADD)
-    const half3 direct = input.litColor * shading * lighting.directLightColor * lerp(1, 0.5, shadingToony);
+    const half3 direct = input.litColor * shading * lighting.directLightColor * 0.5;
     const half3 indirect = 0;
 
 #else
@@ -44,7 +44,7 @@ half4 GetMToonLighting(UnityLighting lighting, MToonLightingInput input)
 #elif defined(UNITY_PASS_FORWARDADD)
     const half3 emission = 0;
 #else
-    const half3 emission = 0;
+    const half3 emission = 0; // unexpected
 #endif
 
 
