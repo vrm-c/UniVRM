@@ -5,9 +5,9 @@ using UnityEngine;
 
 namespace UniGLTF
 {
-    public static class MeshExporterDivided
+    public static class MeshExporter_DividedVertexBuffer
     {
-        public static glTFMesh Export(glTF gltf, int bufferIndex,
+        public static (glTFMesh, Dictionary<int, int>) Export(glTF gltf, int bufferIndex,
             MeshWithRenderer unityMesh, List<Material> unityMaterials,
             IAxisInverter axisInverter, MeshExportSettings settings)
         {
@@ -100,7 +100,7 @@ namespace UniGLTF
             var targetNames = Enumerable.Range(0, mesh.blendShapeCount).Select(x => mesh.GetBlendShapeName(x)).ToArray();
             gltf_mesh_extras_targetNames.Serialize(gltfMesh, targetNames);
 
-            return gltfMesh;
+            return (gltfMesh, Enumerable.Range(0, mesh.blendShapeCount).ToDictionary(x => x, x => x));
         }
     }
 }

@@ -127,14 +127,18 @@ namespace UniGLTF
                 new Material(Shader.Find("Standard")), // B
             };
 
-            var (go, unityMesh) = CreateMesh(Materials.ToArray());
+            var (go, mesh) = CreateMesh(Materials.ToArray());
             var meshExportSettings = new MeshExportSettings
             {
                 DivideVertexBuffer = false
             };
             var axisInverter = Axes.X.Create();
 
-            var (gltfMesh, blendShapeIndexMap) = MeshExporter.ExportMesh(glTF, bufferIndex, new MeshWithRenderer(go.transform), Materials, meshExportSettings, axisInverter);
+            var unityMesh = new MeshWithRenderer(go.transform);
+            var (gltfMesh, blendShapeIndexMap) = meshExportSettings.DivideVertexBuffer
+                ? MeshExporter_DividedVertexBuffer.Export(glTF, bufferIndex, unityMesh, Materials, axisInverter, meshExportSettings)
+                : MeshExporter_SharedVertexBuffer.Export(glTF, bufferIndex, unityMesh, Materials,axisInverter, meshExportSettings)
+                ;
 
             {
                 var indices = glTF.GetIndices(gltfMesh.primitives[0].indices);
@@ -171,14 +175,18 @@ namespace UniGLTF
                 new Material(Shader.Find("Standard")), // B
             };
 
-            var (go, unityMesh) = CreateMesh(Materials.ToArray());
+            var (go, mesh) = CreateMesh(Materials.ToArray());
             var meshExportSettings = new MeshExportSettings
             {
                 DivideVertexBuffer = true
             };
             var axisInverter = Axes.X.Create();
 
-            var (gltfMesh, blendShapeIndexMap) = MeshExporter.ExportMesh(glTF, bufferIndex, new MeshWithRenderer(go.transform), Materials, meshExportSettings, axisInverter);
+            var unityMesh = new MeshWithRenderer(go.transform);
+            var (gltfMesh, blendShapeIndexMap) = meshExportSettings.DivideVertexBuffer
+                ? MeshExporter_DividedVertexBuffer.Export(glTF, bufferIndex, unityMesh, Materials, axisInverter, meshExportSettings)
+                : MeshExporter_SharedVertexBuffer.Export(glTF, bufferIndex, unityMesh, Materials,axisInverter, meshExportSettings)
+                ;
 
             {
                 var indices = glTF.GetIndices(gltfMesh.primitives[0].indices);
