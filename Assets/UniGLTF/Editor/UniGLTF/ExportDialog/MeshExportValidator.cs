@@ -96,11 +96,11 @@ namespace UniGLTF
             sb.Append($") x {info.Mesh.vertexCount}");
             switch (info.VertexColor)
             {
-                case MeshExportInfo.VertexColorState.ExistsAndIsUsed:
-                case MeshExportInfo.VertexColorState.ExistsAndMixed: // エクスポートする
+                case VertexColorState.ExistsAndIsUsed:
+                case VertexColorState.ExistsAndMixed: // エクスポートする
                     sb.Insert(0, "[use vcolor]");
                     break;
-                case MeshExportInfo.VertexColorState.ExistsButNotUsed:
+                case VertexColorState.ExistsButNotUsed:
                     sb.Insert(0, "[remove vcolor]");
                     break;
             }
@@ -150,7 +150,7 @@ namespace UniGLTF
                 return false;
             }
 
-            info.VertexColor = MeshExportInfo.DetectVertexColor(info.Mesh, info.Renderer.sharedMaterials);
+            info.VertexColor = VertexColorUtility.DetectVertexColor(info.Mesh, info.Renderer.sharedMaterials);
 
             var relativePath = UniGLTF.UnityExtensions.RelativePathFrom(renderer.transform, root.transform);
             CalcMeshSize(ref info, relativePath);

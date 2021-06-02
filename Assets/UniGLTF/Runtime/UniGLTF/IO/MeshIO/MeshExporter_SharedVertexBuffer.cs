@@ -47,9 +47,9 @@ namespace UniGLTF
 
             var colorAccessorIndex = -1;
 
-            var vColorState = MeshExportInfo.DetectVertexColor(mesh, materials);
-            if (vColorState == MeshExportInfo.VertexColorState.ExistsAndIsUsed // VColor使っている
-            || vColorState == MeshExportInfo.VertexColorState.ExistsAndMixed // VColorを使っているところと使っていないところが混在(とりあえずExportする)
+            var vColorState = VertexColorUtility.DetectVertexColor(mesh, materials);
+            if (vColorState == VertexColorState.ExistsAndIsUsed // VColor使っている
+            || vColorState == VertexColorState.ExistsAndMixed // VColorを使っているところと使っていないところが混在(とりあえずExportする)
             )
             {
                 // UniUnlit で Multiply 設定になっている
