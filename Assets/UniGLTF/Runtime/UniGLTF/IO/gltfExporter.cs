@@ -156,7 +156,7 @@ namespace UniGLTF
                 if (meshRenderer != null)
                 {
                     var meshFilter = x.GetComponent<MeshFilter>();
-                    if(meshFilter != null)
+                    if (meshFilter != null)
                     {
                         var mesh = meshFilter.sharedMesh;
                         var materials = meshRenderer.sharedMaterials;
@@ -164,7 +164,7 @@ namespace UniGLTF
                         {
                             node.mesh = meshIndex;
                         }
-                        else if(mesh != null && !mesh.vertices.Any())
+                        else if (mesh != null && !mesh.vertices.Any())
                         {
                             // 頂点データが無い場合
                             node.mesh = -1;
@@ -182,7 +182,7 @@ namespace UniGLTF
                 {
                     var mesh = skinnedMeshRenderer.sharedMesh;
                     var materials = skinnedMeshRenderer.sharedMaterials;
-                    if(TryGetSameMeshIndex(meshWithRenderers, mesh, materials, out int meshIndex))
+                    if (TryGetSameMeshIndex(meshWithRenderers, mesh, materials, out int meshIndex))
                     {
                         node.mesh = meshIndex;
                         node.skin = skins.IndexOf(skinnedMeshRenderer);
@@ -252,12 +252,15 @@ namespace UniGLTF
             MeshBlendShapeIndexMap = new Dictionary<Mesh, Dictionary<int, int>>();
             foreach (var unityMesh in uniqueUnityMeshes)
             {
-                var (gltfMesh, blendShapeIndexMap) = MeshExporter.ExportMesh(glTF, bufferIndex, unityMesh, Materials, meshExportSettings, m_axisInverter);
+                var (gltfMesh, blendShapeIndexMap) = meshExportSettings.DivideVertexBuffer
+                    ? MeshExporterDivided.Export(glTF, bufferIndex, unityMesh, Materials, m_axisInverter, meshExportSettings)
+                    : MeshExporter.ExportSharedVertexBuffer(glTF, bufferIndex, unityMesh, Materials, m_axisInverter, meshExportSettings)
+                    ;
                 glTF.meshes.Add(gltfMesh);
                 Meshes.Add(unityMesh.Mesh);
                 if (!MeshBlendShapeIndexMap.ContainsKey(unityMesh.Mesh))
                 {
-                    // 同じmeshが複数回現れた
+                    // 重複防止
                     MeshBlendShapeIndexMap.Add(unityMesh.Mesh, blendShapeIndexMap);
                 }
             }

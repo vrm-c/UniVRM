@@ -8,11 +8,12 @@ namespace UniGLTF
 {
     public static class MeshExporter
     {
-
         /// <summary>
         /// primitive 間で vertex を共有する形で Export する。
         /// 
         /// UniVRM-0.71.0 までの挙動
+        /// 
+        /// UniVRM-0.71.0 以降は、MeshExporterDivided.Export もある
         ///
         /// /// </summary>
         /// <param name="gltf"></param>
@@ -22,7 +23,7 @@ namespace UniGLTF
         /// <param name="axisInverter"></param>
         /// <param name="settings"></param>
         /// <returns></returns>
-        static glTFMesh ExportSharedVertexBuffer(glTF gltf, int bufferIndex,
+        public static (glTFMesh, Dictionary<int, int> blendShapeIndexMap) ExportSharedVertexBuffer(glTF gltf, int bufferIndex,
             MeshWithRenderer unityMesh, List<Material> unityMaterials,
             IAxisInverter axisInverter, MeshExportSettings settings)
         {
@@ -146,7 +147,41 @@ namespace UniGLTF
                     material = unityMaterials.IndexOf(materials[j])
                 });
             }
-            return gltfMesh;
+
+            var blendShapeIndexMap = new Dictionary<int, int>();
+            {
+                var targetNames = new List<string>();
+
+                int exportBlendShapes = 0;
+                for (int j = 0; j < unityMesh.Mesh.blendShapeCount; ++j)
+                {
+                    var morphTarget = ExportMorphTarget(gltf, bufferIndex,
+                        unityMesh.Mesh, j,
+                        settings.UseSparseAccessorForMorphTarget,
+                        settings.ExportOnlyBlendShapePosition, axisInverter);
+                    if (morphTarget.POSITION < 0 && morphTarget.NORMAL < 0 && morphTarget.TANGENT < 0)
+                    {
+                        continue;
+                    }
+
+                    // maybe skip
+                    var blendShapeName = unityMesh.Mesh.GetBlendShapeName(j);
+                    blendShapeIndexMap.Add(j, exportBlendShapes++);
+                    targetNames.Add(blendShapeName);
+
+                    //
+                    // all primitive has same blendShape
+                    //
+                    for (int k = 0; k < gltfMesh.primitives.Count; ++k)
+                    {
+                        gltfMesh.primitives[k].targets.Add(morphTarget);
+                    }
+                }
+
+                gltf_mesh_extras_targetNames.Serialize(gltfMesh, targetNames);
+            }
+
+            return (gltfMesh, blendShapeIndexMap);
         }
 
         static bool UseSparse(
@@ -207,16 +242,6 @@ namespace UniGLTF
                 {
                     Debug.LogFormat("Sparse {0}/{1}", sparseIndices.Length, mesh.vertexCount);
                 }
-                /*
-                var vertexSize = 12;
-                if (useNormal) vertexSize += 12;
-                if (useTangent) vertexSize += 24;
-                var sparseBytes = (4 + vertexSize) * sparseIndices.Length;
-                var fullBytes = (vertexSize) * blendShapeVertices.Length;
-                Debug.LogFormat("Export sparse: {0}/{1}bytes({2}%)",
-                    sparseBytes, fullBytes, (int)((float)sparseBytes / fullBytes)
-                    );
-                    */
 
                 var sparseIndicesViewIndex = -1;
                 if (usePosition)
@@ -286,65 +311,6 @@ namespace UniGLTF
                 NORMAL = blendShapeNormalAccessorIndex,
                 TANGENT = blendShapeTangentAccessorIndex,
             };
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="mesh"></param>
-        /// <param name="gltf"></param>
-        /// <param name="bufferIndex"></param>
-        /// <param name="unityMesh"></param>
-        /// <param name="unityMaterials"></param>
-        /// <param name="settings"></param>
-        /// <param name="axisInverter"></param>
-        /// <returns></returns>
-        public static (glTFMesh mesh, Dictionary<int, int> blendShapeIndexMap) ExportMesh(glTF gltf, int bufferIndex,
-            MeshWithRenderer unityMesh, List<Material> unityMaterials,
-            MeshExportSettings settings, IAxisInverter axisInverter)
-        {
-            glTFMesh gltfMesh = default;
-            var blendShapeIndexMap = new Dictionary<int, int>();
-            if (settings.DivideVertexBuffer)
-            {
-                gltfMesh = MeshExporterDivided.Export(gltf, bufferIndex, unityMesh, unityMaterials, axisInverter, settings);
-            }
-            else
-            {
-                gltfMesh = ExportSharedVertexBuffer(gltf, bufferIndex, unityMesh, unityMaterials, axisInverter, settings);
-
-                var targetNames = new List<string>();
-
-                int exportBlendShapes = 0;
-                for (int j = 0; j < unityMesh.Mesh.blendShapeCount; ++j)
-                {
-                    var morphTarget = ExportMorphTarget(gltf, bufferIndex,
-                        unityMesh.Mesh, j,
-                        settings.UseSparseAccessorForMorphTarget,
-                        settings.ExportOnlyBlendShapePosition, axisInverter);
-                    if (morphTarget.POSITION < 0 && morphTarget.NORMAL < 0 && morphTarget.TANGENT < 0)
-                    {
-                        continue;
-                    }
-
-                    // maybe skip
-                    var blendShapeName = unityMesh.Mesh.GetBlendShapeName(j);
-                    blendShapeIndexMap.Add(j, exportBlendShapes++);
-                    targetNames.Add(blendShapeName);
-
-                    //
-                    // all primitive has same blendShape
-                    //
-                    for (int k = 0; k < gltfMesh.primitives.Count; ++k)
-                    {
-                        gltfMesh.primitives[k].targets.Add(morphTarget);
-                    }
-                }
-
-                gltf_mesh_extras_targetNames.Serialize(gltfMesh, targetNames);
-            }
-
-            return (gltfMesh, blendShapeIndexMap);
         }
     }
 }
