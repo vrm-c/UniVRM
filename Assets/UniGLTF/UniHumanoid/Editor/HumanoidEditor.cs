@@ -202,9 +202,23 @@ namespace UniHumanoid
             var prefab = PrefabUtility.GetCorrespondingObjectFromSource(obj);
             if (prefab == null)
             {
-                return null;
+                return "Assets";
             }
-            return UnityPath.FromAsset(prefab).FullPath;
+            return Path.GetDirectoryName(AssetDatabase.GetAssetPath(prefab));
+        }
+
+        static bool TryGetAssetPath(string fullpath, out string AssetPath)
+        {
+            fullpath = fullpath.Replace("\\", "/");
+            var basePath = Application.dataPath + "/";
+            if (!fullpath.StartsWith(basePath))
+            {
+                AssetPath = default;
+                return false;
+            }
+
+            AssetPath = "Assets/" + fullpath.Substring(basePath.Length);
+            return true;
         }
 
         public override void OnInspectorGUI()
@@ -274,16 +288,15 @@ namespace UniHumanoid
                         GetDialogDir(m_target),
                         string.Format("{0}.avatar.asset", serializedObject.targetObject.name),
                         "asset");
-                if (!string.IsNullOrEmpty(path))
+                if (TryGetAssetPath(path, out string unityPath))
                 {
                     var avatar = m_target.CreateAvatar();
                     if (avatar != null)
                     {
-                        var unityPath = UnityPath.FromFullpath(path);
                         avatar.name = "avatar";
                         Debug.LogFormat("Create avatar {0}", unityPath);
-                        AssetDatabase.CreateAsset(avatar, unityPath.Value);
-                        AssetDatabase.ImportAsset(unityPath.Value);
+                        AssetDatabase.CreateAsset(avatar, unityPath);
+                        AssetDatabase.ImportAsset(unityPath);
 
                         // replace
                         var animator = m_target.GetComponent<Animator>();
@@ -295,6 +308,10 @@ namespace UniHumanoid
 
                         Selection.activeObject = avatar;
                     }
+                }
+                else
+                {
+                    Debug.LogWarning($"cannot create {path}");
                 }
             }
         }
