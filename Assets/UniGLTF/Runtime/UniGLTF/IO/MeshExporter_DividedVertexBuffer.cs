@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace UniGLTF
 {
-    public static class MeshExporterDivided
+    public static class MeshExporter_DividedVertexBuffer
     {
         public static (glTFMesh, Dictionary<int, int>) Export(glTF gltf, int bufferIndex,
             MeshWithRenderer unityMesh, List<Material> unityMaterials,

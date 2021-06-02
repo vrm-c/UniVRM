@@ -136,8 +136,8 @@ namespace UniGLTF
 
             var unityMesh = new MeshWithRenderer(go.transform);
             var (gltfMesh, blendShapeIndexMap) = meshExportSettings.DivideVertexBuffer
-                ? MeshExporterDivided.Export(glTF, bufferIndex, unityMesh, Materials, axisInverter, meshExportSettings)
-                : MeshExporter.ExportSharedVertexBuffer(glTF, bufferIndex, unityMesh, Materials,axisInverter, meshExportSettings)
+                ? MeshExporter_DividedVertexBuffer.Export(glTF, bufferIndex, unityMesh, Materials, axisInverter, meshExportSettings)
+                : MeshExporter_SharedVertexBuffer.Export(glTF, bufferIndex, unityMesh, Materials,axisInverter, meshExportSettings)
                 ;
 
             {
@@ -184,8 +184,8 @@ namespace UniGLTF
 
             var unityMesh = new MeshWithRenderer(go.transform);
             var (gltfMesh, blendShapeIndexMap) = meshExportSettings.DivideVertexBuffer
-                ? MeshExporterDivided.Export(glTF, bufferIndex, unityMesh, Materials, axisInverter, meshExportSettings)
-                : MeshExporter.ExportSharedVertexBuffer(glTF, bufferIndex, unityMesh, Materials,axisInverter, meshExportSettings)
+                ? MeshExporter_DividedVertexBuffer.Export(glTF, bufferIndex, unityMesh, Materials, axisInverter, meshExportSettings)
+                : MeshExporter_SharedVertexBuffer.Export(glTF, bufferIndex, unityMesh, Materials,axisInverter, meshExportSettings)
                 ;
 
             {

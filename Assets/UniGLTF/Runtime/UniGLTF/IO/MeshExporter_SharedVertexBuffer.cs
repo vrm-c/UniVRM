@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace UniGLTF
 {
-    public static class MeshExporter
+    public static class MeshExporter_SharedVertexBuffer
     {
         /// <summary>
         /// primitive 間で vertex を共有する形で Export する。
@@ -23,7 +23,7 @@ namespace UniGLTF
         /// <param name="axisInverter"></param>
         /// <param name="settings"></param>
         /// <returns></returns>
-        public static (glTFMesh, Dictionary<int, int> blendShapeIndexMap) ExportSharedVertexBuffer(glTF gltf, int bufferIndex,
+        public static (glTFMesh, Dictionary<int, int> blendShapeIndexMap) Export(glTF gltf, int bufferIndex,
             MeshWithRenderer unityMesh, List<Material> unityMaterials,
             IAxisInverter axisInverter, MeshExportSettings settings)
         {
