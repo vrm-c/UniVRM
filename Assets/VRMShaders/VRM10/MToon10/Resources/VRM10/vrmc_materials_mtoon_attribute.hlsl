@@ -24,8 +24,9 @@ struct Varyings
 #if defined(_NORMALMAP)
     half4 tangentWS : TEXCOORD3;
 #endif
-    UNITY_FOG_COORDS(4)
-    UNITY_LIGHTING_COORDS(5,6)
+    float3 viewDirWS : TEXCOORD4;
+    UNITY_FOG_COORDS(5)
+    UNITY_LIGHTING_COORDS(6,7)
     float4 pos : SV_POSITION; // UnityCG macro specified name. Accurately "positionCS"
     UNITY_VERTEX_INPUT_INSTANCE_ID
     UNITY_VERTEX_OUTPUT_STEREO

@@ -31,7 +31,7 @@ Shader "Hidden/VRM10/vrmc_materials_mtoon"
         _EmissionMap ("emissiveTexture", 2D) = "white" {} // Unity specified name
 
         // Rim Lighting
-        _RimMatcapTex ("mtoon.matcapTexture", 2D) = "black" {}
+        _MatcapTex ("mtoon.matcapTexture", 2D) = "black" {}
         _RimColor ("mtoon.parametricRimColorFactor", Color) = (0, 0, 0, 1)
         _RimFresnelPower ("mtoon.parametricRimFresnelPowerFactor", Float) = 5.0
         _RimLift ("mtoon.parametricRimLiftFactor", Float) = 0

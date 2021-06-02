@@ -26,6 +26,8 @@ Varyings MToonVertex(Attributes v) // v is UnityCG macro specified name.
     output.tangentWS = half4(UnityObjectToWorldDir(v.tangentOS), tangentSign);
 #endif
 
+    output.viewDirWS = MToon_GetWorldSpaceNormalizedViewDir(output.positionWS);
+
     UNITY_TRANSFER_FOG(output, output.positionWS);
     UNITY_TRANSFER_LIGHTING(output, v.texcoord1.xy);
 

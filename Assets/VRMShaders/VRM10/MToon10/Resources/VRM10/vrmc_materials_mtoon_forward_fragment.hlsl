@@ -34,11 +34,8 @@ half4 MToonFragment(Varyings input) : SV_Target
 
     // Get Normal in WorldSpace from Normalmap if available
 #if defined(_NORMALMAP)
-    const half3 bitangent = input.tangentWS.w * cross(normalize(input.normalWS), normalize(input.tangentWS.xyz));
-    const half3x3 tangentToWorld = half3x3(normalize(input.tangentWS.xyz), normalize(bitangent), normalize(input.normalWS));
-
     const half3 normalTS = normalize(UnpackNormalWithScale(UNITY_SAMPLE_TEX2D(_BumpMap, uv), _BumpScale));
-    const half3 normalWS = normalize(mul(normalTS, tangentToWorld));
+    const half3 normalWS = normalize(mul(normalTS, MToon_GetTangentToWorld(input.normalWS, input.tangentWS)));
 #else
     const half3 normalWS = normalize(input.normalWS);
 #endif
@@ -47,9 +44,10 @@ half4 MToonFragment(Varyings input) : SV_Target
     const UnityLighting unityLighting = GetUnityLighting(input, normalWS);
 
     // Get MToon Lighting
-    MToonLightingInput lightingInput;
-    lightingInput.normalWS = normalWS;
+    MToonInput lightingInput;
     lightingInput.uv = uv;
+    lightingInput.normalWS = normalWS;
+    lightingInput.viewDirWS = input.viewDirWS;
     lightingInput.litColor = litColor.rgb;
     lightingInput.alpha = alpha;
     const half4 col = GetMToonLighting(unityLighting, lightingInput);
