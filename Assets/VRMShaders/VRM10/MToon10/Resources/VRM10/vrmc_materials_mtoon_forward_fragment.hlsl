@@ -2,9 +2,8 @@
 #define VRMC_MATERIALS_MTOON_FORWARD_FRAGMENT_INCLUDED
 
 #include <UnityCG.cginc>
-#include <AutoLight.cginc>
-
 #include "./vrmc_materials_mtoon_define.hlsl"
+#include "./vrmc_materials_mtoon_utility.hlsl"
 #include "./vrmc_materials_mtoon_input.hlsl"
 #include "./vrmc_materials_mtoon_attribute.hlsl"
 #include "./vrmc_materials_mtoon_lighting.hlsl"

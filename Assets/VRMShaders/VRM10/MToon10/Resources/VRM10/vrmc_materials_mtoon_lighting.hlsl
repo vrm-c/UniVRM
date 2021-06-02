@@ -1,7 +1,9 @@
 ﻿#ifndef VRMC_MATERIALS_MTOON_LIGHTING_INCLUDED
 #define VRMC_MATERIALS_MTOON_LIGHTING_INCLUDED
 
+#include <UnityShaderVariables.cginc>
 #include "./vrmc_materials_mtoon_define.hlsl"
+#include "./vrmc_materials_mtoon_utility.hlsl"
 #include "./vrmc_materials_mtoon_input.hlsl"
 #include "./vrmc_materials_mtoon_unity_lighting.hlsl"
 
