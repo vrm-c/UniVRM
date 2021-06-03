@@ -36,6 +36,7 @@ namespace UniGLTF
         public IMaterialDescriptorGenerator MaterialDescriptorGenerator { get; protected set; }
         public TextureFactory TextureFactory { get; }
         public MaterialFactory MaterialFactory { get; }
+        IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> _externalObjectMap;
 
         public ImporterContext(
             GltfParser parser,
@@ -46,13 +47,13 @@ namespace UniGLTF
             TextureDescriptorGenerator = new GltfTextureDescriptorGenerator(Parser);
             MaterialDescriptorGenerator = new GltfMaterialDescriptorGenerator();
 
-            externalObjectMap = externalObjectMap ?? new Dictionary<SubAssetKey, UnityEngine.Object>();
+            _externalObjectMap = externalObjectMap ?? new Dictionary<SubAssetKey, UnityEngine.Object>();
             textureDeserializer = textureDeserializer ?? new UnityTextureDeserializer();
 
-            TextureFactory = new TextureFactory(textureDeserializer, externalObjectMap
+            TextureFactory = new TextureFactory(textureDeserializer, _externalObjectMap
                 .Where(x => x.Value is Texture)
                 .ToDictionary(x => x.Key, x => (Texture)x.Value));
-            MaterialFactory = new MaterialFactory(externalObjectMap
+            MaterialFactory = new MaterialFactory(_externalObjectMap
                 .Where(x => x.Value is Material)
                 .ToDictionary(x => x.Key, x => (Material)x.Value));
         }
@@ -122,7 +123,30 @@ namespace UniGLTF
 
             using (MeasureTime("AnimationImporter"))
             {
-                AnimationClips.AddRange(AnimationImporter.Import(GLTF, Root, null, InvertAxis));
+                if (GLTF.animations != null && GLTF.animations.Any())
+                {
+                    var animation = Root.AddComponent<Animation>();
+                    for (int i = 0; i < GLTF.animations.Count; ++i)
+                    {
+                        var gltfAnimation = GLTF.animations[i];
+                        AnimationClip clip = default;
+                        if (_externalObjectMap.TryGetValue(new SubAssetKey(typeof(AnimationClip), gltfAnimation.name), out UnityEngine.Object value))
+                        {
+                            clip = value as AnimationClip;
+                        }
+                        else
+                        {
+                            clip = AnimationImporter.Import(GLTF, i, InvertAxis);
+                            AnimationClips.Add(clip);
+                        }
+
+                        animation.AddClip(clip, clip.name);
+                        if (i == 0)
+                        {
+                            animation.clip = clip;
+                        }
+                    }
+                }
             }
 
             await OnLoadHierarchy(awaitCaller, MeasureTime);

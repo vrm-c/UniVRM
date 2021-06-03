@@ -69,7 +69,7 @@ namespace UniVRM10
         public override void OnInspectorGUI()
         {
             // select sub editor
-            using (new EditorGUI.DisabledGroupScope(false))
+            using (new EditorGUI.DisabledScope(false))
             {
                 _tab = (Tabs)EditorGUILayout.EnumPopup("Select GUI", _tab);
                 EditorGUILayout.Separator();

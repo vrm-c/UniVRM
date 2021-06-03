@@ -130,13 +130,14 @@ namespace UniGLTF
             RestoreOlderVersionValues();
 
             FixMeshNameUnique();
-            foreach(var image in GLTF.images)
+            foreach (var image in GLTF.images)
             {
                 image.uri = PrepareUri(image.uri);
             }
             FixTextureNameUnique();
             FixMaterialNameUnique();
             FixNodeName();
+            FixAnimationNameUnique();
 
             // parepare byte buffer
             //GLTF.baseDir = System.IO.Path.GetDirectoryName(Path);
@@ -304,6 +305,34 @@ namespace UniGLTF
                 if (string.IsNullOrWhiteSpace(node.name))
                 {
                     node.name = $"{i}";
+                }
+            }
+        }
+
+        void FixAnimationNameUnique()
+        {
+            var used = new HashSet<string>();
+            for (int i = 0; i < GLTF.animations.Count; ++i)
+            {
+                var animation = GLTF.animations[i];
+                var originalName = animation.name;
+                int j = 2;
+
+                if (string.IsNullOrEmpty(animation.name))
+                {
+                    animation.name = $"animation_{i}";
+                }
+
+                while (true)
+                {
+                    if (used.Add(animation.name))
+                    {
+#if VRM_DEVELOP                        
+                        // Debug.Log($"Material: {material.name}");
+#endif
+                        break;
+                    }
+                    animation.name = string.Format("{0}({1})", originalName, j++);
                 }
             }
         }

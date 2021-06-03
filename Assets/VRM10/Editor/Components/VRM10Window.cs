@@ -173,7 +173,7 @@ namespace UniVRM10
                 }
             }
 
-            using (new EditorGUI.DisabledGroupScope(true))
+            using (new EditorGUI.DisabledScope(true))
             {
                 if (m_constraints != null)
                 {

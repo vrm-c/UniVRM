@@ -30,7 +30,7 @@ namespace UniVRM10
         public static void OnGUI(ScriptedImporter importer, GltfParser parser, UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm)
         {
             var hasExternal = importer.GetExternalObjectMap().Any(x => x.Value is VRM10MetaObject || x.Value is VRM10ExpressionAvatar || x.Value is VRM10Expression);
-            using (new TmpGuiEnable(!hasExternal))
+            using (new EditorGUI.DisabledScope(hasExternal))
             {
                 if (GUILayout.Button("Extract Meta And Expressions ..."))
                 {
