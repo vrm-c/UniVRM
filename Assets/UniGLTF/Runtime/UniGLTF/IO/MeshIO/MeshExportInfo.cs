@@ -7,10 +7,18 @@ using UnityEngine;
 namespace UniGLTF
 {
     [Serializable]
-    public struct MeshExportInfo
+    public class MeshExportInfo
     {
-        public Renderer Renderer;
+        #region この２つの組が gltf mesh の Unique なキーとなる
         public Mesh Mesh;
+        public Material[] Materials;
+        #endregion
+
+        /// <summary>
+        /// ひとつの Mesh を複数の Renderer が共有することがありうる
+        /// </summary>
+        public List<Renderer> Renderers;
+
         public bool IsRendererActive;
         public bool Skinned;
 
@@ -50,6 +58,12 @@ namespace UniGLTF
 
         public string Summary;
 
+        MeshExportInfo(Renderer renderer)
+        {
+            Materials = renderer.sharedMaterials;
+            Renderers = new List<Renderer> { renderer };
+        }
+
         /// <summary>
         /// ヒエラルキーからエクスポートする Mesh の情報を収集する
         /// </summary>
@@ -76,27 +90,27 @@ namespace UniGLTF
 
         static bool TryGetMeshInfo(GameObject root, Renderer renderer, MeshExportSettings settings, IBlendShapeExportFilter blendShapeFilter, out MeshExportInfo info)
         {
-            info = default;
             if (root == null)
             {
-                info.Summary = "";
+                info = default;
                 return false;
             }
             if (renderer == null)
             {
-                info.Summary = "no Renderer";
+                info = default;
                 return false;
             }
-            info.Renderer = renderer;
 
             if (renderer is SkinnedMeshRenderer smr)
             {
+                info = new MeshExportInfo(renderer);
                 info.Skinned = true;
                 info.Mesh = smr.sharedMesh;
                 info.IsRendererActive = smr.EnableForExport();
             }
             else if (renderer is MeshRenderer mr)
             {
+                info = new MeshExportInfo(renderer);
                 var filter = mr.GetComponent<MeshFilter>();
                 if (filter != null)
                 {
@@ -106,11 +120,15 @@ namespace UniGLTF
             }
             else
             {
-                info.Summary = "no Mesh";
-                return false;
+                throw new NotImplementedException();
             }
 
-            info.VertexColor = VertexColorUtility.DetectVertexColor(info.Mesh, info.Renderer.sharedMaterials);
+            if (info.Mesh == null)
+            {
+                info.Summary = "no mesh";
+            }
+
+            info.VertexColor = VertexColorUtility.DetectVertexColor(info.Mesh, info.Materials);
 
             var relativePath = UniGLTF.UnityExtensions.RelativePathFrom(renderer.transform, root.transform);
             CalcMeshSize(ref info, relativePath, settings, blendShapeFilter);

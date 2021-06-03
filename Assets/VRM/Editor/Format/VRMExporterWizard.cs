@@ -259,7 +259,7 @@ namespace VRM
                 switch (meshInfo.VertexColor)
                 {
                     case UniGLTF.VertexColorState.ExistsAndMixed:
-                        Validation.Warning($"{meshInfo.Renderer}: Both vcolor.multiply and not multiply unlit materials exist").DrawGUI();
+                        Validation.Warning($"{meshInfo.Renderers}: Both vcolor.multiply and not multiply unlit materials exist").DrawGUI();
                         break;
                 }
             }

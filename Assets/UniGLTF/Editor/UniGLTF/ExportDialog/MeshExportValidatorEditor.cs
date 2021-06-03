@@ -40,12 +40,15 @@ namespace UniGLTF
             var (left, right) = LeftRight(r.x, r.y, col0, r.width - col0, EditorGUIUtility.singleLineHeight);
             EditorGUI.LabelField(left, $"{i,3}");
 
-            GUI.enabled = false;
-            EditorGUI.ObjectField(right, info.Renderer, info.Renderer.GetType(), true);
-
-            right.y += EditorGUIUtility.singleLineHeight;
-            EditorGUI.ObjectField(right, info.Mesh, info.Renderer.GetType(), true);
-            GUI.enabled = true;
+            using (new EditorGUI.DisabledScope(false))
+            {
+                foreach (var renderer in info.Renderers)
+                {
+                    EditorGUI.ObjectField(right, renderer, info.Renderers.GetType(), true);
+                }
+                right.y += EditorGUIUtility.singleLineHeight;
+                EditorGUI.ObjectField(right, info.Mesh, info.Renderers.GetType(), true);
+            }
 
             right.y += EditorGUIUtility.singleLineHeight;
             EditorGUI.LabelField(right, info.Summary);
