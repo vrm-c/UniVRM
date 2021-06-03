@@ -143,12 +143,12 @@ namespace UniGLTF
         public bool HasNormal => Mesh != null && Mesh.normals != null && Mesh.normals.Length == Mesh.vertexCount;
         public bool HasUV => Mesh != null && Mesh.uv != null && Mesh.uv.Length == Mesh.vertexCount;
 
-        public bool HasVertexColor => Mesh.colors != null && Mesh.colors.Length == Mesh.vertexCount
+        public bool HasVertexColor => Mesh != null && Mesh.colors != null && Mesh.colors.Length == Mesh.vertexCount
             && VertexColor == VertexColorState.ExistsAndIsUsed
             || VertexColor == VertexColorState.ExistsAndMixed // Export する
             ;
 
-        public bool HasSkinning => Mesh.boneWeights != null && Mesh.boneWeights.Length == Mesh.vertexCount;
+        public bool HasSkinning => Mesh != null && Mesh.boneWeights != null && Mesh.boneWeights.Length == Mesh.vertexCount;
 
         public VertexColorState VertexColor;
 
@@ -183,12 +183,8 @@ namespace UniGLTF
         public string Summary;
         #endregion
 
-        MeshExportInfo(GameObject root, Renderer renderer, MeshExportSettings settings, IBlendShapeExportFilter blendShapeFilter)
+        MeshExportInfo(Renderer renderer, MeshExportSettings settings)
         {
-            if (root == null)
-            {
-                throw new ArgumentNullException();
-            }
             if (renderer == null)
             {
                 throw new ArgumentNullException();
@@ -220,9 +216,6 @@ namespace UniGLTF
             }
 
             VertexColor = VertexColorUtility.DetectVertexColor(Mesh, Materials);
-
-            var relativePath = UniGLTF.UnityExtensions.RelativePathFrom(renderer.transform, root.transform);
-            CalcMeshSize(relativePath, settings, blendShapeFilter);
 
             PushRenderer(renderer);
         }
@@ -271,7 +264,7 @@ namespace UniGLTF
         public static MeshExportInfo Create(GameObject go)
         {
             var list = new List<MeshExportInfo>();
-            GetInfo(go, list, MeshExportSettings.Default, new DefualtBlendShapeExportFilter());
+            GetInfo(go.transform.Traverse(), list, MeshExportSettings.Default);
             return list[0];
         }
 
@@ -282,28 +275,9 @@ namespace UniGLTF
         /// <param name="list"></param>
         /// <param name="settings"></param>
         /// <param name="blendShapeFilter"> blendShape の export を filtering する </param>
-        public static void GetInfo(GameObject root, List<MeshExportInfo> list, MeshExportSettings settings, IBlendShapeExportFilter blendShapeFilter)
+        public static void GetInfo(IEnumerable<Transform> nodes, List<MeshExportInfo> list, MeshExportSettings settings)
         {
             list.Clear();
-            if (root == null)
-            {
-                return;
-            }
-
-            GetInfo(root, root.transform.Traverse()
-                // exclude root object for the symmetry with the importer
-                .Skip(1),
-                list, settings, blendShapeFilter);
-        }
-
-        public static void GetInfo(GameObject root, IEnumerable<Transform> nodes, List<MeshExportInfo> list, MeshExportSettings settings, IBlendShapeExportFilter blendShapeFilter)
-        {
-            list.Clear();
-            if (root == null)
-            {
-                return;
-            }
-
             foreach (var node in nodes)
             {
                 var renderer = node.GetComponent<Renderer>();
@@ -319,7 +293,11 @@ namespace UniGLTF
                     continue;
                 }
 
-                list.Add(new MeshExportInfo(root, renderer, settings, blendShapeFilter));
+                var info = new MeshExportInfo(renderer, settings);
+                if (info.Mesh != null)
+                {
+                    list.Add(info);
+                }
             }
         }
 
@@ -329,7 +307,19 @@ namespace UniGLTF
             return true;
         }
 
-        void CalcMeshSize(
+
+        public void CalcMeshSize(
+            GameObject root,
+            Renderer renderer,
+            MeshExportSettings settings,
+            IBlendShapeExportFilter blendShapeFilter
+            )
+        {
+            var relativePath = UniGLTF.UnityExtensions.RelativePathFrom(renderer.transform, root.transform);
+            CalcMeshSize(relativePath, settings, blendShapeFilter);
+        }
+
+        public void CalcMeshSize(
             string relativePath,
             MeshExportSettings settings,
             IBlendShapeExportFilter blendShapeFilter
@@ -341,73 +331,81 @@ namespace UniGLTF
                 sb.Append("[NotActive]");
             }
 
-            VertexCount = Mesh.vertexCount;
-            ExportVertexSize = 0;
-            TotalBlendShapeCount = 0;
-            ExportBlendShapeCount = 0;
+            if (Mesh == null)
+            {
+                sb.Append("[NoMesh]");
+            }
+            else
+            {
 
-            // float4 x 3
-            // vertices
-            sb.Append($"(Pos");
-            if (HasNormal)
-            {
-                sb.Append("+Nom");
-                ExportVertexSize += 4 * 3;
-            }
-            if (HasUV)
-            {
-                sb.Append("+UV");
-                ExportVertexSize += 4 * 2;
-            }
-            if (HasVertexColor)
-            {
-                sb.Append("+Col");
-                ExportVertexSize += 4 * 4;
-            }
-            if (HasSkinning)
-            {
-                // short, float x 4 weights
-                sb.Append("+Skin");
-                ExportVertexSize += (2 + 4) * 4;
-            }
-            // indices
-            IndexCount = Mesh.triangles.Length;
+                VertexCount = Mesh.vertexCount;
+                ExportVertexSize = 0;
+                TotalBlendShapeCount = 0;
+                ExportBlendShapeCount = 0;
 
-            // postion + normal ?. always tangent is ignored
-            TotalBlendShapeCount = Mesh.blendShapeCount;
-            ExportBlendShapeVertexSize = settings.ExportOnlyBlendShapePosition ? 4 * 3 : 4 * (3 + 3);
-            for (var i = 0; i < Mesh.blendShapeCount; ++i)
-            {
-                if (!blendShapeFilter.UseBlendShape(i, relativePath))
+                // float4 x 3
+                // vertices
+                sb.Append($"(Pos");
+                if (HasNormal)
                 {
-                    continue;
+                    sb.Append("+Nom");
+                    ExportVertexSize += 4 * 3;
+                }
+                if (HasUV)
+                {
+                    sb.Append("+UV");
+                    ExportVertexSize += 4 * 2;
+                }
+                if (HasVertexColor)
+                {
+                    sb.Append("+Col");
+                    ExportVertexSize += 4 * 4;
+                }
+                if (HasSkinning)
+                {
+                    // short, float x 4 weights
+                    sb.Append("+Skin");
+                    ExportVertexSize += (2 + 4) * 4;
+                }
+                // indices
+                IndexCount = Mesh.triangles.Length;
+
+                // postion + normal ?. always tangent is ignored
+                TotalBlendShapeCount = Mesh.blendShapeCount;
+                ExportBlendShapeVertexSize = settings.ExportOnlyBlendShapePosition ? 4 * 3 : 4 * (3 + 3);
+                for (var i = 0; i < Mesh.blendShapeCount; ++i)
+                {
+                    if (!blendShapeFilter.UseBlendShape(i, relativePath))
+                    {
+                        continue;
+                    }
+
+                    ++ExportBlendShapeCount;
                 }
 
-                ++ExportBlendShapeCount;
-            }
+                if (ExportBlendShapeCount > 0)
+                {
+                    sb.Append($"+Morph x {ExportBlendShapeCount}");
+                }
+                sb.Append($") x {Mesh.vertexCount}");
+                switch (VertexColor)
+                {
+                    case VertexColorState.ExistsAndIsUsed:
+                    case VertexColorState.ExistsAndMixed: // エクスポートする
+                        sb.Insert(0, "[use vcolor]");
+                        break;
+                    case VertexColorState.ExistsButNotUsed:
+                        sb.Insert(0, "[remove vcolor]");
+                        break;
+                }
+                if (ExportBlendShapeCount > 0 && !HasSkinning)
+                {
+                    sb.Insert(0, "[morph without skin]");
+                }
 
-            if (ExportBlendShapeCount > 0)
-            {
-                sb.Append($"+Morph x {ExportBlendShapeCount}");
+                // total bytes
+                sb.Insert(0, $"{ExportByteSize:#,0} Bytes = ");
             }
-            sb.Append($") x {Mesh.vertexCount}");
-            switch (VertexColor)
-            {
-                case VertexColorState.ExistsAndIsUsed:
-                case VertexColorState.ExistsAndMixed: // エクスポートする
-                    sb.Insert(0, "[use vcolor]");
-                    break;
-                case VertexColorState.ExistsButNotUsed:
-                    sb.Insert(0, "[remove vcolor]");
-                    break;
-            }
-            if (ExportBlendShapeCount > 0 && !HasSkinning)
-            {
-                sb.Insert(0, "[morph without skin]");
-            }
-
-            // total bytes
-            sb.Insert(0, $"{ExportByteSize:#,0} Bytes = ");
             Summary = sb.ToString();
         }
     }

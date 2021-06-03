@@ -33,7 +33,11 @@ namespace UniGLTF
 
         public void SetRoot(GameObject ExportRoot, MeshExportSettings settings, IBlendShapeExportFilter blendShapeFilter)
         {
-            MeshExportInfo.GetInfo(ExportRoot, Meshes, settings, blendShapeFilter);
+            MeshExportInfo.GetInfo(ExportRoot.transform.Traverse().Skip(1), Meshes, settings);
+            foreach(var info in Meshes)
+            {
+                info.CalcMeshSize(ExportRoot, info.Renderers[0].Item1, settings, blendShapeFilter);
+            }
         }
 
         public Func<string, string> GltfMaterialFromUnityShaderName = DefaultGltfMaterialType;

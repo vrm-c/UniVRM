@@ -208,13 +208,8 @@ namespace UniGLTF
             // do nothing
         }
 
-        public virtual void Export(MeshExportSettings meshExportSettings, ITextureSerializer textureSerializer, IBlendShapeExportFilter blendShapeFilter = null)
+        public virtual void Export(MeshExportSettings meshExportSettings, ITextureSerializer textureSerializer)
         {
-            if (blendShapeFilter == null)
-            {
-                blendShapeFilter = new DefualtBlendShapeExportFilter();
-            }
-
             var bytesBuffer = new ArrayByteBuffer(new byte[50 * 1024 * 1024]);
             var bufferIndex = glTF.AddBuffer(bytesBuffer);
 
@@ -223,7 +218,7 @@ namespace UniGLTF
                 .ToList();
 
             var uniqueUnityMeshes = new List<MeshExportInfo>();
-            MeshExportInfo.GetInfo(Copy, Nodes, uniqueUnityMeshes, meshExportSettings, blendShapeFilter);
+            MeshExportInfo.GetInfo(Nodes, uniqueUnityMeshes, meshExportSettings);
 
             #region Materials and Textures
             Materials = uniqueUnityMeshes.SelectMany(x => x.Materials).Where(x => x != null).Distinct().ToList();
