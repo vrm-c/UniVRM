@@ -35,8 +35,11 @@ namespace UniGLTF
 
         public virtual bool UseBlendShape(int index, string relativePath) => true;
 
-        public virtual void CalcMeshSize(ref MeshExportInfo info,
-                                        string relativePath)
+        static void CalcMeshSize(ref MeshExportInfo info,
+            string relativePath,
+            MeshExportSettings settings,
+            Func<int, string, bool> useBlendShape
+            )
         {
             var sb = new StringBuilder();
             if (!info.IsRendererActive)
@@ -78,10 +81,10 @@ namespace UniGLTF
 
             // postion + normal ?. always tangent is ignored
             info.TotalBlendShapeCount = info.Mesh.blendShapeCount;
-            info.ExportBlendShapeVertexSize = Settings.ExportOnlyBlendShapePosition ? 4 * 3 : 4 * (3 + 3);
+            info.ExportBlendShapeVertexSize = settings.ExportOnlyBlendShapePosition ? 4 * 3 : 4 * (3 + 3);
             for (var i = 0; i < info.Mesh.blendShapeCount; ++i)
             {
-                if (!UseBlendShape(i, relativePath))
+                if (!useBlendShape(i, relativePath))
                 {
                     continue;
                 }
@@ -114,7 +117,7 @@ namespace UniGLTF
             info.Summary = sb.ToString();
         }
 
-        bool TryGetMeshInfo(GameObject root, Renderer renderer, out MeshExportInfo info)
+        static bool TryGetMeshInfo(GameObject root, Renderer renderer, MeshExportSettings settings, Func<int, string, bool> useBlendShape, out MeshExportInfo info)
         {
             info = default;
             if (root == null)
@@ -153,7 +156,7 @@ namespace UniGLTF
             info.VertexColor = VertexColorUtility.DetectVertexColor(info.Mesh, info.Renderer.sharedMaterials);
 
             var relativePath = UniGLTF.UnityExtensions.RelativePathFrom(renderer.transform, root.transform);
-            CalcMeshSize(ref info, relativePath);
+            CalcMeshSize(ref info, relativePath, settings, useBlendShape);
 
             return true;
         }
@@ -169,7 +172,7 @@ namespace UniGLTF
 
             foreach (var renderer in ExportRoot.GetComponentsInChildren<Renderer>(true))
             {
-                if (TryGetMeshInfo(ExportRoot, renderer, out MeshExportInfo info))
+                if (TryGetMeshInfo(ExportRoot, renderer, settings, UseBlendShape, out MeshExportInfo info))
                 {
                     Meshes.Add(info);
                 }
