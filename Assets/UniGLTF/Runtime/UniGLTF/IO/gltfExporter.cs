@@ -274,13 +274,12 @@ namespace UniGLTF
 
             foreach (var x in uniqueUnityMeshes)
             {
-                var matrices = x.GetBindPoses().Select(m_axisInverter.InvertMat4).ToArray();
-                var accessor = glTF.ExtendBufferAndGetAccessorIndex(bufferIndex, matrices, glBufferTarget.NONE);
-
                 foreach (var (renderer, uniqueBones) in x.Renderers)
                 {
                     if (uniqueBones != null && renderer is SkinnedMeshRenderer smr)
                     {
+                        var matrices = x.GetBindPoses().Select(m_axisInverter.InvertMat4).ToArray();
+                        var accessor = glTF.ExtendBufferAndGetAccessorIndex(bufferIndex, matrices, glBufferTarget.NONE);
                         var skin = new glTFSkin
                         {
                             inverseBindMatrices = accessor,

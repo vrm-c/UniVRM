@@ -183,11 +183,6 @@ namespace UniGLTF
         public string Summary;
         #endregion
 
-        public MeshExportInfo(Transform t)
-        {
-
-        }
-
         MeshExportInfo(GameObject root, Renderer renderer, MeshExportSettings settings, IBlendShapeExportFilter blendShapeFilter)
         {
             if (root == null)
@@ -232,7 +227,7 @@ namespace UniGLTF
             PushRenderer(renderer);
         }
 
-        public void PushRenderer(Renderer renderer)
+        void PushRenderer(Renderer renderer)
         {
             if (renderer is SkinnedMeshRenderer smr)
             {
@@ -271,6 +266,13 @@ namespace UniGLTF
             {
                 throw new NotImplementedException();
             }
+        }
+
+        public static MeshExportInfo Create(GameObject go)
+        {
+            var list = new List<MeshExportInfo>();
+            GetInfo(go, list, MeshExportSettings.Default, new DefualtBlendShapeExportFilter());
+            return list[0];
         }
 
         /// <summary>
