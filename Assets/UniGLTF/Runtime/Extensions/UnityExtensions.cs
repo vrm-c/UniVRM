@@ -213,7 +213,7 @@ namespace UniGLTF
         {
             var current = self;
 
-            var split = path.Split(new [] {'/'}, StringSplitOptions.RemoveEmptyEntries);
+            var split = path.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
 
             foreach (var childName in split)
             {
@@ -333,6 +333,16 @@ namespace UniGLTF
                 return c;
             }
             return go.AddComponent<T>();
+        }
+
+        public static bool EnableForExport(this Component mono)
+        {
+            if (mono.transform.Ancestors().Any(x => !x.gameObject.activeSelf))
+            {
+                // 自分か祖先に !activeSelf がいる
+                return false;
+            }
+            return true;
         }
     }
 }
