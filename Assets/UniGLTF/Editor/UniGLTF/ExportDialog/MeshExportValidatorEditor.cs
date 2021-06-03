@@ -42,7 +42,7 @@ namespace UniGLTF
 
             using (new EditorGUI.DisabledScope(false))
             {
-                foreach (var renderer in info.Renderers)
+                foreach (var (renderer, _) in info.Renderers)
                 {
                     EditorGUI.ObjectField(right, renderer, info.Renderers.GetType(), true);
                 }

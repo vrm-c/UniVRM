@@ -24,11 +24,11 @@ namespace UniGLTF
         /// <param name="settings"></param>
         /// <returns></returns>
         public static (glTFMesh, Dictionary<int, int> blendShapeIndexMap) Export(glTF gltf, int bufferIndex,
-            MeshWithRenderer unityMesh, List<Material> unityMaterials,
+            MeshExportInfo unityMesh, List<Material> unityMaterials,
             IAxisInverter axisInverter, MeshExportSettings settings)
         {
             var mesh = unityMesh.Mesh;
-            var materials = unityMesh.Renderer.sharedMaterials;
+            var materials = unityMesh.Materials;
             var positions = mesh.vertices.Select(axisInverter.InvertVector3).ToArray();
             var positionAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, positions, glBufferTarget.ARRAY_BUFFER);
             gltf.accessors[positionAccessorIndex].min = positions.Aggregate(positions[0], (a, b) => new Vector3(Mathf.Min(a.x, b.x), Math.Min(a.y, b.y), Mathf.Min(a.z, b.z))).ToArray();
@@ -135,7 +135,7 @@ namespace UniGLTF
 
                 if (j >= materials.Length)
                 {
-                    Debug.LogWarningFormat("{0}.materials is not enough", unityMesh.Renderer.name);
+                    Debug.LogWarningFormat("{0}.materials is not enough", unityMesh.Mesh.name);
                     break;
                 }
 

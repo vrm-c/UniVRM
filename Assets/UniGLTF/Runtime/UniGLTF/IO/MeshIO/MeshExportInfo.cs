@@ -12,16 +12,134 @@ namespace UniGLTF
         #region この２つの組が gltf mesh の Unique なキーとなる
         public Mesh Mesh;
         public Material[] Materials;
+
+        public bool IsSameMeshAndMaterials(MeshExportInfo other)
+        {
+            return IsSameMeshAndMaterials(other.Mesh, other.Materials);
+        }
+
+        public bool IsSameMeshAndMaterials(Mesh mesh, Material[] materials)
+        {
+            if (Mesh != mesh) return false;
+            if (Materials.Length != materials.Length) return false;
+            for (var i = 0; i < Materials.Length; i++)
+            {
+                if (Materials[i] != materials[i]) return false;
+            }
+            return true;
+        }
+
+        public bool IsSameMeshAndMaterials(Renderer r)
+        {
+            if (r is SkinnedMeshRenderer smr)
+            {
+                return IsSameMeshAndMaterials(smr.sharedMesh, smr.sharedMaterials);
+            }
+            else if (r is MeshRenderer mr)
+            {
+                var filter = r.GetComponent<MeshFilter>();
+                if (filter == null)
+                {
+                    return false;
+                }
+                return IsSameMeshAndMaterials(filter.sharedMesh, mr.sharedMaterials);
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public static bool TryGetSameMeshIndex(List<MeshExportInfo> meshWithRenderers, Mesh mesh, Material[] materials, out int meshIndex)
+        {
+            for (var i = 0; i < meshWithRenderers.Count; i++)
+            {
+                if (meshWithRenderers[i].IsSameMeshAndMaterials(mesh, materials))
+                {
+                    meshIndex = i;
+                    return true;
+                }
+            }
+
+            meshIndex = -1;
+            return false;
+        }
+
+        public bool CanExport
+        {
+            get
+            {
+                if (Mesh == null)
+                {
+                    return false;
+                }
+                if (Mesh.vertexCount == 0)
+                {
+                    return false;
+                }
+                if (Materials == null)
+                {
+                    return false;
+                }
+                if (Materials.Length == 0)
+                {
+                    return false;
+                }
+                return true;
+            }
+        }
         #endregion
 
         /// <summary>
         /// ひとつの Mesh を複数の Renderer が共有することがありうる
         /// </summary>
-        public List<Renderer> Renderers;
+        List<(Renderer, Transform[] UniqueBones)> _renderers;
+        public IReadOnlyList<(Renderer, Transform[] UniqueBones)> Renderers => _renderers;
 
-        public bool IsRendererActive;
+        public bool IsRendererActive => Renderers.Any(x => x.Item1.EnableForExport());
+
+        #region  SkinnedMeshRenderer
         public bool Skinned;
+        int[] JointIndexMap;
 
+        /// <summary>
+        /// glTF は　skinning の boneList の重複を許可しない
+        /// (unity は ok)
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public int GetJointIndex(int index)
+        {
+            if (index < 0)
+            {
+                return index;
+            }
+
+            if (JointIndexMap != null)
+            {
+                return JointIndexMap[index];
+            }
+            else
+            {
+                return index;
+            }
+        }
+
+        public IEnumerable<Matrix4x4> GetBindPoses()
+        {
+            var used = new HashSet<int>();
+            for (int i = 0; i < JointIndexMap.Length; ++i)
+            {
+                var index = JointIndexMap[i];
+                if (used.Add(index))
+                {
+                    yield return Mesh.bindposes[i];
+                }
+            }
+        }
+        #endregion
+
+        #region VertexAttribute
         public bool HasNormal => Mesh != null && Mesh.normals != null && Mesh.normals.Length == Mesh.vertexCount;
         public bool HasUV => Mesh != null && Mesh.uv != null && Mesh.uv.Length == Mesh.vertexCount;
 
@@ -42,163 +160,236 @@ namespace UniGLTF
         /// [SkinningWeight]
         /// </summary>
         public int ExportVertexSize;
+        #endregion
 
+        #region  Triangles
         public int IndexCount;
 
         // int 決め打ち
         public int IndicesSize => IndexCount * 4;
+        #endregion
 
+        #region BlendShape
         public int ExportBlendShapeVertexSize;
 
         public int TotalBlendShapeCount;
 
         public int ExportBlendShapeCount;
+        #endregion
 
+        #region  Summary
         public int ExportByteSize => ExportVertexSize * VertexCount + IndicesSize + ExportBlendShapeCount * ExportBlendShapeVertexSize * VertexCount;
 
         public string Summary;
+        #endregion
 
-        MeshExportInfo(Renderer renderer)
+        public MeshExportInfo(Transform t)
         {
-            Materials = renderer.sharedMaterials;
-            Renderers = new List<Renderer> { renderer };
+
         }
 
-        /// <summary>
-        /// ヒエラルキーからエクスポートする Mesh の情報を収集する
-        /// </summary>
-        /// <param name="exportRoot"></param>
-        /// <param name="list"></param>
-        /// <param name="settings"></param>
-        /// <param name="blendShapeFilter"> blendShape の export を filtering する </param>
-        public static void GetInfo(GameObject exportRoot, List<MeshExportInfo> list, MeshExportSettings settings, IBlendShapeExportFilter blendShapeFilter)
-        {
-            list.Clear();
-            if (exportRoot == null)
-            {
-                return;
-            }
-
-            foreach (var renderer in exportRoot.GetComponentsInChildren<Renderer>(true))
-            {
-                if (TryGetMeshInfo(exportRoot, renderer, settings, blendShapeFilter, out MeshExportInfo info))
-                {
-                    list.Add(info);
-                }
-            }
-        }
-
-        static bool TryGetMeshInfo(GameObject root, Renderer renderer, MeshExportSettings settings, IBlendShapeExportFilter blendShapeFilter, out MeshExportInfo info)
+        MeshExportInfo(GameObject root, Renderer renderer, MeshExportSettings settings, IBlendShapeExportFilter blendShapeFilter)
         {
             if (root == null)
             {
-                info = default;
-                return false;
+                throw new ArgumentNullException();
             }
             if (renderer == null)
             {
-                info = default;
-                return false;
+                throw new ArgumentNullException();
             }
 
+            Materials = renderer.sharedMaterials;
+            _renderers = new List<(Renderer, Transform[])>();
             if (renderer is SkinnedMeshRenderer smr)
             {
-                info = new MeshExportInfo(renderer);
-                info.Skinned = true;
-                info.Mesh = smr.sharedMesh;
-                info.IsRendererActive = smr.EnableForExport();
+                Skinned = true;
+                Mesh = smr.sharedMesh;
             }
             else if (renderer is MeshRenderer mr)
             {
-                info = new MeshExportInfo(renderer);
                 var filter = mr.GetComponent<MeshFilter>();
                 if (filter != null)
                 {
-                    info.Mesh = filter.sharedMesh;
+                    Mesh = filter.sharedMesh;
                 }
-                info.IsRendererActive = mr.EnableForExport();
             }
             else
             {
                 throw new NotImplementedException();
             }
 
-            if (info.Mesh == null)
+            if (Mesh == null)
             {
-                info.Summary = "no mesh";
+                Summary = "no mesh";
             }
 
-            info.VertexColor = VertexColorUtility.DetectVertexColor(info.Mesh, info.Materials);
+            VertexColor = VertexColorUtility.DetectVertexColor(Mesh, Materials);
 
             var relativePath = UniGLTF.UnityExtensions.RelativePathFrom(renderer.transform, root.transform);
-            CalcMeshSize(ref info, relativePath, settings, blendShapeFilter);
+            CalcMeshSize(relativePath, settings, blendShapeFilter);
+
+            PushRenderer(renderer);
+        }
+
+        public void PushRenderer(Renderer renderer)
+        {
+            if (renderer is SkinnedMeshRenderer smr)
+            {
+                if (smr.bones != null && smr.bones.Length > 0)
+                {
+                    var uniqueBones = smr.bones.Distinct().ToArray();
+                    var jointIndexMap = new int[smr.bones.Length];
+                    var bones = smr.bones;
+                    for (int i = 0; i < bones.Length; ++i)
+                    {
+                        jointIndexMap[i] = Array.IndexOf(uniqueBones, bones[i]);
+                    }
+                    _renderers.Add((smr, uniqueBones));
+
+                    if (JointIndexMap != null)
+                    {
+                        if (!JointIndexMap.SequenceEqual(jointIndexMap))
+                        {
+                            // edge case
+                            throw new NotImplementedException("different jointIndexMap is not supported");
+                        }
+                    }
+                    JointIndexMap = jointIndexMap;
+                }
+                else
+                {
+                    // maybe blendshape only SkinnedMeshRenderer
+                    _renderers.Add((smr, null));
+                }
+            }
+            else if (renderer is MeshRenderer mr)
+            {
+                _renderers.Add((mr, null));
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        /// <summary>
+        /// ヒエラルキーからエクスポートする Mesh の情報を収集する
+        /// </summary>
+        /// <param name="root"></param>
+        /// <param name="list"></param>
+        /// <param name="settings"></param>
+        /// <param name="blendShapeFilter"> blendShape の export を filtering する </param>
+        public static void GetInfo(GameObject root, List<MeshExportInfo> list, MeshExportSettings settings, IBlendShapeExportFilter blendShapeFilter)
+        {
+            list.Clear();
+            if (root == null)
+            {
+                return;
+            }
+
+            GetInfo(root, root.transform.Traverse()
+                // exclude root object for the symmetry with the importer
+                .Skip(1),
+                list, settings, blendShapeFilter);
+        }
+
+        public static void GetInfo(GameObject root, IEnumerable<Transform> nodes, List<MeshExportInfo> list, MeshExportSettings settings, IBlendShapeExportFilter blendShapeFilter)
+        {
+            list.Clear();
+            if (root == null)
+            {
+                return;
+            }
+
+            foreach (var node in nodes)
+            {
+                var renderer = node.GetComponent<Renderer>();
+                if (renderer == null)
+                {
+                    continue;
+                }
+
+                var found = list.FirstOrDefault(x => x.IsSameMeshAndMaterials(renderer));
+                if (found != null)
+                {
+                    found.PushRenderer(renderer);
+                    continue;
+                }
+
+                list.Add(new MeshExportInfo(root, renderer, settings, blendShapeFilter));
+            }
+        }
+
+        static bool TryGetMeshInfo()
+        {
 
             return true;
         }
 
-        static void CalcMeshSize(ref MeshExportInfo info,
+        void CalcMeshSize(
             string relativePath,
             MeshExportSettings settings,
             IBlendShapeExportFilter blendShapeFilter
             )
         {
             var sb = new StringBuilder();
-            if (!info.IsRendererActive)
+            if (!IsRendererActive)
             {
                 sb.Append("[NotActive]");
             }
 
-            info.VertexCount = info.Mesh.vertexCount;
-            info.ExportVertexSize = 0;
-            info.TotalBlendShapeCount = 0;
-            info.ExportBlendShapeCount = 0;
+            VertexCount = Mesh.vertexCount;
+            ExportVertexSize = 0;
+            TotalBlendShapeCount = 0;
+            ExportBlendShapeCount = 0;
 
             // float4 x 3
             // vertices
             sb.Append($"(Pos");
-            if (info.HasNormal)
+            if (HasNormal)
             {
                 sb.Append("+Nom");
-                info.ExportVertexSize += 4 * 3;
+                ExportVertexSize += 4 * 3;
             }
-            if (info.HasUV)
+            if (HasUV)
             {
                 sb.Append("+UV");
-                info.ExportVertexSize += 4 * 2;
+                ExportVertexSize += 4 * 2;
             }
-            if (info.HasVertexColor)
+            if (HasVertexColor)
             {
                 sb.Append("+Col");
-                info.ExportVertexSize += 4 * 4;
+                ExportVertexSize += 4 * 4;
             }
-            if (info.HasSkinning)
+            if (HasSkinning)
             {
                 // short, float x 4 weights
                 sb.Append("+Skin");
-                info.ExportVertexSize += (2 + 4) * 4;
+                ExportVertexSize += (2 + 4) * 4;
             }
             // indices
-            info.IndexCount = info.Mesh.triangles.Length;
+            IndexCount = Mesh.triangles.Length;
 
             // postion + normal ?. always tangent is ignored
-            info.TotalBlendShapeCount = info.Mesh.blendShapeCount;
-            info.ExportBlendShapeVertexSize = settings.ExportOnlyBlendShapePosition ? 4 * 3 : 4 * (3 + 3);
-            for (var i = 0; i < info.Mesh.blendShapeCount; ++i)
+            TotalBlendShapeCount = Mesh.blendShapeCount;
+            ExportBlendShapeVertexSize = settings.ExportOnlyBlendShapePosition ? 4 * 3 : 4 * (3 + 3);
+            for (var i = 0; i < Mesh.blendShapeCount; ++i)
             {
                 if (!blendShapeFilter.UseBlendShape(i, relativePath))
                 {
                     continue;
                 }
 
-                ++info.ExportBlendShapeCount;
+                ++ExportBlendShapeCount;
             }
 
-            if (info.ExportBlendShapeCount > 0)
+            if (ExportBlendShapeCount > 0)
             {
-                sb.Append($"+Morph x {info.ExportBlendShapeCount}");
+                sb.Append($"+Morph x {ExportBlendShapeCount}");
             }
-            sb.Append($") x {info.Mesh.vertexCount}");
-            switch (info.VertexColor)
+            sb.Append($") x {Mesh.vertexCount}");
+            switch (VertexColor)
             {
                 case VertexColorState.ExistsAndIsUsed:
                 case VertexColorState.ExistsAndMixed: // エクスポートする
@@ -208,14 +399,14 @@ namespace UniGLTF
                     sb.Insert(0, "[remove vcolor]");
                     break;
             }
-            if (info.ExportBlendShapeCount > 0 && !info.HasSkinning)
+            if (ExportBlendShapeCount > 0 && !HasSkinning)
             {
                 sb.Insert(0, "[morph without skin]");
             }
 
             // total bytes
-            sb.Insert(0, $"{info.ExportByteSize:#,0} Bytes = ");
-            info.Summary = sb.ToString();
+            sb.Insert(0, $"{ExportByteSize:#,0} Bytes = ");
+            Summary = sb.ToString();
         }
     }
 }
