@@ -5,14 +5,7 @@ using UnityEngine;
 
 namespace VRM
 {
-    /// <summary>
-    /// Export時にMeshを一覧する。
-    /// 
-    /// Mesh関連の Validation する。
-    /// Meshのエクスポートサイズを試算する。
-    /// </summary>
-    [Serializable]
-    public class VRMMeshExportValidator : MeshExportValidator
+    public class VRMBlendShapeExportFilter : IBlendShapeExportFilter
     {
         static bool ClipsContainsName(IReadOnlyList<BlendShapeClip> clips, bool onlyPreset, BlendShapeBinding binding)
         {
@@ -40,7 +33,24 @@ namespace VRM
         public VRMExportSettings VRMExportSettings;
         public List<BlendShapeClip> Clips;
 
-        public override bool UseBlendShape(int index, string relativePath)
+        public VRMBlendShapeExportFilter(GameObject exportRoot, VRMExportSettings settings)
+        {
+            VRMExportSettings = settings;
+            Clips = new List<BlendShapeClip>();
+            if (exportRoot != null)
+            {
+                var proxy = exportRoot.GetComponent<VRMBlendShapeProxy>();
+                if (proxy != null)
+                {
+                    if (proxy.BlendShapeAvatar != null)
+                    {
+                        Clips.AddRange(proxy.BlendShapeAvatar.Clips);
+                    }
+                }
+            }
+        }
+
+        public bool UseBlendShape(int index, string relativePath)
         {
             if (VRMExportSettings.ReduceBlendshape)
             {
@@ -56,25 +66,6 @@ namespace VRM
             }
 
             return true;
-        }
-
-        public void SetRoot(GameObject ExportRoot, VRMExportSettings settings)
-        {
-            VRMExportSettings = settings;
-            Clips = new List<BlendShapeClip>();
-            if (ExportRoot != null)
-            {
-                var proxy = ExportRoot.GetComponent<VRMBlendShapeProxy>();
-                if (proxy != null)
-                {
-                    if (proxy.BlendShapeAvatar != null)
-                    {
-                        Clips.AddRange(proxy.BlendShapeAvatar.Clips);
-                    }
-                }
-            }
-
-            SetRoot(ExportRoot, settings.MeshExportSettings);
         }
     }
 }

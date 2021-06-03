@@ -6,8 +6,6 @@ using UnityEngine;
 
 namespace UniGLTF
 {
-    public delegate bool UseBlendShapeFunc(int blendShapeIndex, string relativePath);
-
     [Serializable]
     public struct MeshExportInfo
     {
@@ -58,8 +56,8 @@ namespace UniGLTF
         /// <param name="exportRoot"></param>
         /// <param name="list"></param>
         /// <param name="settings"></param>
-        /// <param name="useBlendShape"> blendShape の export を filtering する </param>
-        public static void GetInfo(GameObject exportRoot, List<MeshExportInfo> list, MeshExportSettings settings, UseBlendShapeFunc useBlendShape)
+        /// <param name="blendShapeFilter"> blendShape の export を filtering する </param>
+        public static void GetInfo(GameObject exportRoot, List<MeshExportInfo> list, MeshExportSettings settings, IBlendShapeExportFilter blendShapeFilter)
         {
             list.Clear();
             if (exportRoot == null)
@@ -69,14 +67,14 @@ namespace UniGLTF
 
             foreach (var renderer in exportRoot.GetComponentsInChildren<Renderer>(true))
             {
-                if (TryGetMeshInfo(exportRoot, renderer, settings, useBlendShape, out MeshExportInfo info))
+                if (TryGetMeshInfo(exportRoot, renderer, settings, blendShapeFilter, out MeshExportInfo info))
                 {
                     list.Add(info);
                 }
             }
         }
 
-        static bool TryGetMeshInfo(GameObject root, Renderer renderer, MeshExportSettings settings, UseBlendShapeFunc useBlendShape, out MeshExportInfo info)
+        static bool TryGetMeshInfo(GameObject root, Renderer renderer, MeshExportSettings settings, IBlendShapeExportFilter blendShapeFilter, out MeshExportInfo info)
         {
             info = default;
             if (root == null)
@@ -115,7 +113,7 @@ namespace UniGLTF
             info.VertexColor = VertexColorUtility.DetectVertexColor(info.Mesh, info.Renderer.sharedMaterials);
 
             var relativePath = UniGLTF.UnityExtensions.RelativePathFrom(renderer.transform, root.transform);
-            CalcMeshSize(ref info, relativePath, settings, useBlendShape);
+            CalcMeshSize(ref info, relativePath, settings, blendShapeFilter);
 
             return true;
         }
@@ -123,7 +121,7 @@ namespace UniGLTF
         static void CalcMeshSize(ref MeshExportInfo info,
             string relativePath,
             MeshExportSettings settings,
-            UseBlendShapeFunc useBlendShape
+            IBlendShapeExportFilter blendShapeFilter
             )
         {
             var sb = new StringBuilder();
@@ -169,7 +167,7 @@ namespace UniGLTF
             info.ExportBlendShapeVertexSize = settings.ExportOnlyBlendShapePosition ? 4 * 3 : 4 * (3 + 3);
             for (var i = 0; i < info.Mesh.blendShapeCount; ++i)
             {
-                if (!useBlendShape(i, relativePath))
+                if (!blendShapeFilter.UseBlendShape(i, relativePath))
                 {
                     continue;
                 }

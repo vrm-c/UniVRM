@@ -26,7 +26,7 @@ namespace UniGLTF
 
             try
             {
-                validator.SetRoot(root, MeshExportSettings.Default);
+                validator.SetRoot(root, MeshExportSettings.Default, new DefualtBlendShapeExportFilter());
                 var vs = validator.Validate(root);
                 Assert.False(vs.All(x => x.CanExport));
             }
@@ -46,7 +46,7 @@ namespace UniGLTF
 
             try
             {
-                validator.SetRoot(root, MeshExportSettings.Default);
+                validator.SetRoot(root, MeshExportSettings.Default, new DefualtBlendShapeExportFilter());
                 var vs = validator.Validate(root);
                 Assert.False(vs.All(x => x.CanExport));
             }
@@ -66,7 +66,7 @@ namespace UniGLTF
 
             try
             {
-                validator.SetRoot(root, MeshExportSettings.Default);
+                validator.SetRoot(root, MeshExportSettings.Default, new DefualtBlendShapeExportFilter());
                 var vs = validator.Validate(root);
                 Assert.False(vs.All(x => x.CanExport));
             }
@@ -90,7 +90,7 @@ namespace UniGLTF
                 // remove MeshFilter
                 Component.DestroyImmediate(child.GetComponent<MeshFilter>());
 
-                validator.SetRoot(root, MeshExportSettings.Default);
+                validator.SetRoot(root, MeshExportSettings.Default, new DefualtBlendShapeExportFilter());
                 var vs = validator.Validate(root);
                 Assert.True(vs.All(x => x.CanExport));
             }
@@ -114,7 +114,7 @@ namespace UniGLTF
                 // set null
                 child.GetComponent<MeshFilter>().sharedMesh = null;
 
-                validator.SetRoot(root, MeshExportSettings.Default);
+                validator.SetRoot(root, MeshExportSettings.Default, new DefualtBlendShapeExportFilter());
                 var vs = validator.Validate(root);
                 Assert.True(vs.All(x => x.CanExport));
             }

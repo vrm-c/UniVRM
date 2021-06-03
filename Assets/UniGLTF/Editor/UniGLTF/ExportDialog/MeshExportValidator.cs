@@ -31,15 +31,9 @@ namespace UniGLTF
 
         public int ExpectedExportByteSize => Meshes.Where(x => x.IsRendererActive).Sum(x => x.ExportByteSize);
 
-        public MeshExportSettings Settings;
-
-        public virtual bool UseBlendShape(int index, string relativePath) => true;
-
-        public void SetRoot(GameObject ExportRoot, MeshExportSettings settings)
+        public void SetRoot(GameObject ExportRoot, MeshExportSettings settings, IBlendShapeExportFilter blendShapeFilter)
         {
-            Settings = settings;
-
-            MeshExportInfo.GetInfo(ExportRoot, Meshes, settings, UseBlendShape);
+            MeshExportInfo.GetInfo(ExportRoot, Meshes, settings, blendShapeFilter);
         }
 
         public Func<string, string> GltfMaterialFromUnityShaderName = DefaultGltfMaterialType;
