@@ -36,7 +36,7 @@ namespace VRM
         Editor m_settingsInspector;
 
 
-        VRMMeshExportValidator m_meshes;
+        MeshExportValidator m_meshes;
         Editor m_meshesInspector;
 
 
@@ -69,7 +69,7 @@ namespace VRM
             m_settings = ScriptableObject.CreateInstance<VRMExportSettings>();
             m_settingsInspector = Editor.CreateEditor(m_settings);
 
-            m_meshes = ScriptableObject.CreateInstance<VRMMeshExportValidator>();
+            m_meshes = ScriptableObject.CreateInstance<MeshExportValidator>();
             m_meshesInspector = Editor.CreateEditor(m_meshes);
 
             State.ExportRootChanged += (root) =>
@@ -179,7 +179,7 @@ namespace VRM
 
         protected override void OnLayout()
         {
-            m_meshes.SetRoot(State.ExportRoot, m_settings);
+            m_meshes.SetRoot(State.ExportRoot, m_settings.MeshExportSettings, new VRMBlendShapeExportFilter(State.ExportRoot, m_settings));
         }
 
         static bool s_foldT = true;
@@ -259,7 +259,7 @@ namespace VRM
                 switch (meshInfo.VertexColor)
                 {
                     case UniGLTF.VertexColorState.ExistsAndMixed:
-                        Validation.Warning($"{meshInfo.Renderer}: Both vcolor.multiply and not multiply unlit materials exist").DrawGUI();
+                        Validation.Warning($"{meshInfo.Renderers}: Both vcolor.multiply and not multiply unlit materials exist").DrawGUI();
                         break;
                 }
             }

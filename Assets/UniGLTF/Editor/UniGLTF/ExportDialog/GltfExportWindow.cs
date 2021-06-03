@@ -73,7 +73,7 @@ namespace UniGLTF
 
         protected override void OnLayout()
         {
-            m_meshes.SetRoot(State.ExportRoot, m_settings.MeshExportSettings);
+            m_meshes.SetRoot(State.ExportRoot, m_settings.MeshExportSettings, new DefualtBlendShapeExportFilter());
         }
 
         protected override bool DoGUI(bool isValid)

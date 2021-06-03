@@ -138,7 +138,7 @@ namespace UniGLTF
         }
 
         #region Export
-        static glTFNode ExportNode(Transform x, List<Transform> nodes, List<MeshWithRenderer> meshWithRenderers, List<SkinnedMeshRenderer> skins)
+        static glTFNode ExportNode(Transform x, List<Transform> nodes, List<MeshExportInfo> meshWithRenderers, List<SkinnedMeshRenderer> skins)
         {
             var node = new glTFNode
             {
@@ -160,7 +160,7 @@ namespace UniGLTF
                     {
                         var mesh = meshFilter.sharedMesh;
                         var materials = meshRenderer.sharedMaterials;
-                        if (TryGetSameMeshIndex(meshWithRenderers, mesh, materials, out int meshIndex))
+                        if (MeshExportInfo.TryGetSameMeshIndex(meshWithRenderers, mesh, materials, out int meshIndex))
                         {
                             node.mesh = meshIndex;
                         }
@@ -182,7 +182,7 @@ namespace UniGLTF
                 {
                     var mesh = skinnedMeshRenderer.sharedMesh;
                     var materials = skinnedMeshRenderer.sharedMaterials;
-                    if (TryGetSameMeshIndex(meshWithRenderers, mesh, materials, out int meshIndex))
+                    if (MeshExportInfo.TryGetSameMeshIndex(meshWithRenderers, mesh, materials, out int meshIndex))
                     {
                         node.mesh = meshIndex;
                         node.skin = skins.IndexOf(skinnedMeshRenderer);
@@ -203,21 +203,6 @@ namespace UniGLTF
             return node;
         }
 
-        private static bool TryGetSameMeshIndex(List<MeshWithRenderer> meshWithRenderers, Mesh mesh, Material[] materials, out int meshIndex)
-        {
-            for (var i = 0; i < meshWithRenderers.Count; i++)
-            {
-                if (meshWithRenderers[i].IsSameMeshAndMaterials(mesh, materials))
-                {
-                    meshIndex = i;
-                    return true;
-                }
-            }
-
-            meshIndex = -1;
-            return false;
-        }
-
         public virtual void ExportExtensions(ITextureSerializer textureSerializer)
         {
             // do nothing
@@ -232,15 +217,11 @@ namespace UniGLTF
                 .Skip(1) // exclude root object for the symmetry with the importer
                 .ToList();
 
-            var unityMeshes = MeshWithRenderer.FromNodes(Nodes).Where(x => x.Mesh.vertices.Any()).ToList();
-            var uniqueUnityMeshes = new List<MeshWithRenderer>();
-            foreach (var um in unityMeshes)
-            {
-                if (!uniqueUnityMeshes.Any(x => x.IsSameMeshAndMaterials(um))) uniqueUnityMeshes.Add(um);
-            }
+            var uniqueUnityMeshes = new List<MeshExportInfo>();
+            MeshExportInfo.GetInfo(Nodes, uniqueUnityMeshes, meshExportSettings);
 
             #region Materials and Textures
-            Materials = uniqueUnityMeshes.SelectMany(x => x.Renderer.sharedMaterials).Where(x => x != null).Distinct().ToList();
+            Materials = uniqueUnityMeshes.SelectMany(x => x.Materials).Where(x => x != null).Distinct().ToList();
 
             TextureExporter = new TextureExporter(textureSerializer);
 
@@ -267,10 +248,17 @@ namespace UniGLTF
             #endregion
 
             #region Nodes and Skins
-            var unitySkins = uniqueUnityMeshes
-                .Where(x => x.UniqueBones != null)
-                .ToList();
-            glTF.nodes = Nodes.Select(x => ExportNode(x, Nodes, uniqueUnityMeshes, unitySkins.Select(y => y.Renderer as SkinnedMeshRenderer).ToList())).ToList();
+            var skins = uniqueUnityMeshes
+                .SelectMany(x => x.Renderers)
+                .Where(x => x.Item1 is SkinnedMeshRenderer && x.UniqueBones != null)
+                .Select(x => x.Item1 as SkinnedMeshRenderer)
+                .ToList()
+                ;
+            foreach (var node in Nodes)
+            {
+                var gltfNode = ExportNode(node, Nodes, uniqueUnityMeshes, skins);
+                glTF.nodes.Add(gltfNode);
+            }
             glTF.scenes = new List<gltfScene>
                 {
                     new gltfScene
@@ -279,26 +267,30 @@ namespace UniGLTF
                     }
                 };
 
-            foreach (var x in unitySkins)
+            foreach (var x in uniqueUnityMeshes)
             {
-                var matrices = x.GetBindPoses().Select(m_axisInverter.InvertMat4).ToArray();
-                var accessor = glTF.ExtendBufferAndGetAccessorIndex(bufferIndex, matrices, glBufferTarget.NONE);
-
-                var renderer = x.Renderer as SkinnedMeshRenderer;
-                var skin = new glTFSkin
+                foreach (var (renderer, uniqueBones) in x.Renderers)
                 {
-                    inverseBindMatrices = accessor,
-                    joints = x.UniqueBones.Select(y => Nodes.IndexOf(y)).ToArray(),
-                    skeleton = Nodes.IndexOf(renderer.rootBone),
-                };
-                var skinIndex = glTF.skins.Count;
-                glTF.skins.Add(skin);
+                    if (uniqueBones != null && renderer is SkinnedMeshRenderer smr)
+                    {
+                        var matrices = x.GetBindPoses().Select(m_axisInverter.InvertMat4).ToArray();
+                        var accessor = glTF.ExtendBufferAndGetAccessorIndex(bufferIndex, matrices, glBufferTarget.NONE);
+                        var skin = new glTFSkin
+                        {
+                            inverseBindMatrices = accessor,
+                            joints = uniqueBones.Select(y => Nodes.IndexOf(y)).ToArray(),
+                            skeleton = Nodes.IndexOf(smr.rootBone),
+                        };
+                        var skinIndex = glTF.skins.Count;
+                        glTF.skins.Add(skin);
 
-                foreach (var z in Nodes.Where(y => y.Has(x.Renderer)))
-                {
-                    var nodeIndex = Nodes.IndexOf(z);
-                    var node = glTF.nodes[nodeIndex];
-                    node.skin = skinIndex;
+                        foreach (var z in Nodes.Where(y => y.Has(renderer)))
+                        {
+                            var nodeIndex = Nodes.IndexOf(z);
+                            var node = glTF.nodes[nodeIndex];
+                            node.skin = skinIndex;
+                        }
+                    }
                 }
             }
             #endregion

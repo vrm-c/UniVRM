@@ -8,7 +8,7 @@ namespace UniGLTF
     public static class MeshExporter_DividedVertexBuffer
     {
         public static (glTFMesh, Dictionary<int, int>) Export(glTF gltf, int bufferIndex,
-            MeshWithRenderer unityMesh, List<Material> unityMaterials,
+            MeshExportInfo unityMesh, List<Material> unityMaterials,
             IAxisInverter axisInverter, MeshExportSettings settings)
         {
             var mesh = unityMesh.Mesh;
@@ -58,7 +58,7 @@ namespace UniGLTF
                     }
                 }
 
-                var material = unityMesh.Renderer.sharedMaterials[i];
+                var material = unityMesh.Materials[i];
                 var materialIndex = -1;
                 if (material != null)
                 {
