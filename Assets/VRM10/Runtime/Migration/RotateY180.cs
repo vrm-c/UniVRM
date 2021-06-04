@@ -49,6 +49,11 @@ namespace UniVRM10
 
         static void ReverseVector3Array(glTF gltf, int accessorIndex, HashSet<int> used)
         {
+            if (accessorIndex == -1)
+            {
+                return;
+            }
+
             if (!used.Add(accessorIndex))
             {
                 return;
