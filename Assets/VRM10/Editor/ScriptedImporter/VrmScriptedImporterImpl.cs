@@ -62,9 +62,9 @@ namespace UniVRM10
                     return "cannot migrate";
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return "migration error";
+                return $"migration error: {ex}";
             }
 
             parser = new GltfParser();
