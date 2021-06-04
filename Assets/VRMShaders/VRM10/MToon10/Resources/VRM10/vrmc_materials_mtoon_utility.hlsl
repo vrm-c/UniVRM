@@ -39,4 +39,9 @@ inline half3x3 MToon_GetTangentToWorld(const half3 normalWS, const half4 tangent
     return half3x3(normalizedTangentWS, normalizedBitangentWS, normalizedNormalWS);
 }
 
+inline half3 MToon_GetObjectToViewNormal(const half3 normalOS)
+{
+    return normalize(mul((half3x3)UNITY_MATRIX_IT_MV, normalOS));
+}
+
 #endif

@@ -62,6 +62,7 @@ Shader "Hidden/VRM10/vrmc_materials_mtoon"
         _M_DebugMode ("_DebugMode", Float) = 0.0
     }
 
+    // Shader Model 3.0
     SubShader
     {
         Tags { "RenderType" = "Opaque"  "Queue" = "Geometry" }
@@ -77,7 +78,7 @@ Shader "Hidden/VRM10/vrmc_materials_mtoon"
             ZWrite [_M_ZWrite]
             ZTest LEqual
             BlendOp Add, Max
-            AlphaToMask Off
+            AlphaToMask [_M_AlphaToMask]
 
             HLSLPROGRAM
             #pragma target 3.0
@@ -90,6 +91,42 @@ Shader "Hidden/VRM10/vrmc_materials_mtoon"
             #pragma multi_compile_local __ _ALPHATEST_ON _ALPHABLEND_ON
             #pragma multi_compile_local __ _NORMALMAP
             #pragma multi_compile_local __ _UVANIMATION
+
+            #pragma vertex MToonVertex
+            #pragma fragment MToonFragment
+
+            #include "./vrmc_materials_mtoon_forward_vertex.hlsl"
+            #include "./vrmc_materials_mtoon_forward_fragment.hlsl"
+            ENDHLSL
+        }
+
+        // Built-in Forward Base Pass: OUTLINE
+        Pass
+        {
+            Name "FORWARD_BASE_OUTLINE"
+            Tags { "LightMode" = "ForwardBase" }
+
+            Cull Front
+            Blend [_M_SrcBlend] [_M_DstBlend]
+            ZWrite [_M_ZWrite]
+            ZTest LEqual
+            BlendOp Add, Max
+            AlphaToMask [_M_AlphaToMask]
+
+            HLSLPROGRAM
+            #pragma target 3.0
+
+            // Unity defined keywords
+            #pragma multi_compile_fwdbase
+            #pragma multi_compile_fog
+            #pragma multi_compile_instancing
+
+            #pragma multi_compile_local __ _ALPHATEST_ON _ALPHABLEND_ON
+            #pragma multi_compile_local __ _NORMALMAP
+            #pragma multi_compile_local __ _UVANIMATION
+
+            #define MTOON_PASS_OUTLINE
+            #define MTOON_OUTLINE_WIDTH_WORLD
 
             #pragma vertex MToonVertex
             #pragma fragment MToonFragment

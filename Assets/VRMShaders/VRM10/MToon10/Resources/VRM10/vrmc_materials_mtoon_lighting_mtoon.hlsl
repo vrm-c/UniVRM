@@ -14,6 +14,7 @@ struct MToonInput
     half3 viewDirWS;
     half3 litColor;
     half alpha;
+    half outlineFactor;
 };
 
 inline half GetMToonLighting_Reflectance(const UnityLighting lighting, const MToonInput input)
@@ -91,12 +92,13 @@ half4 GetMToonLighting(const UnityLighting unityLight, const MToonInput input)
     const half3 direct = GetMToonLighting_DirectLighting(unityLight, input, reflectance);
     const half3 indirect = GetMToonLighting_GlobalIllumination(unityLight, input);
     const half3 lighting = direct + indirect;
-
     const half3 emissive = GetMToonLighting_Emissive(input);
-
     const half3 rim = GetMToonLighting_Rim(input, lighting);
 
-    const half3 col = lighting + emissive + rim;
+    const half3 baseCol = lighting + emissive + rim;
+    const half3 outlineCol = _OutlineColor.rgb * lerp(half3(1, 1, 1), baseCol, _OutlineLightingMix);
+
+    const half3 col = lerp(baseCol, outlineCol, input.outlineFactor);
 
     return half4(col, input.alpha);
 }
