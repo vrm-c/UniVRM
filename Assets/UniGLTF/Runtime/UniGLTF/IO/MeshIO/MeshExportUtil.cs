@@ -15,37 +15,27 @@ namespace UniGLTF
     {
         public class BlendShapeBuffer
         {
-            readonly List<Vector3> m_positions;
-            readonly List<Vector3> m_normals;
+            readonly Vector3[] m_positions;
+            readonly Vector3[] m_normals;
 
             public BlendShapeBuffer(int reserve)
             {
-                m_positions = new List<Vector3>(reserve);
-                m_normals = new List<Vector3>(reserve);
+                m_positions = new Vector3[reserve];
+                m_normals = new Vector3[reserve];
             }
 
-            public void Push(Vector3 position, Vector3 normal)
+            public void Set(int index, Vector3 position, Vector3 normal)
             {
-                m_positions.Add(position);
-                m_normals.Add(normal);
+                m_positions[index] = position;
+                m_normals[index] = normal;
             }
 
-            public gltfMorphTarget ToGltf(glTF gltf, int bufferIndex, bool useNormal)
+            public gltfMorphTarget ToGltf(glTF gltf, int gltfBuffer, bool useNormal, SparseBase? sparseBase)
             {
-                var positionAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, m_positions.ToArray(), glBufferTarget.ARRAY_BUFFER);
-                gltf.accessors[positionAccessorIndex].min = m_positions.Aggregate(m_positions[0], (a, b) => new Vector3(Mathf.Min(a.x, b.x), Math.Min(a.y, b.y), Mathf.Min(a.z, b.z))).ToArray();
-                gltf.accessors[positionAccessorIndex].max = m_positions.Aggregate(m_positions[0], (a, b) => new Vector3(Mathf.Max(a.x, b.x), Math.Max(a.y, b.y), Mathf.Max(a.z, b.z))).ToArray();
-
-                var normalAccessorIndex = -1;
-                if (useNormal)
-                {
-                    normalAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, m_normals.ToArray(), glBufferTarget.ARRAY_BUFFER);
-                }
-                return new gltfMorphTarget
-                {
-                    POSITION = positionAccessorIndex,
-                    NORMAL = normalAccessorIndex,
-                };
+                return BlendShapeExporter.Export(gltf, gltfBuffer,
+                    m_positions,
+                    useNormal ? m_normals : null,
+                    sparseBase);
             }
         }
 
@@ -113,11 +103,12 @@ namespace UniGLTF
                 m_weights.Add(new Vector4(boneWeight.weight0, boneWeight.weight1, boneWeight.weight2, boneWeight.weight3));
             }
 
-            public glTFPrimitives ToGltfPrimitive(glTF gltf, int bufferIndex, int materialIndex, IEnumerable<int> indices)
+            public (glTFPrimitives, SparseBase) ToGltfPrimitive(glTF gltf, int bufferIndex, int materialIndex, IEnumerable<int> indices)
             {
+                var sparseBase = new SparseBase(m_positions.ToArray(), m_normals.ToArray());
                 var indicesAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, indices.Select(x => (uint)m_vertexIndexMap[x]).ToArray(), glBufferTarget.ELEMENT_ARRAY_BUFFER);
-                var positionAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, m_positions.ToArray(), glBufferTarget.ARRAY_BUFFER);
-                var normalAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, m_normals.ToArray(), glBufferTarget.ARRAY_BUFFER);
+                var positionAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, sparseBase.Positions, glBufferTarget.ARRAY_BUFFER);
+                var normalAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, sparseBase.Normals, glBufferTarget.ARRAY_BUFFER);
                 var uvAccessorIndex0 = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, m_uv.ToArray(), glBufferTarget.ARRAY_BUFFER);
 
                 int? jointsAccessorIndex = default;
@@ -146,7 +137,7 @@ namespace UniGLTF
                     mode = 4,
                 };
 
-                return primitive;
+                return (primitive, sparseBase);
             }
         }
     }

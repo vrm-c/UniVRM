@@ -10,11 +10,12 @@ namespace UniGLTF
     {
         /// <summary>
         /// primitive 間で vertex を共有する形で Export する。
+        /// UniVRM-0.71.0 以降は、MeshExporterDivided.Export もある。
         /// 
-        /// UniVRM-0.71.0 までの挙動
+        /// * GLB/GLTF は shared(default) と divided を選択可能
+        /// * VRM0 は shared 仕様
+        /// * VRM1 は divided 仕様
         /// 
-        /// UniVRM-0.71.0 以降は、MeshExporterDivided.Export もある
-        ///
         /// /// </summary>
         /// <param name="gltf"></param>
         /// <param name="bufferIndex"></param>
@@ -159,12 +160,13 @@ namespace UniGLTF
                         unityMesh.Mesh, j,
                         settings.UseSparseAccessorForMorphTarget,
                         settings.ExportOnlyBlendShapePosition, axisInverter);
-                    if (morphTarget.POSITION < 0 && morphTarget.NORMAL < 0 && morphTarget.TANGENT < 0)
+                    if (morphTarget.POSITION < 0)
                     {
+                        // Skip empty blendShape.
+                        // Shift blendShape's index.
                         continue;
                     }
 
-                    // maybe skip
                     var blendShapeName = unityMesh.Mesh.GetBlendShapeName(j);
                     blendShapeIndexMap.Add(j, exportBlendShapes++);
                     targetNames.Add(blendShapeName);
@@ -199,7 +201,7 @@ namespace UniGLTF
         }
 
         static gltfMorphTarget ExportMorphTarget(glTF gltf, int bufferIndex,
-            Mesh mesh, int j,
+            Mesh mesh, int blendShapeIndex,
             bool useSparseAccessorForMorphTarget,
             bool exportOnlyBlendShapePosition,
             IAxisInverter axisInverter)
@@ -215,8 +217,8 @@ namespace UniGLTF
             //var useTangent = usePosition && blendShapeTangents != null && blendShapeTangents.Length == blendShapeVertices.Length;
             var useTangent = false;
 
-            var frameCount = mesh.GetBlendShapeFrameCount(j);
-            mesh.GetBlendShapeFrameVertices(j, frameCount - 1, blendShapeVertices, blendShapeNormals, null);
+            var frameCount = mesh.GetBlendShapeFrameCount(blendShapeIndex);
+            mesh.GetBlendShapeFrameVertices(blendShapeIndex, frameCount - 1, blendShapeVertices, blendShapeNormals, null);
 
             var blendShapePositionAccessorIndex = -1;
             var blendShapeNormalAccessorIndex = -1;

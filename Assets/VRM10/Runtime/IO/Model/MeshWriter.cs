@@ -121,7 +121,7 @@ namespace UniVRM10
                     }
                 }
                 var materialIndex = submesh.Material;
-                var gltfPrimitive = buffer.ToGltfPrimitive(storage.Gltf, bufferIndex, materialIndex, indices);
+                var (gltfPrimitive, sparseBase) = buffer.ToGltfPrimitive(storage.Gltf, bufferIndex, materialIndex, indices);
 
                 // blendShape
                 for (int j = 0; j < mesh.MorphTargets.Count; ++j)
@@ -136,15 +136,16 @@ namespace UniVRM10
                     {
                         blendShapeNormals = morph.VertexBuffer.Normals.GetSpan<UnityEngine.Vector3>();
                     }
+                    int l = 0;
                     foreach (var k in usedIndices)
                     {
-                        blendShape.Push(
+                        blendShape.Set(l++,
                             blendShapePositions[k],
                             blendShapeNormals.HasValue ? blendShapeNormals.Value[k] : UnityEngine.Vector3.zero
                             );
                     }
 
-                    gltfPrimitive.targets.Add(blendShape.ToGltf(storage.Gltf, bufferIndex, !option.removeMorphNormal));
+                    gltfPrimitive.targets.Add(blendShape.ToGltf(storage.Gltf, bufferIndex, !option.removeMorphNormal, option.sparse ? sparseBase : default));
                 }
 
                 yield return gltfPrimitive;
