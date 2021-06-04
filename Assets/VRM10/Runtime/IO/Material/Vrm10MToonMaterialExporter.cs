@@ -25,39 +25,46 @@ namespace UniVRM10
                 // convert MToon intermediate value from UnityEngine.Material
                 var def = MToon.Utils.GetMToonParametersFromMaterial(src);
 
-                // gltfMaterial
-                dst = new glTFMaterial
+                // base material
+                dst = glTF_KHR_materials_unlit.CreateDefault();
+                dst.name = src.name;
+
+                // Rendering
+                dst.doubleSided = def.Rendering.CullMode == CullMode.Off;
+                dst.alphaMode = ExportAlphaMode(def.Rendering.RenderMode);
+                dst.alphaCutoff = Mathf.Max(def.Color.CutoutThresholdValue, 0);
+
+                // Lighting
+                dst.pbrMetallicRoughness = new glTFPbrMetallicRoughness
                 {
-                    name = src.name,
-
-                    // Rendering
-                    doubleSided = def.Rendering.CullMode == CullMode.Off,
-                    alphaMode = ExportAlphaMode(def.Rendering.RenderMode),
-                    alphaCutoff = Mathf.Max(def.Color.CutoutThresholdValue, 0),
-
-                    // Lighting
-                    pbrMetallicRoughness = new glTFPbrMetallicRoughness
+                    baseColorFactor = def.Color.LitColor.ToFloat4(ColorSpace.sRGB, ColorSpace.Linear),
+                    baseColorTexture = new glTFMaterialBaseColorTextureInfo
                     {
-                        baseColorFactor = def.Color.LitColor.ToFloat4(ColorSpace.sRGB, ColorSpace.Linear),
-                        baseColorTexture = new glTFMaterialBaseColorTextureInfo
-                        {
-                            index = textureExporter.ExportAsSRgb(def.Color.LitMultiplyTexture),
-                        },
-                    },
-
-                    normalTexture = new glTFMaterialNormalTextureInfo
-                    {
-                        index = textureExporter.ExportAsNormal(def.Lighting.Normal.NormalTexture),
-                        scale = def.Lighting.Normal.NormalScaleValue,
-                    },
-
-                    // Emission
-                    emissiveFactor = def.Emission.EmissionColor.ToFloat3(ColorSpace.Linear, ColorSpace.Linear),
-                    emissiveTexture = new glTFMaterialEmissiveTextureInfo
-                    {
-                        index = textureExporter.ExportAsSRgb(def.Emission.EmissionMultiplyTexture),
+                        index = textureExporter.ExportAsSRgb(def.Color.LitMultiplyTexture),
                     },
                 };
+
+                // Normal
+                var normalTextureIndex = textureExporter.ExportAsNormal(def.Lighting.Normal.NormalTexture);
+                if (normalTextureIndex != -1)
+                {
+                    dst.normalTexture = new glTFMaterialNormalTextureInfo
+                    {
+                        index = normalTextureIndex,
+                        scale = def.Lighting.Normal.NormalScaleValue,
+                    };
+                }
+
+                // Emission
+                dst.emissiveFactor = def.Emission.EmissionColor.ToFloat3(ColorSpace.Linear, ColorSpace.Linear);
+                var emissiveTextureIndex = textureExporter.ExportAsSRgb(def.Emission.EmissionMultiplyTexture);
+                if (emissiveTextureIndex != -1)
+                {
+                    dst.emissiveTexture = new glTFMaterialEmissiveTextureInfo
+                    {
+                        index = emissiveTextureIndex,
+                    };
+                }
 
                 const float centimeterToMeter = 0.01f;
                 const float invertY = -1f;
@@ -207,6 +214,10 @@ namespace UniVRM10
 
         private static void ExportTextureTransform(glTFTextureInfo textureInfo, Vector2 unityScale, Vector2 unityOffset)
         {
+            if (textureInfo == null)
+            {
+                return;
+            }
             var scale = unityScale;
             var offset = new Vector2(unityOffset.x, 1.0f - unityOffset.y - unityScale.y);
 
