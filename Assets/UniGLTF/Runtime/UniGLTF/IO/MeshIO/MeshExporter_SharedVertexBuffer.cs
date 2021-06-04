@@ -213,106 +213,38 @@ namespace UniGLTF
             var useNormal = usePosition && blendShapeNormals != null && blendShapeNormals.Length == blendShapeVertices.Length;
             // var useNormal = usePosition && blendShapeNormals != null && blendShapeNormals.Length == blendShapeVertices.Length && !exportOnlyBlendShapePosition;
 
-            var blendShapeTangents = mesh.tangents.Select(y => (Vector3)y).ToArray();
-            //var useTangent = usePosition && blendShapeTangents != null && blendShapeTangents.Length == blendShapeVertices.Length;
-            var useTangent = false;
+            // var blendShapeTangents = mesh.tangents.Select(y => (Vector3)y).ToArray();
+            // //var useTangent = usePosition && blendShapeTangents != null && blendShapeTangents.Length == blendShapeVertices.Length;
+            // var useTangent = false;
 
             var frameCount = mesh.GetBlendShapeFrameCount(blendShapeIndex);
             mesh.GetBlendShapeFrameVertices(blendShapeIndex, frameCount - 1, blendShapeVertices, blendShapeNormals, null);
 
-            var blendShapePositionAccessorIndex = -1;
-            var blendShapeNormalAccessorIndex = -1;
-            var blendShapeTangentAccessorIndex = -1;
-            if (useSparseAccessorForMorphTarget)
+            //
+            // invert axis
+            //
+            for (int i = 0; i < blendShapeVertices.Length; ++i)
             {
-                var accessorCount = blendShapeVertices.Length;
-                var sparseIndices = Enumerable.Range(0, blendShapeVertices.Length)
-                    .Where(x => UseSparse(
-                        usePosition, blendShapeVertices[x],
-                        useNormal, blendShapeNormals[x],
-                        useTangent, blendShapeTangents[x]))
-                    .ToArray()
-                    ;
-
-                if (sparseIndices.Length == 0)
-                {
-                    usePosition = false;
-                    useNormal = false;
-                    useTangent = false;
-                }
-                else
-                {
-                    Debug.LogFormat("Sparse {0}/{1}", sparseIndices.Length, mesh.vertexCount);
-                }
-
-                var sparseIndicesViewIndex = -1;
-                if (usePosition)
-                {
-                    sparseIndicesViewIndex = gltf.ExtendBufferAndGetViewIndex(bufferIndex, sparseIndices);
-
-                    blendShapeVertices = sparseIndices.Select(x => axisInverter.InvertVector3(blendShapeVertices[x])).ToArray();
-                    blendShapePositionAccessorIndex = gltf.ExtendSparseBufferAndGetAccessorIndex(bufferIndex, accessorCount,
-                        blendShapeVertices,
-                        sparseIndices, sparseIndicesViewIndex,
-                        glBufferTarget.NONE);
-                }
-
-                if (useNormal)
-                {
-                    blendShapeNormals = sparseIndices.Select(x => axisInverter.InvertVector3(blendShapeNormals[x])).ToArray();
-                    blendShapeNormalAccessorIndex = gltf.ExtendSparseBufferAndGetAccessorIndex(bufferIndex, accessorCount,
-                        blendShapeNormals,
-                        sparseIndices, sparseIndicesViewIndex,
-                        glBufferTarget.NONE);
-                }
-
-                if (useTangent)
-                {
-                    blendShapeTangents = sparseIndices.Select(x => axisInverter.InvertVector3(blendShapeTangents[x])).ToArray();
-                    blendShapeTangentAccessorIndex = gltf.ExtendSparseBufferAndGetAccessorIndex(bufferIndex, accessorCount,
-                        blendShapeTangents, sparseIndices, sparseIndicesViewIndex,
-                        glBufferTarget.NONE);
-                }
+                blendShapeVertices[i] = axisInverter.InvertVector3(blendShapeVertices[i]);
             }
-            else
+            for (int i = 0; i < blendShapeNormals.Length; ++i)
             {
-                for (int i = 0; i < blendShapeVertices.Length; ++i) blendShapeVertices[i] = axisInverter.InvertVector3(blendShapeVertices[i]);
-                if (usePosition)
-                {
-                    blendShapePositionAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex,
-                        blendShapeVertices,
-                        glBufferTarget.ARRAY_BUFFER);
-                }
-
-                if (useNormal)
-                {
-                    for (int i = 0; i < blendShapeNormals.Length; ++i) blendShapeNormals[i] = axisInverter.InvertVector3(blendShapeNormals[i]);
-                    blendShapeNormalAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex,
-                        blendShapeNormals,
-                        glBufferTarget.ARRAY_BUFFER);
-                }
-
-                if (useTangent)
-                {
-                    for (int i = 0; i < blendShapeTangents.Length; ++i) blendShapeTangents[i] = axisInverter.InvertVector3(blendShapeTangents[i]);
-                    blendShapeTangentAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex,
-                        blendShapeTangents,
-                        glBufferTarget.ARRAY_BUFFER);
-                }
+                blendShapeNormals[i] = axisInverter.InvertVector3(blendShapeNormals[i]);
+            }
+            var sparseBase = new SparseBase(mesh.vertices, mesh.normals);
+            for (int i = 0; i < sparseBase.Positions.Length; ++i)
+            {
+                sparseBase.Positions[i] = axisInverter.InvertVector3(sparseBase.Positions[i]);
+            }
+            for (int i = 0; i < sparseBase.Normals.Length; ++i)
+            {
+                sparseBase.Normals[i] = axisInverter.InvertVector3(sparseBase.Normals[i]);
             }
 
-            if (blendShapePositionAccessorIndex != -1)
-            {
-                gltf.accessors[blendShapePositionAccessorIndex].min = blendShapeVertices.Aggregate(blendShapeVertices[0], (a, b) => new Vector3(Mathf.Min(a.x, b.x), Math.Min(a.y, b.y), Mathf.Min(a.z, b.z))).ToArray();
-                gltf.accessors[blendShapePositionAccessorIndex].max = blendShapeVertices.Aggregate(blendShapeVertices[0], (a, b) => new Vector3(Mathf.Max(a.x, b.x), Math.Max(a.y, b.y), Mathf.Max(a.z, b.z))).ToArray();
-            }
-
-            return new gltfMorphTarget
-            {
-                POSITION = blendShapePositionAccessorIndex,
-                NORMAL = blendShapeNormalAccessorIndex,
-                TANGENT = blendShapeTangentAccessorIndex,
-            };
+            return BlendShapeExporter.Export(gltf, bufferIndex,
+                blendShapeVertices,
+                exportOnlyBlendShapePosition && useNormal ? null : blendShapeNormals,
+                useSparseAccessorForMorphTarget ? sparseBase : default);
         }
     }
 }

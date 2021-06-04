@@ -126,7 +126,7 @@ namespace UniVRM10
                 // blendShape
                 for (int j = 0; j < mesh.MorphTargets.Count; ++j)
                 {
-                    var blendShape = new MeshExportUtil.BlendShapeBuffer(indices.Length);
+                    var blendShape = new MeshExportUtil.BlendShapeBuffer(usedIndices.Count);
 
                     // index の順に attributes を蓄える
                     var morph = mesh.MorphTargets[j];

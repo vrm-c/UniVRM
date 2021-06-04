@@ -93,7 +93,15 @@ namespace UniVRM10
                 {
                     var morphTarget = src.Meshes[meshIndex].MorphTargets[i];
                     positions.AddRange(morphTarget.VertexBuffer.Positions.GetSpan<Vector3>());
-                    normals.AddRange(morphTarget.VertexBuffer.Normals.GetSpan<Vector3>());
+                    if (morphTarget.VertexBuffer.Normals != null)
+                    {
+                        normals.AddRange(morphTarget.VertexBuffer.Normals.GetSpan<Vector3>());
+                    }
+                    else
+                    {
+                        // fill zero
+                        normals.AddRange(Enumerable.Range(0, morphTarget.VertexBuffer.Count).Select(x => Vector3.zero));
+                    }
                 }
                 dst.AddBlendShapeFrame(name, 100.0f, positions.ToArray(), normals.ToArray(), null);
             }
