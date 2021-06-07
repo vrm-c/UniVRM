@@ -5,21 +5,9 @@ using UnityEngine;
 
 namespace UniGLTF
 {
-    public struct SparseBase
-    {
-        public readonly Vector3[] Positions;
-        public readonly Vector3[] Normals;
-
-        public SparseBase(Vector3[] positions, Vector3[] normals)
-        {
-            Positions = positions;
-            Normals = normals;
-        }
-    }
-
     public static class BlendShapeExporter
     {
-        public static gltfMorphTarget Export(glTF gltf, int gltfBuffer, Vector3[] positions, Vector3[] normals, SparseBase? sparseBase)
+        public static gltfMorphTarget Export(glTF gltf, int gltfBuffer, Vector3[] positions, Vector3[] normals, bool useSparse)
         {
             var accessorCount = positions.Length;
             if (normals != null && positions.Length != normals.Length)
@@ -27,21 +15,33 @@ namespace UniGLTF
                 throw new Exception();
             }
 
-            bool useSparse = sparseBase.HasValue;
-            if (sparseBase.HasValue)
+            int[] sparseIndices = default;
+            if (useSparse)
             {
-                var sparseIndices = Enumerable.Range(0, positions.Length).Where(x => positions[x] != Vector3.zero).ToArray();
+                sparseIndices = Enumerable.Range(0, positions.Length).Where(x => positions[x] != Vector3.zero).ToArray();
                 if (sparseIndices.Length == 0)
                 {
+                    // sparse 対象がすべて [0, 0, 0] の場合
+                    // new glTFSparse
+                    // {
+                    //     count = 0,
+                    // }
+                    // のようになる。
+                    // たぶん、仕様的にはあり。
+                    // 解釈できない場合あり。
                     useSparse = false;
                 }
             }
 
             if (useSparse)
             {
+                if (sparseIndices == null)
+                {
+                    throw new Exception();
+                }
+
                 // positions
                 var positionAccessorIndex = -1;
-                var sparseIndices = Enumerable.Range(0, positions.Length).Where(x => positions[x] != Vector3.zero).ToArray();
                 if (sparseIndices.Length > 0)
                 {
                     Debug.LogFormat("Sparse {0}/{1}", sparseIndices.Length, positions.Length);

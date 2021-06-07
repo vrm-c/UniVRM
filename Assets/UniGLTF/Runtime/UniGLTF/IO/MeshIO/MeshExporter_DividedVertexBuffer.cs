@@ -84,7 +84,7 @@ namespace UniGLTF
                     flipped.Add(t1);
                     flipped.Add(t0);
                 }
-                var (gltfPrimitive, sparseBase) = buffer.ToGltfPrimitive(gltf, gltfBuffer, materialIndex, flipped);
+                var gltfPrimitive = buffer.ToGltfPrimitive(gltf, gltfBuffer, materialIndex, flipped);
 
                 // blendShape(morph target)
                 for (int j = 0; j < mesh.blendShapeCount; ++j)
@@ -102,7 +102,7 @@ namespace UniGLTF
                     }
 
                     gltfPrimitive.targets.Add(blendShape.ToGltf(gltf, gltfBuffer, !settings.ExportOnlyBlendShapePosition,
-                        settings.UseSparseAccessorForMorphTarget ? sparseBase : default));
+                        settings.UseSparseAccessorForMorphTarget));
                 }
 
                 gltfMesh.primitives.Add(gltfPrimitive);

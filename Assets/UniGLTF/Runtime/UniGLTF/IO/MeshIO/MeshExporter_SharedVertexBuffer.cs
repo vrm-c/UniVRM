@@ -231,20 +231,23 @@ namespace UniGLTF
             {
                 blendShapeNormals[i] = axisInverter.InvertVector3(blendShapeNormals[i]);
             }
-            var sparseBase = new SparseBase(mesh.vertices, mesh.normals);
-            for (int i = 0; i < sparseBase.Positions.Length; ++i)
+
+            var positions = mesh.vertices;
+            for (int i = 0; i < positions.Length; ++i)
             {
-                sparseBase.Positions[i] = axisInverter.InvertVector3(sparseBase.Positions[i]);
+                positions[i] = axisInverter.InvertVector3(positions[i]);
             }
-            for (int i = 0; i < sparseBase.Normals.Length; ++i)
+
+            var normals = mesh.normals;
+            for (int i = 0; i < normals.Length; ++i)
             {
-                sparseBase.Normals[i] = axisInverter.InvertVector3(sparseBase.Normals[i]);
+                normals[i] = axisInverter.InvertVector3(normals[i]);
             }
 
             return BlendShapeExporter.Export(gltf, bufferIndex,
                 blendShapeVertices,
                 exportOnlyBlendShapePosition && useNormal ? null : blendShapeNormals,
-                useSparseAccessorForMorphTarget ? sparseBase : default);
+                useSparseAccessorForMorphTarget);
         }
     }
 }

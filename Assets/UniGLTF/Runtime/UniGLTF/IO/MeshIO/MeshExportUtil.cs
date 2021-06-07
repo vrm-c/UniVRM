@@ -30,12 +30,12 @@ namespace UniGLTF
                 m_normals[index] = normal;
             }
 
-            public gltfMorphTarget ToGltf(glTF gltf, int gltfBuffer, bool useNormal, SparseBase? sparseBase)
+            public gltfMorphTarget ToGltf(glTF gltf, int gltfBuffer, bool useNormal, bool useSparse)
             {
                 return BlendShapeExporter.Export(gltf, gltfBuffer,
                     m_positions,
                     useNormal ? m_normals : null,
-                    sparseBase);
+                    useSparse);
             }
         }
 
@@ -103,12 +103,13 @@ namespace UniGLTF
                 m_weights.Add(new Vector4(boneWeight.weight0, boneWeight.weight1, boneWeight.weight2, boneWeight.weight3));
             }
 
-            public (glTFPrimitives, SparseBase) ToGltfPrimitive(glTF gltf, int bufferIndex, int materialIndex, IEnumerable<int> indices)
+            public glTFPrimitives ToGltfPrimitive(glTF gltf, int bufferIndex, int materialIndex, IEnumerable<int> indices)
             {
-                var sparseBase = new SparseBase(m_positions.ToArray(), m_normals.ToArray());
                 var indicesAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, indices.Select(x => (uint)m_vertexIndexMap[x]).ToArray(), glBufferTarget.ELEMENT_ARRAY_BUFFER);
-                var positionAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, sparseBase.Positions, glBufferTarget.ARRAY_BUFFER);
-                var normalAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, sparseBase.Normals, glBufferTarget.ARRAY_BUFFER);
+                var positions = m_positions.ToArray();
+                var positionAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, positions, glBufferTarget.ARRAY_BUFFER);
+                var normals = m_normals.ToArray();
+                var normalAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, normals, glBufferTarget.ARRAY_BUFFER);
                 var uvAccessorIndex0 = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, m_uv.ToArray(), glBufferTarget.ARRAY_BUFFER);
 
                 int? jointsAccessorIndex = default;
@@ -137,7 +138,7 @@ namespace UniGLTF
                     mode = 4,
                 };
 
-                return (primitive, sparseBase);
+                return primitive;
             }
         }
     }
