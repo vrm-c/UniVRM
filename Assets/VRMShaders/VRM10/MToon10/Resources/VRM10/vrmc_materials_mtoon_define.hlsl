@@ -31,7 +31,7 @@ inline bool MToon_IsOutlinePass()
 // Compile-time constant
 inline bool MToon_IsNormalMapOn()
 {
-#if defined(_MTOON_NORMALMAP)
+#if defined(_NORMALMAP)
     return true;
 #else
     return false;
