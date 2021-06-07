@@ -18,6 +18,16 @@ namespace VRMShaders
             m_externalMap = externalMaterialMap;
         }
 
+        static Dictionary<string, string> s_fallbackShaders = new Dictionary<string, string>
+        {
+            {"VRM/UnlitTexture", "Unlit/Texture"},
+            {"VRM/UnlitTransparent", "Unlit/Transparent"},
+            {"VRM/UnlitCutout", "Unlit/Transparent Cutout"},
+            // 互換性は無いがとりあえず、
+            {"VRM/UnlitTransparentZWrite", "VRM/Mtoon"},
+            {"UniGLTF/StandardVColor", "UniGLTF/UniUnlit"},
+        };
+
         public struct MaterialLoadInfo
         {
             public readonly Material Asset;
@@ -109,29 +119,47 @@ namespace VRMShaders
                 getTexture = (_) => Task.FromResult<Texture>(null);
             }
 
-            material = new Material(Shader.Find(matDesc.ShaderName));
+            var shaderName = matDesc.ShaderName;
+            if (String.IsNullOrEmpty(shaderName))
+            {
+                throw new Exception("no shader name");
+            }
+            if (s_fallbackShaders.TryGetValue(shaderName, out string fallback))
+            {
+                Debug.LogWarning($"fallback: {shaderName} => {fallback}");
+                shaderName = fallback;
+            }
+
+            var shader = Shader.Find(shaderName);
+            if (shader == null)
+            {
+                throw new Exception($"shader: {shaderName} not found");
+            }
+
+            material = new Material(shader);
             material.name = matDesc.SubAssetKey.Name;
 
-            foreach(var kv in matDesc.TextureSlots)
+            foreach (var kv in matDesc.TextureSlots)
             {
                 var texture = await getTexture(kv.Value);
-                if(texture!=null){
+                if (texture != null)
+                {
                     material.SetTexture(kv.Key, texture);
                     SetTextureOffsetAndScale(material, kv.Key, kv.Value.Offset, kv.Value.Scale);
                 }
             }
 
-            foreach(var kv in matDesc.Colors)
+            foreach (var kv in matDesc.Colors)
             {
                 material.SetColor(kv.Key, kv.Value);
             }
 
-            foreach(var kv in matDesc.Vectors)
+            foreach (var kv in matDesc.Vectors)
             {
                 material.SetVector(kv.Key, kv.Value);
             }
 
-            foreach(var kv in matDesc.FloatValues)
+            foreach (var kv in matDesc.FloatValues)
             {
                 material.SetFloat(kv.Key, kv.Value);
             }
@@ -141,7 +169,7 @@ namespace VRMShaders
                 material.renderQueue = matDesc.RenderQueue.Value;
             }
 
-            foreach(var action in matDesc.Actions)
+            foreach (var action in matDesc.Actions)
             {
                 action(material);
             }
