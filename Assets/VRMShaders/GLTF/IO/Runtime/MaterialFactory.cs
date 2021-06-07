@@ -24,8 +24,8 @@ namespace VRMShaders
             {"VRM/UnlitTransparent", "Unlit/Transparent"},
             {"VRM/UnlitCutout", "Unlit/Transparent Cutout"},
             // 互換性は無いがとりあえず、
-            {"VRM/UnlitTransparentZWrite", "VRM/Mtoon"},
-            {"UniGLTF/StandardVColor", "UniGLTF/UniUnlit"},
+            {"VRM/UnlitTransparentZWrite", "VRM/MToon"},
+            {"UniGLTF/StandardVColor", UniGLTF.UniUnlit.Utils.ShaderName},
         };
 
         public struct MaterialLoadInfo
