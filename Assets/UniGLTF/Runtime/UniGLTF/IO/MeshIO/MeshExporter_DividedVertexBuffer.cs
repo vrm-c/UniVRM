@@ -89,7 +89,7 @@ namespace UniGLTF
                 // blendShape(morph target)
                 for (int j = 0; j < mesh.blendShapeCount; ++j)
                 {
-                    var blendShape = new MeshExportUtil.BlendShapeBuffer(indices.Length);
+                    var blendShape = new MeshExportUtil.BlendShapeBuffer(usedIndices.Count);
 
                     // aggriage morph target
                     mesh.GetBlendShapeFrameVertices(j, 0, blendShapePositions, blendShapeNormals, null);
