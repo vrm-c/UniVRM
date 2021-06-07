@@ -44,7 +44,9 @@ namespace UniGLTF
                 var positionAccessorIndex = -1;
                 if (sparseIndices.Length > 0)
                 {
+#if VRM_DEVELOP
                     Debug.LogFormat("Sparse {0}/{1}", sparseIndices.Length, positions.Length);
+#endif
                     var sparseIndicesViewIndex = gltf.ExtendBufferAndGetViewIndex(gltfBuffer, sparseIndices);
                     positionAccessorIndex = gltf.ExtendSparseBufferAndGetAccessorIndex(gltfBuffer, accessorCount, positions, sparseIndices, sparseIndicesViewIndex, glBufferTarget.NONE);
                 }
