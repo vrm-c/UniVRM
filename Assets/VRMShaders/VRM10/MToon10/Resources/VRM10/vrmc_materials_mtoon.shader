@@ -84,7 +84,7 @@ Shader "Hidden/VRM10/vrmc_materials_mtoon"
             #pragma target 3.0
 
             // Unity defined keywords
-            #pragma multi_compile_fwdbase
+            #pragma multi_compile_fwdbase nolightmap nodynlightmap nodirlightmap novertexlight
             #pragma multi_compile_fog
             #pragma multi_compile_instancing
 
@@ -117,7 +117,7 @@ Shader "Hidden/VRM10/vrmc_materials_mtoon"
             #pragma target 3.0
 
             // Unity defined keywords
-            #pragma multi_compile_fwdbase
+            #pragma multi_compile_fwdbase nolightmap nodynlightmap nodirlightmap novertexlight
             #pragma multi_compile_fog
             #pragma multi_compile_instancing
 
@@ -153,7 +153,7 @@ Shader "Hidden/VRM10/vrmc_materials_mtoon"
             #pragma target 3.0
 
             // Unity defined keywords
-            #pragma multi_compile_fwdadd_fullshadows
+            #pragma multi_compile_fwdadd_fullshadows nolightmap nodynlightmap nodirlightmap novertexlight
             #pragma multi_compile_fog
             #pragma multi_compile_instancing
 
@@ -183,7 +183,7 @@ Shader "Hidden/VRM10/vrmc_materials_mtoon"
             #pragma target 3.0
 
             // Unity defined keywords
-            #pragma multi_compile_shadowcaster
+            #pragma multi_compile_shadowcaster nolightmap nodynlightmap nodirlightmap novertexlight
 
             #pragma multi_compile_local __ _ALPHATEST_ON _ALPHABLEND_ON
 
