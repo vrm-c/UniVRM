@@ -12,12 +12,24 @@ struct VertexPositionInfo
     float4 positionCS;
 };
 
+inline half MToon_GetOutlineVertex_OutlineWidth(const float2 uv)
+{
+    if (MToon_IsOutlineMapOn())
+    {
+        return _OutlineWidth * UNITY_SAMPLE_TEX2D_LOD(_OutlineWidthTex, uv, 0);
+    }
+    else
+    {
+        return _OutlineWidth;
+    }
+}
+
 inline VertexPositionInfo MToon_GetOutlineVertex(const float3 positionOS, const half3 normalOS, const float2 uv)
 {
     if (MToon_IsOutlineModeWorldCoordinates())
     {
         const float3 positionWS = mul(unity_ObjectToWorld, float4(positionOS, 1)).xyz;
-        const half outlineWidth = _OutlineWidth * UNITY_SAMPLE_TEX2D_LOD(_OutlineWidthTex, uv, 0);
+        const half outlineWidth = MToon_GetOutlineVertex_OutlineWidth(uv);
         const half3 normalWS = UnityObjectToWorldNormal(normalOS);
 
         VertexPositionInfo output;

@@ -17,11 +17,23 @@ struct MToonInput
     half outlineFactor;
 };
 
+inline half GetMToonLighting_Reflectance_ShadingShift(const MToonInput input)
+{
+    if (MToon_IsShadingMapOn())
+    {
+        return UNITY_SAMPLE_TEX2D(_ShadingShiftTex, input.uv).r * _ShadingShiftTexScale + _ShadingShiftFactor;
+    }
+    else
+    {
+        return _ShadingShiftFactor;
+    }
+}
+
 inline half GetMToonLighting_Reflectance(const UnityLighting lighting, const MToonInput input)
 {
     const half dotNL = dot(input.normalWS, lighting.directLightDirection);
     const half shadingInput = lerp(-1, 1, mtoon_linearstep(-1, 1, dotNL) * lighting.directLightAttenuation);
-    const half shadingShift = UNITY_SAMPLE_TEX2D(_ShadingShiftTex, input.uv).r * _ShadingShiftTexScale + _ShadingShiftFactor;
+    const half shadingShift = GetMToonLighting_Reflectance_ShadingShift(input);
     const half shadingToony = _ShadingToonyFactor;
     return mtoon_linearstep(-1.0 + shadingToony, +1.0 - shadingToony, shadingInput + shadingShift);
 }
@@ -55,7 +67,7 @@ inline half3 GetMToonLighting_GlobalIllumination(const UnityLighting unityLight,
 
 inline half3 GetMToonLighting_Emissive(const MToonInput input)
 {
-    if (MToon_IsForwardBasePass())
+    if (MToon_IsForwardBasePass() && MToon_IsEmissiveOn())
     {
         return UNITY_SAMPLE_TEX2D(_EmissionMap, input.uv).rgb * _EmissionColor.rgb;
     }
@@ -67,7 +79,7 @@ inline half3 GetMToonLighting_Emissive(const MToonInput input)
 
 inline half3 GetMToonLighting_Rim(const MToonInput input, const half3 lighting)
 {
-    if (MToon_IsForwardBasePass())
+    if (MToon_IsForwardBasePass() && MToon_IsRimOn())
     {
         const half3 worldUpWS = half3(0, 1, 0);
         // TODO: use view space axis if abs(dot(viewDir, worldUp)) == 1.0

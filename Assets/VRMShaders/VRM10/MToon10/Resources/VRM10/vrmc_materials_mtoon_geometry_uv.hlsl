@@ -6,7 +6,7 @@
 #include "./vrmc_materials_mtoon_utility.hlsl"
 #include "./vrmc_materials_mtoon_input.hlsl"
 
-float2 GetMToonGeometry_Uv(const float2 geometryUv)
+inline float2 GetMToonGeometry_Uv(const float2 geometryUv)
 {
     // get raw uv with _MainTex_ST
     const float2 uvRaw = TRANSFORM_TEX(geometryUv, _MainTex);
@@ -14,10 +14,10 @@ float2 GetMToonGeometry_Uv(const float2 geometryUv)
     if (MToon_IsUvAnimationOn())
     {
         const float uvAnimationCoef = UNITY_SAMPLE_TEX2D(_UvAnimMaskTex, uvRaw).b * _Time.y;
-        const float2 uvAnimationAdd = uvAnimationCoef * float2(_UvAnimScrollXSpeed, _UvAnimScrollYSpeed);
+        const float2 translate = uvAnimationCoef * float2(_UvAnimScrollXSpeed, _UvAnimScrollYSpeed);
         const float rotateRad = uvAnimationCoef * _UvAnimRotationSpeed * PI_2;
         const float2 rotatePivot = float2(0.5, 0.5);
-        return mul(float2x2(cos(rotateRad), -sin(rotateRad), sin(rotateRad), cos(rotateRad)), uvRaw + uvAnimationAdd - rotatePivot) + rotatePivot;
+        return mul(float2x2(cos(rotateRad), -sin(rotateRad), sin(rotateRad), cos(rotateRad)), uvRaw + translate - rotatePivot) + rotatePivot;
     }
     else
     {

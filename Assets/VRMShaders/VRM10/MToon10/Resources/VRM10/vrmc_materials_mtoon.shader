@@ -89,8 +89,11 @@ Shader "Hidden/VRM10/vrmc_materials_mtoon"
             #pragma multi_compile_instancing
 
             #pragma multi_compile_local __ _ALPHATEST_ON _ALPHABLEND_ON
-            #pragma multi_compile_local __ _NORMALMAP
-            #pragma multi_compile_local __ _UVANIMATION
+            #pragma multi_compile_local __ _MTOON_NORMALMAP
+            #pragma multi_compile_local __ _MTOON_SHADINGMAP
+            #pragma multi_compile_local __ _MTOON_EMISSIVE
+            #pragma multi_compile_local __ _MTOON_UVANIMATION
+            #pragma multi_compile_local __ _MTOON_RIM
 
             #pragma vertex MToonVertex
             #pragma fragment MToonFragment
@@ -122,11 +125,14 @@ Shader "Hidden/VRM10/vrmc_materials_mtoon"
             #pragma multi_compile_instancing
 
             #pragma multi_compile_local __ _ALPHATEST_ON _ALPHABLEND_ON
-            #pragma multi_compile_local __ _NORMALMAP
-            #pragma multi_compile_local __ _UVANIMATION
+            #pragma multi_compile_local __ _MTOON_OUTLINEMAP
+            #pragma multi_compile_local __ _MTOON_NORMALMAP
+            #pragma multi_compile_local __ _MTOON_SHADINGMAP
+            #pragma multi_compile_local __ _MTOON_EMISSIVE
+            #pragma multi_compile_local __ _MTOON_UVANIMATION
+            #pragma multi_compile_local __ _MTOON_RIM
 
             #define MTOON_PASS_OUTLINE
-            #define MTOON_OUTLINE_WIDTH_WORLD
 
             #pragma vertex MToonVertex
             #pragma fragment MToonFragment
@@ -158,8 +164,11 @@ Shader "Hidden/VRM10/vrmc_materials_mtoon"
             #pragma multi_compile_instancing
 
             #pragma multi_compile_local __ _ALPHATEST_ON _ALPHABLEND_ON
-            #pragma multi_compile_local __ _NORMALMAP
-            #pragma multi_compile_local __ _UVANIMATION
+            #pragma multi_compile_local __ _MTOON_NORMALMAP
+            #pragma multi_compile_local __ _MTOON_SHADINGMAP
+            #pragma multi_compile_local __ _MTOON_EMISSIVE
+            #pragma multi_compile_local __ _MTOON_UVANIMATION
+            #pragma multi_compile_local __ _MTOON_RIM
 
             #pragma vertex MToonVertex
             #pragma fragment MToonFragment

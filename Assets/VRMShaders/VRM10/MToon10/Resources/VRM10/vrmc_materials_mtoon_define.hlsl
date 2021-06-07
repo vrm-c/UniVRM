@@ -31,7 +31,27 @@ inline bool MToon_IsOutlinePass()
 // Compile-time constant
 inline bool MToon_IsUvAnimationOn()
 {
-#if defined(_UVANIMATION)
+#if defined(_MTOON_UVANIMATION)
+    return true;
+#else
+    return false;
+#endif
+}
+
+// Compile-time constant
+inline bool MToon_IsRimOn()
+{
+#if defined(_MTOON_RIM)
+    return true;
+#else
+    return false;
+#endif
+}
+
+// Compile-time constant
+inline bool MToon_IsEmissiveOn()
+{
+#if defined(_MTOON_EMISSIVE)
     return true;
 #else
     return false;
@@ -41,7 +61,27 @@ inline bool MToon_IsUvAnimationOn()
 // Compile-time constant
 inline bool MToon_IsNormalMapOn()
 {
-#if defined(_NORMALMAP)
+#if defined(_MTOON_NORMALMAP)
+    return true;
+#else
+    return false;
+#endif
+}
+
+// Compile-time constant
+inline bool MToon_IsShadingMapOn()
+{
+#if defined(_MTOON_SHADINGMAP)
+    return true;
+#else
+    return false;
+#endif
+}
+
+// Compile-time constant
+inline bool MToon_IsOutlineMapOn()
+{
+#if defined(_MTOON_OUTLINEMAP)
     return true;
 #else
     return false;
