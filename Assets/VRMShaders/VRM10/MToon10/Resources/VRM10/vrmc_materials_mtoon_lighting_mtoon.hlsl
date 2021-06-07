@@ -19,7 +19,7 @@ struct MToonInput
 
 inline half GetMToonLighting_Reflectance_ShadingShift(const MToonInput input)
 {
-    if (MToon_IsShadingMapOn())
+    if (MToon_IsParameterMapOn())
     {
         return UNITY_SAMPLE_TEX2D(_ShadingShiftTex, input.uv).r * _ShadingShiftTexScale + _ShadingShiftFactor;
     }
@@ -67,9 +67,26 @@ inline half3 GetMToonLighting_GlobalIllumination(const UnityLighting unityLight,
 
 inline half3 GetMToonLighting_Emissive(const MToonInput input)
 {
-    if (MToon_IsForwardBasePass() && MToon_IsEmissiveOn())
+    if (MToon_IsForwardBasePass() && MToon_IsEmissiveMapOn())
     {
         return UNITY_SAMPLE_TEX2D(_EmissionMap, input.uv).rgb * _EmissionColor.rgb;
+    }
+    else
+    {
+        return _EmissionColor.rgb;
+    }
+}
+
+inline half3 GetMToonLighting_Rim_Matcap(const MToonInput input)
+{
+    if (MToon_IsParameterMapOn())
+    {
+        const half3 worldUpWS = half3(0, 1, 0);
+        // TODO: use view space axis if abs(dot(viewDir, worldUp)) == 1.0
+        const half3 matcapRightAxisWS = normalize(cross(input.viewDirWS, worldUpWS));
+        const half3 matcapUpAxisWS = normalize(cross(matcapRightAxisWS, input.viewDirWS));
+        const half2 matcapUv = float2(dot(matcapRightAxisWS, input.normalWS), dot(matcapUpAxisWS, input.normalWS)) * 0.5 + 0.5;
+        return UNITY_SAMPLE_TEX2D(_MatcapTex, matcapUv).rgb;
     }
     else
     {
@@ -79,16 +96,11 @@ inline half3 GetMToonLighting_Emissive(const MToonInput input)
 
 inline half3 GetMToonLighting_Rim(const MToonInput input, const half3 lighting)
 {
-    if (MToon_IsForwardBasePass() && MToon_IsRimOn())
+    if (MToon_IsForwardBasePass())
     {
-        const half3 worldUpWS = half3(0, 1, 0);
-        // TODO: use view space axis if abs(dot(viewDir, worldUp)) == 1.0
-        const half3 matcapRightAxisWS = normalize(cross(input.viewDirWS, worldUpWS));
-        const half3 matcapUpAxisWS = normalize(cross(matcapRightAxisWS, input.viewDirWS));
-        const half2 matcapUv = float2(dot(matcapRightAxisWS, input.normalWS), dot(matcapUpAxisWS, input.normalWS)) * 0.5 + 0.5;
-        const half3 matcapFactor = UNITY_SAMPLE_TEX2D(_MatcapTex, matcapUv).rgb;
         const half3 parametricRimFactor = pow(saturate(1.0 - dot(input.normalWS, input.viewDirWS) + _RimLift), _RimFresnelPower) * _RimColor.rgb;
         const half3 rimLightingFactor = lerp(half3(1, 1, 1), lighting, _RimLightingMix);
+        const half3 matcapFactor = GetMToonLighting_Rim_Matcap(input);
         return (matcapFactor + parametricRimFactor) * UNITY_SAMPLE_TEX2D(_RimTex, input.uv).rgb * rimLightingFactor;
     }
     else

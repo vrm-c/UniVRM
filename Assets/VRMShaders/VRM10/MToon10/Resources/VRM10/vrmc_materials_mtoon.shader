@@ -89,11 +89,9 @@ Shader "Hidden/VRM10/vrmc_materials_mtoon"
             #pragma multi_compile_instancing
 
             #pragma multi_compile_local __ _ALPHATEST_ON _ALPHABLEND_ON
-            #pragma multi_compile_local __ _MTOON_NORMALMAP
-            #pragma multi_compile_local __ _MTOON_SHADINGMAP
-            #pragma multi_compile_local __ _MTOON_EMISSIVE
-            #pragma multi_compile_local __ _MTOON_UVANIMATION
-            #pragma multi_compile_local __ _MTOON_RIM
+            #pragma multi_compile_local __ _NORMALMAP
+            #pragma multi_compile_local __ _MTOON_EMISSIVEMAP
+            #pragma multi_compile_local __ _MTOON_PARAMETERMAP
 
             #pragma vertex MToonVertex
             #pragma fragment MToonFragment
@@ -125,12 +123,9 @@ Shader "Hidden/VRM10/vrmc_materials_mtoon"
             #pragma multi_compile_instancing
 
             #pragma multi_compile_local __ _ALPHATEST_ON _ALPHABLEND_ON
-            #pragma multi_compile_local __ _MTOON_OUTLINEMAP
-            #pragma multi_compile_local __ _MTOON_NORMALMAP
-            #pragma multi_compile_local __ _MTOON_SHADINGMAP
-            #pragma multi_compile_local __ _MTOON_EMISSIVE
-            #pragma multi_compile_local __ _MTOON_UVANIMATION
-            #pragma multi_compile_local __ _MTOON_RIM
+            #pragma multi_compile_local __ _NORMALMAP
+            #pragma multi_compile_local __ _MTOON_EMISSIVEMAP
+            #pragma multi_compile_local __ _MTOON_PARAMETERMAP
 
             #define MTOON_PASS_OUTLINE
 
@@ -164,11 +159,9 @@ Shader "Hidden/VRM10/vrmc_materials_mtoon"
             #pragma multi_compile_instancing
 
             #pragma multi_compile_local __ _ALPHATEST_ON _ALPHABLEND_ON
-            #pragma multi_compile_local __ _MTOON_NORMALMAP
-            #pragma multi_compile_local __ _MTOON_SHADINGMAP
-            #pragma multi_compile_local __ _MTOON_EMISSIVE
-            #pragma multi_compile_local __ _MTOON_UVANIMATION
-            #pragma multi_compile_local __ _MTOON_RIM
+            #pragma multi_compile_local __ _NORMALMAP
+            #pragma multi_compile_local __ _MTOON_EMISSIVEMAP
+            #pragma multi_compile_local __ _MTOON_PARAMETERMAP
 
             #pragma vertex MToonVertex
             #pragma fragment MToonFragment
