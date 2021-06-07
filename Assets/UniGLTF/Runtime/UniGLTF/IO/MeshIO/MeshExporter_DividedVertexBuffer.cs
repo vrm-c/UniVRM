@@ -7,7 +7,17 @@ namespace UniGLTF
 {
     public static class MeshExporter_DividedVertexBuffer
     {
-        public static (glTFMesh, Dictionary<int, int>) Export(glTF gltf, int bufferIndex,
+        /// <summary>
+        /// Divide vertex buffer(Position, Normal, UV, VertexColor, Skinning and BlendShapes) by submesh usage, then export
+        /// </summary>
+        /// <param name="gltf"></param>
+        /// <param name="gltfBuffer"></param>
+        /// <param name="unityMesh"></param>
+        /// <param name="unityMaterials"></param>
+        /// <param name="axisInverter"></param>
+        /// <param name="settings"></param>
+        /// <returns></returns>
+        public static (glTFMesh, Dictionary<int, int>) Export(glTF gltf, int gltfBuffer,
             MeshExportInfo unityMesh, List<Material> unityMaterials,
             IAxisInverter axisInverter, MeshExportSettings settings)
         {
@@ -16,7 +26,7 @@ namespace UniGLTF
 
             if (settings.ExportTangents)
             {
-                // support しない
+                // no support
                 throw new NotImplementedException();
             }
 
@@ -40,15 +50,14 @@ namespace UniGLTF
                 var indices = mesh.GetIndices(i);
                 var hash = new HashSet<int>(indices);
 
-                // mesh
-                // index の順に attributes を蓄える                
+                // aggrigate vertex attributes
                 var buffer = new MeshExportUtil.VertexBuffer(indices.Length, getJointIndex);
                 usedIndices.Clear();
                 for (int k = 0; k < positions.Length; ++k)
                 {
                     if (hash.Contains(k))
                     {
-                        // indices から参照される頂点だけを蓄える
+                        // aggrigate indices
                         usedIndices.Add(k);
                         buffer.Push(k, axisInverter.InvertVector3(positions[k]), axisInverter.InvertVector3(normals[k]), uv[k].ReverseUV());
                         if (getJointIndex != null)
@@ -75,23 +84,25 @@ namespace UniGLTF
                     flipped.Add(t1);
                     flipped.Add(t0);
                 }
-                var gltfPrimitive = buffer.ToGltfPrimitive(gltf, bufferIndex, materialIndex, flipped);
+                var gltfPrimitive = buffer.ToGltfPrimitive(gltf, gltfBuffer, materialIndex, flipped);
 
-                // blendShape
+                // blendShape(morph target)
                 for (int j = 0; j < mesh.blendShapeCount; ++j)
                 {
                     var blendShape = new MeshExportUtil.BlendShapeBuffer(indices.Length);
 
-                    // index の順に attributes を蓄える                
+                    // aggriage morph target
                     mesh.GetBlendShapeFrameVertices(j, 0, blendShapePositions, blendShapeNormals, null);
+                    int l = 0;
                     foreach (var k in usedIndices)
                     {
-                        blendShape.Push(
+                        blendShape.Set(l++,
                             axisInverter.InvertVector3(blendShapePositions[k]),
                             axisInverter.InvertVector3(blendShapeNormals[k]));
                     }
 
-                    gltfPrimitive.targets.Add(blendShape.ToGltf(gltf, bufferIndex, !settings.ExportOnlyBlendShapePosition));
+                    gltfPrimitive.targets.Add(blendShape.ToGltf(gltf, gltfBuffer, !settings.ExportOnlyBlendShapePosition,
+                        settings.UseSparseAccessorForMorphTarget));
                 }
 
                 gltfMesh.primitives.Add(gltfPrimitive);

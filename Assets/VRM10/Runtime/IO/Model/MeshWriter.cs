@@ -126,7 +126,7 @@ namespace UniVRM10
                 // blendShape
                 for (int j = 0; j < mesh.MorphTargets.Count; ++j)
                 {
-                    var blendShape = new MeshExportUtil.BlendShapeBuffer(indices.Length);
+                    var blendShape = new MeshExportUtil.BlendShapeBuffer(usedIndices.Count);
 
                     // index の順に attributes を蓄える
                     var morph = mesh.MorphTargets[j];
@@ -136,15 +136,16 @@ namespace UniVRM10
                     {
                         blendShapeNormals = morph.VertexBuffer.Normals.GetSpan<UnityEngine.Vector3>();
                     }
+                    int l = 0;
                     foreach (var k in usedIndices)
                     {
-                        blendShape.Push(
+                        blendShape.Set(l++,
                             blendShapePositions[k],
                             blendShapeNormals.HasValue ? blendShapeNormals.Value[k] : UnityEngine.Vector3.zero
                             );
                     }
 
-                    gltfPrimitive.targets.Add(blendShape.ToGltf(storage.Gltf, bufferIndex, !option.removeMorphNormal));
+                    gltfPrimitive.targets.Add(blendShape.ToGltf(storage.Gltf, bufferIndex, !option.removeMorphNormal, option.sparse));
                 }
 
                 yield return gltfPrimitive;
