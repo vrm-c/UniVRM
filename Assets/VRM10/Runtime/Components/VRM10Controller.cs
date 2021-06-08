@@ -139,7 +139,7 @@ namespace UniVRM10
             Expression.Process();
         }
 
-        private void OnEnable()
+        private void Start()
         {
             Setup();
         }
