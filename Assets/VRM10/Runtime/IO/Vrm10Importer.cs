@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using UniGLTF;
@@ -39,7 +40,7 @@ namespace UniVRM10
 
             if (!UniGLTF.Extensions.VRMC_vrm.GltfDeserializer.TryGet(parser.GLTF.extensions, out m_vrm))
             {
-                throw new Exception("VRMC_vrm is not found");
+                throw new Vrm10NoExtensionException();
             }
 
             // assign humanoid bones
@@ -101,6 +102,29 @@ namespace UniVRM10
                 AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.RightLittleDistal, HumanoidBones.rightLittleDistal);
                 AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.UpperChest, HumanoidBones.upperChest);
             }
+        }
+
+        public static Vrm10Importer OpenOrMigrate(byte[] bytes, string path)
+        {
+            try
+            {
+                var parser = new GltfParser();
+                parser.Parse(path, bytes);
+                return new Vrm10Importer(parser);
+            }
+            catch (Vrm10NoExtensionException)
+            {
+                Debug.Log("vrm1 not found. try migration...");
+                bytes = MigrationVrm.Migrate(bytes);
+                var parser = new GltfParser();
+                parser.Parse(path, bytes);
+                return new Vrm10Importer(parser);
+            }
+        }
+
+        public static Vrm10Importer OpenOrMigrate(string path)
+        {
+            return OpenOrMigrate(File.ReadAllBytes(path), path);
         }
 
         public class ModelMap

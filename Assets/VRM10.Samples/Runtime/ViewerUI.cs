@@ -308,10 +308,7 @@ namespace UniVRM10.Samples
             {
                 case ".vrm":
                     {
-                        var parser = new UniGLTF.GltfParser();
-                        parser.ParsePath(path);
-
-                        using (var loader = new Vrm10Importer(parser))
+                        using (var loader = Vrm10Importer.OpenOrMigrate(path))
                         {
                             loader.Load();
                             loader.ShowMeshes();
