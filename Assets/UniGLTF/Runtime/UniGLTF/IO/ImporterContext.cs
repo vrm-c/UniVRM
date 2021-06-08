@@ -12,26 +12,6 @@ namespace UniGLTF
     /// </summary>
     public class ImporterContext : IDisposable
     {
-        #region Animation
-        protected IAnimationImporter m_animationImporter;
-        public void SetAnimationImporter(IAnimationImporter animationImporter)
-        {
-            m_animationImporter = animationImporter;
-        }
-        public IAnimationImporter AnimationImporter
-        {
-            get
-            {
-                if (m_animationImporter == null)
-                {
-                    m_animationImporter = new RootAnimationImporter();
-                }
-                return m_animationImporter;
-            }
-        }
-
-        #endregion
-
         public ITextureDescriptorGenerator TextureDescriptorGenerator { get; protected set; }
         public IMaterialDescriptorGenerator MaterialDescriptorGenerator { get; protected set; }
         public TextureFactory TextureFactory { get; }
@@ -121,6 +101,13 @@ namespace UniGLTF
 
             await LoadGeometryAsync(awaitCaller, MeasureTime);
 
+            await LoadAnimationAsync(awaitCaller, MeasureTime);
+
+            await OnLoadHierarchy(awaitCaller, MeasureTime);
+        }
+
+        protected virtual async Task LoadAnimationAsync(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime)
+        {
             using (MeasureTime("AnimationImporter"))
             {
                 if (GLTF.animations != null && GLTF.animations.Any())
@@ -136,7 +123,7 @@ namespace UniGLTF
                         }
                         else
                         {
-                            clip = AnimationImporter.Import(GLTF, i, InvertAxis);
+                            clip = AnimationImporterUtil.ConvertAnimationClip(GLTF, GLTF.animations[i], InvertAxis.Create());
                             AnimationClips.Add(clip);
                         }
 
@@ -146,10 +133,10 @@ namespace UniGLTF
                             animation.clip = clip;
                         }
                     }
+
+                    await awaitCaller.NextFrame();
                 }
             }
-
-            await OnLoadHierarchy(awaitCaller, MeasureTime);
         }
 
         protected virtual async Task LoadGeometryAsync(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime)
