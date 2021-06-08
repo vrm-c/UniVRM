@@ -33,17 +33,17 @@ Shader "Hidden/VRM10/vrmc_materials_mtoon"
         // Rim Lighting
         _MatcapTex ("mtoon.matcapTexture", 2D) = "black" {}
         _RimColor ("mtoon.parametricRimColorFactor", Color) = (0, 0, 0, 1)
-        _RimFresnelPower ("mtoon.parametricRimFresnelPowerFactor", Float) = 5.0
-        _RimLift ("mtoon.parametricRimLiftFactor", Float) = 0
+        _RimFresnelPower ("mtoon.parametricRimFresnelPowerFactor", Range(0, 100)) = 5.0
+        _RimLift ("mtoon.parametricRimLiftFactor", Range(0, 1)) = 0
         _RimTex ("mtoon.rimMultiplyTexture", 2D) = "white" {}
-        _RimLightingMix ("mtoon.rimLightingMixFactor", Float) = 1
+        _RimLightingMix ("mtoon.rimLightingMixFactor", Range(0, 1)) = 1
 
         // Outline
         _OutlineWidthMode ("mtoon.outlineWidthMode", Int) = 0
-        _OutlineWidth ("mtoon.outlineWidthFactor", Float) = 0
+        [PowerSlider(2.2)] _OutlineWidth ("mtoon.outlineWidthFactor", Range(0, 0.05)) = 0
         _OutlineWidthTex ("mtoon.outlineWidthMultiplyTexture", 2D) = "white" {} // channel G
         _OutlineColor ("mtoon.outlineColorFactor", Color) = (0, 0, 0, 1)
-        _OutlineLightingMix ("mtoon.outlineLightingMixFactor", Float) = 1
+        _OutlineLightingMix ("mtoon.outlineLightingMixFactor", Range(0, 1)) = 1
 
         // UV Animation
         _UvAnimMaskTex ("mtoon.uvAnimationMaskTexture", 2D) = "white" {} // channel B
