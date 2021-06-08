@@ -71,7 +71,7 @@ inline bool MToon_IsParameterMapOn()
 // Compile-time constant
 inline bool MToon_IsOutlineModeWorldCoordinates()
 {
- #if defined(MTOON_OUTLINE_WIDTH_WORLD)
+ #if defined(_MTOON_OUTLINE_WORLD)
     return true;
 #else
     return false;
@@ -81,7 +81,7 @@ inline bool MToon_IsOutlineModeWorldCoordinates()
 // Compile-time constant
 inline bool MToon_IsOutlineModeScreenCoordinates()
 {
- #if defined(MTOON_OUTLINE_WIDTH_SCREEN)
+ #if defined(_MTOON_OUTLINE_SCREEN)
     return true;
 #else
     return false;
