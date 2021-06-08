@@ -22,7 +22,8 @@ namespace VRM
         public static bool TryGetTextureFromMaterialProperty(GltfParser parser, glTF_VRM_extensions vrm, int materialIdx, string textureKey, out (SubAssetKey, TextureDescriptor) texture)
         {
             var vrmMaterial = vrm.materialProperties[materialIdx];
-            if (vrmMaterial.shader == MToon.Utils.ShaderName && vrmMaterial.textureProperties.TryGetValue(textureKey, out var textureIdx))
+            // 任意の shader の import を許容する
+            if (/*vrmMaterial.shader == MToon.Utils.ShaderName &&*/ vrmMaterial.textureProperties.TryGetValue(textureKey, out var textureIdx))
             {
                 var (offset, scale) = (new Vector2(0, 0), new Vector2(1, 1));
                 if (TryGetTextureOffsetAndScale(vrm, materialIdx, textureKey, out var os))
