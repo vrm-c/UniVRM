@@ -651,6 +651,79 @@ namespace UniGLTF
             }
         }
 
+        [Test]
+        public void ExportingNullMeshTest()
+        {
+            var validator = ScriptableObject.CreateInstance<MeshExportValidator>();
+            var root = new GameObject("root");
+
+            try
+            {
+                {
+                    var child = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                    child.transform.SetParent(root.transform);
+                    // remove MeshFilter
+                    Component.DestroyImmediate(child.GetComponent<MeshFilter>());
+                }
+
+                {
+                    var child = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                    child.transform.SetParent(root.transform);
+                    // set null
+                    child.GetComponent<MeshFilter>().sharedMesh = null;
+                }
+
+                // validate
+                validator.SetRoot(root, MeshExportSettings.Default, new DefualtBlendShapeExportFilter());
+                var vs = validator.Validate(root);
+                Assert.True(vs.All(x => x.CanExport));
+
+                // export
+                var gltf = new glTF();
+                string json;
+                using (var exporter = new gltfExporter(gltf))
+                {
+                    exporter.Prepare(root);
+                    exporter.Export(UniGLTF.MeshExportSettings.Default, new EditorTextureSerializer());
+
+                    json = gltf.ToJson();
+                }
+
+                Assert.AreEqual(0, gltf.meshes.Count);
+                Assert.AreEqual(2, gltf.nodes.Count);
+                Assert.AreEqual(-1, gltf.nodes[0].mesh);
+                Assert.AreEqual(-1, gltf.nodes[1].mesh);
+
+                // import
+                {
+                    var parser = new GltfParser();
+                    parser.ParseJson(json, new SimpleStorage(new ArraySegment<byte>(new byte[1024 * 1024])));
+
+                    using (var context = new ImporterContext(parser))
+                    {
+                        context.Load();
+
+                        Assert.AreEqual(2, context.Root.transform.GetChildren().Count());
+
+                        {
+                            var child = context.Root.transform.GetChild(0);
+                            Assert.IsNull(child.GetSharedMesh());
+                        }
+
+                        {
+                            var child = context.Root.transform.GetChild(1);
+                            Assert.IsNull(child.GetSharedMesh());
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                GameObject.DestroyImmediate(root);
+                ScriptableObject.DestroyImmediate(validator);
+            }
+        }
+
         [Serializable]
         class CantConstruct
         {
