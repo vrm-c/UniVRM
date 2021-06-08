@@ -61,7 +61,7 @@ inline VertexPositionInfo MToon_GetOutlineVertex(const float3 positionOS, const 
     else
     {
         VertexPositionInfo output;
-        output.positionWS = mul(unity_ObjectToWorld, float4(positionOS, 1));
+        output.positionWS = mul(unity_ObjectToWorld, float4(positionOS * 0.001, 1));
         output.positionCS = UnityWorldToClipPos(output.positionWS);
         return output;
     }

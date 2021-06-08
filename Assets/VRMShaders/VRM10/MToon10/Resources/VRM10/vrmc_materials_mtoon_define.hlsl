@@ -88,4 +88,14 @@ inline bool MToon_IsOutlineModeScreenCoordinates()
 #endif
 }
 
+// Compile-time constant
+inline bool MToon_IsOutlineModeDisabled()
+{
+ #if defined(_MTOON_OUTLINE_WORLD) || defined(_MTOON_OUTLINE_SCREEN)
+    return false;
+#else
+    return true;
+#endif
+}
+
 #endif
