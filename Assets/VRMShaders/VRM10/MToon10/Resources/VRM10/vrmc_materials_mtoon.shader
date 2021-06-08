@@ -91,6 +91,7 @@ Shader "Hidden/VRM10/vrmc_materials_mtoon"
             #pragma multi_compile_local __ _ALPHATEST_ON _ALPHABLEND_ON
             #pragma multi_compile_local __ _NORMALMAP
             #pragma multi_compile_local __ _MTOON_EMISSIVEMAP
+            #pragma multi_compile_local __ _MTOON_RIMMAP
             #pragma multi_compile_local __ _MTOON_PARAMETERMAP
 
             #pragma vertex MToonVertex
@@ -125,7 +126,9 @@ Shader "Hidden/VRM10/vrmc_materials_mtoon"
             #pragma multi_compile_local __ _ALPHATEST_ON _ALPHABLEND_ON
             #pragma multi_compile_local __ _NORMALMAP
             #pragma multi_compile_local __ _MTOON_EMISSIVEMAP
+            #pragma multi_compile_local __ _MTOON_RIMMAP
             #pragma multi_compile_local __ _MTOON_PARAMETERMAP
+            #pragma multi_compile_local __ _MTOON_OUTLINE_WORLD _MTOON_OUTLINE_SCREEN
 
             #define MTOON_PASS_OUTLINE
 
@@ -161,6 +164,7 @@ Shader "Hidden/VRM10/vrmc_materials_mtoon"
             #pragma multi_compile_local __ _ALPHATEST_ON _ALPHABLEND_ON
             #pragma multi_compile_local __ _NORMALMAP
             #pragma multi_compile_local __ _MTOON_EMISSIVEMAP
+            #pragma multi_compile_local __ _MTOON_RIMMAP
             #pragma multi_compile_local __ _MTOON_PARAMETERMAP
 
             #pragma vertex MToonVertex
@@ -186,6 +190,7 @@ Shader "Hidden/VRM10/vrmc_materials_mtoon"
 
             // Unity defined keywords
             #pragma multi_compile_shadowcaster nolightmap nodynlightmap nodirlightmap novertexlight
+            #pragma multi_compile_instancing
 
             #pragma multi_compile_local __ _ALPHATEST_ON _ALPHABLEND_ON
 

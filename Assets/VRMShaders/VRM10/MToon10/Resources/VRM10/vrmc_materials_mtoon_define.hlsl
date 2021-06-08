@@ -49,6 +49,16 @@ inline bool MToon_IsEmissiveMapOn()
 }
 
 // Compile-time constant
+inline bool MToon_IsRimMapOn()
+{
+#if defined(_MTOON_RIMMAP)
+    return true;
+#else
+    return false;
+#endif
+}
+
+// Compile-time constant
 inline bool MToon_IsParameterMapOn()
 {
 #if defined(_MTOON_PARAMETERMAP)

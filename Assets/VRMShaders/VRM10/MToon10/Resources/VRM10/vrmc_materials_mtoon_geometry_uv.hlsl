@@ -23,20 +23,13 @@ inline float2 GetMToonGeometry_Uv(const float2 geometryUv)
     // get raw uv with _MainTex_ST
     const float2 uvRaw = TRANSFORM_TEX(geometryUv, _MainTex);
 
-    if (MToon_IsParameterMapOn())
-    {
-        const float uvAnimationTime = GetMToonGeometry_Uv_Time(uvRaw);
-        const float2 translate = uvAnimationTime * float2(_UvAnimScrollXSpeed, _UvAnimScrollYSpeed);
-        const float rotateRad = uvAnimationTime * _UvAnimRotationSpeed * PI_2;
-        const float cosRotate = cos(rotateRad);
-        const float sinRotate = sin(rotateRad);
-        const float2 rotatePivot = float2(0.5, 0.5);
-        return mul(float2x2(cosRotate, -sinRotate, sinRotate, cosRotate), uvRaw + translate - rotatePivot) + rotatePivot;
-    }
-    else
-    {
-        return uvRaw;
-    }
+    const float uvAnimationTime = GetMToonGeometry_Uv_Time(uvRaw);
+    const float2 translate = uvAnimationTime * float2(_UvAnimScrollXSpeed, _UvAnimScrollYSpeed);
+    const float rotateRad = frac(uvAnimationTime * _UvAnimRotationSpeed) * PI_2;
+    const float cosRotate = cos(rotateRad);
+    const float sinRotate = sin(rotateRad);
+    const float2 rotatePivot = float2(0.5, 0.5);
+    return mul(float2x2(cosRotate, -sinRotate, sinRotate, cosRotate), uvRaw + translate - rotatePivot) + rotatePivot;
 }
 
 #endif
