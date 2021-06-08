@@ -141,7 +141,7 @@ namespace UniVRM10
 
                 return true;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 dst = null;
                 return false;

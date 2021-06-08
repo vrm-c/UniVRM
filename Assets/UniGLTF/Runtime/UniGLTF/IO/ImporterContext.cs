@@ -12,26 +12,6 @@ namespace UniGLTF
     /// </summary>
     public class ImporterContext : IDisposable
     {
-        #region Animation
-        protected IAnimationImporter m_animationImporter;
-        public void SetAnimationImporter(IAnimationImporter animationImporter)
-        {
-            m_animationImporter = animationImporter;
-        }
-        public IAnimationImporter AnimationImporter
-        {
-            get
-            {
-                if (m_animationImporter == null)
-                {
-                    m_animationImporter = new RootAnimationImporter();
-                }
-                return m_animationImporter;
-            }
-        }
-
-        #endregion
-
         public ITextureDescriptorGenerator TextureDescriptorGenerator { get; protected set; }
         public IMaterialDescriptorGenerator MaterialDescriptorGenerator { get; protected set; }
         public TextureFactory TextureFactory { get; }
@@ -123,33 +103,61 @@ namespace UniGLTF
 
             using (MeasureTime("AnimationImporter"))
             {
-                if (GLTF.animations != null && GLTF.animations.Any())
-                {
-                    var animation = Root.AddComponent<Animation>();
-                    for (int i = 0; i < GLTF.animations.Count; ++i)
-                    {
-                        var gltfAnimation = GLTF.animations[i];
-                        AnimationClip clip = default;
-                        if (_externalObjectMap.TryGetValue(new SubAssetKey(typeof(AnimationClip), gltfAnimation.name), out UnityEngine.Object value))
-                        {
-                            clip = value as AnimationClip;
-                        }
-                        else
-                        {
-                            clip = AnimationImporter.Import(GLTF, i, InvertAxis);
-                            AnimationClips.Add(clip);
-                        }
-
-                        animation.AddClip(clip, clip.name);
-                        if (i == 0)
-                        {
-                            animation.clip = clip;
-                        }
-                    }
-                }
+                await LoadAnimationAsync(awaitCaller);
+                await SetupAnimationsAsync(awaitCaller);
             }
 
             await OnLoadHierarchy(awaitCaller, MeasureTime);
+        }
+
+        /// <summary>
+        /// ImporterContext.AnimationClips に AnimationClip を読み込むところまでが責務
+        /// </summary>
+        /// <param name="awaitCaller"></param>
+        /// <returns></returns>
+        protected virtual async Task LoadAnimationAsync(IAwaitCaller awaitCaller)
+        {
+            if (GLTF.animations != null && GLTF.animations.Any())
+            {
+                for (int i = 0; i < GLTF.animations.Count; ++i)
+                {
+                    var gltfAnimation = GLTF.animations[i];
+                    AnimationClip clip = default;
+                    if (_externalObjectMap.TryGetValue(new SubAssetKey(typeof(AnimationClip), gltfAnimation.name), out UnityEngine.Object value))
+                    {
+                        clip = value as AnimationClip;
+                    }
+                    else
+                    {
+                        clip = AnimationImporterUtil.ConvertAnimationClip(GLTF, GLTF.animations[i], InvertAxis.Create());
+                        AnimationClips.Add(clip);
+                    }
+                }
+
+                await awaitCaller.NextFrame();
+            }
+        }
+
+        /// <summary>
+        /// AnimationClips を AnimationComponent に載せる
+        /// </summary>
+        protected virtual async Task SetupAnimationsAsync(IAwaitCaller awaitCaller)
+        {
+            if (AnimationClips.Count == 0)
+            {
+                return;
+            }
+            var animation = Root.AddComponent<Animation>();
+            for (int i = 0; i < AnimationClips.Count; ++i)
+            {
+                var clip = AnimationClips[i];
+                animation.AddClip(clip, clip.name);
+                if (i == 0)
+                {
+                    animation.clip = clip;
+                }
+            }
+            await awaitCaller.NextFrame();
         }
 
         protected virtual async Task LoadGeometryAsync(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime)
