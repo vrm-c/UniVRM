@@ -101,42 +101,63 @@ namespace UniGLTF
 
             await LoadGeometryAsync(awaitCaller, MeasureTime);
 
-            await LoadAnimationAsync(awaitCaller, MeasureTime);
+            using (MeasureTime("AnimationImporter"))
+            {
+                await LoadAnimationAsync(awaitCaller);
+                await SetupAnimationsAsync(awaitCaller);
+            }
 
             await OnLoadHierarchy(awaitCaller, MeasureTime);
         }
 
-        protected virtual async Task LoadAnimationAsync(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime)
+        /// <summary>
+        /// ImporterContext.AnimationClips に AnimationClip を読み込むところまでが責務
+        /// </summary>
+        /// <param name="awaitCaller"></param>
+        /// <returns></returns>
+        protected virtual async Task LoadAnimationAsync(IAwaitCaller awaitCaller)
         {
-            using (MeasureTime("AnimationImporter"))
+            if (GLTF.animations != null && GLTF.animations.Any())
             {
-                if (GLTF.animations != null && GLTF.animations.Any())
+                for (int i = 0; i < GLTF.animations.Count; ++i)
                 {
-                    var animation = Root.AddComponent<Animation>();
-                    for (int i = 0; i < GLTF.animations.Count; ++i)
+                    var gltfAnimation = GLTF.animations[i];
+                    AnimationClip clip = default;
+                    if (_externalObjectMap.TryGetValue(new SubAssetKey(typeof(AnimationClip), gltfAnimation.name), out UnityEngine.Object value))
                     {
-                        var gltfAnimation = GLTF.animations[i];
-                        AnimationClip clip = default;
-                        if (_externalObjectMap.TryGetValue(new SubAssetKey(typeof(AnimationClip), gltfAnimation.name), out UnityEngine.Object value))
-                        {
-                            clip = value as AnimationClip;
-                        }
-                        else
-                        {
-                            clip = AnimationImporterUtil.ConvertAnimationClip(GLTF, GLTF.animations[i], InvertAxis.Create());
-                            AnimationClips.Add(clip);
-                        }
-
-                        animation.AddClip(clip, clip.name);
-                        if (i == 0)
-                        {
-                            animation.clip = clip;
-                        }
+                        clip = value as AnimationClip;
                     }
+                    else
+                    {
+                        clip = AnimationImporterUtil.ConvertAnimationClip(GLTF, GLTF.animations[i], InvertAxis.Create());
+                        AnimationClips.Add(clip);
+                    }
+                }
 
-                    await awaitCaller.NextFrame();
+                await awaitCaller.NextFrame();
+            }
+        }
+
+        /// <summary>
+        /// AnimationClips を AnimationComponent に載せる
+        /// </summary>
+        protected virtual async Task SetupAnimationsAsync(IAwaitCaller awaitCaller)
+        {
+            if (AnimationClips.Count == 0)
+            {
+                return;
+            }
+            var animation = Root.AddComponent<Animation>();
+            for (int i = 0; i < AnimationClips.Count; ++i)
+            {
+                var clip = AnimationClips[i];
+                animation.AddClip(clip, clip.name);
+                if (i == 0)
+                {
+                    animation.clip = clip;
                 }
             }
+            await awaitCaller.NextFrame();
         }
 
         protected virtual async Task LoadGeometryAsync(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime)
