@@ -40,18 +40,18 @@ namespace VRM
                 var material = parser.GLTF.materials[materialIdx];
                 var vrmMaterial = vrm.materialProperties[materialIdx];
 
-                if (vrmMaterial.shader == MToon.Utils.ShaderName)
+                if (vrmMaterial.shader == VRM.glTF_VRM_Material.VRM_USE_GLTFSHADER)
                 {
-                    // MToon
-                    foreach (var kv in VRMMToonTextureImporter.EnumerateAllTextures(parser, vrm, materialIdx))
+                    // Unlit or PBR
+                    foreach (var kv in GltfPbrTextureImporter.EnumerateAllTextures(parser, materialIdx))
                     {
                         yield return kv;
                     }
                 }
                 else
                 {
-                    // Unlit or PBR
-                    foreach (var kv in GltfPbrTextureImporter.EnumerateAllTextures(parser, materialIdx))
+                    // MToon など任意の shader
+                    foreach (var kv in VRMMToonTextureImporter.EnumerateAllTextures(parser, vrm, materialIdx))
                     {
                         yield return kv;
                     }
