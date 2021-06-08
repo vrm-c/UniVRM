@@ -28,7 +28,7 @@ namespace UniVRM10
         [SerializeField, Range(0, 0.5f), Header("Collision")]
         public float m_jointRadius = 0.02f;
 
-        SpringBoneLogic m_logic;
+        SpringBoneLogic m_logic = null;
 
         public void DrawGizmo(Transform center, Color color)
         {
