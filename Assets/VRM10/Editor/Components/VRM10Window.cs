@@ -19,7 +19,7 @@ namespace UniVRM10
             var window = (VRM10Window)GetWindow(typeof(VRM10Window));
             window.titleContent = new GUIContent(WINDOW_TITLE);
             window.Show();
-            window.Root = UnityEditor.Selection.activeTransform.GetComponent<VRM10Controller>();
+            window.Root = UnityEditor.Selection.activeTransform?.GetComponent<VRM10Controller>();
         }
 
         void OnEnable()
