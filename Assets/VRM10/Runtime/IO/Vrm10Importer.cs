@@ -349,10 +349,22 @@ namespace UniVRM10
                 var src = vrm.LookAt;
                 controller.LookAt.LookAtType = src.Type;
                 controller.LookAt.OffsetFromHead = new Vector3(src.OffsetFromHeadBone[0], src.OffsetFromHeadBone[1], src.OffsetFromHeadBone[2]);
-                controller.LookAt.HorizontalInner = new CurveMapper(src.RangeMapHorizontalInner.InputMaxValue.Value, src.RangeMapHorizontalInner.OutputScale.Value);
-                controller.LookAt.HorizontalOuter = new CurveMapper(src.RangeMapHorizontalOuter.InputMaxValue.Value, src.RangeMapHorizontalOuter.OutputScale.Value);
-                controller.LookAt.VerticalUp = new CurveMapper(src.RangeMapVerticalUp.InputMaxValue.Value, src.RangeMapVerticalUp.OutputScale.Value);
-                controller.LookAt.VerticalDown = new CurveMapper(src.RangeMapVerticalDown.InputMaxValue.Value, src.RangeMapVerticalDown.OutputScale.Value);
+                if (src.RangeMapHorizontalInner != null)
+                {
+                    controller.LookAt.HorizontalInner = new CurveMapper(src.RangeMapHorizontalInner.InputMaxValue.Value, src.RangeMapHorizontalInner.OutputScale.Value);
+                }
+                if (src.RangeMapHorizontalOuter != null)
+                {
+                    controller.LookAt.HorizontalOuter = new CurveMapper(src.RangeMapHorizontalOuter.InputMaxValue.Value, src.RangeMapHorizontalOuter.OutputScale.Value);
+                }
+                if (src.RangeMapVerticalUp != null)
+                {
+                    controller.LookAt.VerticalUp = new CurveMapper(src.RangeMapVerticalUp.InputMaxValue.Value, src.RangeMapVerticalUp.OutputScale.Value);
+                }
+                if (src.RangeMapVerticalDown != null)
+                {
+                    controller.LookAt.VerticalDown = new CurveMapper(src.RangeMapVerticalDown.InputMaxValue.Value, src.RangeMapVerticalDown.OutputScale.Value);
+                }
             }
 
             // firstPerson
@@ -386,66 +398,75 @@ namespace UniVRM10
                 }
 
                 // colliderGroup
-                foreach (var g in gltfVrmSpringBone.ColliderGroups)
+                if (gltfVrmSpringBone.ColliderGroups != null)
                 {
-                    var colliderGroup = secondary.gameObject.AddComponent<VRM10SpringBoneColliderGroup>();
-                    controller.SpringBone.ColliderGroups.Add(colliderGroup);
-
-                    foreach (var c in g.Colliders)
+                    foreach (var g in gltfVrmSpringBone.ColliderGroups)
                     {
-                        var node = Nodes[c.Node.Value];
+                        var colliderGroup = secondary.gameObject.AddComponent<VRM10SpringBoneColliderGroup>();
+                        controller.SpringBone.ColliderGroups.Add(colliderGroup);
 
-                        var collider = node.gameObject.AddComponent<VRM10SpringBoneCollider>();
-                        colliderGroup.Colliders.Add(collider);
+                        foreach (var c in g.Colliders)
+                        {
+                            var node = Nodes[c.Node.Value];
 
-                        if (c.Shape.Sphere is UniGLTF.Extensions.VRMC_springBone.ColliderShapeSphere sphere)
-                        {
-                            collider.ColliderType = VRM10SpringBoneColliderTypes.Sphere;
-                            collider.Radius = sphere.Radius.Value;
-                            collider.Offset = Vector3InvertX(sphere.Offset);
-                        }
-                        else if (c.Shape.Capsule is UniGLTF.Extensions.VRMC_springBone.ColliderShapeCapsule capsule)
-                        {
-                            collider.ColliderType = VRM10SpringBoneColliderTypes.Capsule;
-                            collider.Radius = capsule.Radius.Value;
-                            collider.Offset = Vector3InvertX(capsule.Offset);
-                            collider.Tail = Vector3InvertX(capsule.Tail);
-                        }
-                        else
-                        {
-                            throw new NotImplementedException();
+                            var collider = node.gameObject.AddComponent<VRM10SpringBoneCollider>();
+                            colliderGroup.Colliders.Add(collider);
+
+                            if (c.Shape.Sphere is UniGLTF.Extensions.VRMC_springBone.ColliderShapeSphere sphere)
+                            {
+                                collider.ColliderType = VRM10SpringBoneColliderTypes.Sphere;
+                                collider.Radius = sphere.Radius.Value;
+                                collider.Offset = Vector3InvertX(sphere.Offset);
+                            }
+                            else if (c.Shape.Capsule is UniGLTF.Extensions.VRMC_springBone.ColliderShapeCapsule capsule)
+                            {
+                                collider.ColliderType = VRM10SpringBoneColliderTypes.Capsule;
+                                collider.Radius = capsule.Radius.Value;
+                                collider.Offset = Vector3InvertX(capsule.Offset);
+                                collider.Tail = Vector3InvertX(capsule.Tail);
+                            }
+                            else
+                            {
+                                throw new NotImplementedException();
+                            }
                         }
                     }
                 }
 
-                foreach (var gltfSpring in gltfVrmSpringBone.Springs)
+                if (gltfVrmSpringBone.Springs != null)
                 {
-                    if (gltfSpring.Joints == null || gltfSpring.Joints.Count == 0)
+                    foreach (var gltfSpring in gltfVrmSpringBone.Springs)
                     {
-                        continue;
-                    }
-                    var spring = new VRM10ControllerSpringBone.Spring(gltfSpring.Name);
-                    controller.SpringBone.Springs.Add(spring);
-
-                    spring.ColliderGroups = gltfSpring.ColliderGroups.Select(x => controller.SpringBone.ColliderGroups[x]).ToList();
-                    // joint
-                    foreach (var gltfJoint in gltfSpring.Joints)
-                    {
-                        if (gltfJoint.Node.HasValue)
+                        if (gltfSpring.Joints == null || gltfSpring.Joints.Count == 0)
                         {
-                            var index = gltfJoint.Node.Value;
-                            if (index < 0 || index >= Nodes.Count)
+                            continue;
+                        }
+                        var spring = new VRM10ControllerSpringBone.Spring(gltfSpring.Name);
+                        controller.SpringBone.Springs.Add(spring);
+
+                        if (gltfSpring.ColliderGroups != null)
+                        {
+                            spring.ColliderGroups = gltfSpring.ColliderGroups.Select(x => controller.SpringBone.ColliderGroups[x]).ToList();
+                        }
+                        // joint
+                        foreach (var gltfJoint in gltfSpring.Joints)
+                        {
+                            if (gltfJoint.Node.HasValue)
                             {
-                                throw new IndexOutOfRangeException($"{index} > {Nodes.Count}");
+                                var index = gltfJoint.Node.Value;
+                                if (index < 0 || index >= Nodes.Count)
+                                {
+                                    throw new IndexOutOfRangeException($"{index} > {Nodes.Count}");
+                                }
+                                var joint = Nodes[gltfJoint.Node.Value].gameObject.AddComponent<VRM10SpringBoneJoint>();
+                                joint.m_jointRadius = gltfJoint.HitRadius.Value;
+                                joint.m_dragForce = gltfJoint.DragForce.Value;
+                                joint.m_gravityDir = Vector3InvertX(gltfJoint.GravityDir);
+                                joint.m_gravityPower = gltfJoint.GravityPower.Value;
+                                joint.m_stiffnessForce = gltfJoint.Stiffness.Value;
+                                // joint.m_exclude = gltfJoint.Exclude.GetValueOrDefault();
+                                spring.Joints.Add(joint);
                             }
-                            var joint = Nodes[gltfJoint.Node.Value].gameObject.AddComponent<VRM10SpringBoneJoint>();
-                            joint.m_jointRadius = gltfJoint.HitRadius.Value;
-                            joint.m_dragForce = gltfJoint.DragForce.Value;
-                            joint.m_gravityDir = Vector3InvertX(gltfJoint.GravityDir);
-                            joint.m_gravityPower = gltfJoint.GravityPower.Value;
-                            joint.m_stiffnessForce = gltfJoint.Stiffness.Value;
-                            // joint.m_exclude = gltfJoint.Exclude.GetValueOrDefault();
-                            spring.Joints.Add(joint);
                         }
                     }
                 }
