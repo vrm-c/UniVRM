@@ -23,11 +23,22 @@ namespace UniVRM10
         IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> m_externalMap;
 
         public Vrm10Importer(
-            UniGLTF.GltfParser parser,
+            UniGLTF.GltfParser parser, UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm,
             IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> externalObjectMap = null,
             ITextureDeserializer textureDeserializer = null)
             : base(parser, externalObjectMap, textureDeserializer)
         {
+            if (parser == null)
+            {
+                throw new ArgumentNullException("parser");
+            }
+
+            if (vrm == null)
+            {
+                throw new ArgumentNullException("vrm");
+            }
+            m_vrm = vrm;
+
             TextureDescriptorGenerator = new Vrm10TextureDescriptorGenerator(parser);
             MaterialDescriptorGenerator = new Vrm10MaterialDescriptorGenerator();
 
@@ -36,12 +47,9 @@ namespace UniVRM10
             {
                 m_externalMap = new Dictionary<SubAssetKey, UnityEngine.Object>();
             }
-            m_model = ModelReader.Read(parser);
 
-            if (!UniGLTF.Extensions.VRMC_vrm.GltfDeserializer.TryGet(parser.GLTF.extensions, out m_vrm))
-            {
-                throw new Vrm10NoExtensionException();
-            }
+            // bin に対して右手左手変換を破壊的に実行することに注意 !(bin が変換済みになる)
+            m_model = ModelReader.Read(parser);
 
             // assign humanoid bones
             if (m_vrm.Humanoid != null)
@@ -102,29 +110,6 @@ namespace UniVRM10
                 AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.RightLittleDistal, HumanoidBones.rightLittleDistal);
                 AssignHumanoid(m_model.Nodes, m_vrm.Humanoid.HumanBones.UpperChest, HumanoidBones.upperChest);
             }
-        }
-
-        public static Vrm10Importer OpenOrMigrate(byte[] bytes, string path)
-        {
-            try
-            {
-                var parser = new GltfParser();
-                parser.Parse(path, bytes);
-                return new Vrm10Importer(parser);
-            }
-            catch (Vrm10NoExtensionException)
-            {
-                Debug.Log("vrm1 not found. try migration...");
-                bytes = MigrationVrm.Migrate(bytes);
-                var parser = new GltfParser();
-                parser.Parse(path, bytes);
-                return new Vrm10Importer(parser);
-            }
-        }
-
-        public static Vrm10Importer OpenOrMigrate(string path)
-        {
-            return OpenOrMigrate(File.ReadAllBytes(path), path);
         }
 
         public class ModelMap

@@ -308,7 +308,12 @@ namespace UniVRM10.Samples
             {
                 case ".vrm":
                     {
-                        using (var loader = Vrm10Importer.OpenOrMigrate(path))
+                        if(!Vrm10Parser.TryParseOrMigrate(path, doMigrate: true, out Vrm10Parser.Result result, out string error))
+                        {
+                            Debug.LogError(error);
+                            return;
+                        }
+                        using (var loader = new Vrm10Importer(result.Parser, result.Vrm))
                         {
                             loader.Load();
                             loader.ShowMeshes();
