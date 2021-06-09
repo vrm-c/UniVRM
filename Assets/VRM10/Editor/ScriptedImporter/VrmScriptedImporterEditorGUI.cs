@@ -27,19 +27,16 @@ namespace UniVRM10
             base.OnEnable();
 
             m_importer = target as VrmScriptedImporter;
+            m_parser = default;
+            m_message = default;
             if (!Vrm10Parser.TryParseOrMigrate(m_importer.assetPath, m_importer.MigrateToVrm1, out Vrm10Parser.Result result, out m_message))
             {
                 // error
                 return;
             }
-            if (!UniGLTF.Extensions.VRMC_vrm.GltfDeserializer.TryGet(m_parser.GLTF.extensions, out m_vrm))
-            {
-                // error
-                m_message = "no vrm1";
-                m_parser = null;
-                return;
-            }
-            m_model = ModelReader.Read(m_parser);
+            m_vrm = result.Vrm;
+            m_parser = result.Parser;
+            m_model = ModelReader.Read(result.Parser);
         }
 
         enum Tabs
