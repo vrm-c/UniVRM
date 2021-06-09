@@ -13,6 +13,11 @@
 
 half4 MToonFragment(const Varyings input) : SV_Target
 {
+    if (MToon_IsOutlinePass() && MToon_IsOutlineModeDisabled())
+    {
+        clip(-1);
+    }
+
     // Get MToon UV (with UVAnimation)
     const float2 uv = GetMToonGeometry_Uv(input.uv);
 

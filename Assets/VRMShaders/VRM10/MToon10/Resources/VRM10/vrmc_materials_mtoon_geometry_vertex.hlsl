@@ -40,7 +40,7 @@ inline VertexPositionInfo MToon_GetOutlineVertex(const float3 positionOS, const 
     else if (MToon_IsOutlineModeScreenCoordinates())
     {
         const float3 positionWS = mul(unity_ObjectToWorld, float4(positionOS, 1)).xyz;
-        const half outlineWidth = _OutlineWidth * UNITY_SAMPLE_TEX2D_LOD(_OutlineWidthTex, uv, 0);
+        const half outlineWidth = MToon_GetOutlineVertex_OutlineWidth(uv);
 
         const float4 nearUpperRight = mul(unity_CameraInvProjection, float4(1, 1, UNITY_NEAR_CLIP_VALUE, _ProjectionParams.y));
         const half aspect = abs(nearUpperRight.y / nearUpperRight.x);
@@ -61,7 +61,7 @@ inline VertexPositionInfo MToon_GetOutlineVertex(const float3 positionOS, const 
     else
     {
         VertexPositionInfo output;
-        output.positionWS = mul(unity_ObjectToWorld, float4(positionOS, 1));
+        output.positionWS = mul(unity_ObjectToWorld, float4(positionOS * 0.001, 1));
         output.positionCS = UnityWorldToClipPos(output.positionWS);
         return output;
     }

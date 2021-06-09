@@ -79,7 +79,7 @@ inline half3 GetMToonLighting_Emissive(const MToonInput input)
 
 inline half3 GetMToonLighting_Rim_Matcap(const MToonInput input)
 {
-    if (MToon_IsParameterMapOn())
+    if (MToon_IsRimMapOn())
     {
         const half3 worldUpWS = half3(0, 1, 0);
         // TODO: use view space axis if abs(dot(viewDir, worldUp)) == 1.0
@@ -101,7 +101,15 @@ inline half3 GetMToonLighting_Rim(const MToonInput input, const half3 lighting)
         const half3 parametricRimFactor = pow(saturate(1.0 - dot(input.normalWS, input.viewDirWS) + _RimLift), _RimFresnelPower) * _RimColor.rgb;
         const half3 rimLightingFactor = lerp(half3(1, 1, 1), lighting, _RimLightingMix);
         const half3 matcapFactor = GetMToonLighting_Rim_Matcap(input);
-        return (matcapFactor + parametricRimFactor) * UNITY_SAMPLE_TEX2D(_RimTex, input.uv).rgb * rimLightingFactor;
+
+        if (MToon_IsRimMapOn())
+        {
+            return (matcapFactor + parametricRimFactor) * rimLightingFactor * UNITY_SAMPLE_TEX2D(_RimTex, input.uv).rgb;
+        }
+        else
+        {
+            return (matcapFactor + parametricRimFactor) * rimLightingFactor;
+        }
     }
     else
     {

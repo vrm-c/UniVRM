@@ -49,6 +49,16 @@ inline bool MToon_IsEmissiveMapOn()
 }
 
 // Compile-time constant
+inline bool MToon_IsRimMapOn()
+{
+#if defined(_MTOON_RIMMAP)
+    return true;
+#else
+    return false;
+#endif
+}
+
+// Compile-time constant
 inline bool MToon_IsParameterMapOn()
 {
 #if defined(_MTOON_PARAMETERMAP)
@@ -61,7 +71,7 @@ inline bool MToon_IsParameterMapOn()
 // Compile-time constant
 inline bool MToon_IsOutlineModeWorldCoordinates()
 {
- #if defined(MTOON_OUTLINE_WIDTH_WORLD)
+ #if defined(_MTOON_OUTLINE_WORLD)
     return true;
 #else
     return false;
@@ -71,10 +81,20 @@ inline bool MToon_IsOutlineModeWorldCoordinates()
 // Compile-time constant
 inline bool MToon_IsOutlineModeScreenCoordinates()
 {
- #if defined(MTOON_OUTLINE_WIDTH_SCREEN)
+ #if defined(_MTOON_OUTLINE_SCREEN)
     return true;
 #else
     return false;
+#endif
+}
+
+// Compile-time constant
+inline bool MToon_IsOutlineModeDisabled()
+{
+ #if defined(_MTOON_OUTLINE_WORLD) || defined(_MTOON_OUTLINE_SCREEN)
+    return false;
+#else
+    return true;
 #endif
 }
 

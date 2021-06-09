@@ -33,17 +33,17 @@ Shader "Hidden/VRM10/vrmc_materials_mtoon"
         // Rim Lighting
         _MatcapTex ("mtoon.matcapTexture", 2D) = "black" {}
         _RimColor ("mtoon.parametricRimColorFactor", Color) = (0, 0, 0, 1)
-        _RimFresnelPower ("mtoon.parametricRimFresnelPowerFactor", Float) = 5.0
-        _RimLift ("mtoon.parametricRimLiftFactor", Float) = 0
+        _RimFresnelPower ("mtoon.parametricRimFresnelPowerFactor", Range(0, 100)) = 5.0
+        _RimLift ("mtoon.parametricRimLiftFactor", Range(0, 1)) = 0
         _RimTex ("mtoon.rimMultiplyTexture", 2D) = "white" {}
-        _RimLightingMix ("mtoon.rimLightingMixFactor", Float) = 1
+        _RimLightingMix ("mtoon.rimLightingMixFactor", Range(0, 1)) = 1
 
         // Outline
         _OutlineWidthMode ("mtoon.outlineWidthMode", Int) = 0
-        _OutlineWidth ("mtoon.outlineWidthFactor", Float) = 0
+        [PowerSlider(2.2)] _OutlineWidth ("mtoon.outlineWidthFactor", Range(0, 0.05)) = 0
         _OutlineWidthTex ("mtoon.outlineWidthMultiplyTexture", 2D) = "white" {} // channel G
         _OutlineColor ("mtoon.outlineColorFactor", Color) = (0, 0, 0, 1)
-        _OutlineLightingMix ("mtoon.outlineLightingMixFactor", Float) = 1
+        _OutlineLightingMix ("mtoon.outlineLightingMixFactor", Range(0, 1)) = 1
 
         // UV Animation
         _UvAnimMaskTex ("mtoon.uvAnimationMaskTexture", 2D) = "white" {} // channel B
@@ -91,6 +91,7 @@ Shader "Hidden/VRM10/vrmc_materials_mtoon"
             #pragma multi_compile_local __ _ALPHATEST_ON _ALPHABLEND_ON
             #pragma multi_compile_local __ _NORMALMAP
             #pragma multi_compile_local __ _MTOON_EMISSIVEMAP
+            #pragma multi_compile_local __ _MTOON_RIMMAP
             #pragma multi_compile_local __ _MTOON_PARAMETERMAP
 
             #pragma vertex MToonVertex
@@ -125,7 +126,9 @@ Shader "Hidden/VRM10/vrmc_materials_mtoon"
             #pragma multi_compile_local __ _ALPHATEST_ON _ALPHABLEND_ON
             #pragma multi_compile_local __ _NORMALMAP
             #pragma multi_compile_local __ _MTOON_EMISSIVEMAP
+            #pragma multi_compile_local __ _MTOON_RIMMAP
             #pragma multi_compile_local __ _MTOON_PARAMETERMAP
+            #pragma multi_compile_local __ _MTOON_OUTLINE_WORLD _MTOON_OUTLINE_SCREEN
 
             #define MTOON_PASS_OUTLINE
 
@@ -161,6 +164,7 @@ Shader "Hidden/VRM10/vrmc_materials_mtoon"
             #pragma multi_compile_local __ _ALPHATEST_ON _ALPHABLEND_ON
             #pragma multi_compile_local __ _NORMALMAP
             #pragma multi_compile_local __ _MTOON_EMISSIVEMAP
+            #pragma multi_compile_local __ _MTOON_RIMMAP
             #pragma multi_compile_local __ _MTOON_PARAMETERMAP
 
             #pragma vertex MToonVertex
@@ -186,6 +190,7 @@ Shader "Hidden/VRM10/vrmc_materials_mtoon"
 
             // Unity defined keywords
             #pragma multi_compile_shadowcaster nolightmap nodynlightmap nodirlightmap novertexlight
+            #pragma multi_compile_instancing
 
             #pragma multi_compile_local __ _ALPHATEST_ON _ALPHABLEND_ON
 

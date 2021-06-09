@@ -25,5 +25,10 @@ namespace VRMShaders.VRM10.MToon10.Editor
         {
             mat.SetInt(prop.ToName(), val);
         }
+
+        public static Texture GetTexture(this Material mat, Prop prop)
+        {
+            return mat.GetTexture(prop.ToName());
+        }
     }
 }
