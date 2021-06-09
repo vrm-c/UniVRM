@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using UniGLTF;
+using UniGLTF.Extensions.VRMC_vrm;
 using UnityEngine;
 using UnityEngine.TestTools;
 using UniVRM10;
@@ -30,16 +31,18 @@ namespace UniVRM10.Test
         private (GameObject, IReadOnlyList<VRMShaders.MaterialFactory.MaterialLoadInfo>) ToUnity(byte[] bytes)
         {
             // Vrm => Model
-            var parser = new UniGLTF.GltfParser();
-            parser.Parse("tmp.vrm", bytes);
+            if(!Vrm10Parser.TryParseOrMigrate("tpm.vrm", bytes, true, out Vrm10Parser.Result result, out string error))
+            {
+                throw new Exception();
+            }
 
-            return ToUnity(parser);
+            return ToUnity(result.Parser, result.Vrm);
         }
 
-        private (GameObject, IReadOnlyList<VRMShaders.MaterialFactory.MaterialLoadInfo>) ToUnity(GltfParser parser)
+        private (GameObject, IReadOnlyList<VRMShaders.MaterialFactory.MaterialLoadInfo>) ToUnity(GltfParser parser, VRMC_vrm vrm)
         {
             // Model => Unity
-            using (var loader = new Vrm10Importer(parser))
+            using (var loader = new Vrm10Importer(parser, vrm))
             {
                 loader.Load();
                 loader.DisposeOnGameObjectDestroyed();

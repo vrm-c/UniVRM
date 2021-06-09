@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -43,13 +44,14 @@ namespace UniVRM10
         }
 
         SerializedObject m_so;
-        VRM10Controller m_root;
+        int? m_root;
         VRM10Controller Root
         {
-            get => m_root;
+            get => m_root.HasValue ? (EditorUtility.InstanceIDToObject(m_root.Value) as VRM10Controller) : null;
             set
             {
-                if (m_root == value)
+                int? id = value != null ? value.GetInstanceID() : default;
+                if (m_root == id)
                 {
                     return;
                 }
@@ -58,8 +60,8 @@ namespace UniVRM10
                     // skip prefab
                     return;
                 }
-                m_root = value;
-                m_so = m_root != null ? new SerializedObject(m_root) : null;
+                m_root = id;
+                m_so = value != null ? new SerializedObject(value) : null;
 
                 m_constraints = null;
             }
@@ -119,6 +121,18 @@ namespace UniVRM10
         //
         private void OnGUI()
         {
+            if (Root == null)
+            {
+                if (UnityEditor.Selection.activeTransform != null)
+                {
+                    var root = UnityEditor.Selection.activeTransform.Ancestors().Select(x => x.GetComponent<VRM10Controller>()).FirstOrDefault(x => x != null);
+                    if (root != null)
+                    {
+                        Root = root;
+                    }
+                }
+            }
+
             Root = (VRM10Controller)EditorGUILayout.ObjectField("vrm1", Root, typeof(VRM10Controller), true);
             if (Root == null)
             {

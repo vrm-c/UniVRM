@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using UniGLTF;
@@ -22,11 +23,22 @@ namespace UniVRM10
         IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> m_externalMap;
 
         public Vrm10Importer(
-            UniGLTF.GltfParser parser,
+            UniGLTF.GltfParser parser, UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm,
             IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> externalObjectMap = null,
             ITextureDeserializer textureDeserializer = null)
             : base(parser, externalObjectMap, textureDeserializer)
         {
+            if (parser == null)
+            {
+                throw new ArgumentNullException("parser");
+            }
+
+            if (vrm == null)
+            {
+                throw new ArgumentNullException("vrm");
+            }
+            m_vrm = vrm;
+
             TextureDescriptorGenerator = new Vrm10TextureDescriptorGenerator(parser);
             MaterialDescriptorGenerator = new Vrm10MaterialDescriptorGenerator();
 
@@ -35,12 +47,9 @@ namespace UniVRM10
             {
                 m_externalMap = new Dictionary<SubAssetKey, UnityEngine.Object>();
             }
-            m_model = ModelReader.Read(parser);
 
-            if (!UniGLTF.Extensions.VRMC_vrm.GltfDeserializer.TryGet(parser.GLTF.extensions, out m_vrm))
-            {
-                throw new Exception("VRMC_vrm is not found");
-            }
+            // bin に対して右手左手変換を破壊的に実行することに注意 !(bin が変換済みになる)
+            m_model = ModelReader.Read(parser);
 
             // assign humanoid bones
             if (m_vrm.Humanoid != null)

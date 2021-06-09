@@ -61,24 +61,24 @@ namespace VRM.Samples
                 // ParseしたJSONをシーンオブジェクトに変換していく
                 await context.LoadAsync();
 
-                OnLoaded(context);
+                context.ShowMeshes();
+                context.EnableUpdateWhenOffscreen();
+                var destroyer = context.DisposeOnGameObjectDestroyed();
+
+                OnLoaded(destroyer.gameObject);
             }
         }
 
-        void OnLoaded(VRMImporterContext context)
+        void OnLoaded(GameObject go)
         {
             if (m_model != null)
             {
                 GameObject.Destroy(m_model.gameObject);
             }
 
-            m_model = context.Root;
+            m_model = go;
             m_model.transform.rotation = Quaternion.Euler(0, 180, 0);
-
-            context.ShowMeshes();
-            context.EnableUpdateWhenOffscreen();
         }
-
         #endregion
 
         #region Export

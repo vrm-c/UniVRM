@@ -27,8 +27,7 @@ namespace UniVRM10
             base.OnEnable();
 
             m_importer = target as VrmScriptedImporter;
-            m_message = VrmScriptedImporterImpl.TryParseOrMigrate(m_importer.assetPath, m_importer.MigrateToVrm1, out m_parser);
-            if (!string.IsNullOrEmpty(m_message))
+            if (!Vrm10Parser.TryParseOrMigrate(m_importer.assetPath, m_importer.MigrateToVrm1, out Vrm10Parser.Result result, out m_message))
             {
                 // error
                 return;
