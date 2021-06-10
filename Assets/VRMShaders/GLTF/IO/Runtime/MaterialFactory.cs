@@ -82,21 +82,14 @@ namespace VRMShaders
         /// <param name="take"></param>
         public void TransferOwnership(TakeResponsibilityForDestroyObjectFunc take)
         {
-            var list = new List<Material>();
-            foreach (var x in m_materials)
+            foreach (var x in m_materials.ToArray())
             {
                 if (!x.UseExternal)
                 {
                     // 外部の '.asset' からロードしていない
-                    if (take(x.Key, x.Asset))
-                    {
-                        list.Add(x.Asset);
-                    }
+                    take(x.Key, x.Asset);
+                    m_materials.Remove(x);
                 }
-            }
-            foreach (var x in list)
-            {
-                Remove(x);
             }
         }
 

@@ -322,33 +322,25 @@ namespace VRM
             // VRM-0 は SubAssetKey を使っていないので default で済ます
 
             // VRM 固有のリソース(ScriptableObject)
-            if (take(default, HumanoidAvatar))
-            {
-                HumanoidAvatar = null;
-            }
+            take(default, HumanoidAvatar);
+            HumanoidAvatar = null;
 
-            if (take(default, Meta))
-            {
-                Meta = null;
-            }
+            take(default, Meta);
+            Meta = null;
 
-            if (take(default, AvatarDescription))
-            {
-                AvatarDescription = null;
-            }
+            take(default, AvatarDescription);
+            AvatarDescription = null;
 
             foreach (var x in BlendShapeAvatar.Clips)
             {
-                if (take(default, x))
+                take(default, x);
                 {
                     // do nothing
                 }
             }
 
-            if (take(default, BlendShapeAvatar))
-            {
-                BlendShapeAvatar = null;
-            }
+            take(default, BlendShapeAvatar);
+            BlendShapeAvatar = null;
 
             // GLTF のリソース
             base.TransferOwnership(take);

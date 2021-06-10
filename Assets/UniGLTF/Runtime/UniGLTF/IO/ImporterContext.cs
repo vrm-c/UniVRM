@@ -313,10 +313,8 @@ namespace UniGLTF
         {
             foreach (var mesh in Meshes.ToArray())
             {
-                if (take(SubAssetKey.Create(mesh.Mesh), mesh.Mesh))
-                {
-                    Meshes.Remove(mesh);
-                }
+                take(SubAssetKey.Create(mesh.Mesh), mesh.Mesh);
+                Meshes.Remove(mesh);
             }
 
             TextureFactory.TransferOwnership(take);
@@ -324,10 +322,8 @@ namespace UniGLTF
 
             foreach (var (key, animation) in AnimationClips.ToArray())
             {
-                if (take(key, animation))
-                {
-                    AnimationClips.Remove((key, animation));
-                }
+                take(key, animation);
+                AnimationClips.Remove((key, animation));
             }
         }
     }

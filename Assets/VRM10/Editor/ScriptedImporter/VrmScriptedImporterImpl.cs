@@ -48,7 +48,6 @@ namespace UniVRM10
                 loaded.TransferOwnership((key, o) =>
                 {
                     context.AddObjectToAsset(key.Name, o);
-                    return true;
                 });
 
                 context.AddObjectToAsset(loaded.name, loaded.gameObject);

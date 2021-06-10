@@ -621,25 +621,19 @@ namespace UniVRM10
         public override void TransferOwnership(TakeResponsibilityForDestroyObjectFunc take)
         {
             // VRM 固有のリソース(ScriptableObject)
-            if (take(SubAssetKey.Create(m_humanoid), m_humanoid))
-            {
-                m_humanoid = null;
-            }
+            take(SubAssetKey.Create(m_humanoid), m_humanoid);
+            m_humanoid = null;
 
             if (m_meta != null)
             {
-                if (take(VRM10MetaObject.SubAssetKey, m_meta))
-                {
-                    m_meta = null;
-                }
+                take(VRM10MetaObject.SubAssetKey, m_meta);
+                m_meta = null;
             }
 
             foreach (var x in m_expressions)
             {
-                if (take(ExpressionKey.CreateFromClip(x).SubAssetKey, x))
-                {
-                    // do nothing
-                }
+                take(ExpressionKey.CreateFromClip(x).SubAssetKey, x);
+                // do nothing
             }
             m_expressions.Clear();
 

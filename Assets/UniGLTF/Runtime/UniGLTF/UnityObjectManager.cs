@@ -18,7 +18,6 @@ namespace UniGLTF
             context.TransferOwnership((k, o) =>
             {
                 loaded.m_resources.Add((k, o));
-                return true;
             });
             return loaded;
         }
@@ -49,10 +48,8 @@ namespace UniGLTF
         {
             foreach (var (key, x) in m_resources.ToArray())
             {
-                if (take(key, x))
-                {
-                    m_resources.Remove((key, x));
-                }
+                take(key, x);
+                m_resources.Remove((key, x));
             }
         }
 

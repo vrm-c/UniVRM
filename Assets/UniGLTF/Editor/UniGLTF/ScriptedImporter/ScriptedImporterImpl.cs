@@ -54,7 +54,6 @@ namespace UniGLTF
                 loaded.TransferOwnership((k, o) =>
                 {
                     context.AddObjectToAsset(k.Name, o);
-                    return true;
                 });
 
                 context.AddObjectToAsset(loaded.name, loaded.gameObject);
