@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace VRMShaders.VRM10.MToon10.Editor
+namespace VRMShaders.VRM10.MToon10.Runtime
 {
     public static class MToon10Properties
     {
