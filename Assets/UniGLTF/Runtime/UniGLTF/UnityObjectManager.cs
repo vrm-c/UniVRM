@@ -47,16 +47,19 @@ namespace UniGLTF
 
         public void TransferOwnership(TakeResponsibilityForDestroyObjectFunc take)
         {
-            throw new NotImplementedException();
+            foreach (var (key, x) in m_resources.ToArray())
+            {
+                if (take(key, x))
+                {
+                    m_resources.Remove((key, x));
+                }
+            }
         }
 
         public void Dispose()
         {
             foreach (var (key, x) in m_resources)
             {
-#if VRM_DEVELOP
-                // Debug.Log($"Destroy: {x}");
-#endif                
                 UnityObjectDestoyer.DestroyRuntimeOrEditor(x);
             }
         }

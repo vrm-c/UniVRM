@@ -313,8 +313,7 @@ namespace UniGLTF
         {
             foreach (var mesh in Meshes.ToArray())
             {
-                // mesh の extract は実装していないので SubAssetKey を使わない
-                if (take(default, mesh.Mesh))
+                if (take(SubAssetKey.Create(mesh.Mesh), mesh.Mesh))
                 {
                     Meshes.Remove(mesh);
                 }

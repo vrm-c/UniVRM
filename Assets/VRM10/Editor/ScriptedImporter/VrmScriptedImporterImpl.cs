@@ -45,7 +45,7 @@ namespace UniVRM10
                 var loaded = loader.Load();
                 loaded.ShowMeshes();
 
-                loader.TransferOwnership((key, o) =>
+                loaded.TransferOwnership((key, o) =>
                 {
                     context.AddObjectToAsset(key.Name, o);
                     return true;

@@ -51,7 +51,7 @@ namespace UniGLTF
                 var loaded = loader.Load();
                 loaded.ShowMeshes();
 
-                loader.TransferOwnership((k, o) =>
+                loaded.TransferOwnership((k, o) =>
                 {
                     context.AddObjectToAsset(k.Name, o);
                     return true;
