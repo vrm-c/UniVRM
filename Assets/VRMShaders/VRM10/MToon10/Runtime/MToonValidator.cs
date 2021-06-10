@@ -79,10 +79,10 @@ namespace VRMShaders.VRM10.MToon10.Runtime
             switch (doubleSidedMode)
             {
                 case MToon10DoubleSidedMode.Off:
-                    material.SetInt(MToon10Prop.UnityCullMode, (int) CullMode.Back);
+                    material.SetInt(MToon10Prop.UnityCullMode, (int) UnityCullMode.Back);
                     break;
                 case MToon10DoubleSidedMode.On:
-                    material.SetInt(MToon10Prop.UnityCullMode, (int) CullMode.Off);
+                    material.SetInt(MToon10Prop.UnityCullMode, (int) UnityCullMode.Off);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(doubleSidedMode), doubleSidedMode, null);

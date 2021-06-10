@@ -21,24 +21,24 @@ namespace VRMShaders.VRM10.MToon10.Editor
 
             using (new LabelScope("Rendering"))
             {
-                PopupEnum<AlphaMode>("Alpha Mode", props[MToon10Prop.AlphaMode], materialEditor);
-                var alphaMode = (AlphaMode) (int) props[MToon10Prop.AlphaMode].floatValue;
+                PopupEnum<MToon10AlphaMode>("Alpha Mode", props[MToon10Prop.AlphaMode], materialEditor);
+                var alphaMode = (MToon10AlphaMode) (int) props[MToon10Prop.AlphaMode].floatValue;
 
-                if (alphaMode == AlphaMode.Transparent)
+                if (alphaMode == MToon10AlphaMode.Transparent)
                 {
-                    PopupEnum<TransparentWithZWriteMode>(
+                    PopupEnum<MToon10TransparentWithZWriteMode>(
                         "Transparent With ZWrite Mode",
                         props[MToon10Prop.TransparentWithZWrite],
                         materialEditor
                     );
                 }
 
-                if (alphaMode == AlphaMode.Cutout)
+                if (alphaMode == MToon10AlphaMode.Cutout)
                 {
                     materialEditor.ShaderProperty(props[MToon10Prop.AlphaCutoff], "Cutoff");
                 }
 
-                PopupEnum<DoubleSidedMode>("Double Sided", props[MToon10Prop.DoubleSided], materialEditor);
+                PopupEnum<MToon10DoubleSidedMode>("Double Sided", props[MToon10Prop.DoubleSided], materialEditor);
 
                 materialEditor.ShaderProperty(props[MToon10Prop.RenderQueueOffsetNumber], "RenderQueue Offset");
             }
@@ -117,7 +117,7 @@ namespace VRMShaders.VRM10.MToon10.Editor
 
             using (new LabelScope("Outline"))
             {
-                PopupEnum<OutlineMode>("Outline Mode", props[MToon10Prop.OutlineWidthMode], materialEditor);
+                PopupEnum<MToon10OutlineMode>("Outline Mode", props[MToon10Prop.OutlineWidthMode], materialEditor);
                 materialEditor.TexturePropertySingleLine(
                     new GUIContent("Outline Width", "Outline Width (G) [meter]"),
                     props[MToon10Prop.OutlineWidthMultiplyTexture],

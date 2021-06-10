@@ -31,5 +31,25 @@ namespace VRMShaders.VRM10.MToon10.Runtime
         {
             return mat.GetTexture(prop.ToUnityShaderLabName());
         }
+
+        public static Vector2 GetTextureScale(this Material mat, MToon10Prop prop)
+        {
+            return mat.GetTextureScale(prop.ToUnityShaderLabName());
+        }
+
+        public static Vector2 GetTextureOffset(this Material mat, MToon10Prop prop)
+        {
+            return mat.GetTextureOffset(prop.ToUnityShaderLabName());
+        }
+
+        public static float GetFloat(this Material mat, MToon10Prop prop)
+        {
+            return mat.GetFloat(prop.ToUnityShaderLabName());
+        }
+
+        public static Color GetColor(this Material mat, MToon10Prop prop)
+        {
+            return mat.GetColor(prop.ToUnityShaderLabName());
+        }
     }
 }

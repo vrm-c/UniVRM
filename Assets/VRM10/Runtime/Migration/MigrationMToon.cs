@@ -420,12 +420,12 @@ namespace UniVRM10
                 }
 
                 // Light
-                dst.GiIntensityFactor = MToonMigrator.MigrateToGiEqualization(mtoon.Definition.Lighting.LightingInfluence.GiIntensityValue);
-                dst.ShadingToonyFactor = MToonMigrator.MigrateToShadingToony(
+                dst.GiIntensityFactor = MToon10Migrator.MigrateToGiEqualization(mtoon.Definition.Lighting.LightingInfluence.GiIntensityValue);
+                dst.ShadingToonyFactor = MToon10Migrator.MigrateToShadingToony(
                     mtoon.Definition.Lighting.LitAndShadeMixing.ShadingToonyValue,
                     mtoon.Definition.Lighting.LitAndShadeMixing.ShadingShiftValue
                 );
-                dst.ShadingShiftFactor = MToonMigrator.MigrateToShadingShift(
+                dst.ShadingShiftFactor = MToon10Migrator.MigrateToShadingShift(
                     mtoon.Definition.Lighting.LitAndShadeMixing.ShadingToonyValue,
                     mtoon.Definition.Lighting.LitAndShadeMixing.ShadingShiftValue
                 );

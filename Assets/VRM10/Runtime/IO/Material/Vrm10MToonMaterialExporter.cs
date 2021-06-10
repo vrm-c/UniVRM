@@ -1,12 +1,10 @@
 ﻿using System;
-using MToon;
 using UniGLTF;
 using UniGLTF.Extensions.VRMC_materials_mtoon;
 using UnityEngine;
 using VRMShaders;
+using VRMShaders.VRM10.MToon10.Runtime;
 using ColorSpace = VRMShaders.ColorSpace;
-using OutlineWidthMode = MToon.OutlineWidthMode;
-using RenderMode = MToon.RenderMode;
 
 namespace UniVRM10
 {
@@ -16,48 +14,79 @@ namespace UniVRM10
         {
             try
             {
-                if (src.shader.name != MToon.Utils.ShaderName)
+                if (src.shader.name != MToon10Meta.UnityShaderName)
                 {
                     dst = null;
                     return false;
                 }
 
-                // convert MToon intermediate value from UnityEngine.Material
-                var def = MToon.Utils.GetMToonParametersFromMaterial(src);
+                // Get MToon10 Context
+                var context = new MToon10Context(src);
+                context.Validate();
 
                 // base material
                 dst = glTF_KHR_materials_unlit.CreateDefault();
                 dst.name = src.name;
 
+                // vrmc_materials_mtoon ext
+                var mtoon = new UniGLTF.Extensions.VRMC_materials_mtoon.VRMC_materials_mtoon();
+                mtoon.Version = "";
+
                 // Rendering
-                dst.doubleSided = def.Rendering.CullMode == CullMode.Off;
-                dst.alphaMode = ExportAlphaMode(def.Rendering.RenderMode);
-                dst.alphaCutoff = Mathf.Max(def.Color.CutoutThresholdValue, 0);
+                dst.alphaMode = ExportAlphaMode(context.AlphaMode);
+                mtoon.TransparentWithZWrite = context.TransparentWithZWriteMode == MToon10TransparentWithZWriteMode.On;
+                dst.alphaCutoff = Mathf.Max(0, context.AlphaCutoff);
+                mtoon.RenderQueueOffsetNumber = context.RenderQueueOffsetNumber;
+                dst.doubleSided = context.DoubleSidedMode == MToon10DoubleSidedMode.On;
 
                 // Lighting
-                dst.pbrMetallicRoughness = new glTFPbrMetallicRoughness
+                dst.pbrMetallicRoughness = new glTFPbrMetallicRoughness();
+                dst.pbrMetallicRoughness.baseColorFactor = context.BaseColorFactorSrgb.ToFloat4(ColorSpace.sRGB, ColorSpace.Linear);
+                var baseColorTextureIndex = textureExporter.ExportAsSRgb(context.BaseColorTexture);
+                if (baseColorTextureIndex != -1)
                 {
-                    baseColorFactor = def.Color.LitColor.ToFloat4(ColorSpace.sRGB, ColorSpace.Linear),
-                    baseColorTexture = new glTFMaterialBaseColorTextureInfo
+                    dst.pbrMetallicRoughness.baseColorTexture = new glTFMaterialBaseColorTextureInfo
                     {
-                        index = textureExporter.ExportAsSRgb(def.Color.LitMultiplyTexture),
-                    },
-                };
-
-                // Normal
-                var normalTextureIndex = textureExporter.ExportAsNormal(def.Lighting.Normal.NormalTexture);
+                        index = baseColorTextureIndex,
+                    };
+                }
+                mtoon.ShadeColorFactor = context.ShadeColorFactorSrgb.ToFloat3(ColorSpace.sRGB, ColorSpace.Linear);
+                var shadeColorTextureIndex = textureExporter.ExportAsSRgb(context.ShadeColorTexture);
+                if (shadeColorTextureIndex != -1)
+                {
+                    mtoon.ShadeMultiplyTexture = new TextureInfo
+                    {
+                        Index = shadeColorTextureIndex,
+                    };
+                }
+                var normalTextureIndex = textureExporter.ExportAsNormal(context.NormalTexture);
                 if (normalTextureIndex != -1)
                 {
                     dst.normalTexture = new glTFMaterialNormalTextureInfo
                     {
                         index = normalTextureIndex,
-                        scale = def.Lighting.Normal.NormalScaleValue,
+                        scale = context.NormalTextureScale,
                     };
                 }
+                mtoon.ShadingShiftFactor = context.ShadingShiftFactor;
+                var shadingShiftTextureIndex = textureExporter.ExportAsLinear(context.ShadingShiftTexture);
+                if (shadingShiftTextureIndex != -1)
+                {
+                    mtoon.ShadingShiftTexture = new ShadingShiftTextureInfo
+                    {
+                        Index = shadingShiftTextureIndex,
+                        Scale = context.ShadingShiftTextureScale,
+                    };
+                }
+                mtoon.ShadingToonyFactor = context.ShadingToonyFactor;
+
+                // GI
+                // TODO: update schema
+                mtoon.GiIntensityFactor = context.GiEqualizationFactor;
 
                 // Emission
-                dst.emissiveFactor = def.Emission.EmissionColor.ToFloat3(ColorSpace.Linear, ColorSpace.Linear);
-                var emissiveTextureIndex = textureExporter.ExportAsSRgb(def.Emission.EmissionMultiplyTexture);
+                dst.emissiveFactor = context.EmissiveFactorLinear.ToFloat3(ColorSpace.Linear, ColorSpace.Linear);
+                var emissiveTextureIndex = textureExporter.ExportAsSRgb(context.EmissiveTexture);
                 if (emissiveTextureIndex != -1)
                 {
                     dst.emissiveTexture = new glTFMaterialEmissiveTextureInfo
@@ -66,72 +95,67 @@ namespace UniVRM10
                     };
                 }
 
-                const float centimeterToMeter = 0.01f;
-                const float invertY = -1f;
-
-                // VRMC_materials_mtoon
-                var mtoon = new UniGLTF.Extensions.VRMC_materials_mtoon.VRMC_materials_mtoon
+                // Rim Lighting
+                var matcapTextureIndex = textureExporter.ExportAsSRgb(context.MatcapTexture);
+                if (matcapTextureIndex != -1)
                 {
-                    Version = "",
-
-                    // Rendering
-                    TransparentWithZWrite = def.Rendering.RenderMode == RenderMode.TransparentWithZWrite,
-                    RenderQueueOffsetNumber = ExportRenderQueueOffset(def.Rendering.RenderMode, def.Rendering.RenderQueueOffsetNumber),
-
-                    // Lighting
-                    ShadeColorFactor = def.Color.ShadeColor.ToFloat3(ColorSpace.sRGB, ColorSpace.Linear),
-                    ShadeMultiplyTexture = new TextureInfo
+                    mtoon.MatcapTexture = new TextureInfo
                     {
-                        Index = textureExporter.ExportAsSRgb(def.Color.ShadeMultiplyTexture),
-                    },
-                    ShadingToonyFactor = def.Lighting.LitAndShadeMixing.ShadingToonyValue,
-                    ShadingShiftFactor = def.Lighting.LitAndShadeMixing.ShadingShiftValue,
-                    ShadingShiftTexture = null,
-
-                    // Global Illumination
-                    GiIntensityFactor = def.Lighting.LightingInfluence.GiIntensityValue,
-
-                    // Rim Lighting
-                    MatcapTexture = new TextureInfo
+                        Index = matcapTextureIndex,
+                    };
+                }
+                mtoon.ParametricRimColorFactor = context.ParametricRimColorFactorSrgb.ToFloat3(ColorSpace.sRGB, ColorSpace.Linear);
+                mtoon.ParametricRimFresnelPowerFactor = context.ParametricRimFresnelPowerFactor;
+                mtoon.ParametricRimLiftFactor = context.ParametricRimLiftFactor;
+                var rimMultiplyTextureIndex = textureExporter.ExportAsSRgb(context.RimMultiplyTexture);
+                if (rimMultiplyTextureIndex != -1)
+                {
+                    mtoon.RimMultiplyTexture = new TextureInfo
                     {
-                        Index = textureExporter.ExportAsSRgb(def.MatCap.AdditiveTexture),
-                    },
-                    ParametricRimColorFactor = def.Rim.RimColor.ToFloat3(ColorSpace.Linear, ColorSpace.Linear),
-                    ParametricRimFresnelPowerFactor = def.Rim.RimFresnelPowerValue,
-                    ParametricRimLiftFactor = def.Rim.RimLiftValue,
-                    RimMultiplyTexture = new TextureInfo
-                    {
-                        Index = textureExporter.ExportAsSRgb(def.Rim.RimMultiplyTexture),
-                    },
-                    RimLightingMixFactor = def.Rim.RimLightingMixValue,
+                        Index = rimMultiplyTextureIndex,
+                    };
+                }
+                mtoon.RimLightingMixFactor = context.RimLightingMixFactor;
 
-                    // Outline
-                    OutlineWidthMode = ExportOutlineWidthMode(def.Outline.OutlineWidthMode),
-                    OutlineWidthFactor = def.Outline.OutlineWidthValue * centimeterToMeter,
-                    OutlineWidthMultiplyTexture = new TextureInfo
+                // Outline
+                mtoon.OutlineWidthMode = ExportOutlineWidthMode(context.OutlineWidthMode);
+                mtoon.OutlineWidthFactor = context.OutlineWidthFactor;
+                var outlineWidthMultiplyTextureIndex = textureExporter.ExportAsLinear(context.OutlineWidthMultiplyTexture);
+                if (outlineWidthMultiplyTextureIndex != -1)
+                {
+                    mtoon.OutlineWidthMultiplyTexture = new TextureInfo
                     {
-                        Index = textureExporter.ExportAsLinear(def.Outline.OutlineWidthMultiplyTexture),
-                    },
-                    OutlineColorFactor = def.Outline.OutlineColor.ToFloat3(ColorSpace.sRGB, ColorSpace.Linear),
-                    OutlineLightingMixFactor = ExportOutlineLightingMixFactor(def.Outline.OutlineColorMode, def.Outline.OutlineLightingMixValue),
+                        Index = outlineWidthMultiplyTextureIndex,
+                    };
+                }
+                mtoon.OutlineColorFactor = context.OutlineColorFactorSrgb.ToFloat3(ColorSpace.sRGB, ColorSpace.Linear);
+                mtoon.OutlineLightingMixFactor = context.OutlineLightingMixFactor;
 
-                    // UV Anim
-                    UvAnimationMaskTexture = new TextureInfo
+                // UV Animation
+                var uvAnimationMaskTextureIndex = textureExporter.ExportAsLinear(context.UvAnimationMaskTexture);
+                if (uvAnimationMaskTextureIndex != -1)
+                {
+                    mtoon.UvAnimationMaskTexture = new TextureInfo
                     {
-                        Index = textureExporter.ExportAsLinear(def.TextureOption.UvAnimationMaskTexture),
-                    },
-                    UvAnimationScrollXSpeedFactor = def.TextureOption.UvAnimationScrollXSpeedValue,
-                    UvAnimationScrollYSpeedFactor = def.TextureOption.UvAnimationScrollYSpeedValue * invertY,
-                    UvAnimationRotationSpeedFactor = def.TextureOption.UvAnimationRotationSpeedValue,
-                };
+                        Index = uvAnimationMaskTextureIndex,
+                    };
+                }
+                mtoon.UvAnimationScrollXSpeedFactor = context.UvAnimationScrollXSpeedFactor;
+                {
+                    // Coordinate Conversion
+                    const float invertY = -1f;
+                    mtoon.UvAnimationScrollYSpeedFactor = context.UvAnimationScrollYSpeedFactor * invertY;
+                }
+                mtoon.UvAnimationRotationSpeedFactor = context.UvAnimationRotationSpeedFactor;
 
                 // Texture Transforms
-                var scale = def.TextureOption.MainTextureLeftBottomOriginScale;
-                var offset = def.TextureOption.MainTextureLeftBottomOriginOffset;
+                var scale = context.TextureScale;
+                var offset = context.TextureOffset;
                 ExportTextureTransform(dst.pbrMetallicRoughness.baseColorTexture, scale, offset);
                 ExportTextureTransform(dst.emissiveTexture, scale, offset);
                 ExportTextureTransform(dst.normalTexture, scale, offset);
                 ExportTextureTransform(mtoon.ShadeMultiplyTexture, scale, offset);
+                ExportTextureTransform(mtoon.ShadingShiftTexture, scale, offset);
                 ExportTextureTransform(mtoon.MatcapTexture, scale, offset);
                 ExportTextureTransform(mtoon.RimMultiplyTexture, scale, offset);
                 ExportTextureTransform(mtoon.OutlineWidthMultiplyTexture, scale, offset);
@@ -148,69 +172,35 @@ namespace UniVRM10
             }
         }
 
-        private static string ExportAlphaMode(MToon.RenderMode renderMode)
+        private static string ExportAlphaMode(MToon10AlphaMode alphaMode)
         {
-            switch (renderMode)
+            switch (alphaMode)
             {
-                case RenderMode.Opaque:
+                case MToon10AlphaMode.Opaque:
                     return "OPAQUE";
-                case RenderMode.Cutout:
+                case MToon10AlphaMode.Cutout:
                     return "MASK";
-                case RenderMode.Transparent:
-                    return "BLEND";
-                case RenderMode.TransparentWithZWrite:
+                case MToon10AlphaMode.Transparent:
                     return "BLEND";
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(renderMode), renderMode, null);
+                    throw new ArgumentOutOfRangeException(nameof(alphaMode), alphaMode, null);
             }
         }
 
-        private static int ExportRenderQueueOffset(MToon.RenderMode renderMode, int offset)
-        {
-            switch (renderMode)
-            {
-                case RenderMode.Opaque:
-                    return 0;
-                case RenderMode.Cutout:
-                    return 0;
-                case RenderMode.Transparent:
-                    return Mathf.Clamp(offset, -9, 0);
-                case RenderMode.TransparentWithZWrite:
-                    return Mathf.Clamp(offset, 0, +9);
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(renderMode), renderMode, null);
-            }
-        }
-
-        private static UniGLTF.Extensions.VRMC_materials_mtoon.OutlineWidthMode ExportOutlineWidthMode(
-            MToon.OutlineWidthMode mode)
+        private static OutlineWidthMode ExportOutlineWidthMode(MToon10OutlineMode mode)
         {
             switch (mode)
             {
-                case OutlineWidthMode.None:
-                    return UniGLTF.Extensions.VRMC_materials_mtoon.OutlineWidthMode.none;
-                case OutlineWidthMode.WorldCoordinates:
-                    return UniGLTF.Extensions.VRMC_materials_mtoon.OutlineWidthMode.worldCoordinates;
-                case OutlineWidthMode.ScreenCoordinates:
-                    return UniGLTF.Extensions.VRMC_materials_mtoon.OutlineWidthMode.screenCoordinates;
+                case MToon10OutlineMode.None:
+                    return OutlineWidthMode.none;
+                case MToon10OutlineMode.World:
+                    return OutlineWidthMode.worldCoordinates;
+                case MToon10OutlineMode.Screen:
+                    return OutlineWidthMode.screenCoordinates;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(mode), mode, null);
             }
         }
-
-        private static float ExportOutlineLightingMixFactor(OutlineColorMode mode, float mixValue)
-        {
-            switch (mode)
-            {
-                case OutlineColorMode.FixedColor:
-                    return 0;
-                case OutlineColorMode.MixedLighting:
-                    return mixValue;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(mode), mode, null);
-            }
-        }
-
 
         private static void ExportTextureTransform(glTFTextureInfo textureInfo, Vector2 unityScale, Vector2 unityOffset)
         {
@@ -225,6 +215,16 @@ namespace UniVRM10
         }
 
         private static void ExportTextureTransform(TextureInfo textureInfo, Vector2 unityScale, Vector2 unityOffset)
+        {
+            // Generate extension to empty holder.
+            var gltfTextureInfo = new EmptyGltfTextureInfo();
+            ExportTextureTransform(gltfTextureInfo, unityScale, unityOffset);
+
+            // Copy extension from empty holder.
+            textureInfo.Extensions = gltfTextureInfo.extensions;
+        }
+
+        private static void ExportTextureTransform(ShadingShiftTextureInfo textureInfo, Vector2 unityScale, Vector2 unityOffset)
         {
             // Generate extension to empty holder.
             var gltfTextureInfo = new EmptyGltfTextureInfo();
