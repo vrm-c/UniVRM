@@ -41,7 +41,10 @@ namespace UniGLTF
         void OnDestroy()
         {
             Debug.Log("UnityResourceDestroyer.OnDestroy");
-            Dispose();
+            foreach (var (key, x) in m_resources)
+            {
+                UnityObjectDestoyer.DestroyRuntimeOrEditor(x);
+            }
         }
 
         public void TransferOwnership(TakeResponsibilityForDestroyObjectFunc take)
@@ -55,10 +58,7 @@ namespace UniGLTF
 
         public void Dispose()
         {
-            foreach (var (key, x) in m_resources)
-            {
-                UnityObjectDestoyer.DestroyRuntimeOrEditor(x);
-            }
+            UnityObjectDestoyer.DestroyRuntimeOrEditor(this);
         }
     }
 }
