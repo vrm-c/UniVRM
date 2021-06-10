@@ -621,7 +621,7 @@ namespace UniVRM10
         public override void TransferOwnership(TakeResponsibilityForDestroyObjectFunc take)
         {
             // VRM 固有のリソース(ScriptableObject)
-            if (take(default, m_humanoid))
+            if (take(SubAssetKey.Create(m_humanoid), m_humanoid))
             {
                 m_humanoid = null;
             }
