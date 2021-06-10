@@ -18,17 +18,17 @@ namespace VRMShaders.VRM10.MToon10.Editor
 
         public static int GetInt(this Material mat, Prop prop)
         {
-            return mat.GetInt(prop.ToName());
+            return mat.GetInt(prop.ToUnityShaderLabName());
         }
 
         public static void SetInt(this Material mat, Prop prop, int val)
         {
-            mat.SetInt(prop.ToName(), val);
+            mat.SetInt(prop.ToUnityShaderLabName(), val);
         }
 
         public static Texture GetTexture(this Material mat, Prop prop)
         {
-            return mat.GetTexture(prop.ToName());
+            return mat.GetTexture(prop.ToUnityShaderLabName());
         }
     }
 }

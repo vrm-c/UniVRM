@@ -2,9 +2,9 @@
 
 namespace VRMShaders.VRM10.MToon10.Editor
 {
-    public static class PropExtensions
+    public static class MToon10Properties
     {
-        private static readonly Dictionary<Prop, string> _propertyNames = new Dictionary<Prop, string>
+        private static readonly Dictionary<Prop, string> _unityShaderLabNames = new Dictionary<Prop, string>
         {
             [Prop.AlphaMode] = "_AlphaMode",
             [Prop.TransparentWithZWrite] = "_TransparentWithZWrite",
@@ -53,11 +53,11 @@ namespace VRMShaders.VRM10.MToon10.Editor
             [Prop.UnityAlphaToMask] = "_M_AlphaToMask",
         };
 
-        public static IReadOnlyDictionary<Prop, string> PropertyNames => _propertyNames;
+        public static IReadOnlyDictionary<Prop, string> UnityShaderLabNames => _unityShaderLabNames;
 
-        public static string ToName(this Prop prop)
+        public static string ToUnityShaderLabName(this Prop prop)
         {
-            return PropertyNames[prop];
+            return UnityShaderLabNames[prop];
         }
     }
 }

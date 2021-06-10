@@ -12,7 +12,7 @@ namespace VRMShaders.VRM10.MToon10.Editor
     {
         public override void OnGUI(MaterialEditor materialEditor, MaterialProperty[] properties)
         {
-            var props = PropExtensions.PropertyNames
+            var props = MToon10Properties.UnityShaderLabNames
                 .ToDictionary(x => x.Key, x => FindProperty(x.Value, properties));
             var materials = materialEditor.targets.Select(x => x as Material).ToArray();
 
