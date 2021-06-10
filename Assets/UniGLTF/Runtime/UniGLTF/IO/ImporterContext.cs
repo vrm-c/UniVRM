@@ -313,7 +313,7 @@ namespace UniGLTF
         /// </summary>
         public virtual void Dispose()
         {
-            Action<UnityEngine.Object> destroy = UnityResourceDestroyer.DestroyResource();
+            Action<UnityEngine.Object> destroy = UnityObjectManager.DestroyResource();
 
             foreach (var (k, x) in AnimationClips)
             {
@@ -391,9 +391,9 @@ namespace UniGLTF
         /// ImporterContext.Dispose の対象から外れる。
         /// </summary>
         /// <returns></returns>
-        public UnityResourceDestroyer DisposeOnGameObjectDestroyed()
+        public UnityObjectManager DisposeOnGameObjectDestroyed()
         {
-            var destroyer = Root.AddComponent<UnityResourceDestroyer>();
+            var destroyer = Root.AddComponent<UnityObjectManager>();
             TransferOwnership((k, o) =>
             {
                 destroyer.Resources.Add(o);

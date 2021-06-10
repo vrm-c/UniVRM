@@ -8,7 +8,7 @@ namespace UniGLTF
     /// <summary>
     /// Mesh, Material, Texture などを抱えておいて確実に破棄できるようにする
     /// </summary>
-    public class UnityResourceDestroyer : MonoBehaviour
+    public class UnityObjectManager : MonoBehaviour
     {
         List<UnityEngine.Object> m_resources = new List<UnityEngine.Object>();
         public IList<UnityEngine.Object> Resources => m_resources;

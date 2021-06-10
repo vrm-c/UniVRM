@@ -356,7 +356,7 @@ namespace VRM
 
         public override void Dispose()
         {
-            Action<UnityEngine.Object> destroy = UnityResourceDestroyer.DestroyResource();
+            Action<UnityEngine.Object> destroy = UnityObjectManager.DestroyResource();
 
             // VRM specific
             if (HumanoidAvatar != null)
