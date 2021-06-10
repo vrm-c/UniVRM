@@ -21,7 +21,7 @@ namespace UniGLTF
                 }
             }
 
-            importer.DrawRemapGUI<AnimationClip>(parser.GLTF.animations.Select(x => new SubAssetKey(typeof(AnimationClip), x.name)));
+            importer.DrawRemapGUI<AnimationClip>(AnimationImporterUtil.EnumerateSubAssetKeys(parser.GLTF));
 
             if (GUILayout.Button("Clear"))
             {

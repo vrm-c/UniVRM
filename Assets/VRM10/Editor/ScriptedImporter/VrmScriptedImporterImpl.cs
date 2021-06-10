@@ -45,9 +45,9 @@ namespace UniVRM10
                 loader.Load();
                 loader.ShowMeshes();
 
-                loader.TransferOwnership(o =>
+                loader.TransferOwnership((key, o) =>
                 {
-                    context.AddObjectToAsset(o.name, o);
+                    context.AddObjectToAsset(key.Name, o);
                     if (o is GameObject)
                     {
                         // Root GameObject is main object

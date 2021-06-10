@@ -15,18 +15,6 @@ namespace UniVRM10
 {
     public static class EditorVrm
     {
-        static ExpressionKey CreateKey(UniGLTF.Extensions.VRMC_vrm.Expression expression)
-        {
-            if (expression.Preset == UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.custom)
-            {
-                return ExpressionKey.CreateCustom(expression.Name);
-            }
-            else
-            {
-                return ExpressionKey.CreateFromPreset(expression.Preset);
-            }
-        }
-
         public static void OnGUI(ScriptedImporter importer, GltfParser parser, UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm)
         {
             var hasExternal = importer.GetExternalObjectMap().Any(x => x.Value is VRM10MetaObject || x.Value is VRM10ExpressionAvatar || x.Value is VRM10Expression);
@@ -42,7 +30,7 @@ namespace UniVRM10
             importer.DrawRemapGUI<VRM10MetaObject>(new SubAssetKey[] { VRM10MetaObject.SubAssetKey });
 
             // expressions
-            importer.DrawRemapGUI<VRM10Expression>(vrm.Expressions.Select(x => CreateKey(x).SubAssetKey));
+            importer.DrawRemapGUI<VRM10Expression>(vrm.Expressions.Select(x => ExpressionKey.CreateFromVrm10(x).SubAssetKey));
 
             if (GUILayout.Button("Clear"))
             {

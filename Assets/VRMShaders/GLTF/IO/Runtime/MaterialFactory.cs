@@ -30,13 +30,15 @@ namespace VRMShaders
 
         public struct MaterialLoadInfo
         {
+            public SubAssetKey Key;
             public readonly Material Asset;
             public readonly bool UseExternal;
 
             public bool IsSubAsset => !UseExternal;
 
-            public MaterialLoadInfo(Material asset, bool useExternal)
+            public MaterialLoadInfo(SubAssetKey key, Material asset, bool useExternal)
             {
+                Key = key;
                 Asset = asset;
                 UseExternal = useExternal;
             }
@@ -87,7 +89,7 @@ namespace VRMShaders
                 if (!x.UseExternal)
                 {
                     // 外部の '.asset' からロードしていない
-                    if (take(x.Asset))
+                    if (take(x.Key, x.Asset))
                     {
                         list.Add(x.Asset);
                     }
@@ -110,7 +112,7 @@ namespace VRMShaders
         {
             if (m_externalMap.TryGetValue(matDesc.SubAssetKey, out Material material))
             {
-                m_materials.Add(new MaterialLoadInfo(material, true));
+                m_materials.Add(new MaterialLoadInfo(matDesc.SubAssetKey, material, true));
                 return material;
             }
 
@@ -174,7 +176,7 @@ namespace VRMShaders
                 action(material);
             }
 
-            m_materials.Add(new MaterialLoadInfo(material, false));
+            m_materials.Add(new MaterialLoadInfo(matDesc.SubAssetKey, material, false));
 
             return material;
         }

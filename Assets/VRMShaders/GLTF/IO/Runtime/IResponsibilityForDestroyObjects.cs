@@ -2,7 +2,7 @@ using System;
 
 namespace VRMShaders
 {
-    public delegate bool TakeResponsibilityForDestroyObjectFunc(UnityEngine.Object obj);
+    public delegate bool TakeResponsibilityForDestroyObjectFunc(SubAssetKey key, UnityEngine.Object obj);
 
     /// <summary>
     /// UnityObjectを破棄する責務。

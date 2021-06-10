@@ -119,18 +119,17 @@ namespace UniGLTF
         {
             if (GLTF.animations != null && GLTF.animations.Any())
             {
-                for (int i = 0; i < GLTF.animations.Count; ++i)
+                foreach (var (key, gltfAnimation) in Enumerable.Zip(AnimationImporterUtil.EnumerateSubAssetKeys(GLTF), GLTF.animations, (x, y) => (x, y)))
                 {
-                    var gltfAnimation = GLTF.animations[i];
                     AnimationClip clip = default;
-                    if (_externalObjectMap.TryGetValue(new SubAssetKey(typeof(AnimationClip), gltfAnimation.name), out UnityEngine.Object value))
+                    if (_externalObjectMap.TryGetValue(key, out UnityEngine.Object value))
                     {
                         clip = value as AnimationClip;
                     }
                     else
                     {
-                        clip = AnimationImporterUtil.ConvertAnimationClip(GLTF, GLTF.animations[i], InvertAxis.Create());
-                        AnimationClips.Add(clip);
+                        clip = AnimationImporterUtil.ConvertAnimationClip(GLTF, gltfAnimation, InvertAxis.Create());
+                        AnimationClips.Add((key, clip));
                     }
                 }
 
@@ -150,7 +149,7 @@ namespace UniGLTF
             var animation = Root.AddComponent<Animation>();
             for (int i = 0; i < AnimationClips.Count; ++i)
             {
-                var clip = AnimationClips[i];
+                var (_, clip) = AnimationClips[i];
                 animation.AddClip(clip, clip.name);
                 if (i == 0)
                 {
@@ -290,14 +289,6 @@ namespace UniGLTF
                 }
             }
         }
-        void RemoveMesh(Mesh mesh)
-        {
-            var index = Meshes.FindIndex(x => x.Mesh == mesh);
-            if (index >= 0)
-            {
-                Meshes.RemoveAt(index);
-            }
-        }
 
         public void EnableUpdateWhenOffscreen()
         {
@@ -314,7 +305,7 @@ namespace UniGLTF
             }
         }
 
-        public List<AnimationClip> AnimationClips = new List<AnimationClip>();
+        public List<(SubAssetKey, AnimationClip)> AnimationClips = new List<(SubAssetKey, AnimationClip)>();
         #endregion
 
         /// <summary>
@@ -324,7 +315,7 @@ namespace UniGLTF
         {
             Action<UnityEngine.Object> destroy = UnityResourceDestroyer.DestroyResource();
 
-            foreach (var x in AnimationClips)
+            foreach (var (k, x) in AnimationClips)
             {
 #if VRM_DEVELOP
                 // Debug.Log($"Destroy {x}");
@@ -360,38 +351,30 @@ namespace UniGLTF
         /// <returns></returns>
         public virtual void TransferOwnership(TakeResponsibilityForDestroyObjectFunc take)
         {
-            var list = new List<UnityEngine.Object>();
-            foreach (var mesh in Meshes)
+            foreach (var mesh in Meshes.ToArray())
             {
-                if (take(mesh.Mesh))
+                // mesh の extract は実装していないので SubAssetKey を使わない
+                if (take(default, mesh.Mesh))
                 {
-                    list.Add(mesh.Mesh);
+                    Meshes.Remove(mesh);
                 }
-            }
-            foreach (var x in list)
-            {
-                RemoveMesh(x as Mesh);
             }
 
             TextureFactory.TransferOwnership(take);
             MaterialFactory.TransferOwnership(take);
 
-            list.Clear();
-            foreach (var animation in AnimationClips)
+            foreach (var (key, animation) in AnimationClips.ToArray())
             {
-                if (take(animation))
+                if (take(key, animation))
                 {
-                    list.Add(animation);
+                    AnimationClips.Remove((key, animation));
                 }
-            }
-            foreach (var x in list)
-            {
-                AnimationClips.Remove(x as AnimationClip);
             }
 
             if (m_ownRoot && Root != null)
             {
-                if (take(Root))
+                // GameObject の extract は無いので SubAssetKey を使わない
+                if (take(default, Root))
                 {
                     // 所有権(Dispose権)
                     m_ownRoot = false;
@@ -411,7 +394,7 @@ namespace UniGLTF
         public UnityResourceDestroyer DisposeOnGameObjectDestroyed()
         {
             var destroyer = Root.AddComponent<UnityResourceDestroyer>();
-            TransferOwnership(o =>
+            TransferOwnership((k, o) =>
             {
                 destroyer.Resources.Add(o);
                 return true;

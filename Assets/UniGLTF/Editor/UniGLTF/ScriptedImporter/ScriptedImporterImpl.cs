@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
 using VRMShaders;
 #if UNITY_2020_2_OR_NEWER
@@ -53,9 +51,9 @@ namespace UniGLTF
                 loader.Load();
                 loader.ShowMeshes();
 
-                loader.TransferOwnership(o =>
+                loader.TransferOwnership((k, o) =>
                 {
-                    context.AddObjectToAsset(o.name, o);
+                    context.AddObjectToAsset(k.Name, o);
                     if (o is GameObject)
                     {
                         // Root GameObject is main object

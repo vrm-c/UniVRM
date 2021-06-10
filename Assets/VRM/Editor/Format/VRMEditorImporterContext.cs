@@ -108,7 +108,7 @@ namespace VRM
             TextureExtractor.ExtractTextures(m_context.Parser, m_prefabPath.Parent.Child(dirName), m_context.TextureDescriptorGenerator, subAssets, (_x, _y) => { }, onTextureReloaded);
         }
 
-        bool SaveAsAsset(UnityEngine.Object o)
+        bool SaveAsAsset(SubAssetKey _, UnityEngine.Object o)
         {
             if (o is GameObject)
             {

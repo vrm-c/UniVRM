@@ -319,31 +319,33 @@ namespace VRM
 
         public override void TransferOwnership(TakeResponsibilityForDestroyObjectFunc take)
         {
+            // VRM-0 は SubAssetKey を使っていないので default で済ます
+
             // VRM 固有のリソース(ScriptableObject)
-            if (take(HumanoidAvatar))
+            if (take(default, HumanoidAvatar))
             {
                 HumanoidAvatar = null;
             }
 
-            if (take(Meta))
+            if (take(default, Meta))
             {
                 Meta = null;
             }
 
-            if (take(AvatarDescription))
+            if (take(default, AvatarDescription))
             {
                 AvatarDescription = null;
             }
 
             foreach (var x in BlendShapeAvatar.Clips)
             {
-                if (take(x))
+                if (take(default, x))
                 {
                     // do nothing
                 }
             }
 
-            if (take(BlendShapeAvatar))
+            if (take(default, BlendShapeAvatar))
             {
                 BlendShapeAvatar = null;
             }

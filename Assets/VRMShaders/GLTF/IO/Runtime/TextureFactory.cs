@@ -46,11 +46,11 @@ namespace VRMShaders
         public void TransferOwnership(TakeResponsibilityForDestroyObjectFunc take)
         {
             var transferredAssets = new HashSet<SubAssetKey>();
-            foreach (var x in _textureCache)
+            foreach (var (k, v) in _textureCache)
             {
-                if (take(x.Value))
+                if (take(k, v))
                 {
-                    transferredAssets.Add(x.Key);
+                    transferredAssets.Add(k);
                 }
             }
 
