@@ -72,7 +72,7 @@ inline half3 GetMToonLighting_Emissive(const MToonInput input)
     }
     else
     {
-        return _EmissionColor.rgb;
+        return 0;
     }
 }
 
