@@ -6,6 +6,7 @@
         "UniGLTF",
         "VRMShaders.GLTF.IO.Runtime",
         "VRMShaders.VRM10.Format.Runtime",
+        "VRMShaders.VRM10.MToon10.Runtime",
         "UniHumanoid"
     ],
     "optionalUnityReferences": [],

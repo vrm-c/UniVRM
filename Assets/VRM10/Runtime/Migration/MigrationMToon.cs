@@ -5,6 +5,7 @@ using UniGLTF;
 using UniGLTF.Extensions.VRMC_materials_mtoon;
 using UniJSON;
 using UnityEngine;
+using VRMShaders.VRM10.MToon10.Runtime;
 using ColorSpace = VRMShaders.ColorSpace;
 using RenderMode = MToon.RenderMode;
 
@@ -419,9 +420,15 @@ namespace UniVRM10
                 }
 
                 // Light
-                dst.GiIntensityFactor = mtoon.Definition.Lighting.LightingInfluence.GiIntensityValue;
-                dst.ShadingShiftFactor = mtoon.Definition.Lighting.LitAndShadeMixing.ShadingShiftValue;
-                dst.ShadingToonyFactor = mtoon.Definition.Lighting.LitAndShadeMixing.ShadingToonyValue;
+                dst.GiIntensityFactor = MToonMigrator.MigrateToGiEqualization(mtoon.Definition.Lighting.LightingInfluence.GiIntensityValue);
+                dst.ShadingToonyFactor = MToonMigrator.MigrateToShadingToony(
+                    mtoon.Definition.Lighting.LitAndShadeMixing.ShadingToonyValue,
+                    mtoon.Definition.Lighting.LitAndShadeMixing.ShadingShiftValue
+                );
+                dst.ShadingShiftFactor = MToonMigrator.MigrateToShadingShift(
+                    mtoon.Definition.Lighting.LitAndShadeMixing.ShadingToonyValue,
+                    mtoon.Definition.Lighting.LitAndShadeMixing.ShadingShiftValue
+                );
                 if (mtoon.TextureIndexMap.BumpMap.HasValue)
                 {
                     gltfMaterial.normalTexture = new glTFMaterialNormalTextureInfo
