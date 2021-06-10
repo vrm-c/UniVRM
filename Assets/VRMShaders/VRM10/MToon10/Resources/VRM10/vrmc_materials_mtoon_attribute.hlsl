@@ -25,7 +25,6 @@ struct Varyings
     half4 tangentWS : TEXCOORD3;
 #endif
     float3 viewDirWS : TEXCOORD4;
-    // half outlineFactor : TEXCOORD5;
     UNITY_FOG_COORDS(6)
     UNITY_LIGHTING_COORDS(7,8)
     float4 pos : SV_POSITION; // UnityCG macro specified name. Accurately "positionCS"

@@ -25,7 +25,6 @@ Varyings MToonVertex(const Attributes v) // v is UnityCG macro specified name.
         output.positionWS = position.positionWS;
         output.viewDirWS = MToon_GetWorldSpaceNormalizedViewDir(output.positionWS);
         output.uv = TRANSFORM_TEX(v.texcoord0, _MainTex);
-        // output.outlineFactor = 1;
     }
     else
     {
@@ -35,7 +34,6 @@ Varyings MToonVertex(const Attributes v) // v is UnityCG macro specified name.
         output.positionWS = position.positionWS;
         output.viewDirWS = MToon_GetWorldSpaceNormalizedViewDir(output.positionWS);
         output.uv = TRANSFORM_TEX(v.texcoord0, _MainTex);
-        // output.outlineFactor = 0;
     }
 
 #if defined(_NORMALMAP)

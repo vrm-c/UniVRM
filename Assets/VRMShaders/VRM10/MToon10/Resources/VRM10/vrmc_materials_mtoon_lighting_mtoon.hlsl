@@ -14,7 +14,6 @@ struct MToonInput
     half3 viewDirWS;
     half3 litColor;
     half alpha;
-    // half outlineFactor;
 };
 
 inline half GetMToonLighting_Reflectance_ShadingShift(const MToonInput input)
