@@ -317,7 +317,7 @@ namespace VRM
             return meta;
         }
 
-        public override void TransferOwnership(Func<UnityEngine.Object, bool> take)
+        public override void TransferOwnership(TakeResponsibilityForDestroyObjectFunc take)
         {
             // VRM 固有のリソース(ScriptableObject)
             if (take(HumanoidAvatar))

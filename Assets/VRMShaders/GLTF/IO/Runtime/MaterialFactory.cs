@@ -9,7 +9,7 @@ namespace VRMShaders
 {
     public delegate Task<Texture> GetTextureAsyncFunc(TextureDescriptor texDesc);
 
-    public class MaterialFactory : IDisposable
+    public class MaterialFactory : IResponsibilityForDestroyObjects
     {
         private readonly IReadOnlyDictionary<SubAssetKey, Material> m_externalMap;
 
@@ -79,7 +79,7 @@ namespace VRMShaders
         ///
         /// </summary>
         /// <param name="take"></param>
-        public void TransferOwnership(Func<UnityEngine.Object, bool> take)
+        public void TransferOwnership(TakeResponsibilityForDestroyObjectFunc take)
         {
             var list = new List<Material>();
             foreach (var x in m_materials)

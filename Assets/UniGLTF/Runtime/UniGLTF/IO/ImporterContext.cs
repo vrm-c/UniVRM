@@ -10,7 +10,7 @@ namespace UniGLTF
     /// <summary>
     /// GLTF importer
     /// </summary>
-    public class ImporterContext : IDisposable
+    public class ImporterContext : IResponsibilityForDestroyObjects
     {
         public ITextureDescriptorGenerator TextureDescriptorGenerator { get; protected set; }
         public IMaterialDescriptorGenerator MaterialDescriptorGenerator { get; protected set; }
@@ -358,7 +358,7 @@ namespace UniGLTF
         /// Root ヒエラルキーで使っているリソース
         /// </summary>
         /// <returns></returns>
-        public virtual void TransferOwnership(Func<UnityEngine.Object, bool> take)
+        public virtual void TransferOwnership(TakeResponsibilityForDestroyObjectFunc take)
         {
             var list = new List<UnityEngine.Object>();
             foreach (var mesh in Meshes)

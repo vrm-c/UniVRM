@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace VRMShaders
 {
-    public class TextureFactory : IDisposable
+    public class TextureFactory : IResponsibilityForDestroyObjects
     {
         private readonly ITextureDeserializer _textureDeserializer;
         private readonly IReadOnlyDictionary<SubAssetKey, Texture> _externalMap;
@@ -43,7 +43,7 @@ namespace VRMShaders
         /// 所有権(Dispose権)を移譲する
         /// </summary>
         /// <param name="take"></param>
-        public void TransferOwnership(Func<UnityEngine.Object, bool> take)
+        public void TransferOwnership(TakeResponsibilityForDestroyObjectFunc take)
         {
             var transferredAssets = new HashSet<SubAssetKey>();
             foreach (var x in _textureCache)
