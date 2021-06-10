@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using VRMShaders.VRM10.MToon10.Runtime;
 
-namespace VRMShaders.VRM10.MToon10.Editor
+namespace VRMShaders.VRM10.MToon10.Runtime
 {
     public static class MaterialExtensions
     {
@@ -17,17 +17,17 @@ namespace VRMShaders.VRM10.MToon10.Editor
             }
         }
 
-        public static int GetInt(this Material mat, Prop prop)
+        public static int GetInt(this Material mat, MToon10Prop prop)
         {
             return mat.GetInt(prop.ToUnityShaderLabName());
         }
 
-        public static void SetInt(this Material mat, Prop prop, int val)
+        public static void SetInt(this Material mat, MToon10Prop prop, int val)
         {
             mat.SetInt(prop.ToUnityShaderLabName(), val);
         }
 
-        public static Texture GetTexture(this Material mat, Prop prop)
+        public static Texture GetTexture(this Material mat, MToon10Prop prop)
         {
             return mat.GetTexture(prop.ToUnityShaderLabName());
         }

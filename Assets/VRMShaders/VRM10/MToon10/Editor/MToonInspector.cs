@@ -21,65 +21,65 @@ namespace VRMShaders.VRM10.MToon10.Editor
 
             using (new LabelScope("Rendering"))
             {
-                PopupEnum<AlphaMode>("Alpha Mode", props[Prop.AlphaMode], materialEditor);
-                var alphaMode = (AlphaMode) (int) props[Prop.AlphaMode].floatValue;
+                PopupEnum<AlphaMode>("Alpha Mode", props[MToon10Prop.AlphaMode], materialEditor);
+                var alphaMode = (AlphaMode) (int) props[MToon10Prop.AlphaMode].floatValue;
 
                 if (alphaMode == AlphaMode.Transparent)
                 {
                     PopupEnum<TransparentWithZWriteMode>(
                         "Transparent With ZWrite Mode",
-                        props[Prop.TransparentWithZWrite],
+                        props[MToon10Prop.TransparentWithZWrite],
                         materialEditor
                     );
                 }
 
                 if (alphaMode == AlphaMode.Cutout)
                 {
-                    materialEditor.ShaderProperty(props[Prop.AlphaCutoff], "Cutoff");
+                    materialEditor.ShaderProperty(props[MToon10Prop.AlphaCutoff], "Cutoff");
                 }
 
-                PopupEnum<DoubleSidedMode>("Double Sided", props[Prop.DoubleSided], materialEditor);
+                PopupEnum<DoubleSidedMode>("Double Sided", props[MToon10Prop.DoubleSided], materialEditor);
 
-                materialEditor.ShaderProperty(props[Prop.RenderQueueOffsetNumber], "RenderQueue Offset");
+                materialEditor.ShaderProperty(props[MToon10Prop.RenderQueueOffsetNumber], "RenderQueue Offset");
             }
 
             using (new LabelScope("Lighting"))
             {
                 materialEditor.TexturePropertySingleLine(
                     new GUIContent("Lit Color, Alpha", "Lit (RGB), Alpha (A)"),
-                    props[Prop.BaseColorTexture],
-                    props[Prop.BaseColorFactor]
+                    props[MToon10Prop.BaseColorTexture],
+                    props[MToon10Prop.BaseColorFactor]
                 );
                 materialEditor.TexturePropertySingleLine(
                     new GUIContent("Shade Color", "Shade (RGB)"),
-                    props[Prop.ShadeColorTexture],
-                    props[Prop.ShadeColorFactor]
+                    props[MToon10Prop.ShadeColorTexture],
+                    props[MToon10Prop.ShadeColorFactor]
                 );
                 materialEditor.TexturePropertySingleLine(
                     new GUIContent("Normal Map", "Normal Map (RGB)"),
-                    props[Prop.NormalTexture],
-                    props[Prop.NormalTextureScale]
+                    props[MToon10Prop.NormalTexture],
+                    props[MToon10Prop.NormalTextureScale]
                 );
-                materialEditor.ShaderProperty(props[Prop.ShadingShiftFactor], "Shading Shift");
-                materialEditor.ShaderProperty(props[Prop.ShadingToonyFactor], "Shading Toony");
+                materialEditor.ShaderProperty(props[MToon10Prop.ShadingShiftFactor], "Shading Shift");
+                materialEditor.ShaderProperty(props[MToon10Prop.ShadingToonyFactor], "Shading Toony");
                 materialEditor.TexturePropertySingleLine(
                     new GUIContent("Additive Shading Shift", "Shading Shift (R)"),
-                    props[Prop.ShadingShiftTexture],
-                    props[Prop.ShadingShiftTextureScale]
+                    props[MToon10Prop.ShadingShiftTexture],
+                    props[MToon10Prop.ShadingShiftTextureScale]
                 );
             }
 
             using (new LabelScope("Global Illumination"))
             {
-                materialEditor.ShaderProperty(props[Prop.GiEqualizationFactor], "GI Equalization");
+                materialEditor.ShaderProperty(props[MToon10Prop.GiEqualizationFactor], "GI Equalization");
             }
 
             using (new LabelScope("Emission"))
             {
                 materialEditor.TexturePropertySingleLine(
                     new GUIContent("Emission", "Emission (RGB)"),
-                    props[Prop.EmissiveTexture],
-                    props[Prop.EmissiveFactor]
+                    props[MToon10Prop.EmissiveTexture],
+                    props[MToon10Prop.EmissiveFactor]
                 );
             }
 
@@ -87,48 +87,48 @@ namespace VRMShaders.VRM10.MToon10.Editor
             {
                 materialEditor.TexturePropertySingleLine(
                     new GUIContent("Rim Color", "Rim Color (RGB)"),
-                    props[Prop.RimMultiplyTexture]
+                    props[MToon10Prop.RimMultiplyTexture]
                 );
                 materialEditor.ShaderProperty(
-                    props[Prop.RimLightingMixFactor],
+                    props[MToon10Prop.RimLightingMixFactor],
                     new GUIContent("Rim LightingMix")
                 );
                 EditorGUILayout.Space();
 
                 materialEditor.TexturePropertySingleLine(
                     new GUIContent("Matcap Rim", "Matcap Rim (RGB)"),
-                    props[Prop.MatcapTexture]
+                    props[MToon10Prop.MatcapTexture]
                 );
                 EditorGUILayout.Space();
 
                 materialEditor.ShaderProperty(
-                    props[Prop.ParametricRimColorFactor],
+                    props[MToon10Prop.ParametricRimColorFactor],
                     new GUIContent("Parametric Rim Color")
                 );
                 materialEditor.ShaderProperty(
-                    props[Prop.ParametricRimFresnelPowerFactor],
+                    props[MToon10Prop.ParametricRimFresnelPowerFactor],
                     new GUIContent("Parametric Rim Fresnel Power")
                 );
                 materialEditor.ShaderProperty(
-                    props[Prop.ParametricRimLiftFactor],
+                    props[MToon10Prop.ParametricRimLiftFactor],
                     new GUIContent("Parametric Rim Lift")
                 );
             }
 
             using (new LabelScope("Outline"))
             {
-                PopupEnum<OutlineMode>("Outline Mode", props[Prop.OutlineWidthMode], materialEditor);
+                PopupEnum<OutlineMode>("Outline Mode", props[MToon10Prop.OutlineWidthMode], materialEditor);
                 materialEditor.TexturePropertySingleLine(
                     new GUIContent("Outline Width", "Outline Width (G) [meter]"),
-                    props[Prop.OutlineWidthMultiplyTexture],
-                    props[Prop.OutlineWidthFactor]
+                    props[MToon10Prop.OutlineWidthMultiplyTexture],
+                    props[MToon10Prop.OutlineWidthFactor]
                 );
                 materialEditor.ShaderProperty(
-                    props[Prop.OutlineColorFactor],
+                    props[MToon10Prop.OutlineColorFactor],
                     new GUIContent("Outline Color")
                 );
                 materialEditor.ShaderProperty(
-                    props[Prop.OutlineLightingMixFactor],
+                    props[MToon10Prop.OutlineLightingMixFactor],
                     new GUIContent("Outline LightingMix")
                 );
             }
@@ -137,18 +137,18 @@ namespace VRMShaders.VRM10.MToon10.Editor
             {
                 materialEditor.TexturePropertySingleLine(
                     new GUIContent("Mask", "Mask (B)"),
-                    props[Prop.UvAnimationMaskTexture]
+                    props[MToon10Prop.UvAnimationMaskTexture]
                 );
                 materialEditor.ShaderProperty(
-                    props[Prop.UvAnimationScrollXSpeedFactor],
+                    props[MToon10Prop.UvAnimationScrollXSpeedFactor],
                     new GUIContent("Translate X")
                 );
                 materialEditor.ShaderProperty(
-                    props[Prop.UvAnimationScrollYSpeedFactor],
+                    props[MToon10Prop.UvAnimationScrollYSpeedFactor],
                     new GUIContent("Translate Y")
                 );
                 materialEditor.ShaderProperty(
-                    props[Prop.UvAnimationRotationSpeedFactor],
+                    props[MToon10Prop.UvAnimationRotationSpeedFactor],
                     new GUIContent("Rotation")
                 );
             }
@@ -165,11 +165,11 @@ namespace VRMShaders.VRM10.MToon10.Editor
                     var mat = materials[0];
 
                     EditorGUILayout.LabelField("RenderQueue", mat.renderQueue.ToString());
-                    EditorGUILayout.LabelField("Cull", ((CullMode) props[Prop.UnityCullMode].floatValue).ToString());
-                    EditorGUILayout.LabelField("SrcBlend", ((BlendMode) props[Prop.UnitySrcBlend].floatValue).ToString());
-                    EditorGUILayout.LabelField("DstBlend", ((BlendMode) props[Prop.UnityDstBlend].floatValue).ToString());
-                    EditorGUILayout.LabelField("ZWrite", ((UnityZWriteMode) props[Prop.UnityZWrite].floatValue).ToString());
-                    EditorGUILayout.LabelField("AlphaToMask", ((UnityAlphaToMaskMode) props[Prop.UnityAlphaToMask].floatValue).ToString());
+                    EditorGUILayout.LabelField("Cull", ((CullMode) props[MToon10Prop.UnityCullMode].floatValue).ToString());
+                    EditorGUILayout.LabelField("SrcBlend", ((BlendMode) props[MToon10Prop.UnitySrcBlend].floatValue).ToString());
+                    EditorGUILayout.LabelField("DstBlend", ((BlendMode) props[MToon10Prop.UnityDstBlend].floatValue).ToString());
+                    EditorGUILayout.LabelField("ZWrite", ((UnityZWriteMode) props[MToon10Prop.UnityZWrite].floatValue).ToString());
+                    EditorGUILayout.LabelField("AlphaToMask", ((UnityAlphaToMaskMode) props[MToon10Prop.UnityAlphaToMask].floatValue).ToString());
                     EditorGUILayout.LabelField("Enabled Keywords", string.Join("\n", mat.shaderKeywords), EditorStyles.textArea);
                 }
             }
