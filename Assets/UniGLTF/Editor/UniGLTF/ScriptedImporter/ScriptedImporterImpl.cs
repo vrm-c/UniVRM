@@ -48,20 +48,17 @@ namespace UniGLTF
                 }
 
                 loader.InvertAxis = reverseAxis;
-                loader.Load();
-                loader.ShowMeshes();
+                var loaded = loader.Load();
+                loaded.ShowMeshes();
 
                 loader.TransferOwnership((k, o) =>
                 {
                     context.AddObjectToAsset(k.Name, o);
-                    if (o is GameObject)
-                    {
-                        // Root GameObject is main object
-                        context.SetMainObject(loader.Root);
-                    }
-
                     return true;
                 });
+
+                context.AddObjectToAsset(loaded.name, loaded.gameObject);
+                context.SetMainObject(loaded.gameObject);
             }
         }
     }

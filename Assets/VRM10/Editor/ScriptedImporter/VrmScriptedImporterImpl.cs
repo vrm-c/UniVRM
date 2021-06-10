@@ -42,20 +42,17 @@ namespace UniVRM10
                     VRMShaders.TextureImporterConfigurator.Configure(textureInfo, loader.TextureFactory.ExternalTextures);
                 }
 
-                loader.Load();
-                loader.ShowMeshes();
+                var loaded = loader.Load();
+                loaded.ShowMeshes();
 
                 loader.TransferOwnership((key, o) =>
                 {
                     context.AddObjectToAsset(key.Name, o);
-                    if (o is GameObject)
-                    {
-                        // Root GameObject is main object
-                        context.SetMainObject(loader.Root);
-                    }
-
                     return true;
                 });
+
+                context.AddObjectToAsset(loaded.name, loaded.gameObject);
+                context.SetMainObject(loaded.gameObject);
             }
         }
     }

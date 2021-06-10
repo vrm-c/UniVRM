@@ -63,8 +63,8 @@ namespace VRM
                     {
                         VRMShaders.TextureImporterConfigurator.Configure(textureInfo, context.TextureFactory.ExternalTextures);
                     }
-                    context.Load();
-                    editor.SaveAsAsset();
+                    var loaded = context.Load();
+                    editor.SaveAsAsset(loaded);
                 }
             };
 

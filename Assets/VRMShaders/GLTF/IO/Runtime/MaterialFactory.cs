@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -66,7 +65,7 @@ namespace VRMShaders
 #if VRM_DEVELOP
                     // Debug.Log($"Destroy {x.Asset}");
 #endif
-                    UnityEngine.Object.DestroyImmediate(x.Asset, false);
+                    UnityObjectDestoyer.DestroyRuntimeOrEditor(x.Asset);
                 }
             }
         }

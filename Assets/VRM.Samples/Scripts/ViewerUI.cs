@@ -317,11 +317,10 @@ namespace VRM.Samples
                         using (var context = new VRMImporterContext(parser))
                         {
                             await m_texts.UpdateMetaAsync(context);
-                            await context.LoadAsync();
-                            context.EnableUpdateWhenOffscreen();
-                            context.ShowMeshes();
-                            context.DisposeOnGameObjectDestroyed();
-                            SetModel(context.Root);
+                            var loaded = await context.LoadAsync();
+                            loaded.EnableUpdateWhenOffscreen();
+                            loaded.ShowMeshes();
+                            SetModel(loaded.gameObject);
                         }
                         break;
                     }
@@ -333,11 +332,10 @@ namespace VRM.Samples
                         parser.ParseGlb(file);
 
                         var context = new UniGLTF.ImporterContext(parser);
-                        context.Load();
-                        context.EnableUpdateWhenOffscreen();
-                        context.ShowMeshes();
-                        context.DisposeOnGameObjectDestroyed();
-                        SetModel(context.Root);
+                        var loaded = context.Load();
+                        loaded.EnableUpdateWhenOffscreen();
+                        loaded.ShowMeshes();
+                        SetModel(loaded.gameObject);
                         break;
                     }
 
@@ -348,11 +346,10 @@ namespace VRM.Samples
                         parser.ParsePath(path);
 
                         var context = new UniGLTF.ImporterContext(parser);
-                        context.Load();
-                        context.EnableUpdateWhenOffscreen();
-                        context.ShowMeshes();
-                        context.DisposeOnGameObjectDestroyed();
-                        SetModel(context.Root);
+                        var loaded = context.Load();
+                        loaded.EnableUpdateWhenOffscreen();
+                        loaded.ShowMeshes();
+                        SetModel(loaded.gameObject);
                         break;
                     }
 

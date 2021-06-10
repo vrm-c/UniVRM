@@ -356,28 +356,26 @@ namespace VRM
 
         public override void Dispose()
         {
-            Action<UnityEngine.Object> destroy = UnityObjectManager.DestroyResource();
-
             // VRM specific
             if (HumanoidAvatar != null)
             {
-                destroy(HumanoidAvatar);
+                UnityObjectDestoyer.DestroyRuntimeOrEditor(HumanoidAvatar);
             }
             if (Meta != null)
             {
-                destroy(Meta);
+                UnityObjectDestoyer.DestroyRuntimeOrEditor(Meta);
             }
             if (AvatarDescription != null)
             {
-                destroy(AvatarDescription);
+                UnityObjectDestoyer.DestroyRuntimeOrEditor(AvatarDescription);
             }
             if (BlendShapeAvatar != null)
             {
                 foreach (var clip in BlendShapeAvatar.Clips)
                 {
-                    destroy(clip);
+                    UnityObjectDestoyer.DestroyRuntimeOrEditor(clip);
                 }
-                destroy(BlendShapeAvatar);
+                UnityObjectDestoyer.DestroyRuntimeOrEditor(BlendShapeAvatar);
             }
 
             base.Dispose();

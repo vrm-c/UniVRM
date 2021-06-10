@@ -61,7 +61,7 @@ namespace UniGLTF
         };
 
         #region Load. Build unity objects
-        public virtual async Task LoadAsync(IAwaitCaller awaitCaller = null, Func<string, IDisposable> MeasureTime = null)
+        public virtual async Task<UnityObjectManager> LoadAsync(IAwaitCaller awaitCaller = null, Func<string, IDisposable> MeasureTime = null)
         {
             if (awaitCaller == null)
             {
@@ -108,6 +108,8 @@ namespace UniGLTF
             }
 
             await OnLoadHierarchy(awaitCaller, MeasureTime);
+
+            return UnityObjectManager.AttachTo(Root, this);
         }
 
         /// <summary>
@@ -274,36 +276,10 @@ namespace UniGLTF
         #endregion
 
         #region Imported
-        public GameObject Root;
-        bool m_ownRoot = true;
+        protected GameObject Root;
         public List<Transform> Nodes = new List<Transform>();
 
         public List<MeshWithMaterials> Meshes = new List<MeshWithMaterials>();
-        public void ShowMeshes()
-        {
-            foreach (var x in Meshes)
-            {
-                foreach (var y in x.Renderers)
-                {
-                    y.enabled = true;
-                }
-            }
-        }
-
-        public void EnableUpdateWhenOffscreen()
-        {
-            foreach (var x in Meshes)
-            {
-                foreach (var r in x.Renderers)
-                {
-                    var skinnedMeshRenderer = r as SkinnedMeshRenderer;
-                    if (skinnedMeshRenderer != null)
-                    {
-                        skinnedMeshRenderer.updateWhenOffscreen = true;
-                    }
-                }
-            }
-        }
 
         public List<(SubAssetKey, AnimationClip)> AnimationClips = new List<(SubAssetKey, AnimationClip)>();
         #endregion
@@ -313,36 +289,20 @@ namespace UniGLTF
         /// </summary>
         public virtual void Dispose()
         {
-            Action<UnityEngine.Object> destroy = UnityObjectManager.DestroyResource();
-
             foreach (var (k, x) in AnimationClips)
             {
-#if VRM_DEVELOP
-                // Debug.Log($"Destroy {x}");
-#endif
-                destroy(x);
+                UnityObjectDestoyer.DestroyRuntimeOrEditor(x);
             }
             AnimationClips.Clear();
 
             foreach (var x in Meshes)
             {
-#if VRM_DEVELOP
-                // Debug.Log($"Destroy {x.Mesh}");
-#endif
-                destroy(x.Mesh);
+                UnityObjectDestoyer.DestroyRuntimeOrEditor(x.Mesh);
             }
             Meshes.Clear();
 
             MaterialFactory?.Dispose();
             TextureFactory?.Dispose();
-
-            if (m_ownRoot && Root != null)
-            {
-#if VRM_DEVELOP
-                // Debug.Log($"Destroy {Root}");
-#endif
-                destroy(Root);
-            }
         }
 
         /// <summary>
@@ -370,36 +330,6 @@ namespace UniGLTF
                     AnimationClips.Remove((key, animation));
                 }
             }
-
-            if (m_ownRoot && Root != null)
-            {
-                // GameObject の extract は無いので SubAssetKey を使わない
-                if (take(default, Root))
-                {
-                    // 所有権(Dispose権)
-                    m_ownRoot = false;
-                }
-            }
-        }
-
-        /// <summary>
-        /// RootにUnityResourceDestroyerをアタッチして、
-        /// RootをUnityEngine.Object.Destroyしたときに、
-        /// 関連するUnityEngine.Objectを破棄するようにする。
-        /// Mesh, Material, Texture, AnimationClip, GameObject の所有者が
-        /// ImporterContext から UnityResourceDestroyer に移動する。
-        /// ImporterContext.Dispose の対象から外れる。
-        /// </summary>
-        /// <returns></returns>
-        public UnityObjectManager DisposeOnGameObjectDestroyed()
-        {
-            var destroyer = Root.AddComponent<UnityObjectManager>();
-            TransferOwnership((k, o) =>
-            {
-                destroyer.Resources.Add(o);
-                return true;
-            });
-            return destroyer;
         }
     }
 }

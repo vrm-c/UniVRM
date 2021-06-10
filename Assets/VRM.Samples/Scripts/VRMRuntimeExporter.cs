@@ -59,13 +59,12 @@ namespace VRM.Samples
                 Debug.LogFormat("meta: title:{0}", meta.Title);
 
                 // ParseしたJSONをシーンオブジェクトに変換していく
-                await context.LoadAsync();
+                var loaded = await context.LoadAsync();
 
-                context.ShowMeshes();
-                context.EnableUpdateWhenOffscreen();
-                var destroyer = context.DisposeOnGameObjectDestroyed();
+                loaded.ShowMeshes();
+                loaded.EnableUpdateWhenOffscreen();
 
-                OnLoaded(destroyer.gameObject);
+                OnLoaded(loaded.gameObject);
             }
         }
 

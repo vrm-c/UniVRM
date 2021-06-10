@@ -24,11 +24,11 @@ namespace VRM
             parser.ParsePath(AliciaPath);
             byte[] bytes = default;
             using (var loader = new VRMImporterContext(parser))
+            using (var loaded = loader.Load())
             {
-                loader.Load();
-                loader.ShowMeshes();
+                loaded.ShowMeshes();
 
-                var go = loader.Root;
+                var go = loaded.gameObject;
                 var fp = go.GetComponent<VRMFirstPerson>();
                 GameObject.DestroyImmediate(go.GetComponent<VRMLookAtBoneApplyer>());
                 var lookAt = go.AddComponent<VRMLookAtBlendShapeApplyer>();
@@ -54,11 +54,11 @@ namespace VRM
             byte[] bytes = default;
             CurveMapper horizontalInner = default;
             using (var loader = new VRMImporterContext(parser))
+            using (var loaded = loader.Load())
             {
-                loader.Load();
-                loader.ShowMeshes();
+                loaded.ShowMeshes();
 
-                var go = loader.Root;
+                var go = loaded.gameObject;
                 var fp = go.GetComponent<VRMFirstPerson>();
                 var lookAt = go.GetComponent<VRMLookAtBoneApplyer>();
                 horizontalInner = lookAt.HorizontalInner;
@@ -71,11 +71,11 @@ namespace VRM
             var parser2 = new GltfParser();
             parser2.Parse(AliciaPath, bytes);
             using (var loader = new VRMImporterContext(parser2))
+            using (var loaded = loader.Load())
             {
-                loader.Load();
-                loader.ShowMeshes();
+                loaded.ShowMeshes();
 
-                var lookAt = loader.Root.GetComponent<VRMLookAtBoneApplyer>();
+                var lookAt = loaded.GetComponent<VRMLookAtBoneApplyer>();
                 Assert.AreEqual(horizontalInner.CurveXRangeDegree, lookAt.HorizontalInner.CurveXRangeDegree);
                 Assert.AreEqual(horizontalInner.CurveYRangeDegree, lookAt.HorizontalInner.CurveYRangeDegree);
             }
@@ -89,11 +89,11 @@ namespace VRM
             byte[] bytes = default;
             CurveMapper horizontalInner = default;
             using (var loader = new VRMImporterContext(parser))
+            using (var loaded = loader.Load())
             {
-                loader.Load();
-                loader.ShowMeshes();
+                loaded.ShowMeshes();
 
-                var go = loader.Root;
+                var go = loaded.gameObject;
                 var fp = go.GetComponent<VRMFirstPerson>();
                 var lookAt = go.GetComponent<VRMLookAtBoneApplyer>();
                 horizontalInner = lookAt.HorizontalInner;
@@ -106,11 +106,11 @@ namespace VRM
             var parser2 = new GltfParser();
             parser2.Parse(AliciaPath, bytes);
             using (var loader = new VRMImporterContext(parser2))
+            using (var loaded = loader.Load())
             {
-                loader.Load();
-                loader.ShowMeshes();
+                loaded.ShowMeshes();
 
-                var lookAt = loader.Root.GetComponent<VRMLookAtBoneApplyer>();
+                var lookAt = loaded.GetComponent<VRMLookAtBoneApplyer>();
                 Assert.AreEqual(horizontalInner.CurveXRangeDegree, lookAt.HorizontalInner.CurveXRangeDegree);
                 Assert.AreEqual(horizontalInner.CurveYRangeDegree, lookAt.HorizontalInner.CurveYRangeDegree);
             }

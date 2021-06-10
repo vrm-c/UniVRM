@@ -120,9 +120,9 @@ namespace UniGLTF
 
             // import
             using (var context = new ImporterContext(parser))
+            using (var loaded = context.Load())
             {
-                context.Load();
-                AssertAreEqual(go.transform, context.Root.transform);
+                AssertAreEqual(go.transform, loaded.transform);
             }
         }
 
@@ -557,16 +557,14 @@ namespace UniGLTF
                     parser.ParseJson(json, new SimpleStorage(new ArraySegment<byte>(new byte[1024 * 1024])));
 
                     using (var context = new ImporterContext(parser))
+                    using (var loaded = context.Load())
                     {
-                        //Debug.LogFormat("{0}", context.Json);
-                        context.Load();
-
-                        var importedRed = context.Root.transform.GetChild(0);
+                        var importedRed = loaded.transform.GetChild(0);
                         var importedRedMaterial = importedRed.GetComponent<Renderer>().sharedMaterial;
                         Assert.AreEqual("red", importedRedMaterial.name);
                         Assert.AreEqual(Color.red, importedRedMaterial.color);
 
-                        var importedBlue = context.Root.transform.GetChild(1);
+                        var importedBlue = loaded.transform.GetChild(1);
                         var importedBlueMaterial = importedBlue.GetComponent<Renderer>().sharedMaterial;
                         Assert.AreEqual("blue", importedBlueMaterial.name);
                         Assert.AreEqual(Color.blue, importedBlueMaterial.color);
@@ -579,15 +577,14 @@ namespace UniGLTF
                     parser.ParseJson(json, new SimpleStorage(new ArraySegment<byte>(new byte[1024 * 1024])));
                     //Debug.LogFormat("{0}", context.Json);
                     using (var context = new ImporterContext(parser))
+                    using (var loaded = context.Load())
                     {
-                        context.Load();
-
-                        var importedRed = context.Root.transform.GetChild(0);
+                        var importedRed = loaded.transform.GetChild(0);
                         var importedRedMaterial = importedRed.GetComponent<Renderer>().sharedMaterial;
                         Assert.AreEqual("red", importedRedMaterial.name);
                         Assert.AreEqual(Color.red, importedRedMaterial.color);
 
-                        var importedBlue = context.Root.transform.GetChild(1);
+                        var importedBlue = loaded.transform.GetChild(1);
                         var importedBlueMaterial = importedBlue.GetComponent<Renderer>().sharedMaterial;
                         Assert.AreEqual("blue", importedBlueMaterial.name);
                         Assert.AreEqual(Color.blue, importedBlueMaterial.color);
@@ -633,13 +630,11 @@ namespace UniGLTF
                     parser.ParseJson(json, new SimpleStorage(new ArraySegment<byte>(new byte[1024 * 1024])));
 
                     using (var context = new ImporterContext(parser))
+                    using (var loaded = context.Load())
                     {
-                        context.Load();
-
-                        Assert.AreEqual(1, context.Root.transform.GetChildren().Count());
-
+                        Assert.AreEqual(1, loaded.transform.GetChildren().Count());
                         {
-                            var child = context.Root.transform.GetChild(0);
+                            var child = loaded.transform.GetChild(0);
                             Assert.IsNull(child.GetSharedMesh());
                         }
                     }
@@ -700,18 +695,17 @@ namespace UniGLTF
                     parser.ParseJson(json, new SimpleStorage(new ArraySegment<byte>(new byte[1024 * 1024])));
 
                     using (var context = new ImporterContext(parser))
+                    using (var loaded = context.Load())
                     {
-                        context.Load();
-
-                        Assert.AreEqual(2, context.Root.transform.GetChildren().Count());
+                        Assert.AreEqual(2, loaded.transform.GetChildren().Count());
 
                         {
-                            var child = context.Root.transform.GetChild(0);
+                            var child = loaded.transform.GetChild(0);
                             Assert.IsNull(child.GetSharedMesh());
                         }
 
                         {
-                            var child = context.Root.transform.GetChild(1);
+                            var child = loaded.transform.GetChild(1);
                             Assert.IsNull(child.GetSharedMesh());
                         }
                     }

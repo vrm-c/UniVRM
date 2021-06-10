@@ -649,21 +649,19 @@ namespace UniVRM10
 
         public override void Dispose()
         {
-            Action<UnityEngine.Object> destroy = UnityResourceDestroyer.DestroyResource();
-
             // VRM specific
             if (m_humanoid != null)
             {
-                destroy(m_humanoid);
+                UnityObjectDestoyer.DestroyRuntimeOrEditor(m_humanoid);
             }
             if (m_meta != null)
             {
-                destroy(m_meta);
+                UnityObjectDestoyer.DestroyRuntimeOrEditor(m_meta);
             }
 
             foreach (var clip in m_expressions)
             {
-                destroy(clip);
+                UnityObjectDestoyer.DestroyRuntimeOrEditor(clip);
             }
 
             base.Dispose();

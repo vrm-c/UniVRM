@@ -140,29 +140,29 @@ namespace VRM
             return true;
         }
 
-        public void SaveAsAsset()
+        public void SaveAsAsset(UniGLTF.UnityObjectManager loaded)
         {
-            m_context.ShowMeshes();
+            loaded.ShowMeshes();
 
             //
             // save sub assets
             //
             m_paths.Clear();
             m_paths.Add(m_prefabPath);
-            m_context.TransferOwnership(SaveAsAsset);
+            loaded.TransferOwnership(SaveAsAsset);
 
             // Create or update Main Asset
             if (m_prefabPath.IsFileExists)
             {
                 Debug.LogFormat("replace prefab: {0}", m_prefabPath);
                 var prefab = m_prefabPath.LoadAsset<GameObject>();
-                PrefabUtility.SaveAsPrefabAssetAndConnect(m_context.Root, m_prefabPath.Value, InteractionMode.AutomatedAction);
+                PrefabUtility.SaveAsPrefabAssetAndConnect(loaded.gameObject, m_prefabPath.Value, InteractionMode.AutomatedAction);
 
             }
             else
             {
                 Debug.LogFormat("create prefab: {0}", m_prefabPath);
-                PrefabUtility.SaveAsPrefabAssetAndConnect(m_context.Root, m_prefabPath.Value, InteractionMode.AutomatedAction);
+                PrefabUtility.SaveAsPrefabAssetAndConnect(loaded.gameObject, m_prefabPath.Value, InteractionMode.AutomatedAction);
             }
 
             foreach (var x in m_paths)
