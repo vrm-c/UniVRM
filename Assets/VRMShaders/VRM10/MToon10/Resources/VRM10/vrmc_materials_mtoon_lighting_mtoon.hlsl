@@ -14,7 +14,7 @@ struct MToonInput
     half3 viewDirWS;
     half3 litColor;
     half alpha;
-    half outlineFactor;
+    // half outlineFactor;
 };
 
 inline half GetMToonLighting_Reflectance_ShadingShift(const MToonInput input)
@@ -62,7 +62,6 @@ inline half3 GetMToonLighting_GlobalIllumination(const UnityLighting unityLight,
     {
         return 0;
     }
-
 }
 
 inline half3 GetMToonLighting_Emissive(const MToonInput input)
@@ -94,12 +93,12 @@ inline half3 GetMToonLighting_Rim_Matcap(const MToonInput input)
     }
 }
 
-inline half3 GetMToonLighting_Rim(const MToonInput input, const half3 lighting)
+inline half3 GetMToonLighting_Rim(const MToonInput input, const half3 reflectance)
 {
     if (MToon_IsForwardBasePass())
     {
         const half3 parametricRimFactor = pow(saturate(1.0 - dot(input.normalWS, input.viewDirWS) + _RimLift), _RimFresnelPower) * _RimColor.rgb;
-        const half3 rimLightingFactor = lerp(half3(1, 1, 1), lighting, _RimLightingMix);
+        const half3 rimLightingFactor = lerp(half3(1, 1, 1), reflectance, _RimLightingMix);
         const half3 matcapFactor = GetMToonLighting_Rim_Matcap(input);
 
         if (MToon_IsRimMapOn())
@@ -125,14 +124,19 @@ half4 GetMToonLighting(const UnityLighting unityLight, const MToonInput input)
     const half3 indirect = GetMToonLighting_GlobalIllumination(unityLight, input);
     const half3 lighting = direct + indirect;
     const half3 emissive = GetMToonLighting_Emissive(input);
-    const half3 rim = GetMToonLighting_Rim(input, lighting);
+    const half3 rim = GetMToonLighting_Rim(input, reflectance);
 
     const half3 baseCol = lighting + emissive + rim;
-    const half3 outlineCol = _OutlineColor.rgb * lerp(half3(1, 1, 1), baseCol, _OutlineLightingMix);
 
-    const half3 col = lerp(baseCol, outlineCol, input.outlineFactor);
-
-    return half4(col, input.alpha);
+    if (MToon_IsOutlinePass())
+    {
+        const half3 outlineCol = _OutlineColor.rgb * lerp(half3(1, 1, 1), baseCol, _OutlineLightingMix);
+        return half4(outlineCol, input.alpha);
+    }
+    else
+    {
+        return half4(baseCol, input.alpha);
+    }
 }
 
 #endif

@@ -47,10 +47,10 @@ half4 MToonFragment(const Varyings input) : SV_Target
     MToonInput mtoonInput;
     mtoonInput.uv = uv;
     mtoonInput.normalWS = normalWS;
-    mtoonInput.viewDirWS = input.viewDirWS;
+    mtoonInput.viewDirWS = normalize(input.viewDirWS);
     mtoonInput.litColor = litColor.rgb;
     mtoonInput.alpha = alpha;
-    mtoonInput.outlineFactor = input.outlineFactor;
+    // mtoonInput.outlineFactor = input.outlineFactor;
     const half4 col = GetMToonLighting(unityLighting, mtoonInput);
 
     UNITY_APPLY_FOG(i.fogCoord, col);

@@ -17,16 +17,15 @@ Varyings MToonVertex(const Attributes v) // v is UnityCG macro specified name.
     UNITY_TRANSFER_INSTANCE_ID(v, output);
     UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
 
-    output.uv = TRANSFORM_TEX(v.texcoord0, _MainTex);
-    output.viewDirWS = MToon_GetWorldSpaceNormalizedViewDir(output.positionWS);
-
     if (MToon_IsOutlinePass())
     {
         output.normalWS = UnityObjectToWorldNormal(-v.normalOS);
         const VertexPositionInfo position = MToon_GetOutlineVertex(v.vertex.xyz, normalize(v.normalOS), output.uv);
         output.pos = position.positionCS;
         output.positionWS = position.positionWS;
-        output.outlineFactor = 1;
+        output.viewDirWS = MToon_GetWorldSpaceNormalizedViewDir(output.positionWS);
+        output.uv = TRANSFORM_TEX(v.texcoord0, _MainTex);
+        // output.outlineFactor = 1;
     }
     else
     {
@@ -34,7 +33,9 @@ Varyings MToonVertex(const Attributes v) // v is UnityCG macro specified name.
         const VertexPositionInfo position = MToon_GetVertex(v.vertex.xyz);
         output.pos = position.positionCS;
         output.positionWS = position.positionWS;
-        output.outlineFactor = 0;
+        output.viewDirWS = MToon_GetWorldSpaceNormalizedViewDir(output.positionWS);
+        output.uv = TRANSFORM_TEX(v.texcoord0, _MainTex);
+        // output.outlineFactor = 0;
     }
 
 #if defined(_NORMALMAP)
