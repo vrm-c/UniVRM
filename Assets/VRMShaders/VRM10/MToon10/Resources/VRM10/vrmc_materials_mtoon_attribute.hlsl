@@ -32,4 +32,10 @@ struct Varyings
     UNITY_VERTEX_OUTPUT_STEREO
 };
 
+struct FragmentInput
+{
+    Varyings varyings;
+    MTOON_FRONT_FACE_TYPE facing : MTOON_FRONT_FACE_SEMANTIC;
+};
+
 #endif

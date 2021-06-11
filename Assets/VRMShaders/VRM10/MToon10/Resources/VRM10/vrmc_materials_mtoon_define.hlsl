@@ -1,8 +1,21 @@
 ﻿#ifndef VRMC_MATERIALS_MTOON_DEFINE_INCLUDED
 #define VRMC_MATERIALS_MTOON_DEFINE_INCLUDED
 
+// TEX2D with LOD
 #ifndef UNITY_SAMPLE_TEX2D_LOD
     #define UNITY_SAMPLE_TEX2D_LOD(tex,coord,lod) tex.SampleLevel (sampler##tex,coord,lod)
+#endif
+
+// VFACE
+#ifndef MTOON_FRONT_FACE_SEMANTIC
+    #define MTOON_FRONT_FACE_SEMANTIC VFACE
+#endif
+#ifndef MTOON_FRONT_FACE_TYPE
+    // from https://docs.unity3d.com/Manual/SL-ShaderSemantics.html
+    #define MTOON_FRONT_FACE_TYPE fixed
+#endif
+#ifndef MTOON_IS_FRONT_VFACE
+    #define MTOON_IS_FRONT_VFACE(VAL, FRONT, BACK) ((VAL > 0.0) ? (FRONT) : (BACK))
 #endif
 
 // Compile-time constant

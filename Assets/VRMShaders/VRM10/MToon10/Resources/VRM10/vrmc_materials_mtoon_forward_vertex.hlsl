@@ -19,22 +19,20 @@ Varyings MToonVertex(const Attributes v) // v is UnityCG macro specified name.
 
     if (MToon_IsOutlinePass())
     {
-        output.normalWS = UnityObjectToWorldNormal(-v.normalOS);
         const VertexPositionInfo position = MToon_GetOutlineVertex(v.vertex.xyz, normalize(v.normalOS), output.uv);
         output.pos = position.positionCS;
         output.positionWS = position.positionWS;
-        output.viewDirWS = MToon_GetWorldSpaceNormalizedViewDir(output.positionWS);
-        output.uv = TRANSFORM_TEX(v.texcoord0, _MainTex);
     }
     else
     {
-        output.normalWS = UnityObjectToWorldNormal(v.normalOS);
         const VertexPositionInfo position = MToon_GetVertex(v.vertex.xyz);
         output.pos = position.positionCS;
         output.positionWS = position.positionWS;
-        output.viewDirWS = MToon_GetWorldSpaceNormalizedViewDir(output.positionWS);
-        output.uv = TRANSFORM_TEX(v.texcoord0, _MainTex);
     }
+
+    output.normalWS = UnityObjectToWorldNormal(v.normalOS);
+    output.uv = TRANSFORM_TEX(v.texcoord0, _MainTex);
+    output.viewDirWS = MToon_GetWorldSpaceNormalizedViewDir(output.positionWS);
 
 #if defined(_NORMALMAP)
     const half tangentSign = v.tangentOS.w * unity_WorldTransformParams.w;

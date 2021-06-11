@@ -11,12 +11,14 @@
 #include "./vrmc_materials_mtoon_lighting_unity.hlsl"
 #include "./vrmc_materials_mtoon_lighting_mtoon.hlsl"
 
-half4 MToonFragment(const Varyings input) : SV_Target
+half4 MToonFragment(const FragmentInput fragmentInput) : SV_Target
 {
     if (MToon_IsOutlinePass() && MToon_IsOutlineModeDisabled())
     {
         clip(-1);
     }
+
+    const Varyings input = fragmentInput.varyings;
 
     // Get MToon UV (with UVAnimation)
     const float2 uv = GetMToonGeometry_Uv(input.uv);
@@ -38,7 +40,7 @@ half4 MToonFragment(const Varyings input) : SV_Target
 #endif
 
     // Get Normal
-    const float3 normalWS = GetMToonGeometry_Normal(input, uv);
+    const float3 normalWS = GetMToonGeometry_Normal(input, fragmentInput.facing, uv);
 
     // Get Unity Lighting
     const UnityLighting unityLighting = GetUnityLighting(input, normalWS);
