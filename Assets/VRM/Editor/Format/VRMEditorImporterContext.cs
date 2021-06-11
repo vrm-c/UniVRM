@@ -139,18 +139,20 @@ namespace VRM
             m_paths.Clear();
             m_paths.Add(m_prefabPath);
             loaded.TransferOwnership(SaveAsAsset);
+            var root = loaded.Root;
+            GameObject.DestroyImmediate(loaded);
 
             // Create or update Main Asset
             if (m_prefabPath.IsFileExists)
             {
                 Debug.LogFormat("replace prefab: {0}", m_prefabPath);
                 var prefab = m_prefabPath.LoadAsset<GameObject>();
-                PrefabUtility.SaveAsPrefabAssetAndConnect(loaded.gameObject, m_prefabPath.Value, InteractionMode.AutomatedAction);
+                PrefabUtility.SaveAsPrefabAssetAndConnect(root, m_prefabPath.Value, InteractionMode.AutomatedAction);
             }
             else
             {
                 Debug.LogFormat("create prefab: {0}", m_prefabPath);
-                PrefabUtility.SaveAsPrefabAssetAndConnect(loaded.gameObject, m_prefabPath.Value, InteractionMode.AutomatedAction);
+                PrefabUtility.SaveAsPrefabAssetAndConnect(root, m_prefabPath.Value, InteractionMode.AutomatedAction);
             }
 
             foreach (var x in m_paths)
