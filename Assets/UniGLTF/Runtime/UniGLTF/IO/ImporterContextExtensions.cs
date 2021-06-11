@@ -8,7 +8,7 @@ namespace UniGLTF
         /// <summary>
         /// Build unity objects from parsed gltf
         /// </summary>
-        public static UnityObjectManager Load(this ImporterContext self)
+        public static RuntimeGltfInstance Load(this ImporterContext self)
         {
             var meassureTime = new ImporterContextSpeedLog();
             var task = self.LoadAsync(default(ImmediateCaller), meassureTime.MeasureTime);

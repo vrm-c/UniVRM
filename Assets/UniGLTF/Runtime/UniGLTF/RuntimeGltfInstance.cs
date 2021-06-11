@@ -1,14 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using VRMShaders;
 
 namespace UniGLTF
 {
     /// <summary>
-    /// Mesh, Material, Texture などを抱えておいて確実に破棄できるようにする
+    /// ImporterContext の Load 結果の GltfModel
+    /// 
+    /// Runtime でモデルを Destory したときに関連リソース(Texture, Material...などの UnityEngine.Object)を自動的に Destroy する。
     /// </summary>
-    public class UnityObjectManager : MonoBehaviour, IResponsibilityForDestroyObjects
+    public class RuntimeGltfInstance : MonoBehaviour, IResponsibilityForDestroyObjects
     {
         /// <summary>
         /// this is UniGLTF root gameObject
@@ -17,9 +18,9 @@ namespace UniGLTF
 
         List<(SubAssetKey, UnityEngine.Object)> m_resources = new List<(SubAssetKey, UnityEngine.Object)>();
 
-        public static UnityObjectManager AttachTo(GameObject go, ImporterContext context)
+        public static RuntimeGltfInstance AttachTo(GameObject go, ImporterContext context)
         {
-            var loaded = go.AddComponent<UnityObjectManager>();
+            var loaded = go.AddComponent<RuntimeGltfInstance>();
             context.TransferOwnership((k, o) =>
             {
                 loaded.m_resources.Add((k, o));

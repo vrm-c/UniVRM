@@ -97,7 +97,7 @@ namespace VRM.Samples
                 Debug.LogFormat("meta: title:{0}", meta.Title);
 
                 // ParseしたJSONをシーンオブジェクトに変換していく
-                var loaded = default(UnityObjectManager);
+                var loaded = default(RuntimeGltfInstance);
                 if (m_loadAsync)
                 {
                     loaded = await context.LoadAsync();
@@ -136,7 +136,7 @@ namespace VRM.Samples
             parser.ParseGlb(bytes);
 
             var context = new VRMImporterContext(parser);
-            var loaded = default(UnityObjectManager);
+            var loaded = default(RuntimeGltfInstance);
             if (m_loadAsync)
             {
                 loaded = await context.LoadAsync();
@@ -167,7 +167,7 @@ namespace VRM.Samples
 #endif
         }
 
-        void OnLoaded(UnityObjectManager loaded)
+        void OnLoaded(RuntimeGltfInstance loaded)
         {
             var root = loaded.gameObject;
 

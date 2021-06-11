@@ -61,7 +61,7 @@ namespace UniGLTF
         };
 
         #region Load. Build unity objects
-        public virtual async Task<UnityObjectManager> LoadAsync(IAwaitCaller awaitCaller = null, Func<string, IDisposable> MeasureTime = null)
+        public virtual async Task<RuntimeGltfInstance> LoadAsync(IAwaitCaller awaitCaller = null, Func<string, IDisposable> MeasureTime = null)
         {
             if (awaitCaller == null)
             {
@@ -109,7 +109,7 @@ namespace UniGLTF
 
             await OnLoadHierarchy(awaitCaller, MeasureTime);
 
-            return UnityObjectManager.AttachTo(Root, this);
+            return RuntimeGltfInstance.AttachTo(Root, this);
         }
 
         /// <summary>

@@ -129,7 +129,7 @@ namespace VRM
             }
         }
 
-        public void SaveAsAsset(UniGLTF.UnityObjectManager loaded)
+        public void SaveAsAsset(UniGLTF.RuntimeGltfInstance loaded)
         {
             loaded.ShowMeshes();
 
