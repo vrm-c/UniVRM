@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace VRMShaders
 {
-    public class TextureFactory : IDisposable
+    public class TextureFactory : IResponsibilityForDestroyObjects
     {
         private readonly ITextureDeserializer _textureDeserializer;
         private readonly IReadOnlyDictionary<SubAssetKey, Texture> _externalMap;
@@ -33,7 +33,7 @@ namespace VRMShaders
         {
             foreach (var kv in _temporaryTextures)
             {
-                DestroyResource(kv.Value);
+                UnityObjectDestoyer.DestroyRuntimeOrEditor(kv.Value);
             }
             _temporaryTextures.Clear();
             _textureCache.Clear();
@@ -43,20 +43,12 @@ namespace VRMShaders
         /// 所有権(Dispose権)を移譲する
         /// </summary>
         /// <param name="take"></param>
-        public void TransferOwnership(Func<UnityEngine.Object, bool> take)
+        public void TransferOwnership(TakeResponsibilityForDestroyObjectFunc take)
         {
-            var transferredAssets = new HashSet<SubAssetKey>();
-            foreach (var x in _textureCache)
+            foreach (var (k, v) in _textureCache.ToArray())
             {
-                if (take(x.Value))
-                {
-                    transferredAssets.Add(x.Key);
-                }
-            }
-
-            foreach (var key in transferredAssets)
-            {
-                _textureCache.Remove(key);
+                take(k, v);
+                _textureCache.Remove(k);
             }
         }
 
@@ -81,80 +73,68 @@ namespace VRMShaders
             switch (texDesc.TextureType)
             {
                 case TextureImportTypes.NormalMap:
-                {
-                    // no conversion. Unity's normal map is same with glTF's.
-                    //
-                    // > contrary to Unity’s usual convention of using Y as “up”
-                    // https://docs.unity3d.com/2018.4/Documentation/Manual/StandardShaderMaterialParameterNormalMap.html
-                    var data0 = await texDesc.Index0();
-                    var rawTexture = await _textureDeserializer.LoadTextureAsync(data0, texDesc.Sampler.EnableMipMap, ColorSpace.Linear);
-                    rawTexture.name = subAssetKey.Name;
-                    rawTexture.SetSampler(texDesc.Sampler);
-                    _textureCache.Add(subAssetKey, rawTexture);
-                    return rawTexture;
-                }
+                    {
+                        // no conversion. Unity's normal map is same with glTF's.
+                        //
+                        // > contrary to Unity’s usual convention of using Y as “up”
+                        // https://docs.unity3d.com/2018.4/Documentation/Manual/StandardShaderMaterialParameterNormalMap.html
+                        var data0 = await texDesc.Index0();
+                        var rawTexture = await _textureDeserializer.LoadTextureAsync(data0, texDesc.Sampler.EnableMipMap, ColorSpace.Linear);
+                        rawTexture.name = subAssetKey.Name;
+                        rawTexture.SetSampler(texDesc.Sampler);
+                        _textureCache.Add(subAssetKey, rawTexture);
+                        return rawTexture;
+                    }
 
                 case TextureImportTypes.StandardMap:
-                {
-                    Texture2D metallicRoughnessTexture = default;
-                    Texture2D occlusionTexture = default;
-
-                    if (texDesc.Index0 != null)
                     {
-                        var data0 = await texDesc.Index0();
-                        metallicRoughnessTexture = await _textureDeserializer.LoadTextureAsync(data0, texDesc.Sampler.EnableMipMap, ColorSpace.Linear);
-                    }
-                    if (texDesc.Index1 != null)
-                    {
-                        var data1 = await texDesc.Index1();
-                        occlusionTexture = await _textureDeserializer.LoadTextureAsync(data1, texDesc.Sampler.EnableMipMap, ColorSpace.Linear);
-                    }
+                        Texture2D metallicRoughnessTexture = default;
+                        Texture2D occlusionTexture = default;
 
-                    var combinedTexture = OcclusionMetallicRoughnessConverter.Import(metallicRoughnessTexture,
-                        texDesc.MetallicFactor, texDesc.RoughnessFactor, occlusionTexture);
-                    combinedTexture.name = subAssetKey.Name;
-                    combinedTexture.SetSampler(texDesc.Sampler);
-                    _textureCache.Add(subAssetKey, combinedTexture);
-                    DestroyResource(metallicRoughnessTexture);
-                    DestroyResource(occlusionTexture);
-                    return combinedTexture;
-                }
+                        if (texDesc.Index0 != null)
+                        {
+                            var data0 = await texDesc.Index0();
+                            metallicRoughnessTexture = await _textureDeserializer.LoadTextureAsync(data0, texDesc.Sampler.EnableMipMap, ColorSpace.Linear);
+                        }
+                        if (texDesc.Index1 != null)
+                        {
+                            var data1 = await texDesc.Index1();
+                            occlusionTexture = await _textureDeserializer.LoadTextureAsync(data1, texDesc.Sampler.EnableMipMap, ColorSpace.Linear);
+                        }
+
+                        var combinedTexture = OcclusionMetallicRoughnessConverter.Import(metallicRoughnessTexture,
+                            texDesc.MetallicFactor, texDesc.RoughnessFactor, occlusionTexture);
+                        combinedTexture.name = subAssetKey.Name;
+                        combinedTexture.SetSampler(texDesc.Sampler);
+                        _textureCache.Add(subAssetKey, combinedTexture);
+                        UnityObjectDestoyer.DestroyRuntimeOrEditor(metallicRoughnessTexture);
+                        UnityObjectDestoyer.DestroyRuntimeOrEditor(occlusionTexture);
+                        return combinedTexture;
+                    }
 
                 case TextureImportTypes.sRGB:
-                {
-                    var data0 = await texDesc.Index0();
-                    var rawTexture = await _textureDeserializer.LoadTextureAsync(data0, texDesc.Sampler.EnableMipMap, ColorSpace.sRGB);
-                    rawTexture.name = subAssetKey.Name;
-                    rawTexture.SetSampler(texDesc.Sampler);
-                    _textureCache.Add(subAssetKey, rawTexture);
-                    return rawTexture;
-                }
+                    {
+                        var data0 = await texDesc.Index0();
+                        var rawTexture = await _textureDeserializer.LoadTextureAsync(data0, texDesc.Sampler.EnableMipMap, ColorSpace.sRGB);
+                        rawTexture.name = subAssetKey.Name;
+                        rawTexture.SetSampler(texDesc.Sampler);
+                        _textureCache.Add(subAssetKey, rawTexture);
+                        return rawTexture;
+                    }
                 case TextureImportTypes.Linear:
-                {
-                    var data0 = await texDesc.Index0();
-                    var rawTexture = await _textureDeserializer.LoadTextureAsync(data0, texDesc.Sampler.EnableMipMap, ColorSpace.Linear);
-                    rawTexture.name = subAssetKey.Name;
-                    rawTexture.SetSampler(texDesc.Sampler);
-                    _textureCache.Add(subAssetKey, rawTexture);
-                    return rawTexture;
-                }
+                    {
+                        var data0 = await texDesc.Index0();
+                        var rawTexture = await _textureDeserializer.LoadTextureAsync(data0, texDesc.Sampler.EnableMipMap, ColorSpace.Linear);
+                        rawTexture.name = subAssetKey.Name;
+                        rawTexture.SetSampler(texDesc.Sampler);
+                        _textureCache.Add(subAssetKey, rawTexture);
+                        return rawTexture;
+                    }
                 default:
                     throw new ArgumentOutOfRangeException();
             }
 
             throw new NotImplementedException();
-        }
-
-        private static void DestroyResource(UnityEngine.Object o)
-        {
-            if (Application.isPlaying)
-            {
-                UnityEngine.Object.Destroy(o);
-            }
-            else
-            {
-                UnityEngine.Object.DestroyImmediate(o);
-            }
         }
     }
 }

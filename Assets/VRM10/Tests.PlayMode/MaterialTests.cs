@@ -31,7 +31,7 @@ namespace UniVRM10.Test
         private (GameObject, IReadOnlyList<VRMShaders.MaterialFactory.MaterialLoadInfo>) ToUnity(byte[] bytes)
         {
             // Vrm => Model
-            if(!Vrm10Parser.TryParseOrMigrate("tpm.vrm", bytes, true, out Vrm10Parser.Result result, out string error))
+            if (!Vrm10Parser.TryParseOrMigrate("tpm.vrm", bytes, true, out Vrm10Parser.Result result, out string error))
             {
                 throw new Exception();
             }
@@ -44,9 +44,8 @@ namespace UniVRM10.Test
             // Model => Unity
             using (var loader = new Vrm10Importer(parser, vrm))
             {
-                loader.Load();
-                loader.DisposeOnGameObjectDestroyed();
-                return (loader.Root, loader.MaterialFactory.Materials);
+                var loaded = loader.Load();
+                return (loaded.gameObject, loader.MaterialFactory.Materials);
             }
         }
 

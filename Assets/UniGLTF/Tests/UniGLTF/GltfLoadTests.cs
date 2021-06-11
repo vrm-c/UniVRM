@@ -93,27 +93,27 @@ namespace UniGLTF
             {
                 try
                 {
-                    loader.Load();
+                    var loaded = loader.Load();
+                    if (loaded == null)
+                    {
+                        Debug.LogWarning($"root is null: ${gltf}");
+                        return;
+                    }
+
+                    if (Skip.Contains(gltf.Directory.Parent.Name))
+                    {
+                        // Export issue:
+                        // skip
+                        return;
+                    }
+
+                    Export(loaded.gameObject);
                 }
                 catch (Exception ex)
                 {
                     Message(gltf.FullName.Substring(subStrStart), ex);
                 }
 
-                if (Skip.Contains(gltf.Directory.Parent.Name))
-                {
-                    // Export issue:
-                    // skip
-                    return;
-                }
-
-                if (loader.Root == null)
-                {
-                    Debug.LogWarning($"root is null: ${gltf}");
-                    return;
-                }
-
-                Export(loader.Root);
             }
         }
 

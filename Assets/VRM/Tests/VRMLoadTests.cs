@@ -74,8 +74,7 @@ namespace VRM
             {
                 using (var importer = new VRMImporterContext(parser))
                 {
-                    importer.Load();
-                    return importer.DisposeOnGameObjectDestroyed().gameObject;
+                    return importer.Load().gameObject;
                 }
             }
             catch (Exception ex)

@@ -133,6 +133,18 @@ namespace UniVRM10
             return new ExpressionKey(clip.Preset, clip.ExpressionName);
         }
 
+        public static ExpressionKey CreateFromVrm10(UniGLTF.Extensions.VRMC_vrm.Expression expression)
+        {
+            if (expression.Preset == UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.custom)
+            {
+                return ExpressionKey.CreateCustom(expression.Name);
+            }
+            else
+            {
+                return ExpressionKey.CreateFromPreset(expression.Preset);
+            }
+        }
+
         public override string ToString()
         {
             return _id.Replace(UnknownPresetPrefix, "");

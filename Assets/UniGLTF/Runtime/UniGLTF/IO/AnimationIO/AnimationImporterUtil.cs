@@ -312,5 +312,13 @@ namespace UniGLTF
             }
             return clip;
         }
+
+        public static IEnumerable<VRMShaders.SubAssetKey> EnumerateSubAssetKeys(glTF gltf)
+        {
+            foreach (var gltfAnimation in gltf.animations)
+            {
+                yield return new VRMShaders.SubAssetKey(typeof(AnimationClip), gltfAnimation.name);
+            }
+        }
     }
 }

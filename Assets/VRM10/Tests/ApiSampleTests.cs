@@ -24,13 +24,13 @@ namespace UniVRM10.Test
         {
             using (var loader = new Vrm10Importer(parser, vrm))
             {
-                loader.Load();
+                var loaded = loader.Load();
                 if (showMesh)
                 {
-                    loader.ShowMeshes();
+                    loaded.ShowMeshes();
                 }
-                loader.EnableUpdateWhenOffscreen();
-                return loader.DisposeOnGameObjectDestroyed().gameObject;
+                loaded.EnableUpdateWhenOffscreen();
+                return loaded.gameObject;
             }
         }
 

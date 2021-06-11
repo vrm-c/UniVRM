@@ -50,11 +50,10 @@ namespace VRM
 
             using (var context = new VRMImporterContext(parser))
             {
-                context.Load();
-                context.EnableUpdateWhenOffscreen();
-                context.ShowMeshes();
-                context.DisposeOnGameObjectDestroyed();
-                Selection.activeGameObject = context.Root;
+                var loaded = context.Load();
+                loaded.EnableUpdateWhenOffscreen();
+                loaded.ShowMeshes();
+                Selection.activeGameObject = loaded.gameObject;
             }
         }
 
@@ -88,8 +87,8 @@ namespace VRM
                     {
                         VRMShaders.TextureImporterConfigurator.Configure(textureInfo, context.TextureFactory.ExternalTextures);
                     }
-                    context.Load();
-                    editor.SaveAsAsset();
+                    var loaded = context.Load();
+                    editor.SaveAsAsset(loaded);
                 }
             };
 

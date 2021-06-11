@@ -10,7 +10,7 @@ namespace UniGLTF
     /// <summary>
     /// GLTF importer
     /// </summary>
-    public class ImporterContext : IDisposable
+    public class ImporterContext : IResponsibilityForDestroyObjects
     {
         public ITextureDescriptorGenerator TextureDescriptorGenerator { get; protected set; }
         public IMaterialDescriptorGenerator MaterialDescriptorGenerator { get; protected set; }
@@ -61,7 +61,7 @@ namespace UniGLTF
         };
 
         #region Load. Build unity objects
-        public virtual async Task LoadAsync(IAwaitCaller awaitCaller = null, Func<string, IDisposable> MeasureTime = null)
+        public virtual async Task<RuntimeGltfInstance> LoadAsync(IAwaitCaller awaitCaller = null, Func<string, IDisposable> MeasureTime = null)
         {
             if (awaitCaller == null)
             {
@@ -108,6 +108,8 @@ namespace UniGLTF
             }
 
             await OnLoadHierarchy(awaitCaller, MeasureTime);
+
+            return RuntimeGltfInstance.AttachTo(Root, this);
         }
 
         /// <summary>
@@ -119,18 +121,17 @@ namespace UniGLTF
         {
             if (GLTF.animations != null && GLTF.animations.Any())
             {
-                for (int i = 0; i < GLTF.animations.Count; ++i)
+                foreach (var (key, gltfAnimation) in Enumerable.Zip(AnimationImporterUtil.EnumerateSubAssetKeys(GLTF), GLTF.animations, (x, y) => (x, y)))
                 {
-                    var gltfAnimation = GLTF.animations[i];
                     AnimationClip clip = default;
-                    if (_externalObjectMap.TryGetValue(new SubAssetKey(typeof(AnimationClip), gltfAnimation.name), out UnityEngine.Object value))
+                    if (_externalObjectMap.TryGetValue(key, out UnityEngine.Object value))
                     {
                         clip = value as AnimationClip;
                     }
                     else
                     {
-                        clip = AnimationImporterUtil.ConvertAnimationClip(GLTF, GLTF.animations[i], InvertAxis.Create());
-                        AnimationClips.Add(clip);
+                        clip = AnimationImporterUtil.ConvertAnimationClip(GLTF, gltfAnimation, InvertAxis.Create());
+                        AnimationClips.Add((key, clip));
                     }
                 }
 
@@ -150,7 +151,7 @@ namespace UniGLTF
             var animation = Root.AddComponent<Animation>();
             for (int i = 0; i < AnimationClips.Count; ++i)
             {
-                var clip = AnimationClips[i];
+                var (_, clip) = AnimationClips[i];
                 animation.AddClip(clip, clip.name);
                 if (i == 0)
                 {
@@ -275,46 +276,12 @@ namespace UniGLTF
         #endregion
 
         #region Imported
-        public GameObject Root;
-        bool m_ownRoot = true;
+        protected GameObject Root;
         public List<Transform> Nodes = new List<Transform>();
 
         public List<MeshWithMaterials> Meshes = new List<MeshWithMaterials>();
-        public void ShowMeshes()
-        {
-            foreach (var x in Meshes)
-            {
-                foreach (var y in x.Renderers)
-                {
-                    y.enabled = true;
-                }
-            }
-        }
-        void RemoveMesh(Mesh mesh)
-        {
-            var index = Meshes.FindIndex(x => x.Mesh == mesh);
-            if (index >= 0)
-            {
-                Meshes.RemoveAt(index);
-            }
-        }
 
-        public void EnableUpdateWhenOffscreen()
-        {
-            foreach (var x in Meshes)
-            {
-                foreach (var r in x.Renderers)
-                {
-                    var skinnedMeshRenderer = r as SkinnedMeshRenderer;
-                    if (skinnedMeshRenderer != null)
-                    {
-                        skinnedMeshRenderer.updateWhenOffscreen = true;
-                    }
-                }
-            }
-        }
-
-        public List<AnimationClip> AnimationClips = new List<AnimationClip>();
+        public List<(SubAssetKey, AnimationClip)> AnimationClips = new List<(SubAssetKey, AnimationClip)>();
         #endregion
 
         /// <summary>
@@ -322,101 +289,42 @@ namespace UniGLTF
         /// </summary>
         public virtual void Dispose()
         {
-            Action<UnityEngine.Object> destroy = UnityResourceDestroyer.DestroyResource();
-
-            foreach (var x in AnimationClips)
+            foreach (var (k, x) in AnimationClips)
             {
-#if VRM_DEVELOP
-                // Debug.Log($"Destroy {x}");
-#endif
-                destroy(x);
+                UnityObjectDestoyer.DestroyRuntimeOrEditor(x);
             }
             AnimationClips.Clear();
 
             foreach (var x in Meshes)
             {
-#if VRM_DEVELOP
-                // Debug.Log($"Destroy {x.Mesh}");
-#endif
-                destroy(x.Mesh);
+                UnityObjectDestoyer.DestroyRuntimeOrEditor(x.Mesh);
             }
             Meshes.Clear();
 
             MaterialFactory?.Dispose();
             TextureFactory?.Dispose();
-
-            if (m_ownRoot && Root != null)
-            {
-#if VRM_DEVELOP
-                // Debug.Log($"Destroy {Root}");
-#endif
-                destroy(Root);
-            }
         }
 
         /// <summary>
         /// Root ヒエラルキーで使っているリソース
         /// </summary>
         /// <returns></returns>
-        public virtual void TransferOwnership(Func<UnityEngine.Object, bool> take)
+        public virtual void TransferOwnership(TakeResponsibilityForDestroyObjectFunc take)
         {
-            var list = new List<UnityEngine.Object>();
-            foreach (var mesh in Meshes)
+            foreach (var mesh in Meshes.ToArray())
             {
-                if (take(mesh.Mesh))
-                {
-                    list.Add(mesh.Mesh);
-                }
-            }
-            foreach (var x in list)
-            {
-                RemoveMesh(x as Mesh);
+                take(SubAssetKey.Create(mesh.Mesh), mesh.Mesh);
+                Meshes.Remove(mesh);
             }
 
             TextureFactory.TransferOwnership(take);
             MaterialFactory.TransferOwnership(take);
 
-            list.Clear();
-            foreach (var animation in AnimationClips)
+            foreach (var (key, animation) in AnimationClips.ToArray())
             {
-                if (take(animation))
-                {
-                    list.Add(animation);
-                }
+                take(key, animation);
+                AnimationClips.Remove((key, animation));
             }
-            foreach (var x in list)
-            {
-                AnimationClips.Remove(x as AnimationClip);
-            }
-
-            if (m_ownRoot && Root != null)
-            {
-                if (take(Root))
-                {
-                    // 所有権(Dispose権)
-                    m_ownRoot = false;
-                }
-            }
-        }
-
-        /// <summary>
-        /// RootにUnityResourceDestroyerをアタッチして、
-        /// RootをUnityEngine.Object.Destroyしたときに、
-        /// 関連するUnityEngine.Objectを破棄するようにする。
-        /// Mesh, Material, Texture, AnimationClip, GameObject の所有者が
-        /// ImporterContext から UnityResourceDestroyer に移動する。
-        /// ImporterContext.Dispose の対象から外れる。
-        /// </summary>
-        /// <returns></returns>
-        public UnityResourceDestroyer DisposeOnGameObjectDestroyed()
-        {
-            var destroyer = Root.AddComponent<UnityResourceDestroyer>();
-            TransferOwnership(o =>
-            {
-                destroyer.Resources.Add(o);
-                return true;
-            });
-            return destroyer;
         }
     }
 }

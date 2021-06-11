@@ -22,9 +22,9 @@ namespace UniVRM10.Sample
 
             using (var loader = new Vrm10Importer(result.Parser, result.Vrm))
             {
-                loader.Load();
-                loader.ShowMeshes();
-                return loader.DisposeOnGameObjectDestroyed().gameObject;
+                var loaded = loader.Load();
+                loaded.ShowMeshes();
+                return loaded.gameObject;
             }
         }
 

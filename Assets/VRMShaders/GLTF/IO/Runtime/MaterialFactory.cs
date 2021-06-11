@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -9,7 +8,7 @@ namespace VRMShaders
 {
     public delegate Task<Texture> GetTextureAsyncFunc(TextureDescriptor texDesc);
 
-    public class MaterialFactory : IDisposable
+    public class MaterialFactory : IResponsibilityForDestroyObjects
     {
         private readonly IReadOnlyDictionary<SubAssetKey, Material> m_externalMap;
 
@@ -30,13 +29,15 @@ namespace VRMShaders
 
         public struct MaterialLoadInfo
         {
+            public SubAssetKey Key;
             public readonly Material Asset;
             public readonly bool UseExternal;
 
             public bool IsSubAsset => !UseExternal;
 
-            public MaterialLoadInfo(Material asset, bool useExternal)
+            public MaterialLoadInfo(SubAssetKey key, Material asset, bool useExternal)
             {
+                Key = key;
                 Asset = asset;
                 UseExternal = useExternal;
             }
@@ -64,7 +65,7 @@ namespace VRMShaders
 #if VRM_DEVELOP
                     // Debug.Log($"Destroy {x.Asset}");
 #endif
-                    UnityEngine.Object.DestroyImmediate(x.Asset, false);
+                    UnityObjectDestoyer.DestroyRuntimeOrEditor(x.Asset);
                 }
             }
         }
@@ -79,23 +80,16 @@ namespace VRMShaders
         ///
         /// </summary>
         /// <param name="take"></param>
-        public void TransferOwnership(Func<UnityEngine.Object, bool> take)
+        public void TransferOwnership(TakeResponsibilityForDestroyObjectFunc take)
         {
-            var list = new List<Material>();
-            foreach (var x in m_materials)
+            foreach (var x in m_materials.ToArray())
             {
                 if (!x.UseExternal)
                 {
                     // 外部の '.asset' からロードしていない
-                    if (take(x.Asset))
-                    {
-                        list.Add(x.Asset);
-                    }
+                    take(x.Key, x.Asset);
+                    m_materials.Remove(x);
                 }
-            }
-            foreach (var x in list)
-            {
-                Remove(x);
             }
         }
 
@@ -110,7 +104,7 @@ namespace VRMShaders
         {
             if (m_externalMap.TryGetValue(matDesc.SubAssetKey, out Material material))
             {
-                m_materials.Add(new MaterialLoadInfo(material, true));
+                m_materials.Add(new MaterialLoadInfo(matDesc.SubAssetKey, material, true));
                 return material;
             }
 
@@ -174,7 +168,7 @@ namespace VRMShaders
                 action(material);
             }
 
-            m_materials.Add(new MaterialLoadInfo(material, false));
+            m_materials.Add(new MaterialLoadInfo(matDesc.SubAssetKey, material, false));
 
             return material;
         }

@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
 using VRMShaders;
 #if UNITY_2020_2_OR_NEWER
@@ -50,20 +48,18 @@ namespace UniGLTF
                 }
 
                 loader.InvertAxis = reverseAxis;
-                loader.Load();
-                loader.ShowMeshes();
+                var loaded = loader.Load();
+                loaded.ShowMeshes();
 
-                loader.TransferOwnership(o =>
+                loaded.TransferOwnership((k, o) =>
                 {
-                    context.AddObjectToAsset(o.name, o);
-                    if (o is GameObject)
-                    {
-                        // Root GameObject is main object
-                        context.SetMainObject(loader.Root);
-                    }
-
-                    return true;
+                    context.AddObjectToAsset(k.Name, o);
                 });
+                var root = loaded.Root;
+                GameObject.DestroyImmediate(loaded);
+
+                context.AddObjectToAsset(root.name, root);
+                context.SetMainObject(root);
             }
         }
     }

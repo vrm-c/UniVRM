@@ -308,18 +308,17 @@ namespace UniVRM10.Samples
             {
                 case ".vrm":
                     {
-                        if(!Vrm10Parser.TryParseOrMigrate(path, doMigrate: true, out Vrm10Parser.Result result, out string error))
+                        if (!Vrm10Parser.TryParseOrMigrate(path, doMigrate: true, out Vrm10Parser.Result result, out string error))
                         {
                             Debug.LogError(error);
                             return;
                         }
                         using (var loader = new Vrm10Importer(result.Parser, result.Vrm))
                         {
-                            loader.Load();
-                            loader.ShowMeshes();
-                            loader.EnableUpdateWhenOffscreen();
-                            var destroyer = loader.DisposeOnGameObjectDestroyed();
-                            SetModel(destroyer.gameObject);
+                            var loaded = loader.Load();
+                            loaded.ShowMeshes();
+                            loaded.EnableUpdateWhenOffscreen();
+                            SetModel(loaded.gameObject);
                         }
                         break;
                     }
@@ -332,12 +331,10 @@ namespace UniVRM10.Samples
 
                         using (var loader = new UniGLTF.ImporterContext(parser))
                         {
-                            loader.Load();
-                            loader.ShowMeshes();
-                            loader.EnableUpdateWhenOffscreen();
-                            loader.ShowMeshes();
-                            var destroyer = loader.DisposeOnGameObjectDestroyed();
-                            SetModel(destroyer.gameObject);
+                            var loaded = loader.Load();
+                            loaded.ShowMeshes();
+                            loaded.EnableUpdateWhenOffscreen();
+                            SetModel(loaded.gameObject);
                         }
                         break;
                     }
@@ -350,12 +347,10 @@ namespace UniVRM10.Samples
 
                         using (var loader = new UniGLTF.ImporterContext(parser))
                         {
-                            loader.Load();
-                            loader.ShowMeshes();
-                            loader.EnableUpdateWhenOffscreen();
-                            loader.ShowMeshes();
-                            var destroyer = loader.DisposeOnGameObjectDestroyed();
-                            SetModel(destroyer.gameObject);
+                            var loaded = loader.Load();
+                            loaded.ShowMeshes();
+                            loaded.EnableUpdateWhenOffscreen();
+                            SetModel(loaded.gameObject);
                         }
                         break;
                     }

@@ -26,9 +26,9 @@ namespace VRM
 
             using (var loader = new VRMImporterContext(parser))
             {
-                loader.Load();
-                loader.ShowMeshes();
-                return loader.DisposeOnGameObjectDestroyed().gameObject;
+                var loaded = loader.Load();
+                loaded.ShowMeshes();
+                return loaded.gameObject;
             }
         }
 

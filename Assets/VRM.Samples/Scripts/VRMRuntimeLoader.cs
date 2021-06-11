@@ -97,16 +97,17 @@ namespace VRM.Samples
                 Debug.LogFormat("meta: title:{0}", meta.Title);
 
                 // ParseしたJSONをシーンオブジェクトに変換していく
+                var loaded = default(RuntimeGltfInstance);
                 if (m_loadAsync)
                 {
-                    await context.LoadAsync();
+                    loaded = await context.LoadAsync();
                 }
                 else
                 {
-                    context.Load();
+                    loaded = context.Load();
                 }
 
-                OnLoaded(context);
+                OnLoaded(loaded);
             }
         }
 
@@ -135,15 +136,16 @@ namespace VRM.Samples
             parser.ParseGlb(bytes);
 
             var context = new VRMImporterContext(parser);
+            var loaded = default(RuntimeGltfInstance);
             if (m_loadAsync)
             {
-                await context.LoadAsync();
+                loaded = await context.LoadAsync();
             }
             else
             {
-                context.Load();
+                loaded = context.Load();
             }
-            OnLoaded(context);
+            OnLoaded(loaded);
         }
 
         void LoadBVHClicked()
@@ -165,15 +167,14 @@ namespace VRM.Samples
 #endif
         }
 
-        void OnLoaded(VRMImporterContext context)
+        void OnLoaded(RuntimeGltfInstance loaded)
         {
-            var root = context.Root;
+            var root = loaded.gameObject;
 
             root.transform.SetParent(transform, false);
 
             //メッシュを表示します
-            context.ShowMeshes();
-            context.DisposeOnGameObjectDestroyed();
+            loaded.ShowMeshes();
 
             // add motion
             var humanPoseTransfer = root.AddComponent<UniHumanoid.HumanPoseTransfer>();

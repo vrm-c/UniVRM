@@ -317,36 +317,30 @@ namespace VRM
             return meta;
         }
 
-        public override void TransferOwnership(Func<UnityEngine.Object, bool> take)
+        public override void TransferOwnership(TakeResponsibilityForDestroyObjectFunc take)
         {
+            // VRM-0 は SubAssetKey を使っていないので default で済ます
+
             // VRM 固有のリソース(ScriptableObject)
-            if (take(HumanoidAvatar))
-            {
-                HumanoidAvatar = null;
-            }
+            take(default, HumanoidAvatar);
+            HumanoidAvatar = null;
 
-            if (take(Meta))
-            {
-                Meta = null;
-            }
+            take(default, Meta);
+            Meta = null;
 
-            if (take(AvatarDescription))
-            {
-                AvatarDescription = null;
-            }
+            take(default, AvatarDescription);
+            AvatarDescription = null;
 
             foreach (var x in BlendShapeAvatar.Clips)
             {
-                if (take(x))
+                take(default, x);
                 {
                     // do nothing
                 }
             }
 
-            if (take(BlendShapeAvatar))
-            {
-                BlendShapeAvatar = null;
-            }
+            take(default, BlendShapeAvatar);
+            BlendShapeAvatar = null;
 
             // GLTF のリソース
             base.TransferOwnership(take);
@@ -354,28 +348,26 @@ namespace VRM
 
         public override void Dispose()
         {
-            Action<UnityEngine.Object> destroy = UnityResourceDestroyer.DestroyResource();
-
             // VRM specific
             if (HumanoidAvatar != null)
             {
-                destroy(HumanoidAvatar);
+                UnityObjectDestoyer.DestroyRuntimeOrEditor(HumanoidAvatar);
             }
             if (Meta != null)
             {
-                destroy(Meta);
+                UnityObjectDestoyer.DestroyRuntimeOrEditor(Meta);
             }
             if (AvatarDescription != null)
             {
-                destroy(AvatarDescription);
+                UnityObjectDestoyer.DestroyRuntimeOrEditor(AvatarDescription);
             }
             if (BlendShapeAvatar != null)
             {
                 foreach (var clip in BlendShapeAvatar.Clips)
                 {
-                    destroy(clip);
+                    UnityObjectDestoyer.DestroyRuntimeOrEditor(clip);
                 }
-                destroy(BlendShapeAvatar);
+                UnityObjectDestoyer.DestroyRuntimeOrEditor(BlendShapeAvatar);
             }
 
             base.Dispose();

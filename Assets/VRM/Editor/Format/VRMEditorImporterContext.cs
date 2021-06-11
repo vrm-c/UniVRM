@@ -108,61 +108,51 @@ namespace VRM
             TextureExtractor.ExtractTextures(m_context.Parser, m_prefabPath.Parent.Child(dirName), m_context.TextureDescriptorGenerator, subAssets, (_x, _y) => { }, onTextureReloaded);
         }
 
-        bool SaveAsAsset(UnityEngine.Object o)
+        void SaveAsAsset(SubAssetKey _, UnityEngine.Object o)
         {
-            if (o is GameObject)
-            {
-                return false;
-            }
-
             if (!string.IsNullOrEmpty(AssetDatabase.GetAssetPath(o)))
             {
-                // already exists. not dispose
 #if VRM_DEVELOP
-                Debug.Log($"Loaded. skip: {o}");
+                // 来ない？
+                Debug.LogWarning($"{o} already exists. skip write");
 #endif
-                return true;
+                return;
             }
 
             var assetPath = GetAssetPath(m_prefabPath, o);
-            if (assetPath.IsNull)
+            if (!assetPath.IsNull)
             {
-                // not dispose
-                return true;
+                // アセットとして書き込む
+                assetPath.Parent.EnsureFolder();
+                assetPath.CreateAsset(o);
+                m_paths.Add(assetPath);
             }
-
-            // アセットとして書き込む
-            assetPath.Parent.EnsureFolder();
-            assetPath.CreateAsset(o);
-            m_paths.Add(assetPath);
-
-            // 所有権が移動
-            return true;
         }
 
-        public void SaveAsAsset()
+        public void SaveAsAsset(UniGLTF.RuntimeGltfInstance loaded)
         {
-            m_context.ShowMeshes();
+            loaded.ShowMeshes();
 
             //
             // save sub assets
             //
             m_paths.Clear();
             m_paths.Add(m_prefabPath);
-            m_context.TransferOwnership(SaveAsAsset);
+            loaded.TransferOwnership(SaveAsAsset);
+            var root = loaded.Root;
+            GameObject.DestroyImmediate(loaded);
 
             // Create or update Main Asset
             if (m_prefabPath.IsFileExists)
             {
                 Debug.LogFormat("replace prefab: {0}", m_prefabPath);
                 var prefab = m_prefabPath.LoadAsset<GameObject>();
-                PrefabUtility.SaveAsPrefabAssetAndConnect(m_context.Root, m_prefabPath.Value, InteractionMode.AutomatedAction);
-
+                PrefabUtility.SaveAsPrefabAssetAndConnect(root, m_prefabPath.Value, InteractionMode.AutomatedAction);
             }
             else
             {
                 Debug.LogFormat("create prefab: {0}", m_prefabPath);
-                PrefabUtility.SaveAsPrefabAssetAndConnect(m_context.Root, m_prefabPath.Value, InteractionMode.AutomatedAction);
+                PrefabUtility.SaveAsPrefabAssetAndConnect(root, m_prefabPath.Value, InteractionMode.AutomatedAction);
             }
 
             foreach (var x in m_paths)
