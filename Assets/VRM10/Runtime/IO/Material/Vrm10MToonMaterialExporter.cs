@@ -202,7 +202,7 @@ namespace UniVRM10
             }
         }
 
-        private static void ExportTextureTransform(glTFTextureInfo textureInfo, Vector2 unityScale, Vector2 unityOffset)
+        public static void ExportTextureTransform(glTFTextureInfo textureInfo, Vector2 unityScale, Vector2 unityOffset)
         {
             if (textureInfo == null)
             {
@@ -214,7 +214,7 @@ namespace UniVRM10
             glTF_KHR_texture_transform.Serialize(textureInfo, (offset.x, offset.y), (scale.x, scale.y));
         }
 
-        private static void ExportTextureTransform(TextureInfo textureInfo, Vector2 unityScale, Vector2 unityOffset)
+        public static void ExportTextureTransform(TextureInfo textureInfo, Vector2 unityScale, Vector2 unityOffset)
         {
             // Generate extension to empty holder.
             var gltfTextureInfo = new EmptyGltfTextureInfo();
@@ -224,7 +224,7 @@ namespace UniVRM10
             textureInfo.Extensions = gltfTextureInfo.extensions;
         }
 
-        private static void ExportTextureTransform(ShadingShiftTextureInfo textureInfo, Vector2 unityScale, Vector2 unityOffset)
+        public static void ExportTextureTransform(ShadingShiftTextureInfo textureInfo, Vector2 unityScale, Vector2 unityOffset)
         {
             // Generate extension to empty holder.
             var gltfTextureInfo = new EmptyGltfTextureInfo();
