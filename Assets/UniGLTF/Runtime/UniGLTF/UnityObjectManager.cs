@@ -10,6 +10,11 @@ namespace UniGLTF
     /// </summary>
     public class UnityObjectManager : MonoBehaviour, IResponsibilityForDestroyObjects
     {
+        /// <summary>
+        /// this is UniGLTF root gameObject
+        /// </summary>
+        public GameObject Root => this.gameObject;
+
         List<(SubAssetKey, UnityEngine.Object)> m_resources = new List<(SubAssetKey, UnityEngine.Object)>();
 
         public static UnityObjectManager AttachTo(GameObject go, ImporterContext context)
