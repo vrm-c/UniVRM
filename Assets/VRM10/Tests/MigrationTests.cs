@@ -228,10 +228,10 @@ namespace UniVRM10
             var bytes0 = File.ReadAllBytes(AliciaPath);
             parser0.Parse(AliciaPath, bytes0);
             var json0 = parser0.Json.ParseAsJson();
-            var colliderIndex = json0["extensions"]["VRM"]["secondaryAnimation"]["boneGroups"][0]["colliderGroups"][0].GetInt32();
-            var x = json0["extensions"]["VRM"]["secondaryAnimation"]["colliderGroups"][colliderIndex]["colliders"][0]["offset"]["x"].GetSingle();
-            var y = json0["extensions"]["VRM"]["secondaryAnimation"]["colliderGroups"][colliderIndex]["colliders"][0]["offset"]["y"].GetSingle();
-            var z = json0["extensions"]["VRM"]["secondaryAnimation"]["colliderGroups"][colliderIndex]["colliders"][0]["offset"]["z"].GetSingle();
+            var groupIndex = json0["extensions"]["VRM"]["secondaryAnimation"]["boneGroups"][0]["colliderGroups"][0].GetInt32();
+            var x = json0["extensions"]["VRM"]["secondaryAnimation"]["colliderGroups"][groupIndex]["colliders"][0]["offset"]["x"].GetSingle();
+            var y = json0["extensions"]["VRM"]["secondaryAnimation"]["colliderGroups"][groupIndex]["colliders"][0]["offset"]["y"].GetSingle();
+            var z = json0["extensions"]["VRM"]["secondaryAnimation"]["colliderGroups"][groupIndex]["colliders"][0]["offset"]["z"].GetSingle();
             Assert.AreEqual(VALUE.x, x);
             Assert.AreEqual(VALUE.y, y);
             Assert.AreEqual(VALUE.z, z);
@@ -244,11 +244,11 @@ namespace UniVRM10
             parser1.Parse(AliciaPath, bytes1);
             Assert.True(UniGLTF.Extensions.VRMC_springBone.GltfDeserializer.TryGet(parser1.GLTF.extensions, out UniGLTF.Extensions.VRMC_springBone.VRMC_springBone springBone));
             var spring = springBone.Springs[0];
-            var colliderNodeIndex = spring.ColliderGroups[0];
+            // var colliderNodeIndex = spring.ColliderGroups[0];
             // x軸だけが反転する
-            Assert.AreEqual(-VALUE.x, springBone.ColliderGroups[colliderIndex].Colliders[0].Shape.Sphere.Offset[0]);
-            Assert.AreEqual(VALUE.y, springBone.ColliderGroups[colliderIndex].Colliders[0].Shape.Sphere.Offset[1]);
-            Assert.AreEqual(VALUE.z, springBone.ColliderGroups[colliderIndex].Colliders[0].Shape.Sphere.Offset[2]);
+            Assert.AreEqual(-VALUE.x, springBone.Colliders[groupIndex].Shape.Sphere.Offset[0]);
+            Assert.AreEqual(VALUE.y, springBone.Colliders[groupIndex].Shape.Sphere.Offset[1]);
+            Assert.AreEqual(VALUE.z, springBone.Colliders[groupIndex].Shape.Sphere.Offset[2]);
         }
     }
 }

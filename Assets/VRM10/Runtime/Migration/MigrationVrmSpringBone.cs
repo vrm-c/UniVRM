@@ -49,27 +49,28 @@ namespace UniVRM10
             last.children = new[] { tail_index };
         }
 
+        /// <summary>
+        /// {
+        ///   "colliderGroups": [
+        ///   ],    
+        ///   "boneGroups": [
+        ///   ],
+        /// }
+        /// </summary>
+        /// <param name="gltf"></param>
+        /// <param name="sa"></param>
+        /// <returns></returns>
         public static UniGLTF.Extensions.VRMC_springBone.VRMC_springBone Migrate(UniGLTF.glTF gltf, JsonNode sa)
         {
-            var colliderNodes = new List<int>();
-
             var springBone = new UniGLTF.Extensions.VRMC_springBone.VRMC_springBone
             {
+                Colliders = new List<UniGLTF.Extensions.VRMC_springBone.Collider>(),
                 ColliderGroups = new List<UniGLTF.Extensions.VRMC_springBone.ColliderGroup>(),
                 Springs = new List<UniGLTF.Extensions.VRMC_springBone.Spring>(),
             };
 
             foreach (var x in sa["colliderGroups"].ArrayItems())
             {
-                var node = x["node"].GetInt32();
-                colliderNodes.Add(node);
-
-                var colliderGroup = new UniGLTF.Extensions.VRMC_springBone.ColliderGroup()
-                {
-                    Colliders = new List<UniGLTF.Extensions.VRMC_springBone.Collider>(),
-                };
-                springBone.ColliderGroups.Add(colliderGroup);
-
                 // {
                 //   "node": 14,
                 //   "colliders": [
@@ -99,9 +100,11 @@ namespace UniVRM10
                 //     }
                 //   ]
                 // },
+                var colliders = new List<int>();
                 foreach (var y in x["colliders"].ArrayItems())
                 {
-                    colliderGroup.Colliders.Add(new UniGLTF.Extensions.VRMC_springBone.Collider
+                    colliders.Add(springBone.Colliders.Count);
+                    springBone.Colliders.Add(new UniGLTF.Extensions.VRMC_springBone.Collider
                     {
                         Node = x["node"].GetInt32(),
                         Shape = new UniGLTF.Extensions.VRMC_springBone.ColliderShape
@@ -114,6 +117,11 @@ namespace UniVRM10
                         }
                     });
                 }
+                var colliderGroup = new UniGLTF.Extensions.VRMC_springBone.ColliderGroup()
+                {
+                    Colliders = colliders.ToArray(),
+                };
+                springBone.ColliderGroups.Add(colliderGroup);
             }
 
             // https://github.com/vrm-c/vrm-specification/pull/255

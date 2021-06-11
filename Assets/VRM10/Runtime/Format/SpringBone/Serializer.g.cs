@@ -43,6 +43,11 @@ public static void Serialize(JsonFormatter f, VRMC_springBone value)
         (value.Extras as glTFExtension).Serialize(f);
     }
 
+    if(value.Colliders!=null&&value.Colliders.Count()>=0){
+        f.Key("colliders");                
+        Serialize_Colliders(f, value.Colliders);
+    }
+
     if(value.ColliderGroups!=null&&value.ColliderGroups.Count()>=0){
         f.Key("colliderGroups");                
         Serialize_ColliderGroups(f, value.ColliderGroups);
@@ -54,6 +59,151 @@ public static void Serialize(JsonFormatter f, VRMC_springBone value)
     }
 
     f.EndMap();
+}
+
+public static void Serialize_Colliders(JsonFormatter f, List<Collider> value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    Serialize_Colliders_ITEM(f, item);
+
+    }
+    f.EndList();
+}
+
+public static void Serialize_Colliders_ITEM(JsonFormatter f, Collider value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.Node.HasValue){
+        f.Key("node");                
+        f.Value(value.Node.GetValueOrDefault());
+    }
+
+    if(value.Shape!=null){
+        f.Key("shape");                
+        __colliders_ITEM_Serialize_Shape(f, value.Shape);
+    }
+
+    f.EndMap();
+}
+
+public static void __colliders_ITEM_Serialize_Shape(JsonFormatter f, ColliderShape value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.Sphere!=null){
+        f.Key("sphere");                
+        __colliders_ITEM__shape_Serialize_Sphere(f, value.Sphere);
+    }
+
+    if(value.Capsule!=null){
+        f.Key("capsule");                
+        __colliders_ITEM__shape_Serialize_Capsule(f, value.Capsule);
+    }
+
+    f.EndMap();
+}
+
+public static void __colliders_ITEM__shape_Serialize_Sphere(JsonFormatter f, ColliderShapeSphere value)
+{
+    f.BeginMap();
+
+
+    if(value.Offset!=null&&value.Offset.Count()>=3){
+        f.Key("offset");                
+        __colliders_ITEM__shape__sphere_Serialize_Offset(f, value.Offset);
+    }
+
+    if(value.Radius.HasValue){
+        f.Key("radius");                
+        f.Value(value.Radius.GetValueOrDefault());
+    }
+
+    f.EndMap();
+}
+
+public static void __colliders_ITEM__shape__sphere_Serialize_Offset(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
+}
+
+public static void __colliders_ITEM__shape_Serialize_Capsule(JsonFormatter f, ColliderShapeCapsule value)
+{
+    f.BeginMap();
+
+
+    if(value.Offset!=null&&value.Offset.Count()>=3){
+        f.Key("offset");                
+        __colliders_ITEM__shape__capsule_Serialize_Offset(f, value.Offset);
+    }
+
+    if(value.Radius.HasValue){
+        f.Key("radius");                
+        f.Value(value.Radius.GetValueOrDefault());
+    }
+
+    if(value.Tail!=null&&value.Tail.Count()>=3){
+        f.Key("tail");                
+        __colliders_ITEM__shape__capsule_Serialize_Tail(f, value.Tail);
+    }
+
+    f.EndMap();
+}
+
+public static void __colliders_ITEM__shape__capsule_Serialize_Offset(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
+}
+
+public static void __colliders_ITEM__shape__capsule_Serialize_Tail(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
 }
 
 public static void Serialize_ColliderGroups(JsonFormatter f, List<ColliderGroup> value)
@@ -83,7 +233,12 @@ public static void Serialize_ColliderGroups_ITEM(JsonFormatter f, ColliderGroup 
         (value.Extras as glTFExtension).Serialize(f);
     }
 
-    if(value.Colliders!=null&&value.Colliders.Count()>=0){
+    if(!string.IsNullOrEmpty(value.Name)){
+        f.Key("name");                
+        f.Value(value.Name);
+    }
+
+    if(value.Colliders!=null&&value.Colliders.Count()>=1){
         f.Key("colliders");                
         __colliderGroups_ITEM_Serialize_Colliders(f, value.Colliders);
     }
@@ -91,140 +246,7 @@ public static void Serialize_ColliderGroups_ITEM(JsonFormatter f, ColliderGroup 
     f.EndMap();
 }
 
-public static void __colliderGroups_ITEM_Serialize_Colliders(JsonFormatter f, List<Collider> value)
-{
-    f.BeginList();
-
-    foreach(var item in value)
-    {
-    __colliderGroups_ITEM_Serialize_Colliders_ITEM(f, item);
-
-    }
-    f.EndList();
-}
-
-public static void __colliderGroups_ITEM_Serialize_Colliders_ITEM(JsonFormatter f, Collider value)
-{
-    f.BeginMap();
-
-
-    if(value.Extensions!=null){
-        f.Key("extensions");                
-        (value.Extensions as glTFExtension).Serialize(f);
-    }
-
-    if(value.Extras!=null){
-        f.Key("extras");                
-        (value.Extras as glTFExtension).Serialize(f);
-    }
-
-    if(value.Node.HasValue){
-        f.Key("node");                
-        f.Value(value.Node.GetValueOrDefault());
-    }
-
-    if(value.Shape!=null){
-        f.Key("shape");                
-        __colliderGroups_ITEM__colliders_ITEM_Serialize_Shape(f, value.Shape);
-    }
-
-    f.EndMap();
-}
-
-public static void __colliderGroups_ITEM__colliders_ITEM_Serialize_Shape(JsonFormatter f, ColliderShape value)
-{
-    f.BeginMap();
-
-
-    if(value.Extensions!=null){
-        f.Key("extensions");                
-        (value.Extensions as glTFExtension).Serialize(f);
-    }
-
-    if(value.Extras!=null){
-        f.Key("extras");                
-        (value.Extras as glTFExtension).Serialize(f);
-    }
-
-    if(value.Sphere!=null){
-        f.Key("sphere");                
-        __colliderGroups_ITEM__colliders_ITEM__shape_Serialize_Sphere(f, value.Sphere);
-    }
-
-    if(value.Capsule!=null){
-        f.Key("capsule");                
-        __colliderGroups_ITEM__colliders_ITEM__shape_Serialize_Capsule(f, value.Capsule);
-    }
-
-    f.EndMap();
-}
-
-public static void __colliderGroups_ITEM__colliders_ITEM__shape_Serialize_Sphere(JsonFormatter f, ColliderShapeSphere value)
-{
-    f.BeginMap();
-
-
-    if(value.Offset!=null&&value.Offset.Count()>=3){
-        f.Key("offset");                
-        __colliderGroups_ITEM__colliders_ITEM__shape__sphere_Serialize_Offset(f, value.Offset);
-    }
-
-    if(value.Radius.HasValue){
-        f.Key("radius");                
-        f.Value(value.Radius.GetValueOrDefault());
-    }
-
-    f.EndMap();
-}
-
-public static void __colliderGroups_ITEM__colliders_ITEM__shape__sphere_Serialize_Offset(JsonFormatter f, float[] value)
-{
-    f.BeginList();
-
-    foreach(var item in value)
-    {
-    f.Value(item);
-
-    }
-    f.EndList();
-}
-
-public static void __colliderGroups_ITEM__colliders_ITEM__shape_Serialize_Capsule(JsonFormatter f, ColliderShapeCapsule value)
-{
-    f.BeginMap();
-
-
-    if(value.Offset!=null&&value.Offset.Count()>=3){
-        f.Key("offset");                
-        __colliderGroups_ITEM__colliders_ITEM__shape__capsule_Serialize_Offset(f, value.Offset);
-    }
-
-    if(value.Radius.HasValue){
-        f.Key("radius");                
-        f.Value(value.Radius.GetValueOrDefault());
-    }
-
-    if(value.Tail!=null&&value.Tail.Count()>=3){
-        f.Key("tail");                
-        __colliderGroups_ITEM__colliders_ITEM__shape__capsule_Serialize_Tail(f, value.Tail);
-    }
-
-    f.EndMap();
-}
-
-public static void __colliderGroups_ITEM__colliders_ITEM__shape__capsule_Serialize_Offset(JsonFormatter f, float[] value)
-{
-    f.BeginList();
-
-    foreach(var item in value)
-    {
-    f.Value(item);
-
-    }
-    f.EndList();
-}
-
-public static void __colliderGroups_ITEM__colliders_ITEM__shape__capsule_Serialize_Tail(JsonFormatter f, float[] value)
+public static void __colliderGroups_ITEM_Serialize_Colliders(JsonFormatter f, int[] value)
 {
     f.BeginList();
 

@@ -37,6 +37,16 @@ public static VRMC_vrm Deserialize(JsonNode parsed)
     {
         var key = kv.Key.GetString();
 
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
         if(key=="specVersion"){
             value.SpecVersion = kv.Value.GetString();
             continue;
@@ -78,6 +88,16 @@ public static Meta Deserialize_Meta(JsonNode parsed)
     foreach(var kv in parsed.ObjectItems())
     {
         var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
 
         if(key=="name"){
             value.Name = kv.Value.GetString();
@@ -144,6 +164,11 @@ public static Meta Deserialize_Meta(JsonNode parsed)
             continue;
         }
 
+        if(key=="allowAntisocialOrHateUsage"){
+            value.AllowAntisocialOrHateUsage = kv.Value.GetBoolean();
+            continue;
+        }
+
         if(key=="creditNotation"){
             value.CreditNotation = (CreditNotationType)Enum.Parse(typeof(CreditNotationType), kv.Value.GetString(), true);
             continue;
@@ -195,6 +220,16 @@ public static Humanoid Deserialize_Humanoid(JsonNode parsed)
     foreach(var kv in parsed.ObjectItems())
     {
         var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
 
         if(key=="humanBones"){
             value.HumanBones = __humanoid_Deserialize_HumanBones(kv.Value);
@@ -500,6 +535,16 @@ public static HumanBone __humanoid__humanBones_Deserialize_Hips(JsonNode parsed)
     {
         var key = kv.Key.GetString();
 
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
             continue;
@@ -516,6 +561,16 @@ public static HumanBone __humanoid__humanBones_Deserialize_Spine(JsonNode parsed
     foreach(var kv in parsed.ObjectItems())
     {
         var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
 
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
@@ -534,6 +589,16 @@ public static HumanBone __humanoid__humanBones_Deserialize_Chest(JsonNode parsed
     {
         var key = kv.Key.GetString();
 
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
             continue;
@@ -550,6 +615,16 @@ public static HumanBone __humanoid__humanBones_Deserialize_UpperChest(JsonNode p
     foreach(var kv in parsed.ObjectItems())
     {
         var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
 
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
@@ -568,6 +643,16 @@ public static HumanBone __humanoid__humanBones_Deserialize_Neck(JsonNode parsed)
     {
         var key = kv.Key.GetString();
 
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
             continue;
@@ -584,6 +669,16 @@ public static HumanBone __humanoid__humanBones_Deserialize_Head(JsonNode parsed)
     foreach(var kv in parsed.ObjectItems())
     {
         var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
 
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
@@ -602,6 +697,16 @@ public static HumanBone __humanoid__humanBones_Deserialize_LeftEye(JsonNode pars
     {
         var key = kv.Key.GetString();
 
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
             continue;
@@ -618,6 +723,16 @@ public static HumanBone __humanoid__humanBones_Deserialize_RightEye(JsonNode par
     foreach(var kv in parsed.ObjectItems())
     {
         var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
 
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
@@ -636,6 +751,16 @@ public static HumanBone __humanoid__humanBones_Deserialize_Jaw(JsonNode parsed)
     {
         var key = kv.Key.GetString();
 
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
             continue;
@@ -652,6 +777,16 @@ public static HumanBone __humanoid__humanBones_Deserialize_LeftUpperLeg(JsonNode
     foreach(var kv in parsed.ObjectItems())
     {
         var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
 
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
@@ -670,6 +805,16 @@ public static HumanBone __humanoid__humanBones_Deserialize_LeftLowerLeg(JsonNode
     {
         var key = kv.Key.GetString();
 
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
             continue;
@@ -686,6 +831,16 @@ public static HumanBone __humanoid__humanBones_Deserialize_LeftFoot(JsonNode par
     foreach(var kv in parsed.ObjectItems())
     {
         var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
 
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
@@ -704,6 +859,16 @@ public static HumanBone __humanoid__humanBones_Deserialize_LeftToes(JsonNode par
     {
         var key = kv.Key.GetString();
 
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
             continue;
@@ -720,6 +885,16 @@ public static HumanBone __humanoid__humanBones_Deserialize_RightUpperLeg(JsonNod
     foreach(var kv in parsed.ObjectItems())
     {
         var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
 
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
@@ -738,6 +913,16 @@ public static HumanBone __humanoid__humanBones_Deserialize_RightLowerLeg(JsonNod
     {
         var key = kv.Key.GetString();
 
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
             continue;
@@ -754,6 +939,16 @@ public static HumanBone __humanoid__humanBones_Deserialize_RightFoot(JsonNode pa
     foreach(var kv in parsed.ObjectItems())
     {
         var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
 
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
@@ -772,6 +967,16 @@ public static HumanBone __humanoid__humanBones_Deserialize_RightToes(JsonNode pa
     {
         var key = kv.Key.GetString();
 
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
             continue;
@@ -788,6 +993,16 @@ public static HumanBone __humanoid__humanBones_Deserialize_LeftShoulder(JsonNode
     foreach(var kv in parsed.ObjectItems())
     {
         var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
 
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
@@ -806,6 +1021,16 @@ public static HumanBone __humanoid__humanBones_Deserialize_LeftUpperArm(JsonNode
     {
         var key = kv.Key.GetString();
 
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
             continue;
@@ -822,6 +1047,16 @@ public static HumanBone __humanoid__humanBones_Deserialize_LeftLowerArm(JsonNode
     foreach(var kv in parsed.ObjectItems())
     {
         var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
 
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
@@ -840,6 +1075,16 @@ public static HumanBone __humanoid__humanBones_Deserialize_LeftHand(JsonNode par
     {
         var key = kv.Key.GetString();
 
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
             continue;
@@ -856,6 +1101,16 @@ public static HumanBone __humanoid__humanBones_Deserialize_RightShoulder(JsonNod
     foreach(var kv in parsed.ObjectItems())
     {
         var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
 
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
@@ -874,6 +1129,16 @@ public static HumanBone __humanoid__humanBones_Deserialize_RightUpperArm(JsonNod
     {
         var key = kv.Key.GetString();
 
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
             continue;
@@ -890,6 +1155,16 @@ public static HumanBone __humanoid__humanBones_Deserialize_RightLowerArm(JsonNod
     foreach(var kv in parsed.ObjectItems())
     {
         var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
 
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
@@ -908,6 +1183,16 @@ public static HumanBone __humanoid__humanBones_Deserialize_RightHand(JsonNode pa
     {
         var key = kv.Key.GetString();
 
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
             continue;
@@ -924,6 +1209,16 @@ public static HumanBone __humanoid__humanBones_Deserialize_LeftThumbProximal(Jso
     foreach(var kv in parsed.ObjectItems())
     {
         var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
 
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
@@ -942,6 +1237,16 @@ public static HumanBone __humanoid__humanBones_Deserialize_LeftThumbIntermediate
     {
         var key = kv.Key.GetString();
 
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
             continue;
@@ -958,6 +1263,16 @@ public static HumanBone __humanoid__humanBones_Deserialize_LeftThumbDistal(JsonN
     foreach(var kv in parsed.ObjectItems())
     {
         var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
 
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
@@ -976,6 +1291,16 @@ public static HumanBone __humanoid__humanBones_Deserialize_LeftIndexProximal(Jso
     {
         var key = kv.Key.GetString();
 
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
             continue;
@@ -992,6 +1317,16 @@ public static HumanBone __humanoid__humanBones_Deserialize_LeftIndexIntermediate
     foreach(var kv in parsed.ObjectItems())
     {
         var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
 
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
@@ -1010,6 +1345,16 @@ public static HumanBone __humanoid__humanBones_Deserialize_LeftIndexDistal(JsonN
     {
         var key = kv.Key.GetString();
 
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
             continue;
@@ -1026,6 +1371,16 @@ public static HumanBone __humanoid__humanBones_Deserialize_LeftMiddleProximal(Js
     foreach(var kv in parsed.ObjectItems())
     {
         var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
 
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
@@ -1044,6 +1399,16 @@ public static HumanBone __humanoid__humanBones_Deserialize_LeftMiddleIntermediat
     {
         var key = kv.Key.GetString();
 
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
             continue;
@@ -1060,6 +1425,16 @@ public static HumanBone __humanoid__humanBones_Deserialize_LeftMiddleDistal(Json
     foreach(var kv in parsed.ObjectItems())
     {
         var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
 
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
@@ -1078,6 +1453,16 @@ public static HumanBone __humanoid__humanBones_Deserialize_LeftRingProximal(Json
     {
         var key = kv.Key.GetString();
 
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
             continue;
@@ -1094,6 +1479,16 @@ public static HumanBone __humanoid__humanBones_Deserialize_LeftRingIntermediate(
     foreach(var kv in parsed.ObjectItems())
     {
         var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
 
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
@@ -1112,6 +1507,16 @@ public static HumanBone __humanoid__humanBones_Deserialize_LeftRingDistal(JsonNo
     {
         var key = kv.Key.GetString();
 
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
             continue;
@@ -1128,6 +1533,16 @@ public static HumanBone __humanoid__humanBones_Deserialize_LeftLittleProximal(Js
     foreach(var kv in parsed.ObjectItems())
     {
         var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
 
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
@@ -1146,6 +1561,16 @@ public static HumanBone __humanoid__humanBones_Deserialize_LeftLittleIntermediat
     {
         var key = kv.Key.GetString();
 
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
             continue;
@@ -1162,6 +1587,16 @@ public static HumanBone __humanoid__humanBones_Deserialize_LeftLittleDistal(Json
     foreach(var kv in parsed.ObjectItems())
     {
         var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
 
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
@@ -1180,6 +1615,16 @@ public static HumanBone __humanoid__humanBones_Deserialize_RightThumbProximal(Js
     {
         var key = kv.Key.GetString();
 
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
             continue;
@@ -1196,6 +1641,16 @@ public static HumanBone __humanoid__humanBones_Deserialize_RightThumbIntermediat
     foreach(var kv in parsed.ObjectItems())
     {
         var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
 
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
@@ -1214,6 +1669,16 @@ public static HumanBone __humanoid__humanBones_Deserialize_RightThumbDistal(Json
     {
         var key = kv.Key.GetString();
 
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
             continue;
@@ -1230,6 +1695,16 @@ public static HumanBone __humanoid__humanBones_Deserialize_RightIndexProximal(Js
     foreach(var kv in parsed.ObjectItems())
     {
         var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
 
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
@@ -1248,6 +1723,16 @@ public static HumanBone __humanoid__humanBones_Deserialize_RightIndexIntermediat
     {
         var key = kv.Key.GetString();
 
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
             continue;
@@ -1264,6 +1749,16 @@ public static HumanBone __humanoid__humanBones_Deserialize_RightIndexDistal(Json
     foreach(var kv in parsed.ObjectItems())
     {
         var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
 
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
@@ -1282,6 +1777,16 @@ public static HumanBone __humanoid__humanBones_Deserialize_RightMiddleProximal(J
     {
         var key = kv.Key.GetString();
 
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
             continue;
@@ -1298,6 +1803,16 @@ public static HumanBone __humanoid__humanBones_Deserialize_RightMiddleIntermedia
     foreach(var kv in parsed.ObjectItems())
     {
         var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
 
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
@@ -1316,6 +1831,16 @@ public static HumanBone __humanoid__humanBones_Deserialize_RightMiddleDistal(Jso
     {
         var key = kv.Key.GetString();
 
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
             continue;
@@ -1332,6 +1857,16 @@ public static HumanBone __humanoid__humanBones_Deserialize_RightRingProximal(Jso
     foreach(var kv in parsed.ObjectItems())
     {
         var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
 
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
@@ -1350,6 +1885,16 @@ public static HumanBone __humanoid__humanBones_Deserialize_RightRingIntermediate
     {
         var key = kv.Key.GetString();
 
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
             continue;
@@ -1366,6 +1911,16 @@ public static HumanBone __humanoid__humanBones_Deserialize_RightRingDistal(JsonN
     foreach(var kv in parsed.ObjectItems())
     {
         var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
 
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
@@ -1384,6 +1939,16 @@ public static HumanBone __humanoid__humanBones_Deserialize_RightLittleProximal(J
     {
         var key = kv.Key.GetString();
 
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
             continue;
@@ -1400,6 +1965,16 @@ public static HumanBone __humanoid__humanBones_Deserialize_RightLittleIntermedia
     foreach(var kv in parsed.ObjectItems())
     {
         var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
 
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
@@ -1418,6 +1993,16 @@ public static HumanBone __humanoid__humanBones_Deserialize_RightLittleDistal(Jso
     {
         var key = kv.Key.GetString();
 
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
             continue;
@@ -1434,6 +2019,16 @@ public static FirstPerson Deserialize_FirstPerson(JsonNode parsed)
     foreach(var kv in parsed.ObjectItems())
     {
         var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
 
         if(key=="meshAnnotations"){
             value.MeshAnnotations = __firstPerson_Deserialize_MeshAnnotations(kv.Value);
@@ -1462,6 +2057,16 @@ public static MeshAnnotation __firstPerson_Deserialize_MeshAnnotations_ITEM(Json
     {
         var key = kv.Key.GetString();
 
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
         if(key=="node"){
             value.Node = kv.Value.GetInt32();
             continue;
@@ -1483,6 +2088,16 @@ public static LookAt Deserialize_LookAt(JsonNode parsed)
     foreach(var kv in parsed.ObjectItems())
     {
         var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
 
         if(key=="offsetFromHeadBone"){
             value.OffsetFromHeadBone = __lookAt_Deserialize_OffsetFromHeadBone(kv.Value);
@@ -1537,6 +2152,16 @@ public static LookAtRangeMap __lookAt_Deserialize_RangeMapHorizontalInner(JsonNo
     {
         var key = kv.Key.GetString();
 
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
         if(key=="inputMaxValue"){
             value.InputMaxValue = kv.Value.GetSingle();
             continue;
@@ -1558,6 +2183,16 @@ public static LookAtRangeMap __lookAt_Deserialize_RangeMapHorizontalOuter(JsonNo
     foreach(var kv in parsed.ObjectItems())
     {
         var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
 
         if(key=="inputMaxValue"){
             value.InputMaxValue = kv.Value.GetSingle();
@@ -1581,6 +2216,16 @@ public static LookAtRangeMap __lookAt_Deserialize_RangeMapVerticalDown(JsonNode 
     {
         var key = kv.Key.GetString();
 
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
         if(key=="inputMaxValue"){
             value.InputMaxValue = kv.Value.GetSingle();
             continue;
@@ -1602,6 +2247,16 @@ public static LookAtRangeMap __lookAt_Deserialize_RangeMapVerticalUp(JsonNode pa
     foreach(var kv in parsed.ObjectItems())
     {
         var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
 
         if(key=="inputMaxValue"){
             value.InputMaxValue = kv.Value.GetSingle();
