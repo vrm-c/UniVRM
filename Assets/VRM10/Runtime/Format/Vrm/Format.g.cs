@@ -9,7 +9,7 @@ namespace UniGLTF.Extensions.VRMC_vrm
     public enum AvatarPermissionType
     {
         onlyAuthor,
-        explicitlyLicensedPerson,
+        onlySeparatelyLicensedPerson,
         everyone,
 
     }
@@ -26,20 +26,25 @@ namespace UniGLTF.Extensions.VRMC_vrm
     {
         required,
         unnecessary,
-        abandoned,
 
     }
 
     public enum ModificationType
     {
         prohibited,
-        inherited,
-        notInherited,
+        allowModification,
+        allowModificationRedistribution,
 
     }
 
     public class Meta
     {
+        // Dictionary object with extension-specific objects.
+        public object Extensions;
+
+        // Application-specific data.
+        public object Extras;
+
         // The name of the model
         public string Name;
 
@@ -61,31 +66,34 @@ namespace UniGLTF.Extensions.VRMC_vrm
         // Third party licenses of the model, if required. You can use line breaks
         public string ThirdPartyLicenses;
 
-        // The index to access the thumbnail image of the avatar model in gltf.images. The texture resolution of 1024x1024 is recommended. It must be square. Preferable resolution is 1024 x 1024. This is for the application to use as an icon.
+        // The index to the thumbnail image of the model in gltf.images
         public int? ThumbnailImage;
 
-        // A person who can perform with this avatars
+        // A person who can perform as an avatar with this model
         public AvatarPermissionType AvatarPermission;
 
-        // A flag that permits to use this avatar in excessively violent contents
+        // A flag that permits to use this model in excessively violent contents
         public bool? AllowExcessivelyViolentUsage;
 
-        // A flag that permits to use this avatar in excessively sexual contents
+        // A flag that permits to use this model in excessively sexual contents
         public bool? AllowExcessivelySexualUsage;
 
-        // An option that permits to use this avatar in commercial products
+        // An option that permits to use this model in commercial products
         public CommercialUsageType CommercialUsage;
 
-        // A flag that permits to use this avatar in political or religious contents
+        // A flag that permits to use this model in political or religious contents
         public bool? AllowPoliticalOrReligiousUsage;
 
-        // An option that forces or abandons to display the credit of this avatar
+        // A flag that permits to use this model in contents contain anti-social activities or hate speeches
+        public bool? AllowAntisocialOrHateUsage;
+
+        // An option that forces or abandons to display the credit of this model
         public CreditNotationType CreditNotation;
 
-        // A flag that permits to redistribute this avatar
+        // A flag that permits to redistribute this model
         public bool? AllowRedistribution;
 
-        // An option that controls the condition to modify this avatar
+        // An option that controls the condition to modify this model
         public ModificationType Modification;
 
         // Describe the URL links of other license
@@ -94,6 +102,12 @@ namespace UniGLTF.Extensions.VRMC_vrm
 
     public class HumanBone
     {
+        // Dictionary object with extension-specific objects.
+        public object Extensions;
+
+        // Application-specific data.
+        public object Extras;
+
         // Represents a single glTF node tied to this humanBone.
         public int? Node;
     }
@@ -268,6 +282,12 @@ namespace UniGLTF.Extensions.VRMC_vrm
 
     public class Humanoid
     {
+        // Dictionary object with extension-specific objects.
+        public object Extensions;
+
+        // Application-specific data.
+        public object Extras;
+
         // Represents a set of humanBones of a humanoid.
         public HumanBones HumanBones;
     }
@@ -283,6 +303,12 @@ namespace UniGLTF.Extensions.VRMC_vrm
 
     public class MeshAnnotation
     {
+        // Dictionary object with extension-specific objects.
+        public object Extensions;
+
+        // Application-specific data.
+        public object Extras;
+
         // The index of the node that attached to target mesh.
         public int? Node;
 
@@ -292,6 +318,12 @@ namespace UniGLTF.Extensions.VRMC_vrm
 
     public class FirstPerson
     {
+        // Dictionary object with extension-specific objects.
+        public object Extensions;
+
+        // Application-specific data.
+        public object Extras;
+
         // Mesh rendering annotation for cameras.
         public List<MeshAnnotation> MeshAnnotations;
     }
@@ -305,6 +337,12 @@ namespace UniGLTF.Extensions.VRMC_vrm
 
     public class LookAtRangeMap
     {
+        // Dictionary object with extension-specific objects.
+        public object Extensions;
+
+        // Application-specific data.
+        public object Extras;
+
         // Yaw and pitch angles  ( degrees )  between the head bone forward vector and the eye gaze LookAt vector
         public float? InputMaxValue;
 
@@ -314,6 +352,12 @@ namespace UniGLTF.Extensions.VRMC_vrm
 
     public class LookAt
     {
+        // Dictionary object with extension-specific objects.
+        public object Extensions;
+
+        // Application-specific data.
+        public object Extras;
+
         // The origin of LookAt. Position offset from the head bone
         public float[] OffsetFromHeadBone;
 
@@ -467,9 +511,16 @@ namespace UniGLTF.Extensions.VRMC_vrm
     {
         public const string ExtensionName = "VRMC_vrm";
 
+        // Dictionary object with extension-specific objects.
+        public object Extensions;
+
+        // Application-specific data.
+        public object Extras;
+
         // Specification version of the VRM
         public string SpecVersion;
 
+        // Meta informations of the VRM model
         public Meta Meta;
 
         // Correspondence between nodes and human bones

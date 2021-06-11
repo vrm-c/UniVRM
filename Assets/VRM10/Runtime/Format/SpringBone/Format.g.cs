@@ -62,7 +62,11 @@ namespace UniGLTF.Extensions.VRMC_springBone
         // Application-specific data.
         public object Extras;
 
-        public List<Collider> Colliders;
+        // Name of the ColliderGroup
+        public string Name;
+
+        // An array of colliders.
+        public int[] Colliders;
     }
 
     public class SpringBoneJoint
@@ -119,6 +123,9 @@ namespace UniGLTF.Extensions.VRMC_springBone
 
         // Application-specific data.
         public object Extras;
+
+        // An array of colliders.
+        public List<Collider> Colliders;
 
         // An array of colliderGroups.
         public List<ColliderGroup> ColliderGroups;

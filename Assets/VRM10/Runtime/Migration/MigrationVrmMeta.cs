@@ -65,7 +65,7 @@ namespace UniVRM10
                                     meta.AvatarPermission = UniGLTF.Extensions.VRMC_vrm.AvatarPermissionType.onlyAuthor;
                                     break;
                                 case "ExplicitlyLicensedPerson":
-                                    meta.AvatarPermission = UniGLTF.Extensions.VRMC_vrm.AvatarPermissionType.explicitlyLicensedPerson;
+                                    meta.AvatarPermission = UniGLTF.Extensions.VRMC_vrm.AvatarPermissionType.onlySeparatelyLicensedPerson;
                                     break;
                                 case "Everyone":
                                     meta.AvatarPermission = UniGLTF.Extensions.VRMC_vrm.AvatarPermissionType.everyone;

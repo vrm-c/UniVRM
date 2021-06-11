@@ -33,6 +33,16 @@ public static void Serialize(JsonFormatter f, VRMC_vrm value)
     f.BeginMap();
 
 
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
     if(!string.IsNullOrEmpty(value.SpecVersion)){
         f.Key("specVersion");                
         f.Value(value.SpecVersion);
@@ -70,6 +80,16 @@ public static void Serialize_Meta(JsonFormatter f, Meta value)
 {
     f.BeginMap();
 
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
 
     if(!string.IsNullOrEmpty(value.Name)){
         f.Key("name");                
@@ -136,6 +156,11 @@ public static void Serialize_Meta(JsonFormatter f, Meta value)
         f.Value(value.AllowPoliticalOrReligiousUsage.GetValueOrDefault());
     }
 
+    if(value.AllowAntisocialOrHateUsage.HasValue){
+        f.Key("allowAntisocialOrHateUsage");                
+        f.Value(value.AllowAntisocialOrHateUsage.GetValueOrDefault());
+    }
+
     if(true){
         f.Key("creditNotation");                
         f.Value(value.CreditNotation.ToString());
@@ -187,6 +212,16 @@ public static void Serialize_Humanoid(JsonFormatter f, Humanoid value)
 {
     f.BeginMap();
 
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
 
     if(value.HumanBones!=null){
         f.Key("humanBones");                
@@ -484,6 +519,16 @@ public static void __humanoid__humanBones_Serialize_Hips(JsonFormatter f, HumanB
     f.BeginMap();
 
 
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
     if(value.Node.HasValue){
         f.Key("node");                
         f.Value(value.Node.GetValueOrDefault());
@@ -496,6 +541,16 @@ public static void __humanoid__humanBones_Serialize_Spine(JsonFormatter f, Human
 {
     f.BeginMap();
 
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
 
     if(value.Node.HasValue){
         f.Key("node");                
@@ -510,6 +565,16 @@ public static void __humanoid__humanBones_Serialize_Chest(JsonFormatter f, Human
     f.BeginMap();
 
 
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
     if(value.Node.HasValue){
         f.Key("node");                
         f.Value(value.Node.GetValueOrDefault());
@@ -522,6 +587,16 @@ public static void __humanoid__humanBones_Serialize_UpperChest(JsonFormatter f, 
 {
     f.BeginMap();
 
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
 
     if(value.Node.HasValue){
         f.Key("node");                
@@ -536,6 +611,16 @@ public static void __humanoid__humanBones_Serialize_Neck(JsonFormatter f, HumanB
     f.BeginMap();
 
 
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
     if(value.Node.HasValue){
         f.Key("node");                
         f.Value(value.Node.GetValueOrDefault());
@@ -548,6 +633,16 @@ public static void __humanoid__humanBones_Serialize_Head(JsonFormatter f, HumanB
 {
     f.BeginMap();
 
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
 
     if(value.Node.HasValue){
         f.Key("node");                
@@ -562,6 +657,16 @@ public static void __humanoid__humanBones_Serialize_LeftEye(JsonFormatter f, Hum
     f.BeginMap();
 
 
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
     if(value.Node.HasValue){
         f.Key("node");                
         f.Value(value.Node.GetValueOrDefault());
@@ -574,6 +679,16 @@ public static void __humanoid__humanBones_Serialize_RightEye(JsonFormatter f, Hu
 {
     f.BeginMap();
 
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
 
     if(value.Node.HasValue){
         f.Key("node");                
@@ -588,6 +703,16 @@ public static void __humanoid__humanBones_Serialize_Jaw(JsonFormatter f, HumanBo
     f.BeginMap();
 
 
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
     if(value.Node.HasValue){
         f.Key("node");                
         f.Value(value.Node.GetValueOrDefault());
@@ -600,6 +725,16 @@ public static void __humanoid__humanBones_Serialize_LeftUpperLeg(JsonFormatter f
 {
     f.BeginMap();
 
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
 
     if(value.Node.HasValue){
         f.Key("node");                
@@ -614,6 +749,16 @@ public static void __humanoid__humanBones_Serialize_LeftLowerLeg(JsonFormatter f
     f.BeginMap();
 
 
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
     if(value.Node.HasValue){
         f.Key("node");                
         f.Value(value.Node.GetValueOrDefault());
@@ -626,6 +771,16 @@ public static void __humanoid__humanBones_Serialize_LeftFoot(JsonFormatter f, Hu
 {
     f.BeginMap();
 
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
 
     if(value.Node.HasValue){
         f.Key("node");                
@@ -640,6 +795,16 @@ public static void __humanoid__humanBones_Serialize_LeftToes(JsonFormatter f, Hu
     f.BeginMap();
 
 
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
     if(value.Node.HasValue){
         f.Key("node");                
         f.Value(value.Node.GetValueOrDefault());
@@ -652,6 +817,16 @@ public static void __humanoid__humanBones_Serialize_RightUpperLeg(JsonFormatter 
 {
     f.BeginMap();
 
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
 
     if(value.Node.HasValue){
         f.Key("node");                
@@ -666,6 +841,16 @@ public static void __humanoid__humanBones_Serialize_RightLowerLeg(JsonFormatter 
     f.BeginMap();
 
 
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
     if(value.Node.HasValue){
         f.Key("node");                
         f.Value(value.Node.GetValueOrDefault());
@@ -678,6 +863,16 @@ public static void __humanoid__humanBones_Serialize_RightFoot(JsonFormatter f, H
 {
     f.BeginMap();
 
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
 
     if(value.Node.HasValue){
         f.Key("node");                
@@ -692,6 +887,16 @@ public static void __humanoid__humanBones_Serialize_RightToes(JsonFormatter f, H
     f.BeginMap();
 
 
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
     if(value.Node.HasValue){
         f.Key("node");                
         f.Value(value.Node.GetValueOrDefault());
@@ -704,6 +909,16 @@ public static void __humanoid__humanBones_Serialize_LeftShoulder(JsonFormatter f
 {
     f.BeginMap();
 
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
 
     if(value.Node.HasValue){
         f.Key("node");                
@@ -718,6 +933,16 @@ public static void __humanoid__humanBones_Serialize_LeftUpperArm(JsonFormatter f
     f.BeginMap();
 
 
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
     if(value.Node.HasValue){
         f.Key("node");                
         f.Value(value.Node.GetValueOrDefault());
@@ -730,6 +955,16 @@ public static void __humanoid__humanBones_Serialize_LeftLowerArm(JsonFormatter f
 {
     f.BeginMap();
 
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
 
     if(value.Node.HasValue){
         f.Key("node");                
@@ -744,6 +979,16 @@ public static void __humanoid__humanBones_Serialize_LeftHand(JsonFormatter f, Hu
     f.BeginMap();
 
 
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
     if(value.Node.HasValue){
         f.Key("node");                
         f.Value(value.Node.GetValueOrDefault());
@@ -756,6 +1001,16 @@ public static void __humanoid__humanBones_Serialize_RightShoulder(JsonFormatter 
 {
     f.BeginMap();
 
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
 
     if(value.Node.HasValue){
         f.Key("node");                
@@ -770,6 +1025,16 @@ public static void __humanoid__humanBones_Serialize_RightUpperArm(JsonFormatter 
     f.BeginMap();
 
 
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
     if(value.Node.HasValue){
         f.Key("node");                
         f.Value(value.Node.GetValueOrDefault());
@@ -782,6 +1047,16 @@ public static void __humanoid__humanBones_Serialize_RightLowerArm(JsonFormatter 
 {
     f.BeginMap();
 
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
 
     if(value.Node.HasValue){
         f.Key("node");                
@@ -796,6 +1071,16 @@ public static void __humanoid__humanBones_Serialize_RightHand(JsonFormatter f, H
     f.BeginMap();
 
 
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
     if(value.Node.HasValue){
         f.Key("node");                
         f.Value(value.Node.GetValueOrDefault());
@@ -808,6 +1093,16 @@ public static void __humanoid__humanBones_Serialize_LeftThumbProximal(JsonFormat
 {
     f.BeginMap();
 
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
 
     if(value.Node.HasValue){
         f.Key("node");                
@@ -822,6 +1117,16 @@ public static void __humanoid__humanBones_Serialize_LeftThumbIntermediate(JsonFo
     f.BeginMap();
 
 
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
     if(value.Node.HasValue){
         f.Key("node");                
         f.Value(value.Node.GetValueOrDefault());
@@ -834,6 +1139,16 @@ public static void __humanoid__humanBones_Serialize_LeftThumbDistal(JsonFormatte
 {
     f.BeginMap();
 
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
 
     if(value.Node.HasValue){
         f.Key("node");                
@@ -848,6 +1163,16 @@ public static void __humanoid__humanBones_Serialize_LeftIndexProximal(JsonFormat
     f.BeginMap();
 
 
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
     if(value.Node.HasValue){
         f.Key("node");                
         f.Value(value.Node.GetValueOrDefault());
@@ -860,6 +1185,16 @@ public static void __humanoid__humanBones_Serialize_LeftIndexIntermediate(JsonFo
 {
     f.BeginMap();
 
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
 
     if(value.Node.HasValue){
         f.Key("node");                
@@ -874,6 +1209,16 @@ public static void __humanoid__humanBones_Serialize_LeftIndexDistal(JsonFormatte
     f.BeginMap();
 
 
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
     if(value.Node.HasValue){
         f.Key("node");                
         f.Value(value.Node.GetValueOrDefault());
@@ -886,6 +1231,16 @@ public static void __humanoid__humanBones_Serialize_LeftMiddleProximal(JsonForma
 {
     f.BeginMap();
 
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
 
     if(value.Node.HasValue){
         f.Key("node");                
@@ -900,6 +1255,16 @@ public static void __humanoid__humanBones_Serialize_LeftMiddleIntermediate(JsonF
     f.BeginMap();
 
 
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
     if(value.Node.HasValue){
         f.Key("node");                
         f.Value(value.Node.GetValueOrDefault());
@@ -912,6 +1277,16 @@ public static void __humanoid__humanBones_Serialize_LeftMiddleDistal(JsonFormatt
 {
     f.BeginMap();
 
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
 
     if(value.Node.HasValue){
         f.Key("node");                
@@ -926,6 +1301,16 @@ public static void __humanoid__humanBones_Serialize_LeftRingProximal(JsonFormatt
     f.BeginMap();
 
 
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
     if(value.Node.HasValue){
         f.Key("node");                
         f.Value(value.Node.GetValueOrDefault());
@@ -938,6 +1323,16 @@ public static void __humanoid__humanBones_Serialize_LeftRingIntermediate(JsonFor
 {
     f.BeginMap();
 
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
 
     if(value.Node.HasValue){
         f.Key("node");                
@@ -952,6 +1347,16 @@ public static void __humanoid__humanBones_Serialize_LeftRingDistal(JsonFormatter
     f.BeginMap();
 
 
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
     if(value.Node.HasValue){
         f.Key("node");                
         f.Value(value.Node.GetValueOrDefault());
@@ -964,6 +1369,16 @@ public static void __humanoid__humanBones_Serialize_LeftLittleProximal(JsonForma
 {
     f.BeginMap();
 
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
 
     if(value.Node.HasValue){
         f.Key("node");                
@@ -978,6 +1393,16 @@ public static void __humanoid__humanBones_Serialize_LeftLittleIntermediate(JsonF
     f.BeginMap();
 
 
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
     if(value.Node.HasValue){
         f.Key("node");                
         f.Value(value.Node.GetValueOrDefault());
@@ -990,6 +1415,16 @@ public static void __humanoid__humanBones_Serialize_LeftLittleDistal(JsonFormatt
 {
     f.BeginMap();
 
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
 
     if(value.Node.HasValue){
         f.Key("node");                
@@ -1004,6 +1439,16 @@ public static void __humanoid__humanBones_Serialize_RightThumbProximal(JsonForma
     f.BeginMap();
 
 
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
     if(value.Node.HasValue){
         f.Key("node");                
         f.Value(value.Node.GetValueOrDefault());
@@ -1016,6 +1461,16 @@ public static void __humanoid__humanBones_Serialize_RightThumbIntermediate(JsonF
 {
     f.BeginMap();
 
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
 
     if(value.Node.HasValue){
         f.Key("node");                
@@ -1030,6 +1485,16 @@ public static void __humanoid__humanBones_Serialize_RightThumbDistal(JsonFormatt
     f.BeginMap();
 
 
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
     if(value.Node.HasValue){
         f.Key("node");                
         f.Value(value.Node.GetValueOrDefault());
@@ -1042,6 +1507,16 @@ public static void __humanoid__humanBones_Serialize_RightIndexProximal(JsonForma
 {
     f.BeginMap();
 
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
 
     if(value.Node.HasValue){
         f.Key("node");                
@@ -1056,6 +1531,16 @@ public static void __humanoid__humanBones_Serialize_RightIndexIntermediate(JsonF
     f.BeginMap();
 
 
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
     if(value.Node.HasValue){
         f.Key("node");                
         f.Value(value.Node.GetValueOrDefault());
@@ -1068,6 +1553,16 @@ public static void __humanoid__humanBones_Serialize_RightIndexDistal(JsonFormatt
 {
     f.BeginMap();
 
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
 
     if(value.Node.HasValue){
         f.Key("node");                
@@ -1082,6 +1577,16 @@ public static void __humanoid__humanBones_Serialize_RightMiddleProximal(JsonForm
     f.BeginMap();
 
 
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
     if(value.Node.HasValue){
         f.Key("node");                
         f.Value(value.Node.GetValueOrDefault());
@@ -1094,6 +1599,16 @@ public static void __humanoid__humanBones_Serialize_RightMiddleIntermediate(Json
 {
     f.BeginMap();
 
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
 
     if(value.Node.HasValue){
         f.Key("node");                
@@ -1108,6 +1623,16 @@ public static void __humanoid__humanBones_Serialize_RightMiddleDistal(JsonFormat
     f.BeginMap();
 
 
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
     if(value.Node.HasValue){
         f.Key("node");                
         f.Value(value.Node.GetValueOrDefault());
@@ -1120,6 +1645,16 @@ public static void __humanoid__humanBones_Serialize_RightRingProximal(JsonFormat
 {
     f.BeginMap();
 
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
 
     if(value.Node.HasValue){
         f.Key("node");                
@@ -1134,6 +1669,16 @@ public static void __humanoid__humanBones_Serialize_RightRingIntermediate(JsonFo
     f.BeginMap();
 
 
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
     if(value.Node.HasValue){
         f.Key("node");                
         f.Value(value.Node.GetValueOrDefault());
@@ -1146,6 +1691,16 @@ public static void __humanoid__humanBones_Serialize_RightRingDistal(JsonFormatte
 {
     f.BeginMap();
 
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
 
     if(value.Node.HasValue){
         f.Key("node");                
@@ -1160,6 +1715,16 @@ public static void __humanoid__humanBones_Serialize_RightLittleProximal(JsonForm
     f.BeginMap();
 
 
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
     if(value.Node.HasValue){
         f.Key("node");                
         f.Value(value.Node.GetValueOrDefault());
@@ -1172,6 +1737,16 @@ public static void __humanoid__humanBones_Serialize_RightLittleIntermediate(Json
 {
     f.BeginMap();
 
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
 
     if(value.Node.HasValue){
         f.Key("node");                
@@ -1186,6 +1761,16 @@ public static void __humanoid__humanBones_Serialize_RightLittleDistal(JsonFormat
     f.BeginMap();
 
 
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
     if(value.Node.HasValue){
         f.Key("node");                
         f.Value(value.Node.GetValueOrDefault());
@@ -1198,6 +1783,16 @@ public static void Serialize_FirstPerson(JsonFormatter f, FirstPerson value)
 {
     f.BeginMap();
 
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
 
     if(value.MeshAnnotations!=null&&value.MeshAnnotations.Count()>=0){
         f.Key("meshAnnotations");                
@@ -1224,6 +1819,16 @@ public static void __firstPerson_Serialize_MeshAnnotations_ITEM(JsonFormatter f,
     f.BeginMap();
 
 
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
     if(value.Node.HasValue){
         f.Key("node");                
         f.Value(value.Node.GetValueOrDefault());
@@ -1241,6 +1846,16 @@ public static void Serialize_LookAt(JsonFormatter f, LookAt value)
 {
     f.BeginMap();
 
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
 
     if(value.OffsetFromHeadBone!=null&&value.OffsetFromHeadBone.Count()>=0){
         f.Key("offsetFromHeadBone");                
@@ -1292,6 +1907,16 @@ public static void __lookAt_Serialize_RangeMapHorizontalInner(JsonFormatter f, L
     f.BeginMap();
 
 
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
     if(value.InputMaxValue.HasValue){
         f.Key("inputMaxValue");                
         f.Value(value.InputMaxValue.GetValueOrDefault());
@@ -1309,6 +1934,16 @@ public static void __lookAt_Serialize_RangeMapHorizontalOuter(JsonFormatter f, L
 {
     f.BeginMap();
 
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
 
     if(value.InputMaxValue.HasValue){
         f.Key("inputMaxValue");                
@@ -1328,6 +1963,16 @@ public static void __lookAt_Serialize_RangeMapVerticalDown(JsonFormatter f, Look
     f.BeginMap();
 
 
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
     if(value.InputMaxValue.HasValue){
         f.Key("inputMaxValue");                
         f.Value(value.InputMaxValue.GetValueOrDefault());
@@ -1345,6 +1990,16 @@ public static void __lookAt_Serialize_RangeMapVerticalUp(JsonFormatter f, LookAt
 {
     f.BeginMap();
 
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
 
     if(value.InputMaxValue.HasValue){
         f.Key("inputMaxValue");                

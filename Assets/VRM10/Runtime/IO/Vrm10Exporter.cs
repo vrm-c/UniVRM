@@ -263,7 +263,7 @@ namespace UniVRM10
                 ExportLookAt(vrm, vrmController);
                 ExportFirstPerson(vrm, vrmController, model, converter);
 
-                vrmSpringBone = ExportSpringBone(vrmController.SpringBone, model, converter);
+                vrmSpringBone = ExportSpringBone(vrmController, model, converter);
                 ExportConstraints(vrmController, model, converter);
             }
 
@@ -313,49 +313,49 @@ namespace UniVRM10
             return joint;
         }
 
-        UniGLTF.Extensions.VRMC_springBone.VRMC_springBone ExportSpringBone(VRM10ControllerSpringBone src, Model model, ModelExporter converter)
+        UniGLTF.Extensions.VRMC_springBone.VRMC_springBone ExportSpringBone(VRM10Controller controller, Model model, ModelExporter converter)
         {
             var springBone = new UniGLTF.Extensions.VRMC_springBone.VRMC_springBone
             {
+                Colliders = new List<UniGLTF.Extensions.VRMC_springBone.Collider>(),
                 ColliderGroups = new List<UniGLTF.Extensions.VRMC_springBone.ColliderGroup>(),
                 Springs = new List<UniGLTF.Extensions.VRMC_springBone.Spring>(),
             };
 
+            // colliders
             Func<Transform, int> getNodeIndexFromTransform = t =>
             {
                 var node = converter.Nodes[t.gameObject];
                 return model.Nodes.IndexOf(node);
             };
 
-            foreach (var x in src.ColliderGroups)
+            var colliders = controller.GetComponentsInChildren<VRM10SpringBoneCollider>();
+            foreach (var c in colliders)
             {
-                var colliderGroup = new UniGLTF.Extensions.VRMC_springBone.ColliderGroup
+                springBone.Colliders.Add(new UniGLTF.Extensions.VRMC_springBone.Collider
                 {
-                    Colliders = new List<UniGLTF.Extensions.VRMC_springBone.Collider>(),
-                };
-                springBone.ColliderGroups.Add(colliderGroup);
-
-                foreach (var y in x.Colliders)
-                {
-                    if (y == null)
-                    {
-                        continue;
-                    }
-                    colliderGroup.Colliders.Add(new UniGLTF.Extensions.VRMC_springBone.Collider
-                    {
-                        Node = getNodeIndexFromTransform(y.transform),
-                        Shape = ExportShape(y),
-                    });
-                }
+                    Node = getNodeIndexFromTransform(c.transform),
+                    Shape = ExportShape(c),
+                });
             }
 
-            foreach (var x in src.Springs)
+            // colliderGroups
+            foreach (var x in controller.SpringBone.ColliderGroups)
+            {
+                springBone.ColliderGroups.Add(new UniGLTF.Extensions.VRMC_springBone.ColliderGroup
+                {
+                    Colliders = x.Colliders.Select(y => Array.IndexOf(colliders, y)).ToArray(),
+                });
+            }
+
+            // springs
+            foreach (var x in controller.SpringBone.Springs)
             {
                 var spring = new UniGLTF.Extensions.VRMC_springBone.Spring
                 {
                     Name = x.Name,
                     Joints = x.Joints.Select(y => ExportJoint(y, getNodeIndexFromTransform)).ToList(),
-                    ColliderGroups = x.ColliderGroups.Select(y => src.ColliderGroups.IndexOf(y)).ToArray(),
+                    ColliderGroups = x.ColliderGroups.Select(y => controller.SpringBone.ColliderGroups.IndexOf(y)).ToArray(),
                 };
                 springBone.Springs.Add(spring);
             }
