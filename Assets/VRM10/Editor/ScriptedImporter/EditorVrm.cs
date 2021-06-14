@@ -68,7 +68,7 @@ namespace UniVRM10
 
             // meta
             {
-                var path = GetAndCreateFolder(importer.assetPath, ".vrm1.Meta");
+                var path = GetAndCreateFolder(importer.assetPath, ".vrm1.MetaObject");
                 foreach (var (key, asset) in importer.GetSubAssets<VRM10MetaObject>(importer.assetPath))
                 {
                     asset.ExtractSubAsset($"{path}/{asset.name}.asset", false);
