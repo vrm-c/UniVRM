@@ -375,10 +375,7 @@ namespace UniVRM10
                         gltfMaterial.alphaMode = "BLEND";
                         dst.TransparentWithZWrite = true;
                         gltfMaterial.alphaCutoff = 0.5f;
-                        if (transparentRenderQueueMap.TryGetValue(mtoon.Definition.Rendering.RenderQueueOffsetNumber, out int value))
-                        {
-                            dst.RenderQueueOffsetNumber = Mathf.Clamp(value, 0, +9);
-                        }
+                        dst.RenderQueueOffsetNumber = Mathf.Clamp( transparentZWriteRenderQueueMap[mtoon.Definition.Rendering.RenderQueueOffsetNumber], 0, +9);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
