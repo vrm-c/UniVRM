@@ -42,6 +42,26 @@ inline bool MToon_IsOutlinePass()
 }
 
 // Compile-time constant
+inline bool MToon_IsAlphaTestOn()
+{
+#if defined(_ALPHATEST_ON)
+    return true;
+#else
+    return false;
+#endif
+}
+
+// Compile-time constant
+inline bool MToon_IsAlphaBlendOn()
+{
+#if defined(_ALPHABLEND_ON)
+    return true;
+#else
+    return false;
+#endif
+}
+
+// Compile-time constant
 inline bool MToon_IsNormalMapOn()
 {
 #if defined(_NORMALMAP)
