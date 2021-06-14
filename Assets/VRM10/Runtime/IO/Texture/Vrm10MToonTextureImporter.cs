@@ -4,6 +4,7 @@ using UniGLTF;
 using UniGLTF.Extensions.VRMC_materials_mtoon;
 using UnityEngine;
 using VRMShaders;
+using VRMShaders.VRM10.MToon10.Runtime;
 
 namespace UniVRM10
 {
@@ -13,48 +14,47 @@ namespace UniVRM10
         {
             if (TryGetBaseColorTexture(parser, material, out var litTex))
             {
-                yield return (MToon.Utils.PropMainTex, litTex);
+                yield return (MToon10Prop.BaseColorTexture.ToUnityShaderLabName(), litTex);
             }
 
             if (TryGetEmissiveTexture(parser, material, out var emissiveTex))
             {
-                yield return (MToon.Utils.PropEmissionMap, emissiveTex);
+                yield return (MToon10Prop.EmissiveTexture.ToUnityShaderLabName(), emissiveTex);
             }
 
             if (TryGetNormalTexture(parser, material, out var normalTex))
             {
-                yield return ("_BumpMap", normalTex);
+                yield return (MToon10Prop.NormalTexture.ToUnityShaderLabName(), normalTex);
             }
 
             if (TryGetShadeMultiplyTexture(parser, mToon, out var shadeTex))
             {
-                yield return (MToon.Utils.PropShadeTexture, shadeTex);
+                yield return (MToon10Prop.ShadeColorTexture.ToUnityShaderLabName(), shadeTex);
             }
 
             if (TryGetShadingShiftTexture(parser, mToon, out var shadeShiftTex))
             {
-                Debug.LogWarning("Need VRM 1.0 MToon implementation.");
-                yield return ("_NEED_IMPLEMENTATION_MTOON_1_0_shadingShiftTexture", shadeShiftTex);
+                yield return (MToon10Prop.ShadingShiftTexture.ToUnityShaderLabName(), shadeShiftTex);
             }
 
             if (TryGetMatcapTexture(parser, mToon, out var matcapTex))
             {
-                yield return (MToon.Utils.PropSphereAdd, matcapTex);
+                yield return (MToon10Prop.MatcapTexture.ToUnityShaderLabName(), matcapTex);
             }
 
             if (TryGetRimMultiplyTexture(parser, mToon, out var rimTex))
             {
-                yield return (MToon.Utils.PropRimTexture, rimTex);
+                yield return (MToon10Prop.RimMultiplyTexture.ToUnityShaderLabName(), rimTex);
             }
 
             if (TryGetOutlineWidthMultiplyTexture(parser, mToon, out var outlineTex))
             {
-                yield return (MToon.Utils.PropOutlineWidthTexture, outlineTex);
+                yield return (MToon10Prop.OutlineWidthMultiplyTexture.ToUnityShaderLabName(), outlineTex);
             }
 
             if (TryGetUvAnimationMaskTexture(parser, mToon, out var uvAnimMaskTex))
             {
-                yield return (MToon.Utils.PropUvAnimMaskTexture, uvAnimMaskTex);
+                yield return (MToon10Prop.UvAnimationMaskTexture.ToUnityShaderLabName(), uvAnimMaskTex);
             }
         }
 

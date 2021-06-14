@@ -1,11 +1,7 @@
 {
-    "name": "VRMShaders.VRM10.MToon10.Editor",
-    "references": [
-        "VRMShaders.VRM10.MToon10.Runtime"
-    ],
-    "includePlatforms": [
-        "Editor"
-    ],
+    "name": "VRMShaders.VRM10.MToon10.Runtime",
+    "references": [],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,

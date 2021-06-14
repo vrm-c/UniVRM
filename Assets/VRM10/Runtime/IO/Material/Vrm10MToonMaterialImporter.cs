@@ -4,6 +4,7 @@ using UniGLTF;
 using UniGLTF.Extensions.VRMC_materials_mtoon;
 using UnityEngine;
 using VRMShaders;
+using VRMShaders.VRM10.MToon10.Runtime;
 using ColorSpace = VRMShaders.ColorSpace;
 using OutlineWidthMode = UniGLTF.Extensions.VRMC_materials_mtoon.OutlineWidthMode;
 
@@ -29,7 +30,7 @@ namespace UniVRM10
             }
 
             // use material.name, because material name may renamed in GltfParser.
-            matDesc = new MaterialDescriptor(m.name, MToon.Utils.ShaderName);
+            matDesc = new MaterialDescriptor(m.name, MToon10Meta.UnityShaderName);
 
             foreach (var (key, (subAssetKey, value)) in Vrm10MToonTextureImporter.EnumerateAllTextures(parser, m, mtoon))
             {
@@ -51,12 +52,10 @@ namespace UniVRM10
                 matDesc.Vectors.Add(key, value);
             }
 
-            matDesc.RenderQueue = TryGetRenderQueue(m, mtoon);
-
             matDesc.Actions.Add(material =>
             {
                 // Set hidden properties, keywords from float properties.
-                MToon.Utils.ValidateProperties(material, isBlendModeChangedByUser: false);
+                new MToonValidator(material).Validate();
             });
 
             return true;
@@ -66,148 +65,169 @@ namespace UniVRM10
         {
             const ColorSpace gltfColorSpace = ColorSpace.Linear;
 
+            // Rendering
             var baseColor = material?.pbrMetallicRoughness?.baseColorFactor?.ToColor4(gltfColorSpace, ColorSpace.sRGB);
             if (baseColor.HasValue)
             {
-                yield return (MToon.Utils.PropColor, baseColor.Value);
+                yield return (MToon10Prop.BaseColorFactor.ToUnityShaderLabName(), baseColor.Value);
             }
 
-            var emissionColor = material?.emissiveFactor?.ToColor3(gltfColorSpace, ColorSpace.Linear);
-            if (emissionColor.HasValue)
-            {
-                yield return (MToon.Utils.PropEmissionColor, emissionColor.Value);
-            }
-
+            // Lighting
             var shadeColor = mToon?.ShadeColorFactor?.ToColor3(gltfColorSpace, ColorSpace.sRGB);
             if (shadeColor.HasValue)
             {
-                yield return (MToon.Utils.PropShadeColor, shadeColor.Value);
+                yield return (MToon10Prop.ShadeColorFactor.ToUnityShaderLabName(), shadeColor.Value);
             }
 
+            // GI
+
+            // Emission
+            var emissionColor = material?.emissiveFactor?.ToColor3(gltfColorSpace, ColorSpace.Linear);
+            if (emissionColor.HasValue)
+            {
+                yield return (MToon10Prop.EmissiveFactor.ToUnityShaderLabName(), emissionColor.Value);
+            }
+
+            // Rim Lighting
             var rimColor = mToon?.ParametricRimColorFactor?.ToColor3(gltfColorSpace, ColorSpace.Linear);
             if (rimColor.HasValue)
             {
-                yield return (MToon.Utils.PropRimColor, rimColor.Value);
+                yield return (MToon10Prop.ParametricRimColorFactor.ToUnityShaderLabName(), rimColor.Value);
             }
 
+            // Outline
             var outlineColor = mToon?.OutlineColorFactor?.ToColor3(gltfColorSpace, ColorSpace.sRGB);
             if (outlineColor.HasValue)
             {
-                yield return (MToon.Utils.PropOutlineColor, outlineColor.Value);
+                yield return (MToon10Prop.OutlineColorFactor.ToUnityShaderLabName(), outlineColor.Value);
             }
+
+            // UV Animation
         }
 
         public static IEnumerable<(string key, float value)> TryGetAllFloats(glTFMaterial material, VRMC_materials_mtoon mToon)
         {
-            var renderMode = GetMToonRenderMode(material, mToon);
+            // Rendering
+            var alphaMode = GetMToon10AlphaMode(material);
             {
-                yield return (MToon.Utils.PropBlendMode, (float) renderMode);
+                yield return (MToon10Prop.AlphaMode.ToUnityShaderLabName(), (float) alphaMode);
             }
 
-            var cullMode = GetMToonCullMode(material, mToon);
+            var transparentWithZWrite = GetMToon10TransparentWithZWriteMode(material, mToon);
             {
-                yield return (MToon.Utils.PropCullMode, (float) cullMode);
-            }
-
-            var outlineMode = GetMToonOutlineWidthMode(material, mToon);
-            {
-                yield return (MToon.Utils.PropOutlineWidthMode, (float) outlineMode);
-
-                // In case of VRM 1.0 MToon, outline color mode is always MixedLighting.
-                yield return (MToon.Utils.PropOutlineColorMode, (float) MToon.OutlineColorMode.MixedLighting);
+                yield return (MToon10Prop.TransparentWithZWrite.ToUnityShaderLabName(), (float) transparentWithZWrite);
             }
 
             var cutoff = material?.alphaCutoff;
             if (cutoff.HasValue)
             {
-                yield return (MToon.Utils.PropCutoff, cutoff.Value);
+                yield return (MToon10Prop.AlphaCutoff.ToUnityShaderLabName(), cutoff.Value);
             }
 
+            var renderQueueOffset = mToon?.RenderQueueOffsetNumber;
+            if (renderQueueOffset.HasValue)
+            {
+                yield return (MToon10Prop.RenderQueueOffsetNumber.ToUnityShaderLabName(), (float) renderQueueOffset);
+            }
+
+            var doubleSidedMode = GetMToon10DoubleSidedMode(material, mToon);
+            {
+                yield return (MToon10Prop.DoubleSided.ToUnityShaderLabName(), (float) doubleSidedMode);
+            }
+
+            // Lighting
             var normalScale = material?.normalTexture?.scale;
             if (normalScale.HasValue)
             {
-                yield return ("_BumpScale", normalScale.Value);
+                yield return (MToon10Prop.NormalTextureScale.ToUnityShaderLabName(), normalScale.Value);
             }
 
             var shadingShift = mToon?.ShadingShiftFactor;
             if (shadingShift.HasValue)
             {
-                yield return (MToon.Utils.PropShadeShift, shadingShift.Value);
+                yield return (MToon10Prop.ShadingShiftFactor.ToUnityShaderLabName(), shadingShift.Value);
             }
 
             var shadingShiftTextureScale = mToon?.ShadingShiftTexture?.Scale;
             if (shadingShiftTextureScale.HasValue)
             {
-                Debug.LogWarning("Need VRM 1.0 MToon implementation.");
-                yield return ("_NEED_IMPLEMENTATION_MTOON_1_0_shadingShiftTextureScale", shadingShiftTextureScale.Value);
+                yield return (MToon10Prop.ShadingShiftTextureScale.ToUnityShaderLabName(), shadingShiftTextureScale.Value);
             }
 
             var shadingToony = mToon?.ShadingToonyFactor;
             if (shadingToony.HasValue)
             {
-                yield return (MToon.Utils.PropShadeToony, shadingToony.Value);
+                yield return (MToon10Prop.ShadingToonyFactor.ToUnityShaderLabName(), shadingToony.Value);
             }
 
-            var giIntensity = mToon?.GiIntensityFactor;
-            if (giIntensity.HasValue)
+            // GI
+            var giEqualization = mToon?.GiIntensityFactor;
+            if (giEqualization.HasValue)
             {
-                yield return (MToon.Utils.PropIndirectLightIntensity, giIntensity.Value);
+                // TODO: Update schema
+                yield return (MToon10Prop.GiEqualizationFactor.ToUnityShaderLabName(), giEqualization.Value);
             }
 
-            var rimLightMix = mToon?.RimLightingMixFactor;
-            if (rimLightMix.HasValue)
-            {
-                yield return (MToon.Utils.PropRimLightingMix, rimLightMix.Value);
-            }
+            // Emission
 
+            // Rim Lighting
             var rimFresnelPower = mToon?.ParametricRimFresnelPowerFactor;
             if (rimFresnelPower.HasValue)
             {
-                yield return (MToon.Utils.PropRimFresnelPower, rimFresnelPower.Value);
+                yield return (MToon10Prop.ParametricRimFresnelPowerFactor.ToUnityShaderLabName(), rimFresnelPower.Value);
             }
 
             var rimLift = mToon?.ParametricRimLiftFactor;
             if (rimLift.HasValue)
             {
-                yield return (MToon.Utils.PropRimLift, rimLift.Value);
+                yield return (MToon10Prop.ParametricRimLiftFactor.ToUnityShaderLabName(), rimLift.Value);
             }
 
-            // Unit conversion.
-            // Because Unity implemented MToon uses centimeter unit in width parameter.
+            var rimLightMix = mToon?.RimLightingMixFactor;
+            if (rimLightMix.HasValue)
+            {
+                yield return (MToon10Prop.RimLightingMixFactor.ToUnityShaderLabName(), rimLightMix.Value);
+            }
+
+            // Outline
+            var outlineMode = GetMToon10OutlineWidthMode(material, mToon);
+            {
+                yield return (MToon10Prop.OutlineWidthMode.ToUnityShaderLabName(), (float) outlineMode);
+            }
+
             var outlineWidth = mToon?.OutlineWidthFactor;
             if (outlineWidth.HasValue)
             {
-                const float meterToCentimeter = 100f;
-
-                yield return (MToon.Utils.PropOutlineWidth, outlineWidth.Value * meterToCentimeter);
+                yield return (MToon10Prop.OutlineWidthFactor.ToUnityShaderLabName(), outlineWidth.Value);
             }
 
             var outlineLightMix = mToon?.OutlineLightingMixFactor;
             if (outlineLightMix.HasValue)
             {
-                yield return (MToon.Utils.PropOutlineLightingMix, outlineLightMix.Value);
+                yield return (MToon10Prop.OutlineLightingMixFactor.ToUnityShaderLabName(), outlineLightMix.Value);
             }
 
+            // UV Animation
             var uvAnimSpeedScrollX = mToon?.UvAnimationScrollXSpeedFactor;
             if (uvAnimSpeedScrollX.HasValue)
             {
-                yield return (MToon.Utils.PropUvAnimScrollX, uvAnimSpeedScrollX.Value);
+                yield return (MToon10Prop.UvAnimationScrollXSpeedFactor.ToUnityShaderLabName(), uvAnimSpeedScrollX.Value);
             }
 
-            // UV coords conversion.
-            // glTF (top-left origin) to Unity (bottom-left origin)
             var uvAnimSpeedScrollY = mToon?.UvAnimationScrollYSpeedFactor;
             if (uvAnimSpeedScrollY.HasValue)
             {
+                // UV coords conversion.
+                // glTF (top-left origin) to Unity (bottom-left origin)
                 const float invertY = -1f;
 
-                yield return (MToon.Utils.PropUvAnimScrollY, uvAnimSpeedScrollY.Value * invertY);
+                yield return (MToon10Prop.UvAnimationScrollYSpeedFactor.ToUnityShaderLabName(), uvAnimSpeedScrollY.Value * invertY);
             }
 
             var uvAnimSpeedRotation = mToon?.UvAnimationRotationSpeedFactor;
             if (uvAnimSpeedRotation.HasValue)
             {
-                yield return (MToon.Utils.PropUvAnimRotation, uvAnimSpeedRotation.Value);
+                yield return (MToon10Prop.UvAnimationRotationSpeedFactor.ToUnityShaderLabName(), uvAnimSpeedRotation.Value);
             }
         }
 
@@ -216,77 +236,59 @@ namespace UniVRM10
             yield break;
         }
 
-        public static int? TryGetRenderQueue(glTFMaterial material, VRMC_materials_mtoon mToon)
-        {
-            var renderQueueOffset = mToon?.RenderQueueOffsetNumber;
-            if (renderQueueOffset.HasValue)
-            {
-                var renderMode = GetMToonRenderMode(material, mToon);
-                return MToon.Utils.GetRenderQueueRequirement(renderMode).DefaultValue +
-                                  renderQueueOffset.Value;
-            }
-            return default;
-        }
-
-
-        private static MToon.RenderMode GetMToonRenderMode(glTFMaterial material, VRMC_materials_mtoon mToon)
+        private static MToon10AlphaMode GetMToon10AlphaMode(glTFMaterial material)
         {
             switch (material?.alphaMode)
             {
                 case "OPAQUE":
-                    return MToon.RenderMode.Opaque;
+                    return MToon10AlphaMode.Opaque;
                 case "MASK":
-                    return MToon.RenderMode.Cutout;
+                    return MToon10AlphaMode.Cutout;
                 case "BLEND":
-                    var mToonZWrite = mToon?.TransparentWithZWrite;
-                    if (mToonZWrite.HasValue)
-                    {
-                        if (mToonZWrite.Value)
-                        {
-                            return MToon.RenderMode.TransparentWithZWrite;
-                        }
-                        else
-                        {
-                            return MToon.RenderMode.Transparent;
-                        }
-                    }
-                    else
-                    {
-                        // Invalid
-                        return MToon.RenderMode.Transparent;
-                    }
+                    return MToon10AlphaMode.Transparent;
                 default:
-                    // Invalid
-                    return MToon.RenderMode.Opaque;
+                    Debug.LogWarning($"Invalid AlphaMode");
+                    return MToon10AlphaMode.Opaque;
             }
         }
 
-        private static MToon.CullMode GetMToonCullMode(glTFMaterial material, VRMC_materials_mtoon mToon)
+        private static MToon10TransparentWithZWriteMode GetMToon10TransparentWithZWriteMode(glTFMaterial material, VRMC_materials_mtoon mtoon)
         {
-            var doubleSided = material?.doubleSided;
-            if (doubleSided.HasValue && doubleSided.Value)
+            if (mtoon?.TransparentWithZWrite == true)
             {
-                return MToon.CullMode.Off;
+                return MToon10TransparentWithZWriteMode.On;
             }
             else
             {
-                return MToon.CullMode.Back;
+                return MToon10TransparentWithZWriteMode.Off;
+            }
+        }
+        private static MToon10DoubleSidedMode GetMToon10DoubleSidedMode(glTFMaterial material, VRMC_materials_mtoon mToon)
+        {
+            if (material?.doubleSided == true)
+            {
+                return MToon10DoubleSidedMode.On;
+            }
+            else
+            {
+                return MToon10DoubleSidedMode.Off;
             }
         }
 
-        private static MToon.OutlineWidthMode GetMToonOutlineWidthMode(glTFMaterial material, VRMC_materials_mtoon mToon)
+        private static MToon10OutlineMode GetMToon10OutlineWidthMode(glTFMaterial material, VRMC_materials_mtoon mToon)
         {
-            switch (mToon.OutlineWidthMode)
+            switch (mToon?.OutlineWidthMode)
             {
                 case OutlineWidthMode.none:
-                    return MToon.OutlineWidthMode.None;
+                    return MToon10OutlineMode.None;
                 case OutlineWidthMode.worldCoordinates:
-                    return MToon.OutlineWidthMode.WorldCoordinates;
+                    return MToon10OutlineMode.World;
                 case OutlineWidthMode.screenCoordinates:
-                    return MToon.OutlineWidthMode.ScreenCoordinates;
+                    return MToon10OutlineMode.Screen;
                 default:
                     // Invalid
-                    return MToon.OutlineWidthMode.None;
+                    Debug.LogWarning("Invalid outlineWidthMode");
+                    return MToon10OutlineMode.None;
             }
         }
     }

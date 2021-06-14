@@ -14,7 +14,6 @@ struct MToonInput
     half3 viewDirWS;
     half3 litColor;
     half alpha;
-    half outlineFactor;
 };
 
 inline half GetMToonLighting_Reflectance_ShadingShift(const MToonInput input)
@@ -29,27 +28,49 @@ inline half GetMToonLighting_Reflectance_ShadingShift(const MToonInput input)
     }
 }
 
-inline half GetMToonLighting_Reflectance(const UnityLighting lighting, const MToonInput input)
+inline half GetMToonLighting_DotNL(const UnityLighting lighting, const MToonInput input)
 {
-    const half dotNL = dot(input.normalWS, lighting.directLightDirection);
-    const half shadingInput = lerp(-1, 1, mtoon_linearstep(-1, 1, dotNL) * lighting.directLightAttenuation);
-    const half shadingShift = GetMToonLighting_Reflectance_ShadingShift(input);
-    const half shadingToony = _ShadingToonyFactor;
-    return mtoon_linearstep(-1.0 + shadingToony, +1.0 - shadingToony, shadingInput + shadingShift);
+    return dot(input.normalWS, lighting.directLightDirection);
 }
 
-inline half3 GetMToonLighting_DirectLighting(const UnityLighting unityLight, const MToonInput input, const half reflectance)
+inline half GetMToonLighting_Shade(const UnityLighting lighting, const MToonInput input, const half dotNL)
 {
+    const half shadeShift = GetMToonLighting_Reflectance_ShadingShift(input);
+    const half shadeToony = _ShadingToonyFactor;
+
     if (MToon_IsForwardBasePass())
     {
-        const half3 shadeColor = UNITY_SAMPLE_TEX2D(_ShadeTex, input.uv).rgb * _ShadeColor.rgb;
-
-        return lerp(shadeColor, input.litColor, reflectance) * unityLight.directLightColor;
+        const half shadeInput = lerp(-1, 1, mtoon_linearstep(-1, 1, dotNL) * lighting.directLightAttenuation);
+        return mtoon_linearstep(-1.0 + shadeToony, +1.0 - shadeToony, shadeInput + shadeShift);
     }
     else
     {
-        return input.litColor * reflectance * unityLight.directLightColor * 0.5;
+        const half shadeInput = dotNL;
+        return mtoon_linearstep(-1.0 + shadeToony, +1.0 - shadeToony, shadeInput + shadeShift);
     }
+}
+
+inline half GetMToonLighting_Shadow(const UnityLighting lighting, const half dotNL)
+{
+    if (MToon_IsForwardBasePass())
+    {
+        return 1;
+    }
+    else
+    {
+        // heuristic term for weak lights.
+        //     0.5: heuristic.
+        //     min(0, dotNL) + 1: darken if (dotNL < 0) by using half lambert.
+        return lighting.directLightAttenuation * 0.5 * (min(0, dotNL) + 1);
+    }
+}
+
+inline half3 GetMToonLighting_DirectLighting(const UnityLighting unityLight, const MToonInput input, const half shade, const half shadow)
+{
+    const half3 shadeColor = UNITY_SAMPLE_TEX2D(_ShadeTex, input.uv).rgb * _ShadeColor.rgb;
+    const half3 albedo = lerp(shadeColor, input.litColor, shade);
+
+    return albedo * unityLight.directLightColor * shadow;
 }
 
 inline half3 GetMToonLighting_GlobalIllumination(const UnityLighting unityLight, const MToonInput input)
@@ -62,7 +83,6 @@ inline half3 GetMToonLighting_GlobalIllumination(const UnityLighting unityLight,
     {
         return 0;
     }
-
 }
 
 inline half3 GetMToonLighting_Emissive(const MToonInput input)
@@ -73,7 +93,7 @@ inline half3 GetMToonLighting_Emissive(const MToonInput input)
     }
     else
     {
-        return _EmissionColor.rgb;
+        return 0;
     }
 }
 
@@ -94,45 +114,57 @@ inline half3 GetMToonLighting_Rim_Matcap(const MToonInput input)
     }
 }
 
-inline half3 GetMToonLighting_Rim(const MToonInput input, const half3 lighting)
+inline half3 GetMToonLighting_Rim(const UnityLighting unityLight, const MToonInput input, const half shadow)
 {
+    const half3 parametricRimFactor = pow(saturate(1.0 - dot(input.normalWS, input.viewDirWS) + _RimLift), _RimFresnelPower) * _RimColor.rgb;
+    const half3 matcapFactor = GetMToonLighting_Rim_Matcap(input);
+    const half3 directLightingFactor = unityLight.directLightColor * shadow;
+
+    half3 rimLightingFactor;
     if (MToon_IsForwardBasePass())
     {
-        const half3 parametricRimFactor = pow(saturate(1.0 - dot(input.normalWS, input.viewDirWS) + _RimLift), _RimFresnelPower) * _RimColor.rgb;
-        const half3 rimLightingFactor = lerp(half3(1, 1, 1), lighting, _RimLightingMix);
-        const half3 matcapFactor = GetMToonLighting_Rim_Matcap(input);
+        const half3 indirectLightingFactor = unityLight.indirectLight;
 
-        if (MToon_IsRimMapOn())
-        {
-            return (matcapFactor + parametricRimFactor) * rimLightingFactor * UNITY_SAMPLE_TEX2D(_RimTex, input.uv).rgb;
-        }
-        else
-        {
-            return (matcapFactor + parametricRimFactor) * rimLightingFactor;
-        }
+        rimLightingFactor = lerp(half3(1, 1, 1), directLightingFactor + indirectLightingFactor, _RimLightingMix);
     }
     else
     {
-        return 0;
+        rimLightingFactor = lerp(half3(0, 0, 0), directLightingFactor, _RimLightingMix);
+    }
+
+    if (MToon_IsRimMapOn())
+    {
+        return (matcapFactor + parametricRimFactor) * rimLightingFactor * UNITY_SAMPLE_TEX2D(_RimTex, input.uv).rgb;
+    }
+    else
+    {
+        return (matcapFactor + parametricRimFactor) * rimLightingFactor;
     }
 }
 
 half4 GetMToonLighting(const UnityLighting unityLight, const MToonInput input)
 {
-    const half reflectance = GetMToonLighting_Reflectance(unityLight, input);
+    const half dotNL = GetMToonLighting_DotNL(unityLight, input);
+    const half shade = GetMToonLighting_Shade(unityLight, input, dotNL);
+    const half shadow = GetMToonLighting_Shadow(unityLight, dotNL);
 
-    const half3 direct = GetMToonLighting_DirectLighting(unityLight, input, reflectance);
+    const half3 direct = GetMToonLighting_DirectLighting(unityLight, input, shade, shadow);
     const half3 indirect = GetMToonLighting_GlobalIllumination(unityLight, input);
     const half3 lighting = direct + indirect;
     const half3 emissive = GetMToonLighting_Emissive(input);
-    const half3 rim = GetMToonLighting_Rim(input, lighting);
+    const half3 rim = GetMToonLighting_Rim(unityLight, input, shadow);
 
     const half3 baseCol = lighting + emissive + rim;
-    const half3 outlineCol = _OutlineColor.rgb * lerp(half3(1, 1, 1), baseCol, _OutlineLightingMix);
 
-    const half3 col = lerp(baseCol, outlineCol, input.outlineFactor);
-
-    return half4(col, input.alpha);
+    if (MToon_IsOutlinePass())
+    {
+        const half3 outlineCol = _OutlineColor.rgb * lerp(half3(1, 1, 1), baseCol, _OutlineLightingMix);
+        return half4(outlineCol, input.alpha);
+    }
+    else
+    {
+        return half4(baseCol, input.alpha);
+    }
 }
 
 #endif

@@ -11,14 +11,16 @@ inline float3 GetMToonGeometry_NormalWithoutNormalMap(const half3 normalWS)
     return normalize(normalWS);
 }
 
-inline float3 GetMToonGeometry_Normal(const Varyings input, const float2 mtoonUv)
+inline float3 GetMToonGeometry_Normal(const Varyings input, const MTOON_FRONT_FACE_TYPE facing, const float2 mtoonUv)
 {
+    const half3 normalWS = MTOON_IS_FRONT_VFACE(facing, input.normalWS, -input.normalWS);
+
 #if defined(_NORMALMAP)
     // Get Normal in WorldSpace from Normalmap if available
     const half3 normalTS = normalize(UnpackNormalWithScale(UNITY_SAMPLE_TEX2D(_BumpMap, mtoonUv), _BumpScale));
-    return normalize(mul(normalTS, MToon_GetTangentToWorld(input.normalWS, input.tangentWS)));
+    return normalize(mul(normalTS, MToon_GetTangentToWorld(normalWS, input.tangentWS)));
 #else
-    return GetMToonGeometry_NormalWithoutNormalMap(input.normalWS);
+    return GetMToonGeometry_NormalWithoutNormalMap(normalWS);
 #endif
 }
 
