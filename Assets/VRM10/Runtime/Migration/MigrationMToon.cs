@@ -79,26 +79,30 @@ namespace UniVRM10
                     var key = kv.Key.GetString();
                     switch (key)
                     {
+                        // Lighting
                         case "_Color":
                             definition.Color.LitColor = ToColor(kv.Value, ColorSpace.sRGB, ColorSpace.sRGB);
                             break;
-
                         case "_ShadeColor":
                             definition.Color.ShadeColor = ToColor(kv.Value, ColorSpace.sRGB, ColorSpace.sRGB);
                             break;
 
+                        // Emission
                         case "_EmissionColor":
                             definition.Emission.EmissionColor = ToColor(kv.Value, ColorSpace.Linear, ColorSpace.Linear);
                             break;
 
-                        case "_OutlineColor":
-                            definition.Outline.OutlineColor = ToColor(kv.Value, ColorSpace.sRGB, ColorSpace.sRGB);
-                            break;
-
+                        // Rim Lighting
                         case "_RimColor":
                             definition.Rim.RimColor = ToColor(kv.Value, ColorSpace.sRGB, ColorSpace.sRGB);
                             break;
 
+                        // Outline
+                        case "_OutlineColor":
+                            definition.Outline.OutlineColor = ToColor(kv.Value, ColorSpace.sRGB, ColorSpace.sRGB);
+                            break;
+
+                        // Texture ST
                         case "_MainTex":
                         case "_ShadeTexture":
                         case "_BumpMap":
@@ -126,74 +130,71 @@ namespace UniVRM10
                     var value = kv.Value.GetSingle();
                     switch (kv.Key.GetString())
                     {
+                        // Rendering
                         case "_BlendMode":
                             definition.Rendering.RenderMode = (MToon.RenderMode)(int)value;
                             break;
-
                         case "_CullMode":
                             definition.Rendering.CullMode = (MToon.CullMode)(int)value;
                             break;
-
                         case "_Cutoff":
                             definition.Color.CutoutThresholdValue = value;
                             break;
 
+                        // Lighting
                         case "_BumpScale":
                             definition.Lighting.Normal.NormalScaleValue = value;
                             break;
-
                         case "_LightColorAttenuation":
                             definition.Lighting.LightingInfluence.LightColorAttenuationValue = value;
                             break;
+                        case "_ShadeShift":
+                            definition.Lighting.LitAndShadeMixing.ShadingShiftValue = value;
+                            break;
+                        case "_ShadeToony":
+                            definition.Lighting.LitAndShadeMixing.ShadingToonyValue = value;
+                            break;
+                        case "_ShadingGradeRate":
+                            // Not supported
+                            break;
+                        case "_ReceiveShadowRate":
+                            // Not supported
+                            break;
 
+                        // GI
+                        case "_IndirectLightIntensity":
+                            definition.Lighting.LightingInfluence.GiIntensityValue = value;
+                            break;
+
+                        // Rim Lighting
                         case "_RimFresnelPower":
                             definition.Rim.RimFresnelPowerValue = value;
                             break;
-
                         case "_RimLift":
                             definition.Rim.RimLiftValue = value;
                             break;
-
                         case "_RimLightingMix":
                             definition.Rim.RimLightingMixValue = value;
                             break;
 
-                        case "_ShadeShift":
-                            definition.Lighting.LitAndShadeMixing.ShadingShiftValue = value;
-                            break;
-
-                        case "_ShadeToony":
-                            definition.Lighting.LitAndShadeMixing.ShadingToonyValue = value;
-                            break;
-
-                        case "_ShadingGradeRate":
-                            // definition.Lighting.LightingInfluence.gr
-                            break;
-
+                        // Outline
                         case "_OutlineColorMode":
                             definition.Outline.OutlineColorMode = (MToon.OutlineColorMode)value;
                             break;
-
                         case "_OutlineLightingMix":
                             definition.Outline.OutlineLightingMixValue = value;
                             break;
-
                         case "_OutlineScaledMaxDistance":
                             definition.Outline.OutlineScaledMaxDistanceValue = value;
                             break;
-
                         case "_OutlineWidth":
                             definition.Outline.OutlineWidthValue = value;
                             break;
-
                         case "_OutlineWidthMode":
                             definition.Outline.OutlineWidthMode = (MToon.OutlineWidthMode)value;
                             break;
 
-                        case "_OutlineCullMode":
-                            // definition.Outline.
-                            break;
-
+                        // UV Animation
                         case "_UvAnimRotation":
                             definition.TextureOption.UvAnimationRotationSpeedValue = value;
                             break;
@@ -206,15 +207,13 @@ namespace UniVRM10
                             definition.TextureOption.UvAnimationScrollYSpeedValue = value;
                             break;
 
+                        case "_OutlineCullMode":
                         case "_ZWrite":
-                            break;
-
-                        case "_ReceiveShadowRate":
                         case "_DstBlend":
                         case "_SrcBlend":
-                        case "_IndirectLightIntensity":
                         case "_MToonVersion":
                         case "_DebugMode":
+                            // Auto generated
                             break;
 
                         default:
@@ -232,15 +231,20 @@ namespace UniVRM10
                     var index = kv.Value.GetInt32();
                     switch (kv.Key.GetString())
                     {
+                        // Lighting
                         case "_MainTex": map.MainTex = index; break;
                         case "_ShadeTexture": map.ShadeTexture = index; break;
                         case "_BumpMap": map.BumpMap = index; break;
                         case "_ReceiveShadowTexture": map.ReceiveShadowTexture = index; break;
                         case "_ShadingGradeTexture": map.ShadingGradeTexture = index; break;
+                        // Emission
+                        case "_EmissionMap": map.EmissionMap = index; break;
+                        // Rim Lighting
                         case "_RimTexture": map.RimTexture = index; break;
                         case "_SphereAdd": map.SphereAdd = index; break;
-                        case "_EmissionMap": map.EmissionMap = index; break;
+                        // Outline
                         case "_OutlineWidthTexture": map.OutlineWidthTexture = index; break;
+                        // UV Animation
                         case "_UvAnimMaskTexture": map.UvAnimMaskTexture = index; break;
                         default:
 #if VRM_DEVELOP
