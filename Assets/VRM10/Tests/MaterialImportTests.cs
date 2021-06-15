@@ -26,11 +26,27 @@ namespace UniVRM10
             parser.Parse(AliciaPath, migratedBytes);
 
             var matDesc = new Vrm10MaterialDescriptorGenerator().Get(parser, 0);
-            Assert.AreEqual("VRM/MToon", matDesc.ShaderName);
+            Assert.AreEqual("Alicia_body", matDesc.Name);
+            Assert.AreEqual("Hidden/VRM10/vrmc_materials_mtoon", matDesc.ShaderName);
             Assert.AreEqual("Alicia_body", matDesc.TextureSlots["_MainTex"].UnityObjectName);
+            Assert.AreEqual("Alicia_body", matDesc.TextureSlots["_ShadeTex"].UnityObjectName);
+
+            AreColorEqualApproximately(new Color(1, 1, 1, 1), matDesc.Colors["_Color"]);
+            ColorUtility.TryParseHtmlString("#FFDDD6", out var shadeColor);
+            AreColorEqualApproximately(shadeColor, matDesc.Colors["_ShadeColor"]);
+
+            Assert.AreEqual(1.0f - 0.1f, matDesc.FloatValues["_GiEqualization"]);
 
             var (key, value) = matDesc.EnumerateSubAssetKeyValue().First();
             Assert.AreEqual(new SubAssetKey(typeof(Texture2D), "Alicia_body"), key);
+        }
+
+        private void AreColorEqualApproximately(Color expected, Color actual)
+        {
+            Assert.AreEqual(Mathf.RoundToInt(expected.r * 255), Mathf.RoundToInt(actual.r * 255));
+            Assert.AreEqual(Mathf.RoundToInt(expected.g * 255), Mathf.RoundToInt(actual.g * 255));
+            Assert.AreEqual(Mathf.RoundToInt(expected.b * 255), Mathf.RoundToInt(actual.b * 255));
+            Assert.AreEqual(Mathf.RoundToInt(expected.a * 255), Mathf.RoundToInt(actual.a * 255));
         }
     }
 }
