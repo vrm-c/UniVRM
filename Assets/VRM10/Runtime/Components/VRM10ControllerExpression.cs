@@ -43,23 +43,17 @@ namespace UniVRM10
 
         int m_debugCount;
 
-        internal void Setup(Transform transform, ILookAtEyeDirectionProvider eyeDirectionProvider, ILookAtEyeDirectionApplicable eyeDirectionApplicable)
+        internal void Setup(VRM10Controller target, ILookAtEyeDirectionProvider eyeDirectionProvider, ILookAtEyeDirectionApplicable eyeDirectionApplicable)
         {
-            m_expressionAvatar = transform.GetComponent<VRM10ExpressionAvatar>();
+            m_expressionAvatar = target.GetComponent<VRM10ExpressionAvatar>();
             if (m_expressionAvatar == null)
             {
-#if VRM_DEVELOP          
-                if (m_debugCount++ == 0)
-                {
-                    Debug.LogWarning($"{nameof(VRM10ControllerExpression)}.{nameof(m_expressionAvatar)} is null.");
-                }
-#endif                
-                return;
+                throw new ArgumentNullException();
             }
 
             Restore();
 
-            _merger = new ExpressionMerger(m_expressionAvatar.Clips, transform);
+            _merger = new ExpressionMerger(m_expressionAvatar.Clips, target.transform);
             _keys = m_expressionAvatar.Clips.Select(ExpressionKey.CreateFromClip).ToList();
             var oldInputWeights = _inputWeights;
             _inputWeights = _keys.ToDictionary(x => x, x => 0f);

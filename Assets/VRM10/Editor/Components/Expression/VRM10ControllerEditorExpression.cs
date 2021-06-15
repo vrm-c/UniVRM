@@ -35,6 +35,7 @@ namespace UniVRM10
             if (!Application.isPlaying)
             {
                 EditorGUILayout.HelpBox("Enable when playing", MessageType.Info);
+                return;
             }
 
             if (m_sliders != null)
