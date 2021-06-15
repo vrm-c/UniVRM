@@ -22,7 +22,7 @@ namespace UniVRM10
             }
             m_head = animator.GetBoneTransform(HumanBodyBones.Head);
             target.LookAt.Setup(animator, m_head);
-            target.Expression.Setup(target.transform, target.LookAt, target.LookAt.EyeDirectionApplicable);
+            target.Expression.Setup(target, target.LookAt, target.LookAt.EyeDirectionApplicable);
 
             if (m_constraints == null)
             {
