@@ -1,13 +1,12 @@
 {
     "name": "VRMShaders.VRM10.Format.Runtime",
     "references": [],
+    "optionalUnityReferences": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": false,
-    "defineConstraints": [],
-    "versionDefines": [],
-    "noEngineReferences": false
+    "defineConstraints": []
 }

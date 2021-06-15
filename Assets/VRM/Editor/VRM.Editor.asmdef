@@ -3,13 +3,12 @@
     "references": [
         "VRM",
         "UniHumanoid",
-        "MeshUtility",
-        "MeshUtility.Editor",
         "VRMShaders.GLTF.IO.Runtime",
         "VRMShaders.GLTF.IO.Editor",
         "UniGLTF",
         "UniGLTF.Editor"
     ],
+    "optionalUnityReferences": [],
     "includePlatforms": [
         "Editor"
     ],
@@ -17,8 +16,6 @@
     "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
-    "autoReferenced": true,
-    "defineConstraints": [],
-    "versionDefines": [],
-    "noEngineReferences": false
+    "autoReferenced": false,
+    "defineConstraints": []
 }
