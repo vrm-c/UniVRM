@@ -58,27 +58,6 @@ namespace UniVRM10
             }
         }
 
-        VRM10Constraint[] m_constraints;
-
-        Transform m_head;
-        public Transform Head
-        {
-            get
-            {
-                if (m_head == null)
-                {
-                    m_head = GetComponent<Animator>().GetBoneTransform(HumanBodyBones.Head);
-                }
-                return m_head;
-            }
-        }
-
-        void Reset()
-        {
-            var animator = GetComponent<Animator>();
-            m_head = animator.GetBoneTransform(HumanBodyBones.Head);
-        }
-
         private void OnValidate()
         {
             if (LookAt != null)
@@ -90,65 +69,22 @@ namespace UniVRM10
             }
         }
 
-        public void Setup()
-        {
-            var animator = GetComponent<Animator>();
-            if (animator == null) return;
+        VRM10ControllerRuntime m_runtime;
 
-            m_head = animator.GetBoneTransform(HumanBodyBones.Head);
-            LookAt.Setup(animator, m_head);
-            Expression.Setup(transform, LookAt, LookAt.EyeDirectionApplicable);
-        }
-
-        /// <summary>
-        /// 毎フレーム関連コンポーネントを解決する
-        /// 
-        /// * Contraint
-        /// * Spring
-        /// * LookAt
-        /// * Expression
-        /// 
-        /// </summary>
-        public void Process()
+        VRM10ControllerRuntime GetOrCreate()
         {
-            // 
-            // constraint
-            //
-            if (m_constraints == null)
+            if (m_runtime == null)
             {
-                m_constraints = GetComponentsInChildren<VRM10Constraint>();
+                m_runtime = new VRM10ControllerRuntime(this);
             }
-            foreach (var constraint in m_constraints)
-            {
-                constraint.Process();
-            }
-
-            //
-            // spring
-            //
-            SpringBone.Process(Controller.SpringBoneCenter);
-
-            //
-            // gaze control
-            //
-            LookAt.Process();
-
-            //
-            // expression
-            //
-            Expression.Process();
-        }
-
-        private void Start()
-        {
-            Setup();
+            return m_runtime;
         }
 
         private void Update()
         {
             if (Controller.UpdateType == VRM10ControllerImpl.UpdateTypes.Update)
             {
-                Process();
+                GetOrCreate().Process();
             }
         }
 
@@ -156,7 +92,7 @@ namespace UniVRM10
         {
             if (Controller.UpdateType == VRM10ControllerImpl.UpdateTypes.LateUpdate)
             {
-                Process();
+                GetOrCreate().Process();
             }
         }
     }

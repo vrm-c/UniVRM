@@ -75,12 +75,6 @@ namespace UniVRM10
                 EditorGUILayout.Separator();
             }
 
-            // Setup runtime function.
-            if (UnityEngine.Application.isPlaying)
-            {
-                m_target.Setup();
-            }
-
             serializedObject.Update();
             switch (_tab)
             {
