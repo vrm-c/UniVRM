@@ -1,6 +1,11 @@
 {
-    "name": "ShaderProperty.Runtime",
-    "references": [],
+    "name": "VRM10.Samples",
+    "references": [
+        "VRM10",
+        "UniHumanoid",
+        "VrmLib",
+        "UniGLTF"
+    ],
     "optionalUnityReferences": [],
     "includePlatforms": [],
     "excludePlatforms": [],
