@@ -7,22 +7,80 @@ using VrmLib;
 namespace UniVRM10
 {
     [Serializable]
-    public sealed class VRM10ControllerExpression
+    public sealed class VRM10ObjectExpression
     {
-        public static IExpressionValidatorFactory ExpressionValidatorFactory = new DefaultExpressionValidator.Factory();
-
-        VRM10ExpressionAvatar m_expressionAvatar;
-        public IEnumerable<VRM10Expression> Clips
+        [SerializeField]
+        public List<VRM10Expression> Clips = new List<VRM10Expression>();
+        /// <summary>
+        /// NullのClipを削除して詰める
+        /// </summary>
+        public void RemoveNullClip()
         {
-            get
+            if (Clips == null)
             {
-                if (m_expressionAvatar == null || m_expressionAvatar.Clips == null)
+                return;
+            }
+            for (int i = Clips.Count - 1; i >= 0; --i)
+            {
+                if (Clips[i] == null)
                 {
-                    return Enumerable.Empty<VRM10Expression>();
+                    Clips.RemoveAt(i);
                 }
-                return m_expressionAvatar.Clips;
             }
         }
+
+        /// <summary>
+        /// Unknown以外で存在しないものを全て作る
+        /// </summary>
+        public void CreateDefaultPreset()
+        {
+            foreach (var preset in ((UniGLTF.Extensions.VRMC_vrm.ExpressionPreset[])Enum.GetValues(typeof(UniGLTF.Extensions.VRMC_vrm.ExpressionPreset)))
+                .Where(x => x != UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.custom)
+                )
+            {
+                CreateDefaultPreset(preset);
+            }
+        }
+
+        void CreateDefaultPreset(UniGLTF.Extensions.VRMC_vrm.ExpressionPreset preset)
+        {
+            var clip = GetClip(new ExpressionKey(preset));
+            if (clip != null) return;
+            clip = ScriptableObject.CreateInstance<VRM10Expression>();
+            clip.name = preset.ToString();
+            clip.ExpressionName = preset.ToString();
+            clip.Preset = preset;
+            Clips.Add(clip);
+        }
+
+        public void SetClip(ExpressionKey key, VRM10Expression clip)
+        {
+            int index = -1;
+            try
+            {
+                index = Clips.FindIndex(x => key.Match(x));
+            }
+            catch (Exception)
+            {
+
+            }
+            if (index == -1)
+            {
+                Clips.Add(clip);
+            }
+            else
+            {
+                Clips[index] = clip;
+            }
+        }
+
+        public VRM10Expression GetClip(ExpressionKey key)
+        {
+            if (Clips == null) return null;
+            return Clips.FirstOrDefault(x => key.Match(x));
+        }
+
+        public static IExpressionValidatorFactory ExpressionValidatorFactory = new DefaultExpressionValidator.Factory();
 
         private List<ExpressionKey> _keys = new List<ExpressionKey>();
         private Dictionary<ExpressionKey, float> _inputWeights = new Dictionary<ExpressionKey, float>();
@@ -45,16 +103,10 @@ namespace UniVRM10
 
         internal void Setup(VRM10Controller target, ILookAtEyeDirectionProvider eyeDirectionProvider, ILookAtEyeDirectionApplicable eyeDirectionApplicable)
         {
-            m_expressionAvatar = target.GetComponent<VRM10ExpressionAvatar>();
-            if (m_expressionAvatar == null)
-            {
-                throw new ArgumentNullException();
-            }
-
             Restore();
 
-            _merger = new ExpressionMerger(m_expressionAvatar.Clips, target.transform);
-            _keys = m_expressionAvatar.Clips.Select(ExpressionKey.CreateFromClip).ToList();
+            _merger = new ExpressionMerger(Clips, target.transform);
+            _keys = Clips.Select(ExpressionKey.CreateFromClip).ToList();
             var oldInputWeights = _inputWeights;
             _inputWeights = _keys.ToDictionary(x => x, x => 0f);
             foreach (var key in _keys)
@@ -63,7 +115,7 @@ namespace UniVRM10
                 if (oldInputWeights.ContainsKey(key)) _inputWeights[key] = oldInputWeights[key];
             }
             _actualWeights = _keys.ToDictionary(x => x, x => 0f);
-            _validator = ExpressionValidatorFactory.Create(m_expressionAvatar);
+            _validator = ExpressionValidatorFactory.Create(this);
             _eyeDirectionProvider = eyeDirectionProvider;
             _eyeDirectionApplicable = eyeDirectionApplicable;
         }

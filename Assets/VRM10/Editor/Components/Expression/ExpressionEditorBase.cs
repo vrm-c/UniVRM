@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿using System.IO;
+using UnityEditor;
 using UnityEngine;
 
 namespace UniVRM10
@@ -253,6 +254,19 @@ namespace UniVRM10
                     GUI.DrawTexture(r, PreviewTexture, ScaleMode.StretchToFill, false);
                 }
             }
+        }
+
+        public static VRM10Expression CreateExpression(string path)
+        {
+            //Debug.LogFormat("{0}", path);
+            var clip = ScriptableObject.CreateInstance<VRM10Expression>();
+            clip.ExpressionName = Path.GetFileNameWithoutExtension(path);
+            AssetDatabase.CreateAsset(clip, path);
+            AssetDatabase.ImportAsset(path);
+            return clip;
+            //Clips.Add(clip);
+            //EditorUtility.SetDirty(this);
+            //AssetDatabase.SaveAssets();
         }
     }
 }

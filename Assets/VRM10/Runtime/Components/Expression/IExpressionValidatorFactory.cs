@@ -2,6 +2,6 @@
 {
     public interface IExpressionValidatorFactory
     {
-        IExpressionValidator Create(VRM10ExpressionAvatar expressionAvatar);
+        IExpressionValidator Create(VRM10ObjectExpression expressionAvatar);
     }
 }

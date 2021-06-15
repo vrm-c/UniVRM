@@ -17,7 +17,7 @@ namespace UniVRM10
     {
         public static void OnGUI(ScriptedImporter importer, GltfParser parser, UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm)
         {
-            var hasExternal = importer.GetExternalObjectMap().Any(x => x.Value is VRM10MetaObject || x.Value is VRM10ExpressionAvatar || x.Value is VRM10Expression);
+            var hasExternal = importer.GetExternalObjectMap().Any(x => x.Value is VRM10Object || x.Value is VRM10Expression);
             using (new EditorGUI.DisabledScope(hasExternal))
             {
                 if (GUILayout.Button("Extract Meta And Expressions ..."))
@@ -27,7 +27,7 @@ namespace UniVRM10
             }
 
             // meta
-            importer.DrawRemapGUI<VRM10MetaObject>(new SubAssetKey[] { VRM10MetaObject.SubAssetKey });
+            importer.DrawRemapGUI<VRM10Object>(new SubAssetKey[] { VRM10Object.SubAssetKey });
 
             // expressions
             importer.DrawRemapGUI<VRM10Expression>(vrm.Expressions.Select(x => ExpressionKey.CreateFromVrm10(x).SubAssetKey));
@@ -35,7 +35,7 @@ namespace UniVRM10
             if (GUILayout.Button("Clear"))
             {
                 importer.ClearExternalObjects(
-                    typeof(VRM10MetaObject),
+                    typeof(VRM10ObjectMeta),
                     typeof(VRM10Expression));
             }
         }
@@ -57,7 +57,12 @@ namespace UniVRM10
         }
 
         /// <summary>
-        /// SubAssetを外部ファイルに展開する
+        /// 
+        /// * VRM10Object
+        /// * VRM10Expression[]
+        /// 
+        /// が Extract 対象となる
+        /// 
         /// </summary>
         public static void Extract(ScriptedImporter importer, GltfParser parser)
         {
@@ -66,23 +71,16 @@ namespace UniVRM10
                 return;
             }
 
-            // meta
+            var path = GetAndCreateFolder(importer.assetPath, ".Vrm1Object");
             {
-                var path = GetAndCreateFolder(importer.assetPath, ".vrm1.MetaObject");
-                foreach (var (key, asset) in importer.GetSubAssets<VRM10MetaObject>(importer.assetPath))
+                foreach (var (key, asset) in importer.GetSubAssets<VRM10Object>(importer.assetPath))
                 {
                     asset.ExtractSubAsset($"{path}/{asset.name}.asset", false);
                 }
-            }
-
-            {
-                // expressions
-                var path = GetAndCreateFolder(importer.assetPath, ".vrm1.Expressions");
                 foreach (var (key, asset) in importer.GetSubAssets<VRM10Expression>(importer.assetPath))
                 {
                     asset.ExtractSubAsset($"{path}/{asset.name}.asset", false);
                 }
-
             }
 
             AssetDatabase.ImportAsset(importer.assetPath, ImportAssetOptions.ForceUpdate);

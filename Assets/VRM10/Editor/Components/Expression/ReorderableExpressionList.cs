@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using UnityEditor;
 using UnityEditorInternal;
+using UnityEngine;
 
 namespace UniVRM10
 {
@@ -25,7 +26,7 @@ namespace UniVRM10
             m_list.index = index;
         }
 
-        public ReorderableExpressionList(SerializedObject serializedObject, SerializedProperty prop, UnityEngine.Object target)
+        public ReorderableExpressionList(SerializedObject serializedObject, SerializedProperty prop, string dir)
         {
             m_list = new ReorderableList(serializedObject, prop);
 
@@ -50,7 +51,7 @@ namespace UniVRM10
                 var element = prop.GetArrayElementAtIndex(list.index);
                 element.objectReferenceValue = null;
 
-                var dir = Path.GetDirectoryName(AssetDatabase.GetAssetPath(target));
+                // var dir = Path.GetDirectoryName(AssetDatabase.GetAssetPath(target));
                 var path = EditorUtility.SaveFilePanel(
                                "Create Expression",
                                dir,
@@ -58,7 +59,7 @@ namespace UniVRM10
                                "asset");
                 if (!string.IsNullOrEmpty(path))
                 {
-                    var clip = VRM10ExpressionAvatar.CreateExpression(path.ToUnityRelativePath());
+                    var clip = ExpressionEditorBase.CreateExpression(path.ToUnityRelativePath());
                     //clip.Prefab = AssetDatabase.LoadAssetAtPath<GameObject>(AssetDatabase.GetAssetPath(target));
 
                     element.objectReferenceValue = clip;

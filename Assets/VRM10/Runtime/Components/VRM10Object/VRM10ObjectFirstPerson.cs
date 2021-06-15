@@ -7,7 +7,7 @@ using UnityEngine;
 namespace UniVRM10
 {
     [Serializable]
-    public class VRM10ControllerFirstPerson
+    public class VRM10ObjectFirstPerson
     {
         [SerializeField]
         public List<RendererFirstPersonFlags> Renderers = new List<RendererFirstPersonFlags>();
@@ -15,7 +15,7 @@ namespace UniVRM10
         public void CopyTo(GameObject _dst, Dictionary<Transform, Transform> map)
         {
             var dst = _dst.GetOrAddComponent<VRM10Controller>();
-            dst.FirstPerson.Renderers = Renderers.Select(x =>
+            dst.Vrm.FirstPerson.Renderers = Renderers.Select(x =>
             {
                 var renderer = map[x.Renderer.transform].GetComponent<Renderer>();
                 return new RendererFirstPersonFlags

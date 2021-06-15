@@ -11,7 +11,7 @@ namespace UniVRM10
     /// </summary>
     class ExpressionClipSelector
     {
-        VRM10ExpressionAvatar m_avatar;
+        VRM10ObjectExpression m_avatar;
 
         int m_mode;
         static readonly string[] MODES = new string[]{
@@ -60,21 +60,21 @@ namespace UniVRM10
             }
         }
 
-        public ExpressionClipSelector(VRM10ExpressionAvatar avatar, SerializedObject serializedObject)
+        public ExpressionClipSelector(VRM10ObjectExpression avatar, string dir, SerializedObject serializedObject)
         {
             avatar.RemoveNullClip();
 
             m_avatar = avatar;
 
             var prop = serializedObject.FindProperty("Clips");
-            m_clipList = new ReorderableExpressionList(serializedObject, prop, avatar);
+            m_clipList = new ReorderableExpressionList(serializedObject, prop, dir);
             m_clipList.Selected += (selected) =>
             {
                 SelectedIndex = avatar.Clips.IndexOf(selected);
             };
         }
 
-        public void DrawGUI()
+        public void DrawGUI(string dir)
         {
             var backup = GUI.enabled;
             try
@@ -87,7 +87,7 @@ namespace UniVRM10
                 switch (m_mode)
                 {
                     case 0:
-                        SelectGUI();
+                        SelectGUI(dir);
                         break;
 
                     case 1:
@@ -104,7 +104,7 @@ namespace UniVRM10
             }
         }
 
-        void SelectGUI()
+        void SelectGUI(string dir)
         {
             if (m_avatar != null && m_avatar.Clips != null)
             {
@@ -118,7 +118,6 @@ namespace UniVRM10
 
             if (GUILayout.Button("Add Expression"))
             {
-                var dir = Path.GetDirectoryName(AssetDatabase.GetAssetPath(m_avatar));
                 var path = EditorUtility.SaveFilePanel(
                                "Create Expression",
                                dir,
@@ -126,7 +125,7 @@ namespace UniVRM10
                                "asset");
                 if (!string.IsNullOrEmpty(path))
                 {
-                    var clip = VRM10ExpressionAvatar.CreateExpression(path.ToUnityRelativePath());
+                    var clip = ExpressionEditorBase.CreateExpression(path.ToUnityRelativePath());
                     //clip.Prefab = AssetDatabase.LoadAssetAtPath<GameObject>(AssetDatabase.GetAssetPath(target));
 
                     m_avatar.Clips.Add(clip);

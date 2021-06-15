@@ -20,8 +20,8 @@ namespace UniVRM10
         {
             m_target = target;
 
-            m_expressionKeyWeights = m_target.Expression.Clips.ToDictionary(x => ExpressionKey.CreateFromClip(x), x => 0.0f);
-            m_sliders = m_target.Expression.Clips
+            m_expressionKeyWeights = m_target.Vrm.Expression.Clips.ToDictionary(x => ExpressionKey.CreateFromClip(x), x => 0.0f);
+            m_sliders = m_target.Vrm.Expression.Clips
                 .Where(x => x != null)
                 .Select(x => new ExpressionSlider(m_expressionKeyWeights, ExpressionKey.CreateFromClip(x)))
                 .ToList()
@@ -48,16 +48,16 @@ namespace UniVRM10
                 {
                     m_expressionKeyWeights[slider.Key] = slider.Value;
                 }
-                m_target.Expression.SetWeights(m_expressionKeyWeights);
+                m_target.Vrm.Expression.SetWeights(m_expressionKeyWeights);
             }
 
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Override rates", EditorStyles.boldLabel);
             EditorGUI.BeginDisabledGroup(true);
             {
-                EditorGUILayout.Slider("Blink override rate", m_target.Expression.BlinkOverrideRate, 0f, 1f);
-                EditorGUILayout.Slider("LookAt override rate", m_target.Expression.LookAtOverrideRate, 0f, 1f);
-                EditorGUILayout.Slider("Mouth override rate", m_target.Expression.MouthOverrideRate, 0f, 1f);
+                EditorGUILayout.Slider("Blink override rate", m_target.Vrm.Expression.BlinkOverrideRate, 0f, 1f);
+                EditorGUILayout.Slider("LookAt override rate", m_target.Vrm.Expression.LookAtOverrideRate, 0f, 1f);
+                EditorGUILayout.Slider("Mouth override rate", m_target.Vrm.Expression.MouthOverrideRate, 0f, 1f);
             }
             EditorGUI.EndDisabledGroup();
         }

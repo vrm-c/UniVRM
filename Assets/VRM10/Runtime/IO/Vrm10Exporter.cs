@@ -134,7 +134,7 @@ namespace UniVRM10
             return new float[] { -v.x, v.y, v.z };
         }
 
-        public void Export(GameObject root, Model model, ModelExporter converter, ExportArgs option, VRM10MetaObject metaObject = null)
+        public void Export(GameObject root, Model model, ModelExporter converter, ExportArgs option, VRM10Object vrmObject = null)
         {
             ExportAsset(model);
 
@@ -182,7 +182,7 @@ namespace UniVRM10
             // node
             ExportNodes(model.Root, model.Nodes, model.MeshGroups, option);
 
-            var (vrm, vrmSpringBone, thumbnailTextureIndex) = ExportVrm(root, model, converter, metaObject);
+            var (vrm, vrmSpringBone, thumbnailTextureIndex) = ExportVrm(root, model, converter, vrmObject);
 
             // Extension で Texture が増える場合があるので最後に呼ぶ
             for (int i = 0; i < m_textureExporter.Exported.Count; ++i)
@@ -213,21 +213,21 @@ namespace UniVRM10
         /// <param name="root"></param>
         /// <param name="model"></param>
         /// <param name="converter"></param>
-        /// <param name="meta"></param>
+        /// <param name="vrmObject"></param>
         /// <returns></returns>
         (UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm,
         UniGLTF.Extensions.VRMC_springBone.VRMC_springBone springBone,
-        int? thumbnailIndex) ExportVrm(GameObject root, Model model, ModelExporter converter, VRM10MetaObject meta)
+        int? thumbnailIndex) ExportVrm(GameObject root, Model model, ModelExporter converter, VRM10Object vrmObject)
         {
             var vrmController = root?.GetComponent<VRM10Controller>();
 
-            if (meta == null)
+            if (vrmObject == null)
             {
-                if (vrmController == null || vrmController.Meta == null)
+                if (vrmController?.Vrm?.Meta == null)
                 {
                     throw new NullReferenceException("metaObject is null");
                 }
-                meta = vrmController.Meta.Meta;
+                vrmObject = vrmController.Vrm;
             }
 
             var vrm = new UniGLTF.Extensions.VRMC_vrm.VRMC_vrm
@@ -251,7 +251,7 @@ namespace UniVRM10
             // required
             //
             ExportHumanoid(vrm, model);
-            var thumbnailTextureIndex = ExportMeta(vrm, meta);
+            var thumbnailTextureIndex = ExportMeta(vrm, vrmObject.Meta);
 
             //
             // optional
@@ -340,7 +340,7 @@ namespace UniVRM10
             }
 
             // colliderGroups
-            foreach (var x in controller.SpringBone.ColliderGroups)
+            foreach (var x in controller.Vrm.SpringBone.ColliderGroups)
             {
                 springBone.ColliderGroups.Add(new UniGLTF.Extensions.VRMC_springBone.ColliderGroup
                 {
@@ -349,13 +349,13 @@ namespace UniVRM10
             }
 
             // springs
-            foreach (var x in controller.SpringBone.Springs)
+            foreach (var x in controller.Vrm.SpringBone.Springs)
             {
                 var spring = new UniGLTF.Extensions.VRMC_springBone.Spring
                 {
                     Name = x.Name,
                     Joints = x.Joints.Select(y => ExportJoint(y, getNodeIndexFromTransform)).ToList(),
-                    ColliderGroups = x.ColliderGroups.Select(y => controller.SpringBone.ColliderGroups.IndexOf(y)).ToArray(),
+                    ColliderGroups = x.ColliderGroups.Select(y => controller.Vrm.SpringBone.ColliderGroups.IndexOf(y)).ToArray(),
                 };
                 springBone.Springs.Add(spring);
             }
@@ -469,7 +469,7 @@ namespace UniVRM10
 
         void ExportFirstPerson(UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm, VRM10Controller vrmController, Model model, ModelExporter converter)
         {
-            if (vrmController?.FirstPerson == null)
+            if (!(vrmController?.Vrm?.FirstPerson is VRM10ObjectFirstPerson firstPerson))
             {
                 return;
             }
@@ -483,7 +483,7 @@ namespace UniVRM10
                 var node = converter.Nodes[r.gameObject];
                 return model.Nodes.IndexOf(node);
             };
-            foreach (var f in vrmController.FirstPerson.Renderers)
+            foreach (var f in firstPerson.Renderers)
             {
                 vrm.FirstPerson.MeshAnnotations.Add(ExportMeshAnnotation(f, getIndex));
             }
@@ -500,23 +500,23 @@ namespace UniVRM10
 
         void ExportLookAt(UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm, VRM10Controller vrmController)
         {
-            if (vrmController?.LookAt == null)
+            if (!(vrmController?.Vrm?.LookAt is VRM10ControllerLookAt lookAt))
             {
                 return;
             }
 
             vrm.LookAt = new UniGLTF.Extensions.VRMC_vrm.LookAt
             {
-                Type = vrmController.LookAt.LookAtType,
+                Type = lookAt.LookAtType,
                 OffsetFromHeadBone = new float[]{
-                    vrmController.LookAt.OffsetFromHead.x ,
-                    vrmController.LookAt.OffsetFromHead.y ,
-                    vrmController.LookAt.OffsetFromHead.z ,
+                    lookAt.OffsetFromHead.x ,
+                    lookAt.OffsetFromHead.y ,
+                    lookAt.OffsetFromHead.z ,
                 },
-                RangeMapHorizontalInner = ExportLookAtRangeMap(vrmController.LookAt.HorizontalInner),
-                RangeMapHorizontalOuter = ExportLookAtRangeMap(vrmController.LookAt.HorizontalOuter),
-                RangeMapVerticalDown = ExportLookAtRangeMap(vrmController.LookAt.VerticalDown),
-                RangeMapVerticalUp = ExportLookAtRangeMap(vrmController.LookAt.VerticalUp),
+                RangeMapHorizontalInner = ExportLookAtRangeMap(lookAt.HorizontalInner),
+                RangeMapHorizontalOuter = ExportLookAtRangeMap(lookAt.HorizontalOuter),
+                RangeMapVerticalDown = ExportLookAtRangeMap(lookAt.VerticalDown),
+                RangeMapVerticalUp = ExportLookAtRangeMap(lookAt.VerticalUp),
             };
         }
 
@@ -552,8 +552,7 @@ namespace UniVRM10
 
         void ExportExpression(UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm, VRM10Controller vrmController, Model model, ModelExporter converter)
         {
-            var expressionAvatar = vrmController.GetComponent<VRM10ExpressionAvatar>();
-            if (expressionAvatar?.Clips == null)
+            if (vrmController?.Vrm?.Expression?.Clips == null)
             {
                 return;
             }
@@ -578,7 +577,7 @@ namespace UniVRM10
             };
 
             vrm.Expressions = new List<UniGLTF.Extensions.VRMC_vrm.Expression>();
-            foreach (var e in expressionAvatar.Clips)
+            foreach (var e in vrmController.Vrm.Expression.Clips)
             {
                 var vrmExpression = new UniGLTF.Extensions.VRMC_vrm.Expression
                 {
@@ -629,7 +628,7 @@ namespace UniVRM10
             }
         }
 
-        int? ExportMeta(UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm, VRM10MetaObject meta)
+        int? ExportMeta(UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm, VRM10ObjectMeta meta)
         {
             vrm.Meta.Name = meta.Name;
             vrm.Meta.Version = meta.Version;

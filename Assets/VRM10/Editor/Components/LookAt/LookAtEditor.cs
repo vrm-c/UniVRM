@@ -25,25 +25,25 @@ namespace UniVRM10
             if (!Application.isPlaying)
             {
                 // offset
-                var p = target.LookAt.OffsetFromHead;
+                var p = target.Vrm.LookAt.OffsetFromHead;
                 Handles.Label(head.position, $"fromHead: [{p.x:0.00}, {p.y:0.00}, {p.z:0.00}]");
             }
             else
             {
-                target.LookAt.OnSceneGUILookAt(head);
+                target.Vrm.LookAt.OnSceneGUILookAt(head);
             }
         }
 
         static void OnSceneGUIOffset(VRM10Controller m_target, Transform head)
         {
-            if (!m_target.LookAt.DrawGizmo)
+            if (!m_target.Vrm.LookAt.DrawGizmo)
             {
                 return;
             }
 
             EditorGUI.BeginChangeCheck();
 
-            var worldOffset = head.localToWorldMatrix.MultiplyPoint(m_target.LookAt.OffsetFromHead);
+            var worldOffset = head.localToWorldMatrix.MultiplyPoint(m_target.Vrm.LookAt.OffsetFromHead);
             worldOffset = Handles.PositionHandle(worldOffset, head.rotation);
 
             Handles.DrawDottedLine(head.position, worldOffset, 5);
@@ -54,7 +54,7 @@ namespace UniVRM10
             {
                 Undo.RecordObject(m_target, "Changed FirstPerson");
 
-                m_target.LookAt.OffsetFromHead = head.worldToLocalMatrix.MultiplyPoint(worldOffset);
+                m_target.Vrm.LookAt.OffsetFromHead = head.worldToLocalMatrix.MultiplyPoint(worldOffset);
             }
         }
     }

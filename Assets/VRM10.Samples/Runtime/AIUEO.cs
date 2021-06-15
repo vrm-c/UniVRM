@@ -7,10 +7,10 @@ namespace UniVRM10.Samples
     public class AIUEO : MonoBehaviour
     {
         [SerializeField]
-        public VRM10Controller VRM;
+        public VRM10Controller Controller;
         private void Reset()
         {
-            VRM = GetComponent<VRM10Controller>();
+            Controller = GetComponent<VRM10Controller>();
         }
 
         Coroutine m_coroutine;
@@ -20,9 +20,9 @@ namespace UniVRM10.Samples
 
         private void Awake()
         {
-            if (VRM == null)
+            if (Controller == null)
             {
-                VRM = GetComponent<VRM10Controller>();
+                Controller = GetComponent<VRM10Controller>();
             }
         }
 
@@ -30,17 +30,17 @@ namespace UniVRM10.Samples
         {
             for (var value = 0.0f; value <= 1.0f; value += velocity)
             {
-                VRM.Expression.SetWeight(ExpressionKey.CreateFromPreset(preset), value);
+                Controller.Vrm.Expression.SetWeight(ExpressionKey.CreateFromPreset(preset), value);
                 yield return null;
             }
-            VRM.Expression.SetWeight(ExpressionKey.CreateFromPreset(preset), 1.0f);
+            Controller.Vrm.Expression.SetWeight(ExpressionKey.CreateFromPreset(preset), 1.0f);
             yield return new WaitForSeconds(wait);
             for (var value = 1.0f; value >= 0; value -= velocity)
             {
-                VRM.Expression.SetWeight(ExpressionKey.CreateFromPreset(preset), value);
+                Controller.Vrm.Expression.SetWeight(ExpressionKey.CreateFromPreset(preset), value);
                 yield return null;
             }
-            VRM.Expression.SetWeight(ExpressionKey.CreateFromPreset(preset), 0);
+            Controller.Vrm.Expression.SetWeight(ExpressionKey.CreateFromPreset(preset), 0);
             yield return new WaitForSeconds(wait * 2);
         }
 
