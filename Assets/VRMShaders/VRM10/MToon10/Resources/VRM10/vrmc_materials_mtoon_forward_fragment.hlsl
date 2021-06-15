@@ -7,6 +7,7 @@
 #include "./vrmc_materials_mtoon_input.hlsl"
 #include "./vrmc_materials_mtoon_attribute.hlsl"
 #include "./vrmc_materials_mtoon_geometry_uv.hlsl"
+#include "./vrmc_materials_mtoon_geometry_alpha.hlsl"
 #include "./vrmc_materials_mtoon_geometry_normal.hlsl"
 #include "./vrmc_materials_mtoon_lighting_unity.hlsl"
 #include "./vrmc_materials_mtoon_lighting_mtoon.hlsl"
@@ -27,17 +28,7 @@ half4 MToonFragment(const FragmentInput fragmentInput) : SV_Target
     const half4 litColor = UNITY_SAMPLE_TEX2D(_MainTex, uv) * _Color;
 
     // Alpha Test
-#if defined(_ALPHATEST_ON)
-    const half rawAlpha = litColor.a;
-    const half tmpAlpha = (rawAlpha - _Cutoff) / max(fwidth(rawAlpha), 0.00001) + 0.5; // Alpha to Coverage
-    clip(tmpAlpha - _Cutoff);
-    const half alpha = 1.0;
-#elif defined(_ALPHABLEND_ON)
-    const half alpha = litColor.a;
-    clip(alpha - EPS_COL);
-#else
-    const half alpha = 1.0;
-#endif
+    const half alpha = GetMToonGeometry_Alpha(litColor);
 
     // Get Normal
     const float3 normalWS = GetMToonGeometry_Normal(input, fragmentInput.facing, uv);
