@@ -14,6 +14,13 @@ namespace UniVRM10
         Z = 4,
     }
 
+    [Flags]
+    public enum YawPitchMask
+    {
+        Yaw = 1,
+        Pitch = 2,
+    }
+
     public static class AxesMaskExtensions
     {
         public static Vector3 Freeze(this AxisMask mask, Vector3 src)
