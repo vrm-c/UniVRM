@@ -140,7 +140,6 @@ namespace VRM
             m_paths.Add(m_prefabPath);
             loaded.TransferOwnership(SaveAsAsset);
             var root = loaded.Root;
-            GameObject.DestroyImmediate(loaded);
 
             // Create or update Main Asset
             if (m_prefabPath.IsFileExists)
@@ -154,6 +153,9 @@ namespace VRM
                 Debug.LogFormat("create prefab: {0}", m_prefabPath);
                 PrefabUtility.SaveAsPrefabAssetAndConnect(root, m_prefabPath.Value, InteractionMode.AutomatedAction);
             }
+
+            // destroy GameObject on scene
+            GameObject.DestroyImmediate(root);
 
             foreach (var x in m_paths)
             {
