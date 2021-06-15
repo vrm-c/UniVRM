@@ -1,4 +1,6 @@
-﻿using UnityEditor;
+﻿using UniGLTF;
+using UnityEditor;
+using UnityEngine;
 
 namespace UniVRM10
 {
@@ -69,11 +71,11 @@ namespace UniVRM10
         public override void OnInspectorGUI()
         {
             // select sub editor
-            using (new EditorGUI.DisabledScope(false))
+            using (new EnabledScope())
             {
                 _tab = (Tabs)EditorGUILayout.EnumPopup("Select GUI", _tab);
-                EditorGUILayout.Separator();
             }
+            EditorGUILayout.Separator();
 
             serializedObject.Update();
             switch (_tab)

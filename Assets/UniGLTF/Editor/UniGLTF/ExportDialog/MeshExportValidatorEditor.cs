@@ -40,7 +40,7 @@ namespace UniGLTF
             var (left, right) = LeftRight(r.x, r.y, col0, r.width - col0, EditorGUIUtility.singleLineHeight);
             EditorGUI.LabelField(left, $"{i,3}");
 
-            using (new EditorGUI.DisabledScope(false))
+            using (new EnabledScope())
             {
                 foreach (var (renderer, _) in info.Renderers)
                 {
