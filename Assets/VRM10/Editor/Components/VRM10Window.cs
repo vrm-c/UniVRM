@@ -64,8 +64,11 @@ namespace UniVRM10
                 m_so = value != null ? new SerializedObject(value) : null;
                 m_constraints = null;
 
-                var animator = Root.GetComponent<Animator>();
-                m_head = animator.GetBoneTransform(HumanBodyBones.Head);
+                if (Root != null)
+                {
+                    var animator = Root.GetComponent<Animator>();
+                    m_head = animator.GetBoneTransform(HumanBodyBones.Head);
+                }
             }
         }
 
