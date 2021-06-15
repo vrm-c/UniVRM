@@ -3,7 +3,6 @@
     "references": [
         "VRM",
         "VRM.Samples",
-        "MeshUtility",
         "UniGLTF",
         "UniVRM.Editor",
         "VRM.Tests",
@@ -18,7 +17,7 @@
     ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
-    "overrideReferences": true,
+    "overrideReferences": false,
     "precompiledReferences": [
         "nunit.framework.dll"
     ],
