@@ -4,6 +4,7 @@ using System.Linq;
 using System.IO;
 using UnityEditor;
 using VRMShaders;
+using System.Collections.Generic;
 #if UNITY_2020_2_OR_NEWER
 using UnityEditor.AssetImporters;
 #else
@@ -73,13 +74,22 @@ namespace UniVRM10
 
             var path = GetAndCreateFolder(importer.assetPath, ".Vrm1Object");
             {
-                foreach (var (key, asset) in importer.GetSubAssets<VRM10Object>(importer.assetPath))
-                {
-                    asset.ExtractSubAsset($"{path}/{asset.name}.asset", false);
-                }
+                var map = new Dictionary<VRM10Expression, VRM10Expression>();
                 foreach (var (key, asset) in importer.GetSubAssets<VRM10Expression>(importer.assetPath))
                 {
-                    asset.ExtractSubAsset($"{path}/{asset.name}.asset", false);
+                    var clone = asset.ExtractSubAsset($"{path}/{asset.name}.asset", false);
+                    map.Add(asset, clone as VRM10Expression);
+                }
+
+                var (_, vrmObject) = importer.GetSubAssets<VRM10Object>(importer.assetPath).First();
+
+                // replace clone
+                for (int i = 0; i < vrmObject.Expression.Clips.Count; ++i)
+                {
+                    vrmObject.Expression.Clips[i] = map[vrmObject.Expression.Clips[i]];
+                }
+                {
+                    vrmObject.ExtractSubAsset($"{path}/{vrmObject.name}.asset", false);
                 }
             }
 

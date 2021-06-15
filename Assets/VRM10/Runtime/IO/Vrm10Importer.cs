@@ -233,7 +233,7 @@ namespace UniVRM10
             var controller = Root.AddComponent<VRM10Controller>();
 
             // vrm
-            m_vrmObject = controller.Vrm = await LoadVrmAsync(awaitCaller, m_vrm);
+            controller.Vrm = await LoadVrmAsync(awaitCaller, m_vrm);
 
             // springBone
             if (UniGLTF.Extensions.VRMC_springBone.GltfDeserializer.TryGet(Parser.GLTF.extensions, out UniGLTF.Extensions.VRMC_springBone.VRMC_springBone springBone))
@@ -265,7 +265,7 @@ namespace UniVRM10
             }
 
             // create new object
-            vrm = ScriptableObject.CreateInstance<VRM10Object>();
+            m_vrmObject = vrm = ScriptableObject.CreateInstance<VRM10Object>();
             vrm.name = VRM10Object.SubAssetKey.Name;
 
             // meta
