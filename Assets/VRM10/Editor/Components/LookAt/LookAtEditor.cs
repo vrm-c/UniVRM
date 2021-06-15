@@ -9,35 +9,34 @@ namespace UniVRM10
         {
 
         }
-        
-        public static void Draw3D(VRM10Controller target)
+
+        public static void Draw3D(VRM10Controller target, Transform head)
         {
-            if(target==null)
+            if (target == null)
             {
                 return;
             }
-            OnSceneGUIOffset(target);
+            if (head == null)
+            {
+                return;
+            }
+
+            OnSceneGUIOffset(target, head);
             if (!Application.isPlaying)
             {
                 // offset
                 var p = target.LookAt.OffsetFromHead;
-                Handles.Label(target.Head.position, $"fromHead: [{p.x:0.00}, {p.y:0.00}, {p.z:0.00}]");
+                Handles.Label(head.position, $"fromHead: [{p.x:0.00}, {p.y:0.00}, {p.z:0.00}]");
             }
             else
             {
-                target.LookAt.OnSceneGUILookAt(target.Head);
+                target.LookAt.OnSceneGUILookAt(head);
             }
         }
 
-        static void OnSceneGUIOffset(VRM10Controller m_target)
+        static void OnSceneGUIOffset(VRM10Controller m_target, Transform head)
         {
             if (!m_target.LookAt.DrawGizmo)
-            {
-                return;
-            }
-
-            var head = m_target.Head;
-            if (head == null)
             {
                 return;
             }

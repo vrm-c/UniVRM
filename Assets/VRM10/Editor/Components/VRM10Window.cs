@@ -62,10 +62,14 @@ namespace UniVRM10
                 }
                 m_root = id;
                 m_so = value != null ? new SerializedObject(value) : null;
-
                 m_constraints = null;
+
+                var animator = Root.GetComponent<Animator>();
+                m_head = animator.GetBoneTransform(HumanBodyBones.Head);
             }
         }
+
+        Transform m_head;
 
         public VRM10Constraint[] m_constraints;
 
@@ -105,7 +109,7 @@ namespace UniVRM10
 
                 case VRMSceneUI.LookAt:
                     Tools.hidden = true;
-                    LookAtEditor.Draw3D(Root);
+                    LookAtEditor.Draw3D(Root, m_head);
                     break;
 
                 case VRMSceneUI.SpringBone:
