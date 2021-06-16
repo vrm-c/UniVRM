@@ -16,14 +16,14 @@ namespace UniGLTF
         /// </summary>
         public GameObject Root => this.gameObject;
 
-        List<(SubAssetKey, UnityEngine.Object)> m_resources = new List<(SubAssetKey, UnityEngine.Object)>();
+        public List<(SubAssetKey, UnityEngine.Object)> Resources = new List<(SubAssetKey, UnityEngine.Object)>();
 
         public static RuntimeGltfInstance AttachTo(GameObject go, ImporterContext context)
         {
             var loaded = go.AddComponent<RuntimeGltfInstance>();
             context.TransferOwnership((k, o) =>
             {
-                loaded.m_resources.Add((k, o));
+                loaded.Resources.Add((k, o));
             });
             return loaded;
         }
@@ -47,7 +47,7 @@ namespace UniGLTF
         void OnDestroy()
         {
             Debug.Log("UnityResourceDestroyer.OnDestroy");
-            foreach (var (key, x) in m_resources)
+            foreach (var (key, x) in Resources)
             {
                 UnityObjectDestoyer.DestroyRuntimeOrEditor(x);
             }
@@ -55,10 +55,10 @@ namespace UniGLTF
 
         public void TransferOwnership(TakeResponsibilityForDestroyObjectFunc take)
         {
-            foreach (var (key, x) in m_resources.ToArray())
+            foreach (var (key, x) in Resources.ToArray())
             {
                 take(key, x);
-                m_resources.Remove((key, x));
+                Resources.Remove((key, x));
             }
         }
 

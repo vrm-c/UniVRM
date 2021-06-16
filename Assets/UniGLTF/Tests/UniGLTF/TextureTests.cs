@@ -91,15 +91,22 @@ namespace UniGLTF
             parser.ParsePath(path.FullName);
 
             // load
-            var context = new ImporterContext(parser);
-            context.Load();
+            using (var context = new ImporterContext(parser))
+            {
+                var instance = context.Load();
+                var textureMap = instance.Resources
+                    .Select(kv => (kv.Item1, kv.Item2 as Texture))
+                    .Where(kv => kv.Item2 != null)
+                    .ToDictionary(kv => kv.Item1, kv => kv.Item2)
+                    ;
 
-            // extractor
-            var extractor = new TextureExtractor(parser, UnityPath.FromUnityPath(""), context.TextureFactory.ConvertedTextures);
-            var m = context.TextureDescriptorGenerator.Get().GetEnumerable()
-                .FirstOrDefault(x => x.SubAssetKey.Name == "texture_1.standard");
+                // extractor                
+                var extractor = new TextureExtractor(parser, UnityPath.FromUnityPath(""), textureMap);
+                var m = context.TextureDescriptorGenerator.Get().GetEnumerable()
+                    .FirstOrDefault(x => x.SubAssetKey.Name == "texture_1.standard");
 
-            Assert.Catch<NotImplementedException>(() => extractor.Extract(m.SubAssetKey, m));
+                Assert.Catch<NotImplementedException>(() => extractor.Extract(m.SubAssetKey, m));
+            }
         }
     }
 }
