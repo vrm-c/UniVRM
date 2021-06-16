@@ -134,7 +134,7 @@ namespace UniVRM10
             return new float[] { -v.x, v.y, v.z };
         }
 
-        public void Export(GameObject root, Model model, ModelExporter converter, ExportArgs option, VRM10Object vrmObject = null)
+        public void Export(GameObject root, Model model, ModelExporter converter, ExportArgs option, VRM10ObjectMeta vrmMeta = null)
         {
             ExportAsset(model);
 
@@ -182,7 +182,7 @@ namespace UniVRM10
             // node
             ExportNodes(model.Root, model.Nodes, model.MeshGroups, option);
 
-            var (vrm, vrmSpringBone, thumbnailTextureIndex) = ExportVrm(root, model, converter, vrmObject);
+            var (vrm, vrmSpringBone, thumbnailTextureIndex) = ExportVrm(root, model, converter, vrmMeta);
 
             // Extension で Texture が増える場合があるので最後に呼ぶ
             for (int i = 0; i < m_textureExporter.Exported.Count; ++i)
@@ -217,17 +217,17 @@ namespace UniVRM10
         /// <returns></returns>
         (UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm,
         UniGLTF.Extensions.VRMC_springBone.VRMC_springBone springBone,
-        int? thumbnailIndex) ExportVrm(GameObject root, Model model, ModelExporter converter, VRM10Object vrmObject)
+        int? thumbnailIndex) ExportVrm(GameObject root, Model model, ModelExporter converter, VRM10ObjectMeta vrmMeta)
         {
             var vrmController = root?.GetComponent<VRM10Controller>();
 
-            if (vrmObject == null)
+            if (vrmMeta == null)
             {
                 if (vrmController?.Vrm?.Meta == null)
                 {
                     throw new NullReferenceException("metaObject is null");
                 }
-                vrmObject = vrmController.Vrm;
+                vrmMeta = vrmController.Vrm.Meta;
             }
 
             var vrm = new UniGLTF.Extensions.VRMC_vrm.VRMC_vrm
@@ -251,7 +251,7 @@ namespace UniVRM10
             // required
             //
             ExportHumanoid(vrm, model);
-            var thumbnailTextureIndex = ExportMeta(vrm, vrmObject.Meta);
+            var thumbnailTextureIndex = ExportMeta(vrm, vrmMeta);
 
             //
             // optional

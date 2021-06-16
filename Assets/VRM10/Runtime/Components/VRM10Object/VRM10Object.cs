@@ -53,15 +53,5 @@ namespace UniVRM10
                 LookAt.VerticalDown.OnValidate();
             }
         }
-
-        public void CopyTo(VRM10Object dst)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<Validation> Validate(GameObject ExportRoot)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

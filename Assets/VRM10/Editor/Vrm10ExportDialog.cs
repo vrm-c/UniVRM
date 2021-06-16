@@ -50,7 +50,7 @@ namespace UniVRM10
                 {
                     // SubAsset is readonly. copy
                     Debug.Log("copy VRM10ObjectMeta");
-                    value.CopyTo(m_tmpObject);
+                    value.Meta.CopyTo(m_tmpObject.Meta);
                     return;
                 }
 
@@ -163,7 +163,7 @@ namespace UniVRM10
             // }
 
             var vrm = Vrm ? Vrm : m_tmpObject;
-            yield return vrm.Validate;
+            yield return vrm.Meta.Validate;
         }
 
         protected override void OnLayout()
@@ -301,7 +301,7 @@ namespace UniVRM10
                 // export vrm-1.0
                 var exporter = new UniVRM10.Vrm10Exporter(new EditorTextureSerializer());
                 var option = new VrmLib.ExportArgs();
-                exporter.Export(root, model, converter, option, Vrm ? Vrm : m_tmpObject);
+                exporter.Export(root, model, converter, option, Vrm ? Vrm.Meta : m_tmpObject.Meta);
 
                 var exportedBytes = exporter.Storage.ToBytes();
 
