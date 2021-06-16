@@ -28,6 +28,9 @@ namespace UniVRM10
         [SerializeField]
         public Transform SpringBoneCenter;
 
+        [SerializeField, Header("LookAt")]
+        public bool DrawLookAtGizmo = true;
+
         /// <summay>
         /// LookAtTargetTypes.CalcYawPitchToGaze時の注視点
         /// </summary>

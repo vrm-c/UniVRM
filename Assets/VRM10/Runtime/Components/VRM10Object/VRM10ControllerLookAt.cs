@@ -17,9 +17,6 @@ namespace UniVRM10
         }
 
         [SerializeField]
-        public bool DrawGizmo = true;
-
-        [SerializeField]
         public Vector3 OffsetFromHead = new Vector3(0, 0.06f, 0);
 
         [SerializeField]
@@ -164,17 +161,17 @@ namespace UniVRM10
 
         const float LOOKAT_GIZMO_SIZE = 0.5f;
 
-        private void OnDrawGizmos()
-        {
-            if (DrawGizmo)
-            {
-                if (m_leftEye != null & m_rightEye != null)
-                {
-                    DrawMatrix(m_leftEye.localToWorldMatrix, LOOKAT_GIZMO_SIZE);
-                    DrawMatrix(m_rightEye.localToWorldMatrix, LOOKAT_GIZMO_SIZE);
-                }
-            }
-        }
+        // private void OnDrawGizmos()
+        // {
+        //     if (DrawGizmo)
+        //     {
+        //         if (m_leftEye != null & m_rightEye != null)
+        //         {
+        //             DrawMatrix(m_leftEye.localToWorldMatrix, LOOKAT_GIZMO_SIZE);
+        //             DrawMatrix(m_rightEye.localToWorldMatrix, LOOKAT_GIZMO_SIZE);
+        //         }
+        //     }
+        // }
         #endregion
 
         const float RADIUS = 0.5f;
@@ -182,7 +179,6 @@ namespace UniVRM10
         public void OnSceneGUILookAt(Transform head, LookAtTargetTypes lookAtTargetType, Transform gaze)
         {
             if (head == null) return;
-            if (!DrawGizmo) return;
 
             if (gaze != null)
             {

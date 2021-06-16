@@ -16,6 +16,10 @@ namespace UniVRM10
             {
                 return;
             }
+            if (!target.DrawLookAtGizmo)
+            {
+                return;
+            }
             if (head == null)
             {
                 return;
@@ -36,11 +40,6 @@ namespace UniVRM10
 
         static void OnSceneGUIOffset(VRM10Controller m_target, Transform head)
         {
-            if (!m_target.Vrm.LookAt.DrawGizmo)
-            {
-                return;
-            }
-
             EditorGUI.BeginChangeCheck();
 
             var worldOffset = head.localToWorldMatrix.MultiplyPoint(m_target.Vrm.LookAt.OffsetFromHead);
