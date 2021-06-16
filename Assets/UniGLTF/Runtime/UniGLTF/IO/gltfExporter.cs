@@ -164,7 +164,12 @@ namespace UniGLTF
                         {
                             node.mesh = meshIndex;
                         }
-                        else if (mesh != null && !mesh.vertices.Any())
+                        else if (mesh == null)
+                        {
+                            // mesh が無い
+                            node.mesh = -1;
+                        }
+                        else if (mesh.vertexCount == 0)
                         {
                             // 頂点データが無い場合
                             node.mesh = -1;
@@ -187,7 +192,12 @@ namespace UniGLTF
                         node.mesh = meshIndex;
                         node.skin = skins.IndexOf(skinnedMeshRenderer);
                     }
-                    else if (mesh != null && !mesh.vertices.Any())
+                    else if (mesh == null)
+                    {
+                        // mesh が無い
+                        node.mesh = -1;
+                    }
+                    else if (mesh.vertexCount == 0)
                     {
                         // 頂点データが無い場合
                         node.mesh = -1;
