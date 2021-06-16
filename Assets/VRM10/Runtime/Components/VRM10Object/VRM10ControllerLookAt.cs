@@ -37,9 +37,6 @@ namespace UniVRM10
         [SerializeField]
         public CurveMapper VerticalUp = new CurveMapper(90.0f, 10.0f);
 
-        [SerializeField]
-        public LookAtTargetTypes LookAtTargetType;
-
         private Transform m_head;
         private Transform m_leftEye;
         private Transform m_rightEye;
@@ -50,12 +47,6 @@ namespace UniVRM10
         public LookAtEyeDirection EyeDirection { get; private set; }
 
         #region LookAtTargetTypes.CalcYawPitchToGaze
-        /// <summay>
-        /// LookAtTargetTypes.CalcYawPitchToGaze時の注視点
-        /// </summary>
-        [SerializeField]
-        public Transform Gaze;
-
         // 座標計算用のempty
         Transform m_lookAtOrigin;
         Transform GetLookAtOrigin(Transform head)
@@ -106,13 +97,13 @@ namespace UniVRM10
         /// LookAtTargetType に応じた yaw, pitch を得る
         /// </summary>
         /// <returns>Headボーンのforwardに対するyaw角(度), pitch角(度)</returns>
-        private (float, float) GetLookAtYawPitch(Transform head)
+        private (float, float) GetLookAtYawPitch(Transform head, LookAtTargetTypes lookAtTargetType, Transform gaze)
         {
-            switch (LookAtTargetType)
+            switch (lookAtTargetType)
             {
                 case LookAtTargetTypes.CalcYawPitchToGaze:
                     // Gaze(Transform)のワールド位置に対して計算する
-                    return CalcLookAtYawPitch(Gaze.position, head);
+                    return CalcLookAtYawPitch(gaze.position, head);
 
                 case LookAtTargetTypes.SetYawPitch:
                     // 事前にSetYawPitchした値を使う
@@ -122,7 +113,7 @@ namespace UniVRM10
             throw new NotImplementedException();
         }
 
-        internal void Setup(Animator animator, Transform head)
+        internal void Setup(Animator animator, Transform head, LookAtTargetTypes lookAtTargetType, Transform gaze)
         {
             m_head = head;
             m_leftEye = animator.GetBoneTransform(HumanBodyBones.LeftEye);
@@ -132,12 +123,12 @@ namespace UniVRM10
 #if UNITY_EDITOR
             isRuntimeAsset = Application.isPlaying && !PrefabUtility.IsPartOfAnyPrefab(m_head);
 #endif
-            if (isRuntimeAsset && LookAtTargetType == LookAtTargetTypes.CalcYawPitchToGaze && Gaze == null)
+            if (isRuntimeAsset && lookAtTargetType == LookAtTargetTypes.CalcYawPitchToGaze && gaze == null)
             {
-                Gaze = new GameObject().transform;
-                Gaze.name = "__LOOKAT_GAZE__";
-                Gaze.SetParent(m_head);
-                Gaze.localPosition = Vector3.forward;
+                gaze = new GameObject().transform;
+                gaze.name = "__LOOKAT_GAZE__";
+                gaze.SetParent(m_head);
+                gaze.localPosition = Vector3.forward;
             }
             switch (LookAtType)
             {
@@ -152,9 +143,9 @@ namespace UniVRM10
             }
         }
 
-        public void Process()
+        public void Process(LookAtTargetTypes lookAtTargetType, Transform gaze)
         {
-            var (yaw, pitch) = GetLookAtYawPitch(m_head);
+            var (yaw, pitch) = GetLookAtYawPitch(m_head, lookAtTargetType, gaze);
             EyeDirection = new LookAtEyeDirection(yaw, pitch, 0, 0);
         }
 
@@ -188,28 +179,28 @@ namespace UniVRM10
 
         const float RADIUS = 0.5f;
 
-        public void OnSceneGUILookAt(Transform head)
+        public void OnSceneGUILookAt(Transform head, LookAtTargetTypes lookAtTargetType, Transform gaze)
         {
             if (head == null) return;
             if (!DrawGizmo) return;
 
-            if (Gaze != null)
+            if (gaze != null)
             {
                 {
                     EditorGUI.BeginChangeCheck();
-                    var newTargetPosition = Handles.PositionHandle(Gaze.position, Quaternion.identity);
+                    var newTargetPosition = Handles.PositionHandle(gaze.position, Quaternion.identity);
                     if (EditorGUI.EndChangeCheck())
                     {
-                        Undo.RecordObject(Gaze, "Change Look At Target Position");
-                        Gaze.position = newTargetPosition;
+                        Undo.RecordObject(gaze, "Change Look At Target Position");
+                        gaze.position = newTargetPosition;
                     }
                 }
 
                 Handles.color = new Color(1, 1, 1, 0.6f);
-                Handles.DrawDottedLine(GetLookAtOrigin(head).position, Gaze.position, 4.0f);
+                Handles.DrawDottedLine(GetLookAtOrigin(head).position, gaze.position, 4.0f);
             }
 
-            var (yaw, pitch) = GetLookAtYawPitch(head);
+            var (yaw, pitch) = GetLookAtYawPitch(head, lookAtTargetType, gaze);
             var lookAtOriginMatrix = GetLookAtOrigin(head).localToWorldMatrix;
             Handles.matrix = lookAtOriginMatrix;
             var p = OffsetFromHead;

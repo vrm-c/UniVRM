@@ -28,6 +28,15 @@ namespace UniVRM10
         [SerializeField]
         public Transform SpringBoneCenter;
 
+        /// <summay>
+        /// LookAtTargetTypes.CalcYawPitchToGaze時の注視点
+        /// </summary>
+        [SerializeField]
+        public Transform Gaze;
+
+        [SerializeField]
+        public VRM10ControllerLookAt.LookAtTargetTypes LookAtTargetType;
+
         [SerializeField, Header("VRM1")]
         public VRM10Object Vrm;
 

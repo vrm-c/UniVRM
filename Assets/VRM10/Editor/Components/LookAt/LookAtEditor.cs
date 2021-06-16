@@ -30,7 +30,7 @@ namespace UniVRM10
             }
             else
             {
-                target.Vrm.LookAt.OnSceneGUILookAt(head);
+                target.Vrm.LookAt.OnSceneGUILookAt(head, target.LookAtTargetType, target.Gaze);
             }
         }
 

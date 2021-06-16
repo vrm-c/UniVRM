@@ -21,7 +21,7 @@ namespace UniVRM10
                 throw new Exception();
             }
             m_head = animator.GetBoneTransform(HumanBodyBones.Head);
-            target.Vrm.LookAt.Setup(animator, m_head);
+            target.Vrm.LookAt.Setup(animator, m_head, target.LookAtTargetType, target.Gaze);
             target.Vrm.Expression.Setup(target, target.Vrm.LookAt, target.Vrm.LookAt.EyeDirectionApplicable);
 
             if (m_constraints == null)
@@ -57,7 +57,7 @@ namespace UniVRM10
             //
             // gaze control
             //
-            m_target.Vrm.LookAt.Process();
+            m_target.Vrm.LookAt.Process(m_target.LookAtTargetType, m_target.Gaze);
 
             //
             // expression
