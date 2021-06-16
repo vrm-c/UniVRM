@@ -7,24 +7,24 @@ using UnityEngine;
 namespace UniVRM10
 {
     [Serializable]
-    public class VRM10ControllerFirstPerson
+    public class VRM10ObjectFirstPerson
     {
         [SerializeField]
         public List<RendererFirstPersonFlags> Renderers = new List<RendererFirstPersonFlags>();
 
-        public void CopyTo(GameObject _dst, Dictionary<Transform, Transform> map)
-        {
-            var dst = _dst.GetOrAddComponent<VRM10Controller>();
-            dst.FirstPerson.Renderers = Renderers.Select(x =>
-            {
-                var renderer = map[x.Renderer.transform].GetComponent<Renderer>();
-                return new RendererFirstPersonFlags
-                {
-                    Renderer = renderer,
-                    FirstPersonFlag = x.FirstPersonFlag,
-                };
-            }).ToList();
-        }
+        // public void CopyTo(GameObject _dst, Dictionary<Transform, Transform> map)
+        // {
+        //     var dst = _dst.GetOrAddComponent<VRM10Controller>();
+        //     dst.Vrm.FirstPerson.Renderers = Renderers.Select(x =>
+        //     {
+        //         var renderer = map[x.Renderer.transform].GetComponent<Renderer>();
+        //         return new RendererFirstPersonFlags
+        //         {
+        //             Renderer = renderer,
+        //             FirstPersonFlag = x.FirstPersonFlag,
+        //         };
+        //     }).ToList();
+        // }
 
         // If no layer names are set, use the default layer IDs.
         // Otherwise use the two Unity layers called "VRMFirstPersonOnly" and "VRMThirdPersonOnly".
@@ -94,7 +94,7 @@ namespace UniVRM10
                 {
                     case UniGLTF.Extensions.VRMC_vrm.FirstPersonType.auto:
                         {
-                            if (x.Renderer is SkinnedMeshRenderer smr)
+                            if (x.GetRenderer(go.transform) is SkinnedMeshRenderer smr)
                             {
                                 var eraseBones = GetBonesThatHasAncestor(smr, FirstPersonBone);
                                 if (eraseBones.Any())
@@ -112,7 +112,7 @@ namespace UniVRM10
                                     // 削除対象が含まれないので何もしない
                                 }
                             }
-                            else if (x.Renderer is MeshRenderer mr)
+                            else if (x.GetRenderer(go.transform) is MeshRenderer mr)
                             {
                                 if (mr.transform.Ancestors().Any(y => y == FirstPersonBone))
                                 {
@@ -133,12 +133,12 @@ namespace UniVRM10
 
                     case UniGLTF.Extensions.VRMC_vrm.FirstPersonType.firstPersonOnly:
                         // １人称のカメラでだけ描画されるようにする
-                        x.Renderer.gameObject.layer = FIRSTPERSON_ONLY_LAYER;
+                        x.GetRenderer(go.transform).gameObject.layer = FIRSTPERSON_ONLY_LAYER;
                         break;
 
                     case UniGLTF.Extensions.VRMC_vrm.FirstPersonType.thirdPersonOnly:
                         // ３人称のカメラでだけ描画されるようにする
-                        x.Renderer.gameObject.layer = THIRDPERSON_ONLY_LAYER;
+                        x.GetRenderer(go.transform).gameObject.layer = THIRDPERSON_ONLY_LAYER;
                         break;
 
                     case UniGLTF.Extensions.VRMC_vrm.FirstPersonType.both:

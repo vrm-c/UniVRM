@@ -1,17 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UniGLTF;
 using UnityEngine;
-using VRMShaders;
 
 
 namespace UniVRM10
 {
-    [CreateAssetMenu(menuName = "VRM10/MetaObject")]
-    public class VRM10MetaObject : ScriptableObject
+    [Serializable]
+    public class VRM10ObjectMeta
     {
-        public static SubAssetKey SubAssetKey => new SubAssetKey(typeof(VRM10MetaObject), "Meta");
-
         [SerializeField]
         public string ExporterVersion;
 
@@ -93,7 +91,7 @@ namespace UniVRM10
             }
         }
 
-        public void CopyTo(VRM10MetaObject dst)
+        public void CopyTo(VRM10ObjectMeta dst)
         {
             dst.ExporterVersion = ExporterVersion;
             dst.Name = Name;

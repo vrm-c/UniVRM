@@ -19,7 +19,10 @@ namespace UniGLTF
         {
             foreach (var targetType in targetTypes)
             {
-                if (!typeof(UnityEngine.Object).IsAssignableFrom(targetType)) continue;
+                if (!typeof(UnityEngine.Object).IsAssignableFrom(targetType))
+                {
+                    throw new NotImplementedException();
+                }
 
                 foreach (var (key, obj) in importer.GetExternalObjectMap())
                 {
@@ -76,11 +79,11 @@ namespace UniGLTF
         /// <param name="subAsset"></param>
         /// <param name="destinationPath"></param>
         /// <param name="isForceUpdate"></param>
-        public static void ExtractSubAsset(this UnityEngine.Object subAsset, string destinationPath, bool isForceUpdate)
+        public static UnityEngine.Object ExtractSubAsset(this UnityEngine.Object subAsset, string destinationPath, bool isForceUpdate)
         {
             string assetPath = AssetDatabase.GetAssetPath(subAsset);
 
-            // clone を path に出力
+            // clone を path に出力(subAsset を出力するため)
             var clone = UnityEngine.Object.Instantiate(subAsset);
             AssetDatabase.CreateAsset(clone, destinationPath);
 
@@ -93,6 +96,8 @@ namespace UniGLTF
                 AssetDatabase.WriteImportSettingsIfDirty(assetPath);
                 AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceUpdate);
             }
+
+            return clone;
         }
     }
 }

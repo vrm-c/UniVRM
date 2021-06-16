@@ -84,7 +84,7 @@ namespace UniVRM10.Samples
                 m_textDistributionOther.text = "";
             }
 
-            public void UpdateMeta(VRM10MetaObject meta)
+            public void UpdateMeta(VRM10ObjectMeta meta)
             {
                 if (meta == null)
                 {
@@ -379,9 +379,9 @@ namespace UniVRM10.Samples
                 if (m_controller != null)
                 {
 
-                    m_texts.UpdateMeta(m_controller.Meta.Meta);
+                    m_texts.UpdateMeta(m_controller.Vrm.Meta);
 
-                    m_controller.Controller.UpdateType = VRM10Controller.VRM10ControllerImpl.UpdateTypes.LateUpdate; // after HumanPoseTransfer's setPose
+                    m_controller.UpdateType = VRM10Controller.UpdateTypes.LateUpdate; // after HumanPoseTransfer's setPose
                     {
                         m_loaded = go.AddComponent<HumanPoseTransfer>();
                         m_loaded.Source = m_src;
@@ -390,7 +390,8 @@ namespace UniVRM10.Samples
                         m_lipSync = go.AddComponent<AIUEO>();
                         m_blink = go.AddComponent<Blinker>();
 
-                        m_controller.LookAt.Gaze = m_target.transform;
+                        m_controller.LookAtTargetType = VRM10ObjectLookAt.LookAtTargetTypes.CalcYawPitchToGaze;
+                        m_controller.Gaze = m_target.transform;
                     }
                 }
 

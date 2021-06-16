@@ -40,17 +40,17 @@ namespace UniVRM10
         MeshExportValidator m_meshes;
         Editor m_meshesInspector;
 
-
-        VRM10MetaObject m_meta;
-        VRM10MetaObject Meta
+        VRM10Object m_meta;
+        VRM10Object Vrm
         {
             get { return m_meta; }
             set
             {
                 if (value != null && AssetDatabase.IsSubAsset(value))
                 {
-                    Debug.Log("copy VRM10MetaObject");
-                    value.CopyTo(m_tmpMeta);
+                    // SubAsset is readonly. copy
+                    Debug.Log("copy VRM10ObjectMeta");
+                    value.Meta.CopyTo(m_tmpObject.Meta);
                     return;
                 }
 
@@ -66,15 +66,16 @@ namespace UniVRM10
                 m_meta = value;
             }
         }
-        VRM10MetaObject m_tmpMeta;
+        VRM10Object m_tmpObject;
         Editor m_metaEditor;
 
 
 
         protected override void Initialize()
         {
-            m_tmpMeta = ScriptableObject.CreateInstance<VRM10MetaObject>();
-            m_tmpMeta.Authors = new List<string> { "" };
+            m_tmpObject = ScriptableObject.CreateInstance<VRM10Object>();
+            m_tmpObject.name = "_vrm1_";
+            m_tmpObject.Meta.Authors = new List<string> { "" };
 
             m_settings = ScriptableObject.CreateInstance<VRM10ExportSettings>();
             m_settingsInspector = Editor.CreateEditor(m_settings);
@@ -87,18 +88,18 @@ namespace UniVRM10
                 // update meta
                 if (root == null)
                 {
-                    Meta = null;
+                    Vrm = null;
                 }
                 else
                 {
                     var controller = root.GetComponent<VRM10Controller>();
                     if (controller != null)
                     {
-                        Meta = controller.Meta.Meta;
+                        Vrm = controller.Vrm;
                     }
                     else
                     {
-                        Meta = null;
+                        Vrm = null;
                     }
 
                     // default setting
@@ -119,9 +120,9 @@ namespace UniVRM10
             UnityEditor.Editor.DestroyImmediate(m_meshesInspector);
             m_meshesInspector = null;
             // Meta
-            Meta = null;
-            ScriptableObject.DestroyImmediate(m_tmpMeta);
-            m_tmpMeta = null;
+            Vrm = null;
+            ScriptableObject.DestroyImmediate(m_tmpObject);
+            m_tmpObject = null;
             // m_settings
             ScriptableObject.DestroyImmediate(m_settings);
             m_settings = null;
@@ -161,8 +162,8 @@ namespace UniVRM10
             //     yield return proxy.Validate;
             // }
 
-            var meta = Meta ? Meta : m_tmpMeta;
-            yield return meta.Validate;
+            var vrm = Vrm ? Vrm : m_tmpObject;
+            yield return vrm.Meta.Validate;
         }
 
         protected override void OnLayout()
@@ -229,7 +230,7 @@ namespace UniVRM10
                 return false;
             }
 
-            if (m_tmpMeta == null)
+            if (m_tmpObject == null)
             {
                 // disabled
                 return false;
@@ -244,11 +245,11 @@ namespace UniVRM10
                     {
                         if (m_meta != null)
                         {
-                            m_metaEditor = Editor.CreateEditor(Meta);
+                            m_metaEditor = Editor.CreateEditor(Vrm);
                         }
                         else
                         {
-                            m_metaEditor = Editor.CreateEditor(m_tmpMeta);
+                            m_metaEditor = Editor.CreateEditor(m_tmpObject);
                         }
                     }
                     m_metaEditor.OnInspectorGUI();
@@ -300,7 +301,7 @@ namespace UniVRM10
                 // export vrm-1.0
                 var exporter = new UniVRM10.Vrm10Exporter(new EditorTextureSerializer());
                 var option = new VrmLib.ExportArgs();
-                exporter.Export(root, model, converter, option, Meta ? Meta : m_tmpMeta);
+                exporter.Export(root, model, converter, option, Vrm ? Vrm.Meta : m_tmpObject.Meta);
 
                 var exportedBytes = exporter.Storage.ToBytes();
 

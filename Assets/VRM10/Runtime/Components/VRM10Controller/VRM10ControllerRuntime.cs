@@ -21,8 +21,8 @@ namespace UniVRM10
                 throw new Exception();
             }
             m_head = animator.GetBoneTransform(HumanBodyBones.Head);
-            target.LookAt.Setup(animator, m_head);
-            target.Expression.Setup(target, target.LookAt, target.LookAt.EyeDirectionApplicable);
+            target.Vrm.LookAt.Setup(animator, m_head, target.LookAtTargetType, target.Gaze);
+            target.Vrm.Expression.Setup(target, target.Vrm.LookAt, target.Vrm.LookAt.EyeDirectionApplicable);
 
             if (m_constraints == null)
             {
@@ -52,17 +52,17 @@ namespace UniVRM10
             //
             // spring
             //
-            m_target.SpringBone.Process(m_target.Controller.SpringBoneCenter);
+            m_target.SpringBone.Process(m_target.SpringBoneCenter);
 
             //
             // gaze control
             //
-            m_target.LookAt.Process();
+            m_target.Vrm.LookAt.Process(m_target.LookAtTargetType, m_target.Gaze);
 
             //
             // expression
             //
-            m_target.Expression.Process();
+            m_target.Vrm.Expression.Process();
         }
     }
 }

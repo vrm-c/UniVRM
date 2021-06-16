@@ -214,7 +214,7 @@ namespace UniVRM10
         }
 
         UnityEngine.Avatar m_humanoid;
-        VRM10MetaObject m_meta;
+        VRM10Object m_vrmObject;
         List<VRM10Expression> m_expressions = new List<VRM10Expression>();
 
         protected override async Task OnLoadHierarchy(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime)
@@ -233,7 +233,8 @@ namespace UniVRM10
             var controller = Root.AddComponent<VRM10Controller>();
 
             // vrm
-            await LoadVrmAsync(awaitCaller, controller, m_vrm);
+            controller.Vrm = await LoadVrmAsync(awaitCaller, m_vrm);
+
             // springBone
             if (UniGLTF.Extensions.VRMC_springBone.GltfDeserializer.TryGet(Parser.GLTF.extensions, out UniGLTF.Extensions.VRMC_springBone.VRMC_springBone springBone))
             {
@@ -255,58 +256,61 @@ namespace UniVRM10
             }
         }
 
-        async Task LoadVrmAsync(IAwaitCaller awaitCaller, VRM10Controller controller, UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm)
+        async Task<VRM10Object> LoadVrmAsync(IAwaitCaller awaitCaller, UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrmExtension)
         {
-            // meta
-            if (m_externalMap.TryGetValue(VRM10MetaObject.SubAssetKey, out UnityEngine.Object meta))
+            if (m_externalMap.TryGetValue(VRM10Object.SubAssetKey, out UnityEngine.Object obj) && obj is VRM10Object vrm)
             {
-                controller.Meta.Meta = meta as VRM10MetaObject;
+                // use external object map
+                return vrm;
             }
-            else if (vrm.Meta != null)
+
+            // create new object
+            m_vrmObject = vrm = ScriptableObject.CreateInstance<VRM10Object>();
+            vrm.name = VRM10Object.SubAssetKey.Name;
+
+            // meta
+            if (vrmExtension.Meta != null)
             {
-                var src = vrm.Meta;
-                m_meta = ScriptableObject.CreateInstance<VRM10MetaObject>();
-                m_meta.name = VRM10MetaObject.SubAssetKey.Name;
-                controller.Meta.Meta = m_meta;
-                m_meta.Name = src.Name;
-                m_meta.Version = src.Version;
-                m_meta.ContactInformation = src.ContactInformation;
+                var src = vrmExtension.Meta;
+                var meta = new VRM10ObjectMeta();
+                vrm.Meta = meta;
+                meta.Name = src.Name;
+                meta.Version = src.Version;
+                meta.ContactInformation = src.ContactInformation;
                 // avatar
-                m_meta.AllowedUser = src.AvatarPermission;
-                m_meta.ViolentUsage = src.AllowExcessivelyViolentUsage.Value;
-                m_meta.SexualUsage = src.AllowExcessivelySexualUsage.Value;
-                m_meta.CommercialUsage = src.CommercialUsage;
-                m_meta.PoliticalOrReligiousUsage = src.AllowPoliticalOrReligiousUsage.Value;
+                meta.AllowedUser = src.AvatarPermission;
+                meta.ViolentUsage = src.AllowExcessivelyViolentUsage.Value;
+                meta.SexualUsage = src.AllowExcessivelySexualUsage.Value;
+                meta.CommercialUsage = src.CommercialUsage;
+                meta.PoliticalOrReligiousUsage = src.AllowPoliticalOrReligiousUsage.Value;
                 // redistribution
-                m_meta.CreditNotation = src.CreditNotation;
-                m_meta.Redistribution = src.AllowRedistribution.Value;
-                m_meta.ModificationLicense = src.Modification;
-                m_meta.OtherLicenseUrl = src.OtherLicenseUrl;
+                meta.CreditNotation = src.CreditNotation;
+                meta.Redistribution = src.AllowRedistribution.Value;
+                meta.ModificationLicense = src.Modification;
+                meta.OtherLicenseUrl = src.OtherLicenseUrl;
                 //
                 if (src.References != null)
                 {
-                    m_meta.References.AddRange(src.References);
+                    meta.References.AddRange(src.References);
                 }
                 if (src.Authors != null)
                 {
-                    m_meta.Authors.AddRange(src.Authors);
+                    meta.Authors.AddRange(src.Authors);
                 }
-                if (Vrm10TextureDescriptorGenerator.TryGetMetaThumbnailTextureImportParam(Parser, vrm, out (SubAssetKey, VRMShaders.TextureDescriptor Param) kv))
+                if (Vrm10TextureDescriptorGenerator.TryGetMetaThumbnailTextureImportParam(Parser, vrmExtension, out (SubAssetKey, VRMShaders.TextureDescriptor Param) kv))
                 {
                     var texture = await TextureFactory.GetTextureAsync(kv.Param);
                     if (texture is Texture2D tex2D)
                     {
-                        m_meta.Thumbnail = tex2D;
+                        meta.Thumbnail = tex2D;
                     }
                 }
             }
 
             // expression
-            if (vrm.Expressions != null)
+            if (vrmExtension.Expressions != null)
             {
-                var expressionAvatar = Root.AddComponent<VRM10ExpressionAvatar>();
-
-                foreach (var expression in vrm.Expressions)
+                foreach (var expression in vrmExtension.Expressions)
                 {
                     VRM10Expression clip = default;
                     if (m_externalMap.TryGetValue(Key(expression).SubAssetKey, out UnityEngine.Object expressionObj))
@@ -337,48 +341,51 @@ namespace UniVRM10
                         m_expressions.Add(clip);
                     }
 
-                    expressionAvatar.Clips.Add(clip);
+                    vrm.Expression.AddClip(clip);
                 }
             }
 
             // lookat
-            if (vrm.LookAt != null)
+            if (vrmExtension.LookAt != null)
             {
-                var src = vrm.LookAt;
-                controller.LookAt.LookAtType = src.Type;
-                controller.LookAt.OffsetFromHead = new Vector3(src.OffsetFromHeadBone[0], src.OffsetFromHeadBone[1], src.OffsetFromHeadBone[2]);
+                var src = vrmExtension.LookAt;
+                vrm.LookAt.LookAtType = src.Type;
+                vrm.LookAt.OffsetFromHead = new Vector3(src.OffsetFromHeadBone[0], src.OffsetFromHeadBone[1], src.OffsetFromHeadBone[2]);
                 if (src.RangeMapHorizontalInner != null)
                 {
-                    controller.LookAt.HorizontalInner = new CurveMapper(src.RangeMapHorizontalInner.InputMaxValue.Value, src.RangeMapHorizontalInner.OutputScale.Value);
+                    vrm.LookAt.HorizontalInner = new CurveMapper(src.RangeMapHorizontalInner.InputMaxValue.Value, src.RangeMapHorizontalInner.OutputScale.Value);
                 }
                 if (src.RangeMapHorizontalOuter != null)
                 {
-                    controller.LookAt.HorizontalOuter = new CurveMapper(src.RangeMapHorizontalOuter.InputMaxValue.Value, src.RangeMapHorizontalOuter.OutputScale.Value);
+                    vrm.LookAt.HorizontalOuter = new CurveMapper(src.RangeMapHorizontalOuter.InputMaxValue.Value, src.RangeMapHorizontalOuter.OutputScale.Value);
                 }
                 if (src.RangeMapVerticalUp != null)
                 {
-                    controller.LookAt.VerticalUp = new CurveMapper(src.RangeMapVerticalUp.InputMaxValue.Value, src.RangeMapVerticalUp.OutputScale.Value);
+                    vrm.LookAt.VerticalUp = new CurveMapper(src.RangeMapVerticalUp.InputMaxValue.Value, src.RangeMapVerticalUp.OutputScale.Value);
                 }
                 if (src.RangeMapVerticalDown != null)
                 {
-                    controller.LookAt.VerticalDown = new CurveMapper(src.RangeMapVerticalDown.InputMaxValue.Value, src.RangeMapVerticalDown.OutputScale.Value);
+                    vrm.LookAt.VerticalDown = new CurveMapper(src.RangeMapVerticalDown.InputMaxValue.Value, src.RangeMapVerticalDown.OutputScale.Value);
                 }
             }
 
             // firstPerson
-            if (vrm.FirstPerson != null && vrm.FirstPerson.MeshAnnotations != null)
+            if (vrmExtension.FirstPerson != null && vrmExtension.FirstPerson.MeshAnnotations != null)
             {
-                var fp = vrm.FirstPerson;
+                var fp = vrmExtension.FirstPerson;
                 foreach (var x in fp.MeshAnnotations)
                 {
                     var node = Nodes[x.Node.Value];
-                    controller.FirstPerson.Renderers.Add(new RendererFirstPersonFlags
+                    var relative = node.RelativePathFrom(Root.transform);
+                    vrm.FirstPerson.Renderers.Add(new RendererFirstPersonFlags
                     {
                         FirstPersonFlag = x.Type,
-                        Renderer = node.GetComponent<Renderer>()
+                        Renderer = relative,
                     });
                 }
             }
+
+            return vrm;
         }
 
         async Task LoadSpringBoneAsync(IAwaitCaller awaitCaller, VRM10Controller controller, UniGLTF.Extensions.VRMC_springBone.VRMC_springBone gltfVrmSpringBone)
@@ -630,10 +637,10 @@ namespace UniVRM10
             take(SubAssetKey.Create(m_humanoid), m_humanoid);
             m_humanoid = null;
 
-            if (m_meta != null)
+            if (m_vrmObject != null)
             {
-                take(VRM10MetaObject.SubAssetKey, m_meta);
-                m_meta = null;
+                take(VRM10Object.SubAssetKey, m_vrmObject);
+                m_vrmObject = null;
             }
 
             foreach (var x in m_expressions)
@@ -653,16 +660,20 @@ namespace UniVRM10
             if (m_humanoid != null)
             {
                 UnityObjectDestoyer.DestroyRuntimeOrEditor(m_humanoid);
+                m_humanoid = null;
             }
-            if (m_meta != null)
+
+            if (m_vrmObject != null)
             {
-                UnityObjectDestoyer.DestroyRuntimeOrEditor(m_meta);
+                UnityObjectDestoyer.DestroyRuntimeOrEditor(m_vrmObject);
+                m_vrmObject = null;
             }
 
             foreach (var clip in m_expressions)
             {
                 UnityObjectDestoyer.DestroyRuntimeOrEditor(clip);
             }
+            m_expressions.Clear();
 
             base.Dispose();
         }

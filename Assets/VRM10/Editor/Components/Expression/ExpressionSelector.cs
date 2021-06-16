@@ -11,7 +11,7 @@ namespace UniVRM10
     /// </summary>
     class ExpressionClipSelector
     {
-        VRM10ExpressionAvatar m_avatar;
+        VRM10ObjectExpression m_avatar;
 
         int m_mode;
         static readonly string[] MODES = new string[]{
@@ -23,15 +23,16 @@ namespace UniVRM10
 
         public VRM10Expression GetSelected()
         {
-            if (m_avatar == null || m_avatar.Clips == null || m_avatar.Clips.Count == 0)
+            var clips = m_avatar.Clips.ToArray();
+            if (m_avatar == null || clips == null || clips.Length == 0)
             {
                 return null;
             }
-            if (m_selectedIndex < 0 || m_selectedIndex >= m_avatar.Clips.Count)
+            if (m_selectedIndex < 0 || m_selectedIndex >= clips.Length)
             {
                 return null;
             }
-            return m_avatar.Clips[m_selectedIndex];
+            return clips[m_selectedIndex];
         }
 
         public event Action<VRM10Expression> Selected;
@@ -60,21 +61,23 @@ namespace UniVRM10
             }
         }
 
-        public ExpressionClipSelector(VRM10ExpressionAvatar avatar, SerializedObject serializedObject)
+        public ExpressionClipSelector(VRM10ObjectExpression avatar, string dir, SerializedObject serializedObject)
         {
             avatar.RemoveNullClip();
 
             m_avatar = avatar;
 
             var prop = serializedObject.FindProperty("Clips");
-            m_clipList = new ReorderableExpressionList(serializedObject, prop, avatar);
+            m_clipList = new ReorderableExpressionList(serializedObject, prop, dir);
+
             m_clipList.Selected += (selected) =>
             {
-                SelectedIndex = avatar.Clips.IndexOf(selected);
+                var clips = avatar.Clips.ToArray();
+                SelectedIndex = Array.IndexOf(clips, selected);
             };
         }
 
-        public void DrawGUI()
+        public void DrawGUI(string dir)
         {
             var backup = GUI.enabled;
             try
@@ -87,7 +90,7 @@ namespace UniVRM10
                 switch (m_mode)
                 {
                     case 0:
-                        SelectGUI();
+                        SelectGUI(dir);
                         break;
 
                     case 1:
@@ -104,7 +107,7 @@ namespace UniVRM10
             }
         }
 
-        void SelectGUI()
+        void SelectGUI(string dir)
         {
             if (m_avatar != null && m_avatar.Clips != null)
             {
@@ -116,22 +119,21 @@ namespace UniVRM10
                 SelectedIndex = GUILayout.SelectionGrid(SelectedIndex, array, 4);
             }
 
-            if (GUILayout.Button("Add Expression"))
-            {
-                var dir = Path.GetDirectoryName(AssetDatabase.GetAssetPath(m_avatar));
-                var path = EditorUtility.SaveFilePanel(
-                               "Create Expression",
-                               dir,
-                               string.Format("Expression#{0}.asset", m_avatar.Clips.Count),
-                               "asset");
-                if (!string.IsNullOrEmpty(path))
-                {
-                    var clip = VRM10ExpressionAvatar.CreateExpression(path.ToUnityRelativePath());
-                    //clip.Prefab = AssetDatabase.LoadAssetAtPath<GameObject>(AssetDatabase.GetAssetPath(target));
+            // if (GUILayout.Button("Add Expression"))
+            // {
+            //     var path = EditorUtility.SaveFilePanel(
+            //                    "Create Expression",
+            //                    dir,
+            //                    string.Format("Expression#{0}.asset", m_avatar.Clips.Count),
+            //                    "asset");
+            //     if (!string.IsNullOrEmpty(path))
+            //     {
+            //         var clip = ExpressionEditorBase.CreateExpression(path.ToUnityRelativePath());
+            //         //clip.Prefab = AssetDatabase.LoadAssetAtPath<GameObject>(AssetDatabase.GetAssetPath(target));
 
-                    m_avatar.Clips.Add(clip);
-                }
-            }
+            //         m_avatar.Clips.Add(clip);
+            //     }
+            // }
         }
 
         public void DuplicateWarn()
