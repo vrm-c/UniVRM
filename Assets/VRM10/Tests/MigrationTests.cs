@@ -246,9 +246,16 @@ namespace UniVRM10
             var spring = springBone.Springs[0];
             // var colliderNodeIndex = spring.ColliderGroups[0];
             // x軸だけが反転する
-            Assert.AreEqual(-VALUE.x, springBone.Colliders[groupIndex].Shape.Sphere.Offset[0]);
-            Assert.AreEqual(VALUE.y, springBone.Colliders[groupIndex].Shape.Sphere.Offset[1]);
-            Assert.AreEqual(VALUE.z, springBone.Colliders[groupIndex].Shape.Sphere.Offset[2]);
+
+            var colliderIndex = 0;
+            for (int i = 0; i < groupIndex; ++i)
+            {
+                colliderIndex += springBone.ColliderGroups[i].Colliders.Length;
+            }
+
+            Assert.AreEqual(-VALUE.x, springBone.Colliders[colliderIndex].Shape.Sphere.Offset[0]);
+            Assert.AreEqual(VALUE.y, springBone.Colliders[colliderIndex].Shape.Sphere.Offset[1]);
+            Assert.AreEqual(VALUE.z, springBone.Colliders[colliderIndex].Shape.Sphere.Offset[2]);
         }
     }
 }
