@@ -458,11 +458,11 @@ namespace UniVRM10
             };
         }
 
-        static UniGLTF.Extensions.VRMC_vrm.MeshAnnotation ExportMeshAnnotation(RendererFirstPersonFlags flags, Func<Renderer, int> getIndex)
+        static UniGLTF.Extensions.VRMC_vrm.MeshAnnotation ExportMeshAnnotation(RendererFirstPersonFlags flags, Transform root, Func<Renderer, int> getIndex)
         {
             return new UniGLTF.Extensions.VRMC_vrm.MeshAnnotation
             {
-                Node = getIndex(flags.Renderer),
+                Node = getIndex(flags.GetRenderer(root)),
                 Type = flags.FirstPersonFlag,
             };
         }
@@ -485,7 +485,7 @@ namespace UniVRM10
             };
             foreach (var f in firstPerson.Renderers)
             {
-                vrm.FirstPerson.MeshAnnotations.Add(ExportMeshAnnotation(f, getIndex));
+                vrm.FirstPerson.MeshAnnotations.Add(ExportMeshAnnotation(f, vrmController.transform, getIndex));
             }
         }
 

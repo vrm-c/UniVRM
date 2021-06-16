@@ -376,10 +376,11 @@ namespace UniVRM10
                 foreach (var x in fp.MeshAnnotations)
                 {
                     var node = Nodes[x.Node.Value];
+                    var relative = node.RelativePathFrom(Root.transform);
                     vrm.FirstPerson.Renderers.Add(new RendererFirstPersonFlags
                     {
                         FirstPersonFlag = x.Type,
-                        Renderer = node.GetComponent<Renderer>()
+                        Renderer = relative,
                     });
                 }
             }

@@ -1,22 +1,20 @@
-using System;
-using System.Collections.Generic;
-using UniGLTF;
 using UnityEngine;
 using VRMShaders;
 
 namespace UniVRM10
 {
     /// <summary>
-    /// VRM関連の情報を集約したオブジェクト。
+    /// VRM関連の情報を保持するオブジェクト
+    /// ScriptedImporter から Extract して
+    /// Editor経由で Edit可能にするのが目的。
+    /// ヒエラルキーに対する参照を保持できないので Humanoid, Spring, Constraint は含まず
+    /// 下記の項目を保持することとした。
+    /// シーンに出さずにアセットとして編集できる。
     /// 
-    /// ScriptedImporter から Extract して Edit 可能な項目なるべく増やすべく導入。
-    /// 
-    /// * Meta(VRM必須)
+    /// * Meta
     /// * Expressions(enum + custom list)
     /// * LookAt
     /// * FirstPerson
-    /// 
-    /// Serialize 可能な形で保持し、Editor経由で Edit可能にするのが目的。
     /// 
     /// </summary>
     public class VRM10Object : ScriptableObject
