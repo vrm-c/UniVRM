@@ -94,7 +94,7 @@ namespace UniGLTF
             using (var context = new ImporterContext(parser))
             {
                 var instance = context.Load();
-                var textureMap = instance.Resources
+                var textureMap = instance.RuntimeResources
                     .Select(kv => (kv.Item1, kv.Item2 as Texture))
                     .Where(kv => kv.Item2 != null)
                     .ToDictionary(kv => kv.Item1, kv => kv.Item2)
