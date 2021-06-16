@@ -72,27 +72,30 @@ namespace UniVRM10
         {
             get
             {
-                yield return Happy;
-                yield return Angry;
-                yield return Sad;
-                yield return Relaxed;
-                yield return Surprised;
-                yield return Aa;
-                yield return Ih;
-                yield return Ou;
-                yield return Ee;
-                yield return Oh;
-                yield return Blink;
-                yield return BlinkLeft;
-                yield return BlinkRight;
-                yield return LookUp;
-                yield return LookDown;
-                yield return LookLeft;
-                yield return LookRight;
-                yield return Neutral;
+                if (Happy != null) yield return Happy;
+                if (Angry != null) yield return Angry;
+                if (Sad != null) yield return Sad;
+                if (Relaxed != null) yield return Relaxed;
+                if (Surprised != null) yield return Surprised;
+                if (Aa != null) yield return Aa;
+                if (Ih != null) yield return Ih;
+                if (Ou != null) yield return Ou;
+                if (Ee != null) yield return Ee;
+                if (Oh != null) yield return Oh;
+                if (Blink != null) yield return Blink;
+                if (BlinkLeft != null) yield return BlinkLeft;
+                if (BlinkRight != null) yield return BlinkRight;
+                if (LookUp != null) yield return LookUp;
+                if (LookDown != null) yield return LookDown;
+                if (LookLeft != null) yield return LookLeft;
+                if (LookRight != null) yield return LookRight;
+                if (Neutral != null) yield return Neutral;
                 foreach (var clip in CustomClips)
                 {
-                    yield return clip;
+                    if (clip != null)
+                    {
+                        yield return clip;
+                    }
                 }
             }
         }
