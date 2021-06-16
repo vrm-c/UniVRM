@@ -340,7 +340,7 @@ namespace UniVRM10
             }
 
             // colliderGroups
-            foreach (var x in controller.Vrm.SpringBone.ColliderGroups)
+            foreach (var x in controller.SpringBone.ColliderGroups)
             {
                 springBone.ColliderGroups.Add(new UniGLTF.Extensions.VRMC_springBone.ColliderGroup
                 {
@@ -349,13 +349,13 @@ namespace UniVRM10
             }
 
             // springs
-            foreach (var x in controller.Vrm.SpringBone.Springs)
+            foreach (var x in controller.SpringBone.Springs)
             {
                 var spring = new UniGLTF.Extensions.VRMC_springBone.Spring
                 {
                     Name = x.Name,
                     Joints = x.Joints.Select(y => ExportJoint(y, getNodeIndexFromTransform)).ToList(),
-                    ColliderGroups = x.ColliderGroups.Select(y => controller.Vrm.SpringBone.ColliderGroups.IndexOf(y)).ToArray(),
+                    ColliderGroups = x.ColliderGroups.Select(y => controller.SpringBone.ColliderGroups.IndexOf(y)).ToArray(),
                 };
                 springBone.Springs.Add(spring);
             }

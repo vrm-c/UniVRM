@@ -431,7 +431,7 @@ namespace UniVRM10
                     foreach (var g in gltfVrmSpringBone.ColliderGroups)
                     {
                         var colliderGroup = secondary.gameObject.AddComponent<VRM10SpringBoneColliderGroup>();
-                        controller.Vrm.SpringBone.ColliderGroups.Add(colliderGroup);
+                        controller.SpringBone.ColliderGroups.Add(colliderGroup);
 
                         foreach (var c in g.Colliders)
                         {
@@ -453,11 +453,11 @@ namespace UniVRM10
                         continue;
                     }
                     var spring = new VRM10ControllerSpringBone.Spring(gltfSpring.Name);
-                    controller.Vrm.SpringBone.Springs.Add(spring);
+                    controller.SpringBone.Springs.Add(spring);
 
                     if (gltfSpring.ColliderGroups != null)
                     {
-                        spring.ColliderGroups = gltfSpring.ColliderGroups.Select(x => controller.Vrm.SpringBone.ColliderGroups[x]).ToList();
+                        spring.ColliderGroups = gltfSpring.ColliderGroups.Select(x => controller.SpringBone.ColliderGroups[x]).ToList();
                     }
                     // joint
                     foreach (var gltfJoint in gltfSpring.Joints)

@@ -16,7 +16,6 @@ namespace UniVRM10
             Meta,
             Expression,
             LookAt,
-            SpringBone,
             FirstPerson,
         }
         Tabs _tab = Tabs.Meta;
@@ -25,18 +24,20 @@ namespace UniVRM10
         PropGui m_expression;
         PropGui m_meta;
         PropGui m_lookAt;
-        PropGui m_springBone;
         PropGui m_firstPerson;
         PropGui m_asset;
 
         void OnEnable()
         {
+            if (target == null)
+            {
+                return;
+            }
             m_target = (VRM10Object)target;
 
             m_expression = new PropGui(serializedObject.FindProperty(nameof(m_target.Expression)));
             m_meta = new PropGui(serializedObject.FindProperty(nameof(m_target.Meta)));
             m_lookAt = new PropGui(serializedObject.FindProperty(nameof(m_target.LookAt)));
-            m_springBone = new PropGui(serializedObject.FindProperty(nameof(m_target.SpringBone)));
             m_firstPerson = new PropGui(serializedObject.FindProperty(nameof(m_target.FirstPerson)));
         }
 
@@ -62,10 +63,6 @@ namespace UniVRM10
 
                 case Tabs.LookAt:
                     m_lookAt.RecursiveProperty();
-                    break;
-
-                case Tabs.SpringBone:
-                    m_springBone.RecursiveProperty();
                     break;
 
                 case Tabs.FirstPerson:

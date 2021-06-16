@@ -211,9 +211,9 @@ namespace UniVRM10
                     rect.y += 2;
 
                     SerializedProperty element = prop.GetArrayElementAtIndex(index);
-                    var elements = target.Vrm.SpringBone.ColliderGroups;
+                    var elements = target.SpringBone.ColliderGroups;
                     var element_index = elements.IndexOf(element.objectReferenceValue as VRM10SpringBoneColliderGroup);
-                    var colliderGroups = target.Vrm.SpringBone.ColliderGroups.Select((x, y) => x.GUIName(y)).ToArray();
+                    var colliderGroups = target.SpringBone.ColliderGroups.Select((x, y) => x.GUIName(y)).ToArray();
                     var new_index = EditorGUI.Popup(rect, element_index, colliderGroups);
                     if (new_index != element_index)
                     {

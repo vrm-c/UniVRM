@@ -10,11 +10,24 @@ namespace UniVRM10
     /// 各フレームのHumanoidへのモーション適用後に任意のタイミングで
     /// Applyを呼び出してください。
     /// 
+    /// ヒエラルキー内への参照のシリアライズ
+    /// 
+    /// * Humanoid(VRM必須)
+    /// * SpringBone の MonoBehaviour でない部分
+    ///   * ColliderGroup
+    ///   * Springs
+    /// 
     /// </summary>
     [AddComponentMenu("VRM10/VRMController")]
     [DisallowMultipleComponent]
     public class VRM10Controller : MonoBehaviour
     {
+        [SerializeField, Header("VRM1")]
+        public VRM10Object Vrm;
+
+        [SerializeField]
+        public VRM10ControllerSpringBone SpringBone = new VRM10ControllerSpringBone();
+
         public enum UpdateTypes
         {
             None,
@@ -40,9 +53,6 @@ namespace UniVRM10
         [SerializeField]
         public VRM10ObjectLookAt.LookAtTargetTypes LookAtTargetType;
 
-        [SerializeField, Header("VRM1")]
-        public VRM10Object Vrm;
-
         VRM10ControllerRuntime m_runtime;
 
         /// <summary>
@@ -56,6 +66,17 @@ namespace UniVRM10
                 m_runtime = new VRM10ControllerRuntime(this);
             }
             return m_runtime;
+        }
+
+        void Start()
+        {
+            if (LookAtTargetType == VRM10ObjectLookAt.LookAtTargetTypes.CalcYawPitchToGaze)
+            {
+                if (Gaze == null)
+                {
+                    LookAtTargetType = VRM10ObjectLookAt.LookAtTargetTypes.SetYawPitch;
+                }
+            }
         }
 
         private void Update()

@@ -52,7 +52,7 @@ namespace UniVRM10
             //
             // spring
             //
-            m_target.Vrm.SpringBone.Process(m_target.SpringBoneCenter);
+            m_target.SpringBone.Process(m_target.SpringBoneCenter);
 
             //
             // gaze control
