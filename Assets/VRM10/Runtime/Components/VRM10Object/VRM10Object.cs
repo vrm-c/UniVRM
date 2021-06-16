@@ -34,7 +34,7 @@ namespace UniVRM10
         public VRM10ObjectExpression Expression = new VRM10ObjectExpression();
 
         [SerializeField]
-        public VRM10ControllerLookAt LookAt = new VRM10ControllerLookAt();
+        public VRM10ObjectLookAt LookAt = new VRM10ObjectLookAt();
 
         [SerializeField]
         public VRM10ObjectFirstPerson FirstPerson = new VRM10ObjectFirstPerson();

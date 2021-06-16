@@ -500,7 +500,7 @@ namespace UniVRM10
 
         void ExportLookAt(UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm, VRM10Controller vrmController)
         {
-            if (!(vrmController?.Vrm?.LookAt is VRM10ControllerLookAt lookAt))
+            if (!(vrmController?.Vrm?.LookAt is VRM10ObjectLookAt lookAt))
             {
                 return;
             }

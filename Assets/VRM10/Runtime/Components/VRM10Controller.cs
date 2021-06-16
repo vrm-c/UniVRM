@@ -38,7 +38,7 @@ namespace UniVRM10
         public Transform Gaze;
 
         [SerializeField]
-        public VRM10ControllerLookAt.LookAtTargetTypes LookAtTargetType;
+        public VRM10ObjectLookAt.LookAtTargetTypes LookAtTargetType;
 
         [SerializeField, Header("VRM1")]
         public VRM10Object Vrm;

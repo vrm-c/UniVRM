@@ -8,7 +8,7 @@ using UnityEditor;
 namespace UniVRM10
 {
     [Serializable]
-    public class VRM10ControllerLookAt : ILookAtEyeDirectionProvider
+    public class VRM10ObjectLookAt : ILookAtEyeDirectionProvider
     {
         public enum LookAtTargetTypes
         {

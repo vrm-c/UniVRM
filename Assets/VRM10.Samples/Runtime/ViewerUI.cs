@@ -390,7 +390,7 @@ namespace UniVRM10.Samples
                         m_lipSync = go.AddComponent<AIUEO>();
                         m_blink = go.AddComponent<Blinker>();
 
-                        m_controller.LookAtTargetType = VRM10ControllerLookAt.LookAtTargetTypes.CalcYawPitchToGaze;
+                        m_controller.LookAtTargetType = VRM10ObjectLookAt.LookAtTargetTypes.CalcYawPitchToGaze;
                         m_controller.Gaze = m_target.transform;
                     }
                 }
