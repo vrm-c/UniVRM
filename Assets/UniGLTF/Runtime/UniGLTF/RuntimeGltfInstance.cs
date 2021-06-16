@@ -18,6 +18,8 @@ namespace UniGLTF
 
         List<(SubAssetKey, UnityEngine.Object)> m_resources = new List<(SubAssetKey, UnityEngine.Object)>();
 
+        public IReadOnlyList<(SubAssetKey, UnityEngine.Object)> OwnedResources => m_resources;
+
         public static RuntimeGltfInstance AttachTo(GameObject go, ImporterContext context)
         {
             var loaded = go.AddComponent<RuntimeGltfInstance>();
