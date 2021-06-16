@@ -341,7 +341,7 @@ namespace UniVRM10
                         m_expressions.Add(clip);
                     }
 
-                    vrm.Expression.Clips.Add(clip);
+                    vrm.Expression.AddClip(clip);
                 }
             }
 

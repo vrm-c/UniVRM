@@ -23,15 +23,16 @@ namespace UniVRM10
 
         public VRM10Expression GetSelected()
         {
-            if (m_avatar == null || m_avatar.Clips == null || m_avatar.Clips.Count == 0)
+            var clips = m_avatar.Clips.ToArray();
+            if (m_avatar == null || clips == null || clips.Length == 0)
             {
                 return null;
             }
-            if (m_selectedIndex < 0 || m_selectedIndex >= m_avatar.Clips.Count)
+            if (m_selectedIndex < 0 || m_selectedIndex >= clips.Length)
             {
                 return null;
             }
-            return m_avatar.Clips[m_selectedIndex];
+            return clips[m_selectedIndex];
         }
 
         public event Action<VRM10Expression> Selected;
@@ -68,9 +69,11 @@ namespace UniVRM10
 
             var prop = serializedObject.FindProperty("Clips");
             m_clipList = new ReorderableExpressionList(serializedObject, prop, dir);
+
             m_clipList.Selected += (selected) =>
             {
-                SelectedIndex = avatar.Clips.IndexOf(selected);
+                var clips = avatar.Clips.ToArray();
+                SelectedIndex = Array.IndexOf(clips, selected);
             };
         }
 
@@ -116,21 +119,21 @@ namespace UniVRM10
                 SelectedIndex = GUILayout.SelectionGrid(SelectedIndex, array, 4);
             }
 
-            if (GUILayout.Button("Add Expression"))
-            {
-                var path = EditorUtility.SaveFilePanel(
-                               "Create Expression",
-                               dir,
-                               string.Format("Expression#{0}.asset", m_avatar.Clips.Count),
-                               "asset");
-                if (!string.IsNullOrEmpty(path))
-                {
-                    var clip = ExpressionEditorBase.CreateExpression(path.ToUnityRelativePath());
-                    //clip.Prefab = AssetDatabase.LoadAssetAtPath<GameObject>(AssetDatabase.GetAssetPath(target));
+            // if (GUILayout.Button("Add Expression"))
+            // {
+            //     var path = EditorUtility.SaveFilePanel(
+            //                    "Create Expression",
+            //                    dir,
+            //                    string.Format("Expression#{0}.asset", m_avatar.Clips.Count),
+            //                    "asset");
+            //     if (!string.IsNullOrEmpty(path))
+            //     {
+            //         var clip = ExpressionEditorBase.CreateExpression(path.ToUnityRelativePath());
+            //         //clip.Prefab = AssetDatabase.LoadAssetAtPath<GameObject>(AssetDatabase.GetAssetPath(target));
 
-                    m_avatar.Clips.Add(clip);
-                }
-            }
+            //         m_avatar.Clips.Add(clip);
+            //     }
+            // }
         }
 
         public void DuplicateWarn()

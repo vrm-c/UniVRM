@@ -83,11 +83,8 @@ namespace UniVRM10
 
                 var (_, vrmObject) = importer.GetSubAssets<VRM10Object>(importer.assetPath).First();
 
-                // replace clone
-                for (int i = 0; i < vrmObject.Expression.Clips.Count; ++i)
-                {
-                    vrmObject.Expression.Clips[i] = map[vrmObject.Expression.Clips[i]];
-                }
+                vrmObject.Expression.Replace(map);
+
                 {
                     vrmObject.ExtractSubAsset($"{path}/{vrmObject.name}.asset", false);
                 }

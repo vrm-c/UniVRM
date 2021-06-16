@@ -9,76 +9,243 @@ namespace UniVRM10
     [Serializable]
     public sealed class VRM10ObjectExpression
     {
+        #region Preset
+        [SerializeField, Header("Emotion")]
+        public VRM10Expression Happy;
+
         [SerializeField]
-        public List<VRM10Expression> Clips = new List<VRM10Expression>();
-        /// <summary>
-        /// NullのClipを削除して詰める
-        /// </summary>
-        public void RemoveNullClip()
+        public VRM10Expression Angry;
+
+        [SerializeField]
+        public VRM10Expression Sad;
+
+        [SerializeField]
+        public VRM10Expression Relaxed;
+
+        [SerializeField]
+        public VRM10Expression Surprised;
+
+        [SerializeField, Header("LipSync")]
+        public VRM10Expression Aa;
+
+        [SerializeField]
+        public VRM10Expression Ih;
+
+        [SerializeField]
+        public VRM10Expression Ou;
+
+        [SerializeField]
+        public VRM10Expression Ee;
+
+        [SerializeField]
+        public VRM10Expression Oh;
+
+        [SerializeField, Header("Blink")]
+        public VRM10Expression Blink;
+
+        [SerializeField]
+        public VRM10Expression BlinkLeft;
+
+        [SerializeField]
+        public VRM10Expression BlinkRight;
+
+        [SerializeField, Header("LookAt")]
+        public VRM10Expression LookUp;
+
+        [SerializeField]
+        public VRM10Expression LookDown;
+
+        [SerializeField]
+        public VRM10Expression LookLeft;
+
+        [SerializeField]
+        public VRM10Expression LookRight;
+
+        [SerializeField, Header("Other")]
+        public VRM10Expression Neutral;
+        #endregion
+
+        [SerializeField]
+        public List<VRM10Expression> CustomClips = new List<VRM10Expression>();
+
+        public IEnumerable<VRM10Expression> Clips
         {
-            if (Clips == null)
+            get
             {
-                return;
-            }
-            for (int i = Clips.Count - 1; i >= 0; --i)
-            {
-                if (Clips[i] == null)
+                yield return Happy;
+                yield return Angry;
+                yield return Sad;
+                yield return Relaxed;
+                yield return Surprised;
+                yield return Aa;
+                yield return Ih;
+                yield return Ou;
+                yield return Ee;
+                yield return Oh;
+                yield return Blink;
+                yield return BlinkLeft;
+                yield return BlinkRight;
+                yield return LookUp;
+                yield return LookDown;
+                yield return LookLeft;
+                yield return LookRight;
+                yield return Neutral;
+                foreach (var clip in CustomClips)
                 {
-                    Clips.RemoveAt(i);
+                    yield return clip;
+                }
+            }
+        }
+
+        public void AddClip(VRM10Expression clip)
+        {
+            switch (clip.Preset)
+            {
+                case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.happy: Happy = clip; break;
+                case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.angry: Angry = clip; break;
+                case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.sad: Sad = clip; break;
+                case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.relaxed: Relaxed = clip; break;
+                case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.surprised: Surprised = clip; break;
+                case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.aa: Aa = clip; break;
+                case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.ih: Ih = clip; break;
+                case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.ou: Ou = clip; break;
+                case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.ee: Ee = clip; break;
+                case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.oh: Oh = clip; break;
+                case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.blink: Blink = clip; break;
+                case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.blinkLeft: BlinkLeft = clip; break;
+                case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.blinkRight: BlinkRight = clip; break;
+                case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.lookUp: LookUp = clip; break;
+                case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.lookDown: LookDown = clip; break;
+                case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.lookLeft: LookLeft = clip; break;
+                case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.lookRight: LookRight = clip; break;
+                case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.neutral: Neutral = clip; break;
+                default: CustomClips.Add(clip); break;
+            }
+        }
+
+        public void Replace(IDictionary<VRM10Expression, VRM10Expression> map)
+        {
+            foreach (var (k, v) in map)
+            {
+                Replace(k, v);
+            }
+        }
+
+        void Replace(VRM10Expression src, VRM10Expression dst)
+        {
+            if (Happy == src)
+            {
+                Happy = dst; return;
+            }
+            if (Angry == src)
+            {
+                Angry = dst; return;
+            }
+            if (Sad == src)
+            {
+                Sad = dst; return;
+            }
+            if (Relaxed == src)
+            {
+                Relaxed = dst; return;
+            }
+            if (Surprised == src)
+            {
+                Surprised = dst; return;
+            }
+            if (Aa == src)
+            {
+                Aa = dst; return;
+            }
+            if (Ih == src)
+            {
+                Ih = dst; return;
+            }
+            if (Ou == src)
+            {
+                Ou = dst; return;
+            }
+            if (Ee == src)
+            {
+                Ee = dst; return;
+            }
+            if (Oh == src)
+            {
+                Oh = dst; return;
+            }
+            if (Blink == src)
+            {
+                Blink = dst; return;
+            }
+            if (BlinkLeft == src)
+            {
+                BlinkLeft = dst; return;
+            }
+            if (BlinkRight == src)
+            {
+                BlinkRight = dst; return;
+            }
+            if (LookUp == src)
+            {
+                LookUp = dst; return;
+            }
+            if (LookDown == src)
+            {
+                LookDown = dst; return;
+            }
+            if (LookLeft == src)
+            {
+                LookLeft = dst; return;
+            }
+            if (LookRight == src)
+            {
+                LookRight = dst; return;
+            }
+            if (Neutral == src)
+            {
+                Neutral = dst; return;
+            }
+
+            for (int i = 0; i < CustomClips.Count; ++i)
+            {
+                if (CustomClips[i] == src)
+                {
+                    CustomClips[i] = dst;
+                    return;
                 }
             }
         }
 
         /// <summary>
-        /// Unknown以外で存在しないものを全て作る
+        /// NullのClipを削除して詰める
         /// </summary>
-        public void CreateDefaultPreset()
+        public void RemoveNullClip()
         {
-            foreach (var preset in ((UniGLTF.Extensions.VRMC_vrm.ExpressionPreset[])Enum.GetValues(typeof(UniGLTF.Extensions.VRMC_vrm.ExpressionPreset)))
-                .Where(x => x != UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.custom)
-                )
+            if (CustomClips == null)
             {
-                CreateDefaultPreset(preset);
+                return;
+            }
+            for (int i = CustomClips.Count - 1; i >= 0; --i)
+            {
+                if (CustomClips[i] == null)
+                {
+                    CustomClips.RemoveAt(i);
+                }
             }
         }
 
-        void CreateDefaultPreset(UniGLTF.Extensions.VRMC_vrm.ExpressionPreset preset)
-        {
-            var clip = GetClip(new ExpressionKey(preset));
-            if (clip != null) return;
-            clip = ScriptableObject.CreateInstance<VRM10Expression>();
-            clip.name = preset.ToString();
-            clip.ExpressionName = preset.ToString();
-            clip.Preset = preset;
-            Clips.Add(clip);
-        }
-
-        public void SetClip(ExpressionKey key, VRM10Expression clip)
-        {
-            int index = -1;
-            try
-            {
-                index = Clips.FindIndex(x => key.Match(x));
-            }
-            catch (Exception)
-            {
-
-            }
-            if (index == -1)
-            {
-                Clips.Add(clip);
-            }
-            else
-            {
-                Clips[index] = clip;
-            }
-        }
-
-        public VRM10Expression GetClip(ExpressionKey key)
-        {
-            if (Clips == null) return null;
-            return Clips.FirstOrDefault(x => key.Match(x));
-        }
+        // /// <summary>
+        // /// Unknown以外で存在しないものを全て作る
+        // /// </summary>
+        // public void CreateDefaultPreset()
+        // {
+        //     foreach (var preset in ((UniGLTF.Extensions.VRMC_vrm.ExpressionPreset[])Enum.GetValues(typeof(UniGLTF.Extensions.VRMC_vrm.ExpressionPreset)))
+        //         .Where(x => x != UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.custom)
+        //         )
+        //     {
+        //         CreateDefaultPreset(preset);
+        //     }
+        // }
 
         public static IExpressionValidatorFactory ExpressionValidatorFactory = new DefaultExpressionValidator.Factory();
 
