@@ -123,16 +123,16 @@ namespace UniGLTF
             {
                 foreach (var (key, gltfAnimation) in Enumerable.Zip(AnimationImporterUtil.EnumerateSubAssetKeys(GLTF), GLTF.animations, (x, y) => (x, y)))
                 {
-                    AnimationClip clip = default;
+                    AnimationInfo animation = default;
                     if (_externalObjectMap.TryGetValue(key, out UnityEngine.Object value))
                     {
-                        clip = value as AnimationClip;
+                        animation = new AnimationInfo(key, value as AnimationClip, true);
                     }
                     else
                     {
-                        clip = AnimationImporterUtil.ConvertAnimationClip(GLTF, gltfAnimation, InvertAxis.Create());
-                        AnimationClips.Add((key, clip));
+                        animation = new AnimationInfo(key, AnimationImporterUtil.ConvertAnimationClip(GLTF, gltfAnimation, InvertAxis.Create()), false);
                     }
+                    AnimationClips.Add(animation);
                 }
 
                 await awaitCaller.NextFrame();
@@ -151,7 +151,7 @@ namespace UniGLTF
             var animation = Root.AddComponent<Animation>();
             for (int i = 0; i < AnimationClips.Count; ++i)
             {
-                var (_, clip) = AnimationClips[i];
+                var clip = AnimationClips[i].Clip;
                 animation.AddClip(clip, clip.name);
                 if (i == 0)
                 {
@@ -281,7 +281,21 @@ namespace UniGLTF
 
         public List<MeshWithMaterials> Meshes = new List<MeshWithMaterials>();
 
-        public List<(SubAssetKey, AnimationClip)> AnimationClips = new List<(SubAssetKey, AnimationClip)>();
+        public struct AnimationInfo
+        {
+            public readonly SubAssetKey Key;
+            public readonly AnimationClip Clip;
+            public readonly bool IsExternal;
+
+            public AnimationInfo(SubAssetKey key, AnimationClip clip, bool isExternal)
+            {
+                Key = key;
+                Clip = clip;
+                IsExternal = isExternal;
+            }
+        }
+
+        public List<AnimationInfo> AnimationClips = new List<AnimationInfo>();
         #endregion
 
         /// <summary>
@@ -289,9 +303,14 @@ namespace UniGLTF
         /// </summary>
         public virtual void Dispose()
         {
-            foreach (var (k, x) in AnimationClips)
+            foreach (var info in AnimationClips)
             {
-                UnityObjectDestoyer.DestroyRuntimeOrEditor(x);
+                if (info.IsExternal)
+                {
+                    // external は削除不要
+                    continue;
+                }
+                UnityObjectDestoyer.DestroyRuntimeOrEditor(info.Clip);
             }
             AnimationClips.Clear();
 
@@ -320,11 +339,17 @@ namespace UniGLTF
             TextureFactory.TransferOwnership(take);
             MaterialFactory.TransferOwnership(take);
 
-            foreach (var (key, animation) in AnimationClips.ToArray())
+            foreach (var info in AnimationClips)
             {
-                take(key, animation);
-                AnimationClips.Remove((key, animation));
+                if (info.IsExternal)
+                {
+                    // external は削除しないので不要
+                    continue;
+                }
+                take(info.Key, info.Clip);
             }
+
+            AnimationClips.Clear();
         }
     }
 }
