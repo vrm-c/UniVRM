@@ -45,7 +45,9 @@ namespace UniGLTF
                 if (sparseIndices.Length > 0)
                 {
                     var sparseIndicesViewIndex = gltf.ExtendBufferAndGetViewIndex(gltfBuffer, sparseIndices);
-                    positionAccessorIndex = gltf.ExtendSparseBufferAndGetAccessorIndex(gltfBuffer, accessorCount, positions, sparseIndices, sparseIndicesViewIndex, glBufferTarget.NONE);
+                    positionAccessorIndex = gltf.ExtendSparseBufferAndGetAccessorIndex(gltfBuffer, accessorCount,
+                        sparseIndices.Select(x => positions[x]).ToArray(), sparseIndices, sparseIndicesViewIndex,
+                        glBufferTarget.NONE);
                 }
 
                 // normals
@@ -56,7 +58,9 @@ namespace UniGLTF
                     if (sparseNormalIndices.Length > 0)
                     {
                         var sparseNormalIndicesViewIndex = gltf.ExtendBufferAndGetViewIndex(gltfBuffer, sparseNormalIndices);
-                        normalAccessorIndex = gltf.ExtendSparseBufferAndGetAccessorIndex(gltfBuffer, accessorCount, normals, sparseNormalIndices, sparseNormalIndicesViewIndex, glBufferTarget.NONE);
+                        normalAccessorIndex = gltf.ExtendSparseBufferAndGetAccessorIndex(gltfBuffer, accessorCount,
+                            sparseNormalIndices.Select(x => normals[x]).ToArray(), sparseNormalIndices, sparseNormalIndicesViewIndex,
+                            glBufferTarget.NONE);
                     }
                 }
 

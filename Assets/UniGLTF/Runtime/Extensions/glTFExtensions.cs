@@ -171,6 +171,9 @@ namespace UniGLTF
             return viewIndex;
         }
 
+        /// <summary>
+        /// sparseValues は間引かれた配列
+        /// </summary>
         public static int ExtendSparseBufferAndGetAccessorIndex<T>(this glTF gltf, int bufferIndex,
             int accessorCount,
             T[] sparseValues, int[] sparseIndices, int sparseViewIndex,
