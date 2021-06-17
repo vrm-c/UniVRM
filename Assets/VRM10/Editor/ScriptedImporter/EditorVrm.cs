@@ -72,7 +72,7 @@ namespace UniVRM10
                 return;
             }
 
-            var path = GetAndCreateFolder(importer.assetPath, ".Vrm1Object");
+            var path = GetAndCreateFolder(importer.assetPath, ".vrm1.Assets");
             {
                 var map = new Dictionary<VRM10Expression, VRM10Expression>();
                 foreach (var (key, asset) in importer.GetSubAssets<VRM10Expression>(importer.assetPath))
