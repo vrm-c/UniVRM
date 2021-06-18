@@ -20,6 +20,9 @@ namespace UniVRM10
         VrmLib.Model m_model;
         UniGLTF.Extensions.VRMC_vrm.VRMC_vrm m_vrm;
 
+        RemapEditorMaterial m_materialEditor = new RemapEditorMaterial();
+        RemapEditorVrm m_vrmEditor = new RemapEditorVrm();
+
         string m_message;
 
         public override void OnEnable()
@@ -66,7 +69,7 @@ namespace UniVRM10
                 case Tabs.Materials:
                     if (m_parser != null && m_vrm != null)
                     {
-                        EditorMaterial.OnGUI(m_importer, m_parser, new Vrm10TextureDescriptorGenerator(m_parser),
+                        m_materialEditor.OnGUI(m_importer, m_parser, new Vrm10TextureDescriptorGenerator(m_parser),
                             assetPath => $"{Path.GetFileNameWithoutExtension(assetPath)}.vrm1.Textures",
                             assetPath => $"{Path.GetFileNameWithoutExtension(assetPath)}.vrm1.Materials");
                     }
@@ -75,7 +78,7 @@ namespace UniVRM10
                 case Tabs.Vrm:
                     if (m_parser != null && m_vrm != null)
                     {
-                        EditorVrm.OnGUI(m_importer, m_parser, m_vrm);
+                        m_vrmEditor.OnGUI(m_importer, m_parser, m_vrm);
                     }
                     break;
             }

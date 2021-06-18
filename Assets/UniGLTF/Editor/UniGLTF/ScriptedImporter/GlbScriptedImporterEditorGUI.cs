@@ -16,6 +16,9 @@ namespace UniGLTF
         GlbScriptedImporter m_importer;
         GltfParser m_parser;
 
+        RemapEditorMaterial m_materialEditor = new RemapEditorMaterial();
+        RemapEditorAnimation m_animationEditor = new RemapEditorAnimation();
+
         public override void OnEnable()
         {
             base.OnEnable();
@@ -45,11 +48,11 @@ namespace UniGLTF
                     break;
 
                 case Tabs.Animation:
-                    EditorAnimation.OnGUIAnimation(m_importer, m_parser);
+                    m_animationEditor.OnGUI(m_importer, m_parser);
                     break;
 
                 case Tabs.Materials:
-                    EditorMaterial.OnGUI(m_importer, m_parser, new GltfTextureDescriptorGenerator(m_parser),
+                    m_materialEditor.OnGUI(m_importer, m_parser, new GltfTextureDescriptorGenerator(m_parser),
                     assetPath => $"{Path.GetFileNameWithoutExtension(assetPath)}.Textures",
                     assetPath => $"{Path.GetFileNameWithoutExtension(assetPath)}.Materials");
                     break;

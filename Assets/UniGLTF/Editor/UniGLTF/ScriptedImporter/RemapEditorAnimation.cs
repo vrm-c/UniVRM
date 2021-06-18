@@ -8,9 +8,9 @@ using VRMShaders;
 
 namespace UniGLTF
 {
-    public static class EditorAnimation
+    public class RemapEditorAnimation: RemapEditorBase
     {
-        public static void OnGUIAnimation(ScriptedImporter importer, GltfParser parser)
+        public void OnGUI(ScriptedImporter importer, GltfParser parser)
         {
             var hasExternal = importer.GetExternalObjectMap().Any(x => x.Value is AnimationClip);
             using (new EditorGUI.DisabledScope(hasExternal))
@@ -21,7 +21,7 @@ namespace UniGLTF
                 }
             }
 
-            importer.DrawRemapGUI<AnimationClip>(AnimationImporterUtil.EnumerateSubAssetKeys(parser.GLTF));
+            DrawRemapGUI<AnimationClip>(importer, AnimationImporterUtil.EnumerateSubAssetKeys(parser.GLTF));
 
             if (GUILayout.Button("Clear"))
             {
@@ -58,6 +58,6 @@ namespace UniGLTF
             }
 
             AssetDatabase.ImportAsset(importer.assetPath, ImportAssetOptions.ForceUpdate);
-        }
+        }       
     }
 }

@@ -46,33 +46,6 @@ namespace UniGLTF
                 .Select(x => (new SubAssetKey(typeof(T), x.name), x as T));
         }
 
-        public static void DrawRemapGUI<T>(this ScriptedImporter importer, IEnumerable<SubAssetKey> keys) where T : UnityEngine.Object
-        {
-            EditorGUI.indentLevel++;
-            {
-                var map = importer.GetExternalObjectMap();
-                foreach (var key in keys)
-                {
-                    if (string.IsNullOrEmpty(key.Name))
-                    {
-                        continue;
-                    }
-
-                    EditorGUILayout.BeginHorizontal();
-                    EditorGUILayout.PrefixLabel(key.Name);
-                    map.TryGetValue(new AssetImporter.SourceAssetIdentifier(key.Type, key.Name), out UnityEngine.Object value);
-                    var asset = EditorGUILayout.ObjectField(value, typeof(T), true) as T;
-                    if (asset != value)
-                    {
-                        // update
-                        importer.SetExternalUnityObject(new AssetImporter.SourceAssetIdentifier(key.Type, key.Name), asset);
-                    }
-                    EditorGUILayout.EndHorizontal();
-                }
-            }
-            EditorGUI.indentLevel--;
-        }
-
         /// <summary>
         /// subAsset を 指定された path に extract する
         /// </summary>
