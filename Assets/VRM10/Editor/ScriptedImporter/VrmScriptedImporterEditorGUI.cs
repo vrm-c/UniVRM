@@ -44,6 +44,9 @@ namespace UniVRM10
             m_model = ModelReader.Read(result.Parser);
 
             var externalObjectMap = m_importer.GetExternalObjectMap();
+
+            var tmp = m_importer.GetExternalObjectMap();
+
             var generator = new Vrm10MaterialDescriptorGenerator();
             var materialKeys = m_parser.GLTF.materials.Select((x, i) => generator.Get(m_parser, i).SubAssetKey);
             var textureKeys = new GltfTextureDescriptorGenerator(m_parser).Get().GetEnumerable().Select(x => x.SubAssetKey);

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.Experimental.AssetImporters;
+using UnityEngine;
 using VRMShaders;
 
 namespace UniGLTF
@@ -51,6 +52,8 @@ namespace UniGLTF
                     return new SubAssetPair(x, null);
                 }
             }).ToArray();
+
+            Debug.Log($"RemapEditorBase: {m_keyValues}");
         }
 
         void RemapAndReload<T>(ScriptedImporter self, UnityEditor.AssetImporter.SourceAssetIdentifier sourceAssetIdentifier, T obj) where T : UnityEngine.Object
