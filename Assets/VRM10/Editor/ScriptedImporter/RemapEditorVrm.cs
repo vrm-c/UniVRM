@@ -14,8 +14,13 @@ using UnityEditor.Experimental.AssetImporters;
 
 namespace UniVRM10
 {
-    public class RemapEditorVrm: RemapEditorBase
+    public class RemapEditorVrm : RemapEditorBase
     {
+        public RemapEditorVrm(
+            IEnumerable<SubAssetKey> keys,
+            Dictionary<ScriptedImporter.SourceAssetIdentifier, UnityEngine.Object> externalObjectMap) : base(keys, externalObjectMap)
+        { }
+
         public void OnGUI(ScriptedImporter importer, GltfParser parser, UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm)
         {
             var hasExternal = importer.GetExternalObjectMap().Any(x => x.Value is VRM10Object || x.Value is VRM10Expression);
@@ -28,10 +33,10 @@ namespace UniVRM10
             }
 
             // meta
-            DrawRemapGUI<VRM10Object>(importer, new SubAssetKey[] { VRM10Object.SubAssetKey });
+            DrawRemapGUI<VRM10Object>();
 
             // expressions
-            DrawRemapGUI<VRM10Expression>(importer, vrm.Expressions.Select(x => ExpressionKey.CreateFromVrm10(x).SubAssetKey));
+            DrawRemapGUI<VRM10Expression>();
 
             if (GUILayout.Button("Clear"))
             {

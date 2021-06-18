@@ -3,6 +3,8 @@ using UnityEngine;
 using UniGLTF;
 using System.IO;
 using UniGLTF.MeshUtility;
+using System.Linq;
+using VRMShaders;
 #if UNITY_2020_2_OR_NEWER
 using UnityEditor.AssetImporters;
 #else
@@ -20,8 +22,8 @@ namespace UniVRM10
         VrmLib.Model m_model;
         UniGLTF.Extensions.VRMC_vrm.VRMC_vrm m_vrm;
 
-        RemapEditorMaterial m_materialEditor = new RemapEditorMaterial();
-        RemapEditorVrm m_vrmEditor = new RemapEditorVrm();
+        RemapEditorMaterial m_materialEditor;
+        RemapEditorVrm m_vrmEditor;
 
         string m_message;
 
@@ -40,6 +42,14 @@ namespace UniVRM10
             m_vrm = result.Vrm;
             m_parser = result.Parser;
             m_model = ModelReader.Read(result.Parser);
+
+            var externalObjectMap = m_importer.GetExternalObjectMap();
+            var generator = new Vrm10MaterialDescriptorGenerator();
+            var materialKeys = m_parser.GLTF.materials.Select((x, i) => generator.Get(m_parser, i).SubAssetKey);
+            var textureKeys = new GltfTextureDescriptorGenerator(m_parser).Get().GetEnumerable().Select(x => x.SubAssetKey);
+            m_materialEditor = new RemapEditorMaterial(materialKeys.Concat(textureKeys), externalObjectMap);
+            var expressionSubAssetKeys = m_vrm.Expressions.Select(x => ExpressionKey.CreateFromVrm10(x).SubAssetKey);
+            m_vrmEditor = new RemapEditorVrm(new[] { VRM10Object.SubAssetKey }.Concat(expressionSubAssetKeys), externalObjectMap);
         }
 
         enum Tabs

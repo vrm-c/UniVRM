@@ -1,6 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 using System.IO;
+using System.Linq;
 #if UNITY_2020_2_OR_NEWER
 using UnityEditor.AssetImporters;
 #else
@@ -16,8 +17,8 @@ namespace UniGLTF
         GltfScriptedImporter m_importer;
         GltfParser m_parser;
 
-        RemapEditorMaterial m_materialEditor = new RemapEditorMaterial();
-        RemapEditorAnimation m_animationEditor = new RemapEditorAnimation();
+        RemapEditorMaterial m_materialEditor;
+        RemapEditorAnimation m_animationEditor;
 
         public override void OnEnable()
         {
@@ -26,6 +27,13 @@ namespace UniGLTF
             m_importer = target as GltfScriptedImporter;
             m_parser = new GltfParser();
             m_parser.ParsePath(m_importer.assetPath);
+
+            var externalObjectMap = m_importer.GetExternalObjectMap();
+            var materialGenerator = new GltfMaterialDescriptorGenerator();
+            var materialKeys = m_parser.GLTF.materials.Select((_, i) => materialGenerator.Get(m_parser, i).SubAssetKey);
+            var textureKeys = new GltfTextureDescriptorGenerator(m_parser).Get().GetEnumerable().Select(x => x.SubAssetKey);
+            m_materialEditor = new RemapEditorMaterial(materialKeys.Concat(textureKeys), externalObjectMap);
+            m_animationEditor = new RemapEditorAnimation(AnimationImporterUtil.EnumerateSubAssetKeys(m_parser.GLTF), externalObjectMap);
         }
 
         enum Tabs

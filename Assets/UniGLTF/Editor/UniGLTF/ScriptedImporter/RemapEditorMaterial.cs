@@ -17,10 +17,15 @@ namespace UniGLTF
     /// <summary>
     /// Material, Texture の Remap, Extract
     /// </summary>
-    public class RemapEditorMaterial: RemapEditorBase
+    public class RemapEditorMaterial : RemapEditorBase
     {
         static bool s_foldMaterials = true;
         static bool s_foldTextures = true;
+
+        public RemapEditorMaterial(
+            IEnumerable<SubAssetKey> keys,
+            Dictionary<ScriptedImporter.SourceAssetIdentifier, UnityEngine.Object> externalObjectMap) : base(keys, externalObjectMap)
+        { }
 
         public void OnGUI(ScriptedImporter importer, GltfParser parser, ITextureDescriptorGenerator textureDescriptorGenerator, Func<string, string> textureDir, Func<string, string> materialDir)
         {
@@ -39,13 +44,13 @@ namespace UniGLTF
             s_foldMaterials = EditorGUILayout.Foldout(s_foldMaterials, "Remapped Materials");
             if (s_foldMaterials)
             {
-                DrawRemapGUI<UnityEngine.Material>(importer, parser.GLTF.materials.Select(x => new SubAssetKey(typeof(Material), x.name)));
+                DrawRemapGUI<UnityEngine.Material>();
             }
 
             s_foldTextures = EditorGUILayout.Foldout(s_foldTextures, "Remapped Textures");
             if (s_foldTextures)
             {
-                DrawRemapGUI<UnityEngine.Texture>(importer, textureDescriptorGenerator.Get().GetEnumerable().Select(x => x.SubAssetKey));
+                DrawRemapGUI<UnityEngine.Texture>();
             }
 
             if (GUILayout.Button("Clear"))
