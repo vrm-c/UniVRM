@@ -17,7 +17,7 @@ namespace UniVRM10
     /// * FirstPerson
     /// 
     /// </summary>
-    public class VRM10Object : ScriptableObject
+    public class VRM10Object : PrefabRelatedScriptableObject
     {
         public static SubAssetKey SubAssetKey => new SubAssetKey(typeof(VRM10Object), "_vrm1_");
 
