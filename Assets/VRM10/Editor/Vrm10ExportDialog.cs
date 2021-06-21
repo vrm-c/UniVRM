@@ -60,16 +60,13 @@ namespace UniVRM10
                 }
                 if (m_metaEditor != null)
                 {
-                    UnityEditor.Editor.DestroyImmediate(m_metaEditor);
                     m_metaEditor = null;
                 }
                 m_meta = value;
             }
         }
         VRM10Object m_tmpObject;
-        Editor m_metaEditor;
-
-
+        VRM10MetaEditor m_metaEditor;
 
         protected override void Initialize()
         {
@@ -245,11 +242,11 @@ namespace UniVRM10
                     {
                         if (m_meta != null)
                         {
-                            m_metaEditor = Editor.CreateEditor(Vrm);
+                            m_metaEditor = VRM10MetaEditor.Create(new SerializedObject(Vrm));
                         }
                         else
                         {
-                            m_metaEditor = Editor.CreateEditor(m_tmpObject);
+                            m_metaEditor = VRM10MetaEditor.Create(new SerializedObject(m_tmpObject));
                         }
                     }
                     m_metaEditor.OnInspectorGUI();

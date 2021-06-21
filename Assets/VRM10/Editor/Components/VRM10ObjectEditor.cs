@@ -1,8 +1,5 @@
-﻿using System;
-using System.IO;
-using UniGLTF;
+﻿using UniGLTF;
 using UnityEditor;
-using UnityEngine;
 
 namespace UniVRM10
 {
@@ -21,11 +18,11 @@ namespace UniVRM10
         static Tabs _tab = Tabs.Meta;
 
         // for SerializedProperty
-        PropGui m_expression;
-        PropGui m_meta;
-        PropGui m_lookAt;
-        PropGui m_firstPerson;
-        PropGui m_asset;
+        SerializedPropertyEditor m_expression;
+        SerializedPropertyEditor m_meta;
+        SerializedPropertyEditor m_lookAt;
+        SerializedPropertyEditor m_firstPerson;
+        SerializedPropertyEditor m_asset;
 
         void OnEnable()
         {
@@ -35,10 +32,10 @@ namespace UniVRM10
             }
             m_target = (VRM10Object)target;
 
-            m_expression = new PropGui(serializedObject.FindProperty(nameof(m_target.Expression)));
-            m_meta = new PropGui(serializedObject.FindProperty(nameof(m_target.Meta)));
-            m_lookAt = new PropGui(serializedObject.FindProperty(nameof(m_target.LookAt)));
-            m_firstPerson = new PropGui(serializedObject.FindProperty(nameof(m_target.FirstPerson)));
+            m_expression = SerializedPropertyEditor.Create(serializedObject, nameof(m_target.Expression));
+            m_meta = VRM10MetaEditor.Create(serializedObject);
+            m_lookAt = SerializedPropertyEditor.Create(serializedObject, nameof(m_target.LookAt));
+            m_firstPerson = SerializedPropertyEditor.Create(serializedObject, nameof(m_target.FirstPerson));
         }
 
         public override void OnInspectorGUI()
@@ -54,19 +51,19 @@ namespace UniVRM10
             switch (_tab)
             {
                 case Tabs.Meta:
-                    m_meta.RecursiveProperty();
+                    m_meta.OnInspectorGUI();
                     break;
 
                 case Tabs.Expression:
-                    m_expression.RecursiveProperty();
+                    m_expression.OnInspectorGUI();
                     break;
 
                 case Tabs.LookAt:
-                    m_lookAt.RecursiveProperty();
+                    m_lookAt.OnInspectorGUI();
                     break;
 
                 case Tabs.FirstPerson:
-                    m_firstPerson.RecursiveProperty();
+                    m_firstPerson.OnInspectorGUI();
                     break;
             }
             serializedObject.ApplyModifiedProperties();
