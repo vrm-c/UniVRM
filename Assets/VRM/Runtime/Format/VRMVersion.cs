@@ -5,7 +5,7 @@ namespace VRM
     {
         public const int MAJOR = 0;
         public const int MINOR = 67;
-        public const int PATCH = 7;
-        public const string VERSION = "0.67.7";
+        public const int PATCH = 8;
+        public const string VERSION = "0.67.8";
     }
 }
