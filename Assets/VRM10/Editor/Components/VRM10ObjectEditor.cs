@@ -18,7 +18,7 @@ namespace UniVRM10
             LookAt,
             FirstPerson,
         }
-        Tabs _tab = Tabs.Meta;
+        static Tabs _tab = Tabs.Meta;
 
         // for SerializedProperty
         PropGui m_expression;

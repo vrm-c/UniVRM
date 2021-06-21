@@ -4,44 +4,8 @@ using UnityEngine;
 namespace UniVRM10
 {
     [CreateAssetMenu(menuName = "VRM10/Expression")]
-    public sealed class VRM10Expression : ScriptableObject
+    public sealed class VRM10Expression : PrefabRelatedScriptableObject
     {
-#if UNITY_EDITOR
-        /// <summary>
-        /// Preview 用のObject参照
-        /// </summary>
-        [SerializeField]
-        GameObject m_prefab;
-        public GameObject Prefab
-        {
-            set { m_prefab = value; }
-            get
-            {
-                if (m_prefab == null)
-                {
-                    var assetPath = UnityEditor.AssetDatabase.GetAssetPath(this);
-                    if (!string.IsNullOrEmpty(assetPath))
-                    {
-                        // if asset is subasset of prefab
-                        m_prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
-                        if (m_prefab != null) return m_prefab;
-
-                        var parent = UnityPath.FromUnityPath(assetPath).Parent;
-                        var prefabPath = parent.Parent.Child(parent.FileNameWithoutExtension + ".prefab");
-                        m_prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath.Value);
-                        if (m_prefab != null) return m_prefab;
-
-                        var parentParent = UnityPath.FromUnityPath(assetPath).Parent.Parent;
-                        var vrmPath = parent.Parent.Child(parent.FileNameWithoutExtension + ".vrm");
-                        m_prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(vrmPath.Value);
-                        if (m_prefab != null) return m_prefab;
-                    }
-                }
-                return m_prefab;
-            }
-        }
-#endif
-
         /// <summary>
         /// ExpressionPreset が Unknown 場合の識別子
         /// </summary>
