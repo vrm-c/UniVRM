@@ -16,8 +16,7 @@ namespace UniVRM10
 {
     public class RemapEditorVrm : RemapEditorBase
     {
-        public RemapEditorVrm(
-            IEnumerable<SubAssetKey> keys) : base(keys)
+        public RemapEditorVrm(IEnumerable<SubAssetKey> keys, EditorMapGetterFunc getter, EditorMapSetterFunc setter) : base(keys, getter, setter)
         { }
 
         public void OnGUI(ScriptedImporter importer, GltfParser parser, UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm)

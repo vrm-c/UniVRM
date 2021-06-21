@@ -8,23 +8,33 @@ using VRMShaders;
 
 namespace UniGLTF
 {
+    public delegate Dictionary<SubAssetKey, UnityEngine.Object> EditorMapGetterFunc();
+    public delegate void EditorMapSetterFunc(Dictionary<SubAssetKey, UnityEngine.Object> editorMap);
+
     public abstract class RemapEditorBase
     {
+        public static Dictionary<String, Type> s_typeMap = new Dictionary<string, Type>();
+
+        [Serializable]
         public struct SubAssetPair
         {
-            public readonly SubAssetKey Key;
-            public readonly UnityEngine.Object Object;
+            [SerializeField]
+            public String Type;
+
+            [SerializeField]
+            public String Name;
+
+            public SubAssetKey Key => new SubAssetKey(s_typeMap[Type], Name);
+
+            [SerializeField]
+            public UnityEngine.Object Object;
 
             public SubAssetPair(SubAssetKey key, UnityEngine.Object o)
             {
-                Key = key;
+                Type = key.Type.ToString();
+                s_typeMap[Type] = key.Type;
+                Name = key.Name;
                 Object = o;
-            }
-
-            public void Deconstruct(out SubAssetKey key, out UnityEngine.Object value)
-            {
-                key = Key;
-                value = Object;
             }
         }
 
@@ -35,9 +45,14 @@ namespace UniGLTF
         /// </summary>
         SubAssetKey[] m_keys;
 
-        protected RemapEditorBase(IEnumerable<SubAssetKey> keys)
+        EditorMapGetterFunc m_getter;
+        EditorMapSetterFunc m_setter;
+
+        protected RemapEditorBase(IEnumerable<SubAssetKey> keys, EditorMapGetterFunc getter, EditorMapSetterFunc setter)
         {
             m_keys = keys.ToArray();
+            m_getter = getter;
+            m_setter = setter;
         }
 
         void RemapAndReload<T>(ScriptedImporter self, UnityEditor.AssetImporter.SourceAssetIdentifier sourceAssetIdentifier, T obj) where T : UnityEngine.Object
@@ -47,7 +62,9 @@ namespace UniGLTF
             AssetDatabase.ImportAsset(self.assetPath, ImportAssetOptions.ForceUpdate);
         }
 
-        protected void DrawRemapGUI<T>(Dictionary<ScriptedImporter.SourceAssetIdentifier, UnityEngine.Object> externalObjectMap) where T : UnityEngine.Object
+        protected void DrawRemapGUI<T>(
+            Dictionary<ScriptedImporter.SourceAssetIdentifier, UnityEngine.Object> externalObjectMap
+        ) where T : UnityEngine.Object
         {
             EditorGUI.indentLevel++;
             {
@@ -65,12 +82,21 @@ namespace UniGLTF
 
                     EditorGUILayout.BeginHorizontal();
                     EditorGUILayout.PrefixLabel(key.Name);
-                    externalObjectMap.TryGetValue(new AssetImporter.SourceAssetIdentifier(key.Type, key.Name), out UnityEngine.Object value);
-                    var asset = EditorGUILayout.ObjectField(value, typeof(T), true) as T;
-                    if (asset != value)
+
+                    var editorMap = m_getter();
+                    if (editorMap.TryGetValue(key, out UnityEngine.Object value))
                     {
-                        // update
-                        // RemapAndReload(importer, new AssetImporter.SourceAssetIdentifier(key.Type, key.Name), asset);
+                    }
+                    else
+                    {
+                        externalObjectMap.TryGetValue(new AssetImporter.SourceAssetIdentifier(key.Type, key.Name), out value);
+                    }
+
+                    var newValue = EditorGUILayout.ObjectField(value, typeof(T), true) as T;
+                    if (newValue != value)
+                    {
+                        editorMap[key] = newValue;
+                        m_setter(editorMap);
                     }
                     EditorGUILayout.EndHorizontal();
                 }

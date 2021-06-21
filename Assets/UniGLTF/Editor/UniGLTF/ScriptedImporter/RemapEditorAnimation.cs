@@ -12,7 +12,7 @@ namespace UniGLTF
 {
     public class RemapEditorAnimation : RemapEditorBase
     {
-        public RemapEditorAnimation(IEnumerable<SubAssetKey> keys) : base(keys)
+        public RemapEditorAnimation(IEnumerable<SubAssetKey> keys, EditorMapGetterFunc getter, EditorMapSetterFunc setter) : base(keys, getter, setter)
         { }
 
         public void OnGUI(ScriptedImporter importer, GltfParser parser)

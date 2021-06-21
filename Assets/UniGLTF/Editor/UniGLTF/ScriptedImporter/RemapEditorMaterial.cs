@@ -22,10 +22,13 @@ namespace UniGLTF
         static bool s_foldMaterials = true;
         static bool s_foldTextures = true;
 
-        public RemapEditorMaterial(IEnumerable<SubAssetKey> keys) : base(keys)
+        public RemapEditorMaterial(IEnumerable<SubAssetKey> keys, EditorMapGetterFunc getter, EditorMapSetterFunc setter) : base(keys, getter, setter)
         { }
 
-        public void OnGUI(ScriptedImporter importer, GltfParser parser, ITextureDescriptorGenerator textureDescriptorGenerator, Func<string, string> textureDir, Func<string, string> materialDir)
+        public void OnGUI(ScriptedImporter importer, GltfParser parser,
+            ITextureDescriptorGenerator textureDescriptorGenerator,
+            Func<string, string> textureDir,
+            Func<string, string> materialDir)
         {
             var hasExternal = importer.GetExternalObjectMap().Any(x => x.Value is Material || x.Value is Texture2D);
             using (new EditorGUI.DisabledScope(hasExternal))
