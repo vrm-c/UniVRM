@@ -30,30 +30,14 @@ namespace UniGLTF
 
         /// <summary>
         /// Remap 対象は、このエディタのライフサイクル中に不変
-        /// 
-        /// apply, clear 時には ScriptedImporter は reimport され、新しい引数で new される
-        /// 
+        ///
+        /// ExternalObjectMap は都度変わりうるのに注意。
         /// </summary>
-        SubAssetPair[] m_keyValues;
+        SubAssetKey[] m_keys;
 
-        protected RemapEditorBase(
-            IEnumerable<SubAssetKey> keys,
-            Dictionary<ScriptedImporter.SourceAssetIdentifier, UnityEngine.Object> externalObjectMap)
+        protected RemapEditorBase(IEnumerable<SubAssetKey> keys)
         {
-            m_keyValues = keys.Select(x =>
-            {
-                var id = new ScriptedImporter.SourceAssetIdentifier(x.Type, x.Name);
-                if (externalObjectMap.TryGetValue(id, out UnityEngine.Object value))
-                {
-                    return new SubAssetPair(x, value);
-                }
-                else
-                {
-                    return new SubAssetPair(x, null);
-                }
-            }).ToArray();
-
-            Debug.Log($"RemapEditorBase: {m_keyValues}");
+            m_keys = keys.ToArray();
         }
 
         void RemapAndReload<T>(ScriptedImporter self, UnityEditor.AssetImporter.SourceAssetIdentifier sourceAssetIdentifier, T obj) where T : UnityEngine.Object
@@ -63,11 +47,11 @@ namespace UniGLTF
             AssetDatabase.ImportAsset(self.assetPath, ImportAssetOptions.ForceUpdate);
         }
 
-        protected void DrawRemapGUI<T>() where T : UnityEngine.Object
+        protected void DrawRemapGUI<T>(Dictionary<ScriptedImporter.SourceAssetIdentifier, UnityEngine.Object> externalObjectMap) where T : UnityEngine.Object
         {
             EditorGUI.indentLevel++;
             {
-                foreach (var (key, value) in m_keyValues)
+                foreach (var key in m_keys)
                 {
                     if (!typeof(T).IsAssignableFrom(key.Type))
                     {
@@ -81,6 +65,7 @@ namespace UniGLTF
 
                     EditorGUILayout.BeginHorizontal();
                     EditorGUILayout.PrefixLabel(key.Name);
+                    externalObjectMap.TryGetValue(new AssetImporter.SourceAssetIdentifier(key.Type, key.Name), out UnityEngine.Object value);
                     var asset = EditorGUILayout.ObjectField(value, typeof(T), true) as T;
                     if (asset != value)
                     {

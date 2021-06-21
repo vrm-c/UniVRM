@@ -28,12 +28,11 @@ namespace UniGLTF
             m_parser = new GltfParser();
             m_parser.ParsePath(m_importer.assetPath);
 
-            var externalObjectMap = m_importer.GetExternalObjectMap();
             var materialGenerator = new GltfMaterialDescriptorGenerator();
             var materialKeys = m_parser.GLTF.materials.Select((_, i) => materialGenerator.Get(m_parser, i).SubAssetKey);
             var textureKeys = new GltfTextureDescriptorGenerator(m_parser).Get().GetEnumerable().Select(x => x.SubAssetKey);
-            m_materialEditor = new RemapEditorMaterial(materialKeys.Concat(textureKeys), externalObjectMap);
-            m_animationEditor = new RemapEditorAnimation(AnimationImporterUtil.EnumerateSubAssetKeys(m_parser.GLTF), externalObjectMap);
+            m_materialEditor = new RemapEditorMaterial(materialKeys.Concat(textureKeys));
+            m_animationEditor = new RemapEditorAnimation(AnimationImporterUtil.EnumerateSubAssetKeys(m_parser.GLTF));
         }
 
         enum Tabs

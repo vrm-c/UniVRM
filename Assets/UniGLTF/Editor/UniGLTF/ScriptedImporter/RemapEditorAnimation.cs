@@ -12,9 +12,7 @@ namespace UniGLTF
 {
     public class RemapEditorAnimation : RemapEditorBase
     {
-        public RemapEditorAnimation(
-            IEnumerable<SubAssetKey> keys, 
-            Dictionary<ScriptedImporter.SourceAssetIdentifier, UnityEngine.Object> externalObjectMap) : base(keys, externalObjectMap)
+        public RemapEditorAnimation(IEnumerable<SubAssetKey> keys) : base(keys)
         { }
 
         public void OnGUI(ScriptedImporter importer, GltfParser parser)
@@ -28,7 +26,7 @@ namespace UniGLTF
                 }
             }
 
-            DrawRemapGUI<AnimationClip>();
+            DrawRemapGUI<AnimationClip>(importer.GetExternalObjectMap());
 
             if (GUILayout.Button("Clear"))
             {

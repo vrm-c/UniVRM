@@ -17,8 +17,7 @@ namespace UniVRM10
     public class RemapEditorVrm : RemapEditorBase
     {
         public RemapEditorVrm(
-            IEnumerable<SubAssetKey> keys,
-            Dictionary<ScriptedImporter.SourceAssetIdentifier, UnityEngine.Object> externalObjectMap) : base(keys, externalObjectMap)
+            IEnumerable<SubAssetKey> keys) : base(keys)
         { }
 
         public void OnGUI(ScriptedImporter importer, GltfParser parser, UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm)
@@ -33,10 +32,10 @@ namespace UniVRM10
             }
 
             // meta
-            DrawRemapGUI<VRM10Object>();
+            DrawRemapGUI<VRM10Object>(importer.GetExternalObjectMap());
 
             // expressions
-            DrawRemapGUI<VRM10Expression>();
+            DrawRemapGUI<VRM10Expression>(importer.GetExternalObjectMap());
 
             if (GUILayout.Button("Clear"))
             {

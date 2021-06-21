@@ -22,18 +22,12 @@ namespace VRMShaders
 
         public static void ConfigureNormalMap(Texture texture, TextureImporter textureImporter)
         {
-#if VRM_DEVELOP
-            Debug.Log($"{texture} => normalmap");
-#endif
             textureImporter.textureType = TextureImporterType.NormalMap;
             textureImporter.SaveAndReimport();
         }
 
         public static void ConfigureLinear(Texture texture, TextureImporter textureImporter)
         {
-#if VRM_DEVELOP
-            Debug.Log($"{texture} => linear");
-#endif
             textureImporter.sRGBTexture = false;
             textureImporter.SaveAndReimport();
         }

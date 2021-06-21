@@ -92,8 +92,10 @@ namespace UniGLTF
                 foreach (var (key, targetPath) in extractor.Textures)
                 {
                     // remap
-                    Debug.Log(targetPath);
                     var externalObject = targetPath.LoadAsset<Texture2D>();
+#if VRM_DEVELOP
+                    // Debug.Log($"remap: {targetPath} => {externalObject}");
+#endif                    
                     if (externalObject != null)
                     {
                         addRemap(key, externalObject);
