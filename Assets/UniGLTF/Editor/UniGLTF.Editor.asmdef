@@ -1,9 +1,8 @@
 {
     "name": "UniGLTF.Editor",
     "references": [
-        "UniGLTF"
+        "GUID:8d76e605759c3f64a957d63ef96ada7c"
     ],
-    "optionalUnityReferences": [],
     "includePlatforms": [
         "Editor"
     ],
@@ -12,5 +11,7 @@
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": false,
-    "defineConstraints": []
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

@@ -1,23 +1,24 @@
 {
     "name": "VRM10.Tests",
     "references": [
-        "VrmLib",
-        "ShaderProperty.Runtime",
-        "VRM10",
-        "UniGLTF"
-    ],
-    "optionalUnityReferences": [
-        "TestAssemblies"
+        "GUID:2ef84b520212e174a94668c7a0862d3b",
+        "GUID:301b251fd9834274c9228e0532f444f7",
+        "GUID:e47c917724578cc43b5506c17a27e9a0",
+        "GUID:8d76e605759c3f64a957d63ef96ada7c",
+        "GUID:27619889b8ba8c24980f49ee34dbb44a",
+        "GUID:0acc523941302664db1f4e527237feb3"
     ],
     "includePlatforms": [
         "Editor"
     ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
-    "overrideReferences": false,
-    "precompiledReferences": [],
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
     "autoReferenced": false,
-    "defineConstraints": [
-        "UNITY_INCLUDE_TESTS"
-    ]
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

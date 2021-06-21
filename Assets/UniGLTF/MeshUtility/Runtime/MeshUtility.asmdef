@@ -1,15 +1,16 @@
 {
     "name": "MeshUtility",
     "references": [
-        "UniUnlit",
-        "ShaderProperty.Runtime"
+        "GUID:60c8346e00a8ddd4cafc5a02eceeec57",
+        "GUID:301b251fd9834274c9228e0532f444f7"
     ],
-    "optionalUnityReferences": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": false,
-    "defineConstraints": []
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

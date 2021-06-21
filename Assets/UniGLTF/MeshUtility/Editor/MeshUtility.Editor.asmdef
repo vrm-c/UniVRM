@@ -1,10 +1,9 @@
 {
     "name": "MeshUtility.Editor",
     "references": [
-        "MeshUtility",
-        "ShaderProperty.Runtime"
+        "GUID:71ab1919192903d44971eedbc26b24d1",
+        "GUID:301b251fd9834274c9228e0532f444f7"
     ],
-    "optionalUnityReferences": [],
     "includePlatforms": [
         "Editor"
     ],
@@ -13,5 +12,7 @@
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": false,
-    "defineConstraints": []
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

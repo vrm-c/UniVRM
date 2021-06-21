@@ -1,15 +1,14 @@
 {
     "name": "UniVRM.Editor",
     "references": [
-        "VRM",
-        "UniHumanoid",
-        "MeshUtility",
-        "MeshUtility.Editor",
-        "UniUnlit",
-        "UniGLTF",
-        "UniGLTF.Editor"
+        "GUID:05dd262a0c0a2f841b8252c8c3815582",
+        "GUID:b7aa47b240b57de44a4b2021c143c9bf",
+        "GUID:71ab1919192903d44971eedbc26b24d1",
+        "GUID:eedb868807606df4db953419ab9e0780",
+        "GUID:60c8346e00a8ddd4cafc5a02eceeec57",
+        "GUID:8d76e605759c3f64a957d63ef96ada7c",
+        "GUID:5f875fdc81c40184c8333b9d63c6ddd5"
     ],
-    "optionalUnityReferences": [],
     "includePlatforms": [
         "Editor"
     ],
@@ -18,5 +17,7 @@
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": false,
-    "defineConstraints": []
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

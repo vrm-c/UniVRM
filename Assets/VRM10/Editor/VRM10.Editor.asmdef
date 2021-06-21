@@ -1,14 +1,13 @@
 {
     "name": "VRM10.Editor",
     "references": [
-        "VRM10",
-        "VrmLib",
-        "MeshUtility",
-        "MeshUtility.Editor",
-        "UniGLTF.Editor",
-        "UniGLTF"
+        "GUID:e47c917724578cc43b5506c17a27e9a0",
+        "GUID:2ef84b520212e174a94668c7a0862d3b",
+        "GUID:71ab1919192903d44971eedbc26b24d1",
+        "GUID:eedb868807606df4db953419ab9e0780",
+        "GUID:5f875fdc81c40184c8333b9d63c6ddd5",
+        "GUID:8d76e605759c3f64a957d63ef96ada7c"
     ],
-    "optionalUnityReferences": [],
     "includePlatforms": [
         "Editor"
     ],
@@ -17,5 +16,7 @@
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": false,
-    "defineConstraints": []
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

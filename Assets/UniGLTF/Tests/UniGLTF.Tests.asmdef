@@ -1,18 +1,21 @@
 {
     "name": "UniGLTF.Tests",
     "references": [
-        "UniGLTF"
-    ],
-    "optionalUnityReferences": [
-        "TestAssemblies"
+        "GUID:8d76e605759c3f64a957d63ef96ada7c",
+        "GUID:27619889b8ba8c24980f49ee34dbb44a",
+        "GUID:0acc523941302664db1f4e527237feb3"
     ],
     "includePlatforms": [
         "Editor"
     ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
-    "overrideReferences": false,
-    "precompiledReferences": [],
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
     "autoReferenced": false,
-    "defineConstraints": []
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }
