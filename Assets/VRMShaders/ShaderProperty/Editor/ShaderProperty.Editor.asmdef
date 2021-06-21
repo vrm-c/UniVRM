@@ -1,9 +1,8 @@
 {
     "name": "ShaderProperty.Editor",
     "references": [
-        "ShaderProperty.Runtime"
+        "GUID:301b251fd9834274c9228e0532f444f7"
     ],
-    "optionalUnityReferences": [],
     "includePlatforms": [
         "Editor"
     ],
@@ -12,5 +11,7 @@
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": false,
-    "defineConstraints": []
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

@@ -1,17 +1,18 @@
 {
     "name": "VRM10.Samples",
     "references": [
-        "VRM10",
-        "UniHumanoid",
-        "VrmLib",
-        "UniGLTF"
+        "GUID:e47c917724578cc43b5506c17a27e9a0",
+        "GUID:b7aa47b240b57de44a4b2021c143c9bf",
+        "GUID:2ef84b520212e174a94668c7a0862d3b",
+        "GUID:8d76e605759c3f64a957d63ef96ada7c"
     ],
-    "optionalUnityReferences": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": false,
-    "defineConstraints": []
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }
