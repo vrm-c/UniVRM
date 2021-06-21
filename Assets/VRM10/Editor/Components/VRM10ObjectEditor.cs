@@ -1,8 +1,5 @@
-﻿using System;
-using System.IO;
-using UniGLTF;
+﻿using UniGLTF;
 using UnityEditor;
-using UnityEngine;
 
 namespace UniVRM10
 {
@@ -36,7 +33,7 @@ namespace UniVRM10
             m_target = (VRM10Object)target;
 
             m_expression = SerializedPropertyEditor.Create(serializedObject, nameof(m_target.Expression));
-            m_meta = SerializedPropertyEditor.Create(serializedObject, nameof(m_target.Meta));
+            m_meta = VRM10MetaEditor.Create(serializedObject);
             m_lookAt = SerializedPropertyEditor.Create(serializedObject, nameof(m_target.LookAt));
             m_firstPerson = SerializedPropertyEditor.Create(serializedObject, nameof(m_target.FirstPerson));
         }

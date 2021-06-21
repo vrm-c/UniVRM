@@ -9,12 +9,12 @@ namespace UniGLTF
     public class SerializedPropertyEditor
     {
         protected SerializedObject m_serializedObject;
-        SerializedProperty m_root;
+        protected SerializedProperty m_rootProperty;
 
         public SerializedPropertyEditor(SerializedObject serializedObject, SerializedProperty property)
         {
             m_serializedObject = serializedObject;
-            m_root = property;
+            m_rootProperty = property;
         }
 
         public static SerializedPropertyEditor Create(SerializedObject serializedObject, string name)
@@ -29,7 +29,7 @@ namespace UniGLTF
 
         public void OnGUI()
         {
-            RecursiveProperty(m_root);
+            RecursiveProperty(m_rootProperty);
         }
 
         protected virtual void RecursiveProperty(SerializedProperty root)
