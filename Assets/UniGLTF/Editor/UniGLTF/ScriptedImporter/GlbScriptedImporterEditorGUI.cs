@@ -14,7 +14,7 @@ using UnityEditor.Experimental.AssetImporters;
 namespace UniGLTF
 {
     [CustomEditor(typeof(GlbScriptedImporter))]
-    public class GlbScriptedImporterEditorGUI : ScriptedImporterEditorBase
+    public class GlbScriptedImporterEditorGUI : RemapScriptedImporterEditorBase
     {
         GlbScriptedImporter m_importer;
         GltfParser m_parser;
@@ -58,6 +58,7 @@ namespace UniGLTF
 
                 case Tabs.Animation:
                     m_animationEditor.OnGUI(m_importer, m_parser);
+                    RevertApplyRemapGUI(m_importer);
                     break;
 
                 case Tabs.Materials:
@@ -65,6 +66,7 @@ namespace UniGLTF
                     new GltfTextureDescriptorGenerator(m_parser),
                     assetPath => $"{Path.GetFileNameWithoutExtension(assetPath)}.Textures",
                     assetPath => $"{Path.GetFileNameWithoutExtension(assetPath)}.Materials");
+                    RevertApplyRemapGUI(m_importer);
                     break;
             }
         }

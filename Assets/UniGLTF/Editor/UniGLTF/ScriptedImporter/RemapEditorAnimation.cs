@@ -27,13 +27,6 @@ namespace UniGLTF
             }
 
             DrawRemapGUI<AnimationClip>(importer.GetExternalObjectMap());
-
-            if (GUILayout.Button("Clear"))
-            {
-                importer.ClearExternalObjects(
-                    typeof(UnityEngine.AnimationClip)
-                    );
-            }
         }
 
         static string GetAndCreateFolder(string assetPath, string suffix)

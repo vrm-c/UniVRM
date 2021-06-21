@@ -16,7 +16,7 @@ using UnityEditor.Experimental.AssetImporters;
 namespace UniVRM10
 {
     [CustomEditor(typeof(VrmScriptedImporter))]
-    public class VrmScriptedImporterEditorGUI : ScriptedImporterEditorBase
+    public class VrmScriptedImporterEditorGUI : RemapScriptedImporterEditorBase
     {
         VrmScriptedImporter m_importer;
         GltfParser m_parser;
@@ -84,6 +84,7 @@ namespace UniVRM10
                         m_materialEditor.OnGUI(m_importer, m_parser, new Vrm10TextureDescriptorGenerator(m_parser),
                             assetPath => $"{Path.GetFileNameWithoutExtension(assetPath)}.vrm1.Textures",
                             assetPath => $"{Path.GetFileNameWithoutExtension(assetPath)}.vrm1.Materials");
+                        RevertApplyRemapGUI(m_importer);
                     }
                     break;
 
@@ -91,6 +92,7 @@ namespace UniVRM10
                     if (m_parser != null && m_vrm != null)
                     {
                         m_vrmEditor.OnGUI(m_importer, m_parser, m_vrm);
+                        RevertApplyRemapGUI(m_importer);
                     }
                     break;
             }

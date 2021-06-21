@@ -35,13 +35,6 @@ namespace UniVRM10
 
             // expressions
             DrawRemapGUI<VRM10Expression>(importer.GetExternalObjectMap());
-
-            if (GUILayout.Button("Clear"))
-            {
-                importer.ClearExternalObjects(
-                    typeof(VRM10Object),
-                    typeof(VRM10Expression));
-            }
         }
 
         /// <summary>

@@ -15,27 +15,27 @@ namespace UniGLTF
 {
     public static class ScriptedImporterExtension
     {
-        public static void ClearExternalObjects(this ScriptedImporter importer, params Type[] targetTypes)
-        {
-            foreach (var targetType in targetTypes)
-            {
-                if (!typeof(UnityEngine.Object).IsAssignableFrom(targetType))
-                {
-                    throw new NotImplementedException();
-                }
+        // public static void ClearExternalObjects(this ScriptedImporter importer, params Type[] targetTypes)
+        // {
+        //     foreach (var targetType in targetTypes)
+        //     {
+        //         if (!typeof(UnityEngine.Object).IsAssignableFrom(targetType))
+        //         {
+        //             throw new NotImplementedException();
+        //         }
 
-                foreach (var (key, obj) in importer.GetExternalObjectMap())
-                {
-                    if (targetType.IsAssignableFrom(key.type))
-                    {
-                        importer.RemoveRemap(key);
-                    }
-                }
-            }
+        //         foreach (var (key, obj) in importer.GetExternalObjectMap())
+        //         {
+        //             if (targetType.IsAssignableFrom(key.type))
+        //             {
+        //                 importer.RemoveRemap(key);
+        //             }
+        //         }
+        //     }
 
-            AssetDatabase.WriteImportSettingsIfDirty(importer.assetPath);
-            AssetDatabase.ImportAsset(importer.assetPath, ImportAssetOptions.ForceUpdate);
-        }
+        //     AssetDatabase.WriteImportSettingsIfDirty(importer.assetPath);
+        //     AssetDatabase.ImportAsset(importer.assetPath, ImportAssetOptions.ForceUpdate);
+        // }
 
         public static IEnumerable<(SubAssetKey, T)> GetSubAssets<T>(this ScriptedImporter importer, string assetPath) where T : UnityEngine.Object
         {

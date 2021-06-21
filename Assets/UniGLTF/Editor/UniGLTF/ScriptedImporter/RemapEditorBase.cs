@@ -25,6 +25,7 @@ namespace UniGLTF
             public String Name;
 
             public SubAssetKey Key => new SubAssetKey(s_typeMap[Type], Name);
+            public ScriptedImporter.SourceAssetIdentifier ID => new AssetImporter.SourceAssetIdentifier(s_typeMap[Type], Name);
 
             [SerializeField]
             public UnityEngine.Object Object;
@@ -53,13 +54,6 @@ namespace UniGLTF
             m_keys = keys.ToArray();
             m_getter = getter;
             m_setter = setter;
-        }
-
-        void RemapAndReload<T>(ScriptedImporter self, UnityEditor.AssetImporter.SourceAssetIdentifier sourceAssetIdentifier, T obj) where T : UnityEngine.Object
-        {
-            self.AddRemap(sourceAssetIdentifier, obj);
-            AssetDatabase.WriteImportSettingsIfDirty(self.assetPath);
-            AssetDatabase.ImportAsset(self.assetPath, ImportAssetOptions.ForceUpdate);
         }
 
         protected void DrawRemapGUI<T>(

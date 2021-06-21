@@ -53,13 +53,6 @@ namespace UniGLTF
             {
                 DrawRemapGUI<UnityEngine.Texture>(importer.GetExternalObjectMap());
             }
-
-            if (GUILayout.Button("Clear"))
-            {
-                importer.ClearExternalObjects(
-                    typeof(UnityEngine.Material),
-                    typeof(UnityEngine.Texture));
-            }
         }
 
         void ExtractMaterialsAndTextures(ScriptedImporter self, GltfParser parser, ITextureDescriptorGenerator textureDescriptorGenerator, Func<string, string> textureDir, Func<string, string> materialDir)
