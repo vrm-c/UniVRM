@@ -51,19 +51,19 @@ namespace UniVRM10
             switch (_tab)
             {
                 case Tabs.Meta:
-                    m_meta.OnGUI();
+                    m_meta.OnInspectorGUI();
                     break;
 
                 case Tabs.Expression:
-                    m_expression.OnGUI();
+                    m_expression.OnInspectorGUI();
                     break;
 
                 case Tabs.LookAt:
-                    m_lookAt.OnGUI();
+                    m_lookAt.OnInspectorGUI();
                     break;
 
                 case Tabs.FirstPerson:
-                    m_firstPerson.OnGUI();
+                    m_firstPerson.OnInspectorGUI();
                     break;
             }
             serializedObject.ApplyModifiedProperties();

@@ -27,7 +27,7 @@ namespace UniGLTF
             return new SerializedPropertyEditor(serializedObject, prop);
         }
 
-        public void OnGUI()
+        public void OnInspectorGUI()
         {
             RecursiveProperty(m_rootProperty);
         }
