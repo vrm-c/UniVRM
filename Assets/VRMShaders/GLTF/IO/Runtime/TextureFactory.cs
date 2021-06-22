@@ -10,6 +10,7 @@ namespace VRMShaders
     {
         private readonly ITextureDeserializer _textureDeserializer;
         private readonly IReadOnlyDictionary<SubAssetKey, Texture> _externalMap;
+        private readonly bool _isLegacySquaredRoughness;
         private readonly Dictionary<SubAssetKey, Texture> _temporaryTextures = new Dictionary<SubAssetKey, Texture>();
         private readonly Dictionary<SubAssetKey, Texture> _textureCache = new Dictionary<SubAssetKey, Texture>();
 
@@ -23,10 +24,14 @@ namespace VRMShaders
         /// </summary>
         public IReadOnlyDictionary<SubAssetKey, Texture> ExternalTextures => _externalMap;
 
-        public TextureFactory(ITextureDeserializer textureDeserializer, IReadOnlyDictionary<SubAssetKey, Texture> externalTextures)
+        public TextureFactory(
+            ITextureDeserializer textureDeserializer,
+            IReadOnlyDictionary<SubAssetKey, Texture> externalTextures,
+            bool isLegacySquaredRoughness)
         {
             _textureDeserializer = textureDeserializer;
             _externalMap = externalTextures;
+            _isLegacySquaredRoughness = isLegacySquaredRoughness;
         }
 
         public void Dispose()
@@ -103,7 +108,7 @@ namespace VRMShaders
                         }
 
                         var combinedTexture = OcclusionMetallicRoughnessConverter.Import(metallicRoughnessTexture,
-                            texDesc.MetallicFactor, texDesc.RoughnessFactor, occlusionTexture);
+                            texDesc.MetallicFactor, texDesc.RoughnessFactor, occlusionTexture, _isLegacySquaredRoughness);
                         combinedTexture.name = subAssetKey.Name;
                         combinedTexture.SetSampler(texDesc.Sampler);
                         _textureCache.Add(subAssetKey, combinedTexture);

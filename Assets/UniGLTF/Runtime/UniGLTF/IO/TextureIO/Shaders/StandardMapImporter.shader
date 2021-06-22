@@ -7,6 +7,7 @@
           _GltfRoughnessFactor ("glTF Roughness Factor", Float) = 0.0
           _GltfMetallicRoughnessTexture ("glTF Metallic Roughness Texture", 2D) = "black" {}
           _GltfOcclusionTexture ("glTF Occlusion Texture", 2D) = "black" {}
+          _IsLegacySquaredRoughness ("Is UniGLTF Legacy Squared Roughness", Float) = 0.0
      }
      SubShader
      {
@@ -46,6 +47,7 @@
                half _GltfRoughnessFactor;
                sampler2D _GltfMetallicRoughnessTexture;
                sampler2D _GltfOcclusionTexture;
+               half _IsLegacySquaredRoughness;
 
                fixed4 frag (v2f i) : SV_Target
                {
@@ -55,6 +57,12 @@
                     half occlusion = occlusionTex.r; // R: glTF Occlusion
                     half roughness = metallicRoughnessTex.g * _GltfRoughnessFactor; // G: glTF Roughness
                     half metallic = metallicRoughnessTex.b * _GltfMetallicFactor; // B: glTF Metallic
+
+                    // MIGRATION code: legacy behaviour
+                    if (_IsLegacySquaredRoughness == 1.0)
+                    {
+                         roughness = sqrt(roughness);
+                    }
 
                     fixed4 result;
                     result.r = metallic;  // R: Unity Metallic
