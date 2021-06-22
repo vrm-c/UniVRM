@@ -17,7 +17,7 @@ namespace UniGLTF
         [JsonSchema(MinItems = 16, MaxItems = 16)]
         public float[] matrix;
 
-        [JsonSchema(MinItems = 3, MaxItems = 3)]
+        [JsonSchema(MinItems = 3, MaxItems = 3, SerializationConditions = new string[] { "!value.translation.SequenceEqual(new float[]{0, 0, 0})" })]
         public float[] translation;
 
         [JsonSchema(MinItems = 4, MaxItems = 4)]
