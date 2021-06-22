@@ -9,7 +9,6 @@ namespace VRMShaders
     public class TextureFactory : IResponsibilityForDestroyObjects
     {
         private readonly IReadOnlyDictionary<SubAssetKey, Texture> _externalMap;
-        private readonly Dictionary<SubAssetKey, Texture> _temporaryTextures = new Dictionary<SubAssetKey, Texture>();
         private readonly Dictionary<SubAssetKey, Texture> _textureCache = new Dictionary<SubAssetKey, Texture>();
 
         public ITextureDeserializer TextureDeserializer { get; }
@@ -32,11 +31,6 @@ namespace VRMShaders
 
         public void Dispose()
         {
-            foreach (var kv in _temporaryTextures)
-            {
-                UnityObjectDestoyer.DestroyRuntimeOrEditor(kv.Value);
-            }
-            _temporaryTextures.Clear();
             _textureCache.Clear();
         }
 
@@ -134,8 +128,6 @@ namespace VRMShaders
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-
-            throw new NotImplementedException();
         }
     }
 }
