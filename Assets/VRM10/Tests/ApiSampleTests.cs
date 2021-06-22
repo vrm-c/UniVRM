@@ -40,7 +40,7 @@ namespace UniVRM10.Test
             var path = "Tests/Models/Alicia_vrm-0.51/AliciaSolid_vrm-0.51.vrm";
             Debug.Log($"load: {path}");
 
-            Assert.IsTrue(Vrm10Parser.TryParseOrMigrate(path, true, out Vrm10Parser.Result result, out string error));
+            Assert.IsTrue(Vrm10Parser.TryParseOrMigrate(path, true, out Vrm10Parser.Result result));
 
             var go = BuildGameObject(result.Parser, result.Vrm, true);
             Debug.Log(go);

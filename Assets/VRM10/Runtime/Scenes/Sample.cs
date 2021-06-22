@@ -15,7 +15,7 @@ namespace UniVRM10.Sample
 
         static GameObject Import(byte[] bytes, FileInfo path)
         {
-            if (!Vrm10Parser.TryParseOrMigrate(path.FullName, bytes, doMigrate: true, out Vrm10Parser.Result result, out string message))
+            if (!Vrm10Parser.TryParseOrMigrate(path.FullName, bytes, doMigrate: true, out Vrm10Parser.Result result))
             {
                 return null;
             }

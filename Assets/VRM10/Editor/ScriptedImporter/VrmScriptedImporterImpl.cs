@@ -22,7 +22,7 @@ namespace UniVRM10
             Debug.Log("OnImportAsset to " + scriptedImporter.assetPath);
 #endif
 
-            if (!Vrm10Parser.TryParseOrMigrate(scriptedImporter.assetPath, migrateToVrm1, out Vrm10Parser.Result result, out string message))
+            if (!Vrm10Parser.TryParseOrMigrate(scriptedImporter.assetPath, migrateToVrm1, out Vrm10Parser.Result result))
             {
                 // fail to parse vrm1
                 return;
