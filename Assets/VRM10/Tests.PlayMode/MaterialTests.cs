@@ -31,7 +31,7 @@ namespace UniVRM10.Test
         private (GameObject, IReadOnlyList<VRMShaders.MaterialFactory.MaterialLoadInfo>) ToUnity(byte[] bytes)
         {
             // Vrm => Model
-            if (!Vrm10Parser.TryParseOrMigrate("tpm.vrm", bytes, true, out Vrm10Parser.Result result, out string error))
+            if (!Vrm10Parser.TryParseOrMigrate("tpm.vrm", bytes, true, out Vrm10Parser.Result result))
             {
                 throw new Exception();
             }

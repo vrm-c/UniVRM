@@ -308,9 +308,9 @@ namespace UniVRM10.Samples
             {
                 case ".vrm":
                     {
-                        if (!Vrm10Parser.TryParseOrMigrate(path, doMigrate: true, out Vrm10Parser.Result result, out string error))
+                        if (!Vrm10Parser.TryParseOrMigrate(path, doMigrate: true, out Vrm10Parser.Result result))
                         {
-                            Debug.LogError(error);
+                            Debug.LogError(result.Message);
                             return;
                         }
                         using (var loader = new Vrm10Importer(result.Parser, result.Vrm))
