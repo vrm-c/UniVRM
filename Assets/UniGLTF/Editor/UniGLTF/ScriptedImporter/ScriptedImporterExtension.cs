@@ -15,27 +15,27 @@ namespace UniGLTF
 {
     public static class ScriptedImporterExtension
     {
-        public static void ClearExternalObjects(this ScriptedImporter importer, params Type[] targetTypes)
-        {
-            foreach (var targetType in targetTypes)
-            {
-                if (!typeof(UnityEngine.Object).IsAssignableFrom(targetType))
-                {
-                    throw new NotImplementedException();
-                }
+        // public static void ClearExternalObjects(this ScriptedImporter importer, params Type[] targetTypes)
+        // {
+        //     foreach (var targetType in targetTypes)
+        //     {
+        //         if (!typeof(UnityEngine.Object).IsAssignableFrom(targetType))
+        //         {
+        //             throw new NotImplementedException();
+        //         }
 
-                foreach (var (key, obj) in importer.GetExternalObjectMap())
-                {
-                    if (targetType.IsAssignableFrom(key.type))
-                    {
-                        importer.RemoveRemap(key);
-                    }
-                }
-            }
+        //         foreach (var (key, obj) in importer.GetExternalObjectMap())
+        //         {
+        //             if (targetType.IsAssignableFrom(key.type))
+        //             {
+        //                 importer.RemoveRemap(key);
+        //             }
+        //         }
+        //     }
 
-            AssetDatabase.WriteImportSettingsIfDirty(importer.assetPath);
-            AssetDatabase.ImportAsset(importer.assetPath, ImportAssetOptions.ForceUpdate);
-        }
+        //     AssetDatabase.WriteImportSettingsIfDirty(importer.assetPath);
+        //     AssetDatabase.ImportAsset(importer.assetPath, ImportAssetOptions.ForceUpdate);
+        // }
 
         public static IEnumerable<(SubAssetKey, T)> GetSubAssets<T>(this ScriptedImporter importer, string assetPath) where T : UnityEngine.Object
         {
@@ -44,33 +44,6 @@ namespace UniGLTF
                 .Where(x => AssetDatabase.IsSubAsset(x))
                 .Where(x => x is T)
                 .Select(x => (new SubAssetKey(typeof(T), x.name), x as T));
-        }
-
-        public static void DrawRemapGUI<T>(this ScriptedImporter importer, IEnumerable<SubAssetKey> keys) where T : UnityEngine.Object
-        {
-            EditorGUI.indentLevel++;
-            {
-                var map = importer.GetExternalObjectMap();
-                foreach (var key in keys)
-                {
-                    if (string.IsNullOrEmpty(key.Name))
-                    {
-                        continue;
-                    }
-
-                    EditorGUILayout.BeginHorizontal();
-                    EditorGUILayout.PrefixLabel(key.Name);
-                    map.TryGetValue(new AssetImporter.SourceAssetIdentifier(key.Type, key.Name), out UnityEngine.Object value);
-                    var asset = EditorGUILayout.ObjectField(value, typeof(T), true) as T;
-                    if (asset != value)
-                    {
-                        // update
-                        importer.SetExternalUnityObject(new AssetImporter.SourceAssetIdentifier(key.Type, key.Name), asset);
-                    }
-                    EditorGUILayout.EndHorizontal();
-                }
-            }
-            EditorGUI.indentLevel--;
         }
 
         /// <summary>

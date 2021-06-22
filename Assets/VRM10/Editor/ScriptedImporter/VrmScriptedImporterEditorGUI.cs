@@ -3,6 +3,9 @@ using UnityEngine;
 using UniGLTF;
 using System.IO;
 using UniGLTF.MeshUtility;
+using System.Linq;
+using VRMShaders;
+using System.Collections.Generic;
 #if UNITY_2020_2_OR_NEWER
 using UnityEditor.AssetImporters;
 #else
@@ -13,12 +16,15 @@ using UnityEditor.Experimental.AssetImporters;
 namespace UniVRM10
 {
     [CustomEditor(typeof(VrmScriptedImporter))]
-    public class VrmScriptedImporterEditorGUI : ScriptedImporterEditor
+    public class VrmScriptedImporterEditorGUI : RemapScriptedImporterEditorBase
     {
         VrmScriptedImporter m_importer;
         GltfParser m_parser;
         VrmLib.Model m_model;
         UniGLTF.Extensions.VRMC_vrm.VRMC_vrm m_vrm;
+
+        RemapEditorMaterial m_materialEditor;
+        RemapEditorVrm m_vrmEditor;
 
         string m_message;
 
@@ -37,6 +43,15 @@ namespace UniVRM10
             m_vrm = result.Vrm;
             m_parser = result.Parser;
             m_model = ModelReader.Read(result.Parser);
+
+            var tmp = m_importer.GetExternalObjectMap();
+
+            var generator = new Vrm10MaterialDescriptorGenerator();
+            var materialKeys = m_parser.GLTF.materials.Select((x, i) => generator.Get(m_parser, i).SubAssetKey);
+            var textureKeys = new GltfTextureDescriptorGenerator(m_parser).Get().GetEnumerable().Select(x => x.SubAssetKey);
+            m_materialEditor = new RemapEditorMaterial(materialKeys.Concat(textureKeys), GetEditorMap, SetEditorMap);
+            var expressionSubAssetKeys = m_vrm.Expressions.Select(x => ExpressionKey.CreateFromVrm10(x).SubAssetKey);
+            m_vrmEditor = new RemapEditorVrm(new[] { VRM10Object.SubAssetKey }.Concat(expressionSubAssetKeys), GetEditorMap, SetEditorMap);
         }
 
         enum Tabs
@@ -66,16 +81,18 @@ namespace UniVRM10
                 case Tabs.Materials:
                     if (m_parser != null && m_vrm != null)
                     {
-                        EditorMaterial.OnGUI(m_importer, m_parser, new Vrm10TextureDescriptorGenerator(m_parser),
+                        m_materialEditor.OnGUI(m_importer, m_parser, new Vrm10TextureDescriptorGenerator(m_parser),
                             assetPath => $"{Path.GetFileNameWithoutExtension(assetPath)}.vrm1.Textures",
                             assetPath => $"{Path.GetFileNameWithoutExtension(assetPath)}.vrm1.Materials");
+                        RevertApplyRemapGUI(m_importer);
                     }
                     break;
 
                 case Tabs.Vrm:
                     if (m_parser != null && m_vrm != null)
                     {
-                        EditorVrm.OnGUI(m_importer, m_parser, m_vrm);
+                        m_vrmEditor.OnGUI(m_importer, m_parser, m_vrm);
+                        RevertApplyRemapGUI(m_importer);
                     }
                     break;
             }
