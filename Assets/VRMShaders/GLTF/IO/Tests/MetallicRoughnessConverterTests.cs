@@ -20,7 +20,8 @@ namespace VRMShaders
                 metallicRoughnessTexture,
                 metallicFactor,
                 roughnessFactor,
-                occlusionTexture
+                occlusionTexture,
+                false
             );
 
             var result = converted.GetPixels32()[0];

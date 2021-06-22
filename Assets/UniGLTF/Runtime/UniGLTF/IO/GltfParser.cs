@@ -25,6 +25,7 @@ namespace UniGLTF
         /// </summary>
         public IStorage Storage;
 
+        public MigrationFlags MigrationFlags = new MigrationFlags();
 
         #region Parse
         public void ParsePath(string path)
@@ -226,7 +227,7 @@ namespace UniGLTF
                 var gltfImage = GLTF.images[gltfTexture.source];
                 if (!string.IsNullOrEmpty(gltfImage.uri) && !gltfImage.uri.StartsWith("data:"))
                 {
-                    // from image uri                    
+                    // from image uri
                     gltfTexture.name = Path.GetFileNameWithoutExtension(gltfImage.uri);
                 }
                 if (string.IsNullOrEmpty(gltfTexture.name))
@@ -284,7 +285,7 @@ namespace UniGLTF
                 {
                     if (used.Add(material.name))
                     {
-#if VRM_DEVELOP                        
+#if VRM_DEVELOP
                         // Debug.Log($"Material: {material.name}");
 #endif
                         break;
@@ -327,7 +328,7 @@ namespace UniGLTF
                 {
                     if (used.Add(animation.name))
                     {
-#if VRM_DEVELOP                        
+#if VRM_DEVELOP
                         // Debug.Log($"Material: {material.name}");
 #endif
                         break;

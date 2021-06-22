@@ -32,7 +32,8 @@ namespace UniGLTF
 
             TextureFactory = new TextureFactory(textureDeserializer, _externalObjectMap
                 .Where(x => x.Value is Texture)
-                .ToDictionary(x => x.Key, x => (Texture)x.Value));
+                .ToDictionary(x => x.Key, x => (Texture)x.Value),
+                Parser.MigrationFlags.IsRoughnessTextureValueSquared);
             MaterialFactory = new MaterialFactory(_externalObjectMap
                 .Where(x => x.Value is Material)
                 .ToDictionary(x => x.Key, x => (Material)x.Value));

@@ -34,8 +34,14 @@ namespace VRMShaders
             }
         }
 
+        /// <summary>
+        /// Import glTF Metallic-Roughness texture to Unity Metallic-Smoothness-Occlusion texture.
+        ///
+        /// isLegacySquaredRoughness:
+        ///     Before UniGLTF v0.69, roughness value in the texture was invalid squared value.
+        /// </summary>
         public static Texture2D Import(Texture2D metallicRoughnessTexture,
-            float metallicFactor, float roughnessFactor, Texture2D occlusionTexture)
+            float metallicFactor, float roughnessFactor, Texture2D occlusionTexture, bool isLegacySquaredRoughness)
         {
             if (metallicRoughnessTexture == null && occlusionTexture == null)
             {
@@ -49,6 +55,7 @@ namespace VRMShaders
             Exporter.SetTexture("_GltfOcclusionTexture", occlusionTexture);
             Exporter.SetFloat("_GltfMetallicFactor", metallicFactor);
             Exporter.SetFloat("_GltfRoughnessFactor", roughnessFactor);
+            Exporter.SetFloat("_IsLegacySquaredRoughness", isLegacySquaredRoughness ? 1 : 0);
 
             var dst = TextureConverter.CopyTexture(src, ColorSpace.Linear, true, Exporter);
 
@@ -57,6 +64,7 @@ namespace VRMShaders
             Exporter.SetTexture("_GltfOcclusionTexture", null);
             Exporter.SetFloat("_GltfMetallicFactor", 0);
             Exporter.SetFloat("_GltfRoughnessFactor", 0);
+            Exporter.SetFloat("_IsLegacySquaredRoughness", 0);
 
             return dst;
         }
