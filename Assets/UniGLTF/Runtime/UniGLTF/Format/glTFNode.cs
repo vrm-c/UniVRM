@@ -20,11 +20,11 @@ namespace UniGLTF
         [JsonSchema(MinItems = 3, MaxItems = 3, SerializationConditions = new string[] { "!value.translation.SequenceEqual(new float[]{0, 0, 0})" })]
         public float[] translation;
 
-        [JsonSchema(MinItems = 4, MaxItems = 4)]
+        [JsonSchema(MinItems = 4, MaxItems = 4, SerializationConditions = new string[] { "!value.rotation.SequenceEqual(new float[]{0, 0, 0, 1})" })]
         [ItemJsonSchema(Minimum = -1.0, Maximum = 1.0)]
         public float[] rotation;
 
-        [JsonSchema(MinItems = 3, MaxItems = 3)]
+        [JsonSchema(MinItems = 3, MaxItems = 3, SerializationConditions = new string[] { "!value.scale.SequenceEqual(new float[]{1, 1, 1})" })]
         public float[] scale;
 
         [JsonSchema(Minimum = 0, ExplicitIgnorableValue = -1)]

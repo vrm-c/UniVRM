@@ -1127,12 +1127,12 @@ public static void Serialize_gltf_nodes_ITEM(JsonFormatter f, glTFNode value)
         Serialize_gltf_nodes__translation(f, value.translation);
     }
 
-    if(value.rotation!=null&&value.rotation.Length>=4){
+    if(value.rotation!=null&&value.rotation.Length>=4&&!value.rotation.SequenceEqual(new float[]{0, 0, 0, 1})){
         f.Key("rotation");                
         Serialize_gltf_nodes__rotation(f, value.rotation);
     }
 
-    if(value.scale!=null&&value.scale.Length>=3){
+    if(value.scale!=null&&value.scale.Length>=3&&!value.scale.SequenceEqual(new float[]{1, 1, 1})){
         f.Key("scale");                
         Serialize_gltf_nodes__scale(f, value.scale);
     }
