@@ -16,6 +16,7 @@ namespace UniGLTF
         const string Begin = @"using System;
 using System.Collections.Generic;
 using UniJSON;
+using System.Linq;
 
 namespace UniGLTF {
 
@@ -34,7 +35,7 @@ namespace UniGLTF {
             get
             {
                 return Path.Combine(UnityEngine.Application.dataPath,
-                "UniGLTF/UniGLTF/Scripts/IO/GltfSerializer.g.cs");
+                "UniGLTF/Runtime/UniGLTF/Format/GltfSerializer.g.cs");
             }
         }
 
