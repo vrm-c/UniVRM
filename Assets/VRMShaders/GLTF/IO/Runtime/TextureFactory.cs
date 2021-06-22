@@ -8,10 +8,11 @@ namespace VRMShaders
 {
     public class TextureFactory : IResponsibilityForDestroyObjects
     {
-        private readonly ITextureDeserializer _textureDeserializer;
         private readonly IReadOnlyDictionary<SubAssetKey, Texture> _externalMap;
         private readonly Dictionary<SubAssetKey, Texture> _temporaryTextures = new Dictionary<SubAssetKey, Texture>();
         private readonly Dictionary<SubAssetKey, Texture> _textureCache = new Dictionary<SubAssetKey, Texture>();
+
+        public ITextureDeserializer TextureDeserializer { get; }
 
         /// <summary>
         /// Importer が動的に生成した Texture
@@ -25,7 +26,7 @@ namespace VRMShaders
 
         public TextureFactory(ITextureDeserializer textureDeserializer, IReadOnlyDictionary<SubAssetKey, Texture> externalTextures)
         {
-            _textureDeserializer = textureDeserializer;
+            TextureDeserializer = textureDeserializer;
             _externalMap = externalTextures;
         }
 
@@ -79,7 +80,7 @@ namespace VRMShaders
                         // > contrary to Unity’s usual convention of using Y as “up”
                         // https://docs.unity3d.com/2018.4/Documentation/Manual/StandardShaderMaterialParameterNormalMap.html
                         var data0 = await texDesc.Index0();
-                        var rawTexture = await _textureDeserializer.LoadTextureAsync(data0, texDesc.Sampler.EnableMipMap, ColorSpace.Linear);
+                        var rawTexture = await TextureDeserializer.LoadTextureAsync(data0, texDesc.Sampler.EnableMipMap, ColorSpace.Linear);
                         rawTexture.name = subAssetKey.Name;
                         rawTexture.SetSampler(texDesc.Sampler);
                         _textureCache.Add(subAssetKey, rawTexture);
@@ -94,12 +95,12 @@ namespace VRMShaders
                         if (texDesc.Index0 != null)
                         {
                             var data0 = await texDesc.Index0();
-                            metallicRoughnessTexture = await _textureDeserializer.LoadTextureAsync(data0, texDesc.Sampler.EnableMipMap, ColorSpace.Linear);
+                            metallicRoughnessTexture = await TextureDeserializer.LoadTextureAsync(data0, texDesc.Sampler.EnableMipMap, ColorSpace.Linear);
                         }
                         if (texDesc.Index1 != null)
                         {
                             var data1 = await texDesc.Index1();
-                            occlusionTexture = await _textureDeserializer.LoadTextureAsync(data1, texDesc.Sampler.EnableMipMap, ColorSpace.Linear);
+                            occlusionTexture = await TextureDeserializer.LoadTextureAsync(data1, texDesc.Sampler.EnableMipMap, ColorSpace.Linear);
                         }
 
                         var combinedTexture = OcclusionMetallicRoughnessConverter.Import(metallicRoughnessTexture,
@@ -115,7 +116,7 @@ namespace VRMShaders
                 case TextureImportTypes.sRGB:
                     {
                         var data0 = await texDesc.Index0();
-                        var rawTexture = await _textureDeserializer.LoadTextureAsync(data0, texDesc.Sampler.EnableMipMap, ColorSpace.sRGB);
+                        var rawTexture = await TextureDeserializer.LoadTextureAsync(data0, texDesc.Sampler.EnableMipMap, ColorSpace.sRGB);
                         rawTexture.name = subAssetKey.Name;
                         rawTexture.SetSampler(texDesc.Sampler);
                         _textureCache.Add(subAssetKey, rawTexture);
@@ -124,7 +125,7 @@ namespace VRMShaders
                 case TextureImportTypes.Linear:
                     {
                         var data0 = await texDesc.Index0();
-                        var rawTexture = await _textureDeserializer.LoadTextureAsync(data0, texDesc.Sampler.EnableMipMap, ColorSpace.Linear);
+                        var rawTexture = await TextureDeserializer.LoadTextureAsync(data0, texDesc.Sampler.EnableMipMap, ColorSpace.Linear);
                         rawTexture.name = subAssetKey.Name;
                         rawTexture.SetSampler(texDesc.Sampler);
                         _textureCache.Add(subAssetKey, rawTexture);
