@@ -52,26 +52,28 @@ namespace UniGLTF
 
     public struct GlbChunk
     {
-        public GlbChunkType ChunkType;
+        public GlbChunkType ChunkType => ChunkTypeString.ToChunkType();
+
+        public string ChunkTypeString;
         public ArraySegment<Byte> Bytes;
 
         public GlbChunk(string json) : this(
-            GlbChunkType.JSON,
+            GlbChunkType.JSON.ToChunkTypeString(),
             new ArraySegment<byte>(Encoding.UTF8.GetBytes(json))
             )
         {
         }
 
         public GlbChunk(ArraySegment<Byte> bytes) : this(
-            GlbChunkType.BIN,
+            GlbChunkType.BIN.ToChunkTypeString(),
             bytes
             )
         {
         }
 
-        public GlbChunk(GlbChunkType type, ArraySegment<Byte> bytes)
+        public GlbChunk(string chunkTypeString, ArraySegment<Byte> bytes)
         {
-            ChunkType = type;
+            ChunkTypeString = chunkTypeString;
             Bytes = bytes;
         }
 
@@ -82,12 +84,12 @@ namespace UniGLTF
 
         public static GlbChunk CreateJson(ArraySegment<byte> bytes)
         {
-            return new GlbChunk(GlbChunkType.JSON, bytes);
+            return new GlbChunk(GlbChunkType.JSON.ToChunkTypeString(), bytes);
         }
 
         public static GlbChunk CreateBin(ArraySegment<Byte> bytes)
         {
-            return new GlbChunk(GlbChunkType.BIN, bytes);
+            return new GlbChunk(GlbChunkType.BIN.ToChunkTypeString(), bytes);
         }
 
         byte GetPaddingByte()
@@ -152,7 +154,7 @@ namespace UniGLTF
     }
 
     /// <summary>
-    /// https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#glb-file-format-specification 
+    /// https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#glb-file-format-specification
     /// </summary>
     public struct Glb
     {
@@ -267,12 +269,11 @@ namespace UniGLTF
                     //var type = (GlbChunkType)BitConverter.ToUInt32(bytes, pos);
                     var chunkTypeBytes = bytes.Slice(pos, 4).Where(x => x != 0).ToArray();
                     var chunkTypeStr = Encoding.ASCII.GetString(chunkTypeBytes);
-                    var type = ToChunkType(chunkTypeStr);
                     pos += 4;
 
                     chunks.Add(new GlbChunk
                     {
-                        ChunkType = type,
+                        ChunkTypeString = chunkTypeStr,
                         Bytes = bytes.Slice(pos, chunkDataSize)
                     });
 
