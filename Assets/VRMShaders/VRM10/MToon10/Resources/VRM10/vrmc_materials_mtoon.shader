@@ -112,6 +112,7 @@ Shader "Hidden/VRM10/vrmc_materials_mtoon"
             Blend [_M_SrcBlend] [_M_DstBlend]
             ZWrite [_M_ZWrite]
             ZTest LEqual
+            Offset 1, 1
             BlendOp Add, Max
             AlphaToMask [_M_AlphaToMask]
 
