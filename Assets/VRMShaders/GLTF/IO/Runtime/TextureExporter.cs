@@ -11,9 +11,7 @@ namespace VRMShaders
     public sealed class TextureExporter : IDisposable, ITextureExporter
     {
         private readonly ITextureSerializer m_textureSerializer;
-
-        private readonly List<(TextureExportKey key, bool needsAlpha, Func<Texture2D> creator)> _exportingList =
-            new List<(TextureExportKey key, bool needsAlpha, Func<Texture2D> creator)>();
+        private readonly List<TextureExportParam> _exportingList = new List<TextureExportParam>();
 
         public TextureExporter(ITextureSerializer textureSerializer)
         {
@@ -22,7 +20,6 @@ namespace VRMShaders
 
         public void Dispose()
         {
-            // TODO: export 用にコピー・変換したテクスチャーをここで解放したい
         }
 
         /// <summary>
@@ -30,15 +27,14 @@ namespace VRMShaders
         /// </summary>
         public List<(Texture2D, ColorSpace)> Export()
         {
-            var exported = new List<(Texture2D, ColorSpace)>();
+            var exportedTextures = new List<(Texture2D, ColorSpace)>();
             for (var idx = 0; idx < _exportingList.Count; ++idx)
             {
-                var (key, needsAlpha, creator) = _exportingList[idx];
-                var colorSpace = key.TextureType == TextureExportTypes.Srgb ? ColorSpace.sRGB : ColorSpace.Linear;
-                var texture = creator();
-                exported.Add((creator(), colorSpace));
+                var exporting = _exportingList[idx];
+                var texture = exporting.Creator();
+                exportedTextures.Add((texture, exporting.ExportColorSpace));
             }
-            return exported;
+            return exportedTextures;
         }
 
         public int ExportAsSRgb(Texture src, bool needsAlpha)
@@ -61,17 +57,18 @@ namespace VRMShaders
             var exportType = isLinear ? TextureExportTypes.Linear : TextureExportTypes.Srgb;
             var colorSpace = isLinear ? ColorSpace.Linear : ColorSpace.sRGB;
 
-            var key = new TextureExportKey(src, exportType);
-            var existsIdx = _exportingList.FindIndex(x => key.Equals(x.key));
-            if (existsIdx != -1)
+            var param = new TextureExportParam(exportType, colorSpace, src, default, default,
+                needsAlpha, () => ConvertTextureSimple(src, needsAlpha, colorSpace));
+
+            if (TryGetExistsParam(param, out var existsIdx))
             {
                 // already marked as exporting
                 var cached = _exportingList[existsIdx];
 
-                if (needsAlpha && !cached.needsAlpha)
+                if (needsAlpha && !cached.NeedsAlpha)
                 {
                     // アルファチャンネルを必要とする使用用途が表れたため、アルファチャンネル付きで出力するように上書きする
-                    _exportingList[existsIdx] = (cached.key, true, () => ConvertTextureSimple(src, true, colorSpace));
+                    _exportingList[existsIdx] = param;
                     return existsIdx;
                 }
                 else
@@ -83,51 +80,31 @@ namespace VRMShaders
             else
             {
                 // Add
-                _exportingList.Add((key, needsAlpha, () => ConvertTextureSimple(src, needsAlpha, colorSpace)));
+                _exportingList.Add(param);
                 return _exportingList.Count - 1;
             }
         }
 
         public int ExportAsCombinedGltfPbrParameterTextureFromUnityStandardTextures(Texture metallicSmoothTexture, float smoothness, Texture occlusionTexture)
         {
-            if (metallicSmoothTexture != null)
+            if (metallicSmoothTexture == null && occlusionTexture == null)
             {
-                // metallicSmoothness is available
-                var key = new TextureExportKey(metallicSmoothTexture, TextureExportTypes.OcclusionMetallicRoughness);
-                var existsIdx = _exportingList.FindIndex(x => key.Equals(x.key));
-                if (existsIdx != -1)
-                {
-                    // Return cached
-                    return existsIdx;
-                }
-                else
-                {
-                    // Add
-                    _exportingList.Add((key, false, () => OcclusionMetallicRoughnessConverter.Export(metallicSmoothTexture, smoothness, occlusionTexture)));
-                    return _exportingList.Count - 1;
-                }
+                return -1;
             }
-            else if (occlusionTexture != null)
+
+            var param = new TextureExportParam(TextureExportTypes.OcclusionMetallicRoughness, ColorSpace.Linear,
+                metallicSmoothTexture, occlusionTexture, smoothness, false,
+                () => OcclusionMetallicRoughnessConverter.Export(metallicSmoothTexture, smoothness, occlusionTexture));
+            if (TryGetExistsParam(param, out var existsIdx))
             {
-                // TODO 厳密なチェックをしていない
-                // occlusion is available
-                var key = new TextureExportKey(occlusionTexture, TextureExportTypes.OcclusionMetallicRoughness);
-                var existsIdx = _exportingList.FindIndex(x => key.Equals(x.key));
-                if (existsIdx != -1)
-                {
-                    // Return cached
-                    return existsIdx;
-                }
-                else
-                {
-                    // Add
-                    _exportingList.Add((key, false, () => OcclusionMetallicRoughnessConverter.Export(metallicSmoothTexture, smoothness, occlusionTexture)));
-                    return _exportingList.Count - 1;
-                }
+                // Return cacehd
+                return existsIdx;
             }
             else
             {
-                return -1;
+                // Add
+                _exportingList.Add(param);
+                return _exportingList.Count - 1;
             }
         }
 
@@ -138,10 +115,9 @@ namespace VRMShaders
                 return -1;
             }
 
-            var key = new TextureExportKey(src, TextureExportTypes.Normal);
-            var existsIdx = _exportingList.FindIndex(x => key.Equals(x.key));
-
-            if (existsIdx != -1)
+            var param = new TextureExportParam(TextureExportTypes.Normal, ColorSpace.Linear, src, default, default,
+                false, () => NormalConverter.Export(src));
+            if (TryGetExistsParam(param, out var existsIdx))
             {
                 // Return cached;
                 return existsIdx;
@@ -151,7 +127,7 @@ namespace VRMShaders
                 // Add
                 // NormalMap Property のテクスチャは必ず NormalMap として解釈してコピーする。
                 // Texture Asset の設定に依らず、Standard Shader で得られる見た目と同じ結果を得るため。
-                _exportingList.Add((key, false, () => NormalConverter.Export(src)));
+                _exportingList.Add(param);
                 return _exportingList.Count - 1;
             }
         }
@@ -169,6 +145,12 @@ namespace VRMShaders
                 texture2D = TextureConverter.CopyTexture(src, exportColorSpace, needsAlpha, null);
             }
             return texture2D;
+        }
+
+        private bool TryGetExistsParam(TextureExportParam param, out int existsIdx)
+        {
+            existsIdx = _exportingList.FindIndex(param.EqualsAsKey);
+            return existsIdx != -1;
         }
     }
 }
