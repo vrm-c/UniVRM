@@ -87,9 +87,16 @@ inline half3 GetMToonLighting_GlobalIllumination(const UnityLighting unityLight,
 
 inline half3 GetMToonLighting_Emissive(const MToonInput input)
 {
-    if (MToon_IsForwardBasePass() && MToon_IsEmissiveMapOn())
+    if (MToon_IsForwardBasePass())
     {
-        return UNITY_SAMPLE_TEX2D(_EmissionMap, input.uv).rgb * _EmissionColor.rgb;
+        if (MToon_IsEmissiveMapOn())
+        {
+            return UNITY_SAMPLE_TEX2D(_EmissionMap, input.uv).rgb * _EmissionColor.rgb;
+        }
+        else
+        {
+            return _EmissionColor.rgb;
+        }
     }
     else
     {
