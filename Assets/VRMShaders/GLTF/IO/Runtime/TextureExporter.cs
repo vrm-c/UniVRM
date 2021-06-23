@@ -11,10 +11,9 @@ namespace VRMShaders
     public sealed class TextureExporter : IDisposable, ITextureExporter
     {
         private readonly ITextureSerializer m_textureSerializer;
-        private readonly Dictionary<ExportKey, int> m_exportMap = new Dictionary<ExportKey, int>();
-        private readonly List<(Texture2D, ColorSpace)> m_exported = new List<(Texture2D, ColorSpace)>();
 
-        public IReadOnlyList<(Texture2D, ColorSpace)> Exported => m_exported;
+        private readonly List<(TextureExportKey key, bool needsAlpha, Func<Texture2D> creator)> _exportingList =
+            new List<(TextureExportKey key, bool needsAlpha, Func<Texture2D> creator)>();
 
         public TextureExporter(ITextureSerializer textureSerializer)
         {
@@ -26,130 +25,110 @@ namespace VRMShaders
             // TODO: export 用にコピー・変換したテクスチャーをここで解放したい
         }
 
-        enum ExportTypes
+        /// <summary>
+        /// 実際にテクスチャを変換する
+        /// </summary>
+        public List<(Texture2D, ColorSpace)> Export()
         {
-            // sRGB テクスチャとして出力
-            Srgb,
-            // Linear テクスチャとして出力
-            Linear,
-            // Unity Standard様式 から glTF PBR様式への変換
-            OcclusionMetallicRoughness,
-            // Assetを使うときはそのバイト列を無変換で、それ以外は DXT5nm 形式からのデコードを行う
-            Normal,
+            var exported = new List<(Texture2D, ColorSpace)>();
+            for (var idx = 0; idx < _exportingList.Count; ++idx)
+            {
+                var (key, needsAlpha, creator) = _exportingList[idx];
+                var colorSpace = key.TextureType == TextureExportTypes.Srgb ? ColorSpace.sRGB : ColorSpace.Linear;
+                var texture = creator();
+                exported.Add((creator(), colorSpace));
+            }
+            return exported;
         }
 
-        readonly struct ExportKey
+        public int ExportAsSRgb(Texture src, bool needsAlpha)
         {
-            public readonly Texture Src;
-            public readonly ExportTypes TextureType;
+            return ExportSimple(src, needsAlpha, isLinear: false);
+        }
 
-            public ExportKey(Texture src, ExportTypes type)
+        public int ExportAsLinear(Texture src, bool needsAlpha)
+        {
+            return ExportSimple(src, needsAlpha, isLinear: true);
+        }
+
+        private int ExportSimple(Texture src, bool needsAlpha, bool isLinear)
+        {
+            if (src == null)
             {
-                if (src == null)
+                return -1;
+            }
+
+            var exportType = isLinear ? TextureExportTypes.Linear : TextureExportTypes.Srgb;
+            var colorSpace = isLinear ? ColorSpace.Linear : ColorSpace.sRGB;
+
+            var key = new TextureExportKey(src, exportType);
+            var existsIdx = _exportingList.FindIndex(x => key.Equals(x.key));
+            if (existsIdx != -1)
+            {
+                // already marked as exporting
+                var cached = _exportingList[existsIdx];
+
+                if (needsAlpha && !cached.needsAlpha)
                 {
-                    throw new ArgumentNullException();
+                    // アルファチャンネルを必要とする使用用途が表れたため、アルファチャンネル付きで出力するように上書きする
+                    _exportingList[existsIdx] = (cached.key, true, () => ConvertTextureSimple(src, true, colorSpace));
+                    return existsIdx;
                 }
-                Src = src;
-                TextureType = type;
-            }
-        }
-
-        public int ExportAsSRgb(Texture src)
-        {
-            if (src == null)
-            {
-                return -1;
-            }
-
-            // cache
-            if (m_exportMap.TryGetValue(new ExportKey(src, ExportTypes.Srgb), out var index))
-            {
-                return index;
-            }
-
-            // get Texture2D
-            index = m_exported.Count;
-            var texture2D = src as Texture2D;
-            if (m_textureSerializer.CanExportAsEditorAssetFile(texture2D, ColorSpace.sRGB))
-            {
-                // do nothing
+                else
+                {
+                    // Return cached
+                    return existsIdx;
+                }
             }
             else
             {
-                texture2D = TextureConverter.CopyTexture(src, ColorSpace.sRGB, true, null);
+                // Add
+                _exportingList.Add((key, needsAlpha, () => ConvertTextureSimple(src, needsAlpha, colorSpace)));
+                return _exportingList.Count - 1;
             }
-            m_exported.Add((texture2D, ColorSpace.sRGB));
-            m_exportMap.Add(new ExportKey(src, ExportTypes.Srgb), index);
-
-            return index;
-        }
-
-        public int ExportAsLinear(Texture src)
-        {
-            if (src == null)
-            {
-                return -1;
-            }
-
-            var exportKey = new ExportKey(src, ExportTypes.Linear);
-
-            // search cache
-            if (m_exportMap.TryGetValue(exportKey, out var index))
-            {
-                return index;
-            }
-
-            index = m_exported.Count;
-            var texture2d = src as Texture2D;
-            if (m_textureSerializer.CanExportAsEditorAssetFile(texture2d, ColorSpace.Linear))
-            {
-                // do nothing
-            }
-            else
-            {
-                texture2d = TextureConverter.CopyTexture(src, ColorSpace.Linear, false, null);
-            }
-            m_exported.Add((texture2d, ColorSpace.Linear));
-            m_exportMap.Add(exportKey, index);
-
-            return index;
         }
 
         public int ExportAsCombinedGltfPbrParameterTextureFromUnityStandardTextures(Texture metallicSmoothTexture, float smoothness, Texture occlusionTexture)
         {
-            if (metallicSmoothTexture == null && occlusionTexture == null)
+            if (metallicSmoothTexture != null)
+            {
+                // metallicSmoothness is available
+                var key = new TextureExportKey(metallicSmoothTexture, TextureExportTypes.OcclusionMetallicRoughness);
+                var existsIdx = _exportingList.FindIndex(x => key.Equals(x.key));
+                if (existsIdx != -1)
+                {
+                    // Return cached
+                    return existsIdx;
+                }
+                else
+                {
+                    // Add
+                    _exportingList.Add((key, false, () => OcclusionMetallicRoughnessConverter.Export(metallicSmoothTexture, smoothness, occlusionTexture)));
+                    return _exportingList.Count - 1;
+                }
+            }
+            else if (occlusionTexture != null)
+            {
+                // TODO 厳密なチェックをしていない
+                // occlusion is available
+                var key = new TextureExportKey(occlusionTexture, TextureExportTypes.OcclusionMetallicRoughness);
+                var existsIdx = _exportingList.FindIndex(x => key.Equals(x.key));
+                if (existsIdx != -1)
+                {
+                    // Return cached
+                    return existsIdx;
+                }
+                else
+                {
+                    // Add
+                    _exportingList.Add((key, false, () => OcclusionMetallicRoughnessConverter.Export(metallicSmoothTexture, smoothness, occlusionTexture)));
+                    return _exportingList.Count - 1;
+                }
+            }
+            else
             {
                 return -1;
             }
-
-            // cache
-            // TODO 厳密なチェックをしていない
-            if (metallicSmoothTexture != null && m_exportMap.TryGetValue(new ExportKey(metallicSmoothTexture, ExportTypes.OcclusionMetallicRoughness), out var index))
-            {
-                return index;
-            }
-            if (occlusionTexture != null && m_exportMap.TryGetValue(new ExportKey(occlusionTexture, ExportTypes.OcclusionMetallicRoughness), out index))
-            {
-                return index;
-            }
-
-            //
-            // Unity と glTF で互換性が無いので必ず変換が必用
-            //
-            index = m_exported.Count;
-            var texture2D = OcclusionMetallicRoughnessConverter.Export(metallicSmoothTexture, smoothness, occlusionTexture);
-
-            m_exported.Add((texture2D, ColorSpace.Linear));
-            if (metallicSmoothTexture != null)
-            {
-                m_exportMap.Add(new ExportKey(metallicSmoothTexture, ExportTypes.OcclusionMetallicRoughness), index);
-            }
-            if (occlusionTexture != null && occlusionTexture != metallicSmoothTexture)
-            {
-                m_exportMap.Add(new ExportKey(occlusionTexture, ExportTypes.OcclusionMetallicRoughness), index);
-            }
-
-            return index;
         }
 
         public int ExportAsNormal(Texture src)
@@ -159,21 +138,37 @@ namespace VRMShaders
                 return -1;
             }
 
-            // cache
-            if (m_exportMap.TryGetValue(new ExportKey(src, ExportTypes.Normal), out var index))
+            var key = new TextureExportKey(src, TextureExportTypes.Normal);
+            var existsIdx = _exportingList.FindIndex(x => key.Equals(x.key));
+
+            if (existsIdx != -1)
             {
-                return index;
+                // Return cached;
+                return existsIdx;
             }
+            else
+            {
+                // Add
+                // NormalMap Property のテクスチャは必ず NormalMap として解釈してコピーする。
+                // Texture Asset の設定に依らず、Standard Shader で得られる見た目と同じ結果を得るため。
+                _exportingList.Add((key, false, () => NormalConverter.Export(src)));
+                return _exportingList.Count - 1;
+            }
+        }
 
-            index = m_exported.Count;
-            // NormalMap Property のテクスチャは必ず NormalMap として解釈してコピーする。
-            // Texture Asset の設定に依らず、Standard Shader で得られる見た目と同じ結果を得るため。
-            var texture2D = NormalConverter.Export(src);
-
-            m_exported.Add((texture2D, ColorSpace.Linear));
-            m_exportMap.Add(new ExportKey(src, ExportTypes.Normal), index);
-
-            return index;
+        private Texture2D ConvertTextureSimple(Texture src, bool needsAlpha, ColorSpace exportColorSpace)
+        {
+            // get Texture2D
+            var texture2D = src as Texture2D;
+            if (m_textureSerializer.CanExportAsEditorAssetFile(texture2D, exportColorSpace))
+            {
+                // do nothing
+            }
+            else
+            {
+                texture2D = TextureConverter.CopyTexture(src, exportColorSpace, needsAlpha, null);
+            }
+            return texture2D;
         }
     }
 }

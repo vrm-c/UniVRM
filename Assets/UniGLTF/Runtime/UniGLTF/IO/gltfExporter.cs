@@ -369,9 +369,10 @@ namespace UniGLTF
             ExportExtensions(textureSerializer);
 
             // Extension で Texture が増える場合があるので最後に呼ぶ
-            for (int i = 0; i < TextureExporter.Exported.Count; ++i)
+            var exported = TextureExporter.Export();
+            for (var exportedTextureIdx = 0; exportedTextureIdx < exported.Count; ++exportedTextureIdx)
             {
-                var (unityTexture, colorSpace) = TextureExporter.Exported[i];
+                var (unityTexture, colorSpace) = exported[exportedTextureIdx];
                 glTF.PushGltfTexture(bufferIndex, unityTexture, colorSpace, textureSerializer);
             }
         }

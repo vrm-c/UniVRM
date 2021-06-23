@@ -38,7 +38,7 @@ namespace UniGLTF
 
             if (m.HasProperty("_MainTex"))
             {
-                var index = textureManager.ExportAsSRgb(m.GetTexture("_MainTex"));
+                var index = textureManager.ExportAsSRgb(m.GetTexture("_MainTex"), needsAlpha: true);
                 if (index != -1)
                 {
                     material.pbrMetallicRoughness.baseColorTexture = new glTFMaterialBaseColorTextureInfo()
@@ -161,7 +161,7 @@ namespace UniGLTF
 
             if (m.HasProperty("_EmissionMap"))
             {
-                var index = textureExporter.ExportAsSRgb(m.GetTexture("_EmissionMap"));
+                var index = textureExporter.ExportAsSRgb(m.GetTexture("_EmissionMap"), needsAlpha: false);
                 if (index != -1)
                 {
                     material.emissiveTexture = new glTFMaterialEmissiveTextureInfo()
