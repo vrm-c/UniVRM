@@ -515,6 +515,7 @@ namespace UniVRM10
 
                 // Outline
                 const float centimeterToMeter = 0.01f;
+                const float oneHundredth = 0.01f;
                 switch (mtoon.Definition.Outline.OutlineWidthMode)
                 {
                     case OutlineWidthMode.None:
@@ -527,7 +528,7 @@ namespace UniVRM10
                         break;
                     case OutlineWidthMode.ScreenCoordinates:
                         dst.OutlineWidthMode = UniGLTF.Extensions.VRMC_materials_mtoon.OutlineWidthMode.screenCoordinates;
-                        dst.OutlineWidthFactor = mtoon.Definition.Outline.OutlineWidthValue * centimeterToMeter;
+                        dst.OutlineWidthFactor = mtoon.Definition.Outline.OutlineWidthValue * oneHundredth;
                         break;
                     default:
                         throw new ArgumentOutOfRangeException($"OutlineWidthMode: {(int)mtoon.Definition.Outline.OutlineWidthMode}");

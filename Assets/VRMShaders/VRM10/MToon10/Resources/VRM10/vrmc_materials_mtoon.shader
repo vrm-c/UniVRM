@@ -20,8 +20,6 @@ Shader "Hidden/VRM10/vrmc_materials_mtoon"
         _ShadingShiftTex ("mtoon.shadingShiftTexture", 2D) = "black" {} // channel R
         _ShadingShiftTexScale ("mtoon.shadingShiftTexture.scale", Float) = 1
         _ShadingToonyFactor ("mtoon.shadingToonyFactor", Range(0, 1)) = 0.9
-//        _ShadingToonyTex ("mtoon.shadingToonyTexture", 2D) = "black" {} // parameter texture // need?
-//        _ShadingToonyTexScale ("mtoon.shadingToonyTexture.scale", Float) = 1 // need?
 
         // GI
         _GiEqualization ("mtoon.giEqualizationFactor", Range(0, 1)) = 0.9
@@ -88,11 +86,11 @@ Shader "Hidden/VRM10/vrmc_materials_mtoon"
             #pragma multi_compile_fog
             #pragma multi_compile_instancing
 
-            #pragma multi_compile_local __ _ALPHATEST_ON _ALPHABLEND_ON
-            #pragma multi_compile_local __ _NORMALMAP
-            #pragma multi_compile_local __ _MTOON_EMISSIVEMAP
-            #pragma multi_compile_local __ _MTOON_RIMMAP
-            #pragma multi_compile_local __ _MTOON_PARAMETERMAP
+            #pragma multi_compile __ _ALPHATEST_ON _ALPHABLEND_ON
+            #pragma multi_compile __ _NORMALMAP
+            #pragma multi_compile __ _MTOON_EMISSIVEMAP
+            #pragma multi_compile __ _MTOON_RIMMAP
+            #pragma multi_compile __ _MTOON_PARAMETERMAP
 
             #pragma vertex MToonVertex
             #pragma fragment MToonFragment
@@ -112,6 +110,7 @@ Shader "Hidden/VRM10/vrmc_materials_mtoon"
             Blend [_M_SrcBlend] [_M_DstBlend]
             ZWrite [_M_ZWrite]
             ZTest LEqual
+            Offset 1, 1
             BlendOp Add, Max
             AlphaToMask [_M_AlphaToMask]
 
@@ -123,17 +122,17 @@ Shader "Hidden/VRM10/vrmc_materials_mtoon"
             #pragma multi_compile_fog
             #pragma multi_compile_instancing
 
-            #pragma multi_compile_local __ _ALPHATEST_ON _ALPHABLEND_ON
-            #pragma multi_compile_local __ _NORMALMAP
-            #pragma multi_compile_local __ _MTOON_EMISSIVEMAP
-            #pragma multi_compile_local __ _MTOON_RIMMAP
-            #pragma multi_compile_local __ _MTOON_PARAMETERMAP
-            #pragma multi_compile_local __ _MTOON_OUTLINE_WORLD _MTOON_OUTLINE_SCREEN
-
-            #define MTOON_PASS_OUTLINE
+            #pragma multi_compile __ _ALPHATEST_ON _ALPHABLEND_ON
+            #pragma multi_compile __ _NORMALMAP
+            #pragma multi_compile __ _MTOON_EMISSIVEMAP
+            #pragma multi_compile __ _MTOON_RIMMAP
+            #pragma multi_compile __ _MTOON_PARAMETERMAP
+            #pragma multi_compile __ _MTOON_OUTLINE_WORLD _MTOON_OUTLINE_SCREEN
 
             #pragma vertex MToonVertex
             #pragma fragment MToonFragment
+
+            #define MTOON_PASS_OUTLINE
 
             #include "./vrmc_materials_mtoon_forward_vertex.hlsl"
             #include "./vrmc_materials_mtoon_forward_fragment.hlsl"
@@ -161,11 +160,11 @@ Shader "Hidden/VRM10/vrmc_materials_mtoon"
             #pragma multi_compile_fog
             #pragma multi_compile_instancing
 
-            #pragma multi_compile_local __ _ALPHATEST_ON _ALPHABLEND_ON
-            #pragma multi_compile_local __ _NORMALMAP
-            #pragma multi_compile_local __ _MTOON_EMISSIVEMAP
-            #pragma multi_compile_local __ _MTOON_RIMMAP
-            #pragma multi_compile_local __ _MTOON_PARAMETERMAP
+            #pragma multi_compile __ _ALPHATEST_ON _ALPHABLEND_ON
+            #pragma multi_compile __ _NORMALMAP
+            #pragma multi_compile __ _MTOON_EMISSIVEMAP
+            #pragma multi_compile __ _MTOON_RIMMAP
+            #pragma multi_compile __ _MTOON_PARAMETERMAP
 
             #pragma vertex MToonVertex
             #pragma fragment MToonFragment
@@ -192,7 +191,7 @@ Shader "Hidden/VRM10/vrmc_materials_mtoon"
             #pragma multi_compile_shadowcaster nolightmap nodynlightmap nodirlightmap novertexlight
             #pragma multi_compile_instancing
 
-            #pragma multi_compile_local __ _ALPHATEST_ON _ALPHABLEND_ON
+            #pragma multi_compile __ _ALPHATEST_ON _ALPHABLEND_ON
 
             // Use unity standard shadow implementation.
             // internal usage:
