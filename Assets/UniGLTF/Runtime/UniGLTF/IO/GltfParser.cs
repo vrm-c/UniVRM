@@ -86,7 +86,7 @@ namespace UniGLTF
         {
             var chunks = glbImporter.ParseGlbChunks(bytes);
 
-            if (chunks.Count != 2)
+            if (chunks.Count < 2)
             {
                 throw new Exception("unknown chunk count: " + chunks.Count);
             }
@@ -106,6 +106,8 @@ namespace UniGLTF
                 var jsonBytes = chunks[0].Bytes;
                 ParseJson(Encoding.UTF8.GetString(jsonBytes.Array, jsonBytes.Offset, jsonBytes.Count),
                     new SimpleStorage(chunks[1].Bytes));
+
+                ParseExternalChunks(bytes, chunks);
             }
             catch (StackOverflowException ex)
             {
@@ -115,6 +117,11 @@ namespace UniGLTF
             {
                 throw;
             }
+        }
+
+        protected virtual void ParseExternalChunks(byte[] bytes, IReadOnlyList<GlbChunk> chunks)
+        {
+
         }
 
         public virtual void ParseJson(string json, IStorage storage)

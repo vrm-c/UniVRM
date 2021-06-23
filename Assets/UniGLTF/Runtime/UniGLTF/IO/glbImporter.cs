@@ -12,7 +12,7 @@ namespace UniGLTF
         public const string GLB_MAGIC = "glTF";
         public const float GLB_VERSION = 2.0f;
 
-        public static GlbChunkType ToChunkType(string src)
+        public static GlbChunkType ToChunkType(this string src)
         {
             switch(src)
             {
@@ -24,6 +24,19 @@ namespace UniGLTF
 
                 default:
                     throw new FormatException("unknown chunk type: " + src);
+            }
+        }
+
+        public static string ToChunkTypeString(this GlbChunkType type)
+        {
+            switch (type)
+            {
+                case GlbChunkType.JSON:
+                    return "JSON";
+                case GlbChunkType.BIN:
+                    return "BIN";
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }
         }
 
@@ -67,12 +80,11 @@ namespace UniGLTF
                 //var type = (GlbChunkType)BitConverter.ToUInt32(bytes, pos);
                 var chunkTypeBytes = bytes.Skip(pos).Take(4).Where(x => x != 0).ToArray();
                 var chunkTypeStr = Encoding.ASCII.GetString(chunkTypeBytes);
-                var type = ToChunkType(chunkTypeStr);
                 pos += 4;
 
                 chunks.Add(new GlbChunk
                 {
-                    ChunkType = type,
+                    ChunkTypeString = chunkTypeStr,
                     Bytes = new ArraySegment<byte>(bytes, (int)pos, (int)chunkDataSize)
                 });
 
