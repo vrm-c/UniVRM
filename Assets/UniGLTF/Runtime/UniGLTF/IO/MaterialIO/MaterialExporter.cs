@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using UniGLTF.UniUnlit;
 using UnityEngine;
 using VRMShaders;
@@ -38,7 +39,10 @@ namespace UniGLTF
 
             if (m.HasProperty("_MainTex"))
             {
-                var index = textureManager.ExportAsSRgb(m.GetTexture("_MainTex"), needsAlpha: true);
+                var hasTransparency = string.Equals(material.alphaMode, "MASK", StringComparison.Ordinal) ||
+                                      string.Equals(material.alphaMode, "BLEND", StringComparison.Ordinal);
+
+                var index = textureManager.ExportAsSRgb(m.GetTexture("_MainTex"), hasTransparency);
                 if (index != -1)
                 {
                     material.pbrMetallicRoughness.baseColorTexture = new glTFMaterialBaseColorTextureInfo()
