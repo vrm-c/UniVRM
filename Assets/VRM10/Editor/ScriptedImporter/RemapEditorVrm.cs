@@ -1,7 +1,6 @@
 using UniGLTF;
 using UnityEngine;
 using System.Linq;
-using System.IO;
 using UnityEditor;
 using VRMShaders;
 using System.Collections.Generic;
@@ -38,22 +37,6 @@ namespace UniVRM10
         }
 
         /// <summary>
-        /// $"{assetPath without extension}.{folderName}"
-        /// </summary>
-        /// <param name="assetPath"></param>
-        /// <param name="folderName"></param>
-        /// <returns></returns>
-        static string GetAndCreateFolder(string assetPath, string suffix)
-        {
-            var path = $"{Path.GetDirectoryName(assetPath)}/{Path.GetFileNameWithoutExtension(assetPath)}{suffix}";
-            if (!Directory.Exists(path))
-            {
-                Directory.CreateDirectory(path);
-            }
-            return path;
-        }
-
-        /// <summary>
         /// 
         /// * VRM10Object
         /// * VRM10Expression[]
@@ -69,22 +52,23 @@ namespace UniVRM10
             }
 
             var path = GetAndCreateFolder(importer.assetPath, ".vrm1.Assets");
+
+            // expression を extract し置き換え map を作る
+            var map = new Dictionary<VRM10Expression, VRM10Expression>();
+            foreach (var asset in AssetDatabase.LoadAllAssetsAtPath(importer.assetPath))
             {
-                var map = new Dictionary<VRM10Expression, VRM10Expression>();
-                foreach (var (key, asset) in importer.GetSubAssets<VRM10Expression>(importer.assetPath))
+                if (asset is VRM10Expression expression)
                 {
-                    var clone = asset.ExtractSubAsset($"{path}/{asset.name}.asset", false);
-                    map.Add(asset, clone as VRM10Expression);
-                }
-
-                var (_, vrmObject) = importer.GetSubAssets<VRM10Object>(importer.assetPath).First();
-
-                vrmObject.Expression.Replace(map);
-
-                {
-                    vrmObject.ExtractSubAsset($"{path}/{vrmObject.name}.asset", false);
+                    var clone = ExtractSubAsset(asset, $"{path}/{asset.name}.asset", false);
+                    map.Add(expression, clone as VRM10Expression);
                 }
             }
+
+            // vrmObject の expression を置き換える
+            var vrmObject = AssetDatabase.LoadAllAssetsAtPath(importer.assetPath).First(x => x is VRM10Object) as VRM10Object;
+            vrmObject.Expression.Replace(map);
+            // extract
+            ExtractSubAsset(vrmObject, $"{path}/{vrmObject.name}.asset", false);
 
             AssetDatabase.ImportAsset(importer.assetPath, ImportAssetOptions.ForceUpdate);
         }
