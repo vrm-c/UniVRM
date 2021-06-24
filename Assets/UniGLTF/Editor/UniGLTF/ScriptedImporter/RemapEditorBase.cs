@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.Experimental.AssetImporters;
@@ -13,7 +14,18 @@ namespace UniGLTF
 
     public abstract class RemapEditorBase
     {
-        public static Dictionary<String, Type> s_typeMap = new Dictionary<string, Type>();
+        static Dictionary<String, Type> s_typeMap;
+        static Dictionary<String, Type> TypeMap
+        {
+            get
+            {
+                if (s_typeMap == null)
+                {
+                    s_typeMap = new Dictionary<string, Type>();
+                }
+                return s_typeMap;
+            }
+        }
 
         [Serializable]
         public struct SubAssetPair
@@ -24,8 +36,8 @@ namespace UniGLTF
             [SerializeField]
             public String Name;
 
-            public SubAssetKey Key => new SubAssetKey(s_typeMap[Type], Name);
-            public ScriptedImporter.SourceAssetIdentifier ID => new AssetImporter.SourceAssetIdentifier(s_typeMap[Type], Name);
+            public SubAssetKey Key => new SubAssetKey(TypeMap[Type], Name);
+            public ScriptedImporter.SourceAssetIdentifier ID => new AssetImporter.SourceAssetIdentifier(TypeMap[Type], Name);
 
             [SerializeField]
             public UnityEngine.Object Object;
@@ -33,7 +45,7 @@ namespace UniGLTF
             public SubAssetPair(SubAssetKey key, UnityEngine.Object o)
             {
                 Type = key.Type.ToString();
-                s_typeMap[Type] = key.Type;
+                TypeMap[Type] = key.Type;
                 Name = key.Name;
                 Object = o;
             }
@@ -46,6 +58,8 @@ namespace UniGLTF
         /// </summary>
         SubAssetKey[] m_keys;
 
+        protected bool HasKeys => m_keys.Length > 0;
+
         EditorMapGetterFunc m_getter;
         EditorMapSetterFunc m_setter;
 
@@ -54,6 +68,27 @@ namespace UniGLTF
             m_keys = keys.ToArray();
             m_getter = getter;
             m_setter = setter;
+        }
+
+        /// <summary>
+        /// Extract 対象がすべて SubAsset に含まれるときに可能である
+        /// </summary>
+        /// <param name="importer"></param>
+        /// <returns></returns>
+        protected bool CanExtract(ScriptedImporter importer)
+        {
+            foreach (var (k, v) in importer.GetExternalObjectMap())
+            {
+                foreach (var key in m_keys)
+                {
+                    if (k.type.IsAssignableFrom(key.Type))
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
 
         protected void DrawRemapGUI<T>(
@@ -96,6 +131,65 @@ namespace UniGLTF
                 }
             }
             EditorGUI.indentLevel--;
+        }
+
+        protected static string GetAndCreateFolder(string assetPath, string suffix)
+        {
+            var path = $"{Path.GetDirectoryName(assetPath)}/{Path.GetFileNameWithoutExtension(assetPath)}{suffix}";
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+            return path;
+        }
+
+        /// <summary>
+        /// subAsset を 指定された path に extract する
+        /// </summary>
+        /// <param name="subAsset"></param>
+        /// <param name="destinationPath"></param>
+        /// <param name="isForceUpdate"></param>
+        public static UnityEngine.Object ExtractSubAsset(UnityEngine.Object subAsset, string destinationPath, bool isForceUpdate)
+        {
+            string assetPath = AssetDatabase.GetAssetPath(subAsset);
+
+            // clone を path に出力(subAsset を出力するため)
+            var clone = UnityEngine.Object.Instantiate(subAsset);
+            AssetDatabase.CreateAsset(clone, destinationPath);
+
+            // subAsset を clone に対して remap する
+            var assetImporter = AssetImporter.GetAtPath(assetPath);
+            assetImporter.AddRemap(new AssetImporter.SourceAssetIdentifier(clone), clone);
+
+            if (isForceUpdate)
+            {
+                AssetDatabase.WriteImportSettingsIfDirty(assetPath);
+                AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceUpdate);
+            }
+
+            return clone;
+        }
+
+        public static void ClearExternalObjects(ScriptedImporter importer, params Type[] targetTypes)
+        {
+            foreach (var targetType in targetTypes)
+            {
+                if (!typeof(UnityEngine.Object).IsAssignableFrom(targetType))
+                {
+                    throw new NotImplementedException();
+                }
+
+                foreach (var (key, obj) in importer.GetExternalObjectMap())
+                {
+                    if (targetType.IsAssignableFrom(key.type))
+                    {
+                        importer.RemoveRemap(key);
+                    }
+                }
+            }
+
+            AssetDatabase.WriteImportSettingsIfDirty(importer.assetPath);
+            AssetDatabase.ImportAsset(importer.assetPath, ImportAssetOptions.ForceUpdate);
         }
     }
 }

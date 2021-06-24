@@ -51,6 +51,7 @@ namespace UniGLTF
                     importer.RemoveRemap(kv.ID);
                 }
             }
+            m_editMap.Clear();
             AssetDatabase.WriteImportSettingsIfDirty(importer.assetPath);
             AssetDatabase.ImportAsset(importer.assetPath, ImportAssetOptions.ForceUpdate);
         }

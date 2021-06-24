@@ -1,7 +1,6 @@
 using UniGLTF;
 using UnityEngine;
 using System.Linq;
-using System.IO;
 using UnityEditor;
 using VRMShaders;
 using System.Collections.Generic;
@@ -21,36 +20,25 @@ namespace UniVRM10
 
         public void OnGUI(ScriptedImporter importer, GltfParser parser, UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm)
         {
-            var hasExternal = importer.GetExternalObjectMap().Any(x => x.Value is VRM10Object || x.Value is VRM10Expression);
-            using (new EditorGUI.DisabledScope(hasExternal))
+            if (CanExtract(importer))
             {
                 if (GUILayout.Button("Extract Meta And Expressions ..."))
                 {
                     Extract(importer, parser);
                 }
+                EditorGUILayout.HelpBox("Extract subasset to external object and overwrite remap", MessageType.Info);
             }
-
-            // meta
-            DrawRemapGUI<VRM10Object>(importer.GetExternalObjectMap());
-
-            // expressions
-            DrawRemapGUI<VRM10Expression>(importer.GetExternalObjectMap());
-        }
-
-        /// <summary>
-        /// $"{assetPath without extension}.{folderName}"
-        /// </summary>
-        /// <param name="assetPath"></param>
-        /// <param name="folderName"></param>
-        /// <returns></returns>
-        static string GetAndCreateFolder(string assetPath, string suffix)
-        {
-            var path = $"{Path.GetDirectoryName(assetPath)}/{Path.GetFileNameWithoutExtension(assetPath)}{suffix}";
-            if (!Directory.Exists(path))
+            else
             {
-                Directory.CreateDirectory(path);
+                if (GUILayout.Button("Clear extraction"))
+                {
+                    ClearExternalObjects(importer, typeof(VRM10Object), typeof(VRM10Expression));
+                }
+                EditorGUILayout.HelpBox("Clear remap. All remap use subAsset", MessageType.Info);
             }
-            return path;
+
+            DrawRemapGUI<VRM10Object>(importer.GetExternalObjectMap());
+            DrawRemapGUI<VRM10Expression>(importer.GetExternalObjectMap());
         }
 
         /// <summary>
@@ -69,22 +57,23 @@ namespace UniVRM10
             }
 
             var path = GetAndCreateFolder(importer.assetPath, ".vrm1.Assets");
+
+            // expression を extract し置き換え map を作る
+            var map = new Dictionary<VRM10Expression, VRM10Expression>();
+            foreach (var asset in AssetDatabase.LoadAllAssetsAtPath(importer.assetPath))
             {
-                var map = new Dictionary<VRM10Expression, VRM10Expression>();
-                foreach (var (key, asset) in importer.GetSubAssets<VRM10Expression>(importer.assetPath))
+                if (asset is VRM10Expression expression)
                 {
-                    var clone = asset.ExtractSubAsset($"{path}/{asset.name}.asset", false);
-                    map.Add(asset, clone as VRM10Expression);
-                }
-
-                var (_, vrmObject) = importer.GetSubAssets<VRM10Object>(importer.assetPath).First();
-
-                vrmObject.Expression.Replace(map);
-
-                {
-                    vrmObject.ExtractSubAsset($"{path}/{vrmObject.name}.asset", false);
+                    var clone = ExtractSubAsset(asset, $"{path}/{asset.name}.asset", false);
+                    map.Add(expression, clone as VRM10Expression);
                 }
             }
+
+            // vrmObject の expression を置き換える
+            var vrmObject = AssetDatabase.LoadAllAssetsAtPath(importer.assetPath).First(x => x is VRM10Object) as VRM10Object;
+            vrmObject.Expression.Replace(map);
+            // extract
+            ExtractSubAsset(vrmObject, $"{path}/{vrmObject.name}.asset", false);
 
             AssetDatabase.ImportAsset(importer.assetPath, ImportAssetOptions.ForceUpdate);
         }

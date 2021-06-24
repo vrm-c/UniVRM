@@ -30,13 +30,21 @@ namespace UniGLTF
             Func<string, string> textureDir,
             Func<string, string> materialDir)
         {
-            var hasExternal = importer.GetExternalObjectMap().Any(x => x.Value is Material || x.Value is Texture2D);
-            using (new EditorGUI.DisabledScope(hasExternal))
+            if (CanExtract(importer))
             {
                 if (GUILayout.Button("Extract Materials And Textures ..."))
                 {
                     ExtractMaterialsAndTextures(importer, parser, textureDescriptorGenerator, textureDir, materialDir);
                 }
+                EditorGUILayout.HelpBox("Extract subasset to external object and overwrite remap", MessageType.Info);
+            }
+            else
+            {
+                if (GUILayout.Button("Clear extraction"))
+                {
+                    ClearExternalObjects(importer, typeof(Texture), typeof(Material));
+                }
+                EditorGUILayout.HelpBox("Clear remap. All remap use subAsset", MessageType.Info);
             }
 
             //
@@ -72,9 +80,15 @@ namespace UniGLTF
                     AssetDatabase.ImportAsset(self.assetPath, ImportAssetOptions.ForceUpdate);
 
                     ExtractMaterials(self, materialDir);
-                    // material extract 後に importer 発動
-                    AssetDatabase.ImportAsset(self.assetPath, ImportAssetOptions.ForceUpdate);
                 };
+
+            // subAsset を ExternalObject として投入する
+            var subAssets = AssetDatabase.LoadAllAssetsAtPath(self.assetPath)
+                    .Select(x => x as Texture)
+                    .Where(x => x != null)
+                    .Select(x => (new SubAssetKey(x), x))
+                    .ToDictionary(kv => kv.Item1, kv => kv.Item2)
+                    ;
 
             var assetPath = UnityPath.FromFullpath(parser.TargetPath);
             var dirName = textureDir(assetPath.Value); // $"{assetPath.FileNameWithoutExtension}.Textures";
@@ -82,7 +96,7 @@ namespace UniGLTF
                 parser,
                 assetPath.Parent.Child(dirName),
                 textureDescriptorGenerator,
-                self.GetSubAssets<Texture>(self.assetPath).ToDictionary(kv => kv.Item1, kv => kv.Item2),
+                subAssets,
                 addRemap,
                 onCompleted
             );
@@ -94,16 +108,22 @@ namespace UniGLTF
             {
                 return;
             }
+
             var path = $"{Path.GetDirectoryName(importer.assetPath)}/{materialDir(importer.assetPath)}"; //  Path.GetFileNameWithoutExtension(importer.assetPath)}.Materials
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);
             }
 
-            foreach (var (key, asset) in importer.GetSubAssets<Material>(importer.assetPath))
+            foreach (var asset in AssetDatabase.LoadAllAssetsAtPath(importer.assetPath))
             {
-                asset.ExtractSubAsset($"{path}/{key.Name}.mat", false);
+                if (asset is Material)
+                {
+                    ExtractSubAsset(asset, $"{path}/{asset.name}.mat", false);
+                }
             }
+
+            AssetDatabase.ImportAsset(importer.assetPath, ImportAssetOptions.ForceUpdate);
         }
     }
 }
