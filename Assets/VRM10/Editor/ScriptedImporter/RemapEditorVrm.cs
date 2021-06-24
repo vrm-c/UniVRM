@@ -30,7 +30,7 @@ namespace UniVRM10
             }
             else
             {
-                if (GUILayout.Button("Clear extraction."))
+                if (GUILayout.Button("Clear extraction"))
                 {
                     ClearExternalObjects(importer, typeof(VRM10Object), typeof(VRM10Expression));
                 }

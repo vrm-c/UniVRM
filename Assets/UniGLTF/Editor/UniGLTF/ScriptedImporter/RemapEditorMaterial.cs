@@ -40,7 +40,7 @@ namespace UniGLTF
             }
             else
             {
-                if (GUILayout.Button("Clear extraction."))
+                if (GUILayout.Button("Clear extraction"))
                 {
                     ClearExternalObjects(importer, typeof(Texture), typeof(Material));
                 }

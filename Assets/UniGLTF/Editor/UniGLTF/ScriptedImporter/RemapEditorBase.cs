@@ -66,11 +66,15 @@ namespace UniGLTF
         /// <returns></returns>
         protected bool CanExtract(ScriptedImporter importer)
         {
-            var subAssets = AssetDatabase.LoadAllAssetsAtPath(importer.assetPath);
-
-            foreach (var key in m_keys)
+            foreach (var (k, v) in importer.GetExternalObjectMap())
             {
-                
+                foreach (var key in m_keys)
+                {
+                    if (k.type.IsAssignableFrom(key.Type))
+                    {
+                        return false;
+                    }
+                }
             }
 
             return true;
