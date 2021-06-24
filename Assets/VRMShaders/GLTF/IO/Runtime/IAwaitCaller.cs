@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
 
-namespace UniGLTF
+namespace VRMShaders
 {
     /// <summary>
     /// ImporterContext の 非同期実行 LoadAsync を補助する。
@@ -37,7 +36,7 @@ namespace UniGLTF
     /// <summary>
     /// 同期実行
     /// </summary>
-    public struct ImmediateCaller : IAwaitCaller
+    public sealed class ImmediateCaller : IAwaitCaller
     {
         public Task NextFrame()
         {
@@ -59,7 +58,7 @@ namespace UniGLTF
     /// <summary>
     /// 非同期実行
     /// </summary>
-    public class TaskCaller : IAwaitCaller
+    public sealed class TaskCaller : IAwaitCaller
     {
         public Task NextFrame()
         {

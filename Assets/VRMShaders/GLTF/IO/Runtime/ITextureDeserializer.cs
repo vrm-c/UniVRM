@@ -16,6 +16,6 @@ namespace VRMShaders
         /// <param name="useMipmap">Texture2D の mipmap が生成されるべきか否か</param>
         /// <param name="colorSpace">Texture2D の色空間</param>
         /// <returns></returns>
-        Task<Texture2D> LoadTextureAsync(byte[] imageData, bool useMipmap, ColorSpace colorSpace);
+        Task<Texture2D> LoadTextureAsync(byte[] imageData, bool useMipmap, ColorSpace colorSpace, IAwaitCaller awaitCaller);
     }
 }

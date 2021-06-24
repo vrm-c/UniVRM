@@ -220,29 +220,33 @@ namespace UniGLTF
             await awaitCaller.NextFrame();
         }
 
-        public async Task LoadTexturesAsync()
+        public async Task LoadTexturesAsync(IAwaitCaller awaitCaller = null)
         {
+            awaitCaller = awaitCaller ?? new ImmediateCaller();
+
             var textures = TextureDescriptorGenerator.Get().GetEnumerable();
             foreach (var param in textures)
             {
-                var tex = await TextureFactory.GetTextureAsync(param);
+                var tex = await TextureFactory.GetTextureAsync(param, awaitCaller);
             }
         }
 
-        public async Task LoadMaterialsAsync()
+        public async Task LoadMaterialsAsync(IAwaitCaller awaitCaller = null)
         {
+            awaitCaller = awaitCaller ?? new ImmediateCaller();
+
             if (Parser.GLTF.materials == null || Parser.GLTF.materials.Count == 0)
             {
                 // no material. work around.
                 var param = MaterialDescriptorGenerator.Get(Parser, 0);
-                var material = await MaterialFactory.LoadAsync(param, TextureFactory.GetTextureAsync);
+                var material = await MaterialFactory.LoadAsync(param, TextureFactory.GetTextureAsync, awaitCaller);
             }
             else
             {
                 for (int i = 0; i < Parser.GLTF.materials.Count; ++i)
                 {
                     var param = MaterialDescriptorGenerator.Get(Parser, i);
-                    var material = await MaterialFactory.LoadAsync(param, TextureFactory.GetTextureAsync);
+                    var material = await MaterialFactory.LoadAsync(param, TextureFactory.GetTextureAsync, awaitCaller);
                 }
             }
         }

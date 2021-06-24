@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using VRMShaders;
 
 namespace UniGLTF
 {
@@ -11,7 +12,7 @@ namespace UniGLTF
         public static RuntimeGltfInstance Load(this ImporterContext self)
         {
             var meassureTime = new ImporterContextSpeedLog();
-            var task = self.LoadAsync(default(ImmediateCaller), meassureTime.MeasureTime);
+            var task = self.LoadAsync(new ImmediateCaller(), meassureTime.MeasureTime);
             if (!task.IsCompleted)
             {
                 throw new Exception();
