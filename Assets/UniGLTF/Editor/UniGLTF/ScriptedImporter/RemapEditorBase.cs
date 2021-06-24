@@ -14,7 +14,18 @@ namespace UniGLTF
 
     public abstract class RemapEditorBase
     {
-        public static Dictionary<String, Type> s_typeMap = new Dictionary<string, Type>();
+        static Dictionary<String, Type> s_typeMap;
+        static Dictionary<String, Type> TypeMap
+        {
+            get
+            {
+                if (s_typeMap == null)
+                {
+                    s_typeMap = new Dictionary<string, Type>();
+                }
+                return s_typeMap;
+            }
+        }
 
         [Serializable]
         public struct SubAssetPair
@@ -25,8 +36,8 @@ namespace UniGLTF
             [SerializeField]
             public String Name;
 
-            public SubAssetKey Key => new SubAssetKey(s_typeMap[Type], Name);
-            public ScriptedImporter.SourceAssetIdentifier ID => new AssetImporter.SourceAssetIdentifier(s_typeMap[Type], Name);
+            public SubAssetKey Key => new SubAssetKey(TypeMap[Type], Name);
+            public ScriptedImporter.SourceAssetIdentifier ID => new AssetImporter.SourceAssetIdentifier(TypeMap[Type], Name);
 
             [SerializeField]
             public UnityEngine.Object Object;
@@ -34,7 +45,7 @@ namespace UniGLTF
             public SubAssetPair(SubAssetKey key, UnityEngine.Object o)
             {
                 Type = key.Type.ToString();
-                s_typeMap[Type] = key.Type;
+                TypeMap[Type] = key.Type;
                 Name = key.Name;
                 Object = o;
             }
