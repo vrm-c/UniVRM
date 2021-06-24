@@ -20,13 +20,21 @@ namespace UniGLTF
                 return;
             }
 
-            var hasExternal = importer.GetExternalObjectMap().Any(x => x.Value is AnimationClip);
-            using (new EditorGUI.DisabledScope(hasExternal))
+            if (CanExtract(importer))
             {
                 if (GUILayout.Button("Extract Animation ..."))
                 {
                     Extract(importer, parser);
                 }
+                EditorGUILayout.HelpBox("Extract subasset to external object and overwrite remap", MessageType.Info);
+            }
+            else
+            {
+                if (GUILayout.Button("Clear extraction."))
+                {
+                    ClearExternalObjects(importer, typeof(AnimationClip));
+                }
+                EditorGUILayout.HelpBox("Clear remap. All remap use subAsset", MessageType.Info);
             }
 
             DrawRemapGUI<AnimationClip>(importer.GetExternalObjectMap());

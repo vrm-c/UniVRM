@@ -20,19 +20,24 @@ namespace UniVRM10
 
         public void OnGUI(ScriptedImporter importer, GltfParser parser, UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm)
         {
-            var hasExternal = importer.GetExternalObjectMap().Any(x => x.Value is VRM10Object || x.Value is VRM10Expression);
-            using (new EditorGUI.DisabledScope(hasExternal))
+            if (CanExtract(importer))
             {
                 if (GUILayout.Button("Extract Meta And Expressions ..."))
                 {
                     Extract(importer, parser);
                 }
+                EditorGUILayout.HelpBox("Extract subasset to external object and overwrite remap", MessageType.Info);
+            }
+            else
+            {
+                if (GUILayout.Button("Clear extraction."))
+                {
+                    ClearExternalObjects(importer, typeof(VRM10Object), typeof(VRM10Expression));
+                }
+                EditorGUILayout.HelpBox("Clear remap. All remap use subAsset", MessageType.Info);
             }
 
-            // meta
             DrawRemapGUI<VRM10Object>(importer.GetExternalObjectMap());
-
-            // expressions
             DrawRemapGUI<VRM10Expression>(importer.GetExternalObjectMap());
         }
 

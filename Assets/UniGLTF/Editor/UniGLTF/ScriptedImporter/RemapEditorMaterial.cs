@@ -30,13 +30,21 @@ namespace UniGLTF
             Func<string, string> textureDir,
             Func<string, string> materialDir)
         {
-            var hasExternal = importer.GetExternalObjectMap().Any(x => x.Value is Material || x.Value is Texture2D);
-            using (new EditorGUI.DisabledScope(hasExternal))
+            if (CanExtract(importer))
             {
                 if (GUILayout.Button("Extract Materials And Textures ..."))
                 {
                     ExtractMaterialsAndTextures(importer, parser, textureDescriptorGenerator, textureDir, materialDir);
                 }
+                EditorGUILayout.HelpBox("Extract subasset to external object and overwrite remap", MessageType.Info);
+            }
+            else
+            {
+                if (GUILayout.Button("Clear extraction."))
+                {
+                    ClearExternalObjects(importer, typeof(Texture), typeof(Material));
+                }
+                EditorGUILayout.HelpBox("Clear remap. All remap use subAsset", MessageType.Info);
             }
 
             //

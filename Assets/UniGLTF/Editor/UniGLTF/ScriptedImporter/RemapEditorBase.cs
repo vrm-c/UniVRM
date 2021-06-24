@@ -59,6 +59,23 @@ namespace UniGLTF
             m_setter = setter;
         }
 
+        /// <summary>
+        /// Extract 対象がすべて SubAsset に含まれるときに可能である
+        /// </summary>
+        /// <param name="importer"></param>
+        /// <returns></returns>
+        protected bool CanExtract(ScriptedImporter importer)
+        {
+            var subAssets = AssetDatabase.LoadAllAssetsAtPath(importer.assetPath);
+
+            foreach (var key in m_keys)
+            {
+                
+            }
+
+            return true;
+        }
+
         protected void DrawRemapGUI<T>(
             Dictionary<ScriptedImporter.SourceAssetIdentifier, UnityEngine.Object> externalObjectMap
         ) where T : UnityEngine.Object
@@ -138,26 +155,26 @@ namespace UniGLTF
             return clone;
         }
 
-        // public static void ClearExternalObjects(this ScriptedImporter importer, params Type[] targetTypes)
-        // {
-        //     foreach (var targetType in targetTypes)
-        //     {
-        //         if (!typeof(UnityEngine.Object).IsAssignableFrom(targetType))
-        //         {
-        //             throw new NotImplementedException();
-        //         }
+        public static void ClearExternalObjects(ScriptedImporter importer, params Type[] targetTypes)
+        {
+            foreach (var targetType in targetTypes)
+            {
+                if (!typeof(UnityEngine.Object).IsAssignableFrom(targetType))
+                {
+                    throw new NotImplementedException();
+                }
 
-        //         foreach (var (key, obj) in importer.GetExternalObjectMap())
-        //         {
-        //             if (targetType.IsAssignableFrom(key.type))
-        //             {
-        //                 importer.RemoveRemap(key);
-        //             }
-        //         }
-        //     }
+                foreach (var (key, obj) in importer.GetExternalObjectMap())
+                {
+                    if (targetType.IsAssignableFrom(key.type))
+                    {
+                        importer.RemoveRemap(key);
+                    }
+                }
+            }
 
-        //     AssetDatabase.WriteImportSettingsIfDirty(importer.assetPath);
-        //     AssetDatabase.ImportAsset(importer.assetPath, ImportAssetOptions.ForceUpdate);
-        // }
+            AssetDatabase.WriteImportSettingsIfDirty(importer.assetPath);
+            AssetDatabase.ImportAsset(importer.assetPath, ImportAssetOptions.ForceUpdate);
+        }
     }
 }
