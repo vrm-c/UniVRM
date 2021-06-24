@@ -46,6 +46,8 @@ namespace UniGLTF
         /// </summary>
         SubAssetKey[] m_keys;
 
+        protected bool HasKeys => m_keys.Length > 0;
+
         EditorMapGetterFunc m_getter;
         EditorMapSetterFunc m_setter;
 

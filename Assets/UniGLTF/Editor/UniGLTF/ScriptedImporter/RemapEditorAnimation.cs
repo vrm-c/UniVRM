@@ -17,6 +17,12 @@ namespace UniGLTF
 
         public void OnGUI(ScriptedImporter importer, GltfParser parser)
         {
+            if (!HasKeys)
+            {
+                EditorGUILayout.HelpBox("no animations", MessageType.Info);
+                return;
+            }
+
             var hasExternal = importer.GetExternalObjectMap().Any(x => x.Value is AnimationClip);
             using (new EditorGUI.DisabledScope(hasExternal))
             {
