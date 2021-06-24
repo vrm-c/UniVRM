@@ -39,10 +39,10 @@ namespace UniGLTF
 
             if (m.HasProperty("_MainTex"))
             {
-                var hasTransparency = string.Equals(material.alphaMode, "MASK", StringComparison.Ordinal) ||
-                                      string.Equals(material.alphaMode, "BLEND", StringComparison.Ordinal);
+                // Don't export alpha channel if material was OPAQUE
+                var unnecessaryAlpha = string.Equals(material.alphaMode, "OPAQUE", StringComparison.Ordinal);
 
-                var index = textureManager.RegisterExportingAsSRgb(m.GetTexture("_MainTex"), hasTransparency);
+                var index = textureManager.RegisterExportingAsSRgb(m.GetTexture("_MainTex"), !unnecessaryAlpha);
                 if (index != -1)
                 {
                     material.pbrMetallicRoughness.baseColorTexture = new glTFMaterialBaseColorTextureInfo()
