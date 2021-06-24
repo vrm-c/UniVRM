@@ -181,8 +181,8 @@ namespace VRM
                                 if (texture != null)
                                 {
                                     var value = kv.Key == "_BumpMap"
-                                        ? textureExporter.ExportAsNormal(texture)
-                                        : textureExporter.ExportAsSRgb(texture, needsAlpha: kv.Key == "_MainTex")
+                                        ? textureExporter.RegisterExportingAsNormal(texture)
+                                        : textureExporter.RegisterExportingAsSRgb(texture, needsAlpha: kv.Key == "_MainTex")
                                         ;
                                     if (value == -1)
                                     {

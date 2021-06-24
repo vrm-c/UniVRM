@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace VRMShaders
 {
-    internal class TextureExportParam
+    internal sealed class TextureExportParam
     {
         public TextureExportTypes ExportType { get; }
         public ColorSpace ExportColorSpace { get; }

@@ -5,8 +5,8 @@ using UnityEngine;
 namespace VRMShaders
 {
     /// <summary>
-    /// glTF にエクスポートする Texture2D を蓄えて index を確定させる。
-    /// Exporter の最後でまとめて Texture2D から bytes 列を得て出力する。
+    /// glTF にエクスポートする変換方式を蓄えて index を確定させる。
+    /// Exporter の最後で Export() でまとめて変換する。
     /// </summary>
     public sealed class TextureExporter : IDisposable, ITextureExporter
     {
@@ -37,17 +37,17 @@ namespace VRMShaders
             return exportedTextures;
         }
 
-        public int ExportAsSRgb(Texture src, bool needsAlpha)
+        public int RegisterExportingAsSRgb(Texture src, bool needsAlpha)
         {
-            return ExportSimple(src, needsAlpha, isLinear: false);
+            return RegisterExportingSimple(src, needsAlpha, isLinear: false);
         }
 
-        public int ExportAsLinear(Texture src, bool needsAlpha)
+        public int RegisterExportingAsLinear(Texture src, bool needsAlpha)
         {
-            return ExportSimple(src, needsAlpha, isLinear: true);
+            return RegisterExportingSimple(src, needsAlpha, isLinear: true);
         }
 
-        private int ExportSimple(Texture src, bool needsAlpha, bool isLinear)
+        private int RegisterExportingSimple(Texture src, bool needsAlpha, bool isLinear)
         {
             if (src == null)
             {
@@ -85,7 +85,7 @@ namespace VRMShaders
             }
         }
 
-        public int ExportAsCombinedGltfPbrParameterTextureFromUnityStandardTextures(Texture metallicSmoothTexture, float smoothness, Texture occlusionTexture)
+        public int RegisterExportingAsCombinedGltfPbrParameterTextureFromUnityStandardTextures(Texture metallicSmoothTexture, float smoothness, Texture occlusionTexture)
         {
             if (metallicSmoothTexture == null && occlusionTexture == null)
             {
@@ -108,7 +108,7 @@ namespace VRMShaders
             }
         }
 
-        public int ExportAsNormal(Texture src)
+        public int RegisterExportingAsNormal(Texture src)
         {
             if (src == null)
             {

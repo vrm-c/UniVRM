@@ -650,7 +650,7 @@ namespace UniVRM10
             int? thumbnailTextureIndex = default;
             if (meta.Thumbnail != null)
             {
-                thumbnailTextureIndex = m_textureExporter.ExportAsSRgb(meta.Thumbnail, needsAlpha: true);
+                thumbnailTextureIndex = m_textureExporter.RegisterExportingAsSRgb(meta.Thumbnail, needsAlpha: true);
             }
             return thumbnailTextureIndex;
         }

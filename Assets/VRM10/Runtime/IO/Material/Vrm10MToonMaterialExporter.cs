@@ -42,7 +42,7 @@ namespace UniVRM10
                 // Lighting
                 dst.pbrMetallicRoughness = new glTFPbrMetallicRoughness();
                 dst.pbrMetallicRoughness.baseColorFactor = context.BaseColorFactorSrgb.ToFloat4(ColorSpace.sRGB, ColorSpace.Linear);
-                var baseColorTextureIndex = textureExporter.ExportAsSRgb(context.BaseColorTexture, needsAlpha: true);
+                var baseColorTextureIndex = textureExporter.RegisterExportingAsSRgb(context.BaseColorTexture, needsAlpha: true);
                 if (baseColorTextureIndex != -1)
                 {
                     dst.pbrMetallicRoughness.baseColorTexture = new glTFMaterialBaseColorTextureInfo
@@ -51,7 +51,7 @@ namespace UniVRM10
                     };
                 }
                 mtoon.ShadeColorFactor = context.ShadeColorFactorSrgb.ToFloat3(ColorSpace.sRGB, ColorSpace.Linear);
-                var shadeColorTextureIndex = textureExporter.ExportAsSRgb(context.ShadeColorTexture, needsAlpha: false);
+                var shadeColorTextureIndex = textureExporter.RegisterExportingAsSRgb(context.ShadeColorTexture, needsAlpha: false);
                 if (shadeColorTextureIndex != -1)
                 {
                     mtoon.ShadeMultiplyTexture = new TextureInfo
@@ -59,7 +59,7 @@ namespace UniVRM10
                         Index = shadeColorTextureIndex,
                     };
                 }
-                var normalTextureIndex = textureExporter.ExportAsNormal(context.NormalTexture);
+                var normalTextureIndex = textureExporter.RegisterExportingAsNormal(context.NormalTexture);
                 if (normalTextureIndex != -1)
                 {
                     dst.normalTexture = new glTFMaterialNormalTextureInfo
@@ -69,7 +69,7 @@ namespace UniVRM10
                     };
                 }
                 mtoon.ShadingShiftFactor = context.ShadingShiftFactor;
-                var shadingShiftTextureIndex = textureExporter.ExportAsLinear(context.ShadingShiftTexture, needsAlpha: false);
+                var shadingShiftTextureIndex = textureExporter.RegisterExportingAsLinear(context.ShadingShiftTexture, needsAlpha: false);
                 if (shadingShiftTextureIndex != -1)
                 {
                     mtoon.ShadingShiftTexture = new ShadingShiftTextureInfo
@@ -86,7 +86,7 @@ namespace UniVRM10
 
                 // Emission
                 dst.emissiveFactor = context.EmissiveFactorLinear.ToFloat3(ColorSpace.Linear, ColorSpace.Linear);
-                var emissiveTextureIndex = textureExporter.ExportAsSRgb(context.EmissiveTexture, needsAlpha: false);
+                var emissiveTextureIndex = textureExporter.RegisterExportingAsSRgb(context.EmissiveTexture, needsAlpha: false);
                 if (emissiveTextureIndex != -1)
                 {
                     dst.emissiveTexture = new glTFMaterialEmissiveTextureInfo
@@ -96,7 +96,7 @@ namespace UniVRM10
                 }
 
                 // Rim Lighting
-                var matcapTextureIndex = textureExporter.ExportAsSRgb(context.MatcapTexture, needsAlpha: false);
+                var matcapTextureIndex = textureExporter.RegisterExportingAsSRgb(context.MatcapTexture, needsAlpha: false);
                 if (matcapTextureIndex != -1)
                 {
                     mtoon.MatcapTexture = new TextureInfo
@@ -107,7 +107,7 @@ namespace UniVRM10
                 mtoon.ParametricRimColorFactor = context.ParametricRimColorFactorSrgb.ToFloat3(ColorSpace.sRGB, ColorSpace.Linear);
                 mtoon.ParametricRimFresnelPowerFactor = context.ParametricRimFresnelPowerFactor;
                 mtoon.ParametricRimLiftFactor = context.ParametricRimLiftFactor;
-                var rimMultiplyTextureIndex = textureExporter.ExportAsSRgb(context.RimMultiplyTexture, needsAlpha: false);
+                var rimMultiplyTextureIndex = textureExporter.RegisterExportingAsSRgb(context.RimMultiplyTexture, needsAlpha: false);
                 if (rimMultiplyTextureIndex != -1)
                 {
                     mtoon.RimMultiplyTexture = new TextureInfo
@@ -120,7 +120,7 @@ namespace UniVRM10
                 // Outline
                 mtoon.OutlineWidthMode = ExportOutlineWidthMode(context.OutlineWidthMode);
                 mtoon.OutlineWidthFactor = context.OutlineWidthFactor;
-                var outlineWidthMultiplyTextureIndex = textureExporter.ExportAsLinear(context.OutlineWidthMultiplyTexture, needsAlpha: false);
+                var outlineWidthMultiplyTextureIndex = textureExporter.RegisterExportingAsLinear(context.OutlineWidthMultiplyTexture, needsAlpha: false);
                 if (outlineWidthMultiplyTextureIndex != -1)
                 {
                     mtoon.OutlineWidthMultiplyTexture = new TextureInfo
@@ -132,7 +132,7 @@ namespace UniVRM10
                 mtoon.OutlineLightingMixFactor = context.OutlineLightingMixFactor;
 
                 // UV Animation
-                var uvAnimationMaskTextureIndex = textureExporter.ExportAsLinear(context.UvAnimationMaskTexture, needsAlpha: false);
+                var uvAnimationMaskTextureIndex = textureExporter.RegisterExportingAsLinear(context.UvAnimationMaskTexture, needsAlpha: false);
                 if (uvAnimationMaskTextureIndex != -1)
                 {
                     mtoon.UvAnimationMaskTexture = new TextureInfo
