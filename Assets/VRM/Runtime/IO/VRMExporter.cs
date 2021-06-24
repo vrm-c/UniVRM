@@ -136,7 +136,7 @@ namespace VRM
                     VRM.meta.title = meta.Title;
                     if (meta.Thumbnail != null)
                     {
-                        VRM.meta.texture = TextureExporter.ExportAsSRgb(meta.Thumbnail);
+                        VRM.meta.texture = TextureExporter.RegisterExportingAsSRgb(meta.Thumbnail, needsAlpha: true);
                     }
 
                     // ussage permission

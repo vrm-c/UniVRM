@@ -137,18 +137,18 @@ namespace VRMShaders
 
             {
                 var exporter = new TextureExporter(new EditorTextureSerializer());
-                Assert.AreEqual(-1, exporter.ExportAsCombinedGltfPbrParameterTextureFromUnityStandardTextures(null, 0, null));
+                Assert.AreEqual(-1, exporter.RegisterExportingAsCombinedGltfPbrParameterTextureFromUnityStandardTextures(null, 0, null));
             }
             {
                 var exporter = new TextureExporter(new EditorTextureSerializer());
-                Assert.AreEqual(0, exporter.ExportAsCombinedGltfPbrParameterTextureFromUnityStandardTextures(null, 0, occlusion));
-                Assert.AreEqual(1, exporter.ExportAsCombinedGltfPbrParameterTextureFromUnityStandardTextures(metallic, 0, null));
+                Assert.AreEqual(0, exporter.RegisterExportingAsCombinedGltfPbrParameterTextureFromUnityStandardTextures(null, 0, occlusion));
+                Assert.AreEqual(1, exporter.RegisterExportingAsCombinedGltfPbrParameterTextureFromUnityStandardTextures(metallic, 0, null));
             }
             {
                 var exporter = new TextureExporter(new EditorTextureSerializer());
-                Assert.AreEqual(0, exporter.ExportAsCombinedGltfPbrParameterTextureFromUnityStandardTextures(metallic, 0, occlusion));
-                Assert.AreEqual(0, exporter.ExportAsCombinedGltfPbrParameterTextureFromUnityStandardTextures(null, 0, occlusion));
-                Assert.AreEqual(0, exporter.ExportAsCombinedGltfPbrParameterTextureFromUnityStandardTextures(metallic, 0, null));
+                Assert.AreEqual(0, exporter.RegisterExportingAsCombinedGltfPbrParameterTextureFromUnityStandardTextures(metallic, 0, occlusion));
+                Assert.AreEqual(0, exporter.RegisterExportingAsCombinedGltfPbrParameterTextureFromUnityStandardTextures(null, 0, occlusion));
+                Assert.AreEqual(0, exporter.RegisterExportingAsCombinedGltfPbrParameterTextureFromUnityStandardTextures(metallic, 0, null));
             }
         }
     }

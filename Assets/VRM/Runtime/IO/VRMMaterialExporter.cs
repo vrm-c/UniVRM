@@ -180,10 +180,17 @@ namespace VRM
                                 var texture = m.GetTexture(kv.Key);
                                 if (texture != null)
                                 {
-                                    var value = kv.Key == "_BumpMap"
-                                        ? textureExporter.ExportAsNormal(texture)
-                                        : textureExporter.ExportAsSRgb(texture)
-                                        ;
+                                    var value = -1;
+                                    var isNormalMap = kv.Key == "_BumpMap";
+                                    if (isNormalMap)
+                                    {
+                                        value = textureExporter.RegisterExportingAsNormal(texture);
+                                    }
+                                    else
+                                    {
+                                        var needsAlpha = kv.Key == "_MainTex";
+                                        value = textureExporter.RegisterExportingAsSRgb(texture, needsAlpha);
+                                    }
                                     if (value == -1)
                                     {
                                         Debug.LogFormat("not found {0}", texture.name);

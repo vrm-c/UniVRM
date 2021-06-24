@@ -6,9 +6,12 @@ namespace VRMShaders
 {
     public static class TextureConverter
     {
+        public static readonly TextureFormat WithAlphaFormat = TextureFormat.ARGB32;
+        public static readonly TextureFormat WithoutAlphaFormat = TextureFormat.RGB24;
+
         public static Texture2D CreateEmptyTextureWithSettings(Texture src, ColorSpace dstColorSpace, bool dstNeedsAlpha)
         {
-            var texFormat = dstNeedsAlpha ? TextureFormat.ARGB32 : TextureFormat.RGB24;
+            var texFormat = dstNeedsAlpha ? WithAlphaFormat : WithoutAlphaFormat;
             var dst = new Texture2D(src.width, src.height, texFormat, src.HasMipMap(), dstColorSpace == ColorSpace.Linear);
             dst.name = src.name;
             dst.anisoLevel = src.anisoLevel;

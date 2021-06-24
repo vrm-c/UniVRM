@@ -26,7 +26,9 @@ namespace UniGLTF
             var materialExporter = new MaterialExporter();
             materialExporter.ExportMaterial(material, textureExporter);
 
-            var (convTex0, colorSpace) = textureExporter.Exported[0];
+            var exported = textureExporter.Export();
+
+            var (convTex0, colorSpace) = exported[0];
             var sampler = TextureSamplerUtil.Export(convTex0);
 
             Assert.AreEqual(glWrap.CLAMP_TO_EDGE, sampler.wrapS);
@@ -100,7 +102,7 @@ namespace UniGLTF
                     .ToDictionary(kv => kv.Item1, kv => kv.Item2)
                     ;
 
-                // extractor                
+                // extractor
                 var extractor = new TextureExtractor(parser, UnityPath.FromUnityPath(""), textureMap);
                 var m = context.TextureDescriptorGenerator.Get().GetEnumerable()
                     .FirstOrDefault(x => x.SubAssetKey.Name == "texture_1.standard");

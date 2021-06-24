@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using UniGLTF.UniUnlit;
 using UnityEngine;
 using VRMShaders;
@@ -38,7 +39,10 @@ namespace UniGLTF
 
             if (m.HasProperty("_MainTex"))
             {
-                var index = textureManager.ExportAsSRgb(m.GetTexture("_MainTex"));
+                // Don't export alpha channel if material was OPAQUE
+                var unnecessaryAlpha = string.Equals(material.alphaMode, "OPAQUE", StringComparison.Ordinal);
+
+                var index = textureManager.RegisterExportingAsSRgb(m.GetTexture("_MainTex"), !unnecessaryAlpha);
                 if (index != -1)
                 {
                     material.pbrMetallicRoughness.baseColorTexture = new glTFMaterialBaseColorTextureInfo()
@@ -83,7 +87,7 @@ namespace UniGLTF
                 }
             }
 
-            int index = textureExporter.ExportAsCombinedGltfPbrParameterTextureFromUnityStandardTextures(metallicSmoothTexture, smoothness, occlusionTexture);
+            int index = textureExporter.RegisterExportingAsCombinedGltfPbrParameterTextureFromUnityStandardTextures(metallicSmoothTexture, smoothness, occlusionTexture);
 
             if (index != -1 && metallicSmoothTexture != null)
             {
@@ -126,7 +130,7 @@ namespace UniGLTF
         {
             if (m.HasProperty("_BumpMap"))
             {
-                var index = textureExporter.ExportAsNormal(m.GetTexture("_BumpMap"));
+                var index = textureExporter.RegisterExportingAsNormal(m.GetTexture("_BumpMap"));
                 if (index != -1)
                 {
                     material.normalTexture = new glTFMaterialNormalTextureInfo()
@@ -161,7 +165,7 @@ namespace UniGLTF
 
             if (m.HasProperty("_EmissionMap"))
             {
-                var index = textureExporter.ExportAsSRgb(m.GetTexture("_EmissionMap"));
+                var index = textureExporter.RegisterExportingAsSRgb(m.GetTexture("_EmissionMap"), needsAlpha: false);
                 if (index != -1)
                 {
                     material.emissiveTexture = new glTFMaterialEmissiveTextureInfo()

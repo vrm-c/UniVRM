@@ -11,28 +11,23 @@ namespace VRMShaders
     public interface ITextureExporter
     {
         /// <summary>
-        /// Export する Texture2D のリスト。これが gltf.textures になる
-        /// </summary>
-        IReadOnlyList<(Texture2D, ColorSpace)> Exported { get; }
-
-        /// <summary>
         /// 指定の Texture を、 sRGB 色空間の値を持つ Texture に出力するように指示する。
         /// </summary>
-        int ExportAsSRgb(Texture src);
+        int RegisterExportingAsSRgb(Texture src, bool needsAlpha);
 
         /// <summary>
         /// 指定の Texture を、 Linear の値を持つ Texture に出力するように指示する。
         /// </summary>
-        int ExportAsLinear(Texture src);
+        int RegisterExportingAsLinear(Texture src, bool needsAlpha);
 
         /// <summary>
         /// Unity Standard Shader の Metallic, Roughness, Occlusion 情報を、 glTF 仕様に準拠した 1 枚の合成テクスチャとして出力するように指示する。
         /// </summary>
-        int ExportAsCombinedGltfPbrParameterTextureFromUnityStandardTextures(Texture metallicSmoothTexture, float smoothness, Texture occlusionTexture);
+        int RegisterExportingAsCombinedGltfPbrParameterTextureFromUnityStandardTextures(Texture metallicSmoothTexture, float smoothness, Texture occlusionTexture);
 
         /// <summary>
         /// 指定の Texture を、glTF 仕様に準拠した Normal Texture に出力するように指示する。
         /// </summary>
-        int ExportAsNormal(Texture src);
+        int RegisterExportingAsNormal(Texture src);
     }
 }

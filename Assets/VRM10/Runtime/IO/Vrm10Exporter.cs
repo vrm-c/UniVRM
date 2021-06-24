@@ -185,9 +185,10 @@ namespace UniVRM10
             var (vrm, vrmSpringBone, thumbnailTextureIndex) = ExportVrm(root, model, converter, vrmMeta);
 
             // Extension で Texture が増える場合があるので最後に呼ぶ
-            for (int i = 0; i < m_textureExporter.Exported.Count; ++i)
+            var exportedTextures = m_textureExporter.Export();
+            for (var exportedTextureIdx = 0; exportedTextureIdx < exportedTextures.Count; ++exportedTextureIdx)
             {
-                var (unityTexture, texColorSpace) = m_textureExporter.Exported[i];
+                var (unityTexture, texColorSpace) = exportedTextures[exportedTextureIdx];
                 Storage.Gltf.PushGltfTexture(0, unityTexture, texColorSpace, m_textureSerializer);
             }
 
@@ -649,7 +650,7 @@ namespace UniVRM10
             int? thumbnailTextureIndex = default;
             if (meta.Thumbnail != null)
             {
-                thumbnailTextureIndex = m_textureExporter.ExportAsSRgb(meta.Thumbnail);
+                thumbnailTextureIndex = m_textureExporter.RegisterExportingAsSRgb(meta.Thumbnail, needsAlpha: true);
             }
             return thumbnailTextureIndex;
         }
