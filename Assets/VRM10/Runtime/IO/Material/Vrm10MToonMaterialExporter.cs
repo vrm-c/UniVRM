@@ -42,7 +42,7 @@ namespace UniVRM10
                 // Lighting
                 dst.pbrMetallicRoughness = new glTFPbrMetallicRoughness();
                 dst.pbrMetallicRoughness.baseColorFactor = context.BaseColorFactorSrgb.ToFloat4(ColorSpace.sRGB, ColorSpace.Linear);
-                var baseColorTextureIndex = textureExporter.RegisterExportingAsSRgb(context.BaseColorTexture, needsAlpha: true);
+                var baseColorTextureIndex = textureExporter.RegisterExportingAsSRgb(context.BaseColorTexture, context.AlphaMode != MToon10AlphaMode.Opaque);
                 if (baseColorTextureIndex != -1)
                 {
                     dst.pbrMetallicRoughness.baseColorTexture = new glTFMaterialBaseColorTextureInfo
