@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace VRMShaders
 {
-    public delegate Task<Texture> GetTextureAsyncFunc(TextureDescriptor texDesc);
+    public delegate Task<Texture> GetTextureAsyncFunc(TextureDescriptor texDesc, IAwaitCaller awaitCaller);
 
     public class MaterialFactory : IResponsibilityForDestroyObjects
     {
@@ -100,7 +100,7 @@ namespace VRMShaders
             return m_materials[index].Asset;
         }
 
-        public async Task<Material> LoadAsync(MaterialDescriptor matDesc, GetTextureAsyncFunc getTexture)
+        public async Task<Material> LoadAsync(MaterialDescriptor matDesc, GetTextureAsyncFunc getTexture, IAwaitCaller awaitCaller)
         {
             if (m_externalMap.TryGetValue(matDesc.SubAssetKey, out Material material))
             {
@@ -110,7 +110,7 @@ namespace VRMShaders
 
             if (getTexture == null)
             {
-                getTexture = (_) => Task.FromResult<Texture>(null);
+                getTexture = (x, y) => Task.FromResult<Texture>(null);
             }
 
             var shaderName = matDesc.ShaderName;
@@ -135,7 +135,7 @@ namespace VRMShaders
 
             foreach (var kv in matDesc.TextureSlots)
             {
-                var texture = await getTexture(kv.Value);
+                var texture = await getTexture(kv.Value, awaitCaller);
                 if (texture != null)
                 {
                     material.SetTexture(kv.Key, texture);

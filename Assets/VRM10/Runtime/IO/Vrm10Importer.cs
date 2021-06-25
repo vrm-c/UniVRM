@@ -299,7 +299,7 @@ namespace UniVRM10
                 }
                 if (Vrm10TextureDescriptorGenerator.TryGetMetaThumbnailTextureImportParam(Parser, vrmExtension, out (SubAssetKey, VRMShaders.TextureDescriptor Param) kv))
                 {
-                    var texture = await TextureFactory.GetTextureAsync(kv.Param);
+                    var texture = await TextureFactory.GetTextureAsync(kv.Param, awaitCaller);
                     if (texture is Texture2D tex2D)
                     {
                         meta.Thumbnail = tex2D;

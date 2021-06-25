@@ -56,7 +56,7 @@ namespace VRMShaders
         /// テクスチャ生成情報を基に、テクスチャ生成を行う。
         /// SubAssetKey が同じ場合はキャッシュを返す。
         /// </summary>
-        public async Task<Texture> GetTextureAsync(TextureDescriptor texDesc)
+        public async Task<Texture> GetTextureAsync(TextureDescriptor texDesc, IAwaitCaller awaitCaller)
         {
             var subAssetKey = texDesc.SubAssetKey;
 
@@ -79,7 +79,7 @@ namespace VRMShaders
                         // > contrary to Unity’s usual convention of using Y as “up”
                         // https://docs.unity3d.com/2018.4/Documentation/Manual/StandardShaderMaterialParameterNormalMap.html
                         var data0 = await texDesc.Index0();
-                        var rawTexture = await TextureDeserializer.LoadTextureAsync(data0, texDesc.Sampler.EnableMipMap, ColorSpace.Linear);
+                        var rawTexture = await TextureDeserializer.LoadTextureAsync(data0, texDesc.Sampler.EnableMipMap, ColorSpace.Linear, awaitCaller);
                         rawTexture.name = subAssetKey.Name;
                         rawTexture.SetSampler(texDesc.Sampler);
                         _textureCache.Add(subAssetKey, rawTexture);
@@ -94,12 +94,12 @@ namespace VRMShaders
                         if (texDesc.Index0 != null)
                         {
                             var data0 = await texDesc.Index0();
-                            metallicRoughnessTexture = await TextureDeserializer.LoadTextureAsync(data0, texDesc.Sampler.EnableMipMap, ColorSpace.Linear);
+                            metallicRoughnessTexture = await TextureDeserializer.LoadTextureAsync(data0, texDesc.Sampler.EnableMipMap, ColorSpace.Linear, awaitCaller);
                         }
                         if (texDesc.Index1 != null)
                         {
                             var data1 = await texDesc.Index1();
-                            occlusionTexture = await TextureDeserializer.LoadTextureAsync(data1, texDesc.Sampler.EnableMipMap, ColorSpace.Linear);
+                            occlusionTexture = await TextureDeserializer.LoadTextureAsync(data1, texDesc.Sampler.EnableMipMap, ColorSpace.Linear, awaitCaller);
                         }
 
                         var combinedTexture = OcclusionMetallicRoughnessConverter.Import(metallicRoughnessTexture,
@@ -115,7 +115,7 @@ namespace VRMShaders
                 case TextureImportTypes.sRGB:
                     {
                         var data0 = await texDesc.Index0();
-                        var rawTexture = await TextureDeserializer.LoadTextureAsync(data0, texDesc.Sampler.EnableMipMap, ColorSpace.sRGB);
+                        var rawTexture = await TextureDeserializer.LoadTextureAsync(data0, texDesc.Sampler.EnableMipMap, ColorSpace.sRGB, awaitCaller);
                         rawTexture.name = subAssetKey.Name;
                         rawTexture.SetSampler(texDesc.Sampler);
                         _textureCache.Add(subAssetKey, rawTexture);
@@ -124,7 +124,7 @@ namespace VRMShaders
                 case TextureImportTypes.Linear:
                     {
                         var data0 = await texDesc.Index0();
-                        var rawTexture = await TextureDeserializer.LoadTextureAsync(data0, texDesc.Sampler.EnableMipMap, ColorSpace.Linear);
+                        var rawTexture = await TextureDeserializer.LoadTextureAsync(data0, texDesc.Sampler.EnableMipMap, ColorSpace.Linear, awaitCaller);
                         rawTexture.name = subAssetKey.Name;
                         rawTexture.SetSampler(texDesc.Sampler);
                         _textureCache.Add(subAssetKey, rawTexture);

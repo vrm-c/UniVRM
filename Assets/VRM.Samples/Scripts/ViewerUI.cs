@@ -6,6 +6,7 @@ using UniGLTF;
 using UniHumanoid;
 using UnityEngine;
 using UnityEngine.UI;
+using VRMShaders;
 
 
 namespace VRM.Samples
@@ -89,7 +90,7 @@ namespace VRM.Samples
 
             public async Task UpdateMetaAsync(VRMImporterContext context)
             {
-                var meta = await context.ReadMetaAsync(default(TaskCaller), true);
+                var meta = await context.ReadMetaAsync(new TaskCaller(), true);
 
                 m_textModelTitle.text = meta.Title;
                 m_textModelVersion.text = meta.Version;
