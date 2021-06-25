@@ -547,7 +547,7 @@ namespace UniVRM10
             {
                 Material = getIndex(binding.MaterialName),
                 Offset = new float[] { binding.Offset.x, binding.Offset.y },
-                Scaling = new float[] { binding.Scaling.x, binding.Scaling.y },
+                Scale = new float[] { binding.Scaling.x, binding.Scaling.y },
             };
         }
 

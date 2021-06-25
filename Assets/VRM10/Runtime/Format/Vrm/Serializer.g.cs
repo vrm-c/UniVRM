@@ -2223,9 +2223,9 @@ public static void __expressions_ITEM_Serialize_TextureTransformBinds_ITEM(JsonF
         f.Value(value.Material.GetValueOrDefault());
     }
 
-    if(value.Scaling!=null&&value.Scaling.Count()>=2){
-        f.Key("scaling");                
-        __expressions_ITEM__textureTransformBinds_ITEM_Serialize_Scaling(f, value.Scaling);
+    if(value.Scale!=null&&value.Scale.Count()>=2){
+        f.Key("scale");                
+        __expressions_ITEM__textureTransformBinds_ITEM_Serialize_Scale(f, value.Scale);
     }
 
     if(value.Offset!=null&&value.Offset.Count()>=2){
@@ -2236,7 +2236,7 @@ public static void __expressions_ITEM_Serialize_TextureTransformBinds_ITEM(JsonF
     f.EndMap();
 }
 
-public static void __expressions_ITEM__textureTransformBinds_ITEM_Serialize_Scaling(JsonFormatter f, float[] value)
+public static void __expressions_ITEM__textureTransformBinds_ITEM_Serialize_Scale(JsonFormatter f, float[] value)
 {
     f.BeginList();
 

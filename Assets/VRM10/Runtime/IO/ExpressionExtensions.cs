@@ -55,7 +55,7 @@ namespace UniVRM10
                     binding = new UniVRM10.MaterialUVBinding
                     {
                         MaterialName = material.name, // 名前で持つべき
-                        Scaling = new Vector2(bind.Scaling[0], bind.Scaling[1]),
+                        Scaling = new Vector2(bind.Scale[0], bind.Scale[1]),
                         Offset = new Vector2(bind.Offset[0], bind.Offset[1]),
                     };
                 }

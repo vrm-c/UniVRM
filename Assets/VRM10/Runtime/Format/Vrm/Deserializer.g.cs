@@ -2487,8 +2487,8 @@ public static TextureTransformBind __expressions_ITEM_Deserialize_TextureTransfo
             continue;
         }
 
-        if(key=="scaling"){
-            value.Scaling = __expressions_ITEM__textureTransformBinds_ITEM_Deserialize_Scaling(kv.Value);
+        if(key=="scale"){
+            value.Scale = __expressions_ITEM__textureTransformBinds_ITEM_Deserialize_Scale(kv.Value);
             continue;
         }
 
@@ -2501,7 +2501,7 @@ public static TextureTransformBind __expressions_ITEM_Deserialize_TextureTransfo
     return value;
 }
 
-public static float[] __expressions_ITEM__textureTransformBinds_ITEM_Deserialize_Scaling(JsonNode parsed)
+public static float[] __expressions_ITEM__textureTransformBinds_ITEM_Deserialize_Scale(JsonNode parsed)
 {
     var value = new float[parsed.GetArrayCount()];
     int i=0;
