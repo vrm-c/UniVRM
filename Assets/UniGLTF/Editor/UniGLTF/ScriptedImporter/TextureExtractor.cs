@@ -13,8 +13,8 @@ namespace UniGLTF
     {
         const string TextureDirName = "Textures";
 
-        IGltfData m_data;
-        public IGltfData Data => m_data;
+        GltfData m_data;
+        public GltfData Data => m_data;
 
         public glTF GLTF => m_data.GLTF;
         public IStorage Storage => m_data.Storage;
@@ -23,7 +23,7 @@ namespace UniGLTF
         private readonly IReadOnlyDictionary<SubAssetKey, Texture> m_subAssets;
         UnityPath m_textureDirectory;
 
-        public TextureExtractor(IGltfData data, UnityPath textureDirectory, IReadOnlyDictionary<SubAssetKey, Texture> subAssets)
+        public TextureExtractor(GltfData data, UnityPath textureDirectory, IReadOnlyDictionary<SubAssetKey, Texture> subAssets)
         {
             m_data = data;
             m_textureDirectory = textureDirectory;
@@ -74,7 +74,7 @@ namespace UniGLTF
         /// <param name="importer"></param>
         /// <param name="dirName"></param>
         /// <param name="onCompleted"></param>
-        public static void ExtractTextures(IGltfData data, UnityPath textureDirectory,
+        public static void ExtractTextures(GltfData data, UnityPath textureDirectory,
             ITextureDescriptorGenerator textureDescriptorGenerator, IReadOnlyDictionary<SubAssetKey, Texture> subAssets,
             Action<SubAssetKey, Texture2D> addRemap,
             Action<IEnumerable<UnityPath>> onCompleted = null)

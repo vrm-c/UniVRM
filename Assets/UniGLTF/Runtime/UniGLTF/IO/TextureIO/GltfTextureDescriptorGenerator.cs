@@ -27,10 +27,10 @@ namespace UniGLTF
     /// </summary>
     public sealed class GltfTextureDescriptorGenerator : ITextureDescriptorGenerator
     {
-        private readonly IGltfData m_data;
+        private readonly GltfData m_data;
         private TextureDescriptorSet _textureDescriptorSet;
 
-        public GltfTextureDescriptorGenerator(IGltfData data)
+        public GltfTextureDescriptorGenerator(GltfData data)
         {
             m_data = data;
         }
@@ -51,7 +51,7 @@ namespace UniGLTF
         /// <summary>
         /// glTF 全体で使うテクスチャーを列挙。
         /// </summary>
-        private static IEnumerable<(SubAssetKey, TextureDescriptor)> EnumerateAllTextures(IGltfData data)
+        private static IEnumerable<(SubAssetKey, TextureDescriptor)> EnumerateAllTextures(GltfData data)
         {
             for (int i = 0; i < data.GLTF.materials.Count; ++i)
             {

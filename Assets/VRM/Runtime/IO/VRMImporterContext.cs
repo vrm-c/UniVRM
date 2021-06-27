@@ -21,7 +21,7 @@ namespace VRM
         public VRM.glTF_VRM_extensions VRM { get; private set; }
 
         public VRMImporterContext(
-            IGltfData data,
+            GltfData data,
             IReadOnlyDictionary<SubAssetKey, Object> externalObjectMap = null,
             ITextureDeserializer textureDeserializer = null)
             : base(data, externalObjectMap, textureDeserializer)

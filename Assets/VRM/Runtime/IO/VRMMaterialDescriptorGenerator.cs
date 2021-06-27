@@ -14,7 +14,7 @@ namespace VRM
             m_vrm = vrm;
         }
 
-        public MaterialDescriptor Get(IGltfData data, int i)
+        public MaterialDescriptor Get(GltfData data, int i)
         {
             // mtoon
             if (!VRMMToonMaterialImporter.TryCreateParam(data, m_vrm, i, out MaterialDescriptor matDesc))

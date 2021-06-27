@@ -24,7 +24,7 @@ namespace UniGLTF
             _gltfRootPath = Path.GetDirectoryName(gltfFilePath);
         }
 
-        public IGltfData Parse()
+        public GltfData Parse()
         {
             var binary = File.ReadAllBytes(_gltfFilePath);
             

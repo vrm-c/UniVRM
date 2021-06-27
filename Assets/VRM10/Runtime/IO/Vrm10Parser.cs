@@ -17,11 +17,11 @@ namespace UniVRM10
     {
         public readonly struct Result
         {
-            public readonly IGltfData Data;
+            public readonly GltfData Data;
             public readonly VRMC_vrm Vrm;
             public readonly Vrm10FileType FileType;
             public readonly String Message;
-            public Result(IGltfData data, VRMC_vrm vrm, Vrm10FileType fileType, string message)
+            public Result(GltfData data, VRMC_vrm vrm, Vrm10FileType fileType, string message)
             {
                 Data = data;
                 Vrm = vrm;

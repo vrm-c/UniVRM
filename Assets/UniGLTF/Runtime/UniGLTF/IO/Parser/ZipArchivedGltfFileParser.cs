@@ -23,7 +23,7 @@ namespace UniGLTF
             _zippedFilePath = zippedFilePath;
         }
         
-        public IGltfData Parse()
+        public GltfData Parse()
         {
             var binary = File.ReadAllBytes(_zippedFilePath);
             

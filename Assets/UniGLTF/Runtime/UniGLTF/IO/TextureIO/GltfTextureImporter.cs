@@ -29,7 +29,7 @@ namespace UniGLTF
             }
         }
 
-        public static (SubAssetKey, TextureDescriptor) CreateSRGB(IGltfData data, int textureIndex, Vector2 offset, Vector2 scale)
+        public static (SubAssetKey, TextureDescriptor) CreateSRGB(GltfData data, int textureIndex, Vector2 offset, Vector2 scale)
         {
             var gltfTexture = data.GLTF.textures[textureIndex];
             var gltfImage = data.GLTF.images[gltfTexture.source];
@@ -40,7 +40,7 @@ namespace UniGLTF
             return (param.SubAssetKey, param);
         }
 
-        public static (SubAssetKey, TextureDescriptor) CreateLinear(IGltfData data, int textureIndex, Vector2 offset, Vector2 scale)
+        public static (SubAssetKey, TextureDescriptor) CreateLinear(GltfData data, int textureIndex, Vector2 offset, Vector2 scale)
         {
             var gltfTexture = data.GLTF.textures[textureIndex];
             var gltfImage = data.GLTF.images[gltfTexture.source];
@@ -51,7 +51,7 @@ namespace UniGLTF
             return (param.SubAssetKey, param);
         }
 
-        public static (SubAssetKey, TextureDescriptor) CreateNormal(IGltfData data, int textureIndex, Vector2 offset, Vector2 scale)
+        public static (SubAssetKey, TextureDescriptor) CreateNormal(GltfData data, int textureIndex, Vector2 offset, Vector2 scale)
         {
             var gltfTexture = data.GLTF.textures[textureIndex];
             var gltfImage = data.GLTF.images[gltfTexture.source];
@@ -62,7 +62,7 @@ namespace UniGLTF
             return (param.SubAssetKey, param);
         }
 
-        public static (SubAssetKey, TextureDescriptor) CreateStandard(IGltfData data, int? metallicRoughnessTextureIndex, int? occlusionTextureIndex, Vector2 offset, Vector2 scale, float metallicFactor, float roughnessFactor)
+        public static (SubAssetKey, TextureDescriptor) CreateStandard(GltfData data, int? metallicRoughnessTextureIndex, int? occlusionTextureIndex, Vector2 offset, Vector2 scale, float metallicFactor, float roughnessFactor)
         {
             string name = default;
 

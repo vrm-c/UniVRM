@@ -7,7 +7,7 @@ namespace VRM
 {
     public static class VRMMToonTextureImporter
     {
-        public static IEnumerable<(SubAssetKey, TextureDescriptor)> EnumerateAllTextures(IGltfData data, glTF_VRM_extensions vrm, int materialIdx)
+        public static IEnumerable<(SubAssetKey, TextureDescriptor)> EnumerateAllTextures(GltfData data, glTF_VRM_extensions vrm, int materialIdx)
         {
             var vrmMaterial = vrm.materialProperties[materialIdx];
             foreach (var kv in vrmMaterial.textureProperties)
@@ -19,7 +19,7 @@ namespace VRM
             }
         }
 
-        public static bool TryGetTextureFromMaterialProperty(IGltfData data, glTF_VRM_extensions vrm, int materialIdx, string textureKey, out (SubAssetKey, TextureDescriptor) texture)
+        public static bool TryGetTextureFromMaterialProperty(GltfData data, glTF_VRM_extensions vrm, int materialIdx, string textureKey, out (SubAssetKey, TextureDescriptor) texture)
         {
             var vrmMaterial = vrm.materialProperties[materialIdx];
             // 任意の shader の import を許容する

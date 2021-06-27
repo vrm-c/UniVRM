@@ -21,7 +21,7 @@ namespace UniVRM10
         IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> m_externalMap;
 
         public Vrm10Importer(
-            UniGLTF.IGltfData data, UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm,
+            UniGLTF.GltfData data, UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm,
             IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> externalObjectMap = null,
             ITextureDeserializer textureDeserializer = null)
             : base(data, externalObjectMap, textureDeserializer)

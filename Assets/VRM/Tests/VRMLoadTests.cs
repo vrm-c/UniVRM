@@ -51,7 +51,7 @@ namespace VRM
 
         static GameObject Load(FileInfo gltf, DirectoryInfo root, byte[] bytes = null)
         {
-            IGltfData data = null;
+            GltfData data = null;
             try
             {
                 if (bytes != null)

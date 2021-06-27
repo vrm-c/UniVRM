@@ -11,7 +11,7 @@ namespace UniGLTF
             _path = glbFilePath;
         }
 
-        public IGltfData Parse()
+        public GltfData Parse()
         {
             var data = File.ReadAllBytes(_path);
             return new GlbLowLevelParser(_path, data).Parse();

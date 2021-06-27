@@ -8,11 +8,11 @@ namespace VRM
 {
     public sealed class VrmTextureDescriptorGenerator : ITextureDescriptorGenerator
     {
-        private readonly IGltfData m_data;
+        private readonly GltfData m_data;
         private readonly glTF_VRM_extensions m_vrm;
         private TextureDescriptorSet _textureDescriptorSet;
 
-        public VrmTextureDescriptorGenerator(IGltfData data, glTF_VRM_extensions vrm)
+        public VrmTextureDescriptorGenerator(GltfData data, glTF_VRM_extensions vrm)
         {
             m_data = data;
             m_vrm = vrm;
@@ -32,7 +32,7 @@ namespace VRM
         }
 
 
-        private static IEnumerable<(SubAssetKey, TextureDescriptor)> EnumerateAllTextures(IGltfData data, glTF_VRM_extensions vrm)
+        private static IEnumerable<(SubAssetKey, TextureDescriptor)> EnumerateAllTextures(GltfData data, glTF_VRM_extensions vrm)
         {
             // Materials
             for (var materialIdx = 0; materialIdx < data.GLTF.materials.Count; ++materialIdx)
@@ -65,7 +65,7 @@ namespace VRM
             }
         }
 
-        private static bool TryGetThumbnailTexture(IGltfData data, glTF_VRM_extensions vrm, out (SubAssetKey, TextureDescriptor) texture)
+        private static bool TryGetThumbnailTexture(GltfData data, glTF_VRM_extensions vrm, out (SubAssetKey, TextureDescriptor) texture)
         {
             if (vrm.meta.texture > -1)
             {

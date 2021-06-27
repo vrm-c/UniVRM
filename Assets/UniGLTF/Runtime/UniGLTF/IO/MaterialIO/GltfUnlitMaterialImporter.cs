@@ -8,7 +8,7 @@ namespace UniGLTF
     {
         public const string ShaderName = "UniGLTF/UniUnlit";
 
-        public static bool TryCreateParam(IGltfData data, int i, out MaterialDescriptor matDesc)
+        public static bool TryCreateParam(GltfData data, int i, out MaterialDescriptor matDesc)
         {
             if (i < 0 || i >= data.GLTF.materials.Count)
             {

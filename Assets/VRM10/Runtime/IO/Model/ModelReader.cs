@@ -74,7 +74,7 @@ namespace UniVRM10
             return model;
         }
 
-        public static Model Read(UniGLTF.IGltfData data)
+        public static Model Read(UniGLTF.GltfData data)
         {
             var storage = new Vrm10Storage(data);
             var model = Load(storage, Path.GetFileName(data.TargetPath));

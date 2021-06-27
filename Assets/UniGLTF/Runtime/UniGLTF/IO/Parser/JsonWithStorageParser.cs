@@ -18,7 +18,7 @@ namespace UniGLTF
             _storage = storage ?? new SimpleStorage(new ArraySegment<byte>());
         }
 
-        public IGltfData Parse()
+        public GltfData Parse()
         {
             return GlbLowLevelParser.ParseGltf(
                 string.Empty,

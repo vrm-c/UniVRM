@@ -39,7 +39,7 @@ namespace UniVRM10.Test
             return ToUnity(result.Data, result.Vrm);
         }
 
-        private (GameObject, IReadOnlyList<VRMShaders.MaterialFactory.MaterialLoadInfo>) ToUnity(IGltfData data, VRMC_vrm vrm)
+        private (GameObject, IReadOnlyList<VRMShaders.MaterialFactory.MaterialLoadInfo>) ToUnity(GltfData data, VRMC_vrm vrm)
         {
             // Model => Unity
             using (var loader = new Vrm10Importer(data, vrm))

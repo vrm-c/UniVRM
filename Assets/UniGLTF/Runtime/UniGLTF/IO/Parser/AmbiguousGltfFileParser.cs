@@ -15,7 +15,7 @@ namespace UniGLTF
             _path = path;
         }
         
-        public IGltfData Parse()
+        public GltfData Parse()
         {
             var ext = Path.GetExtension(_path).ToLower();
             switch (ext)

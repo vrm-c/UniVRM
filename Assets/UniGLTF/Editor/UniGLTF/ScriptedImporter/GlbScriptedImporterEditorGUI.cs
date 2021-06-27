@@ -17,7 +17,7 @@ namespace UniGLTF
     public class GlbScriptedImporterEditorGUI : RemapScriptedImporterEditorBase
     {
         GlbScriptedImporter m_importer;
-        IGltfData m_data;
+        GltfData m_data;
 
         RemapEditorMaterial m_materialEditor;
         RemapEditorAnimation m_animationEditor;

@@ -18,7 +18,7 @@ namespace UniVRM10
         public RemapEditorVrm(IEnumerable<SubAssetKey> keys, EditorMapGetterFunc getter, EditorMapSetterFunc setter) : base(keys, getter, setter)
         { }
 
-        public void OnGUI(ScriptedImporter importer, IGltfData data, UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm)
+        public void OnGUI(ScriptedImporter importer, GltfData data, UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm)
         {
             if (CanExtract(importer))
             {
@@ -49,7 +49,7 @@ namespace UniVRM10
         /// が Extract 対象となる
         /// 
         /// </summary>
-        public static void Extract(ScriptedImporter importer, IGltfData data)
+        public static void Extract(ScriptedImporter importer, GltfData data)
         {
             if (string.IsNullOrEmpty(importer.assetPath))
             {

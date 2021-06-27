@@ -78,7 +78,7 @@ namespace UniGLTF
 
         static void RuntimeLoadExport(FileInfo gltf, int subStrStart)
         {
-            IGltfData data = null;
+            GltfData data = null;
             try
             {
                 data = new AmbiguousGltfFileParser(gltf.FullName).Parse();
@@ -124,7 +124,7 @@ namespace UniGLTF
         /// <param name="root"></param>
         static void EditorLoad(FileInfo gltf, int subStrStart)
         {
-            IGltfData data = null;
+            GltfData data = null;
             try
             {
                 data = new AmbiguousGltfFileParser(gltf.FullName).Parse();

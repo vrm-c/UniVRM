@@ -18,7 +18,7 @@ namespace UniVRM10
         /// <summary>
         /// VMRC_materials_mtoon の場合にマテリアル生成情報を作成する
         /// </summary>
-        public static bool TryCreateParam(IGltfData data, int i, out MaterialDescriptor matDesc)
+        public static bool TryCreateParam(GltfData data, int i, out MaterialDescriptor matDesc)
         {
             var m = data.GLTF.materials[i];
             if (!UniGLTF.Extensions.VRMC_materials_mtoon.GltfDeserializer.TryGet(m.extensions,

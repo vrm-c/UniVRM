@@ -17,7 +17,7 @@ namespace VRM
         public void TextureEnumerationTest()
         {
             {
-                var data = IGltfData.CreateFromGltfData(
+                var data = GltfData.CreateFromGltfData(
                     new glTF
                     {
                         images = new List<glTFImage>
@@ -88,7 +88,7 @@ namespace VRM
         [Test]
         public void TextureEnumerationInUnknownShader()
         {
-            var data = IGltfData.CreateFromGltfData(
+            var data = GltfData.CreateFromGltfData(
                 new glTF
                 {
                     images = new List<glTFImage>

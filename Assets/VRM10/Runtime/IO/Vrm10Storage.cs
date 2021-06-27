@@ -12,7 +12,7 @@ namespace UniVRM10
 {
     public class Vrm10Storage
     {
-        UniGLTF.IGltfData m_data;
+        UniGLTF.GltfData m_data;
         public UniGLTF.glTF Gltf => m_data.GLTF;
 
         public List<UniGLTF.IBytesBuffer> Buffers;
@@ -26,7 +26,7 @@ namespace UniVRM10
         /// </summary>
         public Vrm10Storage()
         {
-            m_data = new IGltfData(
+            m_data = new GltfData(
                 string.Empty,
                 string.Empty,
                 new glTF
@@ -50,7 +50,7 @@ namespace UniVRM10
         /// </summary>
         /// <param name="json"></param>
         /// <param name="bin"></param>
-        public Vrm10Storage(UniGLTF.IGltfData data)
+        public Vrm10Storage(UniGLTF.GltfData data)
         {
             m_data = data;
 

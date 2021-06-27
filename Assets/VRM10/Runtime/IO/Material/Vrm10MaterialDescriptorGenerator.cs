@@ -6,7 +6,7 @@ namespace UniVRM10
 {
     public sealed class Vrm10MaterialDescriptorGenerator : IMaterialDescriptorGenerator
     {
-        public MaterialDescriptor Get(IGltfData data, int i)
+        public MaterialDescriptor Get(GltfData data, int i)
         {
             // mtoon
             if (!Vrm10MToonMaterialImporter.TryCreateParam(data, i, out MaterialDescriptor matDesc))

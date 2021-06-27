@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace UniGLTF
 {
-    public sealed class IGltfData
+    public sealed class GltfData
     {
         /// <summary>
         /// Source file path.
@@ -37,11 +37,11 @@ namespace UniGLTF
         public IStorage Storage { get; }
         
         /// <summary>
-        /// 
+        /// Migration Flags used by ImporterContext
         /// </summary>
         public MigrationFlags MigrationFlags { get; }
 
-        public IGltfData(string targetPath, string json, glTF gltf, IReadOnlyList<GlbChunk> chunks, IStorage storage, MigrationFlags migrationFlags)
+        public GltfData(string targetPath, string json, glTF gltf, IReadOnlyList<GlbChunk> chunks, IStorage storage, MigrationFlags migrationFlags)
         {
             TargetPath = targetPath;
             Json = json;
@@ -51,9 +51,9 @@ namespace UniGLTF
             MigrationFlags = migrationFlags;
         }
 
-        public static IGltfData CreateFromGltfData(glTF gltf)
+        public static GltfData CreateFromGltfData(glTF gltf)
         {
-            return new IGltfData(
+            return new GltfData(
                 string.Empty,
                 string.Empty,
                 gltf,

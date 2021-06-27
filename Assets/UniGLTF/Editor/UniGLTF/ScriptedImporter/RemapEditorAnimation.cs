@@ -12,7 +12,7 @@ namespace UniGLTF
         public RemapEditorAnimation(IEnumerable<SubAssetKey> keys, EditorMapGetterFunc getter, EditorMapSetterFunc setter) : base(keys, getter, setter)
         { }
 
-        public void OnGUI(ScriptedImporter importer, IGltfData data)
+        public void OnGUI(ScriptedImporter importer, GltfData data)
         {
             if (!HasKeys)
             {
@@ -40,7 +40,7 @@ namespace UniGLTF
             DrawRemapGUI<AnimationClip>(importer.GetExternalObjectMap());
         }
 
-        public static void Extract(ScriptedImporter importer, IGltfData data)
+        public static void Extract(ScriptedImporter importer, GltfData data)
         {
             if (string.IsNullOrEmpty(importer.assetPath))
             {

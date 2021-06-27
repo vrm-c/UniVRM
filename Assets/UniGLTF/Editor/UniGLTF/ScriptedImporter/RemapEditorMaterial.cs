@@ -25,7 +25,7 @@ namespace UniGLTF
         public RemapEditorMaterial(IEnumerable<SubAssetKey> keys, EditorMapGetterFunc getter, EditorMapSetterFunc setter) : base(keys, getter, setter)
         { }
 
-        public void OnGUI(ScriptedImporter importer, IGltfData data,
+        public void OnGUI(ScriptedImporter importer, GltfData data,
             ITextureDescriptorGenerator textureDescriptorGenerator,
             Func<string, string> textureDir,
             Func<string, string> materialDir)
@@ -63,7 +63,7 @@ namespace UniGLTF
             }
         }
 
-        void ExtractMaterialsAndTextures(ScriptedImporter self, IGltfData data, ITextureDescriptorGenerator textureDescriptorGenerator, Func<string, string> textureDir, Func<string, string> materialDir)
+        void ExtractMaterialsAndTextures(ScriptedImporter self, GltfData data, ITextureDescriptorGenerator textureDescriptorGenerator, Func<string, string> textureDir, Func<string, string> materialDir)
         {
             if (string.IsNullOrEmpty(self.assetPath))
             {

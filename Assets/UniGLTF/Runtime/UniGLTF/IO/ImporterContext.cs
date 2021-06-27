@@ -19,7 +19,7 @@ namespace UniGLTF
         IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> _externalObjectMap;
 
         public ImporterContext(
-            IGltfData data,
+            GltfData data,
             IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> externalObjectMap = null,
             ITextureDeserializer textureDeserializer = null)
         {
@@ -40,7 +40,7 @@ namespace UniGLTF
         }
 
         #region Source
-        public IGltfData Data { get; }
+        public GltfData Data { get; }
         public String Json => Data.Json;
         public glTF GLTF => Data.GLTF;
         public IStorage Storage => Data.Storage;

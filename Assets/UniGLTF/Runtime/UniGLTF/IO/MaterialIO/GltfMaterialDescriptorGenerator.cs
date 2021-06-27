@@ -10,7 +10,7 @@ namespace UniGLTF
     /// </summary>
     public sealed class GltfMaterialDescriptorGenerator : IMaterialDescriptorGenerator
     {
-        public MaterialDescriptor Get(IGltfData data, int i)
+        public MaterialDescriptor Get(GltfData data, int i)
         {
             if (!GltfUnlitMaterialImporter.TryCreateParam(data, i, out var param))
             {

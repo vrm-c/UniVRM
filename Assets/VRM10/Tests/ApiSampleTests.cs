@@ -19,7 +19,7 @@ namespace UniVRM10.Test
             return model;
         }
 
-        GameObject BuildGameObject(IGltfData data, VRMC_vrm vrm, bool showMesh)
+        GameObject BuildGameObject(GltfData data, VRMC_vrm vrm, bool showMesh)
         {
             using (var loader = new Vrm10Importer(data, vrm))
             {

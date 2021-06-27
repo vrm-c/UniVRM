@@ -228,9 +228,9 @@ namespace UniGLTF
             }
         }
 
-        private IGltfData CreateGltfData(glTF gltf)
+        private GltfData CreateGltfData(glTF gltf)
         {
-            return new IGltfData(
+            return new GltfData(
                 string.Empty,
                 string.Empty,
                 gltf,

@@ -10,7 +10,7 @@ namespace UniVRM10
 {
     public static class Vrm10MToonTextureImporter
     {
-        public static IEnumerable<(string key, (SubAssetKey, TextureDescriptor))> EnumerateAllTextures(IGltfData data, glTFMaterial material, VRMC_materials_mtoon mToon)
+        public static IEnumerable<(string key, (SubAssetKey, TextureDescriptor))> EnumerateAllTextures(GltfData data, glTFMaterial material, VRMC_materials_mtoon mToon)
         {
             if (TryGetBaseColorTexture(data, material, out var litTex))
             {
@@ -58,7 +58,7 @@ namespace UniVRM10
             }
         }
 
-        private static bool TryGetBaseColorTexture(IGltfData data, glTFMaterial src, out (SubAssetKey, TextureDescriptor) pair)
+        private static bool TryGetBaseColorTexture(GltfData data, glTFMaterial src, out (SubAssetKey, TextureDescriptor) pair)
         {
             try
             {
@@ -77,7 +77,7 @@ namespace UniVRM10
             }
         }
 
-        private static bool TryGetEmissiveTexture(IGltfData data, glTFMaterial src, out (SubAssetKey, TextureDescriptor) pair)
+        private static bool TryGetEmissiveTexture(GltfData data, glTFMaterial src, out (SubAssetKey, TextureDescriptor) pair)
         {
             try
             {
@@ -97,7 +97,7 @@ namespace UniVRM10
 
         }
 
-        private static bool TryGetNormalTexture(IGltfData data, glTFMaterial src, out (SubAssetKey, TextureDescriptor) pair)
+        private static bool TryGetNormalTexture(GltfData data, glTFMaterial src, out (SubAssetKey, TextureDescriptor) pair)
         {
             try
             {
@@ -116,37 +116,37 @@ namespace UniVRM10
             }
         }
 
-        private static bool TryGetShadeMultiplyTexture(IGltfData data, VRMC_materials_mtoon mToon, out (SubAssetKey, TextureDescriptor) pair)
+        private static bool TryGetShadeMultiplyTexture(GltfData data, VRMC_materials_mtoon mToon, out (SubAssetKey, TextureDescriptor) pair)
         {
             return TryGetSRGBTexture(data, new Vrm10TextureInfo(mToon.ShadeMultiplyTexture), out pair);
         }
 
-        private static bool TryGetShadingShiftTexture(IGltfData data, VRMC_materials_mtoon mToon, out (SubAssetKey, TextureDescriptor) pair)
+        private static bool TryGetShadingShiftTexture(GltfData data, VRMC_materials_mtoon mToon, out (SubAssetKey, TextureDescriptor) pair)
         {
             return TryGetLinearTexture(data, new Vrm10TextureInfo(mToon.ShadingShiftTexture), out pair);
         }
 
-        private static bool TryGetMatcapTexture(IGltfData data, VRMC_materials_mtoon mToon, out (SubAssetKey, TextureDescriptor) pair)
+        private static bool TryGetMatcapTexture(GltfData data, VRMC_materials_mtoon mToon, out (SubAssetKey, TextureDescriptor) pair)
         {
             return TryGetSRGBTexture(data, new Vrm10TextureInfo(mToon.ShadingShiftTexture), out pair);
         }
 
-        private static bool TryGetRimMultiplyTexture(IGltfData data, VRMC_materials_mtoon mToon, out (SubAssetKey, TextureDescriptor) pair)
+        private static bool TryGetRimMultiplyTexture(GltfData data, VRMC_materials_mtoon mToon, out (SubAssetKey, TextureDescriptor) pair)
         {
             return TryGetSRGBTexture(data, new Vrm10TextureInfo(mToon.RimMultiplyTexture), out pair);
         }
 
-        private static bool TryGetOutlineWidthMultiplyTexture(IGltfData data, VRMC_materials_mtoon mToon, out (SubAssetKey, TextureDescriptor) pair)
+        private static bool TryGetOutlineWidthMultiplyTexture(GltfData data, VRMC_materials_mtoon mToon, out (SubAssetKey, TextureDescriptor) pair)
         {
             return TryGetLinearTexture(data, new Vrm10TextureInfo(mToon.OutlineWidthMultiplyTexture), out pair);
         }
 
-        private static bool TryGetUvAnimationMaskTexture(IGltfData data, VRMC_materials_mtoon mToon, out (SubAssetKey, TextureDescriptor) pair)
+        private static bool TryGetUvAnimationMaskTexture(GltfData data, VRMC_materials_mtoon mToon, out (SubAssetKey, TextureDescriptor) pair)
         {
             return TryGetLinearTexture(data, new Vrm10TextureInfo(mToon.UvAnimationMaskTexture), out pair);
         }
 
-        private static bool TryGetSRGBTexture(IGltfData data, Vrm10TextureInfo info, out (SubAssetKey, TextureDescriptor) pair)
+        private static bool TryGetSRGBTexture(GltfData data, Vrm10TextureInfo info, out (SubAssetKey, TextureDescriptor) pair)
         {
             try
             {
@@ -165,7 +165,7 @@ namespace UniVRM10
                 return false;
             }
         }
-        private static bool TryGetLinearTexture(IGltfData data, Vrm10TextureInfo info, out (SubAssetKey, TextureDescriptor) pair)
+        private static bool TryGetLinearTexture(GltfData data, Vrm10TextureInfo info, out (SubAssetKey, TextureDescriptor) pair)
         {
             try
             {

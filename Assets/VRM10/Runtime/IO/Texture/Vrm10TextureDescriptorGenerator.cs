@@ -9,10 +9,10 @@ namespace UniVRM10
 {
     public sealed class Vrm10TextureDescriptorGenerator : ITextureDescriptorGenerator
     {
-        private readonly IGltfData m_data;
+        private readonly GltfData m_data;
         private TextureDescriptorSet _textureDescriptorSet;
 
-        public Vrm10TextureDescriptorGenerator(IGltfData data)
+        public Vrm10TextureDescriptorGenerator(GltfData data)
         {
             m_data = data;
         }
@@ -33,7 +33,7 @@ namespace UniVRM10
         /// <summary>
         /// glTF 全体で使うテクスチャーを列挙する
         /// </summary>
-        private static IEnumerable<(SubAssetKey, TextureDescriptor)> EnumerateAllTextures(IGltfData data)
+        private static IEnumerable<(SubAssetKey, TextureDescriptor)> EnumerateAllTextures(GltfData data)
         {
             if (!UniGLTF.Extensions.VRMC_vrm.GltfDeserializer.TryGet(data.GLTF.extensions, out UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm))
             {
@@ -71,7 +71,7 @@ namespace UniVRM10
         /// <summary>
         /// VRM-1 の thumbnail テクスチャー。gltf.textures ではなく gltf.images の参照であることに注意(sampler等の設定が無い)
         /// </summary>
-        public static bool TryGetMetaThumbnailTextureImportParam(IGltfData data, UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm, out (SubAssetKey, TextureDescriptor) value)
+        public static bool TryGetMetaThumbnailTextureImportParam(GltfData data, UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm, out (SubAssetKey, TextureDescriptor) value)
         {
             if (vrm?.Meta?.ThumbnailImage == null)
             {

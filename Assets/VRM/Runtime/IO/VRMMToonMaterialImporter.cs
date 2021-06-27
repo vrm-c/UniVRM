@@ -6,7 +6,7 @@ namespace VRM
 {
     public static class VRMMToonMaterialImporter
     {
-        public static bool TryCreateParam(IGltfData data, glTF_VRM_extensions vrm, int materialIdx, out MaterialDescriptor matDesc)
+        public static bool TryCreateParam(GltfData data, glTF_VRM_extensions vrm, int materialIdx, out MaterialDescriptor matDesc)
         {
             var vrmMaterial = vrm.materialProperties[materialIdx];
             if (vrmMaterial.shader == VRM.glTF_VRM_Material.VRM_USE_GLTFSHADER)
