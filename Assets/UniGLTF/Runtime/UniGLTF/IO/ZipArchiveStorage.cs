@@ -371,7 +371,9 @@ namespace UniGLTF.Zip
                     return new ArraySegment<byte>(Extract(found));
 
                 case CompressionMethod.Stored:
-                    return new ArraySegment<byte>(found.Bytes, found.RelativeOffsetOfLocalFileHeader, found.CompressedSize);
+                    var local = new LocalFileHeader(found.Bytes, found.RelativeOffsetOfLocalFileHeader);
+                    var pos = local.Offset + local.Length;
+                    return new ArraySegment<byte>(local.Bytes, pos, local.CompressedSize);
             }
 
             throw new NotImplementedException(found.CompressionMethod.ToString());
