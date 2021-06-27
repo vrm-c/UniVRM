@@ -51,7 +51,7 @@ namespace UniGLTF
             MigrationFlags = migrationFlags;
         }
 
-        public static GltfData CreateFromGltfData(glTF gltf)
+        public static GltfData CreateFromGltfDataForTest(glTF gltf)
         {
             return new GltfData(
                 string.Empty,

@@ -7,7 +7,7 @@ using System.Text;
 namespace UniGLTF
 {
     /// <summary>
-    /// Zip archived .GLTF file parser.
+    /// Zip archived .GLTF file & resources parser.
     /// </summary>
     public sealed class ZipArchivedGltfFileParser
     {

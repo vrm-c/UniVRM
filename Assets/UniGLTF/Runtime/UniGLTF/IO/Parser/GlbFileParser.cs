@@ -2,6 +2,9 @@
 
 namespace UniGLTF
 {
+    /// <summary>
+    /// .GLB file parser.
+    /// </summary>
     public sealed class GlbFileParser
     {
         private readonly string _path;

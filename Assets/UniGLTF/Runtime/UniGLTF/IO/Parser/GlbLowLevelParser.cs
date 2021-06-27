@@ -6,6 +6,10 @@ using UniJSON;
 
 namespace UniGLTF
 {
+    /// <summary>
+    /// Low-level API.
+    /// Parse from specified path & specified binary.
+    /// </summary>
     public sealed class GlbLowLevelParser
     {
         private readonly string _path;
