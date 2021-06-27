@@ -45,7 +45,7 @@ namespace VRM
                 throw new Exception();
             }
 
-            var parser = new GltfParser();
+            var parser = new IGltfData();
             parser.ParseGlb(File.ReadAllBytes(vrmPath.FullPath));
 
             var prefabPath = vrmPath.Parent.Child(vrmPath.FileNameWithoutExtension + ".prefab");

@@ -312,7 +312,7 @@ namespace VRM.Samples
                     {
                         var file = File.ReadAllBytes(path);
 
-                        var parser = new GltfParser();
+                        var parser = new IGltfData();
                         parser.ParseGlb(file);
 
                         using (var context = new VRMImporterContext(parser))
@@ -329,7 +329,7 @@ namespace VRM.Samples
                 case ".glb":
                     {
                         var file = File.ReadAllBytes(path);
-                        var parser = new GltfParser();
+                        var parser = new IGltfData();
                         parser.ParseGlb(file);
 
                         var context = new UniGLTF.ImporterContext(parser);
@@ -343,7 +343,7 @@ namespace VRM.Samples
                 case ".gltf":
                 case ".zip":
                     {
-                        var parser = new GltfParser();
+                        var parser = new IGltfData();
                         parser.ParsePath(path);
 
                         var context = new UniGLTF.ImporterContext(parser);

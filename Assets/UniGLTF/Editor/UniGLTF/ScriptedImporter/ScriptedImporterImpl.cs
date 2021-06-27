@@ -27,7 +27,7 @@ namespace UniGLTF
             //
             // Parse(parse glb, parser gltf json)
             //
-            var parser = new GltfParser();
+            var parser = new IGltfData();
             parser.ParsePath(scriptedImporter.assetPath);
 
             //

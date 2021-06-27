@@ -19,12 +19,12 @@ namespace UniGLTF
         IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> _externalObjectMap;
 
         public ImporterContext(
-            GltfParser parser,
+            IGltfData data,
             IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> externalObjectMap = null,
             ITextureDeserializer textureDeserializer = null)
         {
-            Parser = parser;
-            TextureDescriptorGenerator = new GltfTextureDescriptorGenerator(Parser);
+            Data = data;
+            TextureDescriptorGenerator = new GltfTextureDescriptorGenerator(Data);
             MaterialDescriptorGenerator = new GltfMaterialDescriptorGenerator();
 
             _externalObjectMap = externalObjectMap ?? new Dictionary<SubAssetKey, UnityEngine.Object>();
@@ -33,17 +33,17 @@ namespace UniGLTF
             TextureFactory = new TextureFactory(textureDeserializer, _externalObjectMap
                 .Where(x => x.Value is Texture)
                 .ToDictionary(x => x.Key, x => (Texture)x.Value),
-                Parser.MigrationFlags.IsRoughnessTextureValueSquared);
+                Data.MigrationFlags.IsRoughnessTextureValueSquared);
             MaterialFactory = new MaterialFactory(_externalObjectMap
                 .Where(x => x.Value is Material)
                 .ToDictionary(x => x.Key, x => (Material)x.Value));
         }
 
         #region Source
-        public GltfParser Parser { get; }
-        public String Json => Parser.Json;
-        public glTF GLTF => Parser.GLTF;
-        public IStorage Storage => Parser.Storage;
+        public IGltfData Data { get; }
+        public String Json => Data.Json;
+        public glTF GLTF => Data.GLTF;
+        public IStorage Storage => Data.Storage;
         #endregion
 
         // configuration
@@ -235,17 +235,17 @@ namespace UniGLTF
         {
             awaitCaller = awaitCaller ?? new ImmediateCaller();
 
-            if (Parser.GLTF.materials == null || Parser.GLTF.materials.Count == 0)
+            if (Data.GLTF.materials == null || Data.GLTF.materials.Count == 0)
             {
                 // no material. work around.
-                var param = MaterialDescriptorGenerator.Get(Parser, 0);
+                var param = MaterialDescriptorGenerator.Get(Data, 0);
                 var material = await MaterialFactory.LoadAsync(param, TextureFactory.GetTextureAsync, awaitCaller);
             }
             else
             {
-                for (int i = 0; i < Parser.GLTF.materials.Count; ++i)
+                for (int i = 0; i < Data.GLTF.materials.Count; ++i)
                 {
-                    var param = MaterialDescriptorGenerator.Get(Parser, i);
+                    var param = MaterialDescriptorGenerator.Get(Data, i);
                     var material = await MaterialFactory.LoadAsync(param, TextureFactory.GetTextureAsync, awaitCaller);
                 }
             }

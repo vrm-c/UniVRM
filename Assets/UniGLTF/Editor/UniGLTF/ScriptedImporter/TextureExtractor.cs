@@ -13,19 +13,19 @@ namespace UniGLTF
     {
         const string TextureDirName = "Textures";
 
-        GltfParser m_parser;
-        public GltfParser Parser => m_parser;
+        IGltfData m_data;
+        public IGltfData Data => m_data;
 
-        public glTF GLTF => m_parser.GLTF;
-        public IStorage Storage => m_parser.Storage;
+        public glTF GLTF => m_data.GLTF;
+        public IStorage Storage => m_data.Storage;
 
         public readonly Dictionary<SubAssetKey, UnityPath> Textures = new Dictionary<SubAssetKey, UnityPath>();
         private readonly IReadOnlyDictionary<SubAssetKey, Texture> m_subAssets;
         UnityPath m_textureDirectory;
 
-        public TextureExtractor(GltfParser parser, UnityPath textureDirectory, IReadOnlyDictionary<SubAssetKey, Texture> subAssets)
+        public TextureExtractor(IGltfData data, UnityPath textureDirectory, IReadOnlyDictionary<SubAssetKey, Texture> subAssets)
         {
-            m_parser = parser;
+            m_data = data;
             m_textureDirectory = textureDirectory;
             m_textureDirectory.EnsureFolder();
             m_subAssets = subAssets;
@@ -74,12 +74,12 @@ namespace UniGLTF
         /// <param name="importer"></param>
         /// <param name="dirName"></param>
         /// <param name="onCompleted"></param>
-        public static void ExtractTextures(GltfParser parser, UnityPath textureDirectory,
+        public static void ExtractTextures(IGltfData data, UnityPath textureDirectory,
             ITextureDescriptorGenerator textureDescriptorGenerator, IReadOnlyDictionary<SubAssetKey, Texture> subAssets,
             Action<SubAssetKey, Texture2D> addRemap,
             Action<IEnumerable<UnityPath>> onCompleted = null)
         {
-            var extractor = new TextureExtractor(parser, textureDirectory, subAssets);
+            var extractor = new TextureExtractor(data, textureDirectory, subAssets);
             foreach (var param in textureDescriptorGenerator.Get().GetEnumerable())
             {
                 extractor.Extract(param.SubAssetKey, param);

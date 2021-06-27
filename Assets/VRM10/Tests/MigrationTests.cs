@@ -202,7 +202,7 @@ namespace UniVRM10
                 try
                 {
                     var migrated = MigrationVrm.Migrate(bytes);
-                    var parser = new GltfParser();
+                    var parser = new IGltfData();
                     parser.Parse(gltf.FullName, migrated);
                     UniGLTF.Extensions.VRMC_vrm.GltfDeserializer.TryGet(parser.GLTF.extensions, out UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm);
                     Assert.NotNull(vrm);
@@ -224,7 +224,7 @@ namespace UniVRM10
             // vrm0 のオリジナルの値
             //
             var VALUE = new Vector3(-0.0359970331f, -0.0188314915f, 0.00566166639f);
-            var parser0 = new GltfParser();
+            var parser0 = new IGltfData();
             var bytes0 = File.ReadAllBytes(AliciaPath);
             parser0.Parse(AliciaPath, bytes0);
             var json0 = parser0.Json.ParseAsJson();
@@ -240,7 +240,7 @@ namespace UniVRM10
             // vrm1 に migrate
             //
             var bytes1 = MigrationVrm.Migrate(bytes0);
-            var parser1 = new GltfParser();
+            var parser1 = new IGltfData();
             parser1.Parse(AliciaPath, bytes1);
             Assert.True(UniGLTF.Extensions.VRMC_springBone.GltfDeserializer.TryGet(parser1.GLTF.extensions, out UniGLTF.Extensions.VRMC_springBone.VRMC_springBone springBone));
             var spring = springBone.Springs[0];

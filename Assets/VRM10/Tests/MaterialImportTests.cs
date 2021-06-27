@@ -22,7 +22,7 @@ namespace UniVRM10
         public void MaterialImporterTest()
         {
             var migratedBytes = MigrationVrm.Migrate(File.ReadAllBytes(AliciaPath));
-            var parser = new GltfParser();
+            var parser = new IGltfData();
             parser.Parse(AliciaPath, migratedBytes);
 
             var matDesc = new Vrm10MaterialDescriptorGenerator().Get(parser, 0);

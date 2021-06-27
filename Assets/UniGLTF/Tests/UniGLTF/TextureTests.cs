@@ -89,7 +89,7 @@ namespace UniGLTF
             }
 
             // parse
-            var parser = new GltfParser();
+            var parser = new IGltfData();
             parser.ParsePath(path.FullName);
 
             // load

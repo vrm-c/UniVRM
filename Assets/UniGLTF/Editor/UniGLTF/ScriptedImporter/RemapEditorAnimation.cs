@@ -12,7 +12,7 @@ namespace UniGLTF
         public RemapEditorAnimation(IEnumerable<SubAssetKey> keys, EditorMapGetterFunc getter, EditorMapSetterFunc setter) : base(keys, getter, setter)
         { }
 
-        public void OnGUI(ScriptedImporter importer, GltfParser parser)
+        public void OnGUI(ScriptedImporter importer, IGltfData data)
         {
             if (!HasKeys)
             {
@@ -24,7 +24,7 @@ namespace UniGLTF
             {
                 if (GUILayout.Button("Extract Animation ..."))
                 {
-                    Extract(importer, parser);
+                    Extract(importer, data);
                 }
                 EditorGUILayout.HelpBox("Extract subasset to external object and overwrite remap", MessageType.Info);
             }
@@ -40,7 +40,7 @@ namespace UniGLTF
             DrawRemapGUI<AnimationClip>(importer.GetExternalObjectMap());
         }
 
-        public static void Extract(ScriptedImporter importer, GltfParser parser)
+        public static void Extract(ScriptedImporter importer, IGltfData data)
         {
             if (string.IsNullOrEmpty(importer.assetPath))
             {

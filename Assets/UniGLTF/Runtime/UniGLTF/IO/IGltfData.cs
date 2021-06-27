@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace UniGLTF
 {
-    public class GltfParser
+    public class IGltfData
     {
         /// <summary>
         /// JSON source

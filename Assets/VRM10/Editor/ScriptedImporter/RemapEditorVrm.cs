@@ -18,13 +18,13 @@ namespace UniVRM10
         public RemapEditorVrm(IEnumerable<SubAssetKey> keys, EditorMapGetterFunc getter, EditorMapSetterFunc setter) : base(keys, getter, setter)
         { }
 
-        public void OnGUI(ScriptedImporter importer, GltfParser parser, UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm)
+        public void OnGUI(ScriptedImporter importer, IGltfData data, UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm)
         {
             if (CanExtract(importer))
             {
                 if (GUILayout.Button("Extract Meta And Expressions ..."))
                 {
-                    Extract(importer, parser);
+                    Extract(importer, data);
                 }
                 EditorGUILayout.HelpBox("Extract subasset to external object and overwrite remap", MessageType.Info);
             }
@@ -49,7 +49,7 @@ namespace UniVRM10
         /// が Extract 対象となる
         /// 
         /// </summary>
-        public static void Extract(ScriptedImporter importer, GltfParser parser)
+        public static void Extract(ScriptedImporter importer, IGltfData data)
         {
             if (string.IsNullOrEmpty(importer.assetPath))
             {

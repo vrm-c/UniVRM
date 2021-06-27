@@ -115,7 +115,7 @@ namespace UniGLTF
             }
 
             // parse
-            var parser = new GltfParser();
+            var parser = new IGltfData();
             parser.ParseJson(json, new SimpleStorage(new ArraySegment<byte>()));
 
             // import
@@ -553,7 +553,7 @@ namespace UniGLTF
 
                 // import
                 {
-                    var parser = new GltfParser();
+                    var parser = new IGltfData();
                     parser.ParseJson(json, new SimpleStorage(new ArraySegment<byte>(new byte[1024 * 1024])));
 
                     using (var context = new ImporterContext(parser))
@@ -573,7 +573,7 @@ namespace UniGLTF
 
                 // import new version
                 {
-                    var parser = new GltfParser();
+                    var parser = new IGltfData();
                     parser.ParseJson(json, new SimpleStorage(new ArraySegment<byte>(new byte[1024 * 1024])));
                     //Debug.LogFormat("{0}", context.Json);
                     using (var context = new ImporterContext(parser))
@@ -626,7 +626,7 @@ namespace UniGLTF
 
                 // import
                 {
-                    var parser = new GltfParser();
+                    var parser = new IGltfData();
                     parser.ParseJson(json, new SimpleStorage(new ArraySegment<byte>(new byte[1024 * 1024])));
 
                     using (var context = new ImporterContext(parser))
@@ -691,7 +691,7 @@ namespace UniGLTF
 
                 // import
                 {
-                    var parser = new GltfParser();
+                    var parser = new IGltfData();
                     parser.ParseJson(json, new SimpleStorage(new ArraySegment<byte>(new byte[1024 * 1024])));
 
                     using (var context = new ImporterContext(parser))

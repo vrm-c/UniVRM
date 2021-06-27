@@ -6,7 +6,7 @@ namespace VRM
 {
     public static class VRMMToonMaterialImporter
     {
-        public static bool TryCreateParam(GltfParser parser, glTF_VRM_extensions vrm, int materialIdx, out MaterialDescriptor matDesc)
+        public static bool TryCreateParam(IGltfData data, glTF_VRM_extensions vrm, int materialIdx, out MaterialDescriptor matDesc)
         {
             var vrmMaterial = vrm.materialProperties[materialIdx];
             if (vrmMaterial.shader == VRM.glTF_VRM_Material.VRM_USE_GLTFSHADER)
@@ -20,7 +20,7 @@ namespace VRM
             // restore VRM material
             //
             // use material.name, because material name may renamed in GltfParser.
-            var name = parser.GLTF.materials[materialIdx].name;
+            var name = data.GLTF.materials[materialIdx].name;
             matDesc = new MaterialDescriptor(name, vrmMaterial.shader);
 
             matDesc.RenderQueue = vrmMaterial.renderQueue;
@@ -42,7 +42,7 @@ namespace VRM
 
             foreach (var kv in vrmMaterial.textureProperties)
             {
-                if (VRMMToonTextureImporter.TryGetTextureFromMaterialProperty(parser, vrm, materialIdx, kv.Key, out var texture))
+                if (VRMMToonTextureImporter.TryGetTextureFromMaterialProperty(data, vrm, materialIdx, kv.Key, out var texture))
                 {
                     matDesc.TextureSlots.Add(kv.Key, texture.Item2);
                 }

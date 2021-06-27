@@ -51,7 +51,7 @@ namespace VRM
 
         static GameObject Load(FileInfo gltf, DirectoryInfo root, byte[] bytes = null)
         {
-            var parser = new GltfParser();
+            var parser = new IGltfData();
             try
             {
                 if (bytes != null)

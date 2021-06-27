@@ -7,19 +7,19 @@ namespace VRM
 {
     public static class VRMMToonTextureImporter
     {
-        public static IEnumerable<(SubAssetKey, TextureDescriptor)> EnumerateAllTextures(GltfParser parser, glTF_VRM_extensions vrm, int materialIdx)
+        public static IEnumerable<(SubAssetKey, TextureDescriptor)> EnumerateAllTextures(IGltfData data, glTF_VRM_extensions vrm, int materialIdx)
         {
             var vrmMaterial = vrm.materialProperties[materialIdx];
             foreach (var kv in vrmMaterial.textureProperties)
             {
-                if (TryGetTextureFromMaterialProperty(parser, vrm, materialIdx, kv.Key, out var texture))
+                if (TryGetTextureFromMaterialProperty(data, vrm, materialIdx, kv.Key, out var texture))
                 {
                     yield return texture;
                 }
             }
         }
 
-        public static bool TryGetTextureFromMaterialProperty(GltfParser parser, glTF_VRM_extensions vrm, int materialIdx, string textureKey, out (SubAssetKey, TextureDescriptor) texture)
+        public static bool TryGetTextureFromMaterialProperty(IGltfData data, glTF_VRM_extensions vrm, int materialIdx, string textureKey, out (SubAssetKey, TextureDescriptor) texture)
         {
             var vrmMaterial = vrm.materialProperties[materialIdx];
             // 任意の shader の import を許容する
@@ -35,10 +35,10 @@ namespace VRM
                 switch (textureKey)
                 {
                     case MToon.Utils.PropBumpMap:
-                        texture = GltfTextureImporter.CreateNormal(parser, textureIdx, offset, scale);
+                        texture = GltfTextureImporter.CreateNormal(data, textureIdx, offset, scale);
                         break;
                     default:
-                        texture = GltfTextureImporter.CreateSRGB(parser, textureIdx, offset, scale);
+                        texture = GltfTextureImporter.CreateSRGB(data, textureIdx, offset, scale);
                         break;
                 }
                 return true;

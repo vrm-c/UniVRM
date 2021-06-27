@@ -17,13 +17,13 @@ namespace UniVRM10
     {
         public readonly struct Result
         {
-            public readonly GltfParser Parser;
+            public readonly IGltfData Data;
             public readonly VRMC_vrm Vrm;
             public readonly Vrm10FileType FileType;
             public readonly String Message;
-            public Result(GltfParser parser, VRMC_vrm vrm, Vrm10FileType fileType, string message)
+            public Result(IGltfData data, VRMC_vrm vrm, Vrm10FileType fileType, string message)
             {
-                Parser = parser;
+                Data = data;
                 Vrm = vrm;
                 FileType = fileType;
                 Message = message;
@@ -47,7 +47,7 @@ namespace UniVRM10
             // Parse(parse glb, parser gltf json)
             //
             {
-                var parser = new GltfParser();
+                var parser = new IGltfData();
                 parser.Parse(path, bytes);
                 if (UniGLTF.Extensions.VRMC_vrm.GltfDeserializer.TryGet(parser.GLTF.extensions, out UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm))
                 {
@@ -103,7 +103,7 @@ namespace UniVRM10
             }
 
             {
-                var parser = new GltfParser();
+                var parser = new IGltfData();
                 parser.Parse(path, migrated);
                 if (UniGLTF.Extensions.VRMC_vrm.GltfDeserializer.TryGet(parser.GLTF.extensions, out VRMC_vrm vrm))
                 {

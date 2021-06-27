@@ -313,7 +313,7 @@ namespace UniVRM10.Samples
                             Debug.LogError(result.Message);
                             return;
                         }
-                        using (var loader = new Vrm10Importer(result.Parser, result.Vrm))
+                        using (var loader = new Vrm10Importer(result.Data, result.Vrm))
                         {
                             var loaded = loader.Load();
                             loaded.ShowMeshes();
@@ -326,7 +326,7 @@ namespace UniVRM10.Samples
                 case ".glb":
                     {
                         var file = File.ReadAllBytes(path);
-                        var parser = new GltfParser();
+                        var parser = new IGltfData();
                         parser.ParseGlb(file);
 
                         using (var loader = new UniGLTF.ImporterContext(parser))
@@ -342,7 +342,7 @@ namespace UniVRM10.Samples
                 case ".gltf":
                 case ".zip":
                     {
-                        var parser = new GltfParser();
+                        var parser = new IGltfData();
                         parser.ParsePath(path);
 
                         using (var loader = new UniGLTF.ImporterContext(parser))

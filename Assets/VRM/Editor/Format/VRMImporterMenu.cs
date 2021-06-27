@@ -45,7 +45,7 @@ namespace VRM
         static void ImportRuntime(string path)
         {
             // load into scene
-            var parser = new GltfParser();
+            var parser = new IGltfData();
             parser.ParsePath(path);
 
             using (var context = new VRMImporterContext(parser))
@@ -67,7 +67,7 @@ namespace VRM
 
             // import as asset
             // var prefabPath = UnityPath.FromUnityPath(prefabPath);
-            var parser = new GltfParser();
+            var parser = new IGltfData();
             parser.ParseGlb(File.ReadAllBytes(path));
 
             Action<IEnumerable<UnityPath>> onCompleted = texturePaths =>

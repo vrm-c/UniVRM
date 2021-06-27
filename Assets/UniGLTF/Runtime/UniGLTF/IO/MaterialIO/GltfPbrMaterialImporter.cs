@@ -48,15 +48,15 @@ namespace UniGLTF
             Transparent
         }
 
-        public static bool TryCreateParam(GltfParser parser, int i, out MaterialDescriptor matDesc)
+        public static bool TryCreateParam(IGltfData data, int i, out MaterialDescriptor matDesc)
         {
-            if (i < 0 || i >= parser.GLTF.materials.Count)
+            if (i < 0 || i >= data.GLTF.materials.Count)
             {
                 matDesc = default;
                 return false;
             }
 
-            var src = parser.GLTF.materials[i];
+            var src = data.GLTF.materials[i];
             matDesc = new MaterialDescriptor(GltfMaterialDescriptorGenerator.GetMaterialName(i, src), ShaderName);
 
             var standardTexDesc = default(TextureDescriptor);
@@ -65,7 +65,7 @@ namespace UniGLTF
                 if (src.pbrMetallicRoughness.metallicRoughnessTexture != null || src.occlusionTexture != null)
                 {
                     SubAssetKey key;
-                    (key, standardTexDesc) = GltfPbrTextureImporter.StandardTexture(parser, src);
+                    (key, standardTexDesc) = GltfPbrTextureImporter.StandardTexture(data, src);
                 }
 
                 if (src.pbrMetallicRoughness.baseColorFactor != null && src.pbrMetallicRoughness.baseColorFactor.Length == 4)
@@ -77,7 +77,7 @@ namespace UniGLTF
 
                 if (src.pbrMetallicRoughness.baseColorTexture != null && src.pbrMetallicRoughness.baseColorTexture.index != -1)
                 {
-                    var (key, textureParam) = GltfPbrTextureImporter.BaseColorTexture(parser, src);
+                    var (key, textureParam) = GltfPbrTextureImporter.BaseColorTexture(data, src);
                     matDesc.TextureSlots.Add("_MainTex", textureParam);
                 }
 
@@ -99,7 +99,7 @@ namespace UniGLTF
             if (src.normalTexture != null && src.normalTexture.index != -1)
             {
                 matDesc.Actions.Add(material => material.EnableKeyword("_NORMALMAP"));
-                var (key, textureParam) = GltfPbrTextureImporter.NormalTexture(parser, src);
+                var (key, textureParam) = GltfPbrTextureImporter.NormalTexture(data, src);
                 matDesc.TextureSlots.Add("_BumpMap", textureParam);
                 matDesc.FloatValues.Add("_BumpScale", src.normalTexture.scale);
             }
@@ -128,7 +128,7 @@ namespace UniGLTF
 
                 if (src.emissiveTexture != null && src.emissiveTexture.index != -1)
                 {
-                    var (key, textureParam) = GltfPbrTextureImporter.EmissiveTexture(parser, src);
+                    var (key, textureParam) = GltfPbrTextureImporter.EmissiveTexture(data, src);
                     matDesc.TextureSlots.Add("_EmissionMap", textureParam);
                 }
             }

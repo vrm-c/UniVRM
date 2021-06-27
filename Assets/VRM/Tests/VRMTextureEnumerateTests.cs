@@ -16,7 +16,7 @@ namespace VRM
         public void TextureEnumerationTest()
         {
             {
-                var parser = new GltfParser
+                var parser = new IGltfData
                 {
                     GLTF = new glTF
                     {
@@ -80,7 +80,7 @@ namespace VRM
         [Test]
         public void TextureEnumerationInUnknownShader()
         {
-            var parser = new GltfParser
+            var parser = new IGltfData
             {
                 GLTF = new glTF
                 {

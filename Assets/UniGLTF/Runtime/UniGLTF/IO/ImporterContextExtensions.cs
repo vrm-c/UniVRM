@@ -23,7 +23,7 @@ namespace UniGLTF
             }
 
 #if VRM_DEVELOP
-            Debug.Log($"{self.Parser.TargetPath}: {meassureTime.GetSpeedLog()}");
+            Debug.Log($"{self.Data.TargetPath}: {meassureTime.GetSpeedLog()}");
 #endif
 
             return task.Result;

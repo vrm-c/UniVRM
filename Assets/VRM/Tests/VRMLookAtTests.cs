@@ -20,7 +20,7 @@ namespace VRM
         [Test]
         public void VRMLookAtTest()
         {
-            var parser = new GltfParser();
+            var parser = new IGltfData();
             parser.ParsePath(AliciaPath);
             byte[] bytes = default;
             using (var loader = new VRMImporterContext(parser))
@@ -38,7 +38,7 @@ namespace VRM
                 });
             }
 
-            var parser2 = new GltfParser();
+            var parser2 = new IGltfData();
             parser2.Parse(AliciaPath, bytes);
             using (var loader2 = new VRMImporterContext(parser2))
             {
@@ -49,7 +49,7 @@ namespace VRM
         [Test]
         public void VRMLookAtCurveMapWithFreezeTest()
         {
-            var parser = new GltfParser();
+            var parser = new IGltfData();
             parser.ParsePath(AliciaPath);
             byte[] bytes = default;
             CurveMapper horizontalInner = default;
@@ -68,7 +68,7 @@ namespace VRM
                 });
             }
 
-            var parser2 = new GltfParser();
+            var parser2 = new IGltfData();
             parser2.Parse(AliciaPath, bytes);
             using (var loader = new VRMImporterContext(parser2))
             using (var loaded = loader.Load())
@@ -84,7 +84,7 @@ namespace VRM
         [Test]
         public void VRMLookAtCurveMapTest()
         {
-            var parser = new GltfParser();
+            var parser = new IGltfData();
             parser.ParsePath(AliciaPath);
             byte[] bytes = default;
             CurveMapper horizontalInner = default;
@@ -103,7 +103,7 @@ namespace VRM
                 });
             }
 
-            var parser2 = new GltfParser();
+            var parser2 = new IGltfData();
             parser2.Parse(AliciaPath, bytes);
             using (var loader = new VRMImporterContext(parser2))
             using (var loaded = loader.Load())

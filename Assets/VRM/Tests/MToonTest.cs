@@ -46,7 +46,7 @@ namespace VRM
                 return;
             }
 
-            var parser = new GltfParser();
+            var parser = new IGltfData();
             parser.ParsePath(path);
 
             var importer = new VRMImporterContext(parser, null);
@@ -67,7 +67,7 @@ namespace VRM
         [Test]
         public void MaterialImporterTest()
         {
-            var parser = new GltfParser();
+            var parser = new IGltfData();
             parser.ParsePath(AliciaPath);
             var vrmImporter = new VRMImporterContext(parser, null);
             var materialParam = new VRMMaterialDescriptorGenerator(vrmImporter.VRM).Get(parser, 0);

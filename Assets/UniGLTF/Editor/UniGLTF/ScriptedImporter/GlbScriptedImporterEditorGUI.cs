@@ -17,7 +17,7 @@ namespace UniGLTF
     public class GlbScriptedImporterEditorGUI : RemapScriptedImporterEditorBase
     {
         GlbScriptedImporter m_importer;
-        GltfParser m_parser;
+        IGltfData m_data;
 
         RemapEditorMaterial m_materialEditor;
         RemapEditorAnimation m_animationEditor;
@@ -27,14 +27,14 @@ namespace UniGLTF
             base.OnEnable();
 
             m_importer = target as GlbScriptedImporter;
-            m_parser = new GltfParser();
-            m_parser.ParsePath(m_importer.assetPath);
+            m_data = new IGltfData();
+            m_data.ParsePath(m_importer.assetPath);
 
             var materialGenerator = new GltfMaterialDescriptorGenerator();
-            var materialKeys = m_parser.GLTF.materials.Select((_, i) => materialGenerator.Get(m_parser, i).SubAssetKey);
-            var textureKeys = new GltfTextureDescriptorGenerator(m_parser).Get().GetEnumerable().Select(x => x.SubAssetKey);
+            var materialKeys = m_data.GLTF.materials.Select((_, i) => materialGenerator.Get(m_data, i).SubAssetKey);
+            var textureKeys = new GltfTextureDescriptorGenerator(m_data).Get().GetEnumerable().Select(x => x.SubAssetKey);
             m_materialEditor = new RemapEditorMaterial(materialKeys.Concat(textureKeys), GetEditorMap, SetEditorMap);
-            m_animationEditor = new RemapEditorAnimation(AnimationImporterUtil.EnumerateSubAssetKeys(m_parser.GLTF), GetEditorMap, SetEditorMap);
+            m_animationEditor = new RemapEditorAnimation(AnimationImporterUtil.EnumerateSubAssetKeys(m_data.GLTF), GetEditorMap, SetEditorMap);
         }
 
         enum Tabs
@@ -57,13 +57,13 @@ namespace UniGLTF
                     break;
 
                 case Tabs.Animation:
-                    m_animationEditor.OnGUI(m_importer, m_parser);
+                    m_animationEditor.OnGUI(m_importer, m_data);
                     RevertApplyRemapGUI(m_importer);
                     break;
 
                 case Tabs.Materials:
-                    m_materialEditor.OnGUI(m_importer, m_parser,
-                    new GltfTextureDescriptorGenerator(m_parser),
+                    m_materialEditor.OnGUI(m_importer, m_data,
+                    new GltfTextureDescriptorGenerator(m_data),
                     assetPath => $"{Path.GetFileNameWithoutExtension(assetPath)}.Textures",
                     assetPath => $"{Path.GetFileNameWithoutExtension(assetPath)}.Materials");
                     RevertApplyRemapGUI(m_importer);

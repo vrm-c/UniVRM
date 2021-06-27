@@ -8,6 +8,6 @@ namespace UniGLTF
     /// </summary>
     public interface IMaterialDescriptorGenerator
     {
-        MaterialDescriptor Get(GltfParser parser, int i);
+        MaterialDescriptor Get(IGltfData data, int i);
     }
 }

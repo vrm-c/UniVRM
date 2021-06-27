@@ -203,7 +203,7 @@ namespace UniGLTF
         public void TextureEnumerationTest()
         {
             {
-                var parser = new GltfParser
+                var parser = new IGltfData
                 {
                     GLTF = TwoTexture(),
                 };
@@ -212,7 +212,7 @@ namespace UniGLTF
             }
 
             {
-                var parser = new GltfParser
+                var parser = new IGltfData
                 {
                     GLTF = TwoTextureOneUri(),
                 };
@@ -221,7 +221,7 @@ namespace UniGLTF
             }
 
             {
-                var parser = new GltfParser
+                var parser = new IGltfData
                 {
                     GLTF = TwoTextureOneImage(),
                 };
@@ -230,7 +230,7 @@ namespace UniGLTF
             }
 
             {
-                var parser = new GltfParser
+                var parser = new IGltfData
                 {
                     GLTF = CombineMetallicSmoothOcclusion(),
                 };

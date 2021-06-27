@@ -14,16 +14,16 @@ namespace VRM
             m_vrm = vrm;
         }
 
-        public MaterialDescriptor Get(GltfParser parser, int i)
+        public MaterialDescriptor Get(IGltfData data, int i)
         {
             // mtoon
-            if (!VRMMToonMaterialImporter.TryCreateParam(parser, m_vrm, i, out MaterialDescriptor matDesc))
+            if (!VRMMToonMaterialImporter.TryCreateParam(data, m_vrm, i, out MaterialDescriptor matDesc))
             {
                 // unlit
-                if (!GltfUnlitMaterialImporter.TryCreateParam(parser, i, out matDesc))
+                if (!GltfUnlitMaterialImporter.TryCreateParam(data, i, out matDesc))
                 {
                     // pbr
-                    if (!GltfPbrMaterialImporter.TryCreateParam(parser, i, out matDesc))
+                    if (!GltfPbrMaterialImporter.TryCreateParam(data, i, out matDesc))
                     {
                         // fallback
 #if VRM_DEVELOP

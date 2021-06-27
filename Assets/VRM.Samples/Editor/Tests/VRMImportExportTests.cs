@@ -43,7 +43,7 @@ namespace VRM.Samples
         public void ImportExportTest()
         {
             var path = AliciaPath;
-            var parser = new GltfParser();
+            var parser = new IGltfData();
             parser.ParseGlb(File.ReadAllBytes(path));
 
             using (var context = new VRMImporterContext(parser))
@@ -192,7 +192,7 @@ namespace VRM.Samples
         public void MeshCopyTest()
         {
             var path = AliciaPath;
-            var parser = new GltfParser();
+            var parser = new IGltfData();
             parser.ParseGlb(File.ReadAllBytes(path));
 
             using (var context = new VRMImporterContext(parser))
@@ -214,7 +214,7 @@ namespace VRM.Samples
         {
             // Aliciaを古いデシリアライザでロードする
             var path = AliciaPath;
-            var parser = new GltfParser();
+            var parser = new IGltfData();
             parser.ParseGlb(File.ReadAllBytes(path));
 
             using (var context = new VRMImporterContext(parser))

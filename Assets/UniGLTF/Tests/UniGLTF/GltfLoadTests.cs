@@ -78,7 +78,7 @@ namespace UniGLTF
 
         static void RuntimeLoadExport(FileInfo gltf, int subStrStart)
         {
-            var parser = new GltfParser();
+            var parser = new IGltfData();
             try
             {
                 parser.ParsePath(gltf.FullName);
@@ -124,7 +124,7 @@ namespace UniGLTF
         /// <param name="root"></param>
         static void EditorLoad(FileInfo gltf, int subStrStart)
         {
-            var parser = new GltfParser();
+            var parser = new IGltfData();
             try
             {
                 parser.ParsePath(gltf.FullName);
@@ -205,7 +205,7 @@ namespace UniGLTF
 
             {
                 var path = Path.Combine(root.FullName, "DamagedHelmet/glTF-Binary/DamagedHelmet.glb");
-                var parser = new GltfParser();
+                var parser = new IGltfData();
                 parser.ParsePath(path);
 
                 var matDesc = new GltfMaterialDescriptorGenerator().Get(parser, 0);

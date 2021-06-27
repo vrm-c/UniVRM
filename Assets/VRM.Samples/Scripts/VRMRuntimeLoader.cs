@@ -87,7 +87,7 @@ namespace VRM.Samples
             // なんらかの方法でByte列を得た
 
             // GLB形式でJSONを取得しParseします
-            var parser = new GltfParser();
+            var parser = new IGltfData();
             parser.Parse(path, bytes);
 
             using (var context = new VRMImporterContext(parser))
@@ -132,7 +132,7 @@ namespace VRM.Samples
             // なんらかの方法でByte列を得た
 
             // GLB形式でJSONを取得しParseします
-            var parser = new GltfParser();
+            var parser = new IGltfData();
             parser.ParseGlb(bytes);
 
             var context = new VRMImporterContext(parser);

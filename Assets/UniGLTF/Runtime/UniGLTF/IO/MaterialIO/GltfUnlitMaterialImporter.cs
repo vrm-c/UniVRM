@@ -8,15 +8,15 @@ namespace UniGLTF
     {
         public const string ShaderName = "UniGLTF/UniUnlit";
 
-        public static bool TryCreateParam(GltfParser parser, int i, out MaterialDescriptor matDesc)
+        public static bool TryCreateParam(IGltfData data, int i, out MaterialDescriptor matDesc)
         {
-            if (i < 0 || i >= parser.GLTF.materials.Count)
+            if (i < 0 || i >= data.GLTF.materials.Count)
             {
                 matDesc = default;
                 return false;
             }
 
-            var src = parser.GLTF.materials[i];
+            var src = data.GLTF.materials[i];
             if (!glTF_KHR_materials_unlit.IsEnable(src))
             {
                 matDesc = default;
@@ -29,7 +29,7 @@ namespace UniGLTF
             if (src.pbrMetallicRoughness.baseColorTexture != null)
             {
                 var (offset, scale) = GltfTextureImporter.GetTextureOffsetAndScale(src.pbrMetallicRoughness.baseColorTexture);
-                var (key, textureParam) = GltfTextureImporter.CreateSRGB(parser, src.pbrMetallicRoughness.baseColorTexture.index, offset, scale);
+                var (key, textureParam) = GltfTextureImporter.CreateSRGB(data, src.pbrMetallicRoughness.baseColorTexture.index, offset, scale);
                 matDesc.TextureSlots.Add("_MainTex", textureParam);
             }
 
@@ -74,7 +74,7 @@ namespace UniGLTF
                 }
 
                 // VColor
-                var hasVertexColor = parser.GLTF.MaterialHasVertexColor(i);
+                var hasVertexColor = data.GLTF.MaterialHasVertexColor(i);
                 if (hasVertexColor)
                 {
                     UniUnlit.Utils.SetVColBlendMode(material, UniUnlit.UniUnlitVertexColorBlendOp.Multiply);
