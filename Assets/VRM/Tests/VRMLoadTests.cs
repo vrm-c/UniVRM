@@ -51,16 +51,16 @@ namespace VRM
 
         static GameObject Load(FileInfo gltf, DirectoryInfo root, byte[] bytes = null)
         {
-            var parser = new IGltfData();
+            IGltfData data = null;
             try
             {
                 if (bytes != null)
                 {
-                    parser.Parse(gltf.FullName, bytes);
+                    data = new GlbLowLevelParser(gltf.FullName, bytes).Parse();
                 }
                 else
                 {
-                    parser.ParsePath(gltf.FullName);
+                    data = new GlbFileParser(gltf.FullName).Parse();
                 }
             }
             catch (Exception ex)
@@ -72,7 +72,7 @@ namespace VRM
 
             try
             {
-                using (var importer = new VRMImporterContext(parser))
+                using (var importer = new VRMImporterContext(data))
                 {
                     return importer.Load().gameObject;
                 }

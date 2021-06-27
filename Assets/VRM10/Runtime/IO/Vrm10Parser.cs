@@ -47,12 +47,11 @@ namespace UniVRM10
             // Parse(parse glb, parser gltf json)
             //
             {
-                var parser = new IGltfData();
-                parser.Parse(path, bytes);
-                if (UniGLTF.Extensions.VRMC_vrm.GltfDeserializer.TryGet(parser.GLTF.extensions, out UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm))
+                var data = new GlbLowLevelParser(path, bytes).Parse();
+                if (UniGLTF.Extensions.VRMC_vrm.GltfDeserializer.TryGet(data.GLTF.extensions, out UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm))
                 {
                     // success
-                    result = new Result(parser, vrm, Vrm10FileType.Vrm1, "vrm1: loaded");
+                    result = new Result(data, vrm, Vrm10FileType.Vrm1, "vrm1: loaded");
                     return true;
                 }
             }
@@ -103,12 +102,11 @@ namespace UniVRM10
             }
 
             {
-                var parser = new IGltfData();
-                parser.Parse(path, migrated);
-                if (UniGLTF.Extensions.VRMC_vrm.GltfDeserializer.TryGet(parser.GLTF.extensions, out VRMC_vrm vrm))
+                var data = new GlbLowLevelParser(path, migrated).Parse();
+                if (UniGLTF.Extensions.VRMC_vrm.GltfDeserializer.TryGet(data.GLTF.extensions, out VRMC_vrm vrm))
                 {
                     // success
-                    result = new Result(parser, vrm, Vrm10FileType.Vrm0, "vrm0: migrated");
+                    result = new Result(data, vrm, Vrm10FileType.Vrm0, "vrm0: migrated");
                     return true;
                 }
 

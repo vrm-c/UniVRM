@@ -22,10 +22,9 @@ namespace UniVRM10
         public void MaterialImporterTest()
         {
             var migratedBytes = MigrationVrm.Migrate(File.ReadAllBytes(AliciaPath));
-            var parser = new IGltfData();
-            parser.Parse(AliciaPath, migratedBytes);
+            var data = new GlbLowLevelParser(AliciaPath, migratedBytes).Parse();
 
-            var matDesc = new Vrm10MaterialDescriptorGenerator().Get(parser, 0);
+            var matDesc = new Vrm10MaterialDescriptorGenerator().Get(data, 0);
             Assert.AreEqual("Alicia_body", matDesc.Name);
             Assert.AreEqual("Hidden/VRM10/vrmc_materials_mtoon", matDesc.ShaderName);
             Assert.AreEqual("Alicia_body", matDesc.TextureSlots["_MainTex"].UnityObjectName);

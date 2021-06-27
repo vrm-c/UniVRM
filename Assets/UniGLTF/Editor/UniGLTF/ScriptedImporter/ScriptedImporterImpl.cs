@@ -27,8 +27,8 @@ namespace UniGLTF
             //
             // Parse(parse glb, parser gltf json)
             //
-            var parser = new IGltfData();
-            parser.ParsePath(scriptedImporter.assetPath);
+            var data = new AmbiguousGltfFileParser(scriptedImporter.assetPath).Parse();
+            
 
             //
             // Import(create unity objects)
@@ -39,7 +39,7 @@ namespace UniGLTF
                 .Where(x => x.Value != null)
                 .ToDictionary(kv => new SubAssetKey(kv.Value.GetType(), kv.Key.name), kv => kv.Value);
 
-            using (var loader = new ImporterContext(parser, extractedObjects))
+            using (var loader = new ImporterContext(data, extractedObjects))
             {
                 // Configure TextureImporter to Extracted Textures.
                 foreach (var textureInfo in loader.TextureDescriptorGenerator.Get().GetEnumerable())

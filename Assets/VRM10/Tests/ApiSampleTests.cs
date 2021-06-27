@@ -13,10 +13,9 @@ namespace UniVRM10.Test
         {
             var bytes = MigrationVrm.Migrate(File.ReadAllBytes(path));
 
-            var parser = new IGltfData();
-            parser.Parse("migrated", bytes);
+            var data = new GlbLowLevelParser(path, bytes).Parse();
 
-            var model = ModelReader.Read(parser);
+            var model = ModelReader.Read(data);
             return model;
         }
 

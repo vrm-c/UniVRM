@@ -45,8 +45,7 @@ namespace VRM
                 throw new Exception();
             }
 
-            var parser = new IGltfData();
-            parser.ParseGlb(File.ReadAllBytes(vrmPath.FullPath));
+            var data = new GlbFileParser(vrmPath.FullPath).Parse();
 
             var prefabPath = vrmPath.Parent.Child(vrmPath.FileNameWithoutExtension + ".prefab");
 
@@ -56,7 +55,7 @@ namespace VRM
                     .Select(x => x.LoadAsset<Texture>())
                     .ToDictionary(x => new SubAssetKey(x), x => x as UnityEngine.Object);
 
-                using (var context = new VRMImporterContext(parser, map))
+                using (var context = new VRMImporterContext(data, map))
                 {
                     var editor = new VRMEditorImporterContext(context, prefabPath);
                     foreach (var textureInfo in context.TextureDescriptorGenerator.Get().GetEnumerable())
@@ -69,7 +68,7 @@ namespace VRM
             };
 
             // extract texture images
-            using (var context = new VRMImporterContext(parser))
+            using (var context = new VRMImporterContext(data))
             {
                 var editor = new VRMEditorImporterContext(context, prefabPath);
                 editor.ConvertAndExtractImages(onCompleted);

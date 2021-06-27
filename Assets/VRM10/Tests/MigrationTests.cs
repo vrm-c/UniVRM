@@ -202,9 +202,8 @@ namespace UniVRM10
                 try
                 {
                     var migrated = MigrationVrm.Migrate(bytes);
-                    var parser = new IGltfData();
-                    parser.Parse(gltf.FullName, migrated);
-                    UniGLTF.Extensions.VRMC_vrm.GltfDeserializer.TryGet(parser.GLTF.extensions, out UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm);
+                    var data = new GlbLowLevelParser(gltf.FullName, migrated).Parse();
+                    UniGLTF.Extensions.VRMC_vrm.GltfDeserializer.TryGet(data.GLTF.extensions, out UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm);
                     Assert.NotNull(vrm);
                 }
                 catch (UnNormalizedException)
@@ -224,10 +223,9 @@ namespace UniVRM10
             // vrm0 のオリジナルの値
             //
             var VALUE = new Vector3(-0.0359970331f, -0.0188314915f, 0.00566166639f);
-            var parser0 = new IGltfData();
             var bytes0 = File.ReadAllBytes(AliciaPath);
-            parser0.Parse(AliciaPath, bytes0);
-            var json0 = parser0.Json.ParseAsJson();
+            var data0 = new GlbLowLevelParser(AliciaPath, bytes0).Parse();
+            var json0 = data0.Json.ParseAsJson();
             var groupIndex = json0["extensions"]["VRM"]["secondaryAnimation"]["boneGroups"][0]["colliderGroups"][0].GetInt32();
             var x = json0["extensions"]["VRM"]["secondaryAnimation"]["colliderGroups"][groupIndex]["colliders"][0]["offset"]["x"].GetSingle();
             var y = json0["extensions"]["VRM"]["secondaryAnimation"]["colliderGroups"][groupIndex]["colliders"][0]["offset"]["y"].GetSingle();
@@ -240,9 +238,8 @@ namespace UniVRM10
             // vrm1 に migrate
             //
             var bytes1 = MigrationVrm.Migrate(bytes0);
-            var parser1 = new IGltfData();
-            parser1.Parse(AliciaPath, bytes1);
-            Assert.True(UniGLTF.Extensions.VRMC_springBone.GltfDeserializer.TryGet(parser1.GLTF.extensions, out UniGLTF.Extensions.VRMC_springBone.VRMC_springBone springBone));
+            var data1 = new GlbLowLevelParser(AliciaPath, bytes1).Parse();
+            Assert.True(UniGLTF.Extensions.VRMC_springBone.GltfDeserializer.TryGet(data1.GLTF.extensions, out UniGLTF.Extensions.VRMC_springBone.VRMC_springBone springBone));
             var spring = springBone.Springs[0];
             // var colliderNodeIndex = spring.ColliderGroups[0];
             // x軸だけが反転する

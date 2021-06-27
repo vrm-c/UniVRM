@@ -26,13 +26,17 @@ namespace UniVRM10
         /// </summary>
         public Vrm10Storage()
         {
-            m_data = new UniGLTF.IGltfData
-            {
-                GLTF = new UniGLTF.glTF()
+            m_data = new IGltfData(
+                string.Empty,
+                string.Empty,
+                new glTF
                 {
                     extensionsUsed = new List<string>(),
-                }
-            };
+                },
+                new List<GlbChunk>(),
+                new SimpleStorage(new ArraySegment<byte>()),
+                new MigrationFlags()
+            );
             Buffers = new List<UniGLTF.IBytesBuffer>()
             {
                 new UniGLTF.ArrayByteBuffer()

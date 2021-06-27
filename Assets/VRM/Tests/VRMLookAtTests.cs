@@ -20,10 +20,9 @@ namespace VRM
         [Test]
         public void VRMLookAtTest()
         {
-            var parser = new IGltfData();
-            parser.ParsePath(AliciaPath);
+            var data = new GlbFileParser(AliciaPath).Parse();
             byte[] bytes = default;
-            using (var loader = new VRMImporterContext(parser))
+            using (var loader = new VRMImporterContext(data))
             using (var loaded = loader.Load())
             {
                 loaded.ShowMeshes();
@@ -38,9 +37,8 @@ namespace VRM
                 });
             }
 
-            var parser2 = new IGltfData();
-            parser2.Parse(AliciaPath, bytes);
-            using (var loader2 = new VRMImporterContext(parser2))
+            var data2 = new GlbLowLevelParser(AliciaPath, bytes).Parse();
+            using (var loader2 = new VRMImporterContext(data2))
             {
                 Assert.AreEqual(LookAtType.BlendShape, loader2.VRM.firstPerson.lookAtType);
             }
@@ -49,11 +47,10 @@ namespace VRM
         [Test]
         public void VRMLookAtCurveMapWithFreezeTest()
         {
-            var parser = new IGltfData();
-            parser.ParsePath(AliciaPath);
+            var data = new GlbFileParser(AliciaPath).Parse();
             byte[] bytes = default;
             CurveMapper horizontalInner = default;
-            using (var loader = new VRMImporterContext(parser))
+            using (var loader = new VRMImporterContext(data))
             using (var loaded = loader.Load())
             {
                 loaded.ShowMeshes();
@@ -68,9 +65,8 @@ namespace VRM
                 });
             }
 
-            var parser2 = new IGltfData();
-            parser2.Parse(AliciaPath, bytes);
-            using (var loader = new VRMImporterContext(parser2))
+            var data2 = new GlbLowLevelParser(AliciaPath, bytes).Parse();
+            using (var loader = new VRMImporterContext(data2))
             using (var loaded = loader.Load())
             {
                 loaded.ShowMeshes();
@@ -84,11 +80,10 @@ namespace VRM
         [Test]
         public void VRMLookAtCurveMapTest()
         {
-            var parser = new IGltfData();
-            parser.ParsePath(AliciaPath);
+            var data = new GlbFileParser(AliciaPath).Parse();
             byte[] bytes = default;
             CurveMapper horizontalInner = default;
-            using (var loader = new VRMImporterContext(parser))
+            using (var loader = new VRMImporterContext(data))
             using (var loaded = loader.Load())
             {
                 loaded.ShowMeshes();
@@ -103,9 +98,8 @@ namespace VRM
                 });
             }
 
-            var parser2 = new IGltfData();
-            parser2.Parse(AliciaPath, bytes);
-            using (var loader = new VRMImporterContext(parser2))
+            var data2 = new GlbLowLevelParser(AliciaPath, bytes).Parse();
+            using (var loader = new VRMImporterContext(data2))
             using (var loaded = loader.Load())
             {
                 loaded.ShowMeshes();

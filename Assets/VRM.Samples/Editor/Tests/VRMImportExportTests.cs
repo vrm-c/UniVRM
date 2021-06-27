@@ -43,10 +43,9 @@ namespace VRM.Samples
         public void ImportExportTest()
         {
             var path = AliciaPath;
-            var parser = new IGltfData();
-            parser.ParseGlb(File.ReadAllBytes(path));
+            var data = new GlbFileParser(path).Parse();
 
-            using (var context = new VRMImporterContext(parser))
+            using (var context = new VRMImporterContext(data))
             using (var loaded = context.Load())
             {
                 loaded.ShowMeshes();
@@ -67,16 +66,16 @@ namespace VRM.Samples
                             mesh = smr.sharedMesh;
                         }
 
-                        var gltfMesh = parser.GLTF.meshes.Find(x => x.name == mesh.name);
+                        var gltfMesh = data.GLTF.meshes.Find(x => x.name == mesh.name);
                         Assert.AreEqual(gltfMesh.name, mesh.name);
 
                         // materials
                         foreach (var material in renderer.sharedMaterials)
                         {
-                            var gltfMaterial = parser.GLTF.materials.Find(x => x.name == material.name);
+                            var gltfMaterial = data.GLTF.materials.Find(x => x.name == material.name);
                             Assert.AreEqual(gltfMaterial.name, material.name);
 
-                            var materialIndex = parser.GLTF.materials.IndexOf(gltfMaterial);
+                            var materialIndex = data.GLTF.materials.IndexOf(gltfMaterial);
                             var vrmMaterial = context.VRM.materialProperties[materialIndex];
                             // Debug.Log($"shaderName: '{vrmMaterial.shader}'");
                             if (vrmMaterial.shader == "VRM/MToon")
@@ -192,10 +191,9 @@ namespace VRM.Samples
         public void MeshCopyTest()
         {
             var path = AliciaPath;
-            var parser = new IGltfData();
-            parser.ParseGlb(File.ReadAllBytes(path));
+            var data = new GlbFileParser(path).Parse();
 
-            using (var context = new VRMImporterContext(parser))
+            using (var context = new VRMImporterContext(data))
             using (var loaded = context.Load())
             {
                 loaded.ShowMeshes();
@@ -214,10 +212,9 @@ namespace VRM.Samples
         {
             // Aliciaを古いデシリアライザでロードする
             var path = AliciaPath;
-            var parser = new IGltfData();
-            parser.ParseGlb(File.ReadAllBytes(path));
+            var data = new GlbFileParser(path).Parse();
 
-            using (var context = new VRMImporterContext(parser))
+            using (var context = new VRMImporterContext(data))
             {
                 var oldJson = context.GLTF.ToJson().ParseAsJson().ToString("  ");
 
