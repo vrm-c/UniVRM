@@ -15,7 +15,7 @@ namespace VRM
             return new VRMMaterialExporter();
         }
 
-        public static glTF Export(MeshExportSettings configuration, GameObject go, ITextureSerializer textureSerializer)
+        public static glTF Export(GltfExportSettings configuration, GameObject go, ITextureSerializer textureSerializer)
         {
             var gltf = new glTF();
             using (var exporter = new VRMExporter(gltf))

@@ -61,7 +61,7 @@ namespace UniGLTF
             using (var exporter = new gltfExporter(gltf))
             {
                 exporter.Prepare(root);
-                exporter.Export(MeshExportSettings.Default, new EditorTextureSerializer());
+                exporter.Export(new GltfExportSettings(), new EditorTextureSerializer());
                 return gltf.ToGlbBytes();
             }
         }

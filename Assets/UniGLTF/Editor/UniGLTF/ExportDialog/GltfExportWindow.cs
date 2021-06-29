@@ -68,7 +68,7 @@ namespace UniGLTF
 
         protected override void OnLayout()
         {
-            m_meshes.SetRoot(State.ExportRoot, Settings.MeshExportSettings, new DefualtBlendShapeExportFilter());
+            m_meshes.SetRoot(State.ExportRoot, Settings, new DefualtBlendShapeExportFilter());
         }
 
         protected override bool DoGUI(bool isValid)
@@ -113,13 +113,7 @@ namespace UniGLTF
             using (var exporter = new gltfExporter(gltf, Settings.InverseAxis))
             {
                 exporter.Prepare(State.ExportRoot);
-                var settings = new MeshExportSettings
-                {
-                    ExportOnlyBlendShapePosition = Settings.DropNormal,
-                    UseSparseAccessorForMorphTarget = Settings.Sparse,
-                    DivideVertexBuffer = Settings.DivideVertexBuffer,
-                };
-                exporter.Export(settings, new EditorTextureSerializer());
+                exporter.Export(Settings, new EditorTextureSerializer());
             }
 
             if (isGlb)

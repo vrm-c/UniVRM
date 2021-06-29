@@ -106,7 +106,7 @@ namespace UniGLTF
             using (var exporter = new gltfExporter(gltf))
             {
                 exporter.Prepare(go);
-                exporter.Export(MeshExportSettings.Default, new EditorTextureSerializer());
+                exporter.Export(new GltfExportSettings(), new EditorTextureSerializer());
 
                 // remove empty buffer
                 gltf.buffers.Clear();
@@ -297,7 +297,7 @@ namespace UniGLTF
             using (var exporter = new gltfExporter(gltf))
             {
                 exporter.Prepare(CreateSimpleScene());
-                exporter.Export(MeshExportSettings.Default, new EditorTextureSerializer());
+                exporter.Export(new GltfExportSettings(), new EditorTextureSerializer());
             }
 
             var expected = gltf.ToJson().ParseAsJson();
@@ -533,7 +533,7 @@ namespace UniGLTF
                 using (var exporter = new gltfExporter(gltf))
                 {
                     exporter.Prepare(go);
-                    exporter.Export(UniGLTF.MeshExportSettings.Default, new EditorTextureSerializer());
+                    exporter.Export(new UniGLTF.GltfExportSettings(), new EditorTextureSerializer());
 
                     json = gltf.ToJson();
                 }
@@ -615,7 +615,7 @@ namespace UniGLTF
                 using (var exporter = new gltfExporter(gltf))
                 {
                     exporter.Prepare(go);
-                    exporter.Export(UniGLTF.MeshExportSettings.Default, new EditorTextureSerializer());
+                    exporter.Export(new UniGLTF.GltfExportSettings(), new EditorTextureSerializer());
 
                     json = gltf.ToJson();
                 }
@@ -669,7 +669,7 @@ namespace UniGLTF
                 }
 
                 // validate
-                validator.SetRoot(root, MeshExportSettings.Default, new DefualtBlendShapeExportFilter());
+                validator.SetRoot(root, new GltfExportSettings(), new DefualtBlendShapeExportFilter());
                 var vs = validator.Validate(root);
                 Assert.True(vs.All(x => x.CanExport));
 
@@ -679,7 +679,7 @@ namespace UniGLTF
                 using (var exporter = new gltfExporter(gltf))
                 {
                     exporter.Prepare(root);
-                    exporter.Export(UniGLTF.MeshExportSettings.Default, new EditorTextureSerializer());
+                    exporter.Export(new UniGLTF.GltfExportSettings(), new EditorTextureSerializer());
 
                     json = gltf.ToJson();
                 }

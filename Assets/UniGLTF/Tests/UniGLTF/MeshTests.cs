@@ -128,7 +128,7 @@ namespace UniGLTF
             };
 
             var (go, mesh) = CreateMesh(Materials.ToArray());
-            var meshExportSettings = new MeshExportSettings
+            var meshExportSettings = new GltfExportSettings
             {
                 DivideVertexBuffer = false
             };
@@ -176,7 +176,7 @@ namespace UniGLTF
             };
 
             var (go, mesh) = CreateMesh(Materials.ToArray());
-            var meshExportSettings = new MeshExportSettings
+            var meshExportSettings = new GltfExportSettings
             {
                 DivideVertexBuffer = true
             };

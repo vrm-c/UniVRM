@@ -92,7 +92,7 @@ namespace VRM.Samples
                 return;
             }
 
-            var vrm = VRMExporter.Export(UniGLTF.MeshExportSettings.Default, m_model, new RuntimeTextureSerializer());
+            var vrm = VRMExporter.Export(new UniGLTF.GltfExportSettings(), m_model, new RuntimeTextureSerializer());
             var bytes = vrm.ToGlbBytes();
             File.WriteAllBytes(path, bytes);
             Debug.LogFormat("export to {0}", path);

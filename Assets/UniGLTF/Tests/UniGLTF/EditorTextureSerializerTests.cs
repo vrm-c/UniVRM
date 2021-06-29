@@ -126,7 +126,7 @@ namespace UniGLTF
             using (var exporter = new gltfExporter(gltf, Axes.X))
             {
                 exporter.Prepare(root);
-                var settings = new MeshExportSettings
+                var settings = new GltfExportSettings
                 {
                     ExportOnlyBlendShapePosition = false,
                     UseSparseAccessorForMorphTarget = false,

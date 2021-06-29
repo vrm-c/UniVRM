@@ -19,7 +19,7 @@ namespace UniVRM10
         [Tooltip("Remove blendShapeClip that preset is Unknown")]
         public bool ReduceBlendshapeClip = false;
 
-        public MeshExportSettings MeshExportSettings => new MeshExportSettings
+        public GltfExportSettings MeshExportSettings => new GltfExportSettings
         {
             UseSparseAccessorForMorphTarget = true,
             ExportOnlyBlendShapePosition = true,

@@ -66,7 +66,7 @@ namespace VRM
             var path = AliciaPath;
             var loaded = Load(File.ReadAllBytes(path), path);
 
-            var exported = VRMExporter.Export(new UniGLTF.MeshExportSettings
+            var exported = VRMExporter.Export(new UniGLTF.GltfExportSettings
             {
                 DivideVertexBuffer = true, // test this
                 ExportOnlyBlendShapePosition = true,

@@ -215,7 +215,7 @@ namespace UniGLTF
             // do nothing
         }
 
-        public virtual void Export(MeshExportSettings meshExportSettings, ITextureSerializer textureSerializer)
+        public virtual void Export(GltfExportSettings meshExportSettings, ITextureSerializer textureSerializer)
         {
             var bytesBuffer = new ArrayByteBuffer(new byte[50 * 1024 * 1024]);
             var bufferIndex = glTF.AddBuffer(bytesBuffer);
