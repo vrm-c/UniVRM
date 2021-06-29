@@ -14,8 +14,7 @@ namespace VRM
         [SettingsProvider]
         static SettingsProvider CreateProjectSettingsProvider()
         {
-            var provider = new SettingsProvider("Preferences/VRM0", 
-                SettingsScope.User, SettingsProvider.GetSearchKeywordsFromGUIContentProperties<Styles>());
+            var provider = new SettingsProvider("Preferences/VRM0", SettingsScope.User);
             provider.guiHandler = (sarchContext) => OnPreferenceGUI();
             return provider;
         }

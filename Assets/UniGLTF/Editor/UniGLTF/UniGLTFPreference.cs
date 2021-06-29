@@ -40,8 +40,7 @@ namespace UniGLTF
         [SettingsProvider]
         static SettingsProvider CreateProjectSettingsProvider()
         {
-            var provider = new SettingsProvider("Preferences/UniGLTF", 
-                SettingsScope.User, SettingsProvider.GetSearchKeywordsFromGUIContentProperties<Styles>());
+            var provider = new SettingsProvider("Preferences/UniGLTF", SettingsScope.User);
             provider.guiHandler = (sarchContext) => OnPreferenceGUI();
             return provider;
         }
