@@ -8,6 +8,17 @@ namespace VRM
     {
         public static bool TryCreateParam(GltfData data, glTF_VRM_extensions vrm, int materialIdx, out MaterialDescriptor matDesc)
         {
+            if (vrm?.materialProperties == null || vrm.materialProperties.Count == 0)
+            {
+                matDesc = default;
+                return false;
+            }
+            if (materialIdx < 0 || materialIdx >= vrm.materialProperties.Count)
+            {
+                matDesc = default;
+                return false;
+            }
+
             var vrmMaterial = vrm.materialProperties[materialIdx];
             if (vrmMaterial.shader == VRM.glTF_VRM_Material.VRM_USE_GLTFSHADER)
             {
@@ -42,7 +53,7 @@ namespace VRM
 
             foreach (var kv in vrmMaterial.textureProperties)
             {
-                if (VRMMToonTextureImporter.TryGetTextureFromMaterialProperty(data, vrm, materialIdx, kv.Key, out var texture))
+                if (VRMMToonTextureImporter.TryGetTextureFromMaterialProperty(data, vrmMaterial, kv.Key, out var texture))
                 {
                     matDesc.TextureSlots.Add(kv.Key, texture.Item2);
                 }
