@@ -6,16 +6,16 @@ namespace UniVRM10
 {
     public sealed class Vrm10MaterialDescriptorGenerator : IMaterialDescriptorGenerator
     {
-        public MaterialDescriptor Get(GltfParser parser, int i)
+        public MaterialDescriptor Get(GltfData data, int i)
         {
             // mtoon
-            if (!Vrm10MToonMaterialImporter.TryCreateParam(parser, i, out MaterialDescriptor matDesc))
+            if (!Vrm10MToonMaterialImporter.TryCreateParam(data, i, out MaterialDescriptor matDesc))
             {
                 // unlit
-                if (!GltfUnlitMaterialImporter.TryCreateParam(parser, i, out matDesc))
+                if (!GltfUnlitMaterialImporter.TryCreateParam(data, i, out matDesc))
                 {
                     // pbr
-                    if (!GltfPbrMaterialImporter.TryCreateParam(parser, i, out matDesc))
+                    if (!GltfPbrMaterialImporter.TryCreateParam(data, i, out matDesc))
                     {
                         // fallback
 #if VRM_DEVELOP

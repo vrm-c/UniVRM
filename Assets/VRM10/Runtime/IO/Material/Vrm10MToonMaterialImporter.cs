@@ -18,9 +18,9 @@ namespace UniVRM10
         /// <summary>
         /// VMRC_materials_mtoon の場合にマテリアル生成情報を作成する
         /// </summary>
-        public static bool TryCreateParam(GltfParser parser, int i, out MaterialDescriptor matDesc)
+        public static bool TryCreateParam(GltfData data, int i, out MaterialDescriptor matDesc)
         {
-            var m = parser.GLTF.materials[i];
+            var m = data.GLTF.materials[i];
             if (!UniGLTF.Extensions.VRMC_materials_mtoon.GltfDeserializer.TryGet(m.extensions,
                 out UniGLTF.Extensions.VRMC_materials_mtoon.VRMC_materials_mtoon mtoon))
             {
@@ -32,7 +32,7 @@ namespace UniVRM10
             // use material.name, because material name may renamed in GltfParser.
             matDesc = new MaterialDescriptor(m.name, MToon10Meta.UnityShaderName);
 
-            foreach (var (key, (subAssetKey, value)) in Vrm10MToonTextureImporter.EnumerateAllTextures(parser, m, mtoon))
+            foreach (var (key, (subAssetKey, value)) in Vrm10MToonTextureImporter.EnumerateAllTextures(data, m, mtoon))
             {
                 matDesc.TextureSlots.Add(key, value);
             }

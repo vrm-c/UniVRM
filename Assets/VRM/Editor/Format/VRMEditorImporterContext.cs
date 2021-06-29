@@ -105,7 +105,7 @@ namespace VRM
             var subAssets = m_context.TextureFactory.ConvertedTextures;
             var vrmTextures = new VRMMaterialDescriptorGenerator(m_context.VRM);
             var dirName = $"{m_prefabPath.FileNameWithoutExtension}.Textures";
-            TextureExtractor.ExtractTextures(m_context.Parser, m_prefabPath.Parent.Child(dirName), m_context.TextureDescriptorGenerator, subAssets, (_x, _y) => { }, onTextureReloaded);
+            TextureExtractor.ExtractTextures(m_context.Data, m_prefabPath.Parent.Child(dirName), m_context.TextureDescriptorGenerator, subAssets, (_x, _y) => { }, onTextureReloaded);
         }
 
         void SaveAsAsset(SubAssetKey _, UnityEngine.Object o)

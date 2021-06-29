@@ -25,7 +25,7 @@ namespace UniGLTF
         public RemapEditorMaterial(IEnumerable<SubAssetKey> keys, EditorMapGetterFunc getter, EditorMapSetterFunc setter) : base(keys, getter, setter)
         { }
 
-        public void OnGUI(ScriptedImporter importer, GltfParser parser,
+        public void OnGUI(ScriptedImporter importer, GltfData data,
             ITextureDescriptorGenerator textureDescriptorGenerator,
             Func<string, string> textureDir,
             Func<string, string> materialDir)
@@ -34,7 +34,7 @@ namespace UniGLTF
             {
                 if (GUILayout.Button("Extract Materials And Textures ..."))
                 {
-                    ExtractMaterialsAndTextures(importer, parser, textureDescriptorGenerator, textureDir, materialDir);
+                    ExtractMaterialsAndTextures(importer, data, textureDescriptorGenerator, textureDir, materialDir);
                 }
                 EditorGUILayout.HelpBox("Extract subasset to external object and overwrite remap", MessageType.Info);
             }
@@ -63,7 +63,7 @@ namespace UniGLTF
             }
         }
 
-        void ExtractMaterialsAndTextures(ScriptedImporter self, GltfParser parser, ITextureDescriptorGenerator textureDescriptorGenerator, Func<string, string> textureDir, Func<string, string> materialDir)
+        void ExtractMaterialsAndTextures(ScriptedImporter self, GltfData data, ITextureDescriptorGenerator textureDescriptorGenerator, Func<string, string> textureDir, Func<string, string> materialDir)
         {
             if (string.IsNullOrEmpty(self.assetPath))
             {
@@ -90,10 +90,10 @@ namespace UniGLTF
                     .ToDictionary(kv => kv.Item1, kv => kv.Item2)
                     ;
 
-            var assetPath = UnityPath.FromFullpath(parser.TargetPath);
+            var assetPath = UnityPath.FromFullpath(data.TargetPath);
             var dirName = textureDir(assetPath.Value); // $"{assetPath.FileNameWithoutExtension}.Textures";
             TextureExtractor.ExtractTextures(
-                parser,
+                data,
                 assetPath.Parent.Child(dirName),
                 textureDescriptorGenerator,
                 subAssets,

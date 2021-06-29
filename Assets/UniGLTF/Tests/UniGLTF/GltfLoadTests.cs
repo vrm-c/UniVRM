@@ -78,10 +78,10 @@ namespace UniGLTF
 
         static void RuntimeLoadExport(FileInfo gltf, int subStrStart)
         {
-            var parser = new GltfParser();
+            GltfData data = null;
             try
             {
-                parser.ParsePath(gltf.FullName);
+                data = new AmbiguousGltfFileParser(gltf.FullName).Parse();
             }
             catch (Exception ex)
             {
@@ -89,7 +89,7 @@ namespace UniGLTF
                 Debug.LogException(ex);
             }
 
-            using (var loader = new ImporterContext(parser))
+            using (var loader = new ImporterContext(data))
             {
                 try
                 {
@@ -124,10 +124,10 @@ namespace UniGLTF
         /// <param name="root"></param>
         static void EditorLoad(FileInfo gltf, int subStrStart)
         {
-            var parser = new GltfParser();
+            GltfData data = null;
             try
             {
-                parser.ParsePath(gltf.FullName);
+                data = new AmbiguousGltfFileParser(gltf.FullName).Parse();
             }
             catch (Exception ex)
             {
@@ -136,7 +136,7 @@ namespace UniGLTF
             }
 
             // should unique
-            var gltfTextures = new GltfTextureDescriptorGenerator(parser).Get().GetEnumerable()
+            var gltfTextures = new GltfTextureDescriptorGenerator(data).Get().GetEnumerable()
                 .Select(x => x.SubAssetKey)
                 .ToArray();
             var distinct = gltfTextures.Distinct().ToArray();
@@ -205,10 +205,9 @@ namespace UniGLTF
 
             {
                 var path = Path.Combine(root.FullName, "DamagedHelmet/glTF-Binary/DamagedHelmet.glb");
-                var parser = new GltfParser();
-                parser.ParsePath(path);
+                var data = new AmbiguousGltfFileParser(path).Parse();
 
-                var matDesc = new GltfMaterialDescriptorGenerator().Get(parser, 0);
+                var matDesc = new GltfMaterialDescriptorGenerator().Get(data, 0);
                 Assert.AreEqual("Standard", matDesc.ShaderName);
                 Assert.AreEqual(5, matDesc.TextureSlots.Count);
                 var (key, value) = matDesc.EnumerateSubAssetKeyValue().First();

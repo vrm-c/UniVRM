@@ -44,14 +44,11 @@ namespace VRM.Samples
                 return;
             }
 
-            var bytes = File.ReadAllBytes(path);
-            // なんらかの方法でByte列を得た
-
             // GLB形式でJSONを取得しParseします
-            var parser = new GltfParser();
-            parser.ParseGlb(bytes);
+            var data = new GlbFileParser(path).Parse();
+            // var data = new GlbBinaryParser(anyBinary).Parse();
 
-            using (var context = new VRMImporterContext(parser))
+            using (var context = new VRMImporterContext(data))
             {
 
                 // metaを取得(todo: thumbnailテクスチャのロード)

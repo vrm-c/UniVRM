@@ -13,16 +13,15 @@ namespace UniVRM10.Test
         {
             var bytes = MigrationVrm.Migrate(File.ReadAllBytes(path));
 
-            var parser = new GltfParser();
-            parser.Parse("migrated", bytes);
+            var data = new GlbLowLevelParser(path, bytes).Parse();
 
-            var model = ModelReader.Read(parser);
+            var model = ModelReader.Read(data);
             return model;
         }
 
-        GameObject BuildGameObject(GltfParser parser, VRMC_vrm vrm, bool showMesh)
+        GameObject BuildGameObject(GltfData data, VRMC_vrm vrm, bool showMesh)
         {
-            using (var loader = new Vrm10Importer(parser, vrm))
+            using (var loader = new Vrm10Importer(data, vrm))
             {
                 var loaded = loader.Load();
                 if (showMesh)
@@ -42,7 +41,7 @@ namespace UniVRM10.Test
 
             Assert.IsTrue(Vrm10Parser.TryParseOrMigrate(path, true, out Vrm10Parser.Result result));
 
-            var go = BuildGameObject(result.Parser, result.Vrm, true);
+            var go = BuildGameObject(result.Data, result.Vrm, true);
             Debug.Log(go);
 
             // export

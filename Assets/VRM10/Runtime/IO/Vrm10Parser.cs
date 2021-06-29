@@ -17,13 +17,13 @@ namespace UniVRM10
     {
         public readonly struct Result
         {
-            public readonly GltfParser Parser;
+            public readonly GltfData Data;
             public readonly VRMC_vrm Vrm;
             public readonly Vrm10FileType FileType;
             public readonly String Message;
-            public Result(GltfParser parser, VRMC_vrm vrm, Vrm10FileType fileType, string message)
+            public Result(GltfData data, VRMC_vrm vrm, Vrm10FileType fileType, string message)
             {
-                Parser = parser;
+                Data = data;
                 Vrm = vrm;
                 FileType = fileType;
                 Message = message;
@@ -47,12 +47,11 @@ namespace UniVRM10
             // Parse(parse glb, parser gltf json)
             //
             {
-                var parser = new GltfParser();
-                parser.Parse(path, bytes);
-                if (UniGLTF.Extensions.VRMC_vrm.GltfDeserializer.TryGet(parser.GLTF.extensions, out UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm))
+                var data = new GlbLowLevelParser(path, bytes).Parse();
+                if (UniGLTF.Extensions.VRMC_vrm.GltfDeserializer.TryGet(data.GLTF.extensions, out UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm))
                 {
                     // success
-                    result = new Result(parser, vrm, Vrm10FileType.Vrm1, "vrm1: loaded");
+                    result = new Result(data, vrm, Vrm10FileType.Vrm1, "vrm1: loaded");
                     return true;
                 }
             }
@@ -103,12 +102,11 @@ namespace UniVRM10
             }
 
             {
-                var parser = new GltfParser();
-                parser.Parse(path, migrated);
-                if (UniGLTF.Extensions.VRMC_vrm.GltfDeserializer.TryGet(parser.GLTF.extensions, out VRMC_vrm vrm))
+                var data = new GlbLowLevelParser(path, migrated).Parse();
+                if (UniGLTF.Extensions.VRMC_vrm.GltfDeserializer.TryGet(data.GLTF.extensions, out VRMC_vrm vrm))
                 {
                     // success
-                    result = new Result(parser, vrm, Vrm10FileType.Vrm0, "vrm0: migrated");
+                    result = new Result(data, vrm, Vrm10FileType.Vrm0, "vrm0: migrated");
                     return true;
                 }
 

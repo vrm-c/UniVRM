@@ -310,12 +310,9 @@ namespace VRM.Samples
             {
                 case ".vrm":
                     {
-                        var file = File.ReadAllBytes(path);
+                        var data = new GlbFileParser(path).Parse();
 
-                        var parser = new GltfParser();
-                        parser.ParseGlb(file);
-
-                        using (var context = new VRMImporterContext(parser))
+                        using (var context = new VRMImporterContext(data))
                         {
                             await m_texts.UpdateMetaAsync(context);
                             var loaded = await context.LoadAsync();
@@ -328,11 +325,9 @@ namespace VRM.Samples
 
                 case ".glb":
                     {
-                        var file = File.ReadAllBytes(path);
-                        var parser = new GltfParser();
-                        parser.ParseGlb(file);
+                        var data = new GlbFileParser(path).Parse();
 
-                        var context = new UniGLTF.ImporterContext(parser);
+                        var context = new UniGLTF.ImporterContext(data);
                         var loaded = context.Load();
                         loaded.EnableUpdateWhenOffscreen();
                         loaded.ShowMeshes();
@@ -341,12 +336,21 @@ namespace VRM.Samples
                     }
 
                 case ".gltf":
+                    {
+                        var data = new GltfFileWithResourceFilesParser(path).Parse();
+
+                        var context = new UniGLTF.ImporterContext(data);
+                        var loaded = context.Load();
+                        loaded.EnableUpdateWhenOffscreen();
+                        loaded.ShowMeshes();
+                        SetModel(loaded.gameObject);
+                        break;
+                    }
                 case ".zip":
                     {
-                        var parser = new GltfParser();
-                        parser.ParsePath(path);
+                        var data = new ZipArchivedGltfFileParser(path).Parse();
 
-                        var context = new UniGLTF.ImporterContext(parser);
+                        var context = new UniGLTF.ImporterContext(data);
                         var loaded = context.Load();
                         loaded.EnableUpdateWhenOffscreen();
                         loaded.ShowMeshes();

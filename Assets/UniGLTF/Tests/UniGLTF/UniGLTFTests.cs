@@ -115,11 +115,10 @@ namespace UniGLTF
             }
 
             // parse
-            var parser = new GltfParser();
-            parser.ParseJson(json, new SimpleStorage(new ArraySegment<byte>()));
+            var data = new JsonWithStorageParser(json).Parse();
 
             // import
-            using (var context = new ImporterContext(parser))
+            using (var context = new ImporterContext(data))
             using (var loaded = context.Load())
             {
                 AssertAreEqual(go.transform, loaded.transform);
@@ -553,10 +552,10 @@ namespace UniGLTF
 
                 // import
                 {
-                    var parser = new GltfParser();
-                    parser.ParseJson(json, new SimpleStorage(new ArraySegment<byte>(new byte[1024 * 1024])));
+                    var storage = new SimpleStorage(new ArraySegment<byte>(new byte[1024 * 1024]));
+                    var data = new JsonWithStorageParser(json, storage).Parse();
 
-                    using (var context = new ImporterContext(parser))
+                    using (var context = new ImporterContext(data))
                     using (var loaded = context.Load())
                     {
                         var importedRed = loaded.transform.GetChild(0);
@@ -573,10 +572,11 @@ namespace UniGLTF
 
                 // import new version
                 {
-                    var parser = new GltfParser();
-                    parser.ParseJson(json, new SimpleStorage(new ArraySegment<byte>(new byte[1024 * 1024])));
+                    var storage = new SimpleStorage(new ArraySegment<byte>(new byte[1024 * 1024]));
+                    var data = new JsonWithStorageParser(json, storage).Parse();
+                    
                     //Debug.LogFormat("{0}", context.Json);
-                    using (var context = new ImporterContext(parser))
+                    using (var context = new ImporterContext(data))
                     using (var loaded = context.Load())
                     {
                         var importedRed = loaded.transform.GetChild(0);
@@ -626,10 +626,10 @@ namespace UniGLTF
 
                 // import
                 {
-                    var parser = new GltfParser();
-                    parser.ParseJson(json, new SimpleStorage(new ArraySegment<byte>(new byte[1024 * 1024])));
-
-                    using (var context = new ImporterContext(parser))
+                    var storage = new SimpleStorage(new ArraySegment<byte>(new byte[1024 * 1024]));
+                    var data = new JsonWithStorageParser(json, storage).Parse();
+                    
+                    using (var context = new ImporterContext(data))
                     using (var loaded = context.Load())
                     {
                         Assert.AreEqual(1, loaded.transform.GetChildren().Count());
@@ -691,10 +691,10 @@ namespace UniGLTF
 
                 // import
                 {
-                    var parser = new GltfParser();
-                    parser.ParseJson(json, new SimpleStorage(new ArraySegment<byte>(new byte[1024 * 1024])));
+                    var storage = new SimpleStorage(new ArraySegment<byte>(new byte[1024 * 1024]));
+                    var data = new JsonWithStorageParser(json, storage).Parse();
 
-                    using (var context = new ImporterContext(parser))
+                    using (var context = new ImporterContext(data))
                     using (var loaded = context.Load())
                     {
                         Assert.AreEqual(2, loaded.transform.GetChildren().Count());

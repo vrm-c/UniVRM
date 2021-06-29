@@ -20,7 +20,7 @@ namespace UniVRM10.Sample
                 return null;
             }
 
-            using (var loader = new Vrm10Importer(result.Parser, result.Vrm))
+            using (var loader = new Vrm10Importer(result.Data, result.Vrm))
             {
                 var loaded = loader.Load();
                 loaded.ShowMeshes();

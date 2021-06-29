@@ -21,16 +21,16 @@ namespace VRM
         public VRM.glTF_VRM_extensions VRM { get; private set; }
 
         public VRMImporterContext(
-            GltfParser parser,
+            GltfData data,
             IReadOnlyDictionary<SubAssetKey, Object> externalObjectMap = null,
             ITextureDeserializer textureDeserializer = null)
-            : base(parser, externalObjectMap, textureDeserializer)
+            : base(data, externalObjectMap, textureDeserializer)
         {
             // parse VRM part
             if (glTF_VRM_extensions.TryDeserialize(GLTF.extensions, out glTF_VRM_extensions vrm))
             {
                 VRM = vrm;
-                TextureDescriptorGenerator = new VrmTextureDescriptorGenerator(Parser, VRM);
+                TextureDescriptorGenerator = new VrmTextureDescriptorGenerator(Data, VRM);
                 MaterialDescriptorGenerator = new VRMMaterialDescriptorGenerator(VRM);
             }
             else
@@ -299,7 +299,7 @@ namespace VRM
             meta.Title = gltfMeta.title;
             if (gltfMeta.texture >= 0)
             {
-                var (key, param) = GltfTextureImporter.CreateSRGB(Parser, gltfMeta.texture, Vector2.zero, Vector2.one);
+                var (key, param) = GltfTextureImporter.CreateSRGB(Data, gltfMeta.texture, Vector2.zero, Vector2.one);
                 meta.Thumbnail = await TextureFactory.GetTextureAsync(param, awaitCaller) as Texture2D;
             }
             meta.AllowedUser = gltfMeta.allowedUser;

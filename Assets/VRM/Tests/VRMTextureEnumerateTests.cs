@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using UniGLTF;
@@ -16,42 +17,49 @@ namespace VRM
         public void TextureEnumerationTest()
         {
             {
-                var parser = new GltfParser
-                {
-                    GLTF = new glTF
+                var data = GltfData.CreateFromGltfDataForTest(
+                    new glTF
                     {
                         images = new List<glTFImage>
                         {
-                            new glTFImage{
+                            new glTFImage
+                            {
                                 mimeType = "image/png",
                             }
                         },
                         textures = new List<glTFTexture>
                         {
-                            new glTFTexture{
+                            new glTFTexture
+                            {
                                 name = "texture0",
                                 source = 0,
                             }
                         },
                         materials = new List<glTFMaterial>
                         {
-                            new glTFMaterial{
-                                pbrMetallicRoughness = new glTFPbrMetallicRoughness{
-                                    baseColorTexture = new glTFMaterialBaseColorTextureInfo{
+                            new glTFMaterial
+                            {
+                                pbrMetallicRoughness = new glTFPbrMetallicRoughness
+                                {
+                                    baseColorTexture = new glTFMaterialBaseColorTextureInfo
+                                    {
                                         index = 0,
                                     }
                                 }
                             },
-                            new glTFMaterial{
-                                pbrMetallicRoughness = new glTFPbrMetallicRoughness{
-                                    baseColorTexture = new glTFMaterialBaseColorTextureInfo{
+                            new glTFMaterial
+                            {
+                                pbrMetallicRoughness = new glTFPbrMetallicRoughness
+                                {
+                                    baseColorTexture = new glTFMaterialBaseColorTextureInfo
+                                    {
                                         index = 0,
                                     }
                                 }
                             },
                         }
                     }
-                };
+                );
                 var vrm = new glTF_VRM_extensions
                 {
                     materialProperties = new List<glTF_VRM_Material>
@@ -72,7 +80,7 @@ namespace VRM
                         },
                      }
                 };
-                var items = new VrmTextureDescriptorGenerator(parser, vrm).Get().GetEnumerable().ToArray();
+                var items = new VrmTextureDescriptorGenerator(data, vrm).Get().GetEnumerable().ToArray();
                 Assert.AreEqual(1, items.Length);
             }
         }
@@ -80,35 +88,39 @@ namespace VRM
         [Test]
         public void TextureEnumerationInUnknownShader()
         {
-            var parser = new GltfParser
-            {
-                GLTF = new glTF
+            var data = GltfData.CreateFromGltfDataForTest(
+                new glTF
                 {
                     images = new List<glTFImage>
+                    {
+                        new glTFImage
                         {
-                            new glTFImage{
-                                mimeType = "image/png",
-                            }
-                        },
-                    textures = new List<glTFTexture>
-                        {
-                            new glTFTexture{
-                                name = "texture0",
-                                source = 0,
-                            }
-                        },
-                    materials = new List<glTFMaterial>
-                        {
-                            new glTFMaterial{
-                                pbrMetallicRoughness = new glTFPbrMetallicRoughness{
-                                    baseColorTexture = new glTFMaterialBaseColorTextureInfo{
-                                        index = 0,
-                                    }
-                                }
-                            },
+                            mimeType = "image/png",
                         }
+                    },
+                    textures = new List<glTFTexture>
+                    {
+                        new glTFTexture
+                        {
+                            name = "texture0",
+                            source = 0,
+                        }
+                    },
+                    materials = new List<glTFMaterial>
+                    {
+                        new glTFMaterial
+                        {
+                            pbrMetallicRoughness = new glTFPbrMetallicRoughness
+                            {
+                                baseColorTexture = new glTFMaterialBaseColorTextureInfo
+                                {
+                                    index = 0,
+                                }
+                            }
+                        },
+                    }
                 }
-            };
+            );
             var vrm = new glTF_VRM_extensions
             {
                 materialProperties = new List<glTF_VRM_Material>
@@ -125,10 +137,10 @@ namespace VRM
             };
 
             // 2系統ある？
-            Assert.IsTrue(VRMMToonMaterialImporter.TryCreateParam(parser, vrm, 0, out VRMShaders.MaterialDescriptor matDesc));
+            Assert.IsTrue(VRMMToonMaterialImporter.TryCreateParam(data, vrm, 0, out VRMShaders.MaterialDescriptor matDesc));
             Assert.AreEqual(1, matDesc.TextureSlots.Count);
 
-            var items = new VrmTextureDescriptorGenerator(parser, vrm).Get().GetEnumerable().ToArray();
+            var items = new VrmTextureDescriptorGenerator(data, vrm).Get().GetEnumerable().ToArray();
             Assert.AreEqual(1, items.Length);
         }
     }

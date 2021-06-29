@@ -9,12 +9,12 @@ namespace UniVRM10
 {
     public sealed class Vrm10TextureDescriptorGenerator : ITextureDescriptorGenerator
     {
-        private readonly GltfParser m_parser;
+        private readonly GltfData m_data;
         private TextureDescriptorSet _textureDescriptorSet;
 
-        public Vrm10TextureDescriptorGenerator(GltfParser parser)
+        public Vrm10TextureDescriptorGenerator(GltfData data)
         {
-            m_parser = parser;
+            m_data = data;
         }
 
         public TextureDescriptorSet Get()
@@ -22,7 +22,7 @@ namespace UniVRM10
             if (_textureDescriptorSet == null)
             {
                 _textureDescriptorSet = new TextureDescriptorSet();
-                foreach (var (_, param) in EnumerateAllTextures(m_parser))
+                foreach (var (_, param) in EnumerateAllTextures(m_data))
                 {
                     _textureDescriptorSet.Add(param);
                 }
@@ -33,20 +33,20 @@ namespace UniVRM10
         /// <summary>
         /// glTF 全体で使うテクスチャーを列挙する
         /// </summary>
-        private static IEnumerable<(SubAssetKey, TextureDescriptor)> EnumerateAllTextures(GltfParser parser)
+        private static IEnumerable<(SubAssetKey, TextureDescriptor)> EnumerateAllTextures(GltfData data)
         {
-            if (!UniGLTF.Extensions.VRMC_vrm.GltfDeserializer.TryGet(parser.GLTF.extensions, out UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm))
+            if (!UniGLTF.Extensions.VRMC_vrm.GltfDeserializer.TryGet(data.GLTF.extensions, out UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm))
             {
                 throw new System.Exception("not vrm");
             }
 
             // Textures referenced by Materials.
-            for (var materialIdx = 0; materialIdx < parser.GLTF.materials.Count; ++materialIdx)
+            for (var materialIdx = 0; materialIdx < data.GLTF.materials.Count; ++materialIdx)
             {
-                var m = parser.GLTF.materials[materialIdx];
+                var m = data.GLTF.materials[materialIdx];
                 if (UniGLTF.Extensions.VRMC_materials_mtoon.GltfDeserializer.TryGet(m.extensions, out var mToon))
                 {
-                    foreach (var (_, tex) in Vrm10MToonTextureImporter.EnumerateAllTextures(parser, m, mToon))
+                    foreach (var (_, tex) in Vrm10MToonTextureImporter.EnumerateAllTextures(data, m, mToon))
                     {
                         yield return tex;
                     }
@@ -54,7 +54,7 @@ namespace UniVRM10
                 else
                 {
                     // Fallback to glTF PBR & glTF Unlit
-                    foreach (var tex in GltfPbrTextureImporter.EnumerateAllTextures(parser, materialIdx))
+                    foreach (var tex in GltfPbrTextureImporter.EnumerateAllTextures(data, materialIdx))
                     {
                         yield return tex;
                     }
@@ -62,7 +62,7 @@ namespace UniVRM10
             }
 
             // Thumbnail Texture referenced by VRM Meta.
-            if (TryGetMetaThumbnailTextureImportParam(parser, vrm, out (SubAssetKey key, TextureDescriptor) thumbnail))
+            if (TryGetMetaThumbnailTextureImportParam(data, vrm, out (SubAssetKey key, TextureDescriptor) thumbnail))
             {
                 yield return thumbnail;
             }
@@ -71,7 +71,7 @@ namespace UniVRM10
         /// <summary>
         /// VRM-1 の thumbnail テクスチャー。gltf.textures ではなく gltf.images の参照であることに注意(sampler等の設定が無い)
         /// </summary>
-        public static bool TryGetMetaThumbnailTextureImportParam(GltfParser parser, UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm, out (SubAssetKey, TextureDescriptor) value)
+        public static bool TryGetMetaThumbnailTextureImportParam(GltfData data, UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm, out (SubAssetKey, TextureDescriptor) value)
         {
             if (vrm?.Meta?.ThumbnailImage == null)
             {
@@ -80,12 +80,12 @@ namespace UniVRM10
             }
 
             var imageIndex = vrm.Meta.ThumbnailImage.Value;
-            var gltfImage = parser.GLTF.images[imageIndex];
+            var gltfImage = data.GLTF.images[imageIndex];
             var name = TextureImportName.GetUnityObjectName(TextureImportTypes.sRGB, gltfImage.name, gltfImage.uri);
 
             GetTextureBytesAsync getThumbnailImageBytesAsync = () =>
             {
-                var bytes = parser.GLTF.GetImageBytes(parser.Storage, imageIndex);
+                var bytes = data.GLTF.GetImageBytes(data.Storage, imageIndex);
                 return Task.FromResult(GltfTextureImporter.ToArray(bytes));
             };
             var texDesc = new TextureDescriptor(name, gltfImage.GetExt(), gltfImage.uri, Vector2.zero, Vector2.one, default, TextureImportTypes.sRGB, default, default,

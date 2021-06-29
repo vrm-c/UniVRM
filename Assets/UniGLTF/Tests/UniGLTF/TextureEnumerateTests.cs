@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 
@@ -203,40 +204,40 @@ namespace UniGLTF
         public void TextureEnumerationTest()
         {
             {
-                var parser = new GltfParser
-                {
-                    GLTF = TwoTexture(),
-                };
-                var items = new GltfTextureDescriptorGenerator(parser).Get().GetEnumerable().ToArray();
+                var data = CreateGltfData(TwoTexture());
+                var items = new GltfTextureDescriptorGenerator(data).Get().GetEnumerable().ToArray();
                 Assert.AreEqual(2, items.Length);
             }
 
             {
-                var parser = new GltfParser
-                {
-                    GLTF = TwoTextureOneUri(),
-                };
-                var items = new GltfTextureDescriptorGenerator(parser).Get().GetEnumerable().ToArray();
+                var data = CreateGltfData(TwoTextureOneUri());
+                var items = new GltfTextureDescriptorGenerator(data).Get().GetEnumerable().ToArray();
                 Assert.AreEqual(1, items.Length);
             }
 
             {
-                var parser = new GltfParser
-                {
-                    GLTF = TwoTextureOneImage(),
-                };
-                var items = new GltfTextureDescriptorGenerator(parser).Get().GetEnumerable().ToArray();
+                var data = CreateGltfData(TwoTextureOneImage());
+                var items = new GltfTextureDescriptorGenerator(data).Get().GetEnumerable().ToArray();
                 Assert.AreEqual(1, items.Length);
             }
 
             {
-                var parser = new GltfParser
-                {
-                    GLTF = CombineMetallicSmoothOcclusion(),
-                };
-                var items = new GltfTextureDescriptorGenerator(parser).Get().GetEnumerable().ToArray();
+                var data = CreateGltfData(CombineMetallicSmoothOcclusion());
+                var items = new GltfTextureDescriptorGenerator(data).Get().GetEnumerable().ToArray();
                 Assert.AreEqual(1, items.Length);
             }
+        }
+
+        private GltfData CreateGltfData(glTF gltf)
+        {
+            return new GltfData(
+                string.Empty,
+                string.Empty,
+                gltf,
+                new List<GlbChunk>(),
+                new SimpleStorage(new ArraySegment<byte>()),
+                new MigrationFlags()
+            );
         }
     }
 }

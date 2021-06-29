@@ -45,10 +45,9 @@ namespace VRM
         static void ImportRuntime(string path)
         {
             // load into scene
-            var parser = new GltfParser();
-            parser.ParsePath(path);
+            var data = new GlbFileParser(path).Parse();
 
-            using (var context = new VRMImporterContext(parser))
+            using (var context = new VRMImporterContext(data))
             {
                 var loaded = context.Load();
                 loaded.EnableUpdateWhenOffscreen();
@@ -67,8 +66,7 @@ namespace VRM
 
             // import as asset
             // var prefabPath = UnityPath.FromUnityPath(prefabPath);
-            var parser = new GltfParser();
-            parser.ParseGlb(File.ReadAllBytes(path));
+            var data = new GlbFileParser(path).Parse();
 
             Action<IEnumerable<UnityPath>> onCompleted = texturePaths =>
             {
@@ -80,7 +78,7 @@ namespace VRM
                     .Where(x => x != null)
                     .ToDictionary(x => new SubAssetKey(x), x => x as Object);
 
-                using (var context = new VRMImporterContext(parser, map))
+                using (var context = new VRMImporterContext(data, map))
                 {
                     var editor = new VRMEditorImporterContext(context, prefabPath);
                     foreach (var textureInfo in editor.TextureDescriptorGenerator.Get().GetEnumerable())
@@ -92,7 +90,7 @@ namespace VRM
                 }
             };
 
-            using (var context = new VRMImporterContext(parser))
+            using (var context = new VRMImporterContext(data))
             {
                 var editor = new VRMEditorImporterContext(context, prefabPath);
                 editor.ConvertAndExtractImages(onCompleted);

@@ -35,7 +35,7 @@ namespace UniVRM10
                 .Where(kv => kv.Value != null)
                 .ToDictionary(kv => new SubAssetKey(kv.Value.GetType(), kv.Key.name), kv => kv.Value);
 
-            using (var loader = new Vrm10Importer(result.Parser, result.Vrm, extractedObjects))
+            using (var loader = new Vrm10Importer(result.Data, result.Vrm, extractedObjects))
             {
                 // settings TextureImporters
                 foreach (var textureInfo in loader.TextureDescriptorGenerator.Get().GetEnumerable())

@@ -89,11 +89,10 @@ namespace UniGLTF
             }
 
             // parse
-            var parser = new GltfParser();
-            parser.ParsePath(path.FullName);
+            var data = new GlbFileParser(path.FullName).Parse();
 
             // load
-            using (var context = new ImporterContext(parser))
+            using (var context = new ImporterContext(data))
             {
                 var instance = context.Load();
                 var textureMap = instance.RuntimeResources
@@ -103,7 +102,7 @@ namespace UniGLTF
                     ;
 
                 // extractor
-                var extractor = new TextureExtractor(parser, UnityPath.FromUnityPath(""), textureMap);
+                var extractor = new TextureExtractor(data, UnityPath.FromUnityPath(""), textureMap);
                 var m = context.TextureDescriptorGenerator.Get().GetEnumerable()
                     .FirstOrDefault(x => x.SubAssetKey.Name == "texture_1.standard");
 

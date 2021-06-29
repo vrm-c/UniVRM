@@ -74,10 +74,10 @@ namespace UniVRM10
             return model;
         }
 
-        public static Model Read(UniGLTF.GltfParser parser)
+        public static Model Read(UniGLTF.GltfData data)
         {
-            var storage = new Vrm10Storage(parser);
-            var model = Load(storage, Path.GetFileName(parser.TargetPath));
+            var storage = new Vrm10Storage(data);
+            var model = Load(storage, Path.GetFileName(data.TargetPath));
             model.ConvertCoordinate(Coordinates.Unity);
             return model;
         }

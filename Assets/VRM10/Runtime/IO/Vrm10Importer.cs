@@ -21,14 +21,14 @@ namespace UniVRM10
         IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> m_externalMap;
 
         public Vrm10Importer(
-            UniGLTF.GltfParser parser, UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm,
+            UniGLTF.GltfData data, UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm,
             IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> externalObjectMap = null,
             ITextureDeserializer textureDeserializer = null)
-            : base(parser, externalObjectMap, textureDeserializer)
+            : base(data, externalObjectMap, textureDeserializer)
         {
-            if (parser == null)
+            if (data == null)
             {
-                throw new ArgumentNullException("parser");
+                throw new ArgumentNullException("data");
             }
 
             if (vrm == null)
@@ -37,7 +37,7 @@ namespace UniVRM10
             }
             m_vrm = vrm;
 
-            TextureDescriptorGenerator = new Vrm10TextureDescriptorGenerator(parser);
+            TextureDescriptorGenerator = new Vrm10TextureDescriptorGenerator(data);
             MaterialDescriptorGenerator = new Vrm10MaterialDescriptorGenerator();
 
             m_externalMap = externalObjectMap;
@@ -47,7 +47,7 @@ namespace UniVRM10
             }
 
             // bin に対して右手左手変換を破壊的に実行することに注意 !(bin が変換済みになる)
-            m_model = ModelReader.Read(parser);
+            m_model = ModelReader.Read(data);
 
             // assign humanoid bones
             if (m_vrm.Humanoid != null)
@@ -236,7 +236,7 @@ namespace UniVRM10
             controller.Vrm = await LoadVrmAsync(awaitCaller, m_vrm);
 
             // springBone
-            if (UniGLTF.Extensions.VRMC_springBone.GltfDeserializer.TryGet(Parser.GLTF.extensions, out UniGLTF.Extensions.VRMC_springBone.VRMC_springBone springBone))
+            if (UniGLTF.Extensions.VRMC_springBone.GltfDeserializer.TryGet(Data.GLTF.extensions, out UniGLTF.Extensions.VRMC_springBone.VRMC_springBone springBone))
             {
                 await LoadSpringBoneAsync(awaitCaller, controller, springBone);
             }
@@ -297,7 +297,7 @@ namespace UniVRM10
                 {
                     meta.Authors.AddRange(src.Authors);
                 }
-                if (Vrm10TextureDescriptorGenerator.TryGetMetaThumbnailTextureImportParam(Parser, vrmExtension, out (SubAssetKey, VRMShaders.TextureDescriptor Param) kv))
+                if (Vrm10TextureDescriptorGenerator.TryGetMetaThumbnailTextureImportParam(Data, vrmExtension, out (SubAssetKey, VRMShaders.TextureDescriptor Param) kv))
                 {
                     var texture = await TextureFactory.GetTextureAsync(kv.Param, awaitCaller);
                     if (texture is Texture2D tex2D)
@@ -510,9 +510,9 @@ namespace UniVRM10
 
         async Task LoadConstraintAsync(IAwaitCaller awaitCaller, VRM10Controller controller)
         {
-            for (int i = 0; i < Parser.GLTF.nodes.Count; ++i)
+            for (int i = 0; i < Data.GLTF.nodes.Count; ++i)
             {
-                var gltfNode = Parser.GLTF.nodes[i];
+                var gltfNode = Data.GLTF.nodes[i];
                 if (UniGLTF.Extensions.VRMC_node_constraint.GltfDeserializer.TryGet(gltfNode.extensions, out UniGLTF.Extensions.VRMC_node_constraint.VRMC_node_constraint ext))
                 {
                     var constraint = ext.Constraint;

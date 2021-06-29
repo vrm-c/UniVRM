@@ -36,13 +36,13 @@ namespace UniVRM10.Test
                 throw new Exception();
             }
 
-            return ToUnity(result.Parser, result.Vrm);
+            return ToUnity(result.Data, result.Vrm);
         }
 
-        private (GameObject, IReadOnlyList<VRMShaders.MaterialFactory.MaterialLoadInfo>) ToUnity(GltfParser parser, VRMC_vrm vrm)
+        private (GameObject, IReadOnlyList<VRMShaders.MaterialFactory.MaterialLoadInfo>) ToUnity(GltfData data, VRMC_vrm vrm)
         {
             // Model => Unity
-            using (var loader = new Vrm10Importer(parser, vrm))
+            using (var loader = new Vrm10Importer(data, vrm))
             {
                 var loaded = loader.Load();
                 return (loaded.gameObject, loader.MaterialFactory.Materials);
