@@ -103,7 +103,7 @@ namespace UniGLTF
             var gltf = new glTF();
 
             string json = null;
-            using (var exporter = new gltfExporter(gltf))
+            using (var exporter = new gltfExporter(gltf, new GltfExportSettings()))
             {
                 exporter.Prepare(go);
                 exporter.Export(new GltfExportSettings(), new EditorTextureSerializer());
@@ -294,7 +294,7 @@ namespace UniGLTF
         public void GlTFToJsonTest()
         {
             var gltf = new glTF();
-            using (var exporter = new gltfExporter(gltf))
+            using (var exporter = new gltfExporter(gltf, new GltfExportSettings()))
             {
                 exporter.Prepare(CreateSimpleScene());
                 exporter.Export(new GltfExportSettings(), new EditorTextureSerializer());
@@ -530,7 +530,7 @@ namespace UniGLTF
                 // export
                 var gltf = new glTF();
                 var json = default(string);
-                using (var exporter = new gltfExporter(gltf))
+                using (var exporter = new gltfExporter(gltf, new GltfExportSettings()))
                 {
                     exporter.Prepare(go);
                     exporter.Export(new UniGLTF.GltfExportSettings(), new EditorTextureSerializer());
@@ -612,7 +612,7 @@ namespace UniGLTF
                 // export
                 var gltf = new glTF();
                 string json;
-                using (var exporter = new gltfExporter(gltf))
+                using (var exporter = new gltfExporter(gltf, new GltfExportSettings()))
                 {
                     exporter.Prepare(go);
                     exporter.Export(new UniGLTF.GltfExportSettings(), new EditorTextureSerializer());
@@ -676,7 +676,7 @@ namespace UniGLTF
                 // export
                 var gltf = new glTF();
                 string json;
-                using (var exporter = new gltfExporter(gltf))
+                using (var exporter = new gltfExporter(gltf, new GltfExportSettings()))
                 {
                     exporter.Prepare(root);
                     exporter.Export(new UniGLTF.GltfExportSettings(), new EditorTextureSerializer());

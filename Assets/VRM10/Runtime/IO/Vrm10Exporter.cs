@@ -18,8 +18,12 @@ namespace UniVRM10
         ITextureSerializer m_textureSerializer;
         TextureExporter m_textureExporter;
 
-        public Vrm10Exporter(ITextureSerializer textureSerializer)
+        GltfExportSettings m_settings;
+
+        public Vrm10Exporter(ITextureSerializer textureSerializer, GltfExportSettings settings)
         {
+            m_settings = settings;
+
             if (textureSerializer == null)
             {
                 throw new ArgumentException(nameof(textureSerializer));
@@ -172,7 +176,7 @@ namespace UniVRM10
             var materialExporter = new Vrm10MaterialExporter();
             foreach (Material material in model.Materials)
             {
-                var glTFMaterial = materialExporter.ExportMaterial(material, m_textureExporter);
+                var glTFMaterial = materialExporter.ExportMaterial(material, m_textureExporter, m_settings);
                 Storage.Gltf.materials.Add(glTFMaterial);
             }
 
@@ -791,7 +795,7 @@ namespace UniVRM10
             VrmLib.ModelExtensionsForCoordinates.ConvertCoordinate(model, VrmLib.Coordinates.Vrm1);
 
             // Model と go から VRM-1.0 にExport
-            var exporter10 = new Vrm10Exporter(textureSerializer ?? new RuntimeTextureSerializer());
+            var exporter10 = new Vrm10Exporter(textureSerializer ?? new RuntimeTextureSerializer(), new GltfExportSettings());
             var option = new VrmLib.ExportArgs
             {
             };

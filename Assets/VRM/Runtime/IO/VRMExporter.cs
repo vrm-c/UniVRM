@@ -28,7 +28,7 @@ namespace VRM
 
         public readonly VRM.glTF_VRM_extensions VRM = new glTF_VRM_extensions();
 
-        public VRMExporter(glTF gltf) : base(gltf, Axes.Z)
+        public VRMExporter(glTF gltf) : base(gltf, new GltfExportSettings())
         {
             gltf.extensionsUsed.Add(glTF_VRM_extensions.ExtensionName);
         }

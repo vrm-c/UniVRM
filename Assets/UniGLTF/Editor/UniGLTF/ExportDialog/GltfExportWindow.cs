@@ -110,7 +110,7 @@ namespace UniGLTF
             }
 
             var gltf = new glTF();
-            using (var exporter = new gltfExporter(gltf, Settings.InverseAxis))
+            using (var exporter = new gltfExporter(gltf, Settings))
             {
                 exporter.Prepare(State.ExportRoot);
                 exporter.Export(Settings, new EditorTextureSerializer());

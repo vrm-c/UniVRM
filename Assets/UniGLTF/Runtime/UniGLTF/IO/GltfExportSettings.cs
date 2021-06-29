@@ -7,7 +7,7 @@ namespace UniGLTF
     [Serializable]
     public class GltfExportSettings
     {
-        public Axes InverseAxis;
+        public Axes InverseAxis = Axes.Z;
 
         /// <summary>
         /// https://github.com/vrm-c/UniVRM/issues/800

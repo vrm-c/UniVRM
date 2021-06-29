@@ -297,7 +297,7 @@ namespace UniVRM10
                 model.ConvertCoordinate(VrmLib.Coordinates.Vrm1, ignoreVrm: false);
 
                 // export vrm-1.0
-                var exporter = new UniVRM10.Vrm10Exporter(new EditorTextureSerializer());
+                var exporter = new UniVRM10.Vrm10Exporter(new EditorTextureSerializer(), new GltfExportSettings());
                 var option = new VrmLib.ExportArgs();
                 exporter.Export(root, model, converter, option, Vrm ? Vrm.Meta : m_tmpObject.Meta);
 

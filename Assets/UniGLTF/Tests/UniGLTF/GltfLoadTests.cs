@@ -58,7 +58,7 @@ namespace UniGLTF
         static Byte[] Export(GameObject root)
         {
             var gltf = new glTF();
-            using (var exporter = new gltfExporter(gltf))
+            using (var exporter = new gltfExporter(gltf, new GltfExportSettings()))
             {
                 exporter.Prepare(root);
                 exporter.Export(new GltfExportSettings(), new EditorTextureSerializer());

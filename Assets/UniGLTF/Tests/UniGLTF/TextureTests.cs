@@ -24,7 +24,7 @@ namespace UniGLTF
             material.mainTexture = tex0;
 
             var materialExporter = new MaterialExporter();
-            materialExporter.ExportMaterial(material, textureExporter);
+            materialExporter.ExportMaterial(material, textureExporter, new GltfExportSettings());
 
             var exported = textureExporter.Export();
 
