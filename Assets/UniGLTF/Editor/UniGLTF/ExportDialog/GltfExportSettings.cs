@@ -1,13 +1,13 @@
 
 
+using System;
 using UnityEngine;
 
 namespace UniGLTF
 {
-    public class GltfExportSettings : ScriptableObject
+    [Serializable]
+    public class GltfExportSettings
     {
-        public GameObject Root { get; set; }
-
         public Axes InverseAxis;
 
         [Header("MorphTarget(BlendShape)")]

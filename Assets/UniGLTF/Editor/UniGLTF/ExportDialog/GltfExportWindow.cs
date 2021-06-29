@@ -28,18 +28,19 @@ namespace UniGLTF
         }
         Tabs _tab;
 
+        [SerializeField]
+        public GltfExportSettings Settings = new GltfExportSettings();
 
-        GltfExportSettings m_settings;
-        Editor m_settingsInspector;
+        SerializedPropertyEditor m_editor;
 
         MeshExportValidator m_meshes;
         Editor m_meshesInspector;
 
         protected override void Initialize()
         {
-            m_settings = ScriptableObject.CreateInstance<GltfExportSettings>();
-            m_settings.InverseAxis = UniGLTFPreference.GltfIOAxis;
-            m_settingsInspector = Editor.CreateEditor(m_settings);
+            Settings.InverseAxis = UniGLTFPreference.GltfIOAxis;
+            var so = new SerializedObject(this);
+            m_editor = new SerializedPropertyEditor(so, so.FindProperty(nameof(Settings)));
 
             m_meshes = ScriptableObject.CreateInstance<MeshExportValidator>();
             m_meshesInspector = Editor.CreateEditor(m_meshes);
@@ -47,15 +48,9 @@ namespace UniGLTF
 
         protected override void Clear()
         {
-            // m_settingsInspector
-            UnityEditor.Editor.DestroyImmediate(m_settingsInspector);
-            m_settingsInspector = null;
             // m_meshesInspector
             UnityEditor.Editor.DestroyImmediate(m_meshesInspector);
             m_meshesInspector = null;
-            // m_settings
-            ScriptableObject.DestroyImmediate(m_settings);
-            m_settings = null;
         }
 
         protected override IEnumerable<Validator> ValidatorFactory()
@@ -73,7 +68,7 @@ namespace UniGLTF
 
         protected override void OnLayout()
         {
-            m_meshes.SetRoot(State.ExportRoot, m_settings.MeshExportSettings, new DefualtBlendShapeExportFilter());
+            m_meshes.SetRoot(State.ExportRoot, Settings.MeshExportSettings, new DefualtBlendShapeExportFilter());
         }
 
         protected override bool DoGUI(bool isValid)
@@ -92,8 +87,7 @@ namespace UniGLTF
                     break;
 
                 case Tabs.ExportSettings:
-                    m_settings.Root = State.ExportRoot;
-                    m_settingsInspector.OnInspectorGUI();
+                    m_editor.OnInspectorGUI();
                     break;
             }
 
@@ -116,14 +110,14 @@ namespace UniGLTF
             }
 
             var gltf = new glTF();
-            using (var exporter = new gltfExporter(gltf, m_settings.InverseAxis))
+            using (var exporter = new gltfExporter(gltf, Settings.InverseAxis))
             {
                 exporter.Prepare(State.ExportRoot);
                 var settings = new MeshExportSettings
                 {
-                    ExportOnlyBlendShapePosition = m_settings.DropNormal,
-                    UseSparseAccessorForMorphTarget = m_settings.Sparse,
-                    DivideVertexBuffer = m_settings.DivideVertexBuffer,
+                    ExportOnlyBlendShapePosition = Settings.DropNormal,
+                    UseSparseAccessorForMorphTarget = Settings.Sparse,
+                    DivideVertexBuffer = Settings.DivideVertexBuffer,
                 };
                 exporter.Export(settings, new EditorTextureSerializer());
             }
