@@ -60,7 +60,7 @@ namespace UniGLTF
             }
             else
             {
-                throw new Exception($"{texture} is not converted.");
+                throw new Exception($"{key} is not converted.");
             }
         }
 
@@ -95,7 +95,7 @@ namespace UniGLTF
                     var externalObject = targetPath.LoadAsset<Texture2D>();
 #if VRM_DEVELOP
                     // Debug.Log($"remap: {targetPath} => {externalObject}");
-#endif                    
+#endif
                     if (externalObject != null)
                     {
                         addRemap(key, externalObject);

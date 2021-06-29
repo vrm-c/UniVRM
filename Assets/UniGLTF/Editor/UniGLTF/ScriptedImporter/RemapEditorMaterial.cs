@@ -102,7 +102,7 @@ namespace UniGLTF
             );
         }
 
-        public void ExtractMaterials(ScriptedImporter importer, Func<string, string> materialDir)
+        public static void ExtractMaterials(ScriptedImporter importer, Func<string, string> materialDir)
         {
             if (string.IsNullOrEmpty(importer.assetPath))
             {
