@@ -63,7 +63,7 @@ namespace UniVRM10
             }
         }
         VRM10Object m_tmpObject;
-        (VRM10MetaEditor, SerializedObject) m_metaEditor;
+        VRM10MetaEditor m_metaEditor;
 
         protected override void Initialize()
         {
@@ -235,7 +235,7 @@ namespace UniVRM10
             switch (_tab)
             {
                 case Tabs.Meta:
-                    if (m_metaEditor.Item1 == null)
+                    if (m_metaEditor == null)
                     {
                         SerializedObject so;
                         if (m_meta != null)
@@ -246,11 +246,9 @@ namespace UniVRM10
                         {
                             so = new SerializedObject(m_tmpObject);
                         }
-                        m_metaEditor = (VRM10MetaEditor.Create(so), so);
+                        m_metaEditor = VRM10MetaEditor.Create(so);
                     }
-                    m_metaEditor.Item2.Update();
-                    m_metaEditor.Item1.OnInspectorGUI();
-                    m_metaEditor.Item2.ApplyModifiedProperties();
+                    m_metaEditor.OnInspectorGUI();
                     break;
 
                 case Tabs.Mesh:
