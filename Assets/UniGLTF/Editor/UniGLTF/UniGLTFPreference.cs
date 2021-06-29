@@ -11,6 +11,8 @@ namespace UniGLTF
 {
     public static class UniGLTFPreference
     {
+        public const string UNIGLTF_ENABLE_ZIPARCHVIE_IMPORTER = "UNIGLTF_ENABLE_ZIPARCHVIE_IMPORTER";
+
         static IEnumerable<string> GetReimportPaths()
         {
             String[] guids = AssetDatabase.FindAssets("t:GameObject", null);
@@ -68,6 +70,10 @@ namespace UniGLTF
                     AssetDatabase.ImportAsset(path, default);
                 }
             }
+
+            // zip
+            UniGLTF.UniGLTFPreference.ToggleSymbol("Enable zip importer that contains gltf", UNIGLTF_ENABLE_ZIPARCHVIE_IMPORTER);
+            EditorGUILayout.HelpBox("This is `.zip` extension importer", MessageType.Warning);
         }
 
         const string AXIS_KEY = "UNIGLTF_IO_AXIS";
