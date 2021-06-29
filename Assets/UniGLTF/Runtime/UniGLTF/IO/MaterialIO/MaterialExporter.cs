@@ -148,17 +148,28 @@ namespace UniGLTF
             }
         }
 
-        static void Export_Emission(Material m, ITextureExporter textureExporter, glTFMaterial material)
+        static void Export_Emission(Material m, ITextureExporter textureExporter, glTFMaterial material, bool useEmissiveMultiplier = false)
         {
             if (m.IsKeywordEnabled("_EMISSION") == false)
+            {
                 return;
+            }
 
             if (m.HasProperty("_EmissionColor"))
             {
                 var color = m.GetColor("_EmissionColor");
                 if (color.maxColorComponent > 1)
                 {
-                    color /= color.maxColorComponent;
+                    var maxColorComponent = color.maxColorComponent;
+                    color /= maxColorComponent;
+                    if (useEmissiveMultiplier)
+                    {
+                        UniGLTF.Extensions.VRMC_materials_hdr_emissiveMultiplier.GltfSerializer.SerializeTo(ref material.extensions,
+                        new Extensions.VRMC_materials_hdr_emissiveMultiplier.VRMC_materials_hdr_emissiveMultiplier
+                        {
+                            EmissiveMultiplier = maxColorComponent,
+                        });
+                    }
                 }
                 material.emissiveFactor = color.ToFloat3(ColorSpace.Linear, ColorSpace.Linear);
             }
