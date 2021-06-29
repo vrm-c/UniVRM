@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using VRMShaders;
 
@@ -371,6 +372,37 @@ namespace UniGLTF
             {
                 var (unityTexture, colorSpace) = exported[exportedTextureIdx];
                 glTF.PushGltfTexture(bufferIndex, unityTexture, colorSpace, textureSerializer);
+            }
+
+            FixName(glTF);
+        }
+
+        /// <summary>
+        /// GlbLowPevelParser.FixNameUnique で付与した Suffix を remove
+        /// </summary>
+        public static void FixName(glTF gltf)
+        {
+            var regex = new Regex($@"{GlbLowLevelParser.UniqueFixResourceSuffix}\d+$");
+            foreach (var gltfImages in gltf.images)
+            {
+                if (regex.IsMatch(gltfImages.name))
+                {
+                    gltfImages.name = regex.Replace(gltfImages.name, string.Empty);
+                }
+            }
+            foreach (var gltfMaterial in gltf.materials)
+            {
+                if (regex.IsMatch(gltfMaterial.name))
+                {
+                    gltfMaterial.name = regex.Replace(gltfMaterial.name, string.Empty);
+                }
+            }
+            foreach (var gltfAnimation in gltf.animations)
+            {
+                if (regex.IsMatch(gltfAnimation.name))
+                {
+                    gltfAnimation.name = regex.Replace(gltfAnimation.name, string.Empty);
+                }
             }
         }
         #endregion

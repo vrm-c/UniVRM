@@ -14,28 +14,28 @@ namespace UniGLTF
         /// Maybe empty if source file was on memory.
         /// </summary>
         public string TargetPath { get; }
-        
+
         /// <summary>
         /// JSON source
         /// </summary>
         public string Json { get; }
-        
+
         /// <summary>
         /// GLTF parsed from JSON
         /// </summary>
         public glTF GLTF { get; }
-        
+
         /// <summary>
         /// Chunk Data.
         /// Maybe empty if source file was not glb format.
         /// </summary>
         public IReadOnlyList<GlbChunk> Chunks { get; }
-        
+
         /// <summary>
         /// URI access
         /// </summary>
         public IStorage Storage { get; }
-        
+
         /// <summary>
         /// Migration Flags used by ImporterContext
         /// </summary>

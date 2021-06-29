@@ -12,9 +12,10 @@ namespace UniGLTF
     /// </summary>
     public sealed class GlbLowLevelParser
     {
+        public static readonly string UniqueFixResourceSuffix = "__UNIGLTF__DUPLICATED__";
         private readonly string _path;
         private readonly byte[] _binary;
-        
+
         public GlbLowLevelParser(string path, byte[] specifiedBinary)
         {
             _path = path;
@@ -44,7 +45,7 @@ namespace UniGLTF
                 throw;
             }
         }
-        
+
         public static List<GlbChunk> ParseGlbChunks(byte[] data)
         {
             var chunks = glbImporter.ParseGlbChunks(data);
@@ -97,7 +98,7 @@ namespace UniGLTF
 
             return new GltfData(path, json, GLTF, chunks, storage, migrationFlags);
         }
-        
+
         private static void FixMeshNameUnique(glTF GLTF)
         {
             var used = new HashSet<string>();
@@ -171,9 +172,9 @@ namespace UniGLTF
         private static void FixTextureNameUnique(glTF GLTF)
         {
             var used = new HashSet<string>();
-            for (int i = 0; i < GLTF.textures.Count; ++i)
+            for (var textureIdx = 0; textureIdx < GLTF.textures.Count; ++textureIdx)
             {
-                var gltfTexture = GLTF.textures[i];
+                var gltfTexture = GLTF.textures[textureIdx];
                 var gltfImage = GLTF.images[gltfTexture.source];
                 if (!string.IsNullOrEmpty(gltfImage.uri) && !gltfImage.uri.StartsWith("data:"))
                 {
@@ -187,61 +188,26 @@ namespace UniGLTF
                 }
                 if (string.IsNullOrEmpty(gltfTexture.name))
                 {
-                    // no name
-                    var newName = $"texture_{i}";
-                    if (!used.Add(newName))
-                    {
-                        newName = "texture_" + Guid.NewGuid().ToString("N");
-                        if (!used.Add(newName))
-                        {
-                            throw new Exception();
-                        }
-                    }
-                    gltfTexture.name = newName;
+                    gltfTexture.name = $"texture_{textureIdx}";
                 }
-                else
-                {
-                    var lower = gltfTexture.name.ToLower();
-                    if (!used.Add(lower))
-                    {
-                        // rename
-                        var uname = lower + "_" + Guid.NewGuid().ToString("N");
-                        // Debug.LogWarning($"texture.name: {lower} => {uname}");
-                        gltfTexture.name = uname;
-                        if (!used.Add(uname))
-                        {
-                            throw new Exception();
-                        }
-                    }
-                }
+
+                gltfTexture.name = FixNameUnique(used, gltfTexture.name);
             }
         }
 
         private static void FixMaterialNameUnique(glTF GLTF)
         {
             var used = new HashSet<string>();
-            for (int i = 0; i < GLTF.materials.Count; ++i)
+            for (var materialIdx = 0; materialIdx < GLTF.materials.Count; ++materialIdx)
             {
-                var material = GLTF.materials[i];
-                var originalName = material.name;
-                int j = 2;
+                var material = GLTF.materials[materialIdx];
 
                 if (string.IsNullOrEmpty(material.name))
                 {
-                    material.name = $"material_{i}";
+                    material.name = $"material_{materialIdx}";
                 }
 
-                while (true)
-                {
-                    if (used.Add(material.name))
-                    {
-#if VRM_DEVELOP
-                        // Debug.Log($"Material: {material.name}");
-#endif
-                        break;
-                    }
-                    material.name = string.Format("{0}({1})", originalName, j++);
-                }
+                material.name = FixNameUnique(used, material.name);
             }
         }
 
@@ -266,25 +232,13 @@ namespace UniGLTF
             for (int i = 0; i < GLTF.animations.Count; ++i)
             {
                 var animation = GLTF.animations[i];
-                var originalName = animation.name;
-                int j = 2;
 
                 if (string.IsNullOrEmpty(animation.name))
                 {
                     animation.name = $"animation_{i}";
                 }
 
-                while (true)
-                {
-                    if (used.Add(animation.name))
-                    {
-#if VRM_DEVELOP
-                        // Debug.Log($"Material: {material.name}");
-#endif
-                        break;
-                    }
-                    animation.name = string.Format("{0}({1})", originalName, j++);
-                }
+                animation.name = FixNameUnique(used, animation.name);
             }
         }
 
@@ -317,6 +271,24 @@ namespace UniGLTF
             if (!texture.name.EndsWith(extension))
             {
                 texture.name = texture.name + extension;
+            }
+        }
+
+        private static string FixNameUnique(HashSet<string> used, string originalName)
+        {
+            if (used.Add(originalName))
+            {
+                return originalName;
+            }
+
+            var duplicatedIdx = 2;
+            while (true)
+            {
+                var newName = $"{originalName}{UniqueFixResourceSuffix}{duplicatedIdx++}";
+                if (used.Add(newName))
+                {
+                    return newName;
+                }
             }
         }
     }

@@ -203,6 +203,9 @@ namespace UniVRM10
             {
                 UniGLTF.Extensions.VRMC_springBone.GltfSerializer.SerializeTo(ref Storage.Gltf.extensions, vrmSpringBone);
             }
+
+            // Fix Duplicated name
+            gltfExporter.FixName(Storage.Gltf);
         }
 
         /// <summary>
