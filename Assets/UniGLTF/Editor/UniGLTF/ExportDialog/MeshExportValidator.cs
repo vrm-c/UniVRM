@@ -33,6 +33,10 @@ namespace UniGLTF
 
         public void SetRoot(GameObject ExportRoot, GltfExportSettings settings, IBlendShapeExportFilter blendShapeFilter)
         {
+            if(ExportRoot==null)
+            {
+                return;
+            }
             MeshExportInfo.GetInfo(ExportRoot.transform.Traverse().Skip(1), Meshes, settings);
             foreach(var info in Meshes)
             {
