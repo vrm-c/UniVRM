@@ -1,5 +1,3 @@
-using UnityEngine;
-using UnityEditor;
 #if UNITY_2020_2_OR_NEWER
 using UnityEditor.AssetImporters;
 #else
@@ -12,14 +10,11 @@ namespace UniGLTF
 #if UNIGLTF_ENABLE_ZIPARCHVIE_IMPORTER
     [ScriptedImporter(1, "zip")]
 #endif
-    public class ZipArchivedGltfScriptedImporter : ScriptedImporter
+    public class ZipArchivedGltfScriptedImporter : GltfScriptedImporterBase
     {
-        [SerializeField]
-        public ScriptedImporterAxes m_reverseAxis = default;
-
         public override void OnImportAsset(AssetImportContext ctx)
         {
-            ScriptedImporterImpl.Import(this, ctx, m_reverseAxis.ToAxes());
+            Import(this, ctx, m_reverseAxis.ToAxes());
         }
     }
 }

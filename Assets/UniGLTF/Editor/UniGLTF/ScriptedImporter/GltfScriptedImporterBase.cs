@@ -1,5 +1,6 @@
-using System.Linq;
 using UnityEngine;
+using UnityEditor;
+using System.Linq;
 using VRMShaders;
 #if UNITY_2020_2_OR_NEWER
 using UnityEditor.AssetImporters;
@@ -10,15 +11,21 @@ using UnityEditor.Experimental.AssetImporters;
 
 namespace UniGLTF
 {
-    public static class ScriptedImporterImpl
+    /// <summary>
+    /// ScriptedImporterImpl から改め
+    /// </summary>
+    public abstract class GltfScriptedImporterBase : ScriptedImporter
     {
+        [SerializeField]
+        public ScriptedImporterAxes m_reverseAxis = default;
+
         /// <summary>
         /// glb をパースして、UnityObject化、さらにAsset化する
         /// </summary>
         /// <param name="scriptedImporter"></param>
         /// <param name="context"></param>
         /// <param name="reverseAxis"></param>
-        public static void Import(ScriptedImporter scriptedImporter, AssetImportContext context, Axes reverseAxis)
+        protected static void Import(ScriptedImporter scriptedImporter, AssetImportContext context, Axes reverseAxis)
         {
 #if VRM_DEVELOP
             Debug.Log("OnImportAsset to " + scriptedImporter.assetPath);
@@ -28,7 +35,7 @@ namespace UniGLTF
             // Parse(parse glb, parser gltf json)
             //
             var data = new AmbiguousGltfFileParser(scriptedImporter.assetPath).Parse();
-            
+
 
             //
             // Import(create unity objects)
