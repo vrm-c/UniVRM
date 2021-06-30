@@ -148,7 +148,7 @@ namespace UniGLTF
             }
         }
 
-        static void Export_Emission(Material m, ITextureExporter textureExporter, glTFMaterial material, bool useEmissiveMultiplier = false)
+        static void Export_Emission(Material m, ITextureExporter textureExporter, glTFMaterial material, bool useEmissiveMultiplier)
         {
             if (m.IsKeywordEnabled("_EMISSION") == false)
             {
