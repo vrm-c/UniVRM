@@ -29,7 +29,7 @@ namespace UniGLTF
             srcMaterial.mainTextureScale = scale;
 
             var materialExporter = new MaterialExporter();
-            var gltfMaterial = materialExporter.ExportMaterial(srcMaterial, textureExporter);
+            var gltfMaterial = materialExporter.ExportMaterial(srcMaterial, textureExporter, new GltfExportSettings());
             gltfMaterial.pbrMetallicRoughness.baseColorTexture.extensions = gltfMaterial.pbrMetallicRoughness.baseColorTexture.extensions.Deserialize();
 
             Assert.IsTrue(glTF_KHR_texture_transform.TryGet(gltfMaterial.pbrMetallicRoughness.baseColorTexture, out glTF_KHR_texture_transform t));
@@ -243,7 +243,7 @@ namespace UniGLTF
             material.EnableKeyword("_EMISSION");
             var materialExporter = new MaterialExporter();
             var textureExporter = new TextureExporter(new EditorTextureSerializer());
-            var gltfMaterial = materialExporter.ExportMaterial(material, textureExporter);
+            var gltfMaterial = materialExporter.ExportMaterial(material, textureExporter, new GltfExportSettings());
 
             Assert.AreEqual(gltfMaterial.emissiveFactor, new float[] { 0, 0.5f, 1 });
         }

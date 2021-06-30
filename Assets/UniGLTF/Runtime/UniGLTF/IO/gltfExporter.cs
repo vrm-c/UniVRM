@@ -64,9 +64,10 @@ namespace UniGLTF
         }
 
         TextureExporter m_textureExporter;
-        IAxisInverter m_axisInverter;
 
-        public gltfExporter(glTF gltf, Axes invertAxis = Axes.Z)
+        GltfExportSettings m_settings;
+
+        public gltfExporter(glTF gltf, GltfExportSettings settings)
         {
             glTF = gltf;
 
@@ -78,7 +79,12 @@ namespace UniGLTF
                 version = "2.0",
             };
 
-            m_axisInverter = invertAxis.Create();
+            m_settings = settings;
+            if (m_settings == null)
+            {
+                // default
+                m_settings = new GltfExportSettings();
+            }
         }
 
         GameObject m_tmpParent = null;
@@ -87,7 +93,7 @@ namespace UniGLTF
         {
             // コピーを作って左手系を右手系に変換する
             Copy = GameObject.Instantiate(go);
-            Copy.transform.ReverseRecursive(m_axisInverter);
+            Copy.transform.ReverseRecursive(m_settings.InverseAxis.Create());
 
             // Export の root は gltf の scene になるので、
             // エクスポート対象が単一の GameObject の場合に、
@@ -216,7 +222,7 @@ namespace UniGLTF
             // do nothing
         }
 
-        public virtual void Export(MeshExportSettings meshExportSettings, ITextureSerializer textureSerializer)
+        public virtual void Export(GltfExportSettings meshExportSettings, ITextureSerializer textureSerializer)
         {
             var bytesBuffer = new ArrayByteBuffer(new byte[50 * 1024 * 1024]);
             var bufferIndex = glTF.AddBuffer(bytesBuffer);
@@ -234,7 +240,7 @@ namespace UniGLTF
             m_textureExporter = new TextureExporter(textureSerializer);
 
             var materialExporter = CreateMaterialExporter();
-            glTF.materials = Materials.Select(x => materialExporter.ExportMaterial(x, TextureExporter)).ToList();
+            glTF.materials = Materials.Select(x => materialExporter.ExportMaterial(x, TextureExporter, m_settings)).ToList();
             #endregion
 
             #region Meshes
@@ -242,8 +248,8 @@ namespace UniGLTF
             foreach (var unityMesh in uniqueUnityMeshes)
             {
                 var (gltfMesh, blendShapeIndexMap) = meshExportSettings.DivideVertexBuffer
-                    ? MeshExporter_DividedVertexBuffer.Export(glTF, bufferIndex, unityMesh, Materials, m_axisInverter, meshExportSettings)
-                    : MeshExporter_SharedVertexBuffer.Export(glTF, bufferIndex, unityMesh, Materials, m_axisInverter, meshExportSettings)
+                    ? MeshExporter_DividedVertexBuffer.Export(glTF, bufferIndex, unityMesh, Materials, m_settings.InverseAxis.Create(), meshExportSettings)
+                    : MeshExporter_SharedVertexBuffer.Export(glTF, bufferIndex, unityMesh, Materials, m_settings.InverseAxis.Create(), meshExportSettings)
                     ;
                 glTF.meshes.Add(gltfMesh);
                 Meshes.Add(unityMesh.Mesh);
@@ -281,7 +287,7 @@ namespace UniGLTF
                 {
                     if (uniqueBones != null && renderer is SkinnedMeshRenderer smr)
                     {
-                        var matrices = x.GetBindPoses().Select(m_axisInverter.InvertMat4).ToArray();
+                        var matrices = x.GetBindPoses().Select(m_settings.InverseAxis.Create().InvertMat4).ToArray();
                         var accessor = glTF.ExtendBufferAndGetAccessorIndex(bufferIndex, matrices, glBufferTarget.NONE);
                         var skin = new glTFSkin
                         {

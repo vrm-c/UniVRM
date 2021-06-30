@@ -50,7 +50,7 @@ namespace VRM
         [Tooltip("Divide vertex buffer. For more gltf compatibility")]
         public bool DivideVertexBuffer = false;
 
-        public MeshExportSettings MeshExportSettings => new MeshExportSettings
+        public GltfExportSettings MeshExportSettings => new GltfExportSettings
         {
             UseSparseAccessorForMorphTarget = UseSparseAccessor,
             ExportOnlyBlendShapePosition = OnlyBlendshapePosition,

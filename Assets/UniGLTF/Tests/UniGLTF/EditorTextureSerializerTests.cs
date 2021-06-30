@@ -19,9 +19,9 @@ namespace UniGLTF
         private static readonly Texture2D NormalMapGrayTex = AssetDatabase.LoadAssetAtPath<Texture2D>($"{AssetPath}/{NormalMapGrayImageName}.png");
         private static readonly Color32 JustGray = new Color32(127, 127, 127, 255);
         private static readonly Color32 SrgbGrayInSrgb = JustGray;
-        private static readonly Color32 SrgbGrayInLinear = ((Color) SrgbGrayInSrgb).linear;
+        private static readonly Color32 SrgbGrayInLinear = ((Color)SrgbGrayInSrgb).linear;
         private static readonly Color32 LinearGrayInLinear = JustGray;
-        private static readonly Color32 LinearGrayInSrgb = ((Color) LinearGrayInLinear).gamma;
+        private static readonly Color32 LinearGrayInSrgb = ((Color)LinearGrayInLinear).gamma;
         private static readonly Color32 NormalizedLinearGrayInLinear = new Color32(127, 127, 255, 255);
 
         [Test]
@@ -123,10 +123,13 @@ namespace UniGLTF
 
             // Export glTF
             var gltf = new glTF();
-            using (var exporter = new gltfExporter(gltf, Axes.X))
+            using (var exporter = new gltfExporter(gltf, new GltfExportSettings
+            {
+                InverseAxis = Axes.X
+            }))
             {
                 exporter.Prepare(root);
-                var settings = new MeshExportSettings
+                var settings = new GltfExportSettings
                 {
                     ExportOnlyBlendShapePosition = false,
                     UseSparseAccessorForMorphTarget = false,

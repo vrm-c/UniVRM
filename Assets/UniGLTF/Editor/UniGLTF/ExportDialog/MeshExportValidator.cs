@@ -31,8 +31,12 @@ namespace UniGLTF
 
         public int ExpectedExportByteSize => Meshes.Where(x => x.IsRendererActive).Sum(x => x.ExportByteSize);
 
-        public void SetRoot(GameObject ExportRoot, MeshExportSettings settings, IBlendShapeExportFilter blendShapeFilter)
+        public void SetRoot(GameObject ExportRoot, GltfExportSettings settings, IBlendShapeExportFilter blendShapeFilter)
         {
+            if(ExportRoot==null)
+            {
+                return;
+            }
             MeshExportInfo.GetInfo(ExportRoot.transform.Traverse().Skip(1), Meshes, settings);
             foreach(var info in Meshes)
             {

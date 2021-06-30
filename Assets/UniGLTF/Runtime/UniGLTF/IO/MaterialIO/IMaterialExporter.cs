@@ -9,6 +9,6 @@ namespace UniGLTF
     /// </summary>
     public interface IMaterialExporter
     {
-        glTFMaterial ExportMaterial(Material m, ITextureExporter textureExporter);
+        glTFMaterial ExportMaterial(Material m, ITextureExporter textureExporter, GltfExportSettings settings);
     }
 }

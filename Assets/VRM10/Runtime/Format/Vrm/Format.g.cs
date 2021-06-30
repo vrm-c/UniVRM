@@ -457,7 +457,7 @@ namespace UniGLTF.Extensions.VRMC_vrm
         public int? Material;
 
         // uv scaling for TEXCOORD_0
-        public float[] Scaling;
+        public float[] Scale;
 
         // uv offset for TEXCOORD_0
         public float[] Offset;

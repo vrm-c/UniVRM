@@ -19,7 +19,7 @@ namespace UniGLTF
         /// <returns></returns>
         public static (glTFMesh, Dictionary<int, int>) Export(glTF gltf, int gltfBuffer,
             MeshExportInfo unityMesh, List<Material> unityMaterials,
-            IAxisInverter axisInverter, MeshExportSettings settings)
+            IAxisInverter axisInverter, GltfExportSettings settings)
         {
             var mesh = unityMesh.Mesh;
             var gltfMesh = new glTFMesh(mesh.name);

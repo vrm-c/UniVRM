@@ -166,7 +166,7 @@ namespace VRM.Samples
                 */
                 importedJson.RemoveValue(Utf8String.From("/bufferViews/*/byteStride"));
 
-                var vrm = VRMExporter.Export(UniGLTF.MeshExportSettings.Default, loaded.gameObject, new EditorTextureSerializer());
+                var vrm = VRMExporter.Export(new GltfExportSettings(), loaded.gameObject, new EditorTextureSerializer());
 
                 // TODO: Check contents in JSON
                 /*var exportJson = */

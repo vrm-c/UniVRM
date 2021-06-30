@@ -16,14 +16,14 @@ namespace UniGLTF
 
     public class MaterialExporter : IMaterialExporter
     {
-        public virtual glTFMaterial ExportMaterial(Material m, ITextureExporter textureExporter)
+        public virtual glTFMaterial ExportMaterial(Material m, ITextureExporter textureExporter, GltfExportSettings settings)
         {
             var material = CreateMaterial(m);
 
             // common params
             material.name = m.name;
             Export_Color(m, textureExporter, material);
-            Export_Emission(m, textureExporter, material);
+            Export_Emission(m, textureExporter, material, settings.UseEmissiveMultiplier);
             Export_Normal(m, textureExporter, material);
             Export_OcclusionMetallicRoughness(m, textureExporter, material);
 
@@ -148,17 +148,28 @@ namespace UniGLTF
             }
         }
 
-        static void Export_Emission(Material m, ITextureExporter textureExporter, glTFMaterial material)
+        static void Export_Emission(Material m, ITextureExporter textureExporter, glTFMaterial material, bool useEmissiveMultiplier)
         {
             if (m.IsKeywordEnabled("_EMISSION") == false)
+            {
                 return;
+            }
 
             if (m.HasProperty("_EmissionColor"))
             {
                 var color = m.GetColor("_EmissionColor");
                 if (color.maxColorComponent > 1)
                 {
-                    color /= color.maxColorComponent;
+                    var maxColorComponent = color.maxColorComponent;
+                    color /= maxColorComponent;
+                    if (useEmissiveMultiplier)
+                    {
+                        UniGLTF.Extensions.VRMC_materials_hdr_emissiveMultiplier.GltfSerializer.SerializeTo(ref material.extensions,
+                        new Extensions.VRMC_materials_hdr_emissiveMultiplier.VRMC_materials_hdr_emissiveMultiplier
+                        {
+                            EmissiveMultiplier = maxColorComponent,
+                        });
+                    }
                 }
                 material.emissiveFactor = color.ToFloat3(ColorSpace.Linear, ColorSpace.Linear);
             }

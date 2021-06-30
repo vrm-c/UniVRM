@@ -41,10 +41,10 @@ namespace UniVRM10
                 "vrm-specification/specification/VRMC_vrm-1.0_draft/schema/VRMC_vrm.schema.json",
                 "Assets/VRM10/Runtime/Format/Vrm", // format
                 "Assets/VRM10/Runtime/Format/Vrm", // serializer
-                // VRMC_node_constraint
-                "vrm-specification/specification/VRMC_node_constraint-1.0_draft/schema/VRMC_node_constraint.schema.json",
-                "Assets/VRM10/Runtime/Format/Constraints", // format
-                "Assets/VRM10/Runtime/Format/Constraints", // serializer
+                // VRMC_hdr_emissiveMultiplier
+                "vrm-specification/specification/VRMC_materials_hdr_emissiveMultiplier-1.0_draft/schema/VRMC_materials_hdr_emissiveMultiplier.json",
+                "Assets/VRMShaders/VRM10/Format/Runtime/EmissiveMultiplier", // format
+                "Assets/VRM10/Runtime/Format/EmissiveMultiplier", // serializer
                 // VRMC_materials_mtoon
                 "vrm-specification/specification/VRMC_materials_mtoon-1.0_draft/schema/VRMC_materials_mtoon.schema.json",
                 "Assets/VRMShaders/VRM10/Format/Runtime/MaterialsMToon", // format
@@ -53,6 +53,10 @@ namespace UniVRM10
                 "vrm-specification/specification/VRMC_springBone-1.0_draft/schema/VRMC_springBone.schema.json",
                 "Assets/VRM10/Runtime/Format/SpringBone", // format
                 "Assets/VRM10/Runtime/Format/SpringBone", // serializer
+                // VRMC_node_constraint
+                "vrm-specification/specification/VRMC_node_constraint-1.0_draft/schema/VRMC_node_constraint.schema.json",
+                "Assets/VRM10/Runtime/Format/Constraints", // format
+                "Assets/VRM10/Runtime/Format/Constraints", // serializer
             };
 
             for (int i = 0; i < args.Length; i += 3)

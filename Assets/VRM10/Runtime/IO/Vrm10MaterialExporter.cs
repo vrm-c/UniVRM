@@ -6,7 +6,7 @@ namespace UniVRM10
 {
     public class Vrm10MaterialExporter : MaterialExporter
     {
-        public override glTFMaterial ExportMaterial(Material m, ITextureExporter textureExporter)
+        public override glTFMaterial ExportMaterial(Material m, ITextureExporter textureExporter, GltfExportSettings settings)
         {
             if (Vrm10MToonMaterialExporter.TryExportMaterialAsMToon(m, textureExporter, out var dst))
             {
@@ -14,7 +14,7 @@ namespace UniVRM10
             }
             else
             {
-                return base.ExportMaterial(m, textureExporter);
+                return base.ExportMaterial(m, textureExporter, settings);
             }
         }
     }

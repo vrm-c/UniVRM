@@ -26,7 +26,7 @@ namespace UniGLTF
         /// <returns></returns>
         public static (glTFMesh, Dictionary<int, int> blendShapeIndexMap) Export(glTF gltf, int bufferIndex,
             MeshExportInfo unityMesh, List<Material> unityMaterials,
-            IAxisInverter axisInverter, MeshExportSettings settings)
+            IAxisInverter axisInverter, GltfExportSettings settings)
         {
             var mesh = unityMesh.Mesh;
             var materials = unityMesh.Materials;

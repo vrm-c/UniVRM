@@ -47,7 +47,6 @@ namespace UniVRM10
             }
             EditorGUILayout.Separator();
 
-            serializedObject.Update();
             switch (_tab)
             {
                 case Tabs.Meta:
@@ -66,7 +65,6 @@ namespace UniVRM10
                     m_firstPerson.OnInspectorGUI();
                     break;
             }
-            serializedObject.ApplyModifiedProperties();
         }
     }
 }

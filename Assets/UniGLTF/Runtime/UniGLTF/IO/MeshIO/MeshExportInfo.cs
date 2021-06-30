@@ -183,7 +183,7 @@ namespace UniGLTF
         public string Summary;
         #endregion
 
-        MeshExportInfo(Renderer renderer, MeshExportSettings settings)
+        MeshExportInfo(Renderer renderer, GltfExportSettings settings)
         {
             if (renderer == null)
             {
@@ -264,7 +264,7 @@ namespace UniGLTF
         public static MeshExportInfo Create(GameObject go)
         {
             var list = new List<MeshExportInfo>();
-            GetInfo(go.transform.Traverse(), list, MeshExportSettings.Default);
+            GetInfo(go.transform.Traverse(), list, new GltfExportSettings());
             return list[0];
         }
 
@@ -275,7 +275,7 @@ namespace UniGLTF
         /// <param name="list"></param>
         /// <param name="settings"></param>
         /// <param name="blendShapeFilter"> blendShape の export を filtering する </param>
-        public static void GetInfo(IEnumerable<Transform> nodes, List<MeshExportInfo> list, MeshExportSettings settings)
+        public static void GetInfo(IEnumerable<Transform> nodes, List<MeshExportInfo> list, GltfExportSettings settings)
         {
             list.Clear();
             foreach (var node in nodes)
@@ -311,7 +311,7 @@ namespace UniGLTF
         public void CalcMeshSize(
             GameObject root,
             Renderer renderer,
-            MeshExportSettings settings,
+            GltfExportSettings settings,
             IBlendShapeExportFilter blendShapeFilter
             )
         {
@@ -321,7 +321,7 @@ namespace UniGLTF
 
         public void CalcMeshSize(
             string relativePath,
-            MeshExportSettings settings,
+            GltfExportSettings settings,
             IBlendShapeExportFilter blendShapeFilter
             )
         {

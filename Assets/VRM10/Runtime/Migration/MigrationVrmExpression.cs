@@ -117,7 +117,7 @@ namespace UniVRM10
                     expression.TextureTransformBinds.Add(new UniGLTF.Extensions.VRMC_vrm.TextureTransformBind
                     {
                         Material = materialIndex,
-                        Scaling = new float[] { targetValue[0], targetValue[1] },
+                        Scale = new float[] { targetValue[0], targetValue[1] },
                         Offset = new float[] { targetValue[2], targetValue[3] }
                     });
                 }
@@ -126,7 +126,7 @@ namespace UniVRM10
                     expression.TextureTransformBinds.Add(new UniGLTF.Extensions.VRMC_vrm.TextureTransformBind
                     {
                         Material = materialIndex,
-                        Scaling = new float[] { targetValue[0], 1 },
+                        Scale = new float[] { targetValue[0], 1 },
                         Offset = new float[] { targetValue[2], 0 }
                     });
                 }
@@ -135,7 +135,7 @@ namespace UniVRM10
                     expression.TextureTransformBinds.Add(new UniGLTF.Extensions.VRMC_vrm.TextureTransformBind
                     {
                         Material = materialIndex,
-                        Scaling = new float[] { 1, targetValue[1] },
+                        Scale = new float[] { 1, targetValue[1] },
                         Offset = new float[] { 0, targetValue[3] }
                     });
                 }

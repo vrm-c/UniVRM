@@ -105,7 +105,7 @@ namespace VRM
                 try
                 {
                     // export
-                    var vrm = VRMExporter.Export(UniGLTF.MeshExportSettings.Default, go, new EditorTextureSerializer());
+                    var vrm = VRMExporter.Export(new UniGLTF.GltfExportSettings(), go, new EditorTextureSerializer());
 
                     // re import
                     if (vrm != null)
