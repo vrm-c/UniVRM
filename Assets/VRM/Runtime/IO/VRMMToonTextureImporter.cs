@@ -12,21 +12,19 @@ namespace VRM
             var vrmMaterial = vrm.materialProperties[materialIdx];
             foreach (var kv in vrmMaterial.textureProperties)
             {
-                if (TryGetTextureFromMaterialProperty(data, vrm, materialIdx, kv.Key, out var texture))
+                if (TryGetTextureFromMaterialProperty(data, vrmMaterial, kv.Key, out var texture))
                 {
                     yield return texture;
                 }
             }
         }
-
-        public static bool TryGetTextureFromMaterialProperty(GltfData data, glTF_VRM_extensions vrm, int materialIdx, string textureKey, out (SubAssetKey, TextureDescriptor) texture)
+        public static bool TryGetTextureFromMaterialProperty(GltfData data, glTF_VRM_Material vrmMaterial, string textureKey, out (SubAssetKey, TextureDescriptor) texture)
         {
-            var vrmMaterial = vrm.materialProperties[materialIdx];
             // 任意の shader の import を許容する
             if (/*vrmMaterial.shader == MToon.Utils.ShaderName &&*/ vrmMaterial.textureProperties.TryGetValue(textureKey, out var textureIdx))
             {
                 var (offset, scale) = (new Vector2(0, 0), new Vector2(1, 1));
-                if (TryGetTextureOffsetAndScale(vrm, materialIdx, textureKey, out var os))
+                if (TryGetTextureOffsetAndScale(vrmMaterial, textureKey, out var os))
                 {
                     offset = os.offset;
                     scale = os.scale;
@@ -48,10 +46,8 @@ namespace VRM
             return false;
         }
 
-        public static bool TryGetTextureOffsetAndScale(glTF_VRM_extensions vrm, int materialIdx, string unityTextureKey, out (Vector2 offset, Vector2 scale) os)
+        public static bool TryGetTextureOffsetAndScale(glTF_VRM_Material vrmMaterial, string unityTextureKey, out (Vector2 offset, Vector2 scale) os)
         {
-            var vrmMaterial = vrm.materialProperties[materialIdx];
-
             if (vrmMaterial.vectorProperties.TryGetValue(unityTextureKey, out var vector))
             {
                 os = (new Vector2(vector[0], vector[1]), new Vector2(vector[2], vector[3]));
