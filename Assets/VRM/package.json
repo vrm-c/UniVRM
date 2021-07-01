@@ -1,6 +1,6 @@
 {
   "name": "com.vrmc.univrm",
-  "version": "0.67.8",
+  "version": "0.67.9",
   "displayName": "VRM",
   "description": "VRM importer",
   "unity": "2018.4",
@@ -14,7 +14,7 @@
     "name": "VRM Consortium"
   },
   "dependencies": {
-    "com.vrmc.vrmshaders": "0.67.8",
-    "com.vrmc.unigltf": "2.3.8"
+    "com.vrmc.vrmshaders": "0.67.9",
+    "com.vrmc.unigltf": "2.3.9"
   }
 }
