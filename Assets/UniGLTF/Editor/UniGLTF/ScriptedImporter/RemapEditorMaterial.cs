@@ -90,7 +90,7 @@ namespace UniGLTF
                     .ToDictionary(kv => kv.Item1, kv => kv.Item2)
                     ;
 
-            var assetPath = UnityPath.FromFullpath(self.assetPath);
+            var assetPath = UnityPath.FromUnityPath(self.assetPath);
             var dirName = textureDir(assetPath.Value); // $"{assetPath.FileNameWithoutExtension}.Textures";
             TextureExtractor.ExtractTextures(
                 data,

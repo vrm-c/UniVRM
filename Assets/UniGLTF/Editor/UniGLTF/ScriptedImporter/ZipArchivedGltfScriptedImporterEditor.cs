@@ -2,8 +2,6 @@ using UnityEditor;
 using UnityEngine;
 using System.IO;
 using System.Linq;
-using System.Collections.Generic;
-using VRMShaders;
 #if UNITY_2020_2_OR_NEWER
 using UnityEditor.AssetImporters;
 #else
@@ -13,10 +11,10 @@ using UnityEditor.Experimental.AssetImporters;
 
 namespace UniGLTF
 {
-    [CustomEditor(typeof(GlbScriptedImporter))]
-    public class GlbScriptedImporterEditorGUI : RemapScriptedImporterEditorBase
+    [CustomEditor(typeof(ZipArchivedGltfScriptedImporter))]
+    public class ZipArchivedGltfScriptedImporterEditor : RemapScriptedImporterEditorBase
     {
-        GlbScriptedImporter m_importer;
+        ZipArchivedGltfScriptedImporter m_importer;
         GltfData m_data;
 
         RemapEditorMaterial m_materialEditor;
@@ -26,8 +24,8 @@ namespace UniGLTF
         {
             base.OnEnable();
 
-            m_importer = target as GlbScriptedImporter;
-            m_data = new GlbFileParser(m_importer.assetPath).Parse();
+            m_importer = target as ZipArchivedGltfScriptedImporter;
+            m_data = new AmbiguousGltfFileParser(m_importer.assetPath).Parse();
 
             var materialGenerator = new GltfMaterialDescriptorGenerator();
             var materialKeys = m_data.GLTF.materials.Select((_, i) => materialGenerator.Get(m_data, i).SubAssetKey);

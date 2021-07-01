@@ -14,7 +14,7 @@ using UnityEditor.Experimental.AssetImporters;
 namespace UniGLTF
 {
     [CustomEditor(typeof(GltfScriptedImporter))]
-    public class GltfScriptedImporterEditorGUI : RemapScriptedImporterEditorBase
+    public class GltfScriptedImporterEditor : RemapScriptedImporterEditorBase
     {
         GltfScriptedImporter m_importer;
         GltfData m_data;
