@@ -50,9 +50,7 @@ namespace UniGLTF
             if (node.matrix != null && node.matrix.Length > 0)
             {
                 var m = UnityExtensions.MatrixFromArray(node.matrix);
-                go.transform.localRotation = m.ExtractRotation();
-                go.transform.localPosition = m.ExtractPosition();
-                go.transform.localScale = m.ExtractScale();
+                (go.transform.localPosition, go.transform.localRotation, go.transform.localScale) = m.Extract();
             }
             return go;
         }
@@ -158,7 +156,7 @@ namespace UniGLTF
             }
         }
 
-        public static void SetupSkinning(glTF gltf,  List<TransformWithSkin> nodes, int i, IAxisInverter inverter)
+        public static void SetupSkinning(glTF gltf, List<TransformWithSkin> nodes, int i, IAxisInverter inverter)
         {
             var x = nodes[i];
             var skinnedMeshRenderer = x.Transform.GetComponent<SkinnedMeshRenderer>();

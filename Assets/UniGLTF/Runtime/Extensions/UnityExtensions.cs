@@ -180,6 +180,55 @@ namespace UniGLTF
             return scale;
         }
 
+        public static bool Nearly(in Matrix4x4 lhs, in Matrix4x4 rhs, float epsilon = 1e-3f)
+        {
+            if (Mathf.Abs(lhs.m00 - rhs.m00) > epsilon) return false;
+            if (Mathf.Abs(lhs.m01 - rhs.m01) > epsilon) return false;
+            if (Mathf.Abs(lhs.m02 - rhs.m02) > epsilon) return false;
+            if (Mathf.Abs(lhs.m03 - rhs.m03) > epsilon) return false;
+            if (Mathf.Abs(lhs.m10 - rhs.m10) > epsilon) return false;
+            if (Mathf.Abs(lhs.m11 - rhs.m11) > epsilon) return false;
+            if (Mathf.Abs(lhs.m12 - rhs.m12) > epsilon) return false;
+            if (Mathf.Abs(lhs.m13 - rhs.m13) > epsilon) return false;
+            if (Mathf.Abs(lhs.m20 - rhs.m20) > epsilon) return false;
+            if (Mathf.Abs(lhs.m21 - rhs.m21) > epsilon) return false;
+            if (Mathf.Abs(lhs.m22 - rhs.m22) > epsilon) return false;
+            if (Mathf.Abs(lhs.m23 - rhs.m23) > epsilon) return false;
+            if (Mathf.Abs(lhs.m30 - rhs.m30) > epsilon) return false;
+            if (Mathf.Abs(lhs.m31 - rhs.m31) > epsilon) return false;
+            if (Mathf.Abs(lhs.m32 - rhs.m32) > epsilon) return false;
+            if (Mathf.Abs(lhs.m33 - rhs.m33) > epsilon) return false;
+            return true;
+        }
+
+        public static (Vector3 T, Quaternion R, Vector3 S) Extract(this Matrix4x4 m)
+        {
+            if (m.determinant < 0)
+            {
+                // ミラーリングを試行する
+
+                // -X
+                {
+                    var mm = m * Matrix4x4.Scale(new Vector3(-1, 1, 1));
+                    var ss = mm.ExtractScale();
+                    mm = mm * Matrix4x4.Scale(new Vector3(1 / ss.x, 1 / ss.y, 1 / ss.z));
+                    var tt = mm.ExtractPosition();
+                    var rr = mm.ExtractRotation();
+                    ss.x = -ss.x;
+                    var mmm = Matrix4x4.TRS(tt, rr, ss);
+                    if (Nearly(m, mmm))
+                    {
+                        return (tt, rr, ss);
+                    }
+                }
+            }
+
+            var s = m.ExtractScale();
+            var t = m.ExtractPosition();
+            var r = m.ExtractRotation();
+            return (t, r, s);
+        }
+
         public static string RelativePathFrom(this Transform self, Transform root)
         {
             var path = new List<String>();
