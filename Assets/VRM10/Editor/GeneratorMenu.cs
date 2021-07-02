@@ -41,6 +41,10 @@ namespace UniVRM10
                 FormatDir = formatDir;
                 SerializerDir = serializerDir;
             }
+
+            public GenerateInfo(string jsonSchema, string formatDir) : this(jsonSchema, formatDir, formatDir)
+            {
+            }
         }
 
         static void Run(bool debug)
@@ -54,14 +58,12 @@ namespace UniVRM10
                 // VRMC_hdr_emissiveMultiplier
                 new GenerateInfo(
                     "vrm-specification/specification/VRMC_materials_hdr_emissiveMultiplier-1.0_draft/schema/VRMC_materials_hdr_emissiveMultiplier.json",
-                    "Assets/VRMShaders/VRM10/Format/Runtime/EmissiveMultiplier",
-                    "Assets/VRM10/Runtime/Format/EmissiveMultiplier"
+                    "Assets/UniGLTF/Runtime/UniGLTF/Format/ExtensionsAndExtras/EmissiveMultiplier"
                 ),
 
                 // VRMC_vrm
                 new GenerateInfo(
                     "vrm-specification/specification/VRMC_vrm-1.0_draft/schema/VRMC_vrm.schema.json",
-                    "Assets/VRM10/Runtime/Format/Vrm",
                     "Assets/VRM10/Runtime/Format/Vrm"
                 ),
 
@@ -75,14 +77,12 @@ namespace UniVRM10
                 // VRMC_springBone
                 new GenerateInfo(
                     "vrm-specification/specification/VRMC_springBone-1.0_draft/schema/VRMC_springBone.schema.json",
-                    "Assets/VRM10/Runtime/Format/SpringBone",
                     "Assets/VRM10/Runtime/Format/SpringBone"
                 ),
 
                 // VRMC_node_constraint
                 new GenerateInfo(
                     "vrm-specification/specification/VRMC_node_constraint-1.0_draft/schema/VRMC_node_constraint.schema.json",
-                    "Assets/VRM10/Runtime/Format/Constraints",
                     "Assets/VRM10/Runtime/Format/Constraints"
                 ),
             };
