@@ -45,7 +45,37 @@ namespace UniVRM10
                 // blendshape (optional)
                 if (vrm0.TryGet("blendShapeMaster", out JsonNode vrm0BlendShape))
                 {
-                    vrm1.Expressions = MigrationVrmExpression.Migrate(gltf, vrm0BlendShape).ToList();
+                    vrm1.Expressions = new UniGLTF.Extensions.VRMC_vrm.Expressions
+                    {
+                        Preset = new UniGLTF.Extensions.VRMC_vrm.Preset(),
+                        Custom = new Dictionary<string, UniGLTF.Extensions.VRMC_vrm.Expression>(),
+                    };
+                    foreach (var (preset, customName, expression) in MigrationVrmExpression.Migrate(gltf, vrm0BlendShape))
+                    {
+                        switch (preset)
+                        {
+                            case ExpressionPreset.happy: vrm1.Expressions.Preset.Happy = expression; break;
+                            case ExpressionPreset.angry: vrm1.Expressions.Preset.Angry = expression; break;
+                            case ExpressionPreset.sad: vrm1.Expressions.Preset.Sad = expression; break;
+                            case ExpressionPreset.relaxed: vrm1.Expressions.Preset.Relaxed = expression; break;
+                            case ExpressionPreset.surprised: vrm1.Expressions.Preset.Surprised = expression; break;
+                            case ExpressionPreset.aa: vrm1.Expressions.Preset.Aa = expression; break;
+                            case ExpressionPreset.ih: vrm1.Expressions.Preset.Ih = expression; break;
+                            case ExpressionPreset.ou: vrm1.Expressions.Preset.Ou = expression; break;
+                            case ExpressionPreset.ee: vrm1.Expressions.Preset.Ee = expression; break;
+                            case ExpressionPreset.oh: vrm1.Expressions.Preset.Oh = expression; break;
+                            case ExpressionPreset.blink: vrm1.Expressions.Preset.Blink = expression; break;
+                            case ExpressionPreset.blinkLeft: vrm1.Expressions.Preset.BlinkLeft = expression; break;
+                            case ExpressionPreset.blinkRight: vrm1.Expressions.Preset.BlinkRight = expression; break;
+                            case ExpressionPreset.lookUp: vrm1.Expressions.Preset.LookUp = expression; break;
+                            case ExpressionPreset.lookDown: vrm1.Expressions.Preset.LookDown = expression; break;
+                            case ExpressionPreset.lookLeft: vrm1.Expressions.Preset.LookLeft = expression; break;
+                            case ExpressionPreset.lookRight: vrm1.Expressions.Preset.LookRight = expression; break;
+                            case ExpressionPreset.neutral: vrm1.Expressions.Custom[customName] = expression; break;
+                            case ExpressionPreset.custom: vrm1.Expressions.Custom[customName] = expression; break;
+                            default: throw new NotImplementedException();
+                        }
+                    }
                 }
 
                 // lookat & firstperson (optional)

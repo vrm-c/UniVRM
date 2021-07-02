@@ -43,17 +43,22 @@ public static void Serialize(JsonFormatter f, VRMC_springBone value)
         (value.Extras as glTFExtension).Serialize(f);
     }
 
-    if(value.Colliders!=null&&value.Colliders.Count()>=0){
+    if(!string.IsNullOrEmpty(value.SpecVersion)){
+        f.Key("specVersion");                
+        f.Value(value.SpecVersion);
+    }
+
+    if(value.Colliders!=null&&value.Colliders.Count()>=1){
         f.Key("colliders");                
         Serialize_Colliders(f, value.Colliders);
     }
 
-    if(value.ColliderGroups!=null&&value.ColliderGroups.Count()>=0){
+    if(value.ColliderGroups!=null&&value.ColliderGroups.Count()>=1){
         f.Key("colliderGroups");                
         Serialize_ColliderGroups(f, value.ColliderGroups);
     }
 
-    if(value.Springs!=null&&value.Springs.Count()>=0){
+    if(value.Springs!=null&&value.Springs.Count()>=1){
         f.Key("springs");                
         Serialize_Springs(f, value.Springs);
     }
@@ -290,12 +295,12 @@ public static void Serialize_Springs_ITEM(JsonFormatter f, Spring value)
         f.Value(value.Name);
     }
 
-    if(value.Joints!=null&&value.Joints.Count()>=0){
+    if(value.Joints!=null&&value.Joints.Count()>=1){
         f.Key("joints");                
         __springs_ITEM_Serialize_Joints(f, value.Joints);
     }
 
-    if(value.ColliderGroups!=null&&value.ColliderGroups.Count()>=0){
+    if(value.ColliderGroups!=null&&value.ColliderGroups.Count()>=1){
         f.Key("colliderGroups");                
         __springs_ITEM_Serialize_ColliderGroups(f, value.ColliderGroups);
     }

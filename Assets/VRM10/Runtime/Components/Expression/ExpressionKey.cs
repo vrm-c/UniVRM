@@ -11,8 +11,8 @@ namespace UniVRM10
         /// <summary>
         /// Enum.ToString() のGC回避用キャッシュ
         /// </summary>
-        private static readonly Dictionary<UniGLTF.Extensions.VRMC_vrm.ExpressionPreset, string> PresetNameDictionary =
-            new Dictionary<UniGLTF.Extensions.VRMC_vrm.ExpressionPreset, string>();
+        private static readonly Dictionary<ExpressionPreset, string> PresetNameDictionary =
+            new Dictionary<ExpressionPreset, string>();
 
         /// <summary>
         ///  ExpressionPreset と同名の名前を持つ独自に追加した Expression を区別するための prefix
@@ -22,7 +22,7 @@ namespace UniVRM10
         /// <summary>
         /// Preset of this ExpressionKey.
         /// </summary>
-        public readonly UniGLTF.Extensions.VRMC_vrm.ExpressionPreset Preset;
+        public readonly ExpressionPreset Preset;
 
         /// <summary>
         /// Custom Name of this ExpressionKey.
@@ -41,9 +41,9 @@ namespace UniVRM10
             {
                 switch (Preset)
                 {
-                    case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.blink:
-                    case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.blinkLeft:
-                    case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.blinkRight:
+                    case ExpressionPreset.blink:
+                    case ExpressionPreset.blinkLeft:
+                    case ExpressionPreset.blinkRight:
                         return true;
                 }
                 return false;
@@ -56,10 +56,10 @@ namespace UniVRM10
             {
                 switch (Preset)
                 {
-                    case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.lookUp:
-                    case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.lookDown:
-                    case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.lookLeft:
-                    case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.lookRight:
+                    case ExpressionPreset.lookUp:
+                    case ExpressionPreset.lookDown:
+                    case ExpressionPreset.lookLeft:
+                    case ExpressionPreset.lookRight:
                         return true;
                 }
                 return false;
@@ -72,11 +72,11 @@ namespace UniVRM10
             {
                 switch (Preset)
                 {
-                    case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.aa:
-                    case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.ih:
-                    case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.ou:
-                    case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.ee:
-                    case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.oh:
+                    case ExpressionPreset.aa:
+                    case ExpressionPreset.ih:
+                    case ExpressionPreset.ou:
+                    case ExpressionPreset.ee:
+                    case ExpressionPreset.oh:
                         return true;
                 }
                 return false;
@@ -85,11 +85,11 @@ namespace UniVRM10
 
         public bool IsProcedual => IsBlink || IsLookAt || IsMouth;
 
-        public ExpressionKey(UniGLTF.Extensions.VRMC_vrm.ExpressionPreset preset, string customName = null)
+        public ExpressionKey(ExpressionPreset preset, string customName = null)
         {
             Preset = preset;
 
-            if (Preset != UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.custom)
+            if (Preset != ExpressionPreset.custom)
             {
                 if (PresetNameDictionary.ContainsKey((Preset)))
                 {
@@ -105,7 +105,7 @@ namespace UniVRM10
             {
                 if (string.IsNullOrEmpty(customName))
                 {
-                    throw new ArgumentException("name is required for UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.Custom");
+                    throw new ArgumentException("name is required for ExpressionPreset.Custom");
                 }
 
                 _id = $"{UnknownPresetPrefix}{customName}";
@@ -115,10 +115,10 @@ namespace UniVRM10
 
         public static ExpressionKey CreateCustom(String key)
         {
-            return new ExpressionKey(UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.custom, key);
+            return new ExpressionKey(ExpressionPreset.custom, key);
         }
 
-        public static ExpressionKey CreateFromPreset(UniGLTF.Extensions.VRMC_vrm.ExpressionPreset preset)
+        public static ExpressionKey CreateFromPreset(ExpressionPreset preset)
         {
             return new ExpressionKey(preset);
         }
@@ -133,17 +133,25 @@ namespace UniVRM10
             return new ExpressionKey(clip.Preset, clip.ExpressionName);
         }
 
-        public static ExpressionKey CreateFromVrm10(UniGLTF.Extensions.VRMC_vrm.Expression expression)
-        {
-            if (expression.Preset == UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.custom)
-            {
-                return ExpressionKey.CreateCustom(expression.Name);
-            }
-            else
-            {
-                return ExpressionKey.CreateFromPreset(expression.Preset);
-            }
-        }
+        public static ExpressionKey Happy => CreateFromPreset(ExpressionPreset.happy);
+        public static ExpressionKey Angry => CreateFromPreset(ExpressionPreset.angry);
+        public static ExpressionKey Sad => CreateFromPreset(ExpressionPreset.sad);
+        public static ExpressionKey Relaxed => CreateFromPreset(ExpressionPreset.relaxed);
+        public static ExpressionKey Surprised => CreateFromPreset(ExpressionPreset.surprised);
+        public static ExpressionKey Aa => CreateFromPreset(ExpressionPreset.aa);
+        public static ExpressionKey Ih => CreateFromPreset(ExpressionPreset.ih);
+        public static ExpressionKey Ou => CreateFromPreset(ExpressionPreset.ou);
+        public static ExpressionKey Ee => CreateFromPreset(ExpressionPreset.ee);
+        public static ExpressionKey Oh => CreateFromPreset(ExpressionPreset.oh);
+        public static ExpressionKey Blink => CreateFromPreset(ExpressionPreset.blink);
+        public static ExpressionKey BlinkLeft => CreateFromPreset(ExpressionPreset.blinkLeft);
+        public static ExpressionKey BlinkRight => CreateFromPreset(ExpressionPreset.blinkRight);
+        public static ExpressionKey LookUp => CreateFromPreset(ExpressionPreset.lookUp);
+        public static ExpressionKey LookDown => CreateFromPreset(ExpressionPreset.lookDown);
+        public static ExpressionKey LookLeft => CreateFromPreset(ExpressionPreset.lookLeft);
+        public static ExpressionKey LookRight => CreateFromPreset(ExpressionPreset.lookRight);
+        public static ExpressionKey Neutral => CreateFromPreset(ExpressionPreset.neutral);
+
 
         public override string ToString()
         {

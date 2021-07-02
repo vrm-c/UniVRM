@@ -124,6 +124,9 @@ namespace UniGLTF.Extensions.VRMC_springBone
         // Application-specific data.
         public object Extras;
 
+        // Specification version of VRMC_springBone
+        public string SpecVersion;
+
         // An array of colliders.
         public List<Collider> Colliders;
 

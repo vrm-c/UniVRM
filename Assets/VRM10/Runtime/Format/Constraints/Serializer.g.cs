@@ -43,6 +43,11 @@ public static void Serialize(JsonFormatter f, VRMC_node_constraint value)
         (value.Extras as glTFExtension).Serialize(f);
     }
 
+    if(!string.IsNullOrEmpty(value.SpecVersion)){
+        f.Key("specVersion");                
+        f.Value(value.SpecVersion);
+    }
+
     if(value.Constraint!=null){
         f.Key("constraint");                
         Serialize_Constraint(f, value.Constraint);

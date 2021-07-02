@@ -4,6 +4,8 @@ using UniGLTF;
 using System.IO;
 using UniGLTF.MeshUtility;
 using System.Linq;
+using System.Collections.Generic;
+using VRMShaders;
 #if UNITY_2020_2_OR_NEWER
 using UnityEditor.AssetImporters;
 #else
@@ -24,6 +26,31 @@ namespace UniVRM10
 
         Vrm10Parser.Result m_result;
 
+        IEnumerable<SubAssetKey> EnumerateExpressinKeys(UniGLTF.Extensions.VRMC_vrm.Expressions expressions)
+        {
+            if (expressions?.Preset?.Happy != null) yield return ExpressionKey.Happy.SubAssetKey;
+            if (expressions?.Preset?.Angry != null) yield return ExpressionKey.Angry.SubAssetKey;
+            if (expressions?.Preset?.Sad != null) yield return ExpressionKey.Sad.SubAssetKey;
+            if (expressions?.Preset?.Relaxed != null) yield return ExpressionKey.Relaxed.SubAssetKey;
+            if (expressions?.Preset?.Surprised != null) yield return ExpressionKey.Surprised.SubAssetKey;
+            if (expressions?.Preset?.Aa != null) yield return ExpressionKey.Aa.SubAssetKey;
+            if (expressions?.Preset?.Ih != null) yield return ExpressionKey.Ih.SubAssetKey;
+            if (expressions?.Preset?.Ou != null) yield return ExpressionKey.Ou.SubAssetKey;
+            if (expressions?.Preset?.Ee != null) yield return ExpressionKey.Ee.SubAssetKey;
+            if (expressions?.Preset?.Oh != null) yield return ExpressionKey.Oh.SubAssetKey;
+            if (expressions?.Preset?.Blink != null) yield return ExpressionKey.Blink.SubAssetKey;
+            if (expressions?.Preset?.BlinkLeft != null) yield return ExpressionKey.BlinkLeft.SubAssetKey;
+            if (expressions?.Preset?.BlinkRight != null) yield return ExpressionKey.BlinkRight.SubAssetKey;
+            if (expressions?.Preset?.LookUp != null) yield return ExpressionKey.LookUp.SubAssetKey;
+            if (expressions?.Preset?.LookDown != null) yield return ExpressionKey.LookDown.SubAssetKey;
+            if (expressions?.Preset?.LookLeft != null) yield return ExpressionKey.LookLeft.SubAssetKey;
+            if (expressions?.Preset?.LookRight != null) yield return ExpressionKey.LookRight.SubAssetKey;
+            foreach (var kv in expressions.Custom)
+            {
+                yield return ExpressionKey.CreateCustom(kv.Key).SubAssetKey;
+            }
+        }
+
         public override void OnEnable()
         {
             base.OnEnable();
@@ -42,8 +69,7 @@ namespace UniVRM10
             var materialKeys = m_result.Data.GLTF.materials.Select((x, i) => generator.Get(m_result.Data, i).SubAssetKey);
             var textureKeys = new GltfTextureDescriptorGenerator(m_result.Data).Get().GetEnumerable().Select(x => x.SubAssetKey);
             m_materialEditor = new RemapEditorMaterial(materialKeys.Concat(textureKeys), GetEditorMap, SetEditorMap);
-            var expressionSubAssetKeys = m_result.Vrm.Expressions.Select(x => ExpressionKey.CreateFromVrm10(x).SubAssetKey);
-            m_vrmEditor = new RemapEditorVrm(new[] { VRM10Object.SubAssetKey }.Concat(expressionSubAssetKeys), GetEditorMap, SetEditorMap);
+            m_vrmEditor = new RemapEditorVrm(new[] { VRM10Object.SubAssetKey }.Concat(EnumerateExpressinKeys(m_result.Vrm.Expressions)), GetEditorMap, SetEditorMap);
         }
 
         enum Tabs

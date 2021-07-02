@@ -211,7 +211,7 @@ namespace UniVRM10
                 var data = new UniGLTF.Extensions.VRMC_vrm.Expression();
                 data.OverrideBlink = UniGLTF.Extensions.VRMC_vrm.ExpressionOverrideType.block;
 
-                var json = Serialize(data, UniGLTF.Extensions.VRMC_vrm.GltfSerializer.Serialize_Expressions_ITEM);
+                var json = Serialize(data, UniGLTF.Extensions.VRMC_vrm.GltfSerializer.__expressions_Serialize_Custom_ITEM);
                 Assert.AreEqual($"{{{q}preset{q}:{q}custom{q},{q}overrideBlink{q}:{q}block{q},{q}overrideLookAt{q}:{q}none{q},{q}overrideMouth{q}:{q}none{q}}}", json);
             }
 
@@ -241,14 +241,14 @@ namespace UniVRM10
                 // foreach (var preset in Enum.GetValues(typeof(UniGLTF.Extensions.VRMC_vrm.ExpressionPreset)) as UniGLTF.Extensions.VRMC_vrm.ExpressionPreset[])
                 // {
                 //     var expression = new UniGLTF.Extensions.VRMC_vrm.Expression(preset, "", false);
-                    
+
                 //     // expect no exception
                 //     var gltf = ExpressionAdapter.ToGltf(
                 //         expression, 
                 //         new List<UniGLTF.Extensions.VRMC_vrm.Node>(),
                 //         new List<UniGLTF.Extensions.VRMC_vrm.Material>());
                 // }
-                
+
                 // // import 
                 // foreach (var preset in Enum.GetValues(typeof(UniGLTF.Extensions.VRMC_vrm.ExpressionPreset)) as UniGLTF.Extensions.VRMC_vrm.ExpressionPreset[])
                 // {

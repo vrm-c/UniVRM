@@ -69,6 +69,9 @@ namespace UniGLTF.Extensions.VRMC_vrm
         // The index to the thumbnail image of the model in gltf.images
         public int? ThumbnailImage;
 
+        // A URL towards the license document this model refers to
+        public string LicenseUrl;
+
         // A person who can perform as an avatar with this model
         public AvatarPermissionType AvatarPermission;
 
@@ -346,7 +349,7 @@ namespace UniGLTF.Extensions.VRMC_vrm
         // Yaw and pitch angles  ( degrees )  between the head bone forward vector and the eye gaze LookAt vector
         public float? InputMaxValue;
 
-        // Degree for LookAtType.bone ,  Weight for LookAtType.blendShape
+        // Degree for type.bone, Weight for type.expressions
         public float? OutputScale;
     }
 
@@ -374,30 +377,6 @@ namespace UniGLTF.Extensions.VRMC_vrm
 
         // Vertical upward movement. Both eyes move downwards
         public LookAtRangeMap RangeMapVerticalUp;
-    }
-
-    public enum ExpressionPreset
-    {
-        custom,
-        happy,
-        angry,
-        sad,
-        relaxed,
-        surprised,
-        aa,
-        ih,
-        ou,
-        ee,
-        oh,
-        blink,
-        blinkLeft,
-        blinkRight,
-        lookUp,
-        lookDown,
-        lookLeft,
-        lookRight,
-        neutral,
-
     }
 
     public class MorphTargetBind
@@ -479,12 +458,6 @@ namespace UniGLTF.Extensions.VRMC_vrm
         // Application-specific data.
         public object Extras;
 
-        // Use only if the preset is custom. Unique within the model
-        public string Name;
-
-        // Functions of Expression
-        public ExpressionPreset Preset;
-
         // Specify a morph target
         public List<MorphTargetBind> MorphTargetBinds;
 
@@ -507,6 +480,75 @@ namespace UniGLTF.Extensions.VRMC_vrm
         public ExpressionOverrideType OverrideMouth;
     }
 
+    public class Preset
+    {
+        // Definition of expression by weighted animation
+        public Expression Happy;
+
+        // Definition of expression by weighted animation
+        public Expression Angry;
+
+        // Definition of expression by weighted animation
+        public Expression Sad;
+
+        // Definition of expression by weighted animation
+        public Expression Relaxed;
+
+        // Definition of expression by weighted animation
+        public Expression Surprised;
+
+        // Definition of expression by weighted animation
+        public Expression Aa;
+
+        // Definition of expression by weighted animation
+        public Expression Ih;
+
+        // Definition of expression by weighted animation
+        public Expression Ou;
+
+        // Definition of expression by weighted animation
+        public Expression Ee;
+
+        // Definition of expression by weighted animation
+        public Expression Oh;
+
+        // Definition of expression by weighted animation
+        public Expression Blink;
+
+        // Definition of expression by weighted animation
+        public Expression BlinkLeft;
+
+        // Definition of expression by weighted animation
+        public Expression BlinkRight;
+
+        // Definition of expression by weighted animation
+        public Expression LookUp;
+
+        // Definition of expression by weighted animation
+        public Expression LookDown;
+
+        // Definition of expression by weighted animation
+        public Expression LookLeft;
+
+        // Definition of expression by weighted animation
+        public Expression LookRight;
+    }
+
+    public class Expressions
+    {
+        // Dictionary object with extension-specific objects.
+        public object Extensions;
+
+        // Application-specific data.
+        public object Extras;
+
+        // Preset expressions
+        public Preset Preset;
+
+        // Custom expressions
+        public Dictionary<string, Expression> Custom;
+    }
+
     public class VRMC_vrm
     {
         public const string ExtensionName = "VRMC_vrm";
@@ -517,7 +559,7 @@ namespace UniGLTF.Extensions.VRMC_vrm
         // Application-specific data.
         public object Extras;
 
-        // Specification version of the VRM
+        // Specification version of VRMC_vrm
         public string SpecVersion;
 
         // Meta informations of the VRM model
@@ -532,7 +574,7 @@ namespace UniGLTF.Extensions.VRMC_vrm
         // Eye gaze control
         public LookAt LookAt;
 
-        // Definitions of expressions
-        public List<Expression> Expressions;
+        // Definition of expressions
+        public Expressions Expressions;
     }
 }
