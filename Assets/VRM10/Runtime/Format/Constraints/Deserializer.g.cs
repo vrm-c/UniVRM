@@ -47,6 +47,11 @@ public static VRMC_node_constraint Deserialize(JsonNode parsed)
             continue;
         }
 
+        if(key=="specVersion"){
+            value.SpecVersion = kv.Value.GetString();
+            continue;
+        }
+
         if(key=="constraint"){
             value.Constraint = Deserialize_Constraint(kv.Value);
             continue;

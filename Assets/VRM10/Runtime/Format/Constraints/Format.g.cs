@@ -128,6 +128,9 @@ namespace UniGLTF.Extensions.VRMC_node_constraint
         // Application-specific data.
         public object Extras;
 
+        // Specification version of VRMC_node_constraint
+        public string SpecVersion;
+
         // Contains position, rotation, or aim
         public Constraint Constraint;
     }

@@ -104,24 +104,24 @@ namespace UniVRM10
         {
             switch (clip.Preset)
             {
-                case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.happy: Happy = clip; break;
-                case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.angry: Angry = clip; break;
-                case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.sad: Sad = clip; break;
-                case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.relaxed: Relaxed = clip; break;
-                case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.surprised: Surprised = clip; break;
-                case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.aa: Aa = clip; break;
-                case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.ih: Ih = clip; break;
-                case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.ou: Ou = clip; break;
-                case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.ee: Ee = clip; break;
-                case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.oh: Oh = clip; break;
-                case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.blink: Blink = clip; break;
-                case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.blinkLeft: BlinkLeft = clip; break;
-                case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.blinkRight: BlinkRight = clip; break;
-                case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.lookUp: LookUp = clip; break;
-                case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.lookDown: LookDown = clip; break;
-                case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.lookLeft: LookLeft = clip; break;
-                case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.lookRight: LookRight = clip; break;
-                case UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.neutral: Neutral = clip; break;
+                case ExpressionPreset.happy: Happy = clip; break;
+                case ExpressionPreset.angry: Angry = clip; break;
+                case ExpressionPreset.sad: Sad = clip; break;
+                case ExpressionPreset.relaxed: Relaxed = clip; break;
+                case ExpressionPreset.surprised: Surprised = clip; break;
+                case ExpressionPreset.aa: Aa = clip; break;
+                case ExpressionPreset.ih: Ih = clip; break;
+                case ExpressionPreset.ou: Ou = clip; break;
+                case ExpressionPreset.ee: Ee = clip; break;
+                case ExpressionPreset.oh: Oh = clip; break;
+                case ExpressionPreset.blink: Blink = clip; break;
+                case ExpressionPreset.blinkLeft: BlinkLeft = clip; break;
+                case ExpressionPreset.blinkRight: BlinkRight = clip; break;
+                case ExpressionPreset.lookUp: LookUp = clip; break;
+                case ExpressionPreset.lookDown: LookDown = clip; break;
+                case ExpressionPreset.lookLeft: LookLeft = clip; break;
+                case ExpressionPreset.lookRight: LookRight = clip; break;
+                case ExpressionPreset.neutral: Neutral = clip; break;
                 default: CustomClips.Add(clip); break;
             }
         }
@@ -242,8 +242,8 @@ namespace UniVRM10
         // /// </summary>
         // public void CreateDefaultPreset()
         // {
-        //     foreach (var preset in ((UniGLTF.Extensions.VRMC_vrm.ExpressionPreset[])Enum.GetValues(typeof(UniGLTF.Extensions.VRMC_vrm.ExpressionPreset)))
-        //         .Where(x => x != UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.custom)
+        //     foreach (var preset in ((ExpressionPreset[])Enum.GetValues(typeof(ExpressionPreset)))
+        //         .Where(x => x != ExpressionPreset.custom)
         //         )
         //     {
         //         CreateDefaultPreset(preset);

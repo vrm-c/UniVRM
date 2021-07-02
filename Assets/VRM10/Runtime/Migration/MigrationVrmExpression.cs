@@ -7,35 +7,35 @@ namespace UniVRM10
 {
     public static class MigrationVrmExpression
     {
-        static UniGLTF.Extensions.VRMC_vrm.ExpressionPreset ToPreset(JsonNode json)
+        static ExpressionPreset ToPreset(JsonNode json)
         {
             switch (json.GetString().ToLower())
             {
-                case "unknown": return UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.custom;
+                case "unknown": return ExpressionPreset.custom;
 
                 // https://github.com/vrm-c/vrm-specification/issues/185
-                case "neutral": return UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.neutral;
+                case "neutral": return ExpressionPreset.neutral;
 
-                case "a": return UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.aa;
-                case "i": return UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.ih;
-                case "u": return UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.ou;
-                case "e": return UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.ee;
-                case "o": return UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.oh;
+                case "a": return ExpressionPreset.aa;
+                case "i": return ExpressionPreset.ih;
+                case "u": return ExpressionPreset.ou;
+                case "e": return ExpressionPreset.ee;
+                case "o": return ExpressionPreset.oh;
 
-                case "blink": return UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.blink;
-                case "blink_l": return UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.blinkLeft;
-                case "blink_r": return UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.blinkRight;
+                case "blink": return ExpressionPreset.blink;
+                case "blink_l": return ExpressionPreset.blinkLeft;
+                case "blink_r": return ExpressionPreset.blinkRight;
 
                 // https://github.com/vrm-c/vrm-specification/issues/163
-                case "joy": return UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.happy;
-                case "angry": return UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.angry;
-                case "sorrow": return UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.sad;
-                case "fun": return UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.relaxed;
+                case "joy": return ExpressionPreset.happy;
+                case "angry": return ExpressionPreset.angry;
+                case "sorrow": return ExpressionPreset.sad;
+                case "fun": return ExpressionPreset.relaxed;
 
-                case "lookup": return UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.lookUp;
-                case "lookdown": return UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.lookDown;
-                case "lookleft": return UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.lookLeft;
-                case "lookright": return UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.lookRight;
+                case "lookup": return ExpressionPreset.lookUp;
+                case "lookdown": return ExpressionPreset.lookDown;
+                case "lookleft": return ExpressionPreset.lookLeft;
+                case "lookright": return ExpressionPreset.lookRight;
             }
 
             throw new NotImplementedException();
@@ -152,7 +152,7 @@ namespace UniVRM10
             }
         }
 
-        public static IEnumerable<UniGLTF.Extensions.VRMC_vrm.Expression> Migrate(UniGLTF.glTF gltf, JsonNode json)
+        public static IEnumerable<(ExpressionPreset, string, UniGLTF.Extensions.VRMC_vrm.Expression)> Migrate(UniGLTF.glTF gltf, JsonNode json)
         {
             foreach (var blendShapeClip in json["blendShapeGroups"].ArrayItems())
             {
@@ -162,10 +162,9 @@ namespace UniVRM10
                 {
                     isBinary = isBinaryNode.GetBoolean();
                 }
+                var preset = ToPreset(blendShapeClip["presetName"]);
                 var expression = new UniGLTF.Extensions.VRMC_vrm.Expression
                 {
-                    Name = name,
-                    Preset = ToPreset(blendShapeClip["presetName"]),
                     IsBinary = isBinary,
                     MorphTargetBinds = new List<UniGLTF.Extensions.VRMC_vrm.MorphTargetBind>(),
                     MaterialColorBinds = new List<UniGLTF.Extensions.VRMC_vrm.MaterialColorBind>(),
@@ -178,7 +177,7 @@ namespace UniVRM10
                     ToMaterialColorBinds(gltf, materialValues, expression);
                 }
 
-                yield return expression;
+                yield return (preset, name, expression);
             }
         }
     }

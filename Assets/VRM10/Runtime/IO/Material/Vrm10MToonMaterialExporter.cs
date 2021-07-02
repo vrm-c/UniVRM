@@ -10,6 +10,8 @@ namespace UniVRM10
 {
     public static class Vrm10MToonMaterialExporter
     {
+        const string MTOON_SPEC_VERSION = "1.0-draft";
+
         public static bool TryExportMaterialAsMToon(Material src, ITextureExporter textureExporter, out glTFMaterial dst)
         {
             try
@@ -30,7 +32,7 @@ namespace UniVRM10
 
                 // vrmc_materials_mtoon ext
                 var mtoon = new UniGLTF.Extensions.VRMC_materials_mtoon.VRMC_materials_mtoon();
-                mtoon.Version = "";
+                mtoon.SpecVersion = MTOON_SPEC_VERSION;
 
                 // Rendering
                 dst.alphaMode = ExportAlphaMode(context.AlphaMode);
