@@ -48,9 +48,9 @@ namespace UniGLTF.JsonSchema.Schemas
 public static $0 $2(JsonNode parsed)
 {
     var value = new $1();
-    foreach(var (k, v) in parsed.ObjectItems())
+    foreach(var kv in parsed.ObjectItems())
     {
-        value.Add($3);
+        value.Add(kv.Key.GetString(), $3);
     }
 	return value;
 } 
@@ -58,7 +58,7 @@ public static $0 $2(JsonNode parsed)
     .Replace("$0", ValueType)
     .Replace("$1", ValueType)
     .Replace("$2", callName)
-    .Replace("$3", AdditionalProperties.GenerateDeserializerCall(itemCallName, "v"))
+    .Replace("$3", AdditionalProperties.GenerateDeserializerCall(itemCallName, "kv.Value"))
     );
 
             }
@@ -83,13 +83,13 @@ public static void {callName}(JsonFormatter f, {ValueType} value)
 {{
     f.BeginMap();
 
-    foreach(var (k, v) in value)
+    foreach(var kv in value)
     {{
-        f.Key(k);
+        f.Key(kv.Key);
     "
 );
 
-            writer.Write($"{AdditionalProperties.GenerateSerializerCall(itemCallName, "v")};\n");
+            writer.Write($"{AdditionalProperties.GenerateSerializerCall(itemCallName, "kv.Value")};\n");
 
             writer.Write(@"
     }
