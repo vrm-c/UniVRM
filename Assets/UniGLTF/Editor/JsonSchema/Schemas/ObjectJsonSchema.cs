@@ -25,6 +25,11 @@ namespace UniGLTF.JsonSchema.Schemas
                     throw new NotImplementedException();
                 }
 
+                if (string.IsNullOrEmpty(prop.Title))
+                {
+                    prop.Title = kv.Key.ToUpperCamel();
+                }
+
                 var key = kv.Key;
                 Properties.Add(key, prop);
             }
