@@ -14,23 +14,93 @@ namespace UniGLTF.JsonSchema.Schemas
             MinProperties = source.minProperties.GetValueOrDefault();
         }
 
-        public override string ValueType => throw new NotImplementedException();
+        public override string ValueType => $"Dictionary<string, {AdditionalProperties.ValueType}>";
 
-        public override bool IsInline => throw new NotImplementedException();
+        public override bool IsInline => false;
 
         public override string CreateSerializationCondition(string argName)
         {
-            throw new NotImplementedException();
+            return $"{argName}!=null&&{argName}.Count()>0";
         }
 
         public override string GenerateDeserializerCall(string callName, string argName)
         {
-            throw new NotImplementedException();
+            return $"{callName}({argName})";
         }
 
         public override string GenerateSerializerCall(string callName, string argName)
         {
-            throw new NotImplementedException();
+            return $"{callName}(f, {argName})";
+        }
+
+        public override void GenerateDeserializer(TraverseContext writer, string callName)
+        {
+            if (writer.Used.Contains(callName))
+            {
+                return;
+            }
+            writer.Used.Add(callName);
+
+            var itemCallName = callName + "_ITEM";
+
+            {
+                writer.Write(@"
+public static $0 $2(JsonNode parsed)
+{
+    var value = new $1();
+    foreach(var (k, v) in parsed.ObjectItems())
+    {
+        value.Add($3);
+    }
+	return value;
+} 
+"
+    .Replace("$0", ValueType)
+    .Replace("$1", ValueType)
+    .Replace("$2", callName)
+    .Replace("$3", AdditionalProperties.GenerateDeserializerCall(itemCallName, "v"))
+    );
+
+            }
+
+            if (!AdditionalProperties.IsInline)
+            {
+                AdditionalProperties.GenerateDeserializer(writer, itemCallName);
+            }
+        }
+
+        public override void GenerateSerializer(TraverseContext writer, string callName)
+        {
+            if (writer.Used.Contains(callName))
+            {
+                return;
+            }
+            writer.Used.Add(callName);
+
+            var itemCallName = callName + "_ITEM";
+            writer.Write($@"
+public static void {callName}(JsonFormatter f, {ValueType} value)
+{{
+    f.BeginMap();
+
+    foreach(var (k, v) in value)
+    {{
+        f.Key(k);
+    "
+);
+
+            writer.Write($"{AdditionalProperties.GenerateSerializerCall(itemCallName, "v")};\n");
+
+            writer.Write(@"
+    }
+    f.EndMap();
+}
+");
+
+            if (!AdditionalProperties.IsInline)
+            {
+                AdditionalProperties.GenerateSerializer(writer, itemCallName);
+            }
         }
     }
 }
