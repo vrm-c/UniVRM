@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 using UniJSON;
 
 namespace UniGLTF
@@ -13,6 +14,8 @@ namespace UniGLTF
     public sealed class GlbLowLevelParser
     {
         public static readonly string UniqueFixResourceSuffix = "__UNIGLTF__DUPLICATED__";
+        private static readonly Regex _removeUniqueFixResourceSuffix = new Regex($@"^(.+){UniqueFixResourceSuffix}(\d+)$");
+
         private readonly string _path;
         private readonly byte[] _binary;
 
@@ -274,7 +277,7 @@ namespace UniGLTF
             }
         }
 
-        private static string FixNameUnique(HashSet<string> used, string originalName)
+        public static string FixNameUnique(HashSet<string> used, string originalName)
         {
             if (used.Add(originalName))
             {
@@ -289,6 +292,21 @@ namespace UniGLTF
                 {
                     return newName;
                 }
+            }
+        }
+
+        public static bool TryGetOriginalName(string name, out string originalName)
+        {
+            var match = _removeUniqueFixResourceSuffix.Match(name);
+            if (match.Success)
+            {
+                originalName = match.Groups[1].Value;
+                return true;
+            }
+            else
+            {
+                originalName = name;
+                return false;
             }
         }
     }
