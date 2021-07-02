@@ -68,7 +68,7 @@ namespace UniGLTF
                     }
                     else
                     {
-                        return Path.GetExtension(uri).ToLower();
+                        return Path.GetExtension(uri)?.ToLowerInvariant() ?? string.Empty;
                     }
             }
         }

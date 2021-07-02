@@ -76,6 +76,11 @@ namespace UniGLTF
         // https://docs.unity3d.com/Manual/BestPracticeUnderstandingPerformanceInUnity5.html
         public static bool FastStartsWith(this string a, string b)
         {
+            if (a == null || b == null)
+            {
+                return false;
+            }
+
             var aLen = a.Length;
             var bLen = b.Length;
             if (aLen < bLen)
@@ -94,6 +99,11 @@ namespace UniGLTF
 
         public static bool FastEndsWith(this string a, string b)
         {
+            if (a == null || b == null)
+            {
+                return false;
+            }
+
             var aLen = a.Length;
             var bLen = b.Length;
             if (aLen < bLen)
