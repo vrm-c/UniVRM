@@ -66,7 +66,10 @@ namespace UniGLTF
 
         public void Dispose()
         {
-            UnityObjectDestoyer.DestroyRuntimeOrEditor(this.gameObject);
+            if (this != null && this.gameObject != null)
+            {
+                UnityObjectDestoyer.DestroyRuntimeOrEditor(this.gameObject);
+            }
         }
     }
 }
