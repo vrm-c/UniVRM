@@ -47,6 +47,11 @@ public static VRMC_springBone Deserialize(JsonNode parsed)
             continue;
         }
 
+        if(key=="specVersion"){
+            value.SpecVersion = kv.Value.GetString();
+            continue;
+        }
+
         if(key=="colliders"){
             value.Colliders = Deserialize_Colliders(kv.Value);
             continue;

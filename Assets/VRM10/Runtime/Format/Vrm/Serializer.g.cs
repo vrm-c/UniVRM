@@ -68,7 +68,7 @@ public static void Serialize(JsonFormatter f, VRMC_vrm value)
         Serialize_LookAt(f, value.LookAt);
     }
 
-    if(value.Expressions!=null&&value.Expressions.Count()>=0){
+    if(value.Expressions!=null){
         f.Key("expressions");                
         Serialize_Expressions(f, value.Expressions);
     }
@@ -116,7 +116,7 @@ public static void Serialize_Meta(JsonFormatter f, Meta value)
         f.Value(value.ContactInformation);
     }
 
-    if(value.References!=null&&value.References.Count()>=0){
+    if(value.References!=null&&value.References.Count()>=1){
         f.Key("references");                
         __meta_Serialize_References(f, value.References);
     }
@@ -129,6 +129,11 @@ public static void Serialize_Meta(JsonFormatter f, Meta value)
     if(value.ThumbnailImage.HasValue){
         f.Key("thumbnailImage");                
         f.Value(value.ThumbnailImage.GetValueOrDefault());
+    }
+
+    if(!string.IsNullOrEmpty(value.LicenseUrl)){
+        f.Key("licenseUrl");                
+        f.Value(value.LicenseUrl);
     }
 
     if(true){
@@ -1794,7 +1799,7 @@ public static void Serialize_FirstPerson(JsonFormatter f, FirstPerson value)
         (value.Extras as glTFExtension).Serialize(f);
     }
 
-    if(value.MeshAnnotations!=null&&value.MeshAnnotations.Count()>=0){
+    if(value.MeshAnnotations!=null&&value.MeshAnnotations.Count()>=1){
         f.Key("meshAnnotations");                
         __firstPerson_Serialize_MeshAnnotations(f, value.MeshAnnotations);
     }
@@ -1857,7 +1862,7 @@ public static void Serialize_LookAt(JsonFormatter f, LookAt value)
         (value.Extras as glTFExtension).Serialize(f);
     }
 
-    if(value.OffsetFromHeadBone!=null&&value.OffsetFromHeadBone.Count()>=0){
+    if(value.OffsetFromHeadBone!=null&&value.OffsetFromHeadBone.Count()>=3){
         f.Key("offsetFromHeadBone");                
         __lookAt_Serialize_OffsetFromHeadBone(f, value.OffsetFromHeadBone);
     }
@@ -2014,19 +2019,7 @@ public static void __lookAt_Serialize_RangeMapVerticalUp(JsonFormatter f, LookAt
     f.EndMap();
 }
 
-public static void Serialize_Expressions(JsonFormatter f, List<Expression> value)
-{
-    f.BeginList();
-
-    foreach(var item in value)
-    {
-    Serialize_Expressions_ITEM(f, item);
-
-    }
-    f.EndList();
-}
-
-public static void Serialize_Expressions_ITEM(JsonFormatter f, Expression value)
+public static void Serialize_Expressions(JsonFormatter f, Expressions value)
 {
     f.BeginMap();
 
@@ -2041,29 +2034,140 @@ public static void Serialize_Expressions_ITEM(JsonFormatter f, Expression value)
         (value.Extras as glTFExtension).Serialize(f);
     }
 
-    if(!string.IsNullOrEmpty(value.Name)){
-        f.Key("name");                
-        f.Value(value.Name);
-    }
-
-    if(true){
+    if(value.Preset!=null){
         f.Key("preset");                
-        f.Value(value.Preset.ToString());
+        __expressions_Serialize_Preset(f, value.Preset);
     }
 
-    if(value.MorphTargetBinds!=null&&value.MorphTargetBinds.Count()>=0){
+    if(value.Custom!=null&&value.Custom.Count()>0){
+        f.Key("custom");                
+        __expressions_Serialize_Custom(f, value.Custom);
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions_Serialize_Preset(JsonFormatter f, Preset value)
+{
+    f.BeginMap();
+
+
+    if(value.Happy!=null){
+        f.Key("happy");                
+        __expressions__preset_Serialize_Happy(f, value.Happy);
+    }
+
+    if(value.Angry!=null){
+        f.Key("angry");                
+        __expressions__preset_Serialize_Angry(f, value.Angry);
+    }
+
+    if(value.Sad!=null){
+        f.Key("sad");                
+        __expressions__preset_Serialize_Sad(f, value.Sad);
+    }
+
+    if(value.Relaxed!=null){
+        f.Key("relaxed");                
+        __expressions__preset_Serialize_Relaxed(f, value.Relaxed);
+    }
+
+    if(value.Surprised!=null){
+        f.Key("surprised");                
+        __expressions__preset_Serialize_Surprised(f, value.Surprised);
+    }
+
+    if(value.Aa!=null){
+        f.Key("aa");                
+        __expressions__preset_Serialize_Aa(f, value.Aa);
+    }
+
+    if(value.Ih!=null){
+        f.Key("ih");                
+        __expressions__preset_Serialize_Ih(f, value.Ih);
+    }
+
+    if(value.Ou!=null){
+        f.Key("ou");                
+        __expressions__preset_Serialize_Ou(f, value.Ou);
+    }
+
+    if(value.Ee!=null){
+        f.Key("ee");                
+        __expressions__preset_Serialize_Ee(f, value.Ee);
+    }
+
+    if(value.Oh!=null){
+        f.Key("oh");                
+        __expressions__preset_Serialize_Oh(f, value.Oh);
+    }
+
+    if(value.Blink!=null){
+        f.Key("blink");                
+        __expressions__preset_Serialize_Blink(f, value.Blink);
+    }
+
+    if(value.BlinkLeft!=null){
+        f.Key("blinkLeft");                
+        __expressions__preset_Serialize_BlinkLeft(f, value.BlinkLeft);
+    }
+
+    if(value.BlinkRight!=null){
+        f.Key("blinkRight");                
+        __expressions__preset_Serialize_BlinkRight(f, value.BlinkRight);
+    }
+
+    if(value.LookUp!=null){
+        f.Key("lookUp");                
+        __expressions__preset_Serialize_LookUp(f, value.LookUp);
+    }
+
+    if(value.LookDown!=null){
+        f.Key("lookDown");                
+        __expressions__preset_Serialize_LookDown(f, value.LookDown);
+    }
+
+    if(value.LookLeft!=null){
+        f.Key("lookLeft");                
+        __expressions__preset_Serialize_LookLeft(f, value.LookLeft);
+    }
+
+    if(value.LookRight!=null){
+        f.Key("lookRight");                
+        __expressions__preset_Serialize_LookRight(f, value.LookRight);
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset_Serialize_Happy(JsonFormatter f, Expression value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.MorphTargetBinds!=null&&value.MorphTargetBinds.Count()>=1){
         f.Key("morphTargetBinds");                
-        __expressions_ITEM_Serialize_MorphTargetBinds(f, value.MorphTargetBinds);
+        __expressions__preset__happy_Serialize_MorphTargetBinds(f, value.MorphTargetBinds);
     }
 
-    if(value.MaterialColorBinds!=null&&value.MaterialColorBinds.Count()>=0){
+    if(value.MaterialColorBinds!=null&&value.MaterialColorBinds.Count()>=1){
         f.Key("materialColorBinds");                
-        __expressions_ITEM_Serialize_MaterialColorBinds(f, value.MaterialColorBinds);
+        __expressions__preset__happy_Serialize_MaterialColorBinds(f, value.MaterialColorBinds);
     }
 
-    if(value.TextureTransformBinds!=null&&value.TextureTransformBinds.Count()>=0){
+    if(value.TextureTransformBinds!=null&&value.TextureTransformBinds.Count()>=1){
         f.Key("textureTransformBinds");                
-        __expressions_ITEM_Serialize_TextureTransformBinds(f, value.TextureTransformBinds);
+        __expressions__preset__happy_Serialize_TextureTransformBinds(f, value.TextureTransformBinds);
     }
 
     if(value.IsBinary.HasValue){
@@ -2089,19 +2193,19 @@ public static void Serialize_Expressions_ITEM(JsonFormatter f, Expression value)
     f.EndMap();
 }
 
-public static void __expressions_ITEM_Serialize_MorphTargetBinds(JsonFormatter f, List<MorphTargetBind> value)
+public static void __expressions__preset__happy_Serialize_MorphTargetBinds(JsonFormatter f, List<MorphTargetBind> value)
 {
     f.BeginList();
 
     foreach(var item in value)
     {
-    __expressions_ITEM_Serialize_MorphTargetBinds_ITEM(f, item);
+    __expressions__preset__happy_Serialize_MorphTargetBinds_ITEM(f, item);
 
     }
     f.EndList();
 }
 
-public static void __expressions_ITEM_Serialize_MorphTargetBinds_ITEM(JsonFormatter f, MorphTargetBind value)
+public static void __expressions__preset__happy_Serialize_MorphTargetBinds_ITEM(JsonFormatter f, MorphTargetBind value)
 {
     f.BeginMap();
 
@@ -2134,19 +2238,19 @@ public static void __expressions_ITEM_Serialize_MorphTargetBinds_ITEM(JsonFormat
     f.EndMap();
 }
 
-public static void __expressions_ITEM_Serialize_MaterialColorBinds(JsonFormatter f, List<MaterialColorBind> value)
+public static void __expressions__preset__happy_Serialize_MaterialColorBinds(JsonFormatter f, List<MaterialColorBind> value)
 {
     f.BeginList();
 
     foreach(var item in value)
     {
-    __expressions_ITEM_Serialize_MaterialColorBinds_ITEM(f, item);
+    __expressions__preset__happy_Serialize_MaterialColorBinds_ITEM(f, item);
 
     }
     f.EndList();
 }
 
-public static void __expressions_ITEM_Serialize_MaterialColorBinds_ITEM(JsonFormatter f, MaterialColorBind value)
+public static void __expressions__preset__happy_Serialize_MaterialColorBinds_ITEM(JsonFormatter f, MaterialColorBind value)
 {
     f.BeginMap();
 
@@ -2173,13 +2277,13 @@ public static void __expressions_ITEM_Serialize_MaterialColorBinds_ITEM(JsonForm
 
     if(value.TargetValue!=null&&value.TargetValue.Count()>=4){
         f.Key("targetValue");                
-        __expressions_ITEM__materialColorBinds_ITEM_Serialize_TargetValue(f, value.TargetValue);
+        __expressions__preset__happy__materialColorBinds_ITEM_Serialize_TargetValue(f, value.TargetValue);
     }
 
     f.EndMap();
 }
 
-public static void __expressions_ITEM__materialColorBinds_ITEM_Serialize_TargetValue(JsonFormatter f, float[] value)
+public static void __expressions__preset__happy__materialColorBinds_ITEM_Serialize_TargetValue(JsonFormatter f, float[] value)
 {
     f.BeginList();
 
@@ -2191,19 +2295,19 @@ public static void __expressions_ITEM__materialColorBinds_ITEM_Serialize_TargetV
     f.EndList();
 }
 
-public static void __expressions_ITEM_Serialize_TextureTransformBinds(JsonFormatter f, List<TextureTransformBind> value)
+public static void __expressions__preset__happy_Serialize_TextureTransformBinds(JsonFormatter f, List<TextureTransformBind> value)
 {
     f.BeginList();
 
     foreach(var item in value)
     {
-    __expressions_ITEM_Serialize_TextureTransformBinds_ITEM(f, item);
+    __expressions__preset__happy_Serialize_TextureTransformBinds_ITEM(f, item);
 
     }
     f.EndList();
 }
 
-public static void __expressions_ITEM_Serialize_TextureTransformBinds_ITEM(JsonFormatter f, TextureTransformBind value)
+public static void __expressions__preset__happy_Serialize_TextureTransformBinds_ITEM(JsonFormatter f, TextureTransformBind value)
 {
     f.BeginMap();
 
@@ -2225,18 +2329,18 @@ public static void __expressions_ITEM_Serialize_TextureTransformBinds_ITEM(JsonF
 
     if(value.Scale!=null&&value.Scale.Count()>=2){
         f.Key("scale");                
-        __expressions_ITEM__textureTransformBinds_ITEM_Serialize_Scale(f, value.Scale);
+        __expressions__preset__happy__textureTransformBinds_ITEM_Serialize_Scale(f, value.Scale);
     }
 
     if(value.Offset!=null&&value.Offset.Count()>=2){
         f.Key("offset");                
-        __expressions_ITEM__textureTransformBinds_ITEM_Serialize_Offset(f, value.Offset);
+        __expressions__preset__happy__textureTransformBinds_ITEM_Serialize_Offset(f, value.Offset);
     }
 
     f.EndMap();
 }
 
-public static void __expressions_ITEM__textureTransformBinds_ITEM_Serialize_Scale(JsonFormatter f, float[] value)
+public static void __expressions__preset__happy__textureTransformBinds_ITEM_Serialize_Scale(JsonFormatter f, float[] value)
 {
     f.BeginList();
 
@@ -2248,7 +2352,3828 @@ public static void __expressions_ITEM__textureTransformBinds_ITEM_Serialize_Scal
     f.EndList();
 }
 
-public static void __expressions_ITEM__textureTransformBinds_ITEM_Serialize_Offset(JsonFormatter f, float[] value)
+public static void __expressions__preset__happy__textureTransformBinds_ITEM_Serialize_Offset(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset_Serialize_Angry(JsonFormatter f, Expression value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.MorphTargetBinds!=null&&value.MorphTargetBinds.Count()>=1){
+        f.Key("morphTargetBinds");                
+        __expressions__preset__angry_Serialize_MorphTargetBinds(f, value.MorphTargetBinds);
+    }
+
+    if(value.MaterialColorBinds!=null&&value.MaterialColorBinds.Count()>=1){
+        f.Key("materialColorBinds");                
+        __expressions__preset__angry_Serialize_MaterialColorBinds(f, value.MaterialColorBinds);
+    }
+
+    if(value.TextureTransformBinds!=null&&value.TextureTransformBinds.Count()>=1){
+        f.Key("textureTransformBinds");                
+        __expressions__preset__angry_Serialize_TextureTransformBinds(f, value.TextureTransformBinds);
+    }
+
+    if(value.IsBinary.HasValue){
+        f.Key("isBinary");                
+        f.Value(value.IsBinary.GetValueOrDefault());
+    }
+
+    if(true){
+        f.Key("overrideBlink");                
+        f.Value(value.OverrideBlink.ToString());
+    }
+
+    if(true){
+        f.Key("overrideLookAt");                
+        f.Value(value.OverrideLookAt.ToString());
+    }
+
+    if(true){
+        f.Key("overrideMouth");                
+        f.Value(value.OverrideMouth.ToString());
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__angry_Serialize_MorphTargetBinds(JsonFormatter f, List<MorphTargetBind> value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    __expressions__preset__angry_Serialize_MorphTargetBinds_ITEM(f, item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__angry_Serialize_MorphTargetBinds_ITEM(JsonFormatter f, MorphTargetBind value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.Node.HasValue){
+        f.Key("node");                
+        f.Value(value.Node.GetValueOrDefault());
+    }
+
+    if(value.Index.HasValue){
+        f.Key("index");                
+        f.Value(value.Index.GetValueOrDefault());
+    }
+
+    if(value.Weight.HasValue){
+        f.Key("weight");                
+        f.Value(value.Weight.GetValueOrDefault());
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__angry_Serialize_MaterialColorBinds(JsonFormatter f, List<MaterialColorBind> value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    __expressions__preset__angry_Serialize_MaterialColorBinds_ITEM(f, item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__angry_Serialize_MaterialColorBinds_ITEM(JsonFormatter f, MaterialColorBind value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.Material.HasValue){
+        f.Key("material");                
+        f.Value(value.Material.GetValueOrDefault());
+    }
+
+    if(true){
+        f.Key("type");                
+        f.Value(value.Type.ToString());
+    }
+
+    if(value.TargetValue!=null&&value.TargetValue.Count()>=4){
+        f.Key("targetValue");                
+        __expressions__preset__angry__materialColorBinds_ITEM_Serialize_TargetValue(f, value.TargetValue);
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__angry__materialColorBinds_ITEM_Serialize_TargetValue(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__angry_Serialize_TextureTransformBinds(JsonFormatter f, List<TextureTransformBind> value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    __expressions__preset__angry_Serialize_TextureTransformBinds_ITEM(f, item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__angry_Serialize_TextureTransformBinds_ITEM(JsonFormatter f, TextureTransformBind value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.Material.HasValue){
+        f.Key("material");                
+        f.Value(value.Material.GetValueOrDefault());
+    }
+
+    if(value.Scale!=null&&value.Scale.Count()>=2){
+        f.Key("scale");                
+        __expressions__preset__angry__textureTransformBinds_ITEM_Serialize_Scale(f, value.Scale);
+    }
+
+    if(value.Offset!=null&&value.Offset.Count()>=2){
+        f.Key("offset");                
+        __expressions__preset__angry__textureTransformBinds_ITEM_Serialize_Offset(f, value.Offset);
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__angry__textureTransformBinds_ITEM_Serialize_Scale(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__angry__textureTransformBinds_ITEM_Serialize_Offset(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset_Serialize_Sad(JsonFormatter f, Expression value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.MorphTargetBinds!=null&&value.MorphTargetBinds.Count()>=1){
+        f.Key("morphTargetBinds");                
+        __expressions__preset__sad_Serialize_MorphTargetBinds(f, value.MorphTargetBinds);
+    }
+
+    if(value.MaterialColorBinds!=null&&value.MaterialColorBinds.Count()>=1){
+        f.Key("materialColorBinds");                
+        __expressions__preset__sad_Serialize_MaterialColorBinds(f, value.MaterialColorBinds);
+    }
+
+    if(value.TextureTransformBinds!=null&&value.TextureTransformBinds.Count()>=1){
+        f.Key("textureTransformBinds");                
+        __expressions__preset__sad_Serialize_TextureTransformBinds(f, value.TextureTransformBinds);
+    }
+
+    if(value.IsBinary.HasValue){
+        f.Key("isBinary");                
+        f.Value(value.IsBinary.GetValueOrDefault());
+    }
+
+    if(true){
+        f.Key("overrideBlink");                
+        f.Value(value.OverrideBlink.ToString());
+    }
+
+    if(true){
+        f.Key("overrideLookAt");                
+        f.Value(value.OverrideLookAt.ToString());
+    }
+
+    if(true){
+        f.Key("overrideMouth");                
+        f.Value(value.OverrideMouth.ToString());
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__sad_Serialize_MorphTargetBinds(JsonFormatter f, List<MorphTargetBind> value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    __expressions__preset__sad_Serialize_MorphTargetBinds_ITEM(f, item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__sad_Serialize_MorphTargetBinds_ITEM(JsonFormatter f, MorphTargetBind value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.Node.HasValue){
+        f.Key("node");                
+        f.Value(value.Node.GetValueOrDefault());
+    }
+
+    if(value.Index.HasValue){
+        f.Key("index");                
+        f.Value(value.Index.GetValueOrDefault());
+    }
+
+    if(value.Weight.HasValue){
+        f.Key("weight");                
+        f.Value(value.Weight.GetValueOrDefault());
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__sad_Serialize_MaterialColorBinds(JsonFormatter f, List<MaterialColorBind> value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    __expressions__preset__sad_Serialize_MaterialColorBinds_ITEM(f, item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__sad_Serialize_MaterialColorBinds_ITEM(JsonFormatter f, MaterialColorBind value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.Material.HasValue){
+        f.Key("material");                
+        f.Value(value.Material.GetValueOrDefault());
+    }
+
+    if(true){
+        f.Key("type");                
+        f.Value(value.Type.ToString());
+    }
+
+    if(value.TargetValue!=null&&value.TargetValue.Count()>=4){
+        f.Key("targetValue");                
+        __expressions__preset__sad__materialColorBinds_ITEM_Serialize_TargetValue(f, value.TargetValue);
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__sad__materialColorBinds_ITEM_Serialize_TargetValue(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__sad_Serialize_TextureTransformBinds(JsonFormatter f, List<TextureTransformBind> value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    __expressions__preset__sad_Serialize_TextureTransformBinds_ITEM(f, item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__sad_Serialize_TextureTransformBinds_ITEM(JsonFormatter f, TextureTransformBind value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.Material.HasValue){
+        f.Key("material");                
+        f.Value(value.Material.GetValueOrDefault());
+    }
+
+    if(value.Scale!=null&&value.Scale.Count()>=2){
+        f.Key("scale");                
+        __expressions__preset__sad__textureTransformBinds_ITEM_Serialize_Scale(f, value.Scale);
+    }
+
+    if(value.Offset!=null&&value.Offset.Count()>=2){
+        f.Key("offset");                
+        __expressions__preset__sad__textureTransformBinds_ITEM_Serialize_Offset(f, value.Offset);
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__sad__textureTransformBinds_ITEM_Serialize_Scale(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__sad__textureTransformBinds_ITEM_Serialize_Offset(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset_Serialize_Relaxed(JsonFormatter f, Expression value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.MorphTargetBinds!=null&&value.MorphTargetBinds.Count()>=1){
+        f.Key("morphTargetBinds");                
+        __expressions__preset__relaxed_Serialize_MorphTargetBinds(f, value.MorphTargetBinds);
+    }
+
+    if(value.MaterialColorBinds!=null&&value.MaterialColorBinds.Count()>=1){
+        f.Key("materialColorBinds");                
+        __expressions__preset__relaxed_Serialize_MaterialColorBinds(f, value.MaterialColorBinds);
+    }
+
+    if(value.TextureTransformBinds!=null&&value.TextureTransformBinds.Count()>=1){
+        f.Key("textureTransformBinds");                
+        __expressions__preset__relaxed_Serialize_TextureTransformBinds(f, value.TextureTransformBinds);
+    }
+
+    if(value.IsBinary.HasValue){
+        f.Key("isBinary");                
+        f.Value(value.IsBinary.GetValueOrDefault());
+    }
+
+    if(true){
+        f.Key("overrideBlink");                
+        f.Value(value.OverrideBlink.ToString());
+    }
+
+    if(true){
+        f.Key("overrideLookAt");                
+        f.Value(value.OverrideLookAt.ToString());
+    }
+
+    if(true){
+        f.Key("overrideMouth");                
+        f.Value(value.OverrideMouth.ToString());
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__relaxed_Serialize_MorphTargetBinds(JsonFormatter f, List<MorphTargetBind> value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    __expressions__preset__relaxed_Serialize_MorphTargetBinds_ITEM(f, item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__relaxed_Serialize_MorphTargetBinds_ITEM(JsonFormatter f, MorphTargetBind value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.Node.HasValue){
+        f.Key("node");                
+        f.Value(value.Node.GetValueOrDefault());
+    }
+
+    if(value.Index.HasValue){
+        f.Key("index");                
+        f.Value(value.Index.GetValueOrDefault());
+    }
+
+    if(value.Weight.HasValue){
+        f.Key("weight");                
+        f.Value(value.Weight.GetValueOrDefault());
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__relaxed_Serialize_MaterialColorBinds(JsonFormatter f, List<MaterialColorBind> value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    __expressions__preset__relaxed_Serialize_MaterialColorBinds_ITEM(f, item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__relaxed_Serialize_MaterialColorBinds_ITEM(JsonFormatter f, MaterialColorBind value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.Material.HasValue){
+        f.Key("material");                
+        f.Value(value.Material.GetValueOrDefault());
+    }
+
+    if(true){
+        f.Key("type");                
+        f.Value(value.Type.ToString());
+    }
+
+    if(value.TargetValue!=null&&value.TargetValue.Count()>=4){
+        f.Key("targetValue");                
+        __expressions__preset__relaxed__materialColorBinds_ITEM_Serialize_TargetValue(f, value.TargetValue);
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__relaxed__materialColorBinds_ITEM_Serialize_TargetValue(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__relaxed_Serialize_TextureTransformBinds(JsonFormatter f, List<TextureTransformBind> value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    __expressions__preset__relaxed_Serialize_TextureTransformBinds_ITEM(f, item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__relaxed_Serialize_TextureTransformBinds_ITEM(JsonFormatter f, TextureTransformBind value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.Material.HasValue){
+        f.Key("material");                
+        f.Value(value.Material.GetValueOrDefault());
+    }
+
+    if(value.Scale!=null&&value.Scale.Count()>=2){
+        f.Key("scale");                
+        __expressions__preset__relaxed__textureTransformBinds_ITEM_Serialize_Scale(f, value.Scale);
+    }
+
+    if(value.Offset!=null&&value.Offset.Count()>=2){
+        f.Key("offset");                
+        __expressions__preset__relaxed__textureTransformBinds_ITEM_Serialize_Offset(f, value.Offset);
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__relaxed__textureTransformBinds_ITEM_Serialize_Scale(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__relaxed__textureTransformBinds_ITEM_Serialize_Offset(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset_Serialize_Surprised(JsonFormatter f, Expression value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.MorphTargetBinds!=null&&value.MorphTargetBinds.Count()>=1){
+        f.Key("morphTargetBinds");                
+        __expressions__preset__surprised_Serialize_MorphTargetBinds(f, value.MorphTargetBinds);
+    }
+
+    if(value.MaterialColorBinds!=null&&value.MaterialColorBinds.Count()>=1){
+        f.Key("materialColorBinds");                
+        __expressions__preset__surprised_Serialize_MaterialColorBinds(f, value.MaterialColorBinds);
+    }
+
+    if(value.TextureTransformBinds!=null&&value.TextureTransformBinds.Count()>=1){
+        f.Key("textureTransformBinds");                
+        __expressions__preset__surprised_Serialize_TextureTransformBinds(f, value.TextureTransformBinds);
+    }
+
+    if(value.IsBinary.HasValue){
+        f.Key("isBinary");                
+        f.Value(value.IsBinary.GetValueOrDefault());
+    }
+
+    if(true){
+        f.Key("overrideBlink");                
+        f.Value(value.OverrideBlink.ToString());
+    }
+
+    if(true){
+        f.Key("overrideLookAt");                
+        f.Value(value.OverrideLookAt.ToString());
+    }
+
+    if(true){
+        f.Key("overrideMouth");                
+        f.Value(value.OverrideMouth.ToString());
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__surprised_Serialize_MorphTargetBinds(JsonFormatter f, List<MorphTargetBind> value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    __expressions__preset__surprised_Serialize_MorphTargetBinds_ITEM(f, item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__surprised_Serialize_MorphTargetBinds_ITEM(JsonFormatter f, MorphTargetBind value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.Node.HasValue){
+        f.Key("node");                
+        f.Value(value.Node.GetValueOrDefault());
+    }
+
+    if(value.Index.HasValue){
+        f.Key("index");                
+        f.Value(value.Index.GetValueOrDefault());
+    }
+
+    if(value.Weight.HasValue){
+        f.Key("weight");                
+        f.Value(value.Weight.GetValueOrDefault());
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__surprised_Serialize_MaterialColorBinds(JsonFormatter f, List<MaterialColorBind> value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    __expressions__preset__surprised_Serialize_MaterialColorBinds_ITEM(f, item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__surprised_Serialize_MaterialColorBinds_ITEM(JsonFormatter f, MaterialColorBind value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.Material.HasValue){
+        f.Key("material");                
+        f.Value(value.Material.GetValueOrDefault());
+    }
+
+    if(true){
+        f.Key("type");                
+        f.Value(value.Type.ToString());
+    }
+
+    if(value.TargetValue!=null&&value.TargetValue.Count()>=4){
+        f.Key("targetValue");                
+        __expressions__preset__surprised__materialColorBinds_ITEM_Serialize_TargetValue(f, value.TargetValue);
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__surprised__materialColorBinds_ITEM_Serialize_TargetValue(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__surprised_Serialize_TextureTransformBinds(JsonFormatter f, List<TextureTransformBind> value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    __expressions__preset__surprised_Serialize_TextureTransformBinds_ITEM(f, item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__surprised_Serialize_TextureTransformBinds_ITEM(JsonFormatter f, TextureTransformBind value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.Material.HasValue){
+        f.Key("material");                
+        f.Value(value.Material.GetValueOrDefault());
+    }
+
+    if(value.Scale!=null&&value.Scale.Count()>=2){
+        f.Key("scale");                
+        __expressions__preset__surprised__textureTransformBinds_ITEM_Serialize_Scale(f, value.Scale);
+    }
+
+    if(value.Offset!=null&&value.Offset.Count()>=2){
+        f.Key("offset");                
+        __expressions__preset__surprised__textureTransformBinds_ITEM_Serialize_Offset(f, value.Offset);
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__surprised__textureTransformBinds_ITEM_Serialize_Scale(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__surprised__textureTransformBinds_ITEM_Serialize_Offset(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset_Serialize_Aa(JsonFormatter f, Expression value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.MorphTargetBinds!=null&&value.MorphTargetBinds.Count()>=1){
+        f.Key("morphTargetBinds");                
+        __expressions__preset__aa_Serialize_MorphTargetBinds(f, value.MorphTargetBinds);
+    }
+
+    if(value.MaterialColorBinds!=null&&value.MaterialColorBinds.Count()>=1){
+        f.Key("materialColorBinds");                
+        __expressions__preset__aa_Serialize_MaterialColorBinds(f, value.MaterialColorBinds);
+    }
+
+    if(value.TextureTransformBinds!=null&&value.TextureTransformBinds.Count()>=1){
+        f.Key("textureTransformBinds");                
+        __expressions__preset__aa_Serialize_TextureTransformBinds(f, value.TextureTransformBinds);
+    }
+
+    if(value.IsBinary.HasValue){
+        f.Key("isBinary");                
+        f.Value(value.IsBinary.GetValueOrDefault());
+    }
+
+    if(true){
+        f.Key("overrideBlink");                
+        f.Value(value.OverrideBlink.ToString());
+    }
+
+    if(true){
+        f.Key("overrideLookAt");                
+        f.Value(value.OverrideLookAt.ToString());
+    }
+
+    if(true){
+        f.Key("overrideMouth");                
+        f.Value(value.OverrideMouth.ToString());
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__aa_Serialize_MorphTargetBinds(JsonFormatter f, List<MorphTargetBind> value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    __expressions__preset__aa_Serialize_MorphTargetBinds_ITEM(f, item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__aa_Serialize_MorphTargetBinds_ITEM(JsonFormatter f, MorphTargetBind value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.Node.HasValue){
+        f.Key("node");                
+        f.Value(value.Node.GetValueOrDefault());
+    }
+
+    if(value.Index.HasValue){
+        f.Key("index");                
+        f.Value(value.Index.GetValueOrDefault());
+    }
+
+    if(value.Weight.HasValue){
+        f.Key("weight");                
+        f.Value(value.Weight.GetValueOrDefault());
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__aa_Serialize_MaterialColorBinds(JsonFormatter f, List<MaterialColorBind> value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    __expressions__preset__aa_Serialize_MaterialColorBinds_ITEM(f, item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__aa_Serialize_MaterialColorBinds_ITEM(JsonFormatter f, MaterialColorBind value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.Material.HasValue){
+        f.Key("material");                
+        f.Value(value.Material.GetValueOrDefault());
+    }
+
+    if(true){
+        f.Key("type");                
+        f.Value(value.Type.ToString());
+    }
+
+    if(value.TargetValue!=null&&value.TargetValue.Count()>=4){
+        f.Key("targetValue");                
+        __expressions__preset__aa__materialColorBinds_ITEM_Serialize_TargetValue(f, value.TargetValue);
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__aa__materialColorBinds_ITEM_Serialize_TargetValue(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__aa_Serialize_TextureTransformBinds(JsonFormatter f, List<TextureTransformBind> value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    __expressions__preset__aa_Serialize_TextureTransformBinds_ITEM(f, item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__aa_Serialize_TextureTransformBinds_ITEM(JsonFormatter f, TextureTransformBind value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.Material.HasValue){
+        f.Key("material");                
+        f.Value(value.Material.GetValueOrDefault());
+    }
+
+    if(value.Scale!=null&&value.Scale.Count()>=2){
+        f.Key("scale");                
+        __expressions__preset__aa__textureTransformBinds_ITEM_Serialize_Scale(f, value.Scale);
+    }
+
+    if(value.Offset!=null&&value.Offset.Count()>=2){
+        f.Key("offset");                
+        __expressions__preset__aa__textureTransformBinds_ITEM_Serialize_Offset(f, value.Offset);
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__aa__textureTransformBinds_ITEM_Serialize_Scale(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__aa__textureTransformBinds_ITEM_Serialize_Offset(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset_Serialize_Ih(JsonFormatter f, Expression value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.MorphTargetBinds!=null&&value.MorphTargetBinds.Count()>=1){
+        f.Key("morphTargetBinds");                
+        __expressions__preset__ih_Serialize_MorphTargetBinds(f, value.MorphTargetBinds);
+    }
+
+    if(value.MaterialColorBinds!=null&&value.MaterialColorBinds.Count()>=1){
+        f.Key("materialColorBinds");                
+        __expressions__preset__ih_Serialize_MaterialColorBinds(f, value.MaterialColorBinds);
+    }
+
+    if(value.TextureTransformBinds!=null&&value.TextureTransformBinds.Count()>=1){
+        f.Key("textureTransformBinds");                
+        __expressions__preset__ih_Serialize_TextureTransformBinds(f, value.TextureTransformBinds);
+    }
+
+    if(value.IsBinary.HasValue){
+        f.Key("isBinary");                
+        f.Value(value.IsBinary.GetValueOrDefault());
+    }
+
+    if(true){
+        f.Key("overrideBlink");                
+        f.Value(value.OverrideBlink.ToString());
+    }
+
+    if(true){
+        f.Key("overrideLookAt");                
+        f.Value(value.OverrideLookAt.ToString());
+    }
+
+    if(true){
+        f.Key("overrideMouth");                
+        f.Value(value.OverrideMouth.ToString());
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__ih_Serialize_MorphTargetBinds(JsonFormatter f, List<MorphTargetBind> value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    __expressions__preset__ih_Serialize_MorphTargetBinds_ITEM(f, item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__ih_Serialize_MorphTargetBinds_ITEM(JsonFormatter f, MorphTargetBind value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.Node.HasValue){
+        f.Key("node");                
+        f.Value(value.Node.GetValueOrDefault());
+    }
+
+    if(value.Index.HasValue){
+        f.Key("index");                
+        f.Value(value.Index.GetValueOrDefault());
+    }
+
+    if(value.Weight.HasValue){
+        f.Key("weight");                
+        f.Value(value.Weight.GetValueOrDefault());
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__ih_Serialize_MaterialColorBinds(JsonFormatter f, List<MaterialColorBind> value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    __expressions__preset__ih_Serialize_MaterialColorBinds_ITEM(f, item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__ih_Serialize_MaterialColorBinds_ITEM(JsonFormatter f, MaterialColorBind value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.Material.HasValue){
+        f.Key("material");                
+        f.Value(value.Material.GetValueOrDefault());
+    }
+
+    if(true){
+        f.Key("type");                
+        f.Value(value.Type.ToString());
+    }
+
+    if(value.TargetValue!=null&&value.TargetValue.Count()>=4){
+        f.Key("targetValue");                
+        __expressions__preset__ih__materialColorBinds_ITEM_Serialize_TargetValue(f, value.TargetValue);
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__ih__materialColorBinds_ITEM_Serialize_TargetValue(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__ih_Serialize_TextureTransformBinds(JsonFormatter f, List<TextureTransformBind> value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    __expressions__preset__ih_Serialize_TextureTransformBinds_ITEM(f, item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__ih_Serialize_TextureTransformBinds_ITEM(JsonFormatter f, TextureTransformBind value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.Material.HasValue){
+        f.Key("material");                
+        f.Value(value.Material.GetValueOrDefault());
+    }
+
+    if(value.Scale!=null&&value.Scale.Count()>=2){
+        f.Key("scale");                
+        __expressions__preset__ih__textureTransformBinds_ITEM_Serialize_Scale(f, value.Scale);
+    }
+
+    if(value.Offset!=null&&value.Offset.Count()>=2){
+        f.Key("offset");                
+        __expressions__preset__ih__textureTransformBinds_ITEM_Serialize_Offset(f, value.Offset);
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__ih__textureTransformBinds_ITEM_Serialize_Scale(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__ih__textureTransformBinds_ITEM_Serialize_Offset(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset_Serialize_Ou(JsonFormatter f, Expression value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.MorphTargetBinds!=null&&value.MorphTargetBinds.Count()>=1){
+        f.Key("morphTargetBinds");                
+        __expressions__preset__ou_Serialize_MorphTargetBinds(f, value.MorphTargetBinds);
+    }
+
+    if(value.MaterialColorBinds!=null&&value.MaterialColorBinds.Count()>=1){
+        f.Key("materialColorBinds");                
+        __expressions__preset__ou_Serialize_MaterialColorBinds(f, value.MaterialColorBinds);
+    }
+
+    if(value.TextureTransformBinds!=null&&value.TextureTransformBinds.Count()>=1){
+        f.Key("textureTransformBinds");                
+        __expressions__preset__ou_Serialize_TextureTransformBinds(f, value.TextureTransformBinds);
+    }
+
+    if(value.IsBinary.HasValue){
+        f.Key("isBinary");                
+        f.Value(value.IsBinary.GetValueOrDefault());
+    }
+
+    if(true){
+        f.Key("overrideBlink");                
+        f.Value(value.OverrideBlink.ToString());
+    }
+
+    if(true){
+        f.Key("overrideLookAt");                
+        f.Value(value.OverrideLookAt.ToString());
+    }
+
+    if(true){
+        f.Key("overrideMouth");                
+        f.Value(value.OverrideMouth.ToString());
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__ou_Serialize_MorphTargetBinds(JsonFormatter f, List<MorphTargetBind> value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    __expressions__preset__ou_Serialize_MorphTargetBinds_ITEM(f, item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__ou_Serialize_MorphTargetBinds_ITEM(JsonFormatter f, MorphTargetBind value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.Node.HasValue){
+        f.Key("node");                
+        f.Value(value.Node.GetValueOrDefault());
+    }
+
+    if(value.Index.HasValue){
+        f.Key("index");                
+        f.Value(value.Index.GetValueOrDefault());
+    }
+
+    if(value.Weight.HasValue){
+        f.Key("weight");                
+        f.Value(value.Weight.GetValueOrDefault());
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__ou_Serialize_MaterialColorBinds(JsonFormatter f, List<MaterialColorBind> value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    __expressions__preset__ou_Serialize_MaterialColorBinds_ITEM(f, item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__ou_Serialize_MaterialColorBinds_ITEM(JsonFormatter f, MaterialColorBind value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.Material.HasValue){
+        f.Key("material");                
+        f.Value(value.Material.GetValueOrDefault());
+    }
+
+    if(true){
+        f.Key("type");                
+        f.Value(value.Type.ToString());
+    }
+
+    if(value.TargetValue!=null&&value.TargetValue.Count()>=4){
+        f.Key("targetValue");                
+        __expressions__preset__ou__materialColorBinds_ITEM_Serialize_TargetValue(f, value.TargetValue);
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__ou__materialColorBinds_ITEM_Serialize_TargetValue(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__ou_Serialize_TextureTransformBinds(JsonFormatter f, List<TextureTransformBind> value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    __expressions__preset__ou_Serialize_TextureTransformBinds_ITEM(f, item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__ou_Serialize_TextureTransformBinds_ITEM(JsonFormatter f, TextureTransformBind value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.Material.HasValue){
+        f.Key("material");                
+        f.Value(value.Material.GetValueOrDefault());
+    }
+
+    if(value.Scale!=null&&value.Scale.Count()>=2){
+        f.Key("scale");                
+        __expressions__preset__ou__textureTransformBinds_ITEM_Serialize_Scale(f, value.Scale);
+    }
+
+    if(value.Offset!=null&&value.Offset.Count()>=2){
+        f.Key("offset");                
+        __expressions__preset__ou__textureTransformBinds_ITEM_Serialize_Offset(f, value.Offset);
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__ou__textureTransformBinds_ITEM_Serialize_Scale(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__ou__textureTransformBinds_ITEM_Serialize_Offset(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset_Serialize_Ee(JsonFormatter f, Expression value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.MorphTargetBinds!=null&&value.MorphTargetBinds.Count()>=1){
+        f.Key("morphTargetBinds");                
+        __expressions__preset__ee_Serialize_MorphTargetBinds(f, value.MorphTargetBinds);
+    }
+
+    if(value.MaterialColorBinds!=null&&value.MaterialColorBinds.Count()>=1){
+        f.Key("materialColorBinds");                
+        __expressions__preset__ee_Serialize_MaterialColorBinds(f, value.MaterialColorBinds);
+    }
+
+    if(value.TextureTransformBinds!=null&&value.TextureTransformBinds.Count()>=1){
+        f.Key("textureTransformBinds");                
+        __expressions__preset__ee_Serialize_TextureTransformBinds(f, value.TextureTransformBinds);
+    }
+
+    if(value.IsBinary.HasValue){
+        f.Key("isBinary");                
+        f.Value(value.IsBinary.GetValueOrDefault());
+    }
+
+    if(true){
+        f.Key("overrideBlink");                
+        f.Value(value.OverrideBlink.ToString());
+    }
+
+    if(true){
+        f.Key("overrideLookAt");                
+        f.Value(value.OverrideLookAt.ToString());
+    }
+
+    if(true){
+        f.Key("overrideMouth");                
+        f.Value(value.OverrideMouth.ToString());
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__ee_Serialize_MorphTargetBinds(JsonFormatter f, List<MorphTargetBind> value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    __expressions__preset__ee_Serialize_MorphTargetBinds_ITEM(f, item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__ee_Serialize_MorphTargetBinds_ITEM(JsonFormatter f, MorphTargetBind value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.Node.HasValue){
+        f.Key("node");                
+        f.Value(value.Node.GetValueOrDefault());
+    }
+
+    if(value.Index.HasValue){
+        f.Key("index");                
+        f.Value(value.Index.GetValueOrDefault());
+    }
+
+    if(value.Weight.HasValue){
+        f.Key("weight");                
+        f.Value(value.Weight.GetValueOrDefault());
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__ee_Serialize_MaterialColorBinds(JsonFormatter f, List<MaterialColorBind> value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    __expressions__preset__ee_Serialize_MaterialColorBinds_ITEM(f, item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__ee_Serialize_MaterialColorBinds_ITEM(JsonFormatter f, MaterialColorBind value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.Material.HasValue){
+        f.Key("material");                
+        f.Value(value.Material.GetValueOrDefault());
+    }
+
+    if(true){
+        f.Key("type");                
+        f.Value(value.Type.ToString());
+    }
+
+    if(value.TargetValue!=null&&value.TargetValue.Count()>=4){
+        f.Key("targetValue");                
+        __expressions__preset__ee__materialColorBinds_ITEM_Serialize_TargetValue(f, value.TargetValue);
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__ee__materialColorBinds_ITEM_Serialize_TargetValue(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__ee_Serialize_TextureTransformBinds(JsonFormatter f, List<TextureTransformBind> value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    __expressions__preset__ee_Serialize_TextureTransformBinds_ITEM(f, item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__ee_Serialize_TextureTransformBinds_ITEM(JsonFormatter f, TextureTransformBind value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.Material.HasValue){
+        f.Key("material");                
+        f.Value(value.Material.GetValueOrDefault());
+    }
+
+    if(value.Scale!=null&&value.Scale.Count()>=2){
+        f.Key("scale");                
+        __expressions__preset__ee__textureTransformBinds_ITEM_Serialize_Scale(f, value.Scale);
+    }
+
+    if(value.Offset!=null&&value.Offset.Count()>=2){
+        f.Key("offset");                
+        __expressions__preset__ee__textureTransformBinds_ITEM_Serialize_Offset(f, value.Offset);
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__ee__textureTransformBinds_ITEM_Serialize_Scale(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__ee__textureTransformBinds_ITEM_Serialize_Offset(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset_Serialize_Oh(JsonFormatter f, Expression value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.MorphTargetBinds!=null&&value.MorphTargetBinds.Count()>=1){
+        f.Key("morphTargetBinds");                
+        __expressions__preset__oh_Serialize_MorphTargetBinds(f, value.MorphTargetBinds);
+    }
+
+    if(value.MaterialColorBinds!=null&&value.MaterialColorBinds.Count()>=1){
+        f.Key("materialColorBinds");                
+        __expressions__preset__oh_Serialize_MaterialColorBinds(f, value.MaterialColorBinds);
+    }
+
+    if(value.TextureTransformBinds!=null&&value.TextureTransformBinds.Count()>=1){
+        f.Key("textureTransformBinds");                
+        __expressions__preset__oh_Serialize_TextureTransformBinds(f, value.TextureTransformBinds);
+    }
+
+    if(value.IsBinary.HasValue){
+        f.Key("isBinary");                
+        f.Value(value.IsBinary.GetValueOrDefault());
+    }
+
+    if(true){
+        f.Key("overrideBlink");                
+        f.Value(value.OverrideBlink.ToString());
+    }
+
+    if(true){
+        f.Key("overrideLookAt");                
+        f.Value(value.OverrideLookAt.ToString());
+    }
+
+    if(true){
+        f.Key("overrideMouth");                
+        f.Value(value.OverrideMouth.ToString());
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__oh_Serialize_MorphTargetBinds(JsonFormatter f, List<MorphTargetBind> value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    __expressions__preset__oh_Serialize_MorphTargetBinds_ITEM(f, item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__oh_Serialize_MorphTargetBinds_ITEM(JsonFormatter f, MorphTargetBind value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.Node.HasValue){
+        f.Key("node");                
+        f.Value(value.Node.GetValueOrDefault());
+    }
+
+    if(value.Index.HasValue){
+        f.Key("index");                
+        f.Value(value.Index.GetValueOrDefault());
+    }
+
+    if(value.Weight.HasValue){
+        f.Key("weight");                
+        f.Value(value.Weight.GetValueOrDefault());
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__oh_Serialize_MaterialColorBinds(JsonFormatter f, List<MaterialColorBind> value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    __expressions__preset__oh_Serialize_MaterialColorBinds_ITEM(f, item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__oh_Serialize_MaterialColorBinds_ITEM(JsonFormatter f, MaterialColorBind value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.Material.HasValue){
+        f.Key("material");                
+        f.Value(value.Material.GetValueOrDefault());
+    }
+
+    if(true){
+        f.Key("type");                
+        f.Value(value.Type.ToString());
+    }
+
+    if(value.TargetValue!=null&&value.TargetValue.Count()>=4){
+        f.Key("targetValue");                
+        __expressions__preset__oh__materialColorBinds_ITEM_Serialize_TargetValue(f, value.TargetValue);
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__oh__materialColorBinds_ITEM_Serialize_TargetValue(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__oh_Serialize_TextureTransformBinds(JsonFormatter f, List<TextureTransformBind> value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    __expressions__preset__oh_Serialize_TextureTransformBinds_ITEM(f, item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__oh_Serialize_TextureTransformBinds_ITEM(JsonFormatter f, TextureTransformBind value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.Material.HasValue){
+        f.Key("material");                
+        f.Value(value.Material.GetValueOrDefault());
+    }
+
+    if(value.Scale!=null&&value.Scale.Count()>=2){
+        f.Key("scale");                
+        __expressions__preset__oh__textureTransformBinds_ITEM_Serialize_Scale(f, value.Scale);
+    }
+
+    if(value.Offset!=null&&value.Offset.Count()>=2){
+        f.Key("offset");                
+        __expressions__preset__oh__textureTransformBinds_ITEM_Serialize_Offset(f, value.Offset);
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__oh__textureTransformBinds_ITEM_Serialize_Scale(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__oh__textureTransformBinds_ITEM_Serialize_Offset(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset_Serialize_Blink(JsonFormatter f, Expression value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.MorphTargetBinds!=null&&value.MorphTargetBinds.Count()>=1){
+        f.Key("morphTargetBinds");                
+        __expressions__preset__blink_Serialize_MorphTargetBinds(f, value.MorphTargetBinds);
+    }
+
+    if(value.MaterialColorBinds!=null&&value.MaterialColorBinds.Count()>=1){
+        f.Key("materialColorBinds");                
+        __expressions__preset__blink_Serialize_MaterialColorBinds(f, value.MaterialColorBinds);
+    }
+
+    if(value.TextureTransformBinds!=null&&value.TextureTransformBinds.Count()>=1){
+        f.Key("textureTransformBinds");                
+        __expressions__preset__blink_Serialize_TextureTransformBinds(f, value.TextureTransformBinds);
+    }
+
+    if(value.IsBinary.HasValue){
+        f.Key("isBinary");                
+        f.Value(value.IsBinary.GetValueOrDefault());
+    }
+
+    if(true){
+        f.Key("overrideBlink");                
+        f.Value(value.OverrideBlink.ToString());
+    }
+
+    if(true){
+        f.Key("overrideLookAt");                
+        f.Value(value.OverrideLookAt.ToString());
+    }
+
+    if(true){
+        f.Key("overrideMouth");                
+        f.Value(value.OverrideMouth.ToString());
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__blink_Serialize_MorphTargetBinds(JsonFormatter f, List<MorphTargetBind> value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    __expressions__preset__blink_Serialize_MorphTargetBinds_ITEM(f, item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__blink_Serialize_MorphTargetBinds_ITEM(JsonFormatter f, MorphTargetBind value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.Node.HasValue){
+        f.Key("node");                
+        f.Value(value.Node.GetValueOrDefault());
+    }
+
+    if(value.Index.HasValue){
+        f.Key("index");                
+        f.Value(value.Index.GetValueOrDefault());
+    }
+
+    if(value.Weight.HasValue){
+        f.Key("weight");                
+        f.Value(value.Weight.GetValueOrDefault());
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__blink_Serialize_MaterialColorBinds(JsonFormatter f, List<MaterialColorBind> value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    __expressions__preset__blink_Serialize_MaterialColorBinds_ITEM(f, item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__blink_Serialize_MaterialColorBinds_ITEM(JsonFormatter f, MaterialColorBind value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.Material.HasValue){
+        f.Key("material");                
+        f.Value(value.Material.GetValueOrDefault());
+    }
+
+    if(true){
+        f.Key("type");                
+        f.Value(value.Type.ToString());
+    }
+
+    if(value.TargetValue!=null&&value.TargetValue.Count()>=4){
+        f.Key("targetValue");                
+        __expressions__preset__blink__materialColorBinds_ITEM_Serialize_TargetValue(f, value.TargetValue);
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__blink__materialColorBinds_ITEM_Serialize_TargetValue(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__blink_Serialize_TextureTransformBinds(JsonFormatter f, List<TextureTransformBind> value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    __expressions__preset__blink_Serialize_TextureTransformBinds_ITEM(f, item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__blink_Serialize_TextureTransformBinds_ITEM(JsonFormatter f, TextureTransformBind value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.Material.HasValue){
+        f.Key("material");                
+        f.Value(value.Material.GetValueOrDefault());
+    }
+
+    if(value.Scale!=null&&value.Scale.Count()>=2){
+        f.Key("scale");                
+        __expressions__preset__blink__textureTransformBinds_ITEM_Serialize_Scale(f, value.Scale);
+    }
+
+    if(value.Offset!=null&&value.Offset.Count()>=2){
+        f.Key("offset");                
+        __expressions__preset__blink__textureTransformBinds_ITEM_Serialize_Offset(f, value.Offset);
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__blink__textureTransformBinds_ITEM_Serialize_Scale(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__blink__textureTransformBinds_ITEM_Serialize_Offset(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset_Serialize_BlinkLeft(JsonFormatter f, Expression value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.MorphTargetBinds!=null&&value.MorphTargetBinds.Count()>=1){
+        f.Key("morphTargetBinds");                
+        __expressions__preset__blinkLeft_Serialize_MorphTargetBinds(f, value.MorphTargetBinds);
+    }
+
+    if(value.MaterialColorBinds!=null&&value.MaterialColorBinds.Count()>=1){
+        f.Key("materialColorBinds");                
+        __expressions__preset__blinkLeft_Serialize_MaterialColorBinds(f, value.MaterialColorBinds);
+    }
+
+    if(value.TextureTransformBinds!=null&&value.TextureTransformBinds.Count()>=1){
+        f.Key("textureTransformBinds");                
+        __expressions__preset__blinkLeft_Serialize_TextureTransformBinds(f, value.TextureTransformBinds);
+    }
+
+    if(value.IsBinary.HasValue){
+        f.Key("isBinary");                
+        f.Value(value.IsBinary.GetValueOrDefault());
+    }
+
+    if(true){
+        f.Key("overrideBlink");                
+        f.Value(value.OverrideBlink.ToString());
+    }
+
+    if(true){
+        f.Key("overrideLookAt");                
+        f.Value(value.OverrideLookAt.ToString());
+    }
+
+    if(true){
+        f.Key("overrideMouth");                
+        f.Value(value.OverrideMouth.ToString());
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__blinkLeft_Serialize_MorphTargetBinds(JsonFormatter f, List<MorphTargetBind> value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    __expressions__preset__blinkLeft_Serialize_MorphTargetBinds_ITEM(f, item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__blinkLeft_Serialize_MorphTargetBinds_ITEM(JsonFormatter f, MorphTargetBind value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.Node.HasValue){
+        f.Key("node");                
+        f.Value(value.Node.GetValueOrDefault());
+    }
+
+    if(value.Index.HasValue){
+        f.Key("index");                
+        f.Value(value.Index.GetValueOrDefault());
+    }
+
+    if(value.Weight.HasValue){
+        f.Key("weight");                
+        f.Value(value.Weight.GetValueOrDefault());
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__blinkLeft_Serialize_MaterialColorBinds(JsonFormatter f, List<MaterialColorBind> value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    __expressions__preset__blinkLeft_Serialize_MaterialColorBinds_ITEM(f, item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__blinkLeft_Serialize_MaterialColorBinds_ITEM(JsonFormatter f, MaterialColorBind value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.Material.HasValue){
+        f.Key("material");                
+        f.Value(value.Material.GetValueOrDefault());
+    }
+
+    if(true){
+        f.Key("type");                
+        f.Value(value.Type.ToString());
+    }
+
+    if(value.TargetValue!=null&&value.TargetValue.Count()>=4){
+        f.Key("targetValue");                
+        __expressions__preset__blinkLeft__materialColorBinds_ITEM_Serialize_TargetValue(f, value.TargetValue);
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__blinkLeft__materialColorBinds_ITEM_Serialize_TargetValue(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__blinkLeft_Serialize_TextureTransformBinds(JsonFormatter f, List<TextureTransformBind> value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    __expressions__preset__blinkLeft_Serialize_TextureTransformBinds_ITEM(f, item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__blinkLeft_Serialize_TextureTransformBinds_ITEM(JsonFormatter f, TextureTransformBind value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.Material.HasValue){
+        f.Key("material");                
+        f.Value(value.Material.GetValueOrDefault());
+    }
+
+    if(value.Scale!=null&&value.Scale.Count()>=2){
+        f.Key("scale");                
+        __expressions__preset__blinkLeft__textureTransformBinds_ITEM_Serialize_Scale(f, value.Scale);
+    }
+
+    if(value.Offset!=null&&value.Offset.Count()>=2){
+        f.Key("offset");                
+        __expressions__preset__blinkLeft__textureTransformBinds_ITEM_Serialize_Offset(f, value.Offset);
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__blinkLeft__textureTransformBinds_ITEM_Serialize_Scale(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__blinkLeft__textureTransformBinds_ITEM_Serialize_Offset(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset_Serialize_BlinkRight(JsonFormatter f, Expression value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.MorphTargetBinds!=null&&value.MorphTargetBinds.Count()>=1){
+        f.Key("morphTargetBinds");                
+        __expressions__preset__blinkRight_Serialize_MorphTargetBinds(f, value.MorphTargetBinds);
+    }
+
+    if(value.MaterialColorBinds!=null&&value.MaterialColorBinds.Count()>=1){
+        f.Key("materialColorBinds");                
+        __expressions__preset__blinkRight_Serialize_MaterialColorBinds(f, value.MaterialColorBinds);
+    }
+
+    if(value.TextureTransformBinds!=null&&value.TextureTransformBinds.Count()>=1){
+        f.Key("textureTransformBinds");                
+        __expressions__preset__blinkRight_Serialize_TextureTransformBinds(f, value.TextureTransformBinds);
+    }
+
+    if(value.IsBinary.HasValue){
+        f.Key("isBinary");                
+        f.Value(value.IsBinary.GetValueOrDefault());
+    }
+
+    if(true){
+        f.Key("overrideBlink");                
+        f.Value(value.OverrideBlink.ToString());
+    }
+
+    if(true){
+        f.Key("overrideLookAt");                
+        f.Value(value.OverrideLookAt.ToString());
+    }
+
+    if(true){
+        f.Key("overrideMouth");                
+        f.Value(value.OverrideMouth.ToString());
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__blinkRight_Serialize_MorphTargetBinds(JsonFormatter f, List<MorphTargetBind> value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    __expressions__preset__blinkRight_Serialize_MorphTargetBinds_ITEM(f, item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__blinkRight_Serialize_MorphTargetBinds_ITEM(JsonFormatter f, MorphTargetBind value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.Node.HasValue){
+        f.Key("node");                
+        f.Value(value.Node.GetValueOrDefault());
+    }
+
+    if(value.Index.HasValue){
+        f.Key("index");                
+        f.Value(value.Index.GetValueOrDefault());
+    }
+
+    if(value.Weight.HasValue){
+        f.Key("weight");                
+        f.Value(value.Weight.GetValueOrDefault());
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__blinkRight_Serialize_MaterialColorBinds(JsonFormatter f, List<MaterialColorBind> value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    __expressions__preset__blinkRight_Serialize_MaterialColorBinds_ITEM(f, item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__blinkRight_Serialize_MaterialColorBinds_ITEM(JsonFormatter f, MaterialColorBind value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.Material.HasValue){
+        f.Key("material");                
+        f.Value(value.Material.GetValueOrDefault());
+    }
+
+    if(true){
+        f.Key("type");                
+        f.Value(value.Type.ToString());
+    }
+
+    if(value.TargetValue!=null&&value.TargetValue.Count()>=4){
+        f.Key("targetValue");                
+        __expressions__preset__blinkRight__materialColorBinds_ITEM_Serialize_TargetValue(f, value.TargetValue);
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__blinkRight__materialColorBinds_ITEM_Serialize_TargetValue(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__blinkRight_Serialize_TextureTransformBinds(JsonFormatter f, List<TextureTransformBind> value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    __expressions__preset__blinkRight_Serialize_TextureTransformBinds_ITEM(f, item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__blinkRight_Serialize_TextureTransformBinds_ITEM(JsonFormatter f, TextureTransformBind value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.Material.HasValue){
+        f.Key("material");                
+        f.Value(value.Material.GetValueOrDefault());
+    }
+
+    if(value.Scale!=null&&value.Scale.Count()>=2){
+        f.Key("scale");                
+        __expressions__preset__blinkRight__textureTransformBinds_ITEM_Serialize_Scale(f, value.Scale);
+    }
+
+    if(value.Offset!=null&&value.Offset.Count()>=2){
+        f.Key("offset");                
+        __expressions__preset__blinkRight__textureTransformBinds_ITEM_Serialize_Offset(f, value.Offset);
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__blinkRight__textureTransformBinds_ITEM_Serialize_Scale(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__blinkRight__textureTransformBinds_ITEM_Serialize_Offset(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset_Serialize_LookUp(JsonFormatter f, Expression value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.MorphTargetBinds!=null&&value.MorphTargetBinds.Count()>=1){
+        f.Key("morphTargetBinds");                
+        __expressions__preset__lookUp_Serialize_MorphTargetBinds(f, value.MorphTargetBinds);
+    }
+
+    if(value.MaterialColorBinds!=null&&value.MaterialColorBinds.Count()>=1){
+        f.Key("materialColorBinds");                
+        __expressions__preset__lookUp_Serialize_MaterialColorBinds(f, value.MaterialColorBinds);
+    }
+
+    if(value.TextureTransformBinds!=null&&value.TextureTransformBinds.Count()>=1){
+        f.Key("textureTransformBinds");                
+        __expressions__preset__lookUp_Serialize_TextureTransformBinds(f, value.TextureTransformBinds);
+    }
+
+    if(value.IsBinary.HasValue){
+        f.Key("isBinary");                
+        f.Value(value.IsBinary.GetValueOrDefault());
+    }
+
+    if(true){
+        f.Key("overrideBlink");                
+        f.Value(value.OverrideBlink.ToString());
+    }
+
+    if(true){
+        f.Key("overrideLookAt");                
+        f.Value(value.OverrideLookAt.ToString());
+    }
+
+    if(true){
+        f.Key("overrideMouth");                
+        f.Value(value.OverrideMouth.ToString());
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__lookUp_Serialize_MorphTargetBinds(JsonFormatter f, List<MorphTargetBind> value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    __expressions__preset__lookUp_Serialize_MorphTargetBinds_ITEM(f, item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__lookUp_Serialize_MorphTargetBinds_ITEM(JsonFormatter f, MorphTargetBind value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.Node.HasValue){
+        f.Key("node");                
+        f.Value(value.Node.GetValueOrDefault());
+    }
+
+    if(value.Index.HasValue){
+        f.Key("index");                
+        f.Value(value.Index.GetValueOrDefault());
+    }
+
+    if(value.Weight.HasValue){
+        f.Key("weight");                
+        f.Value(value.Weight.GetValueOrDefault());
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__lookUp_Serialize_MaterialColorBinds(JsonFormatter f, List<MaterialColorBind> value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    __expressions__preset__lookUp_Serialize_MaterialColorBinds_ITEM(f, item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__lookUp_Serialize_MaterialColorBinds_ITEM(JsonFormatter f, MaterialColorBind value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.Material.HasValue){
+        f.Key("material");                
+        f.Value(value.Material.GetValueOrDefault());
+    }
+
+    if(true){
+        f.Key("type");                
+        f.Value(value.Type.ToString());
+    }
+
+    if(value.TargetValue!=null&&value.TargetValue.Count()>=4){
+        f.Key("targetValue");                
+        __expressions__preset__lookUp__materialColorBinds_ITEM_Serialize_TargetValue(f, value.TargetValue);
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__lookUp__materialColorBinds_ITEM_Serialize_TargetValue(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__lookUp_Serialize_TextureTransformBinds(JsonFormatter f, List<TextureTransformBind> value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    __expressions__preset__lookUp_Serialize_TextureTransformBinds_ITEM(f, item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__lookUp_Serialize_TextureTransformBinds_ITEM(JsonFormatter f, TextureTransformBind value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.Material.HasValue){
+        f.Key("material");                
+        f.Value(value.Material.GetValueOrDefault());
+    }
+
+    if(value.Scale!=null&&value.Scale.Count()>=2){
+        f.Key("scale");                
+        __expressions__preset__lookUp__textureTransformBinds_ITEM_Serialize_Scale(f, value.Scale);
+    }
+
+    if(value.Offset!=null&&value.Offset.Count()>=2){
+        f.Key("offset");                
+        __expressions__preset__lookUp__textureTransformBinds_ITEM_Serialize_Offset(f, value.Offset);
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__lookUp__textureTransformBinds_ITEM_Serialize_Scale(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__lookUp__textureTransformBinds_ITEM_Serialize_Offset(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset_Serialize_LookDown(JsonFormatter f, Expression value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.MorphTargetBinds!=null&&value.MorphTargetBinds.Count()>=1){
+        f.Key("morphTargetBinds");                
+        __expressions__preset__lookDown_Serialize_MorphTargetBinds(f, value.MorphTargetBinds);
+    }
+
+    if(value.MaterialColorBinds!=null&&value.MaterialColorBinds.Count()>=1){
+        f.Key("materialColorBinds");                
+        __expressions__preset__lookDown_Serialize_MaterialColorBinds(f, value.MaterialColorBinds);
+    }
+
+    if(value.TextureTransformBinds!=null&&value.TextureTransformBinds.Count()>=1){
+        f.Key("textureTransformBinds");                
+        __expressions__preset__lookDown_Serialize_TextureTransformBinds(f, value.TextureTransformBinds);
+    }
+
+    if(value.IsBinary.HasValue){
+        f.Key("isBinary");                
+        f.Value(value.IsBinary.GetValueOrDefault());
+    }
+
+    if(true){
+        f.Key("overrideBlink");                
+        f.Value(value.OverrideBlink.ToString());
+    }
+
+    if(true){
+        f.Key("overrideLookAt");                
+        f.Value(value.OverrideLookAt.ToString());
+    }
+
+    if(true){
+        f.Key("overrideMouth");                
+        f.Value(value.OverrideMouth.ToString());
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__lookDown_Serialize_MorphTargetBinds(JsonFormatter f, List<MorphTargetBind> value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    __expressions__preset__lookDown_Serialize_MorphTargetBinds_ITEM(f, item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__lookDown_Serialize_MorphTargetBinds_ITEM(JsonFormatter f, MorphTargetBind value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.Node.HasValue){
+        f.Key("node");                
+        f.Value(value.Node.GetValueOrDefault());
+    }
+
+    if(value.Index.HasValue){
+        f.Key("index");                
+        f.Value(value.Index.GetValueOrDefault());
+    }
+
+    if(value.Weight.HasValue){
+        f.Key("weight");                
+        f.Value(value.Weight.GetValueOrDefault());
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__lookDown_Serialize_MaterialColorBinds(JsonFormatter f, List<MaterialColorBind> value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    __expressions__preset__lookDown_Serialize_MaterialColorBinds_ITEM(f, item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__lookDown_Serialize_MaterialColorBinds_ITEM(JsonFormatter f, MaterialColorBind value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.Material.HasValue){
+        f.Key("material");                
+        f.Value(value.Material.GetValueOrDefault());
+    }
+
+    if(true){
+        f.Key("type");                
+        f.Value(value.Type.ToString());
+    }
+
+    if(value.TargetValue!=null&&value.TargetValue.Count()>=4){
+        f.Key("targetValue");                
+        __expressions__preset__lookDown__materialColorBinds_ITEM_Serialize_TargetValue(f, value.TargetValue);
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__lookDown__materialColorBinds_ITEM_Serialize_TargetValue(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__lookDown_Serialize_TextureTransformBinds(JsonFormatter f, List<TextureTransformBind> value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    __expressions__preset__lookDown_Serialize_TextureTransformBinds_ITEM(f, item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__lookDown_Serialize_TextureTransformBinds_ITEM(JsonFormatter f, TextureTransformBind value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.Material.HasValue){
+        f.Key("material");                
+        f.Value(value.Material.GetValueOrDefault());
+    }
+
+    if(value.Scale!=null&&value.Scale.Count()>=2){
+        f.Key("scale");                
+        __expressions__preset__lookDown__textureTransformBinds_ITEM_Serialize_Scale(f, value.Scale);
+    }
+
+    if(value.Offset!=null&&value.Offset.Count()>=2){
+        f.Key("offset");                
+        __expressions__preset__lookDown__textureTransformBinds_ITEM_Serialize_Offset(f, value.Offset);
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__lookDown__textureTransformBinds_ITEM_Serialize_Scale(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__lookDown__textureTransformBinds_ITEM_Serialize_Offset(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset_Serialize_LookLeft(JsonFormatter f, Expression value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.MorphTargetBinds!=null&&value.MorphTargetBinds.Count()>=1){
+        f.Key("morphTargetBinds");                
+        __expressions__preset__lookLeft_Serialize_MorphTargetBinds(f, value.MorphTargetBinds);
+    }
+
+    if(value.MaterialColorBinds!=null&&value.MaterialColorBinds.Count()>=1){
+        f.Key("materialColorBinds");                
+        __expressions__preset__lookLeft_Serialize_MaterialColorBinds(f, value.MaterialColorBinds);
+    }
+
+    if(value.TextureTransformBinds!=null&&value.TextureTransformBinds.Count()>=1){
+        f.Key("textureTransformBinds");                
+        __expressions__preset__lookLeft_Serialize_TextureTransformBinds(f, value.TextureTransformBinds);
+    }
+
+    if(value.IsBinary.HasValue){
+        f.Key("isBinary");                
+        f.Value(value.IsBinary.GetValueOrDefault());
+    }
+
+    if(true){
+        f.Key("overrideBlink");                
+        f.Value(value.OverrideBlink.ToString());
+    }
+
+    if(true){
+        f.Key("overrideLookAt");                
+        f.Value(value.OverrideLookAt.ToString());
+    }
+
+    if(true){
+        f.Key("overrideMouth");                
+        f.Value(value.OverrideMouth.ToString());
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__lookLeft_Serialize_MorphTargetBinds(JsonFormatter f, List<MorphTargetBind> value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    __expressions__preset__lookLeft_Serialize_MorphTargetBinds_ITEM(f, item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__lookLeft_Serialize_MorphTargetBinds_ITEM(JsonFormatter f, MorphTargetBind value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.Node.HasValue){
+        f.Key("node");                
+        f.Value(value.Node.GetValueOrDefault());
+    }
+
+    if(value.Index.HasValue){
+        f.Key("index");                
+        f.Value(value.Index.GetValueOrDefault());
+    }
+
+    if(value.Weight.HasValue){
+        f.Key("weight");                
+        f.Value(value.Weight.GetValueOrDefault());
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__lookLeft_Serialize_MaterialColorBinds(JsonFormatter f, List<MaterialColorBind> value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    __expressions__preset__lookLeft_Serialize_MaterialColorBinds_ITEM(f, item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__lookLeft_Serialize_MaterialColorBinds_ITEM(JsonFormatter f, MaterialColorBind value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.Material.HasValue){
+        f.Key("material");                
+        f.Value(value.Material.GetValueOrDefault());
+    }
+
+    if(true){
+        f.Key("type");                
+        f.Value(value.Type.ToString());
+    }
+
+    if(value.TargetValue!=null&&value.TargetValue.Count()>=4){
+        f.Key("targetValue");                
+        __expressions__preset__lookLeft__materialColorBinds_ITEM_Serialize_TargetValue(f, value.TargetValue);
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__lookLeft__materialColorBinds_ITEM_Serialize_TargetValue(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__lookLeft_Serialize_TextureTransformBinds(JsonFormatter f, List<TextureTransformBind> value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    __expressions__preset__lookLeft_Serialize_TextureTransformBinds_ITEM(f, item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__lookLeft_Serialize_TextureTransformBinds_ITEM(JsonFormatter f, TextureTransformBind value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.Material.HasValue){
+        f.Key("material");                
+        f.Value(value.Material.GetValueOrDefault());
+    }
+
+    if(value.Scale!=null&&value.Scale.Count()>=2){
+        f.Key("scale");                
+        __expressions__preset__lookLeft__textureTransformBinds_ITEM_Serialize_Scale(f, value.Scale);
+    }
+
+    if(value.Offset!=null&&value.Offset.Count()>=2){
+        f.Key("offset");                
+        __expressions__preset__lookLeft__textureTransformBinds_ITEM_Serialize_Offset(f, value.Offset);
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__lookLeft__textureTransformBinds_ITEM_Serialize_Scale(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__lookLeft__textureTransformBinds_ITEM_Serialize_Offset(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset_Serialize_LookRight(JsonFormatter f, Expression value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.MorphTargetBinds!=null&&value.MorphTargetBinds.Count()>=1){
+        f.Key("morphTargetBinds");                
+        __expressions__preset__lookRight_Serialize_MorphTargetBinds(f, value.MorphTargetBinds);
+    }
+
+    if(value.MaterialColorBinds!=null&&value.MaterialColorBinds.Count()>=1){
+        f.Key("materialColorBinds");                
+        __expressions__preset__lookRight_Serialize_MaterialColorBinds(f, value.MaterialColorBinds);
+    }
+
+    if(value.TextureTransformBinds!=null&&value.TextureTransformBinds.Count()>=1){
+        f.Key("textureTransformBinds");                
+        __expressions__preset__lookRight_Serialize_TextureTransformBinds(f, value.TextureTransformBinds);
+    }
+
+    if(value.IsBinary.HasValue){
+        f.Key("isBinary");                
+        f.Value(value.IsBinary.GetValueOrDefault());
+    }
+
+    if(true){
+        f.Key("overrideBlink");                
+        f.Value(value.OverrideBlink.ToString());
+    }
+
+    if(true){
+        f.Key("overrideLookAt");                
+        f.Value(value.OverrideLookAt.ToString());
+    }
+
+    if(true){
+        f.Key("overrideMouth");                
+        f.Value(value.OverrideMouth.ToString());
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__lookRight_Serialize_MorphTargetBinds(JsonFormatter f, List<MorphTargetBind> value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    __expressions__preset__lookRight_Serialize_MorphTargetBinds_ITEM(f, item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__lookRight_Serialize_MorphTargetBinds_ITEM(JsonFormatter f, MorphTargetBind value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.Node.HasValue){
+        f.Key("node");                
+        f.Value(value.Node.GetValueOrDefault());
+    }
+
+    if(value.Index.HasValue){
+        f.Key("index");                
+        f.Value(value.Index.GetValueOrDefault());
+    }
+
+    if(value.Weight.HasValue){
+        f.Key("weight");                
+        f.Value(value.Weight.GetValueOrDefault());
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__lookRight_Serialize_MaterialColorBinds(JsonFormatter f, List<MaterialColorBind> value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    __expressions__preset__lookRight_Serialize_MaterialColorBinds_ITEM(f, item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__lookRight_Serialize_MaterialColorBinds_ITEM(JsonFormatter f, MaterialColorBind value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.Material.HasValue){
+        f.Key("material");                
+        f.Value(value.Material.GetValueOrDefault());
+    }
+
+    if(true){
+        f.Key("type");                
+        f.Value(value.Type.ToString());
+    }
+
+    if(value.TargetValue!=null&&value.TargetValue.Count()>=4){
+        f.Key("targetValue");                
+        __expressions__preset__lookRight__materialColorBinds_ITEM_Serialize_TargetValue(f, value.TargetValue);
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__lookRight__materialColorBinds_ITEM_Serialize_TargetValue(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__lookRight_Serialize_TextureTransformBinds(JsonFormatter f, List<TextureTransformBind> value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    __expressions__preset__lookRight_Serialize_TextureTransformBinds_ITEM(f, item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__lookRight_Serialize_TextureTransformBinds_ITEM(JsonFormatter f, TextureTransformBind value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.Material.HasValue){
+        f.Key("material");                
+        f.Value(value.Material.GetValueOrDefault());
+    }
+
+    if(value.Scale!=null&&value.Scale.Count()>=2){
+        f.Key("scale");                
+        __expressions__preset__lookRight__textureTransformBinds_ITEM_Serialize_Scale(f, value.Scale);
+    }
+
+    if(value.Offset!=null&&value.Offset.Count()>=2){
+        f.Key("offset");                
+        __expressions__preset__lookRight__textureTransformBinds_ITEM_Serialize_Offset(f, value.Offset);
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__preset__lookRight__textureTransformBinds_ITEM_Serialize_Scale(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__preset__lookRight__textureTransformBinds_ITEM_Serialize_Offset(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions_Serialize_Custom(JsonFormatter f, Dictionary<string, Expression> value)
+{
+    f.BeginMap();
+
+    foreach(var kv in value)
+    {
+        f.Key(kv.Key);
+    __expressions_Serialize_Custom_ITEM(f, kv.Value);
+
+    }
+    f.EndMap();
+}
+
+public static void __expressions_Serialize_Custom_ITEM(JsonFormatter f, Expression value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.MorphTargetBinds!=null&&value.MorphTargetBinds.Count()>=1){
+        f.Key("morphTargetBinds");                
+        __expressions__custom_PROP_Serialize_MorphTargetBinds(f, value.MorphTargetBinds);
+    }
+
+    if(value.MaterialColorBinds!=null&&value.MaterialColorBinds.Count()>=1){
+        f.Key("materialColorBinds");                
+        __expressions__custom_PROP_Serialize_MaterialColorBinds(f, value.MaterialColorBinds);
+    }
+
+    if(value.TextureTransformBinds!=null&&value.TextureTransformBinds.Count()>=1){
+        f.Key("textureTransformBinds");                
+        __expressions__custom_PROP_Serialize_TextureTransformBinds(f, value.TextureTransformBinds);
+    }
+
+    if(value.IsBinary.HasValue){
+        f.Key("isBinary");                
+        f.Value(value.IsBinary.GetValueOrDefault());
+    }
+
+    if(true){
+        f.Key("overrideBlink");                
+        f.Value(value.OverrideBlink.ToString());
+    }
+
+    if(true){
+        f.Key("overrideLookAt");                
+        f.Value(value.OverrideLookAt.ToString());
+    }
+
+    if(true){
+        f.Key("overrideMouth");                
+        f.Value(value.OverrideMouth.ToString());
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__custom_PROP_Serialize_MorphTargetBinds(JsonFormatter f, List<MorphTargetBind> value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    __expressions__custom_PROP_Serialize_MorphTargetBinds_ITEM(f, item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__custom_PROP_Serialize_MorphTargetBinds_ITEM(JsonFormatter f, MorphTargetBind value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.Node.HasValue){
+        f.Key("node");                
+        f.Value(value.Node.GetValueOrDefault());
+    }
+
+    if(value.Index.HasValue){
+        f.Key("index");                
+        f.Value(value.Index.GetValueOrDefault());
+    }
+
+    if(value.Weight.HasValue){
+        f.Key("weight");                
+        f.Value(value.Weight.GetValueOrDefault());
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__custom_PROP_Serialize_MaterialColorBinds(JsonFormatter f, List<MaterialColorBind> value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    __expressions__custom_PROP_Serialize_MaterialColorBinds_ITEM(f, item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__custom_PROP_Serialize_MaterialColorBinds_ITEM(JsonFormatter f, MaterialColorBind value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.Material.HasValue){
+        f.Key("material");                
+        f.Value(value.Material.GetValueOrDefault());
+    }
+
+    if(true){
+        f.Key("type");                
+        f.Value(value.Type.ToString());
+    }
+
+    if(value.TargetValue!=null&&value.TargetValue.Count()>=4){
+        f.Key("targetValue");                
+        __expressions__custom_PROP__materialColorBinds_ITEM_Serialize_TargetValue(f, value.TargetValue);
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__custom_PROP__materialColorBinds_ITEM_Serialize_TargetValue(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__custom_PROP_Serialize_TextureTransformBinds(JsonFormatter f, List<TextureTransformBind> value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    __expressions__custom_PROP_Serialize_TextureTransformBinds_ITEM(f, item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__custom_PROP_Serialize_TextureTransformBinds_ITEM(JsonFormatter f, TextureTransformBind value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(value.Material.HasValue){
+        f.Key("material");                
+        f.Value(value.Material.GetValueOrDefault());
+    }
+
+    if(value.Scale!=null&&value.Scale.Count()>=2){
+        f.Key("scale");                
+        __expressions__custom_PROP__textureTransformBinds_ITEM_Serialize_Scale(f, value.Scale);
+    }
+
+    if(value.Offset!=null&&value.Offset.Count()>=2){
+        f.Key("offset");                
+        __expressions__custom_PROP__textureTransformBinds_ITEM_Serialize_Offset(f, value.Offset);
+    }
+
+    f.EndMap();
+}
+
+public static void __expressions__custom_PROP__textureTransformBinds_ITEM_Serialize_Scale(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
+}
+
+public static void __expressions__custom_PROP__textureTransformBinds_ITEM_Serialize_Offset(JsonFormatter f, float[] value)
 {
     f.BeginList();
 

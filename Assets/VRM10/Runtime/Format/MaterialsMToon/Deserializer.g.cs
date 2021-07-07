@@ -47,8 +47,8 @@ public static VRMC_materials_mtoon Deserialize(JsonNode parsed)
             continue;
         }
 
-        if(key=="version"){
-            value.Version = kv.Value.GetString();
+        if(key=="specVersion"){
+            value.SpecVersion = kv.Value.GetString();
             continue;
         }
 

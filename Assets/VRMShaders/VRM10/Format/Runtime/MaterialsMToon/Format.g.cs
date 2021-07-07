@@ -57,8 +57,8 @@ namespace UniGLTF.Extensions.VRMC_materials_mtoon
         // Application-specific data.
         public object Extras;
 
-        // Meta
-        public string Version;
+        // Specification version of VRMC_materials_mtoon
+        public string SpecVersion;
 
         // enable depth buffer when `alphaMode` is `BLEND`
         public bool? TransparentWithZWrite;

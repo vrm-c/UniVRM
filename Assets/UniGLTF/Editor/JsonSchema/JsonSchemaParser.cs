@@ -190,6 +190,10 @@ namespace UniGLTF.JsonSchema
                             var key = prop.Key.GetString();
                             var propJsonPath = $"{jsonPath}.{key}";
                             var propSchema = Parse(prop.Value, propJsonPath);
+                            if (string.IsNullOrEmpty(propSchema.title))
+                            {
+                                propSchema.title = key.ToUpperCamel();
+                            }
                             if (propSchema is null)
                             {
                                 if (source.baseSchema is null)

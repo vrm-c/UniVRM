@@ -136,6 +136,10 @@ namespace GenerateUniGLTFSerialization
                         {
                             // WriteObject(ext);
                         }
+                        else if (schema is DictionaryJsonSchema dict)
+                        {
+                            WriteObject((ObjectJsonSchema)dict.AdditionalProperties, rootName);
+                        }
                         else
                         {
                             throw new Exception();

@@ -16,7 +16,7 @@ namespace UniVRM10
         /// ExpressionPreset を識別する。 Unknown の場合は、 ExpressionName で識別する
         /// </summary>
         [SerializeField]
-        public UniGLTF.Extensions.VRMC_vrm.ExpressionPreset Preset;
+        public ExpressionPreset Preset;
 
         /// <summary>
         /// 対象メッシュの Expression を操作する
@@ -67,7 +67,7 @@ namespace UniVRM10
 
         void OnValidate()
         {
-            if (Preset == UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.custom)
+            if (Preset == ExpressionPreset.custom)
             {
                 if (string.IsNullOrEmpty(ExpressionName))
                 {

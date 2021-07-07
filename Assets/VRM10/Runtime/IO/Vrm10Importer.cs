@@ -244,16 +244,42 @@ namespace UniVRM10
             await LoadConstraintAsync(awaitCaller, controller);
         }
 
-        static ExpressionKey Key(UniGLTF.Extensions.VRMC_vrm.Expression e)
+        VRM10Expression GetOrLoadExpression(in SubAssetKey key, UniGLTF.Extensions.VRMC_vrm.Expression expression)
         {
-            if (e.Preset == UniGLTF.Extensions.VRMC_vrm.ExpressionPreset.custom)
+            if (expression == null)
             {
-                return ExpressionKey.CreateCustom(e.Name);
+                return null;
+            }
+
+            VRM10Expression clip = default;
+            if (m_externalMap.TryGetValue(key, out UnityEngine.Object expressionObj))
+            {
+                clip = expressionObj as VRM10Expression;
             }
             else
             {
-                return ExpressionKey.CreateFromPreset(e.Preset);
+                clip = ScriptableObject.CreateInstance<UniVRM10.VRM10Expression>();
+                clip.Preset = ExpressionPreset.custom;
+                clip.ExpressionName = key.Name;
+                clip.name = key.Name;
+                clip.IsBinary = expression.IsBinary.GetValueOrDefault();
+                clip.OverrideBlink = expression.OverrideBlink;
+                clip.OverrideLookAt = expression.OverrideLookAt;
+                clip.OverrideMouth = expression.OverrideMouth;
+
+                clip.MorphTargetBindings = expression?.MorphTargetBinds?.Select(x => x.Build10(Root, m_map, m_model))
+                    .ToArray();
+                clip.MaterialColorBindings = expression?.MaterialColorBinds?.Select(x => x.Build10(MaterialFactory.Materials))
+                    .Where(x => x.HasValue)
+                    .Select(x => x.Value)
+                    .ToArray();
+                clip.MaterialUVBindings = expression?.TextureTransformBinds?.Select(x => x.Build10(MaterialFactory.Materials))
+                    .Where(x => x.HasValue)
+                    .Select(x => x.Value)
+                    .ToArray();
+                m_expressions.Add(clip);
             }
+            return clip;
         }
 
         async Task<VRM10Object> LoadVrmAsync(IAwaitCaller awaitCaller, UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrmExtension)
@@ -310,38 +336,31 @@ namespace UniVRM10
             // expression
             if (vrmExtension.Expressions != null)
             {
-                foreach (var expression in vrmExtension.Expressions)
+                vrm.Expression.Happy = GetOrLoadExpression(ExpressionKey.Happy.SubAssetKey, vrmExtension.Expressions.Preset.Happy);
+                vrm.Expression.Angry = GetOrLoadExpression(ExpressionKey.Angry.SubAssetKey, vrmExtension.Expressions.Preset.Angry);
+                vrm.Expression.Sad = GetOrLoadExpression(ExpressionKey.Sad.SubAssetKey, vrmExtension.Expressions.Preset.Sad);
+                vrm.Expression.Relaxed = GetOrLoadExpression(ExpressionKey.Relaxed.SubAssetKey, vrmExtension.Expressions.Preset.Relaxed);
+                vrm.Expression.Surprised = GetOrLoadExpression(ExpressionKey.Surprised.SubAssetKey, vrmExtension.Expressions.Preset.Surprised);
+                vrm.Expression.Aa = GetOrLoadExpression(ExpressionKey.Aa.SubAssetKey, vrmExtension.Expressions.Preset.Aa);
+                vrm.Expression.Ih = GetOrLoadExpression(ExpressionKey.Ih.SubAssetKey, vrmExtension.Expressions.Preset.Ih);
+                vrm.Expression.Ou = GetOrLoadExpression(ExpressionKey.Ou.SubAssetKey, vrmExtension.Expressions.Preset.Ou);
+                vrm.Expression.Ee = GetOrLoadExpression(ExpressionKey.Ee.SubAssetKey, vrmExtension.Expressions.Preset.Ee);
+                vrm.Expression.Oh = GetOrLoadExpression(ExpressionKey.Oh.SubAssetKey, vrmExtension.Expressions.Preset.Oh);
+                vrm.Expression.Blink = GetOrLoadExpression(ExpressionKey.Blink.SubAssetKey, vrmExtension.Expressions.Preset.Blink);
+                vrm.Expression.BlinkLeft = GetOrLoadExpression(ExpressionKey.BlinkLeft.SubAssetKey, vrmExtension.Expressions.Preset.BlinkLeft);
+                vrm.Expression.BlinkRight = GetOrLoadExpression(ExpressionKey.BlinkRight.SubAssetKey, vrmExtension.Expressions.Preset.BlinkRight);
+                vrm.Expression.LookUp = GetOrLoadExpression(ExpressionKey.LookUp.SubAssetKey, vrmExtension.Expressions.Preset.LookUp);
+                vrm.Expression.LookDown = GetOrLoadExpression(ExpressionKey.LookDown.SubAssetKey, vrmExtension.Expressions.Preset.LookDown);
+                vrm.Expression.LookLeft = GetOrLoadExpression(ExpressionKey.LookLeft.SubAssetKey, vrmExtension.Expressions.Preset.LookLeft);
+                vrm.Expression.LookRight = GetOrLoadExpression(ExpressionKey.LookRight.SubAssetKey, vrmExtension.Expressions.Preset.LookRight);
+                foreach (var (name, expression) in vrmExtension.Expressions.Custom)
                 {
-                    VRM10Expression clip = default;
-                    if (m_externalMap.TryGetValue(Key(expression).SubAssetKey, out UnityEngine.Object expressionObj))
+                    var key = ExpressionKey.CreateCustom(name);
+                    var clip = GetOrLoadExpression(key.SubAssetKey, expression);
+                    if (clip != null)
                     {
-                        clip = expressionObj as VRM10Expression;
+                        vrm.Expression.AddClip(clip);
                     }
-                    else
-                    {
-                        clip = ScriptableObject.CreateInstance<UniVRM10.VRM10Expression>();
-                        clip.Preset = expression.Preset;
-                        clip.ExpressionName = expression.Name;
-                        clip.name = Key(expression).SubAssetKey.Name;
-                        clip.IsBinary = expression.IsBinary.GetValueOrDefault();
-                        clip.OverrideBlink = expression.OverrideBlink;
-                        clip.OverrideLookAt = expression.OverrideLookAt;
-                        clip.OverrideMouth = expression.OverrideMouth;
-
-                        clip.MorphTargetBindings = expression.MorphTargetBinds.Select(x => x.Build10(Root, m_map, m_model))
-                            .ToArray();
-                        clip.MaterialColorBindings = expression.MaterialColorBinds.Select(x => x.Build10(MaterialFactory.Materials))
-                            .Where(x => x.HasValue)
-                            .Select(x => x.Value)
-                            .ToArray();
-                        clip.MaterialUVBindings = expression.TextureTransformBinds.Select(x => x.Build10(MaterialFactory.Materials))
-                            .Where(x => x.HasValue)
-                            .Select(x => x.Value)
-                            .ToArray();
-                        m_expressions.Add(clip);
-                    }
-
-                    vrm.Expression.AddClip(clip);
                 }
             }
 

@@ -43,9 +43,9 @@ public static void Serialize(JsonFormatter f, VRMC_materials_mtoon value)
         (value.Extras as glTFExtension).Serialize(f);
     }
 
-    if(!string.IsNullOrEmpty(value.Version)){
-        f.Key("version");                
-        f.Value(value.Version);
+    if(!string.IsNullOrEmpty(value.SpecVersion)){
+        f.Key("specVersion");                
+        f.Value(value.SpecVersion);
     }
 
     if(value.TransparentWithZWrite.HasValue){

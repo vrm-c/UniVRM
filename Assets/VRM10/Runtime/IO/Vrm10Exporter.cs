@@ -558,11 +558,11 @@ namespace UniVRM10
             };
         }
 
-        void ExportExpression(UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm, VRM10Controller vrmController, Model model, ModelExporter converter)
+        UniGLTF.Extensions.VRMC_vrm.Expression ExportExpression(VRM10Expression e, VRM10Controller vrmController, Model model, ModelExporter converter)
         {
-            if (vrmController?.Vrm?.Expression?.Clips == null)
+            if (e == null)
             {
-                return;
+                return null;
             }
 
             Func<string, int> getIndexFromRelativePath = relativePath =>
@@ -570,6 +570,19 @@ namespace UniVRM10
                 var rendererNode = vrmController.transform.GetFromPath(relativePath);
                 var node = converter.Nodes[rendererNode.gameObject];
                 return model.Nodes.IndexOf(node);
+            };
+
+            var vrmExpression = new UniGLTF.Extensions.VRMC_vrm.Expression
+            {
+                // Preset = e.Preset,
+                // Name = e.ExpressionName,
+                IsBinary = e.IsBinary,
+                OverrideBlink = e.OverrideBlink,
+                OverrideLookAt = e.OverrideLookAt,
+                OverrideMouth = e.OverrideMouth,
+                MorphTargetBinds = new List<UniGLTF.Extensions.VRMC_vrm.MorphTargetBind>(),
+                MaterialColorBinds = new List<UniGLTF.Extensions.VRMC_vrm.MaterialColorBind>(),
+                TextureTransformBinds = new List<UniGLTF.Extensions.VRMC_vrm.TextureTransformBind>(),
             };
             Func<string, int> getIndexFromMaterialName = materialName =>
             {
@@ -584,56 +597,73 @@ namespace UniVRM10
                 throw new KeyNotFoundException();
             };
 
-            vrm.Expressions = new List<UniGLTF.Extensions.VRMC_vrm.Expression>();
-            foreach (var e in vrmController.Vrm.Expression.Clips)
+            foreach (var b in e.MorphTargetBindings)
             {
-                var vrmExpression = new UniGLTF.Extensions.VRMC_vrm.Expression
+                try
                 {
-                    Preset = e.Preset,
-                    Name = e.ExpressionName,
-                    IsBinary = e.IsBinary,
-                    OverrideBlink = e.OverrideBlink,
-                    OverrideLookAt = e.OverrideLookAt,
-                    OverrideMouth = e.OverrideMouth,
-                    MorphTargetBinds = new List<UniGLTF.Extensions.VRMC_vrm.MorphTargetBind>(),
-                    MaterialColorBinds = new List<UniGLTF.Extensions.VRMC_vrm.MaterialColorBind>(),
-                    TextureTransformBinds = new List<UniGLTF.Extensions.VRMC_vrm.TextureTransformBind>(),
-                };
-                foreach (var b in e.MorphTargetBindings)
-                {
-                    try
-                    {
-                        vrmExpression.MorphTargetBinds.Add(ExportMorphTargetBinding(b, getIndexFromRelativePath));
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.LogWarning(ex);
-                    }
+                    vrmExpression.MorphTargetBinds.Add(ExportMorphTargetBinding(b, getIndexFromRelativePath));
                 }
-                foreach (var b in e.MaterialColorBindings)
+                catch (Exception ex)
                 {
-                    try
-                    {
-                        vrmExpression.MaterialColorBinds.Add(ExportMaterialColorBinding(b, getIndexFromMaterialName));
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.LogWarning(ex);
-                    }
+                    Debug.LogWarning(ex);
                 }
-                foreach (var b in e.MaterialUVBindings)
-                {
-                    try
-                    {
-                        vrmExpression.TextureTransformBinds.Add(ExportTextureTransformBinding(b, getIndexFromMaterialName));
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.LogWarning(ex);
-                    }
-                }
-                vrm.Expressions.Add(vrmExpression);
             }
+            foreach (var b in e.MaterialColorBindings)
+            {
+                try
+                {
+                    vrmExpression.MaterialColorBinds.Add(ExportMaterialColorBinding(b, getIndexFromMaterialName));
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogWarning(ex);
+                }
+            }
+            foreach (var b in e.MaterialUVBindings)
+            {
+                try
+                {
+                    vrmExpression.TextureTransformBinds.Add(ExportTextureTransformBinding(b, getIndexFromMaterialName));
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogWarning(ex);
+                }
+            }
+            return vrmExpression;
+        }
+
+        void ExportExpression(UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm, VRM10Controller vrmController, Model model, ModelExporter converter)
+        {
+            if (vrmController?.Vrm?.Expression?.Clips == null)
+            {
+                return;
+            }
+
+            vrm.Expressions = new UniGLTF.Extensions.VRMC_vrm.Expressions
+            {
+                Preset = new UniGLTF.Extensions.VRMC_vrm.Preset
+                {
+                    Happy = ExportExpression(vrmController.Vrm.Expression.Happy, vrmController, model, converter),
+                    Angry = ExportExpression(vrmController.Vrm.Expression.Angry, vrmController, model, converter),
+                    Sad = ExportExpression(vrmController.Vrm.Expression.Sad, vrmController, model, converter),
+                    Relaxed = ExportExpression(vrmController.Vrm.Expression.Relaxed, vrmController, model, converter),
+                    Surprised = ExportExpression(vrmController.Vrm.Expression.Surprised, vrmController, model, converter),
+                    Aa = ExportExpression(vrmController.Vrm.Expression.Aa, vrmController, model, converter),
+                    Ih = ExportExpression(vrmController.Vrm.Expression.Ih, vrmController, model, converter),
+                    Ou = ExportExpression(vrmController.Vrm.Expression.Ou, vrmController, model, converter),
+                    Ee = ExportExpression(vrmController.Vrm.Expression.Ee, vrmController, model, converter),
+                    Oh = ExportExpression(vrmController.Vrm.Expression.Oh, vrmController, model, converter),
+                    Blink = ExportExpression(vrmController.Vrm.Expression.Blink, vrmController, model, converter),
+                    BlinkLeft = ExportExpression(vrmController.Vrm.Expression.BlinkLeft, vrmController, model, converter),
+                    BlinkRight = ExportExpression(vrmController.Vrm.Expression.BlinkRight, vrmController, model, converter),
+                    LookUp = ExportExpression(vrmController.Vrm.Expression.LookUp, vrmController, model, converter),
+                    LookDown = ExportExpression(vrmController.Vrm.Expression.LookDown, vrmController, model, converter),
+                    LookLeft = ExportExpression(vrmController.Vrm.Expression.LookLeft, vrmController, model, converter),
+                    LookRight = ExportExpression(vrmController.Vrm.Expression.LookRight, vrmController, model, converter),
+                },
+                Custom = vrmController.Vrm.Expression.CustomClips.ToDictionary(c => c.ExpressionName, c => ExportExpression(c, vrmController, model, converter)),
+            };
         }
 
         int? ExportMeta(UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm, VRM10ObjectMeta meta)

@@ -139,6 +139,11 @@ public static Meta Deserialize_Meta(JsonNode parsed)
             continue;
         }
 
+        if(key=="licenseUrl"){
+            value.LicenseUrl = kv.Value.GetString();
+            continue;
+        }
+
         if(key=="avatarPermission"){
             value.AvatarPermission = (AvatarPermissionType)Enum.Parse(typeof(AvatarPermissionType), kv.Value.GetString(), true);
             continue;
@@ -2272,17 +2277,136 @@ public static LookAtRangeMap __lookAt_Deserialize_RangeMapVerticalUp(JsonNode pa
     return value;
 }
 
-public static List<Expression> Deserialize_Expressions(JsonNode parsed)
+public static Expressions Deserialize_Expressions(JsonNode parsed)
 {
-    var value = new List<Expression>();
-    foreach(var x in parsed.ArrayItems())
-    {
-        value.Add(Deserialize_Expressions_ITEM(x));
-    }
-	return value;
-} 
+    var value = new Expressions();
 
-public static Expression Deserialize_Expressions_ITEM(JsonNode parsed)
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="preset"){
+            value.Preset = __expressions_Deserialize_Preset(kv.Value);
+            continue;
+        }
+
+        if(key=="custom"){
+            value.Custom = __expressions_Deserialize_Custom(kv.Value);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static Preset __expressions_Deserialize_Preset(JsonNode parsed)
+{
+    var value = new Preset();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="happy"){
+            value.Happy = __expressions__preset_Deserialize_Happy(kv.Value);
+            continue;
+        }
+
+        if(key=="angry"){
+            value.Angry = __expressions__preset_Deserialize_Angry(kv.Value);
+            continue;
+        }
+
+        if(key=="sad"){
+            value.Sad = __expressions__preset_Deserialize_Sad(kv.Value);
+            continue;
+        }
+
+        if(key=="relaxed"){
+            value.Relaxed = __expressions__preset_Deserialize_Relaxed(kv.Value);
+            continue;
+        }
+
+        if(key=="surprised"){
+            value.Surprised = __expressions__preset_Deserialize_Surprised(kv.Value);
+            continue;
+        }
+
+        if(key=="aa"){
+            value.Aa = __expressions__preset_Deserialize_Aa(kv.Value);
+            continue;
+        }
+
+        if(key=="ih"){
+            value.Ih = __expressions__preset_Deserialize_Ih(kv.Value);
+            continue;
+        }
+
+        if(key=="ou"){
+            value.Ou = __expressions__preset_Deserialize_Ou(kv.Value);
+            continue;
+        }
+
+        if(key=="ee"){
+            value.Ee = __expressions__preset_Deserialize_Ee(kv.Value);
+            continue;
+        }
+
+        if(key=="oh"){
+            value.Oh = __expressions__preset_Deserialize_Oh(kv.Value);
+            continue;
+        }
+
+        if(key=="blink"){
+            value.Blink = __expressions__preset_Deserialize_Blink(kv.Value);
+            continue;
+        }
+
+        if(key=="blinkLeft"){
+            value.BlinkLeft = __expressions__preset_Deserialize_BlinkLeft(kv.Value);
+            continue;
+        }
+
+        if(key=="blinkRight"){
+            value.BlinkRight = __expressions__preset_Deserialize_BlinkRight(kv.Value);
+            continue;
+        }
+
+        if(key=="lookUp"){
+            value.LookUp = __expressions__preset_Deserialize_LookUp(kv.Value);
+            continue;
+        }
+
+        if(key=="lookDown"){
+            value.LookDown = __expressions__preset_Deserialize_LookDown(kv.Value);
+            continue;
+        }
+
+        if(key=="lookLeft"){
+            value.LookLeft = __expressions__preset_Deserialize_LookLeft(kv.Value);
+            continue;
+        }
+
+        if(key=="lookRight"){
+            value.LookRight = __expressions__preset_Deserialize_LookRight(kv.Value);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static Expression __expressions__preset_Deserialize_Happy(JsonNode parsed)
 {
     var value = new Expression();
 
@@ -2300,28 +2424,18 @@ public static Expression Deserialize_Expressions_ITEM(JsonNode parsed)
             continue;
         }
 
-        if(key=="name"){
-            value.Name = kv.Value.GetString();
-            continue;
-        }
-
-        if(key=="preset"){
-            value.Preset = (ExpressionPreset)Enum.Parse(typeof(ExpressionPreset), kv.Value.GetString(), true);
-            continue;
-        }
-
         if(key=="morphTargetBinds"){
-            value.MorphTargetBinds = __expressions_ITEM_Deserialize_MorphTargetBinds(kv.Value);
+            value.MorphTargetBinds = __expressions__preset__happy_Deserialize_MorphTargetBinds(kv.Value);
             continue;
         }
 
         if(key=="materialColorBinds"){
-            value.MaterialColorBinds = __expressions_ITEM_Deserialize_MaterialColorBinds(kv.Value);
+            value.MaterialColorBinds = __expressions__preset__happy_Deserialize_MaterialColorBinds(kv.Value);
             continue;
         }
 
         if(key=="textureTransformBinds"){
-            value.TextureTransformBinds = __expressions_ITEM_Deserialize_TextureTransformBinds(kv.Value);
+            value.TextureTransformBinds = __expressions__preset__happy_Deserialize_TextureTransformBinds(kv.Value);
             continue;
         }
 
@@ -2349,17 +2463,17 @@ public static Expression Deserialize_Expressions_ITEM(JsonNode parsed)
     return value;
 }
 
-public static List<MorphTargetBind> __expressions_ITEM_Deserialize_MorphTargetBinds(JsonNode parsed)
+public static List<MorphTargetBind> __expressions__preset__happy_Deserialize_MorphTargetBinds(JsonNode parsed)
 {
     var value = new List<MorphTargetBind>();
     foreach(var x in parsed.ArrayItems())
     {
-        value.Add(__expressions_ITEM_Deserialize_MorphTargetBinds_ITEM(x));
+        value.Add(__expressions__preset__happy_Deserialize_MorphTargetBinds_ITEM(x));
     }
 	return value;
 } 
 
-public static MorphTargetBind __expressions_ITEM_Deserialize_MorphTargetBinds_ITEM(JsonNode parsed)
+public static MorphTargetBind __expressions__preset__happy_Deserialize_MorphTargetBinds_ITEM(JsonNode parsed)
 {
     var value = new MorphTargetBind();
 
@@ -2396,17 +2510,17 @@ public static MorphTargetBind __expressions_ITEM_Deserialize_MorphTargetBinds_IT
     return value;
 }
 
-public static List<MaterialColorBind> __expressions_ITEM_Deserialize_MaterialColorBinds(JsonNode parsed)
+public static List<MaterialColorBind> __expressions__preset__happy_Deserialize_MaterialColorBinds(JsonNode parsed)
 {
     var value = new List<MaterialColorBind>();
     foreach(var x in parsed.ArrayItems())
     {
-        value.Add(__expressions_ITEM_Deserialize_MaterialColorBinds_ITEM(x));
+        value.Add(__expressions__preset__happy_Deserialize_MaterialColorBinds_ITEM(x));
     }
 	return value;
 } 
 
-public static MaterialColorBind __expressions_ITEM_Deserialize_MaterialColorBinds_ITEM(JsonNode parsed)
+public static MaterialColorBind __expressions__preset__happy_Deserialize_MaterialColorBinds_ITEM(JsonNode parsed)
 {
     var value = new MaterialColorBind();
 
@@ -2435,7 +2549,7 @@ public static MaterialColorBind __expressions_ITEM_Deserialize_MaterialColorBind
         }
 
         if(key=="targetValue"){
-            value.TargetValue = __expressions_ITEM__materialColorBinds_ITEM_Deserialize_TargetValue(kv.Value);
+            value.TargetValue = __expressions__preset__happy__materialColorBinds_ITEM_Deserialize_TargetValue(kv.Value);
             continue;
         }
 
@@ -2443,7 +2557,7 @@ public static MaterialColorBind __expressions_ITEM_Deserialize_MaterialColorBind
     return value;
 }
 
-public static float[] __expressions_ITEM__materialColorBinds_ITEM_Deserialize_TargetValue(JsonNode parsed)
+public static float[] __expressions__preset__happy__materialColorBinds_ITEM_Deserialize_TargetValue(JsonNode parsed)
 {
     var value = new float[parsed.GetArrayCount()];
     int i=0;
@@ -2454,17 +2568,17 @@ public static float[] __expressions_ITEM__materialColorBinds_ITEM_Deserialize_Ta
 	return value;
 } 
 
-public static List<TextureTransformBind> __expressions_ITEM_Deserialize_TextureTransformBinds(JsonNode parsed)
+public static List<TextureTransformBind> __expressions__preset__happy_Deserialize_TextureTransformBinds(JsonNode parsed)
 {
     var value = new List<TextureTransformBind>();
     foreach(var x in parsed.ArrayItems())
     {
-        value.Add(__expressions_ITEM_Deserialize_TextureTransformBinds_ITEM(x));
+        value.Add(__expressions__preset__happy_Deserialize_TextureTransformBinds_ITEM(x));
     }
 	return value;
 } 
 
-public static TextureTransformBind __expressions_ITEM_Deserialize_TextureTransformBinds_ITEM(JsonNode parsed)
+public static TextureTransformBind __expressions__preset__happy_Deserialize_TextureTransformBinds_ITEM(JsonNode parsed)
 {
     var value = new TextureTransformBind();
 
@@ -2488,12 +2602,12 @@ public static TextureTransformBind __expressions_ITEM_Deserialize_TextureTransfo
         }
 
         if(key=="scale"){
-            value.Scale = __expressions_ITEM__textureTransformBinds_ITEM_Deserialize_Scale(kv.Value);
+            value.Scale = __expressions__preset__happy__textureTransformBinds_ITEM_Deserialize_Scale(kv.Value);
             continue;
         }
 
         if(key=="offset"){
-            value.Offset = __expressions_ITEM__textureTransformBinds_ITEM_Deserialize_Offset(kv.Value);
+            value.Offset = __expressions__preset__happy__textureTransformBinds_ITEM_Deserialize_Offset(kv.Value);
             continue;
         }
 
@@ -2501,7 +2615,7 @@ public static TextureTransformBind __expressions_ITEM_Deserialize_TextureTransfo
     return value;
 }
 
-public static float[] __expressions_ITEM__textureTransformBinds_ITEM_Deserialize_Scale(JsonNode parsed)
+public static float[] __expressions__preset__happy__textureTransformBinds_ITEM_Deserialize_Scale(JsonNode parsed)
 {
     var value = new float[parsed.GetArrayCount()];
     int i=0;
@@ -2512,7 +2626,3944 @@ public static float[] __expressions_ITEM__textureTransformBinds_ITEM_Deserialize
 	return value;
 } 
 
-public static float[] __expressions_ITEM__textureTransformBinds_ITEM_Deserialize_Offset(JsonNode parsed)
+public static float[] __expressions__preset__happy__textureTransformBinds_ITEM_Deserialize_Offset(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static Expression __expressions__preset_Deserialize_Angry(JsonNode parsed)
+{
+    var value = new Expression();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="morphTargetBinds"){
+            value.MorphTargetBinds = __expressions__preset__angry_Deserialize_MorphTargetBinds(kv.Value);
+            continue;
+        }
+
+        if(key=="materialColorBinds"){
+            value.MaterialColorBinds = __expressions__preset__angry_Deserialize_MaterialColorBinds(kv.Value);
+            continue;
+        }
+
+        if(key=="textureTransformBinds"){
+            value.TextureTransformBinds = __expressions__preset__angry_Deserialize_TextureTransformBinds(kv.Value);
+            continue;
+        }
+
+        if(key=="isBinary"){
+            value.IsBinary = kv.Value.GetBoolean();
+            continue;
+        }
+
+        if(key=="overrideBlink"){
+            value.OverrideBlink = (ExpressionOverrideType)Enum.Parse(typeof(ExpressionOverrideType), kv.Value.GetString(), true);
+            continue;
+        }
+
+        if(key=="overrideLookAt"){
+            value.OverrideLookAt = (ExpressionOverrideType)Enum.Parse(typeof(ExpressionOverrideType), kv.Value.GetString(), true);
+            continue;
+        }
+
+        if(key=="overrideMouth"){
+            value.OverrideMouth = (ExpressionOverrideType)Enum.Parse(typeof(ExpressionOverrideType), kv.Value.GetString(), true);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static List<MorphTargetBind> __expressions__preset__angry_Deserialize_MorphTargetBinds(JsonNode parsed)
+{
+    var value = new List<MorphTargetBind>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(__expressions__preset__angry_Deserialize_MorphTargetBinds_ITEM(x));
+    }
+	return value;
+} 
+
+public static MorphTargetBind __expressions__preset__angry_Deserialize_MorphTargetBinds_ITEM(JsonNode parsed)
+{
+    var value = new MorphTargetBind();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="node"){
+            value.Node = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="index"){
+            value.Index = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="weight"){
+            value.Weight = kv.Value.GetSingle();
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static List<MaterialColorBind> __expressions__preset__angry_Deserialize_MaterialColorBinds(JsonNode parsed)
+{
+    var value = new List<MaterialColorBind>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(__expressions__preset__angry_Deserialize_MaterialColorBinds_ITEM(x));
+    }
+	return value;
+} 
+
+public static MaterialColorBind __expressions__preset__angry_Deserialize_MaterialColorBinds_ITEM(JsonNode parsed)
+{
+    var value = new MaterialColorBind();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="material"){
+            value.Material = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="type"){
+            value.Type = (MaterialColorType)Enum.Parse(typeof(MaterialColorType), kv.Value.GetString(), true);
+            continue;
+        }
+
+        if(key=="targetValue"){
+            value.TargetValue = __expressions__preset__angry__materialColorBinds_ITEM_Deserialize_TargetValue(kv.Value);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static float[] __expressions__preset__angry__materialColorBinds_ITEM_Deserialize_TargetValue(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static List<TextureTransformBind> __expressions__preset__angry_Deserialize_TextureTransformBinds(JsonNode parsed)
+{
+    var value = new List<TextureTransformBind>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(__expressions__preset__angry_Deserialize_TextureTransformBinds_ITEM(x));
+    }
+	return value;
+} 
+
+public static TextureTransformBind __expressions__preset__angry_Deserialize_TextureTransformBinds_ITEM(JsonNode parsed)
+{
+    var value = new TextureTransformBind();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="material"){
+            value.Material = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="scale"){
+            value.Scale = __expressions__preset__angry__textureTransformBinds_ITEM_Deserialize_Scale(kv.Value);
+            continue;
+        }
+
+        if(key=="offset"){
+            value.Offset = __expressions__preset__angry__textureTransformBinds_ITEM_Deserialize_Offset(kv.Value);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static float[] __expressions__preset__angry__textureTransformBinds_ITEM_Deserialize_Scale(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static float[] __expressions__preset__angry__textureTransformBinds_ITEM_Deserialize_Offset(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static Expression __expressions__preset_Deserialize_Sad(JsonNode parsed)
+{
+    var value = new Expression();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="morphTargetBinds"){
+            value.MorphTargetBinds = __expressions__preset__sad_Deserialize_MorphTargetBinds(kv.Value);
+            continue;
+        }
+
+        if(key=="materialColorBinds"){
+            value.MaterialColorBinds = __expressions__preset__sad_Deserialize_MaterialColorBinds(kv.Value);
+            continue;
+        }
+
+        if(key=="textureTransformBinds"){
+            value.TextureTransformBinds = __expressions__preset__sad_Deserialize_TextureTransformBinds(kv.Value);
+            continue;
+        }
+
+        if(key=="isBinary"){
+            value.IsBinary = kv.Value.GetBoolean();
+            continue;
+        }
+
+        if(key=="overrideBlink"){
+            value.OverrideBlink = (ExpressionOverrideType)Enum.Parse(typeof(ExpressionOverrideType), kv.Value.GetString(), true);
+            continue;
+        }
+
+        if(key=="overrideLookAt"){
+            value.OverrideLookAt = (ExpressionOverrideType)Enum.Parse(typeof(ExpressionOverrideType), kv.Value.GetString(), true);
+            continue;
+        }
+
+        if(key=="overrideMouth"){
+            value.OverrideMouth = (ExpressionOverrideType)Enum.Parse(typeof(ExpressionOverrideType), kv.Value.GetString(), true);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static List<MorphTargetBind> __expressions__preset__sad_Deserialize_MorphTargetBinds(JsonNode parsed)
+{
+    var value = new List<MorphTargetBind>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(__expressions__preset__sad_Deserialize_MorphTargetBinds_ITEM(x));
+    }
+	return value;
+} 
+
+public static MorphTargetBind __expressions__preset__sad_Deserialize_MorphTargetBinds_ITEM(JsonNode parsed)
+{
+    var value = new MorphTargetBind();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="node"){
+            value.Node = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="index"){
+            value.Index = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="weight"){
+            value.Weight = kv.Value.GetSingle();
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static List<MaterialColorBind> __expressions__preset__sad_Deserialize_MaterialColorBinds(JsonNode parsed)
+{
+    var value = new List<MaterialColorBind>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(__expressions__preset__sad_Deserialize_MaterialColorBinds_ITEM(x));
+    }
+	return value;
+} 
+
+public static MaterialColorBind __expressions__preset__sad_Deserialize_MaterialColorBinds_ITEM(JsonNode parsed)
+{
+    var value = new MaterialColorBind();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="material"){
+            value.Material = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="type"){
+            value.Type = (MaterialColorType)Enum.Parse(typeof(MaterialColorType), kv.Value.GetString(), true);
+            continue;
+        }
+
+        if(key=="targetValue"){
+            value.TargetValue = __expressions__preset__sad__materialColorBinds_ITEM_Deserialize_TargetValue(kv.Value);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static float[] __expressions__preset__sad__materialColorBinds_ITEM_Deserialize_TargetValue(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static List<TextureTransformBind> __expressions__preset__sad_Deserialize_TextureTransformBinds(JsonNode parsed)
+{
+    var value = new List<TextureTransformBind>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(__expressions__preset__sad_Deserialize_TextureTransformBinds_ITEM(x));
+    }
+	return value;
+} 
+
+public static TextureTransformBind __expressions__preset__sad_Deserialize_TextureTransformBinds_ITEM(JsonNode parsed)
+{
+    var value = new TextureTransformBind();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="material"){
+            value.Material = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="scale"){
+            value.Scale = __expressions__preset__sad__textureTransformBinds_ITEM_Deserialize_Scale(kv.Value);
+            continue;
+        }
+
+        if(key=="offset"){
+            value.Offset = __expressions__preset__sad__textureTransformBinds_ITEM_Deserialize_Offset(kv.Value);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static float[] __expressions__preset__sad__textureTransformBinds_ITEM_Deserialize_Scale(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static float[] __expressions__preset__sad__textureTransformBinds_ITEM_Deserialize_Offset(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static Expression __expressions__preset_Deserialize_Relaxed(JsonNode parsed)
+{
+    var value = new Expression();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="morphTargetBinds"){
+            value.MorphTargetBinds = __expressions__preset__relaxed_Deserialize_MorphTargetBinds(kv.Value);
+            continue;
+        }
+
+        if(key=="materialColorBinds"){
+            value.MaterialColorBinds = __expressions__preset__relaxed_Deserialize_MaterialColorBinds(kv.Value);
+            continue;
+        }
+
+        if(key=="textureTransformBinds"){
+            value.TextureTransformBinds = __expressions__preset__relaxed_Deserialize_TextureTransformBinds(kv.Value);
+            continue;
+        }
+
+        if(key=="isBinary"){
+            value.IsBinary = kv.Value.GetBoolean();
+            continue;
+        }
+
+        if(key=="overrideBlink"){
+            value.OverrideBlink = (ExpressionOverrideType)Enum.Parse(typeof(ExpressionOverrideType), kv.Value.GetString(), true);
+            continue;
+        }
+
+        if(key=="overrideLookAt"){
+            value.OverrideLookAt = (ExpressionOverrideType)Enum.Parse(typeof(ExpressionOverrideType), kv.Value.GetString(), true);
+            continue;
+        }
+
+        if(key=="overrideMouth"){
+            value.OverrideMouth = (ExpressionOverrideType)Enum.Parse(typeof(ExpressionOverrideType), kv.Value.GetString(), true);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static List<MorphTargetBind> __expressions__preset__relaxed_Deserialize_MorphTargetBinds(JsonNode parsed)
+{
+    var value = new List<MorphTargetBind>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(__expressions__preset__relaxed_Deserialize_MorphTargetBinds_ITEM(x));
+    }
+	return value;
+} 
+
+public static MorphTargetBind __expressions__preset__relaxed_Deserialize_MorphTargetBinds_ITEM(JsonNode parsed)
+{
+    var value = new MorphTargetBind();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="node"){
+            value.Node = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="index"){
+            value.Index = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="weight"){
+            value.Weight = kv.Value.GetSingle();
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static List<MaterialColorBind> __expressions__preset__relaxed_Deserialize_MaterialColorBinds(JsonNode parsed)
+{
+    var value = new List<MaterialColorBind>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(__expressions__preset__relaxed_Deserialize_MaterialColorBinds_ITEM(x));
+    }
+	return value;
+} 
+
+public static MaterialColorBind __expressions__preset__relaxed_Deserialize_MaterialColorBinds_ITEM(JsonNode parsed)
+{
+    var value = new MaterialColorBind();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="material"){
+            value.Material = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="type"){
+            value.Type = (MaterialColorType)Enum.Parse(typeof(MaterialColorType), kv.Value.GetString(), true);
+            continue;
+        }
+
+        if(key=="targetValue"){
+            value.TargetValue = __expressions__preset__relaxed__materialColorBinds_ITEM_Deserialize_TargetValue(kv.Value);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static float[] __expressions__preset__relaxed__materialColorBinds_ITEM_Deserialize_TargetValue(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static List<TextureTransformBind> __expressions__preset__relaxed_Deserialize_TextureTransformBinds(JsonNode parsed)
+{
+    var value = new List<TextureTransformBind>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(__expressions__preset__relaxed_Deserialize_TextureTransformBinds_ITEM(x));
+    }
+	return value;
+} 
+
+public static TextureTransformBind __expressions__preset__relaxed_Deserialize_TextureTransformBinds_ITEM(JsonNode parsed)
+{
+    var value = new TextureTransformBind();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="material"){
+            value.Material = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="scale"){
+            value.Scale = __expressions__preset__relaxed__textureTransformBinds_ITEM_Deserialize_Scale(kv.Value);
+            continue;
+        }
+
+        if(key=="offset"){
+            value.Offset = __expressions__preset__relaxed__textureTransformBinds_ITEM_Deserialize_Offset(kv.Value);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static float[] __expressions__preset__relaxed__textureTransformBinds_ITEM_Deserialize_Scale(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static float[] __expressions__preset__relaxed__textureTransformBinds_ITEM_Deserialize_Offset(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static Expression __expressions__preset_Deserialize_Surprised(JsonNode parsed)
+{
+    var value = new Expression();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="morphTargetBinds"){
+            value.MorphTargetBinds = __expressions__preset__surprised_Deserialize_MorphTargetBinds(kv.Value);
+            continue;
+        }
+
+        if(key=="materialColorBinds"){
+            value.MaterialColorBinds = __expressions__preset__surprised_Deserialize_MaterialColorBinds(kv.Value);
+            continue;
+        }
+
+        if(key=="textureTransformBinds"){
+            value.TextureTransformBinds = __expressions__preset__surprised_Deserialize_TextureTransformBinds(kv.Value);
+            continue;
+        }
+
+        if(key=="isBinary"){
+            value.IsBinary = kv.Value.GetBoolean();
+            continue;
+        }
+
+        if(key=="overrideBlink"){
+            value.OverrideBlink = (ExpressionOverrideType)Enum.Parse(typeof(ExpressionOverrideType), kv.Value.GetString(), true);
+            continue;
+        }
+
+        if(key=="overrideLookAt"){
+            value.OverrideLookAt = (ExpressionOverrideType)Enum.Parse(typeof(ExpressionOverrideType), kv.Value.GetString(), true);
+            continue;
+        }
+
+        if(key=="overrideMouth"){
+            value.OverrideMouth = (ExpressionOverrideType)Enum.Parse(typeof(ExpressionOverrideType), kv.Value.GetString(), true);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static List<MorphTargetBind> __expressions__preset__surprised_Deserialize_MorphTargetBinds(JsonNode parsed)
+{
+    var value = new List<MorphTargetBind>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(__expressions__preset__surprised_Deserialize_MorphTargetBinds_ITEM(x));
+    }
+	return value;
+} 
+
+public static MorphTargetBind __expressions__preset__surprised_Deserialize_MorphTargetBinds_ITEM(JsonNode parsed)
+{
+    var value = new MorphTargetBind();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="node"){
+            value.Node = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="index"){
+            value.Index = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="weight"){
+            value.Weight = kv.Value.GetSingle();
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static List<MaterialColorBind> __expressions__preset__surprised_Deserialize_MaterialColorBinds(JsonNode parsed)
+{
+    var value = new List<MaterialColorBind>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(__expressions__preset__surprised_Deserialize_MaterialColorBinds_ITEM(x));
+    }
+	return value;
+} 
+
+public static MaterialColorBind __expressions__preset__surprised_Deserialize_MaterialColorBinds_ITEM(JsonNode parsed)
+{
+    var value = new MaterialColorBind();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="material"){
+            value.Material = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="type"){
+            value.Type = (MaterialColorType)Enum.Parse(typeof(MaterialColorType), kv.Value.GetString(), true);
+            continue;
+        }
+
+        if(key=="targetValue"){
+            value.TargetValue = __expressions__preset__surprised__materialColorBinds_ITEM_Deserialize_TargetValue(kv.Value);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static float[] __expressions__preset__surprised__materialColorBinds_ITEM_Deserialize_TargetValue(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static List<TextureTransformBind> __expressions__preset__surprised_Deserialize_TextureTransformBinds(JsonNode parsed)
+{
+    var value = new List<TextureTransformBind>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(__expressions__preset__surprised_Deserialize_TextureTransformBinds_ITEM(x));
+    }
+	return value;
+} 
+
+public static TextureTransformBind __expressions__preset__surprised_Deserialize_TextureTransformBinds_ITEM(JsonNode parsed)
+{
+    var value = new TextureTransformBind();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="material"){
+            value.Material = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="scale"){
+            value.Scale = __expressions__preset__surprised__textureTransformBinds_ITEM_Deserialize_Scale(kv.Value);
+            continue;
+        }
+
+        if(key=="offset"){
+            value.Offset = __expressions__preset__surprised__textureTransformBinds_ITEM_Deserialize_Offset(kv.Value);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static float[] __expressions__preset__surprised__textureTransformBinds_ITEM_Deserialize_Scale(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static float[] __expressions__preset__surprised__textureTransformBinds_ITEM_Deserialize_Offset(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static Expression __expressions__preset_Deserialize_Aa(JsonNode parsed)
+{
+    var value = new Expression();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="morphTargetBinds"){
+            value.MorphTargetBinds = __expressions__preset__aa_Deserialize_MorphTargetBinds(kv.Value);
+            continue;
+        }
+
+        if(key=="materialColorBinds"){
+            value.MaterialColorBinds = __expressions__preset__aa_Deserialize_MaterialColorBinds(kv.Value);
+            continue;
+        }
+
+        if(key=="textureTransformBinds"){
+            value.TextureTransformBinds = __expressions__preset__aa_Deserialize_TextureTransformBinds(kv.Value);
+            continue;
+        }
+
+        if(key=="isBinary"){
+            value.IsBinary = kv.Value.GetBoolean();
+            continue;
+        }
+
+        if(key=="overrideBlink"){
+            value.OverrideBlink = (ExpressionOverrideType)Enum.Parse(typeof(ExpressionOverrideType), kv.Value.GetString(), true);
+            continue;
+        }
+
+        if(key=="overrideLookAt"){
+            value.OverrideLookAt = (ExpressionOverrideType)Enum.Parse(typeof(ExpressionOverrideType), kv.Value.GetString(), true);
+            continue;
+        }
+
+        if(key=="overrideMouth"){
+            value.OverrideMouth = (ExpressionOverrideType)Enum.Parse(typeof(ExpressionOverrideType), kv.Value.GetString(), true);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static List<MorphTargetBind> __expressions__preset__aa_Deserialize_MorphTargetBinds(JsonNode parsed)
+{
+    var value = new List<MorphTargetBind>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(__expressions__preset__aa_Deserialize_MorphTargetBinds_ITEM(x));
+    }
+	return value;
+} 
+
+public static MorphTargetBind __expressions__preset__aa_Deserialize_MorphTargetBinds_ITEM(JsonNode parsed)
+{
+    var value = new MorphTargetBind();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="node"){
+            value.Node = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="index"){
+            value.Index = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="weight"){
+            value.Weight = kv.Value.GetSingle();
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static List<MaterialColorBind> __expressions__preset__aa_Deserialize_MaterialColorBinds(JsonNode parsed)
+{
+    var value = new List<MaterialColorBind>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(__expressions__preset__aa_Deserialize_MaterialColorBinds_ITEM(x));
+    }
+	return value;
+} 
+
+public static MaterialColorBind __expressions__preset__aa_Deserialize_MaterialColorBinds_ITEM(JsonNode parsed)
+{
+    var value = new MaterialColorBind();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="material"){
+            value.Material = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="type"){
+            value.Type = (MaterialColorType)Enum.Parse(typeof(MaterialColorType), kv.Value.GetString(), true);
+            continue;
+        }
+
+        if(key=="targetValue"){
+            value.TargetValue = __expressions__preset__aa__materialColorBinds_ITEM_Deserialize_TargetValue(kv.Value);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static float[] __expressions__preset__aa__materialColorBinds_ITEM_Deserialize_TargetValue(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static List<TextureTransformBind> __expressions__preset__aa_Deserialize_TextureTransformBinds(JsonNode parsed)
+{
+    var value = new List<TextureTransformBind>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(__expressions__preset__aa_Deserialize_TextureTransformBinds_ITEM(x));
+    }
+	return value;
+} 
+
+public static TextureTransformBind __expressions__preset__aa_Deserialize_TextureTransformBinds_ITEM(JsonNode parsed)
+{
+    var value = new TextureTransformBind();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="material"){
+            value.Material = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="scale"){
+            value.Scale = __expressions__preset__aa__textureTransformBinds_ITEM_Deserialize_Scale(kv.Value);
+            continue;
+        }
+
+        if(key=="offset"){
+            value.Offset = __expressions__preset__aa__textureTransformBinds_ITEM_Deserialize_Offset(kv.Value);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static float[] __expressions__preset__aa__textureTransformBinds_ITEM_Deserialize_Scale(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static float[] __expressions__preset__aa__textureTransformBinds_ITEM_Deserialize_Offset(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static Expression __expressions__preset_Deserialize_Ih(JsonNode parsed)
+{
+    var value = new Expression();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="morphTargetBinds"){
+            value.MorphTargetBinds = __expressions__preset__ih_Deserialize_MorphTargetBinds(kv.Value);
+            continue;
+        }
+
+        if(key=="materialColorBinds"){
+            value.MaterialColorBinds = __expressions__preset__ih_Deserialize_MaterialColorBinds(kv.Value);
+            continue;
+        }
+
+        if(key=="textureTransformBinds"){
+            value.TextureTransformBinds = __expressions__preset__ih_Deserialize_TextureTransformBinds(kv.Value);
+            continue;
+        }
+
+        if(key=="isBinary"){
+            value.IsBinary = kv.Value.GetBoolean();
+            continue;
+        }
+
+        if(key=="overrideBlink"){
+            value.OverrideBlink = (ExpressionOverrideType)Enum.Parse(typeof(ExpressionOverrideType), kv.Value.GetString(), true);
+            continue;
+        }
+
+        if(key=="overrideLookAt"){
+            value.OverrideLookAt = (ExpressionOverrideType)Enum.Parse(typeof(ExpressionOverrideType), kv.Value.GetString(), true);
+            continue;
+        }
+
+        if(key=="overrideMouth"){
+            value.OverrideMouth = (ExpressionOverrideType)Enum.Parse(typeof(ExpressionOverrideType), kv.Value.GetString(), true);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static List<MorphTargetBind> __expressions__preset__ih_Deserialize_MorphTargetBinds(JsonNode parsed)
+{
+    var value = new List<MorphTargetBind>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(__expressions__preset__ih_Deserialize_MorphTargetBinds_ITEM(x));
+    }
+	return value;
+} 
+
+public static MorphTargetBind __expressions__preset__ih_Deserialize_MorphTargetBinds_ITEM(JsonNode parsed)
+{
+    var value = new MorphTargetBind();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="node"){
+            value.Node = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="index"){
+            value.Index = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="weight"){
+            value.Weight = kv.Value.GetSingle();
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static List<MaterialColorBind> __expressions__preset__ih_Deserialize_MaterialColorBinds(JsonNode parsed)
+{
+    var value = new List<MaterialColorBind>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(__expressions__preset__ih_Deserialize_MaterialColorBinds_ITEM(x));
+    }
+	return value;
+} 
+
+public static MaterialColorBind __expressions__preset__ih_Deserialize_MaterialColorBinds_ITEM(JsonNode parsed)
+{
+    var value = new MaterialColorBind();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="material"){
+            value.Material = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="type"){
+            value.Type = (MaterialColorType)Enum.Parse(typeof(MaterialColorType), kv.Value.GetString(), true);
+            continue;
+        }
+
+        if(key=="targetValue"){
+            value.TargetValue = __expressions__preset__ih__materialColorBinds_ITEM_Deserialize_TargetValue(kv.Value);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static float[] __expressions__preset__ih__materialColorBinds_ITEM_Deserialize_TargetValue(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static List<TextureTransformBind> __expressions__preset__ih_Deserialize_TextureTransformBinds(JsonNode parsed)
+{
+    var value = new List<TextureTransformBind>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(__expressions__preset__ih_Deserialize_TextureTransformBinds_ITEM(x));
+    }
+	return value;
+} 
+
+public static TextureTransformBind __expressions__preset__ih_Deserialize_TextureTransformBinds_ITEM(JsonNode parsed)
+{
+    var value = new TextureTransformBind();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="material"){
+            value.Material = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="scale"){
+            value.Scale = __expressions__preset__ih__textureTransformBinds_ITEM_Deserialize_Scale(kv.Value);
+            continue;
+        }
+
+        if(key=="offset"){
+            value.Offset = __expressions__preset__ih__textureTransformBinds_ITEM_Deserialize_Offset(kv.Value);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static float[] __expressions__preset__ih__textureTransformBinds_ITEM_Deserialize_Scale(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static float[] __expressions__preset__ih__textureTransformBinds_ITEM_Deserialize_Offset(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static Expression __expressions__preset_Deserialize_Ou(JsonNode parsed)
+{
+    var value = new Expression();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="morphTargetBinds"){
+            value.MorphTargetBinds = __expressions__preset__ou_Deserialize_MorphTargetBinds(kv.Value);
+            continue;
+        }
+
+        if(key=="materialColorBinds"){
+            value.MaterialColorBinds = __expressions__preset__ou_Deserialize_MaterialColorBinds(kv.Value);
+            continue;
+        }
+
+        if(key=="textureTransformBinds"){
+            value.TextureTransformBinds = __expressions__preset__ou_Deserialize_TextureTransformBinds(kv.Value);
+            continue;
+        }
+
+        if(key=="isBinary"){
+            value.IsBinary = kv.Value.GetBoolean();
+            continue;
+        }
+
+        if(key=="overrideBlink"){
+            value.OverrideBlink = (ExpressionOverrideType)Enum.Parse(typeof(ExpressionOverrideType), kv.Value.GetString(), true);
+            continue;
+        }
+
+        if(key=="overrideLookAt"){
+            value.OverrideLookAt = (ExpressionOverrideType)Enum.Parse(typeof(ExpressionOverrideType), kv.Value.GetString(), true);
+            continue;
+        }
+
+        if(key=="overrideMouth"){
+            value.OverrideMouth = (ExpressionOverrideType)Enum.Parse(typeof(ExpressionOverrideType), kv.Value.GetString(), true);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static List<MorphTargetBind> __expressions__preset__ou_Deserialize_MorphTargetBinds(JsonNode parsed)
+{
+    var value = new List<MorphTargetBind>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(__expressions__preset__ou_Deserialize_MorphTargetBinds_ITEM(x));
+    }
+	return value;
+} 
+
+public static MorphTargetBind __expressions__preset__ou_Deserialize_MorphTargetBinds_ITEM(JsonNode parsed)
+{
+    var value = new MorphTargetBind();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="node"){
+            value.Node = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="index"){
+            value.Index = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="weight"){
+            value.Weight = kv.Value.GetSingle();
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static List<MaterialColorBind> __expressions__preset__ou_Deserialize_MaterialColorBinds(JsonNode parsed)
+{
+    var value = new List<MaterialColorBind>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(__expressions__preset__ou_Deserialize_MaterialColorBinds_ITEM(x));
+    }
+	return value;
+} 
+
+public static MaterialColorBind __expressions__preset__ou_Deserialize_MaterialColorBinds_ITEM(JsonNode parsed)
+{
+    var value = new MaterialColorBind();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="material"){
+            value.Material = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="type"){
+            value.Type = (MaterialColorType)Enum.Parse(typeof(MaterialColorType), kv.Value.GetString(), true);
+            continue;
+        }
+
+        if(key=="targetValue"){
+            value.TargetValue = __expressions__preset__ou__materialColorBinds_ITEM_Deserialize_TargetValue(kv.Value);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static float[] __expressions__preset__ou__materialColorBinds_ITEM_Deserialize_TargetValue(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static List<TextureTransformBind> __expressions__preset__ou_Deserialize_TextureTransformBinds(JsonNode parsed)
+{
+    var value = new List<TextureTransformBind>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(__expressions__preset__ou_Deserialize_TextureTransformBinds_ITEM(x));
+    }
+	return value;
+} 
+
+public static TextureTransformBind __expressions__preset__ou_Deserialize_TextureTransformBinds_ITEM(JsonNode parsed)
+{
+    var value = new TextureTransformBind();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="material"){
+            value.Material = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="scale"){
+            value.Scale = __expressions__preset__ou__textureTransformBinds_ITEM_Deserialize_Scale(kv.Value);
+            continue;
+        }
+
+        if(key=="offset"){
+            value.Offset = __expressions__preset__ou__textureTransformBinds_ITEM_Deserialize_Offset(kv.Value);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static float[] __expressions__preset__ou__textureTransformBinds_ITEM_Deserialize_Scale(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static float[] __expressions__preset__ou__textureTransformBinds_ITEM_Deserialize_Offset(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static Expression __expressions__preset_Deserialize_Ee(JsonNode parsed)
+{
+    var value = new Expression();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="morphTargetBinds"){
+            value.MorphTargetBinds = __expressions__preset__ee_Deserialize_MorphTargetBinds(kv.Value);
+            continue;
+        }
+
+        if(key=="materialColorBinds"){
+            value.MaterialColorBinds = __expressions__preset__ee_Deserialize_MaterialColorBinds(kv.Value);
+            continue;
+        }
+
+        if(key=="textureTransformBinds"){
+            value.TextureTransformBinds = __expressions__preset__ee_Deserialize_TextureTransformBinds(kv.Value);
+            continue;
+        }
+
+        if(key=="isBinary"){
+            value.IsBinary = kv.Value.GetBoolean();
+            continue;
+        }
+
+        if(key=="overrideBlink"){
+            value.OverrideBlink = (ExpressionOverrideType)Enum.Parse(typeof(ExpressionOverrideType), kv.Value.GetString(), true);
+            continue;
+        }
+
+        if(key=="overrideLookAt"){
+            value.OverrideLookAt = (ExpressionOverrideType)Enum.Parse(typeof(ExpressionOverrideType), kv.Value.GetString(), true);
+            continue;
+        }
+
+        if(key=="overrideMouth"){
+            value.OverrideMouth = (ExpressionOverrideType)Enum.Parse(typeof(ExpressionOverrideType), kv.Value.GetString(), true);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static List<MorphTargetBind> __expressions__preset__ee_Deserialize_MorphTargetBinds(JsonNode parsed)
+{
+    var value = new List<MorphTargetBind>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(__expressions__preset__ee_Deserialize_MorphTargetBinds_ITEM(x));
+    }
+	return value;
+} 
+
+public static MorphTargetBind __expressions__preset__ee_Deserialize_MorphTargetBinds_ITEM(JsonNode parsed)
+{
+    var value = new MorphTargetBind();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="node"){
+            value.Node = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="index"){
+            value.Index = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="weight"){
+            value.Weight = kv.Value.GetSingle();
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static List<MaterialColorBind> __expressions__preset__ee_Deserialize_MaterialColorBinds(JsonNode parsed)
+{
+    var value = new List<MaterialColorBind>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(__expressions__preset__ee_Deserialize_MaterialColorBinds_ITEM(x));
+    }
+	return value;
+} 
+
+public static MaterialColorBind __expressions__preset__ee_Deserialize_MaterialColorBinds_ITEM(JsonNode parsed)
+{
+    var value = new MaterialColorBind();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="material"){
+            value.Material = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="type"){
+            value.Type = (MaterialColorType)Enum.Parse(typeof(MaterialColorType), kv.Value.GetString(), true);
+            continue;
+        }
+
+        if(key=="targetValue"){
+            value.TargetValue = __expressions__preset__ee__materialColorBinds_ITEM_Deserialize_TargetValue(kv.Value);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static float[] __expressions__preset__ee__materialColorBinds_ITEM_Deserialize_TargetValue(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static List<TextureTransformBind> __expressions__preset__ee_Deserialize_TextureTransformBinds(JsonNode parsed)
+{
+    var value = new List<TextureTransformBind>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(__expressions__preset__ee_Deserialize_TextureTransformBinds_ITEM(x));
+    }
+	return value;
+} 
+
+public static TextureTransformBind __expressions__preset__ee_Deserialize_TextureTransformBinds_ITEM(JsonNode parsed)
+{
+    var value = new TextureTransformBind();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="material"){
+            value.Material = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="scale"){
+            value.Scale = __expressions__preset__ee__textureTransformBinds_ITEM_Deserialize_Scale(kv.Value);
+            continue;
+        }
+
+        if(key=="offset"){
+            value.Offset = __expressions__preset__ee__textureTransformBinds_ITEM_Deserialize_Offset(kv.Value);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static float[] __expressions__preset__ee__textureTransformBinds_ITEM_Deserialize_Scale(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static float[] __expressions__preset__ee__textureTransformBinds_ITEM_Deserialize_Offset(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static Expression __expressions__preset_Deserialize_Oh(JsonNode parsed)
+{
+    var value = new Expression();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="morphTargetBinds"){
+            value.MorphTargetBinds = __expressions__preset__oh_Deserialize_MorphTargetBinds(kv.Value);
+            continue;
+        }
+
+        if(key=="materialColorBinds"){
+            value.MaterialColorBinds = __expressions__preset__oh_Deserialize_MaterialColorBinds(kv.Value);
+            continue;
+        }
+
+        if(key=="textureTransformBinds"){
+            value.TextureTransformBinds = __expressions__preset__oh_Deserialize_TextureTransformBinds(kv.Value);
+            continue;
+        }
+
+        if(key=="isBinary"){
+            value.IsBinary = kv.Value.GetBoolean();
+            continue;
+        }
+
+        if(key=="overrideBlink"){
+            value.OverrideBlink = (ExpressionOverrideType)Enum.Parse(typeof(ExpressionOverrideType), kv.Value.GetString(), true);
+            continue;
+        }
+
+        if(key=="overrideLookAt"){
+            value.OverrideLookAt = (ExpressionOverrideType)Enum.Parse(typeof(ExpressionOverrideType), kv.Value.GetString(), true);
+            continue;
+        }
+
+        if(key=="overrideMouth"){
+            value.OverrideMouth = (ExpressionOverrideType)Enum.Parse(typeof(ExpressionOverrideType), kv.Value.GetString(), true);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static List<MorphTargetBind> __expressions__preset__oh_Deserialize_MorphTargetBinds(JsonNode parsed)
+{
+    var value = new List<MorphTargetBind>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(__expressions__preset__oh_Deserialize_MorphTargetBinds_ITEM(x));
+    }
+	return value;
+} 
+
+public static MorphTargetBind __expressions__preset__oh_Deserialize_MorphTargetBinds_ITEM(JsonNode parsed)
+{
+    var value = new MorphTargetBind();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="node"){
+            value.Node = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="index"){
+            value.Index = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="weight"){
+            value.Weight = kv.Value.GetSingle();
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static List<MaterialColorBind> __expressions__preset__oh_Deserialize_MaterialColorBinds(JsonNode parsed)
+{
+    var value = new List<MaterialColorBind>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(__expressions__preset__oh_Deserialize_MaterialColorBinds_ITEM(x));
+    }
+	return value;
+} 
+
+public static MaterialColorBind __expressions__preset__oh_Deserialize_MaterialColorBinds_ITEM(JsonNode parsed)
+{
+    var value = new MaterialColorBind();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="material"){
+            value.Material = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="type"){
+            value.Type = (MaterialColorType)Enum.Parse(typeof(MaterialColorType), kv.Value.GetString(), true);
+            continue;
+        }
+
+        if(key=="targetValue"){
+            value.TargetValue = __expressions__preset__oh__materialColorBinds_ITEM_Deserialize_TargetValue(kv.Value);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static float[] __expressions__preset__oh__materialColorBinds_ITEM_Deserialize_TargetValue(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static List<TextureTransformBind> __expressions__preset__oh_Deserialize_TextureTransformBinds(JsonNode parsed)
+{
+    var value = new List<TextureTransformBind>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(__expressions__preset__oh_Deserialize_TextureTransformBinds_ITEM(x));
+    }
+	return value;
+} 
+
+public static TextureTransformBind __expressions__preset__oh_Deserialize_TextureTransformBinds_ITEM(JsonNode parsed)
+{
+    var value = new TextureTransformBind();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="material"){
+            value.Material = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="scale"){
+            value.Scale = __expressions__preset__oh__textureTransformBinds_ITEM_Deserialize_Scale(kv.Value);
+            continue;
+        }
+
+        if(key=="offset"){
+            value.Offset = __expressions__preset__oh__textureTransformBinds_ITEM_Deserialize_Offset(kv.Value);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static float[] __expressions__preset__oh__textureTransformBinds_ITEM_Deserialize_Scale(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static float[] __expressions__preset__oh__textureTransformBinds_ITEM_Deserialize_Offset(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static Expression __expressions__preset_Deserialize_Blink(JsonNode parsed)
+{
+    var value = new Expression();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="morphTargetBinds"){
+            value.MorphTargetBinds = __expressions__preset__blink_Deserialize_MorphTargetBinds(kv.Value);
+            continue;
+        }
+
+        if(key=="materialColorBinds"){
+            value.MaterialColorBinds = __expressions__preset__blink_Deserialize_MaterialColorBinds(kv.Value);
+            continue;
+        }
+
+        if(key=="textureTransformBinds"){
+            value.TextureTransformBinds = __expressions__preset__blink_Deserialize_TextureTransformBinds(kv.Value);
+            continue;
+        }
+
+        if(key=="isBinary"){
+            value.IsBinary = kv.Value.GetBoolean();
+            continue;
+        }
+
+        if(key=="overrideBlink"){
+            value.OverrideBlink = (ExpressionOverrideType)Enum.Parse(typeof(ExpressionOverrideType), kv.Value.GetString(), true);
+            continue;
+        }
+
+        if(key=="overrideLookAt"){
+            value.OverrideLookAt = (ExpressionOverrideType)Enum.Parse(typeof(ExpressionOverrideType), kv.Value.GetString(), true);
+            continue;
+        }
+
+        if(key=="overrideMouth"){
+            value.OverrideMouth = (ExpressionOverrideType)Enum.Parse(typeof(ExpressionOverrideType), kv.Value.GetString(), true);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static List<MorphTargetBind> __expressions__preset__blink_Deserialize_MorphTargetBinds(JsonNode parsed)
+{
+    var value = new List<MorphTargetBind>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(__expressions__preset__blink_Deserialize_MorphTargetBinds_ITEM(x));
+    }
+	return value;
+} 
+
+public static MorphTargetBind __expressions__preset__blink_Deserialize_MorphTargetBinds_ITEM(JsonNode parsed)
+{
+    var value = new MorphTargetBind();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="node"){
+            value.Node = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="index"){
+            value.Index = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="weight"){
+            value.Weight = kv.Value.GetSingle();
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static List<MaterialColorBind> __expressions__preset__blink_Deserialize_MaterialColorBinds(JsonNode parsed)
+{
+    var value = new List<MaterialColorBind>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(__expressions__preset__blink_Deserialize_MaterialColorBinds_ITEM(x));
+    }
+	return value;
+} 
+
+public static MaterialColorBind __expressions__preset__blink_Deserialize_MaterialColorBinds_ITEM(JsonNode parsed)
+{
+    var value = new MaterialColorBind();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="material"){
+            value.Material = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="type"){
+            value.Type = (MaterialColorType)Enum.Parse(typeof(MaterialColorType), kv.Value.GetString(), true);
+            continue;
+        }
+
+        if(key=="targetValue"){
+            value.TargetValue = __expressions__preset__blink__materialColorBinds_ITEM_Deserialize_TargetValue(kv.Value);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static float[] __expressions__preset__blink__materialColorBinds_ITEM_Deserialize_TargetValue(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static List<TextureTransformBind> __expressions__preset__blink_Deserialize_TextureTransformBinds(JsonNode parsed)
+{
+    var value = new List<TextureTransformBind>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(__expressions__preset__blink_Deserialize_TextureTransformBinds_ITEM(x));
+    }
+	return value;
+} 
+
+public static TextureTransformBind __expressions__preset__blink_Deserialize_TextureTransformBinds_ITEM(JsonNode parsed)
+{
+    var value = new TextureTransformBind();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="material"){
+            value.Material = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="scale"){
+            value.Scale = __expressions__preset__blink__textureTransformBinds_ITEM_Deserialize_Scale(kv.Value);
+            continue;
+        }
+
+        if(key=="offset"){
+            value.Offset = __expressions__preset__blink__textureTransformBinds_ITEM_Deserialize_Offset(kv.Value);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static float[] __expressions__preset__blink__textureTransformBinds_ITEM_Deserialize_Scale(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static float[] __expressions__preset__blink__textureTransformBinds_ITEM_Deserialize_Offset(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static Expression __expressions__preset_Deserialize_BlinkLeft(JsonNode parsed)
+{
+    var value = new Expression();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="morphTargetBinds"){
+            value.MorphTargetBinds = __expressions__preset__blinkLeft_Deserialize_MorphTargetBinds(kv.Value);
+            continue;
+        }
+
+        if(key=="materialColorBinds"){
+            value.MaterialColorBinds = __expressions__preset__blinkLeft_Deserialize_MaterialColorBinds(kv.Value);
+            continue;
+        }
+
+        if(key=="textureTransformBinds"){
+            value.TextureTransformBinds = __expressions__preset__blinkLeft_Deserialize_TextureTransformBinds(kv.Value);
+            continue;
+        }
+
+        if(key=="isBinary"){
+            value.IsBinary = kv.Value.GetBoolean();
+            continue;
+        }
+
+        if(key=="overrideBlink"){
+            value.OverrideBlink = (ExpressionOverrideType)Enum.Parse(typeof(ExpressionOverrideType), kv.Value.GetString(), true);
+            continue;
+        }
+
+        if(key=="overrideLookAt"){
+            value.OverrideLookAt = (ExpressionOverrideType)Enum.Parse(typeof(ExpressionOverrideType), kv.Value.GetString(), true);
+            continue;
+        }
+
+        if(key=="overrideMouth"){
+            value.OverrideMouth = (ExpressionOverrideType)Enum.Parse(typeof(ExpressionOverrideType), kv.Value.GetString(), true);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static List<MorphTargetBind> __expressions__preset__blinkLeft_Deserialize_MorphTargetBinds(JsonNode parsed)
+{
+    var value = new List<MorphTargetBind>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(__expressions__preset__blinkLeft_Deserialize_MorphTargetBinds_ITEM(x));
+    }
+	return value;
+} 
+
+public static MorphTargetBind __expressions__preset__blinkLeft_Deserialize_MorphTargetBinds_ITEM(JsonNode parsed)
+{
+    var value = new MorphTargetBind();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="node"){
+            value.Node = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="index"){
+            value.Index = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="weight"){
+            value.Weight = kv.Value.GetSingle();
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static List<MaterialColorBind> __expressions__preset__blinkLeft_Deserialize_MaterialColorBinds(JsonNode parsed)
+{
+    var value = new List<MaterialColorBind>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(__expressions__preset__blinkLeft_Deserialize_MaterialColorBinds_ITEM(x));
+    }
+	return value;
+} 
+
+public static MaterialColorBind __expressions__preset__blinkLeft_Deserialize_MaterialColorBinds_ITEM(JsonNode parsed)
+{
+    var value = new MaterialColorBind();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="material"){
+            value.Material = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="type"){
+            value.Type = (MaterialColorType)Enum.Parse(typeof(MaterialColorType), kv.Value.GetString(), true);
+            continue;
+        }
+
+        if(key=="targetValue"){
+            value.TargetValue = __expressions__preset__blinkLeft__materialColorBinds_ITEM_Deserialize_TargetValue(kv.Value);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static float[] __expressions__preset__blinkLeft__materialColorBinds_ITEM_Deserialize_TargetValue(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static List<TextureTransformBind> __expressions__preset__blinkLeft_Deserialize_TextureTransformBinds(JsonNode parsed)
+{
+    var value = new List<TextureTransformBind>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(__expressions__preset__blinkLeft_Deserialize_TextureTransformBinds_ITEM(x));
+    }
+	return value;
+} 
+
+public static TextureTransformBind __expressions__preset__blinkLeft_Deserialize_TextureTransformBinds_ITEM(JsonNode parsed)
+{
+    var value = new TextureTransformBind();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="material"){
+            value.Material = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="scale"){
+            value.Scale = __expressions__preset__blinkLeft__textureTransformBinds_ITEM_Deserialize_Scale(kv.Value);
+            continue;
+        }
+
+        if(key=="offset"){
+            value.Offset = __expressions__preset__blinkLeft__textureTransformBinds_ITEM_Deserialize_Offset(kv.Value);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static float[] __expressions__preset__blinkLeft__textureTransformBinds_ITEM_Deserialize_Scale(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static float[] __expressions__preset__blinkLeft__textureTransformBinds_ITEM_Deserialize_Offset(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static Expression __expressions__preset_Deserialize_BlinkRight(JsonNode parsed)
+{
+    var value = new Expression();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="morphTargetBinds"){
+            value.MorphTargetBinds = __expressions__preset__blinkRight_Deserialize_MorphTargetBinds(kv.Value);
+            continue;
+        }
+
+        if(key=="materialColorBinds"){
+            value.MaterialColorBinds = __expressions__preset__blinkRight_Deserialize_MaterialColorBinds(kv.Value);
+            continue;
+        }
+
+        if(key=="textureTransformBinds"){
+            value.TextureTransformBinds = __expressions__preset__blinkRight_Deserialize_TextureTransformBinds(kv.Value);
+            continue;
+        }
+
+        if(key=="isBinary"){
+            value.IsBinary = kv.Value.GetBoolean();
+            continue;
+        }
+
+        if(key=="overrideBlink"){
+            value.OverrideBlink = (ExpressionOverrideType)Enum.Parse(typeof(ExpressionOverrideType), kv.Value.GetString(), true);
+            continue;
+        }
+
+        if(key=="overrideLookAt"){
+            value.OverrideLookAt = (ExpressionOverrideType)Enum.Parse(typeof(ExpressionOverrideType), kv.Value.GetString(), true);
+            continue;
+        }
+
+        if(key=="overrideMouth"){
+            value.OverrideMouth = (ExpressionOverrideType)Enum.Parse(typeof(ExpressionOverrideType), kv.Value.GetString(), true);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static List<MorphTargetBind> __expressions__preset__blinkRight_Deserialize_MorphTargetBinds(JsonNode parsed)
+{
+    var value = new List<MorphTargetBind>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(__expressions__preset__blinkRight_Deserialize_MorphTargetBinds_ITEM(x));
+    }
+	return value;
+} 
+
+public static MorphTargetBind __expressions__preset__blinkRight_Deserialize_MorphTargetBinds_ITEM(JsonNode parsed)
+{
+    var value = new MorphTargetBind();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="node"){
+            value.Node = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="index"){
+            value.Index = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="weight"){
+            value.Weight = kv.Value.GetSingle();
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static List<MaterialColorBind> __expressions__preset__blinkRight_Deserialize_MaterialColorBinds(JsonNode parsed)
+{
+    var value = new List<MaterialColorBind>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(__expressions__preset__blinkRight_Deserialize_MaterialColorBinds_ITEM(x));
+    }
+	return value;
+} 
+
+public static MaterialColorBind __expressions__preset__blinkRight_Deserialize_MaterialColorBinds_ITEM(JsonNode parsed)
+{
+    var value = new MaterialColorBind();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="material"){
+            value.Material = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="type"){
+            value.Type = (MaterialColorType)Enum.Parse(typeof(MaterialColorType), kv.Value.GetString(), true);
+            continue;
+        }
+
+        if(key=="targetValue"){
+            value.TargetValue = __expressions__preset__blinkRight__materialColorBinds_ITEM_Deserialize_TargetValue(kv.Value);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static float[] __expressions__preset__blinkRight__materialColorBinds_ITEM_Deserialize_TargetValue(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static List<TextureTransformBind> __expressions__preset__blinkRight_Deserialize_TextureTransformBinds(JsonNode parsed)
+{
+    var value = new List<TextureTransformBind>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(__expressions__preset__blinkRight_Deserialize_TextureTransformBinds_ITEM(x));
+    }
+	return value;
+} 
+
+public static TextureTransformBind __expressions__preset__blinkRight_Deserialize_TextureTransformBinds_ITEM(JsonNode parsed)
+{
+    var value = new TextureTransformBind();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="material"){
+            value.Material = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="scale"){
+            value.Scale = __expressions__preset__blinkRight__textureTransformBinds_ITEM_Deserialize_Scale(kv.Value);
+            continue;
+        }
+
+        if(key=="offset"){
+            value.Offset = __expressions__preset__blinkRight__textureTransformBinds_ITEM_Deserialize_Offset(kv.Value);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static float[] __expressions__preset__blinkRight__textureTransformBinds_ITEM_Deserialize_Scale(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static float[] __expressions__preset__blinkRight__textureTransformBinds_ITEM_Deserialize_Offset(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static Expression __expressions__preset_Deserialize_LookUp(JsonNode parsed)
+{
+    var value = new Expression();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="morphTargetBinds"){
+            value.MorphTargetBinds = __expressions__preset__lookUp_Deserialize_MorphTargetBinds(kv.Value);
+            continue;
+        }
+
+        if(key=="materialColorBinds"){
+            value.MaterialColorBinds = __expressions__preset__lookUp_Deserialize_MaterialColorBinds(kv.Value);
+            continue;
+        }
+
+        if(key=="textureTransformBinds"){
+            value.TextureTransformBinds = __expressions__preset__lookUp_Deserialize_TextureTransformBinds(kv.Value);
+            continue;
+        }
+
+        if(key=="isBinary"){
+            value.IsBinary = kv.Value.GetBoolean();
+            continue;
+        }
+
+        if(key=="overrideBlink"){
+            value.OverrideBlink = (ExpressionOverrideType)Enum.Parse(typeof(ExpressionOverrideType), kv.Value.GetString(), true);
+            continue;
+        }
+
+        if(key=="overrideLookAt"){
+            value.OverrideLookAt = (ExpressionOverrideType)Enum.Parse(typeof(ExpressionOverrideType), kv.Value.GetString(), true);
+            continue;
+        }
+
+        if(key=="overrideMouth"){
+            value.OverrideMouth = (ExpressionOverrideType)Enum.Parse(typeof(ExpressionOverrideType), kv.Value.GetString(), true);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static List<MorphTargetBind> __expressions__preset__lookUp_Deserialize_MorphTargetBinds(JsonNode parsed)
+{
+    var value = new List<MorphTargetBind>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(__expressions__preset__lookUp_Deserialize_MorphTargetBinds_ITEM(x));
+    }
+	return value;
+} 
+
+public static MorphTargetBind __expressions__preset__lookUp_Deserialize_MorphTargetBinds_ITEM(JsonNode parsed)
+{
+    var value = new MorphTargetBind();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="node"){
+            value.Node = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="index"){
+            value.Index = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="weight"){
+            value.Weight = kv.Value.GetSingle();
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static List<MaterialColorBind> __expressions__preset__lookUp_Deserialize_MaterialColorBinds(JsonNode parsed)
+{
+    var value = new List<MaterialColorBind>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(__expressions__preset__lookUp_Deserialize_MaterialColorBinds_ITEM(x));
+    }
+	return value;
+} 
+
+public static MaterialColorBind __expressions__preset__lookUp_Deserialize_MaterialColorBinds_ITEM(JsonNode parsed)
+{
+    var value = new MaterialColorBind();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="material"){
+            value.Material = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="type"){
+            value.Type = (MaterialColorType)Enum.Parse(typeof(MaterialColorType), kv.Value.GetString(), true);
+            continue;
+        }
+
+        if(key=="targetValue"){
+            value.TargetValue = __expressions__preset__lookUp__materialColorBinds_ITEM_Deserialize_TargetValue(kv.Value);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static float[] __expressions__preset__lookUp__materialColorBinds_ITEM_Deserialize_TargetValue(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static List<TextureTransformBind> __expressions__preset__lookUp_Deserialize_TextureTransformBinds(JsonNode parsed)
+{
+    var value = new List<TextureTransformBind>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(__expressions__preset__lookUp_Deserialize_TextureTransformBinds_ITEM(x));
+    }
+	return value;
+} 
+
+public static TextureTransformBind __expressions__preset__lookUp_Deserialize_TextureTransformBinds_ITEM(JsonNode parsed)
+{
+    var value = new TextureTransformBind();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="material"){
+            value.Material = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="scale"){
+            value.Scale = __expressions__preset__lookUp__textureTransformBinds_ITEM_Deserialize_Scale(kv.Value);
+            continue;
+        }
+
+        if(key=="offset"){
+            value.Offset = __expressions__preset__lookUp__textureTransformBinds_ITEM_Deserialize_Offset(kv.Value);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static float[] __expressions__preset__lookUp__textureTransformBinds_ITEM_Deserialize_Scale(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static float[] __expressions__preset__lookUp__textureTransformBinds_ITEM_Deserialize_Offset(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static Expression __expressions__preset_Deserialize_LookDown(JsonNode parsed)
+{
+    var value = new Expression();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="morphTargetBinds"){
+            value.MorphTargetBinds = __expressions__preset__lookDown_Deserialize_MorphTargetBinds(kv.Value);
+            continue;
+        }
+
+        if(key=="materialColorBinds"){
+            value.MaterialColorBinds = __expressions__preset__lookDown_Deserialize_MaterialColorBinds(kv.Value);
+            continue;
+        }
+
+        if(key=="textureTransformBinds"){
+            value.TextureTransformBinds = __expressions__preset__lookDown_Deserialize_TextureTransformBinds(kv.Value);
+            continue;
+        }
+
+        if(key=="isBinary"){
+            value.IsBinary = kv.Value.GetBoolean();
+            continue;
+        }
+
+        if(key=="overrideBlink"){
+            value.OverrideBlink = (ExpressionOverrideType)Enum.Parse(typeof(ExpressionOverrideType), kv.Value.GetString(), true);
+            continue;
+        }
+
+        if(key=="overrideLookAt"){
+            value.OverrideLookAt = (ExpressionOverrideType)Enum.Parse(typeof(ExpressionOverrideType), kv.Value.GetString(), true);
+            continue;
+        }
+
+        if(key=="overrideMouth"){
+            value.OverrideMouth = (ExpressionOverrideType)Enum.Parse(typeof(ExpressionOverrideType), kv.Value.GetString(), true);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static List<MorphTargetBind> __expressions__preset__lookDown_Deserialize_MorphTargetBinds(JsonNode parsed)
+{
+    var value = new List<MorphTargetBind>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(__expressions__preset__lookDown_Deserialize_MorphTargetBinds_ITEM(x));
+    }
+	return value;
+} 
+
+public static MorphTargetBind __expressions__preset__lookDown_Deserialize_MorphTargetBinds_ITEM(JsonNode parsed)
+{
+    var value = new MorphTargetBind();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="node"){
+            value.Node = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="index"){
+            value.Index = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="weight"){
+            value.Weight = kv.Value.GetSingle();
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static List<MaterialColorBind> __expressions__preset__lookDown_Deserialize_MaterialColorBinds(JsonNode parsed)
+{
+    var value = new List<MaterialColorBind>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(__expressions__preset__lookDown_Deserialize_MaterialColorBinds_ITEM(x));
+    }
+	return value;
+} 
+
+public static MaterialColorBind __expressions__preset__lookDown_Deserialize_MaterialColorBinds_ITEM(JsonNode parsed)
+{
+    var value = new MaterialColorBind();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="material"){
+            value.Material = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="type"){
+            value.Type = (MaterialColorType)Enum.Parse(typeof(MaterialColorType), kv.Value.GetString(), true);
+            continue;
+        }
+
+        if(key=="targetValue"){
+            value.TargetValue = __expressions__preset__lookDown__materialColorBinds_ITEM_Deserialize_TargetValue(kv.Value);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static float[] __expressions__preset__lookDown__materialColorBinds_ITEM_Deserialize_TargetValue(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static List<TextureTransformBind> __expressions__preset__lookDown_Deserialize_TextureTransformBinds(JsonNode parsed)
+{
+    var value = new List<TextureTransformBind>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(__expressions__preset__lookDown_Deserialize_TextureTransformBinds_ITEM(x));
+    }
+	return value;
+} 
+
+public static TextureTransformBind __expressions__preset__lookDown_Deserialize_TextureTransformBinds_ITEM(JsonNode parsed)
+{
+    var value = new TextureTransformBind();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="material"){
+            value.Material = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="scale"){
+            value.Scale = __expressions__preset__lookDown__textureTransformBinds_ITEM_Deserialize_Scale(kv.Value);
+            continue;
+        }
+
+        if(key=="offset"){
+            value.Offset = __expressions__preset__lookDown__textureTransformBinds_ITEM_Deserialize_Offset(kv.Value);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static float[] __expressions__preset__lookDown__textureTransformBinds_ITEM_Deserialize_Scale(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static float[] __expressions__preset__lookDown__textureTransformBinds_ITEM_Deserialize_Offset(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static Expression __expressions__preset_Deserialize_LookLeft(JsonNode parsed)
+{
+    var value = new Expression();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="morphTargetBinds"){
+            value.MorphTargetBinds = __expressions__preset__lookLeft_Deserialize_MorphTargetBinds(kv.Value);
+            continue;
+        }
+
+        if(key=="materialColorBinds"){
+            value.MaterialColorBinds = __expressions__preset__lookLeft_Deserialize_MaterialColorBinds(kv.Value);
+            continue;
+        }
+
+        if(key=="textureTransformBinds"){
+            value.TextureTransformBinds = __expressions__preset__lookLeft_Deserialize_TextureTransformBinds(kv.Value);
+            continue;
+        }
+
+        if(key=="isBinary"){
+            value.IsBinary = kv.Value.GetBoolean();
+            continue;
+        }
+
+        if(key=="overrideBlink"){
+            value.OverrideBlink = (ExpressionOverrideType)Enum.Parse(typeof(ExpressionOverrideType), kv.Value.GetString(), true);
+            continue;
+        }
+
+        if(key=="overrideLookAt"){
+            value.OverrideLookAt = (ExpressionOverrideType)Enum.Parse(typeof(ExpressionOverrideType), kv.Value.GetString(), true);
+            continue;
+        }
+
+        if(key=="overrideMouth"){
+            value.OverrideMouth = (ExpressionOverrideType)Enum.Parse(typeof(ExpressionOverrideType), kv.Value.GetString(), true);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static List<MorphTargetBind> __expressions__preset__lookLeft_Deserialize_MorphTargetBinds(JsonNode parsed)
+{
+    var value = new List<MorphTargetBind>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(__expressions__preset__lookLeft_Deserialize_MorphTargetBinds_ITEM(x));
+    }
+	return value;
+} 
+
+public static MorphTargetBind __expressions__preset__lookLeft_Deserialize_MorphTargetBinds_ITEM(JsonNode parsed)
+{
+    var value = new MorphTargetBind();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="node"){
+            value.Node = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="index"){
+            value.Index = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="weight"){
+            value.Weight = kv.Value.GetSingle();
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static List<MaterialColorBind> __expressions__preset__lookLeft_Deserialize_MaterialColorBinds(JsonNode parsed)
+{
+    var value = new List<MaterialColorBind>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(__expressions__preset__lookLeft_Deserialize_MaterialColorBinds_ITEM(x));
+    }
+	return value;
+} 
+
+public static MaterialColorBind __expressions__preset__lookLeft_Deserialize_MaterialColorBinds_ITEM(JsonNode parsed)
+{
+    var value = new MaterialColorBind();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="material"){
+            value.Material = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="type"){
+            value.Type = (MaterialColorType)Enum.Parse(typeof(MaterialColorType), kv.Value.GetString(), true);
+            continue;
+        }
+
+        if(key=="targetValue"){
+            value.TargetValue = __expressions__preset__lookLeft__materialColorBinds_ITEM_Deserialize_TargetValue(kv.Value);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static float[] __expressions__preset__lookLeft__materialColorBinds_ITEM_Deserialize_TargetValue(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static List<TextureTransformBind> __expressions__preset__lookLeft_Deserialize_TextureTransformBinds(JsonNode parsed)
+{
+    var value = new List<TextureTransformBind>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(__expressions__preset__lookLeft_Deserialize_TextureTransformBinds_ITEM(x));
+    }
+	return value;
+} 
+
+public static TextureTransformBind __expressions__preset__lookLeft_Deserialize_TextureTransformBinds_ITEM(JsonNode parsed)
+{
+    var value = new TextureTransformBind();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="material"){
+            value.Material = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="scale"){
+            value.Scale = __expressions__preset__lookLeft__textureTransformBinds_ITEM_Deserialize_Scale(kv.Value);
+            continue;
+        }
+
+        if(key=="offset"){
+            value.Offset = __expressions__preset__lookLeft__textureTransformBinds_ITEM_Deserialize_Offset(kv.Value);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static float[] __expressions__preset__lookLeft__textureTransformBinds_ITEM_Deserialize_Scale(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static float[] __expressions__preset__lookLeft__textureTransformBinds_ITEM_Deserialize_Offset(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static Expression __expressions__preset_Deserialize_LookRight(JsonNode parsed)
+{
+    var value = new Expression();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="morphTargetBinds"){
+            value.MorphTargetBinds = __expressions__preset__lookRight_Deserialize_MorphTargetBinds(kv.Value);
+            continue;
+        }
+
+        if(key=="materialColorBinds"){
+            value.MaterialColorBinds = __expressions__preset__lookRight_Deserialize_MaterialColorBinds(kv.Value);
+            continue;
+        }
+
+        if(key=="textureTransformBinds"){
+            value.TextureTransformBinds = __expressions__preset__lookRight_Deserialize_TextureTransformBinds(kv.Value);
+            continue;
+        }
+
+        if(key=="isBinary"){
+            value.IsBinary = kv.Value.GetBoolean();
+            continue;
+        }
+
+        if(key=="overrideBlink"){
+            value.OverrideBlink = (ExpressionOverrideType)Enum.Parse(typeof(ExpressionOverrideType), kv.Value.GetString(), true);
+            continue;
+        }
+
+        if(key=="overrideLookAt"){
+            value.OverrideLookAt = (ExpressionOverrideType)Enum.Parse(typeof(ExpressionOverrideType), kv.Value.GetString(), true);
+            continue;
+        }
+
+        if(key=="overrideMouth"){
+            value.OverrideMouth = (ExpressionOverrideType)Enum.Parse(typeof(ExpressionOverrideType), kv.Value.GetString(), true);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static List<MorphTargetBind> __expressions__preset__lookRight_Deserialize_MorphTargetBinds(JsonNode parsed)
+{
+    var value = new List<MorphTargetBind>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(__expressions__preset__lookRight_Deserialize_MorphTargetBinds_ITEM(x));
+    }
+	return value;
+} 
+
+public static MorphTargetBind __expressions__preset__lookRight_Deserialize_MorphTargetBinds_ITEM(JsonNode parsed)
+{
+    var value = new MorphTargetBind();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="node"){
+            value.Node = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="index"){
+            value.Index = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="weight"){
+            value.Weight = kv.Value.GetSingle();
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static List<MaterialColorBind> __expressions__preset__lookRight_Deserialize_MaterialColorBinds(JsonNode parsed)
+{
+    var value = new List<MaterialColorBind>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(__expressions__preset__lookRight_Deserialize_MaterialColorBinds_ITEM(x));
+    }
+	return value;
+} 
+
+public static MaterialColorBind __expressions__preset__lookRight_Deserialize_MaterialColorBinds_ITEM(JsonNode parsed)
+{
+    var value = new MaterialColorBind();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="material"){
+            value.Material = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="type"){
+            value.Type = (MaterialColorType)Enum.Parse(typeof(MaterialColorType), kv.Value.GetString(), true);
+            continue;
+        }
+
+        if(key=="targetValue"){
+            value.TargetValue = __expressions__preset__lookRight__materialColorBinds_ITEM_Deserialize_TargetValue(kv.Value);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static float[] __expressions__preset__lookRight__materialColorBinds_ITEM_Deserialize_TargetValue(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static List<TextureTransformBind> __expressions__preset__lookRight_Deserialize_TextureTransformBinds(JsonNode parsed)
+{
+    var value = new List<TextureTransformBind>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(__expressions__preset__lookRight_Deserialize_TextureTransformBinds_ITEM(x));
+    }
+	return value;
+} 
+
+public static TextureTransformBind __expressions__preset__lookRight_Deserialize_TextureTransformBinds_ITEM(JsonNode parsed)
+{
+    var value = new TextureTransformBind();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="material"){
+            value.Material = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="scale"){
+            value.Scale = __expressions__preset__lookRight__textureTransformBinds_ITEM_Deserialize_Scale(kv.Value);
+            continue;
+        }
+
+        if(key=="offset"){
+            value.Offset = __expressions__preset__lookRight__textureTransformBinds_ITEM_Deserialize_Offset(kv.Value);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static float[] __expressions__preset__lookRight__textureTransformBinds_ITEM_Deserialize_Scale(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static float[] __expressions__preset__lookRight__textureTransformBinds_ITEM_Deserialize_Offset(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static Dictionary<string, Expression> __expressions_Deserialize_Custom(JsonNode parsed)
+{
+    var value = new Dictionary<string, Expression>();
+    foreach(var kv in parsed.ObjectItems())
+    {
+        value.Add(kv.Key.GetString(), __expressions_Deserialize_Custom_ITEM(kv.Value));
+    }
+	return value;
+} 
+
+public static Expression __expressions_Deserialize_Custom_ITEM(JsonNode parsed)
+{
+    var value = new Expression();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="morphTargetBinds"){
+            value.MorphTargetBinds = __expressions__custom_PROP_Deserialize_MorphTargetBinds(kv.Value);
+            continue;
+        }
+
+        if(key=="materialColorBinds"){
+            value.MaterialColorBinds = __expressions__custom_PROP_Deserialize_MaterialColorBinds(kv.Value);
+            continue;
+        }
+
+        if(key=="textureTransformBinds"){
+            value.TextureTransformBinds = __expressions__custom_PROP_Deserialize_TextureTransformBinds(kv.Value);
+            continue;
+        }
+
+        if(key=="isBinary"){
+            value.IsBinary = kv.Value.GetBoolean();
+            continue;
+        }
+
+        if(key=="overrideBlink"){
+            value.OverrideBlink = (ExpressionOverrideType)Enum.Parse(typeof(ExpressionOverrideType), kv.Value.GetString(), true);
+            continue;
+        }
+
+        if(key=="overrideLookAt"){
+            value.OverrideLookAt = (ExpressionOverrideType)Enum.Parse(typeof(ExpressionOverrideType), kv.Value.GetString(), true);
+            continue;
+        }
+
+        if(key=="overrideMouth"){
+            value.OverrideMouth = (ExpressionOverrideType)Enum.Parse(typeof(ExpressionOverrideType), kv.Value.GetString(), true);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static List<MorphTargetBind> __expressions__custom_PROP_Deserialize_MorphTargetBinds(JsonNode parsed)
+{
+    var value = new List<MorphTargetBind>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(__expressions__custom_PROP_Deserialize_MorphTargetBinds_ITEM(x));
+    }
+	return value;
+} 
+
+public static MorphTargetBind __expressions__custom_PROP_Deserialize_MorphTargetBinds_ITEM(JsonNode parsed)
+{
+    var value = new MorphTargetBind();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="node"){
+            value.Node = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="index"){
+            value.Index = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="weight"){
+            value.Weight = kv.Value.GetSingle();
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static List<MaterialColorBind> __expressions__custom_PROP_Deserialize_MaterialColorBinds(JsonNode parsed)
+{
+    var value = new List<MaterialColorBind>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(__expressions__custom_PROP_Deserialize_MaterialColorBinds_ITEM(x));
+    }
+	return value;
+} 
+
+public static MaterialColorBind __expressions__custom_PROP_Deserialize_MaterialColorBinds_ITEM(JsonNode parsed)
+{
+    var value = new MaterialColorBind();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="material"){
+            value.Material = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="type"){
+            value.Type = (MaterialColorType)Enum.Parse(typeof(MaterialColorType), kv.Value.GetString(), true);
+            continue;
+        }
+
+        if(key=="targetValue"){
+            value.TargetValue = __expressions__custom_PROP__materialColorBinds_ITEM_Deserialize_TargetValue(kv.Value);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static float[] __expressions__custom_PROP__materialColorBinds_ITEM_Deserialize_TargetValue(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static List<TextureTransformBind> __expressions__custom_PROP_Deserialize_TextureTransformBinds(JsonNode parsed)
+{
+    var value = new List<TextureTransformBind>();
+    foreach(var x in parsed.ArrayItems())
+    {
+        value.Add(__expressions__custom_PROP_Deserialize_TextureTransformBinds_ITEM(x));
+    }
+	return value;
+} 
+
+public static TextureTransformBind __expressions__custom_PROP_Deserialize_TextureTransformBinds_ITEM(JsonNode parsed)
+{
+    var value = new TextureTransformBind();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="material"){
+            value.Material = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="scale"){
+            value.Scale = __expressions__custom_PROP__textureTransformBinds_ITEM_Deserialize_Scale(kv.Value);
+            continue;
+        }
+
+        if(key=="offset"){
+            value.Offset = __expressions__custom_PROP__textureTransformBinds_ITEM_Deserialize_Offset(kv.Value);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static float[] __expressions__custom_PROP__textureTransformBinds_ITEM_Deserialize_Scale(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
+
+public static float[] __expressions__custom_PROP__textureTransformBinds_ITEM_Deserialize_Offset(JsonNode parsed)
 {
     var value = new float[parsed.GetArrayCount()];
     int i=0;
