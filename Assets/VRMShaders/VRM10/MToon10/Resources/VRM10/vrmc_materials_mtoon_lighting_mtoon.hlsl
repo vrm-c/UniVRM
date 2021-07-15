@@ -60,7 +60,7 @@ inline half GetMToonLighting_Shadow(const UnityLighting lighting, const half dot
 {
     if (MToon_IsPbrCorrectOn())
     {
-        return lighting.directLightAttenuation * (min(0, dotNL) + 1);
+        return lighting.directLightAttenuation * step(0, dotNL);
     }
 
     if (MToon_IsForwardBasePass())

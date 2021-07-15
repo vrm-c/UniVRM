@@ -19,6 +19,7 @@
 #endif
 
 // Compile-time constant
+// EXPERIMENTAL
 inline bool MToon_IsPbrCorrectOn()
 {
     return false;
