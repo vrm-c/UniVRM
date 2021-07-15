@@ -55,5 +55,8 @@
         UnityDstBlend,
         UnityZWrite,
         UnityAlphaToMask,
+
+        // for Editor
+        EditorEditMode,
     }
 }

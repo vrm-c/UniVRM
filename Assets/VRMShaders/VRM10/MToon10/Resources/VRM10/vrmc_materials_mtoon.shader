@@ -58,6 +58,9 @@ Shader "VRM10/MToon10"
 
         // etc
         _M_DebugMode ("_DebugMode", Float) = 0.0
+
+        // for Editor
+        _M_EditMode ("_EditMode", Float) = 0.0
     }
 
     // Shader Model 3.0
