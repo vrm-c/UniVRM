@@ -2,6 +2,6 @@
 {
     public static class MToon10Meta
     {
-        public static readonly string UnityShaderName = "Hidden/VRM10/vrmc_materials_mtoon";
+        public static readonly string UnityShaderName = "VRM10/MToon10";
     }
 }

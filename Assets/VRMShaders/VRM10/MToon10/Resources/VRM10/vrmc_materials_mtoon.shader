@@ -1,4 +1,4 @@
-Shader "Hidden/VRM10/vrmc_materials_mtoon"
+Shader "VRM10/MToon10"
 {
     Properties
     {
