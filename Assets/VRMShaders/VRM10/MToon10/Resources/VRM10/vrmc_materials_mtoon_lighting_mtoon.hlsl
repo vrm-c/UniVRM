@@ -46,8 +46,8 @@ inline half GetMToonLighting_Shade(const UnityLighting lighting, const MToonInpu
 
     if (MToon_IsForwardBasePass())
     {
-        const half shadeInput = lerp(-1, 1, mtoon_linearstep(-1, 1, dotNL) * lighting.directLightAttenuation);
-        return mtoon_linearstep(-1.0 + shadeToony, +1.0 - shadeToony, shadeInput + shadeShift);
+        const half shadeInput = lerp(-1, 1, mtoon_linearstep(-1, 1, dotNL));
+        return mtoon_linearstep(-1.0 + shadeToony, +1.0 - shadeToony, shadeInput + shadeShift) * lighting.directLightAttenuation;
     }
     else
     {
