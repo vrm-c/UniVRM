@@ -38,6 +38,12 @@ inline half GetMToonLighting_Shade(const UnityLighting lighting, const MToonInpu
     const half shadeShift = GetMToonLighting_Reflectance_ShadingShift(input);
     const half shadeToony = _ShadingToonyFactor;
 
+    if (MToon_IsPbrCorrectOn())
+    {
+        const half shadeInput = dotNL;
+        return mtoon_linearstep(-1.0 + shadeToony, +1.0 - shadeToony, shadeInput + shadeShift);
+    }
+
     if (MToon_IsForwardBasePass())
     {
         const half shadeInput = lerp(-1, 1, mtoon_linearstep(-1, 1, dotNL) * lighting.directLightAttenuation);
@@ -52,6 +58,11 @@ inline half GetMToonLighting_Shade(const UnityLighting lighting, const MToonInpu
 
 inline half GetMToonLighting_Shadow(const UnityLighting lighting, const half dotNL)
 {
+    if (MToon_IsPbrCorrectOn())
+    {
+        return lighting.directLightAttenuation * (min(0, dotNL) + 1);
+    }
+
     if (MToon_IsForwardBasePass())
     {
         return 1;

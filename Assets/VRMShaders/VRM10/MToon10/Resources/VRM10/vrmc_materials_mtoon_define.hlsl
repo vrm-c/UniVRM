@@ -19,6 +19,12 @@
 #endif
 
 // Compile-time constant
+inline bool MToon_IsPbrCorrectOn()
+{
+    return false;
+}
+
+// Compile-time constant
 inline bool MToon_IsForwardBasePass()
 {
 #if defined(UNITY_PASS_FORWARDBASE)
