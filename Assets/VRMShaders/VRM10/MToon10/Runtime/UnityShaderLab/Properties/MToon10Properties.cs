@@ -51,6 +51,8 @@ namespace VRMShaders.VRM10.MToon10.Runtime
             [MToon10Prop.UnityDstBlend] = "_M_DstBlend",
             [MToon10Prop.UnityZWrite] = "_M_ZWrite",
             [MToon10Prop.UnityAlphaToMask] = "_M_AlphaToMask",
+
+            [MToon10Prop.EditorEditMode] = "_M_EditMode",
         };
 
         public static IReadOnlyDictionary<MToon10Prop, string> UnityShaderLabNames => _unityShaderLabNames;
