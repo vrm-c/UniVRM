@@ -25,8 +25,8 @@ namespace VRMShaders.VRM10.MToon10.Runtime
         {
             var (rangeMin, rangeMax) = GetShadingRange0X(shadingToony0X, shadingShift0X);
 
-            // new shadingShift is the center of range.
-            return Mathf.Clamp((rangeMax - rangeMin) * 0.5f, -1, +1);
+            // new shadingShift is the center of range inverted.
+            return Mathf.Clamp((rangeMax + rangeMin) * 0.5f * -1f, -1, +1);
         }
 
         /// <summary>
