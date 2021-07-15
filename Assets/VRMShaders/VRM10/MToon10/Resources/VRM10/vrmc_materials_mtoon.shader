@@ -16,10 +16,10 @@ Shader "VRM10/MToon10"
         _ShadeTex ("mtoon.shadeMultiplyTexture", 2D) = "white" {}
         [Normal] _BumpMap ("normalTexture", 2D) = "bump" {} // Unity specified name
         _BumpScale ("normalTexture.scale", Float) = 1.0 // Unity specified name
-        _ShadingShiftFactor ("mtoon.shadingShiftFactor", Range(-1, 1)) = 0
+        _ShadingShiftFactor ("mtoon.shadingShiftFactor", Range(-1, 1)) = -0.05
         _ShadingShiftTex ("mtoon.shadingShiftTexture", 2D) = "black" {} // channel R
         _ShadingShiftTexScale ("mtoon.shadingShiftTexture.scale", Float) = 1
-        _ShadingToonyFactor ("mtoon.shadingToonyFactor", Range(0, 1)) = 0.9
+        _ShadingToonyFactor ("mtoon.shadingToonyFactor", Range(0, 1)) = 0.95
 
         // GI
         _GiEqualization ("mtoon.giEqualizationFactor", Range(0, 1)) = 0.9

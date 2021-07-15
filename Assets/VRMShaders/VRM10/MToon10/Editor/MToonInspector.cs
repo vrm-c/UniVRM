@@ -77,15 +77,54 @@ namespace VRMShaders.VRM10.MToon10.Editor
                 }
                 EditorGUILayout.Space();
 
-                materialEditor.ShaderProperty(props[MToon10Prop.ShadingToonyFactor], "Shading Toony");
-                materialEditor.ShaderProperty(props[MToon10Prop.ShadingShiftFactor], "Shading Shift");
                 if (isAdvancedEditMode)
                 {
+                    materialEditor.ShaderProperty(props[MToon10Prop.ShadingToonyFactor], "Shading Toony");
+                    materialEditor.ShaderProperty(props[MToon10Prop.ShadingShiftFactor], "Shading Shift");
                     materialEditor.TexturePropertySingleLine(
                         new GUIContent("Additive Shading Shift", "Shading Shift (R)"),
                         props[MToon10Prop.ShadingShiftTexture],
                         props[MToon10Prop.ShadingShiftTextureScale]
                     );
+                }
+                else
+                {
+                    EditorGUILayout.BeginHorizontal();
+                    GUILayout.Label("Presets");
+                    if (GUILayout.Button("Default"))
+                    {
+                        props[MToon10Prop.ShadingToonyFactor].floatValue = 0.95f;
+                        props[MToon10Prop.ShadingShiftFactor].floatValue = -0.05f;
+                        props[MToon10Prop.ShadingShiftTexture].textureValue = null;
+                    }
+                    if (GUILayout.Button("Lambert"))
+                    {
+                        props[MToon10Prop.ShadingToonyFactor].floatValue = 0.5f;
+                        props[MToon10Prop.ShadingShiftFactor].floatValue = -0.5f;
+                        props[MToon10Prop.ShadingShiftTexture].textureValue = null;
+                    }
+                    if (GUILayout.Button("Cartoon"))
+                    {
+                        props[MToon10Prop.ShadingToonyFactor].floatValue = 1.0f;
+                        props[MToon10Prop.ShadingShiftFactor].floatValue = 0.0f;
+                        props[MToon10Prop.ShadingShiftTexture].textureValue = null;
+                    }
+                    EditorGUILayout.EndHorizontal();
+
+                    GUILayout.BeginVertical(GUI.skin.box);
+                    materialEditor.ShaderProperty(props[MToon10Prop.ShadingToonyFactor], "Shading Toony");
+                    materialEditor.ShaderProperty(props[MToon10Prop.ShadingShiftFactor], "Shading Shift");
+                    GUILayout.EndVertical();
+                }
+
+                if (props[MToon10Prop.ShadingShiftTexture].textureValue == null)
+                {
+                    var toony = props[MToon10Prop.ShadingToonyFactor].floatValue;
+                    var shift = props[MToon10Prop.ShadingShiftFactor].floatValue;
+                    if (toony - shift < 1.0f - 0.001f)
+                    {
+                        EditorGUILayout.HelpBox("The lit area includes non-lit area.", MessageType.Warning);
+                    }
                 }
             }
 
