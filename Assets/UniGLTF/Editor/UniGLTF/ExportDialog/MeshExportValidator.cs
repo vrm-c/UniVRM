@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UniGLTF.M17N;
+using UnityEditor;
 using UnityEngine;
 
 namespace UniGLTF
@@ -118,9 +119,42 @@ namespace UniGLTF
                 {
                     yield return Validation.Warning($"{m}: unknown shader: {m.shader.name} => export as gltf default");
                 }
-            }
 
-            yield break;
+                var count = ShaderUtil.GetPropertyCount(m.shader);
+                for (int i = 0; i < count; ++i)
+                {
+                    var propType = ShaderUtil.GetPropertyType(m.shader, i);
+                    if (propType == ShaderUtil.ShaderPropertyType.TexEnv)
+                    {
+                        var propName = ShaderUtil.GetPropertyName(m.shader, i);
+                        var tex = m.GetTexture(propName);
+                        if (tex != null)
+                        {
+                            var assetPath = AssetDatabase.GetAssetPath(tex);
+                            if (!string.IsNullOrEmpty(assetPath))
+                            {
+                                if (AssetImporter.GetAtPath(assetPath) is TextureImporter textureImporter)
+                                {
+                                    switch (textureImporter.textureType)
+                                    {
+                                        case TextureImporterType.Default:
+                                        case TextureImporterType.NormalMap:
+                                            break;
+
+                                        default:
+                                            // EditorTextureSerializer throw Exception
+                                            // エクスポート未実装
+                                            yield return Validation.Error($"{tex}: unknown texture type: {textureImporter.textureType}", ValidationContext.Create(tex));
+                                            break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                yield break;
+            }
         }
     }
 }
