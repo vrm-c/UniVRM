@@ -55,7 +55,7 @@ namespace UniGLTF
             return null;
         }
 
-        public List<MeshExportInfo> Meshes = new List<MeshExportInfo>();
+        public MeshExportList Meshes = new MeshExportList();
 
         public int ExpectedExportByteSize => Meshes.Where(x => x.IsRendererActive).Sum(x => x.ExportByteSize);
 
@@ -65,7 +65,7 @@ namespace UniGLTF
             {
                 return;
             }
-            MeshExportInfo.GetInfo(ExportRoot.transform.Traverse().Skip(1), Meshes, settings);
+            Meshes.GetInfo(ExportRoot.transform.Traverse().Skip(1), settings);
             foreach (var info in Meshes)
             {
                 info.CalcMeshSize(ExportRoot, info.Renderers[0].Item1, settings, blendShapeFilter);
@@ -108,12 +108,8 @@ namespace UniGLTF
                 }
             }
 
-            foreach (var m in Meshes.SelectMany(x => x.Materials).Distinct())
+            foreach (var m in Meshes.GetUniqueMaterials())
             {
-                if (m == null)
-                {
-                    continue;
-                }
                 var gltfMaterial = MaterialValidator.GetGltfMaterialTypeFromUnityShaderName(m.shader.name);
                 if (string.IsNullOrEmpty(gltfMaterial))
                 {
