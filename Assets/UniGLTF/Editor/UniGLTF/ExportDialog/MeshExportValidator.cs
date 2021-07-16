@@ -7,34 +7,6 @@ using UnityEngine;
 
 namespace UniGLTF
 {
-    public interface IMaterialValidator
-    {
-        /// <summary>
-        /// shaderName から glTF マテリアルタイプ を得る 
-        /// 
-        /// shaderName が エクスポートできるものでないときは null を返す(gltfデフォルトの pbr として処理される)
-        /// </summary>
-        /// <param name="shaderName"></param>
-        /// <returns></returns>
-        string GetGltfMaterialTypeFromUnityShaderName(string shaderName);
-    }
-
-    public class DefaultMaterialValidator : IMaterialValidator
-    {
-        public virtual string GetGltfMaterialTypeFromUnityShaderName(string shaderName)
-        {
-            if (shaderName == "Standard")
-            {
-                return "pbr";
-            }
-            if (MaterialExporter.IsUnlit(shaderName))
-            {
-                return "unlit";
-            }
-            return null;
-        }
-    }
-
     [Serializable]
     public class MeshExportValidator : ScriptableObject
     {
@@ -116,34 +88,32 @@ namespace UniGLTF
                     yield return Validation.Warning($"{m}: unknown shader: {m.shader.name} => export as gltf default");
                 }
 
-                var count = ShaderUtil.GetPropertyCount(m.shader);
-                for (int i = 0; i < count; ++i)
+                var used = new HashSet<Texture>();
+                foreach (var (propName, texture) in MaterialValidator.EnumerateTextureProperties(m))
                 {
-                    var propType = ShaderUtil.GetPropertyType(m.shader, i);
-                    if (propType == ShaderUtil.ShaderPropertyType.TexEnv)
+                    if (texture == null)
                     {
-                        var propName = ShaderUtil.GetPropertyName(m.shader, i);
-                        var tex = m.GetTexture(propName);
-                        if (tex != null)
+                        continue;
+                    }
+                    var assetPath = AssetDatabase.GetAssetPath(texture);
+                    if (!string.IsNullOrEmpty(assetPath))
+                    {
+                        if (AssetImporter.GetAtPath(assetPath) is TextureImporter textureImporter)
                         {
-                            var assetPath = AssetDatabase.GetAssetPath(tex);
-                            if (!string.IsNullOrEmpty(assetPath))
+                            switch (textureImporter.textureType)
                             {
-                                if (AssetImporter.GetAtPath(assetPath) is TextureImporter textureImporter)
-                                {
-                                    switch (textureImporter.textureType)
-                                    {
-                                        case TextureImporterType.Default:
-                                        case TextureImporterType.NormalMap:
-                                            break;
+                                case TextureImporterType.Default:
+                                case TextureImporterType.NormalMap:
+                                    break;
 
-                                        default:
-                                            // EditorTextureSerializer throw Exception
-                                            // エクスポート未実装
-                                            yield return Validation.Error($"{tex}: unknown texture type: {textureImporter.textureType}", ValidationContext.Create(tex));
-                                            break;
+                                default:
+                                    // EditorTextureSerializer throw Exception
+                                    // エクスポート未実装
+                                    if (used.Add(texture))
+                                    {
+                                        yield return Validation.Error($"{texture}: unknown texture type: {textureImporter.textureType}", ValidationContext.Create(texture));
                                     }
-                                }
+                                    break;
                             }
                         }
                     }
