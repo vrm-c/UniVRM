@@ -1,12 +1,39 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UniGLTF.M17N;
 using UnityEngine;
 
 namespace UniGLTF
 {
+    public interface IMaterialValidator
+    {
+        /// <summary>
+        /// shaderName から glTF マテリアルタイプ を得る 
+        /// 
+        /// shaderName が エクスポートできるものでないときは null を返す(gltfデフォルトの pbr として処理される)
+        /// </summary>
+        /// <param name="shaderName"></param>
+        /// <returns></returns>
+        string GetGltfMaterialTypeFromUnityShaderName(string shaderName);
+    }
+
+    public class DefaultMaterialValidator : IMaterialValidator
+    {
+        public virtual string GetGltfMaterialTypeFromUnityShaderName(string shaderName)
+        {
+            if (shaderName == "Standard")
+            {
+                return "pbr";
+            }
+            if (MaterialExporter.IsUnlit(shaderName))
+            {
+                return "unlit";
+            }
+            return null;
+        }
+    }
+
     [Serializable]
     public class MeshExportValidator : ScriptableObject
     {
@@ -33,31 +60,18 @@ namespace UniGLTF
 
         public void SetRoot(GameObject ExportRoot, GltfExportSettings settings, IBlendShapeExportFilter blendShapeFilter)
         {
-            if(ExportRoot==null)
+            if (ExportRoot == null)
             {
                 return;
             }
             MeshExportInfo.GetInfo(ExportRoot.transform.Traverse().Skip(1), Meshes, settings);
-            foreach(var info in Meshes)
+            foreach (var info in Meshes)
             {
                 info.CalcMeshSize(ExportRoot, info.Renderers[0].Item1, settings, blendShapeFilter);
             }
         }
 
-        public Func<string, string> GltfMaterialFromUnityShaderName = DefaultGltfMaterialType;
-
-        public static string DefaultGltfMaterialType(string shaderName)
-        {
-            if (shaderName == "Standard")
-            {
-                return "pbr";
-            }
-            if (MaterialExporter.IsUnlit(shaderName))
-            {
-                return "unlit";
-            }
-            return null;
-        }
+        public IMaterialValidator MaterialValidator = new DefaultMaterialValidator();
 
         public enum Messages
         {
@@ -99,7 +113,7 @@ namespace UniGLTF
                 {
                     continue;
                 }
-                var gltfMaterial = GltfMaterialFromUnityShaderName(m.shader.name);
+                var gltfMaterial = MaterialValidator.GetGltfMaterialTypeFromUnityShaderName(m.shader.name);
                 if (string.IsNullOrEmpty(gltfMaterial))
                 {
                     yield return Validation.Warning($"{m}: unknown shader: {m.shader.name} => export as gltf default");
