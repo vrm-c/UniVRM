@@ -267,16 +267,40 @@ namespace UniVRM10
                 clip.OverrideLookAt = expression.OverrideLookAt;
                 clip.OverrideMouth = expression.OverrideMouth;
 
-                clip.MorphTargetBindings = expression?.MorphTargetBinds?.Select(x => x.Build10(Root, m_map, m_model))
-                    .ToArray();
-                clip.MaterialColorBindings = expression?.MaterialColorBinds?.Select(x => x.Build10(MaterialFactory.Materials))
-                    .Where(x => x.HasValue)
-                    .Select(x => x.Value)
-                    .ToArray();
-                clip.MaterialUVBindings = expression?.TextureTransformBinds?.Select(x => x.Build10(MaterialFactory.Materials))
-                    .Where(x => x.HasValue)
-                    .Select(x => x.Value)
-                    .ToArray();
+                if (expression.MorphTargetBinds != null)
+                {
+                    clip.MorphTargetBindings = expression.MorphTargetBinds?.Select(x => x.Build10(Root, m_map, m_model))
+                        .ToArray();
+                }
+                else
+                {
+                    clip.MorphTargetBindings = new MorphTargetBinding[] { };
+                }
+
+                if (expression.MaterialColorBinds != null)
+                {
+                    clip.MaterialColorBindings = expression.MaterialColorBinds.Select(x => x.Build10(MaterialFactory.Materials))
+                        .Where(x => x.HasValue)
+                        .Select(x => x.Value)
+                        .ToArray();
+                }
+                else
+                {
+                    clip.MaterialColorBindings = new MaterialColorBinding[] { };
+                }
+
+                if (expression.TextureTransformBinds != null)
+                {
+                    clip.MaterialUVBindings = expression?.TextureTransformBinds?.Select(x => x.Build10(MaterialFactory.Materials))
+                        .Where(x => x.HasValue)
+                        .Select(x => x.Value)
+                        .ToArray();
+                }
+                else
+                {
+                    clip.MaterialUVBindings = new MaterialUVBinding[] { };
+                }
+
                 m_expressions.Add(clip);
             }
             return clip;
