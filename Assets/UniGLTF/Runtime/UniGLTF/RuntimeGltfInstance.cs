@@ -18,7 +18,7 @@ namespace UniGLTF
 
         /// <summary>
         /// Runtime resources.
-        /// ex. Material, Texture, Mesh.
+        /// ex. Material, Texture, AnimationClip, Mesh.
         /// </summary>
         public IReadOnlyList<(SubAssetKey, UnityEngine.Object)> RuntimeResources => _resources;
 
@@ -31,6 +31,11 @@ namespace UniGLTF
         /// Textures.
         /// </summary>
         public IReadOnlyList<Texture> Textures => _textures;
+
+        /// <summary>
+        /// Animation Clips.
+        /// </summary>
+        public IReadOnlyList<AnimationClip> AnimationClips => _animationClips;
 
         /// <summary>
         /// Meshes.
@@ -56,6 +61,7 @@ namespace UniGLTF
         private readonly List<(SubAssetKey, UnityEngine.Object)> _resources = new List<(SubAssetKey, UnityEngine.Object)>();
         private readonly List<Material> _materials = new List<Material>();
         private readonly List<Texture> _textures = new List<Texture>();
+        private readonly List<AnimationClip> _animationClips = new List<AnimationClip>();
         private readonly List<Mesh> _meshes = new List<Mesh>();
         private readonly List<Renderer> _renderers = new List<Renderer>();
         private readonly List<MeshRenderer> _meshRenderers = new List<MeshRenderer>();
@@ -77,6 +83,9 @@ namespace UniGLTF
                         break;
                     case Texture texture:
                         loaded._textures.Add(texture);
+                        break;
+                    case AnimationClip animationClip:
+                        loaded._animationClips.Add(animationClip);
                         break;
                     case Mesh mesh:
                         loaded._meshes.Add(mesh);
