@@ -104,7 +104,7 @@ namespace UniGLTF
 
         public void ShowMeshes()
         {
-            foreach (var r in GetComponentsInChildren<Renderer>())
+            foreach (var r in Renderers)
             {
                 r.enabled = true;
             }
@@ -112,9 +112,9 @@ namespace UniGLTF
 
         public void EnableUpdateWhenOffscreen()
         {
-            foreach (var smr in GetComponentsInChildren<SkinnedMeshRenderer>())
+            foreach (var skinnedMeshRenderer in SkinnedMeshRenderers)
             {
-                smr.updateWhenOffscreen = true;
+                skinnedMeshRenderer.updateWhenOffscreen = true;
             }
         }
 
