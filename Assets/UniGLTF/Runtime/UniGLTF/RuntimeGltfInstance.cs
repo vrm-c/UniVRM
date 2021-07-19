@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using VRMShaders;
 
@@ -14,7 +15,12 @@ namespace UniGLTF
         /// <summary>
         /// this is UniGLTF root gameObject
         /// </summary>
-        public GameObject Root => this.gameObject;
+        public GameObject Root => (this != null) ? this.gameObject : null;
+
+        /// <summary>
+        /// Transforms with gltf node index.
+        /// </summary>
+        public IReadOnlyList<Transform> Nodes => _nodes;
 
         /// <summary>
         /// Runtime resources.
@@ -58,6 +64,7 @@ namespace UniGLTF
         /// </summary>
         public IReadOnlyList<SkinnedMeshRenderer> SkinnedMeshRenderers => _skinnedMeshRenderers;
 
+        private readonly List<Transform> _nodes = new List<Transform>();
         private readonly List<(SubAssetKey, UnityEngine.Object)> _resources = new List<(SubAssetKey, UnityEngine.Object)>();
         private readonly List<Material> _materials = new List<Material>();
         private readonly List<Texture> _textures = new List<Texture>();
@@ -70,11 +77,19 @@ namespace UniGLTF
         public static RuntimeGltfInstance AttachTo(GameObject go, ImporterContext context)
         {
             var loaded = go.AddComponent<RuntimeGltfInstance>();
+
+            foreach (var node in context.Nodes)
+            {
+                // Maintain index order.
+                loaded._nodes.Add(node);
+            }
+
             context.TransferOwnership((k, o) =>
             {
                 if (o == null) return;
 
                 loaded._resources.Add((k, o));
+
 
                 switch (o)
                 {
