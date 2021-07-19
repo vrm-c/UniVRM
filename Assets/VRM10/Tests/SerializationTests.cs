@@ -212,7 +212,7 @@ namespace UniVRM10
                 data.OverrideBlink = UniGLTF.Extensions.VRMC_vrm.ExpressionOverrideType.block;
 
                 var json = Serialize(data, UniGLTF.Extensions.VRMC_vrm.GltfSerializer.__expressions_Serialize_Custom_ITEM);
-                Assert.AreEqual($"{{{q}preset{q}:{q}custom{q},{q}overrideBlink{q}:{q}block{q},{q}overrideLookAt{q}:{q}none{q},{q}overrideMouth{q}:{q}none{q}}}", json);
+                Assert.AreEqual($"{{{q}overrideBlink{q}:{q}block{q},{q}overrideLookAt{q}:{q}none{q},{q}overrideMouth{q}:{q}none{q}}}", json);
             }
 
             {
