@@ -247,6 +247,11 @@ namespace UniGLTF
             MeshBlendShapeIndexMap = new Dictionary<Mesh, Dictionary<int, int>>();
             foreach (var unityMesh in uniqueUnityMeshes)
             {
+                if (!unityMesh.CanExport)
+                {
+                    continue;
+                }
+
                 var (gltfMesh, blendShapeIndexMap) = meshExportSettings.DivideVertexBuffer
                     ? MeshExporter_DividedVertexBuffer.Export(glTF, bufferIndex, unityMesh, Materials, m_settings.InverseAxis.Create(), meshExportSettings)
                     : MeshExporter_SharedVertexBuffer.Export(glTF, bufferIndex, unityMesh, Materials, m_settings.InverseAxis.Create(), meshExportSettings)
