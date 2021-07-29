@@ -11,7 +11,7 @@ namespace UniVRM10
     public class ExpressionEditor : Editor
     {
         /// <summary>
-        /// PreviewRenderUtilityを管理する。
+        /// Preview(Inspectorの下方)を描画するクラス
         /// 
         /// * PreviewRenderUtility.m_cameraのUnityVersionによる切り分け
         /// 
@@ -19,7 +19,8 @@ namespace UniVRM10
         PreviewFaceRenderer m_renderer;
 
         /// <summary>
-        /// Prefabをインスタンス化したシーンを管理する。
+        /// Previewを描画するのにシーンが必用である。
+        /// m_target.Prefabをインスタンス化したシーンを管理する。
         /// 
         /// * ExpressionのBake
         /// * MaterialMorphの適用
@@ -28,44 +29,6 @@ namespace UniVRM10
         /// 
         /// </summary>
         PreviewSceneManager m_scene;
-        PreviewSceneManager PreviewSceneManager
-        {
-            get { return m_scene; }
-        }
-
-        /// <summary>
-        /// Previewシーンに表示するPrefab
-        /// </summary>
-        GameObject m_prefab;
-        GameObject Prefab
-        {
-            get { return m_prefab; }
-            set
-            {
-                if (m_prefab == value) return;
-
-                //Debug.LogFormat("Prefab = {0}", value);
-                m_prefab = value;
-
-                if (m_scene != null)
-                {
-                    //Debug.LogFormat("OnDestroy");
-                    GameObject.DestroyImmediate(m_scene.gameObject);
-                    m_scene = null;
-                }
-
-                if (m_prefab != null)
-                {
-                    m_scene = UniVRM10.PreviewSceneManager.GetOrCreate(m_prefab);
-                    if (m_scene != null)
-                    {
-                        m_scene.gameObject.SetActive(false);
-                    }
-
-                    Bake();
-                }
-            }
-        }
 
         /// <summary>
         /// Preview シーンに Expression を適用する
@@ -79,11 +42,32 @@ namespace UniVRM10
             }
         }
 
+        void ClearScene()
+        {
+            if (m_scene != null)
+            {
+                //Debug.LogFormat("OnDestroy");
+                m_scene.Clean();
+                GameObject.DestroyImmediate(m_scene.gameObject);
+                m_scene = null;
+            }
+        }
+
+        void PrefabGUI()
+        {
+            var prefab = (GameObject)EditorGUILayout.ObjectField("Preview Prefab", m_target.Prefab, typeof(GameObject), false);
+            if (prefab == m_target.Prefab)
+            {
+                return;
+            }
+            ClearScene();
+            m_target.Prefab = prefab;
+        }
+
         void OnEnable()
         {
             m_target = (VRM10Expression)target;
             m_renderer = new PreviewFaceRenderer();
-            Prefab = GetPrefab();
         }
 
         void OnDisable()
@@ -100,17 +84,6 @@ namespace UniVRM10
         {
             // 2018/2019 で OnDisable/OnDestroy の呼ばれ方が違う？
             ClearScene();
-        }
-
-        void ClearScene()
-        {
-            if (m_scene != null)
-            {
-                //Debug.LogFormat("OnDestroy");
-                m_scene.Clean();
-                GameObject.DestroyImmediate(m_scene.gameObject);
-                m_scene = null;
-            }
         }
 
         static void Separator()
@@ -262,11 +235,6 @@ namespace UniVRM10
             return m_target;
         }
 
-        GameObject GetPrefab()
-        {
-            return m_target.Prefab;
-        }
-
         float m_previewSlider = 1.0f;
 
         static Texture2D SaveResizedImage(RenderTexture rt, UnityPath path, int size)
@@ -310,51 +278,54 @@ namespace UniVRM10
 
         public override void OnInspectorGUI()
         {
-            if (PreviewSceneManager == null)
-            {
-                return;
-            }
+            var changed = false;
             serializedObject.Update();
 
-            if (m_serializedEditor == null)
-            {
-                m_serializedEditor = new SerializedExpressionEditor(serializedObject, PreviewSceneManager);
-            }
-
             EditorGUILayout.BeginHorizontal();
-
-            var changed = false;
             EditorGUILayout.BeginVertical();
-
-            Prefab = (GameObject)EditorGUILayout.ObjectField("Preview Prefab", Prefab, typeof(GameObject), false);
+            PrefabGUI();
             EditorGUILayout.LabelField("Preview Weight");
             var previewSlider = EditorGUILayout.Slider(m_previewSlider, 0, 1.0f);
-
-            EditorGUILayout.EndVertical();
-
-            if (m_serializedEditor.IsBinary)
+            if (m_target.IsBinary)
             {
                 previewSlider = Mathf.Round(previewSlider);
             }
-
             if (previewSlider != m_previewSlider)
             {
                 m_previewSlider = previewSlider;
                 changed = true;
             }
-
+            EditorGUILayout.EndVertical();
             EditorGUILayout.EndHorizontal();
             Separator();
-            // EditorGUILayout.Space();
 
-            if (m_serializedEditor.Draw(out VRM10Expression bakeValue))
+            if (m_scene == null)
             {
-                changed = true;
+                if (m_target.Prefab != null)
+                {
+                    m_scene = UniVRM10.PreviewSceneManager.GetOrCreate(m_target.Prefab);
+                    if (m_scene != null)
+                    {
+                        m_scene.gameObject.SetActive(false);
+                    }
+                    Bake();
+                }
             }
 
-            if (changed && PreviewSceneManager != null)
+            if (m_scene != null)
             {
-                PreviewSceneManager.Bake(bakeValue, m_previewSlider);
+                if (m_serializedEditor == null)
+                {
+                    m_serializedEditor = new SerializedExpressionEditor(serializedObject, m_scene);
+                }
+                if (m_serializedEditor.Draw(out VRM10Expression bakeValue))
+                {
+                    changed = true;
+                }
+                if (changed)
+                {
+                    m_scene.Bake(bakeValue, m_previewSlider);
+                }
             }
 
             serializedObject.ApplyModifiedProperties();
