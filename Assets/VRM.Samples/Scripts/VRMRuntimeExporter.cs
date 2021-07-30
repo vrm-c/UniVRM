@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Linq;
 using UniGLTF;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,6 +15,9 @@ namespace VRM.Samples
         [SerializeField] Button m_loadButton = default;
 
         [SerializeField] Button m_exportButton = default;
+
+        [SerializeField]
+        public bool UseNormalize = true;
 
         GameObject m_model;
 
@@ -92,10 +97,33 @@ namespace VRM.Samples
                 return;
             }
 
-            var vrm = VRMExporter.Export(new UniGLTF.GltfExportSettings(), m_model, new RuntimeTextureSerializer());
-            var bytes = vrm.ToGlbBytes();
+            var bytes = UseNormalize ? ExportCustom(m_model) : ExportSimple(m_model);
+
             File.WriteAllBytes(path, bytes);
             Debug.LogFormat("export to {0}", path);
+        }
+
+        static byte[] ExportSimple(GameObject model)
+        {
+            var vrm = VRMExporter.Export(new UniGLTF.GltfExportSettings(), model, new RuntimeTextureSerializer());
+            var bytes = vrm.ToGlbBytes();
+            return bytes;
+        }
+
+        static byte[] ExportCustom(GameObject exportRoot, bool forceTPose = false)
+        {
+            // normalize
+            var target = VRMBoneNormalizer.Execute(exportRoot, forceTPose);
+
+            try
+            {
+                return ExportSimple(target);
+            }
+            finally
+            {
+                // cleanup
+                GameObject.Destroy(target);
+            }
         }
 
         void OnExported(UniGLTF.glTF vrm)
