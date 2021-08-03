@@ -377,13 +377,16 @@ namespace UniVRM10
                 vrm.Expression.LookDown = GetOrLoadExpression(ExpressionKey.LookDown.SubAssetKey, vrmExtension.Expressions.Preset.LookDown);
                 vrm.Expression.LookLeft = GetOrLoadExpression(ExpressionKey.LookLeft.SubAssetKey, vrmExtension.Expressions.Preset.LookLeft);
                 vrm.Expression.LookRight = GetOrLoadExpression(ExpressionKey.LookRight.SubAssetKey, vrmExtension.Expressions.Preset.LookRight);
-                foreach (var (name, expression) in vrmExtension.Expressions.Custom)
+                if (vrmExtension.Expressions.Custom != null)
                 {
-                    var key = ExpressionKey.CreateCustom(name);
-                    var clip = GetOrLoadExpression(key.SubAssetKey, expression);
-                    if (clip != null)
+                    foreach (var (name, expression) in vrmExtension.Expressions.Custom)
                     {
-                        vrm.Expression.AddClip(clip);
+                        var key = ExpressionKey.CreateCustom(name);
+                        var clip = GetOrLoadExpression(key.SubAssetKey, expression);
+                        if (clip != null)
+                        {
+                            vrm.Expression.AddClip(clip);
+                        }
                     }
                 }
             }
