@@ -45,9 +45,13 @@ namespace UniVRM10
             if (expressions?.Preset?.LookDown != null) yield return ExpressionKey.LookDown.SubAssetKey;
             if (expressions?.Preset?.LookLeft != null) yield return ExpressionKey.LookLeft.SubAssetKey;
             if (expressions?.Preset?.LookRight != null) yield return ExpressionKey.LookRight.SubAssetKey;
-            foreach (var kv in expressions.Custom)
+
+            if (expressions.Custom != null)
             {
-                yield return ExpressionKey.CreateCustom(kv.Key).SubAssetKey;
+                foreach (var kv in expressions.Custom)
+                {
+                    yield return ExpressionKey.CreateCustom(kv.Key).SubAssetKey;
+                }
             }
         }
 
