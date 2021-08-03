@@ -58,12 +58,18 @@ namespace UniVRM10
 
             var path = GetAndCreateFolder(importer.assetPath, ".vrm1.Assets");
 
+            var assets = AssetDatabase.LoadAllAssetsAtPath(importer.assetPath);
+            var prefab = assets.First(x => x is GameObject) as GameObject;
+
             // expression を extract し置き換え map を作る
             var map = new Dictionary<VRM10Expression, VRM10Expression>();
-            foreach (var asset in AssetDatabase.LoadAllAssetsAtPath(importer.assetPath))
+            foreach (var asset in assets)
             {
                 if (asset is VRM10Expression expression)
                 {
+                    // preview用のprefab
+                    expression.Prefab = prefab;
+
                     var clone = ExtractSubAsset(asset, $"{path}/{asset.name}.asset", false);
                     map.Add(expression, clone as VRM10Expression);
                 }

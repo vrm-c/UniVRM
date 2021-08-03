@@ -81,7 +81,7 @@ namespace UniGLTF
             {
                 foreach (var key in m_keys)
                 {
-                    if (k.type.IsAssignableFrom(key.Type))
+                    if (k.type != null && k.type.IsAssignableFrom(key.Type))
                     {
                         return false;
                     }
