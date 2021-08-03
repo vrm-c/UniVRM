@@ -28,23 +28,28 @@ namespace UniVRM10
 
         IEnumerable<SubAssetKey> EnumerateExpressinKeys(UniGLTF.Extensions.VRMC_vrm.Expressions expressions)
         {
-            if (expressions?.Preset?.Happy != null) yield return ExpressionKey.Happy.SubAssetKey;
-            if (expressions?.Preset?.Angry != null) yield return ExpressionKey.Angry.SubAssetKey;
-            if (expressions?.Preset?.Sad != null) yield return ExpressionKey.Sad.SubAssetKey;
-            if (expressions?.Preset?.Relaxed != null) yield return ExpressionKey.Relaxed.SubAssetKey;
-            if (expressions?.Preset?.Surprised != null) yield return ExpressionKey.Surprised.SubAssetKey;
-            if (expressions?.Preset?.Aa != null) yield return ExpressionKey.Aa.SubAssetKey;
-            if (expressions?.Preset?.Ih != null) yield return ExpressionKey.Ih.SubAssetKey;
-            if (expressions?.Preset?.Ou != null) yield return ExpressionKey.Ou.SubAssetKey;
-            if (expressions?.Preset?.Ee != null) yield return ExpressionKey.Ee.SubAssetKey;
-            if (expressions?.Preset?.Oh != null) yield return ExpressionKey.Oh.SubAssetKey;
-            if (expressions?.Preset?.Blink != null) yield return ExpressionKey.Blink.SubAssetKey;
-            if (expressions?.Preset?.BlinkLeft != null) yield return ExpressionKey.BlinkLeft.SubAssetKey;
-            if (expressions?.Preset?.BlinkRight != null) yield return ExpressionKey.BlinkRight.SubAssetKey;
-            if (expressions?.Preset?.LookUp != null) yield return ExpressionKey.LookUp.SubAssetKey;
-            if (expressions?.Preset?.LookDown != null) yield return ExpressionKey.LookDown.SubAssetKey;
-            if (expressions?.Preset?.LookLeft != null) yield return ExpressionKey.LookLeft.SubAssetKey;
-            if (expressions?.Preset?.LookRight != null) yield return ExpressionKey.LookRight.SubAssetKey;
+            if (expressions == null)
+            {
+                yield break;
+            }
+
+            if (expressions.Preset?.Happy != null) yield return ExpressionKey.Happy.SubAssetKey;
+            if (expressions.Preset?.Angry != null) yield return ExpressionKey.Angry.SubAssetKey;
+            if (expressions.Preset?.Sad != null) yield return ExpressionKey.Sad.SubAssetKey;
+            if (expressions.Preset?.Relaxed != null) yield return ExpressionKey.Relaxed.SubAssetKey;
+            if (expressions.Preset?.Surprised != null) yield return ExpressionKey.Surprised.SubAssetKey;
+            if (expressions.Preset?.Aa != null) yield return ExpressionKey.Aa.SubAssetKey;
+            if (expressions.Preset?.Ih != null) yield return ExpressionKey.Ih.SubAssetKey;
+            if (expressions.Preset?.Ou != null) yield return ExpressionKey.Ou.SubAssetKey;
+            if (expressions.Preset?.Ee != null) yield return ExpressionKey.Ee.SubAssetKey;
+            if (expressions.Preset?.Oh != null) yield return ExpressionKey.Oh.SubAssetKey;
+            if (expressions.Preset?.Blink != null) yield return ExpressionKey.Blink.SubAssetKey;
+            if (expressions.Preset?.BlinkLeft != null) yield return ExpressionKey.BlinkLeft.SubAssetKey;
+            if (expressions.Preset?.BlinkRight != null) yield return ExpressionKey.BlinkRight.SubAssetKey;
+            if (expressions.Preset?.LookUp != null) yield return ExpressionKey.LookUp.SubAssetKey;
+            if (expressions.Preset?.LookDown != null) yield return ExpressionKey.LookDown.SubAssetKey;
+            if (expressions.Preset?.LookLeft != null) yield return ExpressionKey.LookLeft.SubAssetKey;
+            if (expressions.Preset?.LookRight != null) yield return ExpressionKey.LookRight.SubAssetKey;
 
             if (expressions.Custom != null)
             {
