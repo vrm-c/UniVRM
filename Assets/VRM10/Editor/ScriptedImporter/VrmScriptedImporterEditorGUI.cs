@@ -18,7 +18,6 @@ namespace UniVRM10
     [CustomEditor(typeof(VrmScriptedImporter))]
     public class VrmScriptedImporterEditorGUI : RemapScriptedImporterEditorBase
     {
-        VrmScriptedImporter m_importer;
         VrmLib.Model m_model;
 
         RemapEditorMaterial m_materialEditor;
@@ -64,8 +63,9 @@ namespace UniVRM10
         {
             base.OnEnable();
 
-            m_importer = target as VrmScriptedImporter;
-            if (!Vrm10Parser.TryParseOrMigrate(m_importer.assetPath, m_importer.MigrateToVrm1, out m_result))
+            var importer = target as VrmScriptedImporter;
+            m_importer = importer;
+            if (!Vrm10Parser.TryParseOrMigrate(m_importer.assetPath, importer.MigrateToVrm1, out m_result))
             {
                 // error
                 return;
@@ -102,6 +102,7 @@ namespace UniVRM10
                         {
                             case Vrm10FileType.Vrm1:
                                 EditorGUILayout.HelpBox(m_result.Message, MessageType.Info);
+                                ApplyRevertGUI();
                                 break;
 
                             case Vrm10FileType.Vrm0:
@@ -111,6 +112,7 @@ namespace UniVRM10
                                 break;
 
                             default:
+                                ApplyRevertGUI();
                                 break;
                         }
                     }
@@ -122,7 +124,7 @@ namespace UniVRM10
                         m_materialEditor.OnGUI(m_importer, m_result.Data, new Vrm10TextureDescriptorGenerator(m_result.Data),
                             assetPath => $"{Path.GetFileNameWithoutExtension(assetPath)}.vrm1.Textures",
                             assetPath => $"{Path.GetFileNameWithoutExtension(assetPath)}.vrm1.Materials");
-                        RevertApplyRemapGUI(m_importer);
+                        ApplyRevertGUI();
                     }
                     break;
 
@@ -130,7 +132,7 @@ namespace UniVRM10
                     if (m_result.Data != null && m_result.Vrm != null)
                     {
                         m_vrmEditor.OnGUI(m_importer, m_result.Data, m_result.Vrm);
-                        RevertApplyRemapGUI(m_importer);
+                        ApplyRevertGUI();
                     }
                     break;
             }

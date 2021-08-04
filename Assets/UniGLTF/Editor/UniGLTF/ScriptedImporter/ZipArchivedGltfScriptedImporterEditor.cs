@@ -14,7 +14,6 @@ namespace UniGLTF
     [CustomEditor(typeof(ZipArchivedGltfScriptedImporter))]
     public class ZipArchivedGltfScriptedImporterEditor : RemapScriptedImporterEditorBase
     {
-        ZipArchivedGltfScriptedImporter m_importer;
         GltfData m_data;
 
         RemapEditorMaterial m_materialEditor;
@@ -55,7 +54,7 @@ namespace UniGLTF
 
                 case Tabs.Animation:
                     m_animationEditor.OnGUI(m_importer, m_data);
-                    RevertApplyRemapGUI(m_importer);
+                    ApplyRevertGUI();
                     break;
 
                 case Tabs.Materials:
@@ -63,7 +62,7 @@ namespace UniGLTF
                     new GltfTextureDescriptorGenerator(m_data),
                     assetPath => $"{Path.GetFileNameWithoutExtension(assetPath)}.Textures",
                     assetPath => $"{Path.GetFileNameWithoutExtension(assetPath)}.Materials");
-                    RevertApplyRemapGUI(m_importer);
+                    ApplyRevertGUI();
                     break;
             }
         }
