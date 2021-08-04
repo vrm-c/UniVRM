@@ -2,8 +2,6 @@ using UnityEditor;
 using UnityEngine;
 using System.IO;
 using System.Linq;
-using System.Collections.Generic;
-using VRMShaders;
 #if UNITY_2020_2_OR_NEWER
 using UnityEditor.AssetImporters;
 #else
@@ -16,7 +14,6 @@ namespace UniGLTF
     [CustomEditor(typeof(GltfScriptedImporter))]
     public class GltfScriptedImporterEditor : RemapScriptedImporterEditorBase
     {
-        GltfScriptedImporter m_importer;
         GltfData m_data;
 
         RemapEditorMaterial m_materialEditor;
@@ -57,7 +54,7 @@ namespace UniGLTF
 
                 case Tabs.Animation:
                     m_animationEditor.OnGUI(m_importer, m_data);
-                    RevertApplyRemapGUI(m_importer);
+                    ApplyRevertGUI();
                     break;
 
                 case Tabs.Materials:
@@ -65,7 +62,7 @@ namespace UniGLTF
                     new GltfTextureDescriptorGenerator(m_data),
                     assetPath => $"{Path.GetFileNameWithoutExtension(assetPath)}.Textures",
                     assetPath => $"{Path.GetFileNameWithoutExtension(assetPath)}.Materials");
-                    RevertApplyRemapGUI(m_importer);
+                    ApplyRevertGUI();
                     break;
             }
         }
