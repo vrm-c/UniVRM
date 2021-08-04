@@ -1,19 +1,24 @@
 {
     "name": "UniHumanoid.Editor.Tests",
     "references": [
-        "VRM",
-        "UniHumanoid"
-    ],
-    "optionalUnityReferences": [
-        "TestAssemblies"
+        "GUID:05dd262a0c0a2f841b8252c8c3815582",
+        "GUID:b7aa47b240b57de44a4b2021c143c9bf",
+        "GUID:27619889b8ba8c24980f49ee34dbb44a",
+        "GUID:0acc523941302664db1f4e527237feb3"
     ],
     "includePlatforms": [
         "Editor"
     ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
-    "overrideReferences": false,
-    "precompiledReferences": [],
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
     "autoReferenced": false,
-    "defineConstraints": []
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

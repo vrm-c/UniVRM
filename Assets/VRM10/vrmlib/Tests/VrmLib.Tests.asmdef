@@ -1,20 +1,24 @@
 {
     "name": "VrmLibTests",
     "references": [
-        "VrmLib"
-    ],
-    "optionalUnityReferences": [
-        "TestAssemblies"
+        "GUID:2ef84b520212e174a94668c7a0862d3b",
+        "GUID:27619889b8ba8c24980f49ee34dbb44a",
+        "GUID:0acc523941302664db1f4e527237feb3"
     ],
     "includePlatforms": [
         "Editor"
     ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
-    "overrideReferences": false,
-    "precompiledReferences": [],
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
     "autoReferenced": false,
     "defineConstraints": [
+        "UNITY_INCLUDE_TESTS",
         "UNITY_INCLUDE_TESTS"
-    ]
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

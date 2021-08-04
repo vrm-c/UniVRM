@@ -1,9 +1,8 @@
 {
     "name": "VRMShaders.VRM10.MToon10.Editor",
     "references": [
-        "VRMShaders.VRM10.MToon10.Runtime"
+        "GUID:0aaf403bd13871a44b7127aef2695ff8"
     ],
-    "optionalUnityReferences": [],
     "includePlatforms": [
         "Editor"
     ],
@@ -12,5 +11,7 @@
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": false,
-    "defineConstraints": []
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }
