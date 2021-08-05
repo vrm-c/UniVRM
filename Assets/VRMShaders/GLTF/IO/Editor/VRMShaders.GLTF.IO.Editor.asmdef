@@ -1,9 +1,8 @@
 {
     "name": "VRMShaders.GLTF.IO.Editor",
     "references": [
-        "VRMShaders.GLTF.IO.Runtime"
+        "GUID:da3e51d19d51a544fa14d43fee843098"
     ],
-    "optionalUnityReferences": [],
     "includePlatforms": [
         "Editor"
     ],
@@ -12,5 +11,7 @@
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": false,
-    "defineConstraints": []
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

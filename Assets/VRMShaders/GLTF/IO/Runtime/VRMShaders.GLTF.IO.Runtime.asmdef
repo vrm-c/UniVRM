@@ -1,14 +1,15 @@
 {
     "name": "VRMShaders.GLTF.IO.Runtime",
     "references": [
-        "VRMShaders.GLTF.UniUnlit.Runtime"
+        "GUID:60c8346e00a8ddd4cafc5a02eceeec57"
     ],
-    "optionalUnityReferences": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
-    "defineConstraints": []
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }
