@@ -28,14 +28,14 @@ namespace UniVRM10
             Undo.willFlushUndoRecord += Repaint;
             UnityEditor.Selection.selectionChanged += Repaint;
 
-            SceneView.onSceneGUIDelegate += OnSceneGUI;
+            SceneView.duringSceneGui += OnSceneGUI;
         }
 
         void OnDisable()
         {
             SpringBoneEditor.Disable();
 
-            SceneView.onSceneGUIDelegate -= OnSceneGUI;
+            SceneView.duringSceneGui -= OnSceneGUI;
             // Debug.Log("OnDisable");
             UnityEditor.Selection.selectionChanged -= Repaint;
             Undo.willFlushUndoRecord -= Repaint;
