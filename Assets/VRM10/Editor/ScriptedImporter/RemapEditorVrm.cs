@@ -78,6 +78,8 @@ namespace UniVRM10
             // vrmObject の expression を置き換える
             var vrmObject = AssetDatabase.LoadAllAssetsAtPath(importer.assetPath).First(x => x is VRM10Object) as VRM10Object;
             vrmObject.Expression.Replace(map);
+            vrmObject.Prefab = prefab; // for FirstPerson Editor
+
             // extract
             ExtractSubAsset(vrmObject, $"{path}/{vrmObject.name}.asset", false);
 

@@ -11,20 +11,21 @@ namespace UniVRM10
     {
         [SerializeField]
         public List<RendererFirstPersonFlags> Renderers = new List<RendererFirstPersonFlags>();
+        public void SetDefault(Transform root)
+        {
+            Renderers.Clear();
 
-        // public void CopyTo(GameObject _dst, Dictionary<Transform, Transform> map)
-        // {
-        //     var dst = _dst.GetOrAddComponent<VRM10Controller>();
-        //     dst.Vrm.FirstPerson.Renderers = Renderers.Select(x =>
-        //     {
-        //         var renderer = map[x.Renderer.transform].GetComponent<Renderer>();
-        //         return new RendererFirstPersonFlags
-        //         {
-        //             Renderer = renderer,
-        //             FirstPersonFlag = x.FirstPersonFlag,
-        //         };
-        //     }).ToList();
-        // }
+            var renderers = root.GetComponentsInChildren<Renderer>();
+            var paths = renderers.Select(x => x.transform.RelativePathFrom(root)).ToArray();
+            foreach (var path in paths)
+            {
+                Renderers.Add(new RendererFirstPersonFlags
+                {
+                    FirstPersonFlag = UniGLTF.Extensions.VRMC_vrm.FirstPersonType.auto,
+                    Renderer = path,
+                });
+            }
+        }
 
         // If no layer names are set, use the default layer IDs.
         // Otherwise use the two Unity layers called "VRMFirstPersonOnly" and "VRMThirdPersonOnly".

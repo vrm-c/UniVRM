@@ -1,5 +1,7 @@
-﻿using UniGLTF;
+﻿using System.Linq;
+using UniGLTF;
 using UnityEditor;
+using UnityEngine;
 
 namespace UniVRM10
 {
@@ -22,7 +24,7 @@ namespace UniVRM10
         SerializedPropertyEditor m_meta;
         SerializedPropertyEditor m_lookAt;
         SerializedPropertyEditor m_firstPerson;
-        SerializedPropertyEditor m_asset;
+        SerializedProperty m_prefab;
 
         void OnEnable()
         {
@@ -36,10 +38,22 @@ namespace UniVRM10
             m_meta = VRM10MetaEditor.Create(serializedObject);
             m_lookAt = SerializedPropertyEditor.Create(serializedObject, nameof(m_target.LookAt));
             m_firstPerson = SerializedPropertyEditor.Create(serializedObject, nameof(m_target.FirstPerson));
+
+            m_prefab = serializedObject.FindProperty("m_prefab");
         }
 
         public override void OnInspectorGUI()
         {
+            // prefab
+            if (_tab == Tabs.FirstPerson && m_prefab.objectReferenceValue == null)
+            {
+                EditorGUILayout.HelpBox("required !", MessageType.Error);
+            }
+            serializedObject.Update();
+            EditorGUILayout.ObjectField(m_prefab);
+            serializedObject.ApplyModifiedProperties();
+            EditorGUILayout.Separator();
+
             // select sub editor
             using (new EnabledScope())
             {
@@ -62,6 +76,14 @@ namespace UniVRM10
                     break;
 
                 case Tabs.FirstPerson:
+                    using (new EditorGUI.DisabledScope(m_target.Prefab == null))
+                    {
+                        if (GUILayout.Button("set default"))
+                        {
+                            m_target.FirstPerson.SetDefault(m_target.Prefab.transform);
+                        }
+                        EditorGUILayout.HelpBox("Clear Renderers and add all renderers (Auto)", MessageType.Info);
+                    }
                     m_firstPerson.OnInspectorGUI();
                     break;
             }
