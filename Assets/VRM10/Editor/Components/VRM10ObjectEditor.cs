@@ -22,7 +22,7 @@ namespace UniVRM10
         SerializedPropertyEditor m_meta;
         SerializedPropertyEditor m_lookAt;
         SerializedPropertyEditor m_firstPerson;
-        SerializedPropertyEditor m_asset;
+        SerializedProperty m_prefab;
 
         void OnEnable()
         {
@@ -36,10 +36,22 @@ namespace UniVRM10
             m_meta = VRM10MetaEditor.Create(serializedObject);
             m_lookAt = SerializedPropertyEditor.Create(serializedObject, nameof(m_target.LookAt));
             m_firstPerson = SerializedPropertyEditor.Create(serializedObject, nameof(m_target.FirstPerson));
+
+            m_prefab = serializedObject.FindProperty("m_prefab");
         }
 
         public override void OnInspectorGUI()
         {
+            // prefab
+            if (_tab == Tabs.FirstPerson && m_prefab.objectReferenceValue == null)
+            {
+                EditorGUILayout.HelpBox("required !", MessageType.Error);
+            }
+            serializedObject.Update();
+            EditorGUILayout.ObjectField(m_prefab);
+            serializedObject.ApplyModifiedProperties();
+            EditorGUILayout.Separator();
+
             // select sub editor
             using (new EnabledScope())
             {
