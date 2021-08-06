@@ -83,7 +83,6 @@ namespace UniVRM10
                 mtoon.ShadingToonyFactor = context.ShadingToonyFactor;
 
                 // GI
-                // TODO: update schema
                 mtoon.GiEqualizationFactor = context.GiEqualizationFactor;
 
                 // Emission
