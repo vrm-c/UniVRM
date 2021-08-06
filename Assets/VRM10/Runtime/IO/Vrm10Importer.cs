@@ -246,11 +246,6 @@ namespace UniVRM10
 
         VRM10Expression GetOrLoadExpression(in SubAssetKey key, UniGLTF.Extensions.VRMC_vrm.Expression expression)
         {
-            if (expression == null)
-            {
-                return null;
-            }
-
             VRM10Expression clip = default;
             if (m_externalMap.TryGetValue(key, out UnityEngine.Object expressionObj))
             {
@@ -258,6 +253,17 @@ namespace UniVRM10
             }
             else
             {
+                if (expression == null)
+                {
+                    // default empty expression
+                    expression = new UniGLTF.Extensions.VRMC_vrm.Expression
+                    {
+                        IsBinary = false,
+                        OverrideBlink = UniGLTF.Extensions.VRMC_vrm.ExpressionOverrideType.none,
+                        OverrideLookAt = UniGLTF.Extensions.VRMC_vrm.ExpressionOverrideType.none,
+                        OverrideMouth = UniGLTF.Extensions.VRMC_vrm.ExpressionOverrideType.none,
+                    };
+                }
                 clip = ScriptableObject.CreateInstance<UniVRM10.VRM10Expression>();
                 clip.Preset = ExpressionPreset.custom;
                 clip.ExpressionName = key.Name;
@@ -358,26 +364,25 @@ namespace UniVRM10
             }
 
             // expression
-            if (vrmExtension.Expressions != null)
             {
-                vrm.Expression.Happy = GetOrLoadExpression(ExpressionKey.Happy.SubAssetKey, vrmExtension.Expressions.Preset.Happy);
-                vrm.Expression.Angry = GetOrLoadExpression(ExpressionKey.Angry.SubAssetKey, vrmExtension.Expressions.Preset.Angry);
-                vrm.Expression.Sad = GetOrLoadExpression(ExpressionKey.Sad.SubAssetKey, vrmExtension.Expressions.Preset.Sad);
-                vrm.Expression.Relaxed = GetOrLoadExpression(ExpressionKey.Relaxed.SubAssetKey, vrmExtension.Expressions.Preset.Relaxed);
-                vrm.Expression.Surprised = GetOrLoadExpression(ExpressionKey.Surprised.SubAssetKey, vrmExtension.Expressions.Preset.Surprised);
-                vrm.Expression.Aa = GetOrLoadExpression(ExpressionKey.Aa.SubAssetKey, vrmExtension.Expressions.Preset.Aa);
-                vrm.Expression.Ih = GetOrLoadExpression(ExpressionKey.Ih.SubAssetKey, vrmExtension.Expressions.Preset.Ih);
-                vrm.Expression.Ou = GetOrLoadExpression(ExpressionKey.Ou.SubAssetKey, vrmExtension.Expressions.Preset.Ou);
-                vrm.Expression.Ee = GetOrLoadExpression(ExpressionKey.Ee.SubAssetKey, vrmExtension.Expressions.Preset.Ee);
-                vrm.Expression.Oh = GetOrLoadExpression(ExpressionKey.Oh.SubAssetKey, vrmExtension.Expressions.Preset.Oh);
-                vrm.Expression.Blink = GetOrLoadExpression(ExpressionKey.Blink.SubAssetKey, vrmExtension.Expressions.Preset.Blink);
-                vrm.Expression.BlinkLeft = GetOrLoadExpression(ExpressionKey.BlinkLeft.SubAssetKey, vrmExtension.Expressions.Preset.BlinkLeft);
-                vrm.Expression.BlinkRight = GetOrLoadExpression(ExpressionKey.BlinkRight.SubAssetKey, vrmExtension.Expressions.Preset.BlinkRight);
-                vrm.Expression.LookUp = GetOrLoadExpression(ExpressionKey.LookUp.SubAssetKey, vrmExtension.Expressions.Preset.LookUp);
-                vrm.Expression.LookDown = GetOrLoadExpression(ExpressionKey.LookDown.SubAssetKey, vrmExtension.Expressions.Preset.LookDown);
-                vrm.Expression.LookLeft = GetOrLoadExpression(ExpressionKey.LookLeft.SubAssetKey, vrmExtension.Expressions.Preset.LookLeft);
-                vrm.Expression.LookRight = GetOrLoadExpression(ExpressionKey.LookRight.SubAssetKey, vrmExtension.Expressions.Preset.LookRight);
-                if (vrmExtension.Expressions.Custom != null)
+                vrm.Expression.Happy = GetOrLoadExpression(ExpressionKey.Happy.SubAssetKey, vrmExtension.Expressions?.Preset?.Happy);
+                vrm.Expression.Angry = GetOrLoadExpression(ExpressionKey.Angry.SubAssetKey, vrmExtension.Expressions?.Preset?.Angry);
+                vrm.Expression.Sad = GetOrLoadExpression(ExpressionKey.Sad.SubAssetKey, vrmExtension.Expressions?.Preset?.Sad);
+                vrm.Expression.Relaxed = GetOrLoadExpression(ExpressionKey.Relaxed.SubAssetKey, vrmExtension.Expressions?.Preset?.Relaxed);
+                vrm.Expression.Surprised = GetOrLoadExpression(ExpressionKey.Surprised.SubAssetKey, vrmExtension.Expressions?.Preset?.Surprised);
+                vrm.Expression.Aa = GetOrLoadExpression(ExpressionKey.Aa.SubAssetKey, vrmExtension.Expressions?.Preset?.Aa);
+                vrm.Expression.Ih = GetOrLoadExpression(ExpressionKey.Ih.SubAssetKey, vrmExtension.Expressions?.Preset?.Ih);
+                vrm.Expression.Ou = GetOrLoadExpression(ExpressionKey.Ou.SubAssetKey, vrmExtension.Expressions?.Preset?.Ou);
+                vrm.Expression.Ee = GetOrLoadExpression(ExpressionKey.Ee.SubAssetKey, vrmExtension.Expressions?.Preset?.Ee);
+                vrm.Expression.Oh = GetOrLoadExpression(ExpressionKey.Oh.SubAssetKey, vrmExtension.Expressions?.Preset?.Oh);
+                vrm.Expression.Blink = GetOrLoadExpression(ExpressionKey.Blink.SubAssetKey, vrmExtension.Expressions?.Preset?.Blink);
+                vrm.Expression.BlinkLeft = GetOrLoadExpression(ExpressionKey.BlinkLeft.SubAssetKey, vrmExtension.Expressions?.Preset?.BlinkLeft);
+                vrm.Expression.BlinkRight = GetOrLoadExpression(ExpressionKey.BlinkRight.SubAssetKey, vrmExtension.Expressions?.Preset?.BlinkRight);
+                vrm.Expression.LookUp = GetOrLoadExpression(ExpressionKey.LookUp.SubAssetKey, vrmExtension.Expressions?.Preset?.LookUp);
+                vrm.Expression.LookDown = GetOrLoadExpression(ExpressionKey.LookDown.SubAssetKey, vrmExtension.Expressions?.Preset?.LookDown);
+                vrm.Expression.LookLeft = GetOrLoadExpression(ExpressionKey.LookLeft.SubAssetKey, vrmExtension.Expressions?.Preset?.LookLeft);
+                vrm.Expression.LookRight = GetOrLoadExpression(ExpressionKey.LookRight.SubAssetKey, vrmExtension.Expressions?.Preset?.LookRight);
+                if (vrmExtension?.Expressions?.Custom != null)
                 {
                     foreach (var (name, expression) in vrmExtension.Expressions.Custom)
                     {
