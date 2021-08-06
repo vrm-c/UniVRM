@@ -87,8 +87,13 @@ public static VRMC_materials_mtoon Deserialize(JsonNode parsed)
             continue;
         }
 
-        if(key=="giIntensityFactor"){
-            value.GiIntensityFactor = kv.Value.GetSingle();
+        if(key=="giEqualizationFactor"){
+            value.GiEqualizationFactor = kv.Value.GetSingle();
+            continue;
+        }
+
+        if(key=="matcapFactor"){
+            value.MatcapFactor = Deserialize_MatcapFactor(kv.Value);
             continue;
         }
 
@@ -250,6 +255,17 @@ public static ShadingShiftTextureInfo Deserialize_ShadingShiftTexture(JsonNode p
     }
     return value;
 }
+
+public static float[] Deserialize_MatcapFactor(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
 
 public static TextureInfo Deserialize_MatcapTexture(JsonNode parsed)
 {

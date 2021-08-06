@@ -161,7 +161,7 @@ namespace UniVRM10
             }
 
             // GI
-            var giEqualization = mToon?.GiIntensityFactor;
+            var giEqualization = mToon?.GiEqualizationFactor;
             if (giEqualization.HasValue)
             {
                 // TODO: Update schema

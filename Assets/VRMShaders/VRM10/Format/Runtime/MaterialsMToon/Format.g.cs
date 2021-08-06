@@ -77,7 +77,9 @@ namespace UniGLTF.Extensions.VRMC_materials_mtoon
 
         public float? ShadingToonyFactor;
 
-        public float? GiIntensityFactor;
+        public float? GiEqualizationFactor;
+
+        public float[] MatcapFactor;
 
         // MatCap
         public TextureInfo MatcapTexture;

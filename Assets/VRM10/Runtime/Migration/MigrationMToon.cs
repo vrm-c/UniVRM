@@ -463,7 +463,7 @@ namespace UniVRM10
                 );
 
                 // GI
-                dst.GiIntensityFactor = MToon10Migrator.MigrateToGiEqualization(mtoon.Definition.Lighting.LightingInfluence.GiIntensityValue);
+                dst.GiEqualizationFactor = MToon10Migrator.MigrateToGiEqualization(mtoon.Definition.Lighting.LightingInfluence.GiIntensityValue);
 
                 // Emission
                 gltfMaterial.emissiveFactor = mtoon.Definition.Emission.EmissionColor.ToFloat3(ColorSpace.Linear, ColorSpace.Linear);
