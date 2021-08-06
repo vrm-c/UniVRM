@@ -35,7 +35,6 @@ namespace UniVRM10
 
         void OnValidate()
         {
-            Debug.Log($"VRM10Object.OnValidate");
             if (LookAt != null)
             {
                 LookAt.HorizontalInner.OnValidate();
