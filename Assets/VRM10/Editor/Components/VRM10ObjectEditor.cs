@@ -1,5 +1,7 @@
-﻿using UniGLTF;
+﻿using System.Linq;
+using UniGLTF;
 using UnityEditor;
+using UnityEngine;
 
 namespace UniVRM10
 {
@@ -74,6 +76,14 @@ namespace UniVRM10
                     break;
 
                 case Tabs.FirstPerson:
+                    using (new EditorGUI.DisabledScope(m_target.Prefab == null))
+                    {
+                        if (GUILayout.Button("set default"))
+                        {
+                            m_target.FirstPerson.SetDefault(m_target.Prefab.transform);
+                        }
+                        EditorGUILayout.HelpBox("Clear Renderers and add all renderers (Auto)", MessageType.Info);
+                    }
                     m_firstPerson.OnInspectorGUI();
                     break;
             }
