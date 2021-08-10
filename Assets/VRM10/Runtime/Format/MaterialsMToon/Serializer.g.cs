@@ -83,9 +83,14 @@ public static void Serialize(JsonFormatter f, VRMC_materials_mtoon value)
         f.Value(value.ShadingToonyFactor.GetValueOrDefault());
     }
 
-    if(value.GiIntensityFactor.HasValue){
-        f.Key("giIntensityFactor");                
-        f.Value(value.GiIntensityFactor.GetValueOrDefault());
+    if(value.GiEqualizationFactor.HasValue){
+        f.Key("giEqualizationFactor");                
+        f.Value(value.GiEqualizationFactor.GetValueOrDefault());
+    }
+
+    if(value.MatcapFactor!=null&&value.MatcapFactor.Count()>=3){
+        f.Key("matcapFactor");                
+        Serialize_MatcapFactor(f, value.MatcapFactor);
     }
 
     if(value.MatcapTexture!=null){
@@ -237,6 +242,18 @@ public static void Serialize_ShadingShiftTexture(JsonFormatter f, ShadingShiftTe
     }
 
     f.EndMap();
+}
+
+public static void Serialize_MatcapFactor(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
 }
 
 public static void Serialize_MatcapTexture(JsonFormatter f, TextureInfo value)

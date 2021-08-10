@@ -110,12 +110,12 @@ namespace UniVRM10
             // Rendering
             var alphaMode = GetMToon10AlphaMode(material);
             {
-                yield return (MToon10Prop.AlphaMode.ToUnityShaderLabName(), (float) alphaMode);
+                yield return (MToon10Prop.AlphaMode.ToUnityShaderLabName(), (float)alphaMode);
             }
 
             var transparentWithZWrite = GetMToon10TransparentWithZWriteMode(material, mToon);
             {
-                yield return (MToon10Prop.TransparentWithZWrite.ToUnityShaderLabName(), (float) transparentWithZWrite);
+                yield return (MToon10Prop.TransparentWithZWrite.ToUnityShaderLabName(), (float)transparentWithZWrite);
             }
 
             var cutoff = material?.alphaCutoff;
@@ -127,12 +127,12 @@ namespace UniVRM10
             var renderQueueOffset = mToon?.RenderQueueOffsetNumber;
             if (renderQueueOffset.HasValue)
             {
-                yield return (MToon10Prop.RenderQueueOffsetNumber.ToUnityShaderLabName(), (float) renderQueueOffset);
+                yield return (MToon10Prop.RenderQueueOffsetNumber.ToUnityShaderLabName(), (float)renderQueueOffset);
             }
 
             var doubleSidedMode = GetMToon10DoubleSidedMode(material, mToon);
             {
-                yield return (MToon10Prop.DoubleSided.ToUnityShaderLabName(), (float) doubleSidedMode);
+                yield return (MToon10Prop.DoubleSided.ToUnityShaderLabName(), (float)doubleSidedMode);
             }
 
             // Lighting
@@ -161,10 +161,9 @@ namespace UniVRM10
             }
 
             // GI
-            var giEqualization = mToon?.GiIntensityFactor;
+            var giEqualization = mToon?.GiEqualizationFactor;
             if (giEqualization.HasValue)
             {
-                // TODO: Update schema
                 yield return (MToon10Prop.GiEqualizationFactor.ToUnityShaderLabName(), giEqualization.Value);
             }
 
@@ -192,7 +191,7 @@ namespace UniVRM10
             // Outline
             var outlineMode = GetMToon10OutlineWidthMode(material, mToon);
             {
-                yield return (MToon10Prop.OutlineWidthMode.ToUnityShaderLabName(), (float) outlineMode);
+                yield return (MToon10Prop.OutlineWidthMode.ToUnityShaderLabName(), (float)outlineMode);
             }
 
             var outlineWidth = mToon?.OutlineWidthFactor;
