@@ -68,41 +68,56 @@ namespace UniVRM10
         [SerializeField]
         public List<VRM10Expression> CustomClips = new List<VRM10Expression>();
 
-        public IEnumerable<VRM10Expression> Clips
+        public IEnumerable<(ExpressionPreset Preset, VRM10Expression Clip)> Clips
         {
             get
             {
-                if (Happy != null) yield return Happy;
-                if (Angry != null) yield return Angry;
-                if (Sad != null) yield return Sad;
-                if (Relaxed != null) yield return Relaxed;
-                if (Surprised != null) yield return Surprised;
-                if (Aa != null) yield return Aa;
-                if (Ih != null) yield return Ih;
-                if (Ou != null) yield return Ou;
-                if (Ee != null) yield return Ee;
-                if (Oh != null) yield return Oh;
-                if (Blink != null) yield return Blink;
-                if (BlinkLeft != null) yield return BlinkLeft;
-                if (BlinkRight != null) yield return BlinkRight;
-                if (LookUp != null) yield return LookUp;
-                if (LookDown != null) yield return LookDown;
-                if (LookLeft != null) yield return LookLeft;
-                if (LookRight != null) yield return LookRight;
-                if (Neutral != null) yield return Neutral;
+                if (Happy != null) yield return (ExpressionPreset.happy, Happy);
+                if (Angry != null) yield return (ExpressionPreset.angry, Angry);
+                if (Sad != null) yield return (ExpressionPreset.sad, Sad);
+                if (Relaxed != null) yield return (ExpressionPreset.relaxed, Relaxed);
+                if (Surprised != null) yield return (ExpressionPreset.surprised, Surprised);
+                if (Aa != null) yield return (ExpressionPreset.aa, Aa);
+                if (Ih != null) yield return (ExpressionPreset.ih, Ih);
+                if (Ou != null) yield return (ExpressionPreset.ou, Ou);
+                if (Ee != null) yield return (ExpressionPreset.ee, Ee);
+                if (Oh != null) yield return (ExpressionPreset.oh, Oh);
+                if (Blink != null) yield return (ExpressionPreset.blink, Blink);
+                if (BlinkLeft != null) yield return (ExpressionPreset.blinkLeft, BlinkLeft);
+                if (BlinkRight != null) yield return (ExpressionPreset.blinkRight, BlinkRight);
+                if (LookUp != null) yield return (ExpressionPreset.lookUp, LookUp);
+                if (LookDown != null) yield return (ExpressionPreset.lookDown, LookDown);
+                if (LookLeft != null) yield return (ExpressionPreset.lookLeft, LookLeft);
+                if (LookRight != null) yield return (ExpressionPreset.lookRight, LookRight);
+                if (Neutral != null) yield return (ExpressionPreset.neutral, Neutral);
                 foreach (var clip in CustomClips)
                 {
                     if (clip != null)
                     {
-                        yield return clip;
+                        yield return (ExpressionPreset.custom, clip);
                     }
                 }
             }
         }
 
-        public void AddClip(VRM10Expression clip)
+        public ExpressionKey CreateKey(VRM10Expression clip)
         {
-            switch (clip.Preset)
+            foreach (var (preset, c) in Clips)
+            {
+                if (c == clip)
+                {
+                    return new ExpressionKey(preset, clip.name);
+                }
+            }
+
+            // not found
+            // return default(ExpressionKey);
+            throw new KeyNotFoundException();
+        }
+
+        public void AddClip(ExpressionPreset preset, VRM10Expression clip)
+        {
+            switch (preset)
             {
                 case ExpressionPreset.happy: Happy = clip; break;
                 case ExpressionPreset.angry: Angry = clip; break;
@@ -275,8 +290,8 @@ namespace UniVRM10
         {
             Restore();
 
-            _merger = new ExpressionMerger(Clips, target.transform);
-            _keys = Clips.Select(ExpressionKey.CreateFromClip).ToList();
+            _merger = new ExpressionMerger(this, target.transform);
+            _keys = Clips.Select(x => CreateKey(x.Clip)).ToList();
             var oldInputWeights = _inputWeights;
             _inputWeights = _keys.ToDictionary(x => x, x => 0f);
             foreach (var key in _keys)

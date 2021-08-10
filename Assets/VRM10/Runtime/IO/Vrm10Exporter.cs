@@ -662,7 +662,7 @@ namespace UniVRM10
                     LookLeft = ExportExpression(vrmController.Vrm.Expression.LookLeft, vrmController, model, converter),
                     LookRight = ExportExpression(vrmController.Vrm.Expression.LookRight, vrmController, model, converter),
                 },
-                Custom = vrmController.Vrm.Expression.CustomClips.ToDictionary(c => c.ExpressionName, c => ExportExpression(c, vrmController, model, converter)),
+                Custom = vrmController.Vrm.Expression.CustomClips.ToDictionary(c => c.name, c => ExportExpression(c, vrmController, model, converter)),
             };
         }
 

@@ -16,9 +16,6 @@ namespace UniVRM10
 
         #region  Properties
         SerializedProperty m_thumbnail;
-        SerializedProperty m_expressionNameProp;
-        SerializedProperty m_presetProp;
-
         SerializedProperty m_isBinaryProp;
 
         public bool IsBinary => m_isBinaryProp.boolValue;
@@ -77,8 +74,6 @@ namespace UniVRM10
             this.m_serializedObject = serializedObject;
             this.m_targetObject = targetObject;
 
-            m_expressionNameProp = serializedObject.FindProperty(nameof(targetObject.ExpressionName));
-            m_presetProp = serializedObject.FindProperty(nameof(targetObject.Preset));
             m_isBinaryProp = serializedObject.FindProperty(nameof(targetObject.IsBinary));
             m_ignoreBlinkProp = serializedObject.FindProperty(nameof(targetObject.OverrideBlink));
             m_ignoreLookAtProp = serializedObject.FindProperty(nameof(targetObject.OverrideLookAt));
@@ -104,9 +99,6 @@ namespace UniVRM10
             EditorGUILayout.ObjectField("Current clip",
                 m_targetObject, typeof(VRM10Expression), false);
             GUI.enabled = true;
-
-            EditorGUILayout.PropertyField(m_expressionNameProp, true);
-            EditorGUILayout.PropertyField(m_presetProp, true);
 
             m_status.MorphTargetFoldout = CustomUI.Foldout(Status.MorphTargetFoldout, "MorphTarget");
             if (Status.MorphTargetFoldout)

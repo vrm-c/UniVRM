@@ -123,16 +123,6 @@ namespace UniVRM10
             return new ExpressionKey(preset);
         }
 
-        public static ExpressionKey CreateFromClip(VRM10Expression clip)
-        {
-            if (clip == null)
-            {
-                return default(ExpressionKey);
-            }
-
-            return new ExpressionKey(clip.Preset, clip.ExpressionName);
-        }
-
         public static ExpressionKey Happy => CreateFromPreset(ExpressionPreset.happy);
         public static ExpressionKey Angry => CreateFromPreset(ExpressionPreset.angry);
         public static ExpressionKey Sad => CreateFromPreset(ExpressionPreset.sad);
@@ -180,10 +170,10 @@ namespace UniVRM10
             return _id.GetHashCode();
         }
 
-        public bool Match(VRM10Expression clip)
-        {
-            return this.Equals(CreateFromClip(clip));
-        }
+        // public bool Match(VRM10Expression clip)
+        // {
+        //     return this.Equals(CreateFromClip(clip));
+        // }
 
         public int CompareTo(ExpressionKey other)
         {
