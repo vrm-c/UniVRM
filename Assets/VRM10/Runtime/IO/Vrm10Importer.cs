@@ -215,7 +215,7 @@ namespace UniVRM10
 
         UnityEngine.Avatar m_humanoid;
         VRM10Object m_vrmObject;
-        List<VRM10Expression> m_expressions = new List<VRM10Expression>();
+        List<(ExpressionPreset Preset, VRM10Expression Clip)> m_expressions = new List<(ExpressionPreset, VRM10Expression)>();
 
         protected override async Task OnLoadHierarchy(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime)
         {
@@ -244,7 +244,7 @@ namespace UniVRM10
             await LoadConstraintAsync(awaitCaller, controller);
         }
 
-        VRM10Expression GetOrLoadExpression(in SubAssetKey key, UniGLTF.Extensions.VRMC_vrm.Expression expression)
+        VRM10Expression GetOrLoadExpression(in SubAssetKey key, ExpressionPreset preset, UniGLTF.Extensions.VRMC_vrm.Expression expression)
         {
             VRM10Expression clip = default;
             if (m_externalMap.TryGetValue(key, out UnityEngine.Object expressionObj))
@@ -265,8 +265,6 @@ namespace UniVRM10
                     };
                 }
                 clip = ScriptableObject.CreateInstance<UniVRM10.VRM10Expression>();
-                clip.Preset = ExpressionPreset.custom;
-                clip.ExpressionName = key.Name;
                 clip.name = key.Name;
                 clip.IsBinary = expression.IsBinary.GetValueOrDefault();
                 clip.OverrideBlink = expression.OverrideBlink;
@@ -307,7 +305,7 @@ namespace UniVRM10
                     clip.MaterialUVBindings = new MaterialUVBinding[] { };
                 }
 
-                m_expressions.Add(clip);
+                m_expressions.Add((preset, clip));
             }
             return clip;
         }
@@ -365,32 +363,33 @@ namespace UniVRM10
 
             // expression
             {
-                vrm.Expression.Happy = GetOrLoadExpression(ExpressionKey.Happy.SubAssetKey, vrmExtension.Expressions?.Preset?.Happy);
-                vrm.Expression.Angry = GetOrLoadExpression(ExpressionKey.Angry.SubAssetKey, vrmExtension.Expressions?.Preset?.Angry);
-                vrm.Expression.Sad = GetOrLoadExpression(ExpressionKey.Sad.SubAssetKey, vrmExtension.Expressions?.Preset?.Sad);
-                vrm.Expression.Relaxed = GetOrLoadExpression(ExpressionKey.Relaxed.SubAssetKey, vrmExtension.Expressions?.Preset?.Relaxed);
-                vrm.Expression.Surprised = GetOrLoadExpression(ExpressionKey.Surprised.SubAssetKey, vrmExtension.Expressions?.Preset?.Surprised);
-                vrm.Expression.Aa = GetOrLoadExpression(ExpressionKey.Aa.SubAssetKey, vrmExtension.Expressions?.Preset?.Aa);
-                vrm.Expression.Ih = GetOrLoadExpression(ExpressionKey.Ih.SubAssetKey, vrmExtension.Expressions?.Preset?.Ih);
-                vrm.Expression.Ou = GetOrLoadExpression(ExpressionKey.Ou.SubAssetKey, vrmExtension.Expressions?.Preset?.Ou);
-                vrm.Expression.Ee = GetOrLoadExpression(ExpressionKey.Ee.SubAssetKey, vrmExtension.Expressions?.Preset?.Ee);
-                vrm.Expression.Oh = GetOrLoadExpression(ExpressionKey.Oh.SubAssetKey, vrmExtension.Expressions?.Preset?.Oh);
-                vrm.Expression.Blink = GetOrLoadExpression(ExpressionKey.Blink.SubAssetKey, vrmExtension.Expressions?.Preset?.Blink);
-                vrm.Expression.BlinkLeft = GetOrLoadExpression(ExpressionKey.BlinkLeft.SubAssetKey, vrmExtension.Expressions?.Preset?.BlinkLeft);
-                vrm.Expression.BlinkRight = GetOrLoadExpression(ExpressionKey.BlinkRight.SubAssetKey, vrmExtension.Expressions?.Preset?.BlinkRight);
-                vrm.Expression.LookUp = GetOrLoadExpression(ExpressionKey.LookUp.SubAssetKey, vrmExtension.Expressions?.Preset?.LookUp);
-                vrm.Expression.LookDown = GetOrLoadExpression(ExpressionKey.LookDown.SubAssetKey, vrmExtension.Expressions?.Preset?.LookDown);
-                vrm.Expression.LookLeft = GetOrLoadExpression(ExpressionKey.LookLeft.SubAssetKey, vrmExtension.Expressions?.Preset?.LookLeft);
-                vrm.Expression.LookRight = GetOrLoadExpression(ExpressionKey.LookRight.SubAssetKey, vrmExtension.Expressions?.Preset?.LookRight);
+                vrm.Expression.Happy = GetOrLoadExpression(ExpressionKey.Happy.SubAssetKey, ExpressionPreset.happy, vrmExtension.Expressions?.Preset?.Happy);
+                vrm.Expression.Angry = GetOrLoadExpression(ExpressionKey.Angry.SubAssetKey, ExpressionPreset.angry, vrmExtension.Expressions?.Preset?.Angry);
+                vrm.Expression.Sad = GetOrLoadExpression(ExpressionKey.Sad.SubAssetKey, ExpressionPreset.sad, vrmExtension.Expressions?.Preset?.Sad);
+                vrm.Expression.Relaxed = GetOrLoadExpression(ExpressionKey.Relaxed.SubAssetKey, ExpressionPreset.relaxed, vrmExtension.Expressions?.Preset?.Relaxed);
+                vrm.Expression.Surprised = GetOrLoadExpression(ExpressionKey.Surprised.SubAssetKey, ExpressionPreset.surprised, vrmExtension.Expressions?.Preset?.Surprised);
+                vrm.Expression.Aa = GetOrLoadExpression(ExpressionKey.Aa.SubAssetKey, ExpressionPreset.aa, vrmExtension.Expressions?.Preset?.Aa);
+                vrm.Expression.Ih = GetOrLoadExpression(ExpressionKey.Ih.SubAssetKey, ExpressionPreset.ih, vrmExtension.Expressions?.Preset?.Ih);
+                vrm.Expression.Ou = GetOrLoadExpression(ExpressionKey.Ou.SubAssetKey, ExpressionPreset.ou, vrmExtension.Expressions?.Preset?.Ou);
+                vrm.Expression.Ee = GetOrLoadExpression(ExpressionKey.Ee.SubAssetKey, ExpressionPreset.ee, vrmExtension.Expressions?.Preset?.Ee);
+                vrm.Expression.Oh = GetOrLoadExpression(ExpressionKey.Oh.SubAssetKey, ExpressionPreset.oh, vrmExtension.Expressions?.Preset?.Oh);
+                vrm.Expression.Blink = GetOrLoadExpression(ExpressionKey.Blink.SubAssetKey, ExpressionPreset.blink, vrmExtension.Expressions?.Preset?.Blink);
+                vrm.Expression.BlinkLeft = GetOrLoadExpression(ExpressionKey.BlinkLeft.SubAssetKey, ExpressionPreset.blinkLeft, vrmExtension.Expressions?.Preset?.BlinkLeft);
+                vrm.Expression.BlinkRight = GetOrLoadExpression(ExpressionKey.BlinkRight.SubAssetKey, ExpressionPreset.blinkRight, vrmExtension.Expressions?.Preset?.BlinkRight);
+                vrm.Expression.LookUp = GetOrLoadExpression(ExpressionKey.LookUp.SubAssetKey, ExpressionPreset.lookUp, vrmExtension.Expressions?.Preset?.LookUp);
+                vrm.Expression.LookDown = GetOrLoadExpression(ExpressionKey.LookDown.SubAssetKey, ExpressionPreset.lookDown, vrmExtension.Expressions?.Preset?.LookDown);
+                vrm.Expression.LookLeft = GetOrLoadExpression(ExpressionKey.LookLeft.SubAssetKey, ExpressionPreset.lookLeft, vrmExtension.Expressions?.Preset?.LookLeft);
+                vrm.Expression.LookRight = GetOrLoadExpression(ExpressionKey.LookRight.SubAssetKey, ExpressionPreset.lookRight, vrmExtension.Expressions?.Preset?.LookRight);
                 if (vrmExtension?.Expressions?.Custom != null)
                 {
                     foreach (var (name, expression) in vrmExtension.Expressions.Custom)
                     {
                         var key = ExpressionKey.CreateCustom(name);
-                        var clip = GetOrLoadExpression(key.SubAssetKey, expression);
+                        var preset = ExpressionPreset.custom;
+                        var clip = GetOrLoadExpression(key.SubAssetKey, preset, expression);
                         if (clip != null)
                         {
-                            vrm.Expression.AddClip(clip);
+                            vrm.Expression.AddClip(preset, clip);
                         }
                     }
                 }
@@ -694,9 +693,9 @@ namespace UniVRM10
                 m_vrmObject = null;
             }
 
-            foreach (var x in m_expressions)
+            foreach (var (preset, x) in m_expressions)
             {
-                take(ExpressionKey.CreateFromClip(x).SubAssetKey, x);
+                take(new ExpressionKey(preset, x.name).SubAssetKey, x);
                 // do nothing
             }
             m_expressions.Clear();
@@ -720,7 +719,7 @@ namespace UniVRM10
                 m_vrmObject = null;
             }
 
-            foreach (var clip in m_expressions)
+            foreach (var (preset, clip) in m_expressions)
             {
                 UnityObjectDestoyer.DestroyRuntimeOrEditor(clip);
             }

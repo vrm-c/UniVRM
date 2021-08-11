@@ -214,18 +214,18 @@ namespace UniVRM10
             }
         }
 
-        public static VRM10Expression CreateExpression(string path)
-        {
-            //Debug.LogFormat("{0}", path);
-            var clip = ScriptableObject.CreateInstance<VRM10Expression>();
-            clip.ExpressionName = Path.GetFileNameWithoutExtension(path);
-            AssetDatabase.CreateAsset(clip, path);
-            AssetDatabase.ImportAsset(path);
-            return clip;
-            //Clips.Add(clip);
-            //EditorUtility.SetDirty(this);
-            //AssetDatabase.SaveAssets();
-        }
+        // public static VRM10Expression CreateExpression(string path)
+        // {
+        //     //Debug.LogFormat("{0}", path);
+        //     var clip = ScriptableObject.CreateInstance<VRM10Expression>();
+        //     clip.name = Path.GetFileNameWithoutExtension(path);
+        //     AssetDatabase.CreateAsset(clip, path);
+        //     AssetDatabase.ImportAsset(path);
+        //     return clip;
+        //     //Clips.Add(clip);
+        //     //EditorUtility.SetDirty(this);
+        //     //AssetDatabase.SaveAssets();
+        // }
 
         SerializedExpressionEditor m_serializedEditor;
 

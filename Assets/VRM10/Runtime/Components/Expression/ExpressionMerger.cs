@@ -26,9 +26,9 @@ namespace UniVRM10
         MaterialValueBindingMerger m_materialValueBindingMerger;
 
 
-        public ExpressionMerger(IEnumerable<VRM10Expression> clips, Transform root)
+        public ExpressionMerger(VRM10ObjectExpression expressions, Transform root)
         {
-            m_clipMap = clips.ToDictionary(x => ExpressionKey.CreateFromClip(x), x => x);
+            m_clipMap = expressions.Clips.ToDictionary(x => expressions.CreateKey(x.Clip), x => x.Clip);
 
             m_valueMap = new Dictionary<ExpressionKey, float>();
 
@@ -46,7 +46,7 @@ namespace UniVRM10
             {
                 AccumulateValue(key, weight);
             }
-            
+
             m_morphTargetBindingMerger.Apply();
             m_materialValueBindingMerger.Apply();
         }

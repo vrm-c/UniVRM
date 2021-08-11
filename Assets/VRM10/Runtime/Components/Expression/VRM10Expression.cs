@@ -1,23 +1,10 @@
-﻿using UniGLTF;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace UniVRM10
 {
     [CreateAssetMenu(menuName = "VRM10/Expression")]
     public sealed class VRM10Expression : PrefabRelatedScriptableObject
     {
-        /// <summary>
-        /// ExpressionPreset が Unknown 場合の識別子
-        /// </summary>
-        [SerializeField]
-        public string ExpressionName;
-
-        /// <summary>
-        /// ExpressionPreset を識別する。 Unknown の場合は、 ExpressionName で識別する
-        /// </summary>
-        [SerializeField]
-        public ExpressionPreset Preset;
-
         /// <summary>
         /// 対象メッシュの Expression を操作する
         /// <summary>
@@ -59,21 +46,5 @@ namespace UniVRM10
         /// </summary>
         [SerializeField]
         public UniGLTF.Extensions.VRMC_vrm.ExpressionOverrideType OverrideMouth;
-
-        void Reset()
-        {
-            OnValidate();
-        }
-
-        void OnValidate()
-        {
-            if (Preset == ExpressionPreset.custom)
-            {
-                if (string.IsNullOrEmpty(ExpressionName))
-                {
-                    ExpressionName = "custom";
-                }
-            }
-        }
     }
 }

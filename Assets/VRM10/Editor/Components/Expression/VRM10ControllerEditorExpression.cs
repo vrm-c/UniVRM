@@ -20,10 +20,10 @@ namespace UniVRM10
         {
             m_target = target;
 
-            m_expressionKeyWeights = m_target.Vrm.Expression.Clips.ToDictionary(x => ExpressionKey.CreateFromClip(x), x => 0.0f);
+            m_expressionKeyWeights = m_target.Vrm.Expression.Clips.ToDictionary(x => target.Vrm.Expression.CreateKey(x.Clip), x => 0.0f);
             m_sliders = m_target.Vrm.Expression.Clips
-                .Where(x => x != null)
-                .Select(x => new ExpressionSlider(m_expressionKeyWeights, ExpressionKey.CreateFromClip(x)))
+                .Where(x => x.Clip != null)
+                .Select(x => new ExpressionSlider(m_expressionKeyWeights, target.Vrm.Expression.CreateKey(x.Clip)))
                 .ToList()
                 ;
         }
