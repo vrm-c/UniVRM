@@ -103,11 +103,11 @@ namespace UniVRM10
 
         }
 
-        public bool Draw()
+        public bool Draw(string label)
         {
             m_changed = false;
             m_ValuesList.DoLayoutList();
-            if (GUILayout.Button("Clear BlendShape"))
+            if (GUILayout.Button($"Clear {label}"))
             {
                 m_changed = true;
                 m_valuesProp.arraySize = 0;

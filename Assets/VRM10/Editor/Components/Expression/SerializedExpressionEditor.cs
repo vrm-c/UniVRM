@@ -33,25 +33,15 @@ namespace UniVRM10
 
         bool m_changed;
 
-        public struct EditorStatus
-        {
-            public int Mode;
-            public bool MorphTargetFoldout;
-            public bool AdvancedFoldout;
-
-            public static EditorStatus Default => new EditorStatus
-            {
-                MorphTargetFoldout = true,
-            };
-        }
-        EditorStatus m_status = EditorStatus.Default;
-
-        public EditorStatus Status => m_status;
+        static int s_Mode;
+        static bool s_MorphTargetFoldout = true;
+        static bool s_OptionFoldout;
+        static bool s_ListFoldout;
 
         static string[] MODES = new[]{
             "MorphTarget",
             "Material Color",
-            "Material UV"
+            "Texture Transform"
         };
 
         PreviewMeshItem[] m_items;
@@ -59,18 +49,17 @@ namespace UniVRM10
 
         public SerializedExpressionEditor(SerializedObject serializedObject,
             PreviewSceneManager previewSceneManager) : this(
-                serializedObject, (VRM10Expression)serializedObject.targetObject, previewSceneManager, EditorStatus.Default)
+                serializedObject, (VRM10Expression)serializedObject.targetObject, previewSceneManager)
         { }
 
         public SerializedExpressionEditor(VRM10Expression expression,
-            PreviewSceneManager previewSceneManager, EditorStatus status) : this(
-                new SerializedObject(expression), expression, previewSceneManager, status)
+            PreviewSceneManager previewSceneManager) : this(
+                new SerializedObject(expression), expression, previewSceneManager)
         { }
 
         public SerializedExpressionEditor(SerializedObject serializedObject, VRM10Expression targetObject,
-            PreviewSceneManager previewSceneManager, EditorStatus status)
+            PreviewSceneManager previewSceneManager)
         {
-            m_status = status;
             this.m_serializedObject = serializedObject;
             this.m_targetObject = targetObject;
 
@@ -100,8 +89,8 @@ namespace UniVRM10
                 m_targetObject, typeof(VRM10Expression), false);
             GUI.enabled = true;
 
-            m_status.MorphTargetFoldout = CustomUI.Foldout(Status.MorphTargetFoldout, "MorphTarget");
-            if (Status.MorphTargetFoldout)
+            s_MorphTargetFoldout = CustomUI.Foldout(s_MorphTargetFoldout, "MorphTarget");
+            if (s_MorphTargetFoldout)
             {
                 EditorGUI.indentLevel++;
                 var changed = MorphTargetBindsGUI();
@@ -116,8 +105,48 @@ namespace UniVRM10
                 EditorGUI.indentLevel--;
             }
 
-            m_status.AdvancedFoldout = CustomUI.Foldout(Status.AdvancedFoldout, "Advanced");
-            if (Status.AdvancedFoldout)
+            s_ListFoldout = CustomUI.Foldout(s_ListFoldout, "List");
+            if (s_ListFoldout)
+            {
+                EditorGUI.indentLevel++;
+                s_Mode = GUILayout.Toolbar(s_Mode, MODES);
+                switch (s_Mode)
+                {
+                    case 0:
+                        // MorphTarget
+                        {
+                            if (m_morphTargetBindings.Draw("MorphTarget"))
+                            {
+                                m_changed = true;
+                            }
+                        }
+                        break;
+
+                    case 1:
+                        // Material
+                        {
+                            if (m_materialColorBindings.Draw("MaterialColor"))
+                            {
+                                m_changed = true;
+                            }
+                        }
+                        break;
+
+                    case 2:
+                        // TextureTransform
+                        {
+                            if (m_materialUVBindings.Draw("TextureTransform"))
+                            {
+                                m_changed = true;
+                            }
+                        }
+                        break;
+                }
+                EditorGUI.indentLevel--;
+            }
+
+            s_OptionFoldout = CustomUI.Foldout(s_OptionFoldout, "Option");
+            if (s_OptionFoldout)
             {
                 EditorGUI.indentLevel++;
 
@@ -129,40 +158,6 @@ namespace UniVRM10
                 EditorGUILayout.PropertyField(m_ignoreLookAtProp, true);
                 EditorGUILayout.PropertyField(m_ignoreMouthProp, true);
 
-                EditorGUILayout.Space();
-                m_status.Mode = GUILayout.Toolbar(Status.Mode, MODES);
-                switch (Status.Mode)
-                {
-                    case 0:
-                        // MorphTarget
-                        {
-                            if (m_morphTargetBindings.Draw())
-                            {
-                                m_changed = true;
-                            }
-                        }
-                        break;
-
-                    case 1:
-                        // Material
-                        {
-                            if (m_materialColorBindings.Draw())
-                            {
-                                m_changed = true;
-                            }
-                        }
-                        break;
-
-                    case 2:
-                        // MaterialUV
-                        {
-                            if (m_materialUVBindings.Draw())
-                            {
-                                m_changed = true;
-                            }
-                        }
-                        break;
-                }
 
                 EditorGUI.indentLevel--;
             }

@@ -80,11 +80,11 @@ namespace UniVRM10
             return changed;
         }
 
-        public bool Draw()
+        public bool Draw(string label)
         {
             m_changed = false;
             m_list.DoLayoutList();
-            if (GUILayout.Button("Clear MaterialUV"))
+            if (GUILayout.Button($"Clear {label}"))
             {
                 m_changed = true;
                 m_serializedProperty.arraySize = 0;
