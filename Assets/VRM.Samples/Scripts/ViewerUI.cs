@@ -38,6 +38,9 @@ namespace VRM.Samples
         [SerializeField]
         GameObject Root = default;
 
+        [SerializeField]
+        Button m_reset = default;
+
         [Serializable]
         class TextFields
         {
@@ -160,6 +163,8 @@ namespace VRM.Samples
             var buttons = GameObject.FindObjectsOfType<Button>();
             m_open = buttons.First(x => x.name == "Open");
 
+            m_reset = buttons.First(x => x.name == "ResetSpringBone");
+
             var toggles = GameObject.FindObjectsOfType<Toggle>();
             m_enableLipSync = toggles.First(x => x.name == "EnableLipSync");
             m_enableAutoBlink = toggles.First(x => x.name == "EnableAutoBlink");
@@ -210,6 +215,8 @@ namespace VRM.Samples
             m_version.text = string.Format("VRMViewer {0}.{1}",
                 VRMVersion.MAJOR, VRMVersion.MINOR);
             m_open.onClick.AddListener(OnOpenClicked);
+
+            m_reset.onClick.AddListener(OnResetClicked);
 
             // load initial bvh
             LoadMotion(Application.streamingAssetsPath + "/VRM.Samples/Motions/test.txt");
@@ -264,6 +271,18 @@ namespace VRM.Samples
             {
                 m_loaded.PoseClip = m_pose;
                 m_loaded.SourceType = HumanPoseTransfer.HumanPoseTransferSourceType.HumanPoseClip;
+            }
+        }
+
+        void OnResetClicked()
+        {
+            if (m_loaded == null)
+            {
+                return;
+            }
+            foreach (var spring in m_loaded.GetComponentsInChildren<VRMSpringBone>())
+            {
+                spring.Setup();
             }
         }
 
