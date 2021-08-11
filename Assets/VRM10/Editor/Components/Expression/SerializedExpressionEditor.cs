@@ -37,7 +37,8 @@ namespace UniVRM10
         {
             public int Mode;
             public bool MorphTargetFoldout;
-            public bool AdvancedFoldout;
+            public bool OptionFoldout;
+            public bool ListFoldout;
 
             public static EditorStatus Default => new EditorStatus
             {
@@ -51,7 +52,7 @@ namespace UniVRM10
         static string[] MODES = new[]{
             "MorphTarget",
             "Material Color",
-            "Material UV"
+            "Texture Transform"
         };
 
         PreviewMeshItem[] m_items;
@@ -116,8 +117,48 @@ namespace UniVRM10
                 EditorGUI.indentLevel--;
             }
 
-            m_status.AdvancedFoldout = CustomUI.Foldout(Status.AdvancedFoldout, "Advanced");
-            if (Status.AdvancedFoldout)
+            m_status.ListFoldout = CustomUI.Foldout(Status.ListFoldout, "List");
+            if (Status.ListFoldout)
+            {
+                EditorGUI.indentLevel++;
+                m_status.Mode = GUILayout.Toolbar(Status.Mode, MODES);
+                switch (Status.Mode)
+                {
+                    case 0:
+                        // MorphTarget
+                        {
+                            if (m_morphTargetBindings.Draw("MorphTarget"))
+                            {
+                                m_changed = true;
+                            }
+                        }
+                        break;
+
+                    case 1:
+                        // Material
+                        {
+                            if (m_materialColorBindings.Draw("MaterialColor"))
+                            {
+                                m_changed = true;
+                            }
+                        }
+                        break;
+
+                    case 2:
+                        // TextureTransform
+                        {
+                            if (m_materialUVBindings.Draw("TextureTransform"))
+                            {
+                                m_changed = true;
+                            }
+                        }
+                        break;
+                }
+                EditorGUI.indentLevel--;
+            }
+
+            m_status.OptionFoldout = CustomUI.Foldout(Status.OptionFoldout, "Option");
+            if (Status.OptionFoldout)
             {
                 EditorGUI.indentLevel++;
 
@@ -129,40 +170,6 @@ namespace UniVRM10
                 EditorGUILayout.PropertyField(m_ignoreLookAtProp, true);
                 EditorGUILayout.PropertyField(m_ignoreMouthProp, true);
 
-                EditorGUILayout.Space();
-                m_status.Mode = GUILayout.Toolbar(Status.Mode, MODES);
-                switch (Status.Mode)
-                {
-                    case 0:
-                        // MorphTarget
-                        {
-                            if (m_morphTargetBindings.Draw())
-                            {
-                                m_changed = true;
-                            }
-                        }
-                        break;
-
-                    case 1:
-                        // Material
-                        {
-                            if (m_materialColorBindings.Draw())
-                            {
-                                m_changed = true;
-                            }
-                        }
-                        break;
-
-                    case 2:
-                        // MaterialUV
-                        {
-                            if (m_materialUVBindings.Draw())
-                            {
-                                m_changed = true;
-                            }
-                        }
-                        break;
-                }
 
                 EditorGUI.indentLevel--;
             }
