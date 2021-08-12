@@ -134,6 +134,26 @@ namespace VRM.DevOnly.PackageExporter
             CreateUnityPackages(folder);
         }
 
+        /// <summary>
+        /// This is call from Jenkins build
+        /// 
+        /// -quit -batchMode -executeMethod VRM.DevOnly.PackageExporter.VRMExportUnityPackage.CreateUnityPackageWithBuild
+        /// </summary>
+        public static void CreateUnityPackageWithBuild()
+        {
+            var folder = GetProjectRoot();
+            if (!Directory.Exists(folder))
+            {
+                Directory.CreateDirectory(folder);
+            }
+
+            if (!BuildTestScene())
+            {
+                Debug.LogError("Failed to build test scenes");
+            }
+            CreateUnityPackages(folder);
+        }
+
         public class GlobList
         {
             public readonly string[] Files;
