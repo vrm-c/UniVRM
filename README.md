@@ -7,7 +7,10 @@ https://github.com/vrm-c/UniVRM
 
 `UniVRM` is a Unity implementation of [VRM](https://vrm.dev/en/vrm_about/). It can create, import and export VRM models.
 
+From version `v0.80.0`, UniVRM supports `Unity-2019.4LTS` or later.
 * [Unity Version](https://vrm.dev/en/docs/univrm/install/unity_version/)
+
+
 * [UniVRM Version](https://vrm.dev/en/docs/univrm/install/univrm_version/)
 * [UniVRM Manual](https://vrm.dev/en/docs/univrm/)
 
@@ -32,24 +35,12 @@ The imported VRM model has the following Data:
 
 https://vrm.dev/en/docs/univrm/install/
 
-### Stable Version
-
-Versions without bug fixes will be picked up as stable versions.  
-To download the stable version, click the release tag (marked as `Latest`) as shown in the image below:
-
-<img width=400 src=./right_latest.jpg>
-
-1. Download ``UniVRM-0.xx.unitypackage``
-1. Import ``UniVRM-0.xx.unitypackage`` into the Unity project
-
-### Latest Version
-
-The latest version is marked as `Pre-release`:
-
 1. Go to the [releases page](https://github.com/vrm-c/UniVRM/releases)
-1. Download the latest ``UniVRM-0.xx.unitypackage``
-1. Import ``UniVRM-0.xx.unitypackage`` into the Unity project
-   
+1. Download the latest ``UniVRM0X-0.xx.unitypackage``
+1. Import ``UniVRM0X-0.xx.unitypackage`` into the Unity project
+
+`UniVRM10-*` is `vrm-1.0` development version package.
+
 ## Script Samples
 
 * [Programming](https://vrm.dev/en/docs/univrm/programming/)

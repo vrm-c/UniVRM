@@ -7,7 +7,10 @@ https://github.com/vrm-c/UniVRM
 
 UniVRM は、VRMフォーマットを読み書きする Unity package です。
 
+バージョン `v0.80.0` から、`Unity-2019.4LTS` 以降をサポートします。
 * [Unityのバージョン](https://vrm.dev/docs/univrm/install/unity_version/)
+
+
 * [UniVRMのバージョン](https://vrm.dev/docs/univrm/install/univrm_version/)
 * [UniVRMマニュアル](https://vrm.dev/docs/univrm/)
 
@@ -35,30 +38,18 @@ glTF2.0をベースとしており、誰でも自由に利用することがで�
 ## Installation
 
 https://vrm.dev/docs/univrm/install/
-### 安定版
-
-トラブルの無さそうなバージョンをピックアップする予定です。
-バージョン選択の参考にしてください。
-github の右側にある下のようなリンクを辿ってください。
-
-<img width=400 src=./right_latest.jpg>
-
-1. ``UniVRM-0.xx.unitypackage``をダウンロードしてください。
-1. ``UniVRM-0.xx.unitypackage``をUnityのプロジェクトにインポートしてください。
-
-### 最新版
-
-リリース時に preview の印を付けることにしました。
 
 1. 本リポジトリの[リリースページ](https://github.com/vrm-c/UniVRM/releases)へ移動してください。
-1. 最新の``UniVRM-0.xx.unitypackage``をダウンロードしてください。
-1. ``UniVRM-0.xx.unitypackage``をUnityのプロジェクトにインポートしてください。
-   
+1. 最新の``UniVRM0X-0.xx.unitypackage``をダウンロードしてください。
+1. ``UniVRM0X-0.xx.unitypackage``をUnityのプロジェクトにインポートしてください。
+  
 ## Script Samples
 
 * [Programming](https://vrm.dev/docs/univrm/programming/)
 * [UniVRMサンプル](https://github.com/vrm-c/UniVRM/tree/master/Assets/VRM.Samples)
 * [UniVRMTest(テストとサンプル)](https://github.com/vrm-c/UniVRMTest)
+
+`UniVRM10-*` は vrm-1.0 開発版のパッケージです。
 
 ## Contributing to UniVRM
 
