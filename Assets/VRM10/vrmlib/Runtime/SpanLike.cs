@@ -157,6 +157,15 @@ namespace VrmLib
             Write(bytes, i + 8, value.z);
             Write(bytes, i + 12, value.w);
         }
+
+        public static void Write(byte[] bytes, int i, UnityEngine.Color value)
+        {
+            Write(bytes, i, value.r);
+            Write(bytes, i + 4, value.g);
+            Write(bytes, i + 8, value.b);
+            Write(bytes, i + 12, value.a);
+        }
+
         public static void Write(byte[] bytes, int i, UnityEngine.Matrix4x4 value)
         {
             Write(bytes, i, value.m00);
@@ -429,6 +438,16 @@ namespace VrmLib
             {typeof(UnityEngine.Vector4), new GetSet<UnityEngine.Vector4>{
                 Getter = (array, start) =>
                     new UnityEngine.Vector4(
+                        BitConverter.ToSingle(array, start),
+                        BitConverter.ToSingle(array, start + 4),
+                        BitConverter.ToSingle(array, start + 8),
+                        BitConverter.ToSingle(array, start + 12)
+                    ),
+                Setter = BitWriter.Write
+            }},
+            {typeof(UnityEngine.Color), new GetSet<UnityEngine.Color>{
+                Getter = (array, start) =>
+                    new UnityEngine.Color(
                         BitConverter.ToSingle(array, start),
                         BitConverter.ToSingle(array, start + 4),
                         BitConverter.ToSingle(array, start + 8),
