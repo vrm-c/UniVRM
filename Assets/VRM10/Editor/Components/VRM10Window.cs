@@ -81,7 +81,6 @@ namespace UniVRM10
         enum VRMSceneUI
         {
             Constraints,
-            LookAt,
             SpringBone,
         }
         static VRMSceneUI s_ui = default;
@@ -108,11 +107,6 @@ namespace UniVRM10
             {
                 case VRMSceneUI.Constraints:
                     Tools.hidden = false;
-                    break;
-
-                case VRMSceneUI.LookAt:
-                    Tools.hidden = true;
-                    LookAtEditor.Draw3D(Root, m_head);
                     break;
 
                 case VRMSceneUI.SpringBone:
@@ -167,10 +161,6 @@ namespace UniVRM10
             {
                 case VRMSceneUI.Constraints:
                     m_scrollView.Draw(this.position.y, DrawConstraints, Repaint);
-                    break;
-
-                case VRMSceneUI.LookAt:
-                    LookAtEditor.Draw2D(Root);
                     break;
 
                 case VRMSceneUI.SpringBone:
