@@ -46,7 +46,7 @@ namespace UniVRM10
         #region LookAtTargetTypes.CalcYawPitchToGaze
         // 座標計算用のempty
         Transform m_lookAtOrigin;
-        Transform GetLookAtOrigin(Transform head)
+        public Transform GetLookAtOrigin(Transform head)
         {
             if (!Application.isPlaying)
             {
@@ -94,7 +94,7 @@ namespace UniVRM10
         /// LookAtTargetType に応じた yaw, pitch を得る
         /// </summary>
         /// <returns>Headボーンのforwardに対するyaw角(度), pitch角(度)</returns>
-        private (float, float) GetLookAtYawPitch(Transform head, LookAtTargetTypes lookAtTargetType, Transform gaze)
+        public (float, float) GetLookAtYawPitch(Transform head, LookAtTargetTypes lookAtTargetType, Transform gaze)
         {
             switch (lookAtTargetType)
             {
@@ -145,85 +145,5 @@ namespace UniVRM10
             var (yaw, pitch) = GetLookAtYawPitch(m_head, lookAtTargetType, gaze);
             EyeDirection = new LookAtEyeDirection(yaw, pitch, 0, 0);
         }
-
-#if UNITY_EDITOR
-        #region Gizmo
-        static void DrawMatrix(Matrix4x4 m, float size)
-        {
-            Gizmos.matrix = m;
-            Gizmos.color = Color.red;
-            Gizmos.DrawLine(Vector3.zero, Vector3.right * size);
-            Gizmos.color = Color.green;
-            Gizmos.DrawLine(Vector3.zero, Vector3.up * size);
-            Gizmos.color = Color.blue;
-            Gizmos.DrawLine(Vector3.zero, Vector3.forward * size);
-        }
-
-        const float LOOKAT_GIZMO_SIZE = 0.5f;
-
-        // private void OnDrawGizmos()
-        // {
-        //     if (DrawGizmo)
-        //     {
-        //         if (m_leftEye != null & m_rightEye != null)
-        //         {
-        //             DrawMatrix(m_leftEye.localToWorldMatrix, LOOKAT_GIZMO_SIZE);
-        //             DrawMatrix(m_rightEye.localToWorldMatrix, LOOKAT_GIZMO_SIZE);
-        //         }
-        //     }
-        // }
-        #endregion
-
-        const float RADIUS = 0.5f;
-
-        public void OnSceneGUILookAt(Transform head, LookAtTargetTypes lookAtTargetType, Transform gaze)
-        {
-            if (head == null) return;
-
-            if (gaze != null)
-            {
-                {
-                    EditorGUI.BeginChangeCheck();
-                    var newTargetPosition = Handles.PositionHandle(gaze.position, Quaternion.identity);
-                    if (EditorGUI.EndChangeCheck())
-                    {
-                        Undo.RecordObject(gaze, "Change Look At Target Position");
-                        gaze.position = newTargetPosition;
-                    }
-                }
-
-                Handles.color = new Color(1, 1, 1, 0.6f);
-                Handles.DrawDottedLine(GetLookAtOrigin(head).position, gaze.position, 4.0f);
-            }
-
-            var (yaw, pitch) = GetLookAtYawPitch(head, lookAtTargetType, gaze);
-            var lookAtOriginMatrix = GetLookAtOrigin(head).localToWorldMatrix;
-            Handles.matrix = lookAtOriginMatrix;
-            var p = OffsetFromHead;
-            Handles.Label(Vector3.zero,
-            $"FromHead: [{p.x:0.00}, {p.y:0.00}, {p.z:0.00}]\nYaw: {yaw:0.}degree\nPitch: {pitch:0.}degree");
-
-            Handles.color = new Color(0, 1, 0, 0.2f);
-            Handles.DrawSolidArc(Vector3.zero,
-                    Matrix4x4.identity.GetColumn(1),
-                    Matrix4x4.identity.GetColumn(2),
-                    yaw,
-                    RADIUS);
-
-
-            var yawQ = Quaternion.AngleAxis(yaw, Vector3.up);
-            var yawMatrix = default(Matrix4x4);
-            yawMatrix.SetTRS(Vector3.zero, yawQ, Vector3.one);
-
-            Handles.matrix = lookAtOriginMatrix * yawMatrix;
-            Handles.color = new Color(1, 0, 0, 0.2f);
-            Handles.DrawSolidArc(Vector3.zero,
-                    Matrix4x4.identity.GetColumn(0),
-                    Matrix4x4.identity.GetColumn(2),
-                    -pitch,
-                    RADIUS);
-        }
-
-#endif
     }
 }
