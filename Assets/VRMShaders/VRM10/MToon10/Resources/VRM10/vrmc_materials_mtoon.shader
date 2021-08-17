@@ -25,7 +25,7 @@ Shader "VRM10/MToon10"
         _GiEqualization ("mtoon.giEqualizationFactor", Range(0, 1)) = 0.9
 
         // Emission
-        _EmissionColor ("emissiveFactor", Color) = (0, 0, 0, 1) // Unity specified name
+        [HDR] _EmissionColor ("emissiveFactor", Color) = (0, 0, 0, 1) // Unity specified name
         _EmissionMap ("emissiveTexture", 2D) = "white" {} // Unity specified name
 
         // Rim Lighting
