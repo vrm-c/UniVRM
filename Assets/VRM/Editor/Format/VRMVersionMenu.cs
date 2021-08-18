@@ -56,13 +56,11 @@ namespace VRM
 
         struct UpmPackage
         {
-            public readonly string Name;
             public readonly string Path;
             public readonly string Template;
 
-            public UpmPackage(string name, string path, string template)
+            public UpmPackage(string path, string template)
             {
-                Name = name;
                 Path = path;
                 Template = template;
             }
@@ -70,7 +68,7 @@ namespace VRM
 
         UpmPackage[] Packages = new UpmPackage[]
         {
-            new UpmPackage("VRMShaders", "Assets/VRMShaders/package.json",
+            new UpmPackage("Assets/VRMShaders/package.json",
 @"{{
   ""name"": ""com.vrmc.vrmshaders"",
   ""version"": ""{1}"",
@@ -86,7 +84,7 @@ namespace VRM
   }}
 }}
 "),
-            new UpmPackage("VRM", "Assets/VRM/package.json",
+            new UpmPackage("Assets/VRM/package.json",
 @"{{
   ""name"": ""com.vrmc.univrm"",
   ""version"": ""{1}"",
@@ -131,7 +129,7 @@ namespace VRM
 }}
 "),
 
-            new UpmPackage("VRM1", "Assets/VRM10/package.json",
+            new UpmPackage("Assets/VRM10/package.json",
 @"{{
   ""name"": ""com.vrmc.vrm"",
   ""version"": ""{1}"",
@@ -163,7 +161,7 @@ namespace VRM
 
         };
 
-        UpmPackage UniGLTFPackage = new UpmPackage("UniGLTF", "Assets/UniGLTF/package.json",
+        UpmPackage UniGLTFPackage = new UpmPackage("Assets/UniGLTF/package.json",
 @"{{
   ""name"": ""com.vrmc.unigltf"",
   ""version"": ""{0}"",
