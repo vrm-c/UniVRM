@@ -1,9 +1,9 @@
 {
   "name": "com.vrmc.univrm",
-  "version": "0.80.0",
+  "version": "0.80.1",
   "displayName": "VRM",
   "description": "VRM importer",
-  "unity": "2018.4",
+  "unity": "2019.4",
   "keywords": [
     "vrm",
     "importer",
@@ -14,8 +14,8 @@
     "name": "VRM Consortium"
   },
   "dependencies": {
-    "com.vrmc.vrmshaders": "0.80.0",
-    "com.vrmc.unigltf": "2.16.0"
+    "com.vrmc.vrmshaders": "0.80.1",
+    "com.vrmc.unigltf": "2.16.1"
   },
   "samples": [
     {
@@ -32,6 +32,11 @@
       "displayName": "RuntimeExporterSample",
       "description": "VRM runtime exporter sample",
       "path": "Samples/RuntimeExporterSample"
+    },
+    {
+      "displayName": "AnimationBridgeSample",
+      "description": "BlendShape animation clip sample",
+      "path": "Samples/AnimationBridgeSample"
     }
   ]
 }

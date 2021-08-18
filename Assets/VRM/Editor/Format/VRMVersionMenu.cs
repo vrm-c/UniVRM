@@ -76,7 +76,7 @@ namespace VRM
   ""version"": ""{1}"",
   ""displayName"": ""VRM Shaders"",
   ""description"": ""VRM Shaders"",
-  ""unity"": ""2018.4"",
+  ""unity"": ""2019.4"",
   ""keywords"": [
     ""vrm"",
     ""shader""
@@ -92,7 +92,52 @@ namespace VRM
   ""version"": ""{1}"",
   ""displayName"": ""VRM"",
   ""description"": ""VRM importer"",
-  ""unity"": ""2018.4"",
+  ""unity"": ""2019.4"",
+  ""keywords"": [
+    ""vrm"",
+    ""importer"",
+    ""avatar"",
+    ""vr""
+  ],
+  ""author"": {{
+    ""name"": ""VRM Consortium""
+  }},
+  ""dependencies"": {{
+    ""com.vrmc.vrmshaders"": ""{1}"",
+    ""com.vrmc.unigltf"": ""{0}""
+  }},
+  ""samples"": [
+    {{
+      ""displayName"": ""SimpleViewer"",
+      ""description"": ""VRM runtime loader sample"",
+      ""path"": ""Samples/SimpleViewer""
+    }},
+    {{
+      ""displayName"": ""FirstPersonSample"",
+      ""description"": ""First Person layer sample with multi camera"",
+      ""path"": ""Samples/FirstPersonSample""
+    }},
+    {{
+      ""displayName"": ""RuntimeExporterSample"",
+      ""description"": ""VRM runtime exporter sample"",
+      ""path"": ""Samples/RuntimeExporterSample""
+    }},
+    {{
+      ""displayName"": ""AnimationBridgeSample"",
+      ""description"": ""BlendShape animation clip sample"",
+      ""path"": ""Samples/AnimationBridgeSample""
+    }}
+  ]
+}}
+"),
+
+            new UpmPackage("VRM1", "Assets/VRM10/package.json",
+@"{{
+  ""name"": ""com.vrmc.univrm1"",
+  ""version"": ""{1}"",
+  ""displayName"": ""VRM-1.0β"",
+  ""description"": ""VRM-1.0β importer"",
+  ""unity"": ""2019.4"",
   ""keywords"": [
     ""vrm"",
     ""importer"",
@@ -108,6 +153,7 @@ namespace VRM
   }}
 }}
 "),
+
         };
 
         UpmPackage UniGLTFPackage = new UpmPackage("UniGLTF", "Assets/UniGLTF/package.json",
@@ -116,7 +162,7 @@ namespace VRM
   ""version"": ""{0}"",
   ""displayName"": ""UniGLTF"",
   ""description"": ""GLTF importer and exporter"",
-  ""unity"": ""2018.4"",
+  ""unity"": ""2019.4"",
   ""keywords"": [
     ""gltf""
   ],
