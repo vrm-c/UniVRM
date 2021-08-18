@@ -207,7 +207,7 @@ namespace VRM.DevOnly.PackageExporter
                         }
                     },
                     // VRM-1.0
-                    new PackageInfo("UniVRM10")
+                    new PackageInfo("VRM")
                     {
                         List = new []{
                             new GlobList("Assets/VRM10"),
