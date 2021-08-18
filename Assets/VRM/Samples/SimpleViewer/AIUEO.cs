@@ -2,7 +2,7 @@
 using UnityEngine;
 
 
-namespace VRM.Samples
+namespace VRM.SimpleViewer
 {
     public class AIUEO : MonoBehaviour
     {

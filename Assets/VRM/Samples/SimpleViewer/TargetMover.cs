@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace VRM.Samples
+namespace VRM.SimpleViewer
 {
     public class TargetMover : MonoBehaviour
     {

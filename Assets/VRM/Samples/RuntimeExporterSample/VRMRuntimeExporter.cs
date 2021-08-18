@@ -7,7 +7,7 @@ using UnityEngine.UI;
 using VRM;
 using VRMShaders;
 
-namespace VRM.Samples
+namespace VRM.RuntimeExporterSample
 {
 
     public class VRMRuntimeExporter : MonoBehaviour

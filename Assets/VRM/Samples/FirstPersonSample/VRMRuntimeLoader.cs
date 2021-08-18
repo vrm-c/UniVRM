@@ -4,7 +4,7 @@ using UniGLTF;
 using UnityEngine;
 
 
-namespace VRM.Samples
+namespace VRM.FirstPersonSample
 {
     public class VRMRuntimeLoader : MonoBehaviour
     {

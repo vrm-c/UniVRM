@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace VRM.Samples
+namespace VRM.AnimationBridgeSample
 {
     /// <summary>
     /// VRMからAnimatorを取り外してからアタッチしてください。

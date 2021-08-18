@@ -9,7 +9,7 @@ using UnityEngine.UI;
 using VRMShaders;
 
 
-namespace VRM.Samples
+namespace VRM.SimpleViewer
 {
 
 

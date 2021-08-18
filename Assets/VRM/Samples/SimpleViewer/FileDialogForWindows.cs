@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 #endif
 
 
-namespace VRM.Samples
+namespace VRM.SimpleViewer
 {
     public static class FileDialogForWindows
     {
