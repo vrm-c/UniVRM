@@ -133,7 +133,7 @@ namespace VRM
 
             new UpmPackage("VRM1", "Assets/VRM10/package.json",
 @"{{
-  ""name"": ""com.vrmc.univrm1"",
+  ""name"": ""com.vrmc.vrm"",
   ""version"": ""{1}"",
   ""displayName"": ""VRM-1.0β"",
   ""description"": ""VRM-1.0β importer"",

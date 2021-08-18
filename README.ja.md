@@ -51,7 +51,7 @@ https://vrm.dev/docs/univrm/install/univrm_upm/
     "com.vrmc.unigltf": "https://github.com/vrm-c/UniVRM.git?path=/Assets/UniGLTF#v0.80.0",
     "com.vrmc.univrm": "https://github.com/vrm-c/UniVRM.git?path=/Assets/VRM#v0.80.0",
     // VRM-1.0βを試す場合
-    "com.vrmc.univrm1": "https://github.com/vrm-c/UniVRM.git?path=/Assets/VRM10#v0.80.0",
+    "com.vrmc.vrm": "https://github.com/vrm-c/UniVRM.git?path=/Assets/VRM10#v0.80.0",
 }
 ```
 
@@ -59,7 +59,7 @@ https://vrm.dev/docs/univrm/install/univrm_upm/
 
 Unity の `PackageManager` Windows から Sample を install できます。
 
-* `com.vrmc.univrm` と `com.vrmc.univrm1` にサンプルがあります。
+* `com.vrmc.univrm` と `com.vrmc.vrm` にサンプルがあります。
 
 * [Programming](https://vrm.dev/en/docs/univrm/programming/)
 * [UniVRM Samples](https://github.com/vrm-c/UniVRM/tree/master/Assets/VRM.Samples)

@@ -51,7 +51,7 @@ To upgrade/downgrade UniVRM version, for example, replace `v0.80.0` with any ver
     "com.vrmc.unigltf": "https://github.com/vrm-c/UniVRM.git?path=/Assets/UniGLTF#v0.80.0",
     "com.vrmc.univrm": "https://github.com/vrm-c/UniVRM.git?path=/Assets/VRM#v0.80.0",
     // for VRM-1.0β
-    "com.vrmc.univrm1": "https://github.com/vrm-c/UniVRM.git?path=/Assets/VRM10#v0.80.0",}
+    "com.vrmc.vrm": "https://github.com/vrm-c/UniVRM.git?path=/Assets/VRM10#v0.80.0",}
 }
 ```
 
@@ -59,7 +59,7 @@ To upgrade/downgrade UniVRM version, for example, replace `v0.80.0` with any ver
 
 Enable sample on Unity `PackageManager` Window.
 
-* `com.vrmc.univrm` and `com.vrmc.univrm1` has samples.
+* `com.vrmc.univrm` and `com.vrmc.vrm` has samples.
 
 * [Programming](https://vrm.dev/en/docs/univrm/programming/)
 * [UniVRM Samples](https://github.com/vrm-c/UniVRM/tree/master/Assets/VRM.Samples)
