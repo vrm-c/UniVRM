@@ -23,7 +23,20 @@ glTF2.0をベースとしており、誰でも自由に利用することがで�
 
 バージョン `v0.80.0` から、`Unity-2019.4LTS` 以降をサポートしています。
 
+https://vrm.dev/docs/univrm/install/
+
 ### UnityPackage
+
+[Release](https://github.com/vrm-c/UniVRM/releases) から unitypackage をダウンロードしてください。
+
+`v0.81.0` からパッケージの分割方法を変更しました。
+
+|                             | UniGLTF_VRMShaders | VRM     | VRM-1.0β |
+|-----------------------------|--------------------|---------|----------|
+| VRMを使うとき               | install            | install |          |
+| VRM1を使うとき              | install            |         | install  |
+| VRMとVRM1両方使うとき       | instlal            | install | install  |
+| GLTF か Shader だけ使うとき | install            |         |          |
 
 ### UPM(開発者向け)
 
@@ -31,7 +44,7 @@ https://vrm.dev/docs/univrm/install/univrm_upm/
 
 `v0.80.0` を任意のバージョンに読み替えてください。
 
-```
+```json
 {
   "dependencies": {
     "com.vrmc.vrmshaders": "https://github.com/vrm-c/UniVRM.git?path=/Assets/VRMShaders#v0.80.0",
@@ -42,4 +55,12 @@ https://vrm.dev/docs/univrm/install/univrm_upm/
 }
 ```
 
-## Folder構成
+#### サンプル
+
+Unity の `PackageManager` Windows から Sample を install できます。
+
+* `com.vrmc.univrm` と `com.vrmc.univrm1` にサンプルがあります。
+
+* [Programming](https://vrm.dev/en/docs/univrm/programming/)
+* [UniVRM Samples](https://github.com/vrm-c/UniVRM/tree/master/Assets/VRM.Samples)
+* [UniVRMTest](https://github.com/vrm-c/UniVRMTest)
