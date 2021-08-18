@@ -3,7 +3,7 @@
   "version": "0.80.0",
   "displayName": "VRM",
   "description": "VRM importer",
-  "unity": "2018.4",
+  "unity": "2019.4",
   "keywords": [
     "vrm",
     "importer",
@@ -16,5 +16,27 @@
   "dependencies": {
     "com.vrmc.vrmshaders": "0.80.0",
     "com.vrmc.unigltf": "2.16.0"
-  }
+  },
+  "samples": [
+    {
+      "displayName": "SimpleViewer",
+      "description": "VRM runtime loader sample",
+      "path": "Samples/SimpleViewer"
+    },
+    {
+      "displayName": "FirstPersonSample",
+      "description": "First Person layer sample with multi camera",
+      "path": "Samples/FirstPersonSample"
+    },
+    {
+      "displayName": "RuntimeExporterSample",
+      "description": "VRM runtime exporter sample",
+      "path": "Samples/RuntimeExporterSample"
+    },
+    {
+      "displayName": "AnimationBridgeSample",
+      "description": "BlendShape animation clip sample",
+      "path": "Samples/AnimationBridgeSample"
+    }
+  ]
 }

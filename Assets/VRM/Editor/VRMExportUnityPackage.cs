@@ -86,6 +86,7 @@ namespace VRM.DevOnly.PackageExporter
             "DevOnly",
             "doc",
             "Profiling",
+            "Samples",
         };
 
         static IEnumerable<string> GlobFiles(string path)
@@ -188,40 +189,30 @@ namespace VRM.DevOnly.PackageExporter
 
         public static void CreateUnityPackages(string outputDir)
         {
-            // UniVRM and sub packages
             {
                 var packages = new[]{
-                    new PackageInfo("UniVRM0X")
+                    // UniGLTF + VRMShaders
+                    new PackageInfo("UniGLTF_VRMShaders")
+                    {
+                        List = new []{
+                            new GlobList("Assets/VRMShaders"),
+                            new GlobList("Assets/UniGLTF"),
+                        }
+                    },
+                    // VRM
+                    new PackageInfo("UniVRM")
                     {
                         List = new []{
                             new GlobList("Assets/VRM"),
-                            new GlobList("Assets/VRMShaders"),
-                            new GlobList("Assets/UniGLTF"),
                         }
                     },
-                    new PackageInfo("UniVRM0X-samples")
-                    {
-                        List = new[]{
-                            new GlobList("Assets/VRM.Samples"),
-                            new GlobList("Assets/StreamingAssets/VRM.Samples"),
-                        }
-                    },
-                    new PackageInfo("UniVRM10")
+                    // VRM-1.0
+                    new PackageInfo("VRM")
                     {
                         List = new []{
                             new GlobList("Assets/VRM10"),
-                            new GlobList("Assets/VRMShaders"),
-                            new GlobList("Assets/UniGLTF"),
                         }
                     },
-                    new PackageInfo("UniVRM10-samples")
-                    {
-                        List = new[]{
-                            new GlobList("Assets/VRM10.Samples"),
-                            new GlobList("Assets/UniGLTF.Samples"), // look dev resources
-                            new GlobList("Assets/StreamingAssets/VRM.Samples"),
-                        }
-                    }
                 };
                 foreach (var package in packages)
                 {
