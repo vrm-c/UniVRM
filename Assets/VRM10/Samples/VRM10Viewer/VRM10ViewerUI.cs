@@ -9,7 +9,7 @@ using UnityEngine.UI;
 
 namespace UniVRM10.VRM10Viewer
 {
-    public class ViewerUI : MonoBehaviour
+    public class VRM10ViewerUI : MonoBehaviour
     {
         #region UI
         [SerializeField]
@@ -172,13 +172,13 @@ namespace UniVRM10.VRM10Viewer
 
             m_src = GameObject.FindObjectOfType<HumanPoseTransfer>();
 
-            m_target = GameObject.FindObjectOfType<TargetMover>().gameObject;
+            m_target = GameObject.FindObjectOfType<VRM10TargetMover>().gameObject;
         }
 
         HumanPoseTransfer m_loaded;
         VRM10Controller m_controller;
 
-        AIUEO m_lipSync;
+        VRM10AIUEO m_lipSync;
         bool m_enableLipSyncValue;
         bool EnableLipSyncValue
         {
@@ -193,7 +193,7 @@ namespace UniVRM10.VRM10Viewer
             }
         }
 
-        Blinker m_blink;
+        VRM10Blinker m_blink;
         bool m_enableBlinkValue;
         bool EnableBlinkValue
         {
@@ -276,7 +276,7 @@ namespace UniVRM10.VRM10Viewer
         void OnOpenClicked()
         {
 #if UNITY_STANDALONE_WIN
-            var path = FileDialogForWindows.FileDialog("open VRM", "vrm", "glb", "bvh", "gltf", "zip");
+            var path = VRM10FileDialogForWindows.FileDialog("open VRM", "vrm", "glb", "bvh", "gltf", "zip");
 #elif UNITY_EDITOR
             var path = UnityEditor.EditorUtility.OpenFilePanel("Open VRM", "", "vrm");
 #else
@@ -404,8 +404,8 @@ namespace UniVRM10.VRM10Viewer
                         m_loaded.Source = m_src;
                         m_loaded.SourceType = HumanPoseTransfer.HumanPoseTransferSourceType.HumanPoseTransfer;
 
-                        m_lipSync = go.AddComponent<AIUEO>();
-                        m_blink = go.AddComponent<Blinker>();
+                        m_lipSync = go.AddComponent<VRM10AIUEO>();
+                        m_blink = go.AddComponent<VRM10Blinker>();
 
                         m_controller.LookAtTargetType = VRM10ObjectLookAt.LookAtTargetTypes.CalcYawPitchToGaze;
                         m_controller.Gaze = m_target.transform;

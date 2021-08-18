@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace UniVRM10.VRM10Viewer
 {
-    public class AIUEO : MonoBehaviour
+    public class VRM10AIUEO : MonoBehaviour
     {
         [SerializeField]
         public VRM10Controller Controller;

@@ -8,7 +8,7 @@ namespace UniVRM10.VRM10Viewer
     /// VRMBlendShapeProxy によるランダムに瞬きするサンプル。
     /// VRMBlendShapeProxy のある GameObject にアタッチする。
     /// </summary>
-    public class Blinker : MonoBehaviour
+    public class VRM10Blinker : MonoBehaviour
     {
         VRM10Controller m_controller;
 

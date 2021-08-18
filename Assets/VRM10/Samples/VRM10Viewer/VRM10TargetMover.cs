@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace UniVRM10.VRM10Viewer
 {
-    public class TargetMover : MonoBehaviour
+    public class VRM10TargetMover : MonoBehaviour
     {
         [SerializeField]
         float m_radius = 5.0f;

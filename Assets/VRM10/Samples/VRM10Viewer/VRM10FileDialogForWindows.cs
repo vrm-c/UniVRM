@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 
 namespace UniVRM10.VRM10Viewer
 {
-    public static class FileDialogForWindows
+    public static class VRM10FileDialogForWindows
     {
 #if UNITY_STANDALONE_WIN
         #region GetOpenFileName
