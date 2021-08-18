@@ -150,7 +150,14 @@ namespace VRM
   ""dependencies"": {{
     ""com.vrmc.vrmshaders"": ""{1}"",
     ""com.vrmc.unigltf"": ""{0}""
-  }}
+  }},
+  ""samples"": [
+    {{
+      ""displayName"": ""VRM10Viewer"",
+      ""description"": ""VRM10 runtime loader sample"",
+      ""path"": ""Samples/VRM10Viewer""
+    }}
+  ]
 }}
 "),
 

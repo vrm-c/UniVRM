@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 
-namespace UniVRM10.Samples
+namespace UniVRM10.VRM10Viewer
 {
     public class ViewerUI : MonoBehaviour
     {
@@ -33,6 +33,9 @@ namespace UniVRM10.Samples
 
         [SerializeField]
         GameObject Root = default;
+
+        [SerializeField]
+        TextAsset m_motion;
 
         [Serializable]
         class TextFields
@@ -212,7 +215,10 @@ namespace UniVRM10.Samples
             m_open.onClick.AddListener(OnOpenClicked);
 
             // load initial bvh
-            LoadMotion(Application.streamingAssetsPath + "/VRM.Samples/Motions/test.txt");
+            if (m_motion != null)
+            {
+                LoadMotion(m_motion.text);
+            }
 
             string[] cmds = System.Environment.GetCommandLineArgs();
             if (cmds.Length > 1)
@@ -223,10 +229,10 @@ namespace UniVRM10.Samples
             m_texts.Start();
         }
 
-        private void LoadMotion(string path)
+        private void LoadMotion(string source)
         {
             var context = new UniHumanoid.BvhImporterContext();
-            context.Parse(path);
+            context.Parse("tmp.bvh", source);
             context.Load();
             SetMotion(context.Root.GetComponent<HumanPoseTransfer>());
         }

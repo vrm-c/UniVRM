@@ -1,6 +1,6 @@
 {
   "name": "com.vrmc.univrm1",
-  "version": "0.80.1",
+  "version": "0.80.0",
   "displayName": "VRM-1.0β",
   "description": "VRM-1.0β importer",
   "unity": "2019.4",
@@ -14,7 +14,14 @@
     "name": "VRM Consortium"
   },
   "dependencies": {
-    "com.vrmc.vrmshaders": "0.80.1",
-    "com.vrmc.unigltf": "2.16.1"
-  }
+    "com.vrmc.vrmshaders": "0.80.0",
+    "com.vrmc.unigltf": "2.16.0"
+  },
+  "samples": [
+    {
+      "displayName": "VRM10Viewer",
+      "description": "VRM10 runtime loader sample",
+      "path": "Samples/VRM10Viewer"
+    }
+  ]
 }

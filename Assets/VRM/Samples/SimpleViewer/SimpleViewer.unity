@@ -4671,6 +4671,7 @@ MonoBehaviour:
   m_target: {fileID: 802105000}
   Root: {fileID: 124675793}
   m_reset: {fileID: 1923377808}
+  m_motion: {fileID: 4900000, guid: 7d2617171adc40b41ac50228f101e178, type: 3}
   m_texts:
     m_textModelTitle: {fileID: 1111491925}
     m_textModelVersion: {fileID: 1045380263}

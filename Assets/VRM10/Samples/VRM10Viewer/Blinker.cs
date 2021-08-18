@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace UniVRM10.Samples
+namespace UniVRM10.VRM10Viewer
 {
     /// <summary>
     /// VRMBlendShapeProxy によるランダムに瞬きするサンプル。

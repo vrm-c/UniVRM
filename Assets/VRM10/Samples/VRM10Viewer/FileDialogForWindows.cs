@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 #endif
 
 
-namespace UniVRM10.Samples
+namespace UniVRM10.VRM10Viewer
 {
     public static class FileDialogForWindows
     {
