@@ -44,7 +44,7 @@ https://vrm.dev/en/docs/univrm/install/univrm_upm/
 Copy and paste the following git urls in `Packages/manifest.json` for UniVRM installation.  
 To upgrade/downgrade UniVRM version, for example, replace `v0.80.0` with any version.
 
-```
+```json
 {
   "dependencies": {
     "com.vrmc.vrmshaders": "https://github.com/vrm-c/UniVRM.git?path=/Assets/VRMShaders#v0.80.0",
@@ -55,7 +55,11 @@ To upgrade/downgrade UniVRM version, for example, replace `v0.80.0` with any ver
 }
 ```
 
-## Script Samples
+#### Script Samples
+
+Enable sample on Unity `PackageManager` Window.
+
+* `com.vrmc.univrm` and `com.vrmc.univrm1` has samples.
 
 * [Programming](https://vrm.dev/en/docs/univrm/programming/)
 * [UniVRM Samples](https://github.com/vrm-c/UniVRM/tree/master/Assets/VRM.Samples)
