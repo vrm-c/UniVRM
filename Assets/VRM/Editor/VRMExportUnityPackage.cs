@@ -86,7 +86,6 @@ namespace VRM.DevOnly.PackageExporter
             "DevOnly",
             "doc",
             "Profiling",
-            "Samples",
         };
 
         static IEnumerable<string> GlobFiles(string path)
