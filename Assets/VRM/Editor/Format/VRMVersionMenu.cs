@@ -102,7 +102,7 @@ namespace VRM
   }},
   ""dependencies"": {{
     ""com.vrmc.vrmshaders"": ""{1}"",
-    ""com.vrmc.unigltf"": ""{0}""
+    ""com.vrmc.gltf"": ""{0}""
   }},
   ""samples"": [
     {{
@@ -147,7 +147,7 @@ namespace VRM
   }},
   ""dependencies"": {{
     ""com.vrmc.vrmshaders"": ""{1}"",
-    ""com.vrmc.unigltf"": ""{0}""
+    ""com.vrmc.gltf"": ""{0}""
   }},
   ""samples"": [
     {{
