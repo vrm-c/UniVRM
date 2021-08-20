@@ -30,28 +30,30 @@ Download from [Release](https://github.com/vrm-c/UniVRM/releases)
 
 From `v0.81.0` UniVRM has 3 unitypackages.
 
-|                       | UniGLTF_VRMShaders | VRM     | VRM1.0β |
-|-----------------------|--------------------|---------|---------|
-| for VRM               | install            | install |         |
-| for VRM1              | install            |         | install |
-| for both VRM and VRM1 | instlal            | install | install |
-| only GLTF or Shader   | install            |         |         |
+|             | UniGLTF_VRMShaders | UniVRM  | VRM     |
+|-------------|--------------------|---------|---------|
+| for GLTF    | install            |         |         |
+| for VRM-0.X | install            | install |         |
+| for VRM-1.0 | install            |         | install |
 
 ## UPM(developer)
 
 https://vrm.dev/en/docs/univrm/install/univrm_upm/
 
-Copy and paste the following git urls in `Packages/manifest.json` for UniVRM installation.  
 To upgrade/downgrade UniVRM version, for example, replace `v0.80.0` with any version.
 
+From `v0.81.0` package rename, reversion.
+
+Copy and paste the following git urls in `Packages/manifest.json` for UniVRM installation.  
 ```json
 {
   "dependencies": {
-    "com.vrmc.vrmshaders": "https://github.com/vrm-c/UniVRM.git?path=/Assets/VRMShaders#v0.80.0",
-    "com.vrmc.unigltf": "https://github.com/vrm-c/UniVRM.git?path=/Assets/UniGLTF#v0.80.0",
-    "com.vrmc.univrm": "https://github.com/vrm-c/UniVRM.git?path=/Assets/VRM#v0.80.0",
+    "com.vrmc.vrmshaders": "https://github.com/vrm-c/UniVRM.git?path=/Assets/VRMShaders#v0.81.0",
+    "com.vrmc.gltf": "https://github.com/vrm-c/UniVRM.git?path=/Assets/UniGLTF#v0.81.0", // rename unigltf to gltf
+    "com.vrmc.univrm": "https://github.com/vrm-c/UniVRM.git?path=/Assets/VRM#v0.81.0",
     // for VRM-1.0β
-    "com.vrmc.vrm": "https://github.com/vrm-c/UniVRM.git?path=/Assets/VRM10#v0.80.0",}
+    "com.vrmc.vrm": "https://github.com/vrm-c/UniVRM.git?path=/Assets/VRM10#v0.81.0", // rename univrm1 to vrm
+  }
 }
 ```
 
