@@ -23,7 +23,10 @@ namespace VRMShaders.VRM10.MToon10.Editor
 
             using (new LabelScope("Editor Settings"))
             {
+                var backup = GUI.enabled;
+                GUI.enabled = true;
                 PopupEnum<MToon10EditorEditMode>("Edit Mode", props[MToon10Prop.EditorEditMode], materialEditor);
+                GUI.enabled = backup;
             }
             var editMode = (MToon10EditorEditMode) (int) props[MToon10Prop.EditorEditMode].floatValue;
             var isAdvancedEditMode = editMode == MToon10EditorEditMode.Advanced;
