@@ -128,7 +128,7 @@ namespace UniVRM10
 
         private static bool TryGetMatcapTexture(GltfData data, VRMC_materials_mtoon mToon, out (SubAssetKey, TextureDescriptor) pair)
         {
-            return TryGetSRGBTexture(data, new Vrm10TextureInfo(mToon.ShadingShiftTexture), out pair);
+            return TryGetSRGBTexture(data, new Vrm10TextureInfo(mToon.MatcapTexture), out pair);
         }
 
         private static bool TryGetRimMultiplyTexture(GltfData data, VRMC_materials_mtoon mToon, out (SubAssetKey, TextureDescriptor) pair)
