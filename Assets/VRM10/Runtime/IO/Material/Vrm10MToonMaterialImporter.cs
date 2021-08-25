@@ -228,6 +228,12 @@ namespace UniVRM10
             {
                 yield return (MToon10Prop.UvAnimationRotationSpeedFactor.ToUnityShaderLabName(), uvAnimSpeedRotation.Value);
             }
+
+            // UI
+            if (true /* TODO: mToon.IsAdvancedMode */)
+            {
+                yield return (MToon10Prop.EditorEditMode.ToUnityShaderLabName(), 1);
+            }
         }
 
         public static IEnumerable<(string key, Vector4 value)> TryGetAllFloatArrays(glTFMaterial material, VRMC_materials_mtoon mToon)
