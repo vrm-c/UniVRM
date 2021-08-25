@@ -9,9 +9,9 @@ assignees: ''
 
 ## Environments (please complete the following information):
 
- - UniVRM version: [e.g. `0.52.0`]
- - Unity version: [e.g. `Unity-2018.4`]
- - OS: [e.g. `Windows 10`]
+ - UniVRM version: `0.81.0`
+ - Unity version: `Unity-2019.4`
+ - OS: `Windows 10`
 
 ## Describe the bug
 

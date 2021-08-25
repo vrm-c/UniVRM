@@ -9,9 +9,9 @@ assignees: ''
 
 ## 環境情報
 
- - UniVRM version: [e.g. `0.80.0`]
- - Unity version: [e.g. `Unity-2019.4`]
- - OS: [e.g. `Windows 10`]
+ - UniVRM version: `0.81.0`
+ - Unity version: `Unity-2019.4`
+ - OS: `Windows 10`
 
 ## バグについて
 
