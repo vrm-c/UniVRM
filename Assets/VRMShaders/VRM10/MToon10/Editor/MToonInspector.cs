@@ -25,13 +25,13 @@ namespace VRMShaders.VRM10.MToon10.Editor
             {
                 PopupEnum<MToon10EditorEditMode>("Edit Mode", props[MToon10Prop.EditorEditMode], materialEditor);
             }
-            var editMode = (MToon10EditorEditMode) (int) props[MToon10Prop.EditorEditMode].floatValue;
+            var editMode = (MToon10EditorEditMode)(int)props[MToon10Prop.EditorEditMode].floatValue;
             var isAdvancedEditMode = editMode == MToon10EditorEditMode.Advanced;
 
             using (new LabelScope("Rendering"))
             {
                 PopupEnum<MToon10AlphaMode>("Alpha Mode", props[MToon10Prop.AlphaMode], materialEditor);
-                var alphaMode = (MToon10AlphaMode) (int) props[MToon10Prop.AlphaMode].floatValue;
+                var alphaMode = (MToon10AlphaMode)(int)props[MToon10Prop.AlphaMode].floatValue;
 
                 if (isAdvancedEditMode && alphaMode == MToon10AlphaMode.Transparent)
                 {
@@ -183,7 +183,7 @@ namespace VRMShaders.VRM10.MToon10.Editor
             using (new LabelScope("Outline"))
             {
                 PopupEnum<MToon10OutlineMode>("Outline Mode", props[MToon10Prop.OutlineWidthMode], materialEditor);
-                var hasOutline = (MToon10OutlineMode) (int) props[MToon10Prop.OutlineWidthMode].floatValue != MToon10OutlineMode.None;
+                var hasOutline = (MToon10OutlineMode)(int)props[MToon10Prop.OutlineWidthMode].floatValue != MToon10OutlineMode.None;
 
                 if (hasOutline)
                 {
@@ -240,11 +240,11 @@ namespace VRMShaders.VRM10.MToon10.Editor
                 using (new LabelScope("Debug"))
                 {
                     EditorGUILayout.LabelField("RenderQueue", mat.renderQueue.ToString());
-                    EditorGUILayout.LabelField("Cull", ((CullMode) props[MToon10Prop.UnityCullMode].floatValue).ToString());
-                    EditorGUILayout.LabelField("SrcBlend", ((BlendMode) props[MToon10Prop.UnitySrcBlend].floatValue).ToString());
-                    EditorGUILayout.LabelField("DstBlend", ((BlendMode) props[MToon10Prop.UnityDstBlend].floatValue).ToString());
-                    EditorGUILayout.LabelField("ZWrite", ((UnityZWriteMode) props[MToon10Prop.UnityZWrite].floatValue).ToString());
-                    EditorGUILayout.LabelField("AlphaToMask", ((UnityAlphaToMaskMode) props[MToon10Prop.UnityAlphaToMask].floatValue).ToString());
+                    EditorGUILayout.LabelField("Cull", ((CullMode)props[MToon10Prop.UnityCullMode].floatValue).ToString());
+                    EditorGUILayout.LabelField("SrcBlend", ((BlendMode)props[MToon10Prop.UnitySrcBlend].floatValue).ToString());
+                    EditorGUILayout.LabelField("DstBlend", ((BlendMode)props[MToon10Prop.UnityDstBlend].floatValue).ToString());
+                    EditorGUILayout.LabelField("ZWrite", ((UnityZWriteMode)props[MToon10Prop.UnityZWrite].floatValue).ToString());
+                    EditorGUILayout.LabelField("AlphaToMask", ((UnityAlphaToMaskMode)props[MToon10Prop.UnityAlphaToMask].floatValue).ToString());
                     EditorGUILayout.LabelField("Enabled Keywords", string.Join("\n", mat.shaderKeywords), EditorStyles.textArea);
                 }
             }
@@ -264,7 +264,7 @@ namespace VRMShaders.VRM10.MToon10.Editor
         {
             EditorGUI.showMixedValue = property.hasMixedValue;
             EditorGUI.BeginChangeCheck();
-            var ret = EditorGUILayout.Popup(name, (int) property.floatValue, Enum.GetNames(typeof(T)));
+            var ret = EditorGUILayout.Popup(name, (int)property.floatValue, Enum.GetNames(typeof(T)));
             var changed = EditorGUI.EndChangeCheck();
             if (changed)
             {
