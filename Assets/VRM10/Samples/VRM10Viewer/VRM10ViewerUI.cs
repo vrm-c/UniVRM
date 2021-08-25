@@ -23,6 +23,9 @@ namespace UniVRM10.VRM10Viewer
 
         [SerializeField]
         Toggle m_enableAutoBlink = default;
+
+        [SerializeField]
+        Toggle m_enableAutoExpression = default;
         #endregion
 
         [SerializeField]
@@ -166,6 +169,7 @@ namespace UniVRM10.VRM10Viewer
             var toggles = GameObject.FindObjectsOfType<Toggle>();
             m_enableLipSync = toggles.First(x => x.name == "EnableLipSync");
             m_enableAutoBlink = toggles.First(x => x.name == "EnableAutoBlink");
+            m_enableAutoExpression = toggles.First(x => x.name == "EnableAutoExpression");
 
             var texts = GameObject.FindObjectsOfType<Text>();
             m_version = texts.First(x => x.name == "Version");
@@ -189,6 +193,21 @@ namespace UniVRM10.VRM10Viewer
                 if (m_lipSync != null)
                 {
                     m_lipSync.enabled = m_enableLipSyncValue;
+                }
+            }
+        }
+
+        VRM10AutoExpression m_autoExpression;
+        bool m_enableAutoExpressionValue;
+        bool EnableAutoExpressionValue
+        {
+            set
+            {
+                if (m_enableAutoExpressionValue == value) return;
+                m_enableAutoExpressionValue = value;
+                if (m_autoExpression != null)
+                {
+                    m_autoExpression.enabled = m_enableAutoExpressionValue;
                 }
             }
         }
@@ -241,6 +260,7 @@ namespace UniVRM10.VRM10Viewer
         {
             EnableLipSyncValue = m_enableLipSync.isOn;
             EnableBlinkValue = m_enableAutoBlink.isOn;
+            EnableAutoExpressionValue = m_enableAutoExpression.isOn;
 
             if (Input.GetKeyDown(KeyCode.Tab))
             {
@@ -406,6 +426,7 @@ namespace UniVRM10.VRM10Viewer
 
                         m_lipSync = go.AddComponent<VRM10AIUEO>();
                         m_blink = go.AddComponent<VRM10Blinker>();
+                        m_autoExpression = go.AddComponent<VRM10AutoExpression>();
 
                         m_controller.LookAtTargetType = VRM10ObjectLookAt.LookAtTargetTypes.CalcYawPitchToGaze;
                         m_controller.Gaze = m_target.transform;
