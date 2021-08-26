@@ -76,7 +76,7 @@ namespace UniVRM10
 
             var generator = new Vrm10MaterialDescriptorGenerator();
             var materialKeys = m_result.Data.GLTF.materials.Select((x, i) => generator.Get(m_result.Data, i).SubAssetKey);
-            var textureKeys = new GltfTextureDescriptorGenerator(m_result.Data).Get().GetEnumerable().Select(x => x.SubAssetKey);
+            var textureKeys = new Vrm10TextureDescriptorGenerator(m_result.Data).Get().GetEnumerable().Select(x => x.SubAssetKey);
             m_materialEditor = new RemapEditorMaterial(materialKeys.Concat(textureKeys), GetEditorMap, SetEditorMap);
             m_vrmEditor = new RemapEditorVrm(new[] { VRM10Object.SubAssetKey }.Concat(EnumerateExpressinKeys(m_result.Vrm.Expressions)), GetEditorMap, SetEditorMap);
         }
