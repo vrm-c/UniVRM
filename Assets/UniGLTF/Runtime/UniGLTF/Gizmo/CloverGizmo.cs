@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-namespace MeshUtility.Gizmo
+namespace UniGLTF
 {
     public static class CloverGizmo
     {

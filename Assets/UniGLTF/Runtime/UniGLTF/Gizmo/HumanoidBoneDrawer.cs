@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-namespace MeshUtility.Gizmo
+namespace UniGLTF
 {
     public class HumanoidBoneDrawer
     {

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace MeshUtility.Gizmo
+namespace UniGLTF
 {
     public class BoneInfo
     {
