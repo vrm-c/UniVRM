@@ -19,7 +19,6 @@ namespace UniGLTF
         };
 
         private readonly Animator _animator;
-        private readonly List<Transform> _bonePoints = new List<Transform>();
         private readonly List<BoneInfo> _bones = new List<BoneInfo>();
 
         public HumanoidBoneDrawer(Animator animator)
@@ -102,8 +101,6 @@ namespace UniGLTF
         {
             var tailTransform = _animator.GetBoneTransform(tail);
             if (tailTransform == null) return null;
-
-            _bonePoints.Add(tailTransform);
 
             HumanBodyBones? headCandidate = tail;
             while (true)
