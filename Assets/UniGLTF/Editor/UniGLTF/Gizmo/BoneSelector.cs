@@ -30,39 +30,32 @@ namespace UniGLTF
         }
 
         Camera _sceneViewCamera;
-        CommandBuffer _currentCommandBuffer;
-        CommandBuffer _selectedCommandBuffer;
+        CommandBuffer _commandBuffer;
         const CameraEvent _cameraEvent = CameraEvent.AfterForwardAlpha;
+
         BoneInfo _selectedBoneInfo;
         public BoneInfo SelectedBoneInfo => _selectedBoneInfo;
+
+        BoneInfo _hoverBoneInfo;
+        public BoneInfo HoverBoneInfo => _hoverBoneInfo;
 
         public BoneSelector(Camera camera)
         {
             _sceneViewCamera = camera;
 
-            _currentCommandBuffer = new CommandBuffer();
-            _currentCommandBuffer.name = "bones";
-            _sceneViewCamera.AddCommandBuffer(_cameraEvent, _currentCommandBuffer);
-
-            _selectedCommandBuffer = new CommandBuffer();
-            _selectedCommandBuffer.name = "selected";
-            _sceneViewCamera.AddCommandBuffer(_cameraEvent, _selectedCommandBuffer);
+            _commandBuffer = new CommandBuffer();
+            _commandBuffer.name = "bones";
+            _sceneViewCamera.AddCommandBuffer(_cameraEvent, _commandBuffer);
         }
 
         public void Dispose()
         {
             CurrentAnimator = null;
-            if (_currentCommandBuffer != null)
+            if (_commandBuffer != null)
             {
-                _sceneViewCamera.RemoveCommandBuffer(_cameraEvent, _currentCommandBuffer);
-                _currentCommandBuffer.Dispose();
-                _currentCommandBuffer = null;
-            }
-            if (_selectedCommandBuffer != null)
-            {
-                _sceneViewCamera.RemoveCommandBuffer(_cameraEvent, _selectedCommandBuffer);
-                _selectedCommandBuffer.Dispose();
-                _selectedCommandBuffer = null;
+                _sceneViewCamera.RemoveCommandBuffer(_cameraEvent, _commandBuffer);
+                _commandBuffer.Dispose();
+                _commandBuffer = null;
             }
         }
 
@@ -84,7 +77,7 @@ namespace UniGLTF
         }
 
         Dictionary<BoneInfo, float> _hitBones = new Dictionary<BoneInfo, float>();
-        public GameObject IntersectBone(Ray ray)
+        public GameObject IntersectBone(Ray ray, bool isHover = false)
         {
             if (_bones == null)
             {
@@ -107,7 +100,19 @@ namespace UniGLTF
             }
 
             // clear
-            _selectedBoneInfo = null;
+            if (isHover)
+            {
+                return _IntersectBone(ref _hoverBoneInfo);
+            }
+            else
+            {
+                return _IntersectBone(ref _selectedBoneInfo);
+            }
+        }
+
+        GameObject _IntersectBone(ref BoneInfo info)
+        {
+            info = null;
             if (!_hitBones.Any())
             {
                 return null;
@@ -115,10 +120,9 @@ namespace UniGLTF
 
             var min = _hitBones.Aggregate((result, next) => result.Value < next.Value ? result : next);
             // Debug.Log("Hit!! = " + min.Key.HeadBone);
-            _selectedBoneInfo = min.Key;
-            return _selectedBoneInfo.HeadObject;
+            info = min.Key;
+            return info.HeadObject;
         }
-
         private bool GetClosestPosition(Vector3 origin, Vector3 targetDirection, Ray ray, out HitResult hitResult)
         {
             Vector3 deltaPos3 = origin - ray.origin;
@@ -164,25 +168,25 @@ namespace UniGLTF
             return true;
         }
 
-        public void Update()
+        public void Draw()
         {
             if (_bones == null)
             {
                 return;
             }
 
-            if (_currentCommandBuffer != null)
+            if (_commandBuffer != null)
             {
-                _currentCommandBuffer.Clear();
-                _currentCommandBuffer.DrawBones(_bones);
+                _commandBuffer.Clear();
+                _commandBuffer.DrawBones(_bones);
 
-                if (_selectedCommandBuffer != null)
+                if (_selectedBoneInfo != null)
                 {
-                    _selectedCommandBuffer.Clear();
-                    if (_selectedBoneInfo != null)
-                    {
-                        _selectedCommandBuffer.DrawBone(_selectedBoneInfo);
-                    }
+                    _commandBuffer.DrawBone(_selectedBoneInfo, BoneInfoDrawer.SelectedMaterial);
+                }
+                if (_hoverBoneInfo != null && _selectedBoneInfo != _hoverBoneInfo)
+                {
+                    _commandBuffer.DrawBone(_hoverBoneInfo, BoneInfoDrawer.HoverMaterial);
                 }
             }
         }

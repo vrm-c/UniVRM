@@ -7,8 +7,20 @@ namespace UniGLTF
 {
     public static class BoneInfoDrawer
     {
+        #region Bone
         const string BONE_GIZMO = "Assets/UniGLTF/Editor/UniGLTF/Gizmo/Models/BoneGizmo.prefab";
-        const string SELECTED_BONE_GIZMO = "Assets/UniGLTF/Editor/UniGLTF/Gizmo/Models/SelectedBoneGizmo.prefab";
+        static GameObject _bone;
+        static GameObject BonePrefab
+        {
+            get
+            {
+                if (_bone == null)
+                {
+                    _bone = AssetDatabase.LoadAssetAtPath<GameObject>(BONE_GIZMO);
+                }
+                return _bone;
+            }
+        }
 
         private static Mesh _boneMesh;
         static Mesh BoneMesh
@@ -17,8 +29,7 @@ namespace UniGLTF
             {
                 if (_boneMesh == null)
                 {
-                    var bone = AssetDatabase.LoadAssetAtPath<GameObject>(BONE_GIZMO);
-                    _boneMesh = bone.GetComponent<MeshFilter>().sharedMesh;
+                    _boneMesh = BonePrefab.GetComponent<MeshFilter>().sharedMesh;
                 }
                 return _boneMesh;
             }
@@ -31,11 +42,30 @@ namespace UniGLTF
             {
                 if (_boneMaterial == null)
                 {
-                    var bone = AssetDatabase.LoadAssetAtPath<GameObject>(BONE_GIZMO);
-                    _boneMaterial = bone.GetComponent<MeshRenderer>().sharedMaterial;
+                    _boneMaterial = BonePrefab.GetComponent<MeshRenderer>().sharedMaterial;
                     _boneMaterial.enableInstancing = true;
                 }
                 return _boneMaterial;
+            }
+        }
+        #endregion
+
+        #region Selected
+        const string SELECTED_BONE_GIZMO = "Assets/UniGLTF/Editor/UniGLTF/Gizmo/Models/SelectedBoneGizmo.prefab";
+        static GameObject _selected;
+        static GameObject SelectedPrefab
+        {
+            get
+            {
+                if (_selected == null)
+                {
+                    _selected = AssetDatabase.LoadAssetAtPath<GameObject>(SELECTED_BONE_GIZMO);
+                    if (_selected == null)
+                    {
+                        throw new System.NullReferenceException("SelectedPrefab");
+                    }
+                }
+                return _selected;
             }
         }
 
@@ -44,31 +74,77 @@ namespace UniGLTF
         {
             get
             {
-                if (_selectedBoneMesh)
+                if (_selectedBoneMesh == null)
                 {
-                    var selectedBone = AssetDatabase.LoadAssetAtPath<GameObject>(SELECTED_BONE_GIZMO);
-                    _selectedBoneMesh = selectedBone.GetComponent<MeshFilter>().sharedMesh;
+                    _selectedBoneMesh = SelectedPrefab.GetComponent<MeshFilter>().sharedMesh;
                 }
                 return _selectedBoneMesh;
             }
         }
 
         private static Material _selectedMaterial;
-        static Material SelectedMaterial
+        public static Material SelectedMaterial
         {
             get
             {
-                if (_selectedMaterial)
+                if (_selectedMaterial == null)
                 {
-                    var selectedBone = AssetDatabase.LoadAssetAtPath<GameObject>(SELECTED_BONE_GIZMO);
-                    _selectedMaterial = selectedBone.GetComponent<MeshRenderer>().sharedMaterial;
+                    _selectedMaterial = SelectedPrefab.GetComponent<MeshRenderer>().sharedMaterial;
                     _selectedMaterial.enableInstancing = true;
                 }
                 return _selectedMaterial;
             }
         }
+        #endregion
 
-        public static void DrawBone(this CommandBuffer buf, BoneInfo bone)
+        #region Hover
+        const string HOVER_BONE_GIZMO = "Assets/UniGLTF/Editor/UniGLTF/Gizmo/Models/HoverBoneGizmo.prefab";
+        static GameObject _hover;
+        static GameObject HoverPrefab
+        {
+            get
+            {
+                if (_hover == null)
+                {
+                    _hover = AssetDatabase.LoadAssetAtPath<GameObject>(HOVER_BONE_GIZMO);
+                    if (_hover == null)
+                    {
+                        throw new System.NullReferenceException("HoverPrefab");
+                    }
+                }
+                return _hover;
+            }
+        }
+
+        private static Mesh _hoverBoneMesh;
+        static Mesh HoverBoneMesh
+        {
+            get
+            {
+                if (_hoverBoneMesh == null)
+                {
+                    _hoverBoneMesh = HoverPrefab.GetComponent<MeshFilter>().sharedMesh;
+                }
+                return _hoverBoneMesh;
+            }
+        }
+
+        private static Material _hoverMaterial;
+        public static Material HoverMaterial
+        {
+            get
+            {
+                if (_hoverMaterial == null)
+                {
+                    _hoverMaterial = HoverPrefab.GetComponent<MeshRenderer>().sharedMaterial;
+                    _hoverMaterial.enableInstancing = true;
+                }
+                return _hoverMaterial;
+            }
+        }
+        #endregion
+
+        public static void DrawBone(this CommandBuffer buf, BoneInfo bone, Material material)
         {
             var head = bone.GetHeadPosition();
             var tail = bone.GetTailPosition();
@@ -82,7 +158,7 @@ namespace UniGLTF
                 new Vector3(distance, distance, distance)
             );
 
-            buf.DrawMesh(SelectedBoneMesh, matrix, SelectedMaterial);
+            buf.DrawMesh(SelectedBoneMesh, matrix, material);
         }
 
         private const int MaxDrawCount = 256;

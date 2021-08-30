@@ -28,7 +28,9 @@ namespace UniVRM10
         void OnEnable()
         {
             EditorTools.activeToolChanged += ActiveToolDidChange;
-            _impl = new BoneSelector(SceneView.lastActiveSceneView.camera);
+            if (SceneView.lastActiveSceneView?.camera)
+            {
+            }
         }
 
         void OnDisable()
@@ -45,7 +47,6 @@ namespace UniVRM10
         {
             if (EditorTools.IsActiveTool(this))
             {
-                _impl = new BoneSelector(SceneView.lastActiveSceneView.camera);
             }
             else
             {
@@ -59,54 +60,64 @@ namespace UniVRM10
 
         public override void OnToolGUI(EditorWindow window)
         {
-            var root = Selection.activeGameObject.GetComponent<VRM10Controller>();
+            if (_impl == null)
+            {
+                _impl = new BoneSelector(SceneView.lastActiveSceneView.camera);
+            }
+
+            var root = Selection.activeGameObject?.GetComponent<VRM10Controller>();
             if (root == null)
             {
                 return;
             }
-
             _impl.SetTarget(root.gameObject);
-
-            if (_impl != null)
+            if (Event.current.type == EventType.Repaint)
             {
-                _impl.Update();
+                _impl.Draw();
+            }
 
-                // bone manipulator
-                var selected = _impl.SelectedBoneInfo;
-                bool selector = true;
-                if (selected != null)
+            // bone manipulator
+            var selected = _impl.SelectedBoneInfo;
+            bool selector = true;
+            if (selected != null)
+            {
+                EditorGUI.BeginChangeCheck();
+                Quaternion rot = Handles.RotationHandle(selected.HeadObject.transform.rotation, selected.HeadObject.transform.position);
+                // Debug.Log($"{selected}");
+                if (EditorGUI.EndChangeCheck())
                 {
-                    EditorGUI.BeginChangeCheck();
-                    Quaternion rot = Handles.RotationHandle(selected.HeadObject.transform.rotation, selected.HeadObject.transform.position);
-                    // Debug.Log($"{selected}");
-                    if (EditorGUI.EndChangeCheck())
-                    {
-                        // UNDO
+                    // UNDO
+                    Undo.RecordObject(selected.HeadObject.transform, "bone rotation");
 
-                        // apply
-                        selected.HeadObject.transform.rotation = rot;
-                        selector = false;
-                    }
+                    // apply
+                    selected.HeadObject.transform.rotation = rot;
+                    selector = false;
                 }
+            }
 
-                if (selector)
+            if (selector)
+            {
+                if (Event.current.type == EventType.MouseDown && Event.current.button == 0)
                 {
                     // 回転ギズモがなんもしなかった
                     // selector
                     Vector2 mousePosition = Event.current.mousePosition;
                     Ray ray = HandleUtility.GUIPointToWorldRay(mousePosition);
                     Event e = Event.current;
-                    if (e.isMouse && e.button == 0 && e.type == EventType.MouseUp)
-                    {
-                        var hit = _impl.IntersectBone(ray);
-                        if (hit != null)
-                        {
-                            // select
-                            Selection.activeGameObject = hit;
-                        }
-                    }
+                    _impl.IntersectBone(ray);
+                }
+                else if (Event.current.type == EventType.MouseMove)
+                {
+                    // hover
+                    Vector2 mousePosition = Event.current.mousePosition;
+                    Ray ray = HandleUtility.GUIPointToWorldRay(mousePosition);
+                    Event e = Event.current;
+                    _impl.IntersectBone(ray, true);
                 }
             }
+
+            // disable sceneView select
+            HandleUtility.AddDefaultControl(GUIUtility.GetControlID(FocusType.Passive));
         }
     }
 }
