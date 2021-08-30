@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using UnityEditor.EditorTools;
+using UniGLTF;
 
 namespace UniVRM10
 {
@@ -23,98 +24,89 @@ namespace UniVRM10
             }
         }
 
+        BoneSelector _impl;
         void OnEnable()
         {
             EditorTools.activeToolChanged += ActiveToolDidChange;
+            _impl = new BoneSelector(SceneView.lastActiveSceneView.camera);
         }
 
         void OnDisable()
         {
             EditorTools.activeToolChanged -= ActiveToolDidChange;
+            if (_impl != null)
+            {
+                _impl.Dispose();
+                _impl = null;
+            }
         }
 
         void ActiveToolDidChange()
         {
-            if (!EditorTools.IsActiveTool(this))
+            if (EditorTools.IsActiveTool(this))
             {
-                return;
+                _impl = new BoneSelector(SceneView.lastActiveSceneView.camera);
             }
-        }
-
-        UniHumanoid.Humanoid _target;
-
-        UniHumanoid.Humanoid Target
-        {
-            get
+            else
             {
-                return _target;
-            }
-            set
-            {
-                if (_target == value)
+                if (_impl != null)
                 {
-                    return;
-                }
-                _target = value;
-                if (_target != null)
-                {
-                    // initialize
+                    _impl.Dispose();
+                    _impl = null;
                 }
             }
         }
 
         public override void OnToolGUI(EditorWindow window)
         {
-            var root = Selection.activeTransform.GetComponent<VRM10Controller>();
+            var root = Selection.activeGameObject.GetComponent<VRM10Controller>();
             if (root == null)
             {
                 return;
             }
 
-            Target = root.GetComponent<UniHumanoid.Humanoid>();
+            _impl.SetTarget(root.gameObject);
 
+            if (_impl != null)
+            {
+                _impl.Update();
 
-            // if (_impl != null)
-            // {
-            //     _impl.Update();
+                // bone manipulator
+                var selected = _impl.SelectedBoneInfo;
+                bool selector = true;
+                if (selected != null)
+                {
+                    EditorGUI.BeginChangeCheck();
+                    Quaternion rot = Handles.RotationHandle(selected.HeadObject.transform.rotation, selected.HeadObject.transform.position);
+                    // Debug.Log($"{selected}");
+                    if (EditorGUI.EndChangeCheck())
+                    {
+                        // UNDO
 
-            //     // bone manipulator
-            //     var selected = _impl.SelectedBoneInfo;
-            //     bool selector = true;
-            //     if (selected != null)
-            //     {
-            //         EditorGUI.BeginChangeCheck();
-            //         Quaternion rot = Handles.RotationHandle(selected.HeadObject.transform.rotation, selected.HeadObject.transform.position);
-            //         // Debug.Log($"{selected}");
-            //         if (EditorGUI.EndChangeCheck())
-            //         {
-            //             // apply
-            //             selected.HeadObject.transform.rotation = rot;
-            //             selector = false;
-            //         }
-            //     }
+                        // apply
+                        selected.HeadObject.transform.rotation = rot;
+                        selector = false;
+                    }
+                }
 
-            //     if (selector)
-            //     {
-            //         // 回転ギズモがなんもしなかった
-            //         // selector
-            //         Vector2 mousePosition = Event.current.mousePosition;
-            //         Ray ray = HandleUtility.GUIPointToWorldRay(mousePosition);
-            //         Event e = Event.current;
-            //         if (e.isMouse && e.button == 0 && e.type == EventType.MouseUp)
-            //         {
-            //             var hit = _impl.IntersectBone(ray);
-            //             if (hit != null)
-            //             {
-            //                 // select
-            //                 Selection.activeGameObject = hit;
-            //             }
-            //         }
-            //     }
-            // }
-
-            // // disable sceneView select
-            // HandleUtility.AddDefaultControl(GUIUtility.GetControlID(FocusType.Passive));
+                if (selector)
+                {
+                    // 回転ギズモがなんもしなかった
+                    // selector
+                    Vector2 mousePosition = Event.current.mousePosition;
+                    Ray ray = HandleUtility.GUIPointToWorldRay(mousePosition);
+                    Event e = Event.current;
+                    if (e.isMouse && e.button == 0 && e.type == EventType.MouseUp)
+                    {
+                        var hit = _impl.IntersectBone(ray);
+                        if (hit != null)
+                        {
+                            // select
+                            Selection.activeGameObject = hit;
+                        }
+                    }
+                }
+            }
         }
     }
 }

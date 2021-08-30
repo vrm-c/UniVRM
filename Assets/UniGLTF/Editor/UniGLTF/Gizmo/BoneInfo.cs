@@ -2,12 +2,115 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace UniGLTF
 {
-    public class HumanoidBoneDrawer
+    public class BoneInfo
     {
+        private readonly Transform _head;
+        private readonly Transform _tail;
+        private readonly Vector3 _headLocalForward;
+        private readonly Vector3 _headLocalUp;
+
+        public HumanBodyBones HeadBone { get; private set; }
+        public HumanBodyBones TailBone { get; private set; }
+
+        public GameObject HeadObject { get { return _head.gameObject; } }
+
+        public BoneInfo(Transform head, Transform tail, HumanBodyBones headBone, HumanBodyBones tailBone)
+        {
+            _head = head;
+            _tail = tail;
+            _headLocalForward = (_head != null && _tail != null) ?
+                _head.InverseTransformPoint(_tail.position) :
+                new Vector3(0, 0, 0.1f);
+            _headLocalUp = CalculateLocalUpVector(_headLocalForward);
+
+            HeadBone = headBone;
+            TailBone = tailBone;
+        }
+
+        public BoneInfo(Transform head, Vector3 headLocalDirection, HumanBodyBones headBone)
+        {
+            _head = head;
+            _tail = null;
+            _headLocalForward = headLocalDirection;
+            _headLocalUp = CalculateLocalUpVector(_headLocalForward);
+
+            HeadBone = headBone;
+        }
+
+        public override string ToString()
+        {
+            return $"{_head}";
+        }
+
+        public Vector3 GetHeadPosition()
+        {
+            if (_head == null) return Vector3.zero;
+
+            return _head.position;
+        }
+
+        public Vector3 GetTailPosition()
+        {
+            if (_tail == null)
+            {
+                return _head.TransformPoint(_headLocalForward);
+            }
+            else
+            {
+                return _tail.position;
+            }
+        }
+
+        public Vector3 GetUpVector()
+        {
+            if (_head == null) return Vector3.zero;
+
+            return _head.TransformVector(_headLocalUp);
+        }
+
+        private static Vector3 CalculateLocalUpVector(Vector3 localForward)
+        {
+            var dotX = Mathf.Abs(Vector3.Dot(localForward, new Vector3(1, 0, 0)));
+            var dotY = Mathf.Abs(Vector3.Dot(localForward, new Vector3(0, 1, 0)));
+            var dotZ = Mathf.Abs(Vector3.Dot(localForward, new Vector3(0, 0, 1)));
+            if (dotX > dotY && dotX > dotZ)
+            {
+                return new Vector3(0, 1, 0);
+            }
+            if (dotY > dotX && dotY > dotZ)
+            {
+                return new Vector3(0, 0, 1);
+            }
+            else
+            {
+                return new Vector3(0, 1, 0);
+            }
+        }
+
+        #region Humanoid Bone info
+        private static readonly Dictionary<HumanBodyBones, Vector3> LeafBoneWithDirection =
+                    new Dictionary<HumanBodyBones, Vector3>
+                    {
+                {HumanBodyBones.Head, Vector3.zero},
+                {HumanBodyBones.LeftToes, Vector3.forward},
+                {HumanBodyBones.RightToes, Vector3.forward},
+                {HumanBodyBones.LeftEye, Vector3.forward},
+                {HumanBodyBones.RightEye, Vector3.forward},
+                {HumanBodyBones.Jaw, Vector3.forward},
+                {HumanBodyBones.LeftThumbDistal,   Vector3.zero},
+                {HumanBodyBones.LeftIndexDistal,   Vector3.zero},
+                {HumanBodyBones.LeftMiddleDistal,  Vector3.zero},
+                {HumanBodyBones.LeftRingDistal,    Vector3.zero},
+                {HumanBodyBones.LeftLittleDistal,  Vector3.zero},
+                {HumanBodyBones.RightThumbDistal,  Vector3.zero},
+                {HumanBodyBones.RightIndexDistal,  Vector3.zero},
+                {HumanBodyBones.RightMiddleDistal, Vector3.zero},
+                {HumanBodyBones.RightRingDistal,   Vector3.zero},
+                {HumanBodyBones.RightLittleDistal, Vector3.zero},
+                    };
         static HumanBodyBones[] _NotConnectedBones = new HumanBodyBones[]{
             HumanBodyBones.LeftShoulder ,
             HumanBodyBones.RightShoulder,
@@ -18,12 +121,9 @@ namespace UniGLTF
             HumanBodyBones.Jaw,
         };
 
-        private readonly Animator _animator;
-        private readonly List<BoneInfo> _bones = new List<BoneInfo>();
-
-        public HumanoidBoneDrawer(Animator animator)
+        public static List<BoneInfo> GetHumanoidBones(Animator _animator)
         {
-            _animator = animator;
+            List<BoneInfo> _bones = new List<BoneInfo>();
             if (_animator == null || !_animator.isHuman)
             {
                 throw new ArgumentException("not humanoid");
@@ -43,7 +143,7 @@ namespace UniGLTF
                     continue;
                 }
 
-                var head = FindHeadBone(x);
+                var head = FindHeadBone(_animator, x);
                 if (!head.HasValue) continue;
 
                 var headTf = _animator.GetBoneTransform(head.Value);
@@ -59,7 +159,7 @@ namespace UniGLTF
                 var headTf = _animator.GetBoneTransform(head);
                 if (headTf == null) continue;
 
-                var parent = FindHeadBone(head);
+                var parent = FindHeadBone(_animator, head);
                 var parentTf = parent.HasValue ? _animator.GetBoneTransform(parent.Value) : null;
 
                 if (kv.Value == Vector3.zero)
@@ -80,24 +180,11 @@ namespace UniGLTF
                 }
 
             }
-        }
 
-        public void GetDrawBonesCommandBuffer(CommandBuffer buf)
-        {
-            CloverGizmo.GetDrawBonesCommandBuffer(buf, _bones);
-        }
-
-        public void GetDrawSelectedBoneCommandBuffer(CommandBuffer buf, BoneInfo selected)
-        {
-            CloverGizmo.GetSelectedDrawBoneCommandBuffer(buf, selected);
-        }
-
-        public List<BoneInfo> GetBoneInfoList()
-        {
             return _bones;
         }
 
-        private HumanBodyBones? FindHeadBone(HumanBodyBones tail)
+        private static HumanBodyBones? FindHeadBone(Animator _animator, HumanBodyBones tail)
         {
             var tailTransform = _animator.GetBoneTransform(tail);
             if (tailTransform == null) return null;
@@ -119,27 +206,6 @@ namespace UniGLTF
                 }
             }
         }
-
-        private static readonly Dictionary<HumanBodyBones, Vector3> LeafBoneWithDirection =
-            new Dictionary<HumanBodyBones, Vector3>
-            {
-                {HumanBodyBones.Head, Vector3.zero},
-                {HumanBodyBones.LeftToes, Vector3.forward},
-                {HumanBodyBones.RightToes, Vector3.forward},
-                {HumanBodyBones.LeftEye, Vector3.forward},
-                {HumanBodyBones.RightEye, Vector3.forward},
-                {HumanBodyBones.Jaw, Vector3.forward},
-                {HumanBodyBones.LeftThumbDistal,   Vector3.zero},
-                {HumanBodyBones.LeftIndexDistal,   Vector3.zero},
-                {HumanBodyBones.LeftMiddleDistal,  Vector3.zero},
-                {HumanBodyBones.LeftRingDistal,    Vector3.zero},
-                {HumanBodyBones.LeftLittleDistal,  Vector3.zero},
-                {HumanBodyBones.RightThumbDistal,  Vector3.zero},
-                {HumanBodyBones.RightIndexDistal,  Vector3.zero},
-                {HumanBodyBones.RightMiddleDistal, Vector3.zero},
-                {HumanBodyBones.RightRingDistal,   Vector3.zero},
-                {HumanBodyBones.RightLittleDistal, Vector3.zero},
-            };
 
         private static HumanBodyBones? GetParent(HumanBodyBones bone)
         {
@@ -205,5 +271,6 @@ namespace UniGLTF
                     throw new ArgumentOutOfRangeException(nameof(bone), bone, null);
             }
         }
+        #endregion
     }
 }

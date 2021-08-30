@@ -8,6 +8,7 @@ namespace UniGLTF
 {
     public class BoneSelector : IDisposable
     {
+        List<BoneInfo> _bones;
         Animator _currentAnimator;
         public Animator CurrentAnimator
         {
@@ -24,11 +25,10 @@ namespace UniGLTF
                 }
 
                 _currentAnimator = value;
-                _currentDrawer = new HumanoidBoneDrawer(value);
+                _bones = BoneInfo.GetHumanoidBones(value);
             }
         }
 
-        HumanoidBoneDrawer _currentDrawer;
         Camera _sceneViewCamera;
         CommandBuffer _currentCommandBuffer;
         CommandBuffer _selectedCommandBuffer;
@@ -66,7 +66,7 @@ namespace UniGLTF
             }
         }
 
-        public void OnSelectionChanged(GameObject activeGameObject)
+        public void SetTarget(GameObject activeGameObject)
         {
             CurrentAnimator = activeGameObject?.GetComponentInParent<Animator>();
         }
@@ -86,11 +86,13 @@ namespace UniGLTF
         Dictionary<BoneInfo, float> _hitBones = new Dictionary<BoneInfo, float>();
         public GameObject IntersectBone(Ray ray)
         {
-            _hitBones.Clear();
-            if (_currentDrawer == null)
+            if (_bones == null)
+            {
                 return null;
+            }
 
-            foreach (var boneInfo in _currentDrawer.GetBoneInfoList())
+            _hitBones.Clear();
+            foreach (var boneInfo in _bones)
             {
                 var direction = boneInfo.GetTailPosition() - boneInfo.GetHeadPosition();
                 HitResult hitResult;
@@ -164,7 +166,7 @@ namespace UniGLTF
 
         public void Update()
         {
-            if (_currentDrawer == null)
+            if (_bones == null)
             {
                 return;
             }
@@ -172,14 +174,14 @@ namespace UniGLTF
             if (_currentCommandBuffer != null)
             {
                 _currentCommandBuffer.Clear();
-                _currentDrawer.GetDrawBonesCommandBuffer(_currentCommandBuffer);
+                _currentCommandBuffer.DrawBones(_bones);
 
                 if (_selectedCommandBuffer != null)
                 {
                     _selectedCommandBuffer.Clear();
                     if (_selectedBoneInfo != null)
                     {
-                        _currentDrawer.GetDrawSelectedBoneCommandBuffer(_selectedCommandBuffer, _selectedBoneInfo);
+                        _selectedCommandBuffer.DrawBone(_selectedBoneInfo);
                     }
                 }
             }
