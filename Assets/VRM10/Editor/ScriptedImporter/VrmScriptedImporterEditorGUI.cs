@@ -104,7 +104,8 @@ namespace UniVRM10
                                 EditorGUILayout.HelpBox(m_result.Message, MessageType.Info);
                                 {
                                     serializedObject.Update();
-                                    EditorGUILayout.PropertyField(serializedObject.FindProperty("UseUrp"));
+                                    EditorGUILayout.HelpBox("Experimental", MessageType.Warning);
+                                    EditorGUILayout.PropertyField(serializedObject.FindProperty(nameof(VrmScriptedImporter.RenderPipeline)));
                                     serializedObject.ApplyModifiedProperties();
                                 }
                                 ApplyRevertGUI();

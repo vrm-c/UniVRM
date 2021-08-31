@@ -19,6 +19,7 @@ namespace UniGLTF
         public ScriptedImporterAxes m_reverseAxis = default;
 
         [SerializeField]
+        [Header("Experimental")]
         public RenderPipelineTypes m_renderPipeline;
 
         static IMaterialDescriptorGenerator GetMaterialGenerator(RenderPipelineTypes renderPipeline)
