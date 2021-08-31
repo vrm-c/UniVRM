@@ -15,11 +15,11 @@ namespace UniVRM10
         public bool MigrateToVrm1 = default;
 
         [SerializeField]
-        public bool UseUrp = default;
+        public UniGLTF.RenderPipelineTypes RenderPipeline = default;
 
         public override void OnImportAsset(AssetImportContext ctx)
         {
-            VrmScriptedImporterImpl.Import(this, ctx, MigrateToVrm1, UseUrp);
+            VrmScriptedImporterImpl.Import(this, ctx, MigrateToVrm1, RenderPipeline);
         }
     }
 }

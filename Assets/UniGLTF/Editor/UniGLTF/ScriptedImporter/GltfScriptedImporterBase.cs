@@ -1,8 +1,6 @@
 using UnityEngine;
-using UnityEditor;
 using System.Linq;
 using VRMShaders;
-using UnityEngine.Rendering;
 #if UNITY_2020_2_OR_NEWER
 using UnityEditor.AssetImporters;
 #else
@@ -21,17 +19,20 @@ namespace UniGLTF
         public ScriptedImporterAxes m_reverseAxis = default;
 
         [SerializeField]
-        public bool m_useUrpMaterial;
+        public RenderPipelineTypes m_renderPipeline;
 
-        static IMaterialDescriptorGenerator GetMaterialGenerator(bool useUrpMaterial)
+        static IMaterialDescriptorGenerator GetMaterialGenerator(RenderPipelineTypes renderPipeline)
         {
-            if (useUrpMaterial)
+            switch (renderPipeline)
             {
-                return new GltfUrpMaterialDescriptorGenerator();
-            }
-            else
-            {
-                return new GltfMaterialDescriptorGenerator();
+                case RenderPipelineTypes.Builtin:
+                    return new GltfUrpMaterialDescriptorGenerator();
+
+                case RenderPipelineTypes.UniversalRenderPipeline:
+                    return new GltfMaterialDescriptorGenerator();
+
+                default:
+                    throw new System.NotImplementedException();
             }
         }
 
@@ -41,7 +42,7 @@ namespace UniGLTF
         /// <param name="scriptedImporter"></param>
         /// <param name="context"></param>
         /// <param name="reverseAxis"></param>
-        protected static void Import(ScriptedImporter scriptedImporter, AssetImportContext context, Axes reverseAxis, bool useUrpMaterial)
+        protected static void Import(ScriptedImporter scriptedImporter, AssetImportContext context, Axes reverseAxis, RenderPipelineTypes renderPipeline)
         {
 #if VRM_DEVELOP
             Debug.Log("OnImportAsset to " + scriptedImporter.assetPath);
@@ -62,7 +63,7 @@ namespace UniGLTF
                 .Where(x => x.Value != null)
                 .ToDictionary(kv => new SubAssetKey(kv.Value.GetType(), kv.Key.name), kv => kv.Value);
 
-            IMaterialDescriptorGenerator materialGenerator = GetMaterialGenerator(useUrpMaterial);
+            IMaterialDescriptorGenerator materialGenerator = GetMaterialGenerator(renderPipeline);
 
             using (var loader = new ImporterContext(data, extractedObjects, materialGenerator: materialGenerator))
             {

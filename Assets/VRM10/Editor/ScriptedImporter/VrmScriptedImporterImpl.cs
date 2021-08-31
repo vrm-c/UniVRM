@@ -1,9 +1,7 @@
 ﻿using System.Linq;
 using UnityEngine;
 using UniGLTF;
-using System.IO;
 using System;
-using UniJSON;
 using VRMShaders;
 #if UNITY_2020_2_OR_NEWER
 using UnityEditor.AssetImporters;
@@ -16,7 +14,22 @@ namespace UniVRM10
 {
     public static class VrmScriptedImporterImpl
     {
-        public static void Import(ScriptedImporter scriptedImporter, AssetImportContext context, bool migrateToVrm1, bool useUrp)
+        static IMaterialDescriptorGenerator GetMaterialDescriptorGenerator(RenderPipelineTypes renderPipeline)
+        {
+            switch (renderPipeline)
+            {
+                case RenderPipelineTypes.Builtin:
+                    return new Vrm10MaterialDescriptorGenerator();
+
+                case RenderPipelineTypes.UniversalRenderPipeline:
+                    return new Vrm10UrpMaterialDescriptorGenerator();
+
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
+        public static void Import(ScriptedImporter scriptedImporter, AssetImportContext context, bool migrateToVrm1, RenderPipelineTypes renderPipeline)
         {
 #if VRM_DEVELOP
             Debug.Log("OnImportAsset to " + scriptedImporter.assetPath);
@@ -35,15 +48,7 @@ namespace UniVRM10
                 .Where(kv => kv.Value != null)
                 .ToDictionary(kv => new SubAssetKey(kv.Value.GetType(), kv.Key.name), kv => kv.Value);
 
-            IMaterialDescriptorGenerator materialGenerator;
-            if (useUrp)
-            {
-                materialGenerator = new Vrm10UrpMaterialDescriptorGenerator();
-            }
-            else
-            {
-                materialGenerator = new Vrm10MaterialDescriptorGenerator();
-            }
+            var materialGenerator = GetMaterialDescriptorGenerator(renderPipeline);
 
             using (var loader = new Vrm10Importer(result.Data, result.Vrm, extractedObjects, materialGenerator: materialGenerator))
             {
