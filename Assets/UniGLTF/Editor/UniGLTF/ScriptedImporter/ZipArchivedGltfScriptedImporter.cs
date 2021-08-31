@@ -14,7 +14,7 @@ namespace UniGLTF
     {
         public override void OnImportAsset(AssetImportContext ctx)
         {
-            Import(this, ctx, m_reverseAxis.ToAxes(), m_useURPMaterial);
+            Import(this, ctx, m_reverseAxis.ToAxes(), m_useUrpMaterial);
         }
     }
 }

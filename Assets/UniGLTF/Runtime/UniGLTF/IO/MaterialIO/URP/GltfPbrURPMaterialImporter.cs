@@ -9,7 +9,7 @@ namespace UniGLTF
     /// 
     /// see: https://github.com/Unity-Technologies/Graphics/blob/v7.5.3/com.unity.render-pipelines.universal/Editor/UniversalRenderPipelineMaterialUpgrader.cs#L354-L379
     /// </summary>
-    public static class GltfPbrURPMaterialImporter
+    public static class GltfPbrUrpMaterialImporter
     {
         public const string ShaderName = "Universal Render Pipeline/Lit";
 

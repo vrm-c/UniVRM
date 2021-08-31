@@ -12,7 +12,7 @@ namespace UniVRM10
             if (!GltfUnlitMaterialImporter.TryCreateParam(data, i, out MaterialDescriptor matDesc))
             {
                 // pbr
-                if (!GltfPbrURPMaterialImporter.TryCreateParam(data, i, out matDesc))
+                if (!GltfPbrUrpMaterialImporter.TryCreateParam(data, i, out matDesc))
                 {
                     // fallback
 #if VRM_DEVELOP

@@ -4,10 +4,10 @@ using VRMShaders;
 
 namespace VRM
 {
-    public sealed class VRMURPMaterialDescriptorGenerator : IMaterialDescriptorGenerator
+    public sealed class VRMUrpMaterialDescriptorGenerator : IMaterialDescriptorGenerator
     {
         readonly glTF_VRM_extensions m_vrm;
-        public VRMURPMaterialDescriptorGenerator(glTF_VRM_extensions vrm)
+        public VRMUrpMaterialDescriptorGenerator(glTF_VRM_extensions vrm)
         {
             m_vrm = vrm;
         }
@@ -19,7 +19,7 @@ namespace VRM
             if (!GltfUnlitMaterialImporter.TryCreateParam(data, i, out MaterialDescriptor matDesc))
             {
                 // pbr "Standard" to "Universal Render Pipeline/Lit" 
-                if (!GltfPbrURPMaterialImporter.TryCreateParam(data, i, out matDesc))
+                if (!GltfPbrUrpMaterialImporter.TryCreateParam(data, i, out matDesc))
                 {
                     // fallback
 #if VRM_DEVELOP

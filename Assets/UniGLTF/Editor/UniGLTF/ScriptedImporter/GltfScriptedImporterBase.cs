@@ -21,13 +21,13 @@ namespace UniGLTF
         public ScriptedImporterAxes m_reverseAxis = default;
 
         [SerializeField]
-        public bool m_useURPMaterial;
+        public bool m_useUrpMaterial;
 
-        static IMaterialDescriptorGenerator GetMaterialGenerator(bool useURPMaterial)
+        static IMaterialDescriptorGenerator GetMaterialGenerator(bool useUrpMaterial)
         {
-            if (useURPMaterial)
+            if (useUrpMaterial)
             {
-                return new GltfURPMaterialDescriptorGenerator();
+                return new GltfUrpMaterialDescriptorGenerator();
             }
             else
             {
@@ -41,7 +41,7 @@ namespace UniGLTF
         /// <param name="scriptedImporter"></param>
         /// <param name="context"></param>
         /// <param name="reverseAxis"></param>
-        protected static void Import(ScriptedImporter scriptedImporter, AssetImportContext context, Axes reverseAxis, bool useURPMaterial)
+        protected static void Import(ScriptedImporter scriptedImporter, AssetImportContext context, Axes reverseAxis, bool useUrpMaterial)
         {
 #if VRM_DEVELOP
             Debug.Log("OnImportAsset to " + scriptedImporter.assetPath);
@@ -62,7 +62,7 @@ namespace UniGLTF
                 .Where(x => x.Value != null)
                 .ToDictionary(kv => new SubAssetKey(kv.Value.GetType(), kv.Key.name), kv => kv.Value);
 
-            IMaterialDescriptorGenerator materialGenerator = GetMaterialGenerator(useURPMaterial);
+            IMaterialDescriptorGenerator materialGenerator = GetMaterialGenerator(useUrpMaterial);
 
             using (var loader = new ImporterContext(data, extractedObjects, materialGenerator: materialGenerator))
             {
