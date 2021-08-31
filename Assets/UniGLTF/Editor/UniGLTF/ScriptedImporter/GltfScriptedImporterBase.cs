@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEditor;
 using System.Linq;
 using VRMShaders;
+using UnityEngine.Rendering;
 #if UNITY_2020_2_OR_NEWER
 using UnityEditor.AssetImporters;
 #else
@@ -19,13 +20,28 @@ namespace UniGLTF
         [SerializeField]
         public ScriptedImporterAxes m_reverseAxis = default;
 
+        [SerializeField]
+        public bool m_useURPMaterial;
+
+        static IMaterialDescriptorGenerator GetMaterialGenerator(bool useURPMaterial)
+        {
+            if (useURPMaterial)
+            {
+                return new GltfURPMaterialDescriptorGenerator();
+            }
+            else
+            {
+                return new GltfMaterialDescriptorGenerator();
+            }
+        }
+
         /// <summary>
         /// glb をパースして、UnityObject化、さらにAsset化する
         /// </summary>
         /// <param name="scriptedImporter"></param>
         /// <param name="context"></param>
         /// <param name="reverseAxis"></param>
-        protected static void Import(ScriptedImporter scriptedImporter, AssetImportContext context, Axes reverseAxis)
+        protected static void Import(ScriptedImporter scriptedImporter, AssetImportContext context, Axes reverseAxis, bool useURPMaterial)
         {
 #if VRM_DEVELOP
             Debug.Log("OnImportAsset to " + scriptedImporter.assetPath);
@@ -46,7 +62,9 @@ namespace UniGLTF
                 .Where(x => x.Value != null)
                 .ToDictionary(kv => new SubAssetKey(kv.Value.GetType(), kv.Key.name), kv => kv.Value);
 
-            using (var loader = new ImporterContext(data, extractedObjects))
+            IMaterialDescriptorGenerator materialGenerator = GetMaterialGenerator(useURPMaterial);
+
+            using (var loader = new ImporterContext(data, extractedObjects, materialGenerator: materialGenerator))
             {
                 // Configure TextureImporter to Extracted Textures.
                 foreach (var textureInfo in loader.TextureDescriptorGenerator.Get().GetEnumerable())
