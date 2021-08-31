@@ -15,9 +15,7 @@ namespace UniVRM10
                 if (!GltfPbrUrpMaterialImporter.TryCreateParam(data, i, out matDesc))
                 {
                     // fallback
-#if VRM_DEVELOP
                     Debug.LogWarning($"material: {i} out of range. fallback");
-#endif
                     return new MaterialDescriptor(GltfMaterialDescriptorGenerator.GetMaterialName(i, null), GltfPbrMaterialImporter.ShaderName);
                 }
             }
