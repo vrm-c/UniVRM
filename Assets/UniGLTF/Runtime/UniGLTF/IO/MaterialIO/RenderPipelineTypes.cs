@@ -6,7 +6,7 @@ namespace UniGLTF
     /// </summary>
     public enum RenderPipelineTypes
     {
-        Builtin,
+        BuiltinRenderPipeline,
         UniversalRenderPipeline,
     }
 }

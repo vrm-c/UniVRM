@@ -18,7 +18,7 @@ namespace UniVRM10
         {
             switch (renderPipeline)
             {
-                case RenderPipelineTypes.Builtin:
+                case RenderPipelineTypes.BuiltinRenderPipeline:
                     return new Vrm10MaterialDescriptorGenerator();
 
                 case RenderPipelineTypes.UniversalRenderPipeline:
