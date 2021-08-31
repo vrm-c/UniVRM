@@ -14,9 +14,12 @@ namespace UniVRM10
         [SerializeField]
         public bool MigrateToVrm1 = default;
 
+        [SerializeField]
+        public bool UseUrp = default;
+
         public override void OnImportAsset(AssetImportContext ctx)
         {
-            VrmScriptedImporterImpl.Import(this, ctx, MigrateToVrm1);
+            VrmScriptedImporterImpl.Import(this, ctx, MigrateToVrm1, UseUrp);
         }
     }
 }

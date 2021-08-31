@@ -16,7 +16,7 @@ namespace UniVRM10
 {
     public static class VrmScriptedImporterImpl
     {
-        public static void Import(ScriptedImporter scriptedImporter, AssetImportContext context, bool migrateToVrm1)
+        public static void Import(ScriptedImporter scriptedImporter, AssetImportContext context, bool migrateToVrm1, bool useUrp)
         {
 #if VRM_DEVELOP
             Debug.Log("OnImportAsset to " + scriptedImporter.assetPath);
@@ -35,7 +35,17 @@ namespace UniVRM10
                 .Where(kv => kv.Value != null)
                 .ToDictionary(kv => new SubAssetKey(kv.Value.GetType(), kv.Key.name), kv => kv.Value);
 
-            using (var loader = new Vrm10Importer(result.Data, result.Vrm, extractedObjects))
+            IMaterialDescriptorGenerator materialGenerator;
+            if (useUrp)
+            {
+                materialGenerator = new Vrm10UrpMaterialDescriptorGenerator();
+            }
+            else
+            {
+                materialGenerator = new Vrm10MaterialDescriptorGenerator();
+            }
+
+            using (var loader = new Vrm10Importer(result.Data, result.Vrm, extractedObjects, materialGenerator: materialGenerator))
             {
                 // settings TextureImporters
                 foreach (var textureInfo in loader.TextureDescriptorGenerator.Get().GetEnumerable())

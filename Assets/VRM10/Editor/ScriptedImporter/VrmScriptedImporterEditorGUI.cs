@@ -102,6 +102,11 @@ namespace UniVRM10
                         {
                             case Vrm10FileType.Vrm1:
                                 EditorGUILayout.HelpBox(m_result.Message, MessageType.Info);
+                                {
+                                    serializedObject.Update();
+                                    EditorGUILayout.PropertyField(serializedObject.FindProperty("UseUrp"));
+                                    serializedObject.ApplyModifiedProperties();
+                                }
                                 ApplyRevertGUI();
                                 break;
 

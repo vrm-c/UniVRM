@@ -23,7 +23,8 @@ namespace UniVRM10
         public Vrm10Importer(
             UniGLTF.GltfData data, UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm,
             IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> externalObjectMap = null,
-            ITextureDeserializer textureDeserializer = null)
+            ITextureDeserializer textureDeserializer = null,
+            IMaterialDescriptorGenerator materialGenerator = null)
             : base(data, externalObjectMap, textureDeserializer)
         {
             if (data == null)
@@ -38,7 +39,7 @@ namespace UniVRM10
             m_vrm = vrm;
 
             TextureDescriptorGenerator = new Vrm10TextureDescriptorGenerator(data);
-            MaterialDescriptorGenerator = new Vrm10MaterialDescriptorGenerator();
+            MaterialDescriptorGenerator = materialGenerator ?? new Vrm10MaterialDescriptorGenerator();
 
             m_externalMap = externalObjectMap;
             if (m_externalMap == null)
