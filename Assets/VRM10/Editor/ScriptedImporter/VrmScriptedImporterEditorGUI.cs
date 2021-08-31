@@ -102,6 +102,12 @@ namespace UniVRM10
                         {
                             case Vrm10FileType.Vrm1:
                                 EditorGUILayout.HelpBox(m_result.Message, MessageType.Info);
+                                {
+                                    serializedObject.Update();
+                                    EditorGUILayout.HelpBox("Experimental", MessageType.Warning);
+                                    EditorGUILayout.PropertyField(serializedObject.FindProperty(nameof(VrmScriptedImporter.RenderPipeline)));
+                                    serializedObject.ApplyModifiedProperties();
+                                }
                                 ApplyRevertGUI();
                                 break;
 

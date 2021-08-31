@@ -23,7 +23,8 @@ namespace VRM
         public VRMImporterContext(
             GltfData data,
             IReadOnlyDictionary<SubAssetKey, Object> externalObjectMap = null,
-            ITextureDeserializer textureDeserializer = null)
+            ITextureDeserializer textureDeserializer = null,
+            IMaterialDescriptorGenerator materialGenerator = null)
             : base(data, externalObjectMap, textureDeserializer)
         {
             // parse VRM part
@@ -31,7 +32,7 @@ namespace VRM
             {
                 VRM = vrm;
                 TextureDescriptorGenerator = new VrmTextureDescriptorGenerator(Data, VRM);
-                MaterialDescriptorGenerator = new VRMMaterialDescriptorGenerator(VRM);
+                MaterialDescriptorGenerator = materialGenerator ?? new VRMMaterialDescriptorGenerator(VRM);
             }
             else
             {

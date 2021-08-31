@@ -22,11 +22,12 @@ namespace UniGLTF
         public ImporterContext(
             GltfData data,
             IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> externalObjectMap = null,
-            ITextureDeserializer textureDeserializer = null)
+            ITextureDeserializer textureDeserializer = null,
+            IMaterialDescriptorGenerator materialGenerator = null)
         {
             Data = data;
             TextureDescriptorGenerator = new GltfTextureDescriptorGenerator(Data);
-            MaterialDescriptorGenerator = new GltfMaterialDescriptorGenerator();
+            MaterialDescriptorGenerator = materialGenerator ?? new GltfMaterialDescriptorGenerator();
 
             ExternalObjectMap = externalObjectMap ?? new Dictionary<SubAssetKey, UnityEngine.Object>();
             textureDeserializer = textureDeserializer ?? new UnityTextureDeserializer();

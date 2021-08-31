@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEditor;
 using System.Linq;
 using VRMShaders;
 #if UNITY_2020_2_OR_NEWER
@@ -19,13 +18,32 @@ namespace UniGLTF
         [SerializeField]
         public ScriptedImporterAxes m_reverseAxis = default;
 
+        [SerializeField]
+        [Header("Experimental")]
+        public RenderPipelineTypes m_renderPipeline;
+
+        static IMaterialDescriptorGenerator GetMaterialGenerator(RenderPipelineTypes renderPipeline)
+        {
+            switch (renderPipeline)
+            {
+                case RenderPipelineTypes.BuiltinRenderPipeline:
+                    return new GltfUrpMaterialDescriptorGenerator();
+
+                case RenderPipelineTypes.UniversalRenderPipeline:
+                    return new GltfMaterialDescriptorGenerator();
+
+                default:
+                    throw new System.NotImplementedException();
+            }
+        }
+
         /// <summary>
         /// glb をパースして、UnityObject化、さらにAsset化する
         /// </summary>
         /// <param name="scriptedImporter"></param>
         /// <param name="context"></param>
         /// <param name="reverseAxis"></param>
-        protected static void Import(ScriptedImporter scriptedImporter, AssetImportContext context, Axes reverseAxis)
+        protected static void Import(ScriptedImporter scriptedImporter, AssetImportContext context, Axes reverseAxis, RenderPipelineTypes renderPipeline)
         {
 #if VRM_DEVELOP
             Debug.Log("OnImportAsset to " + scriptedImporter.assetPath);
@@ -46,7 +64,9 @@ namespace UniGLTF
                 .Where(x => x.Value != null)
                 .ToDictionary(kv => new SubAssetKey(kv.Value.GetType(), kv.Key.name), kv => kv.Value);
 
-            using (var loader = new ImporterContext(data, extractedObjects))
+            IMaterialDescriptorGenerator materialGenerator = GetMaterialGenerator(renderPipeline);
+
+            using (var loader = new ImporterContext(data, extractedObjects, materialGenerator: materialGenerator))
             {
                 // Configure TextureImporter to Extracted Textures.
                 foreach (var textureInfo in loader.TextureDescriptorGenerator.Get().GetEnumerable())
