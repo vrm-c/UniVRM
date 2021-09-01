@@ -93,7 +93,7 @@ namespace VRMShaders
                     var occlusionPixels = linearOcclusion.GetPixels32();
                     if (metallicSmoothPixels.Length != occlusionPixels.Length)
                     {
-                        throw new NotImplementedException();
+                        throw new NotImplementedException("Resizing not implemented, please ensure Metallic and Occlusion textures are the same size!");
                     }
                     for (int i = 0; i < metallicSmoothPixels.Length; ++i)
                     {
