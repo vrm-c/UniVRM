@@ -51,9 +51,9 @@ namespace VRM.RuntimeExporterSample
 
             // GLB形式でJSONを取得しParseします
             var data = new GlbFileParser(path).Parse();
-            // var data = new GlbBinaryParser(anyBinary).Parse();
-
-            using (var context = new VRMImporterContext(data))
+            // VRM extension を parse します
+            var vrm = new VRMData(data);
+            using (var context = new VRMImporterContext(vrm))
             {
 
                 // metaを取得(todo: thumbnailテクスチャのロード)

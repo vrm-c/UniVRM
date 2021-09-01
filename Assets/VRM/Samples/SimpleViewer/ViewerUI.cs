@@ -327,22 +327,27 @@ namespace VRM.SimpleViewer
 
         static IMaterialDescriptorGenerator GetGltfMaterialGenerator(bool useUrp)
         {
-            if(useUrp){
+            if (useUrp)
+            {
                 return new GltfUrpMaterialDescriptorGenerator();
             }
-            else{
+            else
+            {
                 return new GltfMaterialDescriptorGenerator();
             }
         }
 
         static IMaterialDescriptorGenerator GetVrmMaterialGenerator(bool useUrp, VRM.glTF_VRM_extensions vrm)
         {
-            if(useUrp){
+            if (useUrp)
+            {
                 return new VRM.VRMUrpMaterialDescriptorGenerator(vrm);
-             }else{
-                 return  new VRM.VRMMaterialDescriptorGenerator(vrm);            
-             }
-        }                
+            }
+            else
+            {
+                return new VRM.VRMMaterialDescriptorGenerator(vrm);
+            }
+        }
 
         async void LoadModelAsync(string path)
         {
@@ -358,12 +363,8 @@ namespace VRM.SimpleViewer
                 case ".vrm":
                     {
                         var data = new GlbFileParser(path).Parse();
-                        if(!glTF_VRM_extensions.TryDeserialize(data.GLTF.extensions, out VRM.glTF_VRM_extensions vrm))
-                        {
-                            throw new System.ArgumentException();
-                        }
-
-                        using (var context = new VRMImporterContext(data, vrm, materialGenerator: GetVrmMaterialGenerator(m_useUrpMaterial.isOn, vrm)))
+                        var vrm = new VRMData(data);
+                        using (var context = new VRMImporterContext(vrm, materialGenerator: GetVrmMaterialGenerator(m_useUrpMaterial.isOn, vrm.VrmExtensions)))
                         {
                             await m_texts.UpdateMetaAsync(context);
                             var loaded = await context.LoadAsync();

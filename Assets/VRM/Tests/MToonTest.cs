@@ -47,11 +47,12 @@ namespace VRM
             }
 
             var data = new GlbFileParser(path).Parse();
-            
-            var importer = new VRMImporterContext(data, null);
+            var vrm = new VRMData(data);
 
-            Assert.AreEqual(73, data.GLTF.materials.Count);
-            Assert.True(VRMMToonMaterialImporter.TryCreateParam(data, importer.VRM, 0, out MaterialDescriptor matDesc));
+            var importer = new VRMImporterContext(vrm, null);
+
+            Assert.AreEqual(73, vrm.Data.GLTF.materials.Count);
+            Assert.True(VRMMToonMaterialImporter.TryCreateParam(vrm.Data, importer.VRM, 0, out MaterialDescriptor matDesc));
         }
 
         static string AliciaPath
@@ -68,7 +69,7 @@ namespace VRM
         {
             var path = AliciaPath;
             var data = new GlbFileParser(path).Parse();
-            var vrmImporter = new VRMImporterContext(data, null);
+            var vrmImporter = new VRMImporterContext(new VRMData(data), null);
             var materialParam = new VRMMaterialDescriptorGenerator(vrmImporter.VRM).Get(data, 0);
             Assert.AreEqual("VRM/MToon", materialParam.ShaderName);
             Assert.AreEqual("Alicia_body", materialParam.TextureSlots["_MainTex"].UnityObjectName);

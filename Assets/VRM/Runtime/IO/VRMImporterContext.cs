@@ -12,31 +12,23 @@ namespace VRM
 {
     public class VRMImporterContext : ImporterContext
     {
-        public class NotVrm0Exception : Exception
+        VRMData _data;
+        public VRM.glTF_VRM_extensions VRM
         {
-            public NotVrm0Exception()
-            { }
+            get
+            {
+                return _data.VrmExtensions;
+            }
         }
 
-        public VRM.glTF_VRM_extensions VRM { get; private set; }
-
         public VRMImporterContext(
-            GltfData data, VRM.glTF_VRM_extensions vrm = null,
+            VRMData data,
             IReadOnlyDictionary<SubAssetKey, Object> externalObjectMap = null,
             ITextureDeserializer textureDeserializer = null,
             IMaterialDescriptorGenerator materialGenerator = null)
-            : base(data, externalObjectMap, textureDeserializer)
+            : base(data.Data, externalObjectMap, textureDeserializer)
         {
-            // parse VRM part
-            if (vrm == null)
-            {
-                glTF_VRM_extensions.TryDeserialize(GLTF.extensions, out vrm);
-            }
-            if (vrm == null)
-            {
-                throw new NotVrm0Exception();
-            }
-            VRM = vrm;
+            _data = data;
             TextureDescriptorGenerator = new VrmTextureDescriptorGenerator(Data, VRM);
             MaterialDescriptorGenerator = materialGenerator ?? new VRMMaterialDescriptorGenerator(VRM);
         }

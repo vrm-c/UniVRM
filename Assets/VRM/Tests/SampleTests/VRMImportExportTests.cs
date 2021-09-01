@@ -45,7 +45,7 @@ namespace VRM.Samples
             var path = AliciaPath;
             var data = new GlbFileParser(path).Parse();
 
-            using (var context = new VRMImporterContext(data))
+            using (var context = new VRMImporterContext(new VRMData(data)))
             using (var loaded = context.Load())
             {
                 loaded.ShowMeshes();
@@ -193,7 +193,7 @@ namespace VRM.Samples
             var path = AliciaPath;
             var data = new GlbFileParser(path).Parse();
 
-            using (var context = new VRMImporterContext(data))
+            using (var context = new VRMImporterContext(new VRMData(data)))
             using (var loaded = context.Load())
             {
                 loaded.ShowMeshes();
@@ -214,7 +214,7 @@ namespace VRM.Samples
             var path = AliciaPath;
             var data = new GlbFileParser(path).Parse();
 
-            using (var context = new VRMImporterContext(data))
+            using (var context = new VRMImporterContext(new VRMData(data)))
             {
                 var oldJson = context.GLTF.ToJson().ParseAsJson().ToString("  ");
 
