@@ -27,6 +27,9 @@ namespace VRM.SimpleViewer
 
         [SerializeField]
         Toggle m_enableAutoBlink = default;
+
+        [SerializeField]
+        Toggle m_useUrpMaterial = default;
         #endregion
 
         [SerializeField]
@@ -322,6 +325,25 @@ namespace VRM.SimpleViewer
             }
         }
 
+        static IMaterialDescriptorGenerator GetGltfMaterialGenerator(bool useUrp)
+        {
+            if(useUrp){
+                return new GltfUrpMaterialDescriptorGenerator();
+            }
+            else{
+                return new GltfMaterialDescriptorGenerator();
+            }
+        }
+
+        static IMaterialDescriptorGenerator GetVrmMaterialGenerator(bool useUrp, VRM.glTF_VRM_extensions vrm)
+        {
+            if(useUrp){
+                return new VRM.VRMUrpMaterialDescriptorGenerator(vrm);
+             }else{
+                 return  new VRM.VRMMaterialDescriptorGenerator(vrm);            
+             }
+        }                
+
         async void LoadModelAsync(string path)
         {
             if (!File.Exists(path))
@@ -336,8 +358,12 @@ namespace VRM.SimpleViewer
                 case ".vrm":
                     {
                         var data = new GlbFileParser(path).Parse();
+                        if(!glTF_VRM_extensions.TryDeserialize(data.GLTF.extensions, out VRM.glTF_VRM_extensions vrm))
+                        {
+                            throw new System.ArgumentException();
+                        }
 
-                        using (var context = new VRMImporterContext(data))
+                        using (var context = new VRMImporterContext(data, vrm, materialGenerator: GetVrmMaterialGenerator(m_useUrpMaterial.isOn, vrm)))
                         {
                             await m_texts.UpdateMetaAsync(context);
                             var loaded = await context.LoadAsync();
@@ -352,7 +378,7 @@ namespace VRM.SimpleViewer
                     {
                         var data = new GlbFileParser(path).Parse();
 
-                        var context = new UniGLTF.ImporterContext(data);
+                        var context = new UniGLTF.ImporterContext(data, materialGenerator: GetGltfMaterialGenerator(m_useUrpMaterial.isOn));
                         var loaded = context.Load();
                         loaded.EnableUpdateWhenOffscreen();
                         loaded.ShowMeshes();
@@ -364,7 +390,7 @@ namespace VRM.SimpleViewer
                     {
                         var data = new GltfFileWithResourceFilesParser(path).Parse();
 
-                        var context = new UniGLTF.ImporterContext(data);
+                        var context = new UniGLTF.ImporterContext(data, materialGenerator: GetGltfMaterialGenerator(m_useUrpMaterial.isOn));
                         var loaded = context.Load();
                         loaded.EnableUpdateWhenOffscreen();
                         loaded.ShowMeshes();
@@ -375,7 +401,7 @@ namespace VRM.SimpleViewer
                     {
                         var data = new ZipArchivedGltfFileParser(path).Parse();
 
-                        var context = new UniGLTF.ImporterContext(data);
+                        var context = new UniGLTF.ImporterContext(data, materialGenerator: GetGltfMaterialGenerator(m_useUrpMaterial.isOn));
                         var loaded = context.Load();
                         loaded.EnableUpdateWhenOffscreen();
                         loaded.ShowMeshes();

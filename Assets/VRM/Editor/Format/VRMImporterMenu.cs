@@ -78,7 +78,7 @@ namespace VRM
                     .Where(x => x != null)
                     .ToDictionary(x => new SubAssetKey(x), x => x as Object);
 
-                using (var context = new VRMImporterContext(data, map))
+                using (var context = new VRMImporterContext(data, externalObjectMap: map))
                 {
                     var editor = new VRMEditorImporterContext(context, prefabPath);
                     foreach (var textureInfo in editor.TextureDescriptorGenerator.Get().GetEnumerable())

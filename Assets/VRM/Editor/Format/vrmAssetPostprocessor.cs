@@ -55,7 +55,7 @@ namespace VRM
                     .Select(x => x.LoadAsset<Texture>())
                     .ToDictionary(x => new SubAssetKey(x), x => x as UnityEngine.Object);
 
-                using (var context = new VRMImporterContext(data, map))
+                using (var context = new VRMImporterContext(data, externalObjectMap: map))
                 {
                     var editor = new VRMEditorImporterContext(context, prefabPath);
                     foreach (var textureInfo in context.TextureDescriptorGenerator.Get().GetEnumerable())

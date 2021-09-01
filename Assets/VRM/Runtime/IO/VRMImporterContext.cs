@@ -21,23 +21,24 @@ namespace VRM
         public VRM.glTF_VRM_extensions VRM { get; private set; }
 
         public VRMImporterContext(
-            GltfData data,
+            GltfData data, VRM.glTF_VRM_extensions vrm = null,
             IReadOnlyDictionary<SubAssetKey, Object> externalObjectMap = null,
             ITextureDeserializer textureDeserializer = null,
             IMaterialDescriptorGenerator materialGenerator = null)
             : base(data, externalObjectMap, textureDeserializer)
         {
             // parse VRM part
-            if (glTF_VRM_extensions.TryDeserialize(GLTF.extensions, out glTF_VRM_extensions vrm))
+            if (vrm == null)
             {
-                VRM = vrm;
-                TextureDescriptorGenerator = new VrmTextureDescriptorGenerator(Data, VRM);
-                MaterialDescriptorGenerator = materialGenerator ?? new VRMMaterialDescriptorGenerator(VRM);
+                glTF_VRM_extensions.TryDeserialize(GLTF.extensions, out vrm);
             }
-            else
+            if (vrm == null)
             {
                 throw new NotVrm0Exception();
             }
+            VRM = vrm;
+            TextureDescriptorGenerator = new VrmTextureDescriptorGenerator(Data, VRM);
+            MaterialDescriptorGenerator = materialGenerator ?? new VRMMaterialDescriptorGenerator(VRM);
         }
 
         #region OnLoad
