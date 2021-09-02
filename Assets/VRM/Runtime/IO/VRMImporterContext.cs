@@ -17,7 +17,7 @@ namespace VRM
         {
             get
             {
-                return _data.VrmExtensions;
+                return _data.VrmExtension;
             }
         }
 
@@ -26,7 +26,7 @@ namespace VRM
             IReadOnlyDictionary<SubAssetKey, Object> externalObjectMap = null,
             ITextureDeserializer textureDeserializer = null,
             IMaterialDescriptorGenerator materialGenerator = null)
-            : base(data.Data, externalObjectMap, textureDeserializer, materialGenerator ?? new VRMMaterialDescriptorGenerator(data.VrmExtensions))
+            : base(data.Data, externalObjectMap, textureDeserializer, materialGenerator ?? new VRMMaterialDescriptorGenerator(data.VrmExtension))
         {
             _data = data;
             TextureDescriptorGenerator = new VrmTextureDescriptorGenerator(Data, VRM);

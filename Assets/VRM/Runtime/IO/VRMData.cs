@@ -5,7 +5,7 @@ namespace VRM
     public class VRMData
     {
         public GltfData Data { get; }
-        public glTF_VRM_extensions VrmExtensions { get; }
+        public glTF_VRM_extensions VrmExtension { get; }
 
         public VRMData(GltfData data)
         {
@@ -15,7 +15,7 @@ namespace VRM
             {
                 throw new NotVrm0Exception();
             }
-            VrmExtensions = vrm;
+            VrmExtension = vrm;
         }
     }
 }

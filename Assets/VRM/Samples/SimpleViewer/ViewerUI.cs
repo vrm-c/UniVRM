@@ -364,7 +364,7 @@ namespace VRM.SimpleViewer
                     {
                         var data = new GlbFileParser(path).Parse();
                         var vrm = new VRMData(data);
-                        using (var context = new VRMImporterContext(vrm, materialGenerator: GetVrmMaterialGenerator(m_useUrpMaterial.isOn, vrm.VrmExtensions)))
+                        using (var context = new VRMImporterContext(vrm, materialGenerator: GetVrmMaterialGenerator(m_useUrpMaterial.isOn, vrm.VrmExtension)))
                         {
                             await m_texts.UpdateMetaAsync(context);
                             var loaded = await context.LoadAsync();
