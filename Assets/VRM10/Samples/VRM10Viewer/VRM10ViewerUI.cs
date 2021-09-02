@@ -326,7 +326,7 @@ namespace UniVRM10.VRM10Viewer
             }
         }
 
-        static IMaterialDescriptorGenerator GetMaterialDescriptorGenerator(bool useUrp)
+        static IMaterialDescriptorGenerator GetVrmMaterialDescriptorGenerator(bool useUrp)
         {
             if (useUrp)
             {
@@ -335,6 +335,18 @@ namespace UniVRM10.VRM10Viewer
             else
             {
                 return new Vrm10MaterialDescriptorGenerator();
+            }
+        }
+
+        static IMaterialDescriptorGenerator GetMaterialDescriptorGenerator(bool useUrp)
+        {
+            if (useUrp)
+            {
+                return new GltfUrpMaterialDescriptorGenerator();
+            }
+            else
+            {
+                return new GltfMaterialDescriptorGenerator();
             }
         }
 
@@ -356,7 +368,7 @@ namespace UniVRM10.VRM10Viewer
                             Debug.LogError(result.Message);
                             return;
                         }
-                        using (var loader = new Vrm10Importer(result, materialGenerator: GetMaterialDescriptorGenerator(m_useUrpMaterial.isOn)))
+                        using (var loader = new Vrm10Importer(result, materialGenerator: GetVrmMaterialDescriptorGenerator(m_useUrpMaterial.isOn)))
                         {
                             var loaded = loader.Load();
                             loaded.ShowMeshes();
@@ -370,7 +382,7 @@ namespace UniVRM10.VRM10Viewer
                     {
                         var data = new GlbFileParser(path).Parse();
 
-                        using (var loader = new UniGLTF.ImporterContext(data))
+                        using (var loader = new UniGLTF.ImporterContext(data, materialGenerator: GetMaterialDescriptorGenerator(m_useUrpMaterial.isOn)))
                         {
                             var loaded = loader.Load();
                             loaded.ShowMeshes();
@@ -384,7 +396,7 @@ namespace UniVRM10.VRM10Viewer
                     {
                         var data = new GltfFileWithResourceFilesParser(path).Parse();
 
-                        using (var loader = new UniGLTF.ImporterContext(data))
+                        using (var loader = new UniGLTF.ImporterContext(data, materialGenerator: GetMaterialDescriptorGenerator(m_useUrpMaterial.isOn)))
                         {
                             var loaded = loader.Load();
                             loaded.ShowMeshes();
@@ -398,7 +410,7 @@ namespace UniVRM10.VRM10Viewer
                     {
                         var data = new ZipArchivedGltfFileParser(path).Parse();
 
-                        using (var loader = new UniGLTF.ImporterContext(data))
+                        using (var loader = new UniGLTF.ImporterContext(data, materialGenerator: GetMaterialDescriptorGenerator(m_useUrpMaterial.isOn)))
                         {
                             var loaded = loader.Load();
                             loaded.ShowMeshes();
