@@ -336,12 +336,12 @@ namespace UniVRM10.VRM10Viewer
             {
                 case ".vrm":
                     {
-                        if (!Vrm10Parser.TryParseOrMigrate(path, doMigrate: true, out Vrm10Parser.Result result))
+                        if (!Vrm10Data.TryParseOrMigrate(path, doMigrate: true, out Vrm10Data result))
                         {
                             Debug.LogError(result.Message);
                             return;
                         }
-                        using (var loader = new Vrm10Importer(result.Data, result.Vrm))
+                        using (var loader = new Vrm10Importer(result))
                         {
                             var loaded = loader.Load();
                             loaded.ShowMeshes();

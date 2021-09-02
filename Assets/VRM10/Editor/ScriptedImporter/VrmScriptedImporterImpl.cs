@@ -35,7 +35,7 @@ namespace UniVRM10
             Debug.Log("OnImportAsset to " + scriptedImporter.assetPath);
 #endif
 
-            if (!Vrm10Parser.TryParseOrMigrate(scriptedImporter.assetPath, migrateToVrm1, out Vrm10Parser.Result result))
+            if (!Vrm10Data.TryParseOrMigrate(scriptedImporter.assetPath, migrateToVrm1, out Vrm10Data result))
             {
                 // fail to parse vrm1
                 return;
@@ -50,7 +50,7 @@ namespace UniVRM10
 
             var materialGenerator = GetMaterialDescriptorGenerator(renderPipeline);
 
-            using (var loader = new Vrm10Importer(result.Data, result.Vrm, extractedObjects, materialGenerator: materialGenerator))
+            using (var loader = new Vrm10Importer(result, extractedObjects, materialGenerator: materialGenerator))
             {
                 // settings TextureImporters
                 foreach (var textureInfo in loader.TextureDescriptorGenerator.Get().GetEnumerable())
