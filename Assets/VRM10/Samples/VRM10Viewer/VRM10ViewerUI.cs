@@ -26,6 +26,9 @@ namespace UniVRM10.VRM10Viewer
 
         [SerializeField]
         Toggle m_enableAutoExpression = default;
+
+        [SerializeField]
+        Toggle m_useUrpMaterial = default;
         #endregion
 
         [SerializeField]
@@ -323,6 +326,18 @@ namespace UniVRM10.VRM10Viewer
             }
         }
 
+        static IMaterialDescriptorGenerator GetMaterialDescriptorGenerator(bool useUrp)
+        {
+            if (useUrp)
+            {
+                return new Vrm10UrpMaterialDescriptorGenerator();
+            }
+            else
+            {
+                return new Vrm10MaterialDescriptorGenerator();
+            }
+        }
+
         void LoadModel(string path)
         {
             if (!File.Exists(path))
@@ -341,7 +356,7 @@ namespace UniVRM10.VRM10Viewer
                             Debug.LogError(result.Message);
                             return;
                         }
-                        using (var loader = new Vrm10Importer(result))
+                        using (var loader = new Vrm10Importer(result, materialGenerator: GetMaterialDescriptorGenerator(m_useUrpMaterial.isOn)))
                         {
                             var loaded = loader.Load();
                             loaded.ShowMeshes();
@@ -378,6 +393,7 @@ namespace UniVRM10.VRM10Viewer
                         }
                         break;
                     }
+
                 case ".zip":
                     {
                         var data = new ZipArchivedGltfFileParser(path).Parse();
