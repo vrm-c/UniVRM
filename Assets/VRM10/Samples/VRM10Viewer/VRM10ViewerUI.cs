@@ -26,6 +26,9 @@ namespace UniVRM10.VRM10Viewer
 
         [SerializeField]
         Toggle m_enableAutoExpression = default;
+
+        [SerializeField]
+        Toggle m_useUrpMaterial = default;
         #endregion
 
         [SerializeField]
@@ -323,6 +326,30 @@ namespace UniVRM10.VRM10Viewer
             }
         }
 
+        static IMaterialDescriptorGenerator GetVrmMaterialDescriptorGenerator(bool useUrp)
+        {
+            if (useUrp)
+            {
+                return new Vrm10UrpMaterialDescriptorGenerator();
+            }
+            else
+            {
+                return new Vrm10MaterialDescriptorGenerator();
+            }
+        }
+
+        static IMaterialDescriptorGenerator GetMaterialDescriptorGenerator(bool useUrp)
+        {
+            if (useUrp)
+            {
+                return new GltfUrpMaterialDescriptorGenerator();
+            }
+            else
+            {
+                return new GltfMaterialDescriptorGenerator();
+            }
+        }
+
         void LoadModel(string path)
         {
             if (!File.Exists(path))
@@ -336,12 +363,12 @@ namespace UniVRM10.VRM10Viewer
             {
                 case ".vrm":
                     {
-                        if (!Vrm10Parser.TryParseOrMigrate(path, doMigrate: true, out Vrm10Parser.Result result))
+                        if (!Vrm10Data.TryParseOrMigrate(path, doMigrate: true, out Vrm10Data result))
                         {
                             Debug.LogError(result.Message);
                             return;
                         }
-                        using (var loader = new Vrm10Importer(result.Data, result.Vrm))
+                        using (var loader = new Vrm10Importer(result, materialGenerator: GetVrmMaterialDescriptorGenerator(m_useUrpMaterial.isOn)))
                         {
                             var loaded = loader.Load();
                             loaded.ShowMeshes();
@@ -355,7 +382,7 @@ namespace UniVRM10.VRM10Viewer
                     {
                         var data = new GlbFileParser(path).Parse();
 
-                        using (var loader = new UniGLTF.ImporterContext(data))
+                        using (var loader = new UniGLTF.ImporterContext(data, materialGenerator: GetMaterialDescriptorGenerator(m_useUrpMaterial.isOn)))
                         {
                             var loaded = loader.Load();
                             loaded.ShowMeshes();
@@ -369,7 +396,7 @@ namespace UniVRM10.VRM10Viewer
                     {
                         var data = new GltfFileWithResourceFilesParser(path).Parse();
 
-                        using (var loader = new UniGLTF.ImporterContext(data))
+                        using (var loader = new UniGLTF.ImporterContext(data, materialGenerator: GetMaterialDescriptorGenerator(m_useUrpMaterial.isOn)))
                         {
                             var loaded = loader.Load();
                             loaded.ShowMeshes();
@@ -378,11 +405,12 @@ namespace UniVRM10.VRM10Viewer
                         }
                         break;
                     }
+
                 case ".zip":
                     {
                         var data = new ZipArchivedGltfFileParser(path).Parse();
 
-                        using (var loader = new UniGLTF.ImporterContext(data))
+                        using (var loader = new UniGLTF.ImporterContext(data, materialGenerator: GetMaterialDescriptorGenerator(m_useUrpMaterial.isOn)))
                         {
                             var loaded = loader.Load();
                             loaded.ShowMeshes();

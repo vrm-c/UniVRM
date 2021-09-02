@@ -21,8 +21,8 @@ namespace VRM
 
         static GameObject Load(byte[] bytes, string path)
         {
-            var data = new GlbLowLevelParser(path, bytes).Parse();
-
+            var gltf = new GlbLowLevelParser(path, bytes).Parse();
+            var data = new VRMData(gltf);
             using (var loader = new VRMImporterContext(data))
             {
                 var loaded = loader.Load();

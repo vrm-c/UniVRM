@@ -15,12 +15,12 @@ namespace UniVRM10.Sample
 
         static GameObject Import(byte[] bytes, FileInfo path)
         {
-            if (!Vrm10Parser.TryParseOrMigrate(path.FullName, bytes, doMigrate: true, out Vrm10Parser.Result result))
+            if (!Vrm10Data.TryParseOrMigrate(path.FullName, bytes, doMigrate: true, out Vrm10Data result))
             {
                 return null;
             }
 
-            using (var loader = new Vrm10Importer(result.Data, result.Vrm))
+            using (var loader = new Vrm10Importer(result))
             {
                 var loaded = loader.Load();
                 loaded.ShowMeshes();

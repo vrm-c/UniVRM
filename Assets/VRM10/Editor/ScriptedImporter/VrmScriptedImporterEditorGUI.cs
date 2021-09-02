@@ -23,7 +23,7 @@ namespace UniVRM10
         RemapEditorMaterial m_materialEditor;
         RemapEditorVrm m_vrmEditor;
 
-        Vrm10Parser.Result m_result;
+        Vrm10Data m_result;
 
         IEnumerable<SubAssetKey> EnumerateExpressinKeys(UniGLTF.Extensions.VRMC_vrm.Expressions expressions)
         {
@@ -65,7 +65,7 @@ namespace UniVRM10
 
             var importer = target as VrmScriptedImporter;
             m_importer = importer;
-            if (!Vrm10Parser.TryParseOrMigrate(m_importer.assetPath, importer.MigrateToVrm1, out m_result))
+            if (!Vrm10Data.TryParseOrMigrate(m_importer.assetPath, importer.MigrateToVrm1, out m_result))
             {
                 // error
                 return;
@@ -78,7 +78,7 @@ namespace UniVRM10
             var materialKeys = m_result.Data.GLTF.materials.Select((x, i) => generator.Get(m_result.Data, i).SubAssetKey);
             var textureKeys = new Vrm10TextureDescriptorGenerator(m_result.Data).Get().GetEnumerable().Select(x => x.SubAssetKey);
             m_materialEditor = new RemapEditorMaterial(materialKeys.Concat(textureKeys), GetEditorMap, SetEditorMap);
-            m_vrmEditor = new RemapEditorVrm(new[] { VRM10Object.SubAssetKey }.Concat(EnumerateExpressinKeys(m_result.Vrm.Expressions)), GetEditorMap, SetEditorMap);
+            m_vrmEditor = new RemapEditorVrm(new[] { VRM10Object.SubAssetKey }.Concat(EnumerateExpressinKeys(m_result.VrmExtension.Expressions)), GetEditorMap, SetEditorMap);
         }
 
         enum Tabs
@@ -125,7 +125,7 @@ namespace UniVRM10
                     break;
 
                 case Tabs.Materials:
-                    if (m_result.Data != null && m_result.Vrm != null)
+                    if (m_result.Data != null && m_result.VrmExtension != null)
                     {
                         m_materialEditor.OnGUI(m_importer, m_result.Data, new Vrm10TextureDescriptorGenerator(m_result.Data),
                             assetPath => $"{Path.GetFileNameWithoutExtension(assetPath)}.vrm1.Textures",
@@ -135,9 +135,9 @@ namespace UniVRM10
                     break;
 
                 case Tabs.Vrm:
-                    if (m_result.Data != null && m_result.Vrm != null)
+                    if (m_result.Data != null && m_result.VrmExtension != null)
                     {
-                        m_vrmEditor.OnGUI(m_importer, m_result.Data, m_result.Vrm);
+                        m_vrmEditor.OnGUI(m_importer, m_result.Data, m_result.VrmExtension);
                         ApplyRevertGUI();
                     }
                     break;

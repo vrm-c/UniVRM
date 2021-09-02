@@ -31,18 +31,18 @@ namespace UniVRM10.Test
         private (GameObject, IReadOnlyList<VRMShaders.MaterialFactory.MaterialLoadInfo>) ToUnity(byte[] bytes)
         {
             // Vrm => Model
-            if (!Vrm10Parser.TryParseOrMigrate("tpm.vrm", bytes, true, out Vrm10Parser.Result result))
+            if (!Vrm10Data.TryParseOrMigrate("tpm.vrm", bytes, true, out Vrm10Data result))
             {
                 throw new Exception();
             }
 
-            return ToUnity(result.Data, result.Vrm);
+            return ToUnity(result);
         }
 
-        private (GameObject, IReadOnlyList<VRMShaders.MaterialFactory.MaterialLoadInfo>) ToUnity(GltfData data, VRMC_vrm vrm)
+        private (GameObject, IReadOnlyList<VRMShaders.MaterialFactory.MaterialLoadInfo>) ToUnity(Vrm10Data data)
         {
             // Model => Unity
-            using (var loader = new Vrm10Importer(data, vrm))
+            using (var loader = new Vrm10Importer(data))
             {
                 var loaded = loader.Load();
                 return (loaded.gameObject, loader.MaterialFactory.Materials);

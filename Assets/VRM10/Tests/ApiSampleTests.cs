@@ -19,9 +19,9 @@ namespace UniVRM10.Test
             return model;
         }
 
-        GameObject BuildGameObject(GltfData data, VRMC_vrm vrm, bool showMesh)
+        GameObject BuildGameObject(Vrm10Data data, bool showMesh)
         {
-            using (var loader = new Vrm10Importer(data, vrm))
+            using (var loader = new Vrm10Importer(data))
             {
                 var loaded = loader.Load();
                 if (showMesh)
@@ -39,9 +39,9 @@ namespace UniVRM10.Test
             var path = "Tests/Models/Alicia_vrm-0.51/AliciaSolid_vrm-0.51.vrm";
             Debug.Log($"load: {path}");
 
-            Assert.IsTrue(Vrm10Parser.TryParseOrMigrate(path, true, out Vrm10Parser.Result result));
+            Assert.IsTrue(Vrm10Data.TryParseOrMigrate(path, true, out Vrm10Data result));
 
-            var go = BuildGameObject(result.Data, result.Vrm, true);
+            var go = BuildGameObject(result, true);
             Debug.Log(go);
 
             // export

@@ -19,6 +19,14 @@ namespace UniGLTF
         public AnimationClipFactory AnimationClipFactory { get; }
         public IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> ExternalObjectMap;
 
+        /// <summary>
+        /// UnityObject の 生成(LoadAsync) と 破棄(Dispose) を行う。
+        /// LoadAsync が成功した場合、返り値(RuntimeGltfInstance) に破棄する責務を移動させる。
+        /// </summary>
+        /// <param name="data">Jsonからデシリアライズされた GLTF 情報など</param>
+        /// <param name="externalObjectMap">外部オブジェクトのリスト(主にScriptedImporterのRemapで使う)</param>
+        /// <param name="textureDeserializer">Textureロードをカスタマイズする</param>
+        /// <param name="materialGenerator">Materialロードをカスタマイズする(URP向け)</param>
         public ImporterContext(
             GltfData data,
             IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> externalObjectMap = null,
