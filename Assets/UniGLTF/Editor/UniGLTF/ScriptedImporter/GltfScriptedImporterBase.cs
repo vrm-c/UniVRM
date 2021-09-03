@@ -27,10 +27,10 @@ namespace UniGLTF
             switch (renderPipeline)
             {
                 case RenderPipelineTypes.BuiltinRenderPipeline:
-                    return new GltfUrpMaterialDescriptorGenerator();
+                    return new GltfMaterialDescriptorGenerator();
 
                 case RenderPipelineTypes.UniversalRenderPipeline:
-                    return new GltfMaterialDescriptorGenerator();
+                    return new GltfUrpMaterialDescriptorGenerator();
 
                 default:
                     throw new System.NotImplementedException();
