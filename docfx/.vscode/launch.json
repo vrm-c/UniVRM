@@ -12,6 +12,12 @@
             "args": [
                 "copy-csproj"
             ]
+        },
+        {
+            "name": "watch-build",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/watch_build.py",
         }
     ]
 }

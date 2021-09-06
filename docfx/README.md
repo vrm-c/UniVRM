@@ -6,6 +6,8 @@
 
 * [docfx](https://dotnet.github.io/docfx/)(2系)
 * python3
+  * pip install invoke
+  * pip install watchdog
 
 # 記事の更新
 
@@ -58,4 +60,41 @@ docfx$ docfx --serve
 
 ```
 docfx$ docfx build
+```
+
+## github actions
+
+`.github/workflows/docfx.yml`
+
+```yml
+name: DocFX
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: windows-2019
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+
+      # build docfx site to docfx/_site
+      - name: DocFX
+        shell: cmd
+        run: |
+          choco install docfx -y
+          docfx docfx\docfx.json
+
+      # push docfx/_site to gh-pages 
+      - name: Publish Documentation on GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: docfx/_site
 ```
