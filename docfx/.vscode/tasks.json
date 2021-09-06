@@ -16,10 +16,11 @@
             "problemMatcher": []
         },
         {
-            "label": "meta-build",
+            "label": "watch-build",
             "type": "shell",
-            "command": "invoke meta-build",
-            "problemMatcher": []
+            "command": "python watch_build.py",
+            "problemMatcher": [],
+            "isBackground": true
         },
         {
             "label": "serve",
@@ -27,6 +28,18 @@
             "command": "docfx --serve",
             "problemMatcher": [],
             "isBackground": true
-        }
+        },
+        {
+            "label": "meta-build",
+            "type": "shell",
+            "command": "invoke meta-build",
+            "problemMatcher": []
+        },
+        {
+            "label": "lang-diff",
+            "type": "shell",
+            "command": "invoke lang-diff",
+            "problemMatcher": [],
+        },
     ]
 }

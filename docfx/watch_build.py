@@ -31,7 +31,7 @@ class MyHandler(PatternMatchingEventHandler):
 def watch():
     event_handler = MyHandler()
     observer = Observer()
-    observer.schedule(event_handler, HERE, recursive=True)
+    observer.schedule(event_handler, HERE / 'articles', recursive=True)
     observer.start()
     try:
         while True:

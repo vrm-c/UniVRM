@@ -1,3 +1,4 @@
 # UniVRM Programming Document
 
-index
+* [日本語](./articles/ja/)
+* [English](./articles/en/)
