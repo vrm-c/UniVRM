@@ -38,3 +38,13 @@ def copy_csproj(c):
         m = PROJECT_PATTERN.search(l)
         if m:
             process(ROOT / m.group(1), SRC_DIR / m.group(1))
+
+
+@task
+def meta_build(c):
+    # type: (Context) -> None
+    '''
+    task description
+    '''
+    c.run("docfx metadata")
+    c.run("docfx build")
