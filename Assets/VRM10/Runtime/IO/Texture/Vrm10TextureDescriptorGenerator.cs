@@ -82,6 +82,10 @@ namespace UniVRM10
             var imageIndex = vrm.Meta.ThumbnailImage.Value;
             var gltfImage = data.GLTF.images[imageIndex];
             var name = TextureImportName.GetUnityObjectName(TextureImportTypes.sRGB, gltfImage.name, gltfImage.uri);
+            if (string.IsNullOrEmpty(name))
+            {
+                name = "thumbnail";
+            }
 
             GetTextureBytesAsync getThumbnailImageBytesAsync = () =>
             {
