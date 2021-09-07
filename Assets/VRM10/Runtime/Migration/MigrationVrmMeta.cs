@@ -27,6 +27,8 @@ namespace UniVRM10
     // },
     public static class MigrationVrmMeta
     {
+        public const string THUMBNAIL_NAME = "__VRM10_thumbnail__";
+
         public static UniGLTF.Extensions.VRMC_vrm.Meta Migrate(UniGLTF.glTF gltf, JsonNode vrm0)
         {
             var meta = new UniGLTF.Extensions.VRMC_vrm.Meta
@@ -69,7 +71,7 @@ namespace UniVRM10
                                 if (string.IsNullOrEmpty(gltfImage.name))
                                 {
                                     // fall back default name
-                                    gltfImage.name = "__VRM10_thumbnail__";
+                                    gltfImage.name = THUMBNAIL_NAME;
                                 }
                             }
                             break;

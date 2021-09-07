@@ -84,7 +84,7 @@ namespace UniVRM10
             var name = TextureImportName.GetUnityObjectName(TextureImportTypes.sRGB, gltfImage.name, gltfImage.uri);
             if (string.IsNullOrEmpty(name))
             {
-                name = "thumbnail";
+                name = MigrationVrmMeta.THUMBNAIL_NAME;
             }
 
             GetTextureBytesAsync getThumbnailImageBytesAsync = () =>
