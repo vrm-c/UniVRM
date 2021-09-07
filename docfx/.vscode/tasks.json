@@ -1,0 +1,45 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "metadata",
+            "type": "shell",
+            "command": "docfx metadata",
+            "problemMatcher": []
+        },
+        {
+            "label": "build",
+            "type": "shell",
+            "command": "docfx build",
+            "problemMatcher": []
+        },
+        {
+            "label": "watch-build",
+            "type": "shell",
+            "command": "python watch_build.py",
+            "problemMatcher": [],
+            "isBackground": true
+        },
+        {
+            "label": "serve",
+            "type": "shell",
+            "command": "docfx --serve",
+            "problemMatcher": [],
+            "isBackground": true
+        },
+        {
+            "label": "meta-build",
+            "type": "shell",
+            "command": "invoke meta-build",
+            "problemMatcher": []
+        },
+        {
+            "label": "lang-diff",
+            "type": "shell",
+            "command": "invoke lang-diff",
+            "problemMatcher": [],
+        },
+    ]
+}
