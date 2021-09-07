@@ -1,56 +1,73 @@
 * `Version 0.82.0` `0.82.1` 以降を使ってください。
 * `Version 0.82.1~`
 
-Import時の Material 差し替え機能(URP対応)が実装されました。
-
 以下の手順で import します。
 
-1. VRMをパースして、VrmDataを得る
-1. VrmImporter 作成して、 Unity のヒエラルキーをロードする
-1. ロードされたインスタンスを使う(ShowMeshes)
+1. VRMをパースして、`GltfData` を得る。
+1. `GltfData` から `VRMData` を得る。
+1. `VrmData` から `RuntimeGltfInstance` をロードする。
+1. `RuntimeGltfInstance` を使う。
 
-# 1. Parse
-
-`v0.82.1` VrmData が導入されます。
-
-```cs
-var data = new UniGLTF.GlbFileParser(path).Parse();
-VrmData vrm = new VRM.VRMData(data);
-```
-
-# 2. Load
-
-`v0.82.1` VrmData が導入されます。
+# 1. `GltfData` を得る
 
 ```cs
-var loader = new VRM.VRMImporterContext(vrm);
-RuntimeGltfInstance instance = context.Load();
+GltfData Load(string path)
+{
+    return new GlbFileParser(path).Parse();
+}
 ```
 
-## URP 向けに `materialGenerator` を指定する
+[GLB import](../gltf/0_82_glb_import.md) も参照してください。
+
+# 2. `VRMData` を得る
+
+```cs
+VRMData vrm = new VRMData(data);
+```
+
+# 3. Load する
+
+```cs
+async RuntimeGltfInstance Load(VRMData vrm)
+{
+    // 使用後に Dispose で VRMImporterContext を破棄してください。
+    using(var loader = new VRMImporterContext(vrm))
+    {
+        var instance = await loader.LoadAsync();
+        return instance;
+    }
+}
+```
+
+## URP 向けに `materialGenerator` を指定する(実験)
 
 `materialGenerator` 引き数(省略可能)を指定することで URP マテリアルを生成するようにカスタムできます。
 指定しない場合は `built-in` 向けのデフォルトが使用されます。
 
 ```cs
-var loader = new VRM.VRMImporterContext(vrm, materialGenerator: new VRMUrpMaterialDescriptorGenerator(vrm.VrmExtension));
+async RuntimeGltfInstance Load(VRMData vrm)
+{
+    var materialGenerator = new VRMUrpMaterialDescriptorGenerator(vrm.VrmExtension);
+    using(var loader = new VRM.VRMImporterContext(vrm, materialGenerator: materialGenerator))
+    {
+        var instance = await loader.LoadAsync();
+        return instance;
+    }
+}
 ```
 
-* まだ URP 向け MToonShader が作成されていないので、URP 向け `UniUnlit` にフォールバックします。
+* まだ URP 向け MToonShader が作成されていないので、`UniUnlit` にフォールバックします。
 
-# 3. Instance
-## ShowMeshes
-
-`v0.77` ShowMeshes が loader から instance に移動しました。 
+# 4. Instance
 
 ```cs
+// SkinnedMeshRenderer に対する指示
+instance.EnableUpdateWhenOffscreen();
+// 準備ができたら表示する(デフォルトでは非表示)
 instance.ShowMeshes();
 ```
 
-## Destroy
-
-`v0.77` 破棄時に関連する Asset を破棄するようになりました。
-
+使用後に以下のように破棄してください。関連する Asset(Texture, Material, Meshなど)も破棄されます。
 ```cs
 GameObject.Destroy(instance);
 ```
