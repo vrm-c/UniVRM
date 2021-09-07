@@ -6,7 +6,7 @@ namespace UniVRM10
     /// <summary>
     /// Play時 と Editorからの参照情報置き場
     /// </summary>
-    class VRM10ControllerRuntime
+    public class VRM10ControllerRuntime
     {
         VRM10Controller m_target;
         VRM10Constraint[] m_constraints;
