@@ -5,9 +5,9 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>1. Parse </title>
+    <title>1. GltfData &#12434;&#24471;&#12427; </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="1. Parse ">
+    <meta name="title" content="1. GltfData &#12434;&#24471;&#12427; ">
     <meta name="generator" content="docfx 2.58.2.0">
     
     <link rel="shortcut icon" href="../../../favicon.ico">
@@ -72,38 +72,57 @@
 <li><code>Version 0.82.0</code> <code>0.82.1</code> 以降を使ってください。</li>
 <li><code>Version 0.82.1~</code></li>
 </ul>
-<p>Import時の Material 差し替え機能(URP対応)が実装されました。</p>
 <p>以下の手順で import します。</p>
 <ol>
-<li>VRMをパースして、VrmDataを得る</li>
-<li>VrmImporter 作成して、 Unity のヒエラルキーをロードする</li>
-<li>ロードされたインスタンスを使う(ShowMeshes)</li>
+<li>VRMをパースして、<code>GltfData</code> を得る。</li>
+<li><code>GltfData</code> から <code>VRMData</code> を得る。</li>
+<li><code>VrmData</code> から <code>RuntimeGltfInstance</code> をロードする。</li>
+<li><code>RuntimeGltfInstance</code> を使う。</li>
 </ol>
-<h1 id="1-parse">1. Parse</h1>
-<p><code>v0.82.1</code> VrmData が導入されます。</p>
-<pre><code class="lang-cs">var data = new UniGLTF.GlbFileParser(path).Parse();
-VrmData vrm = new VRM.VRMData(data);
+<h1 id="1-gltfdata-を得る">1. <code>GltfData</code> を得る</h1>
+<pre><code class="lang-cs">GltfData Load(string path)
+{
+    return new GlbFileParser(path).Parse();
+}
 </code></pre>
-<h1 id="2-load">2. Load</h1>
-<p><code>v0.82.1</code> VrmData が導入されます。</p>
-<pre><code class="lang-cs">var loader = new VRM.VRMImporterContext(vrm);
-RuntimeGltfInstance instance = context.Load();
+<p><a href="../gltf/0_82_glb_import.html">GLB import</a> も参照してください。</p>
+<h1 id="2-vrmdata-を得る">2. <code>VRMData</code> を得る</h1>
+<pre><code class="lang-cs">VRMData vrm = new VRMData(data);
 </code></pre>
-<h2 id="urp-向けに-materialgenerator-を指定する">URP 向けに <code>materialGenerator</code> を指定する</h2>
+<h1 id="3-load-する">3. Load する</h1>
+<pre><code class="lang-cs">async RuntimeGltfInstance Load(VRMData vrm)
+{
+    // 使用後に Dispose で VRMImporterContext を破棄してください。
+    using(var loader = new VRMImporterContext(vrm))
+    {
+        var instance = await loader.LoadAsync();
+        return instance;
+    }
+}
+</code></pre>
+<h2 id="urp-向けに-materialgenerator-を指定する実験">URP 向けに <code>materialGenerator</code> を指定する(実験)</h2>
 <p><code>materialGenerator</code> 引き数(省略可能)を指定することで URP マテリアルを生成するようにカスタムできます。
 指定しない場合は <code>built-in</code> 向けのデフォルトが使用されます。</p>
-<pre><code class="lang-cs">var loader = new VRM.VRMImporterContext(vrm, materialGenerator: new VRMUrpMaterialDescriptorGenerator(vrm.VrmExtension));
+<pre><code class="lang-cs">async RuntimeGltfInstance Load(VRMData vrm)
+{
+    var materialGenerator = new VRMUrpMaterialDescriptorGenerator(vrm.VrmExtension);
+    using(var loader = new VRM.VRMImporterContext(vrm, materialGenerator: materialGenerator))
+    {
+        var instance = await loader.LoadAsync();
+        return instance;
+    }
+}
 </code></pre>
 <ul>
-<li>まだ URP 向け MToonShader が作成されていないので、URP 向け <code>UniUnlit</code> にフォールバックします。</li>
+<li>まだ URP 向け MToonShader が作成されていないので、<code>UniUnlit</code> にフォールバックします。</li>
 </ul>
-<h1 id="3-instance">3. Instance</h1>
-<h2 id="showmeshes">ShowMeshes</h2>
-<p><code>v0.77</code> ShowMeshes が loader から instance に移動しました。</p>
-<pre><code class="lang-cs">instance.ShowMeshes();
+<h1 id="4-instance">4. Instance</h1>
+<pre><code class="lang-cs">// SkinnedMeshRenderer に対する指示
+instance.EnableUpdateWhenOffscreen();
+// 準備ができたら表示する(デフォルトでは非表示)
+instance.ShowMeshes();
 </code></pre>
-<h2 id="destroy">Destroy</h2>
-<p><code>v0.77</code> 破棄時に関連する Asset を破棄するようになりました。</p>
+<p>使用後に以下のように破棄してください。関連する Asset(Texture, Material, Meshなど)も破棄されます。</p>
 <pre><code class="lang-cs">GameObject.Destroy(instance);
 </code></pre>
 </article>

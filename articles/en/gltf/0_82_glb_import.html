@@ -5,9 +5,9 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>GLB </title>
+    <title>1. Parse </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="GLB ">
+    <meta name="title" content="1. Parse ">
     <meta name="generator" content="docfx 2.58.2.0">
     
     <link rel="shortcut icon" href="../../../favicon.ico">
@@ -67,11 +67,106 @@
         <div class="article row grid-right">
           <div class="col-md-10">
             <article class="content wrap" id="_content" data-uid="">
-<h2 id="glb">GLB</h2>
 
-<p>Set <code>materialGenerator</code> argument, Material is replaced by URP version.</p>
-<pre><code class="lang-cs">var data = new GlbFileParser(path).Parse();
-var loader = new UniGLTF.ImporterContext(data, materialGenerator: new GltfUrpMaterialDescriptorGenerator());
+<p>This is <code>0.82.1</code> API.
+If use <code>0.82.0</code>, please upgrade.</p>
+<p>GLB load is below steps.</p>
+<ol>
+<li>Parse <code>GLB</code> / <code>GLTF</code>, get a <code>GltfData</code></li>
+<li>Load <code>Unity Hierarchy</code> from the <code>GltfData</code>, get a <code>RuntimeGltfInstance</code>, dispose loader.</li>
+<li>Use the <code>RuntimeGltfInstance</code>, destroy the <code>RuntimeGltfInstance</code>.</li>
+</ol>
+<h1 id="1-parse">1. Parse</h1>
+<h2 id="parse-glb-from-file-path">Parse glb from file path</h2>
+<ul>
+<li>same as <code>vrm</code></li>
+</ul>
+<pre><code class="lang-cs">GltfData Load(string path)
+{
+    return new GlbFileParser(path).Parse();
+}
+</code></pre>
+<h2 id="parse-glb-byte-array">Parse glb byte array</h2>
+<ul>
+<li>same as <code>vrm</code></li>
+</ul>
+<pre><code class="lang-cs">GltfData Load(byte[] bytes)
+{
+    return new GlbBinaryParser(bytes, &quot;LOAD_NAME&quot;).parse();
+}
+</code></pre>
+<h2 id="parse-gltf-from-file-path">Parse gltf from file path</h2>
+<pre><code class="lang-cs">GltfData Load(string path)
+{
+    return new GltfFileWithResourceFilesParser(path).Parse();
+}
+</code></pre>
+<h2 id="parse-gltf-in-zip-archive-from-file-path">Parse gltf in zip archive from file path</h2>
+<p>Zip archive that contain gltf and related files can parsed (experimental).</p>
+<pre><code class="lang-cs">GltfData Load(string path)
+{
+    return new ZipArchivedGltfFileParser(path).Parse();
+}
+</code></pre>
+<h2 id="parse-by-file-extension">Parse by file extension</h2>
+<p>See <code>SimpleViewer</code> sample.</p>
+<pre><code class="lang-cs">GltfData Load(string path)
+{
+    var ext = Path.GetExtension(path).ToLower();
+    switch(ext)
+    {
+        case &quot;.glb&quot;: return new GlbFileParser(path).Parse();
+        case &quot;.gltf&quot;: return new GltfFileWithResourceFilesParser(path).Parse();
+        case &quot;.zip&quot;: return new ZipArchivedGltfFileParser(path).Parse();
+        default: throw new Exception($&quot;unknown: {ext}&quot;);
+    }
+}
+</code></pre>
+<h1 id="2-load">2. Load</h1>
+<h2 id="sync">sync</h2>
+<pre><code class="lang-cs">RuntimeGltfInstance Load(GltfData data)
+{
+    // Call ImporterContext.Dispose after load.
+    // Automatically load dispose by using.
+    using(var loader = new UniGLTF.ImporterContext(data)
+    {
+        var instance = loader.Load();
+        return instance;
+    }
+}
+</code></pre>
+<h2 id="async">async</h2>
+<pre><code class="lang-cs">async RuntimeGltfInstance Load(GltfData data)
+{
+    // Call ImporterContext.Dispose after load.
+    // Automatically load dispose by using.
+    using(var loader = new UniGLTF.ImporterContext(data)
+    {
+        var instance = await loader.LoadAsync();
+        return instance;
+    }
+}
+</code></pre>
+<h2 id="load-urp-material-by-materialgenerator-argument">Load URP material by materialGenerator argument</h2>
+<p>You can load URP materials by setting the <code>materialGenerator</code> Argument (optional).</p>
+<pre><code class="lang-cs">async RuntimeGltfInstance Load(GltfData data)
+{
+    var materialGenerator = new GltfUrpMaterialDescriptorGenerator();
+    using(var loader = new UniGLTF.ImporterContext(data, materialGenerator: materialGenerator)
+    {
+        var instance = await loader.LoadAsync();
+        return instance;
+    }
+}
+</code></pre>
+<h1 id="3-use-instance">3. Use instance</h1>
+<pre><code class="lang-cs">// Setup for SkinnedMeshRenderer
+instance.EnableUpdateWhenOffscreen();
+// Show meshes when ready(invisible by default)
+instance.ShowMeshes();
+</code></pre>
+<p>Destroy after use and discard related assets (textures, materials, meshes, etc.)</p>
+<pre><code class="lang-cs">GameObject.Destroy(instance);
 </code></pre>
 </article>
           </div>
