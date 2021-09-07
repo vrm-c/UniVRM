@@ -80,11 +80,14 @@ namespace UniVRM10
                         m_materialMap.Add(binding.MaterialName, item);
                     }
                     var propName = GetProperty(binding.BindType);
-                    item.PropMap.Add(binding.BindType, new PropItem
+                    if (!item.PropMap.ContainsKey(binding.BindType))
                     {
-                        Name = propName,
-                        DefaultValues = item.Material.GetVector(propName),
-                    });
+                        item.PropMap.Add(binding.BindType, new PropItem
+                        {
+                            Name = propName,
+                            DefaultValues = item.Material.GetVector(propName),
+                        });
+                    }
                 }
 
                 foreach (var binding in kv.Value.MaterialUVBindings)
