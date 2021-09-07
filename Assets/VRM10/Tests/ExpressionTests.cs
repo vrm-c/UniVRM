@@ -32,7 +32,7 @@ namespace UniVRM10.Test
         }
 
         [Test]
-        public void KeyTest()
+        public void DuplicatedMaterialColorBindings()
         {
             var controller = Load();
 
@@ -55,6 +55,30 @@ namespace UniVRM10.Test
                 TargetValue = default,
             });
             controller.Vrm.Expression.Aa.MaterialColorBindings = src.ToArray();
+
+            // ok if no exception
+            var r = new VRM10ControllerRuntime(controller);
+        }
+
+        [Test]
+        public void DuplicatedMaterialUVBindings()
+        {
+            var controller = Load();
+
+            var renderers = controller.GetComponentsInChildren<Renderer>();
+            var name = renderers[0].sharedMaterials[0].name;
+
+            // add duplicate key
+            var src = controller.Vrm.Expression.Aa.MaterialUVBindings.ToList();
+            src.Add(new MaterialUVBinding
+            {
+                MaterialName = name,
+            });
+            src.Add(new MaterialUVBinding
+            {
+                MaterialName = name,
+            });
+            controller.Vrm.Expression.Aa.MaterialUVBindings = src.ToArray();
 
             // ok if no exception
             var r = new VRM10ControllerRuntime(controller);
