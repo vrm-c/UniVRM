@@ -17,15 +17,17 @@ namespace UniVRM10
     {
         public GltfData Data { get; }
         public UniGLTF.Extensions.VRMC_vrm.VRMC_vrm VrmExtension { get; }
+        public readonly Migration.Vrm0Meta OldMeta;
         public readonly Vrm10FileType FileType;
         public readonly String Message;
 
-        public Vrm10Data(GltfData data, VRMC_vrm vrm, Vrm10FileType fileType, string message)
+        public Vrm10Data(GltfData data, VRMC_vrm vrm, Vrm10FileType fileType, string message, Migration.Vrm0Meta oldMeta = null)
         {
             Data = data;
             VrmExtension = vrm;
             FileType = fileType;
             Message = message;
+            OldMeta = oldMeta;
         }
 
         public static bool TryParseOrMigrate(string path, bool doMigrate, out Vrm10Data result)
@@ -56,6 +58,7 @@ namespace UniVRM10
 
             // try migrateion
             byte[] migrated = default;
+            Migration.Vrm0Meta oldMeta = default;
             try
             {
                 var glb = UniGLTF.Glb.Parse(bytes);
@@ -92,6 +95,8 @@ namespace UniVRM10
                     result = new Vrm10Data(default, default, Vrm10FileType.Vrm0, "vrm0: cannot migrate");
                     return false;
                 }
+
+                oldMeta = Migration.Vrm0Meta.FromJsonBytes(json);
             }
             catch (Exception ex)
             {
@@ -104,7 +109,11 @@ namespace UniVRM10
                 if (UniGLTF.Extensions.VRMC_vrm.GltfDeserializer.TryGet(data.GLTF.extensions, out VRMC_vrm vrm))
                 {
                     // success
-                    result = new Vrm10Data(data, vrm, Vrm10FileType.Vrm0, "vrm0: migrated");
+                    if (oldMeta == null)
+                    {
+                        throw new NullReferenceException("oldMeta");
+                    }
+                    result = new Vrm10Data(data, vrm, Vrm10FileType.Vrm0, "vrm0: migrated", oldMeta);
                     return true;
                 }
 
