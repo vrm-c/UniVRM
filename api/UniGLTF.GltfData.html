@@ -1,0 +1,429 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class GltfData
+   </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class GltfData
+   ">
+    <meta name="generator" content="docfx 2.58.2.0">
+    
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="UniGLTF.GltfData">
+  
+  
+  <h1 id="UniGLTF_GltfData" data-uid="UniGLTF.GltfData" class="text-break">Class GltfData
+  </h1>
+  <div class="markdown level0 summary"></div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><span class="xref">System.Object</span></div>
+    <div class="level1"><span class="xref">GltfData</span></div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="UniGLTF.html">UniGLTF</a></h6>
+  <h6><strong>Assembly</strong>: UniGLTF.dll</h6>
+  <h5 id="UniGLTF_GltfData_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed class GltfData</code></pre>
+  </div>
+  <h3 id="constructors">Constructors
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/vrm-c/UniVRM/new/master/apiSpec/new?filename=UniGLTF_GltfData__ctor_System_String_System_String_UniGLTF_glTF_System_Collections_Generic_IReadOnlyList_UniGLTF_GlbChunk__UniGLTF_IStorage_UniGLTF_MigrationFlags_.md&amp;value=---%0Auid%3A%20UniGLTF.GltfData.%23ctor(System.String%2CSystem.String%2CUniGLTF.glTF%2CSystem.Collections.Generic.IReadOnlyList%7BUniGLTF.GlbChunk%7D%2CUniGLTF.IStorage%2CUniGLTF.MigrationFlags)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/vrm-c/UniVRM/blob/master/Assets/UniGLTF/Runtime/UniGLTF/IO/GltfData.cs/#L44">View Source</a>
+  </span>
+  <a id="UniGLTF_GltfData__ctor_" data-uid="UniGLTF.GltfData.#ctor*"></a>
+  <h4 id="UniGLTF_GltfData__ctor_System_String_System_String_UniGLTF_glTF_System_Collections_Generic_IReadOnlyList_UniGLTF_GlbChunk__UniGLTF_IStorage_UniGLTF_MigrationFlags_" data-uid="UniGLTF.GltfData.#ctor(System.String,System.String,UniGLTF.glTF,System.Collections.Generic.IReadOnlyList{UniGLTF.GlbChunk},UniGLTF.IStorage,UniGLTF.MigrationFlags)">GltfData(String, String, glTF, IReadOnlyList&lt;GlbChunk&gt;, IStorage, MigrationFlags)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public GltfData(string targetPath, string json, glTF gltf, IReadOnlyList&lt;GlbChunk&gt; chunks, IStorage storage, MigrationFlags migrationFlags)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">targetPath</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">json</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="UniGLTF.glTF.html">glTF</a></td>
+        <td><span class="parametername">gltf</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Collections.Generic.IReadOnlyList</span>&lt;<a class="xref" href="UniGLTF.GlbChunk.html">GlbChunk</a>&gt;</td>
+        <td><span class="parametername">chunks</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="UniGLTF.IStorage.html">IStorage</a></td>
+        <td><span class="parametername">storage</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="UniGLTF.MigrationFlags.html">MigrationFlags</a></td>
+        <td><span class="parametername">migrationFlags</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/vrm-c/UniVRM/new/master/apiSpec/new?filename=UniGLTF_GltfData_Chunks.md&amp;value=---%0Auid%3A%20UniGLTF.GltfData.Chunks%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/vrm-c/UniVRM/blob/master/Assets/UniGLTF/Runtime/UniGLTF/IO/GltfData.cs/#L32">View Source</a>
+  </span>
+  <a id="UniGLTF_GltfData_Chunks_" data-uid="UniGLTF.GltfData.Chunks*"></a>
+  <h4 id="UniGLTF_GltfData_Chunks" data-uid="UniGLTF.GltfData.Chunks">Chunks</h4>
+  <div class="markdown level1 summary"><p>Chunk Data.
+Maybe empty if source file was not glb format.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public IReadOnlyList&lt;GlbChunk&gt; Chunks { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Collections.Generic.IReadOnlyList</span>&lt;<a class="xref" href="UniGLTF.GlbChunk.html">GlbChunk</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/vrm-c/UniVRM/new/master/apiSpec/new?filename=UniGLTF_GltfData_GLTF.md&amp;value=---%0Auid%3A%20UniGLTF.GltfData.GLTF%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/vrm-c/UniVRM/blob/master/Assets/UniGLTF/Runtime/UniGLTF/IO/GltfData.cs/#L26">View Source</a>
+  </span>
+  <a id="UniGLTF_GltfData_GLTF_" data-uid="UniGLTF.GltfData.GLTF*"></a>
+  <h4 id="UniGLTF_GltfData_GLTF" data-uid="UniGLTF.GltfData.GLTF">GLTF</h4>
+  <div class="markdown level1 summary"><p>GLTF parsed from JSON</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public glTF GLTF { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="UniGLTF.glTF.html">glTF</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/vrm-c/UniVRM/new/master/apiSpec/new?filename=UniGLTF_GltfData_Json.md&amp;value=---%0Auid%3A%20UniGLTF.GltfData.Json%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/vrm-c/UniVRM/blob/master/Assets/UniGLTF/Runtime/UniGLTF/IO/GltfData.cs/#L21">View Source</a>
+  </span>
+  <a id="UniGLTF_GltfData_Json_" data-uid="UniGLTF.GltfData.Json*"></a>
+  <h4 id="UniGLTF_GltfData_Json" data-uid="UniGLTF.GltfData.Json">Json</h4>
+  <div class="markdown level1 summary"><p>JSON source</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string Json { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/vrm-c/UniVRM/new/master/apiSpec/new?filename=UniGLTF_GltfData_MigrationFlags.md&amp;value=---%0Auid%3A%20UniGLTF.GltfData.MigrationFlags%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/vrm-c/UniVRM/blob/master/Assets/UniGLTF/Runtime/UniGLTF/IO/GltfData.cs/#L42">View Source</a>
+  </span>
+  <a id="UniGLTF_GltfData_MigrationFlags_" data-uid="UniGLTF.GltfData.MigrationFlags*"></a>
+  <h4 id="UniGLTF_GltfData_MigrationFlags" data-uid="UniGLTF.GltfData.MigrationFlags">MigrationFlags</h4>
+  <div class="markdown level1 summary"><p>Migration Flags used by ImporterContext</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public MigrationFlags MigrationFlags { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="UniGLTF.MigrationFlags.html">MigrationFlags</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/vrm-c/UniVRM/new/master/apiSpec/new?filename=UniGLTF_GltfData_Storage.md&amp;value=---%0Auid%3A%20UniGLTF.GltfData.Storage%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/vrm-c/UniVRM/blob/master/Assets/UniGLTF/Runtime/UniGLTF/IO/GltfData.cs/#L37">View Source</a>
+  </span>
+  <a id="UniGLTF_GltfData_Storage_" data-uid="UniGLTF.GltfData.Storage*"></a>
+  <h4 id="UniGLTF_GltfData_Storage" data-uid="UniGLTF.GltfData.Storage">Storage</h4>
+  <div class="markdown level1 summary"><p>URI access</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public IStorage Storage { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="UniGLTF.IStorage.html">IStorage</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/vrm-c/UniVRM/new/master/apiSpec/new?filename=UniGLTF_GltfData_TargetPath.md&amp;value=---%0Auid%3A%20UniGLTF.GltfData.TargetPath%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/vrm-c/UniVRM/blob/master/Assets/UniGLTF/Runtime/UniGLTF/IO/GltfData.cs/#L16">View Source</a>
+  </span>
+  <a id="UniGLTF_GltfData_TargetPath_" data-uid="UniGLTF.GltfData.TargetPath*"></a>
+  <h4 id="UniGLTF_GltfData_TargetPath" data-uid="UniGLTF.GltfData.TargetPath">TargetPath</h4>
+  <div class="markdown level1 summary"><p>Source file path.
+Maybe empty if source file was on memory.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string TargetPath { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/vrm-c/UniVRM/new/master/apiSpec/new?filename=UniGLTF_GltfData_CreateFromGltfDataForTest_UniGLTF_glTF_.md&amp;value=---%0Auid%3A%20UniGLTF.GltfData.CreateFromGltfDataForTest(UniGLTF.glTF)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/vrm-c/UniVRM/blob/master/Assets/UniGLTF/Runtime/UniGLTF/IO/GltfData.cs/#L54">View Source</a>
+  </span>
+  <a id="UniGLTF_GltfData_CreateFromGltfDataForTest_" data-uid="UniGLTF.GltfData.CreateFromGltfDataForTest*"></a>
+  <h4 id="UniGLTF_GltfData_CreateFromGltfDataForTest_UniGLTF_glTF_" data-uid="UniGLTF.GltfData.CreateFromGltfDataForTest(UniGLTF.glTF)">CreateFromGltfDataForTest(glTF)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static GltfData CreateFromGltfDataForTest(glTF gltf)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="UniGLTF.glTF.html">glTF</a></td>
+        <td><span class="parametername">gltf</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="UniGLTF.GltfData.html">GltfData</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/vrm-c/UniVRM/new/master/apiSpec/new?filename=UniGLTF_GltfData.md&amp;value=---%0Auid%3A%20UniGLTF.GltfData%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/vrm-c/UniVRM/blob/master/Assets/UniGLTF/Runtime/UniGLTF/IO/GltfData.cs/#L10" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+                <h5>In This Article</h5>
+                <div></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

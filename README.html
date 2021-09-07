@@ -1,0 +1,182 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>UniVRM Programming Document </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="UniVRM Programming Document ">
+    <meta name="generator" content="docfx 2.58.2.0">
+    
+    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="stylesheet" href="styles/docfx.vendor.css">
+    <link rel="stylesheet" href="styles/docfx.css">
+    <link rel="stylesheet" href="styles/main.css">
+    <meta property="docfx:navrel" content="toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="index.html">
+                <img id="logo" class="svg" src="logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        <div class="article row grid">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="univrm-programming-document">UniVRM Programming Document</h1>
+
+<p><code>UniVRM/docfx</code> フォルダから <code>gh-pages</code> ブランチを作成する。</p>
+<h1 id="dependencies">dependencies</h1>
+<ul>
+<li><a href="https://dotnet.github.io/docfx/">docfx</a>(2系)</li>
+<li>python3
+<ul>
+<li>pip install invoke</li>
+<li>pip install watchdog</li>
+</ul>
+</li>
+</ul>
+<h1 id="記事の更新">記事の更新</h1>
+<ul>
+<li>index.md</li>
+<li>articles フォルダを更新して <code>articles/toc.yml</code> にそれを反映する</li>
+</ul>
+<h1 id="docfx-作業記録">docfx 作業記録</h1>
+<h2 id="初期化">初期化</h2>
+<p>Project ROOT から</p>
+<pre><code>$ docfx init -o docfx -q
+</code></pre>
+<h2 id="csproj-をコピー">csproj をコピー</h2>
+<ul>
+<li>Unity の Editor を vscode に設定</li>
+<li><code>Open C# project</code> により <code>sln</code> と <code>csproj</code> が生成される</li>
+<li>Unity の csproj(vscode向け) を <code>docfx/src/UniVRM</code> にコピーする python スクリプト作った</li>
+</ul>
+<pre><code>$ pip install invoke
+$ cd docfx
+docfx$ invoke copy-csproj
+</code></pre>
+<p>コピーする際にパスを調整している。
+<code>docfx/src/UniVRM</code> からの相対パスに改変。</p>
+<p><code>Assets</code> =&gt; <code>..\\..\\..\\Assets</code></p>
+<h2 id="csproj-から-meta情報を生成する">csproj から meta情報を生成する</h2>
+<pre><code>docfx$ docfx metadata
+</code></pre>
+<p><a href="./filterConfig.yml">filter設定</a></p>
+<h2 id="preview">preview</h2>
+<pre><code>docfx$ docfx --serve
+</code></pre>
+<p><a href="http://localhost:8080/">http://localhost:8080/</a></p>
+<p>記事更新の反映</p>
+<pre><code>docfx$ docfx build
+</code></pre>
+<h2 id="github-actions">github actions</h2>
+<p><code>.github/workflows/docfx.yml</code></p>
+<pre><code class="lang-yml">name: DocFX
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: windows-2019
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+
+      # build docfx site to docfx/_site
+      - name: DocFX
+        shell: cmd
+        run: |
+          choco install docfx -y
+          docfx docfx\docfx.json
+
+      # push docfx/_site to gh-pages 
+      - name: Publish Documentation on GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: docfx/_site
+</code></pre>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/vrm-c/UniVRM/blob/master/docfx/README.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+                <h5>In This Article</h5>
+                <div></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="styles/docfx.js"></script>
+    <script type="text/javascript" src="styles/main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,170 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Version </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Version ">
+    <meta name="generator" content="docfx 2.58.2.0">
+    
+    <link rel="shortcut icon" href="../../favicon.ico">
+    <link rel="stylesheet" href="../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../styles/docfx.css">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <meta property="docfx:navrel" content="../../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="version">Version</h1>
+
+<table>
+<thead>
+<tr>
+<th>version</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>v0.82.1</td>
+<td>Import時のMaterial差し替え(URP対応)</td>
+</tr>
+<tr>
+<td>v0.82.0</td>
+<td>Import時のMaterial差し替え(URP対応)</td>
+</tr>
+<tr>
+<td>v0.77</td>
+<td>ImporterContext の整理</td>
+</tr>
+<tr>
+<td>v0.68</td>
+<td>ImporterContext の整理</td>
+</tr>
+<tr>
+<td>v0.63.2</td>
+<td>gltf の extension の実装方法を変更</td>
+</tr>
+<tr>
+<td>v0.56</td>
+<td>BlendShapeKey の仕様変更</td>
+</tr>
+</tbody>
+</table>
+<p><a href="https://github.com/vrm-c/UniVRM/wiki/ReleaseNote-v0.56.0%28ja%29#blendshapekey%E3%81%AE%E3%82%A4%E3%83%B3%E3%82%BF%E3%83%95%E3%82%A7%E3%83%BC%E3%82%B9%E3%82%92%E5%8E%B3%E6%A0%BC%E5%8C%96%E6%95%B4%E7%90%86">BlendShapeKeyのインタフェースを厳格化、整理</a></p>
+<h2 id="v036">v0.36</h2>
+<h3 id="テクスチャ名の格納位置の修正">テクスチャ名の格納位置の修正</h3>
+<p>GLTFの仕様に準拠しました。</p>
+<ul>
+<li>extraはextrasの間違い</li>
+<li>imageはnameを持っていた</li>
+</ul>
+<pre><code class="lang-json">json.images[i].extra.name
+</code></pre>
+<p>変更後</p>
+<pre><code class="lang-json">json.images[i].name
+</code></pre>
+<h3 id="ブレンドシェイプ名の格納位置の修正">ブレンドシェイプ名の格納位置の修正</h3>
+<p>GLTFの仕様に準拠しました。</p>
+<ul>
+<li>extraはextrasの間違い</li>
+<li>targetにextrasは不許可</li>
+<li><a href="https://github.com/KhronosGroup/glTF/issues/1036#issuecomment-314078356">https://github.com/KhronosGroup/glTF/issues/1036#issuecomment-314078356</a></li>
+</ul>
+<pre><code class="lang-json">json.meshes[i].primitives[j].targets[k].extra.name
+</code></pre>
+<p>変更後</p>
+<pre><code class="lang-json">json.meshes[i].primitives[j].extras.targetNames[k]
+</code></pre>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/vrm-c/UniVRM/blob/master/docfx/articles/ja/history.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+                <h5>In This Article</h5>
+                <div></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

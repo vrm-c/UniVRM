@@ -1,0 +1,578 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class RuntimeGltfInstance
+   </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class RuntimeGltfInstance
+   ">
+    <meta name="generator" content="docfx 2.58.2.0">
+    
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="UniGLTF.RuntimeGltfInstance">
+  
+  
+  <h1 id="UniGLTF_RuntimeGltfInstance" data-uid="UniGLTF.RuntimeGltfInstance" class="text-break">Class RuntimeGltfInstance
+  </h1>
+  <div class="markdown level0 summary"><p>ImporterContext の Load 結果の GltfModel</p>
+<p>Runtime でモデルを Destory したときに関連リソース(Texture, Material...などの UnityEngine.Object)を自動的に Destroy する。</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><span class="xref">System.Object</span></div>
+    <div class="level1"><span class="xref">RuntimeGltfInstance</span></div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="UniGLTF.html">UniGLTF</a></h6>
+  <h6><strong>Assembly</strong>: UniGLTF.dll</h6>
+  <h5 id="UniGLTF_RuntimeGltfInstance_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public class RuntimeGltfInstance : MonoBehaviour, IResponsibilityForDestroyObjects, IDisposable</code></pre>
+  </div>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/vrm-c/UniVRM/new/master/apiSpec/new?filename=UniGLTF_RuntimeGltfInstance_AnimationClips.md&amp;value=---%0Auid%3A%20UniGLTF.RuntimeGltfInstance.AnimationClips%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/vrm-c/UniVRM/blob/master/Assets/UniGLTF/Runtime/UniGLTF/RuntimeGltfInstance.cs/#L44">View Source</a>
+  </span>
+  <a id="UniGLTF_RuntimeGltfInstance_AnimationClips_" data-uid="UniGLTF.RuntimeGltfInstance.AnimationClips*"></a>
+  <h4 id="UniGLTF_RuntimeGltfInstance_AnimationClips" data-uid="UniGLTF.RuntimeGltfInstance.AnimationClips">AnimationClips</h4>
+  <div class="markdown level1 summary"><p>Animation Clips.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public IReadOnlyList&lt;AnimationClip&gt; AnimationClips { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Collections.Generic.IReadOnlyList</span>&lt;<span class="xref">AnimationClip</span>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/vrm-c/UniVRM/new/master/apiSpec/new?filename=UniGLTF_RuntimeGltfInstance_Materials.md&amp;value=---%0Auid%3A%20UniGLTF.RuntimeGltfInstance.Materials%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/vrm-c/UniVRM/blob/master/Assets/UniGLTF/Runtime/UniGLTF/RuntimeGltfInstance.cs/#L34">View Source</a>
+  </span>
+  <a id="UniGLTF_RuntimeGltfInstance_Materials_" data-uid="UniGLTF.RuntimeGltfInstance.Materials*"></a>
+  <h4 id="UniGLTF_RuntimeGltfInstance_Materials" data-uid="UniGLTF.RuntimeGltfInstance.Materials">Materials</h4>
+  <div class="markdown level1 summary"><p>Materials.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public IReadOnlyList&lt;Material&gt; Materials { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Collections.Generic.IReadOnlyList</span>&lt;<span class="xref">Material</span>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/vrm-c/UniVRM/new/master/apiSpec/new?filename=UniGLTF_RuntimeGltfInstance_Meshes.md&amp;value=---%0Auid%3A%20UniGLTF.RuntimeGltfInstance.Meshes%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/vrm-c/UniVRM/blob/master/Assets/UniGLTF/Runtime/UniGLTF/RuntimeGltfInstance.cs/#L49">View Source</a>
+  </span>
+  <a id="UniGLTF_RuntimeGltfInstance_Meshes_" data-uid="UniGLTF.RuntimeGltfInstance.Meshes*"></a>
+  <h4 id="UniGLTF_RuntimeGltfInstance_Meshes" data-uid="UniGLTF.RuntimeGltfInstance.Meshes">Meshes</h4>
+  <div class="markdown level1 summary"><p>Meshes.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public IReadOnlyList&lt;Mesh&gt; Meshes { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Collections.Generic.IReadOnlyList</span>&lt;<span class="xref">Mesh</span>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/vrm-c/UniVRM/new/master/apiSpec/new?filename=UniGLTF_RuntimeGltfInstance_MeshRenderers.md&amp;value=---%0Auid%3A%20UniGLTF.RuntimeGltfInstance.MeshRenderers%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/vrm-c/UniVRM/blob/master/Assets/UniGLTF/Runtime/UniGLTF/RuntimeGltfInstance.cs/#L60">View Source</a>
+  </span>
+  <a id="UniGLTF_RuntimeGltfInstance_MeshRenderers_" data-uid="UniGLTF.RuntimeGltfInstance.MeshRenderers*"></a>
+  <h4 id="UniGLTF_RuntimeGltfInstance_MeshRenderers" data-uid="UniGLTF.RuntimeGltfInstance.MeshRenderers">MeshRenderers</h4>
+  <div class="markdown level1 summary"><p>Mesh Renderers.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public IReadOnlyList&lt;MeshRenderer&gt; MeshRenderers { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Collections.Generic.IReadOnlyList</span>&lt;<span class="xref">MeshRenderer</span>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/vrm-c/UniVRM/new/master/apiSpec/new?filename=UniGLTF_RuntimeGltfInstance_Nodes.md&amp;value=---%0Auid%3A%20UniGLTF.RuntimeGltfInstance.Nodes%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/vrm-c/UniVRM/blob/master/Assets/UniGLTF/Runtime/UniGLTF/RuntimeGltfInstance.cs/#L23">View Source</a>
+  </span>
+  <a id="UniGLTF_RuntimeGltfInstance_Nodes_" data-uid="UniGLTF.RuntimeGltfInstance.Nodes*"></a>
+  <h4 id="UniGLTF_RuntimeGltfInstance_Nodes" data-uid="UniGLTF.RuntimeGltfInstance.Nodes">Nodes</h4>
+  <div class="markdown level1 summary"><p>Transforms with gltf node index.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public IReadOnlyList&lt;Transform&gt; Nodes { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Collections.Generic.IReadOnlyList</span>&lt;<span class="xref">Transform</span>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/vrm-c/UniVRM/new/master/apiSpec/new?filename=UniGLTF_RuntimeGltfInstance_Renderers.md&amp;value=---%0Auid%3A%20UniGLTF.RuntimeGltfInstance.Renderers%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/vrm-c/UniVRM/blob/master/Assets/UniGLTF/Runtime/UniGLTF/RuntimeGltfInstance.cs/#L55">View Source</a>
+  </span>
+  <a id="UniGLTF_RuntimeGltfInstance_Renderers_" data-uid="UniGLTF.RuntimeGltfInstance.Renderers*"></a>
+  <h4 id="UniGLTF_RuntimeGltfInstance_Renderers" data-uid="UniGLTF.RuntimeGltfInstance.Renderers">Renderers</h4>
+  <div class="markdown level1 summary"><p>Renderers.
+ex. MeshRenderer, SkinnedMeshRenderer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public IReadOnlyList&lt;Renderer&gt; Renderers { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Collections.Generic.IReadOnlyList</span>&lt;<span class="xref">Renderer</span>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/vrm-c/UniVRM/new/master/apiSpec/new?filename=UniGLTF_RuntimeGltfInstance_Root.md&amp;value=---%0Auid%3A%20UniGLTF.RuntimeGltfInstance.Root%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/vrm-c/UniVRM/blob/master/Assets/UniGLTF/Runtime/UniGLTF/RuntimeGltfInstance.cs/#L18">View Source</a>
+  </span>
+  <a id="UniGLTF_RuntimeGltfInstance_Root_" data-uid="UniGLTF.RuntimeGltfInstance.Root*"></a>
+  <h4 id="UniGLTF_RuntimeGltfInstance_Root" data-uid="UniGLTF.RuntimeGltfInstance.Root">Root</h4>
+  <div class="markdown level1 summary"><p>this is UniGLTF root gameObject</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public GameObject Root { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">GameObject</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/vrm-c/UniVRM/new/master/apiSpec/new?filename=UniGLTF_RuntimeGltfInstance_RuntimeResources.md&amp;value=---%0Auid%3A%20UniGLTF.RuntimeGltfInstance.RuntimeResources%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/vrm-c/UniVRM/blob/master/Assets/UniGLTF/Runtime/UniGLTF/RuntimeGltfInstance.cs/#L29">View Source</a>
+  </span>
+  <a id="UniGLTF_RuntimeGltfInstance_RuntimeResources_" data-uid="UniGLTF.RuntimeGltfInstance.RuntimeResources*"></a>
+  <h4 id="UniGLTF_RuntimeGltfInstance_RuntimeResources" data-uid="UniGLTF.RuntimeGltfInstance.RuntimeResources">RuntimeResources</h4>
+  <div class="markdown level1 summary"><p>Runtime resources.
+ex. Material, Texture, AnimationClip, Mesh.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public IReadOnlyList&lt;(SubAssetKey, Object)&gt; RuntimeResources { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Collections.Generic.IReadOnlyList</span>&lt;<span class="xref">System.ValueTuple</span>&lt;<span class="xref">VRMShaders.SubAssetKey</span>, <span class="xref">UnityEngine.Object</span>&gt;&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/vrm-c/UniVRM/new/master/apiSpec/new?filename=UniGLTF_RuntimeGltfInstance_SkinnedMeshRenderers.md&amp;value=---%0Auid%3A%20UniGLTF.RuntimeGltfInstance.SkinnedMeshRenderers%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/vrm-c/UniVRM/blob/master/Assets/UniGLTF/Runtime/UniGLTF/RuntimeGltfInstance.cs/#L65">View Source</a>
+  </span>
+  <a id="UniGLTF_RuntimeGltfInstance_SkinnedMeshRenderers_" data-uid="UniGLTF.RuntimeGltfInstance.SkinnedMeshRenderers*"></a>
+  <h4 id="UniGLTF_RuntimeGltfInstance_SkinnedMeshRenderers" data-uid="UniGLTF.RuntimeGltfInstance.SkinnedMeshRenderers">SkinnedMeshRenderers</h4>
+  <div class="markdown level1 summary"><p>Skinned Mesh Renderers.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public IReadOnlyList&lt;SkinnedMeshRenderer&gt; SkinnedMeshRenderers { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Collections.Generic.IReadOnlyList</span>&lt;<span class="xref">SkinnedMeshRenderer</span>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/vrm-c/UniVRM/new/master/apiSpec/new?filename=UniGLTF_RuntimeGltfInstance_Textures.md&amp;value=---%0Auid%3A%20UniGLTF.RuntimeGltfInstance.Textures%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/vrm-c/UniVRM/blob/master/Assets/UniGLTF/Runtime/UniGLTF/RuntimeGltfInstance.cs/#L39">View Source</a>
+  </span>
+  <a id="UniGLTF_RuntimeGltfInstance_Textures_" data-uid="UniGLTF.RuntimeGltfInstance.Textures*"></a>
+  <h4 id="UniGLTF_RuntimeGltfInstance_Textures" data-uid="UniGLTF.RuntimeGltfInstance.Textures">Textures</h4>
+  <div class="markdown level1 summary"><p>Textures.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public IReadOnlyList&lt;Texture&gt; Textures { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Collections.Generic.IReadOnlyList</span>&lt;<span class="xref">Texture</span>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/vrm-c/UniVRM/new/master/apiSpec/new?filename=UniGLTF_RuntimeGltfInstance_AttachTo_GameObject_UniGLTF_ImporterContext_.md&amp;value=---%0Auid%3A%20UniGLTF.RuntimeGltfInstance.AttachTo(GameObject%2CUniGLTF.ImporterContext)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/vrm-c/UniVRM/blob/master/Assets/UniGLTF/Runtime/UniGLTF/RuntimeGltfInstance.cs/#L77">View Source</a>
+  </span>
+  <a id="UniGLTF_RuntimeGltfInstance_AttachTo_" data-uid="UniGLTF.RuntimeGltfInstance.AttachTo*"></a>
+  <h4 id="UniGLTF_RuntimeGltfInstance_AttachTo_GameObject_UniGLTF_ImporterContext_" data-uid="UniGLTF.RuntimeGltfInstance.AttachTo(GameObject,UniGLTF.ImporterContext)">AttachTo(GameObject, ImporterContext)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static RuntimeGltfInstance AttachTo(GameObject go, ImporterContext context)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">GameObject</span></td>
+        <td><span class="parametername">go</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="UniGLTF.ImporterContext.html">ImporterContext</a></td>
+        <td><span class="parametername">context</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="UniGLTF.RuntimeGltfInstance.html">RuntimeGltfInstance</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/vrm-c/UniVRM/new/master/apiSpec/new?filename=UniGLTF_RuntimeGltfInstance_Dispose.md&amp;value=---%0Auid%3A%20UniGLTF.RuntimeGltfInstance.Dispose%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/vrm-c/UniVRM/blob/master/Assets/UniGLTF/Runtime/UniGLTF/RuntimeGltfInstance.cs/#L163">View Source</a>
+  </span>
+  <a id="UniGLTF_RuntimeGltfInstance_Dispose_" data-uid="UniGLTF.RuntimeGltfInstance.Dispose*"></a>
+  <h4 id="UniGLTF_RuntimeGltfInstance_Dispose" data-uid="UniGLTF.RuntimeGltfInstance.Dispose">Dispose()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Dispose()</code></pre>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/vrm-c/UniVRM/new/master/apiSpec/new?filename=UniGLTF_RuntimeGltfInstance_EnableUpdateWhenOffscreen.md&amp;value=---%0Auid%3A%20UniGLTF.RuntimeGltfInstance.EnableUpdateWhenOffscreen%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/vrm-c/UniVRM/blob/master/Assets/UniGLTF/Runtime/UniGLTF/RuntimeGltfInstance.cs/#L137">View Source</a>
+  </span>
+  <a id="UniGLTF_RuntimeGltfInstance_EnableUpdateWhenOffscreen_" data-uid="UniGLTF.RuntimeGltfInstance.EnableUpdateWhenOffscreen*"></a>
+  <h4 id="UniGLTF_RuntimeGltfInstance_EnableUpdateWhenOffscreen" data-uid="UniGLTF.RuntimeGltfInstance.EnableUpdateWhenOffscreen">EnableUpdateWhenOffscreen()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void EnableUpdateWhenOffscreen()</code></pre>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/vrm-c/UniVRM/new/master/apiSpec/new?filename=UniGLTF_RuntimeGltfInstance_ShowMeshes.md&amp;value=---%0Auid%3A%20UniGLTF.RuntimeGltfInstance.ShowMeshes%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/vrm-c/UniVRM/blob/master/Assets/UniGLTF/Runtime/UniGLTF/RuntimeGltfInstance.cs/#L129">View Source</a>
+  </span>
+  <a id="UniGLTF_RuntimeGltfInstance_ShowMeshes_" data-uid="UniGLTF.RuntimeGltfInstance.ShowMeshes*"></a>
+  <h4 id="UniGLTF_RuntimeGltfInstance_ShowMeshes" data-uid="UniGLTF.RuntimeGltfInstance.ShowMeshes">ShowMeshes()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void ShowMeshes()</code></pre>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/vrm-c/UniVRM/new/master/apiSpec/new?filename=UniGLTF_RuntimeGltfInstance_TransferOwnership_VRMShaders_TakeResponsibilityForDestroyObjectFunc_.md&amp;value=---%0Auid%3A%20UniGLTF.RuntimeGltfInstance.TransferOwnership(VRMShaders.TakeResponsibilityForDestroyObjectFunc)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/vrm-c/UniVRM/blob/master/Assets/UniGLTF/Runtime/UniGLTF/RuntimeGltfInstance.cs/#L154">View Source</a>
+  </span>
+  <a id="UniGLTF_RuntimeGltfInstance_TransferOwnership_" data-uid="UniGLTF.RuntimeGltfInstance.TransferOwnership*"></a>
+  <h4 id="UniGLTF_RuntimeGltfInstance_TransferOwnership_VRMShaders_TakeResponsibilityForDestroyObjectFunc_" data-uid="UniGLTF.RuntimeGltfInstance.TransferOwnership(VRMShaders.TakeResponsibilityForDestroyObjectFunc)">TransferOwnership(TakeResponsibilityForDestroyObjectFunc)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void TransferOwnership(TakeResponsibilityForDestroyObjectFunc take)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">VRMShaders.TakeResponsibilityForDestroyObjectFunc</span></td>
+        <td><span class="parametername">take</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/vrm-c/UniVRM/new/master/apiSpec/new?filename=UniGLTF_RuntimeGltfInstance.md&amp;value=---%0Auid%3A%20UniGLTF.RuntimeGltfInstance%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/vrm-c/UniVRM/blob/master/Assets/UniGLTF/Runtime/UniGLTF/RuntimeGltfInstance.cs/#L13" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+                <h5>In This Article</h5>
+                <div></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>
