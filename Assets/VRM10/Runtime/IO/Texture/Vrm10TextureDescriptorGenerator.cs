@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using UniGLTF;
 using UnityEngine;
@@ -68,6 +69,8 @@ namespace UniVRM10
             }
         }
 
+        public const string THUMBNAIL_NAME = "__VRM10_thumbnail__";
+
         /// <summary>
         /// VRM-1 の thumbnail テクスチャー。gltf.textures ではなく gltf.images の参照であることに注意(sampler等の設定が無い)
         /// </summary>
@@ -81,18 +84,25 @@ namespace UniVRM10
 
             var imageIndex = vrm.Meta.ThumbnailImage.Value;
             var gltfImage = data.GLTF.images[imageIndex];
-            var name = TextureImportName.GetUnityObjectName(TextureImportTypes.sRGB, gltfImage.name, gltfImage.uri);
-            if (string.IsNullOrEmpty(name))
+
+            // data.GLTF.textures は前処理によりユニーク性がある
+            // unique な名前を振り出す
+            var used = new HashSet<string>(data.GLTF.textures.Select(x => x.name));
+            var imageName = gltfImage.name;
+            if (string.IsNullOrEmpty(imageName))
             {
-                name = MigrationVrmMeta.THUMBNAIL_NAME;
+                imageName = THUMBNAIL_NAME;
             }
+            var uniqueName = GlbLowLevelParser.FixNameUnique(used, imageName);
+
+            var objectName = TextureImportName.GetUnityObjectName(TextureImportTypes.sRGB, uniqueName, gltfImage.uri);
 
             GetTextureBytesAsync getThumbnailImageBytesAsync = () =>
             {
                 var bytes = data.GLTF.GetImageBytes(data.Storage, imageIndex);
                 return Task.FromResult(GltfTextureImporter.ToArray(bytes));
             };
-            var texDesc = new TextureDescriptor(name, gltfImage.GetExt(), gltfImage.uri, Vector2.zero, Vector2.one, default, TextureImportTypes.sRGB, default, default,
+            var texDesc = new TextureDescriptor(objectName, gltfImage.GetExt(), gltfImage.uri, Vector2.zero, Vector2.one, default, TextureImportTypes.sRGB, default, default,
                getThumbnailImageBytesAsync, default, default,
                default, default, default
                );
