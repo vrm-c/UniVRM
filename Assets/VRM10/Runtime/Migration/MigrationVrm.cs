@@ -38,7 +38,7 @@ namespace UniVRM10
                 var vrm1 = new UniGLTF.Extensions.VRMC_vrm.VRMC_vrm();
 
                 // meta (required)
-                vrm1.Meta = MigrationVrmMeta.Migrate(vrm0["meta"]);
+                vrm1.Meta = MigrationVrmMeta.Migrate(gltf, vrm0["meta"]);
                 // humanoid (required)
                 vrm1.Humanoid = MigrationVrmHumanoid.Migrate(vrm0["humanoid"]);
 
