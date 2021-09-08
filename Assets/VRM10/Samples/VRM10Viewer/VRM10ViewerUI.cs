@@ -5,7 +5,7 @@ using UniGLTF;
 using UniHumanoid;
 using UnityEngine;
 using UnityEngine.UI;
-
+using VRMShaders;
 
 namespace UniVRM10.VRM10Viewer
 {
@@ -93,7 +93,31 @@ namespace UniVRM10.VRM10Viewer
                 m_textDistributionOther.text = "";
             }
 
-            public void UpdateMeta(VRM10ObjectMeta meta)
+            public void UpdateMeta(Migration.Vrm0Meta meta, Texture2D thumbnail)
+            {
+                if (meta == null)
+                {
+                    return;
+                }
+
+                m_textModelTitle.text = meta.title;
+                m_textModelVersion.text = meta.version;
+                m_textModelAuthor.text = meta.author;
+                m_textModelContact.text = meta.contactInformation;
+                m_textModelReference.text = meta.reference;
+                m_textPermissionAllowed.text = meta.allowedUser.ToString();
+                m_textPermissionViolent.text = meta.violentUsage.ToString();
+                m_textPermissionSexual.text = meta.sexualUsage.ToString();
+                m_textPermissionCommercial.text = meta.commercialUsage.ToString();
+                m_textPermissionOther.text = meta.otherPermissionUrl;
+
+                // m_textDistributionLicense.text = meta.ModificationLicense.ToString();
+                m_textDistributionOther.text = meta.otherLicenseUrl;
+
+                m_thumbnail.texture = thumbnail;
+            }
+
+            public void UpdateMeta(UniGLTF.Extensions.VRMC_vrm.Meta meta, Texture2D thumbnail)
             {
                 if (meta == null)
                 {
@@ -108,16 +132,16 @@ namespace UniVRM10.VRM10Viewer
                 {
                     m_textModelReference.text = meta.References[0];
                 }
-                m_textPermissionAllowed.text = meta.AllowedUser.ToString();
-                m_textPermissionViolent.text = meta.ViolentUsage.ToString();
-                m_textPermissionSexual.text = meta.SexualUsage.ToString();
+                // m_textPermissionAllowed.text = meta.AllowedUser.ToString();
+                m_textPermissionViolent.text = meta.AllowExcessivelyViolentUsage.ToString();
+                m_textPermissionSexual.text = meta.AllowExcessivelySexualUsage.ToString();
                 m_textPermissionCommercial.text = meta.CommercialUsage.ToString();
-                m_textPermissionOther.text = meta.OtherPermissionUrl;
+                // m_textPermissionOther.text = meta.OtherPermissionUrl;
 
-                m_textDistributionLicense.text = meta.ModificationLicense.ToString();
+                // m_textDistributionLicense.text = meta.ModificationLicense.ToString();
                 m_textDistributionOther.text = meta.OtherLicenseUrl;
 
-                m_thumbnail.texture = meta.Thumbnail;
+                m_thumbnail.texture = thumbnail;
             }
         }
         [SerializeField]
@@ -241,7 +265,6 @@ namespace UniVRM10.VRM10Viewer
                 if (m_controller != null)
                 {
                     // VRM
-                    // m_texts.UpdateMeta(m_controller.Vrm.Meta);
                     m_controller.UpdateType = VRM10Controller.UpdateTypes.LateUpdate; // after HumanPoseTransfer's setPose
                     {
                         m_pose = instance.gameObject.AddComponent<HumanPoseTransfer>();
@@ -415,6 +438,24 @@ namespace UniVRM10.VRM10Viewer
                 // vrm
                 using (var loader = new Vrm10Importer(vrm, materialGenerator: GetVrmMaterialDescriptorGenerator(m_useUrpMaterial.isOn)))
                 {
+                    // migrate しても thumbnail は同じ
+                    Texture2D thumbnail = null;
+                    if (Vrm10TextureDescriptorGenerator.TryGetMetaThumbnailTextureImportParam(data, vrm.VrmExtension, out (SubAssetKey, VRMShaders.TextureDescriptor Param) kv))
+                    {
+                        thumbnail = await loader.TextureFactory.GetTextureAsync(kv.Param, new TaskCaller()) as Texture2D;
+                    }
+
+                    if (vrm.OldMeta != null)
+                    {
+                        // migrated from vrm-0.x. use OldMeta
+                        m_texts.UpdateMeta(vrm.OldMeta, thumbnail);
+                    }
+                    else
+                    {
+                        // load vrm-1.0. use newMeta
+                        m_texts.UpdateMeta(vrm.VrmExtension.Meta, thumbnail);
+                    }
+
                     var instance = await loader.LoadAsync();
                     SetModel(instance);
                 }
