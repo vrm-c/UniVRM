@@ -52,7 +52,7 @@ namespace UniGLTF
             //
             // Parse(parse glb, parser gltf json)
             //
-            var data = new AmbiguousGltfFileParser(scriptedImporter.assetPath).Parse();
+            var data = new AutoGltfFileParser(scriptedImporter.assetPath).Parse();
 
 
             //

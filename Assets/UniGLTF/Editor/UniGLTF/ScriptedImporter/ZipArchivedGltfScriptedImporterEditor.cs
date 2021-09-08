@@ -24,7 +24,7 @@ namespace UniGLTF
             base.OnEnable();
 
             m_importer = target as ZipArchivedGltfScriptedImporter;
-            m_data = new AmbiguousGltfFileParser(m_importer.assetPath).Parse();
+            m_data = new AutoGltfFileParser(m_importer.assetPath).Parse();
 
             var materialGenerator = new GltfMaterialDescriptorGenerator();
             var materialKeys = m_data.GLTF.materials.Select((_, i) => materialGenerator.Get(m_data, i).SubAssetKey);

@@ -407,7 +407,7 @@ namespace VRM.SimpleViewer
             GltfData data;
             try
             {
-                data = new GltfZipOrGlbFileParser(path).Parse();
+                data = new AutoGltfFileParser(path).Parse();
             }
             catch (Exception ex)
             {

@@ -425,7 +425,7 @@ namespace UniVRM10.VRM10Viewer
             GltfData data;
             try
             {
-                data = new GltfZipOrGlbFileParser(path).Parse();
+                data = new AutoGltfFileParser(path).Parse();
             }
             catch (Exception ex)
             {
@@ -439,7 +439,7 @@ namespace UniVRM10.VRM10Viewer
                 using (var loader = new Vrm10Importer(vrm, materialGenerator: GetVrmMaterialDescriptorGenerator(m_useUrpMaterial.isOn)))
                 {
                     // migrate しても thumbnail は同じ
-                    var thumbnail  = await loader.LoadVrmThumbnailAsync();
+                    var thumbnail = await loader.LoadVrmThumbnailAsync();
 
                     if (vrm.OldMeta != null)
                     {

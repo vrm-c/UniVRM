@@ -81,7 +81,7 @@ namespace UniGLTF
             GltfData data = null;
             try
             {
-                data = new AmbiguousGltfFileParser(gltf.FullName).Parse();
+                data = new AutoGltfFileParser(gltf.FullName).Parse();
             }
             catch (Exception ex)
             {
@@ -127,7 +127,7 @@ namespace UniGLTF
             GltfData data = null;
             try
             {
-                data = new AmbiguousGltfFileParser(gltf.FullName).Parse();
+                data = new AutoGltfFileParser(gltf.FullName).Parse();
             }
             catch (Exception ex)
             {
@@ -205,7 +205,7 @@ namespace UniGLTF
 
             {
                 var path = Path.Combine(root.FullName, "DamagedHelmet/glTF-Binary/DamagedHelmet.glb");
-                var data = new AmbiguousGltfFileParser(path).Parse();
+                var data = new AutoGltfFileParser(path).Parse();
 
                 var matDesc = new GltfMaterialDescriptorGenerator().Get(data, 0);
                 Assert.AreEqual("Standard", matDesc.ShaderName);
