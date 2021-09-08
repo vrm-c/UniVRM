@@ -12,6 +12,8 @@
       href: gltf/0_82_glb_import.md
     - name: glTF拡張の実装(0.63.2)
       href: gltf/how_to_impl_extension.md
+    - name: GltfUpdate(0.36)
+      href: gltf/0_36_update.md
 
 - name: VRM
   items:
@@ -37,7 +39,7 @@
 - name: VRM-1.0(β)
   items:
     - name: 🚧Samples/VRM10Viewer
-    - name: 🚧RuntimeImport
+    - name: RuntimeImport
       href: vrm1/vrm1_runtime_load.md
     - name: 🚧Humanoid
       href: vrm1/vrm1_get_humanoid.md

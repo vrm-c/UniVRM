@@ -5,7 +5,7 @@ using UniGLTF;
 using UniHumanoid;
 using UnityEngine;
 using UnityEngine.UI;
-
+using VRMShaders;
 
 namespace UniVRM10.VRM10Viewer
 {
@@ -93,7 +93,31 @@ namespace UniVRM10.VRM10Viewer
                 m_textDistributionOther.text = "";
             }
 
-            public void UpdateMeta(VRM10ObjectMeta meta)
+            public void UpdateMeta(Migration.Vrm0Meta meta, Texture2D thumbnail)
+            {
+                if (meta == null)
+                {
+                    return;
+                }
+
+                m_textModelTitle.text = meta.title;
+                m_textModelVersion.text = meta.version;
+                m_textModelAuthor.text = meta.author;
+                m_textModelContact.text = meta.contactInformation;
+                m_textModelReference.text = meta.reference;
+                m_textPermissionAllowed.text = meta.allowedUser.ToString();
+                m_textPermissionViolent.text = meta.violentUsage.ToString();
+                m_textPermissionSexual.text = meta.sexualUsage.ToString();
+                m_textPermissionCommercial.text = meta.commercialUsage.ToString();
+                m_textPermissionOther.text = meta.otherPermissionUrl;
+
+                // m_textDistributionLicense.text = meta.ModificationLicense.ToString();
+                m_textDistributionOther.text = meta.otherLicenseUrl;
+
+                m_thumbnail.texture = thumbnail;
+            }
+
+            public void UpdateMeta(UniGLTF.Extensions.VRMC_vrm.Meta meta, Texture2D thumbnail)
             {
                 if (meta == null)
                 {
@@ -108,16 +132,16 @@ namespace UniVRM10.VRM10Viewer
                 {
                     m_textModelReference.text = meta.References[0];
                 }
-                m_textPermissionAllowed.text = meta.AllowedUser.ToString();
-                m_textPermissionViolent.text = meta.ViolentUsage.ToString();
-                m_textPermissionSexual.text = meta.SexualUsage.ToString();
+                // m_textPermissionAllowed.text = meta.AllowedUser.ToString();
+                m_textPermissionViolent.text = meta.AllowExcessivelyViolentUsage.ToString();
+                m_textPermissionSexual.text = meta.AllowExcessivelySexualUsage.ToString();
                 m_textPermissionCommercial.text = meta.CommercialUsage.ToString();
-                m_textPermissionOther.text = meta.OtherPermissionUrl;
+                // m_textPermissionOther.text = meta.OtherPermissionUrl;
 
-                m_textDistributionLicense.text = meta.ModificationLicense.ToString();
+                // m_textDistributionLicense.text = meta.ModificationLicense.ToString();
                 m_textDistributionOther.text = meta.OtherLicenseUrl;
 
-                m_thumbnail.texture = meta.Thumbnail;
+                m_thumbnail.texture = thumbnail;
             }
         }
         [SerializeField]
@@ -182,53 +206,113 @@ namespace UniVRM10.VRM10Viewer
             m_target = GameObject.FindObjectOfType<VRM10TargetMover>().gameObject;
         }
 
-        HumanPoseTransfer m_loaded;
-        VRM10Controller m_controller;
-
-        VRM10AIUEO m_lipSync;
-        bool m_enableLipSyncValue;
-        bool EnableLipSyncValue
+        class Loaded : IDisposable
         {
-            set
+            RuntimeGltfInstance m_instance;
+            HumanPoseTransfer m_pose;
+            VRM10Controller m_controller;
+
+            VRM10AIUEO m_lipSync;
+            bool m_enableLipSyncValue;
+            public bool EnableLipSyncValue
             {
-                if (m_enableLipSyncValue == value) return;
-                m_enableLipSyncValue = value;
-                if (m_lipSync != null)
+                set
                 {
-                    m_lipSync.enabled = m_enableLipSyncValue;
+                    if (m_enableLipSyncValue == value) return;
+                    m_enableLipSyncValue = value;
+                    if (m_lipSync != null)
+                    {
+                        m_lipSync.enabled = m_enableLipSyncValue;
+                    }
+                }
+            }
+
+            VRM10AutoExpression m_autoExpression;
+            bool m_enableAutoExpressionValue;
+            public bool EnableAutoExpressionValue
+            {
+                set
+                {
+                    if (m_enableAutoExpressionValue == value) return;
+                    m_enableAutoExpressionValue = value;
+                    if (m_autoExpression != null)
+                    {
+                        m_autoExpression.enabled = m_enableAutoExpressionValue;
+                    }
+                }
+            }
+
+            VRM10Blinker m_blink;
+            bool m_enableBlinkValue;
+            public bool EnableBlinkValue
+            {
+                set
+                {
+                    if (m_blink == value) return;
+                    m_enableBlinkValue = value;
+                    if (m_blink != null)
+                    {
+                        m_blink.enabled = m_enableBlinkValue;
+                    }
+                }
+            }
+
+            public Loaded(RuntimeGltfInstance instance, HumanPoseTransfer src, Transform lookAtTarget)
+            {
+                m_instance = instance;
+
+                m_controller = instance.GetComponent<VRM10Controller>();
+                if (m_controller != null)
+                {
+                    // VRM
+                    m_controller.UpdateType = VRM10Controller.UpdateTypes.LateUpdate; // after HumanPoseTransfer's setPose
+                    {
+                        m_pose = instance.gameObject.AddComponent<HumanPoseTransfer>();
+                        m_pose.Source = src;
+                        m_pose.SourceType = HumanPoseTransfer.HumanPoseTransferSourceType.HumanPoseTransfer;
+
+                        m_lipSync = instance.gameObject.AddComponent<VRM10AIUEO>();
+                        m_blink = instance.gameObject.AddComponent<VRM10Blinker>();
+                        m_autoExpression = instance.gameObject.AddComponent<VRM10AutoExpression>();
+
+                        m_controller.LookAtTargetType = VRM10ObjectLookAt.LookAtTargetTypes.CalcYawPitchToGaze;
+                        m_controller.Gaze = lookAtTarget;
+                    }
+                }
+
+                var animation = instance.GetComponent<Animation>();
+                if (animation && animation.clip != null)
+                {
+                    // GLTF animation
+                    animation.Play(animation.clip.name);
+                }
+            }
+
+            public void Dispose()
+            {
+                // destroy GameObject
+                GameObject.Destroy(m_instance.gameObject);
+            }
+
+            public void EnableBvh(HumanPoseTransfer src)
+            {
+                if (m_pose != null)
+                {
+                    m_pose.Source = src;
+                    m_pose.SourceType = HumanPoseTransfer.HumanPoseTransferSourceType.HumanPoseTransfer;
+                }
+            }
+
+            public void EnableTPose(HumanPoseClip pose)
+            {
+                if (m_pose != null)
+                {
+                    m_pose.PoseClip = pose;
+                    m_pose.SourceType = HumanPoseTransfer.HumanPoseTransferSourceType.HumanPoseClip;
                 }
             }
         }
-
-        VRM10AutoExpression m_autoExpression;
-        bool m_enableAutoExpressionValue;
-        bool EnableAutoExpressionValue
-        {
-            set
-            {
-                if (m_enableAutoExpressionValue == value) return;
-                m_enableAutoExpressionValue = value;
-                if (m_autoExpression != null)
-                {
-                    m_autoExpression.enabled = m_enableAutoExpressionValue;
-                }
-            }
-        }
-
-        VRM10Blinker m_blink;
-        bool m_enableBlinkValue;
-        bool EnableBlinkValue
-        {
-            set
-            {
-                if (m_blink == value) return;
-                m_enableBlinkValue = value;
-                if (m_blink != null)
-                {
-                    m_blink.enabled = m_enableBlinkValue;
-                }
-            }
-        }
+        Loaded m_loaded;
 
         private void Start()
         {
@@ -261,39 +345,19 @@ namespace UniVRM10.VRM10Viewer
 
         private void Update()
         {
-            EnableLipSyncValue = m_enableLipSync.isOn;
-            EnableBlinkValue = m_enableAutoBlink.isOn;
-            EnableAutoExpressionValue = m_enableAutoExpression.isOn;
+            if (m_loaded != null)
+            {
+                m_loaded.EnableLipSyncValue = m_enableLipSync.isOn;
+                m_loaded.EnableBlinkValue = m_enableAutoBlink.isOn;
+                m_loaded.EnableAutoExpressionValue = m_enableAutoExpression.isOn;
+            }
 
             if (Input.GetKeyDown(KeyCode.Tab))
             {
                 if (Root != null) Root.SetActive(!Root.activeSelf);
             }
 
-            m_ui.UpdateToggle(EnableBvh, EnableTPose);
-
-            // if (m_controller != null)
-            // {
-            //     m_controller.Expression.Apply();
-            // }
-        }
-
-        void EnableBvh()
-        {
-            if (m_loaded != null)
-            {
-                m_loaded.Source = m_src;
-                m_loaded.SourceType = HumanPoseTransfer.HumanPoseTransferSourceType.HumanPoseTransfer;
-            }
-        }
-
-        void EnableTPose()
-        {
-            if (m_loaded != null)
-            {
-                m_loaded.PoseClip = m_pose;
-                m_loaded.SourceType = HumanPoseTransfer.HumanPoseTransferSourceType.HumanPoseClip;
-            }
+            m_ui.UpdateToggle(() => m_loaded?.EnableBvh(m_src), () => m_loaded?.EnableTPose(m_pose));
         }
 
         void OnOpenClicked()
@@ -350,7 +414,7 @@ namespace UniVRM10.VRM10Viewer
             }
         }
 
-        void LoadModel(string path)
+        async void LoadModel(string path)
         {
             if (!File.Exists(path))
             {
@@ -358,115 +422,63 @@ namespace UniVRM10.VRM10Viewer
             }
 
             Debug.LogFormat("{0}", path);
-            var ext = Path.GetExtension(path).ToLower();
-            switch (ext)
+            GltfData data;
+            try
             {
-                case ".vrm":
+                data = new AutoGltfFileParser(path).Parse();
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning(ex);
+                return;
+            }
+
+            if (Vrm10Data.TryParseOrMigrate(data, doMigrate: true, out Vrm10Data vrm))
+            {
+                // vrm
+                using (var loader = new Vrm10Importer(vrm, materialGenerator: GetVrmMaterialDescriptorGenerator(m_useUrpMaterial.isOn)))
+                {
+                    // migrate しても thumbnail は同じ
+                    var thumbnail = await loader.LoadVrmThumbnailAsync();
+
+                    if (vrm.OriginalMetaBeforeMigration != null)
                     {
-                        if (!Vrm10Data.TryParseOrMigrate(path, doMigrate: true, out Vrm10Data result))
-                        {
-                            Debug.LogError(result.Message);
-                            return;
-                        }
-                        using (var loader = new Vrm10Importer(result, materialGenerator: GetVrmMaterialDescriptorGenerator(m_useUrpMaterial.isOn)))
-                        {
-                            var loaded = loader.Load();
-                            loaded.ShowMeshes();
-                            loaded.EnableUpdateWhenOffscreen();
-                            SetModel(loaded.gameObject);
-                        }
-                        break;
+                        // migrated from vrm-0.x. use OldMeta
+                        m_texts.UpdateMeta(vrm.OriginalMetaBeforeMigration, thumbnail);
+                    }
+                    else
+                    {
+                        // load vrm-1.0. use newMeta
+                        m_texts.UpdateMeta(vrm.VrmExtension.Meta, thumbnail);
                     }
 
-                case ".glb":
-                    {
-                        var data = new GlbFileParser(path).Parse();
-
-                        using (var loader = new UniGLTF.ImporterContext(data, materialGenerator: GetMaterialDescriptorGenerator(m_useUrpMaterial.isOn)))
-                        {
-                            var loaded = loader.Load();
-                            loaded.ShowMeshes();
-                            loaded.EnableUpdateWhenOffscreen();
-                            SetModel(loaded.gameObject);
-                        }
-                        break;
-                    }
-
-                case ".gltf":
-                    {
-                        var data = new GltfFileWithResourceFilesParser(path).Parse();
-
-                        using (var loader = new UniGLTF.ImporterContext(data, materialGenerator: GetMaterialDescriptorGenerator(m_useUrpMaterial.isOn)))
-                        {
-                            var loaded = loader.Load();
-                            loaded.ShowMeshes();
-                            loaded.EnableUpdateWhenOffscreen();
-                            SetModel(loaded.gameObject);
-                        }
-                        break;
-                    }
-
-                case ".zip":
-                    {
-                        var data = new ZipArchivedGltfFileParser(path).Parse();
-
-                        using (var loader = new UniGLTF.ImporterContext(data, materialGenerator: GetMaterialDescriptorGenerator(m_useUrpMaterial.isOn)))
-                        {
-                            var loaded = loader.Load();
-                            loaded.ShowMeshes();
-                            loaded.EnableUpdateWhenOffscreen();
-                            SetModel(loaded.gameObject);
-                        }
-                        break;
-                    }
-
-                default:
-                    Debug.LogWarningFormat("unknown file type: {0}", path);
-                    break;
+                    var instance = await loader.LoadAsync();
+                    SetModel(instance);
+                }
+            }
+            else
+            {
+                // gltf
+                using (var loader = new UniGLTF.ImporterContext(data, materialGenerator: GetMaterialDescriptorGenerator(m_useUrpMaterial.isOn)))
+                {
+                    var instance = await loader.LoadAsync();
+                    SetModel(instance);
+                }
             }
         }
 
-        void SetModel(GameObject go)
+        void SetModel(RuntimeGltfInstance instance)
         {
             // cleanup
-            var loaded = m_loaded;
-            m_loaded = null;
-
-            if (loaded != null)
+            if (m_loaded != null)
             {
-                Debug.LogFormat("destroy {0}", loaded);
-                GameObject.Destroy(loaded.gameObject);
+                m_loaded.Dispose();
+                m_loaded = null;
             }
 
-            if (go != null)
-            {
-                m_controller = go.GetComponent<VRM10Controller>();
-                if (m_controller != null)
-                {
-
-                    m_texts.UpdateMeta(m_controller.Vrm.Meta);
-
-                    m_controller.UpdateType = VRM10Controller.UpdateTypes.LateUpdate; // after HumanPoseTransfer's setPose
-                    {
-                        m_loaded = go.AddComponent<HumanPoseTransfer>();
-                        m_loaded.Source = m_src;
-                        m_loaded.SourceType = HumanPoseTransfer.HumanPoseTransferSourceType.HumanPoseTransfer;
-
-                        m_lipSync = go.AddComponent<VRM10AIUEO>();
-                        m_blink = go.AddComponent<VRM10Blinker>();
-                        m_autoExpression = go.AddComponent<VRM10AutoExpression>();
-
-                        m_controller.LookAtTargetType = VRM10ObjectLookAt.LookAtTargetTypes.CalcYawPitchToGaze;
-                        m_controller.Gaze = m_target.transform;
-                    }
-                }
-
-                var animation = go.GetComponent<Animation>();
-                if (animation && animation.clip != null)
-                {
-                    animation.Play(animation.clip.name);
-                }
-            }
+            instance.ShowMeshes();
+            instance.EnableUpdateWhenOffscreen();
+            m_loaded = new Loaded(instance, m_src, m_target.transform);
         }
 
         void SetMotion(HumanPoseTransfer src)
@@ -474,7 +486,10 @@ namespace UniVRM10.VRM10Viewer
             m_src = src;
             src.GetComponent<Renderer>().enabled = false;
 
-            EnableBvh();
+            if (m_loaded != null)
+            {
+                m_loaded.EnableBvh(m_src);
+            }
         }
     }
 }

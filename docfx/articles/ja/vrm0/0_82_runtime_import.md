@@ -1,4 +1,4 @@
-* `Version 0.82.0` `0.82.1` 以降を使ってください。
+* `Version 0.82.0` は `0.82.1` 以降を使ってください。
 * `Version 0.82.1~`
 
 以下の手順で import します。
@@ -7,6 +7,8 @@
 1. `GltfData` から `VRMData` を得る。
 1. `VrmData` から `RuntimeGltfInstance` をロードする。
 1. `RuntimeGltfInstance` を使う。
+
+サンプルの `Assets\VRM\Samples\SimpleViewer\ViewerUI.cs` も参照してください。
 
 # 1. `GltfData` を得る
 

@@ -254,5 +254,12 @@ namespace UniVRM10
             Assert.AreEqual(VALUE.y, springBone.Colliders[colliderIndex].Shape.Sphere.Offset[1]);
             Assert.AreEqual(VALUE.z, springBone.Colliders[colliderIndex].Shape.Sphere.Offset[2]);
         }
+
+        [Test]
+        public void MigrateMeta()
+        {
+            Assert.True(Vrm10Data.TryParseOrMigrate(AliciaPath, true, out Vrm10Data vrm));
+            var a = 0;
+        }
     }
 }

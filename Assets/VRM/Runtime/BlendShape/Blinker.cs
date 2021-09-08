@@ -106,6 +106,7 @@ namespace VRM
 
         private void OnDisable()
         {
+            Debug.Log("StopCoroutine");
             if (m_coroutine != null)
             {
                 StopCoroutine(m_coroutine);

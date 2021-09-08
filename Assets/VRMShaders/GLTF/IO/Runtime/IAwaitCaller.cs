@@ -54,28 +54,4 @@ namespace VRMShaders
             return Task.FromResult(action());
         }
     }
-
-    /// <summary>
-    /// 非同期実行
-    /// </summary>
-    public sealed class TaskCaller : IAwaitCaller
-    {
-        public Task NextFrame()
-        {
-            return Task.Run(() =>
-            {
-                // Thread.Sleep(10);
-            });
-        }
-
-        public Task Run(Action action)
-        {
-            return Task.Run(action);
-        }
-
-        public Task<T> Run<T>(Func<T> action)
-        {
-            return Task.Run(action);
-        }
-    }
 }

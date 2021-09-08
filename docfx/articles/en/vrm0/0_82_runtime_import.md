@@ -10,6 +10,8 @@ Below step is needed.
 1. Load a `RuntimeGltfInstance` from `VRMData`.
 1. Use the `RuntimeGltfInstance`
 
+See `Assets\VRM\Samples\SimpleViewer\ViewerUI.cs`
+
 # 1. Get `GltfData`
 
 ```cs

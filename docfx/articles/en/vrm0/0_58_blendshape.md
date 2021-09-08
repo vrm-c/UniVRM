@@ -10,6 +10,8 @@ tags: ["api"]
 ## Environment
 UniVRM v0.58.0
 
+[Rework BlendShapeKey's Interface](https://github.com/vrm-c/UniVRM/wiki/ReleaseNote-v0.56.0%28en%29#reworks-blendshapekeys-interface)
+
 ## Methods
 
 * [Recommended] `SetValues`

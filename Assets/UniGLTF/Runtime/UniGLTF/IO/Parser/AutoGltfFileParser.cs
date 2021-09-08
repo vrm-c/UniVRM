@@ -3,14 +3,15 @@
 namespace UniGLTF
 {
     /// <summary>
-    /// Ambiguous file parser.
+    /// Auto detection file parser.
     /// Determine parsing method from the file extension.
+    /// Detects `gltf`` zip`, others as` glb`
     /// </summary>
-    public sealed class AmbiguousGltfFileParser
+    public sealed class AutoGltfFileParser
     {
         private readonly string _path;
         
-        public AmbiguousGltfFileParser(string path)
+        public AutoGltfFileParser(string path)
         {
             _path = path;
         }

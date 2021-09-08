@@ -1,19 +1,44 @@
----
-title: 🚧Runtime ロード
-weight: 10
----
+# RuntimeLoad
 
-VRM-1.0 を使うアプリケーションは、 `VRM-0.x` の資産もロードしたいはずです。
+`VRM-1.0` は、 `VRM-0.x` もロードできます。
+その場合、あたらしい meta への変換が発生し互換性の無い部分はすべて `不許可` の値になります。
+このため、変換前のライセンスにアクセスする API を提供します。
 
-`VRM-1.0` と `VRM-0.X` の meta の非互換に [Metaの自動的なマイグレーションは禁止する方針](https://github.com/vrm-c/vrm-specification/issues/181) となりました。
+サンプルの `Assets\VRM10\Samples\VRM10Viewer\VRM10ViewerUI.cs` も参照してください。
 
-## VRM-0.X を VRM-1.0 コンポーネントに対してロードする
+```cs
+async Task<RuntimeGltfInstance> LoadAsync(string path)
+{
+    GltfData data = new GltfZipOrGlbFileParser(path).Parse();
 
-`UniVRM-1.0` では、
-`VRM-0.X` のライセンスを保持したまま、`VRM-1.0` のコンポーネントにロードする機能を提供します(予定)。
+    // doMigrate: true で旧バージョンの vrm をロードできます。
+    if (Vrm10Data.TryParseOrMigrate(data, doMigrate: true, out Vrm10Data vrm))
+    {
+        // vrm
+        using (var loader = new Vrm10Importer(vrm, 
+        materialGenerator: GetVrmMaterialDescriptorGenerator(m_useUrpMaterial.isOn)))
+        {
+            // migrate しても thumbnail は同じ
+            var thumbnail  = await loader.LoadVrmThumbnailAsync();
 
-アプリケーションは、この方法でロードしたモデルは、`VRM-0.X` ライセンスとして扱ってください。
+            if (vrm.OldMeta != null)
+            {
+                // migrated from vrm-0.x. use OldMeta
+                UpdateMeta(vrm.OldMeta, thumbnail);
+            }
+            else
+            {
+                // load vrm-1.0. use newMeta
+                UpdateMeta(vrm.VrmExtension.Meta, thumbnail);
+            }
 
-## RuntimeLoad 例
-
-`vrm-0.x` と `vrm-1.0` 両方をロードしてライセンスを取得する例。
+            // モデルをロード
+            RuntimeGltfInstance instance = await loader.LoadAsync();
+            return instance;
+        }
+    }
+    else{
+        throw new Exception("not vrm");
+    }
+}
+```

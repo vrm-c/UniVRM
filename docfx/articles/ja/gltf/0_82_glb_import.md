@@ -58,14 +58,8 @@ GltfData Load(string path)
 ```cs
 GltfData Load(string path)
 {
-    var ext = Path.GetExtension(path).ToLower();
-    switch(ext)
-    {
-        case ".glb": return new GlbFileParser(path).Parse();
-        case ".gltf": return new GltfFileWithResourceFilesParser(path).Parse();
-        case ".zip": return new ZipArchivedGltfFileParser(path).Parse();
-        default: throw new Exception($"unknown: {ext}");
-    }
+    // ファイル拡張子で自動判定します
+    return new AutoGltfFileParser(path).Parse();
 }
 ```
 
