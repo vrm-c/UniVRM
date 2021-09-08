@@ -226,6 +226,7 @@ namespace VRM.SimpleViewer
                 var lookAt = instance.GetComponent<VRMLookAtHead>();
                 if (lookAt != null)
                 {
+                    // vrm
                     _pose = _instance.gameObject.AddComponent<HumanPoseTransfer>();
                     _pose.Source = src;
                     _pose.SourceType = HumanPoseTransfer.HumanPoseTransferSourceType.HumanPoseTransfer;
@@ -236,13 +237,14 @@ namespace VRM.SimpleViewer
                     lookAt.Target = lookAtTarget;
                     lookAt.UpdateType = UpdateType.LateUpdate; // after HumanPoseTransfer's setPose
 
-                    var animation = instance.GetComponent<Animation>();
-                    if (animation && animation.clip != null)
-                    {
-                        animation.Play(animation.clip.name);
-                    }
-
                     m_proxy = instance.GetComponent<VRMBlendShapeProxy>();
+                }
+
+                // not vrm
+                var animation = instance.GetComponent<Animation>();
+                if (animation && animation.clip != null)
+                {
+                    animation.Play(animation.clip.name);
                 }
             }
 
