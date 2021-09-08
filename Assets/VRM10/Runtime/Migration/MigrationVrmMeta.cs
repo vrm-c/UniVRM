@@ -27,7 +27,7 @@ namespace UniVRM10
     // },
     public static class MigrationVrmMeta
     {
-        public static UniGLTF.Extensions.VRMC_vrm.Meta Migrate(JsonNode vrm0)
+        public static UniGLTF.Extensions.VRMC_vrm.Meta Migrate(UniGLTF.glTF gltf, JsonNode vrm0)
         {
             var meta = new UniGLTF.Extensions.VRMC_vrm.Meta
             {
@@ -54,7 +54,21 @@ namespace UniVRM10
                     case "author": meta.Authors = new List<string>() { kv.Value.GetString() }; break;
                     case "contactInformation": meta.ContactInformation = kv.Value.GetString(); break;
                     case "reference": meta.References = new List<string>() { kv.Value.GetString() }; break;
-                    case "texture": meta.ThumbnailImage = kv.Value.GetInt32(); break;
+                    case "texture":
+                        {
+                            // vrm0x use texture. vrm10 use image
+                            var textureIndex = kv.Value.GetInt32();
+                            if (textureIndex == -1)
+                            {
+                                meta.ThumbnailImage = -1;
+                            }
+                            else
+                            {
+                                var gltfTexture = gltf.textures[textureIndex];
+                                meta.ThumbnailImage = gltfTexture.source;
+                            }
+                            break;
+                        }
 
                     case "allowedUserName":
                         {
