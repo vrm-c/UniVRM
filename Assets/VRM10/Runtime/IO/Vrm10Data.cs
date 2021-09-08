@@ -18,7 +18,7 @@ namespace UniVRM10
     {
         public GltfData Data { get; }
         public UniGLTF.Extensions.VRMC_vrm.VRMC_vrm VrmExtension { get; }
-        public readonly Migration.Vrm0Meta OldMeta;
+        public readonly Migration.Vrm0Meta OriginalMetaBeforeMigration;
         public readonly Vrm10FileType FileType;
         public readonly String Message;
 
@@ -28,7 +28,7 @@ namespace UniVRM10
             VrmExtension = vrm;
             FileType = fileType;
             Message = message;
-            OldMeta = oldMeta;
+            OriginalMetaBeforeMigration = oldMeta;
         }
 
         public static bool TryParseOrMigrate(string path, bool doMigrate, out Vrm10Data result)

@@ -441,10 +441,10 @@ namespace UniVRM10.VRM10Viewer
                     // migrate しても thumbnail は同じ
                     var thumbnail = await loader.LoadVrmThumbnailAsync();
 
-                    if (vrm.OldMeta != null)
+                    if (vrm.OriginalMetaBeforeMigration != null)
                     {
                         // migrated from vrm-0.x. use OldMeta
-                        m_texts.UpdateMeta(vrm.OldMeta, thumbnail);
+                        m_texts.UpdateMeta(vrm.OriginalMetaBeforeMigration, thumbnail);
                     }
                     else
                     {
