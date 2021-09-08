@@ -310,7 +310,7 @@ namespace UniVRM10
         {
             if (awaitCaller == null)
             {
-                awaitCaller = new TaskCaller();
+                awaitCaller = new ImmediateCaller();
             }
 
             if (Vrm10TextureDescriptorGenerator.TryGetMetaThumbnailTextureImportParam(Data, m_vrm.VrmExtension, out (SubAssetKey, VRMShaders.TextureDescriptor Param) kv))

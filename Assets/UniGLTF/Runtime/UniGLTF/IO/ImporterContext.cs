@@ -79,7 +79,7 @@ namespace UniGLTF
         {
             if (awaitCaller == null)
             {
-                awaitCaller = new TaskCaller();
+                awaitCaller = new ImmediateCaller();
             }
 
             if (MeasureTime == null)

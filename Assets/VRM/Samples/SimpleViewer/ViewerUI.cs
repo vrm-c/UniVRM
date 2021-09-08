@@ -99,7 +99,7 @@ namespace VRM.SimpleViewer
 
             public async Task UpdateMetaAsync(VRMImporterContext context)
             {
-                var meta = await context.ReadMetaAsync(new TaskCaller(), true);
+                var meta = await context.ReadMetaAsync(new ImmediateCaller(), true);
 
                 m_textModelTitle.text = meta.Title;
                 m_textModelVersion.text = meta.Version;
