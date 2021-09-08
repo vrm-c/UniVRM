@@ -67,6 +67,7 @@ namespace VRM.SimpleViewer
 
         private void OnDisable()
         {
+            Debug.Log("StopCoroutine");
             StopCoroutine(m_coroutine);
         }
     }
