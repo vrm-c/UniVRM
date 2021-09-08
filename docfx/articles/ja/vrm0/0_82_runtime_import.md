@@ -8,6 +8,8 @@
 1. `VrmData` から `RuntimeGltfInstance` をロードする。
 1. `RuntimeGltfInstance` を使う。
 
+サンプルの `Assets\VRM\Samples\SimpleViewer\ViewerUI.cs` も参照してください。
+
 # 1. `GltfData` を得る
 
 ```cs

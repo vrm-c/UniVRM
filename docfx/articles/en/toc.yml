@@ -39,7 +39,7 @@
 - name: VRM-1.0(β)
   items:
     - name: 🚧Samples/VRM10Viewer
-    - name: 🚧RuntimeImport
+    - name: RuntimeImport
       href: vrm1/vrm1_runtime_load.md
     - name: 🚧Humanoid
       href: vrm1/vrm1_get_humanoid.md
