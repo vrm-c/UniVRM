@@ -112,14 +112,8 @@
 <p>サンプルの <code>SimpleViewer</code> を参考にしてください。</p>
 <pre><code class="lang-cs">GltfData Load(string path)
 {
-    var ext = Path.GetExtension(path).ToLower();
-    switch(ext)
-    {
-        case &quot;.glb&quot;: return new GlbFileParser(path).Parse();
-        case &quot;.gltf&quot;: return new GltfFileWithResourceFilesParser(path).Parse();
-        case &quot;.zip&quot;: return new ZipArchivedGltfFileParser(path).Parse();
-        default: throw new Exception($&quot;unknown: {ext}&quot;);
-    }
+    // ファイル拡張子で自動判定します
+    return new AutoGltfFileParser(path).Parse();
 }
 </code></pre>
 <h1 id="2-ロードする">2. ロードする</h1>

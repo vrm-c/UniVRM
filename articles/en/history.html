@@ -79,19 +79,19 @@
 <tbody>
 <tr>
 <td>v0.82.1</td>
-<td>Material replacement when(for URP)</td>
+<td><code>materialGenerator(for URP)</code> argument and <code>VrmData</code></td>
 </tr>
 <tr>
-<td>v0.82.0</td>
-<td>Material replacement when(for URP)</td>
+<td>v0.79</td>
+<td><code>GltfData</code></td>
 </tr>
 <tr>
 <td>v0.77</td>
-<td>Reorganize ImporterContext</td>
+<td><code>RuntimeGltfInstance</code></td>
 </tr>
 <tr>
 <td>v0.68</td>
-<td>Reorganize ImporterContext</td>
+<td><code>GltfParser</code></td>
 </tr>
 <tr>
 <td>v0.63.2</td>
@@ -103,26 +103,6 @@
 </tr>
 </tbody>
 </table>
-<p><a href="https://github.com/vrm-c/UniVRM/wiki/ReleaseNote-v0.56.0%28en%29#reworks-blendshapekeys-interface">Rework BlendShapeKey's Interface</a></p>
-<h2 id="v036">v0.36</h2>
-<h3 id="changed-storage-position-of-texture-name">Changed Storage Position of Texture Name</h3>
-<p>Conforming to the GLTF specification.</p>
-<pre><code class="lang-json">json.images[i].extra.name
-</code></pre>
-<p>After the change</p>
-<pre><code class="lang-json">json.images[i].name
-</code></pre>
-<h3 id="changed-storage-position-blendshape-name">Changed Storage Position BlendShape Name</h3>
-<p>Conforming to the GLTF specification.</p>
-<ul>
-<li><code>extras</code> is not allowed in target</li>
-<li><a href="https://github.com/KhronosGroup/glTF/issues/1036#issuecomment-314078356">https://github.com/KhronosGroup/glTF/issues/1036#issuecomment-314078356</a></li>
-</ul>
-<pre><code class="lang-json">json.meshes[i].primitives[j].targets[k].extra.name
-</code></pre>
-<p>After the change</p>
-<pre><code class="lang-json">json.meshes[i].primitives[j].extras.targetNames[k]
-</code></pre>
 </article>
           </div>
           

@@ -112,14 +112,8 @@ If use <code>0.82.0</code>, please upgrade.</p>
 <p>See <code>SimpleViewer</code> sample.</p>
 <pre><code class="lang-cs">GltfData Load(string path)
 {
-    var ext = Path.GetExtension(path).ToLower();
-    switch(ext)
-    {
-        case &quot;.glb&quot;: return new GlbFileParser(path).Parse();
-        case &quot;.gltf&quot;: return new GltfFileWithResourceFilesParser(path).Parse();
-        case &quot;.zip&quot;: return new ZipArchivedGltfFileParser(path).Parse();
-        default: throw new Exception($&quot;unknown: {ext}&quot;);
-    }
+    // Detect type by file extension automatically
+    return new AutoGltfFileParser(path).Parse();
 }
 </code></pre>
 <h1 id="2-load">2. Load</h1>

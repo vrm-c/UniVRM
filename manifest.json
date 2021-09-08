@@ -20,18 +20,6 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/UniGLTF.AmbiguousGltfFileParser.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/UniGLTF.AmbiguousGltfFileParser.html",
-          "hash": "z1qZ0rW5Zwy1d87n5RlV29r26mxpXZpCbQk5suyWXE4="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
       "source_relative_path": "api/UniGLTF.AnimationExporter.InputOutputValues.yml",
       "output": {
         ".html": {
@@ -2760,7 +2748,7 @@
       "output": {
         ".html": {
           "relative_path": "api/UniGLTF.html",
-          "hash": "4BMHbNCtrKgbjEfHx8E51VX9b8oKQruF2OZh6ehhkas="
+          "hash": "uGlgaxB8ni9tLyVbusx7PqJPiSlLapkhRflE9fuWQ6I="
         }
       },
       "is_incremental": false,
@@ -4464,7 +4452,19 @@
       "output": {
         ".html": {
           "relative_path": "api/toc.html",
-          "hash": "6O9XFCPWapd5iziq00hx1qGBalqJLQLTKV75FgJRVMY="
+          "hash": "v1BtuWwB/f9nV+eJxUNtL/JakHeVsX81f74Mpoi0ocA="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/en/gltf/0_36_update.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/en/gltf/0_36_update.html",
+          "hash": "qyUm2ddjOYNouvW2fGuQdpJQPVhxNItrDztXFXxS2js="
         }
       },
       "is_incremental": false,
@@ -4476,7 +4476,7 @@
       "output": {
         ".html": {
           "relative_path": "articles/en/gltf/0_82_glb_import.html",
-          "hash": "sePaFU7bPMVRBXhGAxP6mRHoHA2pAlahd/YdY2RnFgM="
+          "hash": "heAC1zWdIihS0cXtVL/ESqdJJO8hpbZFIMzuQEG+vJk="
         }
       },
       "is_incremental": false,
@@ -4500,7 +4500,7 @@
       "output": {
         ".html": {
           "relative_path": "articles/en/history.html",
-          "hash": "SvqIt/oocNob3emRpULHT5gAMiyD3eUQPfs9DP3FtZ8="
+          "hash": "w2e0Sz1MYi+9aMGmBnLunoljCOzXGX9PjVyEgBdiJD4="
         }
       },
       "is_incremental": false,
@@ -4536,7 +4536,7 @@
       "output": {
         ".html": {
           "relative_path": "articles/en/toc.html",
-          "hash": "1cErx3ondkrN56hPAu+BZvnJEd3b8Fa+JlKv7u31BPY="
+          "hash": "0xAo3eJaAstFH1Iz+d8jAM0gyJczjnYoEjCtsT7Q4Os="
         }
       },
       "is_incremental": false,
@@ -4560,7 +4560,7 @@
       "output": {
         ".html": {
           "relative_path": "articles/en/vrm0/0_58_blendshape.html",
-          "hash": "xIasr5p9f1Kg7Tq57/iuqgOT58IA3KB1+WttcpoXmHg="
+          "hash": "VHQ14lZz1wGlY5atD4YlZ2wp1SuscV1FFE1R1lXqj14="
         }
       },
       "is_incremental": false,
@@ -4608,7 +4608,7 @@
       "output": {
         ".html": {
           "relative_path": "articles/en/vrm0/0_82_runtime_import.html",
-          "hash": "ee7MtwC62KPXwOTOnI9Su04fMxwiqZzCflTrcCZpBuM="
+          "hash": "H1v5NSOv4dzNelyXXS3M0q4L2WH2C9G/ZgReeGU3aH0="
         }
       },
       "is_incremental": false,
@@ -4680,7 +4680,7 @@
       "output": {
         ".html": {
           "relative_path": "articles/en/vrm1/vrm1_runtime_load.html",
-          "hash": "5HJQmEX1yWy1vZIQwKiOWE1uNvJatw51ORpss7UphKw="
+          "hash": "fjlzlJif09I9fVRQuqrboU634xUfEv119MpqMAxOHg8="
         }
       },
       "is_incremental": false,
@@ -4703,11 +4703,23 @@
     },
     {
       "type": "Conceptual",
+      "source_relative_path": "articles/ja/gltf/0_36_update.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/ja/gltf/0_36_update.html",
+          "hash": "1Clgv0oiy1wbunxm5rTaxMClofzZ5AcsEA+rXx4EIJ4="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
       "source_relative_path": "articles/ja/gltf/0_82_glb_import.md",
       "output": {
         ".html": {
           "relative_path": "articles/ja/gltf/0_82_glb_import.html",
-          "hash": "n5U2x3FheIJItVm+4eMQVnPsT8KzVhFeT/fJkmmjYps="
+          "hash": "CrRq0blmzEkWj0ssm+P1pfAL/IaLhuzvQ//lrX8w76k="
         }
       },
       "is_incremental": false,
@@ -4731,7 +4743,7 @@
       "output": {
         ".html": {
           "relative_path": "articles/ja/history.html",
-          "hash": "0EovI4tLnDmUXYHVovxanrJrubepxT5D5oZS6rUCJws="
+          "hash": "wUFDP/mJ8eWofsSom+5kod7E6J8fG0qeMbjA8md8KRc="
         }
       },
       "is_incremental": false,
@@ -4767,7 +4779,7 @@
       "output": {
         ".html": {
           "relative_path": "articles/ja/toc.html",
-          "hash": "RCUOWZpFItkHAmN9xlkHAp8nNtpApBiIzyEHqkCQ0D8="
+          "hash": "lpMPaG+LLg4loS9KCp9yllBcKY/sM/ySq4Iq4Z9VNRw="
         }
       },
       "is_incremental": false,
@@ -4791,7 +4803,7 @@
       "output": {
         ".html": {
           "relative_path": "articles/ja/vrm0/0_58_blendshape.html",
-          "hash": "Z7K5rQ1drsMhkrCALhac1BEml4NyoSrfkjJIfgZZVxk="
+          "hash": "jFXpvzG+XKWudsB1P0lcfVQN571lfmEq3ou60Q0d4Qo="
         }
       },
       "is_incremental": false,
@@ -4839,7 +4851,7 @@
       "output": {
         ".html": {
           "relative_path": "articles/ja/vrm0/0_82_runtime_import.html",
-          "hash": "mkQnVZnFrSBTi1dCMHAOfKtVXIm7EBvkXaGtjvr8TtM="
+          "hash": "09y+kuhgsFhiaGH46SsV+vct0N9DyuSyUy6i0VFw+cA="
         }
       },
       "is_incremental": false,
@@ -4911,7 +4923,7 @@
       "output": {
         ".html": {
           "relative_path": "articles/ja/vrm1/vrm1_runtime_load.html",
-          "hash": "JQ0gdAHhk0tFT6KP7vdoBVRDji9wYVtlN+kMvLCFzPc="
+          "hash": "0wPDelUL0uo1W8X5PYenTc/5QWnyShZw4oxRXTPpOWk="
         }
       },
       "is_incremental": false,
@@ -4974,13 +4986,13 @@
         "ConceptualDocumentProcessor": {
           "can_incremental": false,
           "incrementalPhase": "build",
-          "total_file_count": 38,
+          "total_file_count": 40,
           "skipped_file_count": 0
         },
         "ManagedReferenceDocumentProcessor": {
           "can_incremental": false,
           "incrementalPhase": "build",
-          "total_file_count": 369,
+          "total_file_count": 368,
           "skipped_file_count": 0
         },
         "TocDocumentProcessor": {

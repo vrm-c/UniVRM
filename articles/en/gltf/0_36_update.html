@@ -5,9 +5,9 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>1. Get GltfData </title>
+    <title>v0.36 </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="1. Get GltfData ">
+    <meta name="title" content="v0.36 ">
     <meta name="generator" content="docfx 2.58.2.0">
     
     <link rel="shortcut icon" href="../../../favicon.ico">
@@ -67,65 +67,25 @@
         <div class="article row grid-right">
           <div class="col-md-10">
             <article class="content wrap" id="_content" data-uid="">
+<h1 id="v036">v0.36</h1>
 
+<h2 id="changed-storage-position-of-texture-name">Changed Storage Position of Texture Name</h2>
+<p>Conforming to the GLTF specification.</p>
+<pre><code class="lang-json">json.images[i].extra.name
+</code></pre>
+<p>After the change</p>
+<pre><code class="lang-json">json.images[i].name
+</code></pre>
+<h2 id="changed-storage-position-blendshape-name">Changed Storage Position BlendShape Name</h2>
+<p>Conforming to the GLTF specification.</p>
 <ul>
-<li><code>Version 0.82.0</code>: Please use  <code>0.82.1</code> or later</li>
-<li><code>Version 0.82.1~</code></li>
+<li><code>extras</code> is not allowed in target</li>
+<li><a href="https://github.com/KhronosGroup/glTF/issues/1036#issuecomment-314078356">https://github.com/KhronosGroup/glTF/issues/1036#issuecomment-314078356</a></li>
 </ul>
-<p>Material replacement for URP when Import is implemented .</p>
-<p>Below step is needed.</p>
-<ol>
-<li>Parse VRM, and Get <code>GltfData</code>.</li>
-<li>Get <code>VRMData</code> from <code>GltfData</code>.</li>
-<li>Load a <code>RuntimeGltfInstance</code> from <code>VRMData</code>.</li>
-<li>Use the <code>RuntimeGltfInstance</code></li>
-</ol>
-<p>See <code>Assets\VRM\Samples\SimpleViewer\ViewerUI.cs</code></p>
-<h1 id="1-get-gltfdata">1. Get <code>GltfData</code></h1>
-<pre><code class="lang-cs">GltfData Load(string path)
-{
-    return new GlbFileParser(path).Parse();
-}
+<pre><code class="lang-json">json.meshes[i].primitives[j].targets[k].extra.name
 </code></pre>
-<p>See <a href="../gltf/0_82_glb_import.html">GLB import</a>.</p>
-<h1 id="2-get-vrmdata">2. Get <code>VRMData</code></h1>
-<pre><code class="lang-cs">VRMData vrm = new VRMData(data);
-</code></pre>
-<h1 id="3-load">3. Load</h1>
-<pre><code class="lang-cs">async RuntimeGltfInstance Load(VRMData vrm)
-{
-    // Dispose VRMImporterContext, after load
-    using(var loader = new VRMImporterContext(vrm))
-    {
-        var instance = await loader.LoadAsync();
-        return instance;
-    }
-}
-</code></pre>
-<h2 id="set-materialgenerator-argument-for-urpexperimental">Set <code>materialGenerator</code> argument for URP(Experimental)</h2>
-<p>Set <code>materialGenerator</code> Argument, material generation is could customized.
-If omitted, default <code>materialGenerator</code> for <code>built-in</code> pipeline is used.</p>
-<pre><code class="lang-cs">async RuntimeGltfInstance Load(VRMData vrm)
-{
-    var materialGenerator = new VRMUrpMaterialDescriptorGenerator(vrm.VrmExtension);
-    using(var loader = new VRM.VRMImporterContext(vrm, materialGenerator: materialGenerator))
-    {
-        var instance = await loader.LoadAsync();
-        return instance;
-    }
-}
-</code></pre>
-<ul>
-<li><code>MToonShader for URP</code> has not been implemented yet, fallback to <code>UniUnlit</code>.</li>
-</ul>
-<h1 id="4-instance">4. Instance</h1>
-<pre><code class="lang-cs">// Setup for SkinnedMeshRenderer
-instance.EnableUpdateWhenOffscreen();
-// Show meshes when ready(invisible by default)
-instance.ShowMeshes();
-</code></pre>
-<p>When destroy, related assets(meshes, materials and textures etc...) is destroyed.</p>
-<pre><code class="lang-cs">GameObject.Destroy(instance);
+<p>After the change</p>
+<pre><code class="lang-json">json.meshes[i].primitives[j].extras.targetNames[k]
 </code></pre>
 </article>
           </div>
@@ -135,7 +95,7 @@ instance.ShowMeshes();
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/vrm-c/UniVRM/blob/master/docfx/articles/en/vrm0/0_82_runtime_import.md/#L1" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/vrm-c/UniVRM/blob/master/docfx/articles/en/gltf/0_36_update.md/#L1" class="contribution-link">Improve this Doc</a>
                   </li>
                 </ul>
               </div>

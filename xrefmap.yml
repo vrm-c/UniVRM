@@ -7,38 +7,6 @@ references:
   commentId: N:UniGLTF
   fullName: UniGLTF
   nameWithType: UniGLTF
-- uid: UniGLTF.AmbiguousGltfFileParser
-  name: AmbiguousGltfFileParser
-  href: api/UniGLTF.AmbiguousGltfFileParser.html
-  commentId: T:UniGLTF.AmbiguousGltfFileParser
-  fullName: UniGLTF.AmbiguousGltfFileParser
-  nameWithType: AmbiguousGltfFileParser
-- uid: UniGLTF.AmbiguousGltfFileParser.#ctor(System.String)
-  name: AmbiguousGltfFileParser(String)
-  href: api/UniGLTF.AmbiguousGltfFileParser.html#UniGLTF_AmbiguousGltfFileParser__ctor_System_String_
-  commentId: M:UniGLTF.AmbiguousGltfFileParser.#ctor(System.String)
-  fullName: UniGLTF.AmbiguousGltfFileParser.AmbiguousGltfFileParser(System.String)
-  nameWithType: AmbiguousGltfFileParser.AmbiguousGltfFileParser(String)
-- uid: UniGLTF.AmbiguousGltfFileParser.#ctor*
-  name: AmbiguousGltfFileParser
-  href: api/UniGLTF.AmbiguousGltfFileParser.html#UniGLTF_AmbiguousGltfFileParser__ctor_
-  commentId: Overload:UniGLTF.AmbiguousGltfFileParser.#ctor
-  isSpec: "True"
-  fullName: UniGLTF.AmbiguousGltfFileParser.AmbiguousGltfFileParser
-  nameWithType: AmbiguousGltfFileParser.AmbiguousGltfFileParser
-- uid: UniGLTF.AmbiguousGltfFileParser.Parse
-  name: Parse()
-  href: api/UniGLTF.AmbiguousGltfFileParser.html#UniGLTF_AmbiguousGltfFileParser_Parse
-  commentId: M:UniGLTF.AmbiguousGltfFileParser.Parse
-  fullName: UniGLTF.AmbiguousGltfFileParser.Parse()
-  nameWithType: AmbiguousGltfFileParser.Parse()
-- uid: UniGLTF.AmbiguousGltfFileParser.Parse*
-  name: Parse
-  href: api/UniGLTF.AmbiguousGltfFileParser.html#UniGLTF_AmbiguousGltfFileParser_Parse_
-  commentId: Overload:UniGLTF.AmbiguousGltfFileParser.Parse
-  isSpec: "True"
-  fullName: UniGLTF.AmbiguousGltfFileParser.Parse
-  nameWithType: AmbiguousGltfFileParser.Parse
 - uid: UniGLTF.AnimationExporter
   name: AnimationExporter
   href: api/UniGLTF.AnimationExporter.html

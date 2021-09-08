@@ -5,9 +5,9 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>&#128679;Runtime &#12525;&#12540;&#12489; </title>
+    <title>RuntimeLoad </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="&#128679;Runtime &#12525;&#12540;&#12489; ">
+    <meta name="title" content="RuntimeLoad ">
     <meta name="generator" content="docfx 2.58.2.0">
     
     <link rel="shortcut icon" href="../../../favicon.ico">
@@ -67,16 +67,47 @@
         <div class="article row grid-right">
           <div class="col-md-10">
             <article class="content wrap" id="_content" data-uid="">
+<h1 id="runtimeload">RuntimeLoad</h1>
 
+<p><code>VRM-1.0</code> can load <code>VRM-0.x</code>.
+In that case, incompatible migrated meta properties are not allowed.
+Therefore, we provide an API that allows you to access the original meta before migration.</p>
+<p>See <code>Assets\VRM10\Samples\VRM10Viewer\VRM10ViewerUI.cs</code>.</p>
+<pre><code class="lang-cs">async Task&lt;RuntimeGltfInstance&gt; LoadAsync(string path)
+{
+    GltfData data = new GltfZipOrGlbFileParser(path).Parse();
 
-<p>VRM-1.0 を使うアプリケーションは、 <code>VRM-0.x</code> の資産もロードしたいはずです。</p>
-<p><code>VRM-1.0</code> と <code>VRM-0.X</code> の meta の非互換に <a href="https://github.com/vrm-c/vrm-specification/issues/181">Metaの自動的なマイグレーションは禁止する方針</a> となりました。</p>
-<h2 id="vrm-0x-を-vrm-10-コンポーネントに対してロードする">VRM-0.X を VRM-1.0 コンポーネントに対してロードする</h2>
-<p><code>UniVRM-1.0</code> では、
-<code>VRM-0.X</code> のライセンスを保持したまま、<code>VRM-1.0</code> のコンポーネントにロードする機能を提供します(予定)。</p>
-<p>アプリケーションは、この方法でロードしたモデルは、<code>VRM-0.X</code> ライセンスとして扱ってください。</p>
-<h2 id="runtimeload-例">RuntimeLoad 例</h2>
-<p><code>vrm-0.x</code> と <code>vrm-1.0</code> 両方をロードしてライセンスを取得する例。</p>
+    // The doMigrate argument allows you to load that older version of the vrm.
+    if (Vrm10Data.TryParseOrMigrate(data, doMigrate: true, out Vrm10Data vrm))
+    {
+        // vrm
+        using (var loader = new Vrm10Importer(vrm, 
+        materialGenerator: GetVrmMaterialDescriptorGenerator(m_useUrpMaterial.isOn)))
+        {
+            // It has been migrated, but it is the same thumbnail
+            var thumbnail  = await loader.LoadVrmThumbnailAsync();
+
+            if (vrm.OldMeta != null)
+            {
+                // migrated from vrm-0.x. use OldMeta
+                UpdateMeta(vrm.OldMeta, thumbnail);
+            }
+            else
+            {
+                // load vrm-1.0. use newMeta
+                UpdateMeta(vrm.VrmExtension.Meta, thumbnail);
+            }
+
+            // load model
+            RuntimeGltfInstance instance = await loader.LoadAsync();
+            return instance;
+        }
+    }
+    else{
+        throw new Exception(&quot;not vrm&quot;);
+    }
+}
+</code></pre>
 </article>
           </div>
           
