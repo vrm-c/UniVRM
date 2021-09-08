@@ -306,6 +306,24 @@ namespace UniVRM10
             return clip;
         }
 
+        public async Task<Texture2D> LoadVrmThumbnailAsync(IAwaitCaller awaitCaller = null)
+        {
+            if (awaitCaller == null)
+            {
+                awaitCaller = new TaskCaller();
+            }
+
+            if (Vrm10TextureDescriptorGenerator.TryGetMetaThumbnailTextureImportParam(Data, m_vrm.VrmExtension, out (SubAssetKey, VRMShaders.TextureDescriptor Param) kv))
+            {
+                var texture = await TextureFactory.GetTextureAsync(kv.Param, awaitCaller);
+                return texture as Texture2D;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         async Task<VRM10Object> LoadVrmAsync(IAwaitCaller awaitCaller, UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrmExtension)
         {
             if (m_externalMap.TryGetValue(VRM10Object.SubAssetKey, out UnityEngine.Object obj) && obj is VRM10Object vrm)
@@ -347,13 +365,11 @@ namespace UniVRM10
                 {
                     meta.Authors.AddRange(src.Authors);
                 }
-                if (Vrm10TextureDescriptorGenerator.TryGetMetaThumbnailTextureImportParam(Data, vrmExtension, out (SubAssetKey, VRMShaders.TextureDescriptor Param) kv))
+
+                var tex2D = await LoadVrmThumbnailAsync(awaitCaller);
+                if (tex2D != null)
                 {
-                    var texture = await TextureFactory.GetTextureAsync(kv.Param, awaitCaller);
-                    if (texture is Texture2D tex2D)
-                    {
-                        meta.Thumbnail = tex2D;
-                    }
+                    meta.Thumbnail = tex2D;
                 }
             }
 

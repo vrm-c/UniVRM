@@ -439,11 +439,7 @@ namespace UniVRM10.VRM10Viewer
                 using (var loader = new Vrm10Importer(vrm, materialGenerator: GetVrmMaterialDescriptorGenerator(m_useUrpMaterial.isOn)))
                 {
                     // migrate しても thumbnail は同じ
-                    Texture2D thumbnail = null;
-                    if (Vrm10TextureDescriptorGenerator.TryGetMetaThumbnailTextureImportParam(data, vrm.VrmExtension, out (SubAssetKey, VRMShaders.TextureDescriptor Param) kv))
-                    {
-                        thumbnail = await loader.TextureFactory.GetTextureAsync(kv.Param, new TaskCaller()) as Texture2D;
-                    }
+                    var thumbnail  = await loader.LoadVrmThumbnailAsync();
 
                     if (vrm.OldMeta != null)
                     {
