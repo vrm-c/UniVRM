@@ -58,14 +58,8 @@ See `SimpleViewer` sample.
 ```cs
 GltfData Load(string path)
 {
-    var ext = Path.GetExtension(path).ToLower();
-    switch(ext)
-    {
-        case ".glb": return new GlbFileParser(path).Parse();
-        case ".gltf": return new GltfFileWithResourceFilesParser(path).Parse();
-        case ".zip": return new ZipArchivedGltfFileParser(path).Parse();
-        default: throw new Exception($"unknown: {ext}");
-    }
+    // Detect type by file extension automatically
+    return new AutoGltfFileParser(path).Parse();
 }
 ```
 
