@@ -7,9 +7,21 @@
 サンプルの `Assets\VRM10\Samples\VRM10Viewer\VRM10ViewerUI.cs` も参照してください。
 
 ```cs
+static IMaterialDescriptorGenerator GetVrmMaterialDescriptorGenerator(bool useUrp)
+{
+    if (useUrp)
+    {
+        return new Vrm10UrpMaterialDescriptorGenerator();
+    }
+    else
+    {
+        return new Vrm10MaterialDescriptorGenerator();
+    }
+}
+
 async Task<RuntimeGltfInstance> LoadAsync(string path)
 {
-    GltfData data = new GltfZipOrGlbFileParser(path).Parse();
+    GltfData data = new AutoGltfFileParser(path).Parse();
 
     // doMigrate: true で旧バージョンの vrm をロードできます。
     if (Vrm10Data.TryParseOrMigrate(data, doMigrate: true, out Vrm10Data vrm))
@@ -21,10 +33,10 @@ async Task<RuntimeGltfInstance> LoadAsync(string path)
             // migrate しても thumbnail は同じ
             var thumbnail  = await loader.LoadVrmThumbnailAsync();
 
-            if (vrm.OldMeta != null)
+            if (vrm.OriginalMetaBeforeMigration != null)
             {
-                // migrated from vrm-0.x. use OldMeta
-                UpdateMeta(vrm.OldMeta, thumbnail);
+                // migrated from vrm-0.x. use OriginalMetaBeforeMigration
+                UpdateMeta(vrm.OriginalMetaBeforeMigration, thumbnail);
             }
             else
             {
