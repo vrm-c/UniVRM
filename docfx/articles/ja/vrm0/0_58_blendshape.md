@@ -11,6 +11,8 @@ tags: ["api"]
 ## 環境
 UniVRM v0.58.0
 
+[BlendShapeKeyのインタフェースを厳格化、整理](https://github.com/vrm-c/UniVRM/wiki/ReleaseNote-v0.56.0%28ja%29#blendshapekey%E3%81%AE%E3%82%A4%E3%83%B3%E3%82%BF%E3%83%95%E3%82%A7%E3%83%BC%E3%82%B9%E3%82%92%E5%8E%B3%E6%A0%BC%E5%8C%96%E6%95%B4%E7%90%86)
+
 ## 使用するメソッド
 
 * [推奨] `SetValues`
