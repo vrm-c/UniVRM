@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
-
+using VRMShaders;
 
 namespace UniGLTF.MeshUtility
 {
@@ -35,6 +36,13 @@ namespace UniGLTF.MeshUtility
             }
         }
 
+        /// <summary>
+        /// skip triangles that has weight for exclude, return valid triangle count
+        /// </summary>
+        /// <param name="triangles"></param>
+        /// <param name="bws"></param>
+        /// <param name="exclude"></param>
+        /// <returns></returns>
         static int ExcludeTriangles(int[] triangles, BoneWeight[] bws, int[] exclude)
         {
             int count = 0;
@@ -116,8 +124,28 @@ namespace UniGLTF.MeshUtility
             return new ExcludeBoneIndex(b0, b1, b2, b3);
         }
 
-        public static Mesh CreateErasedMesh(Mesh src, int[] eraseBoneIndices)
+        /// <summary>
+        /// Erase triangles that has boneWeight for eraseBone
+        /// </summary>
+        /// <param name="indices"></param>
+        /// <param name="boneWeights"></param>
+        /// <param name="eraseBoneIndices"></param>
+        /// <returns></returns>
+        public static int[] GetExcludedIndices(int[] indices, BoneWeight[] boneWeights, int[] eraseBoneIndices)
         {
+            var count = ExcludeTriangles(indices, boneWeights, eraseBoneIndices);
+            var dst = new int[count];
+            Array.Copy(indices, 0, dst, 0, count);
+            return dst;
+        }
+
+        public static async Task<Mesh> CreateErasedMeshAsync(Mesh src, int[] eraseBoneIndices, IAwaitCaller awaitCaller)
+        {
+            if (awaitCaller == null)
+            {
+                awaitCaller = new ImmediateCaller();
+            }
+
             /*
             Debug.LogFormat("{0} exclude: {1}", 
                 src.name,
@@ -140,14 +168,18 @@ namespace UniGLTF.MeshUtility
             mesh.subMeshCount = src.subMeshCount;
             for (int i = 0; i < src.subMeshCount; ++i)
             {
-                var indices = src.GetIndices(i);
-                var count = ExcludeTriangles(indices, mesh.boneWeights, eraseBoneIndices);
-                var dst = new int[count];
-                Array.Copy(indices, 0, dst, 0, count);
+                var dst = await awaitCaller.Run(() => GetExcludedIndices(src.GetIndices(i), mesh.boneWeights, eraseBoneIndices));
                 mesh.SetIndices(dst, MeshTopology.Triangles, i);
             }
 
             return mesh;
+        }
+
+        public static Mesh CreateErasedMesh(Mesh src, int[] eraseBoneIndices)
+        {
+            var task = CreateErasedMeshAsync(src, eraseBoneIndices, new ImmediateCaller());
+            task.Wait();
+            return task.Result;
         }
 
         public static IEnumerable<Transform> Ancestor(this Transform t)
