@@ -60,7 +60,8 @@ namespace UniVRM10
 
         bool m_done;
 
-        async Task<SkinnedMeshRenderer> SetupRendererAsync(GameObject go, Transform FirstPersonBone, RendererFirstPersonFlags x, IAwaitCaller awaitCaller = null)
+        async Task<SkinnedMeshRenderer> SetupRendererAsync(GameObject go, Transform FirstPersonBone, RendererFirstPersonFlags x,
+            (int FirstPersonOnly, int ThirdPersonOnly) layer, IAwaitCaller awaitCaller = null)
         {
             switch (x.FirstPersonFlag)
             {
@@ -72,12 +73,12 @@ namespace UniVRM10
                             if (eraseBones.Any())
                             {
                                 // オリジナルのモデルを３人称用にする                                
-                                smr.gameObject.layer = Vrm10FirstPersonLayerSettings.THIRDPERSON_ONLY_LAYER;
+                                smr.gameObject.layer = layer.ThirdPersonOnly;
 
                                 // 頭を取り除いた複製モデルを作成し、１人称用にする
                                 var headless = await CreateHeadlessMeshAsync(smr, eraseBones, awaitCaller);
                                 headless.enabled = false;
-                                headless.gameObject.layer = Vrm10FirstPersonLayerSettings.FIRSTPERSON_ONLY_LAYER;
+                                headless.gameObject.layer = layer.FirstPersonOnly;
                                 headless.transform.SetParent(smr.transform, false);
                                 return headless;
                             }
@@ -91,7 +92,7 @@ namespace UniVRM10
                             if (mr.transform.Ancestors().Any(y => y == FirstPersonBone))
                             {
                                 // 頭の子孫なので１人称では非表示に
-                                mr.gameObject.layer = Vrm10FirstPersonLayerSettings.THIRDPERSON_ONLY_LAYER;
+                                mr.gameObject.layer = layer.ThirdPersonOnly;
                             }
                             else
                             {
@@ -107,12 +108,12 @@ namespace UniVRM10
 
                 case UniGLTF.Extensions.VRMC_vrm.FirstPersonType.firstPersonOnly:
                     // １人称のカメラでだけ描画されるようにする
-                    x.GetRenderer(go.transform).gameObject.layer = Vrm10FirstPersonLayerSettings.FIRSTPERSON_ONLY_LAYER;
+                    x.GetRenderer(go.transform).gameObject.layer = layer.FirstPersonOnly;
                     break;
 
                 case UniGLTF.Extensions.VRMC_vrm.FirstPersonType.thirdPersonOnly:
                     // ３人称のカメラでだけ描画されるようにする
-                    x.GetRenderer(go.transform).gameObject.layer = Vrm10FirstPersonLayerSettings.THIRDPERSON_ONLY_LAYER;
+                    x.GetRenderer(go.transform).gameObject.layer = layer.ThirdPersonOnly;
                     break;
 
                 case UniGLTF.Extensions.VRMC_vrm.FirstPersonType.both:
@@ -143,7 +144,9 @@ namespace UniVRM10
                 awaitCaller = new ImmediateCaller();
             }
 
-            Vrm10FirstPersonLayerSettings.SetupLayers(firstPersonOnlyLayer, thirdPersonOnlyLayer);
+            var layer = (
+                Vrm10FirstPersonLayerSettings.GetFirstPersonOnlyLayer(firstPersonOnlyLayer),
+                Vrm10FirstPersonLayerSettings.GetThirdPersonOnlyLayer(thirdPersonOnlyLayer));
 
             var created = new List<SkinnedMeshRenderer>();
             if (m_done)
@@ -155,7 +158,7 @@ namespace UniVRM10
             var FirstPersonBone = go.GetComponent<Animator>().GetBoneTransform(HumanBodyBones.Head);
             foreach (var x in Renderers)
             {
-                var renderer = await SetupRendererAsync(go, FirstPersonBone, x, awaitCaller);
+                var renderer = await SetupRendererAsync(go, FirstPersonBone, x, layer, awaitCaller);
                 if (renderer)
                 {
                     created.Add(renderer);
