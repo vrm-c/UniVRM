@@ -29,24 +29,6 @@ namespace UniVRM10
             }
         }
 
-        // If no layer names are set, use the default layer IDs.
-        // Otherwise use the two Unity layers called "VRMFirstPersonOnly" and "VRMThirdPersonOnly".
-        public static bool TriedSetupLayer = false;
-        public static int FIRSTPERSON_ONLY_LAYER = 9;
-        public static int THIRDPERSON_ONLY_LAYER = 10;
-
-        public static void SetupLayers()
-        {
-            if (!TriedSetupLayer)
-            {
-                TriedSetupLayer = true;
-                int layer = LayerMask.NameToLayer("VRMFirstPersonOnly");
-                FIRSTPERSON_ONLY_LAYER = (layer == -1) ? FIRSTPERSON_ONLY_LAYER : layer;
-                layer = LayerMask.NameToLayer("VRMThirdPersonOnly");
-                THIRDPERSON_ONLY_LAYER = (layer == -1) ? THIRDPERSON_ONLY_LAYER : layer;
-            }
-        }
-
         static int[] GetBonesThatHasAncestor(SkinnedMeshRenderer smr, Transform ancestor)
         {
             var eraseBones = smr.bones
@@ -90,12 +72,12 @@ namespace UniVRM10
                             if (eraseBones.Any())
                             {
                                 // オリジナルのモデルを３人称用にする                                
-                                smr.gameObject.layer = THIRDPERSON_ONLY_LAYER;
+                                smr.gameObject.layer = Vrm10FirstPersonLayerSettings.THIRDPERSON_ONLY_LAYER;
 
                                 // 頭を取り除いた複製モデルを作成し、１人称用にする
                                 var headless = await CreateHeadlessMeshAsync(smr, eraseBones, awaitCaller);
                                 headless.enabled = false;
-                                headless.gameObject.layer = FIRSTPERSON_ONLY_LAYER;
+                                headless.gameObject.layer = Vrm10FirstPersonLayerSettings.FIRSTPERSON_ONLY_LAYER;
                                 headless.transform.SetParent(smr.transform, false);
                                 return headless;
                             }
@@ -109,7 +91,7 @@ namespace UniVRM10
                             if (mr.transform.Ancestors().Any(y => y == FirstPersonBone))
                             {
                                 // 頭の子孫なので１人称では非表示に
-                                mr.gameObject.layer = THIRDPERSON_ONLY_LAYER;
+                                mr.gameObject.layer = Vrm10FirstPersonLayerSettings.THIRDPERSON_ONLY_LAYER;
                             }
                             else
                             {
@@ -125,12 +107,12 @@ namespace UniVRM10
 
                 case UniGLTF.Extensions.VRMC_vrm.FirstPersonType.firstPersonOnly:
                     // １人称のカメラでだけ描画されるようにする
-                    x.GetRenderer(go.transform).gameObject.layer = FIRSTPERSON_ONLY_LAYER;
+                    x.GetRenderer(go.transform).gameObject.layer = Vrm10FirstPersonLayerSettings.FIRSTPERSON_ONLY_LAYER;
                     break;
 
                 case UniGLTF.Extensions.VRMC_vrm.FirstPersonType.thirdPersonOnly:
                     // ３人称のカメラでだけ描画されるようにする
-                    x.GetRenderer(go.transform).gameObject.layer = THIRDPERSON_ONLY_LAYER;
+                    x.GetRenderer(go.transform).gameObject.layer = Vrm10FirstPersonLayerSettings.THIRDPERSON_ONLY_LAYER;
                     break;
 
                 case UniGLTF.Extensions.VRMC_vrm.FirstPersonType.both:
@@ -150,17 +132,18 @@ namespace UniVRM10
         /// 
         /// </summary>
         /// <param name="go"></param>
-        /// <param name="visible"></param>
+        /// <param name="firstPersonOnlyLayer"></param>
+        /// <param name="thirdPersonOnlyLayer"></param>
         /// <param name="awaitCaller"></param>
         /// <returns></returns>
-        public async Task<List<SkinnedMeshRenderer>> SetupAsync(GameObject go, IAwaitCaller awaitCaller = null)
+        public async Task<List<SkinnedMeshRenderer>> SetupAsync(GameObject go, int? firstPersonOnlyLayer = default, int? thirdPersonOnlyLayer = default, IAwaitCaller awaitCaller = default)
         {
             if (awaitCaller == null)
             {
                 awaitCaller = new ImmediateCaller();
             }
 
-            SetupLayers();
+            Vrm10FirstPersonLayerSettings.SetupLayers(firstPersonOnlyLayer, thirdPersonOnlyLayer);
 
             var created = new List<SkinnedMeshRenderer>();
             if (m_done)
