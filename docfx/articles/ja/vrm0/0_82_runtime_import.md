@@ -71,5 +71,8 @@ instance.ShowMeshes();
 
 使用後に以下のように破棄してください。関連する Asset(Texture, Material, Meshなど)も破棄されます。
 ```cs
-GameObject.Destroy(instance);
+// GameObject.Destroy(instance);
+
+// RuntimeGltfInstance ではなくて、その GameObject を Destroy します。
+GameObject.Destroy(instance.gameObject);
 ```

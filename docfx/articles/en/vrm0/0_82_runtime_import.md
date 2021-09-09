@@ -75,5 +75,8 @@ instance.ShowMeshes();
 When destroy, related assets(meshes, materials and textures etc...) is destroyed.
 
 ```cs
-GameObject.Destroy(instance);
+// GameObject.Destroy(instance);
+
+// Destroy GameObject not RuntimeGltfInstance
+GameObject.Destroy(instance.gameObject);
 ```
