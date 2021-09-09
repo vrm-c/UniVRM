@@ -29,6 +29,9 @@ namespace UniVRM10
             }
         }
 
+        List<SkinnedMeshRenderer> _created = new List<SkinnedMeshRenderer>();
+        public IReadOnlyList<SkinnedMeshRenderer> Created => _created;
+
         // If no layer names are set, use the default layer IDs.
         // Otherwise use the two Unity layers called "VRMFirstPersonOnly" and "VRMThirdPersonOnly".
         public static bool TriedSetupLayer = false;
@@ -90,7 +93,7 @@ namespace UniVRM10
         /// <param name="visible"></param>
         /// <param name="awaitCaller"></param>
         /// <returns></returns>
-        public async Task SetupAsync(GameObject go, bool visible, IAwaitCaller awaitCaller = null)
+        public async Task<IReadOnlyList<SkinnedMeshRenderer>> SetupAsync(GameObject go, IAwaitCaller awaitCaller = null)
         {
             if (awaitCaller == null)
             {
@@ -100,7 +103,7 @@ namespace UniVRM10
             SetupLayers();
             if (m_done)
             {
-                return;
+                return Created;
             }
             m_done = true;
 
@@ -121,9 +124,10 @@ namespace UniVRM10
 
                                     // 頭を取り除いた複製モデルを作成し、１人称用にする
                                     var headless = await CreateHeadlessMeshAsync(smr, eraseBones, awaitCaller);
-                                    headless.enabled = visible;
+                                    headless.enabled = false;
                                     headless.gameObject.layer = FIRSTPERSON_ONLY_LAYER;
                                     headless.transform.SetParent(smr.transform, false);
+                                    _created.Add(headless);
                                 }
                                 else
                                 {
@@ -164,6 +168,8 @@ namespace UniVRM10
                         break;
                 }
             }
+
+            return Created;
         }
     }
 }

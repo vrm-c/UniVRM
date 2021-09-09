@@ -1,4 +1,5 @@
 ﻿#pragma warning disable 0414
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using UniGLTF;
@@ -21,27 +22,23 @@ namespace UniVRM10.FirstPersonSample
         [SerializeField]
         UniHumanoid.HumanPoseTransfer m_target;
 
-        [SerializeField, Header("runtime")]
-        VRM10Controller m_firstPerson;
 
-        async Task SetupTargetAsync(UniHumanoid.HumanPoseTransfer m_target, bool visible)
+        void SetupTarget(UniHumanoid.HumanPoseTransfer m_target)
         {
-            if (m_target != null)
+            if (m_target == null)
             {
-                m_target.Source = m_source;
-                m_target.SourceType = UniHumanoid.HumanPoseTransfer.HumanPoseTransferSourceType.HumanPoseTransfer;
+                return;
+            }
 
-                m_firstPerson = m_target.GetComponent<VRM10Controller>();
+            m_target.Source = m_source;
+            m_target.SourceType = UniHumanoid.HumanPoseTransfer.HumanPoseTransferSourceType.HumanPoseTransfer;
 
-                var animator = m_target.GetComponent<Animator>();
-                if (animator != null)
+            var animator = m_target.GetComponent<Animator>();
+            if (animator != null)
+            {
+                if (m_faceCamera != null)
                 {
-                    await m_firstPerson.Vrm.FirstPerson.SetupAsync(m_firstPerson.gameObject, visible);
-
-                    if (m_faceCamera != null)
-                    {
-                        m_faceCamera.Target = animator.GetBoneTransform(HumanBodyBones.Head);
-                    }
+                    m_faceCamera.Target = animator.GetBoneTransform(HumanBodyBones.Head);
                 }
             }
         }
@@ -72,34 +69,45 @@ namespace UniVRM10.FirstPersonSample
                 return;
             }
 
-            // GLB形式でJSONを取得しParseします
-            // VRM extension を parse します
-            var data = new GlbFileParser(path).Parse();
-            Vrm10Data.TryParseOrMigrate(data, true, out Vrm10Data vrm);
-            using (var context = new Vrm10Importer(vrm))
+            var instance = await LoadAsync(path);
+
+            var root = instance.gameObject;
+            root.transform.SetParent(transform, false);
+
+            // add motion
+            var humanPoseTransfer = root.AddComponent<UniHumanoid.HumanPoseTransfer>();
+            if (m_target != null)
             {
-                // metaを取得(todo: thumbnailテクスチャのロード)
-                var meta = vrm.VrmExtension.Meta;
-                Debug.LogFormat("meta: title:{0}", meta.Name);
+                GameObject.Destroy(m_target.gameObject);
+            }
+            m_target = humanPoseTransfer;
+            SetupTarget(m_target);
+        }
 
-                // ParseしたJSONをシーンオブジェクトに変換していく
-                var loaded = await context.LoadAsync();
+        async Task<RuntimeGltfInstance> LoadAsync(string path)
+        {
+            var data = new GlbFileParser(path).Parse();
+            if (!Vrm10Data.TryParseOrMigrate(data, true, out Vrm10Data vrm))
+            {
+                throw new System.Exception("vrm parse error !");
+            }
+            using (var loader = new Vrm10Importer(vrm))
+            {
+                var instance = await loader.LoadAsync();
 
-                var root = loaded.gameObject;
-
-                root.transform.SetParent(transform, false);
-
-                // add motion
-                var humanPoseTransfer = root.AddComponent<UniHumanoid.HumanPoseTransfer>();
-                if (m_target != null)
-                {
-                    GameObject.Destroy(m_target.gameObject);
-                }
-                m_target = humanPoseTransfer;
-                await SetupTargetAsync(m_target, visible: false);
+                // VR用 FirstPerson 設定
+                var controller = instance.GetComponent<VRM10Controller>();
+                var created = await controller.Vrm.FirstPerson.SetupAsync(controller.gameObject);
 
                 //メッシュを表示します
-                // loaded.ShowMeshes();
+                foreach (var r in created)
+                {
+                    // FistPerson flag = auto で生成されたモデル
+                    r.enabled = true;
+                }
+                instance.ShowMeshes();
+
+                return instance;
             }
         }
 
@@ -136,7 +144,7 @@ namespace UniVRM10.FirstPersonSample
             }
             m_source = context.Root.GetComponent<UniHumanoid.HumanPoseTransfer>();
 
-            var task = SetupTargetAsync(m_target, true);
+            SetupTarget(m_target);
         }
     }
 }

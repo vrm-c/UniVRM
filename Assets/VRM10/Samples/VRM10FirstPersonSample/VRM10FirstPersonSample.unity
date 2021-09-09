@@ -1049,10 +1049,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1148284494}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 03b059a6d90275246ba8622ac40a63dc, type: 3}
+  m_Script: {fileID: 11500000, guid: bd151410f22d0f6409cf4b17c03a3c6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_loadAsync: 1
   m_canvas: {fileID: 2082684588}
   m_faceCamera: {fileID: 1919635064}
   m_source: {fileID: 0}
@@ -1447,7 +1446,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1919635062}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d1cc319f70f55264eb38d1959c4222c6, type: 3}
+  m_Script: {fileID: 11500000, guid: b74319fb726e30c4ca99bd741af8bd3c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Target: {fileID: 0}
@@ -1754,7 +1753,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2082684583}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1ae08a6ba07c0864c9132bc8a004030d, type: 3}
+  m_Script: {fileID: 11500000, guid: 58bd4ef7b3a863142ae9960c21106ba3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   LoadVRMButton: {fileID: 2036452539}
