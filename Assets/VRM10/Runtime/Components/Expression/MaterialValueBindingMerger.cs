@@ -79,6 +79,7 @@ namespace UniVRM10
                         item = new PreviewMaterialItem(material);
                         m_materialMap.Add(binding.MaterialName, item);
                     }
+                    // color default value
                     var propName = GetProperty(binding.BindType);
                     if (!item.PropMap.ContainsKey(binding.BindType))
                     {
@@ -148,8 +149,6 @@ namespace UniVRM10
         /// </summary>
         Dictionary<string, Vector4> m_materialUVMap = new Dictionary<string, Vector4>();
 
-        static readonly Vector4 DefaultUVScaleOffset = new Vector4(1, 1, 0, 0);
-
         public void AccumulateValue(VRM10Expression clip, float value)
         {
             // material color
@@ -169,14 +168,20 @@ namespace UniVRM10
             // maetrial uv
             foreach (var binding in clip.MaterialUVBindings)
             {
-                Vector4 acc;
-                if (!m_materialUVMap.TryGetValue(binding.MaterialName, out acc))
+                if (m_materialMap.TryGetValue(binding.MaterialName, out PreviewMaterialItem item))
                 {
-                    acc = DefaultUVScaleOffset;
-                }
+                    var delta = binding.ScalingOffset - item.DefaultUVScaleOffset;
 
-                var delta = binding.ScalingOffset - DefaultUVScaleOffset;
-                m_materialUVMap[binding.MaterialName] = acc + delta * value;
+                    Vector4 acc;
+                    if (m_materialUVMap.TryGetValue(binding.MaterialName, out acc))
+                    {
+                        m_materialUVMap[binding.MaterialName] = acc + delta * value;
+                    }
+                    else
+                    {
+                        m_materialUVMap[binding.MaterialName] = item.DefaultUVScaleOffset + delta * value;
+                    }
+                }
             }
         }
 
