@@ -126,6 +126,11 @@ namespace UniGLTF
             return loaded;
         }
 
+        public void AddRenderers(IEnumerable<Renderer> renderers)
+        {
+            _renderers.AddRange(renderers);
+        }
+
         public void ShowMeshes()
         {
             foreach (var r in Renderers)
