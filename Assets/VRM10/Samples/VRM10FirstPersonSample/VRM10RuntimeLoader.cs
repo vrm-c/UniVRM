@@ -1,0 +1,142 @@
+﻿#pragma warning disable 0414
+using System.IO;
+using System.Threading.Tasks;
+using UniGLTF;
+using UnityEngine;
+
+
+namespace UniVRM10.FirstPersonSample
+{
+    public class VRM10RuntimeLoader : MonoBehaviour
+    {
+        [SerializeField, Header("GUI")]
+        VRM10CanvasManager m_canvas = default;
+
+        [SerializeField]
+        VRM10LookTarget m_faceCamera = default;
+
+        [SerializeField, Header("loader")]
+        UniHumanoid.HumanPoseTransfer m_source;
+
+        [SerializeField]
+        UniHumanoid.HumanPoseTransfer m_target;
+
+        [SerializeField, Header("runtime")]
+        VRM10Controller m_firstPerson;
+
+        async Task SetupTargetAsync(UniHumanoid.HumanPoseTransfer m_target, bool visible)
+        {
+            if (m_target != null)
+            {
+                m_target.Source = m_source;
+                m_target.SourceType = UniHumanoid.HumanPoseTransfer.HumanPoseTransferSourceType.HumanPoseTransfer;
+
+                m_firstPerson = m_target.GetComponent<VRM10Controller>();
+
+                var animator = m_target.GetComponent<Animator>();
+                if (animator != null)
+                {
+                    await m_firstPerson.Vrm.FirstPerson.SetupAsync(m_firstPerson.gameObject, visible);
+
+                    if (m_faceCamera != null)
+                    {
+                        m_faceCamera.Target = animator.GetBoneTransform(HumanBodyBones.Head);
+                    }
+                }
+            }
+        }
+
+        private void Start()
+        {
+            if (m_canvas == null)
+            {
+                Debug.LogWarning("no canvas");
+                return;
+            }
+
+            m_canvas.LoadVRMButton.onClick.AddListener(LoadVRMClicked);
+            m_canvas.LoadBVHButton.onClick.AddListener(LoadBVHClicked);
+        }
+
+        async void LoadVRMClicked()
+        {
+#if UNITY_STANDALONE_WIN
+            var path = VRM10FileDialogForWindows.FileDialog("open VRM", ".vrm");
+#elif UNITY_EDITOR
+            var path = UnityEditor.EditorUtility.OpenFilePanel("Open VRM", "", "vrm");
+#else
+            var path = Application.dataPath + "/default.vrm";
+#endif
+            if (string.IsNullOrEmpty(path))
+            {
+                return;
+            }
+
+            // GLB形式でJSONを取得しParseします
+            // VRM extension を parse します
+            var data = new GlbFileParser(path).Parse();
+            Vrm10Data.TryParseOrMigrate(data, true, out Vrm10Data vrm);
+            using (var context = new Vrm10Importer(vrm))
+            {
+                // metaを取得(todo: thumbnailテクスチャのロード)
+                var meta = vrm.VrmExtension.Meta;
+                Debug.LogFormat("meta: title:{0}", meta.Name);
+
+                // ParseしたJSONをシーンオブジェクトに変換していく
+                var loaded = await context.LoadAsync();
+
+                var root = loaded.gameObject;
+
+                root.transform.SetParent(transform, false);
+
+                // add motion
+                var humanPoseTransfer = root.AddComponent<UniHumanoid.HumanPoseTransfer>();
+                if (m_target != null)
+                {
+                    GameObject.Destroy(m_target.gameObject);
+                }
+                m_target = humanPoseTransfer;
+                await SetupTargetAsync(m_target, visible: false);
+
+                //メッシュを表示します
+                // loaded.ShowMeshes();
+            }
+        }
+
+        void LoadBVHClicked()
+        {
+#if UNITY_STANDALONE_WIN
+            var path = VRM10FileDialogForWindows.FileDialog("open BVH", ".bvh");
+            if (!string.IsNullOrEmpty(path))
+            {
+                LoadBvh(path);
+            }
+#elif UNITY_EDITOR
+            var path = UnityEditor.EditorUtility.OpenFilePanel("Open BVH", "", "bvh");
+            if (!string.IsNullOrEmpty(path))
+            {
+                LoadBvh(path);
+            }
+#else
+            LoadBvh(Application.dataPath + "/default.bvh");
+#endif
+        }
+
+        void LoadBvh(string path)
+        {
+            Debug.LogFormat("ImportBvh: {0}", path);
+            var context = new UniHumanoid.BvhImporterContext();
+
+            context.Parse(path);
+            context.Load();
+
+            if (m_source != null)
+            {
+                GameObject.Destroy(m_source.gameObject);
+            }
+            m_source = context.Root.GetComponent<UniHumanoid.HumanPoseTransfer>();
+
+            var task = SetupTargetAsync(m_target, true);
+        }
+    }
+}
