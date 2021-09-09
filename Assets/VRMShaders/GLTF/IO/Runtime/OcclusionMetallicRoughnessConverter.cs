@@ -21,16 +21,16 @@ namespace VRMShaders
     /// </summary>
     public static class OcclusionMetallicRoughnessConverter
     {
-        private static Material exporter;
-        private static Material Exporter
+        private static Material _importer;
+        private static Material Importer
         {
             get
             {
-                if (exporter == null)
+                if (_importer == null)
                 {
-                    exporter = new Material(Shader.Find("Hidden/UniGLTF/StandardMapImporter"));
+                    _importer = new Material(Shader.Find("Hidden/UniGLTF/StandardMapImporter"));
                 }
-                return exporter;
+                return _importer;
             }
         }
 
@@ -50,87 +50,59 @@ namespace VRMShaders
 
             var src = metallicRoughnessTexture != null ? metallicRoughnessTexture : occlusionTexture;
 
-            Exporter.mainTexture = src;
-            Exporter.SetTexture("_GltfMetallicRoughnessTexture", metallicRoughnessTexture);
-            Exporter.SetTexture("_GltfOcclusionTexture", occlusionTexture);
-            Exporter.SetFloat("_GltfMetallicFactor", metallicFactor);
-            Exporter.SetFloat("_GltfRoughnessFactor", roughnessFactor);
-            Exporter.SetFloat("_IsLegacySquaredRoughness", isLegacySquaredRoughness ? 1 : 0);
+            Importer.mainTexture = src;
+            Importer.SetTexture("_GltfMetallicRoughnessTexture", metallicRoughnessTexture);
+            Importer.SetTexture("_GltfOcclusionTexture", occlusionTexture);
+            Importer.SetFloat("_GltfMetallicFactor", metallicFactor);
+            Importer.SetFloat("_GltfRoughnessFactor", roughnessFactor);
+            Importer.SetFloat("_IsLegacySquaredRoughness", isLegacySquaredRoughness ? 1 : 0);
 
-            var dst = TextureConverter.CopyTexture(src, ColorSpace.Linear, true, Exporter);
+            var dst = TextureConverter.CopyTexture(src, ColorSpace.Linear, true, Importer);
 
-            Exporter.mainTexture = null;
-            Exporter.SetTexture("_GltfMetallicRoughnessTexture", null);
-            Exporter.SetTexture("_GltfOcclusionTexture", null);
-            Exporter.SetFloat("_GltfMetallicFactor", 0);
-            Exporter.SetFloat("_GltfRoughnessFactor", 0);
-            Exporter.SetFloat("_IsLegacySquaredRoughness", 0);
+            Importer.mainTexture = null;
+            Importer.SetTexture("_GltfMetallicRoughnessTexture", null);
+            Importer.SetTexture("_GltfOcclusionTexture", null);
+            Importer.SetFloat("_GltfMetallicFactor", 0);
+            Importer.SetFloat("_GltfRoughnessFactor", 0);
+            Importer.SetFloat("_IsLegacySquaredRoughness", 0);
 
             return dst;
         }
 
+        private static Material _exporter;
+        private static Material Exporter
+        {
+            get
+            {
+                if (_exporter == null)
+                {
+                    _exporter = new Material(Shader.Find("Hidden/UniGLTF/StandardMapExporter"));
+                }
+                return _exporter;
+            }
+        }
+
         public static Texture2D Export(Texture metallicSmoothTexture, float smoothness, Texture occlusionTexture)
         {
-            // TODO: Replace with Shader implementation
-            if (metallicSmoothTexture != null && occlusionTexture != null)
+            if (metallicSmoothTexture == null && occlusionTexture == null)
             {
-                if (metallicSmoothTexture == occlusionTexture)
-                {
-                    var dst = TextureConverter.CreateEmptyTextureWithSettings(metallicSmoothTexture, ColorSpace.Linear, false);
-                    var linearTexture = TextureConverter.CopyTexture(metallicSmoothTexture, ColorSpace.Linear, true, null);
-                    dst.SetPixels32(linearTexture.GetPixels32().Select(x => ExportPixel(x, smoothness, x)).ToArray());
-                    dst.Apply();
-                    dst.name = metallicSmoothTexture.name;
-                    DestroyTexture(linearTexture);
-                    return dst;
-                }
-                else
-                {
-                    var dst = TextureConverter.CreateEmptyTextureWithSettings(metallicSmoothTexture, ColorSpace.Linear, false);
-                    var linearMetallicSmooth = TextureConverter.CopyTexture(metallicSmoothTexture, ColorSpace.Linear, true, null);
-                    var metallicSmoothPixels = linearMetallicSmooth.GetPixels32();
-                    var linearOcclusion = TextureConverter.CopyTexture(occlusionTexture, ColorSpace.Linear, false, null);
-                    var occlusionPixels = linearOcclusion.GetPixels32();
-                    if (metallicSmoothPixels.Length != occlusionPixels.Length)
-                    {
-                        throw new NotImplementedException("Resizing not implemented, please ensure Metallic and Occlusion textures are the same size!");
-                    }
-                    for (int i = 0; i < metallicSmoothPixels.Length; ++i)
-                    {
-                        metallicSmoothPixels[i] = ExportPixel(metallicSmoothPixels[i], smoothness, occlusionPixels[i]);
-                    }
-                    dst.SetPixels32(metallicSmoothPixels);
-                    dst.Apply();
-                    dst.name = metallicSmoothTexture.name;
-                    DestroyTexture(linearMetallicSmooth);
-                    DestroyTexture(linearOcclusion);
-                    return dst;
-                }
+                throw new ArgumentNullException("no texture");
             }
-            else if (metallicSmoothTexture)
-            {
-                var dst = TextureConverter.CreateEmptyTextureWithSettings(metallicSmoothTexture, ColorSpace.Linear, false);
-                var linearMetallicSmooth = TextureConverter.CopyTexture(metallicSmoothTexture, ColorSpace.Linear, true, null);
-                dst.SetPixels32(linearMetallicSmooth.GetPixels32().Select(x => ExportPixel(x, smoothness, default)).ToArray());
-                dst.Apply();
-                dst.name = metallicSmoothTexture.name;
-                DestroyTexture(linearMetallicSmooth);
-                return dst;
-            }
-            else if (occlusionTexture)
-            {
-                var dst = TextureConverter.CreateEmptyTextureWithSettings(occlusionTexture, ColorSpace.Linear, false);
-                var linearOcclusion = TextureConverter.CopyTexture(occlusionTexture, ColorSpace.Linear, false, null);
-                dst.SetPixels32(linearOcclusion.GetPixels32().Select(x => ExportPixel(default, smoothness, x)).ToArray());
-                dst.Apply();
-                dst.name = occlusionTexture.name;
-                DestroyTexture(linearOcclusion);
-                return dst;
-            }
-            else
-            {
-                throw new ArgumentNullException();
-            }
+
+            var src = metallicSmoothTexture != null ? metallicSmoothTexture : occlusionTexture;
+            Exporter.mainTexture = src;
+            Exporter.SetTexture("_UnityMetallicSmoothTexture", metallicSmoothTexture);
+            Exporter.SetTexture("_UnityOcclusionTexture", occlusionTexture);
+            Exporter.SetFloat("_UnitySmoothness", smoothness);
+
+            var dst = TextureConverter.CopyTexture(src, ColorSpace.Linear, true, Exporter);
+
+            Exporter.mainTexture = null;
+            Exporter.SetTexture("_UnityMetallicSmoothTexture", null);
+            Exporter.SetTexture("_UnityOcclusionTexture", null);
+            Exporter.SetFloat("_UnitySmoothness", 0);
+
+            return dst;
         }
 
         public static Color32 ExportPixel(Color32 metallicSmooth, float smoothness, Color32 occlusion)
