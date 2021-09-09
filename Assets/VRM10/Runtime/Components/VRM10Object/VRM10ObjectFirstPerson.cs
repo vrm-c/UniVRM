@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using UniGLTF.MeshUtility;
 using UnityEngine;
+using VRMShaders;
 
 namespace UniVRM10
 {
@@ -59,9 +61,9 @@ namespace UniVRM10
         // </summary>
         // <parameter>renderer: 元になるSkinnedMeshRenderer</parameter>
         // <parameter>eraseBones: 削除対象になるボーンのindex</parameter>
-        private static SkinnedMeshRenderer CreateHeadlessMesh(SkinnedMeshRenderer renderer, int[] eraseBones)
+        private async static Task<SkinnedMeshRenderer> CreateHeadlessMeshAsync(SkinnedMeshRenderer renderer, int[] eraseBones, IAwaitCaller awaitCaller)
         {
-            var mesh = BoneMeshEraser.CreateErasedMesh(renderer.sharedMesh, eraseBones);
+            var mesh = await BoneMeshEraser.CreateErasedMeshAsync(renderer.sharedMesh, eraseBones, awaitCaller);
 
             var go = new GameObject("_headless_" + renderer.name);
             var erased = go.AddComponent<SkinnedMeshRenderer>();
@@ -79,8 +81,13 @@ namespace UniVRM10
         /// <summary>
         /// 配下のモデルのレイヤー設定など
         /// </summary>
-        public void Setup(GameObject go)
+        public async Task SetupAsync(GameObject go, IAwaitCaller awaitCaller = null)
         {
+            if (awaitCaller == null)
+            {
+                awaitCaller = new ImmediateCaller();
+            }
+
             SetupLayers();
             if (m_done)
             {
@@ -104,7 +111,7 @@ namespace UniVRM10
                                     smr.gameObject.layer = THIRDPERSON_ONLY_LAYER;
 
                                     // 頭を取り除いた複製モデルを作成し、１人称用にする
-                                    var headless = CreateHeadlessMesh(smr, eraseBones);
+                                    var headless = await CreateHeadlessMeshAsync(smr, eraseBones, awaitCaller);
                                     headless.gameObject.layer = FIRSTPERSON_ONLY_LAYER;
                                     headless.transform.SetParent(smr.transform, false);
                                 }
