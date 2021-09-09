@@ -11619,6 +11619,22 @@ references:
   commentId: T:UniGLTF.RuntimeGltfInstance
   fullName: UniGLTF.RuntimeGltfInstance
   nameWithType: RuntimeGltfInstance
+- uid: UniGLTF.RuntimeGltfInstance.AddRenderers(System.Collections.Generic.IEnumerable{Renderer})
+  name: AddRenderers(IEnumerable<Renderer>)
+  href: api/UniGLTF.RuntimeGltfInstance.html#UniGLTF_RuntimeGltfInstance_AddRenderers_System_Collections_Generic_IEnumerable_Renderer__
+  commentId: M:UniGLTF.RuntimeGltfInstance.AddRenderers(System.Collections.Generic.IEnumerable{Renderer})
+  name.vb: AddRenderers(IEnumerable(Of Renderer))
+  fullName: UniGLTF.RuntimeGltfInstance.AddRenderers(System.Collections.Generic.IEnumerable<Renderer>)
+  fullName.vb: UniGLTF.RuntimeGltfInstance.AddRenderers(System.Collections.Generic.IEnumerable(Of Renderer))
+  nameWithType: RuntimeGltfInstance.AddRenderers(IEnumerable<Renderer>)
+  nameWithType.vb: RuntimeGltfInstance.AddRenderers(IEnumerable(Of Renderer))
+- uid: UniGLTF.RuntimeGltfInstance.AddRenderers*
+  name: AddRenderers
+  href: api/UniGLTF.RuntimeGltfInstance.html#UniGLTF_RuntimeGltfInstance_AddRenderers_
+  commentId: Overload:UniGLTF.RuntimeGltfInstance.AddRenderers
+  isSpec: "True"
+  fullName: UniGLTF.RuntimeGltfInstance.AddRenderers
+  nameWithType: RuntimeGltfInstance.AddRenderers
 - uid: UniGLTF.RuntimeGltfInstance.AnimationClips
   name: AnimationClips
   href: api/UniGLTF.RuntimeGltfInstance.html#UniGLTF_RuntimeGltfInstance_AnimationClips

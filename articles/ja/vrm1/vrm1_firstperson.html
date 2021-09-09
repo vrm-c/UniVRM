@@ -5,9 +5,9 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>&#128679;FirstPerson </title>
+    <title>Runtime &#12395; FirstPerson &#27231;&#33021;&#12434;&#26377;&#21177;&#12395;&#12377;&#12427; </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="&#128679;FirstPerson ">
+    <meta name="title" content="Runtime &#12395; FirstPerson &#27231;&#33021;&#12434;&#26377;&#21177;&#12395;&#12377;&#12427; ">
     <meta name="generator" content="docfx 2.58.2.0">
     
     <link rel="shortcut icon" href="../../../favicon.ico">
@@ -67,7 +67,62 @@
         <div class="article row grid-right">
           <div class="col-md-10">
             <article class="content wrap" id="_content" data-uid="">
+<h1 id="runtime-に-firstperson-機能を有効にする">Runtime に FirstPerson 機能を有効にする</h1>
 
+<p>VR向け FirstPerson 設定の初期化手順です。</p>
+<ol>
+<li>Load する</li>
+<li>VRM10Controller を取得する</li>
+<li><code>controller.Vrm.FirstPerson.SetupAsync</code> を呼び出す</li>
+<li><code>controller.Vrm.FirstPerson.SetupAsync</code> した結果新規に作成されたモデルを <code>RuntimeGltfInstance</code> に渡す</li>
+<li>ShowMeshes</li>
+</ol>
+<pre><code class="lang-cs">async Task&lt;RuntimeGltfInstance&gt; LoadAsync(string path)
+{
+    var data = new GlbFileParser(path).Parse();
+    if (!Vrm10Data.TryParseOrMigrate(data, true, out Vrm10Data vrm))
+    {
+        throw new System.Exception(&quot;vrm parse error !&quot;);
+    }
+    using (var loader = new Vrm10Importer(vrm))
+    {
+        // 1.
+        var instance = await loader.LoadAsync();
+
+        // 2.
+        var controller = instance.GetComponent&lt;VRM10Controller&gt;();
+
+        // 3.
+        var created = await controller.Vrm.FirstPerson.SetupAsync(controller.gameObject);
+
+        // 4.
+        instance.AddRenderers(created);
+
+        // 5.
+        instance.ShowMeshes();
+
+        return instance;
+    }
+}
+</code></pre>
+<h1 id="vrmの推奨する-vr-向けのカメラ構成">VRMの推奨する VR 向けのカメラ構成</h1>
+<p>ヘッドマウントディスプレイを表すカメラ と その他のカメラという２種類のカメラを想定ます。
+それぞれに対して、</p>
+<ul>
+<li>FIRSTPERSON_ONLY_LAYER(このレイヤーを指定した gameObject はその他のカメラから消えます)</li>
+<li>THIRDPERSON_ONLY_LAYER(このレイヤーを指定した gameObject はヘッドマウントディスプレイから消えます)</li>
+</ul>
+<p>を定義します。
+これにより、ヘッドマウント視点のアバターの描画を抑止しつつ、他者からは見えるようにします。</p>
+<p>例: アバターの頭の描画を抑止して前が見えるようにする</p>
+<p>VRMは、<code>VRMFirstPersonOnly</code> と <code>VRMThirdPersonOnly</code> という名前のレイヤーを予約しています。</p>
+<p><code>Project Settings</code> - <code>Tags and Layers</code> に <code>VRMFirstPersonOnly</code> と <code>VRMThirdPersonOnly</code> を
+設定してください。
+サンプルでは、それぞれに <code>9</code> と <code>10</code> を割り当ています。</p>
+<h1 id="初期化時に-layer-を明示する">初期化時に layer を明示する</h1>
+<p>追加の引数で指定できます。</p>
+<pre><code class="lang-cs">var created = await controller.Vrm.FirstPerson.SetupAsync(controller.gameObject, firstPersonOnlyLayer: 9, thirdPersonOnlyLayer: 10);
+</code></pre>
 </article>
           </div>
           

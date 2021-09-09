@@ -5,9 +5,9 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>&#128679;FirstPerson </title>
+    <title>Recommended camera layer settings </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="&#128679;FirstPerson ">
+    <meta name="title" content="Recommended camera layer settings ">
     <meta name="generator" content="docfx 2.58.2.0">
     
     <link rel="shortcut icon" href="../../../favicon.ico">
@@ -68,6 +68,57 @@
           <div class="col-md-10">
             <article class="content wrap" id="_content" data-uid="">
 
+<p>The VR First Person settings.</p>
+<ol>
+<li>Load</li>
+<li>Get VRM10Controller</li>
+<li>Call <code>controller.Vrm.FirstPerson.SetupAsync</code></li>
+<li>Add the result of <code>controller.Vrm.FirstPerson.SetupAsync</code> to <code>RuntimeGltfInstance</code></li>
+<li>ShowMeshes</li>
+</ol>
+<pre><code class="lang-cs">async Task&lt;RuntimeGltfInstance&gt; LoadAsync(string path)
+{
+    var data = new GlbFileParser(path).Parse();
+    if (!Vrm10Data.TryParseOrMigrate(data, true, out Vrm10Data vrm))
+    {
+        throw new System.Exception(&quot;vrm parse error !&quot;);
+    }
+    using (var loader = new Vrm10Importer(vrm))
+    {
+        // 1.
+        var instance = await loader.LoadAsync();
+
+        // 2.
+        var controller = instance.GetComponent&lt;VRM10Controller&gt;();
+
+        // 3.
+        var created = await controller.Vrm.FirstPerson.SetupAsync(controller.gameObject);
+
+        // 4.
+        instance.AddRenderers(created);
+
+        // 5.
+        instance.ShowMeshes();
+
+        return instance;
+    }
+}
+</code></pre>
+<h1 id="recommended-camera-layer-settings">Recommended camera layer settings</h1>
+<p>Suppose your scene has a camera that represents a head-mounted display and other cameras.</p>
+<ul>
+<li>FIRSTPERSON_ONLY_LAYER(The gameObject that specifies this layer disappears from other cameras)</li>
+<li>THIRDPERSON_ONLY_LAYER(The gameObject that specifies this layer disappears from the head-mounted display)</li>
+</ul>
+<p>Stops drawing the avatar from the head-mounted display perspective and makes it visible to other cameras.</p>
+<p>Example: Stop drawing the avatar's head so you can see the front</p>
+<p>VRM reserves layers named <code>VRMFirstPersonOnly</code> and<code> VRMThirdPersonOnly</code>.</p>
+<p>Please set <code>VRMFirstPersonOnly</code> and<code> VRMThirdPersonOnly</code> to <code>Project Settings</code>-<code>Tags and Layers</code>.</p>
+<p>In the sample, we assign <code>9</code> and<code> 10</code> to each.</p>
+<h1 id="specify-layer-at-initialization">Specify layer at initialization</h1>
+<p>It can be specified with an additional argument.</p>
+<pre><code class="lang-cs">var created = await controller.Vrm.FirstPerson.SetupAsync(controller.gameObject, firstPersonOnlyLayer: 9, thirdPersonOnlyLayer: 10);
+</code></pre>
 </article>
           </div>
           
