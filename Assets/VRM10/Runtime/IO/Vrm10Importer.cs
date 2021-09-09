@@ -675,6 +675,9 @@ namespace UniVRM10
                 meshFilter.sharedMesh = map.Meshes[node.MeshGroup];
             }
 
+            // hide by default
+            renderer.enabled = false;
+
             if (node.MeshGroup.Meshes.Count == 0)
             {
                 throw new NotImplementedException();
