@@ -82,6 +82,8 @@ namespace UniVRM10.FirstPersonSample
             }
             m_target = humanPoseTransfer;
             SetupTarget(m_target);
+
+            instance.ShowMeshes();
         }
 
         async Task<RuntimeGltfInstance> LoadAsync(string path)
@@ -98,14 +100,7 @@ namespace UniVRM10.FirstPersonSample
                 // VR用 FirstPerson 設定
                 var controller = instance.GetComponent<VRM10Controller>();
                 var created = await controller.Vrm.FirstPerson.SetupAsync(controller.gameObject);
-
-                //メッシュを表示します
-                foreach (var r in created)
-                {
-                    // FistPerson flag = auto で生成されたモデル
-                    r.enabled = true;
-                }
-                instance.ShowMeshes();
+                instance.AddRenderers(created);
 
                 return instance;
             }

@@ -29,9 +29,6 @@ namespace UniVRM10
             }
         }
 
-        List<SkinnedMeshRenderer> _created = new List<SkinnedMeshRenderer>();
-        public IReadOnlyList<SkinnedMeshRenderer> Created => _created;
-
         // If no layer names are set, use the default layer IDs.
         // Otherwise use the two Unity layers called "VRMFirstPersonOnly" and "VRMThirdPersonOnly".
         public static bool TriedSetupLayer = false;
@@ -81,6 +78,69 @@ namespace UniVRM10
 
         bool m_done;
 
+        async Task<SkinnedMeshRenderer> SetupRendererAsync(GameObject go, Transform FirstPersonBone, RendererFirstPersonFlags x, IAwaitCaller awaitCaller = null)
+        {
+            switch (x.FirstPersonFlag)
+            {
+                case UniGLTF.Extensions.VRMC_vrm.FirstPersonType.auto:
+                    {
+                        if (x.GetRenderer(go.transform) is SkinnedMeshRenderer smr)
+                        {
+                            var eraseBones = GetBonesThatHasAncestor(smr, FirstPersonBone);
+                            if (eraseBones.Any())
+                            {
+                                // オリジナルのモデルを３人称用にする                                
+                                smr.gameObject.layer = THIRDPERSON_ONLY_LAYER;
+
+                                // 頭を取り除いた複製モデルを作成し、１人称用にする
+                                var headless = await CreateHeadlessMeshAsync(smr, eraseBones, awaitCaller);
+                                headless.enabled = false;
+                                headless.gameObject.layer = FIRSTPERSON_ONLY_LAYER;
+                                headless.transform.SetParent(smr.transform, false);
+                                return headless;
+                            }
+                            else
+                            {
+                                // 削除対象が含まれないので何もしない
+                            }
+                        }
+                        else if (x.GetRenderer(go.transform) is MeshRenderer mr)
+                        {
+                            if (mr.transform.Ancestors().Any(y => y == FirstPersonBone))
+                            {
+                                // 頭の子孫なので１人称では非表示に
+                                mr.gameObject.layer = THIRDPERSON_ONLY_LAYER;
+                            }
+                            else
+                            {
+                                // 特に変更しない => 両方表示
+                            }
+                        }
+                        else
+                        {
+                            throw new NotImplementedException();
+                        }
+                    }
+                    break;
+
+                case UniGLTF.Extensions.VRMC_vrm.FirstPersonType.firstPersonOnly:
+                    // １人称のカメラでだけ描画されるようにする
+                    x.GetRenderer(go.transform).gameObject.layer = FIRSTPERSON_ONLY_LAYER;
+                    break;
+
+                case UniGLTF.Extensions.VRMC_vrm.FirstPersonType.thirdPersonOnly:
+                    // ３人称のカメラでだけ描画されるようにする
+                    x.GetRenderer(go.transform).gameObject.layer = THIRDPERSON_ONLY_LAYER;
+                    break;
+
+                case UniGLTF.Extensions.VRMC_vrm.FirstPersonType.both:
+                    // 特に何もしない。すべてのカメラで描画される
+                    break;
+            }
+
+            return null;
+        }
+
         /// <summary>
         /// Setup first person
         /// 
@@ -93,7 +153,7 @@ namespace UniVRM10
         /// <param name="visible"></param>
         /// <param name="awaitCaller"></param>
         /// <returns></returns>
-        public async Task<IReadOnlyList<SkinnedMeshRenderer>> SetupAsync(GameObject go, IAwaitCaller awaitCaller = null)
+        public async Task<List<SkinnedMeshRenderer>> SetupAsync(GameObject go, IAwaitCaller awaitCaller = null)
         {
             if (awaitCaller == null)
             {
@@ -101,75 +161,24 @@ namespace UniVRM10
             }
 
             SetupLayers();
+
+            var created = new List<SkinnedMeshRenderer>();
             if (m_done)
             {
-                return Created;
+                return created;
             }
             m_done = true;
 
             var FirstPersonBone = go.GetComponent<Animator>().GetBoneTransform(HumanBodyBones.Head);
             foreach (var x in Renderers)
             {
-                switch (x.FirstPersonFlag)
+                var renderer = await SetupRendererAsync(go, FirstPersonBone, x, awaitCaller);
+                if (renderer)
                 {
-                    case UniGLTF.Extensions.VRMC_vrm.FirstPersonType.auto:
-                        {
-                            if (x.GetRenderer(go.transform) is SkinnedMeshRenderer smr)
-                            {
-                                var eraseBones = GetBonesThatHasAncestor(smr, FirstPersonBone);
-                                if (eraseBones.Any())
-                                {
-                                    // オリジナルのモデルを３人称用にする                                
-                                    smr.gameObject.layer = THIRDPERSON_ONLY_LAYER;
-
-                                    // 頭を取り除いた複製モデルを作成し、１人称用にする
-                                    var headless = await CreateHeadlessMeshAsync(smr, eraseBones, awaitCaller);
-                                    headless.enabled = false;
-                                    headless.gameObject.layer = FIRSTPERSON_ONLY_LAYER;
-                                    headless.transform.SetParent(smr.transform, false);
-                                    _created.Add(headless);
-                                }
-                                else
-                                {
-                                    // 削除対象が含まれないので何もしない
-                                }
-                            }
-                            else if (x.GetRenderer(go.transform) is MeshRenderer mr)
-                            {
-                                if (mr.transform.Ancestors().Any(y => y == FirstPersonBone))
-                                {
-                                    // 頭の子孫なので１人称では非表示に
-                                    mr.gameObject.layer = THIRDPERSON_ONLY_LAYER;
-                                }
-                                else
-                                {
-                                    // 特に変更しない => 両方表示
-                                }
-                            }
-                            else
-                            {
-                                throw new NotImplementedException();
-                            }
-                        }
-                        break;
-
-                    case UniGLTF.Extensions.VRMC_vrm.FirstPersonType.firstPersonOnly:
-                        // １人称のカメラでだけ描画されるようにする
-                        x.GetRenderer(go.transform).gameObject.layer = FIRSTPERSON_ONLY_LAYER;
-                        break;
-
-                    case UniGLTF.Extensions.VRMC_vrm.FirstPersonType.thirdPersonOnly:
-                        // ３人称のカメラでだけ描画されるようにする
-                        x.GetRenderer(go.transform).gameObject.layer = THIRDPERSON_ONLY_LAYER;
-                        break;
-
-                    case UniGLTF.Extensions.VRMC_vrm.FirstPersonType.both:
-                        // 特に何もしない。すべてのカメラで描画される
-                        break;
+                    created.Add(renderer);
                 }
             }
-
-            return Created;
+            return created;
         }
     }
 }
