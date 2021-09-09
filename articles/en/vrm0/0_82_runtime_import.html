@@ -125,7 +125,10 @@ instance.EnableUpdateWhenOffscreen();
 instance.ShowMeshes();
 </code></pre>
 <p>When destroy, related assets(meshes, materials and textures etc...) is destroyed.</p>
-<pre><code class="lang-cs">GameObject.Destroy(instance);
+<pre><code class="lang-cs">// GameObject.Destroy(instance);
+
+// Destroy GameObject not RuntimeGltfInstance
+GameObject.Destroy(instance.gameObject);
 </code></pre>
 </article>
           </div>

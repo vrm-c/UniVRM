@@ -124,7 +124,10 @@ instance.EnableUpdateWhenOffscreen();
 instance.ShowMeshes();
 </code></pre>
 <p>使用後に以下のように破棄してください。関連する Asset(Texture, Material, Meshなど)も破棄されます。</p>
-<pre><code class="lang-cs">GameObject.Destroy(instance);
+<pre><code class="lang-cs">// GameObject.Destroy(instance);
+
+// RuntimeGltfInstance ではなくて、その GameObject を Destroy します。
+GameObject.Destroy(instance.gameObject);
 </code></pre>
 </article>
           </div>
