@@ -79,9 +79,18 @@ namespace UniVRM10
         bool m_done;
 
         /// <summary>
-        /// 配下のモデルのレイヤー設定など
+        /// Setup first person
+        /// 
+        /// * SetupLayers
+        /// * Each renderer is set according to the first person flag. If the flag is `auto`, headless mesh creation will be performed. It's a heavy process.
+        /// * If visible is false, the created headless mesh will be hidden.
+        /// 
         /// </summary>
-        public async Task SetupAsync(GameObject go, IAwaitCaller awaitCaller = null)
+        /// <param name="go"></param>
+        /// <param name="visible"></param>
+        /// <param name="awaitCaller"></param>
+        /// <returns></returns>
+        public async Task SetupAsync(GameObject go, bool visible, IAwaitCaller awaitCaller = null)
         {
             if (awaitCaller == null)
             {
@@ -112,6 +121,7 @@ namespace UniVRM10
 
                                     // 頭を取り除いた複製モデルを作成し、１人称用にする
                                     var headless = await CreateHeadlessMeshAsync(smr, eraseBones, awaitCaller);
+                                    headless.enabled = visible;
                                     headless.gameObject.layer = FIRSTPERSON_ONLY_LAYER;
                                     headless.transform.SetParent(smr.transform, false);
                                 }
