@@ -53,7 +53,7 @@ namespace UniVRM10.VRM10Viewer
             {
                 yield return new WaitForSeconds(1.0f);
 
-                var velocity = 0.1f;
+                var velocity = 0.01f;
 
                 yield return RoutineNest(ExpressionPreset.happy, velocity, m_wait);
                 yield return RoutineNest(ExpressionPreset.angry, velocity, m_wait);

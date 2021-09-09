@@ -56,9 +56,14 @@ namespace UniVRM10
         public PreviewMaterialItem(Material material)
         {
             Material = material;
+
+            // uv default value
+            DefaultUVScaleOffset = material.GetVector(UV_PROPERTY);
         }
 
         public Dictionary<UniGLTF.Extensions.VRMC_vrm.MaterialColorType, PropItem> PropMap = new Dictionary<UniGLTF.Extensions.VRMC_vrm.MaterialColorType, PropItem>();
+
+        public Vector4 DefaultUVScaleOffset = new Vector4(1, 1, 0, 0);
 
         public string[] PropNames
         {
