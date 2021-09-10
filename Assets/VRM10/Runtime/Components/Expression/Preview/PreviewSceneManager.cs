@@ -97,7 +97,7 @@ namespace UniVRM10
 
                     //Debug.LogFormat("add material {0}", src.name);
                     materialNames.Add(src.name);
-                    m_materialMap.Add(src.name, PreviewMaterialItem.CreateForPreview(dst));
+                    m_materialMap.Add(src.name, PreviewMaterialUtil.CreateForPreview(dst));
                 }
                 return dst;
             };

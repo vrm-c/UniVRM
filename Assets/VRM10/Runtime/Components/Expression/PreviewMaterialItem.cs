@@ -2,13 +2,10 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UniGLTF.Extensions.VRMC_vrm;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
+
 
 namespace UniVRM10
 {
-
     public enum ShaderPropertyType
     {
         //
@@ -68,7 +65,7 @@ namespace UniVRM10
         public string[] PropNames
         {
             get;
-            private set;
+            set;
         }
 
         public void RestoreInitialValues()
@@ -79,7 +76,6 @@ namespace UniVRM10
             }
         }
 
-#if UNITY_EDITOR
         public const string UV_PROPERTY = "_MainTex_ST";
         public const string COLOR_PROPERTY = "_Color";
         public const string EMISSION_COLOR_PROPERTY = "_EmissionColor";
@@ -108,69 +104,5 @@ namespace UniVRM10
 
             throw new NotImplementedException();
         }
-
-        public static PreviewMaterialItem CreateForPreview(Material material)
-        {
-            var item = new PreviewMaterialItem(material);
-
-            var propNames = new List<string>();
-            for (int i = 0; i < ShaderUtil.GetPropertyCount(material.shader); ++i)
-            {
-                var propType = ShaderUtil.GetPropertyType(material.shader, i);
-                var name = ShaderUtil.GetPropertyName(material.shader, i);
-
-                switch (propType)
-                {
-                    case ShaderUtil.ShaderPropertyType.Color:
-                        // 色
-                        {
-                            var bindType = GetBindType(name);
-                            item.PropMap.Add(bindType, new PropItem
-                            {
-                                Name = name,
-                                PropertyType = (UniVRM10.ShaderPropertyType)Enum.Parse(typeof(UniVRM10.ShaderPropertyType), propType.ToString(), true),
-                                DefaultValues = material.GetColor(name),
-                            });
-                            propNames.Add(name);
-                        }
-                        break;
-
-                    case ShaderUtil.ShaderPropertyType.TexEnv:
-                        // テクスチャ
-                        // {
-                        //     name += "_ST";
-                        //     item.PropMap.Add(name, new PropItem
-                        //     {
-                        //         PropertyType = propType,
-                        //         DefaultValues = material.GetVector(name),
-                        //     });
-                        //     propNames.Add(name);
-                        // }
-                        // // 縦横分離用
-                        // {
-                        //     var st_name = name + "_S";
-                        //     item.PropMap.Add(st_name, new PropItem
-                        //     {
-                        //         PropertyType = propType,
-                        //         DefaultValues = material.GetVector(name),
-                        //     });
-                        //     propNames.Add(st_name);
-                        // }
-                        // {
-                        //     var st_name = name + "_T";
-                        //     item.PropMap.Add(st_name, new PropItem
-                        //     {
-                        //         PropertyType = propType,
-                        //         DefaultValues = material.GetVector(name),
-                        //     });
-                        //     propNames.Add(st_name);
-                        // }
-                        break;
-                }
-            }
-            item.PropNames = propNames.ToArray();
-            return item;
-        }
-#endif
     }
 }
