@@ -96,12 +96,12 @@ namespace UniGLTF
 
             using (MeasureTime("LoadTextures"))
             {
-                await LoadTexturesAsync();
+                await LoadTexturesAsync(awaitCaller);
             }
 
             using (MeasureTime("LoadMaterials"))
             {
-                await LoadMaterialsAsync();
+                await LoadMaterialsAsync(awaitCaller);
             }
 
             await LoadGeometryAsync(awaitCaller, MeasureTime);
