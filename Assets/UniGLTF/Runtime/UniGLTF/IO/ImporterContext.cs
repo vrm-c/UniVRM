@@ -219,7 +219,7 @@ namespace UniGLTF
                 NodeImporter.FixCoordinate(GLTF, nodes, inverter);
 
                 // skinning
-                if (Nodes.Count > 0)
+                if (nodes.Count > 0)
                 {
                     Profiler.BeginSample("NodeImporter.SetupSkinning");
                     for (var i = 0; i < nodes.Count; ++i)
