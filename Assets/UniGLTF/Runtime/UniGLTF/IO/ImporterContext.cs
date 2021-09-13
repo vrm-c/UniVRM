@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Threading.Tasks;
+using UnityEngine.Profiling;
 using VRMShaders;
 
 namespace UniGLTF
@@ -169,40 +170,65 @@ namespace UniGLTF
             var inverter = InvertAxis.Create();
 
             var meshImporter = new MeshImporter();
-            for (int i = 0; i < GLTF.meshes.Count; ++i)
+            if (GLTF.meshes.Count > 0)
             {
-                var index = i;
-                using (MeasureTime("ReadMesh"))
+                for (var i = 0; i < GLTF.meshes.Count; ++i)
                 {
-                    var x = await awaitCaller.Run(() => meshImporter.ReadMesh(GLTF, index, inverter));
-                    var y = await BuildMeshAsync(awaitCaller, MeasureTime, x, index);
-                    Meshes.Add(y);
+                    var index = i;
+                    using (MeasureTime("ReadMesh"))
+                    {
+                        var x = await awaitCaller.Run(() => meshImporter.ReadMesh(GLTF, index, inverter));
+                        var y = await BuildMeshAsync(awaitCaller, MeasureTime, x, index);
+                        Meshes.Add(y);
+                    }
                 }
+
+                await awaitCaller.NextFrame();
             }
 
-            using (MeasureTime("LoadNodes"))
+            if (GLTF.nodes.Count > 0)
             {
-                for (int i = 0; i < GLTF.nodes.Count; i++)
+                using (MeasureTime("LoadNodes"))
                 {
-                    Nodes.Add(NodeImporter.ImportNode(GLTF.nodes[i], i).transform);
+                    Profiler.BeginSample("ImporterContext.LoadNodes");
+                    for (var i = 0; i < GLTF.nodes.Count; i++)
+                    {
+                        Nodes.Add(NodeImporter.ImportNode(GLTF.nodes[i], i).transform);
+                    }
+                    Profiler.EndSample();
                 }
+
+                await awaitCaller.NextFrame();
             }
-            await awaitCaller.NextFrame();
 
             using (MeasureTime("BuildHierarchy"))
             {
                 var nodes = new List<NodeImporter.TransformWithSkin>();
-                for (int i = 0; i < Nodes.Count; ++i)
+                if (Nodes.Count > 0)
                 {
-                    nodes.Add(NodeImporter.BuildHierarchy(GLTF, i, Nodes, Meshes));
+                    Profiler.BeginSample("NodeImporter.BuildHierarchy");
+                    for (var i = 0; i < Nodes.Count; ++i)
+                    {
+                        nodes.Add(NodeImporter.BuildHierarchy(GLTF, i, Nodes, Meshes));
+                    }
+                    Profiler.EndSample();
+
+                    await awaitCaller.NextFrame();
                 }
 
                 NodeImporter.FixCoordinate(GLTF, nodes, inverter);
 
                 // skinning
-                for (int i = 0; i < nodes.Count; ++i)
+                if (Nodes.Count > 0)
                 {
-                    NodeImporter.SetupSkinning(GLTF, nodes, i, inverter);
+                    Profiler.BeginSample("NodeImporter.SetupSkinning");
+                    for (var i = 0; i < nodes.Count; ++i)
+                    {
+                        NodeImporter.SetupSkinning(GLTF, nodes, i, inverter);
+                    }
+                    Profiler.EndSample();
+
+                    await awaitCaller.NextFrame();
                 }
 
                 if (Root == null)
