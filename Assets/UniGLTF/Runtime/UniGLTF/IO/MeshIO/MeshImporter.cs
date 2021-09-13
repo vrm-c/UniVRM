@@ -682,13 +682,11 @@ namespace UniGLTF
             await awaitCaller.NextFrame();
             if (meshContext.BlendShapes.Count > 0)
             {
-                Profiler.BeginSample("Mesh.UploadMeshData");
                 var emptyVertices = new Vector3[mesh.vertexCount];
                 foreach (var blendShape in meshContext.BlendShapes)
                 {
                     await BuildBlendShapeAsync(awaitCaller, mesh, meshContext, blendShape, emptyVertices);
                 }
-                Profiler.EndSample();
             }
 
             Profiler.BeginSample("Mesh.UploadMeshData");
