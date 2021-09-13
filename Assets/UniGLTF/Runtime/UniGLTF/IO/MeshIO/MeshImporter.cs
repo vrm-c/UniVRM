@@ -619,15 +619,22 @@ namespace UniGLTF
             return (mesh, recalculateTangents);
         }
 
-        static void BuildBlendShape(Mesh mesh, MeshContext meshContext, BlendShape blendShape, Vector3[] emptyVertices)
+        static async Task BuildBlendShapeAsync(IAwaitCaller awaitCaller, Mesh mesh, MeshContext meshContext, BlendShape blendShape, Vector3[] emptyVertices)
         {
+            Vector3[] positions = null;
+            Vector3[] normals = null;
+            await awaitCaller.Run(() =>
+            {
+                positions = blendShape.Positions.ToArray();
+                normals = blendShape.Normals.ToArray();
+            });
             if (blendShape.Positions.Count > 0)
             {
                 if (blendShape.Positions.Count == mesh.vertexCount)
                 {
                     mesh.AddBlendShapeFrame(blendShape.Name, FRAME_WEIGHT,
                         blendShape.Positions.ToArray(),
-                        (meshContext.Normals.Count == mesh.vertexCount && blendShape.Normals.Count == blendShape.Positions.Count()) ? blendShape.Normals.ToArray() : null,
+                        normals.Length == mesh.vertexCount && normals.Length == positions.Length ? normals : null,
                         null
                         );
                 }
@@ -672,7 +679,7 @@ namespace UniGLTF
                 var emptyVertices = new Vector3[mesh.vertexCount];
                 foreach (var blendShape in meshContext.BlendShapes)
                 {
-                    BuildBlendShape(mesh, meshContext, blendShape, emptyVertices);
+                    await BuildBlendShapeAsync(awaitCaller, mesh, meshContext, blendShape, emptyVertices);
                 }
             }
 
