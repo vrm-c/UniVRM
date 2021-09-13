@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Profiling;
 using VRMShaders;
 
 namespace UniGLTF
@@ -628,6 +629,8 @@ namespace UniGLTF
                 positions = blendShape.Positions.ToArray();
                 normals = blendShape.Normals.ToArray();
             });
+
+            Profiler.BeginSample("MeshImporter.BuildBlendShapeAsync");
             if (blendShape.Positions.Count > 0)
             {
                 if (blendShape.Positions.Count == mesh.vertexCount)
@@ -653,11 +656,14 @@ namespace UniGLTF
                     null
                     );
             }
+            Profiler.EndSample();
         }
 
         public static async Task<MeshWithMaterials> BuildMeshAsync(IAwaitCaller awaitCaller, Func<int, Material> ctx, MeshImporter.MeshContext meshContext)
         {
+            Profiler.BeginSample("MeshImporter._BuildMesh");
             var (mesh, recalculateTangents) = _BuildMesh(meshContext);
+            Profiler.EndSample();
 
             if (recalculateTangents)
             {
@@ -676,14 +682,18 @@ namespace UniGLTF
             await awaitCaller.NextFrame();
             if (meshContext.BlendShapes.Count > 0)
             {
+                Profiler.BeginSample("Mesh.UploadMeshData");
                 var emptyVertices = new Vector3[mesh.vertexCount];
                 foreach (var blendShape in meshContext.BlendShapes)
                 {
                     await BuildBlendShapeAsync(awaitCaller, mesh, meshContext, blendShape, emptyVertices);
                 }
+                Profiler.EndSample();
             }
 
+            Profiler.BeginSample("Mesh.UploadMeshData");
             mesh.UploadMeshData(false);
+            Profiler.EndSample();
 
             return result;
         }
