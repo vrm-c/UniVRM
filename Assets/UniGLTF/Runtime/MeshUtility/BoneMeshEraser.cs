@@ -166,9 +166,12 @@ namespace UniGLTF.MeshUtility
             mesh.boneWeights = src.boneWeights;
             mesh.bindposes = src.bindposes;
             mesh.subMeshCount = src.subMeshCount;
+
+            var boneWeights = mesh.boneWeights;
             for (int i = 0; i < src.subMeshCount; ++i)
             {
-                var dst = await awaitCaller.Run(() => GetExcludedIndices(src.GetIndices(i), mesh.boneWeights, eraseBoneIndices));
+                var srcIndices = src.GetIndices(i);
+                var dst = await awaitCaller.Run(() => GetExcludedIndices(srcIndices, boneWeights, eraseBoneIndices));
                 mesh.SetIndices(dst, MeshTopology.Triangles, i);
             }
 
