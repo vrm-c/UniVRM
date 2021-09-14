@@ -1,5 +1,7 @@
 # パッケージ構成
 
+## パッケージ
+
 | unitypackage       | folder                            | contents              |
 |--------------------|-----------------------------------|-----------------------|
 | VRMShaders_UniGLTF | Assets/VRMShaders, Assets/UniGLTF | VRMShaders と UniGLTF |
@@ -17,7 +19,7 @@
 +----------------------+
 ```
 
-# UPM
+## UPM
 
 ```json
 // manifest.json 抜粋

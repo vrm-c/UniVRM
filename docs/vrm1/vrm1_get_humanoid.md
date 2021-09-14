@@ -1,7 +1,4 @@
----
-title: 🚧Humanoid
-weight: 20
----
+# 🚧Humanoid
 
 ## Humanoid Bone の取得方法
 

@@ -6,7 +6,7 @@
 
 サンプルの `Assets\VRM10\Samples\VRM10Viewer\VRM10ViewerUI.cs` も参照してください。
 
-```cs
+```csharp
 static IMaterialDescriptorGenerator GetVrmMaterialDescriptorGenerator(bool useUrp)
 {
     if (useUrp)

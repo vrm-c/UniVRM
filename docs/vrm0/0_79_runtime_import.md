@@ -1,12 +1,12 @@
-## `Version 0.79`
+# RuntimeImport(0.79)
 
 `GltfParser` と `GltfData` の分割
 
-```cs
+```csharp
 var parser = new GltfParser();
 parser.ParsePath(path);
 ```
 
-```cs
+```csharp
 GltfData data = new GlbFileParser(path).Parse();
 ```

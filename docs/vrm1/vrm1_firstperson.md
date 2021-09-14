@@ -1,4 +1,6 @@
-# Runtime に FirstPerson 機能を有効にする
+# FirstPerson
+
+## Runtime に FirstPerson 機能を有効にする
 
 VR向け FirstPerson 設定の初期化手順です。
 
@@ -8,7 +10,7 @@ VR向け FirstPerson 設定の初期化手順です。
 4. `controller.Vrm.FirstPerson.SetupAsync` した結果新規に作成されたモデルを `RuntimeGltfInstance` に渡す
 5. ShowMeshes
 
-```cs
+```csharp
 async Task<RuntimeGltfInstance> LoadAsync(string path)
 {
     var data = new GlbFileParser(path).Parse();
@@ -38,7 +40,7 @@ async Task<RuntimeGltfInstance> LoadAsync(string path)
 }
 ```
 
-# VRMの推奨する VR 向けのカメラ構成
+## VRMの推奨する VR 向けのカメラ構成
 
 ヘッドマウントディスプレイを表すカメラ と その他のカメラという２種類のカメラを想定ます。
 それぞれに対して、
@@ -57,10 +59,10 @@ VRMは、`VRMFirstPersonOnly` と `VRMThirdPersonOnly` という名前のレイ�
 設定してください。
 サンプルでは、それぞれに `9` と `10` を割り当ています。
 
-# 初期化時に layer を明示する
+## 初期化時に layer を明示する
 
 追加の引数で指定できます。
 
-```cs
+```csharp
 var created = await controller.Vrm.FirstPerson.SetupAsync(controller.gameObject, firstPersonOnlyLayer: 9, thirdPersonOnlyLayer: 10);
 ```

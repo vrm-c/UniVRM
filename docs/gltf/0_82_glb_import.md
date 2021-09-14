@@ -1,3 +1,4 @@
+# GlbImport(0.82)
 `0.82.1` の API です。
 `0.82.0` の場合は更新をお願いします。
 
@@ -7,55 +8,55 @@
 2. `GltfData` から `Unity Hierarchy` を ロード する。`RuntimeGltfInstance` を得る。 ローダーを破棄する。
 3. ロードした `RuntimeGltfInstance` 使う。`RuntimeGltfInstance` を破棄する。
 
-# 1. パースする
+## 1. パースする
 
-## glb ファイルパスからパースする
+### glb ファイルパスからパースする
 
 * `vrm` もこの関数を使います。
 
-```cs
+```csharp
 GltfData Load(string path)
 {
     return new GlbFileParser(path).Parse();
 }
 ```
 
-## glb バイト列をパースする
+### glb バイト列をパースする
 
 * `vrm` もこの関数を使います。
 
-```cs
+```csharp
 GltfData Load(byte[] bytes)
 {
     return new GlbBinaryParser(bytes, "LOAD_NAME").parse();
 }
 ```
 
-## gltf ファイルパスからパースする
+### gltf ファイルパスからパースする
 
-```cs
+```csharp
 GltfData Load(string path)
 {
     return new GltfFileWithResourceFilesParser(path).Parse();
 }
 ```
 
-## zip アーカイブからパースする
+### zip アーカイブからパースする
 
 gltf と関連するファイルを zip アーカイブしたファイルをパースできます(実験)。
 
-```cs
+```csharp
 GltfData Load(string path)
 {
     return new ZipArchivedGltfFileParser(path).Parse();
 }
 ```
 
-## ファイルパスの拡張子でパースする
+### ファイルパスの拡張子でパースする
 
 サンプルの `SimpleViewer` を参考にしてください。
 
-```cs
+```csharp
 GltfData Load(string path)
 {
     // ファイル拡張子で自動判定します
@@ -63,11 +64,11 @@ GltfData Load(string path)
 }
 ```
 
-# 2. ロードする
+## 2. ロードする
 
-## sync
+### sync
 
-```cs
+```csharp
 RuntimeGltfInstance Load(GltfData data)
 {
     // ImporterContext は使用後に Dispose を呼び出してください。
@@ -80,9 +81,9 @@ RuntimeGltfInstance Load(GltfData data)
 }
 ```
 
-## async
+### async
 
-```cs
+```csharp
 async RuntimeGltfInstance Load(GltfData data)
 {
     // ImporterContext は使用後に Dispose を呼び出してください。
@@ -95,11 +96,11 @@ async RuntimeGltfInstance Load(GltfData data)
 }
 ```
 
-## materialGenerator で URP 用のマテリアルをロードする
+### materialGenerator で URP 用のマテリアルをロードする
 
 `materialGenerator` 引き数(省略可能)を指定することで URP マテリアルを生成するようにカスタムできます。
 
-```cs
+```csharp
 async RuntimeGltfInstance Load(GltfData data)
 {
     var materialGenerator = new GltfUrpMaterialDescriptorGenerator();
@@ -111,9 +112,9 @@ async RuntimeGltfInstance Load(GltfData data)
 }
 ```
 
-# 3. インスタンスを使用する
+## 3. インスタンスを使用する
 
-```cs
+```csharp
 // SkinnedMeshRenderer に対する指示
 instance.EnableUpdateWhenOffscreen();
 // 準備ができたら表示する(デフォルトでは非表示)
@@ -121,6 +122,6 @@ instance.ShowMeshes();
 ```
 
 使用後に以下のように破棄してください。関連する Asset(Texture, Material, Meshなど)も破棄されます。
-```cs
+```csharp
 GameObject.Destroy(instance);
 ```

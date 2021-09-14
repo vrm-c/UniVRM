@@ -1,3 +1,5 @@
+# RuntimeImport(0.44)
+
 ## `Version 0.44～` LoadAsyncの例 
 
 ```csharp

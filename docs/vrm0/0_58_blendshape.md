@@ -1,13 +1,5 @@
----
-title: BlendShapeProxyの使い方
-date: 2018-04-16T16:30:00+09:00
-aliases: [
-    "/dev/univrm-0.xx/programming/univrm_use_blendshape/",
-    "/univrm/programming/how_to_use_blendshapeproxy/",
-    ]
-weight: 3
-tags: ["api"]
----
+# BlendShapeProxy(0.58)
+
 ## 環境
 UniVRM v0.58.0
 
@@ -103,7 +95,7 @@ BlendShape同士が競合することがわかりました。
 
 例：
 
-```cs
+```csharp
 var proxy = GetComponent<VRMBlendShapeProxy>();
 
 proxy.ImmediatelySetValue(BlendShapeKey.CreateFromPreset(BlendShapePreset.A), 1.0f);
@@ -113,7 +105,7 @@ proxy.ImmediatelySetValue(BlendShapeKey.CreateFromPreset(BlendShapePreset.A), 1.
 
 例：
 
-```cs
+```csharp
 var proxy = GetComponent<VRMBlendShapeProxy>();
 
 proxy.AccumulateValue(BlendShapeKey.CreateFromPreset(BlendShapePreset.Blink_L), 1.0f); // すぐに適用せずにたくわえる
@@ -129,7 +121,7 @@ BlendShape合成器が必要に応じ呼び出すことを想定しています�
 
 例：
 
-```cs
+```csharp
 var proxy = GetComponent<VRMBlendShapeProxy>();
 
 proxy.SetValues(new Dictionary<BlendShapeKey, float>

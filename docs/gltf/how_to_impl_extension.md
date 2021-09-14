@@ -1,3 +1,5 @@
+# glTF拡張の実装(0.63.2)
+
 `UniVRM-0.63.2` から `UniGLTF` の構成が変わって、 `extensions` / `extras` の実装方法が変わりました。
 
 ## GLTF 拡張とは
@@ -26,7 +28,7 @@
 
 `v0.63.0` 以前は、`GLTF 型` の `extensions` フィールドに、`GLTFExtensions` 型を定義して、`VRM` フィールドを定義するという方法をとっていました。
 
-```cs
+```csharp
 class VRM
 {
 
@@ -49,7 +51,7 @@ class GLTF
 `v0.63.1` から設計を変更して、すべての `extensions/extras` に同じ型の入れ物を使うように変更しました。
 UniGLTF は `import/export` の具体的な内容を知らずに中間データの入れ物として扱います。
 
-```cs
+```csharp
 // extensions / extras の入れ物として使う型
 // 実行時は、 glTFExtensionImport / glTFExtensionExport を使う
 public abstract class glTFExtension
@@ -126,7 +128,7 @@ void ImportMaterial(UniGLTF.glTFMaterial material)
 
 ### export
 
-```cs
+```csharp
 void SerializeGoodMaterial(UniJSON.JsonFormatter f, GoodMaterial value)
 {
     // シリアライズ。手で書くかコード生成する(後述)
@@ -255,7 +257,7 @@ C# の型から生成するものと、JsonSchema から C# の型とともに�
 
 * `Assets\UniGLTF\Editor\UniGLTF\Serialization\SerializerGenerator.cs`
 
-```cs
+```csharp
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -331,7 +333,7 @@ namespace UniGLTF {
 
 * `Assets\UniGLTF\Editor\UniGLTF\Serialization\DeserializerGenerator.cs`
 
-```cs
+```csharp
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -401,21 +403,21 @@ public static class GltfDeserializer
 
 TODO: `int?` にするべきだった
 
-```cs
+```csharp
 [JsonSchema(Minimum = 0)]
 int index = -1;
 ```
 
 のようにすることで、キーの出力を抑制できます。
 
-```cs
+```csharp
     // 生成コードのキー出力例
     if(value.index>=0){
 ```
 
 何も付けないと
 
-```cs
+```csharp
     // 出力制御無し
     if(true){
 ```
@@ -425,7 +427,7 @@ int index = -1;
 enumの値の名前を文字列で使う、enumの値の数値を使うの2種類がありえます。
 enumの場合はデフォルト値が無いので必須です。
 
-```cs
+```csharp
 [JsonSchema(EnumSerializationType = EnumSerializationType.AsInt)]
 public glBufferTarget target;
 

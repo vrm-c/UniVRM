@@ -1,7 +1,4 @@
----
-title: 🚧Expression
-weight: 30
----
+# 🚧Expression
 
 表情周りの操作方法。
 
@@ -9,7 +6,7 @@ weight: 30
 
 VRM-0.X の例
 
-```cs
+```csharp
 void SetExpression(GameObject root)
 {
     var controller = root.GetComponent<BlendShapeProxy>();
@@ -18,7 +15,7 @@ void SetExpression(GameObject root)
 
 VRM-1.0 の例
 
-```cs
+```csharp
 void SetExpression(GameObject root)
 {
     var controller = root.GetComponent<VRM10Controller>();

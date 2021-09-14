@@ -1,13 +1,6 @@
----
-title: "VRMFirstPersonの使い方"
-linkTitle: "一人称モードの使い方"
-date: 2018-05-29T10:00:00+09:00
-aliases: ["/dev/univrm-0.xx/programming/univrm_use_firstperson/"]
-weight: 5
-tags: ["api"]
----
+# VRMFirstPersonの使い方
 
-# VRMFirstPersonの設定
+## VRMFirstPersonの設定
 [VRMFirstPerson]({{< relref "univrm_firstperson.md" >}})ではRendererに対して設定があります。
 
 |FirstPersonFlag               |レイヤー               |備考                                        |
@@ -19,7 +12,7 @@ tags: ["api"]
 
 実行時に**VRMFirstPerson.Setup**を呼び出すことで、上記のレイヤー設定を行うことができます。明示的に外部から呼び出してください。
 
-# アプリケーションに追加の描画レイヤーを指定する
+## アプリケーションに追加の描画レイヤーを指定する
 
 定数で以下のレイヤーを定義しています。
 
@@ -37,7 +30,7 @@ public class VRMFirstPerson : MonoBehaviour
 |-----|
 |9番と１０番にLayerを設定|
 
-# 実行時にSetupを呼び出して、カメラにLayerMaskを設定する
+## 実行時にSetupを呼び出して、カメラにLayerMaskを設定する
 
 * VRMFirstPerson.Setupの呼び出し
 * 一人称カメラとその他のカメラに対してLayerMask

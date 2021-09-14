@@ -1,4 +1,4 @@
-## `Version 0.77~`
+# RuntimeImport(0.77)
 
 [DisposeOnGameObjectDestroyed](https://github.com/vrm-c/UniVRM/issues/1018)
 
@@ -17,7 +17,7 @@
 Load の呼び出し後の任意のタイミングで ImporterContext.Dispose で Importer を破棄してください。
 任意のタイミングで RuntimeGltfInstance を Destory することで紐づくリソース (Texture, Material, Mesh, etc) も破棄されます。
 
-```cs
+```csharp
 using UniGLTF;
 using UnityEngine;
 

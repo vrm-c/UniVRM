@@ -1,6 +1,6 @@
-## `Version 0.68～`
+# RuntimeImport(0.68)
 
-### 過去バージョンからの仕様変更
+## 過去バージョンからの仕様変更
 
 `ImporterContext` の仕様を変更しました。
 
@@ -17,9 +17,9 @@
     * VRM の GameObject の破棄タイミングでリソース (Texture, Material, Mesh, etc) を破棄します。
 
 
-### サンプルコード（同期的ロード）
+## サンプルコード（同期的ロード）
 
-```cs
+```csharp
 using UniGLTF;
 using UnityEngine;
 using VRM;
@@ -85,9 +85,9 @@ namespace YourNameSpace
 }
 ```
 
-### サンプルコード（非同期ロード）
+## サンプルコード（非同期ロード）
 
-```cs
+```csharp
 using System.IO;
 using System.Threading.Tasks;
 using UniGLTF;
