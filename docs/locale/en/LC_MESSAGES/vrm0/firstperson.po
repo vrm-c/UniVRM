@@ -1,0 +1,145 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2021, VRM Consortium
+# This file is distributed under the same license as the UniVRM Programming
+# Document package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: UniVRM Programming Document \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-09-14 13:46+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../vrm0/firstperson.md:1
+msgid "VRMFirstPersonの使い方"
+msgstr ""
+
+#: ../../vrm0/firstperson.md:3
+msgid "VRMFirstPersonの設定"
+msgstr ""
+
+#: ../../vrm0/firstperson.md:4
+msgid ""
+"[VRMFirstPerson]({{< relref \"univrm_firstperson.md\" "
+">}})ではRendererに対して設定があります。"
+msgstr ""
+
+#: ../../vrm0/firstperson.md
+msgid "FirstPersonFlag"
+msgstr ""
+
+#: ../../vrm0/firstperson.md
+msgid "レイヤー"
+msgstr ""
+
+#: ../../vrm0/firstperson.md
+msgid "備考"
+msgstr ""
+
+#: ../../vrm0/firstperson.md
+msgid "Both"
+msgstr ""
+
+#: ../../vrm0/firstperson.md
+msgid "default"
+msgstr ""
+
+#: ../../vrm0/firstperson.md
+msgid "一人称と三人称で分ける必要のない部分に指定します"
+msgstr ""
+
+#: ../../vrm0/firstperson.md
+msgid "ThirdPersonOnly"
+msgstr ""
+
+#: ../../vrm0/firstperson.md
+msgid "VRMThirdPersonOnly"
+msgstr ""
+
+#: ../../vrm0/firstperson.md
+msgid "一人称時に描画したくない部分に指定します"
+msgstr ""
+
+#: ../../vrm0/firstperson.md
+msgid "FirstPersonOnly"
+msgstr ""
+
+#: ../../vrm0/firstperson.md
+msgid "VRMFirstPersonOnly"
+msgstr ""
+
+#: ../../vrm0/firstperson.md
+msgid "三人称時に描画したくない部分に指定します。自動作成した頭部無しモデルが使います"
+msgstr ""
+
+#: ../../vrm0/firstperson.md
+msgid "Auto"
+msgstr ""
+
+#: ../../vrm0/firstperson.md
+msgid "実行時に一人称用モデルを自動で作成し、それをFIRSTPERSON_ONLY_LAYERに設定します"
+msgstr ""
+
+#: ../../vrm0/firstperson.md:13
+msgid "実行時に**VRMFirstPerson.Setup**を呼び出すことで、上記のレイヤー設定を行うことができます。明示的に外部から呼び出してください。"
+msgstr ""
+
+#: ../../vrm0/firstperson.md:15
+msgid "アプリケーションに追加の描画レイヤーを指定する"
+msgstr ""
+
+#: ../../vrm0/firstperson.md:17
+msgid "定数で以下のレイヤーを定義しています。"
+msgstr ""
+
+#: ../../vrm0/firstperson.md:19
+msgid ""
+"{{< highlight cs >}} public class VRMFirstPerson : MonoBehaviour {     "
+"public const int FIRSTPERSON_ONLY_LAYER = 9;     public const int "
+"THIRDPERSON_ONLY_LAYER = 10;"
+msgstr ""
+
+#: ../../vrm0/firstperson.md:26 ../../vrm0/firstperson.md:79
+msgid "} {{< / highlight >}}"
+msgstr ""
+
+#: ../../vrm0/firstperson.md
+msgid "{{< img src=\"images/vrm/layer_setting.png\" >}}"
+msgstr ""
+
+#: ../../vrm0/firstperson.md
+msgid "9番と１０番にLayerを設定"
+msgstr ""
+
+#: ../../vrm0/firstperson.md:33
+msgid "実行時にSetupを呼び出して、カメラにLayerMaskを設定する"
+msgstr ""
+
+#: ../../vrm0/firstperson.md:35
+msgid "VRMFirstPerson.Setupの呼び出し"
+msgstr ""
+
+#: ../../vrm0/firstperson.md:36
+msgid "一人称カメラとその他のカメラに対してLayerMask"
+msgstr ""
+
+#: ../../vrm0/firstperson.md:38
+msgid ""
+"{{< highlight cs >}} using System.Collections; using "
+"System.Collections.Generic; using UnityEngine; using VRM;"
+msgstr ""
+
+#: ../../vrm0/firstperson.md:44
+msgid ""
+"public class SetupExample : MonoBehaviour {     [SerializeField]     "
+"Camera m_firstPersonCamera; // HMDのカメラ"
+msgstr ""
+

@@ -1,0 +1,222 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2021, VRM Consortium
+# This file is distributed under the same license as the UniVRM Programming
+# Document package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: UniVRM Programming Document \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-09-14 13:46+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../vrm0/0_58_blendshape.md:1
+msgid "BlendShapeProxy(0.58)"
+msgstr ""
+
+#: ../../vrm0/0_58_blendshape.md:3
+msgid "環境"
+msgstr ""
+
+#: ../../vrm0/0_58_blendshape.md:4
+msgid "UniVRM v0.58.0"
+msgstr ""
+
+#: ../../vrm0/0_58_blendshape.md:6
+#, python-format
+msgid "[BlendShapeKeyのインタフェースを厳格化、整理](https://github.com/vrm-c/UniVRM/wiki/ReleaseNote-v0.56.0%28ja%29#blendshapekey%E3%81%AE%E3%82%A4%E3%83%B3%E3%82%BF%E3%83%95%E3%82%A7%E3%83%BC%E3%82%B9%E3%82%92%E5%8E%B3%E6%A0%BC%E5%8C%96%E6%95%B4%E7%90%86)"
+msgstr ""
+
+#: ../../vrm0/0_58_blendshape.md:8
+msgid "使用するメソッド"
+msgstr ""
+
+#: ../../vrm0/0_58_blendshape.md:10
+msgid "[推奨] `SetValues`"
+msgstr ""
+
+#: ../../vrm0/0_58_blendshape.md:11
+msgid "[非推奨] `ImmediatelySetValue`"
+msgstr ""
+
+#: ../../vrm0/0_58_blendshape.md:12
+msgid "[上級者向け] `AccumulateValue`"
+msgstr ""
+
+#: ../../vrm0/0_58_blendshape.md:13
+msgid "[上級者向け] `Apply`"
+msgstr ""
+
+#: ../../vrm0/0_58_blendshape.md:15
+msgid "スクリプトから BlendShape weight を適用する"
+msgstr ""
+
+#: ../../vrm0/0_58_blendshape.md:17
+msgid ""
+"`SetValues` 関数のみを使用します。 そのフレームで必要な表情の weight 値をすべて集めてから `SetValues` を 1 "
+"回だけ呼んで設定します。"
+msgstr ""
+
+#: ../../vrm0/0_58_blendshape.md:20
+msgid "{{< highlight cs >}} var proxy = GetComponent<VRMBlendShapeProxy>();"
+msgstr ""
+
+#: ../../vrm0/0_58_blendshape.md:23
+msgid ""
+"proxy.SetValues(new Dictionary<BlendShapeKey, float> {     "
+"{BlendShapeKey.CreateFromPreset(BlendShapePreset.A), 1f}, // [0, 1] の範囲で "
+"Weight を指定     {BlendShapeKey.CreateFromPreset(BlendShapePreset.Joy), "
+"1f}, // システム定義の表情は enum で指定     "
+"{BlendShapeKey.CreateUnknown(\"USER_DEFINED_FACIAL\"), 1f}, // ユーザ定義の表情は "
+"string で指定 }); {{< / highlight >}}"
+msgstr ""
+
+#: ../../vrm0/0_58_blendshape.md:31
+msgid "複数の BlendShape weight を適用する際の競合の問題について"
+msgstr ""
+
+#: ../../vrm0/0_58_blendshape.md:33
+msgid "この節では、なぜ `SetValues` を使わなければならないのかという疑問に回答します。"
+msgstr ""
+
+#: ../../vrm0/0_58_blendshape.md:35
+msgid "たとえば 2 つの VRMBlendShape `Blink_L` と `Blink_R` が"
+msgstr ""
+
+#: ../../vrm0/0_58_blendshape.md:37
+msgid "VRMBlendShape `Blink_L`"
+msgstr ""
+
+#: ../../vrm0/0_58_blendshape.md:39
+msgid "Mesh `A` の Blendshape `eye_close_L` の weight 値 `100`"
+msgstr ""
+
+#: ../../vrm0/0_58_blendshape.md:40
+msgid "Mesh `A` の Blendshape `eye_close_R` の weight 値 `1`"
+msgstr ""
+
+#: ../../vrm0/0_58_blendshape.md:42
+msgid "VRMBlendShape `Blink_R`"
+msgstr ""
+
+#: ../../vrm0/0_58_blendshape.md:44
+msgid "Mesh `A` の Blendshape `eye_close_L` の weight 値 `1`"
+msgstr ""
+
+#: ../../vrm0/0_58_blendshape.md:45
+msgid "Mesh `A` の Blendshape `eye_close_R` の weight 値 `100`"
+msgstr ""
+
+#: ../../vrm0/0_58_blendshape.md:47
+msgid "で定義されているとします。 このとき両目を閉じたいモチベーションから、両方を有効にする意図で下記のように実行します。"
+msgstr ""
+
+#: ../../vrm0/0_58_blendshape.md:50
+msgid ""
+"{{< highlight cs >}} "
+"proxy.ImmediatelySetValue(BlendShapeKey.CreateFromPreset(BlendShapePreset.Blink_L),"
+" 1.0f); "
+"proxy.ImmediatelySetValue(BlendShapeKey.CreateFromPreset(BlendShapePreset.Blink_R),"
+" 1.0f); {{< / highlight >}}"
+msgstr ""
+
+#: ../../vrm0/0_58_blendshape.md:55
+msgid ""
+"すると、左目だけが開いてしまいます。 これは後から `ImmediateSetValue` した `Blink_R` が `Blink_L` "
+"と競合して weight を上書きしてしまうからです。 したがって VRM の表情制御においては下記の 2 "
+"通りのどちらかの方法で書くことが求められます。 これらの方法はこの競合の問題を解決して表情を設定することができます。"
+msgstr ""
+
+#: ../../vrm0/0_58_blendshape.md:60
+msgid ""
+"{{< highlight cs >}} proxy.SetValues(new Dictionary<BlendShapeKey, float>"
+" {     {BlendShapeKey.CreateFromPreset(BlendShapePreset.Blink_L), 1.0f},"
+"     {BlendShapeKey.CreateFromPreset(BlendShapePreset.Blink_R), 1.0f}, "
+"}); {{< / highlight >}}"
+msgstr ""
+
+#: ../../vrm0/0_58_blendshape.md:68
+msgid "または"
+msgstr ""
+
+#: ../../vrm0/0_58_blendshape.md:70
+msgid ""
+"{{< highlight cs >}} "
+"proxy.AccumulateValue(BlendShapeKey.CreateFromPreset(BlendShapePreset.Blink_L),"
+" 1.0f); // すぐに適用せずにたくわえる "
+"proxy.AccumulateValue(BlendShapeKey.CreateFromPreset(BlendShapePreset.Blink_R),"
+" 1.0f); proxy.Apply(); // 蓄積した値をまとめて適用する {{< / highlight >}}"
+msgstr ""
+
+#: ../../vrm0/0_58_blendshape.md:76
+msgid "WIP"
+msgstr ""
+
+#: ../../vrm0/0_58_blendshape.md:78
+msgid "何故、複数のSetterがあるのか"
+msgstr ""
+
+#: ../../vrm0/0_58_blendshape.md:80
+msgid "LipSync"
+msgstr ""
+
+#: ../../vrm0/0_58_blendshape.md:81
+msgid "瞬き"
+msgstr ""
+
+#: ../../vrm0/0_58_blendshape.md:82
+msgid "視線制御(BlendShapeで視線を動かすタイプのモデル)"
+msgstr ""
+
+#: ../../vrm0/0_58_blendshape.md:83
+msgid "プログラムによる喜怒哀楽"
+msgstr ""
+
+#: ../../vrm0/0_58_blendshape.md:85
+msgid ""
+"上記のような複数のBlendShapeが別々のコンポーネントから設定された場合に、 BlendShape同士が競合することがわかりました。 "
+"後で設定した値で上書きされて希望のBlendShapeが適用されないという状態になります。 "
+"これを解決するために、一か所で中央集権的に制御する必要があります。"
+msgstr ""
+
+#: ../../vrm0/0_58_blendshape.md:90
+msgid "合成したり排他制御した、BlendShapeClipの集合のスナップショットをまとめて適用することを想定して `SetValues`"
+msgstr ""
+
+#: ../../vrm0/0_58_blendshape.md:92
+msgid "ImmediatelySetValue"
+msgstr ""
+
+#: ../../vrm0/0_58_blendshape.md:94
+msgid "簡単なテストプログラムでの利用を想定しています。"
+msgstr ""
+
+#: ../../vrm0/0_58_blendshape.md:96 ../../vrm0/0_58_blendshape.md:106
+#: ../../vrm0/0_58_blendshape.md:122
+msgid "例："
+msgstr ""
+
+#: ../../vrm0/0_58_blendshape.md:104
+msgid "AccumulateValue + Apply"
+msgstr ""
+
+#: ../../vrm0/0_58_blendshape.md:116
+msgid "下記のSetValuesを推奨しています。"
+msgstr ""
+
+#: ../../vrm0/0_58_blendshape.md:118
+msgid "SetValues"
+msgstr ""
+
+#: ../../vrm0/0_58_blendshape.md:120
+msgid "BlendShape合成器が必要に応じ呼び出すことを想定しています。"
+msgstr ""
+
