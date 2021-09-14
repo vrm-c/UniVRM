@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: UniVRM Programming Document \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-09-14 13:46+0900\n"
+"POT-Creation-Date: 2021-09-14 14:37+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -50,7 +50,11 @@ msgstr ""
 msgid "potファイル作成"
 msgstr ""
 
-#: ../../README.md:50
+#: ../../README.md:51
 msgid "poファイルを作成"
+msgstr ""
+
+#: ../../README.md:57
+msgid "ロケールを使ってサイトビルド"
 msgstr ""
 

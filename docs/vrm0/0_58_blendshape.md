@@ -1,9 +1,18 @@
 # BlendShapeProxy(0.58)
 
-## 環境
-UniVRM v0.58.0
+## BlendShapeKeyのインタフェースを厳格化、整理
 
-[BlendShapeKeyのインタフェースを厳格化、整理](https://github.com/vrm-c/UniVRM/wiki/ReleaseNote-v0.56.0%28ja%29#blendshapekey%E3%81%AE%E3%82%A4%E3%83%B3%E3%82%BF%E3%83%95%E3%82%A7%E3%83%BC%E3%82%B9%E3%82%92%E5%8E%B3%E6%A0%BC%E5%8C%96%E6%95%B4%E7%90%86)
+BlendShapeKeyを作成する方法が不明瞭だったため、
+より明示的な API に置き換えました。
+
+* BlendShapeClip.Key 追加
+
+| arguments                            | before                   | after                          | 備考                                                                                                                   |
+|--------------------------------------|--------------------------|--------------------------------|------------------------------------------------------------------------------------------------------------------------|
+| string name, BlendShapePreset preset | public constructor       | private constructor            | BlendShapePreset.Unknownのときの挙動が不明瞭だった。代わりに、CreateFromPreset または CreateUnknown を使用してください |
+| BlendShapeClip                       | BlendShapeKey.CreateFrom | BlendShapeKey.CreateFromClip   | 他の関数に合わせて、名前を変更                                                                                         |
+| BlendShapePreset                     | public constructor       | BlendShapeKey.CreateFromPreset | オーバーロードをやめて明示的な関数に変更                                                                               |
+| string                               | public constructor       | BlendShapeKey.CreateUnknown    | オーバーロードをやめて明示的な関数に変更。                                                                             |
 
 ## 使用するメソッド
 
@@ -17,7 +26,7 @@ UniVRM v0.58.0
 `SetValues` 関数のみを使用します。
 そのフレームで必要な表情の weight 値をすべて集めてから `SetValues` を 1 回だけ呼んで設定します。
 
-{{< highlight cs >}}
+```csharp
 var proxy = GetComponent<VRMBlendShapeProxy>();
 
 proxy.SetValues(new Dictionary<BlendShapeKey, float>
@@ -26,7 +35,7 @@ proxy.SetValues(new Dictionary<BlendShapeKey, float>
     {BlendShapeKey.CreateFromPreset(BlendShapePreset.Joy), 1f}, // システム定義の表情は enum で指定
     {BlendShapeKey.CreateUnknown("USER_DEFINED_FACIAL"), 1f}, // ユーザ定義の表情は string で指定
 });
-{{< / highlight >}}
+```
 
 ## 複数の BlendShape weight を適用する際の競合の問題について
 
@@ -47,31 +56,31 @@ VRMBlendShape `Blink_R`
 で定義されているとします。
 このとき両目を閉じたいモチベーションから、両方を有効にする意図で下記のように実行します。
 
-{{< highlight cs >}}
+```csharp
 proxy.ImmediatelySetValue(BlendShapeKey.CreateFromPreset(BlendShapePreset.Blink_L), 1.0f);
 proxy.ImmediatelySetValue(BlendShapeKey.CreateFromPreset(BlendShapePreset.Blink_R), 1.0f);
-{{< / highlight >}}
+```
 
 すると、左目だけが開いてしまいます。
 これは後から `ImmediateSetValue` した `Blink_R` が `Blink_L` と競合して weight を上書きしてしまうからです。
 したがって VRM の表情制御においては下記の 2 通りのどちらかの方法で書くことが求められます。
 これらの方法はこの競合の問題を解決して表情を設定することができます。
 
-{{< highlight cs >}}
+```csharp
 proxy.SetValues(new Dictionary<BlendShapeKey, float>
 {
     {BlendShapeKey.CreateFromPreset(BlendShapePreset.Blink_L), 1.0f},
     {BlendShapeKey.CreateFromPreset(BlendShapePreset.Blink_R), 1.0f},
 });
-{{< / highlight >}}
+```
 
 または
 
-{{< highlight cs >}}
+```csharp
 proxy.AccumulateValue(BlendShapeKey.CreateFromPreset(BlendShapePreset.Blink_L), 1.0f); // すぐに適用せずにたくわえる
 proxy.AccumulateValue(BlendShapeKey.CreateFromPreset(BlendShapePreset.Blink_R), 1.0f);
 proxy.Apply(); // 蓄積した値をまとめて適用する
-{{< / highlight >}}
+```
 
 WIP
 

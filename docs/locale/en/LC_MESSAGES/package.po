@@ -20,11 +20,11 @@ msgstr ""
 
 #: ../../package.md:1
 msgid "パッケージ構成"
-msgstr ""
+msgstr "Package Structure"
 
 #: ../../package.md:3
 msgid "パッケージ"
-msgstr ""
+msgstr "Package"
 
 #: ../../package.md
 msgid "unitypackage"
@@ -48,7 +48,7 @@ msgstr ""
 
 #: ../../package.md
 msgid "VRMShaders と UniGLTF"
-msgstr ""
+msgstr "VRMShaders and UniGLTF"
 
 #: ../../package.md
 msgid "UniVRM"

@@ -44,10 +44,17 @@ gettext_compact = False
 
 potファイル作成
 ```
-doc$ sphinx-build -M gettext . _build
+doc$ sphinx-build -M gettext . _pot
+# => _pot/gettext
 ```
 
 poファイルを作成
 ```
-doc$ sphinx-intl update -p _build/gettext -l ja
+doc$ sphinx-intl update -p _pot/gettext -l en
+# => locale/en
+```
+
+ロケールを使ってサイトビルド
+```
+doc$ sphinx-build . _build/en -D language=en
 ```

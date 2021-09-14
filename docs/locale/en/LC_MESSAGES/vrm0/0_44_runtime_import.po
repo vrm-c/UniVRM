@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: UniVRM Programming Document \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-09-14 13:46+0900\n"
+"POT-Creation-Date: 2021-09-14 14:37+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,19 +24,19 @@ msgstr ""
 
 #: ../../vrm0/0_44_runtime_import.md:3
 msgid "`Version 0.44～` LoadAsyncの例"
-msgstr ""
+msgstr "`Version 0.44~` LoadAsync Example "
 
 #: ../../vrm0/0_44_runtime_import.md:28
 msgid "LoadAsyncTaskを使う例"
-msgstr ""
+msgstr "LoadAsyncTask Example"
 
 #: ../../vrm0/0_44_runtime_import.md:65
 msgid "関連する記事など"
-msgstr ""
+msgstr "Related-Article"
 
 #: ../../vrm0/0_44_runtime_import.md:67
 msgid "こちらの記事がわかりやすいです。"
-msgstr ""
+msgstr "More details can be found in the link below (written in Japanese):"
 
 #: ../../vrm0/0_44_runtime_import.md:69
 msgid "[UniVRMを使ってVRMモデルをランタイムロードする方法](https://qiita.com/sh_akira/items/8155e4b69107c2a7ede6)"
@@ -45,83 +45,87 @@ msgstr ""
 #: ../../vrm0/0_44_runtime_import.md:72
 msgid "最新バージョンは[こちら]({{< relref \"runtime_import.md\" >}})をご覧ください。"
 msgstr ""
+"Examples of importing the VRM model with the latest version [can be found"
+" here]({{< relref runtime_import.md >}})."
 
 #: ../../vrm0/0_44_runtime_import.md:74
 msgid "Unityで実行時にモデルをインポートする方法です。"
-msgstr ""
+msgstr "The followings are the methods to import a VRM model at runtime in Unity:"
 
 #: ../../vrm0/0_44_runtime_import.md:76
 msgid "ファイルパスからVRMを開く"
-msgstr ""
-
-#: ../../vrm0/0_44_runtime_import.md:78
-msgid ""
-"{{< highlight cs >}} var path=\"sample.vrm\"; var "
-"go=VRM.VRMImporter.LoadFromPath(path); Debug.LogFormat(\"loaded {0}\", "
-"go.name); {{< / highlight >}}"
-msgstr ""
+msgstr "Open VRM from a file path"
 
 #: ../../vrm0/0_44_runtime_import.md:84
 msgid "ファイルパスから非同期にVRMを開く"
-msgstr ""
-
-#: ../../vrm0/0_44_runtime_import.md:86
-msgid ""
-"{{< highlight cs >}} var path=\"sample.vrm\"; "
-"VRMImporter.LoadVrmAsync(path, go => {     Debug.LogFormat(\"loaded "
-"{0}\", go.name); }); {{< / highlight >}}"
-msgstr ""
+msgstr "Open VRM asynchronously from a file path"
 
 #: ../../vrm0/0_44_runtime_import.md:93
 msgid "バイト列からVRM開く"
-msgstr ""
-
-#: ../../vrm0/0_44_runtime_import.md:95
-msgid ""
-"{{< highlight cs >}} var path=\"sample.vrm\"; var bytes = "
-"File.ReadAllBytes(path); var go=VRMImporter.LoadFromBytes(bytes); {{< / "
-"highlight >}}"
-msgstr ""
+msgstr "Open VRM from a byte array"
 
 #: ../../vrm0/0_44_runtime_import.md:101
 msgid "バイト列から非同期にVRMを開く"
-msgstr ""
-
-#: ../../vrm0/0_44_runtime_import.md:103
-msgid ""
-"{{< highlight cs >}} VRMImporter.LoadVrmAsync(bytes, go => {     "
-"Debug.LogFormat(\"loaded {0}\", go.name); }); {{< / highlight >}}"
-msgstr ""
+msgstr "Open VRM asynchronously from a byte array"
 
 #: ../../vrm0/0_44_runtime_import.md:109
 msgid "VRMから情報を取り出す"
-msgstr ""
-
-#: ../../vrm0/0_44_runtime_import.md:111
-msgid ""
-"{{< highlight cs >}} #if UNITY_STANDALONE_WIN             var path = "
-"FileDialogForWindows.FileDialog(\"open VRM\", \".vrm\"); #else"
-"             var path = Application.dataPath + \"/default.vrm\"; #endif"
-"             if (string.IsNullOrEmpty(path))             {"
-"                 return;             }"
-msgstr ""
-
-#: ../../vrm0/0_44_runtime_import.md:154
-msgid "{{< / highlight >}}"
-msgstr ""
+msgstr "Get the information form VRM"
 
 #: ../../vrm0/0_44_runtime_import.md:156
 msgid "Thumbnailを取得する(v0.37から)"
-msgstr ""
+msgstr "Get the thumbnail (From v0.37)"
 
 #: ../../vrm0/0_44_runtime_import.md:158
 msgid "ReadMetaに引数を渡すことでThumbnailテクスチャを作成できます。"
-msgstr ""
+msgstr "A thumbnail texture can be created by passing arguments to ReadMeta. "
 
-#: ../../vrm0/0_44_runtime_import.md:160
-msgid ""
-"{{< highlight cs >}}     var meta = context.ReadMeta(true); // "
-"Thumbnailテクスチャを作成する     Texture2D thumbnail=meta.Thumbnail; {{< / "
-"highlight >}}"
-msgstr ""
+#~ msgid ""
+#~ "{{< highlight cs >}} var "
+#~ "path=\"sample.vrm\"; var "
+#~ "go=VRM.VRMImporter.LoadFromPath(path); Debug.LogFormat(\"loaded"
+#~ " {0}\", go.name); {{< / highlight >}}"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "{{< highlight cs >}} var "
+#~ "path=\"sample.vrm\"; VRMImporter.LoadVrmAsync(path, go "
+#~ "=> {     Debug.LogFormat(\"loaded {0}\", "
+#~ "go.name); }); {{< / highlight >}}"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "{{< highlight cs >}} var "
+#~ "path=\"sample.vrm\"; var bytes = "
+#~ "File.ReadAllBytes(path); var "
+#~ "go=VRMImporter.LoadFromBytes(bytes); {{< / highlight"
+#~ " >}}"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "{{< highlight cs >}} "
+#~ "VRMImporter.LoadVrmAsync(bytes, go => {     "
+#~ "Debug.LogFormat(\"loaded {0}\", go.name); }); "
+#~ "{{< / highlight >}}"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "{{< highlight cs >}} #if "
+#~ "UNITY_STANDALONE_WIN             var path = "
+#~ "FileDialogForWindows.FileDialog(\"open VRM\", \".vrm\");"
+#~ " #else             var path = "
+#~ "Application.dataPath + \"/default.vrm\"; #endif"
+#~ "             if (string.IsNullOrEmpty(path))             "
+#~ "{                 return;             }"
+#~ msgstr ""
+
+#~ msgid "{{< / highlight >}}"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "{{< highlight cs >}}     var meta "
+#~ "= context.ReadMeta(true); // Thumbnailテクスチャを作成する"
+#~ "     Texture2D thumbnail=meta.Thumbnail; {{< /"
+#~ " highlight >}}"
+#~ msgstr ""
 

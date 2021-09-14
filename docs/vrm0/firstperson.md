@@ -16,7 +16,7 @@
 
 定数で以下のレイヤーを定義しています。
 
-{{< highlight cs >}}
+```csharp
 public class VRMFirstPerson : MonoBehaviour
 {
     public const int FIRSTPERSON_ONLY_LAYER = 9;
@@ -24,7 +24,7 @@ public class VRMFirstPerson : MonoBehaviour
 
     // 省略
 }
-{{< / highlight >}}
+```
 
 |{{< img src="images/vrm/layer_setting.png" >}}|
 |-----|
@@ -35,7 +35,7 @@ public class VRMFirstPerson : MonoBehaviour
 * VRMFirstPerson.Setupの呼び出し
 * 一人称カメラとその他のカメラに対してLayerMask
 
-{{< highlight cs >}}
+```csharp
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -77,4 +77,4 @@ public class SetupExample : MonoBehaviour
         }
     }
 }
-{{< / highlight >}}
+```

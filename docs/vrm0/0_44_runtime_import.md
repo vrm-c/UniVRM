@@ -75,40 +75,40 @@ Unityで実行時にモデルをインポートする方法です。
 
 ## ファイルパスからVRMを開く
 
-{{< highlight cs >}}
+```csharp
 var path="sample.vrm";
 var go=VRM.VRMImporter.LoadFromPath(path);
 Debug.LogFormat("loaded {0}", go.name);
-{{< / highlight >}}
+```
 
 ## ファイルパスから非同期にVRMを開く
 
-{{< highlight cs >}}
+```csharp
 var path="sample.vrm";
 VRMImporter.LoadVrmAsync(path, go => {
     Debug.LogFormat("loaded {0}", go.name);
 });
-{{< / highlight >}}
+```
 
 ## バイト列からVRM開く
 
-{{< highlight cs >}}
+```csharp
 var path="sample.vrm";
 var bytes = File.ReadAllBytes(path);
 var go=VRMImporter.LoadFromBytes(bytes);
-{{< / highlight >}}
+```
 
 ## バイト列から非同期にVRMを開く
 
-{{< highlight cs >}}
+```csharp
 VRMImporter.LoadVrmAsync(bytes, go => {
     Debug.LogFormat("loaded {0}", go.name);
 });
-{{< / highlight >}}
+```
 
 ## VRMから情報を取り出す
 
-{{< highlight cs >}}
+```csharp
 #if UNITY_STANDALONE_WIN
             var path = FileDialogForWindows.FileDialog("open VRM", ".vrm");
 #else
@@ -151,13 +151,13 @@ VRMImporter.LoadVrmAsync(bytes, go => {
                 VRMImporter.LoadFromBytes(context);
                 OnLoaded(context.Root);
             }
-{{< / highlight >}}
+```
 
 ## Thumbnailを取得する(v0.37から)
 
 ReadMetaに引数を渡すことでThumbnailテクスチャを作成できます。
 
-{{< highlight cs >}}
+```csharp
     var meta = context.ReadMeta(true); // Thumbnailテクスチャを作成する
     Texture2D thumbnail=meta.Thumbnail;
-{{< / highlight >}}
+```

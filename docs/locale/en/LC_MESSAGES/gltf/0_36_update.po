@@ -24,33 +24,32 @@ msgstr ""
 
 #: ../../gltf/0_36_update.md:3
 msgid "テクスチャ名の格納位置の修正"
-msgstr ""
+msgstr "Changed Storage Position of Texture Name"
 
 #: ../../gltf/0_36_update.md:5 ../../gltf/0_36_update.md:22
 msgid "GLTFの仕様に準拠しました。"
-msgstr ""
+msgstr "Conforming to the GLTF specification."
 
 #: ../../gltf/0_36_update.md:7 ../../gltf/0_36_update.md:24
 msgid "extraはextrasの間違い"
-msgstr ""
+msgstr "`extras` is not allowed in target"
 
 #: ../../gltf/0_36_update.md:8
 msgid "imageはnameを持っていた"
-msgstr ""
+msgstr "Use image.name"
 
 #: ../../gltf/0_36_update.md:14 ../../gltf/0_36_update.md:32
 msgid "変更後"
-msgstr ""
+msgstr "After the change "
 
 #: ../../gltf/0_36_update.md:20
 msgid "ブレンドシェイプ名の格納位置の修正"
-msgstr ""
+msgstr "Fix blendshape name"
 
 #: ../../gltf/0_36_update.md:25
 msgid "targetにextrasは不許可"
-msgstr ""
+msgstr "Target has no extras"
 
 #: ../../gltf/0_36_update.md:26
 msgid "https://github.com/KhronosGroup/glTF/issues/1036#issuecomment-314078356"
 msgstr ""
-

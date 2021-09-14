@@ -28,18 +28,18 @@ msgstr ""
 
 #: ../../vrm0/0_77_runtime_import.md:5
 msgid "`ImporterContext` の仕様を変更しました。"
-msgstr ""
+msgstr "`ImporterContext` API has been modified."
 
 #: ../../vrm0/0_77_runtime_import.md:7
 msgid ""
 "`Version 0.68` で導入した、 `ImporterContext.DisposeOnGameObjectDestroyed` "
 "が扱いづらかったためのでこれを取りやめ、 `ImporterContext.Load` が `RuntimeGltfInstance` "
 "を返すようにしました。"
-msgstr ""
+msgstr "The function `ImporterContext.DisposeOnGameObjectDestroyed` introduced in `Version 0.68` has been discarded. Instead, `ImporterContext.Load` and `RuntimeGltfInstance` are used in `v0.77`."
 
 #: ../../vrm0/0_77_runtime_import.md:10
 msgid "`RuntimeGltfInstance` は、 `ImporterContext` の"
-msgstr ""
+msgstr "In addition, `ImporterContext`'s members have been moved to `RuntimeGltfInstance`:"
 
 #: ../../vrm0/0_77_runtime_import.md:12
 msgid "Root"
@@ -58,5 +58,5 @@ msgid ""
 "を引き継ぎます。 Load の呼び出し後の任意のタイミングで ImporterContext.Dispose で Importer "
 "を破棄してください。 任意のタイミングで RuntimeGltfInstance を Destory することで紐づくリソース (Texture,"
 " Material, Mesh, etc) も破棄されます。"
-msgstr ""
+msgstr "To destroy the Importer, use `ImporterContext.Dispose` after `Load` is called. By destroying RuntimeGltfInstance, the resources associated with the RuntimeGltfInstance (Texture, Material, Mesh, etc) will be destroyed."
 

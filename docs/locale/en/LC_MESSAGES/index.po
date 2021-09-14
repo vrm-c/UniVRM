@@ -24,17 +24,17 @@ msgstr ""
 
 #: ../../index.md:3
 msgid "これは、開発者(UniVRMを使ったアプリケーションを作成する人)向けのドキュメントです。"
-msgstr ""
+msgstr "This is a document for developer that using UniVRM."
 
 #: ../../index.md:5
 msgid ""
 "UnityでVRMをエクスポートする方法などについては [manual](https://vrm.dev/docs/univrm/) "
 "を参照してください。"
-msgstr ""
+msgstr "Please see [manual](https://vrm.dev/en/docs//univrm/) about how to export VRM."
 
 #: ../../index.md:7
 msgid "概要"
-msgstr ""
+msgstr "Overview"
 
 #: ../../index.md:16
 msgid "glTF"

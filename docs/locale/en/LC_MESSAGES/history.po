@@ -32,7 +32,7 @@ msgstr ""
 
 #: ../../history.md
 msgid "`materialGenerator(URP対応)` 引き数と `VrmData`"
-msgstr ""
+msgstr "`materialGenerator(for URP)` argument and `VrmData`"
 
 #: ../../history.md
 msgid "v0.79"
@@ -64,7 +64,7 @@ msgstr ""
 
 #: ../../history.md
 msgid "gltf の extension の実装方法を変更"
-msgstr ""
+msgstr "Update gltf extensions implementation"
 
 #: ../../history.md
 msgid "v0.56"
@@ -72,5 +72,5 @@ msgstr ""
 
 #: ../../history.md
 msgid "BlendShapeKey の仕様変更"
-msgstr ""
+msgstr "Update BlendShapeKey spec"
 

@@ -20,45 +20,45 @@ msgstr ""
 
 #: ../../gltf/how_to_impl_extension.md:1
 msgid "glTF拡張の実装(0.63.2)"
-msgstr ""
+msgstr "The implementation of glTF extensions(0.63.2)"
 
 #: ../../gltf/how_to_impl_extension.md:3
 msgid ""
 "`UniVRM-0.63.2` から `UniGLTF` の構成が変わって、 `extensions` / `extras` "
 "の実装方法が変わりました。"
-msgstr ""
+msgstr "From `UniVRM-0.63.2` , `UniGLTF` structure is changed, cause `extensions` / `extras` implementations is updated."
 
 #: ../../gltf/how_to_impl_extension.md:5
 msgid "GLTF 拡張とは"
-msgstr ""
+msgstr "About GLTF Extensions"
 
 #: ../../gltf/how_to_impl_extension.md:7
 msgid "`glTF` は各所に `extensions`, `extras` が定義してありその中身を拡張できます。"
-msgstr ""
+msgstr "`glTF` has each `extensions`, `extras` points."
 
 #: ../../gltf/how_to_impl_extension.md:9
 msgid "`extensions` (またはextras)"
-msgstr ""
+msgstr "`extensions` (or extras)"
 
 #: ../../gltf/how_to_impl_extension.md:10
 msgid "`asset.extensions` (またはextras)"
-msgstr ""
+msgstr "`asset.extensions` (or extras)"
 
 #: ../../gltf/how_to_impl_extension.md:11
 msgid "`meshes[*].extensions` (またはextras)"
-msgstr ""
+msgstr "`meshes[*].extensions` (or extras)"
 
 #: ../../gltf/how_to_impl_extension.md:12
 msgid "`materials[*].extensions` (またはextras)"
-msgstr ""
+msgstr "`materials[*].extensions` (or extras)"
 
 #: ../../gltf/how_to_impl_extension.md:14
 msgid "など。"
-msgstr ""
+msgstr "etc..."
 
 #: ../../gltf/how_to_impl_extension.md:16
 msgid "`extensions` はオフィシャルに仕様を策定して `JsonSchema` として公開します。"
-msgstr ""
+msgstr "`extensions` is defined specification officially, and publish `JsonSchema`."
 
 #: ../../gltf/how_to_impl_extension.md:18
 msgid "https://github.com/KhronosGroup/glTF/tree/master/extensions"
@@ -68,11 +68,13 @@ msgstr ""
 msgid ""
 "`extensions` は、`{ベンダー名}_{拡張名}` という命名規則です。 ベンダー名は、 "
 "https://github.com/KhronosGroup/glTF に申し込んで登録できます。"
-msgstr ""
+msgstr "`extensions` naming convention is `{VENDOR_NAME}_{EXTENSION_NAME}`.
+VENDOR_NAME can registered on https://github.com/KhronosGroup/glTF.
+"
 
 #: ../../gltf/how_to_impl_extension.md:23
 msgid "`extras` は登録せずにアプリケーション独自に拡張する場合に用います。仕組みは同じです。"
-msgstr ""
+msgstr "`extras` is defined in application local."
 
 #: ../../gltf/how_to_impl_extension.md:25
 msgid ""
@@ -82,13 +84,13 @@ msgstr ""
 
 #: ../../gltf/how_to_impl_extension.md:27
 msgid "UniGLTF の extensions"
-msgstr ""
+msgstr "The extensions of UniGLTF"
 
 #: ../../gltf/how_to_impl_extension.md:29
 msgid ""
 "`v0.63.0` 以前は、`GLTF 型` の `extensions` フィールドに、`GLTFExtensions` "
 "型を定義して、`VRM` フィールドを定義するという方法をとっていました。"
-msgstr ""
+msgstr "Before `v0.63.0`, `GLTF type` 's  `extensions` field is statically extended as `GLTFExtensions Type`, and had `VRM type` field."
 
 #: ../../gltf/how_to_impl_extension.md:49
 msgid "この設計だと GLTF と拡張を別ライブラリとして分離することができませんでした。"

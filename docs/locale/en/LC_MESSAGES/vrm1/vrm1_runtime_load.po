@@ -26,9 +26,9 @@ msgstr ""
 msgid ""
 "`VRM-1.0` は、 `VRM-0.x` もロードできます。 その場合、あたらしい meta への変換が発生し互換性の無い部分はすべて "
 "`不許可` の値になります。 このため、変換前のライセンスにアクセスする API を提供します。"
-msgstr ""
+msgstr "`VRM-1.0` can load `VRM-0.x`. In that case, incompatible migrated meta properties are not allowed. Therefore, we provide an API that allows you to access the original meta before migration."
 
 #: ../../vrm1/vrm1_runtime_load.md:7
 msgid "サンプルの `Assets\\VRM10\\Samples\\VRM10Viewer\\VRM10ViewerUI.cs` も参照してください。"
-msgstr ""
+msgstr "See `Assets\VRM10\Samples\VRM10Viewer\VRM10ViewerUI.cs`."
 
