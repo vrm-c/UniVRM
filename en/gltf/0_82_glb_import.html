@@ -1,0 +1,249 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>GlbImport(0.82) &#8212; UniVRM Programming Document  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="The implementation of glTF extensions(0.63.2)" href="how_to_impl_extension.html" />
+    <link rel="prev" title="Version" href="../history.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="how_to_impl_extension.html" title="The implementation of glTF extensions(0.63.2)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../history.html" title="Version"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">UniVRM Programming Document  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">GlbImport(0.82)</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="glbimport-0-82">
+<h1>GlbImport(0.82)<a class="headerlink" href="#glbimport-0-82" title="Permalink to this headline">¶</a></h1>
+<p>If use <code class="docutils literal notranslate"><span class="pre">0.82.0</span></code>, please upgrade.</p>
+<p>GLB load is below steps.</p>
+<ol class="simple">
+<li><p>Parse <code class="docutils literal notranslate"><span class="pre">GLB</span></code> / <code class="docutils literal notranslate"><span class="pre">GLTF</span></code>, get a <code class="docutils literal notranslate"><span class="pre">GltfData</span></code></p></li>
+<li><p>Load <code class="docutils literal notranslate"><span class="pre">Unity</span> <span class="pre">Hierarchy</span></code> from the <code class="docutils literal notranslate"><span class="pre">GltfData</span></code>, get a <code class="docutils literal notranslate"><span class="pre">RuntimeGltfInstance</span></code>, dispose loader.</p></li>
+<li><p>Use the <code class="docutils literal notranslate"><span class="pre">RuntimeGltfInstance</span></code>, destroy the <code class="docutils literal notranslate"><span class="pre">RuntimeGltfInstance</span></code>.</p></li>
+</ol>
+<section id="id1">
+<h2>1. パースする<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<section id="glb">
+<h3>Parse glb from file path<a class="headerlink" href="#glb" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Use this for vrm too.</p></li>
+</ul>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">GltfData</span> <span class="nf">Load</span><span class="p">(</span><span class="kt">string</span> <span class="n">path</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="k">new</span> <span class="nf">GlbFileParser</span><span class="p">(</span><span class="n">path</span><span class="p">).</span><span class="n">Parse</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="id2">
+<h3>Parse glb byte array<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Use this for vrm too.</p></li>
+</ul>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">GltfData</span> <span class="nf">Load</span><span class="p">(</span><span class="kt">byte</span><span class="p">[]</span> <span class="n">bytes</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="k">new</span> <span class="nf">GlbBinaryParser</span><span class="p">(</span><span class="n">bytes</span><span class="p">,</span> <span class="s">&quot;LOAD_NAME&quot;</span><span class="p">).</span><span class="n">parse</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="gltf">
+<h3>Parse gltf from file path<a class="headerlink" href="#gltf" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">GltfData</span> <span class="nf">Load</span><span class="p">(</span><span class="kt">string</span> <span class="n">path</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="k">new</span> <span class="nf">GltfFileWithResourceFilesParser</span><span class="p">(</span><span class="n">path</span><span class="p">).</span><span class="n">Parse</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="zip">
+<h3>Parse gltf in zip archive from file path<a class="headerlink" href="#zip" title="Permalink to this headline">¶</a></h3>
+<p>Zip archive that contains gltf and related files could parsed(expelemental).</p>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">GltfData</span> <span class="nf">Load</span><span class="p">(</span><span class="kt">string</span> <span class="n">path</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="k">new</span> <span class="nf">ZipArchivedGltfFileParser</span><span class="p">(</span><span class="n">path</span><span class="p">).</span><span class="n">Parse</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="id3">
+<h3>Parse by file extension<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<p>See <code class="docutils literal notranslate"><span class="pre">SimpleViewer</span></code> sample.</p>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">GltfData</span> <span class="nf">Load</span><span class="p">(</span><span class="kt">string</span> <span class="n">path</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="c1">// ファイル拡張子で自動判定します</span>
+    <span class="k">return</span> <span class="k">new</span> <span class="nf">AutoGltfFileParser</span><span class="p">(</span><span class="n">path</span><span class="p">).</span><span class="n">Parse</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id4">
+<h2>2. ロードする<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<section id="sync">
+<h3>sync<a class="headerlink" href="#sync" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">RuntimeGltfInstance</span> <span class="nf">Load</span><span class="p">(</span><span class="n">GltfData</span> <span class="n">data</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="c1">// ImporterContext は使用後に Dispose を呼び出してください。</span>
+    <span class="c1">// using で自動的に呼び出すことができます。</span>
+    <span class="n">using</span><span class="p">(</span><span class="kt">var</span> <span class="n">loader</span> <span class="p">=</span> <span class="k">new</span> <span class="n">UniGLTF</span><span class="p">.</span><span class="n">ImporterContext</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="kt">var</span> <span class="n">instance</span> <span class="p">=</span> <span class="n">loader</span><span class="p">.</span><span class="n">Load</span><span class="p">();</span>
+        <span class="k">return</span> <span class="n">instance</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="async">
+<h3>async<a class="headerlink" href="#async" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="n">RuntimeGltfInstance</span> <span class="nf">Load</span><span class="p">(</span><span class="n">GltfData</span> <span class="n">data</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="c1">// ImporterContext は使用後に Dispose を呼び出してください。</span>
+    <span class="c1">// using で自動的に呼び出すことができます。</span>
+    <span class="n">using</span><span class="p">(</span><span class="kt">var</span> <span class="n">loader</span> <span class="p">=</span> <span class="k">new</span> <span class="n">UniGLTF</span><span class="p">.</span><span class="n">ImporterContext</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="kt">var</span> <span class="n">instance</span> <span class="p">=</span> <span class="k">await</span> <span class="n">loader</span><span class="p">.</span><span class="n">LoadAsync</span><span class="p">();</span>
+        <span class="k">return</span> <span class="n">instance</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="materialgenerator-urp">
+<h3>Load URP material by materialGenerator argument<a class="headerlink" href="#materialgenerator-urp" title="Permalink to this headline">¶</a></h3>
+<p>You can load URP materials by setting the <code class="docutils literal notranslate"><span class="pre">materialGenerator</span></code> Argument (optional).</p>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="n">RuntimeGltfInstance</span> <span class="nf">Load</span><span class="p">(</span><span class="n">GltfData</span> <span class="n">data</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">var</span> <span class="n">materialGenerator</span> <span class="p">=</span> <span class="k">new</span> <span class="n">GltfUrpMaterialDescriptorGenerator</span><span class="p">();</span>
+    <span class="n">using</span><span class="p">(</span><span class="kt">var</span> <span class="n">loader</span> <span class="p">=</span> <span class="k">new</span> <span class="n">UniGLTF</span><span class="p">.</span><span class="n">ImporterContext</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">materialGenerator</span><span class="p">:</span> <span class="n">materialGenerator</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="kt">var</span> <span class="n">instance</span> <span class="p">=</span> <span class="k">await</span> <span class="n">loader</span><span class="p">.</span><span class="n">LoadAsync</span><span class="p">();</span>
+        <span class="k">return</span> <span class="n">instance</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id5">
+<h2>3. インスタンスを使用する<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="c1">// SkinnedMeshRenderer に対する指示</span>
+<span class="n">instance</span><span class="p">.</span><span class="n">EnableUpdateWhenOffscreen</span><span class="p">();</span>
+<span class="c1">// 準備ができたら表示する(デフォルトでは非表示)</span>
+<span class="n">instance</span><span class="p">.</span><span class="n">ShowMeshes</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>Destroy after use and discard related assets (textures, materials, meshes, etc.)</p>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">GameObject</span><span class="p">.</span><span class="n">Destroy</span><span class="p">(</span><span class="n">instance</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">GlbImport(0.82)</a><ul>
+<li><a class="reference internal" href="#id1">1. パースする</a><ul>
+<li><a class="reference internal" href="#glb">Parse glb from file path</a></li>
+<li><a class="reference internal" href="#id2">Parse glb byte array</a></li>
+<li><a class="reference internal" href="#gltf">Parse gltf from file path</a></li>
+<li><a class="reference internal" href="#zip">Parse gltf in zip archive from file path</a></li>
+<li><a class="reference internal" href="#id3">Parse by file extension</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id4">2. ロードする</a><ul>
+<li><a class="reference internal" href="#sync">sync</a></li>
+<li><a class="reference internal" href="#async">async</a></li>
+<li><a class="reference internal" href="#materialgenerator-urp">Load URP material by materialGenerator argument</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id5">3. インスタンスを使用する</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../history.html"
+                        title="previous chapter">Version</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="how_to_impl_extension.html"
+                        title="next chapter">The implementation of glTF extensions(0.63.2)</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/gltf/0_82_glb_import.md.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="how_to_impl_extension.html" title="The implementation of glTF extensions(0.63.2)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../history.html" title="Version"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">UniVRM Programming Document  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">GlbImport(0.82)</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, VRM Consortium.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+    </div>
+  </body>
+</html>

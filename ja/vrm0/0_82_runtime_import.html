@@ -1,0 +1,194 @@
+
+<!DOCTYPE html>
+
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>RuntimeImport(0.82) &#8212; UniVRM Programming Document  ドキュメント</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="検索" href="../search.html" />
+    <link rel="next" title="RuntimeImport(0.79)" href="0_79_runtime_import.html" />
+    <link rel="prev" title="GltfUpdate(0.36)" href="../gltf/0_36_update.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="総合索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="0_79_runtime_import.html" title="RuntimeImport(0.79)"
+             accesskey="N">次へ</a> |</li>
+        <li class="right" >
+          <a href="../gltf/0_36_update.html" title="GltfUpdate(0.36)"
+             accesskey="P">前へ</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">UniVRM Programming Document  ドキュメント</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">RuntimeImport(0.82)</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="runtimeimport-0-82">
+<h1>RuntimeImport(0.82)<a class="headerlink" href="#runtimeimport-0-82" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Version</span> <span class="pre">0.82.0</span></code> は <code class="docutils literal notranslate"><span class="pre">0.82.1</span></code> 以降を使ってください。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Version</span> <span class="pre">0.82.1~</span></code></p></li>
+</ul>
+<p>以下の手順で import します。</p>
+<ol class="simple">
+<li><p>VRMをパースして、<code class="docutils literal notranslate"><span class="pre">GltfData</span></code> を得る。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GltfData</span></code> から <code class="docutils literal notranslate"><span class="pre">VRMData</span></code> を得る。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">VrmData</span></code> から <code class="docutils literal notranslate"><span class="pre">RuntimeGltfInstance</span></code> をロードする。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">RuntimeGltfInstance</span></code> を使う。</p></li>
+</ol>
+<p>サンプルの <code class="docutils literal notranslate"><span class="pre">Assets\VRM\Samples\SimpleViewer\ViewerUI.cs</span></code> も参照してください。</p>
+<section id="gltfdata">
+<h2>1. <code class="docutils literal notranslate"><span class="pre">GltfData</span></code> を得る<a class="headerlink" href="#gltfdata" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">GltfData</span> <span class="nf">Load</span><span class="p">(</span><span class="kt">string</span> <span class="n">path</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="k">new</span> <span class="nf">GlbFileParser</span><span class="p">(</span><span class="n">path</span><span class="p">).</span><span class="n">Parse</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><a class="reference internal" href="../gltf/0_82_glb_import.html"><span class="doc std std-doc">GLB import</span></a> も参照してください。</p>
+</section>
+<section id="vrmdata">
+<h2>2. <code class="docutils literal notranslate"><span class="pre">VRMData</span></code> を得る<a class="headerlink" href="#vrmdata" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">VRMData</span> <span class="n">vrm</span> <span class="p">=</span> <span class="k">new</span> <span class="n">VRMData</span><span class="p">(</span><span class="n">data</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="load">
+<h2>3. Load する<a class="headerlink" href="#load" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="n">RuntimeGltfInstance</span> <span class="nf">Load</span><span class="p">(</span><span class="n">VRMData</span> <span class="n">vrm</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="c1">// 使用後に Dispose で VRMImporterContext を破棄してください。</span>
+    <span class="n">using</span><span class="p">(</span><span class="kt">var</span> <span class="n">loader</span> <span class="p">=</span> <span class="k">new</span> <span class="n">VRMImporterContext</span><span class="p">(</span><span class="n">vrm</span><span class="p">))</span>
+    <span class="p">{</span>
+        <span class="kt">var</span> <span class="n">instance</span> <span class="p">=</span> <span class="k">await</span> <span class="n">loader</span><span class="p">.</span><span class="n">LoadAsync</span><span class="p">();</span>
+        <span class="k">return</span> <span class="n">instance</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<section id="urp-materialgenerator">
+<h3>URP 向けに <code class="docutils literal notranslate"><span class="pre">materialGenerator</span></code> を指定する(実験)<a class="headerlink" href="#urp-materialgenerator" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">materialGenerator</span></code> 引き数(省略可能)を指定することで URP マテリアルを生成するようにカスタムできます。
+指定しない場合は <code class="docutils literal notranslate"><span class="pre">built-in</span></code> 向けのデフォルトが使用されます。</p>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="n">RuntimeGltfInstance</span> <span class="nf">Load</span><span class="p">(</span><span class="n">VRMData</span> <span class="n">vrm</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">var</span> <span class="n">materialGenerator</span> <span class="p">=</span> <span class="k">new</span> <span class="n">VRMUrpMaterialDescriptorGenerator</span><span class="p">(</span><span class="n">vrm</span><span class="p">.</span><span class="n">VrmExtension</span><span class="p">);</span>
+    <span class="n">using</span><span class="p">(</span><span class="kt">var</span> <span class="n">loader</span> <span class="p">=</span> <span class="k">new</span> <span class="n">VRM</span><span class="p">.</span><span class="n">VRMImporterContext</span><span class="p">(</span><span class="n">vrm</span><span class="p">,</span> <span class="n">materialGenerator</span><span class="p">:</span> <span class="n">materialGenerator</span><span class="p">))</span>
+    <span class="p">{</span>
+        <span class="kt">var</span> <span class="n">instance</span> <span class="p">=</span> <span class="k">await</span> <span class="n">loader</span><span class="p">.</span><span class="n">LoadAsync</span><span class="p">();</span>
+        <span class="k">return</span> <span class="n">instance</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>まだ URP 向け MToonShader が作成されていないので、<code class="docutils literal notranslate"><span class="pre">UniUnlit</span></code> にフォールバックします。</p></li>
+</ul>
+</section>
+</section>
+<section id="instance">
+<h2>4. Instance<a class="headerlink" href="#instance" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="c1">// SkinnedMeshRenderer に対する指示</span>
+<span class="n">instance</span><span class="p">.</span><span class="n">EnableUpdateWhenOffscreen</span><span class="p">();</span>
+<span class="c1">// 準備ができたら表示する(デフォルトでは非表示)</span>
+<span class="n">instance</span><span class="p">.</span><span class="n">ShowMeshes</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>使用後に以下のように破棄してください。関連する Asset(Texture, Material, Meshなど)も破棄されます。</p>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="c1">// GameObject.Destroy(instance);</span>
+
+<span class="c1">// RuntimeGltfInstance ではなくて、その GameObject を Destroy します。</span>
+<span class="n">GameObject</span><span class="p">.</span><span class="n">Destroy</span><span class="p">(</span><span class="n">instance</span><span class="p">.</span><span class="n">gameObject</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">目次</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">RuntimeImport(0.82)</a><ul>
+<li><a class="reference internal" href="#gltfdata">1. <code class="docutils literal notranslate"><span class="pre">GltfData</span></code> を得る</a></li>
+<li><a class="reference internal" href="#vrmdata">2. <code class="docutils literal notranslate"><span class="pre">VRMData</span></code> を得る</a></li>
+<li><a class="reference internal" href="#load">3. Load する</a><ul>
+<li><a class="reference internal" href="#urp-materialgenerator">URP 向けに <code class="docutils literal notranslate"><span class="pre">materialGenerator</span></code> を指定する(実験)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#instance">4. Instance</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>前のトピックへ</h4>
+  <p class="topless"><a href="../gltf/0_36_update.html"
+                        title="前の章へ">GltfUpdate(0.36)</a></p>
+  <h4>次のトピックへ</h4>
+  <p class="topless"><a href="0_79_runtime_import.html"
+                        title="次の章へ">RuntimeImport(0.79)</a></p>
+  <div role="note" aria-label="source link">
+    <h3>このページ</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/vrm0/0_82_runtime_import.md.txt"
+            rel="nofollow">ソースコードを表示</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="総合索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="0_79_runtime_import.html" title="RuntimeImport(0.79)"
+             >次へ</a> |</li>
+        <li class="right" >
+          <a href="../gltf/0_36_update.html" title="GltfUpdate(0.36)"
+             >前へ</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">UniVRM Programming Document  ドキュメント</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">RuntimeImport(0.82)</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, VRM Consortium.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+    </div>
+  </body>
+</html>

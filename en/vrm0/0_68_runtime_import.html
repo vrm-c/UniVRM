@@ -1,0 +1,286 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>RuntimeImport(0.68) &#8212; UniVRM Programming Document  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="RuntimeImport(0.44)" href="0_44_runtime_import.html" />
+    <link rel="prev" title="RuntimeImport(0.77)" href="0_77_runtime_import.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0_44_runtime_import.html" title="RuntimeImport(0.44)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0_77_runtime_import.html" title="RuntimeImport(0.77)"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">UniVRM Programming Document  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">RuntimeImport(0.68)</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="runtimeimport-0-68">
+<h1>RuntimeImport(0.68)<a class="headerlink" href="#runtimeimport-0-68" title="Permalink to this headline">¶</a></h1>
+<section id="id1">
+<h2>API Changes<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>ImporterContext has been reworked.</p>
+<ul class="simple">
+<li><p>Loading processing has been divided into two steps: <code class="docutils literal notranslate"><span class="pre">Parse</span></code> and <code class="docutils literal notranslate"><span class="pre">Load</span></code>.</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">Parse</span></code> processing can be processed by other than the main thread.</p></li>
+</ul>
+</li>
+<li><p>The implementation of asynchronous loading function <code class="docutils literal notranslate"><span class="pre">ImporterContext.LoadAsync</span></code> has changed to <code class="docutils literal notranslate"><span class="pre">Task</span></code>.</p></li>
+<li><p>The method of explicitly destroying <code class="docutils literal notranslate"><span class="pre">UnityEngine.Object</span></code> resources is now available.</p>
+<ul>
+<li><p>As such, resource leaks can be prevented.</p></li>
+</ul>
+</li>
+<li><p>The timing of calling <code class="docutils literal notranslate"><span class="pre">ImporterContext.Dispose</span></code> has been changed to when the loading process ends</p>
+<ul>
+<li><p>Call <code class="docutils literal notranslate"><span class="pre">ImporterContext.DisposeOnGameObjectDestroyed</span></code> function (described below) before <code class="docutils literal notranslate"><span class="pre">ImporterContext.Dispose</span></code> function is called.</p></li>
+<li><p>In the previous versions, <code class="docutils literal notranslate"><span class="pre">ImporterContext.Dispose</span></code> is called when the generated VRM model is destroyed.</p></li>
+</ul>
+</li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">ImporterContext.DisposeOnGameObjectDestroyed</span></code> function</p>
+<ul>
+<li><p>The duty of destroying VRM resources (Texture, Material, Mesh, etc) has been transferred to GameObject.</p></li>
+<li><p>The resources (Texture, Material, Mesh, etc) will be destroyed when VRM’s GameObject is destroyed.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="id2">
+<h2>Sample Codes (Synchronous Loading)<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="nn">UniGLTF</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">UnityEngine</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">VRM</span><span class="p">;</span>
+
+<span class="k">namespace</span> <span class="nn">YourNameSpace</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">sealed</span> <span class="k">class</span> <span class="nc">LoadVrmSample</span> <span class="p">:</span> <span class="n">MonoBehaviour</span>
+    <span class="p">{</span>
+<span class="na">        [SerializeField]</span> <span class="k">private</span> <span class="kt">string</span> <span class="n">_vrmFilePath</span><span class="p">;</span>
+        <span class="k">private</span> <span class="n">GameObject</span> <span class="n">_vrmGameObject</span><span class="p">;</span>
+
+        <span class="k">private</span> <span class="k">void</span> <span class="nf">Start</span><span class="p">()</span>
+        <span class="p">{</span>
+            <span class="n">_vrmGameObject</span> <span class="p">=</span> <span class="n">LoadVrm</span><span class="p">(</span><span class="n">_vrmFilePath</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="k">private</span> <span class="k">void</span> <span class="nf">OnDestroy</span><span class="p">()</span>
+        <span class="p">{</span>
+            <span class="n">DestroyVrm</span><span class="p">(</span><span class="n">_vrmGameObject</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="k">private</span> <span class="n">GameObject</span> <span class="nf">LoadVrm</span><span class="p">(</span><span class="kt">string</span> <span class="n">vrmFilePath</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="c1">// 1. GltfParser を呼び出します。</span>
+            <span class="c1">//    GltfParser はファイルから JSON 情報とバイナリデータを読み出します。</span>
+            <span class="kt">var</span> <span class="n">parser</span> <span class="p">=</span> <span class="k">new</span> <span class="n">GltfParser</span><span class="p">();</span>
+            <span class="n">parser</span><span class="p">.</span><span class="n">ParsePath</span><span class="p">(</span><span class="n">vrmFilePath</span><span class="p">);</span>
+
+            <span class="c1">// 2. GltfParser のインスタンスを引数にして VRMImporterContext を作成します。</span>
+            <span class="c1">//    VRMImporterContext は VRM のロードを実際に行うクラスです。</span>
+            <span class="k">using</span> <span class="p">(</span><span class="kt">var</span> <span class="n">context</span> <span class="p">=</span> <span class="k">new</span> <span class="n">VRMImporterContext</span><span class="p">(</span><span class="n">parser</span><span class="p">))</span>
+            <span class="p">{</span>
+                <span class="c1">// 3. Load 関数を呼び出し、VRM の GameObject を生成します。</span>
+                <span class="n">context</span><span class="p">.</span><span class="n">Load</span><span class="p">();</span>
+
+                <span class="c1">// 4. （任意） SkinnedMeshRenderer の UpdateWhenOffscreen を有効にできる便利関数です。</span>
+                <span class="c1">//    https://docs.unity3d.com/2019.4/Documentation/ScriptReference/SkinnedMeshRenderer-updateWhenOffscreen.html</span>
+                <span class="n">context</span><span class="p">.</span><span class="n">EnableUpdateWhenOffscreen</span><span class="p">();</span>
+
+                <span class="c1">// 5. VRM モデルを表示します。</span>
+                <span class="n">context</span><span class="p">.</span><span class="n">ShowMeshes</span><span class="p">();</span>
+
+                <span class="c1">// 6. VRM の GameObject が実際に使用している UnityEngine.Object リソースの寿命を VRM の GameObject に紐付けます。</span>
+                <span class="c1">//    つまり VRM の GameObject の破棄時に、実際に使用しているリソース (Texture, Material, Mesh, etc) をまとめて破棄することができます。</span>
+                <span class="n">context</span><span class="p">.</span><span class="n">DisposeOnGameObjectDestroyed</span><span class="p">();</span>
+
+                <span class="c1">// 7. Root の GameObject を return します。</span>
+                <span class="c1">//    Root の GameObject とは VRMMeta コンポーネントが付与されている GameObject のことです。</span>
+                <span class="k">return</span> <span class="n">context</span><span class="p">.</span><span class="n">Root</span><span class="p">;</span>
+            <span class="p">}</span>
+            <span class="c1">// 8. using スコープを抜けて context が破棄されると、 VRMImporterContext が保持する UnityEngine.Object リソースが破棄されます。</span>
+            <span class="c1">//    このとき破棄されるリソースは、 glTF ファイルには含まれているが VRM の GameObject には割り当てられていないテクスチャなどです。</span>
+            <span class="c1">//    手順 6. で VRM の GameObject に紐付けたリソースは、ここでは破棄されません。</span>
+        <span class="p">}</span>
+
+        <span class="k">private</span> <span class="k">void</span> <span class="nf">DestroyVrm</span><span class="p">(</span><span class="n">GameObject</span> <span class="n">vrmGameObject</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="c1">// 9. 生成された VRM の GameObject を破棄します。</span>
+            <span class="c1">//    GameObject を破棄すれば、紐づくリソース (Texture, Material, Mesh, etc) も破棄されます。</span>
+            <span class="n">UnityEngine</span><span class="p">.</span><span class="n">Object</span><span class="p">.</span><span class="n">Destroy</span><span class="p">(</span><span class="n">vrmGameObject</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="id3">
+<h2>Sample Codes (Asynchronous Loading)<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="nn">System.IO</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">System.Threading.Tasks</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">UniGLTF</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">UnityEngine</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">VRM</span><span class="p">;</span>
+
+<span class="k">namespace</span> <span class="nn">YourNameSpace</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">sealed</span> <span class="k">class</span> <span class="nc">LoadVrmAsyncSample</span> <span class="p">:</span> <span class="n">MonoBehaviour</span>
+    <span class="p">{</span>
+<span class="na">        [SerializeField]</span> <span class="k">private</span> <span class="kt">string</span> <span class="n">_vrmFilePath</span><span class="p">;</span>
+        <span class="k">private</span> <span class="n">GameObject</span> <span class="n">_vrmGameObject</span><span class="p">;</span>
+
+        <span class="k">private</span> <span class="k">async</span> <span class="k">void</span> <span class="nf">Start</span><span class="p">()</span>
+        <span class="p">{</span>
+            <span class="c1">// 簡便のため、このサンプルではキャンセル処理などは考慮しません。</span>
+            <span class="n">_vrmGameObject</span> <span class="p">=</span> <span class="k">await</span> <span class="n">LoadVrmAsync</span><span class="p">(</span><span class="n">_vrmFilePath</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="k">private</span> <span class="k">void</span> <span class="nf">OnDestroy</span><span class="p">()</span>
+        <span class="p">{</span>
+            <span class="n">DestroyVrm</span><span class="p">(</span><span class="n">_vrmGameObject</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="k">private</span> <span class="k">async</span> <span class="n">Task</span><span class="p">&lt;</span><span class="n">GameObject</span><span class="p">&gt;</span> <span class="n">LoadVrmAsync</span><span class="p">(</span><span class="kt">string</span> <span class="n">vrmFilePath</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="c1">// 1. GltfParser を呼び出します。</span>
+            <span class="c1">//    GltfParser はファイルから JSON 情報とバイナリデータを読み出します。</span>
+            <span class="c1">//    GltfParser は Unity のメインスレッド以外で実行できます。</span>
+            <span class="kt">var</span> <span class="n">parser</span> <span class="p">=</span> <span class="k">new</span> <span class="n">GltfParser</span><span class="p">();</span>
+            <span class="k">await</span> <span class="n">Task</span><span class="p">.</span><span class="n">Run</span><span class="p">(()</span> <span class="p">=&gt;</span>
+            <span class="p">{</span>
+                <span class="kt">var</span> <span class="n">file</span> <span class="p">=</span> <span class="n">File</span><span class="p">.</span><span class="n">ReadAllBytes</span><span class="p">(</span><span class="n">vrmFilePath</span><span class="p">);</span>
+                <span class="n">parser</span><span class="p">.</span><span class="n">ParseGlb</span><span class="p">(</span><span class="n">file</span><span class="p">);</span>
+            <span class="p">});</span>
+
+            <span class="c1">// 2. GltfParser のインスタンスを引数にして VRMImporterContext を作成します。</span>
+            <span class="c1">//    VRMImporterContext は VRM のロードを実際に行うクラスです。</span>
+            <span class="k">using</span> <span class="p">(</span><span class="kt">var</span> <span class="n">context</span> <span class="p">=</span> <span class="k">new</span> <span class="n">VRMImporterContext</span><span class="p">(</span><span class="n">parser</span><span class="p">))</span>
+            <span class="p">{</span>
+                <span class="c1">// 3. Load 関数を呼び出し、VRM の GameObject を生成します。</span>
+                <span class="c1">//    Load 処理は数フレームの時間を要します。</span>
+                <span class="k">await</span> <span class="n">context</span><span class="p">.</span><span class="n">LoadAsync</span><span class="p">();</span>
+
+                <span class="c1">// 4. （任意） SkinnedMeshRenderer の UpdateWhenOffscreen を有効にできる便利関数です。</span>
+                <span class="c1">//    https://docs.unity3d.com/2019.4/Documentation/ScriptReference/SkinnedMeshRenderer-updateWhenOffscreen.html</span>
+                <span class="n">context</span><span class="p">.</span><span class="n">EnableUpdateWhenOffscreen</span><span class="p">();</span>
+
+                <span class="c1">// 5. VRM モデルを表示します。</span>
+                <span class="n">context</span><span class="p">.</span><span class="n">ShowMeshes</span><span class="p">();</span>
+
+                <span class="c1">// 6. VRM の GameObject が実際に使用している UnityEngine.Object リソースの寿命を VRM の GameObject に紐付けます。</span>
+                <span class="c1">//    つまり VRM の GameObject の破棄時に、実際に使用しているリソース (Texture, Material, Mesh, etc) をまとめて破棄することができます。</span>
+                <span class="n">context</span><span class="p">.</span><span class="n">DisposeOnGameObjectDestroyed</span><span class="p">();</span>
+
+                <span class="c1">// 7. Root の GameObject を return します。</span>
+                <span class="c1">//    Root の GameObject とは VRMMeta コンポーネントが付与されている GameObject のことです。</span>
+                <span class="k">return</span> <span class="n">context</span><span class="p">.</span><span class="n">Root</span><span class="p">;</span>
+            <span class="p">}</span>
+            <span class="c1">// 8. using スコープを抜けて context が破棄されると、 VRMImporterContext が保持する UnityEngine.Object リソースが破棄されます。</span>
+            <span class="c1">//    このとき破棄されるリソースは、 glTF ファイルには含まれているが VRM の GameObject には割り当てられていないテクスチャなどです。</span>
+            <span class="c1">//    手順 6. で VRM の GameObject に紐付けたリソースは、ここでは破棄されません。</span>
+        <span class="p">}</span>
+
+        <span class="k">private</span> <span class="k">void</span> <span class="nf">DestroyVrm</span><span class="p">(</span><span class="n">GameObject</span> <span class="n">vrmGameObject</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="c1">// 9. 生成された VRM の GameObject を破棄します。</span>
+            <span class="c1">// GameObject を破棄すれば、紐づくリソース (Texture, Material, Mesh, etc) も破棄されます。</span>
+            <span class="n">UnityEngine</span><span class="p">.</span><span class="n">Object</span><span class="p">.</span><span class="n">Destroy</span><span class="p">(</span><span class="n">vrmGameObject</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">RuntimeImport(0.68)</a><ul>
+<li><a class="reference internal" href="#id1">API Changes</a></li>
+<li><a class="reference internal" href="#id2">Sample Codes (Synchronous Loading)</a></li>
+<li><a class="reference internal" href="#id3">Sample Codes (Asynchronous Loading)</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="0_77_runtime_import.html"
+                        title="previous chapter">RuntimeImport(0.77)</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="0_44_runtime_import.html"
+                        title="next chapter">RuntimeImport(0.44)</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/vrm0/0_68_runtime_import.md.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0_44_runtime_import.html" title="RuntimeImport(0.44)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0_77_runtime_import.html" title="RuntimeImport(0.77)"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">UniVRM Programming Document  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">RuntimeImport(0.68)</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, VRM Consortium.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,141 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Sphinx 作業 &#8212; UniVRM Programming Document  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/nature.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="nav-item nav-item-0"><a href="index.html">UniVRM Programming Document  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Sphinx 作業</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="sphinx">
+<h1>Sphinx 作業<a class="headerlink" href="#sphinx" title="Permalink to this headline">¶</a></h1>
+<section id="id1">
+<h2>初期化<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install sphinx
+$ mkdir docs
+$ cd docs
+docs$ sphinx-quickstart
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">docs/_build/ja</span></code> に日本語ドキュメントを出力する</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>doc$ sphinx-build . _build/ja
+</pre></div>
+</div>
+</section>
+<section id="myst">
+<h2>MySt 導入<a class="headerlink" href="#myst" title="Permalink to this headline">¶</a></h2>
+<p>markdown で記事を記述する</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install --upgrade myst-parser
+</pre></div>
+</div>
+<p>conf.py</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">extensions</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;myst_parser&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="gettext">
+<h2>gettext で英語記事を作成する<a class="headerlink" href="#gettext" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install sphinx-intl
+</pre></div>
+</div>
+<p>conf.py</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">locale_dirs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;locale/&#39;</span><span class="p">]</span>
+<span class="n">gettext_compact</span> <span class="o">=</span> <span class="bp">False</span>
+</pre></div>
+</div>
+<p>potファイル作成</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>doc$ sphinx-build -M gettext . _pot
+# =&gt; _pot/gettext
+</pre></div>
+</div>
+<p>poファイルを作成</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>doc$ sphinx-intl update -p _pot/gettext -l en
+# =&gt; locale/en
+</pre></div>
+</div>
+<p>ロケールを使ってサイトビルド</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>doc$ sphinx-build . _build/en -D language=en
+</pre></div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Sphinx 作業</a><ul>
+<li><a class="reference internal" href="#id1">初期化</a></li>
+<li><a class="reference internal" href="#myst">MySt 導入</a></li>
+<li><a class="reference internal" href="#gettext">gettext で英語記事を作成する</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/README.md.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="nav-item nav-item-0"><a href="index.html">UniVRM Programming Document  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Sphinx 作業</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, VRM Consortium.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+    </div>
+  </body>
+</html>

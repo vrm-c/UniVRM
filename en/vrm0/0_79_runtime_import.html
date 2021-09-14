@@ -1,0 +1,110 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>RuntimeImport(0.79) &#8212; UniVRM Programming Document  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="RuntimeImport(0.77)" href="0_77_runtime_import.html" />
+    <link rel="prev" title="RuntimeImport(0.82)" href="0_82_runtime_import.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0_77_runtime_import.html" title="RuntimeImport(0.77)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0_82_runtime_import.html" title="RuntimeImport(0.82)"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">UniVRM Programming Document  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">RuntimeImport(0.79)</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="runtimeimport-0-79">
+<h1>RuntimeImport(0.79)<a class="headerlink" href="#runtimeimport-0-79" title="Permalink to this headline">¶</a></h1>
+<p>Separate <code class="docutils literal notranslate"><span class="pre">GltfData</span></code> from <code class="docutils literal notranslate"><span class="pre">GltfParser</span></code></p>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span> <span class="n">parser</span> <span class="p">=</span> <span class="k">new</span> <span class="n">GltfParser</span><span class="p">();</span>
+<span class="n">parser</span><span class="p">.</span><span class="n">ParsePath</span><span class="p">(</span><span class="n">path</span><span class="p">);</span>
+</pre></div>
+</div>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">GltfData</span> <span class="n">data</span> <span class="p">=</span> <span class="k">new</span> <span class="n">GlbFileParser</span><span class="p">(</span><span class="n">path</span><span class="p">).</span><span class="n">Parse</span><span class="p">();</span>
+</pre></div>
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="0_82_runtime_import.html"
+                        title="previous chapter">RuntimeImport(0.82)</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="0_77_runtime_import.html"
+                        title="next chapter">RuntimeImport(0.77)</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/vrm0/0_79_runtime_import.md.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0_77_runtime_import.html" title="RuntimeImport(0.77)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0_82_runtime_import.html" title="RuntimeImport(0.82)"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">UniVRM Programming Document  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">RuntimeImport(0.79)</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, VRM Consortium.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+    </div>
+  </body>
+</html>

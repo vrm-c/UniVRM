@@ -1,0 +1,152 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>RuntimeLoad &#8212; UniVRM Programming Document  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="🚧Humanoid" href="vrm1_get_humanoid.html" />
+    <link rel="prev" title="How to use VRMFirstPerson" href="../vrm0/firstperson.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="vrm1_get_humanoid.html" title="🚧Humanoid"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../vrm0/firstperson.html" title="How to use VRMFirstPerson"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">UniVRM Programming Document  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">RuntimeLoad</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="runtimeload">
+<h1>RuntimeLoad<a class="headerlink" href="#runtimeload" title="Permalink to this headline">¶</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">VRM-1.0</span></code> can load <code class="docutils literal notranslate"><span class="pre">VRM-0.x</span></code>. In that case, incompatible migrated meta properties are not allowed. Therefore, we provide an API that allows you to access the original meta before migration.</p>
+<p>See <code class="docutils literal notranslate"><span class="pre">Assets\VRM10\Samples\VRM10Viewer\VRM10ViewerUI.cs</span></code>.</p>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">IMaterialDescriptorGenerator</span> <span class="nf">GetVrmMaterialDescriptorGenerator</span><span class="p">(</span><span class="kt">bool</span> <span class="n">useUrp</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">useUrp</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">Vrm10UrpMaterialDescriptorGenerator</span><span class="p">();</span>
+    <span class="p">}</span>
+    <span class="k">else</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">Vrm10MaterialDescriptorGenerator</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">async</span> <span class="n">Task</span><span class="p">&lt;</span><span class="n">RuntimeGltfInstance</span><span class="p">&gt;</span> <span class="n">LoadAsync</span><span class="p">(</span><span class="kt">string</span> <span class="n">path</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">GltfData</span> <span class="n">data</span> <span class="p">=</span> <span class="k">new</span> <span class="n">AutoGltfFileParser</span><span class="p">(</span><span class="n">path</span><span class="p">).</span><span class="n">Parse</span><span class="p">();</span>
+
+    <span class="c1">// doMigrate: true で旧バージョンの vrm をロードできます。</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">Vrm10Data</span><span class="p">.</span><span class="n">TryParseOrMigrate</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">doMigrate</span><span class="p">:</span> <span class="k">true</span><span class="p">,</span> <span class="k">out</span> <span class="n">Vrm10Data</span> <span class="n">vrm</span><span class="p">))</span>
+    <span class="p">{</span>
+        <span class="c1">// vrm</span>
+        <span class="k">using</span> <span class="p">(</span><span class="kt">var</span> <span class="n">loader</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Vrm10Importer</span><span class="p">(</span><span class="n">vrm</span><span class="p">,</span> 
+        <span class="n">materialGenerator</span><span class="p">:</span> <span class="n">GetVrmMaterialDescriptorGenerator</span><span class="p">(</span><span class="n">m_useUrpMaterial</span><span class="p">.</span><span class="n">isOn</span><span class="p">)))</span>
+        <span class="p">{</span>
+            <span class="c1">// migrate しても thumbnail は同じ</span>
+            <span class="kt">var</span> <span class="n">thumbnail</span>  <span class="p">=</span> <span class="k">await</span> <span class="n">loader</span><span class="p">.</span><span class="n">LoadVrmThumbnailAsync</span><span class="p">();</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="n">vrm</span><span class="p">.</span><span class="n">OriginalMetaBeforeMigration</span> <span class="p">!=</span> <span class="k">null</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="c1">// migrated from vrm-0.x. use OriginalMetaBeforeMigration</span>
+                <span class="n">UpdateMeta</span><span class="p">(</span><span class="n">vrm</span><span class="p">.</span><span class="n">OriginalMetaBeforeMigration</span><span class="p">,</span> <span class="n">thumbnail</span><span class="p">);</span>
+            <span class="p">}</span>
+            <span class="k">else</span>
+            <span class="p">{</span>
+                <span class="c1">// load vrm-1.0. use newMeta</span>
+                <span class="n">UpdateMeta</span><span class="p">(</span><span class="n">vrm</span><span class="p">.</span><span class="n">VrmExtension</span><span class="p">.</span><span class="n">Meta</span><span class="p">,</span> <span class="n">thumbnail</span><span class="p">);</span>
+            <span class="p">}</span>
+
+            <span class="c1">// モデルをロード</span>
+            <span class="n">RuntimeGltfInstance</span> <span class="n">instance</span> <span class="p">=</span> <span class="k">await</span> <span class="n">loader</span><span class="p">.</span><span class="n">LoadAsync</span><span class="p">();</span>
+            <span class="k">return</span> <span class="n">instance</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">else</span><span class="p">{</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nf">Exception</span><span class="p">(</span><span class="s">&quot;not vrm&quot;</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../vrm0/firstperson.html"
+                        title="previous chapter">How to use VRMFirstPerson</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="vrm1_get_humanoid.html"
+                        title="next chapter">🚧Humanoid</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/vrm1/vrm1_runtime_load.md.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="vrm1_get_humanoid.html" title="🚧Humanoid"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../vrm0/firstperson.html" title="How to use VRMFirstPerson"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">UniVRM Programming Document  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">RuntimeLoad</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, VRM Consortium.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+    </div>
+  </body>
+</html>

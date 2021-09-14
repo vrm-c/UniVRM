@@ -1,0 +1,600 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>The implementation of glTF extensions(0.63.2) &#8212; UniVRM Programming Document  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="GltfUpdate(0.36)" href="0_36_update.html" />
+    <link rel="prev" title="GlbImport(0.82)" href="0_82_glb_import.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0_36_update.html" title="GltfUpdate(0.36)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0_82_glb_import.html" title="GlbImport(0.82)"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">UniVRM Programming Document  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">The implementation of glTF extensions(0.63.2)</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="gltf-0-63-2">
+<h1>The implementation of glTF extensions(0.63.2)<a class="headerlink" href="#gltf-0-63-2" title="Permalink to this headline">¶</a></h1>
+<p>From <code class="docutils literal notranslate"><span class="pre">UniVRM-0.63.2</span></code> , <code class="docutils literal notranslate"><span class="pre">UniGLTF</span></code> structure is changed, cause <code class="docutils literal notranslate"><span class="pre">extensions</span></code> / <code class="docutils literal notranslate"><span class="pre">extras</span></code> implementations is updated.</p>
+<section id="gltf">
+<h2>About GLTF Extensions<a class="headerlink" href="#gltf" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">glTF</span></code> has each <code class="docutils literal notranslate"><span class="pre">extensions</span></code>, <code class="docutils literal notranslate"><span class="pre">extras</span></code> points.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">extensions</span></code> (or extras)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">asset.extensions</span></code> (or extras)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">meshes[*].extensions</span></code> (or extras)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">materials[*].extensions</span></code> (or extras)</p></li>
+</ul>
+<p>etc…</p>
+<p><code class="docutils literal notranslate"><span class="pre">extensions</span></code> is defined specification officially, and publish <code class="docutils literal notranslate"><span class="pre">JsonSchema</span></code>.</p>
+<ul class="simple">
+<li><p>https://github.com/KhronosGroup/glTF/tree/master/extensions</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">extensions</span></code> naming convention is <code class="docutils literal notranslate"><span class="pre">{VENDOR_NAME}_{EXTENSION_NAME}</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">extras</span></code> is defined in application local.</p>
+<blockquote>
+<div><p>This enables glTF models to contain application-specific properties without creating a full glTF extension</p>
+</div></blockquote>
+</section>
+<section id="unigltf-extensions">
+<h2>The extensions of UniGLTF<a class="headerlink" href="#unigltf-extensions" title="Permalink to this headline">¶</a></h2>
+<p>Before <code class="docutils literal notranslate"><span class="pre">v0.63.0</span></code>, <code class="docutils literal notranslate"><span class="pre">GLTF</span> <span class="pre">type</span></code> ‘s  <code class="docutils literal notranslate"><span class="pre">extensions</span></code> field is statically extended as <code class="docutils literal notranslate"><span class="pre">GLTFExtensions</span> <span class="pre">Type</span></code>, and had <code class="docutils literal notranslate"><span class="pre">VRM</span> <span class="pre">type</span></code> field.</p>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">VRM</span>
+<span class="p">{</span>
+
+<span class="p">}</span>
+
+<span class="k">class</span> <span class="nc">GLTFExtensions</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="n">VRM</span> <span class="n">VRM</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">class</span> <span class="nc">GLTF</span>
+<span class="p">{</span>
+    <span class="c1">// すべての拡張の型をコンパイル時に知っている必要がある。動的に拡張できない</span>
+    <span class="k">public</span> <span class="n">GLTFExtensions</span> <span class="n">extensions</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>この設計だと GLTF と拡張を別ライブラリとして分離することができませんでした。</p>
+<p><code class="docutils literal notranslate"><span class="pre">v0.63.1</span></code> から設計を変更して、すべての <code class="docutils literal notranslate"><span class="pre">extensions/extras</span></code> に同じ型の入れ物を使うように変更しました。
+UniGLTF は <code class="docutils literal notranslate"><span class="pre">import/export</span></code> の具体的な内容を知らずに中間データの入れ物として扱います。</p>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="c1">// extensions / extras の入れ物として使う型</span>
+<span class="c1">// 実行時は、 glTFExtensionImport / glTFExtensionExport を使う</span>
+<span class="k">public</span> <span class="k">abstract</span> <span class="k">class</span> <span class="nc">glTFExtension</span>
+<span class="p">{</span>
+
+<span class="p">}</span>
+
+<span class="k">class</span> <span class="nc">GLTF</span>
+<span class="p">{</span>
+    <span class="c1">// UniGLTFは具体的な型を知らない。利用側が処理(serialize/deserialize)する</span>
+    <span class="k">public</span> <span class="n">glTFExtension</span> <span class="n">extensions</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="unigltf">
+<h2>UniGLTF の拡張の書き方<a class="headerlink" href="#unigltf" title="Permalink to this headline">¶</a></h2>
+<p>拡張は、以下の部品要素から作れます。</p>
+<ul class="simple">
+<li><p>名前(JsonPath)。例: <code class="docutils literal notranslate"><span class="pre">extensions.VRM</span></code>, <code class="docutils literal notranslate"><span class="pre">materials[*].extensions.KHR_materials_unlit</span></code></p></li>
+<li><p>拡張の型。<code class="docutils literal notranslate"><span class="pre">T型</span></code></p></li>
+<li><p>デシリアライザー(import)。 <code class="docutils literal notranslate"><span class="pre">jsonバイト列</span> <span class="pre">=&gt;</span> <span class="pre">T型</span></code></p></li>
+<li><p>シリアライザーexport)。<code class="docutils literal notranslate"><span class="pre">T型</span> <span class="pre">=&gt;</span> <span class="pre">jsonバイト列</span></code></p></li>
+</ul>
+<section id="jsonpath">
+<h3>JSONPATH と 型を決める<a class="headerlink" href="#jsonpath" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-C# notranslate"><div class="highlight"><pre><span></span><span class="c1">// 型</span>
+<span class="k">class</span> <span class="nc">GoodMaterial</span>
+<span class="p">{</span>
+    <span class="c1">// `materials[*].extensions.CUSTOM_materials_good`</span>
+    <span class="k">public</span> <span class="k">const</span> <span class="kt">string</span> <span class="n">EXTENSION_NAME</span> <span class="p">=</span> <span class="s">&quot;CUSTOM_materials_good&quot;</span><span class="p">;</span>
+
+    <span class="k">public</span> <span class="kt">int</span> <span class="n">GoodValue</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="import">
+<h3>import<a class="headerlink" href="#import" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-C# notranslate"><div class="highlight"><pre><span></span><span class="n">GoodMaterial</span> <span class="nf">DeserializeGoodMaterial</span><span class="p">(</span><span class="n">ListTreeNode</span><span class="p">&lt;</span><span class="n">JsonValue</span><span class="p">&gt;</span> <span class="n">json</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="c1">// デシリアライズ。手で書くかコード生成する(後述)</span>
+<span class="p">}</span>
+
+<span class="c1">// ユーティリティ関数例</span>
+<span class="kt">bool</span> <span class="n">TryGetExtension</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="n">UniGLTF</span><span class="p">.</span><span class="n">glTFExtension</span> <span class="n">extension</span><span class="p">,</span> <span class="kt">string</span> <span class="n">key</span><span class="p">,</span> <span class="n">Func</span><span class="p">&lt;</span><span class="n">ListTreeNode</span><span class="p">&lt;</span><span class="n">JsonValue</span><span class="p">&gt;,</span> <span class="n">T</span><span class="p">&gt;</span> <span class="n">deserializer</span><span class="p">,</span> <span class="k">out</span> <span class="n">T</span> <span class="k">value</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">material</span><span class="p">.</span><span class="n">extensions</span> <span class="k">is</span> <span class="n">UniGLTF</span><span class="p">.</span><span class="n">glTFExtensionsImport</span> <span class="n">import</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="c1">// null check 完了</span>
+        <span class="k">foreach</span><span class="p">(</span><span class="kt">var</span> <span class="n">kv</span> <span class="k">in</span> <span class="n">import</span><span class="p">.</span><span class="n">ObjectItems</span><span class="p">())</span>
+        <span class="p">{</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">kv</span><span class="p">.</span><span class="n">key</span><span class="p">.</span><span class="n">GetString</span><span class="p">()==</span><span class="n">key</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="k">value</span> <span class="p">=</span> <span class="n">Deserialize</span><span class="p">(</span><span class="n">kv</span><span class="p">.</span><span class="n">Value</span><span class="p">);</span>
+                <span class="k">return</span> <span class="k">true</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="k">value</span> <span class="p">=</span> <span class="k">default</span><span class="p">;</span>
+    <span class="k">return</span> <span class="k">false</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">void</span> <span class="nf">ImportMaterial</span><span class="p">(</span><span class="n">UniGLTF</span><span class="p">.</span><span class="n">glTFMaterial</span> <span class="n">material</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="c1">// material の処理に割り込んで</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">TryGetExtension</span><span class="p">(</span><span class="n">material</span><span class="p">.</span><span class="n">extension</span><span class="p">,</span> <span class="n">GoodMaterial</span><span class="p">.</span><span class="n">EXTENSION_NAME</span><span class="p">,</span> <span class="n">DeserializeGoodMaterial</span><span class="p">,</span> <span class="k">out</span> <span class="n">GoodMaterial</span> <span class="n">good</span><span class="p">))</span>
+    <span class="p">{</span>
+        <span class="c1">// good material 独自の処理</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="export">
+<h3>export<a class="headerlink" href="#export" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">void</span> <span class="nf">SerializeGoodMaterial</span><span class="p">(</span><span class="n">UniJSON</span><span class="p">.</span><span class="n">JsonFormatter</span> <span class="n">f</span><span class="p">,</span> <span class="n">GoodMaterial</span> <span class="k">value</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="c1">// シリアライズ。手で書くかコード生成する(後述)</span>
+<span class="p">}</span>
+
+<span class="c1">// ユーティリティ関数例</span>
+<span class="k">public</span> <span class="n">ArraySegment</span><span class="p">&lt;</span><span class="kt">byte</span><span class="p">&gt;</span> <span class="n">SerializeExtension</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="n">T</span> <span class="k">value</span><span class="p">,</span> <span class="n">Func</span><span class="p">&lt;</span><span class="n">T</span><span class="p">,</span> <span class="n">ArraySegment</span><span class="p">&lt;</span><span class="kt">byte</span><span class="p">&gt;&gt;</span> <span class="n">serialize</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">var</span> <span class="n">f</span> <span class="p">=</span> <span class="k">new</span> <span class="n">UniJSON</span><span class="p">.</span><span class="n">JsonFormatter</span><span class="p">();</span>
+    <span class="n">serialize</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="k">value</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">f</span><span class="p">.</span><span class="n">GetStoreBytes</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="k">void</span> <span class="nf">ExportGoodMaterial</span><span class="p">(</span><span class="n">UniGLTF</span><span class="p">.</span><span class="n">glTFMaterial</span> <span class="n">material</span><span class="p">,</span> <span class="n">GoodMaterial</span> <span class="n">good</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="c1">// material の処理に割り込んで</span>
+    <span class="k">if</span><span class="p">(!(</span><span class="n">material</span><span class="p">.</span><span class="n">extensions</span> <span class="k">is</span> <span class="n">UniGLTF</span><span class="p">.</span><span class="n">glTFExtensionsExport</span> <span class="n">export</span><span class="p">))</span>
+    <span class="p">{</span>
+        <span class="c1">// 無かった。新規作成</span>
+        <span class="n">export</span> <span class="p">=</span> <span class="k">new</span> <span class="n">UniGLTF</span><span class="p">.</span><span class="n">glTFExtensionsExport</span><span class="p">();</span>
+        <span class="n">material</span><span class="p">.</span><span class="n">extensions</span> <span class="p">=</span> <span class="n">export</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="kt">var</span> <span class="n">bytes</span> <span class="p">=</span> <span class="n">SerializeExtension</span><span class="p">(</span><span class="n">good</span><span class="p">,</span> <span class="n">SerializeGoodMaterial</span><span class="p">);</span>
+    <span class="n">export</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">GoodMaterial</span><span class="p">.</span><span class="n">EXTENSION_NAME</span><span class="p">,</span> <span class="n">bytes</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id1">
+<h2>実装例<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<section id="gltf-gltf">
+<h3>GLTF: GLTF全体<a class="headerlink" href="#gltf-gltf" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">C#の型からコード生成</span></code></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Assets\UniGLTF\Runtime\UniGLTF\Format\GltfSerializer.g.cs</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Assets\UniGLTF\Runtime\UniGLTF\Format\GltfDeserializer.g.cs</span></code></p></li>
+</ul>
+<p>ジェネレーターの呼び出しコード</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Assets\UniGLTF\Editor\UniGLTF\Serialization\SerializerGenerator.cs</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Assets\UniGLTF\Editor\UniGLTF\Serialization\DeserializerGenerator.cs</span></code></p></li>
+</ul>
+<p>生成コードの呼び出し</p>
+</section>
+<section id="gltf-meshes-extras-targetnames">
+<h3>GLTF: <code class="docutils literal notranslate"><span class="pre">meshes[*].extras.targetNames</span></code><a class="headerlink" href="#gltf-meshes-extras-targetnames" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">コード生成せずに手書き</span></code></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Assets\UniGLTF\Runtime\UniGLTF\Format\ExtensionsAndExtras\gltf_mesh_extras_targetNames.cs</span></code></p></li>
+</ul>
+<p>生成コードの呼び出し</p>
+</section>
+<section id="gltf-materials-extensions-khr-materials-unlit">
+<h3>GLTF: <code class="docutils literal notranslate"><span class="pre">materials[*].extensions.KHR_materials_unlit</span></code><a class="headerlink" href="#gltf-materials-extensions-khr-materials-unlit" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">コード生成せずに手書き</span></code></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Assets\UniGLTF\Runtime\UniGLTF\Format\ExtensionsAndExtras\KHR_materials_unlit.cs</span></code></p></li>
+</ul>
+<p>生成コードの呼び出し</p>
+</section>
+<section id="gltf-materials-extensions-khr-texture-transform">
+<h3>GLTF: <code class="docutils literal notranslate"><span class="pre">materials[*].extensions.KHR_texture_transform</span></code><a class="headerlink" href="#gltf-materials-extensions-khr-texture-transform" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">コード生成せずに手書き</span></code></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Assets\UniGLTF\Runtime\UniGLTF\Format\ExtensionsAndExtras\KHR_texture_transform.cs</span></code></p></li>
+</ul>
+<p>生成コードの呼び出し</p>
+<ul class="simple">
+<li><p>https://github.com/vrm-c/UniVRM/blob/master/Assets/UniGLTF/Runtime/UniGLTF/IO/MaterialImporter.cs#L296</p></li>
+<li><p>https://github.com/vrm-c/UniVRM/blob/master/Assets/UniGLTF/Runtime/UniGLTF/IO/MaterialExporter.cs#L193</p></li>
+</ul>
+</section>
+<section id="vrm0-extensions-vrm">
+<h3>VRM0: <code class="docutils literal notranslate"><span class="pre">extensions.VRM</span></code><a class="headerlink" href="#vrm0-extensions-vrm" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">C#の型からコード生成</span></code></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Assets\VRM\Runtime\Format\VRMSerializer.g.cs</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Assets\VRM\Runtime\Format\VRMDeserializer.g.cs</span></code></p></li>
+</ul>
+<p>ジェネレーターの呼び出しコード</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Assets\VRM\Editor\VRMSerializerGenerator.cs</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Assets\VRM\Editor\VRMDeserializerGenerator.cs</span></code></p></li>
+</ul>
+<p>生成コードの呼び出し</p>
+<ul class="simple">
+<li><p>https://github.com/vrm-c/UniVRM/blob/master/Assets/VRM/Runtime/IO/VRMImporterContext.cs#L41</p></li>
+<li><p>https://github.com/vrm-c/UniVRM/blob/master/Assets/VRM/Runtime/IO/VRMExporter.cs#L209</p></li>
+</ul>
+</section>
+<section id="vrm1-extensions-vrmc-vrm">
+<h3>VRM1: <code class="docutils literal notranslate"><span class="pre">extensions.VRMC_vrm</span></code> など<a class="headerlink" href="#vrm1-extensions-vrmc-vrm" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">JsonSchemaからコード生成</span></code></p>
+<p>5つの Extensions に分かれたので個別に作成。
+ささる場所(JsonPath)が違うのに注意。</p>
+<section id="extensions-vrmc-vrm">
+<h4><code class="docutils literal notranslate"><span class="pre">extensions.VRMC_vrm</span></code><a class="headerlink" href="#extensions-vrmc-vrm" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Assets\VRM10\Runtime\Format\VRM</span></code></p></li>
+</ul>
+</section>
+<section id="materials-extensions-vrmc-materials-mtoon">
+<h4><code class="docutils literal notranslate"><span class="pre">materials[*].extensions.VRMC_materials_mtoon</span></code><a class="headerlink" href="#materials-extensions-vrmc-materials-mtoon" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Assets\VRM10\Runtime\Format\MaterialsMToon</span></code></p></li>
+</ul>
+</section>
+<section id="nodes-extensions-vrmc-node-collider">
+<h4><code class="docutils literal notranslate"><span class="pre">nodes[*].extensions.VRMC_node_collider</span></code><a class="headerlink" href="#nodes-extensions-vrmc-node-collider" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Assets\VRM10\Runtime\Format\NodeCollider</span></code></p></li>
+</ul>
+</section>
+<section id="extensions-vrmc-springbone">
+<h4><code class="docutils literal notranslate"><span class="pre">extensions.VRMC_springBone</span></code><a class="headerlink" href="#extensions-vrmc-springbone" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Assets\VRM10\Runtime\Format\SpringBone</span></code></p></li>
+</ul>
+</section>
+<section id="extensions-vrmc-vrm-constraints">
+<h4><code class="docutils literal notranslate"><span class="pre">extensions.VRMC_vrm_constraints</span></code><a class="headerlink" href="#extensions-vrmc-vrm-constraints" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Assets\VRM10\Runtime\Format\Constraints</span></code></p></li>
+</ul>
+</section>
+<section id="id2">
+<h4>ジェネレーターの呼び出しコード<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Assets\VRM10\Editor\GeneratorMenu.cs</span></code></p></li>
+</ul>
+</section>
+<section id="id3">
+<h4>生成コードの呼び出し<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
+</section>
+</section>
+</section>
+<section id="id4">
+<h2>コード生成<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<p>JSON と C# の型との シリアライズ/デシリアライズは定型コードになるので、ジェネレーターがあります。
+C# の型から生成するものと、JsonSchema から C# の型とともに生成するものがあります。</p>
+<section id="c">
+<h3>C# の型から生成<a class="headerlink" href="#c" title="Permalink to this headline">¶</a></h3>
+<section id="id5">
+<h4>シリアライザー<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h4>
+<p>ジェネレーターを呼び出すコードを作成します。</p>
+<ul class="simple">
+<li><p>元になる型</p></li>
+<li><p>出力先</p></li>
+</ul>
+<p>の２つを決めます。static関数を生成するので、namespace と static class で囲ってあげます。</p>
+<p>例</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Assets\UniGLTF\Editor\UniGLTF\Serialization\SerializerGenerator.cs</span></code></p></li>
+</ul>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="nn">System</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">System.Collections.Generic</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">System.IO</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">System.Reflection</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">System.Text</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">UniJSON</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">UnityEditor</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">UnityEngine</span><span class="p">;</span>
+
+<span class="k">namespace</span> <span class="nn">UniGLTF</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">static</span> <span class="k">class</span> <span class="nc">SerializerGenerator</span>
+    <span class="p">{</span>
+        <span class="k">const</span> <span class="n">BindingFlags</span> <span class="n">FIELD_FLAGS</span> <span class="p">=</span> <span class="n">BindingFlags</span><span class="p">.</span><span class="n">Instance</span> <span class="p">|</span> <span class="n">BindingFlags</span><span class="p">.</span><span class="n">Public</span><span class="p">;</span>
+
+        <span class="k">const</span> <span class="kt">string</span> <span class="n">Begin</span> <span class="p">=</span> <span class="s">@&quot;// Don&#39;t edit manually. This is generaged. </span>
+<span class="s">using System;</span>
+<span class="s">using System.Collections.Generic;</span>
+<span class="s">using UniJSON;</span>
+
+<span class="s">namespace UniGLTF {</span>
+
+<span class="s">    static public class GltfSerializer</span>
+<span class="s">    {</span>
+
+<span class="s">&quot;</span><span class="p">;</span>
+
+        <span class="k">const</span> <span class="kt">string</span> <span class="n">End</span> <span class="p">=</span> <span class="s">@&quot;</span>
+<span class="s">    } // class</span>
+<span class="s">} // namespace</span>
+<span class="s">&quot;</span><span class="p">;</span>
+
+        <span class="k">static</span> <span class="kt">string</span> <span class="n">OutPath</span>
+        <span class="p">{</span>
+            <span class="k">get</span>
+            <span class="p">{</span>
+                <span class="k">return</span> <span class="n">Path</span><span class="p">.</span><span class="n">Combine</span><span class="p">(</span><span class="n">UnityEngine</span><span class="p">.</span><span class="n">Application</span><span class="p">.</span><span class="n">dataPath</span><span class="p">,</span>
+                <span class="s">&quot;UniGLTF/UniGLTF/Scripts/IO/GltfSerializer.g.cs&quot;</span><span class="p">);</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+
+<span class="na">        [MenuItem(UniGLTFVersion.MENU + &quot;/GLTF: Generate Serializer&quot;)]</span>
+        <span class="k">static</span> <span class="k">void</span> <span class="nf">GenerateSerializer</span><span class="p">()</span>
+        <span class="p">{</span>
+            <span class="kt">var</span> <span class="n">info</span> <span class="p">=</span> <span class="k">new</span> <span class="n">ObjectSerialization</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="n">glTF</span><span class="p">),</span> <span class="s">&quot;gltf&quot;</span><span class="p">,</span> <span class="s">&quot;Serialize_&quot;</span><span class="p">);</span>
+            <span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="n">info</span><span class="p">);</span>
+
+            <span class="k">using</span> <span class="p">(</span><span class="kt">var</span> <span class="n">s</span> <span class="p">=</span> <span class="n">File</span><span class="p">.</span><span class="n">Open</span><span class="p">(</span><span class="n">OutPath</span><span class="p">,</span> <span class="n">FileMode</span><span class="p">.</span><span class="n">Create</span><span class="p">))</span>
+            <span class="k">using</span> <span class="p">(</span><span class="kt">var</span> <span class="n">w</span> <span class="p">=</span> <span class="k">new</span> <span class="n">StreamWriter</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="k">new</span> <span class="n">UTF8Encoding</span><span class="p">(</span><span class="k">false</span><span class="p">)))</span>
+            <span class="p">{</span>
+                <span class="n">w</span><span class="p">.</span><span class="n">Write</span><span class="p">(</span><span class="n">Begin</span><span class="p">);</span>
+                <span class="n">info</span><span class="p">.</span><span class="n">GenerateSerializer</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="s">&quot;Serialize&quot;</span><span class="p">);</span>
+                <span class="n">w</span><span class="p">.</span><span class="n">Write</span><span class="p">(</span><span class="n">End</span><span class="p">);</span>
+            <span class="p">}</span>
+
+            <span class="n">Debug</span><span class="p">.</span><span class="n">LogFormat</span><span class="p">(</span><span class="s">&quot;write: {0}&quot;</span><span class="p">,</span> <span class="n">OutPath</span><span class="p">);</span>
+            <span class="n">UnityPath</span><span class="p">.</span><span class="n">FromFullpath</span><span class="p">(</span><span class="n">OutPath</span><span class="p">).</span><span class="n">ImportAsset</span><span class="p">();</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="id6">
+<h4>デシリアライザー<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h4>
+<p>ジェネレーターを呼び出すコードを作成します。</p>
+<ul class="simple">
+<li><p>元になる型</p></li>
+<li><p>出力先</p></li>
+</ul>
+<p>の２つを決めます。static関数を生成するので、namespace と static class で囲ってあげます。</p>
+<p>例</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Assets\UniGLTF\Editor\UniGLTF\Serialization\DeserializerGenerator.cs</span></code></p></li>
+</ul>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="nn">System.IO</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">System.Reflection</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">System.Text</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">UnityEditor</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">UnityEngine</span><span class="p">;</span>
+
+<span class="k">namespace</span> <span class="nn">UniGLTF</span>
+<span class="p">{</span>
+    <span class="c1">/// &lt;summary&gt;</span>
+    <span class="c1">/// Generate deserializer from ListTreeNode&lt;JsonValue&gt; to glTF using type reflection</span>
+    <span class="c1">/// &lt;/summary&gt;</span>
+    <span class="k">public</span> <span class="k">static</span> <span class="k">class</span> <span class="nc">DeserializerGenerator</span>
+    <span class="p">{</span>
+        <span class="k">public</span> <span class="k">const</span> <span class="n">BindingFlags</span> <span class="n">FIELD_FLAGS</span> <span class="p">=</span> <span class="n">BindingFlags</span><span class="p">.</span><span class="n">Instance</span> <span class="p">|</span> <span class="n">BindingFlags</span><span class="p">.</span><span class="n">Public</span><span class="p">;</span>
+
+        <span class="k">const</span> <span class="kt">string</span> <span class="n">Begin</span> <span class="p">=</span> <span class="s">@&quot;// Don&#39;t edit manually. This is generaged. </span>
+<span class="s">using UniJSON;</span>
+<span class="s">using System;</span>
+<span class="s">using System.Collections.Generic;</span>
+<span class="s">using UnityEngine;</span>
+
+<span class="s">namespace UniGLTF {</span>
+
+<span class="s">public static class GltfDeserializer</span>
+<span class="s">{</span>
+
+<span class="s">&quot;</span><span class="p">;</span>
+
+        <span class="k">const</span> <span class="kt">string</span> <span class="n">End</span> <span class="p">=</span> <span class="s">@&quot;</span>
+<span class="s">} // GltfDeserializer</span>
+<span class="s">} // UniGLTF </span>
+<span class="s">&quot;</span><span class="p">;</span>
+
+        <span class="k">static</span> <span class="kt">string</span> <span class="n">OutPath</span>
+        <span class="p">{</span>
+            <span class="k">get</span>
+            <span class="p">{</span>
+                <span class="k">return</span> <span class="n">Path</span><span class="p">.</span><span class="n">Combine</span><span class="p">(</span><span class="n">UnityEngine</span><span class="p">.</span><span class="n">Application</span><span class="p">.</span><span class="n">dataPath</span><span class="p">,</span>
+                <span class="s">&quot;UniGLTF/UniGLTF/Scripts/IO/GltfDeserializer.g.cs&quot;</span><span class="p">);</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+
+<span class="na">        [MenuItem(UniGLTFVersion.MENU + &quot;/GLTF: Generate Deserializer&quot;)]</span>
+        <span class="k">static</span> <span class="k">void</span> <span class="nf">GenerateSerializer</span><span class="p">()</span>
+        <span class="p">{</span>
+            <span class="kt">var</span> <span class="n">info</span> <span class="p">=</span> <span class="k">new</span> <span class="n">ObjectSerialization</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="n">glTF</span><span class="p">),</span> <span class="s">&quot;gltf&quot;</span><span class="p">,</span> <span class="s">&quot;Deserialize_&quot;</span><span class="p">);</span>
+            <span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="n">info</span><span class="p">);</span>
+
+            <span class="k">using</span> <span class="p">(</span><span class="kt">var</span> <span class="n">s</span> <span class="p">=</span> <span class="n">File</span><span class="p">.</span><span class="n">Open</span><span class="p">(</span><span class="n">OutPath</span><span class="p">,</span> <span class="n">FileMode</span><span class="p">.</span><span class="n">Create</span><span class="p">))</span>
+            <span class="k">using</span> <span class="p">(</span><span class="kt">var</span> <span class="n">w</span> <span class="p">=</span> <span class="k">new</span> <span class="n">StreamWriter</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="k">new</span> <span class="n">UTF8Encoding</span><span class="p">(</span><span class="k">false</span><span class="p">)))</span>
+            <span class="p">{</span>
+                <span class="n">w</span><span class="p">.</span><span class="n">Write</span><span class="p">(</span><span class="n">Begin</span><span class="p">);</span>
+                <span class="n">info</span><span class="p">.</span><span class="n">GenerateDeserializer</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="s">&quot;Deserialize&quot;</span><span class="p">);</span>
+                <span class="n">w</span><span class="p">.</span><span class="n">Write</span><span class="p">(</span><span class="n">End</span><span class="p">);</span>
+            <span class="p">}</span>
+
+            <span class="n">Debug</span><span class="p">.</span><span class="n">LogFormat</span><span class="p">(</span><span class="s">&quot;write: {0}&quot;</span><span class="p">,</span> <span class="n">OutPath</span><span class="p">);</span>
+            <span class="n">UnityPath</span><span class="p">.</span><span class="n">FromFullpath</span><span class="p">(</span><span class="n">OutPath</span><span class="p">).</span><span class="n">ImportAsset</span><span class="p">();</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="id7">
+<h4>キー出力の抑制<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">index</span></code> に無効な値として <code class="docutils literal notranslate"><span class="pre">-1</span></code> を入れる場合に、JSONではキーを出力しないとしたいことがあります。</p>
+<p>TODO: <code class="docutils literal notranslate"><span class="pre">int?</span></code> にするべきだった</p>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="na">[JsonSchema(Minimum = 0)]</span>
+<span class="kt">int</span> <span class="n">index</span> <span class="p">=</span> <span class="p">-</span><span class="m">1</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>のようにすることで、キーの出力を抑制できます。</p>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span>    <span class="c1">// 生成コードのキー出力例</span>
+    <span class="k">if</span><span class="p">(</span><span class="k">value</span><span class="p">.</span><span class="n">index</span><span class="p">&gt;=</span><span class="m">0</span><span class="p">){</span>
+</pre></div>
+</div>
+<p>何も付けないと</p>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span>    <span class="c1">// 出力制御無し</span>
+    <span class="k">if</span><span class="p">(</span><span class="k">true</span><span class="p">){</span>
+</pre></div>
+</div>
+</section>
+<section id="enum">
+<h4>enum のエンコーディング<a class="headerlink" href="#enum" title="Permalink to this headline">¶</a></h4>
+<p>enumの値の名前を文字列で使う、enumの値の数値を使うの2種類がありえます。
+enumの場合はデフォルト値が無いので必須です。</p>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="na">[JsonSchema(EnumSerializationType = EnumSerializationType.AsInt)]</span>
+<span class="k">public</span> <span class="n">glBufferTarget</span> <span class="n">target</span><span class="p">;</span>
+
+<span class="na">[JsonSchema(EnumSerializationType = EnumSerializationType.AsLowerString)]</span>
+<span class="k">public</span> <span class="n">ProjectionType</span> <span class="n">type</span><span class="p">;</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="jsonschema">
+<h3>JsonSchemaから生成<a class="headerlink" href="#jsonschema" title="Permalink to this headline">¶</a></h3>
+<p>VRM-1.0 の実装</p>
+<p>TODO:</p>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">The implementation of glTF extensions(0.63.2)</a><ul>
+<li><a class="reference internal" href="#gltf">About GLTF Extensions</a></li>
+<li><a class="reference internal" href="#unigltf-extensions">The extensions of UniGLTF</a></li>
+<li><a class="reference internal" href="#unigltf">UniGLTF の拡張の書き方</a><ul>
+<li><a class="reference internal" href="#jsonpath">JSONPATH と 型を決める</a></li>
+<li><a class="reference internal" href="#import">import</a></li>
+<li><a class="reference internal" href="#export">export</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id1">実装例</a><ul>
+<li><a class="reference internal" href="#gltf-gltf">GLTF: GLTF全体</a></li>
+<li><a class="reference internal" href="#gltf-meshes-extras-targetnames">GLTF: <code class="docutils literal notranslate"><span class="pre">meshes[*].extras.targetNames</span></code></a></li>
+<li><a class="reference internal" href="#gltf-materials-extensions-khr-materials-unlit">GLTF: <code class="docutils literal notranslate"><span class="pre">materials[*].extensions.KHR_materials_unlit</span></code></a></li>
+<li><a class="reference internal" href="#gltf-materials-extensions-khr-texture-transform">GLTF: <code class="docutils literal notranslate"><span class="pre">materials[*].extensions.KHR_texture_transform</span></code></a></li>
+<li><a class="reference internal" href="#vrm0-extensions-vrm">VRM0: <code class="docutils literal notranslate"><span class="pre">extensions.VRM</span></code></a></li>
+<li><a class="reference internal" href="#vrm1-extensions-vrmc-vrm">VRM1: <code class="docutils literal notranslate"><span class="pre">extensions.VRMC_vrm</span></code> など</a><ul>
+<li><a class="reference internal" href="#extensions-vrmc-vrm"><code class="docutils literal notranslate"><span class="pre">extensions.VRMC_vrm</span></code></a></li>
+<li><a class="reference internal" href="#materials-extensions-vrmc-materials-mtoon"><code class="docutils literal notranslate"><span class="pre">materials[*].extensions.VRMC_materials_mtoon</span></code></a></li>
+<li><a class="reference internal" href="#nodes-extensions-vrmc-node-collider"><code class="docutils literal notranslate"><span class="pre">nodes[*].extensions.VRMC_node_collider</span></code></a></li>
+<li><a class="reference internal" href="#extensions-vrmc-springbone"><code class="docutils literal notranslate"><span class="pre">extensions.VRMC_springBone</span></code></a></li>
+<li><a class="reference internal" href="#extensions-vrmc-vrm-constraints"><code class="docutils literal notranslate"><span class="pre">extensions.VRMC_vrm_constraints</span></code></a></li>
+<li><a class="reference internal" href="#id2">ジェネレーターの呼び出しコード</a></li>
+<li><a class="reference internal" href="#id3">生成コードの呼び出し</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id4">コード生成</a><ul>
+<li><a class="reference internal" href="#c">C# の型から生成</a><ul>
+<li><a class="reference internal" href="#id5">シリアライザー</a></li>
+<li><a class="reference internal" href="#id6">デシリアライザー</a></li>
+<li><a class="reference internal" href="#id7">キー出力の抑制</a></li>
+<li><a class="reference internal" href="#enum">enum のエンコーディング</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jsonschema">JsonSchemaから生成</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="0_82_glb_import.html"
+                        title="previous chapter">GlbImport(0.82)</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="0_36_update.html"
+                        title="next chapter">GltfUpdate(0.36)</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/gltf/how_to_impl_extension.md.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0_36_update.html" title="GltfUpdate(0.36)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0_82_glb_import.html" title="GlbImport(0.82)"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">UniVRM Programming Document  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">The implementation of glTF extensions(0.63.2)</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, VRM Consortium.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+    </div>
+  </body>
+</html>

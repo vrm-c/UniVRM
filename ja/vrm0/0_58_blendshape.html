@@ -1,0 +1,270 @@
+
+<!DOCTYPE html>
+
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>BlendShapeProxy(0.58) &#8212; UniVRM Programming Document  ドキュメント</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="検索" href="../search.html" />
+    <link rel="next" title="VRMFirstPersonの使い方" href="firstperson.html" />
+    <link rel="prev" title="RuntimeImport(0.44)" href="0_44_runtime_import.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="総合索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="firstperson.html" title="VRMFirstPersonの使い方"
+             accesskey="N">次へ</a> |</li>
+        <li class="right" >
+          <a href="0_44_runtime_import.html" title="RuntimeImport(0.44)"
+             accesskey="P">前へ</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">UniVRM Programming Document  ドキュメント</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">BlendShapeProxy(0.58)</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="blendshapeproxy-0-58">
+<h1>BlendShapeProxy(0.58)<a class="headerlink" href="#blendshapeproxy-0-58" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<section id="blendshapekey">
+<h2>BlendShapeKeyのインタフェースを厳格化、整理<a class="headerlink" href="#blendshapekey" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>BlendShapeKeyを作成する方法が不明瞭だったため、
+より明示的な API に置き換えました。</p>
+<ul class="simple">
+<li><p>BlendShapeClip.Key 追加</p></li>
+</ul>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>arguments</p></th>
+<th class="head"><p>before</p></th>
+<th class="head"><p>after</p></th>
+<th class="head"><p>備考</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>string name, BlendShapePreset preset</p></td>
+<td><p>public constructor</p></td>
+<td><p>private constructor</p></td>
+<td><p>BlendShapePreset.Unknownのときの挙動が不明瞭だった。代わりに、CreateFromPreset または CreateUnknown を使用してください</p></td>
+</tr>
+<tr class="row-odd"><td><p>BlendShapeClip</p></td>
+<td><p>BlendShapeKey.CreateFrom</p></td>
+<td><p>BlendShapeKey.CreateFromClip</p></td>
+<td><p>他の関数に合わせて、名前を変更</p></td>
+</tr>
+<tr class="row-even"><td><p>BlendShapePreset</p></td>
+<td><p>public constructor</p></td>
+<td><p>BlendShapeKey.CreateFromPreset</p></td>
+<td><p>オーバーロードをやめて明示的な関数に変更</p></td>
+</tr>
+<tr class="row-odd"><td><p>string</p></td>
+<td><p>public constructor</p></td>
+<td><p>BlendShapeKey.CreateUnknown</p></td>
+<td><p>オーバーロードをやめて明示的な関数に変更。</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id1">
+<h2>使用するメソッド<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p>[推奨] <code class="docutils literal notranslate"><span class="pre">SetValues</span></code></p></li>
+<li><p>[非推奨] <code class="docutils literal notranslate"><span class="pre">ImmediatelySetValue</span></code></p></li>
+<li><p>[上級者向け] <code class="docutils literal notranslate"><span class="pre">AccumulateValue</span></code></p></li>
+<li><p>[上級者向け] <code class="docutils literal notranslate"><span class="pre">Apply</span></code></p></li>
+</ul>
+</section>
+<section id="blendshape-weight">
+<h2>スクリプトから BlendShape weight を適用する<a class="headerlink" href="#blendshape-weight" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">SetValues</span></code> 関数のみを使用します。
+そのフレームで必要な表情の weight 値をすべて集めてから <code class="docutils literal notranslate"><span class="pre">SetValues</span></code> を 1 回だけ呼んで設定します。</p>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span> <span class="n">proxy</span> <span class="p">=</span> <span class="n">GetComponent</span><span class="p">&lt;</span><span class="n">VRMBlendShapeProxy</span><span class="p">&gt;();</span>
+
+<span class="n">proxy</span><span class="p">.</span><span class="n">SetValues</span><span class="p">(</span><span class="k">new</span> <span class="n">Dictionary</span><span class="p">&lt;</span><span class="n">BlendShapeKey</span><span class="p">,</span> <span class="kt">float</span><span class="p">&gt;</span>
+<span class="p">{</span>
+    <span class="p">{</span><span class="n">BlendShapeKey</span><span class="p">.</span><span class="n">CreateFromPreset</span><span class="p">(</span><span class="n">BlendShapePreset</span><span class="p">.</span><span class="n">A</span><span class="p">),</span> <span class="m">1f</span><span class="p">},</span> <span class="c1">// [0, 1] の範囲で Weight を指定</span>
+    <span class="p">{</span><span class="n">BlendShapeKey</span><span class="p">.</span><span class="n">CreateFromPreset</span><span class="p">(</span><span class="n">BlendShapePreset</span><span class="p">.</span><span class="n">Joy</span><span class="p">),</span> <span class="m">1f</span><span class="p">},</span> <span class="c1">// システム定義の表情は enum で指定</span>
+    <span class="p">{</span><span class="n">BlendShapeKey</span><span class="p">.</span><span class="n">CreateUnknown</span><span class="p">(</span><span class="s">&quot;USER_DEFINED_FACIAL&quot;</span><span class="p">),</span> <span class="m">1f</span><span class="p">},</span> <span class="c1">// ユーザ定義の表情は string で指定</span>
+<span class="p">});</span>
+</pre></div>
+</div>
+</section>
+<section id="id2">
+<h2>複数の BlendShape weight を適用する際の競合の問題について<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>この節では、なぜ <code class="docutils literal notranslate"><span class="pre">SetValues</span></code> を使わなければならないのかという疑問に回答します。</p>
+<p>たとえば 2 つの VRMBlendShape <code class="docutils literal notranslate"><span class="pre">Blink_L</span></code> と <code class="docutils literal notranslate"><span class="pre">Blink_R</span></code> が</p>
+<p>VRMBlendShape <code class="docutils literal notranslate"><span class="pre">Blink_L</span></code></p>
+<ul class="simple">
+<li><p>Mesh <code class="docutils literal notranslate"><span class="pre">A</span></code> の Blendshape <code class="docutils literal notranslate"><span class="pre">eye_close_L</span></code> の weight 値 <code class="docutils literal notranslate"><span class="pre">100</span></code></p></li>
+<li><p>Mesh <code class="docutils literal notranslate"><span class="pre">A</span></code> の Blendshape <code class="docutils literal notranslate"><span class="pre">eye_close_R</span></code> の weight 値 <code class="docutils literal notranslate"><span class="pre">1</span></code></p></li>
+</ul>
+<p>VRMBlendShape <code class="docutils literal notranslate"><span class="pre">Blink_R</span></code></p>
+<ul class="simple">
+<li><p>Mesh <code class="docutils literal notranslate"><span class="pre">A</span></code> の Blendshape <code class="docutils literal notranslate"><span class="pre">eye_close_L</span></code> の weight 値 <code class="docutils literal notranslate"><span class="pre">1</span></code></p></li>
+<li><p>Mesh <code class="docutils literal notranslate"><span class="pre">A</span></code> の Blendshape <code class="docutils literal notranslate"><span class="pre">eye_close_R</span></code> の weight 値 <code class="docutils literal notranslate"><span class="pre">100</span></code></p></li>
+</ul>
+<p>で定義されているとします。
+このとき両目を閉じたいモチベーションから、両方を有効にする意図で下記のように実行します。</p>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">proxy</span><span class="p">.</span><span class="n">ImmediatelySetValue</span><span class="p">(</span><span class="n">BlendShapeKey</span><span class="p">.</span><span class="n">CreateFromPreset</span><span class="p">(</span><span class="n">BlendShapePreset</span><span class="p">.</span><span class="n">Blink_L</span><span class="p">),</span> <span class="m">1.0f</span><span class="p">);</span>
+<span class="n">proxy</span><span class="p">.</span><span class="n">ImmediatelySetValue</span><span class="p">(</span><span class="n">BlendShapeKey</span><span class="p">.</span><span class="n">CreateFromPreset</span><span class="p">(</span><span class="n">BlendShapePreset</span><span class="p">.</span><span class="n">Blink_R</span><span class="p">),</span> <span class="m">1.0f</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>すると、左目だけが開いてしまいます。
+これは後から <code class="docutils literal notranslate"><span class="pre">ImmediateSetValue</span></code> した <code class="docutils literal notranslate"><span class="pre">Blink_R</span></code> が <code class="docutils literal notranslate"><span class="pre">Blink_L</span></code> と競合して weight を上書きしてしまうからです。
+したがって VRM の表情制御においては下記の 2 通りのどちらかの方法で書くことが求められます。
+これらの方法はこの競合の問題を解決して表情を設定することができます。</p>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">proxy</span><span class="p">.</span><span class="n">SetValues</span><span class="p">(</span><span class="k">new</span> <span class="n">Dictionary</span><span class="p">&lt;</span><span class="n">BlendShapeKey</span><span class="p">,</span> <span class="kt">float</span><span class="p">&gt;</span>
+<span class="p">{</span>
+    <span class="p">{</span><span class="n">BlendShapeKey</span><span class="p">.</span><span class="n">CreateFromPreset</span><span class="p">(</span><span class="n">BlendShapePreset</span><span class="p">.</span><span class="n">Blink_L</span><span class="p">),</span> <span class="m">1.0f</span><span class="p">},</span>
+    <span class="p">{</span><span class="n">BlendShapeKey</span><span class="p">.</span><span class="n">CreateFromPreset</span><span class="p">(</span><span class="n">BlendShapePreset</span><span class="p">.</span><span class="n">Blink_R</span><span class="p">),</span> <span class="m">1.0f</span><span class="p">},</span>
+<span class="p">});</span>
+</pre></div>
+</div>
+<p>または</p>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">proxy</span><span class="p">.</span><span class="n">AccumulateValue</span><span class="p">(</span><span class="n">BlendShapeKey</span><span class="p">.</span><span class="n">CreateFromPreset</span><span class="p">(</span><span class="n">BlendShapePreset</span><span class="p">.</span><span class="n">Blink_L</span><span class="p">),</span> <span class="m">1.0f</span><span class="p">);</span> <span class="c1">// すぐに適用せずにたくわえる</span>
+<span class="n">proxy</span><span class="p">.</span><span class="n">AccumulateValue</span><span class="p">(</span><span class="n">BlendShapeKey</span><span class="p">.</span><span class="n">CreateFromPreset</span><span class="p">(</span><span class="n">BlendShapePreset</span><span class="p">.</span><span class="n">Blink_R</span><span class="p">),</span> <span class="m">1.0f</span><span class="p">);</span>
+<span class="n">proxy</span><span class="p">.</span><span class="n">Apply</span><span class="p">();</span> <span class="c1">// 蓄積した値をまとめて適用する</span>
+</pre></div>
+</div>
+<p>WIP</p>
+</section>
+<section id="setter">
+<h2>何故、複数のSetterがあるのか<a class="headerlink" href="#setter" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p>LipSync</p></li>
+<li><p>瞬き</p></li>
+<li><p>視線制御(BlendShapeで視線を動かすタイプのモデル)</p></li>
+<li><p>プログラムによる喜怒哀楽</p></li>
+</ul>
+<p>上記のような複数のBlendShapeが別々のコンポーネントから設定された場合に、
+BlendShape同士が競合することがわかりました。
+後で設定した値で上書きされて希望のBlendShapeが適用されないという状態になります。
+これを解決するために、一か所で中央集権的に制御する必要があります。</p>
+<p>合成したり排他制御した、BlendShapeClipの集合のスナップショットをまとめて適用することを想定して <code class="docutils literal notranslate"><span class="pre">SetValues</span></code></p>
+</section>
+<section id="immediatelysetvalue">
+<h2>ImmediatelySetValue<a class="headerlink" href="#immediatelysetvalue" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>簡単なテストプログラムでの利用を想定しています。</p>
+<p>例：</p>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span> <span class="n">proxy</span> <span class="p">=</span> <span class="n">GetComponent</span><span class="p">&lt;</span><span class="n">VRMBlendShapeProxy</span><span class="p">&gt;();</span>
+
+<span class="n">proxy</span><span class="p">.</span><span class="n">ImmediatelySetValue</span><span class="p">(</span><span class="n">BlendShapeKey</span><span class="p">.</span><span class="n">CreateFromPreset</span><span class="p">(</span><span class="n">BlendShapePreset</span><span class="p">.</span><span class="n">A</span><span class="p">),</span> <span class="m">1.0f</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="accumulatevalue-apply">
+<h2>AccumulateValue + Apply<a class="headerlink" href="#accumulatevalue-apply" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>例：</p>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span> <span class="n">proxy</span> <span class="p">=</span> <span class="n">GetComponent</span><span class="p">&lt;</span><span class="n">VRMBlendShapeProxy</span><span class="p">&gt;();</span>
+
+<span class="n">proxy</span><span class="p">.</span><span class="n">AccumulateValue</span><span class="p">(</span><span class="n">BlendShapeKey</span><span class="p">.</span><span class="n">CreateFromPreset</span><span class="p">(</span><span class="n">BlendShapePreset</span><span class="p">.</span><span class="n">Blink_L</span><span class="p">),</span> <span class="m">1.0f</span><span class="p">);</span> <span class="c1">// すぐに適用せずにたくわえる</span>
+<span class="n">proxy</span><span class="p">.</span><span class="n">AccumulateValue</span><span class="p">(</span><span class="n">BlendShapeKey</span><span class="p">.</span><span class="n">CreateFromPreset</span><span class="p">(</span><span class="n">BlendShapePreset</span><span class="p">.</span><span class="n">Blink_R</span><span class="p">),</span> <span class="m">1.0f</span><span class="p">);</span>
+<span class="n">proxy</span><span class="p">.</span><span class="n">Apply</span><span class="p">();</span> <span class="c1">// 蓄積した値をまとめて適用する</span>
+</pre></div>
+</div>
+<p>下記のSetValuesを推奨しています。</p>
+</section>
+<section id="setvalues">
+<h2>SetValues<a class="headerlink" href="#setvalues" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>BlendShape合成器が必要に応じ呼び出すことを想定しています。</p>
+<p>例：</p>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span> <span class="n">proxy</span> <span class="p">=</span> <span class="n">GetComponent</span><span class="p">&lt;</span><span class="n">VRMBlendShapeProxy</span><span class="p">&gt;();</span>
+
+<span class="n">proxy</span><span class="p">.</span><span class="n">SetValues</span><span class="p">(</span><span class="k">new</span> <span class="n">Dictionary</span><span class="p">&lt;</span><span class="n">BlendShapeKey</span><span class="p">,</span> <span class="kt">float</span><span class="p">&gt;</span>
+<span class="p">{</span>
+    <span class="p">{</span><span class="n">BlendShapeKey</span><span class="p">.</span><span class="n">CreateFromPreset</span><span class="p">(</span><span class="n">BlendShapePreset</span><span class="p">.</span><span class="n">Blink_L</span><span class="p">),</span> <span class="m">1.0f</span><span class="p">},</span>
+    <span class="p">{</span><span class="n">BlendShapeKey</span><span class="p">.</span><span class="n">CreateFromPreset</span><span class="p">(</span><span class="n">BlendShapePreset</span><span class="p">.</span><span class="n">Blink_R</span><span class="p">),</span> <span class="m">1.0f</span><span class="p">},</span>
+<span class="p">});</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">目次</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">BlendShapeProxy(0.58)</a><ul>
+<li><a class="reference internal" href="#blendshapekey">BlendShapeKeyのインタフェースを厳格化、整理</a></li>
+<li><a class="reference internal" href="#id1">使用するメソッド</a></li>
+<li><a class="reference internal" href="#blendshape-weight">スクリプトから BlendShape weight を適用する</a></li>
+<li><a class="reference internal" href="#id2">複数の BlendShape weight を適用する際の競合の問題について</a></li>
+<li><a class="reference internal" href="#setter">何故、複数のSetterがあるのか</a></li>
+<li><a class="reference internal" href="#immediatelysetvalue">ImmediatelySetValue</a></li>
+<li><a class="reference internal" href="#accumulatevalue-apply">AccumulateValue + Apply</a></li>
+<li><a class="reference internal" href="#setvalues">SetValues</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>前のトピックへ</h4>
+  <p class="topless"><a href="0_44_runtime_import.html"
+                        title="前の章へ">RuntimeImport(0.44)</a></p>
+  <h4>次のトピックへ</h4>
+  <p class="topless"><a href="firstperson.html"
+                        title="次の章へ">VRMFirstPersonの使い方</a></p>
+  <div role="note" aria-label="source link">
+    <h3>このページ</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/vrm0/0_58_blendshape.md.txt"
+            rel="nofollow">ソースコードを表示</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="総合索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="firstperson.html" title="VRMFirstPersonの使い方"
+             >次へ</a> |</li>
+        <li class="right" >
+          <a href="0_44_runtime_import.html" title="RuntimeImport(0.44)"
+             >前へ</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">UniVRM Programming Document  ドキュメント</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">BlendShapeProxy(0.58)</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, VRM Consortium.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+    </div>
+  </body>
+</html>

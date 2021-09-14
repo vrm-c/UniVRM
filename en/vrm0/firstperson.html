@@ -1,0 +1,216 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>How to use VRMFirstPerson &#8212; UniVRM Programming Document  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="RuntimeLoad" href="../vrm1/vrm1_runtime_load.html" />
+    <link rel="prev" title="BlendShapeProxy(0.58)" href="0_58_blendshape.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../vrm1/vrm1_runtime_load.html" title="RuntimeLoad"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0_58_blendshape.html" title="BlendShapeProxy(0.58)"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">UniVRM Programming Document  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">How to use VRMFirstPerson</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="vrmfirstperson">
+<h1>How to use VRMFirstPerson<a class="headerlink" href="#vrmfirstperson" title="Permalink to this headline">¶</a></h1>
+<section id="id1">
+<h2>VRMFirstPerson Settings<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p><span class="xref myst">VRMFirstPerson</span> has the following settings for Renderer:</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>FirstPersonFlag</p></th>
+<th class="head"><p>Layer</p></th>
+<th class="head"><p>Note</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Both</p></td>
+<td><p>default</p></td>
+<td><p>Specify parts that are not necessarily separated between first-person view and third-person view.</p></td>
+</tr>
+<tr class="row-odd"><td><p>ThirdPersonOnly</p></td>
+<td><p>VRMThirdPersonOnly</p></td>
+<td><p>Specify parts that are not rendered in first-person view.</p></td>
+</tr>
+<tr class="row-even"><td><p>FirstPersonOnly</p></td>
+<td><p>VRMFirstPersonOnly</p></td>
+<td><p>Specify parts that are not rendered in third-person view. The auto-created headless model is used.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Auto</p></td>
+<td><p>VRMThirdPersonOnly</p></td>
+<td><p>Automatically create the model in first-person view at runtime and set it to FIRSTPERSON_ONLY_LAYER.</p></td>
+</tr>
+</tbody>
+</table>
+<p>By calling <strong>VRMFirstPerson.Setup</strong> at runtime, the layer settings described above can be performed. Please call the function explicitly from outside.</p>
+</section>
+<section id="id2">
+<h2>Specify the additional render layers for the application<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>The following layers are defined as constant:</p>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">public</span> <span class="k">class</span> <span class="nc">VRMFirstPerson</span> <span class="p">:</span> <span class="n">MonoBehaviour</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">const</span> <span class="kt">int</span> <span class="n">FIRSTPERSON_ONLY_LAYER</span> <span class="p">=</span> <span class="m">9</span><span class="p">;</span>
+    <span class="k">public</span> <span class="k">const</span> <span class="kt">int</span> <span class="n">THIRDPERSON_ONLY_LAYER</span> <span class="p">=</span> <span class="m">10</span><span class="p">;</span>
+
+    <span class="c1">// 省略</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>{{&lt; img src=”images/vrm/layer_setting.png” &gt;}}</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Set Layer in #9 and #10</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="setuplayermask">
+<h2>Call Setup function at runtime and set LayerMask in Camera<a class="headerlink" href="#setuplayermask" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Call VRMFirstPerson.Setup</p></li>
+<li><p>Set LayerMask for first-person camera view and other camera views</p></li>
+</ul>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="nn">System.Collections</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">System.Collections.Generic</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">UnityEngine</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">VRM</span><span class="p">;</span>
+
+<span class="k">public</span> <span class="k">class</span> <span class="nc">SetupExample</span> <span class="p">:</span> <span class="n">MonoBehaviour</span>
+<span class="p">{</span>
+<span class="na">    [SerializeField]</span>
+    <span class="n">Camera</span> <span class="n">m_firstPersonCamera</span><span class="p">;</span> <span class="c1">// HMDのカメラ</span>
+
+<span class="na">    [SerializeField]</span>
+    <span class="n">LayerMask</span> <span class="n">m_firstPersonMask</span><span class="p">;</span> <span class="c1">// HMDのカメラにセットするマスク default | VRMFirstPersonOnly など</span>
+
+<span class="na">    [SerializeField]</span>
+    <span class="n">LayerMask</span> <span class="n">m_otherMask</span><span class="p">;</span> <span class="c1">// HMDのカメラにセットするマスク default | VRMThirdPersonOnly など</span>
+
+<span class="na">    [SerializeField]</span>
+    <span class="n">VRMFirstPerson</span> <span class="n">m_firstPerson</span><span class="p">;</span>
+
+    <span class="k">void</span> <span class="nf">Reset</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="n">m_firstPerson</span> <span class="p">=</span> <span class="n">GameObject</span><span class="p">.</span><span class="n">FindObjectOfType</span><span class="p">&lt;</span><span class="n">VRMFirstPerson</span><span class="p">&gt;();</span>
+    <span class="p">}</span>
+
+    <span class="k">void</span> <span class="nf">Start</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="k">foreach</span> <span class="p">(</span><span class="kt">var</span> <span class="n">camera</span> <span class="k">in</span> <span class="n">GameObject</span><span class="p">.</span><span class="n">FindObjectsOfType</span><span class="p">&lt;</span><span class="n">Camera</span><span class="p">&gt;())</span>
+        <span class="p">{</span>
+            <span class="n">camera</span><span class="p">.</span><span class="n">cullingMask</span> <span class="p">=</span> <span class="p">(</span><span class="n">camera</span> <span class="p">==</span> <span class="n">m_firstPersonCamera</span><span class="p">)</span>
+                <span class="p">?</span> <span class="n">m_firstPersonMask</span>
+                <span class="p">:</span> <span class="n">m_otherMask</span>
+                <span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="c1">// VRMFirstPersonの初期化</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">m_firstPerson</span> <span class="p">!=</span> <span class="k">null</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">m_firstPerson</span><span class="p">.</span><span class="n">Setup</span><span class="p">();</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">How to use VRMFirstPerson</a><ul>
+<li><a class="reference internal" href="#id1">VRMFirstPerson Settings</a></li>
+<li><a class="reference internal" href="#id2">Specify the additional render layers for the application</a></li>
+<li><a class="reference internal" href="#setuplayermask">Call Setup function at runtime and set LayerMask in Camera</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="0_58_blendshape.html"
+                        title="previous chapter">BlendShapeProxy(0.58)</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../vrm1/vrm1_runtime_load.html"
+                        title="next chapter">RuntimeLoad</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/vrm0/firstperson.md.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../vrm1/vrm1_runtime_load.html" title="RuntimeLoad"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0_58_blendshape.html" title="BlendShapeProxy(0.58)"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">UniVRM Programming Document  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">How to use VRMFirstPerson</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, VRM Consortium.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+    </div>
+  </body>
+</html>

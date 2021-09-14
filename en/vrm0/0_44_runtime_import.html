@@ -1,0 +1,277 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>RuntimeImport(0.44) &#8212; UniVRM Programming Document  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="BlendShapeProxy(0.58)" href="0_58_blendshape.html" />
+    <link rel="prev" title="RuntimeImport(0.68)" href="0_68_runtime_import.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0_58_blendshape.html" title="BlendShapeProxy(0.58)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0_68_runtime_import.html" title="RuntimeImport(0.68)"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">UniVRM Programming Document  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">RuntimeImport(0.44)</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="runtimeimport-0-44">
+<h1>RuntimeImport(0.44)<a class="headerlink" href="#runtimeimport-0-44" title="Permalink to this headline">¶</a></h1>
+<section id="version-0-44-loadasync">
+<h2><code class="docutils literal notranslate"><span class="pre">Version</span> <span class="pre">0.44~</span></code> LoadAsync Example<a class="headerlink" href="#version-0-44-loadasync" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span> <span class="n">bytes</span> <span class="p">=</span> <span class="n">File</span><span class="p">.</span><span class="n">ReadAllBytes</span><span class="p">(</span><span class="n">path</span><span class="p">);</span>
+<span class="c1">// なんらかの方法でByte列を得る</span>
+
+<span class="kt">var</span> <span class="n">context</span> <span class="p">=</span> <span class="k">new</span> <span class="n">VRMImporterContext</span><span class="p">();</span>
+
+<span class="n">context</span><span class="p">.</span><span class="n">ParseGlb</span><span class="p">(</span><span class="n">bytes</span><span class="p">);</span>
+
+<span class="c1">// metaが必要な場合</span>
+<span class="kt">bool</span> <span class="n">createThumbnail</span><span class="p">=</span><span class="k">true</span><span class="p">;</span>
+<span class="kt">var</span> <span class="n">meta</span> <span class="p">=</span> <span class="n">context</span><span class="p">.</span><span class="n">ReadMeta</span><span class="p">(</span><span class="n">createThumbnail</span><span class="p">);</span>
+<span class="kt">var</span> <span class="n">thumbnail</span> <span class="p">=</span> <span class="n">meta</span><span class="p">.</span><span class="n">Thumbnail</span><span class="p">;</span>
+
+<span class="c1">// modelを構築</span>
+<span class="n">context</span><span class="p">.</span><span class="n">LoadAsync</span><span class="p">(</span><span class="n">_</span> <span class="p">=&gt;</span>
+<span class="p">{</span>
+    <span class="n">context</span><span class="p">.</span><span class="n">ShowMeshes</span><span class="p">();</span>
+    <span class="kt">var</span> <span class="n">go</span> <span class="p">=</span> <span class="n">context</span><span class="p">.</span><span class="n">Root</span><span class="p">;</span>
+    <span class="c1">// load完了</span>
+<span class="p">},</span>
+<span class="n">Debug</span><span class="p">.</span><span class="n">LogError</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="loadasynctask">
+<h2>LoadAsyncTask Example<a class="headerlink" href="#loadasynctask" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="cp">#if (NET_4_6 &amp;&amp; UNITY_2017_1_OR_NEWER)</span>
+<span class="k">async</span> <span class="k">static</span> <span class="n">Task</span><span class="p">&lt;</span><span class="n">GameObject</span><span class="p">&gt;</span> <span class="n">LoadAsync</span><span class="p">(</span><span class="n">Byte</span><span class="p">[]</span> <span class="n">bytes</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">var</span> <span class="n">context</span> <span class="p">=</span> <span class="k">new</span> <span class="n">VRMImporterContext</span><span class="p">();</span>
+
+    <span class="c1">// GLB形式でJSONを取得しParseします</span>
+    <span class="n">context</span><span class="p">.</span><span class="n">ParseGlb</span><span class="p">(</span><span class="n">bytes</span><span class="p">);</span>
+
+    <span class="k">try</span>
+    <span class="p">{</span>
+        <span class="c1">// ParseしたJSONをシーンオブジェクトに変換していく</span>
+        <span class="k">await</span> <span class="n">context</span><span class="p">.</span><span class="n">LoadAsyncTask</span><span class="p">();</span>
+
+        <span class="c1">// バウンディングボックスとカメラの位置関係で見切れるのを防止する</span>
+        <span class="c1">// SkinnedMeshRenderer.updateWhenOffscreen = true</span>
+        <span class="n">context</span><span class="p">.</span><span class="n">EnableUpdateWhenOffscreen</span><span class="p">();</span>
+
+        <span class="c1">// T-Poseのモデルを表示したくない場合、ShowMeshesする前に準備する</span>
+        <span class="c1">// ロード後に表示する</span>
+        <span class="n">context</span><span class="p">.</span><span class="n">ShowMeshes</span><span class="p">();</span>
+
+        <span class="k">return</span> <span class="n">context</span><span class="p">.</span><span class="n">Root</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">catch</span><span class="p">(</span><span class="n">Exception</span> <span class="n">ex</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">Debug</span><span class="p">.</span><span class="n">LogError</span><span class="p">(</span><span class="n">ex</span><span class="p">);</span>
+        <span class="c1">// 関連するリソースを破棄する</span>
+        <span class="n">context</span><span class="p">.</span><span class="n">Destroy</span><span class="p">(</span><span class="k">true</span><span class="p">);</span>
+        <span class="k">throw</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="cp">#endif</span>
+</pre></div>
+</div>
+</section>
+<section id="id1">
+<h2>Related-Article<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>More details can be found in the link below (written in Japanese):</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://qiita.com/sh_akira/items/8155e4b69107c2a7ede6">UniVRMを使ってVRMモデルをランタイムロードする方法</a></p></li>
+</ul>
+<p>Examples of importing the VRM model with the latest version [can be found here]({{&lt; relref runtime_import.md &gt;}}).</p>
+<p>The followings are the methods to import a VRM model at runtime in Unity:</p>
+</section>
+<section id="vrm">
+<h2>Open VRM from a file path<a class="headerlink" href="#vrm" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span> <span class="n">path</span><span class="p">=</span><span class="s">&quot;sample.vrm&quot;</span><span class="p">;</span>
+<span class="kt">var</span> <span class="n">go</span><span class="p">=</span><span class="n">VRM</span><span class="p">.</span><span class="n">VRMImporter</span><span class="p">.</span><span class="n">LoadFromPath</span><span class="p">(</span><span class="n">path</span><span class="p">);</span>
+<span class="n">Debug</span><span class="p">.</span><span class="n">LogFormat</span><span class="p">(</span><span class="s">&quot;loaded {0}&quot;</span><span class="p">,</span> <span class="n">go</span><span class="p">.</span><span class="n">name</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="id2">
+<h2>Open VRM asynchronously from a file path<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span> <span class="n">path</span><span class="p">=</span><span class="s">&quot;sample.vrm&quot;</span><span class="p">;</span>
+<span class="n">VRMImporter</span><span class="p">.</span><span class="n">LoadVrmAsync</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">go</span> <span class="p">=&gt;</span> <span class="p">{</span>
+    <span class="n">Debug</span><span class="p">.</span><span class="n">LogFormat</span><span class="p">(</span><span class="s">&quot;loaded {0}&quot;</span><span class="p">,</span> <span class="n">go</span><span class="p">.</span><span class="n">name</span><span class="p">);</span>
+<span class="p">});</span>
+</pre></div>
+</div>
+</section>
+<section id="id3">
+<h2>Open VRM from a byte array<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span> <span class="n">path</span><span class="p">=</span><span class="s">&quot;sample.vrm&quot;</span><span class="p">;</span>
+<span class="kt">var</span> <span class="n">bytes</span> <span class="p">=</span> <span class="n">File</span><span class="p">.</span><span class="n">ReadAllBytes</span><span class="p">(</span><span class="n">path</span><span class="p">);</span>
+<span class="kt">var</span> <span class="n">go</span><span class="p">=</span><span class="n">VRMImporter</span><span class="p">.</span><span class="n">LoadFromBytes</span><span class="p">(</span><span class="n">bytes</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="id4">
+<h2>Open VRM asynchronously from a byte array<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">VRMImporter</span><span class="p">.</span><span class="n">LoadVrmAsync</span><span class="p">(</span><span class="n">bytes</span><span class="p">,</span> <span class="n">go</span> <span class="p">=&gt;</span> <span class="p">{</span>
+    <span class="n">Debug</span><span class="p">.</span><span class="n">LogFormat</span><span class="p">(</span><span class="s">&quot;loaded {0}&quot;</span><span class="p">,</span> <span class="n">go</span><span class="p">.</span><span class="n">name</span><span class="p">);</span>
+<span class="p">});</span>
+</pre></div>
+</div>
+</section>
+<section id="id5">
+<h2>Get the information form VRM<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="cp">#if UNITY_STANDALONE_WIN</span>
+            <span class="kt">var</span> <span class="n">path</span> <span class="p">=</span> <span class="n">FileDialogForWindows</span><span class="p">.</span><span class="n">FileDialog</span><span class="p">(</span><span class="s">&quot;open VRM&quot;</span><span class="p">,</span> <span class="s">&quot;.vrm&quot;</span><span class="p">);</span>
+<span class="cp">#else</span>
+            <span class="kt">var</span> <span class="n">path</span> <span class="p">=</span> <span class="n">Application</span><span class="p">.</span><span class="n">dataPath</span> <span class="p">+</span> <span class="s">&quot;/default.vrm&quot;</span><span class="p">;</span>
+<span class="cp">#endif</span>
+            <span class="k">if</span> <span class="p">(</span><span class="kt">string</span><span class="p">.</span><span class="n">IsNullOrEmpty</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+            <span class="p">{</span>
+                <span class="k">return</span><span class="p">;</span>
+            <span class="p">}</span>
+
+            <span class="c1">// Byte列を得る</span>
+            <span class="kt">var</span> <span class="n">bytes</span> <span class="p">=</span> <span class="n">File</span><span class="p">.</span><span class="n">ReadAllBytes</span><span class="p">(</span><span class="n">path</span><span class="p">);</span>
+
+            <span class="kt">var</span> <span class="n">context</span> <span class="p">=</span> <span class="k">new</span> <span class="n">VRMImporterContext</span><span class="p">();</span>
+
+            <span class="c1">// GLB形式をParseしてチャンクからJSONを取得しParseします</span>
+            <span class="n">context</span><span class="p">.</span><span class="n">ParseGlb</span><span class="p">(</span><span class="n">bytes</span><span class="p">);</span>
+
+            <span class="c1">// metaを取得</span>
+            <span class="kt">var</span> <span class="n">meta</span> <span class="p">=</span> <span class="n">context</span><span class="p">.</span><span class="n">ReadMeta</span><span class="p">();</span>
+            <span class="n">Debug</span><span class="p">.</span><span class="n">LogFormat</span><span class="p">(</span><span class="s">&quot;meta: title:{0}&quot;</span><span class="p">,</span> <span class="n">meta</span><span class="p">.</span><span class="n">Title</span><span class="p">);</span>
+
+            <span class="c1">// もしくはこちらでパースされたGLTF全体にアクセスできます</span>
+            <span class="kt">var</span> <span class="n">vrm</span> <span class="p">=</span> <span class="n">context</span><span class="p">.</span><span class="n">GLTF</span><span class="p">;</span>
+
+            <span class="c1">// ParseしたJSONをもとにシーンを構築します</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">m_loadAsync</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="c1">// 非同期に実行する</span>
+                <span class="kt">var</span> <span class="n">now</span> <span class="p">=</span> <span class="n">Time</span><span class="p">.</span><span class="n">time</span><span class="p">;</span>
+                <span class="n">VRMImporter</span><span class="p">.</span><span class="n">LoadVrmAsync</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">go</span><span class="p">=&gt;</span> <span class="p">{</span>
+                    <span class="kt">var</span> <span class="n">delta</span> <span class="p">=</span> <span class="n">Time</span><span class="p">.</span><span class="n">time</span> <span class="p">-</span> <span class="n">now</span><span class="p">;</span>
+                    <span class="n">Debug</span><span class="p">.</span><span class="n">LogFormat</span><span class="p">(</span><span class="s">&quot;LoadVrmAsync {0:0.0} seconds&quot;</span><span class="p">,</span> <span class="n">delta</span><span class="p">);</span>
+                    <span class="n">OnLoaded</span><span class="p">(</span><span class="n">go</span><span class="p">);</span>
+                <span class="p">});</span>
+            <span class="p">}</span>
+            <span class="k">else</span>
+            <span class="p">{</span>
+                <span class="c1">// 同期的に実行する</span>
+                <span class="n">VRMImporter</span><span class="p">.</span><span class="n">LoadFromBytes</span><span class="p">(</span><span class="n">context</span><span class="p">);</span>
+                <span class="n">OnLoaded</span><span class="p">(</span><span class="n">context</span><span class="p">.</span><span class="n">Root</span><span class="p">);</span>
+            <span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="thumbnail-v0-37">
+<h2>Get the thumbnail (From v0.37)<a class="headerlink" href="#thumbnail-v0-37" title="Permalink to this headline">¶</a></h2>
+<p>A thumbnail texture can be created by passing arguments to ReadMeta.</p>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span>    <span class="kt">var</span> <span class="n">meta</span> <span class="p">=</span> <span class="n">context</span><span class="p">.</span><span class="n">ReadMeta</span><span class="p">(</span><span class="k">true</span><span class="p">);</span> <span class="c1">// Thumbnailテクスチャを作成する</span>
+    <span class="n">Texture2D</span> <span class="n">thumbnail</span><span class="p">=</span><span class="n">meta</span><span class="p">.</span><span class="n">Thumbnail</span><span class="p">;</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">RuntimeImport(0.44)</a><ul>
+<li><a class="reference internal" href="#version-0-44-loadasync"><code class="docutils literal notranslate"><span class="pre">Version</span> <span class="pre">0.44~</span></code> LoadAsync Example</a></li>
+<li><a class="reference internal" href="#loadasynctask">LoadAsyncTask Example</a></li>
+<li><a class="reference internal" href="#id1">Related-Article</a></li>
+<li><a class="reference internal" href="#vrm">Open VRM from a file path</a></li>
+<li><a class="reference internal" href="#id2">Open VRM asynchronously from a file path</a></li>
+<li><a class="reference internal" href="#id3">Open VRM from a byte array</a></li>
+<li><a class="reference internal" href="#id4">Open VRM asynchronously from a byte array</a></li>
+<li><a class="reference internal" href="#id5">Get the information form VRM</a></li>
+<li><a class="reference internal" href="#thumbnail-v0-37">Get the thumbnail (From v0.37)</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="0_68_runtime_import.html"
+                        title="previous chapter">RuntimeImport(0.68)</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="0_58_blendshape.html"
+                        title="next chapter">BlendShapeProxy(0.58)</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/vrm0/0_44_runtime_import.md.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0_58_blendshape.html" title="BlendShapeProxy(0.58)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0_68_runtime_import.html" title="RuntimeImport(0.68)"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">UniVRM Programming Document  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">RuntimeImport(0.44)</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, VRM Consortium.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+    </div>
+  </body>
+</html>
