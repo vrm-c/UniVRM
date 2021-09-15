@@ -1,0 +1,110 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2021, VRM Consortium
+# This file is distributed under the same license as the UniVRM Programming
+# Document package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: UniVRM Programming Document \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-09-14 13:46+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../gltf/0_82_glb_import.md:1
+msgid "GlbImport(0.82)"
+msgstr ""
+
+#: ../../gltf/0_82_glb_import.md:2
+msgid "`0.82.1` の API です。 `0.82.0` の場合は更新をお願いします。"
+msgstr "If use `0.82.0`, please upgrade."
+
+#: ../../gltf/0_82_glb_import.md:5
+msgid "以下のステップでロードします。"
+msgstr "GLB load is below steps."
+
+#: ../../gltf/0_82_glb_import.md:7
+msgid "`GLB` / `GLTF` をパースして `GltfData` を得る。"
+msgstr "Parse `GLB` / `GLTF`, get a `GltfData`"
+
+#: ../../gltf/0_82_glb_import.md:8
+msgid ""
+"`GltfData` から `Unity Hierarchy` を ロード する。`RuntimeGltfInstance` を得る。 "
+"ローダーを破棄する。"
+msgstr "Load `Unity Hierarchy` from the `GltfData`, get a `RuntimeGltfInstance`, dispose loader."
+
+#: ../../gltf/0_82_glb_import.md:9
+msgid "ロードした `RuntimeGltfInstance` 使う。`RuntimeGltfInstance` を破棄する。"
+msgstr "Use the `RuntimeGltfInstance`, destroy the `RuntimeGltfInstance`."
+
+#: ../../gltf/0_82_glb_import.md:11
+msgid "1. パースする"
+msgstr "1. Parse"
+
+#: ../../gltf/0_82_glb_import.md:13
+msgid "glb ファイルパスからパースする"
+msgstr "Parse glb from file path"
+
+#: ../../gltf/0_82_glb_import.md:15 ../../gltf/0_82_glb_import.md:26
+msgid "`vrm` もこの関数を使います。"
+msgstr "Use this for vrm too."
+
+#: ../../gltf/0_82_glb_import.md:24
+msgid "glb バイト列をパースする"
+msgstr "Parse glb byte array"
+
+#: ../../gltf/0_82_glb_import.md:35
+msgid "gltf ファイルパスからパースする"
+msgstr "Parse gltf from file path"
+
+#: ../../gltf/0_82_glb_import.md:44
+msgid "zip アーカイブからパースする"
+msgstr "Parse gltf in zip archive from file path"
+
+#: ../../gltf/0_82_glb_import.md:46
+msgid "gltf と関連するファイルを zip アーカイブしたファイルをパースできます(実験)。"
+msgstr "Zip archive that contains gltf and related files could parsed(expelemental)."
+
+#: ../../gltf/0_82_glb_import.md:55
+msgid "ファイルパスの拡張子でパースする"
+msgstr "Parse by file extension"
+
+#: ../../gltf/0_82_glb_import.md:57
+msgid "サンプルの `SimpleViewer` を参考にしてください。"
+msgstr "See `SimpleViewer` sample."
+
+#: ../../gltf/0_82_glb_import.md:67
+msgid "2. ロードする"
+msgstr "2. Load"
+
+#: ../../gltf/0_82_glb_import.md:69
+msgid "sync"
+msgstr ""
+
+#: ../../gltf/0_82_glb_import.md:84
+msgid "async"
+msgstr ""
+
+#: ../../gltf/0_82_glb_import.md:99
+msgid "materialGenerator で URP 用のマテリアルをロードする"
+msgstr "Load URP material by materialGenerator argument"
+
+#: ../../gltf/0_82_glb_import.md:101
+msgid "`materialGenerator` 引き数(省略可能)を指定することで URP マテリアルを生成するようにカスタムできます。"
+msgstr "You can load URP materials by setting the `materialGenerator` Argument (optional)."
+
+#: ../../gltf/0_82_glb_import.md:115
+msgid "3. インスタンスを使用する"
+msgstr "3. Use instance"
+
+#: ../../gltf/0_82_glb_import.md:124
+msgid "使用後に以下のように破棄してください。関連する Asset(Texture, Material, Meshなど)も破棄されます。"
+msgstr "Destroy after use and discard related assets (textures, materials, meshes, etc.)"
+
