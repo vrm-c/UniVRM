@@ -10,7 +10,6 @@ namespace UniVRM10
     ///
     internal sealed class MaterialValueBindingMerger
     {
-        public const string UV_PROPERTY = "_MainTex_ST";
         public const string COLOR_PROPERTY = "_Color";
         public const string EMISSION_COLOR_PROPERTY = "_EmissionColor";
         public const string RIM_COLOR_PROPERTY = "_RimColor";
