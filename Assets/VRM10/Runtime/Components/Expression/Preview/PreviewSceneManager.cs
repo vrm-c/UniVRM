@@ -234,19 +234,12 @@ namespace UniVRM10
             if (m_materialMap != null)
             {
                 // clear
-                //Debug.LogFormat("clear material");
                 foreach (var kv in m_materialMap)
                 {
-                    foreach (var _kv in kv.Value.PropMap)
-                    {
-                        // var prop = VrmLib.MaterialBindTypeExtensions.GetProperty(_kv.Key);
-                        kv.Value.Material.SetColor(_kv.Value.Name, _kv.Value.DefaultValues);
-                    }
-
-                    // clear UV
-                    kv.Value.Material.SetVector("_MainTex_ST", new Vector4(1, 1, 0, 0));
+                    kv.Value.Clear();
                 }
 
+                // color
                 if (bake.MaterialColorBindings != null)
                 {
                     foreach (var x in bake.MaterialColorBindings)
@@ -274,6 +267,7 @@ namespace UniVRM10
                     }
                 }
 
+                // uv
                 if (bake.MaterialUVBindings != null)
                 {
                     foreach (var x in bake.MaterialUVBindings)
@@ -281,17 +275,7 @@ namespace UniVRM10
                         PreviewMaterialItem item;
                         if (m_materialMap.TryGetValue(x.MaterialName, out item))
                         {
-                            // var valueName = x.ValueName;
-                            // if (valueName.EndsWith("_ST_S")
-                            // || valueName.EndsWith("_ST_T"))
-                            // {
-                            //     valueName = valueName.Substring(0, valueName.Length - 2);
-                            // }
-
-                            var value = item.Material.GetVector("_MainTex_ST");
-                            //Debug.LogFormat("{0} => {1}", valueName, x.TargetValue);
-                            value += ((x.ScalingOffset - new Vector4(1, 1, 0, 0)) * weight);
-                            item.Material.SetColor("_MainTex_ST", value);
+                            item.AddScaleOffset(x.ScalingOffset, weight);
                         }
                     }
                 }

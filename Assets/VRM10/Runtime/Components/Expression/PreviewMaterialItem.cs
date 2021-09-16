@@ -104,5 +104,33 @@ namespace UniVRM10
 
             throw new NotImplementedException();
         }
+
+        /// <summary>
+        /// [Preview] 積算する前の初期値にクリアする
+        /// </summary>
+        public void Clear()
+        {
+            // clear Color
+            foreach (var _kv in PropMap)
+            {
+                Material.SetColor(_kv.Value.Name, _kv.Value.DefaultValues);
+            }
+
+            // clear UV
+            Material.SetVector(UV_PROPERTY, DefaultUVScaleOffset);
+        }
+
+        /// <summary>
+        /// [Preview] scaleOffset を weight で重みを付けて加える
+        /// </summary>
+        /// <param name="scaleOffset"></param>
+        /// <param name="weight"></param>
+        public void AddScaleOffset(Vector4 scaleOffset, float weight)
+        {
+            var value = Material.GetVector(UV_PROPERTY);
+            //Debug.LogFormat("{0} => {1}", valueName, x.TargetValue);
+            value += (scaleOffset - DefaultUVScaleOffset) * weight;
+            Material.SetColor(UV_PROPERTY, value);
+        }
     }
 }
