@@ -680,6 +680,7 @@ namespace UniVRM10
             vrm.Meta.AllowExcessivelySexualUsage = meta.SexualUsage;
             vrm.Meta.CommercialUsage = meta.CommercialUsage;
             vrm.Meta.AllowPoliticalOrReligiousUsage = meta.PoliticalOrReligiousUsage;
+            vrm.Meta.AllowAntisocialOrHateUsage = meta.AntisocialOrHateUsage;
             vrm.Meta.CreditNotation = meta.CreditNotation;
             vrm.Meta.AllowRedistribution = meta.Redistribution;
             vrm.Meta.Modification = meta.ModificationLicense;

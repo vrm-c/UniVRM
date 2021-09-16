@@ -55,6 +55,9 @@ namespace UniVRM10
         [SerializeField]
         public bool PoliticalOrReligiousUsage;
 
+        [SerializeField]
+        public bool AntisocialOrHateUsage;
+
         [SerializeField, Tooltip("Other License Url")]
         public string OtherPermissionUrl;
         #endregion
