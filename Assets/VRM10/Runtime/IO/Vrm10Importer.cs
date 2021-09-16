@@ -347,13 +347,15 @@ namespace UniVRM10
                 meta.ContactInformation = src.ContactInformation;
                 // avatar
                 meta.AllowedUser = src.AvatarPermission;
-                meta.ViolentUsage = src.AllowExcessivelyViolentUsage.Value;
-                meta.SexualUsage = src.AllowExcessivelySexualUsage.Value;
+                meta.ViolentUsage = src.AllowExcessivelyViolentUsage.GetValueOrDefault();
+                meta.SexualUsage = src.AllowExcessivelySexualUsage.GetValueOrDefault();
                 meta.CommercialUsage = src.CommercialUsage;
-                meta.PoliticalOrReligiousUsage = src.AllowPoliticalOrReligiousUsage.Value;
+                meta.PoliticalOrReligiousUsage = src.AllowPoliticalOrReligiousUsage.GetValueOrDefault();
+                meta.AntisocialOrHateUsage = src.AllowAntisocialOrHateUsage.GetValueOrDefault();
                 // redistribution
                 meta.CreditNotation = src.CreditNotation;
-                meta.Redistribution = src.AllowRedistribution.Value;
+                meta.Redistribution = src.AllowRedistribution.GetValueOrDefault();
+
                 meta.ModificationLicense = src.Modification;
                 meta.OtherLicenseUrl = src.OtherLicenseUrl;
                 //
