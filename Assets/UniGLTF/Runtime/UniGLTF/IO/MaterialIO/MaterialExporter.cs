@@ -206,7 +206,7 @@ namespace UniGLTF
             {
                 var offset = m.GetTextureOffset(propertyName);
                 var scale = m.GetTextureScale(propertyName);
-                offset.y = 1.0f - offset.y - scale.y;
+                (scale, offset) = TextureTransform.VerticalFlipScaleOffset(scale, offset);
 
                 glTF_KHR_texture_transform.Serialize(textureInfo, (offset.x, offset.y), (scale.x, scale.y));
             }
