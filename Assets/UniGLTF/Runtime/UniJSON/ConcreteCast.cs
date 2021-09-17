@@ -43,7 +43,6 @@ namespace UniJSON
             typeof(double),
         };
 
-        [MenuItem("UniGLTF/UniJSON/Generate ConcreteCast")]
         public static void GenerateGenericCast()
         {
             var s = new StringBuilder();

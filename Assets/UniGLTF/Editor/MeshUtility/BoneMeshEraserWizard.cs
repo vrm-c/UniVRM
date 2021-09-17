@@ -52,12 +52,6 @@ namespace UniGLTF.MeshUtility
         [SerializeField]
         BoneMeshEraser.EraseBone[] m_eraseBones;
 
-        // [MenuItem(MeshUtility.MENU_PARENT + "BoneMeshEraser Wizard", priority = 31)]
-        // static void CreateWizard()
-        // {
-        //     ScriptableWizard.DisplayWizard<BoneMeshEraserWizard>("BoneMeshEraser", "Erase triangles by bone", "Erase");
-        // }
-
         private void OnEnable()
         {
             var root = Selection.activeGameObject;
