@@ -1,3 +1,4 @@
+using System.IO;
 using UnityEditor;
 using UnityEngine;
 
@@ -9,9 +10,87 @@ namespace UniGLTF
     public static class Menu
     {
         #region UniGLTF
-        const string MENU_KEY = UniGLTFVersion.MENU + "/Export " + UniGLTFVersion.UNIGLTF_VERSION;
+        [MenuItem(UniGLTFVersion.MENU + "/Import(gltf, glb, zip)", priority = 1)]
+        public static void ImportMenu()
+        {
+            var path = EditorUtility.OpenFilePanel("open glb", "", "gltf,glb,zip");
+            if (string.IsNullOrEmpty(path))
+            {
+                return;
+            }
 
-        [MenuItem(MENU_KEY, false, 0)]
+            if (Application.isPlaying)
+            {
+                //
+                // load into scene
+                //
+                var data = new AutoGltfFileParser(path).Parse();
+                using (var context = new ImporterContext(data))
+                {
+                    var loaded = context.Load();
+                    loaded.ShowMeshes();
+                    Selection.activeGameObject = loaded.gameObject;
+                }
+                return;
+            }
+
+            //
+            // save as asset
+            //
+            if (path.StartsWithUnityAssetPath())
+            {
+                Debug.LogWarningFormat("disallow import from folder under the Assets");
+                return;
+            }
+
+            var ext = Path.GetExtension(path).ToLower();
+            var assetPath = EditorUtility.SaveFilePanel("save prefab", "Assets", Path.GetFileNameWithoutExtension(path), ext.Substring(1));
+            if (string.IsNullOrEmpty(assetPath))
+            {
+                return;
+            }
+
+            // copy
+            var bytes = File.ReadAllBytes(path);
+            File.WriteAllBytes(assetPath, bytes);
+            if (ext == ".gltf")
+            {
+                // copy associated files
+                var src_dir = Path.GetDirectoryName(path);
+                var dst_dir = Path.GetDirectoryName(assetPath);
+                var data = new GltfFileWithResourceFilesParser(path, bytes).Parse();
+                foreach (var buffer in data.GLTF.buffers)
+                {
+                    if (!string.IsNullOrEmpty(buffer.uri))
+                    {
+                        var src_path = Path.Combine(src_dir, buffer.uri);
+                        var src_bytes = File.ReadAllBytes(src_path);
+                        var dst_path = Path.Combine(dst_dir, buffer.uri);
+                        File.WriteAllBytes(dst_path, src_bytes);
+                        UnityPath.FromFullpath(dst_path).ImportAsset();
+                    }
+                }
+                foreach (var buffer in data.GLTF.images)
+                {
+                    if (!string.IsNullOrEmpty(buffer.uri))
+                    {
+                        var src_path = Path.Combine(src_dir, buffer.uri);
+                        var src_bytes = File.ReadAllBytes(src_path);
+                        var dst_path = Path.Combine(dst_dir, buffer.uri);
+                        File.WriteAllBytes(dst_path, src_bytes);
+                        UnityPath.FromFullpath(dst_path).ImportAsset();
+                    }
+                }
+            }
+
+            // import as asset
+            var unitypath = UnityPath.FromFullpath(assetPath);
+            unitypath.ImportAsset();
+            var asset = unitypath.LoadAsset<GameObject>();
+            Selection.activeObject = asset;
+        }
+
+        [MenuItem(UniGLTFVersion.MENU + "/Export " + UniGLTFVersion.UNIGLTF_VERSION, false, 0)]
         private static void ExportFromMenu()
         {
             var window = (GltfExportWindow)GltfExportWindow.GetWindow(typeof(GltfExportWindow));

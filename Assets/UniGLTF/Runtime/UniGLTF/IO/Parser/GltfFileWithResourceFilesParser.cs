@@ -12,25 +12,26 @@ namespace UniGLTF
     {
         private readonly string _gltfFilePath;
         private readonly string _gltfRootPath;
-        
-        public GltfFileWithResourceFilesParser(string gltfFilePath)
+
+        private readonly byte[] _bytes;
+
+        public GltfFileWithResourceFilesParser(string gltfFilePath) : this(gltfFilePath, File.ReadAllBytes(gltfFilePath))
         {
-            if (!File.Exists(gltfFilePath))
-            {
-                throw new ArgumentException($"no file: {gltfFilePath}");
-            }
-            
+        }
+
+        public GltfFileWithResourceFilesParser(string gltfFilePath, byte[] bytes)
+        {
             _gltfFilePath = gltfFilePath;
             _gltfRootPath = Path.GetDirectoryName(gltfFilePath);
+            _bytes = bytes;
         }
 
         public GltfData Parse()
         {
-            var binary = File.ReadAllBytes(_gltfFilePath);
-            
+
             return GlbLowLevelParser.ParseGltf(
                 _gltfFilePath,
-                Encoding.UTF8.GetString(binary),
+                Encoding.UTF8.GetString(_bytes),
                 new List<GlbChunk>(), // .gltf file has no chunks.
                 new FileSystemStorage(_gltfRootPath), // .gltf file has resource path at file system.
                 new MigrationFlags()
