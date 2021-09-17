@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: SelectedBone 1
-  m_Shader: {fileID: 4800000, guid: 68ae7ae8d41c65a44bf5cad645c7f3f8, type: 3}
+  m_Name: HoverBone
+  m_Shader: {fileID: 4800000, guid: 8a83b8ffa4c6d7a44999e8b099ea3f4e, type: 3}
   m_ShaderKeywords: _RIMFACTOR_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 1
