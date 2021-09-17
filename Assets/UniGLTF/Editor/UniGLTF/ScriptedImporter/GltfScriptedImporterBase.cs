@@ -22,6 +22,18 @@ namespace UniGLTF
         [Header("Experimental")]
         public RenderPipelineTypes m_renderPipeline;
 
+        void OnValidate()
+        {
+            if (m_renderPipeline == UniGLTF.RenderPipelineTypes.UniversalRenderPipeline)
+            {
+                if (Shader.Find(UniGLTF.GltfPbrUrpMaterialImporter.ShaderName) == null)
+                {
+                    Debug.LogWarning("URP is not installed. Force to BuiltinRenderPipeline");
+                    m_renderPipeline = UniGLTF.RenderPipelineTypes.BuiltinRenderPipeline;
+                }
+            }
+        }
+
         static IMaterialDescriptorGenerator GetMaterialGenerator(RenderPipelineTypes renderPipeline)
         {
             switch (renderPipeline)
