@@ -17,9 +17,11 @@ namespace UniVRM10
     ///   * ColliderGroup
     ///   * Springs
     /// 
+    /// * DefaultExecutionOrder(11000) means calculate springbone after FinalIK( VRIK )
     /// </summary>
     [AddComponentMenu("VRM10/VRMController")]
     [DisallowMultipleComponent]
+    [DefaultExecutionOrder(11000)]
     public class VRM10Controller : MonoBehaviour
     {
         [SerializeField, Header("VRM1")]
