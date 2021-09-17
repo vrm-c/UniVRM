@@ -154,6 +154,11 @@ namespace VRM
       ""displayName"": ""VRM10Viewer"",
       ""description"": ""VRM10 runtime loader sample"",
       ""path"": ""Samples/VRM10Viewer""
+    }},
+    {{
+      ""displayName"": ""VRM10FirstPersonSample"",
+      ""description"": ""First Person layer sample with multi camera"",
+      ""path"": ""Samples/VRM10FirstPersonSample""
     }}
   ]
 }}
