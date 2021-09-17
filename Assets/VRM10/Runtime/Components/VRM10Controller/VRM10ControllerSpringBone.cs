@@ -33,6 +33,16 @@ namespace UniVRM10
 
             [SerializeField]
             public List<VRM10SpringBoneJoint> Joints = new List<VRM10SpringBoneJoint>();
+            public IEnumerable<(VRM10SpringBoneJoint, Transform)> Pairs
+            {
+                get
+                {
+                    for (int i = 0; i < Joints.Count - 1; ++i)
+                    {
+                        yield return (Joints[i], Joints[i + 1].transform);
+                    }
+                }
+            }
 
             Transform m_center;
             List<SpringBoneLogic.InternalCollider> m_colliderList;

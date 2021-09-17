@@ -94,5 +94,32 @@ namespace UniVRM10
                 GetOrCreate().Process();
             }
         }
+
+        void OnDrawGizmos()
+        {
+            if (SpringBone == null)
+            {
+                return;
+            }
+
+            foreach (var spring in SpringBone.Springs)
+            {
+                bool first = true;
+                foreach (var (joint, tail) in spring.Pairs)
+                {
+                    if (first)
+                    {
+                        // root
+                        Gizmos.color = Color.gray;
+                        Gizmos.DrawCube(joint.transform.position, new Vector3(0.01f, 0.01f, 0.01f));
+                        first = false;
+                    }
+                    // draw
+                    Gizmos.DrawLine(joint.transform.position, tail.transform.position);
+                    Gizmos.color = Color.green;
+                    Gizmos.DrawSphere(tail.transform.position, joint.m_jointRadius);
+                }
+            }
+        }
     }
 }
