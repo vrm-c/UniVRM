@@ -50,13 +50,15 @@ namespace UniVRM10
             var binding = default(UniVRM10.MaterialUVBinding?);
             if (material != null)
             {
+                var (scale, offset) = UniGLTF.TextureTransform.VerticalFlipScaleOffset(new Vector2(bind.Scale[0], bind.Scale[1]), new Vector2(bind.Offset[0], bind.Offset[1]));
+
                 try
                 {
                     binding = new UniVRM10.MaterialUVBinding
                     {
                         MaterialName = material.name, // 名前で持つべき
-                        Scaling = new Vector2(bind.Scale[0], bind.Scale[1]),
-                        Offset = new Vector2(bind.Offset[0], bind.Offset[1]),
+                        Scaling = scale,
+                        Offset = offset,
                     };
                 }
                 catch (Exception)

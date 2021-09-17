@@ -550,11 +550,12 @@ namespace UniVRM10
 
         UniGLTF.Extensions.VRMC_vrm.TextureTransformBind ExportTextureTransformBinding(MaterialUVBinding binding, Func<string, int> getIndex)
         {
+            var (scale, offset) = TextureTransform.VerticalFlipScaleOffset(binding.Scaling, binding.Offset);
             return new UniGLTF.Extensions.VRMC_vrm.TextureTransformBind
             {
                 Material = getIndex(binding.MaterialName),
-                Offset = new float[] { binding.Offset.x, binding.Offset.y },
-                Scale = new float[] { binding.Scaling.x, binding.Scaling.y },
+                Offset = new float[] { offset.x, offset.y },
+                Scale = new float[] { scale.x, scale.y },
             };
         }
 
