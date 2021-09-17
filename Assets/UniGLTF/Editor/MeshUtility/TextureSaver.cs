@@ -8,26 +8,7 @@ namespace UniGLTF.MeshUtility
 {
     public static class EditorChangeTextureType
     {
-        [MenuItem("Assets/SaveAsPng", true)]
-        [MenuItem("Assets/SaveAsPngLinear", true)]
-        static bool IsTextureAsset()
-        {
-            return Selection.activeObject is Texture2D;
-        }
-
-        [MenuItem("Assets/SaveAsPng")]
-        static void SaveAsPng()
-        {
-            SaveAsPng(true);
-        }
-
-        [MenuItem("Assets/SaveAsPngLinear")]
-        static void SaveAsPngLinear()
-        {
-            SaveAsPng(false);
-        }
-
-        static void SaveAsPng(bool sRGB)
+        public static void SaveAsPng(bool sRGB)
         {
             var texture = Selection.activeObject as Texture2D;
             var path = SaveDialog(AssetsPath.FromAsset(texture));

@@ -15,7 +15,7 @@ namespace UniGLTF.MeshUtility
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
-            var skinnedMesh =  serializedObject.FindProperty("_cSkinnedMesh");
+            var skinnedMesh = serializedObject.FindProperty("_cSkinnedMesh");
             EditorGUILayout.PropertyField(skinnedMesh, new GUIContent("Skinned Mesh"), true);
             var animator = serializedObject.FindProperty("_cAnimator");
             EditorGUILayout.PropertyField(animator, new GUIContent("Animator"), false);
@@ -29,16 +29,6 @@ namespace UniGLTF.MeshUtility
 
     public class MeshProcessDialog : EditorWindow
     {
-        const string MESH_UTILITY_DICT = "UniGLTF/Mesh Utility/";
-
-        [MenuItem(MESH_UTILITY_DICT + "MeshProcessing Wizard", priority = 30)]
-        static void MeshProcessFromMenu()
-        {
-            var window = (MeshProcessDialog)EditorWindow.GetWindowWithRect(typeof(MeshProcessDialog), new Rect(0, 0, 650, 500));
-            window.titleContent = new GUIContent("Mesh Processing Window");
-            window.Show();
-        }
-        
         enum Tabs
         {
             MeshSeparator,
@@ -180,7 +170,7 @@ namespace UniGLTF.MeshUtility
             }
 
             // Create Other Buttons
-            {        
+            {
                 GUILayout.BeginVertical();
                 {
                     GUILayout.BeginHorizontal();
@@ -260,13 +250,13 @@ namespace UniGLTF.MeshUtility
         {
             if (_exportTarget == null) return GameObjectNull();
             var go = _exportTarget;
-            
-            Component[] allComponents =  go.GetComponents(typeof(Component));
+
+            Component[] allComponents = go.GetComponents(typeof(Component));
             var keyWord = "VRMMeta";
 
             foreach (var component in allComponents)
-            {          
-                if (component == null) continue;      
+            {
+                if (component == null) continue;
                 var sourceString = component.ToString();
                 if (sourceString.Contains(keyWord))
                 {

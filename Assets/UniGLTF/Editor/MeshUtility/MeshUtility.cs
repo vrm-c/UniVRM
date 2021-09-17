@@ -8,7 +8,6 @@ namespace UniGLTF.MeshUtility
 {
     public class MeshUtility
     {
-        public const string MENU_PARENT = "UniGLTF/Mesh Utility/";
         public const string ASSET_SUFFIX = ".mesh.asset";
         private static readonly Vector3 ZERO_MOVEMENT = Vector3.zero;
 
@@ -25,12 +24,6 @@ namespace UniGLTF.MeshUtility
         {
             WithBlendShape,
             WithoutBlendShape,
-        }
-
-        [MenuItem(MENU_PARENT + "MeshUtility Docs", priority = 32)]
-        public static void MeshUtilityDocs()
-        {
-            Application.OpenURL("https://vrm.dev/en/docs/univrm/gltf/mesh_utility/");
         }
 
         public static void SeparationProcessing(GameObject go)
@@ -319,7 +312,7 @@ namespace UniGLTF.MeshUtility
 #endif
         public static void MeshIntegrator(GameObject go)
         {
-            MeshIntegratorUtility.Integrate(go, onlyBlendShapeRenderers: true);            
+            MeshIntegratorUtility.Integrate(go, onlyBlendShapeRenderers: true);
             MeshIntegratorUtility.Integrate(go, onlyBlendShapeRenderers: false);
 
             var outputObject = GameObject.Instantiate(go);
@@ -328,13 +321,13 @@ namespace UniGLTF.MeshUtility
             var normalMeshes = outputObject.GetComponentsInChildren<MeshFilter>();
 
             // destroy integrated meshes in the source
-            foreach (var skinnedMesh in go.GetComponentsInChildren<SkinnedMeshRenderer>()) 
+            foreach (var skinnedMesh in go.GetComponentsInChildren<SkinnedMeshRenderer>())
             {
-               if (skinnedMesh.sharedMesh.name == MeshIntegratorUtility.INTEGRATED_MESH_NAME ||
-                   skinnedMesh.sharedMesh.name == MeshIntegratorUtility.INTEGRATED_MESH_BLENDSHAPE_NAME)
-               {
-                   GameObject.DestroyImmediate(skinnedMesh.gameObject);
-               }
+                if (skinnedMesh.sharedMesh.name == MeshIntegratorUtility.INTEGRATED_MESH_NAME ||
+                    skinnedMesh.sharedMesh.name == MeshIntegratorUtility.INTEGRATED_MESH_BLENDSHAPE_NAME)
+                {
+                    GameObject.DestroyImmediate(skinnedMesh.gameObject);
+                }
             }
             foreach (var skinnedMesh in skinnedMeshes)
             {
@@ -358,14 +351,14 @@ namespace UniGLTF.MeshUtility
             }
             foreach (var normalMesh in normalMeshes)
             {
-               if (normalMesh.sharedMesh.name != MeshIntegratorUtility.INTEGRATED_MESH_NAME)
-               {
+                if (normalMesh.sharedMesh.name != MeshIntegratorUtility.INTEGRATED_MESH_NAME)
+                {
                     if (normalMesh.gameObject.GetComponent<MeshRenderer>())
                     {
                         GameObject.DestroyImmediate(normalMesh.gameObject.GetComponent<MeshRenderer>());
                     }
                     GameObject.DestroyImmediate(normalMesh);
-               }
+                }
             }
         }
 

@@ -39,8 +39,7 @@ namespace UniGLTF {
             }
         }
 
-        [MenuItem(UniGLTFVersion.MENU + "/GLTF: Generate Serializer")]
-        static void GenerateSerializer()
+        public static void GenerateSerializer()
         {
             var info = new ObjectSerialization(typeof(glTF), "gltf", "Serialize_");
             Debug.Log(info);

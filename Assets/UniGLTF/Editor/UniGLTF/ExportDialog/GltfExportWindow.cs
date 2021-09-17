@@ -10,15 +10,6 @@ namespace UniGLTF
 {
     public class GltfExportWindow : ExportDialogBase
     {
-        const string MENU_KEY = UniGLTFVersion.MENU + "/Export " + UniGLTFVersion.UNIGLTF_VERSION;
-
-        [MenuItem(MENU_KEY, false, 0)]
-        private static void ExportFromMenu()
-        {
-            var window = (GltfExportWindow)GetWindow(typeof(GltfExportWindow));
-            window.titleContent = new GUIContent("Gltf Exporter");
-            window.Show();
-        }
 
 
         enum Tabs
