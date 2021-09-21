@@ -14,7 +14,7 @@ namespace UniGLTF
         /// <param name="s"></param>
         /// <param name="o"></param>
         /// <returns></returns>
-        public static (Vector2, Vector2) VerticalFlipScaleOffset(Vector2 s, Vector2 o)
+        public static (Vector2 Scale, Vector2 Offset) VerticalFlipScaleOffset(Vector2 s, Vector2 o)
         {
             return (new Vector2(s.x, s.y), new Vector2(o.x, 1.0f - o.y - s.y));
         }
