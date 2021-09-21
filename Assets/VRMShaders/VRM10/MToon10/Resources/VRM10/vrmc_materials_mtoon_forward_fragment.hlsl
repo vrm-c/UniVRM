@@ -43,9 +43,10 @@ half4 MToonFragment(const FragmentInput fragmentInput) : SV_Target
     mtoonInput.viewDirWS = normalize(input.viewDirWS);
     mtoonInput.litColor = litColor.rgb;
     mtoonInput.alpha = alpha;
-    const half4 col = GetMToonLighting(unityLighting, mtoonInput);
+    half4 col = GetMToonLighting(unityLighting, mtoonInput);
 
-    UNITY_APPLY_FOG(i.fogCoord, col);
+    // Apply Fog
+    UNITY_APPLY_FOG(fragmentInput.varyings.fogCoord, col);
 
     return col;
 }
