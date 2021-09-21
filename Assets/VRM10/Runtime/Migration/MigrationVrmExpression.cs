@@ -113,30 +113,44 @@ namespace UniVRM10
                 var targetValue = x["targetValue"].ArrayItems().Select(y => y.GetSingle()).ToArray();
                 if (propertyName.EndsWith("_ST"))
                 {
-                    var scaling = new float[] { targetValue[0], targetValue[1] };
+                    // VRM-0 は無変換
+                    var (scale, offset) = UniGLTF.TextureTransform.VerticalFlipScaleOffset(
+                        new UnityEngine.Vector2(targetValue[0], targetValue[1]),
+                        new UnityEngine.Vector2(targetValue[2], targetValue[3]));
+
                     expression.TextureTransformBinds.Add(new UniGLTF.Extensions.VRMC_vrm.TextureTransformBind
                     {
                         Material = materialIndex,
-                        Scale = new float[] { targetValue[0], targetValue[1] },
-                        Offset = new float[] { targetValue[2], targetValue[3] }
+                        Scale = new float[] { scale.x, scale.y },
+                        Offset = new float[] { offset.x, offset.y }
                     });
                 }
                 else if (propertyName.EndsWith("_ST_S"))
                 {
+                    // VRM-0 は無変換
+                    var (scale, offset) = UniGLTF.TextureTransform.VerticalFlipScaleOffset(
+                        new UnityEngine.Vector2(targetValue[0], 1),
+                        new UnityEngine.Vector2(targetValue[2], 0));
+
                     expression.TextureTransformBinds.Add(new UniGLTF.Extensions.VRMC_vrm.TextureTransformBind
                     {
                         Material = materialIndex,
-                        Scale = new float[] { targetValue[0], 1 },
-                        Offset = new float[] { targetValue[2], 0 }
+                        Scale = new float[] { scale.x, scale.y },
+                        Offset = new float[] { offset.x, offset.y }
                     });
                 }
                 else if (propertyName.EndsWith("_ST_T"))
                 {
+                    // VRM-0 は無変換
+                    var (scale, offset) = UniGLTF.TextureTransform.VerticalFlipScaleOffset(
+                        new UnityEngine.Vector2(1, targetValue[1]),
+                        new UnityEngine.Vector2(0, targetValue[3]));
+
                     expression.TextureTransformBinds.Add(new UniGLTF.Extensions.VRMC_vrm.TextureTransformBind
                     {
                         Material = materialIndex,
-                        Scale = new float[] { 1, targetValue[1] },
-                        Offset = new float[] { 0, targetValue[3] }
+                        Scale = new float[] { scale.x, scale.y },
+                        Offset = new float[] { offset.x, offset.y }
                     });
                 }
                 else
