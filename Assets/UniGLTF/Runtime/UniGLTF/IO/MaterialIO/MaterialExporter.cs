@@ -220,7 +220,7 @@ namespace UniGLTF
                 case "Unlit/Texture":
                 case "Unlit/Transparent":
                 case "Unlit/Transparent Cutout":
-                case "UniGLTF/UniUnlit":
+                case UniUnlit.UniUnlitUtil.ShaderName:
                     return true;
 
                 default:
@@ -244,7 +244,7 @@ namespace UniGLTF
                 case "Unlit/Transparent Cutout":
                     return Export_UnlitCutout(m);
 
-                case "UniGLTF/UniUnlit":
+                case UniUnlit.UniUnlitUtil.ShaderName:
                     return Export_UniUnlit(m);
 
                 default:
@@ -285,7 +285,7 @@ namespace UniGLTF
         {
             var material = glTF_KHR_materials_unlit.CreateDefault();
 
-            var renderMode = UniUnlit.Utils.GetRenderMode(m);
+            var renderMode = UniUnlit.UniUnlitUtil.GetRenderMode(m);
             if (renderMode == UniUnlitRenderMode.Opaque)
             {
                 material.alphaMode = glTFBlendMode.OPAQUE.ToString();
@@ -304,7 +304,7 @@ namespace UniGLTF
                 material.alphaMode = glTFBlendMode.OPAQUE.ToString();
             }
 
-            var cullMode = UniUnlit.Utils.GetCullMode(m);
+            var cullMode = UniUnlit.UniUnlitUtil.GetCullMode(m);
             if (cullMode == UniUnlitCullMode.Off)
             {
                 material.doubleSided = true;
