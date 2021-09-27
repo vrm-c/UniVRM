@@ -1,6 +1,7 @@
 # UniVRM
 
-UniVRM is `unity pacakge` for Import and Export [VRM Format](https://vrm.dev/vrm_about/) 
+UniVRM is `unity package` for Import and Export [VRM Format](https://vrm.dev/vrm_about/) 
+
 ## Download
 
 * https://github.com/vrm-c/UniVRM/releases
