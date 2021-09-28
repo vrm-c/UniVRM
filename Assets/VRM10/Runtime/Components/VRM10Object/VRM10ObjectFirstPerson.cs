@@ -49,20 +49,22 @@ namespace UniVRM10
 
             var go = new GameObject("_headless_" + renderer.name);
             var erased = go.AddComponent<SkinnedMeshRenderer>();
+            erased.enabled = false; // hide
             erased.sharedMesh = mesh;
             erased.sharedMaterials = renderer.sharedMaterials;
             erased.bones = renderer.bones;
             erased.rootBone = renderer.rootBone;
-            erased.updateWhenOffscreen = true;
 
             return erased;
         }
 
         bool m_done;
 
-        async Task<SkinnedMeshRenderer> SetupRendererAsync(GameObject go, Transform FirstPersonBone, RendererFirstPersonFlags x,
+        async Task SetupRendererAsync(GameObject go, Transform FirstPersonBone, RendererFirstPersonFlags x,
             (int FirstPersonOnly, int ThirdPersonOnly) layer, IAwaitCaller awaitCaller = null)
         {
+            var runtime = go.GetComponent<UniGLTF.RuntimeGltfInstance>();
+
             switch (x.FirstPersonFlag)
             {
                 case UniGLTF.Extensions.VRMC_vrm.FirstPersonType.auto:
@@ -77,10 +79,12 @@ namespace UniVRM10
 
                                 // 頭を取り除いた複製モデルを作成し、１人称用にする
                                 var headless = await CreateHeadlessMeshAsync(smr, eraseBones, awaitCaller);
-                                headless.enabled = false;
                                 headless.gameObject.layer = layer.FirstPersonOnly;
                                 headless.transform.SetParent(smr.transform, false);
-                                return headless;
+                                if (runtime != null)
+                                {
+                                    runtime.AddRenderer(headless);
+                                }
                             }
                             else
                             {
@@ -120,8 +124,6 @@ namespace UniVRM10
                     // 特に何もしない。すべてのカメラで描画される
                     break;
             }
-
-            return null;
         }
 
         /// <summary>
@@ -137,7 +139,7 @@ namespace UniVRM10
         /// <param name="thirdPersonOnlyLayer"></param>
         /// <param name="awaitCaller"></param>
         /// <returns></returns>
-        public async Task<List<SkinnedMeshRenderer>> SetupAsync(GameObject go, int? firstPersonOnlyLayer = default, int? thirdPersonOnlyLayer = default, IAwaitCaller awaitCaller = default)
+        public async Task SetupAsync(GameObject go, int? firstPersonOnlyLayer = default, int? thirdPersonOnlyLayer = default, IAwaitCaller awaitCaller = default)
         {
             if (awaitCaller == null)
             {
@@ -148,23 +150,17 @@ namespace UniVRM10
                 Vrm10FirstPersonLayerSettings.GetFirstPersonOnlyLayer(firstPersonOnlyLayer),
                 Vrm10FirstPersonLayerSettings.GetThirdPersonOnlyLayer(thirdPersonOnlyLayer));
 
-            var created = new List<SkinnedMeshRenderer>();
             if (m_done)
             {
-                return created;
+                return;
             }
             m_done = true;
 
             var FirstPersonBone = go.GetComponent<Animator>().GetBoneTransform(HumanBodyBones.Head);
             foreach (var x in Renderers)
             {
-                var renderer = await SetupRendererAsync(go, FirstPersonBone, x, layer, awaitCaller);
-                if (renderer)
-                {
-                    created.Add(renderer);
-                }
+                await SetupRendererAsync(go, FirstPersonBone, x, layer, awaitCaller);
             }
-            return created;
         }
     }
 }

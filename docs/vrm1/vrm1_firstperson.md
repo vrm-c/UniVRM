@@ -7,8 +7,7 @@ VR向け FirstPerson 設定の初期化手順です。
 1. Load する
 2. Vrm10Instance を取得する
 3. `controller.Vrm.FirstPerson.SetupAsync` を呼び出す
-4. `controller.Vrm.FirstPerson.SetupAsync` した結果新規に作成されたモデルを `RuntimeGltfInstance` に渡す
-5. ShowMeshes
+4. ShowMeshes
 
 ```csharp
 async Task<RuntimeGltfInstance> LoadAsync(string path)
@@ -26,13 +25,10 @@ async Task<RuntimeGltfInstance> LoadAsync(string path)
         // 2.
         var controller = instance.GetComponent<Vrm10Instance>();
 
-        // 3.
-        var created = await controller.Vrm.FirstPerson.SetupAsync(controller.gameObject);
+        // 3. The headless model that created is added to instance
+        await controller.Vrm.FirstPerson.SetupAsync(controller.gameObject);
 
-        // 4.
-        instance.AddRenderers(created);
-
-        // 5.
+        // 4. 
         instance.ShowMeshes();
 
         return instance;

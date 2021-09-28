@@ -110,25 +110,25 @@ namespace UniGLTF
 
             foreach (var renderer in go.GetComponentsInChildren<Renderer>())
             {
-                loaded._renderers.Add(renderer);
-
-                switch (renderer)
-                {
-                    case MeshRenderer meshRenderer:
-                        loaded._meshRenderers.Add(meshRenderer);
-                        break;
-                    case SkinnedMeshRenderer skinnedMeshRenderer:
-                        loaded._skinnedMeshRenderers.Add(skinnedMeshRenderer);
-                        break;
-                }
+                loaded.AddRenderer(renderer);
             }
 
             return loaded;
         }
 
-        public void AddRenderers(IEnumerable<Renderer> renderers)
+        public void AddRenderer(Renderer renderer)
         {
-            _renderers.AddRange(renderers);
+            _renderers.Add(renderer);
+
+            switch (renderer)
+            {
+                case MeshRenderer meshRenderer:
+                    _meshRenderers.Add(meshRenderer);
+                    break;
+                case SkinnedMeshRenderer skinnedMeshRenderer:
+                    _skinnedMeshRenderers.Add(skinnedMeshRenderer);
+                    break;
+            }
         }
 
         public void ShowMeshes()
