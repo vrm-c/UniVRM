@@ -26,11 +26,11 @@ namespace UniGLTF
             {
                 return false;
             }
-            if (m.shader.name != UniGLTF.UniUnlit.Utils.ShaderName)
+            if (m.shader.name != UniGLTF.UniUnlit.UniUnlitUtil.ShaderName)
             {
                 return false;
             }
-            if (UniGLTF.UniUnlit.Utils.GetVColBlendMode(m) != UniGLTF.UniUnlit.UniUnlitVertexColorBlendOp.Multiply)
+            if (UniGLTF.UniUnlit.UniUnlitUtil.GetVColBlendMode(m) != UniGLTF.UniUnlit.UniUnlitVertexColorBlendOp.Multiply)
             {
                 return false;
             }

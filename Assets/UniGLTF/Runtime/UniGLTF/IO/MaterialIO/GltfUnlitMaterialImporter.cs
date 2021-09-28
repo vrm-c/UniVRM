@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+﻿using UniGLTF.UniUnlit;
 using VRMShaders;
 using ColorSpace = VRMShaders.ColorSpace;
 
@@ -6,8 +6,6 @@ namespace UniGLTF
 {
     public static class GltfUnlitMaterialImporter
     {
-        public const string ShaderName = "UniGLTF/UniUnlit";
-
         public static bool TryCreateParam(GltfData data, int i, out MaterialDescriptor matDesc)
         {
             if (i < 0 || i >= data.GLTF.materials.Count)
@@ -23,7 +21,7 @@ namespace UniGLTF
                 return false;
             }
 
-            matDesc = new MaterialDescriptor(GltfMaterialDescriptorGenerator.GetMaterialName(i, src), ShaderName);
+            matDesc = new MaterialDescriptor(GltfMaterialDescriptorGenerator.GetMaterialName(i, src), UniUnlitUtil.ShaderName);
 
             // texture
             if (src.pbrMetallicRoughness.baseColorTexture != null)
@@ -46,41 +44,41 @@ namespace UniGLTF
             {
                 if (src.alphaMode == "OPAQUE")
                 {
-                    UniUnlit.Utils.SetRenderMode(material, UniUnlit.UniUnlitRenderMode.Opaque);
+                    UniUnlitUtil.SetRenderMode(material, UniUnlit.UniUnlitRenderMode.Opaque);
                 }
                 else if (src.alphaMode == "BLEND")
                 {
-                    UniUnlit.Utils.SetRenderMode(material, UniUnlit.UniUnlitRenderMode.Transparent);
+                    UniUnlitUtil.SetRenderMode(material, UniUnlit.UniUnlitRenderMode.Transparent);
                 }
                 else if (src.alphaMode == "MASK")
                 {
-                    UniUnlit.Utils.SetRenderMode(material, UniUnlit.UniUnlitRenderMode.Cutout);
+                    UniUnlitUtil.SetRenderMode(material, UniUnlit.UniUnlitRenderMode.Cutout);
                     material.SetFloat("_Cutoff", src.alphaCutoff);
                 }
                 else
                 {
                     // default OPAQUE
-                    UniUnlit.Utils.SetRenderMode(material, UniUnlit.UniUnlitRenderMode.Opaque);
+                    UniUnlitUtil.SetRenderMode(material, UniUnlit.UniUnlitRenderMode.Opaque);
                 }
 
                 // culling
                 if (src.doubleSided)
                 {
-                    UniUnlit.Utils.SetCullMode(material, UniUnlit.UniUnlitCullMode.Off);
+                    UniUnlitUtil.SetCullMode(material, UniUnlit.UniUnlitCullMode.Off);
                 }
                 else
                 {
-                    UniUnlit.Utils.SetCullMode(material, UniUnlit.UniUnlitCullMode.Back);
+                    UniUnlitUtil.SetCullMode(material, UniUnlit.UniUnlitCullMode.Back);
                 }
 
                 // VColor
                 var hasVertexColor = data.GLTF.MaterialHasVertexColor(i);
                 if (hasVertexColor)
                 {
-                    UniUnlit.Utils.SetVColBlendMode(material, UniUnlit.UniUnlitVertexColorBlendOp.Multiply);
+                    UniUnlitUtil.SetVColBlendMode(material, UniUnlit.UniUnlitVertexColorBlendOp.Multiply);
                 }
 
-                UniUnlit.Utils.ValidateProperties(material, true);
+                UniUnlitUtil.ValidateProperties(material, true);
             });
 
             return true;

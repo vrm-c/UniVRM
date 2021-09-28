@@ -24,7 +24,7 @@ namespace UniGLTF.UniUnlit
         Multiply = 1,
     }
 
-    public static class Utils
+    public static class UniUnlitUtil
     {
         public const string ShaderName = "UniGLTF/UniUnlit";
         public const string PropNameMainTex = "_MainTex";
