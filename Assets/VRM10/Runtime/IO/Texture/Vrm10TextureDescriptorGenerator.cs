@@ -81,8 +81,19 @@ namespace UniVRM10
                 value = default;
                 return false;
             }
+            var thumbnailImage = vrm.Meta.ThumbnailImage;
+            if (!thumbnailImage.HasValue)
+            {
+                value = default;
+                return false;
+            }
+            var imageIndex = thumbnailImage.Value;
+            if (imageIndex < 0 || imageIndex >= data.GLTF.images.Count)
+            {
+                value = default;
+                return false;
+            }
 
-            var imageIndex = vrm.Meta.ThumbnailImage.Value;
             var gltfImage = data.GLTF.images[imageIndex];
 
             // data.GLTF.textures は前処理によりユニーク性がある
