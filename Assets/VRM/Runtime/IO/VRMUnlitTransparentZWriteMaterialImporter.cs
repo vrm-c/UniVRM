@@ -1,10 +1,12 @@
+using MToon;
 using UniGLTF;
 using UnityEngine;
 using VRMShaders;
+using RenderMode = MToon.RenderMode;
 
 namespace VRM
 {
-    public static class VRMZWriteMaterialImporter
+    public static class VRMUnlitTransparentZWriteMaterialImporter
     {
         public const string ShaderName = "VRM/UnlitTransparentZWrite";
 
@@ -32,41 +34,36 @@ namespace VRM
             // use material.name, because material name may renamed in GltfParser.
             var name = data.GLTF.materials[materialIdx].name;
 
-            // 
+            //
             // import as MToon
             //
             matDesc = new MaterialDescriptor(name, MToon.Utils.ShaderName);
 
-            matDesc.RenderQueue = vrmMaterial.renderQueue;
+            matDesc.RenderQueue = MToon.Utils.GetRenderQueueRequirement(RenderMode.TransparentWithZWrite).DefaultValue;
+
+            // NOTE: Unlit のフォールバックなので、 Lit/Shade 色は黒とし、Emissive Factor に設定する.
+            // また、元のシェーダのうちユーザが設定できるプロパティは Texture のみ.
+            matDesc.Colors[MToon.Utils.PropColor] = Color.black;
+            matDesc.Colors[MToon.Utils.PropShadeColor] = Color.black;
+            matDesc.Colors[MToon.Utils.PropEmissionColor] = Color.white;
 
             if (vrmMaterial.textureProperties.ContainsKey(MToon.Utils.PropMainTex))
             {
                 if (VRMMToonTextureImporter.TryGetTextureFromMaterialProperty(data, vrmMaterial, MToon.Utils.PropMainTex, out var texture))
                 {
-                    matDesc.TextureSlots.Add(MToon.Utils.PropMainTex, texture.Item2);
-                    matDesc.TextureSlots.Add(MToon.Utils.PropShadeTexture, texture.Item2);
+                    matDesc.TextureSlots.Add(MToon.Utils.PropEmissionMap, texture.Item2);
                 }
             }
 
-            matDesc.Colors[MToon.Utils.PropColor] = Color.white;
-            matDesc.Colors[MToon.Utils.PropShadeColor] = Color.white;
-
-            foreach (var kv in vrmMaterial.keywordMap)
+            matDesc.Actions.Add(unityMaterial =>
             {
-                if (kv.Value)
-                {
-                    matDesc.Actions.Add(material => material.EnableKeyword(kv.Key));
-                }
-                else
-                {
-                    matDesc.Actions.Add(material => material.DisableKeyword(kv.Key));
-                }
-            }
-
-            foreach (var kv in vrmMaterial.tagMap)
-            {
-                matDesc.Actions.Add(material => material.SetOverrideTag(kv.Key, kv.Value));
-            }
+                // NOTE: ZWrite などの属性は util に設定させる.
+                var parameter = MToon.Utils.GetMToonParametersFromMaterial(unityMaterial);
+                parameter.Rendering.CullMode = CullMode.Back;
+                parameter.Rendering.RenderMode = RenderMode.TransparentWithZWrite;
+                parameter.Rendering.RenderQueueOffsetNumber = 0;
+                MToon.Utils.SetMToonParametersToMaterial(unityMaterial, parameter);
+            });
 
             if (vrmMaterial.shader == MToon.Utils.ShaderName)
             {

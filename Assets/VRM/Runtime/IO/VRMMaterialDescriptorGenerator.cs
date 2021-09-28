@@ -17,7 +17,7 @@ namespace VRM
             MaterialDescriptor matDesc;
 
             // legacy "VRM/UnlitTransparentZWrite"
-            if (VRMZWriteMaterialImporter.TryCreateParam(data, m_vrm, i, out matDesc))
+            if (VRMUnlitTransparentZWriteMaterialImporter.TryCreateParam(data, m_vrm, i, out matDesc))
             {
                 return matDesc;
             }
