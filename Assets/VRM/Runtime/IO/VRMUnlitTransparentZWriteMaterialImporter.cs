@@ -4,7 +4,7 @@ using VRMShaders;
 
 namespace VRM
 {
-    public static class VRMZWriteMaterialImporter
+    public static class VRMUnlitTransparentZWriteMaterialImporter
     {
         public const string ShaderName = "VRM/UnlitTransparentZWrite";
 
@@ -32,7 +32,7 @@ namespace VRM
             // use material.name, because material name may renamed in GltfParser.
             var name = data.GLTF.materials[materialIdx].name;
 
-            // 
+            //
             // import as MToon
             //
             matDesc = new MaterialDescriptor(name, MToon.Utils.ShaderName);
