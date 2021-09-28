@@ -99,8 +99,7 @@ namespace UniVRM10.FirstPersonSample
 
                 // VR用 FirstPerson 設定
                 var controller = instance.GetComponent<Vrm10Instance>();
-                var created = await controller.Vrm.FirstPerson.SetupAsync(controller.gameObject);
-                instance.AddRenderers(created);
+                await controller.Vrm.FirstPerson.SetupAsync(controller.gameObject);
 
                 return instance;
             }
