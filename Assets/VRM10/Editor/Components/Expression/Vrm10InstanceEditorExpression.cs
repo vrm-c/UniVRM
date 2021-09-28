@@ -10,13 +10,13 @@ namespace UniVRM10
     // 
     // Runtime に Expression 操作用の Slider を表示する
     //
-    class VRM10ControllerEditorExpression
+    class Vrm10InstanceEditorExpression
     {
-        VRM10Controller m_target;
+        Vrm10Instance m_target;
         Dictionary<ExpressionKey, float> m_expressionKeyWeights = new Dictionary<ExpressionKey, float>();
         List<ExpressionSlider> m_sliders;
 
-        public VRM10ControllerEditorExpression(VRM10Controller target)
+        public Vrm10InstanceEditorExpression(Vrm10Instance target)
         {
             m_target = target;
 

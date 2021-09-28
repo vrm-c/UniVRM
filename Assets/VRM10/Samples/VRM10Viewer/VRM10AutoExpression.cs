@@ -10,10 +10,10 @@ namespace UniVRM10.VRM10Viewer
     public class VRM10AutoExpression : MonoBehaviour
     {
         [SerializeField]
-        public VRM10Controller Controller;
+        public Vrm10Instance Controller;
         private void Reset()
         {
-            Controller = GetComponent<VRM10Controller>();
+            Controller = GetComponent<Vrm10Instance>();
         }
 
         Coroutine m_coroutine;
@@ -25,7 +25,7 @@ namespace UniVRM10.VRM10Viewer
         {
             if (Controller == null)
             {
-                Controller = GetComponent<VRM10Controller>();
+                Controller = GetComponent<Vrm10Instance>();
             }
         }
 

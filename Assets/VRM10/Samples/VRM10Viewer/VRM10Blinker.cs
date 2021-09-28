@@ -10,7 +10,7 @@ namespace UniVRM10.VRM10Viewer
     /// </summary>
     public class VRM10Blinker : MonoBehaviour
     {
-        VRM10Controller m_controller;
+        Vrm10Instance m_controller;
 
         [FormerlySerializedAs("m_interVal")]
         [SerializeField]
@@ -100,7 +100,7 @@ namespace UniVRM10.VRM10Viewer
 
         private void OnEnable()
         {
-            m_controller = GetComponent<VRM10Controller>();
+            m_controller = GetComponent<Vrm10Instance>();
             m_coroutine = StartCoroutine(BlinkRoutine());
         }
 

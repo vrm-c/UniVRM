@@ -11,7 +11,7 @@ namespace UniVRM10
     public static class SpringBoneEditor
     {
         static SpringBoneTreeView s_treeView;
-        static SpringBoneTreeView GetTree(VRM10Controller target, SerializedObject so)
+        static SpringBoneTreeView GetTree(Vrm10Instance target, SerializedObject so)
         {
             if (s_treeView == null || s_treeView.Target != target)
             {
@@ -30,7 +30,7 @@ namespace UniVRM10
         /// <summary>
         /// 2D の GUI 描画
         /// </summary>
-        public static void Draw2D(VRM10Controller target, SerializedObject so)
+        public static void Draw2D(Vrm10Instance target, SerializedObject so)
         {
             var tree = GetTree(target, so);
             if (GUILayout.Button("Reload"))
@@ -45,7 +45,7 @@ namespace UniVRM10
         /// <summary>
         /// 3D の Handle 描画
         /// </summary>
-        public static void Draw3D(VRM10Controller target, SerializedObject so)
+        public static void Draw3D(Vrm10Instance target, SerializedObject so)
         {
             var tree = GetTree(target, so);
             tree.Draw3D();

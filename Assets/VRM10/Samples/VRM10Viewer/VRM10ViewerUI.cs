@@ -210,7 +210,7 @@ namespace UniVRM10.VRM10Viewer
         {
             RuntimeGltfInstance m_instance;
             HumanPoseTransfer m_pose;
-            VRM10Controller m_controller;
+            Vrm10Instance m_controller;
 
             VRM10AIUEO m_lipSync;
             bool m_enableLipSyncValue;
@@ -261,11 +261,11 @@ namespace UniVRM10.VRM10Viewer
             {
                 m_instance = instance;
 
-                m_controller = instance.GetComponent<VRM10Controller>();
+                m_controller = instance.GetComponent<Vrm10Instance>();
                 if (m_controller != null)
                 {
                     // VRM
-                    m_controller.UpdateType = VRM10Controller.UpdateTypes.LateUpdate; // after HumanPoseTransfer's setPose
+                    m_controller.UpdateType = Vrm10Instance.UpdateTypes.LateUpdate; // after HumanPoseTransfer's setPose
                     {
                         m_pose = instance.gameObject.AddComponent<HumanPoseTransfer>();
                         m_pose.Source = src;

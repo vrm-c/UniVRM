@@ -15,7 +15,7 @@ namespace UniVRM10
     /// 
     /// </summary>
     [Serializable]
-    public sealed class VRM10ControllerSpringBone
+    public sealed class Vrm10InstanceSpringBone
     {
         [SerializeField]
         public List<VRM10SpringBoneColliderGroup> ColliderGroups = new List<VRM10SpringBoneColliderGroup>();

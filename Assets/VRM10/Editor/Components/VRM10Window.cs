@@ -19,7 +19,7 @@ namespace UniVRM10
             var window = (VRM10Window)GetWindow(typeof(VRM10Window));
             window.titleContent = new GUIContent(WINDOW_TITLE);
             window.Show();
-            window.Root = UnityEditor.Selection.activeTransform?.GetComponent<VRM10Controller>();
+            window.Root = UnityEditor.Selection.activeTransform?.GetComponent<Vrm10Instance>();
         }
 
         void OnEnable()
@@ -45,9 +45,9 @@ namespace UniVRM10
 
         SerializedObject m_so;
         int? m_root;
-        VRM10Controller Root
+        Vrm10Instance Root
         {
-            get => m_root.HasValue ? (EditorUtility.InstanceIDToObject(m_root.Value) as VRM10Controller) : null;
+            get => m_root.HasValue ? (EditorUtility.InstanceIDToObject(m_root.Value) as Vrm10Instance) : null;
             set
             {
                 int? id = value != null ? value.GetInstanceID() : default;
@@ -126,7 +126,7 @@ namespace UniVRM10
             {
                 if (UnityEditor.Selection.activeTransform != null)
                 {
-                    var root = UnityEditor.Selection.activeTransform.Ancestors().Select(x => x.GetComponent<VRM10Controller>()).FirstOrDefault(x => x != null);
+                    var root = UnityEditor.Selection.activeTransform.Ancestors().Select(x => x.GetComponent<Vrm10Instance>()).FirstOrDefault(x => x != null);
                     if (root != null)
                     {
                         Root = root;
@@ -134,7 +134,7 @@ namespace UniVRM10
                 }
             }
 
-            Root = (VRM10Controller)EditorGUILayout.ObjectField("vrm1", Root, typeof(VRM10Controller), true);
+            Root = (Vrm10Instance)EditorGUILayout.ObjectField("vrm1", Root, typeof(Vrm10Instance), true);
             if (Root == null)
             {
                 return;

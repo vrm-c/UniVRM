@@ -198,7 +198,7 @@ namespace UniVRM10
         ReorderableList _springColliderGroupList;
         ReorderableList _springJointList;
 
-        public SelectedSpringGUI(VRM10Controller target, SerializedObject so, int i) : base(so, i)
+        public SelectedSpringGUI(Vrm10Instance target, SerializedObject so, int i) : base(so, i)
         {
             Property = so.FindProperty($"SpringBone.Springs.Array.data[{i}]");
 

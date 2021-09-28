@@ -22,13 +22,13 @@ namespace UniVRM10
     [AddComponentMenu("VRM10/VRMController")]
     [DisallowMultipleComponent]
     [DefaultExecutionOrder(11000)]
-    public class VRM10Controller : MonoBehaviour
+    public class Vrm10Instance : MonoBehaviour
     {
         [SerializeField, Header("VRM1")]
         public VRM10Object Vrm;
 
         [SerializeField]
-        public VRM10ControllerSpringBone SpringBone = new VRM10ControllerSpringBone();
+        public Vrm10InstanceSpringBone SpringBone = new Vrm10InstanceSpringBone();
 
         public enum UpdateTypes
         {
@@ -55,17 +55,17 @@ namespace UniVRM10
         [SerializeField]
         public VRM10ObjectLookAt.LookAtTargetTypes LookAtTargetType;
 
-        VRM10ControllerRuntime m_runtime;
+        Vrm10InstanceRuntime m_runtime;
 
         /// <summary>
-        /// delay new VRM10ControllerRuntime
+        /// delay new Vrm10InstanceRuntime
         /// </summary>
         /// <returns></returns>
-        VRM10ControllerRuntime GetOrCreate()
+        Vrm10InstanceRuntime GetOrCreate()
         {
             if (m_runtime == null)
             {
-                m_runtime = new VRM10ControllerRuntime(this);
+                m_runtime = new Vrm10InstanceRuntime(this);
             }
             return m_runtime;
         }

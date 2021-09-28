@@ -286,7 +286,7 @@ namespace UniVRM10
 
         int m_debugCount;
 
-        internal void Setup(VRM10Controller target, ILookAtEyeDirectionProvider eyeDirectionProvider, ILookAtEyeDirectionApplicable eyeDirectionApplicable)
+        internal void Setup(Vrm10Instance target, ILookAtEyeDirectionProvider eyeDirectionProvider, ILookAtEyeDirectionApplicable eyeDirectionApplicable)
         {
             Restore();
 

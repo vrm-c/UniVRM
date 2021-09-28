@@ -27,7 +27,7 @@ msgid "表情周りの操作方法。"
 msgstr ""
 
 #: ../../vrm1/vrm1_expression.md:5
-msgid "VRM-1.0 の `BlendShapeProxy` は、`VRM10Controller.Expression` になります。"
+msgid "VRM-1.0 の `BlendShapeProxy` は、`Vrm10Instance.Expression` になります。"
 msgstr ""
 
 #: ../../vrm1/vrm1_expression.md:7
