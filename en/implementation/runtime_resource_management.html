@@ -1,0 +1,165 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Runtime のリソース管理について &#8212; UniVRM Programming Document  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="RuntimeLoad" href="../vrm1/vrm1_runtime_load.html" />
+    <link rel="prev" title="How to use VRMFirstPerson" href="../vrm0/firstperson.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../vrm1/vrm1_runtime_load.html" title="RuntimeLoad"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../vrm0/firstperson.html" title="How to use VRMFirstPerson"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">UniVRM Programming Document  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Runtime のリソース管理について</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="runtime">
+<h1>Runtime のリソース管理について<a class="headerlink" href="#runtime" title="Permalink to this headline">¶</a></h1>
+<p>Runtime Import で <code class="docutils literal notranslate"><span class="pre">Texture</span></code>, <code class="docutils literal notranslate"><span class="pre">Material</span></code>, <code class="docutils literal notranslate"><span class="pre">Mesh</span></code> などのリソースを Root の <code class="docutils literal notranslate"><span class="pre">GameObject.OnDestroy</span></code>
+と同時に <code class="docutils literal notranslate"><span class="pre">UnityEngine.Object.Destroy</span></code> したい。</p>
+<section id="runtimegltfinstance">
+<h2>RuntimeGltfInstance<a class="headerlink" href="#runtimegltfinstance" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">RuntimeGltfInstance.OnDestroy</span></code> で破棄を実行するようにした。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>ImporterContext
+    [Own]List&lt;Mesh&gt;
+    AnimationClipFactory[Own]List&lt;Animation&gt;
+    TextureFactory[Own]List&lt;Texture&gt;
+    MaterialFactory[Own]List&lt;Material&gt;
+
+👇  ImporterContext.LoadAsync
+      RuntimeGltfInstance.AttachTo
+        ImporterContext.TransferOwnership
+
+RuntimeGltfInstance
+    [Own]List&lt;Mesh&gt;
+    [Own]List&lt;Animation&gt;
+    [Own]List&lt;Texture&gt;
+    [Own]List&lt;Material&gt;
+</pre></div>
+</div>
+<blockquote>
+<div><p>VRM-0.X では <code class="docutils literal notranslate"><span class="pre">RuntimeGltfInstance</span></code> にリソースを委譲している。</p>
+</div></blockquote>
+</section>
+<section id="vrm10instance">
+<h2>Vrm10Instance<a class="headerlink" href="#vrm10instance" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Vrm10Importer
+    [Own]HumanoidAvatar
+    [Own]Vrm10Object
+    [Own]List&lt;Vrm10Expression&gt;
+
+👇  Vrm10Importer.LoadAsync
+
+RuntimeGltfInstance
+    [Own]HumanoidAvatar
+    [Own]VrmObject
+    [Own]List&lt;VrmExpression&gt;
+</pre></div>
+</div>
+<section id="firstperson">
+<h3>FirstPerson<a class="headerlink" href="#firstperson" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>👇  Vrm10Instance.FirstPerson.SetupAsync
+
+RuntimeGltfInstance
+    [Own]List&lt;Mesh&gt;.Add(headless)
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Runtime のリソース管理について</a><ul>
+<li><a class="reference internal" href="#runtimegltfinstance">RuntimeGltfInstance</a></li>
+<li><a class="reference internal" href="#vrm10instance">Vrm10Instance</a><ul>
+<li><a class="reference internal" href="#firstperson">FirstPerson</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../vrm0/firstperson.html"
+                        title="previous chapter">How to use VRMFirstPerson</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../vrm1/vrm1_runtime_load.html"
+                        title="next chapter">RuntimeLoad</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/implementation/runtime_resource_management.md.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../vrm1/vrm1_runtime_load.html" title="RuntimeLoad"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../vrm0/firstperson.html" title="How to use VRMFirstPerson"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">UniVRM Programming Document  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Runtime のリソース管理について</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, VRM Consortium.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+    </div>
+  </body>
+</html>

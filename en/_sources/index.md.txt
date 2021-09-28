@@ -37,6 +37,13 @@ vrm0/0_58_blendshape.md
 vrm0/firstperson.md
 ```
 
+## 実装メモ
+
+```{toctree}
+
+implementation/runtime_resource_management.md
+```
+
 ### Samples
 
 - SimpleViewer
