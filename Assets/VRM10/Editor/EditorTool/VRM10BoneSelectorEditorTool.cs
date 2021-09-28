@@ -8,7 +8,7 @@ namespace UniVRM10
     /// <summary>
     /// Bone Selector
     /// </summary>
-    [EditorTool("vrm-1.0/Humanoid", typeof(UniVRM10.VRM10Controller))]
+    [EditorTool("vrm-1.0/Humanoid", typeof(UniVRM10.Vrm10Instance))]
     public class VRM10BoneSelectorEditorTool : EditorTool
     {
         static GUIContent s_cachedIcon;
@@ -65,7 +65,7 @@ namespace UniVRM10
                 _impl = new BoneSelector(SceneView.lastActiveSceneView.camera);
             }
 
-            var root = Selection.activeGameObject?.GetComponent<VRM10Controller>();
+            var root = Selection.activeGameObject?.GetComponent<Vrm10Instance>();
             if (root == null)
             {
                 return;

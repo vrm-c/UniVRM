@@ -86,7 +86,7 @@ namespace UniVRM10
                 }
                 else
                 {
-                    var controller = root.GetComponent<VRM10Controller>();
+                    var controller = root.GetComponent<Vrm10Instance>();
                     if (controller != null)
                     {
                         Vrm = controller.Vrm;

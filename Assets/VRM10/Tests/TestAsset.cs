@@ -14,7 +14,7 @@ namespace UniVRM10
             }
         }
 
-        public static VRM10Controller LoadAlicia()
+        public static Vrm10Instance LoadAlicia()
         {
             Vrm10Data.TryParseOrMigrate(AliciaPath, true, out Vrm10Data vrm);
             using (var loader = new Vrm10Importer(vrm))
@@ -24,7 +24,7 @@ namespace UniVRM10
 
                 var instance = task.Result;
 
-                return instance.GetComponent<VRM10Controller>();
+                return instance.GetComponent<Vrm10Instance>();
             }
         }
     }

@@ -226,7 +226,7 @@ namespace UniVRM10
             animator.avatar = m_humanoid;
 
             // VrmController
-            var controller = Root.AddComponent<VRM10Controller>();
+            var controller = Root.AddComponent<Vrm10Instance>();
 
             // vrm
             controller.Vrm = await LoadVrmAsync(awaitCaller, m_vrm.VrmExtension);
@@ -452,7 +452,7 @@ namespace UniVRM10
             return vrm;
         }
 
-        async Task LoadSpringBoneAsync(IAwaitCaller awaitCaller, VRM10Controller controller, UniGLTF.Extensions.VRMC_springBone.VRMC_springBone gltfVrmSpringBone)
+        async Task LoadSpringBoneAsync(IAwaitCaller awaitCaller, Vrm10Instance controller, UniGLTF.Extensions.VRMC_springBone.VRMC_springBone gltfVrmSpringBone)
         {
             await awaitCaller.NextFrame();
 
@@ -517,7 +517,7 @@ namespace UniVRM10
                     {
                         continue;
                     }
-                    var spring = new VRM10ControllerSpringBone.Spring(gltfSpring.Name);
+                    var spring = new Vrm10InstanceSpringBone.Spring(gltfSpring.Name);
                     controller.SpringBone.Springs.Add(spring);
 
                     if (gltfSpring.ColliderGroups != null)
@@ -572,7 +572,7 @@ namespace UniVRM10
             return v;
         }
 
-        async Task LoadConstraintAsync(IAwaitCaller awaitCaller, VRM10Controller controller)
+        async Task LoadConstraintAsync(IAwaitCaller awaitCaller, Vrm10Instance controller)
         {
             for (int i = 0; i < Data.GLTF.nodes.Count; ++i)
             {

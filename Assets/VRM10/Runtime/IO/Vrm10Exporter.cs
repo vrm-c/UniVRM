@@ -227,7 +227,7 @@ namespace UniVRM10
         UniGLTF.Extensions.VRMC_springBone.VRMC_springBone springBone,
         int? thumbnailIndex) ExportVrm(GameObject root, Model model, ModelExporter converter, VRM10ObjectMeta vrmMeta)
         {
-            var vrmController = root?.GetComponent<VRM10Controller>();
+            var vrmController = root?.GetComponent<Vrm10Instance>();
 
             if (vrmMeta == null)
             {
@@ -321,7 +321,7 @@ namespace UniVRM10
             return joint;
         }
 
-        UniGLTF.Extensions.VRMC_springBone.VRMC_springBone ExportSpringBone(VRM10Controller controller, Model model, ModelExporter converter)
+        UniGLTF.Extensions.VRMC_springBone.VRMC_springBone ExportSpringBone(Vrm10Instance controller, Model model, ModelExporter converter)
         {
             var springBone = new UniGLTF.Extensions.VRMC_springBone.VRMC_springBone
             {
@@ -371,7 +371,7 @@ namespace UniVRM10
             return springBone;
         }
 
-        void ExportConstraints(VRM10Controller vrmController, Model model, ModelExporter converter)
+        void ExportConstraints(Vrm10Instance vrmController, Model model, ModelExporter converter)
         {
             var constraints = vrmController.GetComponentsInChildren<VRM10Constraint>();
             foreach (var constraint in constraints)
@@ -475,7 +475,7 @@ namespace UniVRM10
             };
         }
 
-        void ExportFirstPerson(UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm, VRM10Controller vrmController, Model model, ModelExporter converter)
+        void ExportFirstPerson(UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm, Vrm10Instance vrmController, Model model, ModelExporter converter)
         {
             if (!(vrmController?.Vrm?.FirstPerson is VRM10ObjectFirstPerson firstPerson))
             {
@@ -506,7 +506,7 @@ namespace UniVRM10
             };
         }
 
-        void ExportLookAt(UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm, VRM10Controller vrmController)
+        void ExportLookAt(UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm, Vrm10Instance vrmController)
         {
             if (!(vrmController?.Vrm?.LookAt is VRM10ObjectLookAt lookAt))
             {
@@ -559,7 +559,7 @@ namespace UniVRM10
             };
         }
 
-        UniGLTF.Extensions.VRMC_vrm.Expression ExportExpression(VRM10Expression e, VRM10Controller vrmController, Model model, ModelExporter converter)
+        UniGLTF.Extensions.VRMC_vrm.Expression ExportExpression(VRM10Expression e, Vrm10Instance vrmController, Model model, ModelExporter converter)
         {
             if (e == null)
             {
@@ -634,7 +634,7 @@ namespace UniVRM10
             return vrmExpression;
         }
 
-        void ExportExpression(UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm, VRM10Controller vrmController, Model model, ModelExporter converter)
+        void ExportExpression(UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm, Vrm10Instance vrmController, Model model, ModelExporter converter)
         {
             if (vrmController?.Vrm?.Expression?.Clips == null)
             {

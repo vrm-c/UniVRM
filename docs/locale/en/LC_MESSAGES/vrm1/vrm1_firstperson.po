@@ -35,8 +35,8 @@ msgid "Load する"
 msgstr "Load"
 
 #: ../../vrm1/vrm1_firstperson.md:8
-msgid "VRM10Controller を取得する"
-msgstr "Get VRM10Controller"
+msgid "Vrm10Instance を取得する"
+msgstr "Get Vrm10Instance"
 
 #: ../../vrm1/vrm1_firstperson.md:9
 msgid "`controller.Vrm.FirstPerson.SetupAsync` を呼び出す"

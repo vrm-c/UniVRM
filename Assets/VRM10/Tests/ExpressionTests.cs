@@ -32,7 +32,7 @@ namespace UniVRM10.Test
             controller.Vrm.Expression.Aa.MaterialColorBindings = src.ToArray();
 
             // ok if no exception
-            var r = new VRM10ControllerRuntime(controller);
+            var r = new Vrm10InstanceRuntime(controller);
         }
 
         [Test]
@@ -56,7 +56,7 @@ namespace UniVRM10.Test
             controller.Vrm.Expression.Aa.MaterialUVBindings = src.ToArray();
 
             // ok if no exception
-            var r = new VRM10ControllerRuntime(controller);
+            var r = new Vrm10InstanceRuntime(controller);
         }
     }
 }

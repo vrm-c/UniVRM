@@ -6,13 +6,13 @@ namespace UniVRM10
     /// <summary>
     /// Play時 と Editorからの参照情報置き場
     /// </summary>
-    public class VRM10ControllerRuntime
+    public class Vrm10InstanceRuntime
     {
-        VRM10Controller m_target;
+        Vrm10Instance m_target;
         VRM10Constraint[] m_constraints;
         Transform m_head;
 
-        public VRM10ControllerRuntime(VRM10Controller target)
+        public Vrm10InstanceRuntime(Vrm10Instance target)
         {
             m_target = target;
             var animator = target.GetComponent<Animator>();

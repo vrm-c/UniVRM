@@ -9,7 +9,7 @@ namespace UniVRM10
 {
     public class SpringBoneTreeView : TreeView
     {
-        public VRM10Controller Target { get; private set; }
+        public Vrm10Instance Target { get; private set; }
         SerializedObject _so;
 
         TreeViewItem _root;
@@ -20,7 +20,7 @@ namespace UniVRM10
 
         Dictionary<int, object> _map = new Dictionary<int, object>();
 
-        public SpringBoneTreeView(TreeViewState state, VRM10Controller target, SerializedObject so) : base(state)
+        public SpringBoneTreeView(TreeViewState state, Vrm10Instance target, SerializedObject so) : base(state)
         {
             Target = target;
             _so = so;
@@ -75,7 +75,7 @@ namespace UniVRM10
                     var i = Target.SpringBone.ColliderGroups.IndexOf(colliderGroup);
                     _selected = new SelectedColliderGroupGUI(_so, i);
                 }
-                else if (value is VRM10ControllerSpringBone.Spring spring)
+                else if (value is Vrm10InstanceSpringBone.Spring spring)
                 {
                     var i = Target.SpringBone.Springs.IndexOf(spring);
                     _selected = new SelectedSpringGUI(Target, _so, i);

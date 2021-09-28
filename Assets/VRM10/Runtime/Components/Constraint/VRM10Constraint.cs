@@ -24,7 +24,7 @@ namespace UniVRM10
                     // root
                     break;
                 }
-                if (current.GetComponent<VRM10Controller>() != null)
+                if (current.GetComponent<Vrm10Instance>() != null)
                 {
                     // model root
                     break;

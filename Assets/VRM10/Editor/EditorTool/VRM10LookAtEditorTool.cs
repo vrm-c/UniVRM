@@ -5,7 +5,7 @@ using UnityEditor.EditorTools;
 
 namespace UniVRM10
 {
-    [EditorTool("vrm-1.0/LookAt", typeof(UniVRM10.VRM10Controller))]
+    [EditorTool("vrm-1.0/LookAt", typeof(UniVRM10.Vrm10Instance))]
     class VRM10LookAtEditorTool : EditorTool
     {
         static GUIContent s_cachedIcon;
@@ -41,7 +41,7 @@ namespace UniVRM10
 
         public override void OnToolGUI(EditorWindow window)
         {
-            var root = Selection.activeTransform.GetComponent<VRM10Controller>();
+            var root = Selection.activeTransform.GetComponent<Vrm10Instance>();
             if (root == null)
             {
                 return;
