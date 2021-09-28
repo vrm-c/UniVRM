@@ -44,7 +44,7 @@
 <p>VR向け FirstPerson 設定の初期化手順です。</p>
 <ol class="simple">
 <li><p>Load する</p></li>
-<li><p>VRM10Controller を取得する</p></li>
+<li><p>Vrm10Instance を取得する</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">controller.Vrm.FirstPerson.SetupAsync</span></code> を呼び出す</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">controller.Vrm.FirstPerson.SetupAsync</span></code> した結果新規に作成されたモデルを <code class="docutils literal notranslate"><span class="pre">RuntimeGltfInstance</span></code> に渡す</p></li>
 <li><p>ShowMeshes</p></li>
@@ -62,7 +62,7 @@
         <span class="kt">var</span> <span class="n">instance</span> <span class="p">=</span> <span class="k">await</span> <span class="n">loader</span><span class="p">.</span><span class="n">LoadAsync</span><span class="p">();</span>
 
         <span class="c1">// 2.</span>
-        <span class="kt">var</span> <span class="n">controller</span> <span class="p">=</span> <span class="n">instance</span><span class="p">.</span><span class="n">GetComponent</span><span class="p">&lt;</span><span class="n">VRM10Controller</span><span class="p">&gt;();</span>
+        <span class="kt">var</span> <span class="n">controller</span> <span class="p">=</span> <span class="n">instance</span><span class="p">.</span><span class="n">GetComponent</span><span class="p">&lt;</span><span class="n">Vrm10Instance</span><span class="p">&gt;();</span>
 
         <span class="c1">// 3.</span>
         <span class="kt">var</span> <span class="n">created</span> <span class="p">=</span> <span class="k">await</span> <span class="n">controller</span><span class="p">.</span><span class="n">Vrm</span><span class="p">.</span><span class="n">FirstPerson</span><span class="p">.</span><span class="n">SetupAsync</span><span class="p">(</span><span class="n">controller</span><span class="p">.</span><span class="n">gameObject</span><span class="p">);</span>

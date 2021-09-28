@@ -43,7 +43,7 @@
 <p>The VR First Person settings.</p>
 <ol class="simple">
 <li><p>Load</p></li>
-<li><p>Get VRM10Controller</p></li>
+<li><p>Get Vrm10Instance</p></li>
 <li><p>Call <code class="docutils literal notranslate"><span class="pre">controller.Vrm.FirstPerson.SetupAsync</span></code></p></li>
 <li><p>Add the result of <code class="docutils literal notranslate"><span class="pre">controller.Vrm.FirstPerson.SetupAsync</span></code> to <code class="docutils literal notranslate"><span class="pre">RuntimeGltfInstance</span></code></p></li>
 <li><p>ShowMeshes</p></li>
@@ -61,7 +61,7 @@
         <span class="kt">var</span> <span class="n">instance</span> <span class="p">=</span> <span class="k">await</span> <span class="n">loader</span><span class="p">.</span><span class="n">LoadAsync</span><span class="p">();</span>
 
         <span class="c1">// 2.</span>
-        <span class="kt">var</span> <span class="n">controller</span> <span class="p">=</span> <span class="n">instance</span><span class="p">.</span><span class="n">GetComponent</span><span class="p">&lt;</span><span class="n">VRM10Controller</span><span class="p">&gt;();</span>
+        <span class="kt">var</span> <span class="n">controller</span> <span class="p">=</span> <span class="n">instance</span><span class="p">.</span><span class="n">GetComponent</span><span class="p">&lt;</span><span class="n">Vrm10Instance</span><span class="p">&gt;();</span>
 
         <span class="c1">// 3.</span>
         <span class="kt">var</span> <span class="n">created</span> <span class="p">=</span> <span class="k">await</span> <span class="n">controller</span><span class="p">.</span><span class="n">Vrm</span><span class="p">.</span><span class="n">FirstPerson</span><span class="p">.</span><span class="n">SetupAsync</span><span class="p">(</span><span class="n">controller</span><span class="p">.</span><span class="n">gameObject</span><span class="p">);</span>
