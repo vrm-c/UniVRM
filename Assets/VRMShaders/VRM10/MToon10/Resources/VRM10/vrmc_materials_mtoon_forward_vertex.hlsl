@@ -17,7 +17,7 @@ Varyings MToonVertex(const Attributes v) // v is UnityCG macro specified name.
     UNITY_TRANSFER_INSTANCE_ID(v, output);
     UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
 
-    output.uv = TRANSFORM_TEX(v.texcoord0, _MainTex);
+    output.uv = v.texcoord0;
 
     if (MToon_IsOutlinePass())
     {
