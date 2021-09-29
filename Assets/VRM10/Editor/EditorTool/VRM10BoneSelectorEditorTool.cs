@@ -3,6 +3,11 @@ using UnityEditor;
 using UnityEditor.EditorTools;
 using UniGLTF;
 
+#if UNITY_2021_OR_NEWER
+#else
+using ToolManager = UnityEditor.EditorTools.EditorTools;
+#endif
+
 namespace UniVRM10
 {
     /// <summary>
@@ -27,7 +32,7 @@ namespace UniVRM10
         BoneSelector _impl;
         void OnEnable()
         {
-            EditorTools.activeToolChanged += ActiveToolDidChange;
+            ToolManager.activeToolChanged += ActiveToolDidChange;
             if (SceneView.lastActiveSceneView?.camera)
             {
             }
@@ -35,7 +40,7 @@ namespace UniVRM10
 
         void OnDisable()
         {
-            EditorTools.activeToolChanged -= ActiveToolDidChange;
+            ToolManager.activeToolChanged -= ActiveToolDidChange;
             if (_impl != null)
             {
                 _impl.Dispose();
@@ -45,7 +50,7 @@ namespace UniVRM10
 
         void ActiveToolDidChange()
         {
-            if (EditorTools.IsActiveTool(this))
+            if (ToolManager.IsActiveTool(this))
             {
             }
             else
