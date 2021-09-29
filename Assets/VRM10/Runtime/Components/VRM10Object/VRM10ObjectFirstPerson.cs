@@ -60,11 +60,10 @@ namespace UniVRM10
 
         bool m_done;
 
-        async Task SetupRendererAsync(GameObject go, Transform FirstPersonBone, RendererFirstPersonFlags x,
+        async Task SetupSelfRendererAsync(GameObject go, Transform FirstPersonBone, RendererFirstPersonFlags x,
             (int FirstPersonOnly, int ThirdPersonOnly) layer, IAwaitCaller awaitCaller = null)
         {
             var runtime = go.GetComponent<UniGLTF.RuntimeGltfInstance>();
-
             switch (x.FirstPersonFlag)
             {
                 case UniGLTF.Extensions.VRMC_vrm.FirstPersonType.auto:
@@ -127,19 +126,17 @@ namespace UniVRM10
         }
 
         /// <summary>
-        /// Setup first person
-        /// 
-        /// * SetupLayers
-        /// * Each renderer is set according to the first person flag. If the flag is `auto`, headless mesh creation will be performed. It's a heavy process.
-        /// * If visible is false, the created headless mesh will be hidden.
-        /// 
+        /// Each renderer is set according to the first person flag. 
+        /// If the flag is `auto`, headless mesh creation will be performed.
+        /// Creating a headless mesh(Renderer) is a heavy process and can be done in threads.
         /// </summary>
-        /// <param name="go"></param>
-        /// <param name="firstPersonOnlyLayer"></param>
-        /// <param name="thirdPersonOnlyLayer"></param>
-        /// <param name="awaitCaller"></param>
+        /// <param name="go">The target model root</param>
+        /// <param name="isSelf">The target model is the VR user himself</param>
+        /// <param name="firstPersonOnlyLayer">layer VRMFirstPersonOnly or 9</param>
+        /// <param name="thirdPersonOnlyLayer">layer VRMThirdPersonOnly ir 10</param>
+        /// <param name="awaitCaller">Headless mesh creation task scheduler. By default, creation is immediate</param>
         /// <returns></returns>
-        public async Task SetupAsync(GameObject go, int? firstPersonOnlyLayer = default, int? thirdPersonOnlyLayer = default, IAwaitCaller awaitCaller = default)
+        public async Task SetupAsync(GameObject go, bool isSelf = true, int? firstPersonOnlyLayer = default, int? thirdPersonOnlyLayer = default, IAwaitCaller awaitCaller = default)
         {
             if (awaitCaller == null)
             {
@@ -159,7 +156,30 @@ namespace UniVRM10
             var FirstPersonBone = go.GetComponent<Animator>().GetBoneTransform(HumanBodyBones.Head);
             foreach (var x in Renderers)
             {
-                await SetupRendererAsync(go, FirstPersonBone, x, layer, awaitCaller);
+                if (isSelf)
+                {
+                    await SetupSelfRendererAsync(go, FirstPersonBone, x, layer, awaitCaller);
+                }
+                else
+                {
+                    switch (x.FirstPersonFlag)
+                    {
+                        case UniGLTF.Extensions.VRMC_vrm.FirstPersonType.firstPersonOnly:
+                            if (x.GetRenderer(go.transform) is Renderer r)
+                            {
+                                // invisible
+                                r.enabled = false;
+                            }
+                            break;
+
+                        case UniGLTF.Extensions.VRMC_vrm.FirstPersonType.auto:
+                        // => Same as Both
+                        case UniGLTF.Extensions.VRMC_vrm.FirstPersonType.both:
+                        case UniGLTF.Extensions.VRMC_vrm.FirstPersonType.thirdPersonOnly:
+                            // do nothing
+                            break;
+                    }
+                }
             }
         }
     }
