@@ -16,8 +16,8 @@ namespace VRM.FastSpringBones.NativeWrappers
         private NativeArray<BlittableColliderGroup> _colliderGroupArray;
         private IReadOnlyList<FastSpringBoneColliderGroup> _colliderGroups;
 
-        //FIXME: Disposeされた後にUpdateColliderGroupsが呼ばれるのをとりあえず防ぐためのフラグ
-        private bool _isDisposed = false;
+        //Disposeされた後にUpdateColliderGroupsが呼ばれるのを防ぐためのフラグ
+        private bool _isDisposed;
 
         public BlittableColliderGroups* GetUnsafePtr() => _nativePointer.GetUnsafePtr(); 
         public void DrawGizmos() => _nativePointer.Value.DrawGizmos();
