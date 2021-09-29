@@ -2,6 +2,11 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditor.EditorTools;
 
+#if UNITY_2021_OR_NEWER
+#else
+using ToolManager = UnityEditor.EditorTools.EditorTools;
+#endif
+
 
 namespace UniVRM10
 {
@@ -23,17 +28,17 @@ namespace UniVRM10
 
         void OnEnable()
         {
-            EditorTools.activeToolChanged += ActiveToolDidChange;
+            ToolManager.activeToolChanged += ActiveToolDidChange;
         }
 
         void OnDisable()
         {
-            EditorTools.activeToolChanged -= ActiveToolDidChange;
+            ToolManager.activeToolChanged -= ActiveToolDidChange;
         }
 
         void ActiveToolDidChange()
         {
-            if (!EditorTools.IsActiveTool(this))
+            if (!ToolManager.IsActiveTool(this))
             {
                 return;
             }
