@@ -30,6 +30,9 @@ namespace VRM.SimpleViewer
 
         [SerializeField]
         Toggle m_useUrpMaterial = default;
+        
+        [SerializeField]
+        Toggle m_useFastSpringBone = default;
         #endregion
 
         [SerializeField]
@@ -172,6 +175,7 @@ namespace VRM.SimpleViewer
             m_reset = buttons.First(x => x.name == "ResetSpringBone");
 
             var toggles = GameObject.FindObjectsOfType<Toggle>();
+            m_useFastSpringBone = toggles.First(x => x.name == "UseFastSpringBone");
             m_enableLipSync = toggles.First(x => x.name == "EnableLipSync");
             m_enableAutoBlink = toggles.First(x => x.name == "EnableAutoBlink");
 
@@ -300,6 +304,8 @@ namespace VRM.SimpleViewer
             m_version.text = string.Format("VRMViewer {0}.{1}",
                 VRMVersion.MAJOR, VRMVersion.MINOR);
             m_open.onClick.AddListener(OnOpenClicked);
+            m_useFastSpringBone.onValueChanged.AddListener(OnUseFastSpringBoneValueChanged);
+            OnUseFastSpringBoneValueChanged(m_useFastSpringBone.isOn);
 
             m_reset.onClick.AddListener(() => m_loaded.OnResetClicked());
 
@@ -379,6 +385,11 @@ namespace VRM.SimpleViewer
                     LoadMotion(path);
                     break;
             }
+        }
+
+        void OnUseFastSpringBoneValueChanged(bool flag)
+        {
+            m_reset.gameObject.SetActive(!flag);
         }
 
         static IMaterialDescriptorGenerator GetGltfMaterialGenerator(bool useUrp)
@@ -465,6 +476,11 @@ namespace VRM.SimpleViewer
             {
                 m_loaded.Dispose();
                 m_loaded = null;
+            }
+
+            if (m_useFastSpringBone.isOn)
+            {
+                FastSpringBoneReplacer.ReplaceAsync(instance.Root);
             }
 
             instance.EnableUpdateWhenOffscreen();
