@@ -312,7 +312,7 @@ namespace VRM.SimpleViewer
             string[] cmds = System.Environment.GetCommandLineArgs();
             if (cmds.Length > 1)
             {
-                LoadModelAsync(cmds[1]);
+                LoadModel(cmds[1]);
             }
 
             m_texts.Start();
@@ -357,14 +357,22 @@ namespace VRM.SimpleViewer
                 return;
             }
 
+            LoadModel(path);
+        }
+
+        void LoadModel(string path)
+        {
             var ext = Path.GetExtension(path).ToLower();
             switch (ext)
             {
                 case ".gltf":
                 case ".glb":
-                case ".vrm":
                 case ".zip":
-                    LoadModelAsync(path);
+                    LoadModelAsync(path, false);
+                    break;
+
+                case ".vrm":
+                    LoadModelAsync(path, true);
                     break;
 
                 case ".bvh":
@@ -397,7 +405,7 @@ namespace VRM.SimpleViewer
             }
         }
 
-        async void LoadModelAsync(string path)
+        async void LoadModelAsync(string path, bool isVrm)
         {
             if (!File.Exists(path))
             {
@@ -417,7 +425,7 @@ namespace VRM.SimpleViewer
                 return;
             }
 
-            try
+            if (isVrm)
             {
                 var vrm = new VRMData(data);
                 using (var loader = new VRMImporterContext(vrm, materialGenerator: GetVrmMaterialGenerator(m_useUrpMaterial.isOn, vrm.VrmExtension)))
@@ -427,7 +435,7 @@ namespace VRM.SimpleViewer
                     SetModel(instance);
                 }
             }
-            catch (NotVrm0Exception)
+            else
             {
                 using (var loader = new UniGLTF.ImporterContext(data, materialGenerator: GetGltfMaterialGenerator(m_useUrpMaterial.isOn)))
                 {
