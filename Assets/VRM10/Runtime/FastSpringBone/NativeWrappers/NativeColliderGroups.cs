@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
-using VRM.FastSpringBones.Blittables;
-using VRM.FastSpringBones.Components;
+using UniVRM10.FastSpringBones.Blittables;
+using UniVRM10.FastSpringBones.Components;
 
-namespace VRM.FastSpringBones.NativeWrappers
+namespace UniVRM10.FastSpringBones.NativeWrappers
 {
     /// <summary>
     /// BlittableColliderGroupsのライフサイクルを管理するWrapper

@@ -1,6 +1,6 @@
-using VRM.FastSpringBones.NativeWrappers;
+using UniVRM10.FastSpringBones.NativeWrappers;
 
-namespace VRM.FastSpringBones.Registries
+namespace UniVRM10.FastSpringBones.Registries
 {
     public sealed class ColliderGroupRegistry : Registry<NativeColliderGroups>
     {

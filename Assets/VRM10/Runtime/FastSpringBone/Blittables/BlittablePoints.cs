@@ -1,4 +1,4 @@
-namespace VRM.FastSpringBones.Blittables
+namespace UniVRM10.FastSpringBones.Blittables
 {
     /// <summary>
     /// BlittablePointのポインタの配列

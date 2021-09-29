@@ -2,7 +2,7 @@ using System;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 
-namespace VRM.FastSpringBones.NativeWrappers
+namespace UniVRM10.FastSpringBones.NativeWrappers
 {
     public sealed class NativePointer<T> : IDisposable where T : unmanaged
     {

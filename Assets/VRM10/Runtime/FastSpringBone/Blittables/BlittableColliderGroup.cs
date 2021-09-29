@@ -1,7 +1,7 @@
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 
-namespace VRM.FastSpringBones.Blittables
+namespace UniVRM10.FastSpringBones.Blittables
 {
     /// <summary>
     /// VRMSpringBoneのColliderGroupをBlittableにしたもの

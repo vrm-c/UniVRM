@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Jobs;
 
-namespace VRM.FastSpringBones.Blittables
+namespace UniVRM10.FastSpringBones.Blittables
 {
     /// <summary>
     /// Transformの必要な機能だけを絞り、Blittableに対応させたクラス

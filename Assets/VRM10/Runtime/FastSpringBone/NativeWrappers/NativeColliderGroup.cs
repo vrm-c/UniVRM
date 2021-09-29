@@ -1,8 +1,8 @@
 using System;
 using Unity.Collections;
-using VRM.FastSpringBones.Blittables;
+using UniVRM10.FastSpringBones.Blittables;
 
-namespace VRM.FastSpringBones.NativeWrappers
+namespace UniVRM10.FastSpringBones.NativeWrappers
 {
     /// <summary>
     /// BlittableColliderGroupのライフサイクルを管理するWrapper

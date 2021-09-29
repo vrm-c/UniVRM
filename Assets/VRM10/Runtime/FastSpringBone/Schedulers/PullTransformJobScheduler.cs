@@ -8,11 +8,11 @@ using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
 using UnityEngine.Jobs;
 using UnityEngine.Profiling;
-using VRM.FastSpringBones.Blittables;
-using VRM.FastSpringBones.NativeWrappers;
-using VRM.FastSpringBones.Registries;
+using UniVRM10.FastSpringBones.Blittables;
+using UniVRM10.FastSpringBones.NativeWrappers;
+using UniVRM10.FastSpringBones.Registries;
 
-namespace VRM.FastSpringBones.Schedulers
+namespace UniVRM10.FastSpringBones.Schedulers
 {
     /// <summary>
     /// GameObjectの世界からBlittableな世界へTransformを複製する処理を行うクラス

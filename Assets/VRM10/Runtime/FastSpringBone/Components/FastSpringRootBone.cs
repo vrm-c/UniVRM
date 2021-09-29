@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using VRM.FastSpringBones.Blittables;
-using VRM.FastSpringBones.NativeWrappers;
-using VRM.FastSpringBones.Registries;
+using UniVRM10.FastSpringBones.Blittables;
+using UniVRM10.FastSpringBones.NativeWrappers;
+using UniVRM10.FastSpringBones.Registries;
 
-namespace VRM.FastSpringBones.Components
+namespace UniVRM10.FastSpringBones.Components
 {
     /// <summary>
     /// SpringBoneの1本の毛束の処理を担当するクラス

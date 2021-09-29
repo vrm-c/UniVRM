@@ -1,10 +1,10 @@
 using Unity.Jobs;
 using UnityEngine;
 using UnityEngine.Profiling;
-using VRM.FastSpringBones.Registries;
-using VRM.FastSpringBones.Schedulers;
+using UniVRM10.FastSpringBones.Registries;
+using UniVRM10.FastSpringBones.Schedulers;
 
-namespace VRM.FastSpringBones.Components
+namespace UniVRM10.FastSpringBones.Components
 {
     /// <summary>
     /// Jobを連続して発火させるComponent

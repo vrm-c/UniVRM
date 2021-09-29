@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace VRM.FastSpringBones.Blittables
+namespace UniVRM10.FastSpringBones.Blittables
 {
     /// <summary>
     /// 1本の毛束を示すBlittable型

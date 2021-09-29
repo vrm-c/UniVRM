@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace VRM.FastSpringBones.Registries
+namespace UniVRM10.FastSpringBones.Registries
 {
     public class Registry<T>
     {

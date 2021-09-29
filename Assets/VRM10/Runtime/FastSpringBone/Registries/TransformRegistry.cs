@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using VRM.FastSpringBones.NativeWrappers;
+using UniVRM10.FastSpringBones.NativeWrappers;
 
-namespace VRM.FastSpringBones.Registries
+namespace UniVRM10.FastSpringBones.Registries
 {
     /// <summary>
     /// 今生きているTransformの一覧を返すクラス

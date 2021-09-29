@@ -1,9 +1,9 @@
 using System;
 using UnityEngine;
-using VRM.FastSpringBones.Blittables;
-using VRM.FastSpringBones.Registries;
+using UniVRM10.FastSpringBones.Blittables;
+using UniVRM10.FastSpringBones.Registries;
 
-namespace VRM.FastSpringBones.NativeWrappers
+namespace UniVRM10.FastSpringBones.NativeWrappers
 {
     /// <summary>
     /// BlittableTransformのライフサイクルを管理するWrapper
