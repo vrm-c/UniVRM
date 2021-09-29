@@ -427,12 +427,25 @@ namespace VRM.SimpleViewer
 
             if (isVrm)
             {
-                var vrm = new VRMData(data);
-                using (var loader = new VRMImporterContext(vrm, materialGenerator: GetVrmMaterialGenerator(m_useUrpMaterial.isOn, vrm.VrmExtension)))
+                try
                 {
-                    await m_texts.UpdateMetaAsync(loader);
-                    var instance = await loader.LoadAsync();
-                    SetModel(instance);
+                    var vrm = new VRMData(data);
+                    using (var loader = new VRMImporterContext(vrm, materialGenerator: GetVrmMaterialGenerator(m_useUrpMaterial.isOn, vrm.VrmExtension)))
+                    {
+                        await m_texts.UpdateMetaAsync(loader);
+                        var instance = await loader.LoadAsync();
+                        SetModel(instance);
+                    }
+                }
+                catch (NotVrm0Exception)
+                {
+                    // retry
+                    Debug.LogWarning("file extension is vrm. but not vrm ?");
+                    using (var loader = new UniGLTF.ImporterContext(data, materialGenerator: GetGltfMaterialGenerator(m_useUrpMaterial.isOn)))
+                    {
+                        var instance = await loader.LoadAsync();
+                        SetModel(instance);
+                    }
                 }
             }
             else
