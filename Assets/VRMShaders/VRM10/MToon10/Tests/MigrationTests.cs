@@ -30,8 +30,6 @@ namespace VRMShaders.VRM10.MToon10.Tests
         [Test]
         public void MigrateGiIntensity()
         {
-            var delta = 0.001f;
-
             // normal
             Assert.AreEqual(0f, MToon10Migrator.MigrateToGiEqualization(1f));
 

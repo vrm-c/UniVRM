@@ -259,7 +259,6 @@ namespace UniVRM10
         public void MigrateMeta()
         {
             Assert.True(Vrm10Data.TryParseOrMigrate(AliciaPath, true, out Vrm10Data vrm));
-            var a = 0;
         }
     }
 }
