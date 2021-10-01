@@ -1,16 +1,20 @@
 using System;
+using System.Linq;
 using UnityEngine;
+using UniVRM10.FastSpringBones.Blittables;
+using UniVRM10.FastSpringBones.System;
 
 namespace UniVRM10
 {
     /// <summary>
     /// Play時 と Editorからの参照情報置き場
     /// </summary>
-    public class Vrm10InstanceRuntime
+    public class Vrm10InstanceRuntime : IDisposable
     {
-        Vrm10Instance m_target;
-        VRM10Constraint[] m_constraints;
-        Transform m_head;
+        private readonly Vrm10Instance m_target;
+        private readonly VRM10Constraint[] m_constraints;
+        private readonly Transform m_head;
+        readonly FastSpringBoneScheduler m_fastSpringBoneScheduler;
 
         public Vrm10InstanceRuntime(Vrm10Instance target)
         {
@@ -20,6 +24,7 @@ namespace UniVRM10
             {
                 throw new Exception();
             }
+
             m_head = animator.GetBoneTransform(HumanBodyBones.Head);
             target.Vrm.LookAt.Setup(animator, m_head, target.LookAtTargetType, target.Gaze);
             target.Vrm.Expression.Setup(target, target.Vrm.LookAt, target.Vrm.LookAt.EyeDirectionApplicable);
@@ -27,6 +32,54 @@ namespace UniVRM10
             if (m_constraints == null)
             {
                 m_constraints = target.GetComponentsInChildren<VRM10Constraint>();
+            }
+
+            m_fastSpringBoneScheduler = CreateFastSpringBoneScheduler(m_target.SpringBone);
+        }
+
+        private FastSpringBoneScheduler CreateFastSpringBoneScheduler(Vrm10InstanceSpringBone springBone)
+        {
+            return new FastSpringBoneScheduler(springBone.Springs.Select(spring => new FastSpringBoneSpring
+            {
+                Colliders = spring.ColliderGroups
+                    .SelectMany(group => group.Colliders)
+                    .Select(collider => new FastSpringBoneCollider
+                    {
+                        Transform = collider.transform,
+                        Collider = new BlittableCollider
+                        {
+                            offset = collider.Offset,
+                            radius = collider.Radius,
+                            tail = collider.Tail,
+                            colliderType = TranslateColliderType(collider.ColliderType)
+                        }
+                    }).ToArray(),
+                Joints = spring.Joints
+                    .Select(joint => new FastSpringBoneJoint
+                    {
+                        Transform = joint.transform,
+                        Joint = new BlittableJoint()
+                        {
+                            radius = joint.m_jointRadius,
+                            dragForce = joint.m_dragForce,
+                            gravityDir = joint.m_gravityDir,
+                            gravityPower = joint.m_gravityPower,
+                            stiffnessForce = joint.m_stiffnessForce
+                        }
+                    }).ToArray(),
+            }).ToArray());
+        }
+
+        private static BlittableColliderType TranslateColliderType(VRM10SpringBoneColliderTypes colliderType)
+        {
+            switch (colliderType)
+            {
+                case VRM10SpringBoneColliderTypes.Sphere:
+                    return BlittableColliderType.Sphere;
+                case VRM10SpringBoneColliderTypes.Capsule: 
+                    return BlittableColliderType.Capsule;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -52,7 +105,8 @@ namespace UniVRM10
             //
             // spring
             //
-            m_target.SpringBone.Process(m_target.SpringBoneCenter);
+            //m_target.SpringBone.Process(m_target.SpringBoneCenter);
+            var handle = m_fastSpringBoneScheduler.Schedule();
 
             //
             // gaze control
@@ -63,6 +117,13 @@ namespace UniVRM10
             // expression
             //
             m_target.Vrm.Expression.Process();
+            
+            handle.Complete();
+        }
+
+        public void Dispose()
+        {
+            m_fastSpringBoneScheduler.Dispose();
         }
     }
 }
