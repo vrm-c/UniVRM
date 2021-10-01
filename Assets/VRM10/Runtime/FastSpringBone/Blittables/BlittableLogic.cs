@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace UniVRM10.FastSpringBones.Blittables
@@ -5,13 +6,14 @@ namespace UniVRM10.FastSpringBones.Blittables
     /// <summary>
     /// SpringBoneの各関節を表すデータ型
     /// </summary>
+    [Serializable]
     public struct BlittableLogic
     {
-        public float Length;
-        public Vector3 CurrentTail;
-        public Vector3 PrevTail;
-        public Vector3 LocalDir;
-        public Quaternion LocalRotation;
-        public Vector3 BoneAxis;
+        public float length;
+        public Vector3 currentTail;
+        public Vector3 prevTail;
+        public Vector3 localDir;
+        public Quaternion localRotation;
+        public Vector3 boneAxis;
     }
 }

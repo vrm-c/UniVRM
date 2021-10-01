@@ -1,8 +1,11 @@
+using System;
+
 namespace UniVRM10.FastSpringBones.Blittables
 {
+    [Serializable]
     public struct BlittableSpan
     {
-        public int StartIndex;
-        public int Count;
+        public int startIndex;
+        public int count;
     }
 }

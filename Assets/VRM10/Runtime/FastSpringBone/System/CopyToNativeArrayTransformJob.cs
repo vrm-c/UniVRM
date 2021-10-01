@@ -14,13 +14,13 @@ namespace UniVRM10.FastSpringBones.System
         {
             Transforms[index] = new BlittableTransform
             {
-                Position = transform.position,
-                Rotation = transform.rotation,
-                LocalPosition = transform.localPosition,
-                LocalRotation = transform.localRotation,
-                LocalScale = transform.localScale,
-                LocalToWorldMatrix = transform.localToWorldMatrix,
-                WorldToLocalMatrix = transform.worldToLocalMatrix
+                position = transform.position,
+                rotation = transform.rotation,
+                localPosition = transform.localPosition,
+                localRotation = transform.localRotation,
+                localScale = transform.localScale,
+                localToWorldMatrix = transform.localToWorldMatrix,
+                worldToLocalMatrix = transform.worldToLocalMatrix
             };
         }
     }

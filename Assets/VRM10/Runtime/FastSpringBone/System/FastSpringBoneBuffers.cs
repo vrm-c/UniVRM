@@ -85,10 +85,10 @@ namespace UniVRM10.FastSpringBones.System
                 var spring = springs[i];
                 var blittableSpring = new BlittableSpring();
 
-                blittableSpring.JointSpan.StartIndex = jointsCount;
-                blittableSpring.ColliderSpan.StartIndex = jointsCount;
-                blittableSpring.JointSpan.Count = spring.Joints.Length;
-                blittableSpring.ColliderSpan.Count = spring.Colliders.Length;
+                blittableSpring.jointSpan.startIndex = jointsCount;
+                blittableSpring.colliderSpan.startIndex = jointsCount;
+                blittableSpring.jointSpan.count = spring.Joints.Length;
+                blittableSpring.colliderSpan.count = spring.Colliders.Length;
                 _springs[i] = blittableSpring;
 
                 jointsCount += spring.Joints.Length;

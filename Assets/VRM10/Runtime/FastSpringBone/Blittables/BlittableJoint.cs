@@ -1,4 +1,4 @@
-using Unity.Collections;
+using System;
 using UnityEngine;
 
 namespace UniVRM10.FastSpringBones.Blittables
@@ -6,12 +6,13 @@ namespace UniVRM10.FastSpringBones.Blittables
     /// <summary>
     /// SpringBoneの各関節を表すデータ型
     /// </summary>
+    [Serializable]
     public struct BlittableJoint
     {
-        public float StiffnessForce;
-        public float GravityPower;
-        public Vector3 GravityDir;
-        public float DragForce;
-        public float Radius;
+        public float stiffnessForce;
+        public float gravityPower;
+        public Vector3 gravityDir;
+        public float dragForce;
+        public float radius;
     }
 }

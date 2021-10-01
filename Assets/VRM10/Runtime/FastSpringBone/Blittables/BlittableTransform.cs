@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace UniVRM10.FastSpringBones.Blittables
@@ -5,14 +6,15 @@ namespace UniVRM10.FastSpringBones.Blittables
     /// <summary>
     /// Transformの必要な機能だけを絞り、Blittableに対応させたクラス
     /// </summary>
+    [Serializable]
     public struct BlittableTransform
     {
-        public Vector3 Position;
-        public Quaternion Rotation;
-        public Vector3 LocalPosition;
-        public Quaternion LocalRotation;
-        public Vector3 LocalScale;
-        public Matrix4x4 LocalToWorldMatrix;
-        public Matrix4x4 WorldToLocalMatrix;
+        public Vector3 position;
+        public Quaternion rotation;
+        public Vector3 localPosition;
+        public Quaternion localRotation;
+        public Vector3 localScale;
+        public Matrix4x4 localToWorldMatrix;
+        public Matrix4x4 worldToLocalMatrix;
     }
 }
