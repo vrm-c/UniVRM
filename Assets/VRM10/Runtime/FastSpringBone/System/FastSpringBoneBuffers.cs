@@ -3,108 +3,121 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.Collections;
 using UnityEngine.Jobs;
+using UnityEngine.Profiling;
 using UniVRM10.FastSpringBones.Blittables;
 
 namespace UniVRM10.FastSpringBones.System
 {
-    public sealed class FastSpringBoneBuffers : IDisposable
+    /// <summary>
+    /// FastSpringBoneの処理に利用するバッファを全て結合して持ち、必要に応じて返すクラス
+    /// </summary>
+    public sealed class FastSpringBoneBufferCombiner : IDisposable
     {
         private NativeArray<BlittableSpring> _springs;
-
         private NativeArray<BlittableJoint> _joints;
-        private NativeArray<BlittableTransform> _jointTransforms;
-        private TransformAccessArray _jointsTransformAccessArray;
-
+        private NativeArray<BlittableTransform> _transforms;
+        private TransformAccessArray _transformAccessArray;
         private NativeArray<BlittableCollider> _colliders;
-        private NativeArray<BlittableTransform> _colliderTransforms;
-        private TransformAccessArray _colliderTransformAccessArray;
+
+        private readonly LinkedList<FastSpringBoneScope> _fastSpringBoneScopes = new LinkedList<FastSpringBoneScope>();
 
         public NativeArray<BlittableSpring> Springs => _springs;
-        
         public NativeArray<BlittableJoint> Joints => _joints;
-        public NativeArray<BlittableTransform> JointTransforms => _jointTransforms;
-        public TransformAccessArray JointsTransformAccessArray => _jointsTransformAccessArray;
-        
+        public NativeArray<BlittableTransform> Transforms => _transforms;
+        public TransformAccessArray TransformAccessArray => _transformAccessArray;
         public NativeArray<BlittableCollider> Colliders => _colliders;
-        public NativeArray<BlittableTransform> ColliderTransforms => _colliderTransforms;
-        public TransformAccessArray ColliderTransformAccessArray => _colliderTransformAccessArray;
 
-        public FastSpringBoneBuffers(IReadOnlyList<FastSpringBoneSpring> springs)
+        public void Register(FastSpringBoneScope scope)
         {
-            _springs = new NativeArray<BlittableSpring>(springs.Count, Allocator.Persistent);
+            _fastSpringBoneScopes.AddLast(scope);
+            ReconstructBuffers();
+        }
 
-            // _springsを構築しつつ、joints, collidersの総数を数える
-            ConstructBlittableSprings(springs, out var jointsCount, out var collidersCount);
+        public void Unregister(FastSpringBoneScope scope)
+        {
+            _fastSpringBoneScopes.Remove(scope);
+            ReconstructBuffers();
+        }
 
-            // 各種bufferの初期化
-            _joints = new NativeArray<BlittableJoint>(jointsCount, Allocator.Persistent);
-            _jointTransforms = new NativeArray<BlittableTransform>(jointsCount, Allocator.Persistent);
-            _jointsTransformAccessArray = new TransformAccessArray(jointsCount);
+        private void ReconstructBuffers()
+        {
+            Profiler.BeginSample("FastSpringBone.ReconstructBuffers");
+            if (_springs.IsCreated) _springs.Dispose();
+            if (_joints.IsCreated) _joints.Dispose();
+            if (_transforms.IsCreated) _transforms.Dispose();
+            if (_transformAccessArray.isCreated) _transformAccessArray.Dispose();
+            if (_colliders.IsCreated) _colliders.Dispose();
+            
+            var springs = _fastSpringBoneScopes.SelectMany(scope => scope.Springs).ToArray();
+            var transforms = springs.SelectMany(spring =>
+                Enumerable.Concat(
+                    spring.joints.Select(joint => joint.Transform),
+                    spring.colliders.Select(collider => collider.Transform)
+                )
+            ).Distinct().ToArray();
 
-            _colliders = new NativeArray<BlittableCollider>(collidersCount, Allocator.Persistent);
-            _colliderTransforms = new NativeArray<BlittableTransform>(collidersCount, Allocator.Persistent);
-            _colliderTransformAccessArray = new TransformAccessArray(collidersCount);
+            var transformIndexDictionary = transforms.Select((trs, index) => (trs, index))
+                .ToDictionary(tuple => tuple.trs, tuple => tuple.index);
 
             // 各種bufferの構築
-            var jointIndex = 0;
-            var colliderIndex = 0;
-            foreach (var spring in springs)
+            var blittableColliders = new List<BlittableCollider>();
+            var blittableJoints = new List<BlittableJoint>();
+            var blittableSprings = new List<BlittableSpring>();
+
+            foreach (var fastSpringBoneSpring in springs)
             {
-                foreach (var joint in spring.Joints)
+                blittableSprings.Add(new BlittableSpring
                 {
-                    var parent = joint.Transform.parent;
+                    colliderSpan = new BlittableSpan
+                    {
+                        count = fastSpringBoneSpring.colliders.Length,
+                        startIndex = blittableColliders.Count
+                    },
+                    jointSpan = new BlittableSpan
+                    {
+                        count = fastSpringBoneSpring.joints.Length,
+                        startIndex = blittableJoints.Count
+                    },
+                });
 
-                    _joints[jointIndex] = joint.Joint;
-                    _jointsTransformAccessArray.Add(joint.Transform);
-                    _jointTransforms[jointIndex] = new BlittableTransform();
-                    ++jointIndex;
-                }
-
-                foreach (var collider in spring.Colliders)
+                blittableColliders.AddRange(fastSpringBoneSpring.colliders.Select(collider =>
                 {
-                    var parent = collider.Transform.parent;
-
-                    _colliders[colliderIndex] = collider.Collider;
-                    _colliderTransformAccessArray.Add(collider.Transform);
-                    _colliderTransforms[colliderIndex] = new BlittableTransform();
-                    ++colliderIndex;
-                }
+                    var blittable = collider.Collider;
+                    blittable.transformIndex = transformIndexDictionary[collider.Transform];
+                    return blittable;
+                }));
+                blittableJoints.AddRange(fastSpringBoneSpring.joints.Select(joint =>
+                {
+                    var blittable = joint.Joint;
+                    blittable.transformIndex = transformIndexDictionary[joint.Transform];
+                    return blittable;
+                }));
             }
+
+            // 各種bufferの初期化
+            _springs = new NativeArray<BlittableSpring>(blittableSprings.ToArray(), Allocator.Persistent);
+
+            _joints = new NativeArray<BlittableJoint>(blittableJoints.ToArray(), Allocator.Persistent);
+            _colliders = new NativeArray<BlittableCollider>(blittableColliders.ToArray(), Allocator.Persistent);
+
+            _transforms = new NativeArray<BlittableTransform>(transforms.Length, Allocator.Persistent);
+            _transformAccessArray = new TransformAccessArray(transforms.Length);
+
+
+            foreach (var trs in transforms)
+            {
+                _transformAccessArray.Add(trs);
+            }
+            Profiler.EndSample();
         }
 
-        /// <summary>
-        /// _springsを構築しつつ、joints, collidersの総数を数える
-        /// </summary>
-        private void ConstructBlittableSprings(IReadOnlyList<FastSpringBoneSpring> springs, out int jointsCount,
-            out int collidersCount)
-        {
-            jointsCount = 0;
-            collidersCount = 0;
-            for (var i = 0; i < springs.Count; i++)
-            {
-                var spring = springs[i];
-                var blittableSpring = new BlittableSpring();
-
-                blittableSpring.jointSpan.startIndex = jointsCount;
-                blittableSpring.colliderSpan.startIndex = jointsCount;
-                blittableSpring.jointSpan.count = spring.Joints.Length;
-                blittableSpring.colliderSpan.count = spring.Colliders.Length;
-                _springs[i] = blittableSpring;
-
-                jointsCount += spring.Joints.Length;
-                collidersCount += spring.Colliders.Length;
-            }
-        }
-        
         public void Dispose()
         {
             _springs.Dispose();
             _joints.Dispose();
-            _jointTransforms.Dispose();
-            _jointsTransformAccessArray.Dispose();
             _colliders.Dispose();
-            _colliderTransforms.Dispose();
-            _colliderTransformAccessArray.Dispose();
+            _transforms.Dispose();
+            _transformAccessArray.Dispose();
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Unity.Jobs;
 using UnityEngine.Jobs;
 
@@ -7,50 +6,39 @@ namespace UniVRM10.FastSpringBones.System
 {
     public sealed class FastSpringBoneScheduler : IDisposable
     {
-        private readonly FastSpringBoneBuffers _fastSpringBoneBuffers;
+        private readonly FastSpringBoneBufferCombiner _fastSpringBoneBufferCombiner;
 
-        public FastSpringBoneScheduler(IReadOnlyList<FastSpringBoneSpring> springs)
+        public FastSpringBoneScheduler(FastSpringBoneBufferCombiner fastSpringBoneBufferCombiner)
         {
-            _fastSpringBoneBuffers = new FastSpringBoneBuffers(springs);
+            _fastSpringBoneBufferCombiner = fastSpringBoneBufferCombiner;
         }
 
         public JobHandle Schedule()
         {
-            var handle = JobHandle.CombineDependencies(
-                new PullTransformJob
+            var handle = new PullTransformJob
                 {
-                    Transforms = _fastSpringBoneBuffers.ColliderTransforms
-                }.Schedule(_fastSpringBoneBuffers.ColliderTransformAccessArray),
-                new PullTransformJob
-                {
-                    Transforms = _fastSpringBoneBuffers.JointTransforms
-                }.Schedule(_fastSpringBoneBuffers.JointsTransformAccessArray));
+                    Transforms = _fastSpringBoneBufferCombiner.Transforms
+                }.Schedule(_fastSpringBoneBufferCombiner.TransformAccessArray);
             
             handle = new UpdateFastSpringBoneJob
             {
-                Colliders = _fastSpringBoneBuffers.Colliders,
-                Joints = _fastSpringBoneBuffers.Joints,
-                Springs = _fastSpringBoneBuffers.Springs,
-                ColliderTransforms = _fastSpringBoneBuffers.ColliderTransforms,
-                JointTransforms = _fastSpringBoneBuffers.JointTransforms
-            }.Schedule(_fastSpringBoneBuffers.Springs.Length, 1, handle);
+                Colliders = _fastSpringBoneBufferCombiner.Colliders,
+                Joints = _fastSpringBoneBufferCombiner.Joints,
+                Springs = _fastSpringBoneBufferCombiner.Springs,
+                Transforms = _fastSpringBoneBufferCombiner.Transforms,
+            }.Schedule(_fastSpringBoneBufferCombiner.Springs.Length, 1, handle);
 
-            handle = JobHandle.CombineDependencies(
-                new PushTransformJob
+            handle = new PushTransformJob
                 {
-                    Transforms = _fastSpringBoneBuffers.ColliderTransforms
-                }.Schedule(_fastSpringBoneBuffers.ColliderTransformAccessArray, handle),
-                new PushTransformJob
-                {
-                    Transforms = _fastSpringBoneBuffers.JointTransforms
-                }.Schedule(_fastSpringBoneBuffers.JointsTransformAccessArray, handle));
+                    Transforms = _fastSpringBoneBufferCombiner.Transforms
+                }.Schedule(_fastSpringBoneBufferCombiner.TransformAccessArray, handle);
 
             return handle;
         }
 
         public void Dispose()
         {
-            _fastSpringBoneBuffers.Dispose();
+            _fastSpringBoneBufferCombiner.Dispose();
         }
     }
 }

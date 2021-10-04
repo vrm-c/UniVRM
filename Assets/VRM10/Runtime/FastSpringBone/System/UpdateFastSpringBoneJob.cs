@@ -9,10 +9,9 @@ namespace UniVRM10.FastSpringBones.System
         [ReadOnly] public NativeArray<BlittableSpring> Springs;
 
         [ReadOnly] public NativeArray<BlittableJoint> Joints;
-        [NativeDisableParallelForRestriction] public NativeArray<BlittableTransform> JointTransforms;
+        [NativeDisableParallelForRestriction] public NativeArray<BlittableTransform> Transforms;
 
         [ReadOnly] public NativeArray<BlittableCollider> Colliders;
-        [NativeDisableParallelForRestriction] public NativeArray<BlittableTransform> ColliderTransforms;
 
         public void Execute(int index)
         {

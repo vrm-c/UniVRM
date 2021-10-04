@@ -14,7 +14,7 @@ namespace UniVRM10
         private readonly Vrm10Instance m_target;
         private readonly VRM10Constraint[] m_constraints;
         private readonly Transform m_head;
-        readonly FastSpringBoneScheduler m_fastSpringBoneScheduler;
+        private readonly FastSpringBoneScope m_fastSpringBoneScope;
 
         public Vrm10InstanceRuntime(Vrm10Instance target)
         {
@@ -34,14 +34,14 @@ namespace UniVRM10
                 m_constraints = target.GetComponentsInChildren<VRM10Constraint>();
             }
 
-            m_fastSpringBoneScheduler = CreateFastSpringBoneScheduler(m_target.SpringBone);
+            m_fastSpringBoneScope = CreateFastSpringBoneScheduler(m_target.SpringBone);
         }
 
-        private FastSpringBoneScheduler CreateFastSpringBoneScheduler(Vrm10InstanceSpringBone springBone)
+        private FastSpringBoneScope CreateFastSpringBoneScheduler(Vrm10InstanceSpringBone springBone)
         {
-            return new FastSpringBoneScheduler(springBone.Springs.Select(spring => new FastSpringBoneSpring
+            return new FastSpringBoneScope(springBone.Springs.Select(spring => new FastSpringBoneSpring
             {
-                Colliders = spring.ColliderGroups
+                colliders = spring.ColliderGroups
                     .SelectMany(group => group.Colliders)
                     .Select(collider => new FastSpringBoneCollider
                     {
@@ -54,7 +54,7 @@ namespace UniVRM10
                             colliderType = TranslateColliderType(collider.ColliderType)
                         }
                     }).ToArray(),
-                Joints = spring.Joints
+                joints = spring.Joints
                     .Select(joint => new FastSpringBoneJoint
                     {
                         Transform = joint.transform,
@@ -106,7 +106,6 @@ namespace UniVRM10
             // spring
             //
             //m_target.SpringBone.Process(m_target.SpringBoneCenter);
-            var handle = m_fastSpringBoneScheduler.Schedule();
 
             //
             // gaze control
@@ -117,13 +116,11 @@ namespace UniVRM10
             // expression
             //
             m_target.Vrm.Expression.Process();
-            
-            handle.Complete();
         }
 
         public void Dispose()
         {
-            m_fastSpringBoneScheduler.Dispose();
+            m_fastSpringBoneScope.Dispose();
         }
     }
 }

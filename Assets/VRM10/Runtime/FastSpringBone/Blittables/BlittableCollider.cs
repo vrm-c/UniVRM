@@ -13,5 +13,6 @@ namespace UniVRM10.FastSpringBones.Blittables
         public Vector3 offset;
         public float radius;
         public Vector3 tail;
+        public int transformIndex;
     }
 }
