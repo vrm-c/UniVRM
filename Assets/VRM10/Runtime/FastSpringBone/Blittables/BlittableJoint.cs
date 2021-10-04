@@ -14,6 +14,5 @@ namespace UniVRM10.FastSpringBones.Blittables
         public Vector3 gravityDir;
         public float dragForce;
         public float radius;
-        public int transformIndex;
     }
 }

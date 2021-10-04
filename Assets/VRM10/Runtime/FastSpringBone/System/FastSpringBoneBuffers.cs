@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Collections;
+using UnityEngine;
 using UnityEngine.Jobs;
 using UnityEngine.Profiling;
 using UniVRM10.FastSpringBones.Blittables;
@@ -47,7 +48,7 @@ namespace UniVRM10.FastSpringBones.System
             if (_transforms.IsCreated) _transforms.Dispose();
             if (_transformAccessArray.isCreated) _transformAccessArray.Dispose();
             if (_colliders.IsCreated) _colliders.Dispose();
-            
+
             var springs = _fastSpringBoneScopes.SelectMany(scope => scope.Springs).ToArray();
             var transforms = springs.SelectMany(spring =>
                 Enumerable.Concat(
@@ -63,35 +64,67 @@ namespace UniVRM10.FastSpringBones.System
             var blittableColliders = new List<BlittableCollider>();
             var blittableJoints = new List<BlittableJoint>();
             var blittableSprings = new List<BlittableSpring>();
+            var blittableLogics = new List<BlittableLogic>();
 
-            foreach (var fastSpringBoneSpring in springs)
+            foreach (var spring in springs)
             {
-                blittableSprings.Add(new BlittableSpring
+                var blittableSpring = new BlittableSpring
                 {
                     colliderSpan = new BlittableSpan
                     {
-                        count = fastSpringBoneSpring.colliders.Length,
+                        count = spring.colliders.Length,
                         startIndex = blittableColliders.Count
                     },
-                    jointSpan = new BlittableSpan
+                    logicSpan = new BlittableSpan
                     {
-                        count = fastSpringBoneSpring.joints.Length,
-                        startIndex = blittableJoints.Count
+                        count = spring.joints.Length,
+                        startIndex = blittableJoints.Count - 1
                     },
-                });
+                };
+                blittableSprings.Add(blittableSpring);
 
-                blittableColliders.AddRange(fastSpringBoneSpring.colliders.Select(collider =>
+                blittableColliders.AddRange(spring.colliders.Select(collider =>
                 {
                     var blittable = collider.Collider;
                     blittable.transformIndex = transformIndexDictionary[collider.Transform];
                     return blittable;
                 }));
-                blittableJoints.AddRange(fastSpringBoneSpring.joints.Select(joint =>
+                blittableJoints.AddRange(spring.joints.Take(spring.joints.Length - 1).Select(joint =>
                 {
                     var blittable = joint.Joint;
-                    blittable.transformIndex = transformIndexDictionary[joint.Transform];
                     return blittable;
                 }));
+
+                for (var i = 0; i < spring.joints.Length - 1; ++i)
+                {
+                    var joint = spring.joints[i];
+                    var tailJoint = spring.joints[i + 1];
+                    var localPosition = tailJoint.Transform.localPosition;
+                    var scale = tailJoint.Transform.lossyScale;
+                    var localChildPosition =
+                        new Vector3(
+                            localPosition.x * scale.x,
+                            localPosition.y * scale.y,
+                            localPosition.z * scale.z
+                        );
+
+                    var worldChildPosition = joint.Transform.TransformPoint(localChildPosition);
+                    var currentTail = spring.center != null
+                        ? spring.center.InverseTransformPoint(worldChildPosition)
+                        : worldChildPosition;
+                    blittableLogics.Add(new BlittableLogic
+                    {
+                        headIndex = transformIndexDictionary[joint.Transform],
+                        tailIndex = transformIndexDictionary[tailJoint.Transform],
+                        currentTail = spring.center != null
+                            ? spring.center.InverseTransformPoint(worldChildPosition)
+                            : worldChildPosition,
+                        prevTail = currentTail,
+                        localRotation = joint.Transform.localRotation,
+                        boneAxis = localChildPosition.normalized,
+                        length = localChildPosition.magnitude
+                    });
+                }
             }
 
             // 各種bufferの初期化
@@ -108,6 +141,7 @@ namespace UniVRM10.FastSpringBones.System
             {
                 _transformAccessArray.Add(trs);
             }
+
             Profiler.EndSample();
         }
 

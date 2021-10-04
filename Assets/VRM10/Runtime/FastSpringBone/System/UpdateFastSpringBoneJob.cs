@@ -16,6 +16,13 @@ namespace UniVRM10.FastSpringBones.System
         public void Execute(int index)
         {
             var spring = Springs[index];
+            var colliderSpan = spring.colliderSpan;
+            var jointSpan = spring.logicSpan;
+
+            for (var i = jointSpan.startIndex; i < jointSpan.count; ++i)
+            {
+                //Joints[i]
+            }
         }
     }
 }

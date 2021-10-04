@@ -1,4 +1,5 @@
 using System;
+using UnityEngine.Serialization;
 
 namespace UniVRM10.FastSpringBones.Blittables
 {
@@ -9,6 +10,6 @@ namespace UniVRM10.FastSpringBones.Blittables
     public struct BlittableSpring
     {
         public BlittableSpan colliderSpan;
-        public BlittableSpan jointSpan;
+        public BlittableSpan logicSpan;
     }
 }

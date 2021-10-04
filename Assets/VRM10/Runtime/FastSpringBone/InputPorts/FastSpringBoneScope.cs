@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace UniVRM10.FastSpringBones.System
 {
@@ -12,7 +13,6 @@ namespace UniVRM10.FastSpringBones.System
 
         public FastSpringBoneScope(IReadOnlyList<FastSpringBoneSpring> springs)
         {
-            
             Springs = springs;
             
             FastSpringBoneService.Instance.BufferCombiner.Register(this);
