@@ -14,12 +14,11 @@ namespace UniVRM10.FastSpringBones.System
     public struct UpdateFastSpringBoneJob : IJobParallelFor
     {
         [ReadOnly] public NativeArray<BlittableSpring> Springs;
-
         [ReadOnly] public NativeArray<BlittableJoint> Joints;
+        [ReadOnly] public NativeArray<BlittableCollider> Colliders;
+
         [NativeDisableParallelForRestriction] public NativeArray<BlittableLogic> Logics;
         [NativeDisableParallelForRestriction] public NativeArray<BlittableTransform> Transforms;
-
-        [ReadOnly] public NativeArray<BlittableCollider> Colliders;
 
         public float DeltaTime;
 
