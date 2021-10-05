@@ -19,7 +19,7 @@ namespace UniVRM10
     /// 
     /// * DefaultExecutionOrder(11000) means calculate springbone after FinalIK( VRIK )
     /// </summary>
-    [AddComponentMenu("VRM10/VRMController")]
+    [AddComponentMenu("VRM10/VRMInstance")]
     [DisallowMultipleComponent]
     [DefaultExecutionOrder(11000)]
     public class Vrm10Instance : MonoBehaviour
