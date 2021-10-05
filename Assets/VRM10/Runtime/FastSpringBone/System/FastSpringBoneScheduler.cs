@@ -1,44 +1,49 @@
 ﻿using System;
 using Unity.Jobs;
+using UnityEngine;
 using UnityEngine.Jobs;
 
 namespace UniVRM10.FastSpringBones.System
 {
     public sealed class FastSpringBoneScheduler : IDisposable
     {
-        private readonly FastSpringBoneBufferCombiner _fastSpringBoneBufferCombiner;
+        private readonly FastSpringBoneBufferCombiner _bufferCombiner;
 
-        public FastSpringBoneScheduler(FastSpringBoneBufferCombiner fastSpringBoneBufferCombiner)
+        public FastSpringBoneScheduler(FastSpringBoneBufferCombiner bufferCombiner)
         {
-            _fastSpringBoneBufferCombiner = fastSpringBoneBufferCombiner;
+            _bufferCombiner = bufferCombiner;
         }
 
         public JobHandle Schedule()
         {
+            _bufferCombiner.ReconstructIfDirty();
+            
             var handle = new PullTransformJob
                 {
-                    Transforms = _fastSpringBoneBufferCombiner.Transforms
-                }.Schedule(_fastSpringBoneBufferCombiner.TransformAccessArray);
+                    Transforms = _bufferCombiner.Transforms
+                }.Schedule(_bufferCombiner.TransformAccessArray);
             
             handle = new UpdateFastSpringBoneJob
             {
-                Colliders = _fastSpringBoneBufferCombiner.Colliders,
-                Joints = _fastSpringBoneBufferCombiner.Joints,
-                Springs = _fastSpringBoneBufferCombiner.Springs,
-                Transforms = _fastSpringBoneBufferCombiner.Transforms,
-            }.Schedule(_fastSpringBoneBufferCombiner.Springs.Length, 1, handle);
+                Colliders = _bufferCombiner.Colliders,
+                Joints = _bufferCombiner.Joints,
+                Logics = _bufferCombiner.Logics,
+                Springs = _bufferCombiner.Springs,
+                Transforms = _bufferCombiner.Transforms,
+                DeltaTime = Time.deltaTime,
+            }.Schedule(_bufferCombiner.Springs.Length, 1, handle);
 
             handle = new PushTransformJob
                 {
-                    Transforms = _fastSpringBoneBufferCombiner.Transforms
-                }.Schedule(_fastSpringBoneBufferCombiner.TransformAccessArray, handle);
+                    Transforms = _bufferCombiner.Transforms
+                }.Schedule(_bufferCombiner.TransformAccessArray, handle);
 
             return handle;
         }
 
         public void Dispose()
         {
-            _fastSpringBoneBufferCombiner.Dispose();
+            _bufferCombiner.Dispose();
         }
     }
 }

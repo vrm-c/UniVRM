@@ -9,18 +9,21 @@ namespace UniVRM10.FastSpringBones.System
     /// </summary>
     public class FastSpringBoneScope : IDisposable
     {
+        private readonly FastSpringBoneService _fastSpringBoneService;
+        
         public IReadOnlyList<FastSpringBoneSpring> Springs { get; }
 
         public FastSpringBoneScope(IReadOnlyList<FastSpringBoneSpring> springs)
         {
             Springs = springs;
             
-            FastSpringBoneService.Instance.BufferCombiner.Register(this);
+            _fastSpringBoneService = FastSpringBoneService.Instance;
+            _fastSpringBoneService.BufferCombiner.Register(this);
         }
 
         public void Dispose()
         {
-            FastSpringBoneService.Instance.BufferCombiner.Unregister(this);
+            _fastSpringBoneService.BufferCombiner.Unregister(this);
         }
     }
 }

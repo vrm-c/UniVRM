@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace UniVRM10.FastSpringBones.Blittables
 {
@@ -9,12 +10,11 @@ namespace UniVRM10.FastSpringBones.Blittables
     [Serializable]
     public struct BlittableLogic
     {
-        public int headIndex;
-        public int tailIndex;
+        public int parentTransformIndex;
+        public int headTransformIndex;
         public float length;
         public Vector3 currentTail;
         public Vector3 prevTail;
-        public Vector3 localDir;
         public Quaternion localRotation;
         public Vector3 boneAxis;
     }

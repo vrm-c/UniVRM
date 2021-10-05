@@ -39,8 +39,10 @@ namespace UniVRM10
 
         private FastSpringBoneScope CreateFastSpringBoneScheduler(Vrm10InstanceSpringBone springBone)
         {
-            return new FastSpringBoneScope(springBone.Springs.Select(spring => new FastSpringBoneSpring
+            return new FastSpringBoneScope(
+                springBone.Springs.Select(spring => new FastSpringBoneSpring
             {
+                center = m_target.SpringBoneCenter,
                 colliders = spring.ColliderGroups
                     .SelectMany(group => group.Colliders)
                     .Select(collider => new FastSpringBoneCollider
@@ -48,9 +50,9 @@ namespace UniVRM10
                         Transform = collider.transform,
                         Collider = new BlittableCollider
                         {
-                            offset = collider.Offset,
+                            worldPosition = collider.Offset,
                             radius = collider.Radius,
-                            tail = collider.Tail,
+                            worldTail = collider.Tail,
                             colliderType = TranslateColliderType(collider.ColliderType)
                         }
                     }).ToArray(),
@@ -58,7 +60,7 @@ namespace UniVRM10
                     .Select(joint => new FastSpringBoneJoint
                     {
                         Transform = joint.transform,
-                        Joint = new BlittableJoint()
+                        Joint = new BlittableJoint
                         {
                             radius = joint.m_jointRadius,
                             dragForce = joint.m_dragForce,

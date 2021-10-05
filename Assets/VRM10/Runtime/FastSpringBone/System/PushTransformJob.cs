@@ -13,7 +13,7 @@ namespace UniVRM10.FastSpringBones.System
 
         public void Execute(int index, TransformAccess transform)
         {
-            transform.localRotation = Transforms[index].localRotation;
+            transform.rotation = Transforms[index].rotation;
         }
     }
 }
