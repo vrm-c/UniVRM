@@ -52,7 +52,7 @@ namespace UniHumanoid
 
         public void Parse(string path)
         {
-            Parse(path, File.ReadAllText(Path, Encoding.UTF8));
+            Parse(path, File.ReadAllText(path, Encoding.UTF8));
         }
 
         public void Parse(string path, string source)
