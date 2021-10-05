@@ -1,0 +1,21 @@
+{
+    "name": "FastSpringBone10",
+    "references": [
+        "GUID:2665a8d13d1b3f18800f46e256720795"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.burst",
+            "expression": "0.0.1",
+            "define": "ENABLE_SPRINGBONE_BURST"
+        }
+    ],
+    "noEngineReferences": false
+}

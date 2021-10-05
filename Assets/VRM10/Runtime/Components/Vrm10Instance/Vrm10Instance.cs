@@ -96,5 +96,10 @@ namespace UniVRM10
                 GetOrCreate().Process();
             }
         }
+
+        private void OnDestroy()
+        {
+            GetOrCreate().Dispose();
+        }
     }
 }
