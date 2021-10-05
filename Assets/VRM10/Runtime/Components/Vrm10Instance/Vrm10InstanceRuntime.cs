@@ -105,11 +105,6 @@ namespace UniVRM10
             }
 
             //
-            // spring
-            //
-            //m_target.SpringBone.Process(m_target.SpringBoneCenter);
-
-            //
             // gaze control
             //
             m_target.Vrm.LookAt.Process(m_target.LookAtTargetType, m_target.Gaze);
