@@ -25,10 +25,10 @@ namespace UniVRM10.FastSpringBones.System
             var colliderSpan = spring.colliderSpan;
             var logicSpan = spring.logicSpan;
 
-            for (var i = logicSpan.startIndex; i < logicSpan.startIndex + logicSpan.count; ++i)
+            for (var logicIndex = logicSpan.startIndex; logicIndex < logicSpan.startIndex + logicSpan.count; ++logicIndex)
             {
-                var logic = Logics[i];
-                var joint = Joints[i];
+                var logic = Logics[logicIndex];
+                var joint = Joints[logicIndex];
 
                 var headTransform = Transforms[logic.headTransformIndex];
                 var parentTransform = logic.parentTransformIndex >= 0
@@ -68,7 +68,23 @@ namespace UniVRM10.FastSpringBones.System
                 nextTail = headTransform.position + (nextTail - headTransform.position).normalized * logic.length;
 
                 // Collisionで移動
-                //nextTail = Collision(colliders, nextTail, jointRadius);
+                for (var colliderIndex = colliderSpan.startIndex; colliderIndex < colliderSpan.startIndex + colliderSpan.count; ++colliderIndex)
+                {
+                    var collider = Colliders[colliderIndex];
+                    var colliderTransform = Transforms[collider.transformIndex];
+                    var worldPosition = colliderTransform.localToWorldMatrix.MultiplyPoint3x4(collider.offset);
+                    var worldTail = colliderTransform.localToWorldMatrix.MultiplyPoint3x4(collider.tail);
+                    
+                    switch (collider.colliderType)
+                    {
+                        case BlittableColliderType.Sphere:
+                            ResolveSphereCollision(joint, collider,  worldPosition, headTransform, logic, ref nextTail);
+                            break;
+                        case BlittableColliderType.Capsule:
+                            ResolveCapsuleCollision(worldTail, worldPosition, headTransform, joint, collider, logic, ref nextTail);
+                            break;
+                    }
+                }
 
                 logic.prevTail = centerTransform.HasValue
                     ? centerTransform.Value.worldToLocalMatrix.MultiplyPoint3x4(logic.currentTail)
@@ -111,7 +127,56 @@ namespace UniVRM10.FastSpringBones.System
 
                 // 値をバッファに戻す
                 Transforms[logic.headTransformIndex] = headTransform;
-                Logics[i] = logic;
+                Logics[logicIndex] = logic;
+            }
+        }
+
+        private static void ResolveCapsuleCollision(
+            Vector3 worldTail,
+            Vector3 worldPosition,
+            BlittableTransform headTransform,
+            BlittableJoint joint,
+            BlittableCollider collider,
+            BlittableLogic logic,
+            ref Vector3 nextTail)
+        {
+            var P = worldTail - worldPosition;
+            var Q = headTransform.position - worldPosition;
+            var dot = Vector3.Dot(P, Q);
+            if (dot <= 0)
+            {
+                // head側半球の球判定
+                ResolveSphereCollision(joint, collider, worldPosition, headTransform, logic, ref nextTail);
+            }
+
+            var t = dot / P.magnitude;
+            if (t >= 1.0f)
+            {
+                // tail側半球の球判定
+                ResolveSphereCollision(joint, collider, worldTail, headTransform, logic, ref nextTail);
+            }
+
+            // head-tail上の m_transform.position との最近点
+            var p = worldPosition + P * t;
+            ResolveSphereCollision(joint, collider, p, headTransform, logic, ref nextTail);
+        }
+
+        private static void ResolveSphereCollision(
+            BlittableJoint joint,
+            BlittableCollider collider,
+            Vector3 worldPosition,
+            BlittableTransform headTransform,
+            BlittableLogic logic,
+            ref Vector3 nextTail)
+        {
+            var r = joint.radius + collider.radius;
+            if (Vector3.SqrMagnitude(nextTail - worldPosition) <= (r * r))
+            {
+                // ヒット。Colliderの半径方向に押し出す
+                var normal = (nextTail - worldPosition).normalized;
+                var posFromCollider = worldPosition + normal * (joint.radius + collider.radius);
+                // 長さをboneLengthに強制
+                nextTail = headTransform.position + (posFromCollider - headTransform.position).normalized * logic.length;
             }
         }
     }

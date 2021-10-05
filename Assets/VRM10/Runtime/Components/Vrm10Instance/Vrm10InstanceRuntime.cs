@@ -50,9 +50,9 @@ namespace UniVRM10
                         Transform = collider.transform,
                         Collider = new BlittableCollider
                         {
-                            worldPosition = collider.Offset,
+                            offset = collider.Offset,
                             radius = collider.Radius,
-                            worldTail = collider.Tail,
+                            tail = collider.Tail,
                             colliderType = TranslateColliderType(collider.ColliderType)
                         }
                     }).ToArray(),

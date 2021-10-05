@@ -11,9 +11,9 @@ namespace UniVRM10.FastSpringBones.Blittables
     public struct BlittableCollider
     {   
         public BlittableColliderType colliderType;
-        public Vector3 worldPosition;
+        public Vector3 offset;
         public float radius;
-        public Vector3 worldTail;
+        public Vector3 tail;
         public int transformIndex;
     }
 }
