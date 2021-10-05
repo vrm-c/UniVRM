@@ -2,6 +2,7 @@ using UnityEngine;
 
 namespace UniVRM10.FastSpringBones.System
 {
+    [DefaultExecutionOrder(11000)]
     public sealed class FastSpringBoneService : MonoBehaviour
     {
         public FastSpringBoneBufferCombiner BufferCombiner { get; private set; }

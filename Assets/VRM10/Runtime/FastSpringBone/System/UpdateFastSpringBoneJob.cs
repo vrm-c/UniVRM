@@ -1,12 +1,16 @@
-using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
 using UniVRM10.FastSpringBones.Blittables;
+#if ENABLE_SPRINGBONE_BURST
+using Unity.Burst;
+#endif
 
 namespace UniVRM10.FastSpringBones.System
 {
+#if ENABLE_SPRINGBONE_BURST
     [BurstCompile]
+#endif
     public struct UpdateFastSpringBoneJob : IJobParallelFor
     {
         [ReadOnly] public NativeArray<BlittableSpring> Springs;
