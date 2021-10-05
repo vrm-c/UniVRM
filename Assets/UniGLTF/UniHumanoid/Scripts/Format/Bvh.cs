@@ -44,8 +44,8 @@ namespace UniHumanoid
                 case Channel.Xposition:
                 case Channel.Yposition:
                 case Channel.Zposition: return true;
-                case Channel.Xrotation: 
-                case Channel.Yrotation: 
+                case Channel.Xrotation:
+                case Channel.Yrotation:
                 case Channel.Zrotation: return false;
             }
 
@@ -149,7 +149,7 @@ namespace UniHumanoid
 
     public class EndSite : BvhNode
     {
-        public EndSite(): base("")
+        public EndSite() : base("")
         {
         }
 
@@ -220,17 +220,17 @@ namespace UniHumanoid
                 return false;
             }
 
-            foreach(var node in Root.Traverse())
+            foreach (var node in Root.Traverse())
             {
-                for(int i=0; i<node.Channels.Length; ++i, --index)
+                for (int i = 0; i < node.Channels.Length; ++i, --index)
                 {
                     if (index == 0)
                     {
                         pathWithProp = new PathWithProperty
                         {
-                            Path=GetPath(node),
-                            Property=node.Channels[i].ToProperty(),
-                            IsLocation=node.Channels[i].IsLocation(),
+                            Path = GetPath(node),
+                            Property = node.Channels[i].ToProperty(),
+                            IsLocation = node.Channels[i].IsLocation(),
                         };
                         return true;
                     }
@@ -245,7 +245,7 @@ namespace UniHumanoid
             var list = new List<string>() { node.Name };
 
             var current = node;
-            while (current!=null)
+            while (current != null)
             {
                 current = GetParent(current);
                 if (current != null)
@@ -259,7 +259,7 @@ namespace UniHumanoid
 
         BvhNode GetParent(BvhNode node)
         {
-            foreach(var x in Root.Traverse())
+            foreach (var x in Root.Traverse())
             {
                 if (x.Children.Contains(node))
                 {
@@ -277,7 +277,7 @@ namespace UniHumanoid
             {
                 for (int i = 0; i < node.Channels.Length; ++i, ++index)
                 {
-                    if(node==target && node.Channels[i] == channel)
+                    if (node == target && node.Channels[i] == channel)
                     {
                         return Channels[index];
                     }
@@ -302,7 +302,7 @@ namespace UniHumanoid
             FrameTime = TimeSpan.FromSeconds(seconds);
             m_frames = frames;
             var channelCount = Root.Traverse()
-                .Where(x => x.Channels!=null)
+                .Where(x => x.Channels != null)
                 .Select(x => x.Channels.Length)
                 .Sum();
             Channels = Enumerable.Range(0, channelCount)
@@ -318,7 +318,7 @@ namespace UniHumanoid
             {
                 throw new BvhException("frame key count is not match channel count");
             }
-            for(int i=0; i<Channels.Length; ++i)
+            for (int i = 0; i < Channels.Length; ++i)
             {
                 Channels[i].SetKey(frame, float.Parse(split[i], System.Globalization.CultureInfo.InvariantCulture));
             }
@@ -328,11 +328,12 @@ namespace UniHumanoid
         {
             using (var r = new StringReader(src))
             {
-                if (r.ReadLine() != "HIERARCHY")
+                var first = r.ReadLine();
+                if (first != "HIERARCHY")
                 {
                     throw new BvhException("not start with HIERARCHY");
                 }
-               
+
                 var root = ParseNode(r);
                 if (root == null)
                 {
@@ -360,12 +361,12 @@ namespace UniHumanoid
 
                 var bvh = new Bvh(root, frames, frameTime);
 
-                for(int i=0; i<frames; ++i)
+                for (int i = 0; i < frames; ++i)
                 {
                     var line = r.ReadLine();
                     bvh.ParseFrame(i, line);
                 }
-               
+
                 return bvh;
             }
         }
@@ -378,7 +379,7 @@ namespace UniHumanoid
             {
                 if (split.Length == 1)
                 {
-                    if(split[0] == "}")
+                    if (split[0] == "}")
                     {
                         return null;
                     }
@@ -416,7 +417,7 @@ namespace UniHumanoid
                 throw new BvhException("unknown type: " + split[0]);
             }
 
-            if(r.ReadLine().Trim() != "{")
+            if (r.ReadLine().Trim() != "{")
             {
                 throw new BvhException("'{' is not found");
             }
@@ -432,7 +433,7 @@ namespace UniHumanoid
                     break;
                 }
 
-                if(!(child is EndSite))
+                if (!(child is EndSite))
                 {
                     node.Children.Add(child);
                 }

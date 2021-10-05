@@ -30,7 +30,7 @@ namespace VRM.SimpleViewer
 
         [SerializeField]
         Toggle m_useUrpMaterial = default;
-        
+
         [SerializeField]
         Toggle m_useFastSpringBone = default;
         #endregion
@@ -312,7 +312,7 @@ namespace VRM.SimpleViewer
             // load initial bvh
             if (m_motion != null)
             {
-                LoadMotion(m_motion.text);
+                LoadMotion("tmp.bvh", m_motion.text);
             }
 
             string[] cmds = System.Environment.GetCommandLineArgs();
@@ -324,10 +324,10 @@ namespace VRM.SimpleViewer
             m_texts.Start();
         }
 
-        private void LoadMotion(string source)
+        private void LoadMotion(string path, string source)
         {
             var context = new UniHumanoid.BvhImporterContext();
-            context.Parse("tmp.bvh", source);
+            context.Parse(path, source);
             context.Load();
             SetMotion(context.Root.GetComponent<HumanPoseTransfer>());
         }
@@ -382,7 +382,7 @@ namespace VRM.SimpleViewer
                     break;
 
                 case ".bvh":
-                    LoadMotion(path);
+                    LoadMotion(path, File.ReadAllText(path));
                     break;
             }
         }
