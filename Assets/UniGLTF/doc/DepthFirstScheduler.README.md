@@ -8,7 +8,7 @@ Asynchronous task scheduler for Unity-5.6 or later
 
 # 使い方
 
-```cs
+```csharp
 var schedulable = new Schedulable<Unit>();
 
 schedulable
