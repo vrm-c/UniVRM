@@ -134,7 +134,7 @@ namespace UniGLTF
     }
 
     public static class ArraySegmentExtensions
-    {
+    {       
         public static ArraySegment<T> Slice<T>(this ArraySegment<T> self, int start, int length)
         {
             if (start + length > self.Count)

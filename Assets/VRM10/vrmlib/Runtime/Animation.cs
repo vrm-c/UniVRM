@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-
+using UniGLTF;
 
 namespace VrmLib
 {
@@ -82,9 +82,9 @@ namespace VrmLib
                 elapsed -= m_lastTime;
             }
 
-            foreach (var (node, animation) in NodeMap)
+            foreach (var (node, animation) in NodeMap.Select(kv => (kv.Key, kv.Value)))
             {
-                foreach (var (target, curve) in animation.Curves)
+                foreach (var (target, curve) in animation.Curves.Select(kv => (kv.Key, kv.Value)))
                 {
                     switch (target)
                     {

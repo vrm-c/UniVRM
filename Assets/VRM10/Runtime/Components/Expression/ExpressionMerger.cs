@@ -42,7 +42,7 @@ namespace UniVRM10
         /// <param name="expressionWeights"></param>
         public void SetValues(Dictionary<ExpressionKey, float> expressionWeights)
         {
-            foreach (var (key, weight) in expressionWeights)
+            foreach (var (key, weight) in expressionWeights.Select(kv => (kv.Key, kv.Value)))
             {
                 AccumulateValue(key, weight);
             }

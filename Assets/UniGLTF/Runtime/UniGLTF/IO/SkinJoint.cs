@@ -1,6 +1,6 @@
 using System;
 
-namespace VrmLib
+namespace UniGLTF
 {
     public struct SkinJoints : IEquatable<SkinJoints>
     {

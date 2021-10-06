@@ -1,7 +1,7 @@
 using System;
 using System.Numerics;
 
-namespace VrmLib
+namespace UniGLTF
 {
     public static class NumericsExtensions
     {

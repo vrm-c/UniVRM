@@ -1,10 +1,9 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Numerics;
-using VrmLib;
 using NUnit.Framework;
 
-namespace VrmLibTests
+namespace UniGLTF
 {
     public class NumericTests
     {

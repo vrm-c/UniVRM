@@ -105,9 +105,9 @@ namespace UniVRM10
                 {
                     // use sparse
                     var sparseIndexBin = new ArraySegment<byte>(new byte[sparseValuesWithIndex.Count * 4]);
-                    var sparseIndexSpan = VrmLib.SpanLike.Wrap<Int32>(sparseIndexBin);
+                    var sparseIndexSpan = SpanLike.Wrap<Int32>(sparseIndexBin);
                     var sparseValueBin = new ArraySegment<byte>(new byte[sparseValuesWithIndex.Count * 12]);
-                    var sparseValueSpan = VrmLib.SpanLike.Wrap<Vector3>(sparseValueBin);
+                    var sparseValueSpan = SpanLike.Wrap<Vector3>(sparseValueBin);
 
                     for (int i = 0; i < sparseValuesWithIndex.Count; ++i)
                     {

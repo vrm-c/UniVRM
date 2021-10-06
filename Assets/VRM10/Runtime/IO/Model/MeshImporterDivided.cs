@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using UniGLTF;
 using UnityEngine;
 
 namespace UniVRM10
@@ -26,7 +27,7 @@ namespace UniVRM10
                 uv.AddRange(mesh.VertexBuffer.TexCoords.GetSpan<Vector2>());
                 if (src.Skin != null)
                 {
-                    var j = mesh.VertexBuffer.Joints.GetSpan<VrmLib.SkinJoints>();
+                    var j = mesh.VertexBuffer.Joints.GetSpan<SkinJoints>();
                     var w = mesh.VertexBuffer.Weights.GetSpan<Vector4>();
                     for (int i = 0; i < mesh.VertexBuffer.Count; ++i)
                     {

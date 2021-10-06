@@ -1,8 +1,7 @@
 using System;
-using VrmLib;
 using NUnit.Framework;
 
-namespace VrmLibTests
+namespace UniGLTF
 {
     public class SpanLikeTests
     {
@@ -32,7 +31,7 @@ namespace VrmLibTests
                 v0,
                 v1,
             };
-            var span = VrmLib.SpanLike.CopyFrom(positions);
+            var span = SpanLike.CopyFrom(positions);
 
             Assert.AreEqual(2, span.Length);
             Assert.AreEqual(v0, span[0]);
