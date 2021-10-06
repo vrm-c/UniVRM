@@ -230,10 +230,7 @@ namespace VrmLib
                         var span = SpanLike.Wrap<Byte4>(Bytes);
                         for (int i = 0; i < span.Length; ++i)
                         {
-                            array[i].X = span[i].X;
-                            array[i].Y = span[i].Y;
-                            array[i].Z = span[i].Z;
-                            array[i].W = span[i].W;
+                            array[i] = new UShort4(span[i].x, span[i].y, span[i].z, span[i].w);
                         }
                         return array;
                     }

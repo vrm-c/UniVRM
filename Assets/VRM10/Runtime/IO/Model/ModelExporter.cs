@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UniGLTF;
 using UnityEngine;
 using VrmLib;
 
@@ -183,7 +184,7 @@ namespace UniVRM10
                 vrmMesh.VertexBuffer.Add(
                     VrmLib.VertexBuffer.JointKey,
                     ToBufferAccessor(mesh.boneWeights.Select(x =>
-                    new VrmLib.SkinJoints((ushort)x.boneIndex0, (ushort)x.boneIndex1, (ushort)x.boneIndex2, (ushort)x.boneIndex3)).ToArray()
+                    new SkinJoints((ushort)x.boneIndex0, (ushort)x.boneIndex1, (ushort)x.boneIndex2, (ushort)x.boneIndex3)).ToArray()
                     ));
             }
             if (mesh.uv.Length == mesh.vertexCount) vrmMesh.VertexBuffer.Add(VrmLib.VertexBuffer.TexCoordKey, ToBufferAccessor(mesh.uv));
@@ -269,7 +270,7 @@ namespace UniVRM10
             return skin;
         }
 
-        private static VrmLib.BufferAccessor ToBufferAccessor(VrmLib.SkinJoints[] values)
+        private static VrmLib.BufferAccessor ToBufferAccessor(SkinJoints[] values)
         {
             return ToBufferAccessor(values, VrmLib.AccessorValueType.UNSIGNED_SHORT, VrmLib.AccessorVectorType.VEC4);
         }
@@ -306,7 +307,7 @@ namespace UniVRM10
 
         private static VrmLib.BufferAccessor ToBufferAccessor<T>(T[] value, VrmLib.AccessorValueType valueType, VrmLib.AccessorVectorType vectorType) where T : struct
         {
-            var span = VrmLib.SpanLike.CopyFrom(value);
+            var span = SpanLike.CopyFrom(value);
             return new VrmLib.BufferAccessor(
                 span.Bytes,
                 valueType,

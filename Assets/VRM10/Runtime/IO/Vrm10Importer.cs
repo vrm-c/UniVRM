@@ -209,7 +209,7 @@ namespace UniVRM10
 
             // renderer
             var map = m_map;
-            foreach (var (node, go) in map.Nodes)
+            foreach (var (node, go) in map.Nodes.Select(kv => (kv.Key, kv.Value)))
             {
                 if (node.MeshGroup is null)
                 {
@@ -408,7 +408,7 @@ namespace UniVRM10
                 vrm.Expression.LookRight = GetOrLoadExpression(ExpressionKey.LookRight.SubAssetKey, ExpressionPreset.lookRight, vrmExtension.Expressions?.Preset?.LookRight);
                 if (vrmExtension?.Expressions?.Custom != null)
                 {
-                    foreach (var (name, expression) in vrmExtension.Expressions.Custom)
+                    foreach (var (name, expression) in vrmExtension.Expressions.Custom.Select(kv => (kv.Key, kv.Value)))
                     {
                         var key = ExpressionKey.CreateCustom(name);
                         var preset = ExpressionPreset.custom;

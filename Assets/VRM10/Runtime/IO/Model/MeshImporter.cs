@@ -1,4 +1,5 @@
 ﻿using System;
+using UniGLTF;
 using UnityEngine;
 
 namespace UniVRM10
@@ -28,7 +29,7 @@ namespace UniVRM10
                     throw new ArgumentException();
                 }
                 var weights = src.VertexBuffer.Weights.GetSpan<Vector4>();
-                var joints = src.VertexBuffer.Joints.GetSpan<VrmLib.SkinJoints>();
+                var joints = src.VertexBuffer.Joints.GetSpan<SkinJoints>();
                 if (skin != null)
                 {
                     mesh.bindposes = skin.InverseMatrices.GetSpan<Matrix4x4>().ToArray();

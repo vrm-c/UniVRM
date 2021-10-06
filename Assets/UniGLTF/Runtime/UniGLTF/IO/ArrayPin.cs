@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace VrmLib
+namespace UniGLTF
 {
     public static class ArrayPin
     {
@@ -85,7 +85,7 @@ namespace VrmLib
         #endregion
     }
 
-    public static class ArrayExtensions
+    public static class ArrayPinExtensions
     {
         public static int FromBytes<T>(this ArraySegment<byte> src, T[] dst) where T : struct
         {

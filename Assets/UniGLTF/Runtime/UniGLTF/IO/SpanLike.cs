@@ -3,24 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
-namespace VrmLib
+namespace UniGLTF
 {
-    public struct Byte4
-    {
-        public byte X;
-        public byte Y;
-        public byte Z;
-        public byte W;
-    }
-
-    public struct UShort4
-    {
-        public ushort X;
-        public ushort Y;
-        public ushort Z;
-        public ushort W;
-    }
-
     static class BitWriter
     {
         public static void Write(byte[] bytes, int i, Int32 value)
@@ -115,10 +99,10 @@ namespace VrmLib
 
         public static void Write(byte[] bytes, int i, UShort4 value)
         {
-            Write(bytes, i, value.X);
-            Write(bytes, i + 2, value.Y);
-            Write(bytes, i + 4, value.Z);
-            Write(bytes, i + 6, value.W);
+            Write(bytes, i, value.x);
+            Write(bytes, i + 2, value.y);
+            Write(bytes, i + 4, value.z);
+            Write(bytes, i + 6, value.w);
         }
 
         public static void Write(byte[] bytes, int i, SkinJoints value)
@@ -131,10 +115,10 @@ namespace VrmLib
 
         public static void Write(byte[] bytes, int i, Byte4 value)
         {
-            bytes[i++] = value.X;
-            bytes[i++] = value.Y;
-            bytes[i++] = value.Z;
-            bytes[i++] = value.W;
+            bytes[i++] = value.x;
+            bytes[i++] = value.y;
+            bytes[i++] = value.z;
+            bytes[i++] = value.w;
         }
 
         public static void Write(byte[] bytes, int i, UnityEngine.Vector2 value)
@@ -387,24 +371,22 @@ namespace VrmLib
             }},
             {typeof(Byte4), new GetSet<Byte4>{
                 Getter = (array, start) =>
-                    new Byte4
-                    {
-                        X = array[start],
-                        Y = array[start + 1],
-                        Z = array[start + 2],
-                        W = array[start + 3],
-                    },
+                    new Byte4(
+                        array[start],
+                        array[start + 1],
+                        array[start + 2],
+                        array[start + 3]
+                    ),
                 Setter = BitWriter.Write
             }},
             {typeof(UShort4), new GetSet<UShort4>{
                 Getter = (array, start) =>
-                    new UShort4
-                    {
-                        X = BitConverter.ToUInt16(array, start),
-                        Y = BitConverter.ToUInt16(array, start + 2),
-                        Z = BitConverter.ToUInt16(array, start + 4),
-                        W = BitConverter.ToUInt16(array, start + 6)
-                    },
+                    new UShort4(
+                        BitConverter.ToUInt16(array, start),
+                        BitConverter.ToUInt16(array, start + 2),
+                        BitConverter.ToUInt16(array, start + 4),
+                        BitConverter.ToUInt16(array, start + 6)
+                    ),
                 Setter = BitWriter.Write
             }},
             {typeof(SkinJoints), new GetSet<SkinJoints>{

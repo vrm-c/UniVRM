@@ -143,7 +143,7 @@ namespace UniVRM10
 
         public void Replace(IDictionary<VRM10Expression, VRM10Expression> map)
         {
-            foreach (var (k, v) in map)
+            foreach (var (k, v) in map.Select(kv => (kv.Key, kv.Value)))
             {
                 Replace(k, v);
             }
@@ -341,7 +341,7 @@ namespace UniVRM10
 
         public void SetWeights(IEnumerable<KeyValuePair<ExpressionKey, float>> weights)
         {
-            foreach (var (expressionKey, weight) in weights)
+            foreach (var (expressionKey, weight) in weights.Select(kv => (kv.Key, kv.Value)))
             {
                 if (_inputWeights.ContainsKey(expressionKey))
                 {

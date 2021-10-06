@@ -9,7 +9,7 @@ using UniJSON;
 namespace UniGLTF
 {
     [Serializable, StructLayout(LayoutKind.Sequential, Pack = 1)]
-    struct Byte4
+    public struct Byte4
     {
         public readonly byte x;
         public readonly byte y;
@@ -25,7 +25,7 @@ namespace UniGLTF
     }
 
     [Serializable, StructLayout(LayoutKind.Sequential, Pack = 1)]
-    struct UShort4
+    public struct UShort4
     {
         public readonly ushort x;
         public readonly ushort y;
