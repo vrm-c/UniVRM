@@ -13,6 +13,14 @@ package
 history
 ```
 
+## build
+
+UniVRMを使うアプリケーションのビルドに関する注意事項
+
+```{toctree}
+build
+```
+
 ## glTF
 
 ```{toctree}
@@ -44,7 +52,7 @@ vrm0/firstperson
 
 implementation/runtime_resource_management
 implementation/texture_manipulation
-implementation/univrm_coordinate
+implementation/coordinate
 ```
 
 ### Samples

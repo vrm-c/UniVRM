@@ -21,7 +21,7 @@ V^{\prime} = 1 - V
 
 Z軸を反転します。
 
-### Vector3(Position, Normalなど)
+### Vector3: Position, Normalなど
 
 ```csharp
 public static Vector3 ReverseZ(this Vector3 v)
@@ -30,7 +30,7 @@ public static Vector3 ReverseZ(this Vector3 v)
 }
 ```
 
-### Quaternion(Rotation)
+### Quaternion: Rotation
 
 ```csharp
 public static Quaternion ReverseZ(this Quaternion q)
@@ -42,7 +42,7 @@ public static Quaternion ReverseZ(this Quaternion q)
 }
 ```
 
-### Matrix(BindMatrices)
+### Matrix: BindMatrices
 
 スケール値が入っているとうまくいきません
 
