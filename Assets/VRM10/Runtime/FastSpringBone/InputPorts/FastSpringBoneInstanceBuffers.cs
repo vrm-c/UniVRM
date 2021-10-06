@@ -8,6 +8,9 @@ using UniVRM10.FastSpringBones.Blittables;
 
 namespace UniVRM10.FastSpringBones.System
 {
+    /// <summary>
+    /// ひとつのVRMに紐づくFastSpringBoneに関連したバッファを保持するクラス
+    /// </summary>
     public class FastSpringBoneBuffer : IDisposable
     {
         public NativeArray<BlittableSpring> Springs { get; }
