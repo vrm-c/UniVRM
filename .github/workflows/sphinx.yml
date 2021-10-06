@@ -21,7 +21,7 @@ jobs:
         run: sphinx-build . ../public/ja
       - name: sphinx build(en)
         working-directory: ./docs
-        run: sphinx-build . ../public/en -D language=en
+        run: sphinx-build . ../public/en -D language=en -A language=en
       - name: copy index.html
         run: cp docs/index.html public/index.html
       - name: Deploy
