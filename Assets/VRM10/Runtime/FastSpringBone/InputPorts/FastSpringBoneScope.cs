@@ -11,12 +11,9 @@ namespace UniVRM10.FastSpringBones.System
     {
         private readonly FastSpringBoneService _service;
         private readonly FastSpringBoneBuffer _buffer;
-        
-        public IReadOnlyList<FastSpringBoneSpring> Springs { get; }
 
         public FastSpringBoneScope(IReadOnlyList<FastSpringBoneSpring> springs)
         {
-            Springs = springs;
             _service = FastSpringBoneService.Instance;
             _buffer = new FastSpringBoneBuffer(springs);
             
