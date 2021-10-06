@@ -35,9 +35,14 @@ namespace UniVRM10
                 m_constraints = target.GetComponentsInChildren<VRM10Constraint>();
             }
 
+            if (!Application.isPlaying)
+            {
+                // for UnitTest
+                return;
+            }
+
             m_fastSpringBoneService = FastSpringBoneService.Instance;
             m_fastSpringBoneBuffer = CreateFastSpringBoneBuffer(m_target.SpringBone);
-            
             m_fastSpringBoneService.BufferCombiner.Register(m_fastSpringBoneBuffer);
         }
 
@@ -45,9 +50,9 @@ namespace UniVRM10
         {
             return new FastSpringBoneBuffer(
                 springBone.Springs.Select(spring => new FastSpringBoneSpring
-            {
-                center = m_target.SpringBoneCenter,
-                colliders = spring.ColliderGroups
+                {
+                    center = m_target.SpringBoneCenter,
+                    colliders = spring.ColliderGroups
                     .SelectMany(group => group.Colliders)
                     .Select(collider => new FastSpringBoneCollider
                     {
@@ -60,7 +65,7 @@ namespace UniVRM10
                             colliderType = TranslateColliderType(collider.ColliderType)
                         }
                     }).ToArray(),
-                joints = spring.Joints
+                    joints = spring.Joints
                     .Select(joint => new FastSpringBoneJoint
                     {
                         Transform = joint.transform,
@@ -73,7 +78,7 @@ namespace UniVRM10
                             stiffnessForce = joint.m_stiffnessForce
                         }
                     }).ToArray(),
-            }).ToArray());
+                }).ToArray());
         }
 
         private static BlittableColliderType TranslateColliderType(VRM10SpringBoneColliderTypes colliderType)
@@ -82,7 +87,7 @@ namespace UniVRM10
             {
                 case VRM10SpringBoneColliderTypes.Sphere:
                     return BlittableColliderType.Sphere;
-                case VRM10SpringBoneColliderTypes.Capsule: 
+                case VRM10SpringBoneColliderTypes.Capsule:
                     return BlittableColliderType.Capsule;
                 default:
                     throw new ArgumentOutOfRangeException();
