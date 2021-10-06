@@ -5,7 +5,7 @@ JSON serializer and deserializer and schema utilities for Unity(.Net3.5)
 
 ### JSON Create
 
-```cs
+```csharp
 var f = new JsonFormatter();
 f.BeginMap();
 f.Key("X"); f.Value(1);
@@ -20,7 +20,7 @@ var json = f.ToString();
 
 Serialize public fields automatically.
 
-```cs
+```csharp
 var f = new JsonFormatter();
 f.Serialize(new Vector3(1, 2, 3));
 var json = f.ToString();
@@ -29,7 +29,7 @@ var json = f.ToString();
 
 ### JSON Parse
 
-```cs
+```csharp
 var json = "{\"X\":1,\"Y\":2,\"Z\":3}";
 var parsed = json.ParseAsJson();
 var x = parsed["X"].GetInt32();
@@ -37,14 +37,14 @@ var x = parsed["X"].GetInt32();
 
 ### JSON Deserialize
 
-```cs
+```csharp
 var v = default(Vector3);
 json.Deserialize(ref v);
 ```
 
 ### JSON Schema
 
-```cs
+```csharp
 [Serializable]
 public class glTFSparseIndices
 {
@@ -82,7 +82,7 @@ public void AccessorSparseIndices()
 
 Same as json interface
 
-```cs
+```csharp
 var f = new MsgPackFormatter();
 f.Serialize(new Vector3(1, 2, 3));
 ArraySegment<byte> msgpack = f.GetStoreBytes();
@@ -95,7 +95,7 @@ var x = parsed["X"].GetInt32();
 
 WIP
 
-```cs
+```csharp
 var toml =@"
 X = 1
 Y = 2
