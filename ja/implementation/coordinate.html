@@ -1,0 +1,222 @@
+
+<!DOCTYPE html>
+
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>座標系の変換 &#8212; UniVRM Programming Document  ドキュメント</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/translations.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="検索" href="../search.html" />
+    <link rel="next" title="RuntimeLoad" href="../vrm1/vrm1_runtime_load.html" />
+    <link rel="prev" title="Texture関連" href="texture_manipulation.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="総合索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="../vrm1/vrm1_runtime_load.html" title="RuntimeLoad"
+             accesskey="N">次へ</a> |</li>
+        <li class="right" >
+          <a href="texture_manipulation.html" title="Texture関連"
+             accesskey="P">前へ</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">UniVRM Programming Document  ドキュメント</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">座標系の変換</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="id1">
+<h1>座標系の変換<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p>UniVRMは、インポート・エクスポート時に座標変換を実行しています。</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p></p></th>
+<th class="head"><p>右</p></th>
+<th class="head"><p>上</p></th>
+<th class="head"><p>前</p></th>
+<th class="head"><p>掌性</p></th>
+<th class="head"><p>UV原点</p></th>
+<th class="head"><p></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Unity</p></td>
+<td><p>+X</p></td>
+<td><p>+Y</p></td>
+<td><p>+Z</p></td>
+<td><p>左手</p></td>
+<td><p>左下</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>VRM-0</p></td>
+<td><p>+X</p></td>
+<td><p>+Y</p></td>
+<td><p>-Z</p></td>
+<td><p>右手</p></td>
+<td><p>左上</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>VRM-1</p></td>
+<td><p>-X</p></td>
+<td><p>+Y</p></td>
+<td><p>+Z</p></td>
+<td><p>右手</p></td>
+<td><p>左上</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>glTF</p></td>
+<td><p></p></td>
+<td><p>+Y</p></td>
+<td><p></p></td>
+<td><p>右手</p></td>
+<td><p>左上</p></td>
+<td><p>デフォルトはVRM-0方式。オプションでVRM-1方式を選べます</p></td>
+</tr>
+</tbody>
+</table>
+<section id="uv">
+<h2>UV<a class="headerlink" href="#uv" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>以下のように変換します。</p>
+<div class="math notranslate nohighlight">
+\[V^{\prime} = 1 - V\]</div>
+</section>
+<section id="unity-vrm0">
+<h2>Unity &lt;-&gt; VRM0<a class="headerlink" href="#unity-vrm0" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>Z軸を反転します。</p>
+<section id="vector3-position-normal">
+<h3>Vector3: Position, Normalなど<a class="headerlink" href="#vector3-position-normal" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">public</span> <span class="k">static</span> <span class="n">Vector3</span> <span class="nf">ReverseZ</span><span class="p">(</span><span class="k">this</span> <span class="n">Vector3</span> <span class="n">v</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="k">new</span> <span class="nf">Vector3</span><span class="p">(</span><span class="n">v</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="n">v</span><span class="p">.</span><span class="n">y</span><span class="p">,</span> <span class="p">-</span><span class="n">v</span><span class="p">.</span><span class="n">z</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="quaternion-rotation">
+<h3>Quaternion: Rotation<a class="headerlink" href="#quaternion-rotation" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">public</span> <span class="k">static</span> <span class="n">Quaternion</span> <span class="nf">ReverseZ</span><span class="p">(</span><span class="k">this</span> <span class="n">Quaternion</span> <span class="n">q</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">float</span> <span class="n">angle</span><span class="p">;</span>
+    <span class="n">Vector3</span> <span class="n">axis</span><span class="p">;</span>
+    <span class="n">q</span><span class="p">.</span><span class="n">ToAngleAxis</span><span class="p">(</span><span class="k">out</span> <span class="n">angle</span><span class="p">,</span> <span class="k">out</span> <span class="n">axis</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">Quaternion</span><span class="p">.</span><span class="n">AngleAxis</span><span class="p">(-</span><span class="n">angle</span><span class="p">,</span> <span class="n">ReverseZ</span><span class="p">(</span><span class="n">axis</span><span class="p">));</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="matrix-bindmatrices">
+<h3>Matrix: BindMatrices<a class="headerlink" href="#matrix-bindmatrices" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>スケール値が入っているとうまくいきません</p>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">public</span> <span class="k">static</span> <span class="n">Matrix4x4</span> <span class="nf">ReverseZ</span><span class="p">(</span><span class="k">this</span> <span class="n">Matrix4x4</span> <span class="n">m</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="cp">#if UNITY_2017_1_OR_NEWER</span>
+    <span class="n">m</span><span class="p">.</span><span class="n">SetTRS</span><span class="p">(</span><span class="n">m</span><span class="p">.</span><span class="n">GetColumn</span><span class="p">(</span><span class="m">3</span><span class="p">).</span><span class="n">ReverseZ</span><span class="p">(),</span> <span class="n">m</span><span class="p">.</span><span class="n">rotation</span><span class="p">.</span><span class="n">ReverseZ</span><span class="p">(),</span> <span class="n">Vector3</span><span class="p">.</span><span class="n">one</span><span class="p">);</span>
+<span class="cp">#else</span>
+    <span class="n">m</span><span class="p">.</span><span class="n">SetTRS</span><span class="p">(</span><span class="n">m</span><span class="p">.</span><span class="n">ExtractPosition</span><span class="p">().</span><span class="n">ReverseZ</span><span class="p">(),</span> <span class="n">m</span><span class="p">.</span><span class="n">ExtractRotation</span><span class="p">().</span><span class="n">ReverseZ</span><span class="p">(),</span> <span class="n">Vector3</span><span class="p">.</span><span class="n">one</span><span class="p">);</span>
+<span class="cp">#endif</span>
+    <span class="k">return</span> <span class="n">m</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="unity-vrm1">
+<h2>Unity &lt;-&gt; VRM1<a class="headerlink" href="#unity-vrm1" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>X軸を反転します。</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<ul>
+    <li><a href="../../public/en/html/implementation/coordinate.html">English</a></li>
+</ul>
+
+
+  <h3><a href="../index.html">目次</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">座標系の変換</a><ul>
+<li><a class="reference internal" href="#uv">UV</a></li>
+<li><a class="reference internal" href="#unity-vrm0">Unity &lt;-&gt; VRM0</a><ul>
+<li><a class="reference internal" href="#vector3-position-normal">Vector3: Position, Normalなど</a></li>
+<li><a class="reference internal" href="#quaternion-rotation">Quaternion: Rotation</a></li>
+<li><a class="reference internal" href="#matrix-bindmatrices">Matrix: BindMatrices</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#unity-vrm1">Unity &lt;-&gt; VRM1</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>前のトピックへ</h4>
+  <p class="topless"><a href="texture_manipulation.html"
+                        title="前の章へ">Texture関連</a></p>
+  <h4>次のトピックへ</h4>
+  <p class="topless"><a href="../vrm1/vrm1_runtime_load.html"
+                        title="次の章へ">RuntimeLoad</a></p>
+  <div role="note" aria-label="source link">
+    <h3>このページ</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/implementation/coordinate.md.txt"
+            rel="nofollow">ソースコードを表示</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="総合索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="../vrm1/vrm1_runtime_load.html" title="RuntimeLoad"
+             >次へ</a> |</li>
+        <li class="right" >
+          <a href="texture_manipulation.html" title="Texture関連"
+             >前へ</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">UniVRM Programming Document  ドキュメント</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">座標系の変換</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, VRM Consortium.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+    </div>
+  </body>
+</html>

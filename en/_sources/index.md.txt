@@ -9,8 +9,16 @@ UnityでVRMをエクスポートする方法などについては [manual](https
 ```{toctree}
 :maxdepth: 1
 
-package.md
-history.md
+package
+history
+```
+
+## build
+
+UniVRMを使うアプリケーションのビルドに関する注意事項
+
+```{toctree}
+build
 ```
 
 ## glTF
@@ -18,9 +26,9 @@ history.md
 ```{toctree}
 :maxdepth: 1
 
-gltf/0_82_glb_import.md
-gltf/how_to_impl_extension.md
-gltf/0_36_update.md
+gltf/0_82_glb_import
+gltf/how_to_impl_extension
+gltf/0_36_update
 ```
 
 ## VRM
@@ -28,20 +36,23 @@ gltf/0_36_update.md
 ```{toctree}
 :maxdepth: 1
 
-vrm0/0_82_runtime_import.md
-vrm0/0_79_runtime_import.md
-vrm0/0_77_runtime_import.md
-vrm0/0_68_runtime_import.md
-vrm0/0_44_runtime_import.md
-vrm0/0_58_blendshape.md
-vrm0/firstperson.md
+vrm0/0_82_runtime_import
+vrm0/0_79_runtime_import
+vrm0/0_77_runtime_import
+vrm0/0_68_runtime_import
+vrm0/0_44_runtime_import
+vrm0/0_58_blendshape
+vrm0/firstperson
 ```
 
 ## 実装メモ
 
 ```{toctree}
+:maxdepth: 1
 
-implementation/runtime_resource_management.md
+implementation/runtime_resource_management
+implementation/texture_manipulation
+implementation/coordinate
 ```
 
 ### Samples
@@ -56,11 +67,11 @@ implementation/runtime_resource_management.md
 ```{toctree}
 :maxdepth: 2
 
-vrm1/vrm1_runtime_load.md
-vrm1/vrm1_get_humanoid.md
-vrm1/vrm1_expression.md
-vrm1/vrm1_lookat.md
-vrm1/vrm1_firstperson.md
+vrm1/vrm1_runtime_load
+vrm1/vrm1_get_humanoid
+vrm1/vrm1_expression
+vrm1/vrm1_lookat
+vrm1/vrm1_firstperson
 ```
 
 ### Samples

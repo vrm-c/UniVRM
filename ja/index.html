@@ -50,6 +50,23 @@
 </ul>
 </div>
 </section>
+<section id="build">
+<h2>build<a class="headerlink" href="#build" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>UniVRMを使うアプリケーションのビルドに関する注意事項</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="build.html">アプリケーションのビルド</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="build.html#id2">ビルドに含めるシェーダー</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="build.html#unlit">Unlit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="build.html#mtoon">MToon</a></li>
+<li class="toctree-l3"><a class="reference internal" href="build.html#import-export">ランタイム import/export 時のテクスチャー変換用のシェーダー</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
 <section id="gltf">
 <h2>glTF<a class="headerlink" href="#gltf" title="このヘッドラインへのパーマリンク">¶</a></h2>
 <div class="toctree-wrapper compound">
@@ -78,14 +95,9 @@
 <h2>実装メモ<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="implementation/runtime_resource_management.html">Runtime のリソース管理について</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="implementation/runtime_resource_management.html#runtimegltfinstance">RuntimeGltfInstance</a></li>
-<li class="toctree-l2"><a class="reference internal" href="implementation/runtime_resource_management.html#vrm10instance">Vrm10Instance</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="implementation/runtime_resource_management.html#firstperson">FirstPerson</a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="implementation/runtime_resource_management.html">Runtime のリソース管理について</a></li>
+<li class="toctree-l1"><a class="reference internal" href="implementation/texture_manipulation.html">Texture関連</a></li>
+<li class="toctree-l1"><a class="reference internal" href="implementation/coordinate.html">座標系の変換</a></li>
 </ul>
 </div>
 <section id="samples">
@@ -141,10 +153,16 @@
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
+<ul>
+    <li><a href="../public/en/html/index.html">English</a></li>
+</ul>
+
+
   <h3><a href="#">目次</a></h3>
   <ul>
 <li><a class="reference internal" href="#">UniVRM Programming Document</a><ul>
 <li><a class="reference internal" href="#id1">概要</a></li>
+<li><a class="reference internal" href="#build">build</a></li>
 <li><a class="reference internal" href="#gltf">glTF</a></li>
 <li><a class="reference internal" href="#vrm">VRM</a></li>
 <li><a class="reference internal" href="#id2">実装メモ</a><ul>
