@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Unity.Collections;
+using Unity.Jobs;
 using UnityEngine;
 using UnityEngine.Jobs;
 using UnityEngine.Profiling;
 using UniVRM10.FastSpringBones.Blittables;
+#if ENABLE_SPRINGBONE_BURST
+using Unity.Burst;
+#endif
 
 namespace UniVRM10.FastSpringBones.System
 {
@@ -15,13 +18,13 @@ namespace UniVRM10.FastSpringBones.System
     public sealed class FastSpringBoneBufferCombiner : IDisposable
     {
         private NativeArray<BlittableSpring> _springs;
-        private NativeArray<BlittableJoint> _joints;
         private NativeArray<BlittableTransform> _transforms;
-        private TransformAccessArray _transformAccessArray;
         private NativeArray<BlittableCollider> _colliders;
+        private NativeArray<BlittableJoint> _joints;
         private NativeArray<BlittableLogic> _logics;
+        private TransformAccessArray _transformAccessArray;
 
-        private readonly LinkedList<FastSpringBoneScope> _fastSpringBoneScopes = new LinkedList<FastSpringBoneScope>();
+        private readonly LinkedList<FastSpringBoneBuffer> _buffers = new LinkedList<FastSpringBoneBuffer>();
 
         private bool _isDirty;
 
@@ -32,139 +35,138 @@ namespace UniVRM10.FastSpringBones.System
         public NativeArray<BlittableCollider> Colliders => _colliders;
         public NativeArray<BlittableLogic> Logics => _logics;
 
-        public void Register(FastSpringBoneScope scope)
+        public void Register(FastSpringBoneBuffer buffer)
         {
-            _fastSpringBoneScopes.AddLast(scope);
+            _buffers.AddLast(buffer);
             _isDirty = true;
         }
 
-        public void Unregister(FastSpringBoneScope scope)
+        public void Unregister(FastSpringBoneBuffer buffer)
         {
-            _fastSpringBoneScopes.Remove(scope);
+            _buffers.Remove(buffer);
             _isDirty = true;
         }
 
         /// <summary>
         /// 変更があったならばバッファを再構築する
         /// </summary>
-        public void ReconstructIfDirty()
+        public JobHandle ReconstructIfDirty(JobHandle handle)
         {
             if (_isDirty)
             {
-                ReconstructBuffers();
+                var result = ReconstructBuffers(handle);
                 _isDirty = false;
+                return result;
             }
+
+            return handle;
         }
 
         /// <summary>
         /// バッファを再構築する
         /// TODO: 最適化
         /// </summary>
-        private void ReconstructBuffers()
+        private JobHandle ReconstructBuffers(JobHandle handle)
         {
             Profiler.BeginSample("FastSpringBone.ReconstructBuffers");
+
+            Profiler.BeginSample("FastSpringBone.ReconstructBuffers.DisposeBuffers");
             DisposeAllBuffers();
+            Profiler.EndSample();
 
-            var springs = _fastSpringBoneScopes.SelectMany(scope => scope.Springs).ToArray();
+            var springsCount = 0;
+            var collidersCount = 0;
+            var logicsCount = 0;
+            var transformsCount = 0;
 
-            // Transformの列挙
-            var transformHashSet = new HashSet<Transform>();
-            foreach (var spring in springs)
+            Profiler.BeginSample("FastSpringBone.ReconstructBuffers.CountBufferSize");
+            foreach (var buffer in _buffers)
             {
-                foreach (var joint in spring.joints)
-                {
-                    transformHashSet.Add(joint.Transform);
-                    if (joint.Transform.parent != null) transformHashSet.Add(joint.Transform.parent);
-                }
-                foreach (var collider in spring.colliders)
-                {
-                    transformHashSet.Add(collider.Transform);
-                }
-
-                if (spring.center != null) transformHashSet.Add(spring.center);
+                springsCount += buffer.Springs.Length;
+                collidersCount += buffer.Colliders.Length;
+                logicsCount += buffer.Logics.Length;
+                transformsCount += buffer.BlittableTransforms.Length;
             }
-            var transforms = transformHashSet.ToArray();
-            var transformIndexDictionary = transforms.Select((trs, index) => (trs, index))
-                .ToDictionary(tuple => tuple.trs, tuple => tuple.index);
-
-            // 各種bufferの構築
-            var blittableColliders = new List<BlittableCollider>();
-            var blittableJoints = new List<BlittableJoint>();
-            var blittableSprings = new List<BlittableSpring>();
-            var blittableLogics = new List<BlittableLogic>();
-
-            foreach (var spring in springs)
-            {
-                var blittableSpring = new BlittableSpring
-                {
-                    colliderSpan = new BlittableSpan
-                    {
-                        startIndex = blittableColliders.Count,
-                        count = spring.colliders.Length,
-                    },
-                    logicSpan = new BlittableSpan
-                    {
-                        startIndex = blittableJoints.Count,
-                        count = spring.joints.Length - 1,
-                    },
-                    centerTransformIndex = spring.center ? transformIndexDictionary[spring.center] : -1
-                };
-                blittableSprings.Add(blittableSpring);
-
-                blittableColliders.AddRange(spring.colliders.Select(collider =>
-                {
-                    var blittable = collider.Collider;
-                    blittable.transformIndex = transformIndexDictionary[collider.Transform];
-                    return blittable;
-                }));
-                blittableJoints.AddRange(spring.joints.Take(spring.joints.Length - 1).Select(joint =>
-                {
-                    var blittable = joint.Joint;
-                    return blittable;
-                }));
-
-                for (var i = 0; i < spring.joints.Length - 1; ++i)
-                {
-                    var joint = spring.joints[i];
-                    var tailJoint = spring.joints[i + 1];
-                    var localPosition = tailJoint.Transform.localPosition;
-                    var scale = tailJoint.Transform.lossyScale;
-                    var localChildPosition =
-                        new Vector3(
-                            localPosition.x * scale.x,
-                            localPosition.y * scale.y,
-                            localPosition.z * scale.z
-                        );
-
-                    var worldChildPosition = joint.Transform.TransformPoint(localChildPosition);
-                    var currentTail = spring.center != null
-                        ? spring.center.InverseTransformPoint(worldChildPosition)
-                        : worldChildPosition;
-                    var parent = joint.Transform.parent;
-                    blittableLogics.Add(new BlittableLogic
-                    {
-                        headTransformIndex = transformIndexDictionary[joint.Transform],
-                        parentTransformIndex = parent != null ? transformIndexDictionary[parent] : -1,
-                        currentTail = currentTail,
-                        prevTail = currentTail,
-                        localRotation = joint.Transform.localRotation,
-                        boneAxis = localChildPosition.normalized,
-                        length = localChildPosition.magnitude
-                    });
-                }
-            }
-
-            // 各種bufferの初期化
-            _springs = new NativeArray<BlittableSpring>(blittableSprings.ToArray(), Allocator.Persistent);
-
-            _joints = new NativeArray<BlittableJoint>(blittableJoints.ToArray(), Allocator.Persistent);
-            _colliders = new NativeArray<BlittableCollider>(blittableColliders.ToArray(), Allocator.Persistent);
-            _logics = new NativeArray<BlittableLogic>(blittableLogics.ToArray(), Allocator.Persistent);
-
-            _transforms = new NativeArray<BlittableTransform>(transforms.Length, Allocator.Persistent);
-            _transformAccessArray = new TransformAccessArray(transforms.ToArray());
 
             Profiler.EndSample();
+
+            // バッファの構築
+            Profiler.BeginSample("FastSpringBone.ReconstructBuffers.CreateBuffers");
+            _springs = new NativeArray<BlittableSpring>(springsCount, Allocator.Persistent);
+
+            _joints = new NativeArray<BlittableJoint>(logicsCount, Allocator.Persistent);
+            _logics = new NativeArray<BlittableLogic>(logicsCount, Allocator.Persistent);
+            _colliders = new NativeArray<BlittableCollider>(collidersCount, Allocator.Persistent);
+
+            _transforms = new NativeArray<BlittableTransform>(transformsCount, Allocator.Persistent);
+            Profiler.EndSample();
+
+            var springsOffset = 0;
+            var collidersOffset = 0;
+            var logicsOffset = 0;
+            var transformOffset = 0;
+
+            Profiler.BeginSample("FastSpringBone.ReconstructBuffers.ScheduleLoadBufferJobs");
+            foreach (var buffer in _buffers)
+            {
+                // バッファの読み込みをスケジュール
+                handle = new LoadTransformsJob
+                {
+                    SrcTransforms = buffer.BlittableTransforms,
+                    DestTransforms =
+                        new NativeSlice<BlittableTransform>(_transforms, transformOffset,
+                            buffer.BlittableTransforms.Length)
+                }.Schedule(buffer.BlittableTransforms.Length, 1, handle);
+                handle = new LoadSpringsJob
+                {
+                    SrcSprings = buffer.Springs,
+                    DestSprings = new NativeSlice<BlittableSpring>(_springs, springsOffset, buffer.Springs.Length),
+                    CollidersOffset = collidersOffset,
+                    LogicsOffset = logicsOffset,
+                    TransformOffset = transformOffset
+                }.Schedule(buffer.Springs.Length, 1, handle);
+                handle = new LoadCollidersJob()
+                {
+                    SrcColliders = buffer.Colliders,
+                    DestColliders =
+                        new NativeSlice<BlittableCollider>(_colliders, collidersOffset, buffer.Colliders.Length),
+                    TransformOffset = transformOffset
+                }.Schedule(buffer.Colliders.Length, 1, handle);
+                handle = new OffsetLogicsJob()
+                {
+                    SrcLogics = buffer.Logics,
+                    SrcJoints = buffer.Joints,
+                    DestLogics = new NativeSlice<BlittableLogic>(_logics, logicsOffset, buffer.Logics.Length),
+                    DestJoints = new NativeSlice<BlittableJoint>(_joints, logicsOffset, buffer.Logics.Length),
+                    TransformOffset = transformOffset
+                }.Schedule(buffer.Logics.Length, 1, handle);
+
+                springsOffset += buffer.Springs.Length;
+                collidersOffset += buffer.Colliders.Length;
+                logicsOffset += buffer.Logics.Length;
+                transformOffset += buffer.BlittableTransforms.Length;
+            }
+
+            // TransformAccessArrayの構築と並行してJobを行うため、この時点で走らせておく
+            JobHandle.ScheduleBatchedJobs();
+            Profiler.EndSample();
+
+            // TransformAccessArrayの構築
+            Profiler.BeginSample("FastSpringBone.ReconstructBuffers.LoadTransformAccessArray");
+            var transforms = new Transform[transformsCount];
+            var transformAccessArrayOffset = 0;
+            foreach (var buffer in _buffers)
+            {
+                Array.Copy(buffer.Transforms, 0, transforms, transformAccessArrayOffset, buffer.Transforms.Length);
+                transformAccessArrayOffset += buffer.BlittableTransforms.Length;
+            }
+
+            _transformAccessArray = new TransformAccessArray(transforms);
+            Profiler.EndSample();
+
+            Profiler.EndSample();
+
+            return handle;
         }
 
         private void DisposeAllBuffers()
@@ -180,6 +182,79 @@ namespace UniVRM10.FastSpringBones.System
         public void Dispose()
         {
             DisposeAllBuffers();
+        }
+
+#if ENABLE_SPRINGBONE_BURST
+        [BurstCompile]
+#endif
+        private struct LoadTransformsJob : IJobParallelFor
+        {
+            [ReadOnly] public NativeArray<BlittableTransform> SrcTransforms;
+            [WriteOnly] public NativeSlice<BlittableTransform> DestTransforms;
+
+            public void Execute(int index)
+            {
+                DestTransforms[index] = SrcTransforms[index];
+            }
+        }
+
+#if ENABLE_SPRINGBONE_BURST
+        [BurstCompile]
+#endif
+        private struct LoadSpringsJob : IJobParallelFor
+        {
+            [ReadOnly] public NativeArray<BlittableSpring> SrcSprings;
+            [WriteOnly] public NativeSlice<BlittableSpring> DestSprings;
+            public int CollidersOffset;
+            public int LogicsOffset;
+            public int TransformOffset;
+
+            public void Execute(int index)
+            {
+                var spring = SrcSprings[index];
+                spring.colliderSpan.startIndex += CollidersOffset;
+                spring.logicSpan.startIndex += LogicsOffset;
+                if (spring.centerTransformIndex >= 0) spring.centerTransformIndex += TransformOffset;
+                DestSprings[index] = spring;
+            }
+        }
+
+#if ENABLE_SPRINGBONE_BURST
+        [BurstCompile]
+#endif
+        private struct LoadCollidersJob : IJobParallelFor
+        {
+            [ReadOnly] public NativeArray<BlittableCollider> SrcColliders;
+            [WriteOnly] public NativeSlice<BlittableCollider> DestColliders;
+            public int TransformOffset;
+
+            public void Execute(int index)
+            {
+                var collider = SrcColliders[index];
+                collider.transformIndex += TransformOffset;
+                DestColliders[index] = collider;
+            }
+        }
+
+#if ENABLE_SPRINGBONE_BURST
+        [BurstCompile]
+#endif
+        private struct OffsetLogicsJob : IJobParallelFor
+        {
+            [ReadOnly] public NativeSlice<BlittableLogic> SrcLogics;
+            [ReadOnly] public NativeSlice<BlittableJoint> SrcJoints;
+            [WriteOnly] public NativeSlice<BlittableLogic> DestLogics;
+            [WriteOnly] public NativeSlice<BlittableJoint> DestJoints;
+            public int TransformOffset;
+
+            public void Execute(int index)
+            {
+                var logic = SrcLogics[index];
+                logic.headTransformIndex += TransformOffset;
+                if (logic.parentTransformIndex >= 0) logic.parentTransformIndex += TransformOffset;
+                DestLogics[index] = logic;
+                DestJoints[index] = SrcJoints[index];
+            }
         }
     }
 }

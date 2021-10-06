@@ -16,12 +16,13 @@ namespace UniVRM10.FastSpringBones.System
 
         public JobHandle Schedule()
         {
-            _bufferCombiner.ReconstructIfDirty();
+            var handle = default(JobHandle);
+            handle = _bufferCombiner.ReconstructIfDirty(handle);
             
-            var handle = new PullTransformJob
+            handle = new PullTransformJob
                 {
                     Transforms = _bufferCombiner.Transforms
-                }.Schedule(_bufferCombiner.TransformAccessArray);
+                }.Schedule(_bufferCombiner.TransformAccessArray, handle);
             
             handle = new UpdateFastSpringBoneJob
             {
