@@ -14,7 +14,8 @@ namespace UniVRM10
         private readonly Vrm10Instance m_target;
         private readonly VRM10Constraint[] m_constraints;
         private readonly Transform m_head;
-        private readonly FastSpringBoneScope m_fastSpringBoneScope;
+        private readonly FastSpringBoneService m_fastSpringBoneService;
+        private readonly FastSpringBoneBuffer m_fastSpringBoneBuffer;
 
         public Vrm10InstanceRuntime(Vrm10Instance target)
         {
@@ -34,12 +35,15 @@ namespace UniVRM10
                 m_constraints = target.GetComponentsInChildren<VRM10Constraint>();
             }
 
-            m_fastSpringBoneScope = CreateFastSpringBoneScheduler(m_target.SpringBone);
+            m_fastSpringBoneService = FastSpringBoneService.Instance;
+            m_fastSpringBoneBuffer = CreateFastSpringBoneBuffer(m_target.SpringBone);
+            
+            m_fastSpringBoneService.BufferCombiner.Register(m_fastSpringBoneBuffer);
         }
 
-        private FastSpringBoneScope CreateFastSpringBoneScheduler(Vrm10InstanceSpringBone springBone)
+        private FastSpringBoneBuffer CreateFastSpringBoneBuffer(Vrm10InstanceSpringBone springBone)
         {
-            return new FastSpringBoneScope(
+            return new FastSpringBoneBuffer(
                 springBone.Springs.Select(spring => new FastSpringBoneSpring
             {
                 center = m_target.SpringBoneCenter,
@@ -117,7 +121,8 @@ namespace UniVRM10
 
         public void Dispose()
         {
-            m_fastSpringBoneScope.Dispose();
+            m_fastSpringBoneService.BufferCombiner.Unregister(m_fastSpringBoneBuffer);
+            m_fastSpringBoneBuffer.Dispose();
         }
     }
 }
