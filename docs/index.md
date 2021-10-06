@@ -53,6 +53,7 @@ vrm0/firstperson
 implementation/runtime_resource_management
 implementation/texture_manipulation
 implementation/coordinate
+implementation/fast_spring_bone
 ```
 
 ### Samples
