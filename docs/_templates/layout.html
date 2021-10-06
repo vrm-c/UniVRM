@@ -3,10 +3,10 @@
 {% block sidebarlogo %}
 <ul>
   {%- if language != "en" %}
-    <li><a href="{{ pathto('../public/en/html/', 1) }}{{ pathto(pagename, 0, '.') }}">English</a></li>
+    <li><a href="{{ pathto('../en/', 1) }}{{ pathto(pagename, 0, '.') }}">English</a></li>
   {%- endif %}
   {%- if language != "ja" %}
-    <li><a href="{{ pathto('../public/ja/html/', 1) }}{{ pathto(pagename, 0, '.') }}">日本語</a></li>
+    <li><a href="{{ pathto('../ja/', 1) }}{{ pathto(pagename, 0, '.') }}">日本語</a></li>
   {%- endif %}
 </ul>
 {{ super() }}
