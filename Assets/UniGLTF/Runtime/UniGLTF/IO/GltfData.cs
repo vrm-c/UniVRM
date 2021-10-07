@@ -1,9 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
-using UnityEngine;
 
 namespace UniGLTF
 {
@@ -30,6 +27,12 @@ namespace UniGLTF
         /// Maybe empty if source file was not glb format.
         /// </summary>
         public IReadOnlyList<GlbChunk> Chunks { get; }
+
+        /// <summary>
+        /// Bin chunk bytes
+        /// </summary>
+        /// <returns></returns>
+        public ArraySegment<byte> Bin => Chunks.First(x => x.ChunkType == GlbChunkType.BIN).Bytes;
 
         /// <summary>
         /// URI access

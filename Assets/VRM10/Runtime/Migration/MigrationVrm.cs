@@ -12,20 +12,14 @@ namespace UniVRM10
     {
         public static byte[] Migrate(byte[] src)
         {
-            var glb = UniGLTF.Glb.Parse(src);
-            var json = glb.Json.Bytes.ParseAsJson();
-            return Migrate(json, glb.Binary.Bytes);
+            var data = new UniGLTF.GlbBinaryParser(src).Parse();
+            return Migrate(data);
         }
 
-        public static byte[] Migrate(JsonNode json, ArraySegment<byte> bin)
+        public static byte[] Migrate(UniGLTF.GltfData data)
         {
-            var gltf = UniGLTF.GltfDeserializer.Deserialize(json);
-
-            // attach glb bin to buffer
-            foreach (var buffer in gltf.buffers)
-            {
-                buffer.OpenStorage(new UniGLTF.SimpleStorage(bin));
-            }
+            var gltf = data.GLTF;
+            var json = data.Json.ParseAsJson();
 
             // https://github.com/vrm-c/vrm-specification/issues/205
             RotateY180.Rotate(gltf);
@@ -107,7 +101,7 @@ namespace UniVRM10
                 vrm1Json = f.GetStoreBytes();
             }
             // JSON 部分だけが改変されて、BIN はそのまま
-            return UniGLTF.Glb.Create(vrm1Json, bin).ToBytes();
+            return UniGLTF.Glb.Create(vrm1Json, data.Bin).ToBytes();
         }
 
         public static void Check(JsonNode vrm0, UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm1)
@@ -121,4 +115,5 @@ namespace UniVRM10
             // Migration.CheckSpringBone(vrm0["secondaryAnimation"], vrm1.sp)
         }
     }
+
 }

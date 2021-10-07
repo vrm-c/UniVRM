@@ -6,8 +6,8 @@ namespace UniGLTF
     {
         private readonly byte[] _data;
         private readonly string _name;
-        
-        public GlbBinaryParser(byte[] data, string uniqueName)
+
+        public GlbBinaryParser(byte[] data, string uniqueName = "tmp")
         {
             _data = data;
 

@@ -68,8 +68,6 @@ namespace UniVRM10
             try
             {
                 var json = data.Json.ParseAsJson();
-                var bin = data.Chunks.First(x => x.ChunkType == GlbChunkType.BIN);
-
                 try
                 {
                     if (!json.TryGet("extensions", out JsonNode extensions))
@@ -95,7 +93,7 @@ namespace UniVRM10
                     return false;
                 }
 
-                migrated = MigrationVrm.Migrate(json, bin.Bytes);
+                migrated = MigrationVrm.Migrate(data);
                 if (migrated == null)
                 {
                     result = new Vrm10Data(default, default, Vrm10FileType.Vrm0, "vrm0: cannot migrate");
