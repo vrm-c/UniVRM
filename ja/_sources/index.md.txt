@@ -29,6 +29,7 @@ build
 gltf/0_82_glb_import
 gltf/how_to_impl_extension
 gltf/0_36_update
+gltf/format
 ```
 
 ## VRM

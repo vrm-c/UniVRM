@@ -1,0 +1,256 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>glbフォーマット概説 &#8212; UniVRM Programming Document  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="RuntimeImport(0.82)" href="../vrm0/0_82_runtime_import.html" />
+    <link rel="prev" title="GltfUpdate(0.36)" href="0_36_update.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../vrm0/0_82_runtime_import.html" title="RuntimeImport(0.82)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0_36_update.html" title="GltfUpdate(0.36)"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">UniVRM Programming Document  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">glbフォーマット概説</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="glb">
+<h1>glbフォーマット概説<a class="headerlink" href="#glb" title="Permalink to this headline">¶</a></h1>
+<p>JSON記述部と、画像や頂点配列を記録するバイナリ部の２つの部分からなります。</p>
+<p>gltf形式では、URLやパスで参照する方法で外部のバイナリデータにアクセスします。
+glb形式ではJSON部とバイナリ部をひとつのファイルにまとめていて、バイト列のオフセットでバイナリデータにアクセスします。
+プログラムから扱うには外部ファイルへのアクセスが無いglb形式の方が簡単<a class="footnote-reference brackets" href="#vrm-glb" id="id1">1</a>です。</p>
+<section id="id2">
+<h2>glb形式<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">ヘッダ部</span> <span class="pre">+</span> <span class="pre">チャンク部繰り返し</span></code>という構造になっています。
+実質的には、
+<code class="docutils literal notranslate"><span class="pre">ヘッダ部</span> <span class="pre">+</span> <span class="pre">JSON</span> <span class="pre">CHUNk</span> <span class="pre">+</span> <span class="pre">BINARY</span> <span class="pre">CHUNK</span></code>となります。</p>
+<p>ヘッダ部</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="text-align:left head"><p>長さ</p></th>
+<th class="text-align:left head"><p>内容</p></th>
+<th class="text-align:left head"><p>型</p></th>
+<th class="text-align:left head"><p>値</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-align:left"><p>4</p></td>
+<td class="text-align:left"><p></p></td>
+<td class="text-align:left"><p>ascii</p></td>
+<td class="text-align:left"><p>“glTF”</p></td>
+</tr>
+<tr class="row-odd"><td class="text-align:left"><p>4</p></td>
+<td class="text-align:left"><p>gltfバージョン</p></td>
+<td class="text-align:left"><p>int32</p></td>
+<td class="text-align:left"><p>2</p></td>
+</tr>
+<tr class="row-even"><td class="text-align:left"><p>4</p></td>
+<td class="text-align:left"><p>file size</p></td>
+<td class="text-align:left"><p>int32</p></td>
+<td class="text-align:left"><p></p></td>
+</tr>
+</tbody>
+</table>
+<p>チャンク部</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="text-align:left head"><p>長さ</p></th>
+<th class="text-align:left head"><p>内容</p></th>
+<th class="text-align:left head"><p>型</p></th>
+<th class="text-align:left head"><p>値</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-align:left"><p>4</p></td>
+<td class="text-align:left"><p>chunk size</p></td>
+<td class="text-align:left"><p>int32</p></td>
+<td class="text-align:left"><p></p></td>
+</tr>
+<tr class="row-odd"><td class="text-align:left"><p>4</p></td>
+<td class="text-align:left"><p>chunk type</p></td>
+<td class="text-align:left"><p>ascii</p></td>
+<td class="text-align:left"><p>“JSON” or “BIN\x00”</p></td>
+</tr>
+<tr class="row-even"><td class="text-align:left"><p>chunk size</p></td>
+<td class="text-align:left"><p>chunk body</p></td>
+<td class="text-align:left"><p>バイト列</p></td>
+<td class="text-align:left"><p></p></td>
+</tr>
+</tbody>
+</table>
+<section id="python3">
+<h3>python3によるパース例<a class="headerlink" href="#python3" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">struct</span>
+<span class="kn">import</span> <span class="nn">json</span>
+
+<span class="k">class</span> <span class="nc">Reader</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span><span class="o">-&gt;</span><span class="bp">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pos</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">def</span> <span class="nf">read_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">pos</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pos</span> <span class="o">+</span> <span class="n">size</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pos</span> <span class="o">+=</span> <span class="n">size</span>
+        <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">pos</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pos</span> <span class="o">+</span> <span class="n">size</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pos</span> <span class="o">+=</span> <span class="n">size</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span> <span class="nf">read_uint</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;I&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">pos</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">pos</span> <span class="o">+</span> <span class="mi">4</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pos</span> <span class="o">+=</span> <span class="mi">4</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+
+<span class="k">def</span> <span class="nf">parse_glb</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">):</span>
+    <span class="n">reader</span> <span class="o">=</span> <span class="n">Reader</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">magic</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="n">read_str</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+    <span class="k">if</span>  <span class="n">magic</span> <span class="o">!=</span> <span class="sa">b</span><span class="s1">&#39;glTF&#39;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;magic not found: #{magic}&#39;</span><span class="p">)</span>
+
+    <span class="n">version</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="n">read_uint</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">version</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;version:#{version} is not 2&#39;</span><span class="p">)</span>
+
+    <span class="n">size</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="n">read_uint</span><span class="p">()</span>
+    <span class="n">size</span> <span class="o">-=</span> <span class="mi">12</span>
+
+    <span class="n">json_str</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">body</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">while</span> <span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="c1">#print(size)</span>
+
+        <span class="n">chunk_size</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="n">read_uint</span><span class="p">()</span>
+        <span class="n">size</span> <span class="o">-=</span> <span class="mi">4</span>
+
+        <span class="n">chunk_type</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="n">read_str</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+        <span class="n">size</span> <span class="o">-=</span> <span class="mi">4</span>
+
+        <span class="n">chunk_data</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">chunk_size</span><span class="p">)</span>
+        <span class="n">size</span> <span class="o">-=</span> <span class="n">chunk_size</span>
+
+        <span class="k">if</span> <span class="n">chunk_type</span> <span class="o">==</span> <span class="sa">b</span><span class="s1">&#39;BIN</span><span class="se">\x00</span><span class="s1">&#39;</span><span class="p">:</span>
+            <span class="n">body</span> <span class="o">=</span> <span class="n">chunk_data</span>
+        <span class="k">elif</span> <span class="n">chunk_type</span> <span class="o">==</span> <span class="sa">b</span><span class="s1">&#39;JSON&#39;</span><span class="p">:</span>
+            <span class="n">json_str</span> <span class="o">=</span> <span class="n">chunk_data</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;unknown chunk_type: {chunk_type}&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json_str</span><span class="p">),</span> <span class="n">body</span>
+
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;AliciaSolid.vrm&#39;</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">parsed</span><span class="p">,</span> <span class="n">body</span> <span class="o">=</span> <span class="n">parse_glb</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+</pre></div>
+</div>
+<hr class="footnotes docutils" />
+<dl class="footnote brackets">
+<dt class="label" id="vrm-glb"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dd><p>VRMではglbを採用しています。</p>
+</dd>
+</dl>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<ul>
+    <li><a href="../../ja/gltf/format.html">日本語</a></li>
+</ul>
+
+
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">glbフォーマット概説</a><ul>
+<li><a class="reference internal" href="#id2">glb形式</a><ul>
+<li><a class="reference internal" href="#python3">python3によるパース例</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="0_36_update.html"
+                        title="previous chapter">GltfUpdate(0.36)</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../vrm0/0_82_runtime_import.html"
+                        title="next chapter">RuntimeImport(0.82)</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/gltf/format.md.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../vrm0/0_82_runtime_import.html" title="RuntimeImport(0.82)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0_36_update.html" title="GltfUpdate(0.36)"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">UniVRM Programming Document  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">glbフォーマット概説</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, VRM Consortium.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+    </div>
+  </body>
+</html>
