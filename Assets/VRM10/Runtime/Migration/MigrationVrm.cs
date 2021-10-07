@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using UniGLTF;
 using UniJSON;
 
 namespace UniVRM10
@@ -12,21 +12,36 @@ namespace UniVRM10
     {
         public static byte[] Migrate(byte[] src)
         {
-            var data = new UniGLTF.GlbBinaryParser(src).Parse();
+            var data = new GlbBinaryParser(src).Parse();
             return Migrate(data);
         }
 
-        public static byte[] Migrate(UniGLTF.GltfData data)
+        static (int, int) GetVertexRange(SpanLike<int> indices)
         {
-            var gltf = data.GLTF;
-            var json = data.Json.ParseAsJson();
+            var min = int.MaxValue; ;
+            var max = 0;
+            foreach (var i in indices)
+            {
+                if (i < min) min = i;
+                if (i > max) max = i;
+            }
+            return (min, max);
+        }
 
-            // https://github.com/vrm-c/vrm-specification/issues/205
-            RotateY180.Rotate(gltf);
+        public static byte[] Migrate(GltfData data)
+        {
+            // VRM0 -> Unity
+            var model = ModelReader.Read(data, VrmLib.Coordinates.Vrm0);
+            // Unity -> VRM1
+            VrmLib.ModelExtensionsForCoordinates.ConvertCoordinate(model, VrmLib.Coordinates.Vrm1);
 
-            var vrm0 = json["extensions"]["VRM"];
+            var (gltf, bin) = new MeshUpdater(data).Update(model);
             gltf.extensions = null;
+            return MigrateVrm(gltf, bin, data.Json.ParseAsJson()["extensions"]["VRM"]);
+        }
 
+        static byte[] MigrateVrm(glTF gltf, ArraySegment<byte> bin, JsonNode vrm0)
+        {
             {
                 // vrm
                 var vrm1 = new UniGLTF.Extensions.VRMC_vrm.VRMC_vrm();
@@ -90,18 +105,18 @@ namespace UniVRM10
 
             // MToon                    
             {
-                MigrationMToon.Migrate(gltf, json);
+                MigrationMToon.Migrate(gltf, vrm0);
             }
 
             // Serialize whole glTF
             ArraySegment<byte> vrm1Json = default;
             {
                 var f = new JsonFormatter();
-                UniGLTF.GltfSerializer.Serialize(f, gltf);
+                GltfSerializer.Serialize(f, gltf);
                 vrm1Json = f.GetStoreBytes();
             }
-            // JSON 部分だけが改変されて、BIN はそのまま
-            return UniGLTF.Glb.Create(vrm1Json, data.Bin).ToBytes();
+
+            return Glb.Create(vrm1Json, bin).ToBytes();
         }
 
         public static void Check(JsonNode vrm0, UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm1)
@@ -110,7 +125,7 @@ namespace UniVRM10
             MigrationVrmHumanoid.Check(vrm0["humanoid"], vrm1.Humanoid);
         }
 
-        public static void Check(JsonNode vrm0, UniGLTF.Extensions.VRMC_springBone.VRMC_springBone vrm1, List<UniGLTF.glTFNode> nodes)
+        public static void Check(JsonNode vrm0, UniGLTF.Extensions.VRMC_springBone.VRMC_springBone vrm1, List<glTFNode> nodes)
         {
             // Migration.CheckSpringBone(vrm0["secondaryAnimation"], vrm1.sp)
         }
