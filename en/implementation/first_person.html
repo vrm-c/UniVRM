@@ -1,0 +1,173 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>VRアプリケーションの FirstPerson 設定による Renderer の可視制御 &#8212; UniVRM Programming Document  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="GlbImport(0.82)" href="../gltf/0_82_glb_import.html" />
+    <link rel="prev" title="FastSpringBoneについて" href="fast_spring_bone.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../gltf/0_82_glb_import.html" title="GlbImport(0.82)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="fast_spring_bone.html" title="FastSpringBoneについて"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">UniVRM Programming Document  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">VRアプリケーションの FirstPerson 設定による Renderer の可視制御</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="vr-firstperson-renderer">
+<h1>VRアプリケーションの FirstPerson 設定による Renderer の可視制御<a class="headerlink" href="#vr-firstperson-renderer" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">isSelf==true</span></code> 自分のアバター</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">isSelf==false</span></code> 自分以外のアバター</p></li>
+<li><p>FP Camera: HMDと連動するカメラ</p></li>
+<li><p>TP Camera: それ以外のすべてのカメラ</p></li>
+</ul>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>isSelf</p></th>
+<th class="head"><p>FirstPerson設定</p></th>
+<th class="head"><p>FP Camera</p></th>
+<th class="head"><p>TP Camera</p></th>
+<th class="head"><p>レイヤーによる可視制御例</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>true</p></td>
+<td><p>FirstPersonOnly</p></td>
+<td><p>✅</p></td>
+<td><p>❌</p></td>
+<td><p>FIRSTPERSON</p></td>
+</tr>
+<tr class="row-odd"><td><p>true</p></td>
+<td><p>ThirdPersonOnly</p></td>
+<td><p>❌</p></td>
+<td><p>✅</p></td>
+<td><p>THIRDPERSON</p></td>
+</tr>
+<tr class="row-even"><td><p>true</p></td>
+<td><p>Both</p></td>
+<td><p>✅</p></td>
+<td><p>✅</p></td>
+<td><p>default</p></td>
+</tr>
+<tr class="row-odd"><td><p>true</p></td>
+<td><p>Auto</p></td>
+<td><p>-</p></td>
+<td><p>-</p></td>
+<td><p>FirstPersonOnly と ThirdPersonOnly に分割する</p></td>
+</tr>
+<tr class="row-even"><td><p>false</p></td>
+<td><p>FirstPersonOnly</p></td>
+<td><p>❌</p></td>
+<td><p>❌</p></td>
+<td><p>完全に描画されない。Rendererの描画を止める</p></td>
+</tr>
+<tr class="row-odd"><td><p>false</p></td>
+<td><p>ThirdPersonOnly</p></td>
+<td><p>✅</p></td>
+<td><p>✅</p></td>
+<td><p>default</p></td>
+</tr>
+<tr class="row-even"><td><p>false</p></td>
+<td><p>Both</p></td>
+<td><p>✅</p></td>
+<td><p>✅</p></td>
+<td><p>default</p></td>
+</tr>
+<tr class="row-odd"><td><p>false</p></td>
+<td><p>Auto</p></td>
+<td><p>✅</p></td>
+<td><p>✅</p></td>
+<td><p>default。メッシュ分割など特別な処理は不要</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<ul>
+    <li><a href="../../ja/implementation/first_person.html">日本語</a></li>
+</ul>
+
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="fast_spring_bone.html"
+                        title="previous chapter">FastSpringBoneについて</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../gltf/0_82_glb_import.html"
+                        title="next chapter">GlbImport(0.82)</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/implementation/first_person.md.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../gltf/0_82_glb_import.html" title="GlbImport(0.82)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="fast_spring_bone.html" title="FastSpringBoneについて"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">UniVRM Programming Document  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">VRアプリケーションの FirstPerson 設定による Renderer の可視制御</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, VRM Consortium.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+    </div>
+  </body>
+</html>

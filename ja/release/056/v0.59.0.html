@@ -1,0 +1,164 @@
+
+<!DOCTYPE html>
+
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>v0.59.0 &#8212; UniVRM Programming Document  ドキュメント</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../../genindex.html" />
+    <link rel="search" title="検索" href="../../search.html" />
+    <link rel="next" title="v0.60.0" href="v0.60.0.html" />
+    <link rel="prev" title="v0.58.0: テクスチャサイズの適正な考慮" href="v0.58.0.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="総合索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="v0.60.0.html" title="v0.60.0"
+             accesskey="N">次へ</a> |</li>
+        <li class="right" >
+          <a href="v0.58.0.html" title="v0.58.0: テクスチャサイズの適正な考慮"
+             accesskey="P">前へ</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">UniVRM Programming Document  ドキュメント</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Release</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">v0.59.0</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="v0-59-0">
+<h1>v0.59.0<a class="headerlink" href="#v0-59-0" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<ul class="simple">
+<li><p>commit: https://github.com/vrm-c/UniVRM/releases/tag/v0.59.0</p></li>
+<li><p>milestone: https://github.com/vrm-c/UniVRM/milestone/18?closed=1</p></li>
+</ul>
+<p><a class="reference external" href="https://github.com/vrm-c/UniVRM/compare/v0.58.1...v0.59.0">Full Changelog</a></p>
+<section id="id1">
+<h2>主な変更<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<section id="id2">
+<h3>エクスポーター<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>エラーの出やすかった SpringBone の Missing、 を検知してメッセージを出すようにしました。</p>
+<ul class="simple">
+<li><p>[<strong>closed</strong>] エクスポートダイアログの修正 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/537">#537</a></p></li>
+<li><p>[<strong>closed</strong>] Fix/exporter validation nullcheck <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/531">#531</a></p></li>
+<li><p>[<strong>closed</strong>] FACE_Z_POSITIVE_DIRECTION を顎の前に修正 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/530">#530</a></p></li>
+<li><p>[<strong>closed</strong>] 初回Export時のmeta受け渡し方法を修正 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/529">#529</a></p></li>
+<li><p>[<strong>closed</strong>] OnEnable で GUI 呼んじゃだめ <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/527">#527</a></p></li>
+<li><p>[<strong>closed</strong>] 多言語化更新 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/525">#525</a></p></li>
+</ul>
+</section>
+<section id="mtoon">
+<h3>MToon<a class="headerlink" href="#mtoon" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<ul class="simple">
+<li><p>[<strong>closed</strong>] MToon v3.4 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/535">#535</a></p></li>
+</ul>
+</section>
+<section id="meshutility">
+<h3>MeshUtility<a class="headerlink" href="#meshutility" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<ul class="simple">
+<li><p>[<strong>closed</strong>] Squashed commit of the following: <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/521">#521</a></p></li>
+<li><p>[<strong>closed</strong>] MeshIntegrator と MeshNormalizer を MeshUtility に移動 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/523">#523</a></p></li>
+</ul>
+</section>
+</section>
+<section id="changelog">
+<h2>その他のChangelog<a class="headerlink" href="#changelog" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p>[<strong>closed</strong>] Make the mesh name unique <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/533">#533</a></p></li>
+<li><p>[<strong>closed</strong>] NullReferenceException <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/532">#532</a></p></li>
+</ul>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<ul>
+    <li><a href="../../../en/release/056/v0.59.0.html">English</a></li>
+</ul>
+
+
+  <h3><a href="../../index.html">目次</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">v0.59.0</a><ul>
+<li><a class="reference internal" href="#id1">主な変更</a><ul>
+<li><a class="reference internal" href="#id2">エクスポーター</a></li>
+<li><a class="reference internal" href="#mtoon">MToon</a></li>
+<li><a class="reference internal" href="#meshutility">MeshUtility</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#changelog">その他のChangelog</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>前のトピックへ</h4>
+  <p class="topless"><a href="v0.58.0.html"
+                        title="前の章へ">v0.58.0: テクスチャサイズの適正な考慮</a></p>
+  <h4>次のトピックへ</h4>
+  <p class="topless"><a href="v0.60.0.html"
+                        title="次の章へ">v0.60.0</a></p>
+  <div role="note" aria-label="source link">
+    <h3>このページ</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/release/056/v0.59.0.md.txt"
+            rel="nofollow">ソースコードを表示</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="総合索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="v0.60.0.html" title="v0.60.0"
+             >次へ</a> |</li>
+        <li class="right" >
+          <a href="v0.58.0.html" title="v0.58.0: テクスチャサイズの適正な考慮"
+             >前へ</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">UniVRM Programming Document  ドキュメント</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Release</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">v0.59.0</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, VRM Consortium.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+    </div>
+  </body>
+</html>

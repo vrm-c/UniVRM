@@ -1,0 +1,260 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>v0.46 &#8212; UniVRM Programming Document  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="v0.47" href="v0.47.html" />
+    <link rel="prev" title="v0.45" href="v0.45.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="v0.47.html" title="v0.47"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="v0.45.html" title="v0.45"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">UniVRM Programming Document  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Release</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">v0.46</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="v0-46">
+<h1>v0.46<a class="headerlink" href="#v0-46" title="Permalink to this headline">¶</a></h1>
+<section id="commit">
+<h2>commit<a class="headerlink" href="#commit" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">ce8c</span></code></p>
+</section>
+<section id="id1">
+<h2>バグ修正<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<section id="importercontext-destroy">
+<h3>ImporterContext.Destroyの修正<a class="headerlink" href="#importercontext-destroy" title="Permalink to this headline">¶</a></h3>
+<p>Runtimeのリソース破棄に使えるように仕様変更しました。
+詳細は、<code class="docutils literal notranslate"><span class="pre">APIの変更</span></code> - <code class="docutils literal notranslate"><span class="pre">ImporterContext.Destroy</span></code> を参照。</p>
+</section>
+<section id="blendshapeproxy">
+<h3>BlendShapeProxyでマテリアルのクリア挙動を修正しました<a class="headerlink" href="#blendshapeproxy" title="Permalink to this headline">¶</a></h3>
+<p>毎フレームマテリアルの基準値にクリアしていたので、変化していないときにセットするのをやめると元に戻ってしまう。</p>
+<ul class="simple">
+<li><p>https://github.com/dwango/UniVRM/issues/72</p></li>
+</ul>
+</section>
+<section id="thumbnail">
+<h3>thumbnail設定の復旧<a class="headerlink" href="#thumbnail" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>https://github.com/dwango/UniVRM/issues/62</p></li>
+</ul>
+</section>
+</section>
+<section id="importer">
+<h2>Importer<a class="headerlink" href="#importer" title="Permalink to this headline">¶</a></h2>
+<section id="floatnaninf">
+<h3>float値にNan、Infがあったときにパース出来るようにした<a class="headerlink" href="#floatnaninf" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>ToDo: ExporterでNan Infを検知すべき</p></li>
+</ul>
+</section>
+<section id="unity2018-3">
+<h3>Unity2018.3対応<a class="headerlink" href="#unity2018-3" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="cp">#if NET_4_6 || NET_STANDARD_2_0</span>
+</pre></div>
+</div>
+</section>
+<section id="import-blendshapeclip-blendshapeavatar-material">
+<h3>Import時に既存のファイル(BlendShapeClip, BlendShapeAvatar, Material)を上書きしない<a class="headerlink" href="#import-blendshapeclip-blendshapeavatar-material" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>https://github.com/dwango/UniVRM/issues/56</p></li>
+</ul>
+<p>改めて作成させるには対象のVRMから作成されたMaterialとBlendShapeClipとBlendShapeAvatarアセットを削除したのちに、vrmファイルをreimportしてください(右クリックのメニューなどからできます)。</p>
+</section>
+</section>
+<section id="exporter">
+<h2>Exporter<a class="headerlink" href="#exporter" title="Permalink to this headline">¶</a></h2>
+<section id="id2">
+<h3>非アクティブオブジェクトのスキップ<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p>エクスポート時に非アクティブのノードのメッシュエクスポートをスキップするようにしました。</p>
+</section>
+</section>
+<section id="component">
+<h2>Component<a class="headerlink" href="#component" title="Permalink to this headline">¶</a></h2>
+<section id="vrmfirstperson-setup">
+<h3>VRMFirstPerson.Setupの最適化<a class="headerlink" href="#vrmfirstperson-setup" title="Permalink to this headline">¶</a></h3>
+<p>設定が <code class="docutils literal notranslate"><span class="pre">auto</span></code> のとき SubMesh の index 配列(<code class="docutils literal notranslate"><span class="pre">mesh.getIndices</span></code>)が長い(10万以上)モデルで異常に負荷がかかるのを修正しました。</p>
+</section>
+</section>
+<section id="api">
+<h2>APIの変更<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h2>
+<section id="blendshapeproxy-setvalue-key-value-immediately">
+<h3>BlendShapeProxy.SetValue(key, value, immediately)<a class="headerlink" href="#blendshapeproxy-setvalue-key-value-immediately" title="Permalink to this headline">¶</a></h3>
+<p>3引数 <code class="docutils literal notranslate"><span class="pre">SetValue</span></code> の代わりに２引数の明示的な関数を用意しました。</p>
+<section id="accumulatevalue">
+<h4>AccumulateValue<a class="headerlink" href="#accumulatevalue" title="Permalink to this headline">¶</a></h4>
+<p>値を貯めて、後で <code class="docutils literal notranslate"><span class="pre">Apply</span></code> したときに反映する。
+<code class="docutils literal notranslate"><span class="pre">SetValues</span></code> の最後にも <code class="docutils literal notranslate"><span class="pre">Apply</span></code> されます。</p>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">void</span> <span class="n">BlendShapeProxy</span><span class="p">.</span><span class="n">AccumulateValue</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="k">value</span><span class="p">)</span>
+
+<span class="c1">// [Obsolete] SetValue(key, value, false)</span>
+</pre></div>
+</div>
+</section>
+<section id="immediatelysetvalue">
+<h4>ImmediatelySetValue<a class="headerlink" href="#immediatelysetvalue" title="Permalink to this headline">¶</a></h4>
+<p>即反映する。</p>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">void</span> <span class="n">BlendShapeProxy</span><span class="p">.</span><span class="n">ImmediatelySetValue</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="k">value</span><span class="p">)</span>
+
+<span class="c1">// [Obsolete] SetValue(key, value, true)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id3">
+<h3>ImporterContext.Destroy<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">ImporterContext</span><span class="p">.</span><span class="n">Destroy</span><span class="p">(</span><span class="kt">bool</span> <span class="n">destroySubAssets</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>が名前から期待される動作をしていないので <code class="docutils literal notranslate"><span class="pre">Obsolete</span></code> にして用途を明確にした関数を用意しました。</p>
+<section id="destroyrootandresources">
+<h4>DestroyRootAndResources<a class="headerlink" href="#destroyrootandresources" title="Permalink to this headline">¶</a></h4>
+<p>runtimeインポーター向けのリソース解放。
+追加したDisposeはこれを呼びます。</p>
+</section>
+<section id="editordestroyroot">
+<h4>EditorDestroyRoot<a class="headerlink" href="#editordestroyroot" title="Permalink to this headline">¶</a></h4>
+<p>editorインポート時のprefabの元になったGameObjectをシーンから削除。
+旧Destroy(destroySubAssets=false)</p>
+</section>
+<section id="editordestroyrootandassets">
+<h4>EditorDestroyRootAndAssets<a class="headerlink" href="#editordestroyrootandassets" title="Permalink to this headline">¶</a></h4>
+<p>editorインポート時にエラーが発生した場合などに作ったアセットを削除する。
+旧Destroy(destroySubAssets=true)</p>
+</section>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<ul>
+    <li><a href="../../../ja/release/055/v0.46.html">日本語</a></li>
+</ul>
+
+
+  <h3><a href="../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">v0.46</a><ul>
+<li><a class="reference internal" href="#commit">commit</a></li>
+<li><a class="reference internal" href="#id1">バグ修正</a><ul>
+<li><a class="reference internal" href="#importercontext-destroy">ImporterContext.Destroyの修正</a></li>
+<li><a class="reference internal" href="#blendshapeproxy">BlendShapeProxyでマテリアルのクリア挙動を修正しました</a></li>
+<li><a class="reference internal" href="#thumbnail">thumbnail設定の復旧</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#importer">Importer</a><ul>
+<li><a class="reference internal" href="#floatnaninf">float値にNan、Infがあったときにパース出来るようにした</a></li>
+<li><a class="reference internal" href="#unity2018-3">Unity2018.3対応</a></li>
+<li><a class="reference internal" href="#import-blendshapeclip-blendshapeavatar-material">Import時に既存のファイル(BlendShapeClip, BlendShapeAvatar, Material)を上書きしない</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#exporter">Exporter</a><ul>
+<li><a class="reference internal" href="#id2">非アクティブオブジェクトのスキップ</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#component">Component</a><ul>
+<li><a class="reference internal" href="#vrmfirstperson-setup">VRMFirstPerson.Setupの最適化</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#api">APIの変更</a><ul>
+<li><a class="reference internal" href="#blendshapeproxy-setvalue-key-value-immediately">BlendShapeProxy.SetValue(key, value, immediately)</a><ul>
+<li><a class="reference internal" href="#accumulatevalue">AccumulateValue</a></li>
+<li><a class="reference internal" href="#immediatelysetvalue">ImmediatelySetValue</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id3">ImporterContext.Destroy</a><ul>
+<li><a class="reference internal" href="#destroyrootandresources">DestroyRootAndResources</a></li>
+<li><a class="reference internal" href="#editordestroyroot">EditorDestroyRoot</a></li>
+<li><a class="reference internal" href="#editordestroyrootandassets">EditorDestroyRootAndAssets</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="v0.45.html"
+                        title="previous chapter">v0.45</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="v0.47.html"
+                        title="next chapter">v0.47</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/release/055/v0.46.md.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="v0.47.html" title="v0.47"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="v0.45.html" title="v0.45"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">UniVRM Programming Document  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Release</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">v0.46</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, VRM Consortium.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+    </div>
+  </body>
+</html>

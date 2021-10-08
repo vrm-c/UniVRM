@@ -1,0 +1,184 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>v0.77.0: RuntimeGltfInstance &#8212; UniVRM Programming Document  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="v0.78.0: ScriptdImporter の改修" href="v0.78.0.html" />
+    <link rel="prev" title="v0.76.0: Shader整理" href="v0.76.0.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="v0.78.0.html" title="v0.78.0: ScriptdImporter の改修"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="v0.76.0.html" title="v0.76.0: Shader整理"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">UniVRM Programming Document  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Release</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">v0.77.0: RuntimeGltfInstance</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="v0-77-0-runtimegltfinstance">
+<h1>v0.77.0: RuntimeGltfInstance<a class="headerlink" href="#v0-77-0-runtimegltfinstance" title="Permalink to this headline">¶</a></h1>
+<section id="v0-77-0-2021-06-16">
+<h2><a class="reference external" href="https://github.com/vrm-c/UniVRM/tree/v0.77.0">v0.77.0</a> (2021-06-16)<a class="headerlink" href="#v0-77-0-2021-06-16" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>commit: https://github.com/vrm-c/UniVRM/releases/tag/v0.77.0</p></li>
+<li><p>milestone: https://github.com/vrm-c/UniVRM/milestone/39?closed=1</p></li>
+</ul>
+<p><a class="reference external" href="https://github.com/vrm-c/UniVRM/compare/v0.76.0...v0.77.0">Full Changelog</a></p>
+</section>
+<section id="api">
+<h2>API更新<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>https://vrm.dev/docs/univrm/programming/univrm_api_history/</p></li>
+<li><p>https://vrm.dev/docs/univrm/programming/runtime_import/</p></li>
+<li><p>DisposeOnGameObjectDestroyed を整理する <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/1018">#1018</a></p></li>
+<li><p>UnityObjectDestoyer 改め RuntimeGltfInstance <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1021">#1021</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+</ul>
+</section>
+<section id="mtoon">
+<h2>MToon<a class="headerlink" href="#mtoon" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>MToon 1.0: Backfaces have flipped normals when double sided. <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/1022">#1022</a></p></li>
+</ul>
+</section>
+<section id="id1">
+<h2>主な修正<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p><strong>Closed issues:</strong></p>
+<ul class="simple">
+<li><p>BaseColor of URP/Lit shader not exported to glb/gltf <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/988">#988</a></p></li>
+<li><p>Does the importer work with Unity URP? <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/740">#740</a></p></li>
+<li><p>Using UniVRM with Universal Render Pipeline <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/683">#683</a></p></li>
+<li><p>サポートシェーダーの整理 <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/496">#496</a></p></li>
+<li><p>When unity URP  will be supported? <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/387">#387</a></p></li>
+</ul>
+</section>
+<section id="changelog">
+<h2>その他のChangelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>作業ミス。エディタで保存されてなかった <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1045">#1045</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>最近の UnitTest <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1044">#1044</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>null check <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1043">#1043</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>[vrm1]ScriptableObjectの構成を見直し <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1042">#1042</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>Fix MToon migration tests <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1041">#1041</a> (<a class="reference external" href="https://github.com/Santarh">Santarh</a>)</p></li>
+<li><p>Disable “AutoReferenced” in all asmdefs. <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1040">#1040</a> (<a class="reference external" href="https://github.com/Santarh">Santarh</a>)</p></li>
+<li><p>null check <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1037">#1037</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>aim constraint Yaw, Pitch freeze <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1036">#1036</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>Refactoring mtoon 1.0 alpha <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1034">#1034</a> (<a class="reference external" href="https://github.com/Santarh">Santarh</a>)</p></li>
+<li><p>avoid editor error if not playing <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1033">#1033</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>new EditorGUI.DisabledScope(false) は GUI.enabled = true という意味ではないぽい <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1032">#1032</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>VRM10Controllerの変数管理を修正 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1031">#1031</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>Fix failing extracting vrm meta file in vrm 1.0 (rarely) <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1030">#1030</a> (<a class="reference external" href="https://github.com/Santarh">Santarh</a>)</p></li>
+<li><p>remove gameobject after prefab created. <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1029">#1029</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>Fix tiny bug <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1028">#1028</a> (<a class="reference external" href="https://github.com/Santarh">Santarh</a>)</p></li>
+<li><p>とりあえず Exception 回避 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1027">#1027</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>Use MToon10 in VRM1.0 implementation. <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1024">#1024</a> (<a class="reference external" href="https://github.com/Santarh">Santarh</a>)</p></li>
+<li><p>JsonSchema を更新 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1023">#1023</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>fix mesh == null <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1020">#1020</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>Fix10/nullcheck <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1019">#1019</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>サンプルの動作を確認 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1017">#1017</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>Add a test case for exporting nodes contains null mesh <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1016">#1016</a> (<a class="reference external" href="https://github.com/oocytanb">oocytanb</a>)</p></li>
+<li><p>Implements vrmc_materials_mtoon inspector <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1015">#1015</a> (<a class="reference external" href="https://github.com/Santarh">Santarh</a>)</p></li>
+<li><p>IAnimationImporter を廃止 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1014">#1014</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+</ul>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<ul>
+    <li><a href="../../../ja/release/068/v0.77.0.html">日本語</a></li>
+</ul>
+
+
+  <h3><a href="../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">v0.77.0: RuntimeGltfInstance</a><ul>
+<li><a class="reference internal" href="#v0-77-0-2021-06-16">v0.77.0 (2021-06-16)</a></li>
+<li><a class="reference internal" href="#api">API更新</a></li>
+<li><a class="reference internal" href="#mtoon">MToon</a></li>
+<li><a class="reference internal" href="#id1">主な修正</a></li>
+<li><a class="reference internal" href="#changelog">その他のChangelog</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="v0.76.0.html"
+                        title="previous chapter">v0.76.0: Shader整理</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="v0.78.0.html"
+                        title="next chapter">v0.78.0: ScriptdImporter の改修</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/release/068/v0.77.0.md.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="v0.78.0.html" title="v0.78.0: ScriptdImporter の改修"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="v0.76.0.html" title="v0.76.0: Shader整理"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">UniVRM Programming Document  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Release</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">v0.77.0: RuntimeGltfInstance</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, VRM Consortium.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+    </div>
+  </body>
+</html>

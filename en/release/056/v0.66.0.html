@@ -1,0 +1,176 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>v0.66.0 &#8212; UniVRM Programming Document  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="v0.67.0: UniJson 単純化" href="v0.67.0.html" />
+    <link rel="prev" title="v0.65.0" href="v0.65.0.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="v0.67.0.html" title="v0.67.0: UniJson 単純化"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="v0.65.0.html" title="v0.65.0"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">UniVRM Programming Document  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Release</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">v0.66.0</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="v0-66-0">
+<h1>v0.66.0<a class="headerlink" href="#v0-66-0" title="Permalink to this headline">¶</a></h1>
+<section id="v0-66-0-2021-02-03">
+<h2><a class="reference external" href="https://github.com/vrm-c/UniVRM/tree/v0.66.0">v0.66.0</a> (2021-02-03)<a class="headerlink" href="#v0-66-0-2021-02-03" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>commit: https://github.com/vrm-c/UniVRM/releases/tag/v0.66.0</p></li>
+<li><p>milestone: https://github.com/vrm-c/UniVRM/milestone/26?closed=1</p></li>
+</ul>
+<p><a class="reference external" href="https://github.com/vrm-c/UniVRM/compare/v0.65.3...v0.66.0">Full Changelog</a></p>
+</section>
+<section id="id1">
+<h2>主な変更<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<section id="export">
+<h3>Export<a class="headerlink" href="#export" title="Permalink to this headline">¶</a></h3>
+<p>正規化時にSpringBoneColliderがスケールに追従するようになりました。</p>
+<ul class="simple">
+<li><p>Fix/springbone scaling <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/720">#720</a></p></li>
+</ul>
+</section>
+<section id="import">
+<h3>Import<a class="headerlink" href="#import" title="Permalink to this headline">¶</a></h3>
+<p>JSON文字列の <code class="docutils literal notranslate"><span class="pre">\u8868</span></code> 形式のUnicodeを読めるようになりました。</p>
+<ul class="simple">
+<li><p>Fix/json unicode escape <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/719">#719</a></p></li>
+</ul>
+</section>
+<section id="meshutility">
+<h3>MeshUtility<a class="headerlink" href="#meshutility" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>moved BoneMeshEraser to MeshUtility editor <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/718">#718</a></p></li>
+</ul>
+</section>
+<section id="vrm-1-0">
+<h3>VRM-1.0 準備<a class="headerlink" href="#vrm-1-0" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>fix UNITY_EDITOR <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/725">#725</a></p></li>
+<li><p>use SetWeight <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/724">#724</a></p></li>
+<li><p>Implemented VrmLib.ExpressionPreset.Surprised <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/722">#722</a></p></li>
+<li><p>Fix ExpressionPreset conversion problem in migration. <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/715">#715</a></p></li>
+<li><p>Implements expression overriding <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/714">#714</a></p></li>
+<li><p>Refactoring Expression &amp; LookAt for impl VRM1.0 Expression constraint spec. <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/713">#713</a></p></li>
+<li><p>add VRM10Viewer sample <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/709">#709</a></p></li>
+</ul>
+</section>
+</section>
+<section id="changelog">
+<h2>その他のChangelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>new list <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/723">#723</a></p></li>
+<li><p>Upgrade MToon <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/716">#716</a> (<a class="reference external" href="https://github.com/nowsprinting">nowsprinting</a>)</p></li>
+<li><p>Optimize string APIs <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/710">#710</a></p></li>
+</ul>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<ul>
+    <li><a href="../../../ja/release/056/v0.66.0.html">日本語</a></li>
+</ul>
+
+
+  <h3><a href="../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">v0.66.0</a><ul>
+<li><a class="reference internal" href="#v0-66-0-2021-02-03">v0.66.0 (2021-02-03)</a></li>
+<li><a class="reference internal" href="#id1">主な変更</a><ul>
+<li><a class="reference internal" href="#export">Export</a></li>
+<li><a class="reference internal" href="#import">Import</a></li>
+<li><a class="reference internal" href="#meshutility">MeshUtility</a></li>
+<li><a class="reference internal" href="#vrm-1-0">VRM-1.0 準備</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#changelog">その他のChangelog</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="v0.65.0.html"
+                        title="previous chapter">v0.65.0</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="v0.67.0.html"
+                        title="next chapter">v0.67.0: UniJson 単純化</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/release/056/v0.66.0.md.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="v0.67.0.html" title="v0.67.0: UniJson 単純化"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="v0.65.0.html" title="v0.65.0"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">UniVRM Programming Document  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Release</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">v0.66.0</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, VRM Consortium.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+    </div>
+  </body>
+</html>

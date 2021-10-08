@@ -21,6 +21,18 @@ UniVRMを使うアプリケーションのビルドに関する注意事項
 build
 ```
 
+## 実装メモ
+
+```{toctree}
+:maxdepth: 1
+
+implementation/runtime_resource_management
+implementation/texture_manipulation
+implementation/coordinate
+implementation/fast_spring_bone
+implementation/first_person
+```
+
 ## glTF
 
 ```{toctree}
@@ -46,17 +58,6 @@ vrm0/0_58_blendshape
 vrm0/firstperson
 ```
 
-## 実装メモ
-
-```{toctree}
-:maxdepth: 1
-
-implementation/runtime_resource_management
-implementation/texture_manipulation
-implementation/coordinate
-implementation/fast_spring_bone
-```
-
 ### Samples
 
 - SimpleViewer
@@ -79,6 +80,16 @@ vrm1/vrm1_firstperson
 ### Samples
 
 - VRM10Viewer
+
+## Release
+
+```{toctree}
+:glob:
+:maxdepth: 1
+   
+release/index
+```
+
 
 # Indices and tables
 

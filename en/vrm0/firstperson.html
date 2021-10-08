@@ -15,7 +15,7 @@
     <script src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Runtime のリソース管理について" href="../implementation/runtime_resource_management.html" />
+    <link rel="next" title="RuntimeLoad" href="../vrm1/vrm1_runtime_load.html" />
     <link rel="prev" title="BlendShapeProxy(0.58)" href="0_58_blendshape.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -25,7 +25,7 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="../implementation/runtime_resource_management.html" title="Runtime のリソース管理について"
+          <a href="../vrm1/vrm1_runtime_load.html" title="RuntimeLoad"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="0_58_blendshape.html" title="BlendShapeProxy(0.58)"
@@ -42,39 +42,11 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="vrmfirstperson">
 <h1>How to use VRMFirstPerson<a class="headerlink" href="#vrmfirstperson" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference internal" href="../implementation/first_person.html"><span class="doc">FirstPerson と Renderer の可視制御</span></a></p>
+<p>実行時に<strong>VRMFirstPerson.Setup</strong>を呼び出すことで、FirstPerson設定に応じた Renderer の可視制御を行うことができます。
+明示的に外部から呼び出してください。</p>
 <section id="id1">
-<h2>VRMFirstPerson Settings<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
-<p><span class="xref myst">VRMFirstPerson</span> has the following settings for Renderer:</p>
-<table class="colwidths-auto docutils align-default">
-<thead>
-<tr class="row-odd"><th class="head"><p>FirstPersonFlag</p></th>
-<th class="head"><p>Layer</p></th>
-<th class="head"><p>Note</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>Both</p></td>
-<td><p>default</p></td>
-<td><p>Specify parts that are not necessarily separated between first-person view and third-person view.</p></td>
-</tr>
-<tr class="row-odd"><td><p>ThirdPersonOnly</p></td>
-<td><p>VRMThirdPersonOnly</p></td>
-<td><p>Specify parts that are not rendered in first-person view.</p></td>
-</tr>
-<tr class="row-even"><td><p>FirstPersonOnly</p></td>
-<td><p>VRMFirstPersonOnly</p></td>
-<td><p>Specify parts that are not rendered in third-person view. The auto-created headless model is used.</p></td>
-</tr>
-<tr class="row-odd"><td><p>Auto</p></td>
-<td><p>VRMThirdPersonOnly</p></td>
-<td><p>Automatically create the model in first-person view at runtime and set it to FIRSTPERSON_ONLY_LAYER.</p></td>
-</tr>
-</tbody>
-</table>
-<p>By calling <strong>VRMFirstPerson.Setup</strong> at runtime, the layer settings described above can be performed. Please call the function explicitly from outside.</p>
-</section>
-<section id="id2">
-<h2>Specify the additional render layers for the application<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<h2>Specify the additional render layers for the application<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <p>The following layers are defined as constant:</p>
 <div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">public</span> <span class="k">class</span> <span class="nc">VRMFirstPerson</span> <span class="p">:</span> <span class="n">MonoBehaviour</span>
 <span class="p">{</span>
@@ -163,8 +135,7 @@
   <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">How to use VRMFirstPerson</a><ul>
-<li><a class="reference internal" href="#id1">VRMFirstPerson Settings</a></li>
-<li><a class="reference internal" href="#id2">Specify the additional render layers for the application</a></li>
+<li><a class="reference internal" href="#id1">Specify the additional render layers for the application</a></li>
 <li><a class="reference internal" href="#setuplayermask">Call Setup function at runtime and set LayerMask in Camera</a></li>
 </ul>
 </li>
@@ -174,8 +145,8 @@
   <p class="topless"><a href="0_58_blendshape.html"
                         title="previous chapter">BlendShapeProxy(0.58)</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="../implementation/runtime_resource_management.html"
-                        title="next chapter">Runtime のリソース管理について</a></p>
+  <p class="topless"><a href="../vrm1/vrm1_runtime_load.html"
+                        title="next chapter">RuntimeLoad</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -204,7 +175,7 @@
           <a href="../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="../implementation/runtime_resource_management.html" title="Runtime のリソース管理について"
+          <a href="../vrm1/vrm1_runtime_load.html" title="RuntimeLoad"
              >next</a> |</li>
         <li class="right" >
           <a href="0_58_blendshape.html" title="BlendShapeProxy(0.58)"

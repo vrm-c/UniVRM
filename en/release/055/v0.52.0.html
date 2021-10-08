@@ -1,0 +1,210 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>v0.52.0 &#8212; UniVRM Programming Document  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="v0.53.0" href="v0.53.0.html" />
+    <link rel="prev" title="v0.51.0" href="v0.51.0.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="v0.53.0.html" title="v0.53.0"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="v0.51.0.html" title="v0.51.0"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">UniVRM Programming Document  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Release</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">v0.52.0</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="v0-52-0">
+<h1>v0.52.0<a class="headerlink" href="#v0-52-0" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p>commit: 1b36 https://github.com/dwango/UniVRM/releases/tag/v0.52.0</p></li>
+<li><p>milestone: https://github.com/dwango/UniVRM/milestone/11?closed=1</p></li>
+</ul>
+<section id="v0-52-0-04-06-2019">
+<h2>v0.52.0 (04/06/2019)<a class="headerlink" href="#v0-52-0-04-06-2019" title="Permalink to this headline">¶</a></h2>
+<section id="id1">
+<h3>更新内容<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>[<strong>closed</strong>] Update MToon to v3.0 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/255">#255</a></p></li>
+<li><p>[<strong>material</strong>] update MToon v2.0 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/249">#249</a></p>
+<ul>
+<li><p>MToonの更新</p></li>
+<li><p>Unity2019.1で正常に動作するように修正</p></li>
+</ul>
+</li>
+<li><p>[<strong>closed</strong>] Move UnityEditorScripts items to the bottom of menu. <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/252">#252</a></p>
+<ul>
+<li><p>UnityEditorScriptsの場所を移動</p></li>
+</ul>
+</li>
+<li><p>[<strong>closed</strong>] Add utility menu for VRMSpringBoneColliderGroup. <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/253">#253</a></p>
+<ul>
+<li><p>VRMSpringBoneのEditor Utility Menuを追加</p></li>
+</ul>
+</li>
+<li><p>[<strong>closed</strong>] Copy m_center and m_hitRadius in VRMSpringBone when exporting (Fix #215) <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/220">#220</a></p>
+<ul>
+<li><p>Export VRMにて、VRMSprngBoneのHit Radiusなど一部のプロパティが既定値になる問題を修正</p></li>
+</ul>
+</li>
+<li><p>[<strong>closed</strong>] If Emission keyword is false, do not output a value <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/227">#227</a></p>
+<ul>
+<li><p>Standerdシェーダを使用してエクスポートした時に、EmissionEnable = falseの状態でもEmissionColorが書き込まれてしまい、インポート時にEmissionColorが(0,0,0)でなかった場合はEmissionEnable = trueになってしまうバグの修正</p></li>
+</ul>
+</li>
+<li><p>[<strong>closed</strong>] Bake smoothness and roughnessFactor into textures.  <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/222">#222</a></p>
+<ul>
+<li><p>StanderdShaderでエクスポートする場合に、smoothness の値をMetallicTextureにベイクするように変更</p></li>
+</ul>
+</li>
+<li><p>[<strong>closed</strong>] Update minimum support Unity version to 5.6.7f1 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/210">#210</a></p>
+<ul>
+<li><p>Unityの最小サポートバージョンを5.6.7f1に変更</p></li>
+</ul>
+</li>
+<li><p>[<strong>closed</strong>] Save FirstPerson values on GUI correctly <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/217">#217</a></p>
+<ul>
+<li><p>EditorにてFirst Person Offset の変更が保存されていないバグの修正</p></li>
+</ul>
+</li>
+<li><p>[<strong>closed</strong>] Propagate texture properties when exporting. <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/218">#218</a></p>
+<ul>
+<li><p>TextureWrapModeなどのテクスチャプロパティ値が失われるバグの修正</p></li>
+</ul>
+</li>
+<li><p>[<strong>closed</strong>] Fix alpha issue when UniUnlit material is opaque. <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/204">#204</a></p></li>
+<li><p>[<strong>closed</strong>] Fix UniUnlit inspector’s bug, cull mode was empty. <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/203">#203</a></p>
+<ul>
+<li><p>UniUnlitのバグ修正</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="id2">
+<h3>その他のバグ修正<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>[<strong>closed</strong>] Update version number  <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/250">#250</a></p></li>
+<li><p>[<strong>bug</strong>] added DepthFirstScheduler reference to VRM.Sample <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/241">#241</a></p></li>
+<li><p>[<strong>common</strong>] Fix typo <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/243">#243</a></p></li>
+<li><p>[<strong>common</strong>][<strong>importer</strong>] unityのwww対応 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/239">#239</a></p></li>
+<li><p>[<strong>closed</strong>] バージョンチェックのエラー表記を修正 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/254">#254</a></p></li>
+<li><p>[<strong>closed</strong>] Fix material test to pass <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/228">#228</a></p></li>
+<li><p>[<strong>closed</strong>] Fix comments <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/224">#224</a></p></li>
+<li><p>[<strong>closed</strong>] Add extensions.VRM.specVersion to the json schema <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/197">#197</a></p></li>
+<li><p>[<strong>closed</strong>] Remove unused meta files <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/221">#221</a></p></li>
+<li><p>[<strong>closed</strong>] Set _Cutoff parameters when alphaMode is MASK <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/219">#219</a></p></li>
+<li><p>[<strong>closed</strong>] optimize ListTreeNode Children for large JSON <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/187">#187</a></p></li>
+<li><p>[<strong>closed</strong>] Fix dictionary deserializer <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/189">#189</a></p></li>
+<li><p>[<strong>closed</strong>] Separate shaderproperty <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/206">#206</a></p></li>
+<li><p>[<strong>closed</strong>] fix AOT <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/205">#205</a></p></li>
+<li><p>[<strong>closed</strong>] Normalize blendshape preview light’s intensity. <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/201">#201</a></p></li>
+<li><p>[<strong>closed</strong>] glTF.extensions.VRM default value to null <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/200">#200</a></p></li>
+<li><p>[<strong>closed</strong>] Fix typo in obsolete attribute. <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/199">#199</a></p></li>
+<li><p>[<strong>closed</strong>] Use unijson parser <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/184">#184</a></p></li>
+<li><p>[<strong>closed</strong>] Hox fix/fix tests for v0 51 0 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/195">#195</a></p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<ul>
+    <li><a href="../../../ja/release/055/v0.52.0.html">日本語</a></li>
+</ul>
+
+
+  <h3><a href="../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">v0.52.0</a><ul>
+<li><a class="reference internal" href="#v0-52-0-04-06-2019">v0.52.0 (04/06/2019)</a><ul>
+<li><a class="reference internal" href="#id1">更新内容</a></li>
+<li><a class="reference internal" href="#id2">その他のバグ修正</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="v0.51.0.html"
+                        title="previous chapter">v0.51.0</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="v0.53.0.html"
+                        title="next chapter">v0.53.0</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/release/055/v0.52.0.md.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="v0.53.0.html" title="v0.53.0"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="v0.51.0.html" title="v0.51.0"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">UniVRM Programming Document  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Release</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">v0.52.0</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, VRM Consortium.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+    </div>
+  </body>
+</html>

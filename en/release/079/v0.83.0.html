@@ -1,0 +1,175 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>v0.83.0: 1.0準備 &#8212; UniVRM Programming Document  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="v0.84.0: 1.0準備, glTF import menu 復活" href="v0.84.0.html" />
+    <link rel="prev" title="v0.82.0: 1.0準備, URP 向け Material置き換え機能" href="v0.82.0.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="v0.84.0.html" title="v0.84.0: 1.0準備, glTF import menu 復活"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="v0.82.0.html" title="v0.82.0: 1.0準備, URP 向け Material置き換え機能"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">UniVRM Programming Document  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Release</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">v0.83.0: 1.0準備</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="v0-83-0-1-0">
+<h1>v0.83.0: 1.0準備<a class="headerlink" href="#v0-83-0-1-0" title="Permalink to this headline">¶</a></h1>
+<p>https://vrm.dev/</p>
+<p>のプログラミング関連のドキュメントを</p>
+<p>https://vrm-c.github.io/UniVRM/</p>
+<p>に引越ししました。</p>
+<section id="v0-83-0-2021-09-10">
+<h2><a class="reference external" href="https://github.com/vrm-c/UniVRM/tree/v0.83.0">v0.83.0</a> (2021-09-10)<a class="headerlink" href="#v0-83-0-2021-09-10" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>commit: https://github.com/vrm-c/UniVRM/releases/tag/v0.83.0</p></li>
+<li><p>milestone: https://github.com/vrm-c/UniVRM/milestone/45?closed=1
+<a class="reference external" href="https://github.com/vrm-c/UniVRM/compare/v0.82.1...v0.83.0">Full Changelog</a></p></li>
+</ul>
+</section>
+<section id="bug">
+<h2>bug修正<a class="headerlink" href="#bug" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>PBR テクスチャーの変換に使っている シェーダーが ビルドに含まれない <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/1187">#1187</a></p></li>
+<li><p>Include all shaders in Resources directory. <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1203">#1203</a> (<a class="reference external" href="https://github.com/Santarh">Santarh</a>)</p></li>
+<li><p>Standard Shader Export - NotImplementedException When Occlusion and Metallic Resolutions Do Not Match <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/1178">#1178</a></p></li>
+</ul>
+</section>
+<section id="id1">
+<h2>1.0<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>[1.0] Renderer.enabled = false になってない <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/1197">#1197</a></p></li>
+<li><p>[1.0] SetupAsync にして Auto で生成される Mesh の初期状態を非表示にした <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/1194">#1194</a></p></li>
+<li><p>[1.0] MaterialUVBindings の挙動 <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/1191">#1191</a></p></li>
+<li><p>[1.0] マイグレートロードしたときに古い方のメタにアクセスできる API <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/1190">#1190</a></p></li>
+<li><p>[1.0] MaterialValueBind が重複すると例外 <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/1189">#1189</a></p></li>
+<li><p>[1.0] サムネイルが無名のときにエラーになる場合がある <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/1188">#1188</a></p></li>
+<li><p>初期値との差分を使うようにロジックを変更 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1209">#1209</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>[1.0] FirstPerson 初期化を整理 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1206">#1206</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>[1.0] RuntimeLoad と meta 取得 を実装 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1196">#1196</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>[1.0] thumbnail の名前が無い時に SubAssetKey を作るのに失敗するのを修正 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1193">#1193</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>MaterialColorBindings の重複時の例外防止 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1192">#1192</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+</ul>
+</section>
+<section id="changelog">
+<h2>その他のChangelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>MMD4Mecanim+UniVRM <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/1184">#1184</a></p></li>
+<li><p>Namespace “VRM” can’t be found by any other script. <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/1103">#1103</a></p></li>
+<li><p>UniGLTF / VRMShader assembly file autoReference setting needs to be true for UPM package import <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/993">#993</a></p></li>
+<li><p>#if UNITY_EDITOR でビルドエラーを修正 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1213">#1213</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>UniVRM-0.83.0 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1212">#1212</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>[Exporter] shader版の StandardMap の Exporter 変換を追加 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1207">#1207</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>Standard を GraphicsSettings に追加 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1204">#1204</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>Import時に非表示にする <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1202">#1202</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>書き間違え <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1201">#1201</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>シンプルなREADME <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1199">#1199</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>Fix/simple viewer docfx <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1198">#1198</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">v0.82.1</span></code> の RuntimeLoad について <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1195">#1195</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>Feature/docfx <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1186">#1186</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>simple <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1172">#1172</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+</ul>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<ul>
+    <li><a href="../../../ja/release/079/v0.83.0.html">日本語</a></li>
+</ul>
+
+
+  <h3><a href="../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">v0.83.0: 1.0準備</a><ul>
+<li><a class="reference internal" href="#v0-83-0-2021-09-10">v0.83.0 (2021-09-10)</a></li>
+<li><a class="reference internal" href="#bug">bug修正</a></li>
+<li><a class="reference internal" href="#id1">1.0</a></li>
+<li><a class="reference internal" href="#changelog">その他のChangelog</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="v0.82.0.html"
+                        title="previous chapter">v0.82.0: 1.0準備, URP 向け Material置き換え機能</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="v0.84.0.html"
+                        title="next chapter">v0.84.0: 1.0準備, glTF import menu 復活</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/release/079/v0.83.0.md.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="v0.84.0.html" title="v0.84.0: 1.0準備, glTF import menu 復活"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="v0.82.0.html" title="v0.82.0: 1.0準備, URP 向け Material置き換え機能"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">UniVRM Programming Document  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Release</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">v0.83.0: 1.0準備</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, VRM Consortium.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+    </div>
+  </body>
+</html>

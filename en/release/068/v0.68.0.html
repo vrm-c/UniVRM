@@ -1,0 +1,203 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>v0.68.0: ImporterContext, ScriptedImporter(glb/gltf), remove DepthFirstScheduler &#8212; UniVRM Programming Document  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="v0.69.0: MetallicRoughnessOcclusionテクスチャー" href="v0.69.0.html" />
+    <link rel="prev" title="v0.67.0: UniJson 単純化" href="../056/v0.67.0.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="v0.69.0.html" title="v0.69.0: MetallicRoughnessOcclusionテクスチャー"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../056/v0.67.0.html" title="v0.67.0: UniJson 単純化"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">UniVRM Programming Document  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Release</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">v0.68.0: ImporterContext, ScriptedImporter(glb/gltf), remove DepthFirstScheduler</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="v0-68-0-importercontext-scriptedimporter-glb-gltf-remove-depthfirstscheduler">
+<h1>v0.68.0: ImporterContext, ScriptedImporter(glb/gltf), remove DepthFirstScheduler<a class="headerlink" href="#v0-68-0-importercontext-scriptedimporter-glb-gltf-remove-depthfirstscheduler" title="Permalink to this headline">¶</a></h1>
+<section id="v0-68-0-2021-03-11">
+<h2><a class="reference external" href="https://github.com/vrm-c/UniVRM/tree/v0.68.0">v0.68.0</a> (2021-03-11)<a class="headerlink" href="#v0-68-0-2021-03-11" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>commit: https://github.com/vrm-c/UniVRM/releases/tag/v0.68.0</p></li>
+<li><p>milestone: https://github.com/vrm-c/UniVRM/milestone/30?closed=1</p></li>
+</ul>
+<p><a class="reference external" href="https://github.com/vrm-c/UniVRM/compare/v0.67.0...v0.68.0">Full Changelog</a></p>
+</section>
+<section id="id1">
+<h2>主な変更<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>ImporterContext の整理。ロードを繰り返すアプリケーションでリソースリークが起きないように Asset 解放(Destroy) のサポートを強化</p>
+<ul>
+<li><p>https://vrm.dev/docs/univrm/programming/runtime_import/</p></li>
+</ul>
+</li>
+<li><p>glb/gltf の AssetImporter を更新。ScriptedImporter を採用。座標軸の変換オプションを追加</p>
+<ul>
+<li><p>https://vrm.dev/docs/univrm/gltf/glb_import/</p></li>
+<li><p>https://vrm.dev/docs/univrm/gltf/how_to_create_glb/</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="import">
+<h2>import<a class="headerlink" href="#import" title="Permalink to this headline">¶</a></h2>
+<p>glb/gltf の AssetImporter を作りなおしました。</p>
+<ul class="simple">
+<li><p>https://vrm.dev/docs/univrm/gltf/glb_import/</p></li>
+</ul>
+<ul class="simple">
+<li><p>Implemented the loader of JOINTS_0 which is 5121 (UNSIGNED_BYTE) <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/762">#762</a></p></li>
+<li><p>Fix/textuerloader from external <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/765">#765</a></p></li>
+<li><p>Feature/remove depthfirstscheduler <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/750">#750</a></p></li>
+<li><p>Feature/refactor textureitem <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/744">#744</a></p></li>
+</ul>
+</section>
+<section id="export">
+<h2>export<a class="headerlink" href="#export" title="Permalink to this headline">¶</a></h2>
+<p>glb/gltf の ExportDialog を作りました。</p>
+<ul class="simple">
+<li><p>https://vrm.dev/docs/univrm/gltf/how_to_create_glb/</p></li>
+</ul>
+<ul class="simple">
+<li><p>ExportRoot を animate する Animation を Export するときの挙動を修正 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/775">#775</a></p></li>
+<li><p>exclude meshes with no vertices <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/771">#771</a></p></li>
+<li><p>MeshExporter に Renderer を必要としない Export 関数を追加 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/764">#764</a></p></li>
+<li><p>Feature/gltf export window <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/759">#759</a></p></li>
+<li><p>gltf の読み書きで反転軸を指定できるようにする <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/755">#755</a></p></li>
+</ul>
+</section>
+<section id="api">
+<h2>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h2>
+<p>ImporterContext を整理しました。</p>
+<ul class="simple">
+<li><p>https://vrm.dev/docs/univrm/programming/univrm_api_history/</p></li>
+</ul>
+<ul class="simple">
+<li><p>Feature/destroy on destroy <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/760">#760</a></p></li>
+</ul>
+</section>
+<section id="vrm1">
+<h2>VRM1<a class="headerlink" href="#vrm1" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>VRM1 は、XYZ_RightUpForward_RH にする <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/727">#727</a></p></li>
+<li><p>Feature10/refactor materialimporter <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/739">#739</a></p></li>
+</ul>
+</section>
+<section id="changelog">
+<h2>その他のChangelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>UnitTest修正 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/768">#768</a></p></li>
+<li><p>UniVRM-0.68.0 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/767">#767</a></p></li>
+<li><p>restore SaveSpringBoneToJSON <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/763">#763</a></p></li>
+<li><p>Check Keyframe length of AnimationCurve <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/761">#761</a></p></li>
+<li><p>JSON schema の参照先を submodule で固定 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/752">#752</a></p></li>
+<li><p>restore VRMMaterialTests.ExportTest <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/749">#749</a></p></li>
+<li><p>AsIEnumerator で同期的に Task を消化するのができてない。応急処置 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/748">#748</a></p></li>
+</ul>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<ul>
+    <li><a href="../../../ja/release/068/v0.68.0.html">日本語</a></li>
+</ul>
+
+
+  <h3><a href="../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">v0.68.0: ImporterContext, ScriptedImporter(glb/gltf), remove DepthFirstScheduler</a><ul>
+<li><a class="reference internal" href="#v0-68-0-2021-03-11">v0.68.0 (2021-03-11)</a></li>
+<li><a class="reference internal" href="#id1">主な変更</a></li>
+<li><a class="reference internal" href="#import">import</a></li>
+<li><a class="reference internal" href="#export">export</a></li>
+<li><a class="reference internal" href="#api">API</a></li>
+<li><a class="reference internal" href="#vrm1">VRM1</a></li>
+<li><a class="reference internal" href="#changelog">その他のChangelog</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../056/v0.67.0.html"
+                        title="previous chapter">v0.67.0: UniJson 単純化</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="v0.69.0.html"
+                        title="next chapter">v0.69.0: MetallicRoughnessOcclusionテクスチャー</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/release/068/v0.68.0.md.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="v0.69.0.html" title="v0.69.0: MetallicRoughnessOcclusionテクスチャー"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../056/v0.67.0.html" title="v0.67.0: UniJson 単純化"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">UniVRM Programming Document  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Release</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">v0.68.0: ImporterContext, ScriptedImporter(glb/gltf), remove DepthFirstScheduler</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, VRM Consortium.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+    </div>
+  </body>
+</html>

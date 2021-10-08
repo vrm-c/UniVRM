@@ -1,0 +1,166 @@
+
+<!DOCTYPE html>
+
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>v0.43 &#8212; UniVRM Programming Document  ドキュメント</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../../genindex.html" />
+    <link rel="search" title="検索" href="../../search.html" />
+    <link rel="next" title="v0.44: UniGLTF/UniUnlit 追加" href="v0.44.html" />
+    <link rel="prev" title="v0.42" href="v0.42.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="総合索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="v0.44.html" title="v0.44: UniGLTF/UniUnlit 追加"
+             accesskey="N">次へ</a> |</li>
+        <li class="right" >
+          <a href="v0.42.html" title="v0.42"
+             accesskey="P">前へ</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">UniVRM Programming Document  ドキュメント</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Release</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">v0.43</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="v0-43">
+<h1>v0.43<a class="headerlink" href="#v0-43" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<section id="important-information">
+<h2>※Important Information※<a class="headerlink" href="#important-information" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>The errors in VRM output from earlier versions (UniVRM 0.41 and before) have been fixed since v0.42. However, this fix comes along with the following impact:</p>
+<ul class="simple">
+<li><p>The exported VRM data in v0.42 or later cannot be imported correctly in the earlier versions</p></li>
+</ul>
+<p>When exporting VRM data using UniVRM, please check which version you use to make VRM model.
+If you are using UniVRM to import VRM data, please update UniVRM to the latest version as soon as you can.</p>
+</section>
+<section id="blendshape-object-bug-fix">
+<h2>BlendShape Object Bug Fix:<a class="headerlink" href="#blendshape-object-bug-fix" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>In v0.42, BlendShape.Clips will not be saved if you try to save clips in the following order:</p>
+<ul class="simple">
+<li><p>Import VRM</p></li>
+<li><p>Close Unity (BlendShape.Clips are not saved in the disk)</p></li>
+<li><p>Start Unity</p></li>
+<li><p>BlendShapeProxy.Clips in <code class="docutils literal notranslate"><span class="pre">model_name.BlendShapes</span> <span class="pre">/</span> <span class="pre">BlendShape</span></code> are empty</p></li>
+</ul>
+<p><img alt="empty" src="https://user-images.githubusercontent.com/68057/45142250-0131a480-b1f3-11e8-8e1c-a601c62d7bb0.png" /></p>
+<p>↑ Empty status</p>
+<p><img alt="valid" src="https://user-images.githubusercontent.com/68057/45142316-3211d980-b1f3-11e8-8740-def7afb90630.png" /></p>
+<p>↑ Valid status</p>
+<p>This issue has been fixed in v0.43.</p>
+</section>
+<section id="how-to-restore-empty-blendshape-resulted-by-v0-42">
+<h2>How to restore empty BlendShape resulted by v0.42:<a class="headerlink" href="#how-to-restore-empty-blendshape-resulted-by-v0-42" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>Either way described below can restore BlendShape clips once UniVRM is updated to v0.43.</p>
+<ol class="simple">
+<li><p>Right click VRM file and select Reimport.</p></li>
+</ol>
+<p><img alt="reimport" src="https://user-images.githubusercontent.com/68057/45142534-c11ef180-b1f3-11e8-9251-23e15486632c.png" /></p>
+<ol class="simple">
+<li><p>Add restore option in menu for empty Blendshape clips (v0.42):</p></li>
+</ol>
+<p><img alt="restore" src="https://user-images.githubusercontent.com/68057/45142411-70a79400-b1f3-11e8-9d0f-b50108b0a8a6.png" /></p>
+<p>↑ Click the gear icon on the top and select <code class="docutils literal notranslate"><span class="pre">Restore</span></code>.
+The BlendShape clips set before will be back (the BlendShape clips in the same folder).</p>
+</section>
+<section id="other-fixes">
+<h2>Other Fixes:<a class="headerlink" href="#other-fixes" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p>Normal map conversion fix at runtime loading: https://github.com/ousttrue/UniGLTF/issues/21</p></li>
+<li><p>Added the argument: VRMSpringBone.Setup(force)https://github.com/dwango/UniVRM/commit/b99e7cb9a47de77280eece57d6ed5e7718e848db</p></li>
+</ul>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<ul>
+    <li><a href="../../../en/release/055/v0.43.html">English</a></li>
+</ul>
+
+
+  <h3><a href="../../index.html">目次</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">v0.43</a><ul>
+<li><a class="reference internal" href="#important-information">※Important Information※</a></li>
+<li><a class="reference internal" href="#blendshape-object-bug-fix">BlendShape Object Bug Fix:</a></li>
+<li><a class="reference internal" href="#how-to-restore-empty-blendshape-resulted-by-v0-42">How to restore empty BlendShape resulted by v0.42:</a></li>
+<li><a class="reference internal" href="#other-fixes">Other Fixes:</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>前のトピックへ</h4>
+  <p class="topless"><a href="v0.42.html"
+                        title="前の章へ">v0.42</a></p>
+  <h4>次のトピックへ</h4>
+  <p class="topless"><a href="v0.44.html"
+                        title="次の章へ">v0.44: UniGLTF/UniUnlit 追加</a></p>
+  <div role="note" aria-label="source link">
+    <h3>このページ</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/release/055/v0.43.md.txt"
+            rel="nofollow">ソースコードを表示</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="総合索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="v0.44.html" title="v0.44: UniGLTF/UniUnlit 追加"
+             >次へ</a> |</li>
+        <li class="right" >
+          <a href="v0.42.html" title="v0.42"
+             >前へ</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">UniVRM Programming Document  ドキュメント</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Release</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">v0.43</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, VRM Consortium.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+    </div>
+  </body>
+</html>

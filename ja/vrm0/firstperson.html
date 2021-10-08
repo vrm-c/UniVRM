@@ -16,7 +16,7 @@
     <script src="../_static/translations.js"></script>
     <link rel="index" title="索引" href="../genindex.html" />
     <link rel="search" title="検索" href="../search.html" />
-    <link rel="next" title="Runtime のリソース管理について" href="../implementation/runtime_resource_management.html" />
+    <link rel="next" title="RuntimeLoad" href="../vrm1/vrm1_runtime_load.html" />
     <link rel="prev" title="BlendShapeProxy(0.58)" href="0_58_blendshape.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -26,7 +26,7 @@
           <a href="../genindex.html" title="総合索引"
              accesskey="I">索引</a></li>
         <li class="right" >
-          <a href="../implementation/runtime_resource_management.html" title="Runtime のリソース管理について"
+          <a href="../vrm1/vrm1_runtime_load.html" title="RuntimeLoad"
              accesskey="N">次へ</a> |</li>
         <li class="right" >
           <a href="0_58_blendshape.html" title="BlendShapeProxy(0.58)"
@@ -43,39 +43,11 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="vrmfirstperson">
 <h1>VRMFirstPersonの使い方<a class="headerlink" href="#vrmfirstperson" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p><a class="reference internal" href="../implementation/first_person.html"><span class="doc">FirstPerson と Renderer の可視制御</span></a></p>
+<p>実行時に<strong>VRMFirstPerson.Setup</strong>を呼び出すことで、FirstPerson設定に応じた Renderer の可視制御を行うことができます。
+明示的に外部から呼び出してください。</p>
 <section id="id1">
-<h2>VRMFirstPersonの設定<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h2>
-<p>[VRMFirstPerson]({{&lt; relref &quot;univrm_firstperson.md&quot; &gt;}})ではRendererに対して設定があります。</p>
-<table class="colwidths-auto docutils align-default">
-<thead>
-<tr class="row-odd"><th class="head"><p>FirstPersonFlag</p></th>
-<th class="head"><p>レイヤー</p></th>
-<th class="head"><p>備考</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>Both</p></td>
-<td><p>default</p></td>
-<td><p>一人称と三人称で分ける必要のない部分に指定します</p></td>
-</tr>
-<tr class="row-odd"><td><p>ThirdPersonOnly</p></td>
-<td><p>VRMThirdPersonOnly</p></td>
-<td><p>一人称時に描画したくない部分に指定します</p></td>
-</tr>
-<tr class="row-even"><td><p>FirstPersonOnly</p></td>
-<td><p>VRMFirstPersonOnly</p></td>
-<td><p>三人称時に描画したくない部分に指定します。自動作成した頭部無しモデルが使います</p></td>
-</tr>
-<tr class="row-odd"><td><p>Auto</p></td>
-<td><p>VRMThirdPersonOnly</p></td>
-<td><p>実行時に一人称用モデルを自動で作成し、それをFIRSTPERSON_ONLY_LAYERに設定します</p></td>
-</tr>
-</tbody>
-</table>
-<p>実行時に<strong>VRMFirstPerson.Setup</strong>を呼び出すことで、上記のレイヤー設定を行うことができます。明示的に外部から呼び出してください。</p>
-</section>
-<section id="id2">
-<h2>アプリケーションに追加の描画レイヤーを指定する<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<h2>アプリケーションに追加の描画レイヤーを指定する<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h2>
 <p>定数で以下のレイヤーを定義しています。</p>
 <div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">public</span> <span class="k">class</span> <span class="nc">VRMFirstPerson</span> <span class="p">:</span> <span class="n">MonoBehaviour</span>
 <span class="p">{</span>
@@ -164,8 +136,7 @@
   <h3><a href="../index.html">目次</a></h3>
   <ul>
 <li><a class="reference internal" href="#">VRMFirstPersonの使い方</a><ul>
-<li><a class="reference internal" href="#id1">VRMFirstPersonの設定</a></li>
-<li><a class="reference internal" href="#id2">アプリケーションに追加の描画レイヤーを指定する</a></li>
+<li><a class="reference internal" href="#id1">アプリケーションに追加の描画レイヤーを指定する</a></li>
 <li><a class="reference internal" href="#setuplayermask">実行時にSetupを呼び出して、カメラにLayerMaskを設定する</a></li>
 </ul>
 </li>
@@ -175,8 +146,8 @@
   <p class="topless"><a href="0_58_blendshape.html"
                         title="前の章へ">BlendShapeProxy(0.58)</a></p>
   <h4>次のトピックへ</h4>
-  <p class="topless"><a href="../implementation/runtime_resource_management.html"
-                        title="次の章へ">Runtime のリソース管理について</a></p>
+  <p class="topless"><a href="../vrm1/vrm1_runtime_load.html"
+                        title="次の章へ">RuntimeLoad</a></p>
   <div role="note" aria-label="source link">
     <h3>このページ</h3>
     <ul class="this-page-menu">
@@ -205,7 +176,7 @@
           <a href="../genindex.html" title="総合索引"
              >索引</a></li>
         <li class="right" >
-          <a href="../implementation/runtime_resource_management.html" title="Runtime のリソース管理について"
+          <a href="../vrm1/vrm1_runtime_load.html" title="RuntimeLoad"
              >次へ</a> |</li>
         <li class="right" >
           <a href="0_58_blendshape.html" title="BlendShapeProxy(0.58)"

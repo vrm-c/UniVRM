@@ -1,0 +1,229 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>v0.54.0 &#8212; UniVRM Programming Document  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="v0.55.0" href="v0.55.0.html" />
+    <link rel="prev" title="v0.53.0" href="v0.53.0.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="v0.55.0.html" title="v0.55.0"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="v0.53.0.html" title="v0.53.0"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">UniVRM Programming Document  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Release</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">v0.54.0</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="v0-54-0">
+<h1>v0.54.0<a class="headerlink" href="#v0-54-0" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p>commit: https://github.com/vrm-c/UniVRM/releases/tag/v0.54.0</p></li>
+<li><p>milestone: https://github.com/vrm-c/UniVRM/milestone/13?closed=1</p></li>
+</ul>
+<section id="v0-54-0-17-12-2019">
+<h2>v0.54.0 (17/12/2019)<a class="headerlink" href="#v0-54-0-17-12-2019" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>[<strong>closed</strong>] Refer to vertex color when importing with UniUnlit <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/343">#343</a></p>
+<ul>
+<li><p>UniUnlitシェーダかつ頂点カラーが書き込まれている場合、VColBlendModeが変更されるように修正</p></li>
+</ul>
+</li>
+<li><p>[<strong>closed</strong>] Generate json serializer <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/298">#298</a></p></li>
+<li><p>[<strong>closed</strong>] add generated serializer, fix tests <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/341">#341</a></p>
+<ul>
+<li><p>モバイル向けのAOT対策をしたシリアライザを追加</p></li>
+</ul>
+</li>
+<li><p>[<strong>closed</strong>] add VRM Export Option. Reduce BlendShape Size <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/304">#304</a></p>
+<ul>
+<li><p>Export時に使用していないBlendShapeを除外するオプションを追加</p></li>
+</ul>
+</li>
+<li><p>[<strong>closed</strong>] add Export Editor Settings <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/338">#338</a></p>
+<ul>
+<li><p>ExportUIにMetaの項目を追加</p></li>
+</ul>
+</li>
+<li><p>[<strong>closed</strong>] handling stackOverflowException <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/340">#340</a></p>
+<ul>
+<li><p>ExportUIにMetaの項目を追加</p></li>
+</ul>
+</li>
+<li><p>[<strong>closed</strong>] suppress blendshape gabage collection <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/330">#330</a></p>
+<ul>
+<li><p>EditorでGCが発生していた部分を修正</p></li>
+</ul>
+</li>
+<li><p>[<strong>closed</strong>] fix baseColorFactor color space. <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/339">#339</a></p>
+<ul>
+<li><p>gltfエクスポート時にbaseColorFactorをlinearで書き込むように変更、import時はgammmaに変換</p></li>
+</ul>
+</li>
+<li><p>[<strong>closed</strong>] Unity2019 asset pipeline v2 support <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/335">#335</a></p>
+<ul>
+<li><p>Unity2019.3でImportするとAssetPipelineV2でエラーが出ていたため修正</p></li>
+</ul>
+</li>
+<li><p>[<strong>closed</strong>] Feature fix export vrm when change blend shape <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/332">#332</a></p>
+<ul>
+<li><p>BlendShapeを操作した状態でPose Freezeにチェックを入れてVRMExportした際に、一部のBlendShapeが壊れる不具合を修正</p></li>
+</ul>
+</li>
+<li><p>[<strong>closed</strong>] fix Pose Freeze Export <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/331">#331</a></p>
+<ul>
+<li><p>Pose Freezeを指定してExportするとFirstPersonBoneが書き込まれていなかった問題の修正</p></li>
+</ul>
+</li>
+<li><p>[<strong>closed</strong>] Fix to normalize and output normals <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/314">#314</a></p>
+<ul>
+<li><p>法線を正規化するように修正</p></li>
+</ul>
+</li>
+<li><p>[<strong>closed</strong>] Update AliciaSolid to 0.51 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/317">#317</a></p>
+<ul>
+<li><p>サンプルモデルを更新</p></li>
+</ul>
+</li>
+<li><p>[<strong>closed</strong>] Fix the problem where Vector3 Color cannot be recognized <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/311">#311</a></p>
+<ul>
+<li><p>Vector3Colorが読み込めなかった問題の修正</p></li>
+</ul>
+</li>
+<li><p>[<strong>closed</strong>] fix texture max size when import vrm <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/310">#310</a></p>
+<ul>
+<li><p>TextureのMaxSizeを2048固定からTextureサイズに応じてMaxSizeを512~8192の間で設定するように修正</p></li>
+</ul>
+</li>
+<li><p>[<strong>closed</strong>] Feature fix vrm export parameter <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/346">#346</a></p>
+<ul>
+<li><p>ExportSettingsの設定が、入力順番によってUndoで戻ってしまう場合があった問題の修正</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="id1">
+<h2>その他修正<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>[<strong>closed</strong>] fix Count() to Count <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/345">#345</a></p></li>
+<li><p>[<strong>closed</strong>] ReduceBlendshapeSize default false <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/342">#342</a></p></li>
+<li><p>[<strong>closed</strong>] Fix typo (Base64Embedded) <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/280">#280</a></p></li>
+<li><p>[<strong>closed</strong>] Add a method to reset bones under the influence of SpringBone. <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/320">#320</a></p></li>
+<li><p>[<strong>closed</strong>] add left handed Description to collidergroup offset properties  <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/286">#286</a></p></li>
+<li><p>[<strong>closed</strong>] add material extension shader property description <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/287">#287</a></p></li>
+<li><p>[<strong>closed</strong>] fix gltf animation import <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/306">#306</a></p></li>
+<li><p>[<strong>closed</strong>] SetDefault when EditorReset with VRMFirstPerson <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/305">#305</a></p></li>
+<li><p>[<strong>closed</strong>] Fix typo (private fields) <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/272">#272</a></p></li>
+<li><p>[<strong>closed</strong>] Fix typo (TextureType) <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/279">#279</a></p></li>
+<li><p>[<strong>closed</strong>] Fix typo (AnimationProperties) <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/278">#278</a></p></li>
+<li><p>[<strong>closed</strong>] Fix type (editor) <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/281">#281</a></p></li>
+<li><p>[<strong>closed</strong>] Fix typo (ToJsonSchema) <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/275">#275</a></p></li>
+<li><p>[<strong>closed</strong>] Fix typo (Scheduler) <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/276">#276</a></p></li>
+<li><p>[<strong>closed</strong>] Fix typo (public class members) <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/274">#274</a></p></li>
+<li><p>[<strong>closed</strong>] Fix typo (error messages) <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/273">#273</a></p></li>
+<li><p>[<strong>closed</strong>] Fix typo (local variables) <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/271">#271</a></p></li>
+<li><p>[<strong>closed</strong>] Fix typo (comments) <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/270">#270</a></p></li>
+<li><p>[<strong>closed</strong>] Fix typo (tests) <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/269">#269</a></p></li>
+<li><p>[<strong>closed</strong>] Fix typo (VRM.Samples) <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/268">#268</a></p></li>
+<li><p>[<strong>closed</strong>] Revert Schema changes <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/285">#285</a></p></li>
+</ul>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<ul>
+    <li><a href="../../../ja/release/055/v0.54.0.html">日本語</a></li>
+</ul>
+
+
+  <h3><a href="../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">v0.54.0</a><ul>
+<li><a class="reference internal" href="#v0-54-0-17-12-2019">v0.54.0 (17/12/2019)</a></li>
+<li><a class="reference internal" href="#id1">その他修正</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="v0.53.0.html"
+                        title="previous chapter">v0.53.0</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="v0.55.0.html"
+                        title="next chapter">v0.55.0</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/release/055/v0.54.0.md.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="v0.55.0.html" title="v0.55.0"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="v0.53.0.html" title="v0.53.0"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">UniVRM Programming Document  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Release</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">v0.54.0</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, VRM Consortium.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+    </div>
+  </body>
+</html>

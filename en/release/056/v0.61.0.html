@@ -1,0 +1,176 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>v0.61.0: シリアライザーを reflection からコード生成に変更 &#8212; UniVRM Programming Document  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="v0.62.0: BlendShape bake" href="v0.62.0.html" />
+    <link rel="prev" title="v0.60.0" href="v0.60.0.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="v0.62.0.html" title="v0.62.0: BlendShape bake"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="v0.60.0.html" title="v0.60.0"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">UniVRM Programming Document  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Release</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">v0.61.0: シリアライザーを reflection からコード生成に変更</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="v0-61-0-reflection">
+<h1>v0.61.0: シリアライザーを reflection からコード生成に変更<a class="headerlink" href="#v0-61-0-reflection" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p>commit: https://github.com/vrm-c/UniVRM/releases/tag/v0.61.0</p></li>
+<li><p>milestone: https://github.com/vrm-c/UniVRM/milestone/20?closed=1</p></li>
+</ul>
+<p><a class="reference external" href="https://github.com/vrm-c/UniVRM/compare/v0.60.0...v0.61.0">Full Changelog</a></p>
+<section id="id1">
+<h2>主な変更<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<section id="export">
+<h3>Export<a class="headerlink" href="#export" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>BoneWeightの無いBlendShapeは正規化必用 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/573">#573</a></p></li>
+</ul>
+</section>
+<section id="id2">
+<h3>頂点カラーの扱い<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>UniUnlitでMultiply設定の時以外に自動で頂点カラーを落とす変更 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/569">#569</a></p></li>
+</ul>
+<ul class="simple">
+<li><p>UniVRM では UniUnlit のみが 頂点カラーに対応しています</p></li>
+<li><p>Unlit で 頂点カラーが Multiply 設定の場合にのみ頂点カラーをエクスポートするように変更しました。それ以外(Standard, MToon, UnlitかつMultiplyでない)のときは、頂点カラーを削除します。</p></li>
+</ul>
+</section>
+<section id="mesh-export">
+<h3>Mesh Export サイズの概要表示<a class="headerlink" href="#mesh-export" title="Permalink to this headline">¶</a></h3>
+<img width=400 src=https://user-images.githubusercontent.com/68057/94888324-ab07bc00-04b3-11eb-9232-ea3bfde2d371.jpg>
+</section>
+</section>
+<section id="id3">
+<h2>シリアライザの更新<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>生成シリアライザをデフォルトにする <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/564">#564</a></p></li>
+</ul>
+<ul class="simple">
+<li><p>AOTで実行時にエラーになる <code class="docutils literal notranslate"><span class="pre">Reflection.Emit</span></code> などを使わなくなった</p></li>
+</ul>
+</section>
+<section id="runtime">
+<h2>Runtime<a class="headerlink" href="#runtime" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Scaleが含まれていてもSpringBoneがある程度動く <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/570">#570</a></p></li>
+</ul>
+</section>
+<section id="changelog">
+<h2>その他のChangelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>fix warning CS0649 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/572">#572</a></p></li>
+<li><p>fix warnings <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/568">#568</a></p></li>
+<li><p>テクスチャサンプラ適用処理を ITextureLoader が持つ <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/561">#561</a></p></li>
+</ul>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<ul>
+    <li><a href="../../../ja/release/056/v0.61.0.html">日本語</a></li>
+</ul>
+
+
+  <h3><a href="../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">v0.61.0: シリアライザーを reflection からコード生成に変更</a><ul>
+<li><a class="reference internal" href="#id1">主な変更</a><ul>
+<li><a class="reference internal" href="#export">Export</a></li>
+<li><a class="reference internal" href="#id2">頂点カラーの扱い</a></li>
+<li><a class="reference internal" href="#mesh-export">Mesh Export サイズの概要表示</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id3">シリアライザの更新</a></li>
+<li><a class="reference internal" href="#runtime">Runtime</a></li>
+<li><a class="reference internal" href="#changelog">その他のChangelog</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="v0.60.0.html"
+                        title="previous chapter">v0.60.0</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="v0.62.0.html"
+                        title="next chapter">v0.62.0: BlendShape bake</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/release/056/v0.61.0.md.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="v0.62.0.html" title="v0.62.0: BlendShape bake"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="v0.60.0.html" title="v0.60.0"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">UniVRM Programming Document  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Release</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">v0.61.0: シリアライザーを reflection からコード生成に変更</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, VRM Consortium.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+    </div>
+  </body>
+</html>

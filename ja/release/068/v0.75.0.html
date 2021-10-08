@@ -1,0 +1,178 @@
+
+<!DOCTYPE html>
+
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>v0.75.0: mipmap &#8212; UniVRM Programming Document  ドキュメント</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../../genindex.html" />
+    <link rel="search" title="検索" href="../../search.html" />
+    <link rel="next" title="v0.76.0: Shader整理" href="v0.76.0.html" />
+    <link rel="prev" title="v0.74.0: runtime スプリングボーンのスケール" href="v0.74.0.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="総合索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="v0.76.0.html" title="v0.76.0: Shader整理"
+             accesskey="N">次へ</a> |</li>
+        <li class="right" >
+          <a href="v0.74.0.html" title="v0.74.0: runtime スプリングボーンのスケール"
+             accesskey="P">前へ</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">UniVRM Programming Document  ドキュメント</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Release</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">v0.75.0: mipmap</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="v0-75-0-mipmap">
+<h1>v0.75.0: mipmap<a class="headerlink" href="#v0-75-0-mipmap" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<section id="v0-75-0-2021-05-24">
+<h2><a class="reference external" href="https://github.com/vrm-c/UniVRM/tree/v0.75.0">v0.75.0</a> (2021-05-24)<a class="headerlink" href="#v0-75-0-2021-05-24" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p>commit: https://github.com/vrm-c/UniVRM/releases/tag/v0.75.0</p></li>
+<li><p>milestone: https://github.com/vrm-c/UniVRM/milestone/37?closed=1</p></li>
+</ul>
+<p><a class="reference external" href="https://github.com/vrm-c/UniVRM/compare/v0.74.0...v0.75.0">Full Changelog</a></p>
+</section>
+<section id="bug">
+<h2>Bug修正<a class="headerlink" href="#bug" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p>正規化時にLookAtのパラメーターが落ちてしまうのを修正 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/957">#957</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>Fix incorrect value caching of M17N <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/939">#939</a> (<a class="reference external" href="https://github.com/oocytanb">oocytanb</a>)</p></li>
+<li><p>DIVIDE_VERTEX_BUFFER がすごい遅い <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/942">#942</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+</ul>
+</section>
+<section id="texture-filter-wrap-mipmap-import-export">
+<h2>Texture filter, wrap, mipmap の import/export の修正<a class="headerlink" href="#texture-filter-wrap-mipmap-import-export" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p>There is no consideration for texture mipmaps on exporting glTF. <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/947">#947</a></p>
+<ul>
+<li><p>Materials.Length==0 または Materials.Contains(null) の場合は、メッセージを表示して、エクスポートボタンを押せないようにする <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/919">#919</a></p></li>
+<li><p>Feature/sampler filter wrap mipmap <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/969">#969</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>Feature/sampler param <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/966">#966</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>fix MagFiler <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/945">#945</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="id1">
+<h2>1.0<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p>[1.0] aim constraint の up vector の目標空間 model/local を実装 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/953">#953</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>[1.0] constraitn の実装 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/952">#952</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+</ul>
+</section>
+<section id="changelog">
+<h2>その他のChangelog<a class="headerlink" href="#changelog" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p>Fix/unittest textureexport dds <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/972">#972</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>Throw not supported texture types <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/970">#970</a> (<a class="reference external" href="https://github.com/Santarh">Santarh</a>)</p></li>
+<li><p>Restrict conditions about using raw texture file bytes while exporting glTF in UnityEditor. <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/967">#967</a> (<a class="reference external" href="https://github.com/Santarh">Santarh</a>)</p></li>
+<li><p>Even if the texture instance is the same, if the color space required by the glTF specification is different, it will be output as a different texture. <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/963">#963</a> (<a class="reference external" href="https://github.com/Santarh">Santarh</a>)</p></li>
+<li><p>Refactoring Serializing Textures <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/961">#961</a> (<a class="reference external" href="https://github.com/Santarh">Santarh</a>)</p></li>
+<li><p>test の コンパイル <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/960">#960</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>Tests satisfying the glTF specification about color space in PBR material properties. <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/959">#959</a> (<a class="reference external" href="https://github.com/Santarh">Santarh</a>)</p></li>
+<li><p>Fix/scripted importer axes <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/958">#958</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>Implements exporting VRM 1.0 MToon <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/955">#955</a> (<a class="reference external" href="https://github.com/Santarh">Santarh</a>)</p></li>
+<li><p>Ignore freezing while exportings vrm10 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/954">#954</a> (<a class="reference external" href="https://github.com/Santarh">Santarh</a>)</p></li>
+<li><p>skip non mtoon material <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/950">#950</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>materialsがsubmeshより多くて null を含む場合をValidationErrorにする <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/949">#949</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>Add test cases for validating null materials <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/946">#946</a> (<a class="reference external" href="https://github.com/oocytanb">oocytanb</a>)</p></li>
+<li><p>Exporter can export compressed or non-readable texture. <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/944">#944</a> (<a class="reference external" href="https://github.com/Santarh">Santarh</a>)</p></li>
+<li><p>Remove GL.sRGBWrite <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/941">#941</a> (<a class="reference external" href="https://github.com/Santarh">Santarh</a>)</p></li>
+</ul>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<ul>
+    <li><a href="../../../en/release/068/v0.75.0.html">English</a></li>
+</ul>
+
+
+  <h3><a href="../../index.html">目次</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">v0.75.0: mipmap</a><ul>
+<li><a class="reference internal" href="#v0-75-0-2021-05-24">v0.75.0 (2021-05-24)</a></li>
+<li><a class="reference internal" href="#bug">Bug修正</a></li>
+<li><a class="reference internal" href="#texture-filter-wrap-mipmap-import-export">Texture filter, wrap, mipmap の import/export の修正</a></li>
+<li><a class="reference internal" href="#id1">1.0</a></li>
+<li><a class="reference internal" href="#changelog">その他のChangelog</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>前のトピックへ</h4>
+  <p class="topless"><a href="v0.74.0.html"
+                        title="前の章へ">v0.74.0: runtime スプリングボーンのスケール</a></p>
+  <h4>次のトピックへ</h4>
+  <p class="topless"><a href="v0.76.0.html"
+                        title="次の章へ">v0.76.0: Shader整理</a></p>
+  <div role="note" aria-label="source link">
+    <h3>このページ</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/release/068/v0.75.0.md.txt"
+            rel="nofollow">ソースコードを表示</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="総合索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="v0.76.0.html" title="v0.76.0: Shader整理"
+             >次へ</a> |</li>
+        <li class="right" >
+          <a href="v0.74.0.html" title="v0.74.0: runtime スプリングボーンのスケール"
+             >前へ</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">UniVRM Programming Document  ドキュメント</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Release</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">v0.75.0: mipmap</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, VRM Consortium.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+    </div>
+  </body>
+</html>

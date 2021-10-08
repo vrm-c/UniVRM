@@ -1,0 +1,433 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>v0.56.0: 最低バージョンを Unity-2018.4 に更新 &#8212; UniVRM Programming Document  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="v0.57.0: ボーン名重複の自動リネーム" href="v0.57.0.html" />
+    <link rel="prev" title="v0.55.0" href="../055/v0.55.0.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="v0.57.0.html" title="v0.57.0: ボーン名重複の自動リネーム"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../055/v0.55.0.html" title="v0.55.0"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">UniVRM Programming Document  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Release</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">v0.56.0: 最低バージョンを Unity-2018.4 に更新</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="v0-56-0-unity-2018-4">
+<h1>v0.56.0: 最低バージョンを Unity-2018.4 に更新<a class="headerlink" href="#v0-56-0-unity-2018-4" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p>commit: https://github.com/vrm-c/UniVRM/releases/tag/v0.56.0</p></li>
+<li><p>milestone: https://github.com/vrm-c/UniVRM/milestone/15?closed=1</p></li>
+</ul>
+<p><a class="reference external" href="https://github.com/vrm-c/UniVRM/compare/v0.55.0...v0.56.0">Full Changelog</a></p>
+<section id="id1">
+<h2>主な変更<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<section id="unity">
+<h3>Unity対応バージョンを更新<a class="headerlink" href="#unity" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>サポートバージョンを <code class="docutils literal notranslate"><span class="pre">Unity-2018.4LTS</span> <span class="pre">以降</span></code> <code class="docutils literal notranslate"><span class="pre">.Net4</span></code> のみに更新しました。</p></li>
+</ul>
+<ul class="simple">
+<li><p>[<strong>closed</strong>] Update Unity version <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/420">#420</a></p>
+<ul>
+<li><p>UnVRMのUnityバージョンは<code class="docutils literal notranslate"><span class="pre">5.6.7f1</span></code>から<code class="docutils literal notranslate"><span class="pre">2018.4.23f1</span></code>に更新した</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="vrmshaders">
+<h3>VRMShaders フォルダを独立<a class="headerlink" href="#vrmshaders" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>MToon</p></li>
+<li><p>UniUnlit</p></li>
+<li><p>ShaderProperty</p></li>
+</ul>
+<p>を <code class="docutils literal notranslate"><span class="pre">VRMShaders</span></code> フォルダに移動して、独立した UPM パッケージとしました。
+UniVRM-0.55 以前からアップグレードする場合は、 <code class="docutils literal notranslate"><span class="pre">Assets/VRM</span></code> を一度削除してからインストールしなおすことをおすすめします(unitypackageはファイルの移動に対応していないため)。</p>
+<ul class="simple">
+<li><p>[<strong>closed</strong>] <strong>Separate vrmshaders</strong> <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/436">#436</a></p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">VRM</span></code>からパッケージを分割して、<code class="docutils literal notranslate"><span class="pre">VRMShaders</span></code>が独立。シェーダは<code class="docutils literal notranslate"><span class="pre">VRMShaders</span></code>に移動した</p></li>
+</ul>
+</li>
+<li><p>[<strong>closed</strong>] <strong>update MToon</strong> <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/435">#435</a></p>
+<ul>
+<li><p>MToonバージョンはv3.3に更新した</p></li>
+</ul>
+</li>
+<li><p>[<strong>closed</strong>] add constant UniGLTF.UniUnlit.Utils.ShaderName <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/442">#442</a></p></li>
+</ul>
+</section>
+<section id="univrm-upm">
+<h3>UniVRM の UPM 対応<a class="headerlink" href="#univrm-upm" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">Unity-2019.3</span></code> で導入された <a class="reference external" href="https://docs.unity3d.com/Manual/upm-ui-giturl.html">git url</a> によるパッケージ指定に対応しました。
+以下の２つを登録することで UniVRM を使用できます。
+VRM が VRMShaders に依存しています。</p>
+<ul class="simple">
+<li><p>https://github.com/vrm-c/UniVRM/releases</p></li>
+<li><p>[<strong>closed</strong>] <strong>Add Basic UPM integration</strong> <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/393">#393</a> (<a class="reference external" href="https://github.com/eelstork">eelstork</a>)</p>
+<ul>
+<li><p>UniVRMはパッケージとして使えるようになった</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="blendshapekey">
+<h3>BlendShapeKeyのインタフェースを厳格化、整理<a class="headerlink" href="#blendshapekey" title="Permalink to this headline">¶</a></h3>
+<p>BlendShapeKeyを作成する方法が不明瞭だったため、
+より明示的な API に置き換えました。</p>
+<ul class="simple">
+<li><p>BlendShapeClip.Key 追加</p></li>
+</ul>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>before</p></th>
+<th class="head"><p>after</p></th>
+<th class="head"><p>備考</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>public BlendShapeKey(string name, BlendShapePreset preset)</p></td>
+<td><p>private</p></td>
+<td><p>BlendShapePreset.Unknownのときの挙動が不明瞭だった。代わりに、CreateFromPreset または CreateUnknown を使用してください</p></td>
+</tr>
+<tr class="row-odd"><td><p>BlendShapeKey.CreateFrom</p></td>
+<td><p>BlendShapeKey.CreateFromClip</p></td>
+<td><p>他の関数に合わせて、名前を変更</p></td>
+</tr>
+<tr class="row-even"><td><p>new BlendShpaeKey(BlendShapePreset)</p></td>
+<td><p>BlendShapeKey.CreateFromPreset</p></td>
+<td><p>オーバーロードをやめて明示的な関数に変更</p></td>
+</tr>
+<tr class="row-odd"><td><p>new BlendShpaeKey(string)</p></td>
+<td><p>BlendShapeKey.CreateUnknown</p></td>
+<td><p>オーバーロードをやめて明示的な関数に変更。#330 以前は、Enum.Parse(ignoreCase=true)　のような動作をしていました。この関数で作成した場合は、 BlendShapePreset.Unknown になります。</p></td>
+</tr>
+</tbody>
+</table>
+<ul class="simple">
+<li><p>https://github.com/vrm-c/UniVRM/pull/330</p></li>
+</ul>
+<p>参考コード</p>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="c1">// #330以前の動作</span>
+<span class="k">public</span> <span class="nf">BlendShapeKey</span><span class="p">(</span><span class="kt">string</span> <span class="n">name</span><span class="p">)</span> <span class="p">:</span> <span class="k">this</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">BlendShapePreset</span><span class="p">.</span><span class="n">Unknown</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="p">}</span>
+
+<span class="k">public</span> <span class="nf">BlendShapeKey</span><span class="p">(</span><span class="kt">string</span> <span class="n">name</span><span class="p">,</span> <span class="n">BlendShapePreset</span> <span class="n">preset</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">Name</span> <span class="p">=</span> <span class="n">name</span><span class="p">.</span><span class="n">ToUpper</span><span class="p">();</span>
+    <span class="n">Preset</span> <span class="p">=</span> <span class="n">preset</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">Preset</span> <span class="p">!=</span> <span class="n">BlendShapePreset</span><span class="p">.</span><span class="n">Unknown</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">m_id</span> <span class="p">=</span> <span class="n">Preset</span><span class="p">.</span><span class="n">ToString</span><span class="p">().</span><span class="n">ToUpper</span><span class="p">();</span>
+    <span class="p">}</span>
+    <span class="k">else</span>
+    <span class="p">{</span>
+        <span class="n">m_id</span> <span class="p">=</span> <span class="n">Name</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">public</span> <span class="kt">bool</span> <span class="nf">Equals</span><span class="p">(</span><span class="n">BlendShapeKey</span> <span class="n">other</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="n">ID</span> <span class="p">==</span> <span class="n">other</span><span class="p">.</span><span class="n">ID</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// v0.56 でだいたい同じような動きをするコード</span>
+<span class="k">static</span> <span class="n">BlendShapeKey</span> <span class="nf">CreateKeyOld</span><span class="p">(</span><span class="kt">string</span> <span class="n">src</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="c1">// Enum があまり速くない(GC出たり)ようなので、パフォーマンス要件が厳しい場合はキャッシュするなど工夫することをおすすめします</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">Enum</span><span class="p">.</span><span class="n">TryParse</span><span class="p">&lt;</span><span class="n">BlendShapePreset</span><span class="p">&gt;(</span><span class="n">src</span><span class="p">,</span> <span class="k">true</span><span class="p">,</span> <span class="k">out</span> <span class="n">BlendShapePreset</span> <span class="n">preset</span><span class="p">))</span>
+    <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">preset</span> <span class="p">!=</span> <span class="n">BlendShapePreset</span><span class="p">.</span><span class="n">Unknown</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="n">BlendShapeKey</span><span class="p">.</span><span class="n">CreateFromPreset</span><span class="p">(</span><span class="n">preset</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">BlendShapeKey</span><span class="p">.</span><span class="n">CreateUnknown</span><span class="p">(</span><span class="n">src</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>[<strong>closed</strong>] <strong>Update BlendShapeKey interface</strong> <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/427">#427</a></p></li>
+</ul>
+</section>
+<section id="meshutility">
+<h3>MeshUtility の追加<a class="headerlink" href="#meshutility" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">https://github.com/vrm-c/UniVRM.git?path=/Assets/MeshUtilty</span></code></p></li>
+</ul>
+<p>で導入できます。</p>
+<p>https://github.com/vrm-c/UniVRM/tree/master/Assets/MeshUtility</p>
+<p>SkinnedMeshRenderer + Mesh を</p>
+<ul class="simple">
+<li><p>SkinnedMeshRenderer + Mesh(BlendShapeのある三角形を含むコピー)</p></li>
+<li><p>SkinnedMeshRenderer + Mesh(BlednShapeの無い三角形を含むコピー)</p></li>
+</ul>
+<p>に分解します。</p>
+<ul class="simple">
+<li><p>[<strong>closed</strong>] <strong>Add mesh utility</strong> <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/434">#434</a></p>
+<ul>
+<li><p>メッシュを分割するUtilityを追加した</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="exporter">
+<h3>Exporter の更新<a class="headerlink" href="#exporter" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>[<strong>closed</strong>] <strong>Add blendshape options to export dialog</strong> <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/421">#421</a></p>
+<ul>
+<li><p>BlendShapeオプションをエクスポートダイアログに追加した</p></li>
+</ul>
+</li>
+<li><p>[<strong>closed</strong>] <strong>ExporterWindowに警告メッセージを実装</strong> <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/404">#404</a></p></li>
+<li><p>[<strong>closed</strong>] add error messages for export validation <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/447">#447</a></p>
+<ul>
+<li><p>エクスポート時、ルートに移動・回転・スケールがある場合にメッセージを出す</p></li>
+</ul>
+</li>
+<li><p>[<strong>closed</strong>] EditorExport時にアセットが見つかったTextureは、それを使う <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/433">#433</a></p>
+<ul>
+<li><p>Jpgフォマットのテクスチャは出力できるようになった</p></li>
+</ul>
+</li>
+<li><p>[<strong>closed</strong>] Fix nullcheck <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/432">#432</a></p>
+<ul>
+<li><p>BlendShapeProxyの無いモデルのエクスポート時(Vrmになる前の初回エクスポート)にエラーなっていた問題を修正した</p></li>
+</ul>
+</li>
+<li><p>[<strong>closed</strong>] Add an option to remove vertex color in export menu <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/428">#428</a></p>
+<ul>
+<li><p>頂点カラー情報を削除するオプションを追加した</p></li>
+</ul>
+</li>
+<li><p>[<strong>closed</strong>] Save the export directory <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/419">#419</a></p>
+<ul>
+<li><p>VRMエクスポート二回目からダイアログのデフォルトは前回の出力先を指定するようになった</p></li>
+</ul>
+</li>
+<li><p>[<strong>closed</strong>] Fix export nonactive mesh <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/401">#401</a></p>
+<ul>
+<li><p>BlendShapeBindingによって参照される非アクティブなメッシュはエクスポートしない。対象オブジェクトはアクティブなメッシュがない場合、エクスポートしない</p></li>
+</ul>
+</li>
+<li><p>[<strong>closed</strong>] Check bone names duplicate when export vrm file. <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/378">#378</a> (<a class="reference external" href="https://github.com/neon-izm">neon-izm</a>)</p>
+<ul>
+<li><p>名前同じのボーンはエクスポート禁止</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="unitypackage">
+<h3>unitypackage<a class="headerlink" href="#unitypackage" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>[<strong>closed</strong>] update export UnityPackage menu <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/441">#441</a></p>
+<ul>
+<li><p>VRMShadersを追加してUniJSON-standalone、UniHumanoid-standaloneとUniGLTF-standaloneを削除した</p></li>
+</ul>
+</li>
+<li><p>[<strong>closed</strong>] asmdef をpackageに同梱するように変更 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/405">#405</a></p></li>
+</ul>
+</section>
+</section>
+<section id="changelog">
+<h2>その他のChangelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>[<strong>closed</strong>] <strong>Add texture transform extensions</strong> <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/229">#229</a></p>
+<ul>
+<li><p>textureInfoの拡張であるKHR_texture_transformの対応</p></li>
+</ul>
+</li>
+<li><p>[<strong>closed</strong>] BuildMesh load balancing in ImporterContext <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/451">#451</a></p>
+<ul>
+<li><p>動的読み込み時のフレームレート低下を防ぐためBuildMeshの処理をフレーム分散させるオプションを用意しました</p></li>
+</ul>
+</li>
+<li><p>[<strong>closed</strong>] Fix vrm look at blend shape applyer <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/449">#449</a></p>
+<ul>
+<li><p>BlendShapeで制御される目が動かないの問題を修正した</p></li>
+</ul>
+</li>
+<li><p>[<strong>closed</strong>] check invalid file name <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/445">#445</a></p>
+<ul>
+<li><p>テクスチャ名前が長すぎるとVRMファイルがエクスポート禁止。インポート時に制御文字のエスケープを追加した</p></li>
+</ul>
+</li>
+<li><p>[<strong>closed</strong>] Fix: SpringBone LateUpdate to FixedUpdate <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/430">#430</a> (<a class="reference external" href="https://github.com/yoship1639">yoship1639</a>)</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">fixed</span> <span class="pre">update</span></code>を追加して、<code class="docutils literal notranslate"><span class="pre">fixed</span> <span class="pre">update</span></code>か<code class="docutils literal notranslate"><span class="pre">late</span> <span class="pre">update</span></code>かを選べるようになった</p></li>
+</ul>
+</li>
+<li><p>[<strong>closed</strong>] fix MaterialImporter and TextureTransformTest <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/417">#417</a></p>
+<ul>
+<li><p>ImporterContextをMaterialImporterに持ち運ばなくても動くように変更した。それに伴ってテストも修正した</p></li>
+</ul>
+</li>
+<li><p>[<strong>closed</strong>] Add cache enum <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/416">#416</a></p>
+<ul>
+<li><p>Enum.Parse and Enum.GetValuesをキャッシュする</p></li>
+</ul>
+</li>
+<li><p>[<strong>closed</strong>] Suppress garbage collection due to using linq <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/413">#413</a></p>
+<ul>
+<li><p>LINQ構文使用によってVRMロード時に発生していたGCを抑制を対応した</p></li>
+</ul>
+</li>
+<li><p>[<strong>closed</strong>] VrmFirstPersonを修正 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/412">#412</a></p></li>
+<li><p>[<strong>closed</strong>] fix multi frame blendShape <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/410">#410</a></p></li>
+<li><p>[<strong>closed</strong>] Fix argument textureitem <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/409">#409</a></p></li>
+<li><p>[<strong>closed</strong>] Changed to be able to extend texture loader. <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/408">#408</a></p>
+<ul>
+<li><p>テクスチャローダーを拡張できるように変更した</p></li>
+</ul>
+</li>
+<li><p>[<strong>closed</strong>] fix glTFPbrMetallicRoughness init. <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/403">#403</a></p>
+<ul>
+<li><p>materials[]-&gt;pbrMetallicRoughnessの項目が無い場合にImportに失敗するの問題を修正した</p></li>
+</ul>
+</li>
+<li><p>[<strong>closed</strong>] Fix blendshape uppercase bug. <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/399">#399</a> (<a class="reference external" href="https://github.com/sh-akira">sh-akira</a>)</p>
+<ul>
+<li><p>BlendShap大文字のためにエラーが発生するバグを修正した</p></li>
+</ul>
+</li>
+<li><p>[<strong>closed</strong>] Fix: Large heap allocation in BoneMeshEraser.ExcludeTriangles <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/389">#389</a></p>
+<ul>
+<li><p>頂点数が多いモデルを読み込んだ時に、BoneMeshEraser.ExcludeTriangles内で大量のヒープアロケートが発生していたの問題を対応した</p></li>
+</ul>
+</li>
+<li><p>[<strong>closed</strong>] onloadmodel to return ienumerator <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/386">#386</a></p>
+<ul>
+<li><p>ImporterContext.OnLoadModelの戻り値をIEnumeratorに変更した</p></li>
+</ul>
+</li>
+<li><p>[<strong>closed</strong>] Bvhのfloat.parseのロケール問題を修正 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/383">#383</a></p>
+<ul>
+<li><p>ロケールを無視して英語で処理してしまうため、小数点が、ピリオドでないロケール(フランス語など)に対する修正</p></li>
+</ul>
+</li>
+<li><p>[<strong>closed</strong>] Add non-string based method to search prefab <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/381">#381</a> (<a class="reference external" href="https://github.com/sator-imaging">sator-imaging</a>)</p></li>
+<li><p>[<strong>closed</strong>] Support mesh sharing morph target <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/380">#380</a> (<a class="reference external" href="https://github.com/mkc1370">mkc1370</a>)</p>
+<ul>
+<li><p>Blenderから*.gltfや*.glbを書き出した際にモーフ名付きのメッシュが読み込まれない問題の修正を行いました</p></li>
+</ul>
+</li>
+<li><p>[<strong>closed</strong>] Adding support for editor preview on non-windows platforms <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/379">#379</a> (<a class="reference external" href="https://github.com/sator-imaging">sator-imaging</a>)</p>
+<ul>
+<li><p>Windowsじゃないのプラットフォームのサポートの追加した。エディターのプレビューのみ</p></li>
+</ul>
+</li>
+<li><p>[<strong>closed</strong>] Fix: memory leak in editor preview <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/325">#325</a> (<a class="reference external" href="https://github.com/ropo">ropo</a>)</p></li>
+</ul>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<ul>
+    <li><a href="../../../ja/release/056/v0.56.0.html">日本語</a></li>
+</ul>
+
+
+  <h3><a href="../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">v0.56.0: 最低バージョンを Unity-2018.4 に更新</a><ul>
+<li><a class="reference internal" href="#id1">主な変更</a><ul>
+<li><a class="reference internal" href="#unity">Unity対応バージョンを更新</a></li>
+<li><a class="reference internal" href="#vrmshaders">VRMShaders フォルダを独立</a></li>
+<li><a class="reference internal" href="#univrm-upm">UniVRM の UPM 対応</a></li>
+<li><a class="reference internal" href="#blendshapekey">BlendShapeKeyのインタフェースを厳格化、整理</a></li>
+<li><a class="reference internal" href="#meshutility">MeshUtility の追加</a></li>
+<li><a class="reference internal" href="#exporter">Exporter の更新</a></li>
+<li><a class="reference internal" href="#unitypackage">unitypackage</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#changelog">その他のChangelog</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../055/v0.55.0.html"
+                        title="previous chapter">v0.55.0</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="v0.57.0.html"
+                        title="next chapter">v0.57.0: ボーン名重複の自動リネーム</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/release/056/v0.56.0.md.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="v0.57.0.html" title="v0.57.0: ボーン名重複の自動リネーム"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../055/v0.55.0.html" title="v0.55.0"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">UniVRM Programming Document  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Release</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">v0.56.0: 最低バージョンを Unity-2018.4 に更新</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, VRM Consortium.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+    </div>
+  </body>
+</html>

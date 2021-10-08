@@ -1,0 +1,187 @@
+
+<!DOCTYPE html>
+
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>v0.50 &#8212; UniVRM Programming Document  ドキュメント</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../../genindex.html" />
+    <link rel="search" title="検索" href="../../search.html" />
+    <link rel="next" title="v0.51.0" href="v0.51.0.html" />
+    <link rel="prev" title="v0.49" href="v0.49.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="総合索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="v0.51.0.html" title="v0.51.0"
+             accesskey="N">次へ</a> |</li>
+        <li class="right" >
+          <a href="v0.49.html" title="v0.49"
+             accesskey="P">前へ</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">UniVRM Programming Document  ドキュメント</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Release</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">v0.50</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="v0-50">
+<h1>v0.50<a class="headerlink" href="#v0-50" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<ul class="simple">
+<li><p>commit: <code class="docutils literal notranslate"><span class="pre">9db7</span></code> https://github.com/dwango/UniVRM/releases/tag/v0.50</p></li>
+<li><p>milestone: https://github.com/dwango/UniVRM/milestone/9?closed=1</p></li>
+</ul>
+<section id="id1">
+<h2>新規<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p>[<strong>closed</strong>] Add specVersion field to VRM extensions <a class="reference external" href="https://github.com/dwango/UniVRM/pull/162">#162</a></p>
+<ul>
+<li><p>VRMに新規プロパティの<code class="docutils literal notranslate"><span class="pre">specVersion</span></code>が追加されました。VRMファイルが参照するVRM仕様のバージョンを示します。</p></li>
+</ul>
+</li>
+<li><p>[<strong>closed</strong>] Support Assembly Definition Files <a class="reference external" href="https://github.com/dwango/UniVRM/pull/154">#154</a></p>
+<ul>
+<li><p>Assembly Definition Files対応を行いました。リリースページより、<code class="docutils literal notranslate"><span class="pre">*.asmdef-</span></code>を名前に含む<code class="docutils literal notranslate"><span class="pre">unitypackage</span></code>にて提供しています。</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="id2">
+<h2>バグ修正<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p>[<strong>closed</strong>] Fix to restore Smoothness value when setting Metallic map <a class="reference external" href="https://github.com/dwango/UniVRM/pull/185">#185</a></p>
+<ul>
+<li><p>Smoothnessの値が強制的に1.0に上書きされてしまう問題を修正しました。</p></li>
+</ul>
+</li>
+<li><p>[<strong>closed</strong>] Calculate inverseBindMatrices(Mesh.bindposes) in SkinnedMeshRenderer.… <a class="reference external" href="https://github.com/dwango/UniVRM/pull/173">#173</a></p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">skins</span></code>の<code class="docutils literal notranslate"><span class="pre">inverseBindMatrices</span></code>が存在しない場合でも、デフォルトで提供する挙動で動作するようにしました。</p></li>
+</ul>
+</li>
+<li><p>[<strong>closed</strong>] Set 'ExplicitIgnorableItemLength = 0' to glTF elements to export mode… <a class="reference external" href="https://github.com/dwango/UniVRM/pull/158">#158</a></p>
+<ul>
+<li><p>一切テクスチャが割り当てられていないモデルをエクスポートする際にエラーが発生する問題を修正しました。</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="id3">
+<h2>改良<a class="headerlink" href="#id3" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p>[<strong>closed</strong>] Add README.url <a class="reference external" href="https://github.com/dwango/UniVRM/pull/180">#180</a> (by &#64;nkjzm)</p></li>
+<li><p>[<strong>closed</strong>] Divide unity packages for asmdef files <a class="reference external" href="https://github.com/dwango/UniVRM/pull/178">#178</a></p></li>
+<li><p>[<strong>closed</strong>] Now some fields in meta are required <a class="reference external" href="https://github.com/dwango/UniVRM/pull/160">#160</a></p>
+<ul>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">meta</span></code>内のいくつかのフィールドが必ずバリデートされ出力されるようになりました。</strong></p></li>
+</ul>
+</li>
+<li><p>[<strong>closed</strong>] Skip AssetPostProcessor when file in StreamingAssets folder. #166 <a class="reference external" href="https://github.com/dwango/UniVRM/pull/171">#171</a></p></li>
+</ul>
+</section>
+<section id="id4">
+<h2>その他<a class="headerlink" href="#id4" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p>[<strong>closed</strong>] Fix adf error <a class="reference external" href="https://github.com/dwango/UniVRM/pull/177">#177</a></p></li>
+<li><p>[<strong>closed</strong>] fix KeyValue <a class="reference external" href="https://github.com/dwango/UniVRM/pull/176">#176</a></p></li>
+<li><p>[<strong>closed</strong>] Reduce Expression.Compile <a class="reference external" href="https://github.com/dwango/UniVRM/pull/164">#164</a></p></li>
+<li><p>[<strong>closed</strong>] Removed Expression.Compile <a class="reference external" href="https://github.com/dwango/UniVRM/pull/165">#165</a></p></li>
+<li><p>[<strong>closed</strong>] Remove unused meta files for specs <a class="reference external" href="https://github.com/dwango/UniVRM/pull/163">#163</a></p></li>
+<li><p>[<strong>closed</strong>] Remove an unused file <a class="reference external" href="https://github.com/dwango/UniVRM/pull/159">#159</a></p></li>
+<li><p>[<strong>closed</strong>] Prepare a version for next release v0.50 <a class="reference external" href="https://github.com/dwango/UniVRM/pull/155">#155</a></p></li>
+<li><p>[<strong>closed</strong>] Fix/suppress warnings <a class="reference external" href="https://github.com/dwango/UniVRM/pull/151">#151</a></p></li>
+<li><p>[<strong>closed</strong>] Fix unity 5 symbol <a class="reference external" href="https://github.com/dwango/UniVRM/pull/150">#150</a></p></li>
+</ul>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<ul>
+    <li><a href="../../../en/release/055/v0.50.html">English</a></li>
+</ul>
+
+
+  <h3><a href="../../index.html">目次</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">v0.50</a><ul>
+<li><a class="reference internal" href="#id1">新規</a></li>
+<li><a class="reference internal" href="#id2">バグ修正</a></li>
+<li><a class="reference internal" href="#id3">改良</a></li>
+<li><a class="reference internal" href="#id4">その他</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>前のトピックへ</h4>
+  <p class="topless"><a href="v0.49.html"
+                        title="前の章へ">v0.49</a></p>
+  <h4>次のトピックへ</h4>
+  <p class="topless"><a href="v0.51.0.html"
+                        title="次の章へ">v0.51.0</a></p>
+  <div role="note" aria-label="source link">
+    <h3>このページ</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/release/055/v0.50.md.txt"
+            rel="nofollow">ソースコードを表示</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="総合索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="v0.51.0.html" title="v0.51.0"
+             >次へ</a> |</li>
+        <li class="right" >
+          <a href="v0.49.html" title="v0.49"
+             >前へ</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">UniVRM Programming Document  ドキュメント</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Release</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">v0.50</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, VRM Consortium.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+    </div>
+  </body>
+</html>

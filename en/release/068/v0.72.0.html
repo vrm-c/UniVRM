@@ -1,0 +1,198 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>v0.72.0: Linearカラースペースの推奨, DividedVertexBuffer &#8212; UniVRM Programming Document  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="v0.73.0: other permission url の修正" href="v0.73.0.html" />
+    <link rel="prev" title="v0.71.0: fix Metallic または Occlusion テクスチャーエクスポートのバグ修正" href="v0.71.0.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="v0.73.0.html" title="v0.73.0: other permission url の修正"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="v0.71.0.html" title="v0.71.0: fix Metallic または Occlusion テクスチャーエクスポートのバグ修正"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">UniVRM Programming Document  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Release</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">v0.72.0: Linearカラースペースの推奨, DividedVertexBuffer</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="v0-72-0-linear-dividedvertexbuffer">
+<h1>v0.72.0: Linearカラースペースの推奨, DividedVertexBuffer<a class="headerlink" href="#v0-72-0-linear-dividedvertexbuffer" title="Permalink to this headline">¶</a></h1>
+<section id="v0-72-0-2021-04-13">
+<h2><a class="reference external" href="https://github.com/vrm-c/UniVRM/tree/v0.72.0">v0.72.0</a> (2021-04-13)<a class="headerlink" href="#v0-72-0-2021-04-13" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>commit: https://github.com/vrm-c/UniVRM/releases/tag/v0.72.0</p></li>
+<li><p>milestone: https://github.com/vrm-c/UniVRM/milestone/34?closed=1</p></li>
+</ul>
+<p><a class="reference external" href="https://github.com/vrm-c/UniVRM/compare/v0.71.0...v0.72.0">Full Changelog</a></p>
+</section>
+<section id="id1">
+<h2>主な変更<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<section id="linear">
+<h3>Linearカラースペースの推奨<a class="headerlink" href="#linear" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>“Recommended settings” window <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/867">#867</a> (<a class="reference external" href="https://github.com/Santarh">Santarh</a>)</p></li>
+</ul>
+<img width=400 src=https://user-images.githubusercontent.com/68057/114508088-f246e480-9c6e-11eb-8188-a42079b69643.jpg>
+<p>プロジェクトのカラースペース設定が <code class="docutils literal notranslate"><span class="pre">linear</span></code> でないときに出てきます。</p>
+</section>
+<section id="bug">
+<h3>bug修正<a class="headerlink" href="#bug" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Resources の修正。 https://github.com/vrm-c/UniVRM/issues/857</p></li>
+</ul>
+</section>
+<section id="t-pose">
+<h3>T-Pose にするボタン<a class="headerlink" href="#t-pose" title="Permalink to this headline">¶</a></h3>
+<img width=400 src=https://user-images.githubusercontent.com/68057/114517305-2f17d900-9c79-11eb-9eec-03809b299fcd.jpg>
+<p>実験的に fbx の humanoid 設定の <code class="docutils literal notranslate"><span class="pre">Enforce</span> <span class="pre">T-Pose</span></code> ボタンぽい機能を呼び出すボタンを追加しました</p>
+<img width=500 src=https://user-images.githubusercontent.com/68057/114511732-4227aa80-9c73-11eb-84b1-4e4c80d14f34.jpg>
+<ul class="simple">
+<li><p>T-Pose にするボタン2 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/868">#868</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+</ul>
+</section>
+<section id="submesh">
+<h3>頂点バッファを SubMesh で分割するを追加<a class="headerlink" href="#submesh" title="Permalink to this headline">¶</a></h3>
+<p>Unity の頂点バッファをなるべく変えないで書き出すために、長いvertexバッファをindexバッファで部分参照する方式を使っていました。
+これは Glft では合法だけどトリッキーな記述となっておりました。この方法を解釈できないローダーでは、ロードできるがメモリ量が増えるということが起きます。具体的には、共有するので１つでいい頂点バッファが、submesh 数重複してロードされます。ということで頂点の順番が変わることはあきらめて、submesh を独立した mesh のように分割するオプションを追加することにしました(VRM-1ではこれを標準にします)。</p>
+<ul class="simple">
+<li><p>VertexBufferをSubMeshで分割してエクスポートするオプション <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/861">#861</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+</ul>
+<img width=500 src=https://user-images.githubusercontent.com/68057/114509959-14d9fd00-9c71-11eb-8388-783bd65eb290.jpg>
+<img width=400 src=https://user-images.githubusercontent.com/68057/114509964-160b2a00-9c71-11eb-890d-ab48d78732b4.jpg>
+<p>以下に注意してください。</p>
+<ul class="simple">
+<li><p>UniVRM-0.72.0 より前のバージョンは、分割方式にBlendShapeが含まれているとうまくロードできません</p>
+<ul>
+<li><p>BlendShapeの連結バグの修正 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/860">#860</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+</ul>
+</li>
+<li><p>UniVRM以外の実装では、分割版の方がうまく行く可能性がある</p></li>
+</ul>
+</section>
+</section>
+<section id="changelog">
+<h2>その他のChangelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>vrm1 の Export インタフェースを整理 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/866">#866</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>fix lookAtType migration <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/865">#865</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>UniVRM-0.72.0 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/864">#864</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>GetBytesWithMime を VRMShaders に移動 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/863">#863</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>Do not use the variadic max to avoid gc <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/862">#862</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>Feature10/vrm1 export <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/859">#859</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>Fix UPM submodule issue. <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/858">#858</a> (<a class="reference external" href="https://github.com/Santarh">Santarh</a>)</p></li>
+<li><p>asmdef をUnity-2018仕様に修正 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/856">#856</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>Remove unused references from asmdefs in VrmShaders. <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/855">#855</a> (<a class="reference external" href="https://github.com/Santarh">Santarh</a>)</p></li>
+<li><p>Refactoring VRMShaders directory &amp; asmdef <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/854">#854</a> (<a class="reference external" href="https://github.com/Santarh">Santarh</a>)</p></li>
+<li><p>implement MigrationVrmLookAtAndFirstPerson. fix MigrateVector3 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/853">#853</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>Update readme <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/850">#850</a> (<a class="reference external" href="https://github.com/PoChang007">PoChang007</a>)</p></li>
+<li><p>meta, expressionAvatar, expression の extract を復旧 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/849">#849</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>Feature/update readme <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/848">#848</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>add export test <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/841">#841</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+</ul>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<ul>
+    <li><a href="../../../ja/release/068/v0.72.0.html">日本語</a></li>
+</ul>
+
+
+  <h3><a href="../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">v0.72.0: Linearカラースペースの推奨, DividedVertexBuffer</a><ul>
+<li><a class="reference internal" href="#v0-72-0-2021-04-13">v0.72.0 (2021-04-13)</a></li>
+<li><a class="reference internal" href="#id1">主な変更</a><ul>
+<li><a class="reference internal" href="#linear">Linearカラースペースの推奨</a></li>
+<li><a class="reference internal" href="#bug">bug修正</a></li>
+<li><a class="reference internal" href="#t-pose">T-Pose にするボタン</a></li>
+<li><a class="reference internal" href="#submesh">頂点バッファを SubMesh で分割するを追加</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#changelog">その他のChangelog</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="v0.71.0.html"
+                        title="previous chapter">v0.71.0: fix Metallic または Occlusion テクスチャーエクスポートのバグ修正</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="v0.73.0.html"
+                        title="next chapter">v0.73.0: other permission url の修正</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/release/068/v0.72.0.md.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="v0.73.0.html" title="v0.73.0: other permission url の修正"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="v0.71.0.html" title="v0.71.0: fix Metallic または Occlusion テクスチャーエクスポートのバグ修正"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">UniVRM Programming Document  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Release</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">v0.72.0: Linearカラースペースの推奨, DividedVertexBuffer</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, VRM Consortium.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+    </div>
+  </body>
+</html>

@@ -1,5 +1,7 @@
 # FirstPerson
 
+{doc}`FirstPerson と Renderer の可視制御 </implementation/first_person>`
+
 ## Runtime に FirstPerson 機能を有効にする
 
 VR向け FirstPerson 設定の初期化手順です。

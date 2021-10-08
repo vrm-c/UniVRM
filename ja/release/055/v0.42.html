@@ -1,0 +1,273 @@
+
+<!DOCTYPE html>
+
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>v0.42 &#8212; UniVRM Programming Document  ドキュメント</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../../genindex.html" />
+    <link rel="search" title="検索" href="../../search.html" />
+    <link rel="next" title="v0.43" href="v0.43.html" />
+    <link rel="prev" title="v0.41" href="v0.41.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="総合索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="v0.43.html" title="v0.43"
+             accesskey="N">次へ</a> |</li>
+        <li class="right" >
+          <a href="v0.41.html" title="v0.41"
+             accesskey="P">前へ</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">UniVRM Programming Document  ドキュメント</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Release</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">v0.42</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="v0-42">
+<h1>v0.42<a class="headerlink" href="#v0-42" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<section id="important-information">
+<h2>※Important Information※<a class="headerlink" href="#important-information" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>The errors in VRM output from earlier versions (UniVRM 0.41 and before) have been fixed in v0.42. However, this fix comes along with the following impact:</p>
+<ul class="simple">
+<li><p>The exported VRM data in v0.42 or later cannot be imported correctly in the earlier versions</p></li>
+</ul>
+<p>When exporting VRM data using UniVRM, please check which version you use to make VRM model.
+If you are using UniVRM to import VRM data, please update UniVRM to the latest version as soon as you can.</p>
+</section>
+<section id="uv-bugs-fix">
+<h2>UV Bugs Fix:<a class="headerlink" href="#uv-bugs-fix" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>In v0.41 and the earlier versions, converting UV between Unity and GLTF was incorrect.</p>
+<p>Before</p>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span> <span class="n">converted_uv</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Vec2</span><span class="p">(</span><span class="n">uv</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="p">-</span><span class="n">uv</span><span class="p">.</span><span class="n">y</span><span class="p">);</span>　<span class="c1">// value becomes negative</span>
+</pre></div>
+</div>
+<p>After</p>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span> <span class="n">converted_uv</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Vec2</span><span class="p">(</span><span class="n">uv</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="m">1.0f</span><span class="p">-</span><span class="n">uv</span><span class="p">.</span><span class="n">y</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>This change influences both import and export.</p>
+<section id="current-status-in-v0-42">
+<h3>Current status in v0.42:<a class="headerlink" href="#current-status-in-v0-42" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<ul class="simple">
+<li><p>The UV of imported VRM is correct.</p></li>
+<li><p>V will become negative when loading the correct UV of VRM with the earlier versions.</p></li>
+<li><p>Texture display will be distorted if texture is set to <code class="docutils literal notranslate"><span class="pre">Clamp</span></code>. The default is <code class="docutils literal notranslate"><span class="pre">Repeat</span></code>.</p></li>
+</ul>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p></p></th>
+<th class="head"><p>VRM's UV in v0.41 and before</p></th>
+<th class="head"><p>VRM's UV from v0.42</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Importer in UniVRM-0.41 and before</p></td>
+<td><p>〇 (negative x negative = positive)</p></td>
+<td><p>× (positive x negative = negative)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Importer from UniVRM-0.42</p></td>
+<td><p>〇</p></td>
+<td><p>〇</p></td>
+</tr>
+<tr class="row-even"><td><p>General GLTF loader</p></td>
+<td><p>×</p></td>
+<td><p>〇</p></td>
+</tr>
+</tbody>
+</table>
+<ul class="simple">
+<li><p>To developers: please update UniVRM to v0.42 as soon as possible.</p></li>
+<li><p>We created a judger based on the string <code class="docutils literal notranslate"><span class="pre">UniGLTF-1.16</span> <span class="pre">(v0.42)</span></code> in GLTF <code class="docutils literal notranslate"><span class="pre">/assets/generator</span></code> in importer to detect whether a VRM model is made by the version before 0.42. For v0.42, it can import VRM model correctly.</p></li>
+</ul>
+</section>
+</section>
+<section id="tangents-bugs-fix">
+<h2>Tangents Bugs Fix:<a class="headerlink" href="#tangents-bugs-fix" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>The method to call <a class="reference external" href="https://docs.unity3d.com/ScriptReference/Mesh.RecalculateTangents.html">Mesh.RecalculateTangents</a>
+was inappropriate and it was not able to generate Tangents.
+We have fixed this issue.
+It influences the use of normal map.</p>
+<section id="tangents-processing-modification">
+<h3>Tangents processing modification:<a class="headerlink" href="#tangents-processing-modification" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<ul class="simple">
+<li><p>Tangents can be calculated and generated from Normal and UV</p></li>
+<li><p>The differences of coordinate axes between GLTF and Unity can be absorbed</p></li>
+<li><p>File size can be decreased if Tangents is not recorded</p></li>
+</ul>
+<p>Based on the reasons above, we decided not to export Tangents.
+(If any problem occurs, please let us know through https://github.com/ousttrue/UniGLTF/issues)</p>
+</section>
+</section>
+<section id="gltf-improvement">
+<h2>GLTF Improvement:<a class="headerlink" href="#gltf-improvement" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<section id="bufferviews-bytestridewill-not-output">
+<h3><code class="docutils literal notranslate"><span class="pre">/bufferViews/*/byteStride</span></code>will not output<a class="headerlink" href="#bufferviews-bytestridewill-not-output" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>It seems necessary for outputting OpenGL's interleaved vbo format:</p>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Example of interleaved format</span>
+<span class="k">struct</span> <span class="nc">Vertex</span>
+<span class="p">{</span>
+  <span class="k">public</span> <span class="n">Vector3</span> <span class="n">Position</span><span class="p">;</span>
+  <span class="k">public</span> <span class="n">Vector3</span> <span class="n">Normal</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="n">Vertex</span><span class="p">[]</span> <span class="n">Vertices</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Since UniGLTF outputs separate arrays for each vertex attribute, ByteStride was unnecessary.</p>
+<blockquote>
+<div><p>When this is not defined, data is tightly packed. When two or more accessors use the same bufferView, this field must be defined.</p>
+</div></blockquote>
+<p>Also, we found that ByteStride should not output to Index.</p>
+</section>
+<section id="gltf-material-support-improvement">
+<h3>GLTF material support improvement:<a class="headerlink" href="#gltf-material-support-improvement" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">/materials/*/alphaMode</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">/materials/*/doubleSided</span></code></p></li>
+<li><p>KHR_material_unlit</p></li>
+<li><p>texture sampler(repeat, clamp, mirror)</p></li>
+<li><p>https://github.com/ousttrue/UniGLTF/issues/12</p></li>
+<li><p><a class="reference external" href="https://github.com/dwango/UniVRM/issues/28">Handling semi-transparent texture #28</a></p></li>
+</ul>
+<p><a class="reference external" href="https://github.com/ousttrue/UniGLTF/wiki/Material">Details</a></p>
+<p>Also, when setting MToon, we tried to pass parameters as many as possible to GLTF material: <code class="docutils literal notranslate"><span class="pre">KHR_material_unlit,</span> <span class="pre">AlphaMode,</span> <span class="pre">DoubleSided</span></code>.</p>
+<p>This improvement has influences on VRM files changed to .glb format when loading with other tools.</p>
+</section>
+</section>
+<section id="vrm-jsonshcema-release">
+<h2>VRM JsonShcema Release:<a class="headerlink" href="#vrm-jsonshcema-release" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p>https://github.com/dwango/UniVRM/tree/master/specification/0.0/schema</p></li>
+</ul>
+</section>
+<section id="directory-structure-changes">
+<h2>Directory Structure Changes:<a class="headerlink" href="#directory-structure-changes" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p>VRM/UniHumanoid =&gt; VRM/UniGLTF/UniHumanoid</p></li>
+<li><p>VRM/Scripts/DepthFirstScheduler(Former UniTask) =&gt; VRM/UniGLTF/DepthFirstScheduler</p></li>
+</ul>
+</section>
+<section id="blendshape-asset">
+<h2>BlendShape Asset:<a class="headerlink" href="#blendshape-asset" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>The asset for BlendShape now is independent (previously it is a sub-asset of Prefab)</p>
+<ul class="simple">
+<li><p>https://github.com/dwango/UniVRM/pull/26</p></li>
+</ul>
+</section>
+<section id="blendshape-reference">
+<h2>BlendShape Reference:<a class="headerlink" href="#blendshape-reference" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>The state of BlendShape before model normalization is now used as a reference. You can make BlendShape before normalization and Bake the state of BlendShape during normalization.</p>
+</section>
+<section id="unihumanoid-bvh-judgement-fix">
+<h2>UniHumanoid BVH Judgement Fix:<a class="headerlink" href="#unihumanoid-bvh-judgement-fix" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>We fixed BVH skeleton estimation.
+Report errors here when it fails: https://github.com/ousttrue/UniHumanoid/issues</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<ul>
+    <li><a href="../../../en/release/055/v0.42.html">English</a></li>
+</ul>
+
+
+  <h3><a href="../../index.html">目次</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">v0.42</a><ul>
+<li><a class="reference internal" href="#important-information">※Important Information※</a></li>
+<li><a class="reference internal" href="#uv-bugs-fix">UV Bugs Fix:</a><ul>
+<li><a class="reference internal" href="#current-status-in-v0-42">Current status in v0.42:</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#tangents-bugs-fix">Tangents Bugs Fix:</a><ul>
+<li><a class="reference internal" href="#tangents-processing-modification">Tangents processing modification:</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#gltf-improvement">GLTF Improvement:</a><ul>
+<li><a class="reference internal" href="#bufferviews-bytestridewill-not-output"><code class="docutils literal notranslate"><span class="pre">/bufferViews/*/byteStride</span></code>will not output</a></li>
+<li><a class="reference internal" href="#gltf-material-support-improvement">GLTF material support improvement:</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#vrm-jsonshcema-release">VRM JsonShcema Release:</a></li>
+<li><a class="reference internal" href="#directory-structure-changes">Directory Structure Changes:</a></li>
+<li><a class="reference internal" href="#blendshape-asset">BlendShape Asset:</a></li>
+<li><a class="reference internal" href="#blendshape-reference">BlendShape Reference:</a></li>
+<li><a class="reference internal" href="#unihumanoid-bvh-judgement-fix">UniHumanoid BVH Judgement Fix:</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>前のトピックへ</h4>
+  <p class="topless"><a href="v0.41.html"
+                        title="前の章へ">v0.41</a></p>
+  <h4>次のトピックへ</h4>
+  <p class="topless"><a href="v0.43.html"
+                        title="次の章へ">v0.43</a></p>
+  <div role="note" aria-label="source link">
+    <h3>このページ</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/release/055/v0.42.md.txt"
+            rel="nofollow">ソースコードを表示</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="総合索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="v0.43.html" title="v0.43"
+             >次へ</a> |</li>
+        <li class="right" >
+          <a href="v0.41.html" title="v0.41"
+             >前へ</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">UniVRM Programming Document  ドキュメント</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Release</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">v0.42</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, VRM Consortium.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+    </div>
+  </body>
+</html>

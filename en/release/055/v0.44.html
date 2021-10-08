@@ -1,0 +1,272 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>v0.44: UniGLTF/UniUnlit 追加 &#8212; UniVRM Programming Document  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="v0.45" href="v0.45.html" />
+    <link rel="prev" title="v0.43" href="v0.43.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="v0.45.html" title="v0.45"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="v0.43.html" title="v0.43"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">UniVRM Programming Document  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Release</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">v0.44: UniGLTF/UniUnlit 追加</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="v0-44-unigltf-uniunlit">
+<h1>v0.44: UniGLTF/UniUnlit 追加<a class="headerlink" href="#v0-44-unigltf-uniunlit" title="Permalink to this headline">¶</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">67a6</span></code> https://github.com/dwango/UniVRM/releases/tag/v0.44</p>
+<section id="id1">
+<h2>※大切なお知らせ※<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<section id="import">
+<h3>新シェーダーを0.43以前のバージョンでImportしたとき<a class="headerlink" href="#import" title="Permalink to this headline">¶</a></h3>
+<p>0.44で新シェーダーUniGLTF/Unlit を追加しました。</p>
+<p>【UniGLTF/Unlit】
+既存のUnlit系シェーダではできなかった、</p>
+<ul class="simple">
+<li><p>TextureとColorの乗算</p></li>
+<li><p>DoubleSided</p></li>
+<li><p>VertexColor</p></li>
+<li><p>ColorでTransparent<br>
+を設定できるようになりました。これらのパラメータはGLTF標準のunlitとして保存されますので、
+他のGLTF互換ビューアなどでも正しく処理されますが、UniVRM 0.43以前では正しく表示されません。<br>
+これらのパラメータを使う場合は、ロードする側のライブラリが0.44以降に更新されるのをお待ちください。
+また、VRMデータをインポートするためにUniVRMをご利用いただいているかたは、UniVRMの更新をお願いいたします。<br></p></li>
+</ul>
+</section>
+<section id="id2">
+<h3>法線マップの入出力について<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p>0.44から正しくエクスポートし、正しくインポートできるようになりました。<br>
+そのため、法線モデルを含んだモデルは、0.44以降でエクスポートし、<br>
+0.44以降のアプリケーションでロードしなければ正しく表示されません。<br>
+お手数ですが、アプリケーションが0.44以降に更新されるのを待ってから、法線マップを含んだモデルを再エクスポートしてください。<br></p>
+</section>
+</section>
+<section id="gltf-uniunlit">
+<h2>[GLTF]UniUnlitの導入<a class="headerlink" href="#gltf-uniunlit" title="Permalink to this headline">¶</a></h2>
+<p>新規に <code class="docutils literal notranslate"><span class="pre">UniGLTF/Unlit</span></code> を導入しました。<br>
+既存のUnlit系シェーダーでできなかった、<br></p>
+<ul class="simple">
+<li><p>TextureとColorの乗算</p></li>
+<li><p>DoubleSided</p></li>
+<li><p>VertexColor</p></li>
+<li><p>ColorでTransparent</p></li>
+</ul>
+<p>を設定できます。</p>
+</section>
+<section id="vrm-unlitstandardvrm">
+<h2>[VRM] UnlitとStandardマテリアルに関しては、VRM部に重複した情報を保存しない仕様変更<a class="headerlink" href="#vrm-unlitstandardvrm" title="Permalink to this headline">¶</a></h2>
+<p>0.43以前では、<code class="docutils literal notranslate"><span class="pre">/materials</span></code> と <code class="docutils literal notranslate"><span class="pre">/extensions/VRM/materialProperties</span></code> に2重に情報を保存していました。
+0.44から、~~GLTFで記述可能な~~GLTFとだいたい互換できる <code class="docutils literal notranslate"><span class="pre">Unlit</span></code> と <code class="docutils literal notranslate"><span class="pre">Standard</span></code> は <code class="docutils literal notranslate"><span class="pre">/materials</span></code> に一本化することにしました。</p>
+<p>GLTFで表現できないマテリアル情報は、</p>
+<p><code class="docutils literal notranslate"><span class="pre">VRM/MToon</span></code> と <code class="docutils literal notranslate"><span class="pre">VRM/UnlitTransparentZWrite</span></code> です。</p>
+</section>
+<section id="vrm-disablegameobject">
+<h2>[VRM]正規化する時にDisableのGameObjectがあると失敗する場合があるのを修正<a class="headerlink" href="#vrm-disablegameobject" title="Permalink to this headline">¶</a></h2>
+<p>HumanBoneに割り当てられていてDisableなど、一定の条件で失敗するのを修正しました。</p>
+<ul class="simple">
+<li><p>https://github.com/dwango/UniVRM/issues/36</p></li>
+<li><p>https://github.com/dwango/UniVRM/issues/31</p></li>
+</ul>
+</section>
+<section id="gltf-normalmap">
+<h2>[GLTF]NormalMap等のマテリアル対応関連<a class="headerlink" href="#gltf-normalmap" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>https://github.com/dwango/UniVRM/issues/17</p></li>
+<li><p>https://github.com/dwango/UniVRM/issues/46</p></li>
+<li><p>https://github.com/dwango/UniVRM/issues/39</p></li>
+<li><p>https://github.com/dwango/UniVRM/issues/38</p></li>
+<li><p>https://github.com/dwango/UniVRM/issues/36</p></li>
+</ul>
+<section id="normalmap-asset-import">
+<h3>NormalMap asset import<a class="headerlink" href="#normalmap-asset-import" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">textureImporter</span><span class="p">.</span><span class="n">textureType</span> <span class="p">=</span> <span class="n">TextureImporterType</span><span class="p">.</span><span class="n">NormalMap</span><span class="p">;</span>
+</pre></div>
+</div>
+</section>
+<section id="normalmap-runtime-import">
+<h3>NormalMap runtime import<a class="headerlink" href="#normalmap-runtime-import" title="Permalink to this headline">¶</a></h3>
+<p>pack</p>
+<div class="highlight-hlsl notranslate"><div class="highlight"><pre><span></span><span class="n">fixed4</span> <span class="n">frag</span><span class="p">(</span><span class="n">v2f</span> <span class="n">i</span><span class="p">)</span> <span class="o">:</span> <span class="nd">SV_Target</span>
+<span class="p">{</span>
+    <span class="kt">half4</span> <span class="n">col</span> <span class="o">=</span> <span class="nb">tex2D</span><span class="p">(</span><span class="n">_MainTex</span><span class="p">,</span> <span class="n">i</span><span class="p">.</span><span class="n">uv</span><span class="p">);</span>
+    <span class="kt">half4</span> <span class="n">normal</span><span class="p">;</span>
+    <span class="n">normal</span><span class="p">.</span><span class="n">x</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">;</span>
+    <span class="n">normal</span><span class="p">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">col</span><span class="p">.</span><span class="n">y</span><span class="p">;</span>
+    <span class="n">normal</span><span class="p">.</span><span class="n">z</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">;</span>
+    <span class="n">normal</span><span class="p">.</span><span class="n">w</span> <span class="o">=</span> <span class="n">col</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
+
+    <span class="k">return</span> <span class="n">normal</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="normalmap-export">
+<h3>NormalMap export<a class="headerlink" href="#normalmap-export" title="Permalink to this headline">¶</a></h3>
+<p>unpack</p>
+<ul class="simple">
+<li><p>https://github.com/ousttrue/UniGLTF/issues/29</p></li>
+</ul>
+</section>
+</section>
+<section id="gltf-animation">
+<h2>[GLTF]Animation関連<a class="headerlink" href="#gltf-animation" title="Permalink to this headline">¶</a></h2>
+<p>GLTFのアニメーション対応を更新しました。</p>
+<section id="id3">
+<h3>import<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<p>Unityのlegacy AnimationClipとしてロードできます。
+GameObjectに対する、 <code class="docutils literal notranslate"><span class="pre">localPosition</span></code>, <code class="docutils literal notranslate"><span class="pre">localRotation</span></code>, <code class="docutils literal notranslate"><span class="pre">localScale</span></code> とBlendShapeのキーフレームに対応しています。</p>
+</section>
+<section id="editor-export">
+<h3>editor export<a class="headerlink" href="#editor-export" title="Permalink to this headline">¶</a></h3>
+<p>エクスポート対象のルートにアタッチされた <code class="docutils literal notranslate"><span class="pre">Animation</span></code> または <code class="docutils literal notranslate"><span class="pre">Animator</span></code> のヒューマノイドではない <code class="docutils literal notranslate"><span class="pre">AnimationClip</span></code>(legacy or generic) の、<code class="docutils literal notranslate"><span class="pre">localPosition</span></code>, <code class="docutils literal notranslate"><span class="pre">localRotation</span></code>, <code class="docutils literal notranslate"><span class="pre">localScale</span></code>
+を出力できます。BlendShapeは未対応です。</p>
+</section>
+</section>
+<section id="mtoon">
+<h2>[MToon]更新<a class="headerlink" href="#mtoon" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>https://github.com/Santarh/MToon/releases/tag/v1.5</p></li>
+</ul>
+</section>
+<section id="gltf-importer">
+<h2>[GLTF]Importerインタフェース整理<a class="headerlink" href="#gltf-importer" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>https://github.com/dwango/UniVRM/wiki/Runtime-import</p></li>
+</ul>
+</section>
+<section id="vrm-automeshrenderer">
+<h2>[VRM] Auto指定のMeshRendererが一人称視点で非表示になるのを修正<a class="headerlink" href="#vrm-automeshrenderer" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>https://github.com/dwango/UniVRM/commit/b7ab741b16c9037b12defc6a34c885953635bd7c</p></li>
+</ul>
+</section>
+<section id="gltf-glb">
+<h2>[GLTF]GLBエクスポーター<a class="headerlink" href="#gltf-glb" title="Permalink to this headline">¶</a></h2>
+<p>GLBエクスポーターが動作するようになりました。</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/dwango/UniVRM/wiki/glb%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E3%81%AE%E4%BD%9C%E3%82%8A%E6%96%B9">glbファイルの作り方</a></p></li>
+</ul>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<ul>
+    <li><a href="../../../ja/release/055/v0.44.html">日本語</a></li>
+</ul>
+
+
+  <h3><a href="../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">v0.44: UniGLTF/UniUnlit 追加</a><ul>
+<li><a class="reference internal" href="#id1">※大切なお知らせ※</a><ul>
+<li><a class="reference internal" href="#import">新シェーダーを0.43以前のバージョンでImportしたとき</a></li>
+<li><a class="reference internal" href="#id2">法線マップの入出力について</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#gltf-uniunlit">[GLTF]UniUnlitの導入</a></li>
+<li><a class="reference internal" href="#vrm-unlitstandardvrm">[VRM] UnlitとStandardマテリアルに関しては、VRM部に重複した情報を保存しない仕様変更</a></li>
+<li><a class="reference internal" href="#vrm-disablegameobject">[VRM]正規化する時にDisableのGameObjectがあると失敗する場合があるのを修正</a></li>
+<li><a class="reference internal" href="#gltf-normalmap">[GLTF]NormalMap等のマテリアル対応関連</a><ul>
+<li><a class="reference internal" href="#normalmap-asset-import">NormalMap asset import</a></li>
+<li><a class="reference internal" href="#normalmap-runtime-import">NormalMap runtime import</a></li>
+<li><a class="reference internal" href="#normalmap-export">NormalMap export</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#gltf-animation">[GLTF]Animation関連</a><ul>
+<li><a class="reference internal" href="#id3">import</a></li>
+<li><a class="reference internal" href="#editor-export">editor export</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#mtoon">[MToon]更新</a></li>
+<li><a class="reference internal" href="#gltf-importer">[GLTF]Importerインタフェース整理</a></li>
+<li><a class="reference internal" href="#vrm-automeshrenderer">[VRM] Auto指定のMeshRendererが一人称視点で非表示になるのを修正</a></li>
+<li><a class="reference internal" href="#gltf-glb">[GLTF]GLBエクスポーター</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="v0.43.html"
+                        title="previous chapter">v0.43</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="v0.45.html"
+                        title="next chapter">v0.45</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/release/055/v0.44.md.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="v0.45.html" title="v0.45"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="v0.43.html" title="v0.43"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">UniVRM Programming Document  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Release</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">v0.44: UniGLTF/UniUnlit 追加</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, VRM Consortium.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,190 @@
+
+<!DOCTYPE html>
+
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>v0.79.0: 1.0準備 &#8212; UniVRM Programming Document  ドキュメント</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../../genindex.html" />
+    <link rel="search" title="検索" href="../../search.html" />
+    <link rel="next" title="v0.80.0: 1.0準備, 最低バージョンを Unity-2019.4LTS に更新" href="v0.80.0.html" />
+    <link rel="prev" title="v0.78.0: ScriptdImporter の改修" href="../068/v0.78.0.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="総合索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="v0.80.0.html" title="v0.80.0: 1.0準備, 最低バージョンを Unity-2019.4LTS に更新"
+             accesskey="N">次へ</a> |</li>
+        <li class="right" >
+          <a href="../068/v0.78.0.html" title="v0.78.0: ScriptdImporter の改修"
+             accesskey="P">前へ</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">UniVRM Programming Document  ドキュメント</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Release</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">v0.79.0: 1.0準備</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="v0-79-0-1-0">
+<h1>v0.79.0: 1.0準備<a class="headerlink" href="#v0-79-0-1-0" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<section id="v0-79-0-2021-07-19">
+<h2><a class="reference external" href="https://github.com/vrm-c/UniVRM/tree/v0.79.0">v0.79.0</a> (2021-07-19)<a class="headerlink" href="#v0-79-0-2021-07-19" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p>commit: https://github.com/vrm-c/UniVRM/releases/tag/v0.79.0</p></li>
+<li><p>milestone: https://github.com/vrm-c/UniVRM/milestone/41?closed=1</p></li>
+</ul>
+<p><a class="reference external" href="https://github.com/vrm-c/UniVRM/compare/v0.78.0...v0.79.0">Full Changelog</a></p>
+<p>このバージョンから <code class="docutils literal notranslate"><span class="pre">pre</span> <span class="pre">release</span></code> をやめて通常リリースに戻ります。</p>
+</section>
+<section id="todo">
+<h2>ToDo:<a class="headerlink" href="#todo" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p>[ ] 0.66 ~ 0.79 の変更まとめ</p></li>
+<li><p>[ ] (GLB, GLTF) ScriptedImporter の導入 と Extract の説明</p></li>
+</ul>
+</section>
+<section id="autoreference">
+<h2>AutoReference<a class="headerlink" href="#autoreference" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>Autoreference を有効にします。</p>
+<ul class="simple">
+<li><p>Make asmdef's <code class="docutils literal notranslate"><span class="pre">Auto</span> <span class="pre">Referenced</span></code> <code class="docutils literal notranslate"><span class="pre">true</span></code> . <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/1107">#1107</a></p></li>
+<li><p>Namespace &quot;VRM&quot; can't be found by any other script. <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/1103">#1103</a></p></li>
+<li><p>Make asmdef's auto-referenced true. <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1108">#1108</a> (<a class="reference external" href="https://github.com/Santarh">Santarh</a>)</p></li>
+</ul>
+</section>
+<section id="id1">
+<h2>1.0<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p>[1.0] Invalid migration of MToon screen coordinates outline <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/1069">#1069</a></p></li>
+<li><p>Fix MToon 1.0 functions. <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1101">#1101</a> (<a class="reference external" href="https://github.com/Santarh">Santarh</a>)</p></li>
+<li><p>[1.0] Expression の仕様更新に追随 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1092">#1092</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>[1.0] Fix MToon 1.0 bugs <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1071">#1071</a> (<a class="reference external" href="https://github.com/Santarh">Santarh</a>)</p></li>
+</ul>
+</section>
+<section id="changelog">
+<h2>その他のChangelog<a class="headerlink" href="#changelog" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p>Add properties &amp; Fix the bug in <code class="docutils literal notranslate"><span class="pre">RuntimeGltfInstance</span></code> <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1109">#1109</a> (<a class="reference external" href="https://github.com/Santarh">Santarh</a>)</p></li>
+<li><p>VRChat用に設定したVRoidモデルを再度VRMに変換する時にエラーが出て失敗する <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/1100">#1100</a></p></li>
+<li><p>Fail to convert, &quot;IndexOutOfRange Exception&quot; critical error <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/1099">#1099</a></p></li>
+<li><p>UniVRM fails to convert avatar with critical errors.  <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/1098">#1098</a></p></li>
+<li><p>Extract null extract の挙動 <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/1070">#1070</a></p></li>
+<li><p>TRS のデフォルト値をスキップ <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/1059">#1059</a></p></li>
+<li><p>Minor compatibility issues with Unity 2021.1 <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/1051">#1051</a></p></li>
+<li><p>Show the warning of color space because UniGLTF supports Linear color space only. <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/1006">#1006</a></p></li>
+<li><p>Export texture include alpha channel only when needed while exporting glTF. <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/968">#968</a></p></li>
+<li><p>UnitTestの修正 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1106">#1106</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>UniVRM-0.79.0 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1105">#1105</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>EditorTextureSerializer で例外になるテクスチャを事前にエラーメッセージにする <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1102">#1102</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>fix MissingReferenceException <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1095">#1095</a> (<a class="reference external" href="https://github.com/Santarh">Santarh</a>)</p></li>
+<li><p>Add null check in StringExtension <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1090">#1090</a> (<a class="reference external" href="https://github.com/Santarh">Santarh</a>)</p></li>
+<li><p>Make public resource fix method <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1089">#1089</a> (<a class="reference external" href="https://github.com/Santarh">Santarh</a>)</p></li>
+<li><p>Nodeの行列分解時の負のスケールの限定対応 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1087">#1087</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>Feature10/zip extract <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1086">#1086</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>VRMC_materials_hdr_emissiveMultiplier 実装 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1085">#1085</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>Fix error when material count was zero in VRM <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1084">#1084</a> (<a class="reference external" href="https://github.com/Santarh">Santarh</a>)</p></li>
+<li><p>Add unique suffix to same name assets. <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1083">#1083</a> (<a class="reference external" href="https://github.com/Santarh">Santarh</a>)</p></li>
+<li><p>AnimationClip import with AnimationClipFactory <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1082">#1082</a> (<a class="reference external" href="https://github.com/Santarh">Santarh</a>)</p></li>
+<li><p>ApplyModifiedProperties <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1081">#1081</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>experimental zip archive importer <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1080">#1080</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>fix SettingProvider <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1079">#1079</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>Fix bug of unarchiving stored file in zip. <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1077">#1077</a> (<a class="reference external" href="https://github.com/Santarh">Santarh</a>)</p></li>
+<li><p>Refactoring <code class="docutils literal notranslate"><span class="pre">GltfParser</span></code> <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1076">#1076</a> (<a class="reference external" href="https://github.com/Santarh">Santarh</a>)</p></li>
+<li><p>TextureDeserializer can await. <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1074">#1074</a> (<a class="reference external" href="https://github.com/Santarh">Santarh</a>)</p></li>
+<li><p>Extract/Clear 改修 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1073">#1073</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>Export textures with alpha channel only if necessary <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1072">#1072</a> (<a class="reference external" href="https://github.com/Santarh">Santarh</a>)</p></li>
+</ul>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<ul>
+    <li><a href="../../../en/release/079/v0.79.0.html">English</a></li>
+</ul>
+
+
+  <h3><a href="../../index.html">目次</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">v0.79.0: 1.0準備</a><ul>
+<li><a class="reference internal" href="#v0-79-0-2021-07-19">v0.79.0 (2021-07-19)</a></li>
+<li><a class="reference internal" href="#todo">ToDo:</a></li>
+<li><a class="reference internal" href="#autoreference">AutoReference</a></li>
+<li><a class="reference internal" href="#id1">1.0</a></li>
+<li><a class="reference internal" href="#changelog">その他のChangelog</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>前のトピックへ</h4>
+  <p class="topless"><a href="../068/v0.78.0.html"
+                        title="前の章へ">v0.78.0: ScriptdImporter の改修</a></p>
+  <h4>次のトピックへ</h4>
+  <p class="topless"><a href="v0.80.0.html"
+                        title="次の章へ">v0.80.0: 1.0準備, 最低バージョンを Unity-2019.4LTS に更新</a></p>
+  <div role="note" aria-label="source link">
+    <h3>このページ</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/release/079/v0.79.0.md.txt"
+            rel="nofollow">ソースコードを表示</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="総合索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="v0.80.0.html" title="v0.80.0: 1.0準備, 最低バージョンを Unity-2019.4LTS に更新"
+             >次へ</a> |</li>
+        <li class="right" >
+          <a href="../068/v0.78.0.html" title="v0.78.0: ScriptdImporter の改修"
+             >前へ</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">UniVRM Programming Document  ドキュメント</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Release</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">v0.79.0: 1.0準備</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, VRM Consortium.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+    </div>
+  </body>
+</html>

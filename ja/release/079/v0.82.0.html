@@ -1,0 +1,160 @@
+
+<!DOCTYPE html>
+
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>v0.82.0: 1.0準備, URP 向け Material置き換え機能 &#8212; UniVRM Programming Document  ドキュメント</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../../genindex.html" />
+    <link rel="search" title="検索" href="../../search.html" />
+    <link rel="next" title="v0.83.0: 1.0準備" href="v0.83.0.html" />
+    <link rel="prev" title="v0.81.0: 1.0準備, unitypackage 構成変更" href="v0.81.0.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="総合索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="v0.83.0.html" title="v0.83.0: 1.0準備"
+             accesskey="N">次へ</a> |</li>
+        <li class="right" >
+          <a href="v0.81.0.html" title="v0.81.0: 1.0準備, unitypackage 構成変更"
+             accesskey="P">前へ</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">UniVRM Programming Document  ドキュメント</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Release</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">v0.82.0: 1.0準備, URP 向け Material置き換え機能</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="v0-82-0-1-0-urp-material">
+<h1>v0.82.0: 1.0準備, URP 向け Material置き換え機能<a class="headerlink" href="#v0-82-0-1-0-urp-material" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<section id="v0-82-0-2021-09-01">
+<h2><a class="reference external" href="https://github.com/vrm-c/UniVRM/tree/v0.82.0">v0.82.0</a> (2021-09-01)<a class="headerlink" href="#v0-82-0-2021-09-01" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p>commit: https://github.com/vrm-c/UniVRM/releases/tag/v0.82.0</p></li>
+<li><p>milestone: https://github.com/vrm-c/UniVRM/milestone/44?closed=1
+<a class="reference external" href="https://github.com/vrm-c/UniVRM/compare/v0.81.0...v0.82.0">Full Changelog</a></p></li>
+</ul>
+</section>
+<section id="urp-universal-render-pipeline">
+<h2>URP(Universal Render Pipeline)<a class="headerlink" href="#urp-universal-render-pipeline" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>URP 向けに Material Import をカスタマイズする機能をはじめました (Experimental)</p>
+<p><code class="docutils literal notranslate"><span class="pre">TODO:</span></code> アプリ開発者向けドキュメント</p>
+<ul class="simple">
+<li><p>Add MaterialGenerator customization point (for URP) <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1177">#1177</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+</ul>
+</section>
+<section id="id1">
+<h2>[1.0]<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p>[1.0]extract の一覧に matcap など一部のテクスチャーが一覧されない <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/1171">#1171</a></p></li>
+<li><p>[1.0] MToon10でエクスポートするとStandardになってしまう <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/1164">#1164</a></p></li>
+<li><p>[1.0] Vrm-1.0 の Texture 列挙を修正 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1174">#1174</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>SubAssetでも中を見れるように、デフォルトで AdvancedMode にする <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1168">#1168</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>play mode の expression preview <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1169">#1169</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+</ul>
+</section>
+<section id="changelog">
+<h2>その他のChangelog<a class="headerlink" href="#changelog" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p>Sampleの構成 <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/1068">#1068</a></p></li>
+<li><p>Error Message <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1180">#1180</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>UniVRM-0.82.0 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1179">#1179</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>add VRM10AutoExpression for VRM10Viewer. move test_motion.txt <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1173">#1173</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>simple <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1172">#1172</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>Fix10/mtoon export/import <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1167">#1167</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>Fix/readme etc <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1161">#1161</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>UniVRM-0.81.0 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1157">#1157</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+</ul>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<ul>
+    <li><a href="../../../en/release/079/v0.82.0.html">English</a></li>
+</ul>
+
+
+  <h3><a href="../../index.html">目次</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">v0.82.0: 1.0準備, URP 向け Material置き換え機能</a><ul>
+<li><a class="reference internal" href="#v0-82-0-2021-09-01">v0.82.0 (2021-09-01)</a></li>
+<li><a class="reference internal" href="#urp-universal-render-pipeline">URP(Universal Render Pipeline)</a></li>
+<li><a class="reference internal" href="#id1">[1.0]</a></li>
+<li><a class="reference internal" href="#changelog">その他のChangelog</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>前のトピックへ</h4>
+  <p class="topless"><a href="v0.81.0.html"
+                        title="前の章へ">v0.81.0: 1.0準備, unitypackage 構成変更</a></p>
+  <h4>次のトピックへ</h4>
+  <p class="topless"><a href="v0.83.0.html"
+                        title="次の章へ">v0.83.0: 1.0準備</a></p>
+  <div role="note" aria-label="source link">
+    <h3>このページ</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/release/079/v0.82.0.md.txt"
+            rel="nofollow">ソースコードを表示</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="総合索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="v0.83.0.html" title="v0.83.0: 1.0準備"
+             >次へ</a> |</li>
+        <li class="right" >
+          <a href="v0.81.0.html" title="v0.81.0: 1.0準備, unitypackage 構成変更"
+             >前へ</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">UniVRM Programming Document  ドキュメント</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Release</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">v0.82.0: 1.0準備, URP 向け Material置き換え機能</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, VRM Consortium.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+    </div>
+  </body>
+</html>

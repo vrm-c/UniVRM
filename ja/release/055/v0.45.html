@@ -1,0 +1,178 @@
+
+<!DOCTYPE html>
+
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>v0.45 &#8212; UniVRM Programming Document  ドキュメント</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../../genindex.html" />
+    <link rel="search" title="検索" href="../../search.html" />
+    <link rel="next" title="v0.46" href="v0.46.html" />
+    <link rel="prev" title="v0.44: UniGLTF/UniUnlit 追加" href="v0.44.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="総合索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="v0.46.html" title="v0.46"
+             accesskey="N">次へ</a> |</li>
+        <li class="right" >
+          <a href="v0.44.html" title="v0.44: UniGLTF/UniUnlit 追加"
+             accesskey="P">前へ</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">UniVRM Programming Document  ドキュメント</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Release</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">v0.45</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="v0-45">
+<h1>v0.45<a class="headerlink" href="#v0-45" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">0c49</span></code> https://github.com/dwango/UniVRM/releases/tag/v0.45</p>
+<section id="id1">
+<h2>バグ修正<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p>法線マップ、MettalicRoughnessなどのテクスチャが無変換でエクスポートされる(最後のマテリアル以外変換・コピー前をエクスポートするバグ)</p></li>
+<li><p>sRGBWriteの指定が不足している場合があるのを修正(sRGBをlinearとして出力していまい、テクスチャの色が濃く変わってしまう。プロジェクトのカラースペースがlinear設定になっているなどが条件と思われる）</p></li>
+<li><p>BlendShapeProxy.SetValuesの修正。同じBlendShapeを違うウェイトで参照するBlendShapeClipが複数あったときに合成されずに最後の値で上書きされてしまう。</p></li>
+</ul>
+</section>
+<section id="api">
+<h2>APIの変更(追記)<a class="headerlink" href="#api" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p>ToDo: publicの変更を明記する</p></li>
+<li><p>ToDo: 内部用の関数にそれと分かる名前を付ける</p></li>
+</ul>
+<section id="vrmblendshapeproxy-clear">
+<h3>VRMBlendShapeProxy.Clearの削除<a class="headerlink" href="#vrmblendshapeproxy-clear" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<ul class="simple">
+<li><p>名前通りの機能で無くApplyとほぼ同じ効果</p></li>
+<li><p>古いカスタムエディタで使っていた？</p></li>
+</ul>
+</section>
+</section>
+<section id="id2">
+<h2>更新<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/Santarh/MToon/releases">Mtoon-1.7</a></p></li>
+<li><p>GlbアニメーションのBlendShapeキーフレームのエクスポート</p></li>
+<li><p>BlendShapeClipに2値フラグ(値を四捨五入することで中間状態にならない)を追加</p></li>
+</ul>
+<img src="https://raw.githubusercontent.com/wiki/dwango/UniVRM/images/binary.png" width="200">
+<ul class="simple">
+<li><p>BlendShapeClipのMaterial適用ロジックを修正</p></li>
+</ul>
+<p>v0.44: 一番最後の値で上書き</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Base</span> <span class="o">+</span> <span class="p">(</span><span class="n">Target</span> <span class="o">-</span> <span class="n">Base</span><span class="p">)</span> <span class="o">*</span> <span class="n">Weight</span>
+</pre></div>
+</div>
+<p>v0.45: 重み付き加算</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Base</span> 
+    <span class="o">+</span> <span class="p">(</span><span class="n">TargetA</span> <span class="o">-</span> <span class="n">Base</span><span class="p">)</span> <span class="o">*</span> <span class="n">WeightA</span> 
+    <span class="o">+</span> <span class="p">(</span><span class="n">TargetB</span> <span class="o">-</span> <span class="n">Base</span><span class="p">)</span> <span class="o">*</span> <span class="n">WeightB</span> 
+    <span class="o">+</span> <span class="o">...</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>BlendShapeAvatarのインスペクタを更新
+リストインタフェースを追加
+<img src="https://raw.githubusercontent.com/wiki/dwango/UniVRM/images/list.png" width=200></p></li>
+<li><p>BlendShapeClipのインスペクタを更新
+<img src="https://raw.githubusercontent.com/wiki/dwango/UniVRM/images/clip.png" width=200></p></li>
+<li><p>BlendShape設定のPreviewの中ドラッグで移動</p></li>
+<li><p>Importerの高速化</p></li>
+</ul>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<ul>
+    <li><a href="../../../en/release/055/v0.45.html">English</a></li>
+</ul>
+
+
+  <h3><a href="../../index.html">目次</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">v0.45</a><ul>
+<li><a class="reference internal" href="#id1">バグ修正</a></li>
+<li><a class="reference internal" href="#api">APIの変更(追記)</a><ul>
+<li><a class="reference internal" href="#vrmblendshapeproxy-clear">VRMBlendShapeProxy.Clearの削除</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id2">更新</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>前のトピックへ</h4>
+  <p class="topless"><a href="v0.44.html"
+                        title="前の章へ">v0.44: UniGLTF/UniUnlit 追加</a></p>
+  <h4>次のトピックへ</h4>
+  <p class="topless"><a href="v0.46.html"
+                        title="次の章へ">v0.46</a></p>
+  <div role="note" aria-label="source link">
+    <h3>このページ</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/release/055/v0.45.md.txt"
+            rel="nofollow">ソースコードを表示</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="総合索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="v0.46.html" title="v0.46"
+             >次へ</a> |</li>
+        <li class="right" >
+          <a href="v0.44.html" title="v0.44: UniGLTF/UniUnlit 追加"
+             >前へ</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">UniVRM Programming Document  ドキュメント</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Release</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">v0.45</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, VRM Consortium.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+    </div>
+  </body>
+</html>

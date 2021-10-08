@@ -1,0 +1,158 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>v0.85.0: 1.0準備, FastSpringBone &#8212; UniVRM Programming Document  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="prev" title="v0.84.0: 1.0準備, glTF import menu 復活" href="v0.84.0.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="v0.84.0.html" title="v0.84.0: 1.0準備, glTF import menu 復活"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">UniVRM Programming Document  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Release</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">v0.85.0: 1.0準備, FastSpringBone</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="v0-85-0-1-0-fastspringbone">
+<h1>v0.85.0: 1.0準備, FastSpringBone<a class="headerlink" href="#v0-85-0-1-0-fastspringbone" title="Permalink to this headline">¶</a></h1>
+<section id="v0-85-0-2021-09-30">
+<h2><a class="reference external" href="https://github.com/vrm-c/UniVRM/tree/v0.85.0">v0.85.0</a> (2021-09-30)<a class="headerlink" href="#v0-85-0-2021-09-30" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>commit: https://github.com/vrm-c/UniVRM/releases/tag/v0.85.0</p></li>
+<li><p>milestone: https://github.com/vrm-c/UniVRM/milestone/47?closed=1</p></li>
+</ul>
+<p><a class="reference external" href="https://github.com/vrm-c/UniVRM/compare/v0.84.0...v0.85.0">Full Changelog</a></p>
+</section>
+<section id="id1">
+<h2>[1.0]<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>[1.0] VRM10ObjectFirstPerson.SetupAsync に isMine 引数 <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/1250">#1250</a></p></li>
+<li><p>[1.0] MToon10 offset/scale の挙動 <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/1225">#1225</a></p></li>
+<li><p>CreateErasedMeshAsync <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/1221">#1221</a></p></li>
+<li><p>[1.0] Vrm10Controller を Vrm10Instance に改名してリソース管理を委譲する <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/1242">#1242</a></p></li>
+<li><p>[1.0] Fix MToon10 texture offset/scale bug. <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1261">#1261</a> (<a class="reference external" href="https://github.com/Santarh">Santarh</a>)</p></li>
+<li><p>VrmLib.Model の Read を非同期処理フェーズに移動 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1259">#1259</a> (<a class="reference external" href="https://github.com/Santarh">Santarh</a>)</p></li>
+<li><p>add self flag <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1258">#1258</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>[1.0] Thumbnail の nullcheck <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1254">#1254</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>[1.0] FirstPerson.SetupAsync 修正 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1252">#1252</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>[1.0] rename_VRM10Controller_to_Vrm10Instance <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1251">#1251</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+</ul>
+</section>
+<section id="fastspringbone">
+<h2>FastSpringBone<a class="headerlink" href="#fastspringbone" title="Permalink to this headline">¶</a></h2>
+<p>利用方法は、 <code class="docutils literal notranslate"><span class="pre">Assets/VRM/Samples/SimpleViewer</span></code> を参考にしてください。</p>
+<ul class="simple">
+<li><p>Add FastSpringBone <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1263">#1263</a> (<a class="reference external" href="https://github.com/notargs">notargs</a>)</p></li>
+</ul>
+</section>
+<section id="changelog">
+<h2>その他のChangelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>it might not be a bug but i can’t import the package <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/1238">#1238</a></p></li>
+<li><p>Failed UnlitTransparentZWrite fallback on importing VRM 0.x <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/1139">#1139</a></p></li>
+<li><p>LWRP / URP support <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/368">#368</a></p></li>
+<li><p>warning <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1265">#1265</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>Fix/unity version <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1262">#1262</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>Vrm と　それ以外の glb の処理分岐方法を変更 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1260">#1260</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>Fallback UnlitTransparentWithZWrite into MToon’s emissive factor. <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1255">#1255</a> (<a class="reference external" href="https://github.com/Santarh">Santarh</a>)</p></li>
+<li><p>Update —–feature-request.md <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1253">#1253</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>UniGLTF/README 更新 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1249">#1249</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">VRM/UnlitTransparentZWrite</span></code> の Import を修正 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1248">#1248</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>Update README.md <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1246">#1246</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>Fix throw by First. Use FirstOrDefault <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1244">#1244</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>lambda <code class="docutils literal notranslate"><span class="pre">Func\&lt;Task\&lt;AnimationClip\&gt;\&gt;</span></code> cause warning. Use Task.FromResult <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1243">#1243</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+</ul>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<ul>
+    <li><a href="../../../ja/release/079/v0.85.0.html">日本語</a></li>
+</ul>
+
+
+  <h3><a href="../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">v0.85.0: 1.0準備, FastSpringBone</a><ul>
+<li><a class="reference internal" href="#v0-85-0-2021-09-30">v0.85.0 (2021-09-30)</a></li>
+<li><a class="reference internal" href="#id1">[1.0]</a></li>
+<li><a class="reference internal" href="#fastspringbone">FastSpringBone</a></li>
+<li><a class="reference internal" href="#changelog">その他のChangelog</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="v0.84.0.html"
+                        title="previous chapter">v0.84.0: 1.0準備, glTF import menu 復活</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/release/079/v0.85.0.md.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="v0.84.0.html" title="v0.84.0: 1.0準備, glTF import menu 復活"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">UniVRM Programming Document  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Release</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">v0.85.0: 1.0準備, FastSpringBone</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, VRM Consortium.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,169 @@
+
+<!DOCTYPE html>
+
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>v0.78.0: ScriptdImporter の改修 &#8212; UniVRM Programming Document  ドキュメント</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../../genindex.html" />
+    <link rel="search" title="検索" href="../../search.html" />
+    <link rel="next" title="v0.79.0: 1.0準備" href="../079/v0.79.0.html" />
+    <link rel="prev" title="v0.77.0: RuntimeGltfInstance" href="v0.77.0.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="総合索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="../079/v0.79.0.html" title="v0.79.0: 1.0準備"
+             accesskey="N">次へ</a> |</li>
+        <li class="right" >
+          <a href="v0.77.0.html" title="v0.77.0: RuntimeGltfInstance"
+             accesskey="P">前へ</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">UniVRM Programming Document  ドキュメント</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Release</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">v0.78.0: ScriptdImporter の改修</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="v0-78-0-scriptdimporter">
+<h1>v0.78.0: ScriptdImporter の改修<a class="headerlink" href="#v0-78-0-scriptdimporter" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p>主に、1.0 向けと glb/gltf の ScriptdImporter の改修です。</p>
+<section id="v0-78-0-2021-06-23">
+<h2><a class="reference external" href="https://github.com/vrm-c/UniVRM/tree/v0.78.0">v0.78.0</a> (2021-06-23)<a class="headerlink" href="#v0-78-0-2021-06-23" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p>commit: https://github.com/vrm-c/UniVRM/releases/tag/v0.78.0</p></li>
+<li><p>milestone: https://github.com/vrm-c/UniVRM/milestone/40?closed=1</p></li>
+</ul>
+<p><a class="reference external" href="https://github.com/vrm-c/UniVRM/compare/v0.77.0...v0.78.0">Full Changelog</a></p>
+</section>
+<section id="id1">
+<h2>バグ修正<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p>Feature10/fix sparse <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1049">#1049</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+</ul>
+</section>
+<section id="exporter">
+<h2>Exporter<a class="headerlink" href="#exporter" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p>Export 時に default 値の TRS を出力しない <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1061">#1061</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+</ul>
+</section>
+<section id="scriptedimporter-gltf-glb-vrm-1">
+<h2>ScriptedImporter(gltf/glb vrm-1)<a class="headerlink" href="#scriptedimporter-gltf-glb-vrm-1" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p>ImporterContext.AnimationClips に External か否かの情報を追加 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1050">#1050</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>Feature10/remap editor <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1053">#1053</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>external_object_map に null が入っているときがある(対象を削除したとき) <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1047">#1047</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+</ul>
+</section>
+<section id="id2">
+<h2>1.0<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p>vrm0 の時だけ migration checkbox <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1062">#1062</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>[1.0]MetaEditorの復旧 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1058">#1058</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>Feature10/impl firstperson list <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1052">#1052</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+</ul>
+</section>
+<section id="changelog">
+<h2>その他のChangelog<a class="headerlink" href="#changelog" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p>fix using <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1066">#1066</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>Allow referencing additional chunks. <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1065">#1065</a> (<a class="reference external" href="https://github.com/Santarh">Santarh</a>)</p></li>
+<li><p>Add migration code about legacy roughness texture behaviour. <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1064">#1064</a> (<a class="reference external" href="https://github.com/Santarh">Santarh</a>)</p></li>
+<li><p>Public ITextureDeserializer <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1063">#1063</a> (<a class="reference external" href="https://github.com/Santarh">Santarh</a>)</p></li>
+</ul>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<ul>
+    <li><a href="../../../en/release/068/v0.78.0.html">English</a></li>
+</ul>
+
+
+  <h3><a href="../../index.html">目次</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">v0.78.0: ScriptdImporter の改修</a><ul>
+<li><a class="reference internal" href="#v0-78-0-2021-06-23">v0.78.0 (2021-06-23)</a></li>
+<li><a class="reference internal" href="#id1">バグ修正</a></li>
+<li><a class="reference internal" href="#exporter">Exporter</a></li>
+<li><a class="reference internal" href="#scriptedimporter-gltf-glb-vrm-1">ScriptedImporter(gltf/glb vrm-1)</a></li>
+<li><a class="reference internal" href="#id2">1.0</a></li>
+<li><a class="reference internal" href="#changelog">その他のChangelog</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>前のトピックへ</h4>
+  <p class="topless"><a href="v0.77.0.html"
+                        title="前の章へ">v0.77.0: RuntimeGltfInstance</a></p>
+  <h4>次のトピックへ</h4>
+  <p class="topless"><a href="../079/v0.79.0.html"
+                        title="次の章へ">v0.79.0: 1.0準備</a></p>
+  <div role="note" aria-label="source link">
+    <h3>このページ</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/release/068/v0.78.0.md.txt"
+            rel="nofollow">ソースコードを表示</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="総合索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="../079/v0.79.0.html" title="v0.79.0: 1.0準備"
+             >次へ</a> |</li>
+        <li class="right" >
+          <a href="v0.77.0.html" title="v0.77.0: RuntimeGltfInstance"
+             >前へ</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">UniVRM Programming Document  ドキュメント</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Release</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">v0.78.0: ScriptdImporter の改修</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, VRM Consortium.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+    </div>
+  </body>
+</html>
