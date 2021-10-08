@@ -1,16 +1,9 @@
 # VRMFirstPersonの使い方
 
-## VRMFirstPersonの設定
-[VRMFirstPerson]({{< relref "univrm_firstperson.md" >}})ではRendererに対して設定があります。
+{doc}`FirstPerson と Renderer の可視制御 </implementation/first_person>`
 
-|FirstPersonFlag               |レイヤー               |備考                                        |
-|------------------------------|----------------------|--------------------------------------------|
-|Both                          |default               |一人称と三人称で分ける必要のない部分に指定します|
-|ThirdPersonOnly               |VRMThirdPersonOnly|一人称時に描画したくない部分に指定します        |
-|FirstPersonOnly               |VRMFirstPersonOnly|三人称時に描画したくない部分に指定します。自動作成した頭部無しモデルが使います|
-|Auto                          |VRMThirdPersonOnly|実行時に一人称用モデルを自動で作成し、それをFIRSTPERSON_ONLY_LAYERに設定します|
-
-実行時に**VRMFirstPerson.Setup**を呼び出すことで、上記のレイヤー設定を行うことができます。明示的に外部から呼び出してください。
+実行時に**VRMFirstPerson.Setup**を呼び出すことで、FirstPerson設定に応じた Renderer の可視制御を行うことができます。
+明示的に外部から呼び出してください。
 
 ## アプリケーションに追加の描画レイヤーを指定する
 
