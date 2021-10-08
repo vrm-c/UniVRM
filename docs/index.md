@@ -79,6 +79,16 @@ vrm1/vrm1_firstperson
 
 - VRM10Viewer
 
+## Release
+
+```{toctree}
+:glob:
+:maxdepth: 1
+   
+release/index
+```
+
+
 # Indices and tables
 
 * {ref}`genindex`
