@@ -76,7 +76,7 @@ namespace UniVRM10
             // update Mesh
             foreach (var (gltfMesh, mesh) in Enumerable.Zip(gltf.meshes, model.MeshGroups, (l, r) => (l, r.Meshes[0])))
             {
-                var indices = mesh.IndexBuffer.GetSpan<int>();
+                var indices = mesh.IndexBuffer.GetSpan<uint>();
                 var position = AddAccessor<Vector3>(mesh.VertexBuffer.Positions);
                 var normal = AddAccessor<Vector3>(mesh.VertexBuffer.Normals);
                 var uv = AddAccessor<Vector2>(mesh.VertexBuffer.TexCoords);

@@ -72,7 +72,7 @@ namespace UniGLTF
             {
                 return cv.ComponentType;
             }
-            else if (typeof(T) == typeof(uint) || typeof(T) == typeof(int))
+            else if (typeof(T) == typeof(uint))
             {
                 return glComponentType.UNSIGNED_INT;
             }
