@@ -60,10 +60,10 @@ namespace UniVRM10
 
         bool m_done;
 
-        async Task SetupSelfRendererAsync(GameObject go, Transform FirstPersonBone, RendererFirstPersonFlags x,
+        async Task SetupSelfRendererAsync(GameObject go, UniGLTF.RuntimeGltfInstance runtime,
+            Transform FirstPersonBone, RendererFirstPersonFlags x,
             (int FirstPersonOnly, int ThirdPersonOnly) layer, IAwaitCaller awaitCaller = null)
         {
-            var runtime = go.GetComponent<UniGLTF.RuntimeGltfInstance>();
             switch (x.FirstPersonFlag)
             {
                 case UniGLTF.Extensions.VRMC_vrm.FirstPersonType.auto:
@@ -153,12 +153,13 @@ namespace UniVRM10
             }
             m_done = true;
 
-            var FirstPersonBone = go.GetComponent<Animator>().GetBoneTransform(HumanBodyBones.Head);
+            var runtime = go.GetComponent<UniGLTF.RuntimeGltfInstance>();
+            var firstPersonBone = go.GetComponent<Animator>().GetBoneTransform(HumanBodyBones.Head);
             foreach (var x in Renderers)
             {
                 if (isSelf)
                 {
-                    await SetupSelfRendererAsync(go, FirstPersonBone, x, layer, awaitCaller);
+                    await SetupSelfRendererAsync(go, runtime, firstPersonBone, x, layer, awaitCaller);
                 }
                 else
                 {
@@ -169,6 +170,7 @@ namespace UniVRM10
                             {
                                 // invisible
                                 r.enabled = false;
+                                runtime.VisibleRenderers.Remove(r);
                             }
                             break;
 
