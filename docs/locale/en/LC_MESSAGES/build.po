@@ -1,0 +1,66 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2021, VRM Consortium
+# This file is distributed under the same license as the UniVRM Programming
+# Document package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: UniVRM Programming Document \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-10-11 16:50+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../build.md:1
+msgid "アプリケーションのビルド"
+msgstr ""
+
+#: ../../build.md:3
+msgid "ビルドに含めるシェーダー"
+msgstr ""
+
+#: ../../build.md:5
+msgid ""
+"`Project Settings = Graphics - Always Included Shaders` "
+"などに設定して、ビルドに含まれるようにしてください。"
+msgstr ""
+
+#: ../../build.md:7
+msgid "Unlit"
+msgstr ""
+
+#: ../../build.md:9
+msgid "`Assets\\VRMShaders\\GLTF\\UniUnlit\\Resources\\UniGLTF\\UniUnlit.shader`"
+msgstr ""
+
+#: ../../build.md:11
+msgid "MToon"
+msgstr ""
+
+#: ../../build.md:13
+msgid "`Assets\\VRMShaders\\VRM\\MToon\\MToon\\Resources\\Shaders\\MToon.shader`"
+msgstr ""
+
+#: ../../build.md:15
+msgid "ランタイム import/export 時のテクスチャー変換用のシェーダー"
+msgstr ""
+
+#: ../../build.md:17
+msgid "`Assets\\VRMShaders\\GLTF\\IO\\Resources\\UniGLTF\\NormalMapExporter.shader`"
+msgstr ""
+
+#: ../../build.md:18
+msgid "`Assets\\VRMShaders\\GLTF\\IO\\Resources\\UniGLTF\\StandardMapExporter.shader`"
+msgstr ""
+
+#: ../../build.md:19
+msgid "`Assets\\VRMShaders\\GLTF\\IO\\Resources\\UniGLTF\\StandardMapImporter.shader`"
+msgstr ""
+

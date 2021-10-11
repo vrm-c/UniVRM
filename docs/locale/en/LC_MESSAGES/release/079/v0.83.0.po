@@ -1,0 +1,244 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2021, VRM Consortium
+# This file is distributed under the same license as the UniVRM Programming
+# Document package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: UniVRM Programming Document \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-10-11 16:50+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../release/079/v0.83.0.md:1
+msgid "v0.83.0: 1.0準備"
+msgstr ""
+
+#: ../../release/079/v0.83.0.md:3
+msgid "https://vrm.dev/"
+msgstr ""
+
+#: ../../release/079/v0.83.0.md:5
+msgid "のプログラミング関連のドキュメントを"
+msgstr ""
+
+#: ../../release/079/v0.83.0.md:7
+msgid "https://vrm-c.github.io/UniVRM/"
+msgstr ""
+
+#: ../../release/079/v0.83.0.md:9
+msgid "に引越ししました。"
+msgstr ""
+
+#: ../../release/079/v0.83.0.md:11
+msgid "[v0.83.0](https://github.com/vrm-c/UniVRM/tree/v0.83.0) (2021-09-10)"
+msgstr ""
+
+#: ../../release/079/v0.83.0.md:13
+msgid "commit: https://github.com/vrm-c/UniVRM/releases/tag/v0.83.0"
+msgstr ""
+
+#: ../../release/079/v0.83.0.md:14
+msgid ""
+"milestone: https://github.com/vrm-c/UniVRM/milestone/45?closed=1 [Full "
+"Changelog](https://github.com/vrm-c/UniVRM/compare/v0.82.1...v0.83.0)"
+msgstr ""
+
+#: ../../release/079/v0.83.0.md:17
+msgid "bug修正"
+msgstr ""
+
+#: ../../release/079/v0.83.0.md:19
+msgid ""
+"PBR テクスチャーの変換に使っている シェーダーが ビルドに含まれない "
+"[\\#1187](https://github.com/vrm-c/UniVRM/issues/1187)"
+msgstr ""
+
+#: ../../release/079/v0.83.0.md:20
+msgid ""
+"Include all shaders in Resources directory. "
+"[\\#1203](https://github.com/vrm-c/UniVRM/pull/1203) "
+"([Santarh](https://github.com/Santarh))"
+msgstr ""
+
+#: ../../release/079/v0.83.0.md:21
+msgid ""
+"Standard Shader Export - NotImplementedException When Occlusion and "
+"Metallic Resolutions Do Not Match "
+"[\\#1178](https://github.com/vrm-c/UniVRM/issues/1178)"
+msgstr ""
+
+#: ../../release/079/v0.83.0.md:23
+msgid "1.0"
+msgstr ""
+
+#: ../../release/079/v0.83.0.md:25
+msgid ""
+"\\[1.0\\] Renderer.enabled = false になってない "
+"[\\#1197](https://github.com/vrm-c/UniVRM/issues/1197)"
+msgstr ""
+
+#: ../../release/079/v0.83.0.md:26
+msgid ""
+"\\[1.0\\] SetupAsync にして Auto で生成される Mesh の初期状態を非表示にした "
+"[\\#1194](https://github.com/vrm-c/UniVRM/issues/1194)"
+msgstr ""
+
+#: ../../release/079/v0.83.0.md:27
+msgid ""
+"\\[1.0\\] MaterialUVBindings の挙動 "
+"[\\#1191](https://github.com/vrm-c/UniVRM/issues/1191)"
+msgstr ""
+
+#: ../../release/079/v0.83.0.md:28
+msgid ""
+"\\[1.0\\] マイグレートロードしたときに古い方のメタにアクセスできる API "
+"[\\#1190](https://github.com/vrm-c/UniVRM/issues/1190)"
+msgstr ""
+
+#: ../../release/079/v0.83.0.md:29
+msgid ""
+"\\[1.0\\] MaterialValueBind が重複すると例外 "
+"[\\#1189](https://github.com/vrm-c/UniVRM/issues/1189)"
+msgstr ""
+
+#: ../../release/079/v0.83.0.md:30
+msgid ""
+"\\[1.0\\] サムネイルが無名のときにエラーになる場合がある "
+"[\\#1188](https://github.com/vrm-c/UniVRM/issues/1188)"
+msgstr ""
+
+#: ../../release/079/v0.83.0.md:31
+msgid ""
+"初期値との差分を使うようにロジックを変更 [\\#1209](https://github.com/vrm-c/UniVRM/pull/1209)"
+" ([ousttrue](https://github.com/ousttrue))"
+msgstr ""
+
+#: ../../release/079/v0.83.0.md:32
+msgid ""
+"\\[1.0\\] FirstPerson 初期化を整理 "
+"[\\#1206](https://github.com/vrm-c/UniVRM/pull/1206) "
+"([ousttrue](https://github.com/ousttrue))"
+msgstr ""
+
+#: ../../release/079/v0.83.0.md:33
+msgid ""
+"\\[1.0\\] RuntimeLoad と meta 取得 を実装 "
+"[\\#1196](https://github.com/vrm-c/UniVRM/pull/1196) "
+"([ousttrue](https://github.com/ousttrue))"
+msgstr ""
+
+#: ../../release/079/v0.83.0.md:34
+msgid ""
+"\\[1.0\\] thumbnail の名前が無い時に SubAssetKey を作るのに失敗するのを修正 "
+"[\\#1193](https://github.com/vrm-c/UniVRM/pull/1193) "
+"([ousttrue](https://github.com/ousttrue))"
+msgstr ""
+
+#: ../../release/079/v0.83.0.md:35
+msgid ""
+"MaterialColorBindings の重複時の例外防止 "
+"[\\#1192](https://github.com/vrm-c/UniVRM/pull/1192) "
+"([ousttrue](https://github.com/ousttrue))"
+msgstr ""
+
+#: ../../release/079/v0.83.0.md:37
+msgid "その他のChangelog"
+msgstr ""
+
+#: ../../release/079/v0.83.0.md:39
+msgid "MMD4Mecanim+UniVRM [\\#1184](https://github.com/vrm-c/UniVRM/issues/1184)"
+msgstr ""
+
+#: ../../release/079/v0.83.0.md:40
+msgid ""
+"Namespace \"VRM\" can't be found by any other script. "
+"[\\#1103](https://github.com/vrm-c/UniVRM/issues/1103)"
+msgstr ""
+
+#: ../../release/079/v0.83.0.md:41
+msgid ""
+"UniGLTF / VRMShader assembly file autoReference setting needs to be true "
+"for UPM package import "
+"[\\#993](https://github.com/vrm-c/UniVRM/issues/993)"
+msgstr ""
+
+#: ../../release/079/v0.83.0.md:42
+msgid ""
+"\\#if UNITY\\_EDITOR でビルドエラーを修正 "
+"[\\#1213](https://github.com/vrm-c/UniVRM/pull/1213) "
+"([ousttrue](https://github.com/ousttrue))"
+msgstr ""
+
+#: ../../release/079/v0.83.0.md:43
+msgid ""
+"UniVRM-0.83.0 [\\#1212](https://github.com/vrm-c/UniVRM/pull/1212) "
+"([ousttrue](https://github.com/ousttrue))"
+msgstr ""
+
+#: ../../release/079/v0.83.0.md:44
+msgid ""
+"\\[Exporter\\] shader版の StandardMap の Exporter 変換を追加 "
+"[\\#1207](https://github.com/vrm-c/UniVRM/pull/1207) "
+"([ousttrue](https://github.com/ousttrue))"
+msgstr ""
+
+#: ../../release/079/v0.83.0.md:45
+msgid ""
+"Standard を GraphicsSettings に追加 "
+"[\\#1204](https://github.com/vrm-c/UniVRM/pull/1204) "
+"([ousttrue](https://github.com/ousttrue))"
+msgstr ""
+
+#: ../../release/079/v0.83.0.md:46
+msgid ""
+"Import時に非表示にする [\\#1202](https://github.com/vrm-c/UniVRM/pull/1202) "
+"([ousttrue](https://github.com/ousttrue))"
+msgstr ""
+
+#: ../../release/079/v0.83.0.md:47
+msgid ""
+"書き間違え [\\#1201](https://github.com/vrm-c/UniVRM/pull/1201) "
+"([ousttrue](https://github.com/ousttrue))"
+msgstr ""
+
+#: ../../release/079/v0.83.0.md:48
+msgid ""
+"シンプルなREADME [\\#1199](https://github.com/vrm-c/UniVRM/pull/1199) "
+"([ousttrue](https://github.com/ousttrue))"
+msgstr ""
+
+#: ../../release/079/v0.83.0.md:49
+msgid ""
+"Fix/simple viewer docfx "
+"[\\#1198](https://github.com/vrm-c/UniVRM/pull/1198) "
+"([ousttrue](https://github.com/ousttrue))"
+msgstr ""
+
+#: ../../release/079/v0.83.0.md:50
+msgid ""
+"`v0.82.1` の RuntimeLoad について "
+"[\\#1195](https://github.com/vrm-c/UniVRM/pull/1195) "
+"([ousttrue](https://github.com/ousttrue))"
+msgstr ""
+
+#: ../../release/079/v0.83.0.md:51
+msgid ""
+"Feature/docfx [\\#1186](https://github.com/vrm-c/UniVRM/pull/1186) "
+"([ousttrue](https://github.com/ousttrue))"
+msgstr ""
+
+#: ../../release/079/v0.83.0.md:52
+msgid ""
+"simple [\\#1172](https://github.com/vrm-c/UniVRM/pull/1172) "
+"([ousttrue](https://github.com/ousttrue))"
+msgstr ""
+

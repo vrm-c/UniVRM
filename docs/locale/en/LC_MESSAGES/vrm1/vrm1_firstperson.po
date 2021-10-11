@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: UniVRM Programming Document \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-09-14 13:46+0900\n"
+"POT-Creation-Date: 2021-10-11 16:50+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,74 +23,91 @@ msgid "FirstPerson"
 msgstr ""
 
 #: ../../vrm1/vrm1_firstperson.md:3
+msgid "{doc}`FirstPerson と Renderer の可視制御 </implementation/first_person>`"
+msgstr ""
+
+#: ../../vrm1/vrm1_firstperson.md:5
 msgid "Runtime に FirstPerson 機能を有効にする"
 msgstr "Enable FirstPerson function at runtime."
 
-#: ../../vrm1/vrm1_firstperson.md:5
+#: ../../vrm1/vrm1_firstperson.md:7
 msgid "VR向け FirstPerson 設定の初期化手順です。"
 msgstr "The VR First Person settings."
 
-#: ../../vrm1/vrm1_firstperson.md:7
+#: ../../vrm1/vrm1_firstperson.md:9
 msgid "Load する"
 msgstr "Load"
 
-#: ../../vrm1/vrm1_firstperson.md:8
+#: ../../vrm1/vrm1_firstperson.md:10
 msgid "Vrm10Instance を取得する"
 msgstr "Get Vrm10Instance"
 
-#: ../../vrm1/vrm1_firstperson.md:9
+#: ../../vrm1/vrm1_firstperson.md:11
 msgid "`controller.Vrm.FirstPerson.SetupAsync` を呼び出す"
 msgstr "Call `controller.Vrm.FirstPerson.SetupAsync`"
 
-#: ../../vrm1/vrm1_firstperson.md:10
-msgid ""
-"`controller.Vrm.FirstPerson.SetupAsync` した結果新規に作成されたモデルを "
-"`RuntimeGltfInstance` に渡す"
-msgstr "Add the result of `controller.Vrm.FirstPerson.SetupAsync` to `RuntimeGltfInstance`"
-
-#: ../../vrm1/vrm1_firstperson.md:11
+#: ../../vrm1/vrm1_firstperson.md:12
 msgid "ShowMeshes"
 msgstr ""
 
-#: ../../vrm1/vrm1_firstperson.md:43
+#: ../../vrm1/vrm1_firstperson.md:41
 msgid "VRMの推奨する VR 向けのカメラ構成"
 msgstr "Recommended camera layer settings"
 
-#: ../../vrm1/vrm1_firstperson.md:45
+#: ../../vrm1/vrm1_firstperson.md:43
 msgid "ヘッドマウントディスプレイを表すカメラ と その他のカメラという２種類のカメラを想定ます。 それぞれに対して、"
-msgstr "Suppose your scene has a camera that represents a head-mounted display and other cameras."
+msgstr ""
+"Suppose your scene has a camera that represents a head-mounted display "
+"and other cameras."
 
-#: ../../vrm1/vrm1_firstperson.md:48
+#: ../../vrm1/vrm1_firstperson.md:46
 msgid "FIRSTPERSON_ONLY_LAYER(このレイヤーを指定した gameObject はその他のカメラから消えます)"
-msgstr "FIRSTPERSON_ONLY_LAYER(The gameObject that specifies this layer disappears from other cameras)"
+msgstr ""
+"FIRSTPERSON_ONLY_LAYER(The gameObject that specifies this layer "
+"disappears from other cameras)"
+
+#: ../../vrm1/vrm1_firstperson.md:47
+msgid "THIRDPERSON_ONLY_LAYER(このレイヤーを指定した gameObject はヘッドマウントディスプレイから消えます)"
+msgstr ""
+"THIRDPERSON_ONLY_LAYER(The gameObject that specifies this layer "
+"disappears from the head-mounted display)"
 
 #: ../../vrm1/vrm1_firstperson.md:49
-msgid "THIRDPERSON_ONLY_LAYER(このレイヤーを指定した gameObject はヘッドマウントディスプレイから消えます)"
-msgstr "THIRDPERSON_ONLY_LAYER(The gameObject that specifies this layer disappears from the head-mounted display)"
-
-#: ../../vrm1/vrm1_firstperson.md:51
 msgid "を定義します。 これにより、ヘッドマウント視点のアバターの描画を抑止しつつ、他者からは見えるようにします。"
-msgstr "Stops drawing the avatar from the head-mounted display perspective and makes it visible to other cameras."
+msgstr ""
+"Stops drawing the avatar from the head-mounted display perspective and "
+"makes it visible to other cameras."
 
-#: ../../vrm1/vrm1_firstperson.md:54
+#: ../../vrm1/vrm1_firstperson.md:52
 msgid "例: アバターの頭の描画を抑止して前が見えるようにする"
 msgstr "Example: Stop drawing the avatar's head so you can see the front"
 
-#: ../../vrm1/vrm1_firstperson.md:56
+#: ../../vrm1/vrm1_firstperson.md:54
 msgid "VRMは、`VRMFirstPersonOnly` と `VRMThirdPersonOnly` という名前のレイヤーを予約しています。"
 msgstr "VRM reserves layers named `VRMFirstPersonOnly` and` VRMThirdPersonOnly`."
 
-#: ../../vrm1/vrm1_firstperson.md:58
+#: ../../vrm1/vrm1_firstperson.md:56
 msgid ""
 "`Project Settings` - `Tags and Layers` に `VRMFirstPersonOnly` と "
 "`VRMThirdPersonOnly` を 設定してください。 サンプルでは、それぞれに `9` と `10` を割り当ています。"
-msgstr "Please set `VRMFirstPersonOnly` and` VRMThirdPersonOnly` to `Project Settings`-`Tags and Layers`. In the sample, we assign `9` and` 10` to each."
+msgstr ""
+"Please set `VRMFirstPersonOnly` and` VRMThirdPersonOnly` to `Project "
+"Settings`-`Tags and Layers`. In the sample, we assign `9` and` 10` to "
+"each."
 
-#: ../../vrm1/vrm1_firstperson.md:62
+#: ../../vrm1/vrm1_firstperson.md:60
 msgid "初期化時に layer を明示する"
 msgstr "Specify layer at initialization"
 
-#: ../../vrm1/vrm1_firstperson.md:64
+#: ../../vrm1/vrm1_firstperson.md:62
 msgid "追加の引数で指定できます。"
 msgstr "It can be specified with an additional argument."
+
+#~ msgid ""
+#~ "`controller.Vrm.FirstPerson.SetupAsync` した結果新規に作成されたモデルを "
+#~ "`RuntimeGltfInstance` に渡す"
+#~ msgstr ""
+#~ "Add the result of "
+#~ "`controller.Vrm.FirstPerson.SetupAsync` to "
+#~ "`RuntimeGltfInstance`"
 

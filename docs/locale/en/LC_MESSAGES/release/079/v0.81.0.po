@@ -1,0 +1,257 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2021, VRM Consortium
+# This file is distributed under the same license as the UniVRM Programming
+# Document package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: UniVRM Programming Document \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-10-11 16:50+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../release/079/v0.81.0.md:1
+msgid "v0.81.0: 1.0準備, unitypackage 構成変更"
+msgstr ""
+
+#: ../../release/079/v0.81.0.md:3
+msgid "**Stable 安定板**"
+msgstr ""
+
+#: ../../release/079/v0.81.0.md:5
+msgid "`v0.81.0` から `unitypackage` が変わりました。"
+msgstr ""
+
+#: ../../release/079/v0.81.0.md:7
+msgid "Install `UniGLTF_VRMShaders` and `UniVRM`"
+msgstr ""
+
+#: ../../release/079/v0.81.0.md:8
+msgid "For `VRM-1.0Beta`, add `VRM` unitypackage"
+msgstr ""
+
+#: ../../release/079/v0.81.0.md ../../release/079/v0.81.0.md:31
+msgid "UniGLTF_VRMShaders"
+msgstr ""
+
+#: ../../release/079/v0.81.0.md
+msgid "UniVRM"
+msgstr ""
+
+#: ../../release/079/v0.81.0.md
+msgid "VRM1.0"
+msgstr ""
+
+#: ../../release/079/v0.81.0.md
+msgid "for GLTF"
+msgstr ""
+
+#: ../../release/079/v0.81.0.md
+msgid "install"
+msgstr ""
+
+#: ../../release/079/v0.81.0.md
+msgid "for VRM-0.X"
+msgstr ""
+
+#: ../../release/079/v0.81.0.md
+msgid "for VRM-1.0β"
+msgstr ""
+
+#: ../../release/079/v0.81.0.md
+msgid "folder"
+msgstr ""
+
+#: ../../release/079/v0.81.0.md
+msgid "Assets/VRMShaders, Assets/UniGLTF"
+msgstr ""
+
+#: ../../release/079/v0.81.0.md
+msgid "Assets/VRM"
+msgstr ""
+
+#: ../../release/079/v0.81.0.md
+msgid "Assets/VRM10"
+msgstr ""
+
+#: ../../release/079/v0.81.0.md:17
+msgid "関連情報 (Related Information)"
+msgstr ""
+
+#: ../../release/079/v0.81.0.md:19
+msgid ""
+"From `v0.80.0`, Unity minimal version is "
+"`Unity-2019.4LTS`[UnityVersion](https://vrm.dev/docs/univrm/install/unity_version/)"
+msgstr ""
+
+#: ../../release/079/v0.81.0.md:21
+msgid ""
+"[UniVRMバージョン](https://vrm.dev/docs/univrm/install/univrm_version/) "
+"([UniVRM "
+"Version](https://vrm.dev/en/docs/univrm/install/univrm_version/))"
+msgstr ""
+
+#: ../../release/079/v0.81.0.md:23
+msgid ""
+"[UniVRMインストール](https://vrm.dev/docs/univrm) ([UniVRM "
+"Install](https://vrm.dev/en/docs/univrm))"
+msgstr ""
+
+#: ../../release/079/v0.81.0.md:25
+msgid ""
+"[UniVRMアンインストール](https://vrm.dev/docs/univrm/install/univrm_uninstall/) "
+"([UniVRM "
+"Uninstall](https://vrm.dev/en/docs/univrm/install/univrm_uninstall/))"
+msgstr ""
+
+#: ../../release/079/v0.81.0.md:27
+msgid ""
+"[VRMエクスポート](https://vrm.dev/docs/univrm/export/univrm_export/) ([VRM "
+"Export](https://vrm.dev/en/docs/univrm/export/univrm_export/))"
+msgstr ""
+
+#: ../../release/079/v0.81.0.md:29
+msgid "UnityPackage の構成を整理しました"
+msgstr ""
+
+#: ../../release/079/v0.81.0.md:32
+msgid "UniVRM(VRM-0.X)"
+msgstr ""
+
+#: ../../release/079/v0.81.0.md:33
+msgid "VRM(VRM-1.0β)"
+msgstr ""
+
+#: ../../release/079/v0.81.0.md:35
+msgid "`UniGLTF_VRMShaders` `UniVRM` の順に２つインストールしてください"
+msgstr ""
+
+#: ../../release/079/v0.81.0.md:37
+msgid "[v0.81.0](https://github.com/vrm-c/UniVRM/tree/v0.81.0) (2021-08-20)"
+msgstr ""
+
+#: ../../release/079/v0.81.0.md:39
+msgid "commit: https://github.com/vrm-c/UniVRM/releases/tag/v0.81.0"
+msgstr ""
+
+#: ../../release/079/v0.81.0.md:40
+msgid "milestone: https://github.com/vrm-c/UniVRM/milestone/43?closed=1"
+msgstr ""
+
+#: ../../release/079/v0.81.0.md:42
+msgid ""
+"[Full "
+"Changelog](https://github.com/vrm-c/UniVRM/compare/v0.80.0...v0.81.0)"
+msgstr ""
+
+#: ../../release/079/v0.81.0.md:44
+msgid "パッケージ整理など"
+msgstr ""
+
+#: ../../release/079/v0.81.0.md:45
+msgid ""
+"UniGLTF の UPM id を、`com.vrmc.unigltf` から `com.vrmc.gltf` に変えてバージョンを振り直し "
+"[\\#1156](https://github.com/vrm-c/UniVRM/issues/1156)"
+msgstr ""
+
+#: ../../release/079/v0.81.0.md:46
+msgid ""
+"UnityPackage に Samples を含める "
+"[\\#1159](https://github.com/vrm-c/UniVRM/pull/1159) "
+"([ousttrue](https://github.com/ousttrue))"
+msgstr ""
+
+#: ../../release/079/v0.81.0.md:47
+msgid ""
+"内部バージョンは維持 UniGLTF/UniGLTFVersion.cs "
+"[\\#1158](https://github.com/vrm-c/UniVRM/pull/1158) "
+"([ousttrue](https://github.com/ousttrue))"
+msgstr ""
+
+#: ../../release/079/v0.81.0.md:48
+msgid ""
+"What difference between \"UniVRM0X\" and \"UniVRM10\" unitypackage? "
+"「UniVRM0X」と「UniVRM10」のユニティパッケージの違いは何ですか？ "
+"[\\#1152](https://github.com/vrm-c/UniVRM/issues/1152)"
+msgstr ""
+
+#: ../../release/079/v0.81.0.md:49
+msgid ""
+"リリースページの安定版のバージョン番号ミス "
+"[\\#1150](https://github.com/vrm-c/UniVRM/issues/1150)"
+msgstr ""
+
+#: ../../release/079/v0.81.0.md:50
+msgid ""
+"サンプルの構成変更 [\\#1155](https://github.com/vrm-c/UniVRM/pull/1155) "
+"([ousttrue](https://github.com/ousttrue))"
+msgstr ""
+
+#: ../../release/079/v0.81.0.md:52
+msgid "VRM-1.0"
+msgstr ""
+
+#: ../../release/079/v0.81.0.md:53
+msgid ""
+"\\[VRM1\\] VRM10/MToon10 のインスペクターの Emission が HDR でない "
+"[\\#1148](https://github.com/vrm-c/UniVRM/issues/1148)"
+msgstr ""
+
+#: ../../release/079/v0.81.0.md:54
+msgid ""
+"Feature1/lookat editor tool "
+"[\\#1154](https://github.com/vrm-c/UniVRM/pull/1154) "
+"([ousttrue](https://github.com/ousttrue))"
+msgstr ""
+
+#: ../../release/079/v0.81.0.md:55
+msgid ""
+"add \\[HDR\\] [\\#1151](https://github.com/vrm-c/UniVRM/pull/1151) "
+"([ousttrue](https://github.com/ousttrue))"
+msgstr ""
+
+#: ../../release/079/v0.81.0.md:57
+msgid "その他のChangelog"
+msgstr ""
+
+#: ../../release/079/v0.81.0.md:58
+msgid ""
+"Add properties to `RuntimeGltfInstance` "
+"[\\#1096](https://github.com/vrm-c/UniVRM/issues/1096)"
+msgstr ""
+
+#: ../../release/079/v0.81.0.md:59
+msgid ""
+"\\[0.77\\]AsyncでランタイムロードしたモデルのScaleを1以上にするとSpringBoneの動作が怪しくなる "
+"[\\#1115](https://github.com/vrm-c/UniVRM/issues/1115)"
+msgstr ""
+
+#: ../../release/079/v0.81.0.md:60
+msgid ""
+"implement Mesh.colors "
+"[\\#1153](https://github.com/vrm-c/UniVRM/pull/1153) "
+"([ousttrue](https://github.com/ousttrue))"
+msgstr ""
+
+#: ../../release/079/v0.81.0.md:61
+msgid ""
+"ISSUE\\_TEMPLATE を簡略化 "
+"[\\#1149](https://github.com/vrm-c/UniVRM/pull/1149) "
+"([ousttrue](https://github.com/ousttrue))"
+msgstr ""
+
+#: ../../release/079/v0.81.0.md:62
+msgid ""
+"Update unity version & end preview release "
+"[\\#1147](https://github.com/vrm-c/UniVRM/pull/1147) "
+"([ousttrue](https://github.com/ousttrue))"
+msgstr ""
+

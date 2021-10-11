@@ -1,0 +1,233 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2021, VRM Consortium
+# This file is distributed under the same license as the UniVRM Programming
+# Document package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: UniVRM Programming Document \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-10-11 16:50+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../release/079/v0.80.0.md:1
+msgid "v0.80.0: 1.0準備, 最低バージョンを Unity-2019.4LTS に更新"
+msgstr ""
+
+#: ../../release/079/v0.80.0.md:3
+msgid "[v0.80.0](https://github.com/vrm-c/UniVRM/tree/v0.80.0) (2021-08-11)"
+msgstr ""
+
+#: ../../release/079/v0.80.0.md:5
+msgid "commit: https://github.com/vrm-c/UniVRM/releases/tag/v0.80.0"
+msgstr ""
+
+#: ../../release/079/v0.80.0.md:6
+msgid "milestone: https://github.com/vrm-c/UniVRM/milestone/42?closed=1"
+msgstr ""
+
+#: ../../release/079/v0.80.0.md:8
+msgid ""
+"[Full "
+"Changelog](https://github.com/vrm-c/UniVRM/compare/v0.79.0...v0.80.0)"
+msgstr ""
+
+#: ../../release/079/v0.80.0.md:10
+msgid "最低バージョンを Unity-2019.4LTS に更新"
+msgstr ""
+
+#: ../../release/079/v0.80.0.md:11
+msgid ""
+"Unityのサポートバージョンを 2019.4LTS 以降にする "
+"[\\#1126](https://github.com/vrm-c/UniVRM/issues/1126)"
+msgstr ""
+
+#: ../../release/079/v0.80.0.md:12
+msgid ""
+"Use GUID in asmdefs [\\#1131](https://github.com/vrm-c/UniVRM/pull/1131) "
+"([Santarh](https://github.com/Santarh))"
+msgstr ""
+
+#: ../../release/079/v0.80.0.md:13
+msgid ""
+"update 2019 settings [\\#1130](https://github.com/vrm-c/UniVRM/pull/1130)"
+" ([ousttrue](https://github.com/ousttrue))"
+msgstr ""
+
+#: ../../release/079/v0.80.0.md:14
+msgid ""
+"開発バージョンをUnity-2019にあげる。および、 Unity-2019 require ApplyRevertGUI call in "
+"OnInspectorGUI の修正 [\\#1129](https://github.com/vrm-c/UniVRM/pull/1129) "
+"([ousttrue](https://github.com/ousttrue))"
+msgstr ""
+
+#: ../../release/079/v0.80.0.md:16
+msgid "VRM-1.0"
+msgstr ""
+
+#: ../../release/079/v0.80.0.md:17
+msgid ""
+"VRM1 の unitypackage を作る "
+"[\\#1127](https://github.com/vrm-c/UniVRM/issues/1127)"
+msgstr ""
+
+#: ../../release/079/v0.80.0.md:18
+msgid ""
+"Fix1/expression UI [\\#1142](https://github.com/vrm-c/UniVRM/pull/1142) "
+"([ousttrue](https://github.com/ousttrue))"
+msgstr ""
+
+#: ../../release/079/v0.80.0.md:19
+msgid ""
+"VRM10Expression.Preset と ExpressionName を廃止 "
+"[\\#1141](https://github.com/vrm-c/UniVRM/pull/1141) "
+"([ousttrue](https://github.com/ousttrue))"
+msgstr ""
+
+#: ../../release/079/v0.80.0.md:20
+msgid ""
+"Fix1/fix firstperson editor "
+"[\\#1136](https://github.com/vrm-c/UniVRM/pull/1136) "
+"([ousttrue](https://github.com/ousttrue))"
+msgstr ""
+
+#: ../../release/079/v0.80.0.md:21
+msgid ""
+"Feature1/add default expressions "
+"[\\#1135](https://github.com/vrm-c/UniVRM/pull/1135) "
+"([ousttrue](https://github.com/ousttrue))"
+msgstr ""
+
+#: ../../release/079/v0.80.0.md:22
+msgid ""
+"Feature1/update jsonschema "
+"[\\#1134](https://github.com/vrm-c/UniVRM/pull/1134) "
+"([ousttrue](https://github.com/ousttrue))"
+msgstr ""
+
+#: ../../release/079/v0.80.0.md:23
+msgid ""
+"add null check [\\#1133](https://github.com/vrm-c/UniVRM/pull/1133) "
+"([ousttrue](https://github.com/ousttrue))"
+msgstr ""
+
+#: ../../release/079/v0.80.0.md:24
+msgid ""
+"VRM-1.0 の unitypackage も作成する "
+"[\\#1132](https://github.com/vrm-c/UniVRM/pull/1132) "
+"([ousttrue](https://github.com/ousttrue))"
+msgstr ""
+
+#: ../../release/079/v0.80.0.md:25
+msgid ""
+"\\[VRM10\\] VRM10Expression のカスタムエディターの修正 "
+"[\\#1118](https://github.com/vrm-c/UniVRM/pull/1118) "
+"([ousttrue](https://github.com/ousttrue))"
+msgstr ""
+
+#: ../../release/079/v0.80.0.md:27
+msgid "その他のChangelog"
+msgstr ""
+
+#: ../../release/079/v0.80.0.md:28
+msgid ""
+"URPサンプルプロジェクトへのインポート時にビルドエラーが出る "
+"[\\#1137](https://github.com/vrm-c/UniVRM/issues/1137)"
+msgstr ""
+
+#: ../../release/079/v0.80.0.md:29
+msgid "Mtoonのマテリアルが作成できません [\\#1114](https://github.com/vrm-c/UniVRM/issues/1114)"
+msgstr ""
+
+#: ../../release/079/v0.80.0.md:30
+msgid ""
+"export VRM with animation clip at runtime "
+"[\\#1113](https://github.com/vrm-c/UniVRM/issues/1113)"
+msgstr ""
+
+#: ../../release/079/v0.80.0.md:31
+msgid ""
+"How to fix \"'MToon' does not exist in the current context\" error on "
+"latest version [\\#1111](https://github.com/vrm-c/UniVRM/issues/1111)"
+msgstr ""
+
+#: ../../release/079/v0.80.0.md:32
+msgid "HDRP/URP Support [\\#1110](https://github.com/vrm-c/UniVRM/issues/1110)"
+msgstr ""
+
+#: ../../release/079/v0.80.0.md:33
+msgid ""
+"I don't know why, but i can't export my model to VRM "
+"[\\#1104](https://github.com/vrm-c/UniVRM/issues/1104)"
+msgstr ""
+
+#: ../../release/079/v0.80.0.md:34
+msgid ""
+"Head look at not work "
+"[\\#1035](https://github.com/vrm-c/UniVRM/issues/1035)"
+msgstr ""
+
+#: ../../release/079/v0.80.0.md:35
+msgid "Hair import [\\#956](https://github.com/vrm-c/UniVRM/issues/956)"
+msgstr ""
+
+#: ../../release/079/v0.80.0.md:36
+msgid ""
+"restore CreateUnityPackageWithBuild "
+"[\\#1145](https://github.com/vrm-c/UniVRM/pull/1145) "
+"([ousttrue](https://github.com/ousttrue))"
+msgstr ""
+
+#: ../../release/079/v0.80.0.md:37
+msgid ""
+"OnResetClicked [\\#1144](https://github.com/vrm-c/UniVRM/pull/1144) "
+"([ousttrue](https://github.com/ousttrue))"
+msgstr ""
+
+#: ../../release/079/v0.80.0.md:38
+msgid ""
+"UniVRM-0.80.0 [\\#1143](https://github.com/vrm-c/UniVRM/pull/1143) "
+"([ousttrue](https://github.com/ousttrue))"
+msgstr ""
+
+#: ../../release/079/v0.80.0.md:39
+msgid ""
+"Unity2020対応のデグレを修正 [\\#1140](https://github.com/vrm-c/UniVRM/pull/1140) "
+"([notargs](https://github.com/notargs))"
+msgstr ""
+
+#: ../../release/079/v0.80.0.md:40
+msgid ""
+"null check [\\#1125](https://github.com/vrm-c/UniVRM/pull/1125) "
+"([ousttrue](https://github.com/ousttrue))"
+msgstr ""
+
+#: ../../release/079/v0.80.0.md:41
+msgid ""
+"ラインタイムエクスポート時に正規化を実行する例 "
+"[\\#1119](https://github.com/vrm-c/UniVRM/pull/1119) "
+"([ousttrue](https://github.com/ousttrue))"
+msgstr ""
+
+#: ../../release/079/v0.80.0.md:42
+msgid ""
+"Skip mesh export when MeshExportInfo.CanExport is false "
+"[\\#1117](https://github.com/vrm-c/UniVRM/pull/1117) "
+"([ichi-23](https://github.com/ichi-23))"
+msgstr ""
+
+#: ../../release/079/v0.80.0.md:43
+msgid ""
+"Make asmdef's auto-referenced true. "
+"[\\#1108](https://github.com/vrm-c/UniVRM/pull/1108) "
+"([Santarh](https://github.com/Santarh))"
+msgstr ""
+
