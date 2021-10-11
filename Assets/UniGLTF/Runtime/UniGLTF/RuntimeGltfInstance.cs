@@ -70,7 +70,7 @@ namespace UniGLTF
         /// </summary>
         /// <typeparam name="Renderer"></typeparam>
         /// <returns></returns>
-        public readonly List<Renderer> VisibleRenderers = new List<Renderer>();
+        public IList<Renderer> VisibleRenderers => _visibleRenderers;
 
         private readonly List<Transform> _nodes = new List<Transform>();
         private readonly List<(SubAssetKey, UnityEngine.Object)> _resources = new List<(SubAssetKey, UnityEngine.Object)>();
@@ -81,6 +81,8 @@ namespace UniGLTF
         private readonly List<Renderer> _renderers = new List<Renderer>();
         private readonly List<MeshRenderer> _meshRenderers = new List<MeshRenderer>();
         private readonly List<SkinnedMeshRenderer> _skinnedMeshRenderers = new List<SkinnedMeshRenderer>();
+
+        private readonly List<Renderer> _visibleRenderers = new List<Renderer>();
 
         public static RuntimeGltfInstance AttachTo(GameObject go, ImporterContext context)
         {
