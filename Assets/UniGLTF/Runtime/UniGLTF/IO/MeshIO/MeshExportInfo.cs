@@ -201,9 +201,12 @@ namespace UniGLTF
             else if (renderer is MeshRenderer mr)
             {
                 var filter = mr.GetComponent<MeshFilter>();
-                if (filter.hideFlags == HideFlags.None && Mesh.vertexCount > 0 && filter != null)
+                if (filter != null && filter.hideFlags == HideFlags.None)
                 {
-                    Mesh = filter.sharedMesh;
+                    if (filter.sharedMesh != null && filter.sharedMesh.vertexCount > 0)
+                    {
+                        Mesh = filter.sharedMesh;
+                    }
                 }
             }
             else
