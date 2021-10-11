@@ -4,7 +4,7 @@ namespace UniGLTF
 {
     public interface IStorage
     {
-        ArraySegment<Byte> Get(string url);
+        ArraySegment<Byte> Get(string url = default);
 
         /// <summary>
         /// Get original filepath if exists

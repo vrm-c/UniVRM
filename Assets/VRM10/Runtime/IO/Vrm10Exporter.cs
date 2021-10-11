@@ -49,54 +49,45 @@ namespace UniVRM10
             m_textureExporter.Dispose();
         }
 
-        public void ExportAsset(Model model)
+        public static glTFAssets ExportAsset(Model model)
         {
-            Storage.Gltf.asset = new glTFAssets
-            {
-            };
-            if (!string.IsNullOrEmpty(model.AssetVersion)) Storage.Gltf.asset.version = model.AssetVersion;
-            if (!string.IsNullOrEmpty(model.AssetMinVersion)) Storage.Gltf.asset.minVersion = model.AssetMinVersion;
-
-            if (!string.IsNullOrEmpty(model.AssetGenerator)) Storage.Gltf.asset.generator = model.AssetGenerator;
-
-            if (!string.IsNullOrEmpty(model.AssetCopyright)) Storage.Gltf.asset.copyright = model.AssetCopyright;
+            var asset = new glTFAssets();
+            if (!string.IsNullOrEmpty(model.AssetVersion)) asset.version = model.AssetVersion;
+            if (!string.IsNullOrEmpty(model.AssetMinVersion)) asset.minVersion = model.AssetMinVersion;
+            if (!string.IsNullOrEmpty(model.AssetGenerator)) asset.generator = model.AssetGenerator;
+            if (!string.IsNullOrEmpty(model.AssetCopyright)) asset.copyright = model.AssetCopyright;
+            return asset;
         }
 
-        public void Reserve(int bytesLength)
-        {
-            Storage.Reserve(bytesLength);
-        }
-
-        public void ExportMeshes(List<MeshGroup> groups, List<object> materials, ExportArgs option)
+        public static IEnumerable<glTFMesh> ExportMeshes(List<MeshGroup> groups, List<object> materials, Vrm10Storage storage, ExportArgs option)
         {
             foreach (var group in groups)
             {
-                var mesh = group.ExportMeshGroup(materials, Storage, option);
-                Storage.Gltf.meshes.Add(mesh);
+                yield return group.ExportMeshGroup(materials, storage, option);
             }
         }
 
-        public void ExportNodes(Node root, List<Node> nodes, List<MeshGroup> groups, ExportArgs option)
+        public static IEnumerable<(glTFNode, glTFSkin)> ExportNodes(List<Node> nodes, List<MeshGroup> groups, Vrm10Storage storage, ExportArgs option)
         {
-            foreach (var x in nodes)
+            foreach (var node in nodes)
             {
-                var node = new glTFNode
+                var gltfNode = new glTFNode
                 {
-                    name = x.Name,
+                    name = node.Name,
                 };
+                glTFSkin gltfSkin = default;
 
-                node.translation = x.LocalTranslation.ToFloat3();
-                node.rotation = x.LocalRotation.ToFloat4();
-                node.scale = x.LocalScaling.ToFloat3();
+                gltfNode.translation = node.LocalTranslation.ToFloat3();
+                gltfNode.rotation = node.LocalRotation.ToFloat4();
+                gltfNode.scale = node.LocalScaling.ToFloat3();
 
-                if (x.MeshGroup != null)
+                if (node.MeshGroup != null)
                 {
-                    node.mesh = groups.IndexOfThrow(x.MeshGroup);
-                    var skin = x.MeshGroup.Skin;
+                    gltfNode.mesh = groups.IndexOfThrow(node.MeshGroup);
+                    var skin = node.MeshGroup.Skin;
                     if (skin != null)
                     {
-                        var skinIndex = Storage.Gltf.skins.Count;
-                        var gltfSkin = new glTFSkin()
+                        gltfSkin = new glTFSkin()
                         {
                             joints = skin.Joints.Select(joint => nodes.IndexOfThrow(joint)).ToArray()
                         };
@@ -106,26 +97,19 @@ namespace UniVRM10
                         }
                         if (skin.InverseMatrices != null)
                         {
-                            gltfSkin.inverseBindMatrices = skin.InverseMatrices.AddAccessorTo(Storage, 0, option.sparse);
+                            gltfSkin.inverseBindMatrices = skin.InverseMatrices.AddAccessorTo(storage, 0, option.sparse);
                         }
                         if (skin.Root != null)
                         {
                             gltfSkin.skeleton = nodes.IndexOf(skin.Root);
                         }
-                        Storage.Gltf.skins.Add(gltfSkin);
-                        node.skin = skinIndex;
                     }
                 }
 
-                node.children = x.Children.Select(child => nodes.IndexOfThrow(child)).ToArray();
+                gltfNode.children = node.Children.Select(child => nodes.IndexOfThrow(child)).ToArray();
 
-                Storage.Gltf.nodes.Add(node);
+                yield return (gltfNode, gltfSkin);
             }
-
-            Storage.Gltf.scenes.Add(new gltfScene()
-            {
-                nodes = root.Children.Select(child => nodes.IndexOfThrow(child)).ToArray()
-            });
         }
 
         /// <summary>
@@ -138,55 +122,77 @@ namespace UniVRM10
             return new float[] { -v.x, v.y, v.z };
         }
 
-        public void Export(GameObject root, Model model, ModelExporter converter, ExportArgs option, VRM10ObjectMeta vrmMeta = null)
+        ///
+        /// 必要な容量を計算
+        /// (sparseは考慮してないので大きめ)
+        static int CalcReserveBytes(Model model)
         {
-            ExportAsset(model);
-
-            ///
-            /// 必要な容量を先に確保
-            /// (sparseは考慮してないので大きめ)
-            ///
+            int reserveBytes = 0;
+            // mesh
+            foreach (var g in model.MeshGroups)
             {
-                var reserveBytes = 0;
-                // mesh
-                foreach (var g in model.MeshGroups)
+                foreach (var mesh in g.Meshes)
                 {
-                    foreach (var mesh in g.Meshes)
+                    // 頂点バッファ
+                    reserveBytes += mesh.IndexBuffer.ByteLength;
+                    foreach (var kv in mesh.VertexBuffer)
                     {
-                        // 頂点バッファ
-                        reserveBytes += mesh.IndexBuffer.ByteLength;
-                        foreach (var kv in mesh.VertexBuffer)
+                        reserveBytes += kv.Value.ByteLength;
+                    }
+                    // morph
+                    foreach (var morph in mesh.MorphTargets)
+                    {
+                        foreach (var kv in morph.VertexBuffer)
                         {
                             reserveBytes += kv.Value.ByteLength;
                         }
-                        // morph
-                        foreach (var morph in mesh.MorphTargets)
-                        {
-                            foreach (var kv in morph.VertexBuffer)
-                            {
-                                reserveBytes += kv.Value.ByteLength;
-                            }
-                        }
                     }
                 }
-                Reserve(reserveBytes);
             }
+            return reserveBytes;
+        }
 
-            // material
+        static IEnumerable<glTFMaterial> ExportMaterials(Model model, ITextureExporter textureExporter, GltfExportSettings settings)
+        {
             var materialExporter = new Vrm10MaterialExporter();
             foreach (Material material in model.Materials)
             {
-                var glTFMaterial = materialExporter.ExportMaterial(material, m_textureExporter, m_settings);
-                Storage.Gltf.materials.Add(glTFMaterial);
+                yield return materialExporter.ExportMaterial(material, textureExporter, settings);
+            }
+        }
+
+        public void Export(GameObject root, Model model, ModelExporter converter, ExportArgs option, VRM10ObjectMeta vrmMeta = null)
+        {
+            Storage.Gltf.asset = ExportAsset(model);
+
+            Storage.Reserve(CalcReserveBytes(model));
+
+            foreach (var material in ExportMaterials(model, m_textureExporter, m_settings))
+            {
+                Storage.Gltf.materials.Add(material);
             }
 
-            // mesh
-            ExportMeshes(model.MeshGroups, model.Materials, option);
+            foreach (var mesh in ExportMeshes(model.MeshGroups, model.Materials, Storage, option))
+            {
+                Storage.Gltf.meshes.Add(mesh);
+            }
 
-            // node
-            ExportNodes(model.Root, model.Nodes, model.MeshGroups, option);
+            foreach (var (node, skin) in ExportNodes(model.Nodes, model.MeshGroups, Storage, option))
+            {
+                Storage.Gltf.nodes.Add(node);
+                if (skin != null)
+                {
+                    var skinIndex = Storage.Gltf.skins.Count;
+                    Storage.Gltf.skins.Add(skin);
+                    node.skin = skinIndex;
+                }
+            }
+            Storage.Gltf.scenes.Add(new gltfScene()
+            {
+                nodes = model.Root.Children.Select(child => model.Nodes.IndexOfThrow(child)).ToArray()
+            });
 
-            var (vrm, vrmSpringBone, thumbnailTextureIndex) = ExportVrm(root, model, converter, vrmMeta);
+            var (vrm, vrmSpringBone, thumbnailTextureIndex) = ExportVrm(root, model, converter, vrmMeta, Storage.Gltf.nodes, m_textureExporter);
 
             // Extension で Texture が増える場合があるので最後に呼ぶ
             var exportedTextures = m_textureExporter.Export();
@@ -225,7 +231,8 @@ namespace UniVRM10
         /// <returns></returns>
         (UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm,
         UniGLTF.Extensions.VRMC_springBone.VRMC_springBone springBone,
-        int? thumbnailIndex) ExportVrm(GameObject root, Model model, ModelExporter converter, VRM10ObjectMeta vrmMeta)
+        int? thumbnailIndex) ExportVrm(GameObject root, Model model, ModelExporter converter,
+        VRM10ObjectMeta vrmMeta, List<glTFNode> nodes, ITextureExporter textureExporter)
         {
             var vrmController = root?.GetComponent<Vrm10Instance>();
 
@@ -259,7 +266,7 @@ namespace UniVRM10
             // required
             //
             ExportHumanoid(vrm, model);
-            var thumbnailTextureIndex = ExportMeta(vrm, vrmMeta);
+            var thumbnailTextureIndex = ExportMeta(vrm, vrmMeta, textureExporter);
 
             //
             // optional
@@ -272,13 +279,13 @@ namespace UniVRM10
                 ExportFirstPerson(vrm, vrmController, model, converter);
 
                 vrmSpringBone = ExportSpringBone(vrmController, model, converter);
-                ExportConstraints(vrmController, model, converter);
+                ExportConstraints(vrmController, model, converter, nodes);
             }
 
             return (vrm, vrmSpringBone, thumbnailTextureIndex);
         }
 
-        UniGLTF.Extensions.VRMC_springBone.ColliderShape ExportShape(VRM10SpringBoneCollider z)
+        static UniGLTF.Extensions.VRMC_springBone.ColliderShape ExportShape(VRM10SpringBoneCollider z)
         {
             var shape = new UniGLTF.Extensions.VRMC_springBone.ColliderShape();
             switch (z.ColliderType)
@@ -307,7 +314,7 @@ namespace UniVRM10
             return shape;
         }
 
-        UniGLTF.Extensions.VRMC_springBone.SpringBoneJoint ExportJoint(VRM10SpringBoneJoint y, Func<Transform, int> getIndexFromTransform)
+        static UniGLTF.Extensions.VRMC_springBone.SpringBoneJoint ExportJoint(VRM10SpringBoneJoint y, Func<Transform, int> getIndexFromTransform)
         {
             var joint = new UniGLTF.Extensions.VRMC_springBone.SpringBoneJoint
             {
@@ -321,7 +328,7 @@ namespace UniVRM10
             return joint;
         }
 
-        UniGLTF.Extensions.VRMC_springBone.VRMC_springBone ExportSpringBone(Vrm10Instance controller, Model model, ModelExporter converter)
+        static UniGLTF.Extensions.VRMC_springBone.VRMC_springBone ExportSpringBone(Vrm10Instance controller, Model model, ModelExporter converter)
         {
             var springBone = new UniGLTF.Extensions.VRMC_springBone.VRMC_springBone
             {
@@ -371,7 +378,7 @@ namespace UniVRM10
             return springBone;
         }
 
-        void ExportConstraints(Vrm10Instance vrmController, Model model, ModelExporter converter)
+        static void ExportConstraints(Vrm10Instance vrmController, Model model, ModelExporter converter, List<glTFNode> nodes)
         {
             var constraints = vrmController.GetComponentsInChildren<VRM10Constraint>();
             foreach (var constraint in constraints)
@@ -398,7 +405,7 @@ namespace UniVRM10
                 // serialize to gltfNode
                 var node = converter.Nodes[constraint.gameObject];
                 var nodeIndex = model.Nodes.IndexOf(node);
-                var gltfNode = Storage.Gltf.nodes[nodeIndex];
+                var gltfNode = nodes[nodeIndex];
                 UniGLTF.Extensions.VRMC_node_constraint.GltfSerializer.SerializeTo(ref gltfNode.extensions, vrmConstraint);
             }
         }
@@ -497,7 +504,7 @@ namespace UniVRM10
             }
         }
 
-        UniGLTF.Extensions.VRMC_vrm.LookAtRangeMap ExportLookAtRangeMap(CurveMapper mapper)
+        static UniGLTF.Extensions.VRMC_vrm.LookAtRangeMap ExportLookAtRangeMap(CurveMapper mapper)
         {
             return new UniGLTF.Extensions.VRMC_vrm.LookAtRangeMap
             {
@@ -506,7 +513,7 @@ namespace UniVRM10
             };
         }
 
-        void ExportLookAt(UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm, Vrm10Instance vrmController)
+        static void ExportLookAt(UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm, Vrm10Instance vrmController)
         {
             if (!(vrmController?.Vrm?.LookAt is VRM10ObjectLookAt lookAt))
             {
@@ -528,7 +535,7 @@ namespace UniVRM10
             };
         }
 
-        UniGLTF.Extensions.VRMC_vrm.MorphTargetBind ExportMorphTargetBinding(MorphTargetBinding binding, Func<string, int> getIndex)
+        static UniGLTF.Extensions.VRMC_vrm.MorphTargetBind ExportMorphTargetBinding(MorphTargetBinding binding, Func<string, int> getIndex)
         {
             return new UniGLTF.Extensions.VRMC_vrm.MorphTargetBind
             {
@@ -538,7 +545,7 @@ namespace UniVRM10
             };
         }
 
-        UniGLTF.Extensions.VRMC_vrm.MaterialColorBind ExportMaterialColorBinding(MaterialColorBinding binding, Func<string, int> getIndex)
+        static UniGLTF.Extensions.VRMC_vrm.MaterialColorBind ExportMaterialColorBinding(MaterialColorBinding binding, Func<string, int> getIndex)
         {
             return new UniGLTF.Extensions.VRMC_vrm.MaterialColorBind
             {
@@ -548,7 +555,7 @@ namespace UniVRM10
             };
         }
 
-        UniGLTF.Extensions.VRMC_vrm.TextureTransformBind ExportTextureTransformBinding(MaterialUVBinding binding, Func<string, int> getIndex)
+        static UniGLTF.Extensions.VRMC_vrm.TextureTransformBind ExportTextureTransformBinding(MaterialUVBinding binding, Func<string, int> getIndex)
         {
             var (scale, offset) = TextureTransform.VerticalFlipScaleOffset(binding.Scaling, binding.Offset);
             return new UniGLTF.Extensions.VRMC_vrm.TextureTransformBind
@@ -559,7 +566,7 @@ namespace UniVRM10
             };
         }
 
-        UniGLTF.Extensions.VRMC_vrm.Expression ExportExpression(VRM10Expression e, Vrm10Instance vrmController, Model model, ModelExporter converter)
+        static UniGLTF.Extensions.VRMC_vrm.Expression ExportExpression(VRM10Expression e, Vrm10Instance vrmController, Model model, ModelExporter converter)
         {
             if (e == null)
             {
@@ -634,7 +641,7 @@ namespace UniVRM10
             return vrmExpression;
         }
 
-        void ExportExpression(UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm, Vrm10Instance vrmController, Model model, ModelExporter converter)
+        static void ExportExpression(UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm, Vrm10Instance vrmController, Model model, ModelExporter converter)
         {
             if (vrmController?.Vrm?.Expression?.Clips == null)
             {
@@ -667,7 +674,7 @@ namespace UniVRM10
             };
         }
 
-        int? ExportMeta(UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm, VRM10ObjectMeta meta)
+        static int? ExportMeta(UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm, VRM10ObjectMeta meta, ITextureExporter textureExporter)
         {
             vrm.Meta.Name = meta.Name;
             vrm.Meta.Version = meta.Version;
@@ -689,12 +696,12 @@ namespace UniVRM10
             int? thumbnailTextureIndex = default;
             if (meta.Thumbnail != null)
             {
-                thumbnailTextureIndex = m_textureExporter.RegisterExportingAsSRgb(meta.Thumbnail, needsAlpha: true);
+                thumbnailTextureIndex = textureExporter.RegisterExportingAsSRgb(meta.Thumbnail, needsAlpha: true);
             }
             return thumbnailTextureIndex;
         }
 
-        void ExportHumanoid(UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm, Model model)
+        static void ExportHumanoid(UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm, Model model)
         {
             // humanoid
             for (int i = 0; i < model.Nodes.Count; ++i)

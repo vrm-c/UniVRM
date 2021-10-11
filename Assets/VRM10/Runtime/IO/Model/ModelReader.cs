@@ -9,19 +9,20 @@ namespace UniVRM10
     /// </summary>
     public static class ModelReader
     {
-        static Model Load(Vrm10Storage storage, string rootName)
+        static Model Load(Vrm10Storage storage, string rootName, Coordinates coords)
         {
             if (storage == null)
             {
                 return null;
             }
 
-            var model = new Model(Coordinates.Vrm1)
+            var model = new Model(coords)
             {
                 AssetVersion = storage.AssetVersion,
                 AssetGenerator = storage.AssetGenerator,
                 AssetCopyright = storage.AssetCopyright,
                 AssetMinVersion = storage.AssetMinVersion,
+                Coordinates = coords,
             };
 
             // node
@@ -74,10 +75,10 @@ namespace UniVRM10
             return model;
         }
 
-        public static Model Read(UniGLTF.GltfData data)
+        public static Model Read(UniGLTF.GltfData data, Coordinates? coords = default)
         {
             var storage = new Vrm10Storage(data);
-            var model = Load(storage, Path.GetFileName(data.TargetPath));
+            var model = Load(storage, Path.GetFileName(data.TargetPath), coords.GetValueOrDefault(Coordinates.Vrm1));
             model.ConvertCoordinate(Coordinates.Unity);
             return model;
         }

@@ -268,13 +268,13 @@ namespace UniVRM10
             }
         }
 
-        public static void Migrate(glTF gltf, JsonNode json)
+        public static void Migrate(glTF gltf, JsonNode vrm0)
         {
             // Create MToonDefinition(0.x) from JSON(0.x)
             var sourceMaterials = new (Vrm0XMToonValue, glTFMaterial)[gltf.materials.Count];
             for (int i = 0; i < gltf.materials.Count; ++i)
             {
-                var vrmMaterial = json["extensions"]["VRM"]["materialProperties"][i];
+                var vrmMaterial = vrm0["materialProperties"][i];
                 if (vrmMaterial["shader"].GetString() != "VRM/MToon")
                 {
                     continue;

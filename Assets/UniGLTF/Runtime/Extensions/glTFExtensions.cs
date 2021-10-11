@@ -65,7 +65,7 @@ namespace UniGLTF
             { typeof(Color), new ComponentVec(glComponentType.FLOAT, 4) },
         };
 
-        static glComponentType GetComponentType<T>()
+        public static glComponentType GetComponentType<T>()
         {
             var cv = default(ComponentVec);
             if (ComponentTypeMap.TryGetValue(typeof(T), out cv))
@@ -86,7 +86,7 @@ namespace UniGLTF
             }
         }
 
-        static string GetAccessorType<T>()
+        public static string GetAccessorType<T>()
         {
             var cv = default(ComponentVec);
             if (ComponentTypeMap.TryGetValue(typeof(T), out cv))

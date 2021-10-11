@@ -98,21 +98,25 @@ namespace VrmLib
             {
                 model.ReverseAxisAndFlipTriangle(ZReverser, ignoreVrm);
                 model.UVVerticalFlip();
+                model.Coordinates = coordinates;
             }
             else if (model.Coordinates.IsUnity && coordinates.IsVrm0)
             {
                 model.ReverseAxisAndFlipTriangle(ZReverser, ignoreVrm);
                 model.UVVerticalFlip();
+                model.Coordinates = coordinates;
             }
             else if (model.Coordinates.IsVrm1 && coordinates.IsUnity)
             {
                 model.ReverseAxisAndFlipTriangle(XReverser, ignoreVrm);
                 model.UVVerticalFlip();
+                model.Coordinates = coordinates;
             }
             else if (model.Coordinates.IsUnity && coordinates.IsVrm1)
             {
                 model.ReverseAxisAndFlipTriangle(XReverser, ignoreVrm);
                 model.UVVerticalFlip();
+                model.Coordinates = coordinates;
             }
             else
             {
