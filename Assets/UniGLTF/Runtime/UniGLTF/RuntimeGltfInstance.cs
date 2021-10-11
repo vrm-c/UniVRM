@@ -64,6 +64,14 @@ namespace UniGLTF
         /// </summary>
         public IReadOnlyList<SkinnedMeshRenderer> SkinnedMeshRenderers => _skinnedMeshRenderers;
 
+        /// <summary>
+        /// ShowMeshes の対象になる Renderer。
+        /// Destroy対象とは無関係なので、自由に操作して OK。
+        /// </summary>
+        /// <typeparam name="Renderer"></typeparam>
+        /// <returns></returns>
+        public IList<Renderer> VisibleRenderers => _visibleRenderers;
+
         private readonly List<Transform> _nodes = new List<Transform>();
         private readonly List<(SubAssetKey, UnityEngine.Object)> _resources = new List<(SubAssetKey, UnityEngine.Object)>();
         private readonly List<Material> _materials = new List<Material>();
@@ -73,6 +81,8 @@ namespace UniGLTF
         private readonly List<Renderer> _renderers = new List<Renderer>();
         private readonly List<MeshRenderer> _meshRenderers = new List<MeshRenderer>();
         private readonly List<SkinnedMeshRenderer> _skinnedMeshRenderers = new List<SkinnedMeshRenderer>();
+
+        private readonly List<Renderer> _visibleRenderers = new List<Renderer>();
 
         public static RuntimeGltfInstance AttachTo(GameObject go, ImporterContext context)
         {
@@ -120,6 +130,8 @@ namespace UniGLTF
         {
             _renderers.Add(renderer);
 
+            VisibleRenderers.Add(renderer);
+
             switch (renderer)
             {
                 case MeshRenderer meshRenderer:
@@ -133,7 +145,7 @@ namespace UniGLTF
 
         public void ShowMeshes()
         {
-            foreach (var r in Renderers)
+            foreach (var r in VisibleRenderers)
             {
                 r.enabled = true;
             }
