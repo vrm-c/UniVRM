@@ -1,0 +1,68 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2021, VRM Consortium
+# This file is distributed under the same license as the UniVRM Programming
+# Document package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: UniVRM Programming Document \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-10-11 16:50+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../release/index.md:1
+msgid "Release"
+msgstr ""
+
+#: ../../release/index.md:3
+msgid "～0.55"
+msgstr ""
+
+#: ../../release/index.md:5
+msgid "`Unity-5.6`"
+msgstr ""
+
+#: ../../release/index.md:14
+msgid "0.56以降"
+msgstr ""
+
+#: ../../release/index.md:16
+msgid "`Unity-2018.4`"
+msgstr ""
+
+#: ../../release/index.md:25
+msgid "0.68以降 pre release"
+msgstr ""
+
+#: ../../release/index.md:27
+msgid "`.Net-3.5` が無くなって `coRoutine` を `Task` に置き換え"
+msgstr ""
+
+#: ../../release/index.md:28
+msgid "glb/gltf に `ScriptedImporter` の導入"
+msgstr ""
+
+#: ../../release/index.md:29
+msgid "`Standard` マテリアルの import/export や mipmapパたメーター などの改修"
+msgstr ""
+
+#: ../../release/index.md:38
+msgid "0.79 以降"
+msgstr ""
+
+#: ../../release/index.md:40
+msgid "`from 0.80`: `Unity-2019.4`"
+msgstr ""
+
+#: ../../release/index.md:41
+msgid "`from 0.81`: `UniGLTF_VRMShaders` and `UniVRM` ２パッケージ構成"
+msgstr ""
+
