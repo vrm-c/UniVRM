@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: UniVRM Programming Document \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-11 18:41+0900\n"
+"POT-Creation-Date: 2021-10-11 13:45+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,8 +19,8 @@ msgstr ""
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../release/079/v0.86.0.md:1
-msgid "v0.86.0: Road to 1.0, [1.0]FastSpringBone"
-msgstr ""
+msgid "v0.86.0: 1.0準備, [1.0]FastSpringBone"
+msgstr "Road to 1.0, [1.0]FastSpringBone"
 
 #: ../../release/079/v0.86.0.md:3
 msgid "1.0"
@@ -28,16 +28,14 @@ msgstr ""
 
 #: ../../release/079/v0.86.0.md:4
 msgid ""
-"[[\\#1287](https://github.com/vrm-c/UniVRM/pull/1287)] [1.0] When a "
-"renderer's `isSelf` is false and its `firstPersonOnly` is enabled, it "
-"will be removed from `VisibleRenderers`"
+"[[\\#1287](https://github.com/vrm-c/UniVRM/pull/1287)] [1.0] !isSelf かつ "
+"firstPersonOnly のときに VisibleRenderers から除去する"
 msgstr ""
 
 #: ../../release/079/v0.86.0.md:5
 msgid ""
-"[[\\#1280](https://github.com/vrm-c/UniVRM/pull/1280)] [1.0] Data "
-"migration (`vrm0` -> `vrm1`) for models containing rotation/scale in "
-"Hierarchy"
+"[[\\#1280](https://github.com/vrm-c/UniVRM/pull/1280)] [1.0] "
+"ヒエラルキーに回転・スケールが含まれているモデルのマイグレーション"
 msgstr ""
 
 #: ../../release/079/v0.86.0.md:6
@@ -65,8 +63,8 @@ msgid ""
 msgstr ""
 
 #: ../../release/079/v0.86.0.md:11
-msgid "Other Changes"
-msgstr ""
+msgid "その他"
+msgstr "Other Changes"
 
 #: ../../release/079/v0.86.0.md:12
 msgid "[[\\#1288](https://github.com/vrm-c/UniVRM/pull/1288)] Fix/test filter"
@@ -85,9 +83,7 @@ msgid ""
 msgstr ""
 
 #: ../../release/079/v0.86.0.md:15
-msgid ""
-"[[\\#1282](https://github.com/vrm-c/UniVRM/pull/1282)] Move articles from"
-" vrm.dev to Sphinx"
+msgid "[[\\#1282](https://github.com/vrm-c/UniVRM/pull/1282)] vrm.devから移動"
 msgstr ""
 
 #: ../../release/079/v0.86.0.md:16
@@ -101,17 +97,17 @@ msgid ""
 msgstr ""
 
 #: ../../release/079/v0.86.0.md:18
-msgid "[[\\#1276](https://github.com/vrm-c/UniVRM/pull/1276)] Update Sphinx"
+msgid ""
+"[[\\#1276](https://github.com/vrm-c/UniVRM/pull/1276)] conf.py "
+"とコマンドラインの評価順ぽい"
 msgstr ""
 
 #: ../../release/079/v0.86.0.md:19
-msgid ""
-"[[\\#1275](https://github.com/vrm-c/UniVRM/pull/1275)] Update Sphinx one "
-"more time"
+msgid "[[\\#1275](https://github.com/vrm-c/UniVRM/pull/1275)] もう一回"
 msgstr ""
 
 #: ../../release/079/v0.86.0.md:20
-msgid "[[\\#1274](https://github.com/vrm-c/UniVRM/pull/1274)] Update Sphinx"
+msgid "[[\\#1274](https://github.com/vrm-c/UniVRM/pull/1274)] Sphinx更新"
 msgstr ""
 
 #: ../../release/079/v0.86.0.md:21
@@ -120,8 +116,8 @@ msgstr ""
 
 #: ../../release/079/v0.86.0.md:22
 msgid ""
-"[[\\#1270](https://github.com/vrm-c/UniVRM/pull/1270)] Fix wrong "
-"arguments in BvhImporterContext.Parse"
+"[[\\#1270](https://github.com/vrm-c/UniVRM/pull/1270)] "
+"BvhImporterContext.Parse の引き数間違いを修正"
 msgstr ""
 
 #: ../../release/079/v0.86.0.md:23
