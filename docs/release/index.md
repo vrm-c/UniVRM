@@ -1,25 +1,16 @@
 # Release
 
-## ～0.55
+## 0.79 以降
 
-`Unity-5.6`
-
-```{toctree}
-:glob:
-:maxdepth: 1
-   
-055/*
-```
-
-## 0.56以降
-
-`Unity-2018.4`
+* `from 0.80`: `Unity-2019.4`
+* `from 0.81`: `UniGLTF_VRMShaders` and `UniVRM` ２パッケージ構成
 
 ```{toctree}
 :glob:
 :maxdepth: 1
+:reversed:
    
-056/*
+079/*
 ```
 
 ## 0.68以降 pre release
@@ -31,18 +22,31 @@
 ```{toctree}
 :glob:
 :maxdepth: 1
+:reversed:
    
 068/*
 ```
 
-## 0.79 以降
+## 0.56以降
 
-* `from 0.80`: `Unity-2019.4`
-* `from 0.81`: `UniGLTF_VRMShaders` and `UniVRM` ２パッケージ構成
+`Unity-2018.4`
 
 ```{toctree}
 :glob:
 :maxdepth: 1
+:reversed:
    
-079/*
+056/*
+```
+
+## ～0.55
+
+`Unity-5.6`
+
+```{toctree}
+:glob:
+:maxdepth: 1
+:reversed:
+   
+055/*
 ```
