@@ -1,4 +1,4 @@
-# v0.85.0: 1.0準備, FastSpringBone
+# v0.85.0: 1.0準備, [0.x]FastSpringBone
 
 ## [v0.85.0](https://github.com/vrm-c/UniVRM/tree/v0.85.0) (2021-09-30)
 
