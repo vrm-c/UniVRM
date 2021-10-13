@@ -116,9 +116,9 @@ namespace VRM.FastSpringBones.Blittables
                     var collider = colliderGroup.Colliders[j];
                     var colliderPosition = colliderGroup.Transform->TransformPoint(collider.Offset);
                     var r = _radius + collider.Radius;
-                    
+
                     if (!((nextPosition - colliderPosition).sqrMagnitude <= (r * r))) continue;
-                    
+
                     // ヒット。Colliderの半径方向に押し出す
                     var normal = (nextPosition - colliderPosition).normalized;
                     var posFromCollider = colliderPosition + normal * (_radius + collider.Radius);
@@ -131,7 +131,7 @@ namespace VRM.FastSpringBones.Blittables
         }
 
         private static Quaternion FromToRotation(Vector3 from, Vector3 to)
-            => Quaternion.AxisAngle(
+            => Quaternion.AngleAxis(
                 angle: Mathf.Acos(Mathf.Clamp(Vector3.Dot(from.normalized, to.normalized), -1f, 1f)),
                 axis: Vector3.Cross(from, to).normalized
             );
@@ -139,7 +139,7 @@ namespace VRM.FastSpringBones.Blittables
         private Quaternion ApplyRotation(Vector3 nextTail)
         {
             var rotation = _transform->ParentWorldRotation * _localRotation;
-            return 
+            return
                 FromToRotation(
                     rotation * _boneAxis,
                     nextTail - _transform->WorldPosition) *
