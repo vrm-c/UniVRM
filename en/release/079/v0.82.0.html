@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>v0.82.0: 1.0準備, URP 向け Material置き換え機能 &mdash; UniVRM Programming Document  documentation</title>
+  <title>v0.82.0: Road to 1.0. Material Customization for URP &mdash; UniVRM Programming Document  documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -18,8 +18,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="v0.83.0: 1.0準備" href="v0.83.0.html" />
-    <link rel="prev" title="v0.81.0: 1.0準備, unitypackage 構成変更" href="v0.81.0.html" /> 
+    <link rel="next" title="v0.83.0: Road to 1.0" href="v0.83.0.html" />
+    <link rel="prev" title="v0.81.0: Road to 1.0. Reorganize unitypackage" href="v0.81.0.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -46,14 +46,14 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">Release</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="index.html">v0.79～: Unity-2019.4</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="index.html#releasenote">ReleaseNote</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="v0.79.0.html">v0.79.0: 1.0準備</a></li>
-<li class="toctree-l4"><a class="reference internal" href="v0.80.0.html">v0.80.0: 1.0準備, 最低バージョンを Unity-2019.4LTS に更新</a></li>
-<li class="toctree-l4"><a class="reference internal" href="v0.81.0.html">v0.81.0: 1.0準備, unitypackage 構成変更</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">v0.82.0: 1.0準備, URP 向け Material置き換え機能</a></li>
-<li class="toctree-l4"><a class="reference internal" href="v0.83.0.html">v0.83.0: 1.0準備</a></li>
-<li class="toctree-l4"><a class="reference internal" href="v0.84.0.html">v0.84.0: 1.0準備, glTF import menu 復活</a></li>
-<li class="toctree-l4"><a class="reference internal" href="v0.85.0.html">v0.85.0: 1.0準備, [0.x]FastSpringBone</a></li>
-<li class="toctree-l4"><a class="reference internal" href="v0.86.0.html">Road to 1.0, [1.0]FastSpringBone</a></li>
+<li class="toctree-l4"><a class="reference internal" href="v0.79.0.html">v0.79.0: Road to 1.0</a></li>
+<li class="toctree-l4"><a class="reference internal" href="v0.80.0.html">v0.80.0: Road to 1.0. Support Unity-2019.4LTS+</a></li>
+<li class="toctree-l4"><a class="reference internal" href="v0.81.0.html">v0.81.0: Road to 1.0. Reorganize unitypackage</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">v0.82.0: Road to 1.0. Material Customization for URP</a></li>
+<li class="toctree-l4"><a class="reference internal" href="v0.83.0.html">v0.83.0: Road to 1.0</a></li>
+<li class="toctree-l4"><a class="reference internal" href="v0.84.0.html">v0.84.0: Road to 1.0. Restore glTF import menu</a></li>
+<li class="toctree-l4"><a class="reference internal" href="v0.85.0.html">v0.85.0: Road to 1.0. [0.x]FastSpringBone</a></li>
+<li class="toctree-l4"><a class="reference internal" href="v0.86.0.html">v0.86.0: Road to 1.0. [1.0]FastSpringBone</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="index.html#v0-81">パッケージ(v0.81~)</a></li>
@@ -83,7 +83,7 @@
       <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="../index.html">Release</a> &raquo;</li>
           <li><a href="index.html">v0.79～: Unity-2019.4</a> &raquo;</li>
-      <li>v0.82.0: 1.0準備, URP 向け Material置き換え機能</li>
+      <li>v0.82.0: Road to 1.0. Material Customization for URP</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/vrm-c/UniVRM/blob/master/docs/release/079/v0.82.0.md" class="fa fa-github"> Edit on GitHub</a>
       </li>
@@ -94,7 +94,7 @@
            <div itemprop="articleBody">
              
   <section class="tex2jax_ignore mathjax_ignore" id="v0-82-0-1-0-urp-material">
-<h1>v0.82.0: 1.0準備, URP 向け Material置き換え機能<a class="headerlink" href="#v0-82-0-1-0-urp-material" title="Permalink to this headline"></a></h1>
+<h1>v0.82.0: Road to 1.0. Material Customization for URP<a class="headerlink" href="#v0-82-0-1-0-urp-material" title="Permalink to this headline"></a></h1>
 <section id="v0-82-0-2021-09-01">
 <h2><a class="reference external" href="https://github.com/vrm-c/UniVRM/tree/v0.82.0">v0.82.0</a> (2021-09-01)<a class="headerlink" href="#v0-82-0-2021-09-01" title="Permalink to this headline"></a></h2>
 <ul class="simple">
@@ -105,9 +105,9 @@
 </ul>
 </section>
 <section id="urp-universal-render-pipeline">
-<h2>URP(Universal Render Pipeline)<a class="headerlink" href="#urp-universal-render-pipeline" title="Permalink to this headline"></a></h2>
-<p>URP 向けに Material Import をカスタマイズする機能をはじめました (Experimental)</p>
-<p><code class="docutils literal notranslate"><span class="pre">TODO:</span></code> アプリ開発者向けドキュメント</p>
+<h2>URP (Universal Render Pipeline)<a class="headerlink" href="#urp-universal-render-pipeline" title="Permalink to this headline"></a></h2>
+<p>Experimental Features: Add MaterialGenerator customization point (for URP).</p>
+<p><code class="docutils literal notranslate"><span class="pre">TODO:</span></code> Documents for app developers</p>
 <ul class="simple">
 <li><p>Add MaterialGenerator customization point (for URP) <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1177">#1177</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
 </ul>
@@ -123,7 +123,7 @@
 </ul>
 </section>
 <section id="changelog">
-<h2>その他のChangelog<a class="headerlink" href="#changelog" title="Permalink to this headline"></a></h2>
+<h2>Other Changes<a class="headerlink" href="#changelog" title="Permalink to this headline"></a></h2>
 <ul class="simple">
 <li><p>Sampleの構成 <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/1068">#1068</a></p></li>
 <li><p>Error Message <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1180">#1180</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
@@ -141,8 +141,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="v0.81.0.html" class="btn btn-neutral float-left" title="v0.81.0: 1.0準備, unitypackage 構成変更" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="v0.83.0.html" class="btn btn-neutral float-right" title="v0.83.0: 1.0準備" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="v0.81.0.html" class="btn btn-neutral float-left" title="v0.81.0: Road to 1.0. Reorganize unitypackage" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="v0.83.0.html" class="btn btn-neutral float-right" title="v0.83.0: Road to 1.0" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
