@@ -1,4 +1,4 @@
-# Version
+# glTF
 
 | version |                                                 |
 |---------|-------------------------------------------------|
@@ -7,4 +7,12 @@
 | v0.77   | `RuntimeGltfInstance`                           |
 | v0.68   | `GltfParser`                                    |
 | v0.63.2 | gltf の extension の実装方法を変更              |
-| v0.56   | BlendShapeKey の仕様変更                        |
+
+```{toctree}
+:maxdepth: 1
+
+0_82_glb_import
+how_to_impl_extension
+0_36_update
+format
+```
