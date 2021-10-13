@@ -219,8 +219,8 @@ msgid ""
 msgstr ""
 
 #: ../../release/079/v0.81.0.md:57
-msgid "Other Changes"
-msgstr ""
+msgid "その他のChangelog"
+msgstr "Other Changes"
 
 #: ../../release/079/v0.81.0.md:58
 msgid ""
