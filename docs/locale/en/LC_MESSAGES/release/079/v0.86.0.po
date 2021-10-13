@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: UniVRM Programming Document \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-11 13:45+0900\n"
+"POT-Creation-Date: 2021-10-11 16:50+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -36,7 +36,7 @@ msgstr ""
 msgid ""
 "[[\\#1280](https://github.com/vrm-c/UniVRM/pull/1280)] [1.0] "
 "ヒエラルキーに回転・スケールが含まれているモデルのマイグレーション"
-msgstr ""
+msgstr "Model migration where the hierarchy contains rotations and scales"
 
 #: ../../release/079/v0.86.0.md:6
 msgid ""
@@ -97,18 +97,19 @@ msgid ""
 msgstr ""
 
 #: ../../release/079/v0.86.0.md:18
+#, fuzzy
 msgid ""
 "[[\\#1276](https://github.com/vrm-c/UniVRM/pull/1276)] conf.py "
 "とコマンドラインの評価順ぽい"
-msgstr ""
+msgstr "Fixed again"
 
 #: ../../release/079/v0.86.0.md:19
 msgid "[[\\#1275](https://github.com/vrm-c/UniVRM/pull/1275)] もう一回"
-msgstr ""
+msgstr "Fixed again"
 
 #: ../../release/079/v0.86.0.md:20
 msgid "[[\\#1274](https://github.com/vrm-c/UniVRM/pull/1274)] Sphinx更新"
-msgstr ""
+msgstr "Udpated sphinx"
 
 #: ../../release/079/v0.86.0.md:21
 msgid "[[\\#1272](https://github.com/vrm-c/UniVRM/pull/1272)] fix name"
@@ -118,45 +119,8 @@ msgstr ""
 msgid ""
 "[[\\#1270](https://github.com/vrm-c/UniVRM/pull/1270)] "
 "BvhImporterContext.Parse の引き数間違いを修正"
-msgstr ""
+msgstr "Fixed incorrect argument in BvhImporterContext.Parse"
 
 #: ../../release/079/v0.86.0.md:23
 msgid "[[\\#1269](https://github.com/vrm-c/UniVRM/pull/1269)] fix typo"
 msgstr ""
-
-#~ msgid "v0.86.0: 1.0準備, [1.0]FastSpringBone"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "[[\\#1287](https://github.com/vrm-c/UniVRM/pull/1287)] [1.0] "
-#~ "!isSelf かつ firstPersonOnly のときに "
-#~ "VisibleRenderers から除去する"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "[[\\#1280](https://github.com/vrm-c/UniVRM/pull/1280)] [1.0] "
-#~ "ヒエラルキーに回転・スケールが含まれているモデルのマイグレーション"
-#~ msgstr ""
-
-#~ msgid "その他"
-#~ msgstr ""
-
-#~ msgid "[[\\#1282](https://github.com/vrm-c/UniVRM/pull/1282)] vrm.devから移動"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "[[\\#1276](https://github.com/vrm-c/UniVRM/pull/1276)] conf.py"
-#~ " とコマンドラインの評価順ぽい"
-#~ msgstr ""
-
-#~ msgid "[[\\#1275](https://github.com/vrm-c/UniVRM/pull/1275)] もう一回"
-#~ msgstr ""
-
-#~ msgid "[[\\#1274](https://github.com/vrm-c/UniVRM/pull/1274)] Sphinx更新"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "[[\\#1270](https://github.com/vrm-c/UniVRM/pull/1270)] "
-#~ "BvhImporterContext.Parse の引き数間違いを修正"
-#~ msgstr ""
-

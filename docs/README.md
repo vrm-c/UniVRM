@@ -30,7 +30,7 @@ conf.py
 extensions = ['myst_parser']
 ```
 
-## gettext で英語記事を作成する
+## gettext 導入
 
 ```
 $ pip install sphinx-intl
@@ -41,6 +41,8 @@ conf.py
 locale_dirs = ['locale/']
 gettext_compact = False
 ```
+
+## gettext 更新
 
 potファイル作成
 ```

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: UniVRM Programming Document \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-11 16:50+0900\n"
+"POT-Creation-Date: 2021-10-13 14:45+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,86 +23,88 @@ msgid "UniVRM Programming Document"
 msgstr ""
 
 #: ../../index.md:3
-msgid "これは、開発者(UniVRMを使ったアプリケーションを作成する人)向けのドキュメントです。"
-msgstr "This is a document for developer that using UniVRM."
-
-#: ../../index.md:5
+#, fuzzy
 msgid ""
+"これは、[UniVRM](https://github.com/vrm-c/UniVRM) の開発ドキュメントです。 "
 "UnityでVRMをエクスポートする方法などについては [manual](https://vrm.dev/docs/univrm/) "
 "を参照してください。"
 msgstr ""
+"This is the development documentation for [UniVRM] (https://github.com/vrm-c/UniVRM)."
 "Please see [manual](https://vrm.dev/en/docs//univrm/) about how to export"
 " VRM."
 
-#: ../../index.md:7
+#: ../../index.md:6
 msgid "概要"
 msgstr "Overview"
 
-#: ../../index.md:16
+#: ../../index.md:15
 msgid "build"
 msgstr ""
 
-#: ../../index.md:18
+#: ../../index.md:17
 msgid "UniVRMを使うアプリケーションのビルドに関する注意事項"
 msgstr ""
 
-#: ../../index.md:24
+#: ../../index.md:23
 msgid "実装メモ"
 msgstr ""
 
-#: ../../index.md:36
+#: ../../index.md:35
 msgid "glTF"
 msgstr ""
 
-#: ../../index.md:47
+#: ../../index.md:46
 msgid "VRM"
 msgstr ""
 
-#: ../../index.md:61 ../../index.md:80
+#: ../../index.md:60 ../../index.md:79
 msgid "Samples"
 msgstr ""
 
-#: ../../index.md:63
+#: ../../index.md:62
 msgid "SimpleViewer"
 msgstr ""
 
-#: ../../index.md:64
+#: ../../index.md:63
 msgid "RuntimeExporerSample"
 msgstr ""
 
-#: ../../index.md:65
+#: ../../index.md:64
 msgid "FirstPersonSample"
 msgstr ""
 
-#: ../../index.md:66
+#: ../../index.md:65
 msgid "AnimationBridgeSample"
 msgstr ""
 
-#: ../../index.md:68
+#: ../../index.md:67
 msgid "VRM-1.0(β)"
 msgstr ""
 
-#: ../../index.md:82
+#: ../../index.md:81
 msgid "VRM10Viewer"
 msgstr ""
 
-#: ../../index.md:84
+#: ../../index.md:83
 msgid "Release"
 msgstr ""
 
-#: ../../index.md:94
+#: ../../index.md:93
 msgid "Indices and tables"
 msgstr ""
 
-#: ../../index.md:96
+#: ../../index.md:95
 msgid "{ref}`genindex`"
 msgstr ""
 
-#: ../../index.md:97
+#: ../../index.md:96
 msgid "{ref}`modindex`"
 msgstr ""
 
-#: ../../index.md:98
+#: ../../index.md:97
 msgid "{ref}`search`"
 msgstr ""
+
+#~ msgid "これは、開発者(UniVRMを使ったアプリケーションを作成する人)向けのドキュメントです。"
+#~ msgstr "This is a document for developer that using UniVRM."
 

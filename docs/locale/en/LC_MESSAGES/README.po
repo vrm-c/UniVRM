@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: UniVRM Programming Document \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-09-14 14:37+0900\n"
+"POT-Creation-Date: 2021-10-13 14:20+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -43,18 +43,25 @@ msgid "conf.py"
 msgstr ""
 
 #: ../../README.md:33
-msgid "gettext で英語記事を作成する"
+msgid "gettext 導入"
 msgstr ""
 
 #: ../../README.md:45
+msgid "gettext 更新"
+msgstr ""
+
+#: ../../README.md:47
 msgid "potファイル作成"
 msgstr ""
 
-#: ../../README.md:51
+#: ../../README.md:53
 msgid "poファイルを作成"
 msgstr ""
 
-#: ../../README.md:57
+#: ../../README.md:59
 msgid "ロケールを使ってサイトビルド"
 msgstr ""
+
+#~ msgid "gettext で英語記事を作成する"
+#~ msgstr ""
 
