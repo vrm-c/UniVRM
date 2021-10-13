@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: UniVRM Programming Document \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-13 14:20+0900\n"
+"POT-Creation-Date: 2021-10-13 14:36+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,8 +34,8 @@ msgstr "Recommended"
 msgid "Unity"
 msgstr ""
 
-#: ../../release/index.md
-msgid "v0.81～"
+#: ../../release/index.md ../../release/index.md:10
+msgid "v0.79～"
 msgstr ""
 
 #: ../../release/index.md
@@ -47,16 +47,9 @@ msgid "Unity-2019.4"
 msgstr ""
 
 #: ../../release/index.md
-msgid "特に問題が無ければこれ"
+#, fuzzy
+msgid "特に問題が無ければこれ。"
 msgstr "Default"
-
-#: ../../release/index.md
-msgid "v0.79, v0.80"
-msgstr ""
-
-#: ../../release/index.md
-msgid "There was a configuration change in the unity package. Please use v0.81 ~"
-msgstr ""
 
 #: ../../release/index.md
 msgid "v0.68～v0.78"
@@ -67,7 +60,8 @@ msgid "Unity-2018.4"
 msgstr ""
 
 #: ../../release/index.md
-msgid "開発版。v0.81～ を使ってください"
+#, fuzzy
+msgid "開発版。最新版を使ってください。"
 msgstr "Development version. Please use v0.81 ~"
 
 #: ../../release/index.md
@@ -90,18 +84,14 @@ msgstr ""
 msgid "Unity-5.6(.NET3.5)"
 msgstr ""
 
-#: ../../release/index.md:11
-msgid "v0.79～"
-msgstr ""
-
-#: ../../release/index.md:13
+#: ../../release/index.md:12
 msgid "`from 0.80`: `Unity-2019.4`"
 msgstr ""
 
-#: ../../release/index.md:14
+#: ../../release/index.md:13
 msgid "`from 0.81`: `UniGLTF_VRMShaders` and `UniVRM` ２パッケージ構成"
 msgstr "`from 0.81`: `UniGLTF_VRMShaders` and `UniVRM` 2 package configuration"
 
-#: ../../release/index.md:24
+#: ../../release/index.md:23
 msgid "Older versions"
 msgstr ""

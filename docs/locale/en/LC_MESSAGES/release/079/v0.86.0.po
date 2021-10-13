@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: UniVRM Programming Document \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-11 13:45+0900\n"
+"POT-Creation-Date: 2021-10-11 16:50+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -97,10 +97,11 @@ msgid ""
 msgstr ""
 
 #: ../../release/079/v0.86.0.md:18
+#, fuzzy
 msgid ""
 "[[\\#1276](https://github.com/vrm-c/UniVRM/pull/1276)] conf.py "
-"Fixed command line evaluation order"
-msgstr ""
+"とコマンドラインの評価順ぽい"
+msgstr "Fixed again"
 
 #: ../../release/079/v0.86.0.md:19
 msgid "[[\\#1275](https://github.com/vrm-c/UniVRM/pull/1275)] もう一回"
