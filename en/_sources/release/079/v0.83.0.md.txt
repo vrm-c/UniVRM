@@ -10,6 +10,8 @@ https://vrm-c.github.io/UniVRM/
 
 ## [v0.83.0](https://github.com/vrm-c/UniVRM/tree/v0.83.0) (2021-09-10)
 
+| 09/03 | [0.82.1](http://github.com/vrm-c/UniVRM/releases/tag/v0.82.1) [milestone](https://github.com/vrm-c/UniVRM/milestone/45?closed=1) |               | URP API                                     |
+
 * commit: https://github.com/vrm-c/UniVRM/releases/tag/v0.83.0
 * milestone: https://github.com/vrm-c/UniVRM/milestone/45?closed=1
 [Full Changelog](https://github.com/vrm-c/UniVRM/compare/v0.82.1...v0.83.0)

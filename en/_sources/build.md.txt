@@ -1,5 +1,7 @@
 # アプリケーションのビルド
 
+UniVRMを使うアプリケーションのビルドに関する注意事項
+
 ## ビルドに含めるシェーダー
 
 `Project Settings = Graphics - Always Included Shaders` などに設定して、ビルドに含まれるようにしてください。

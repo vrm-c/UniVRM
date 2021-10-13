@@ -1,52 +1,97 @@
-
 <!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
-    <title>How to use VRMFirstPerson &#8212; UniVRM Programming Document  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/nature.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/doctools.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>How to use VRMFirstPerson &mdash; UniVRM Programming Document  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="RuntimeLoad" href="../vrm1/vrm1_runtime_load.html" />
+    <link rel="next" title="VRM-1.0(β)" href="../vrm1/index.html" />
     <link rel="prev" title="BlendShapeProxy(0.58)" href="0_58_blendshape.html" /> 
-  </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="../vrm1/vrm1_runtime_load.html" title="RuntimeLoad"
-             accesskey="N">next</a> |</li>
-        <li class="right" >
-          <a href="0_58_blendshape.html" title="BlendShapeProxy(0.58)"
-             accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">UniVRM Programming Document  documentation</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">How to use VRMFirstPerson</a></li> 
-      </ul>
-    </div>  
+</head>
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> UniVRM Programming Document
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../build.html">アプリケーションのビルド</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../implementation/index.html">実装メモ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gltf/index.html">glTF</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">VRM</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="0_82_runtime_import.html">RuntimeImport(0.82)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="0_79_runtime_import.html">RuntimeImport(0.79)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="0_77_runtime_import.html">RuntimeImport(0.77)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="0_68_runtime_import.html">RuntimeImport(0.68)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="0_44_runtime_import.html">RuntimeImport(0.44)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="0_58_blendshape.html">BlendShapeProxy(0.58)</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">How to use VRMFirstPerson</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Specify the additional render layers for the application</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#setuplayermask">Call Setup function at runtime and set LayerMask in Camera</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#samples">Samples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../vrm1/index.html">VRM-1.0(β)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../release/index.html">Release</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">UniVRM Programming Document</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">VRM</a> &raquo;</li>
+      <li>How to use VRMFirstPerson</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/vrm-c/UniVRM/blob/master/docs/vrm0/firstperson.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
   <section class="tex2jax_ignore mathjax_ignore" id="vrmfirstperson">
-<h1>How to use VRMFirstPerson<a class="headerlink" href="#vrmfirstperson" title="Permalink to this headline">¶</a></h1>
+<h1>How to use VRMFirstPerson<a class="headerlink" href="#vrmfirstperson" title="Permalink to this headline"></a></h1>
 <p><a class="reference internal" href="../implementation/first_person.html"><span class="doc">FirstPerson と Renderer の可視制御</span></a></p>
 <p>実行時に<strong>VRMFirstPerson.Setup</strong>を呼び出すことで、FirstPerson設定に応じた Renderer の可視制御を行うことができます。
 明示的に外部から呼び出してください。</p>
 <section id="id1">
-<h2>Specify the additional render layers for the application<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<h2>Specify the additional render layers for the application<a class="headerlink" href="#id1" title="Permalink to this headline"></a></h2>
 <p>The following layers are defined as constant:</p>
 <div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">public</span> <span class="k">class</span> <span class="nc">VRMFirstPerson</span> <span class="p">:</span> <span class="n">MonoBehaviour</span>
 <span class="p">{</span>
@@ -69,7 +114,7 @@
 </table>
 </section>
 <section id="setuplayermask">
-<h2>Call Setup function at runtime and set LayerMask in Camera<a class="headerlink" href="#setuplayermask" title="Permalink to this headline">¶</a></h2>
+<h2>Call Setup function at runtime and set LayerMask in Camera<a class="headerlink" href="#setuplayermask" title="Permalink to this headline"></a></h2>
 <ul class="simple">
 <li><p>Call VRMFirstPerson.Setup</p></li>
 <li><p>Set LayerMask for first-person camera view and other camera views</p></li>
@@ -121,72 +166,34 @@
 </section>
 
 
-            <div class="clearer"></div>
+           </div>
           </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="0_58_blendshape.html" class="btn btn-neutral float-left" title="BlendShapeProxy(0.58)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../vrm1/index.html" class="btn btn-neutral float-right" title="VRM-1.0(β)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, VRM Consortium.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<ul>
-    <li><a href="../../ja/vrm0/firstperson.html">日本語</a></li>
-</ul>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
 
-
-  <h3><a href="../index.html">Table of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">How to use VRMFirstPerson</a><ul>
-<li><a class="reference internal" href="#id1">Specify the additional render layers for the application</a></li>
-<li><a class="reference internal" href="#setuplayermask">Call Setup function at runtime and set LayerMask in Camera</a></li>
-</ul>
-</li>
-</ul>
-
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="0_58_blendshape.html"
-                        title="previous chapter">BlendShapeProxy(0.58)</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="../vrm1/vrm1_runtime_load.html"
-                        title="next chapter">RuntimeLoad</a></p>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="../_sources/vrm0/firstperson.md.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="../vrm1/vrm1_runtime_load.html" title="RuntimeLoad"
-             >next</a> |</li>
-        <li class="right" >
-          <a href="0_58_blendshape.html" title="BlendShapeProxy(0.58)"
-             >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">UniVRM Programming Document  documentation</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">How to use VRMFirstPerson</a></li> 
-      </ul>
-    </div>
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2021, VRM Consortium.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
-    </div>
-  </body>
+</body>
 </html>

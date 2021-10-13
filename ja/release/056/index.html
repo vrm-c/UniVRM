@@ -1,124 +1,311 @@
-
 <!DOCTYPE html>
+<html class="writer-html5" lang="ja" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-<html lang="ja">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
-    <title>v0.56～v0.67: Unity-2018.4 &#8212; UniVRM Programming Document  ドキュメント</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/nature.css" />
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/translations.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>v0.56～v0.67: Unity-2018.4 &mdash; UniVRM Programming Document  ドキュメント</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/translations.js"></script>
+    <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="索引" href="../../genindex.html" />
     <link rel="search" title="検索" href="../../search.html" />
-    <link rel="next" title="～v0.55: Unity-5.6(.NET-3.5)" href="../055/index.html" />
-    <link rel="prev" title="v0.68.0: ImporterContext, ScriptedImporter(glb/gltf), remove DepthFirstScheduler" href="../068/v0.68.0.html" /> 
-  </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>ナビゲーション</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../../genindex.html" title="総合索引"
-             accesskey="I">索引</a></li>
-        <li class="right" >
-          <a href="../055/index.html" title="～v0.55: Unity-5.6(.NET-3.5)"
-             accesskey="N">次へ</a> |</li>
-        <li class="right" >
-          <a href="../068/v0.68.0.html" title="v0.68.0: ImporterContext, ScriptedImporter(glb/gltf), remove DepthFirstScheduler"
-             accesskey="P">前へ</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">UniVRM Programming Document  ドキュメント</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Release</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">v0.56～v0.67: Unity-2018.4</a></li> 
-      </ul>
-    </div>  
+    <link rel="next" title="v0.56.0: 最低バージョンを Unity-2018.4 に更新" href="v0.56.0.html" />
+    <link rel="prev" title="v0.78.0: ScriptdImporter の改修" href="../068/v0.78.0.html" /> 
+</head>
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
-  <section class="tex2jax_ignore mathjax_ignore" id="v0-56-v0-67-unity-2018-4">
-<h1>v0.56～v0.67: Unity-2018.4<a class="headerlink" href="#v0-56-v0-67-unity-2018-4" title="このヘッドラインへのパーマリンク">¶</a></h1>
-<section id="id1">
-<h2>0.56以降<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">Unity-2018.4</span></code></p>
-<div class="toctree-wrapper compound">
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> UniVRM Programming Document
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
 </div>
-</section>
-</section>
-
-
-            <div class="clearer"></div>
-          </div>
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<ul>
-    <li><a href="../../../en/release/056/index.html">English</a></li>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../build.html">アプリケーションのビルド</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../implementation/index.html">実装メモ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gltf/index.html">glTF</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../vrm0/index.html">VRM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../vrm1/index.html">VRM-1.0(β)</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Release</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../079/index.html">v0.79～: Unity-2019.4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../068/index.html">v0.68～v0.78: Unity-2018.4 (pre release)</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">v0.56～v0.67: Unity-2018.4</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#releasenote">ReleaseNote</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="v0.56.0.html">v0.56.0: 最低バージョンを Unity-2018.4 に更新</a></li>
+<li class="toctree-l4"><a class="reference internal" href="v0.57.0.html">v0.57.0: ボーン名重複の自動リネーム</a></li>
+<li class="toctree-l4"><a class="reference internal" href="v0.58.0.html">v0.58.0: テクスチャサイズの適正な考慮</a></li>
+<li class="toctree-l4"><a class="reference internal" href="v0.59.0.html">v0.59.0</a></li>
+<li class="toctree-l4"><a class="reference internal" href="v0.60.0.html">v0.60.0</a></li>
+<li class="toctree-l4"><a class="reference internal" href="v0.61.0.html">v0.61.0: シリアライザーを reflection からコード生成に変更</a></li>
+<li class="toctree-l4"><a class="reference internal" href="v0.62.0.html">v0.62.0: BlendShape bake</a></li>
+<li class="toctree-l4"><a class="reference internal" href="v0.63.0.html">v0.63.0: UniGLTF と UniVRM の分離</a></li>
+<li class="toctree-l4"><a class="reference internal" href="v0.64.0.html">v0.64.0</a></li>
+<li class="toctree-l4"><a class="reference internal" href="v0.65.0.html">v0.65.0</a></li>
+<li class="toctree-l4"><a class="reference internal" href="v0.66.0.html">v0.66.0</a></li>
+<li class="toctree-l4"><a class="reference internal" href="v0.67.0.html">v0.67.0: UniJson 単純化</a></li>
 </ul>
-
-
-  <h3><a href="../../index.html">目次</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">v0.56～v0.67: Unity-2018.4</a><ul>
-<li><a class="reference internal" href="#id1">0.56以降</a></li>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#download">Download</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../055/index.html">～v0.55: Unity-5.6(.NET-3.5)</a></li>
 </ul>
 </li>
 </ul>
 
-  <h4>前のトピックへ</h4>
-  <p class="topless"><a href="../068/v0.68.0.html"
-                        title="前の章へ">v0.68.0: ImporterContext, ScriptedImporter(glb/gltf), remove DepthFirstScheduler</a></p>
-  <h4>次のトピックへ</h4>
-  <p class="topless"><a href="../055/index.html"
-                        title="次の章へ">～v0.55: Unity-5.6(.NET-3.5)</a></p>
-  <div role="note" aria-label="source link">
-    <h3>このページ</h3>
-    <ul class="this-page-menu">
-      <li><a href="../../_sources/release/056/index.md.txt"
-            rel="nofollow">ソースコードを表示</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">クイック検索</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="検索" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script>
         </div>
       </div>
-      <div class="clearer"></div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">UniVRM Programming Document</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Release</a> &raquo;</li>
+      <li>v0.56～v0.67: Unity-2018.4</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/vrm-c/UniVRM/blob/master/docs/release/056/index.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="v0-56-v0-67-unity-2018-4">
+<h1>v0.56～v0.67: Unity-2018.4<a class="headerlink" href="#v0-56-v0-67-unity-2018-4" title="このヘッドラインへのパーマリンク"></a></h1>
+<section id="releasenote">
+<h2>ReleaseNote<a class="headerlink" href="#releasenote" title="このヘッドラインへのパーマリンク"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="v0.56.0.html">v0.56.0: 最低バージョンを Unity-2018.4 に更新</a></li>
+<li class="toctree-l1"><a class="reference internal" href="v0.57.0.html">v0.57.0: ボーン名重複の自動リネーム</a></li>
+<li class="toctree-l1"><a class="reference internal" href="v0.58.0.html">v0.58.0: テクスチャサイズの適正な考慮</a></li>
+<li class="toctree-l1"><a class="reference internal" href="v0.59.0.html">v0.59.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="v0.60.0.html">v0.60.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="v0.61.0.html">v0.61.0: シリアライザーを reflection からコード生成に変更</a></li>
+<li class="toctree-l1"><a class="reference internal" href="v0.62.0.html">v0.62.0: BlendShape bake</a></li>
+<li class="toctree-l1"><a class="reference internal" href="v0.63.0.html">v0.63.0: UniGLTF と UniVRM の分離</a></li>
+<li class="toctree-l1"><a class="reference internal" href="v0.64.0.html">v0.64.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="v0.65.0.html">v0.65.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="v0.66.0.html">v0.66.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="v0.67.0.html">v0.67.0: UniJson 単純化</a></li>
+</ul>
+</div>
+</section>
+<section id="download">
+<h2>Download<a class="headerlink" href="#download" title="このヘッドラインへのパーマリンク"></a></h2>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>date</p></th>
+<th class="head"><p>version</p></th>
+<th class="head"><p>安定性・バグ</p></th>
+<th class="head"><p>更新内容・備考</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>2020</p></td>
+<td><p><a class="reference external" href="http://github.com/vrm-c/UniVRM/releases/tag/v0.56.0">0.56.0</a></p></td>
+<td><p>x</p></td>
+<td><p>Unity-2018.4 に変更</p></td>
+</tr>
+<tr class="row-odd"><td><p></p></td>
+<td><p><a class="reference external" href="http://github.com/vrm-c/UniVRM/releases/tag/v0.56.1">0.56.1</a></p></td>
+<td><p>x</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p></p></td>
+<td><p><a class="reference external" href="http://github.com/vrm-c/UniVRM/releases/tag/v0.56.2">0.56.2</a></p></td>
+<td><p>x</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p></p></td>
+<td><p><a class="reference external" href="http://github.com/vrm-c/UniVRM/releases/tag/v0.56.3">0.56.3</a></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p></p></td>
+<td><p><a class="reference external" href="http://github.com/vrm-c/UniVRM/releases/tag/v0.57.0">0.57.0</a></p></td>
+<td><p></p></td>
+<td><p>ボーン名重複時にに自動でリネームするようになりました</p></td>
+</tr>
+<tr class="row-odd"><td><p></p></td>
+<td><p><a class="reference external" href="http://github.com/vrm-c/UniVRM/releases/tag/v0.57.1">0.57.1</a></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p></p></td>
+<td><p><a class="reference external" href="http://github.com/vrm-c/UniVRM/releases/tag/v0.58.0">0.58.0</a></p></td>
+<td><p><a class="footnote-reference brackets" href="#firstperson-import" id="id1">1</a></p></td>
+<td><p>エクスポートダイアログの作り直し</p></td>
+</tr>
+<tr class="row-odd"><td><p></p></td>
+<td><p><a class="reference external" href="http://github.com/vrm-c/UniVRM/releases/tag/v0.58.1">0.58.1</a></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p></p></td>
+<td><p><a class="reference external" href="http://github.com/vrm-c/UniVRM/releases/tag/v0.59.0">0.59.0</a></p></td>
+<td><p></p></td>
+<td><p>springBone の Missing を検知してメッセージ</p></td>
+</tr>
+<tr class="row-odd"><td><p></p></td>
+<td><p><a class="reference external" href="http://github.com/vrm-c/UniVRM/releases/tag/v0.60.0">0.60.0</a></p></td>
+<td><p></p></td>
+<td><p>null check 的なものが増えて、モデル改変してもエラーが出にくくなりました</p></td>
+</tr>
+<tr class="row-even"><td><p></p></td>
+<td><p><a class="reference external" href="http://github.com/vrm-c/UniVRM/releases/tag/v0.61.0">0.61.0</a> <a class="reference external" href="https://github.com/vrm-c/UniVRM/milestone/20?closed=1">milestone</a></p></td>
+<td><p><a class="footnote-reference brackets" href="#springcollider" id="id2">2</a></p></td>
+<td><p>UniUnlit の頂点カラー。AOT問題を修正</p></td>
+</tr>
+<tr class="row-odd"><td><p></p></td>
+<td><p><a class="reference external" href="http://github.com/vrm-c/UniVRM/releases/tag/v0.61.1">0.61.1</a></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p></p></td>
+<td><p><a class="reference external" href="http://github.com/vrm-c/UniVRM/releases/tag/v0.62.0">0.62.0</a> <a class="reference external" href="https://github.com/vrm-c/UniVRM/milestone/21?closed=1">milestone</a></p></td>
+<td><p></p></td>
+<td><p>BlendShape bake の動作が正しくなった</p></td>
+</tr>
+<tr class="row-odd"><td><p>2021 01/05</p></td>
+<td><p><a class="reference external" href="http://github.com/vrm-c/UniVRM/releases/tag/v0.63.0">0.63.0</a> <a class="reference external" href="https://github.com/vrm-c/UniVRM/milestone/25?closed=1">milestone</a></p></td>
+<td><p><a class="footnote-reference brackets" href="#jpg" id="id3">3</a> <a class="footnote-reference brackets" href="#kwmap" id="id4">4</a> <a class="footnote-reference brackets" href="#upm" id="id5">5</a></p></td>
+<td><p>jpg問題あり。UniGLTF分離</p></td>
+</tr>
+<tr class="row-even"><td><p>01/07</p></td>
+<td><p><a class="reference external" href="http://github.com/vrm-c/UniVRM/releases/tag/v0.63.1">0.63.1</a></p></td>
+<td><p><a class="footnote-reference brackets" href="#jpg" id="id6">3</a> <a class="footnote-reference brackets" href="#kwmap" id="id7">4</a></p></td>
+<td><p>jpg問題あり</p></td>
+</tr>
+<tr class="row-odd"><td><p>01/08</p></td>
+<td><p><a class="reference external" href="http://github.com/vrm-c/UniVRM/releases/tag/v0.63.2">0.63.2</a></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>01/15</p></td>
+<td><p><a class="reference external" href="http://github.com/vrm-c/UniVRM/releases/tag/v0.64.0">0.64.0</a> <a class="reference external" href="https://github.com/vrm-c/UniVRM/milestone/23?closed=1">milestone</a></p></td>
+<td><p><a class="footnote-reference brackets" href="#asmdef" id="id8">6</a></p></td>
+<td><p>メッシュの一部を削除したときのエクスポートエラーを回避。vrm-1.0 Experimental</p></td>
+</tr>
+<tr class="row-odd"><td><p>01/26</p></td>
+<td><p><a class="reference external" href="http://github.com/vrm-c/UniVRM/releases/tag/v0.65.0">0.65.0</a></p></td>
+<td><p><a class="footnote-reference brackets" href="#build" id="id9">7</a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>01/28</p></td>
+<td><p><a class="reference external" href="http://github.com/vrm-c/UniVRM/releases/tag/v0.65.1">0.65.1</a> <a class="reference external" href="https://github.com/vrm-c/UniVRM/milestone/28?closed=1">milestone</a></p></td>
+<td><p><a class="footnote-reference brackets" href="#build" id="id10">7</a></p></td>
+<td><p>トルコ語のExportを修正<a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/696">#696</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>01/28</p></td>
+<td><p><a class="reference external" href="http://github.com/vrm-c/UniVRM/releases/tag/v0.65.2">0.65.2</a> <a class="reference external" href="https://github.com/vrm-c/UniVRM/milestone/29?closed=1">milestone</a></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p></p></td>
+<td><p><a class="reference external" href="http://github.com/vrm-c/UniVRM/releases/tag/v0.65.3">0.65.3</a></p></td>
+<td><p></p></td>
+<td><p>UniGLTFのバージョン。UPM専用。パッケージリリース無し</p></td>
+</tr>
+<tr class="row-odd"><td><p>02/03</p></td>
+<td><p><a class="reference external" href="http://github.com/vrm-c/UniVRM/releases/tag/v0.66.0">0.66.0</a> <a class="reference external" href="https://github.com/vrm-c/UniVRM/milestone/26?closed=1">milestone</a></p></td>
+<td><p>安定✅</p></td>
+<td><p>未正規化ヒエラルキーにスプリングボーンがあるときの警告メッセージ</p></td>
+</tr>
+<tr class="row-even"><td><p></p></td>
+<td><p><a class="reference external" href="http://github.com/vrm-c/UniVRM/releases/tag/v0.67.0">0.67.0</a> <a class="reference external" href="https://github.com/vrm-c/UniVRM/milestone/27?closed=1">milestone</a></p></td>
+<td><p></p></td>
+<td><p>UPM専用。パッケージリリース無し</p></td>
+</tr>
+<tr class="row-odd"><td><p></p></td>
+<td><p><a class="reference external" href="http://github.com/vrm-c/UniVRM/releases/tag/v0.67.1">0.67.1</a></p></td>
+<td><p></p></td>
+<td><p>UPM専用。パッケージリリース無し</p></td>
+</tr>
+</tbody>
+</table>
+<hr class="footnotes docutils" />
+<dl class="footnote brackets">
+<dt class="label" id="firstperson-import"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dd><p>VRMFirstPerson のエディターインポートのバグ <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/515">/#515</a></p>
+</dd>
+<dt class="label" id="springcollider"><span class="brackets"><a class="fn-backref" href="#id2">2</a></span></dt>
+<dd><p>スプリングボーンのコライダーの座標変換バグ。 <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/576">#576</a></p>
+</dd>
+<dt class="label" id="jpg"><span class="brackets">3</span><span class="fn-backref">(<a href="#id3">1</a>,<a href="#id6">2</a>)</span></dt>
+<dd><p>エクスポートダイアログのスクリーンショットボタンの jpg バグ。<a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/639">#639</a></p>
+</dd>
+<dt class="label" id="kwmap"><span class="brackets">4</span><span class="fn-backref">(<a href="#id4">1</a>,<a href="#id7">2</a>)</span></dt>
+<dd><p>シリアライザのバグ。エクスポートしたファイルの互換性。 <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/654">#654</a></p>
+</dd>
+<dt class="label" id="upm"><span class="brackets"><a class="fn-backref" href="#id5">5</a></span></dt>
+<dd><p>MeshUtility フォルダの移動と参照の問題。</p>
+</dd>
+<dt class="label" id="asmdef"><span class="brackets"><a class="fn-backref" href="#id8">6</a></span></dt>
+<dd><p>他のパッケージと併用するときに install で問題が出る？ <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/687">#687</a></p>
+</dd>
+<dt class="label" id="build"><span class="brackets">7</span><span class="fn-backref">(<a href="#id9">1</a>,<a href="#id10">2</a>)</span></dt>
+<dd><p>build すると Exception( <code class="docutils literal notranslate"><span class="pre">#if</span> <span class="pre">UNITY_EDITOR</span></code> )。 <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/701">#701</a></p>
+</dd>
+</dl>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../068/v0.78.0.html" class="btn btn-neutral float-left" title="v0.78.0: ScriptdImporter の改修" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="v0.56.0.html" class="btn btn-neutral float-right" title="v0.56.0: 最低バージョンを Unity-2018.4 に更新" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>ナビゲーション</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../../genindex.html" title="総合索引"
-             >索引</a></li>
-        <li class="right" >
-          <a href="../055/index.html" title="～v0.55: Unity-5.6(.NET-3.5)"
-             >次へ</a> |</li>
-        <li class="right" >
-          <a href="../068/v0.68.0.html" title="v0.68.0: ImporterContext, ScriptedImporter(glb/gltf), remove DepthFirstScheduler"
-             >前へ</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">UniVRM Programming Document  ドキュメント</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../index.html" >Release</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">v0.56～v0.67: Unity-2018.4</a></li> 
-      </ul>
-    </div>
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2021, VRM Consortium.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
-    </div>
-  </body>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, VRM Consortium.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
 </html>

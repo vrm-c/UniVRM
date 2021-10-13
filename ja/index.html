@@ -1,155 +1,92 @@
-
 <!DOCTYPE html>
+<html class="writer-html5" lang="ja" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-<html lang="ja">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
-    <title>UniVRM Programming Document &#8212; UniVRM Programming Document  ドキュメント</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/nature.css" />
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
-    <script src="_static/doctools.js"></script>
-    <script src="_static/translations.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UniVRM Programming Document &mdash; UniVRM Programming Document  ドキュメント</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/translations.js"></script>
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="索引" href="genindex.html" />
     <link rel="search" title="検索" href="search.html" />
-    <link rel="next" title="パッケージ構成" href="package.html" /> 
-  </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>ナビゲーション</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="総合索引"
-             accesskey="I">索引</a></li>
-        <li class="right" >
-          <a href="package.html" title="パッケージ構成"
-             accesskey="N">次へ</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">UniVRM Programming Document  ドキュメント</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">UniVRM Programming Document</a></li> 
-      </ul>
-    </div>  
+    <link rel="next" title="アプリケーションのビルド" href="build.html" /> 
+</head>
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="#" class="icon icon-home"> UniVRM Programming Document
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="build.html">アプリケーションのビルド</a></li>
+<li class="toctree-l1"><a class="reference internal" href="implementation/index.html">実装メモ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gltf/index.html">glTF</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vrm0/index.html">VRM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vrm1/index.html">VRM-1.0(β)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release/index.html">Release</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">UniVRM Programming Document</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home"></a> &raquo;</li>
+      <li>UniVRM Programming Document</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/vrm-c/UniVRM/blob/master/docs/index.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
   <section class="tex2jax_ignore mathjax_ignore" id="univrm-programming-document">
-<h1>UniVRM Programming Document<a class="headerlink" href="#univrm-programming-document" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<h1>UniVRM Programming Document<a class="headerlink" href="#univrm-programming-document" title="このヘッドラインへのパーマリンク"></a></h1>
 <p>これは、<a class="reference external" href="https://github.com/vrm-c/UniVRM">UniVRM</a> の開発ドキュメントです。
 UnityでVRMをエクスポートする方法などについては <a class="reference external" href="https://vrm.dev/docs/univrm/">manual</a> を参照してください。</p>
-<section id="id1">
-<h2>概要<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="package.html">パッケージ構成</a></li>
-<li class="toctree-l1"><a class="reference internal" href="history.html">Version</a></li>
-</ul>
-</div>
-</section>
-<section id="build">
-<h2>build<a class="headerlink" href="#build" title="このヘッドラインへのパーマリンク">¶</a></h2>
-<p>UniVRMを使うアプリケーションのビルドに関する注意事項</p>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="build.html">アプリケーションのビルド</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="build.html#id2">ビルドに含めるシェーダー</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="build.html#unlit">Unlit</a></li>
-<li class="toctree-l3"><a class="reference internal" href="build.html#mtoon">MToon</a></li>
-<li class="toctree-l3"><a class="reference internal" href="build.html#import-export">ランタイム import/export 時のテクスチャー変換用のシェーダー</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</div>
-</section>
-<section id="id2">
-<h2>実装メモ<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク">¶</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="implementation/runtime_resource_management.html">Runtime のリソース管理について</a></li>
-<li class="toctree-l1"><a class="reference internal" href="implementation/texture_manipulation.html">Texture関連</a></li>
-<li class="toctree-l1"><a class="reference internal" href="implementation/coordinate.html">座標系の変換</a></li>
-<li class="toctree-l1"><a class="reference internal" href="implementation/fast_spring_bone.html">FastSpringBoneについて</a></li>
-<li class="toctree-l1"><a class="reference internal" href="implementation/first_person.html">VRアプリケーションの FirstPerson 設定による Renderer の可視制御</a></li>
-</ul>
-</div>
-</section>
-<section id="gltf">
-<h2>glTF<a class="headerlink" href="#gltf" title="このヘッドラインへのパーマリンク">¶</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="gltf/0_82_glb_import.html">GlbImport(0.82)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="gltf/how_to_impl_extension.html">glTF拡張の実装(0.63.2)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="gltf/0_36_update.html">GltfUpdate(0.36)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="gltf/format.html">glbフォーマット概説</a></li>
-</ul>
-</div>
-</section>
-<section id="vrm">
-<h2>VRM<a class="headerlink" href="#vrm" title="このヘッドラインへのパーマリンク">¶</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="vrm0/0_82_runtime_import.html">RuntimeImport(0.82)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="vrm0/0_79_runtime_import.html">RuntimeImport(0.79)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="vrm0/0_77_runtime_import.html">RuntimeImport(0.77)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="vrm0/0_68_runtime_import.html">RuntimeImport(0.68)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="vrm0/0_44_runtime_import.html">RuntimeImport(0.44)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="vrm0/0_58_blendshape.html">BlendShapeProxy(0.58)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="vrm0/firstperson.html">VRMFirstPersonの使い方</a></li>
-</ul>
-</div>
-<section id="samples">
-<h3>Samples<a class="headerlink" href="#samples" title="このヘッドラインへのパーマリンク">¶</a></h3>
-<ul class="simple">
-<li><p>SimpleViewer</p></li>
-<li><p>RuntimeExporerSample</p></li>
-<li><p>FirstPersonSample</p></li>
-<li><p>AnimationBridgeSample</p></li>
-</ul>
-</section>
-</section>
-<section id="vrm-1-0">
-<h2>VRM-1.0(β)<a class="headerlink" href="#vrm-1-0" title="このヘッドラインへのパーマリンク">¶</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="vrm1/vrm1_runtime_load.html">RuntimeLoad</a></li>
-<li class="toctree-l1"><a class="reference internal" href="vrm1/vrm1_get_humanoid.html">🚧Humanoid</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="vrm1/vrm1_get_humanoid.html#humanoid-bone">Humanoid Bone の取得方法</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="vrm1/vrm1_expression.html">🚧Expression</a></li>
-<li class="toctree-l1"><a class="reference internal" href="vrm1/vrm1_lookat.html">🚧LookAt</a></li>
-<li class="toctree-l1"><a class="reference internal" href="vrm1/vrm1_firstperson.html">FirstPerson</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="vrm1/vrm1_firstperson.html#runtime-firstperson">Runtime に FirstPerson 機能を有効にする</a></li>
-<li class="toctree-l2"><a class="reference internal" href="vrm1/vrm1_firstperson.html#vrm-vr">VRMの推奨する VR 向けのカメラ構成</a></li>
-<li class="toctree-l2"><a class="reference internal" href="vrm1/vrm1_firstperson.html#layer">初期化時に layer を明示する</a></li>
-</ul>
-</li>
-</ul>
-</div>
-<section id="id3">
-<h3>Samples<a class="headerlink" href="#id3" title="このヘッドラインへのパーマリンク">¶</a></h3>
-<ul class="simple">
-<li><p>VRM10Viewer</p></li>
-</ul>
-</section>
-</section>
-<section id="release">
-<h2>Release<a class="headerlink" href="#release" title="このヘッドラインへのパーマリンク">¶</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
+<li class="toctree-l1"><a class="reference internal" href="build.html">アプリケーションのビルド</a></li>
+<li class="toctree-l1"><a class="reference internal" href="implementation/index.html">実装メモ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gltf/index.html">glTF</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vrm0/index.html">VRM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vrm1/index.html">VRM-1.0(β)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="release/index.html">Release</a></li>
 </ul>
 </div>
 </section>
-</section>
 <section class="tex2jax_ignore mathjax_ignore" id="indices-and-tables">
-<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="このヘッドラインへのパーマリンク"></a></h1>
 <ul class="simple">
 <li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">索引</span></a></p></li>
 <li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">モジュール索引</span></a></p></li>
@@ -158,78 +95,33 @@ UnityでVRMをエクスポートする方法などについては <a class="refe
 </section>
 
 
-            <div class="clearer"></div>
+           </div>
           </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="build.html" class="btn btn-neutral float-right" title="アプリケーションのビルド" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, VRM Consortium.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<ul>
-    <li><a href="../en/index.html">English</a></li>
-</ul>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
 
-
-  <h3><a href="#">目次</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">UniVRM Programming Document</a><ul>
-<li><a class="reference internal" href="#id1">概要</a></li>
-<li><a class="reference internal" href="#build">build</a></li>
-<li><a class="reference internal" href="#id2">実装メモ</a></li>
-<li><a class="reference internal" href="#gltf">glTF</a></li>
-<li><a class="reference internal" href="#vrm">VRM</a><ul>
-<li><a class="reference internal" href="#samples">Samples</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#vrm-1-0">VRM-1.0(β)</a><ul>
-<li><a class="reference internal" href="#id3">Samples</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#release">Release</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
-</ul>
-
-  <h4>次のトピックへ</h4>
-  <p class="topless"><a href="package.html"
-                        title="次の章へ">パッケージ構成</a></p>
-  <div role="note" aria-label="source link">
-    <h3>このページ</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/index.md.txt"
-            rel="nofollow">ソースコードを表示</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">クイック検索</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="検索" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>ナビゲーション</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="総合索引"
-             >索引</a></li>
-        <li class="right" >
-          <a href="package.html" title="パッケージ構成"
-             >次へ</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">UniVRM Programming Document  ドキュメント</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">UniVRM Programming Document</a></li> 
-      </ul>
-    </div>
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2021, VRM Consortium.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
-    </div>
-  </body>
+</body>
 </html>

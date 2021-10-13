@@ -1,52 +1,105 @@
-
 <!DOCTYPE html>
+<html class="writer-html5" lang="ja" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-<html lang="ja">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
-    <title>v0.70.0: EncodeToPng に失敗するエラーを修正 &#8212; UniVRM Programming Document  ドキュメント</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/nature.css" />
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/translations.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>v0.70.0: EncodeToPng に失敗するエラーを修正 &mdash; UniVRM Programming Document  ドキュメント</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/translations.js"></script>
+    <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="索引" href="../../genindex.html" />
     <link rel="search" title="検索" href="../../search.html" />
-    <link rel="next" title="v0.69.0: MetallicRoughnessOcclusionテクスチャー" href="v0.69.0.html" />
-    <link rel="prev" title="v0.71.0: fix Metallic または Occlusion テクスチャーエクスポートのバグ修正" href="v0.71.0.html" /> 
-  </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>ナビゲーション</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../../genindex.html" title="総合索引"
-             accesskey="I">索引</a></li>
-        <li class="right" >
-          <a href="v0.69.0.html" title="v0.69.0: MetallicRoughnessOcclusionテクスチャー"
-             accesskey="N">次へ</a> |</li>
-        <li class="right" >
-          <a href="v0.71.0.html" title="v0.71.0: fix Metallic または Occlusion テクスチャーエクスポートのバグ修正"
-             accesskey="P">前へ</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">UniVRM Programming Document  ドキュメント</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../index.html" >Release</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">v0.68～v0.78: Unity-2018.4 (pre release)</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">v0.70.0: EncodeToPng に失敗するエラーを修正</a></li> 
-      </ul>
-    </div>  
+    <link rel="next" title="v0.71.0: fix Metallic または Occlusion テクスチャーエクスポートのバグ修正" href="v0.71.0.html" />
+    <link rel="prev" title="v0.69.0: MetallicRoughnessOcclusionテクスチャー" href="v0.69.0.html" /> 
+</head>
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> UniVRM Programming Document
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../build.html">アプリケーションのビルド</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../implementation/index.html">実装メモ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gltf/index.html">glTF</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../vrm0/index.html">VRM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../vrm1/index.html">VRM-1.0(β)</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Release</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../079/index.html">v0.79～: Unity-2019.4</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">v0.68～v0.78: Unity-2018.4 (pre release)</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="index.html#releasenote">ReleaseNote</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="v0.68.0.html">v0.68.0: ImporterContext, ScriptedImporter(glb/gltf), remove DepthFirstScheduler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="v0.69.0.html">v0.69.0: MetallicRoughnessOcclusionテクスチャー</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">v0.70.0: EncodeToPng に失敗するエラーを修正</a></li>
+<li class="toctree-l4"><a class="reference internal" href="v0.71.0.html">v0.71.0: fix Metallic または Occlusion テクスチャーエクスポートのバグ修正</a></li>
+<li class="toctree-l4"><a class="reference internal" href="v0.72.0.html">v0.72.0: Linearカラースペースの推奨, DividedVertexBuffer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="v0.73.0.html">v0.73.0: other permission url の修正</a></li>
+<li class="toctree-l4"><a class="reference internal" href="v0.74.0.html">v0.74.0: runtime スプリングボーンのスケール</a></li>
+<li class="toctree-l4"><a class="reference internal" href="v0.75.0.html">v0.75.0: mipmap</a></li>
+<li class="toctree-l4"><a class="reference internal" href="v0.76.0.html">v0.76.0: Shader整理</a></li>
+<li class="toctree-l4"><a class="reference internal" href="v0.77.0.html">v0.77.0: RuntimeGltfInstance</a></li>
+<li class="toctree-l4"><a class="reference internal" href="v0.78.0.html">v0.78.0: ScriptdImporter の改修</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="index.html#download">Download</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../056/index.html">v0.56～v0.67: Unity-2018.4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../055/index.html">～v0.55: Unity-5.6(.NET-3.5)</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">UniVRM Programming Document</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Release</a> &raquo;</li>
+          <li><a href="index.html">v0.68～v0.78: Unity-2018.4 (pre release)</a> &raquo;</li>
+      <li>v0.70.0: EncodeToPng に失敗するエラーを修正</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/vrm-c/UniVRM/blob/master/docs/release/068/v0.70.0.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
   <section class="tex2jax_ignore mathjax_ignore" id="v0-70-0-encodetopng">
-<h1>v0.70.0: EncodeToPng に失敗するエラーを修正<a class="headerlink" href="#v0-70-0-encodetopng" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<h1>v0.70.0: EncodeToPng に失敗するエラーを修正<a class="headerlink" href="#v0-70-0-encodetopng" title="このヘッドラインへのパーマリンク"></a></h1>
 <section id="v0-70-0-2021-03-31">
-<h2><a class="reference external" href="https://github.com/vrm-c/UniVRM/tree/v0.70.0">v0.70.0</a> (2021-03-31)<a class="headerlink" href="#v0-70-0-2021-03-31" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<h2><a class="reference external" href="https://github.com/vrm-c/UniVRM/tree/v0.70.0">v0.70.0</a> (2021-03-31)<a class="headerlink" href="#v0-70-0-2021-03-31" title="このヘッドラインへのパーマリンク"></a></h2>
 <ul class="simple">
 <li><p>commit: https://github.com/vrm-c/UniVRM/releases/tag/v0.70.0</p></li>
 <li><p>milestone: https://github.com/vrm-c/UniVRM/milestone/32?closed=1</p></li>
@@ -54,9 +107,9 @@
 <p><a class="reference external" href="https://github.com/vrm-c/UniVRM/compare/v0.69.1...v0.70.0">Full Changelog</a></p>
 </section>
 <section id="id1">
-<h2>主な変更<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<h2>主な変更<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク"></a></h2>
 <section id="id2">
-<h3>テクスチャーのエクスポートに失敗する<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<h3>テクスチャーのエクスポートに失敗する<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク"></a></h3>
 <p>テクスチャーの EncodeToPng に失敗するエラーを修正しました。</p>
 <p>https://github.com/vrm-c/UniVRM/pull/831</p>
 <p><code class="docutils literal notranslate"><span class="pre">v0.69.0</span></code> で、エクスポートするテクスチャーをコピーする処理が抜けたのを修正しました。
@@ -67,14 +120,14 @@
 </ul>
 </section>
 <section id="weight-0-byte4-ushort4">
-<h3>WEIGHT_0 が byte4 もしくは ushort4 である場合に対応<a class="headerlink" href="#weight-0-byte4-ushort4" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<h3>WEIGHT_0 が byte4 もしくは ushort4 である場合に対応<a class="headerlink" href="#weight-0-byte4-ushort4" title="このヘッドラインへのパーマリンク"></a></h3>
 <ul class="simple">
 <li><p>Implement WEIGHTS_0 accessor for byte and ushort. <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/823">#823</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
 </ul>
 </section>
 </section>
 <section id="changelog">
-<h2>その他のChangelog<a class="headerlink" href="#changelog" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<h2>その他のChangelog<a class="headerlink" href="#changelog" title="このヘッドラインへのパーマリンク"></a></h2>
 <ul class="simple">
 <li><p>UniVRM-0.70.0 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/835">#835</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
 <li><p>マテリアル生成を VRMShaders に移動 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/830">#830</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
@@ -86,79 +139,34 @@
 </section>
 
 
-            <div class="clearer"></div>
+           </div>
           </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="v0.69.0.html" class="btn btn-neutral float-left" title="v0.69.0: MetallicRoughnessOcclusionテクスチャー" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="v0.71.0.html" class="btn btn-neutral float-right" title="v0.71.0: fix Metallic または Occlusion テクスチャーエクスポートのバグ修正" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, VRM Consortium.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<ul>
-    <li><a href="../../../en/release/068/v0.70.0.html">English</a></li>
-</ul>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
 
-
-  <h3><a href="../../index.html">目次</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">v0.70.0: EncodeToPng に失敗するエラーを修正</a><ul>
-<li><a class="reference internal" href="#v0-70-0-2021-03-31">v0.70.0 (2021-03-31)</a></li>
-<li><a class="reference internal" href="#id1">主な変更</a><ul>
-<li><a class="reference internal" href="#id2">テクスチャーのエクスポートに失敗する</a></li>
-<li><a class="reference internal" href="#weight-0-byte4-ushort4">WEIGHT_0 が byte4 もしくは ushort4 である場合に対応</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#changelog">その他のChangelog</a></li>
-</ul>
-</li>
-</ul>
-
-  <h4>前のトピックへ</h4>
-  <p class="topless"><a href="v0.71.0.html"
-                        title="前の章へ">v0.71.0: fix Metallic または Occlusion テクスチャーエクスポートのバグ修正</a></p>
-  <h4>次のトピックへ</h4>
-  <p class="topless"><a href="v0.69.0.html"
-                        title="次の章へ">v0.69.0: MetallicRoughnessOcclusionテクスチャー</a></p>
-  <div role="note" aria-label="source link">
-    <h3>このページ</h3>
-    <ul class="this-page-menu">
-      <li><a href="../../_sources/release/068/v0.70.0.md.txt"
-            rel="nofollow">ソースコードを表示</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">クイック検索</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="検索" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>ナビゲーション</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../../genindex.html" title="総合索引"
-             >索引</a></li>
-        <li class="right" >
-          <a href="v0.69.0.html" title="v0.69.0: MetallicRoughnessOcclusionテクスチャー"
-             >次へ</a> |</li>
-        <li class="right" >
-          <a href="v0.71.0.html" title="v0.71.0: fix Metallic または Occlusion テクスチャーエクスポートのバグ修正"
-             >前へ</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">UniVRM Programming Document  ドキュメント</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../index.html" >Release</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="index.html" >v0.68～v0.78: Unity-2018.4 (pre release)</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">v0.70.0: EncodeToPng に失敗するエラーを修正</a></li> 
-      </ul>
-    </div>
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2021, VRM Consortium.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
-    </div>
-  </body>
+</body>
 </html>

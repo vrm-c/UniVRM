@@ -2,17 +2,11 @@
 
 ## [v0.79.0](https://github.com/vrm-c/UniVRM/tree/v0.79.0) (2021-07-19)
 
-* commit: https://github.com/vrm-c/UniVRM/releases/tag/v0.79.0
-* milestone: https://github.com/vrm-c/UniVRM/milestone/41?closed=1
-
-[Full Changelog](https://github.com/vrm-c/UniVRM/compare/v0.78.0...v0.79.0)
+* [0.79.0](http://github.com/vrm-c/UniVRM/releases/tag/v0.79.0) 
+* [milestone](https://github.com/vrm-c/UniVRM/milestone/41?closed=1) 
+* [Full Changelog](https://github.com/vrm-c/UniVRM/compare/v0.78.0...v0.79.0)
 
 このバージョンから `pre release` をやめて通常リリースに戻ります。
-
-## ToDo:
-
-* [ ] 0.66 ~ 0.79 の変更まとめ
-* [ ] (GLB, GLTF) ScriptedImporter の導入 と Extract の説明
 
 ## AutoReference
 Autoreference を有効にします。

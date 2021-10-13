@@ -1,49 +1,100 @@
-
 <!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
-    <title>BlendShapeProxy(0.58) &#8212; UniVRM Programming Document  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/nature.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/doctools.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BlendShapeProxy(0.58) &mdash; UniVRM Programming Document  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="How to use VRMFirstPerson" href="firstperson.html" />
     <link rel="prev" title="RuntimeImport(0.44)" href="0_44_runtime_import.html" /> 
-  </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="firstperson.html" title="How to use VRMFirstPerson"
-             accesskey="N">next</a> |</li>
-        <li class="right" >
-          <a href="0_44_runtime_import.html" title="RuntimeImport(0.44)"
-             accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">UniVRM Programming Document  documentation</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">BlendShapeProxy(0.58)</a></li> 
-      </ul>
-    </div>  
+</head>
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> UniVRM Programming Document
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../build.html">アプリケーションのビルド</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../implementation/index.html">実装メモ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gltf/index.html">glTF</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">VRM</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="0_82_runtime_import.html">RuntimeImport(0.82)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="0_79_runtime_import.html">RuntimeImport(0.79)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="0_77_runtime_import.html">RuntimeImport(0.77)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="0_68_runtime_import.html">RuntimeImport(0.68)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="0_44_runtime_import.html">RuntimeImport(0.44)</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">BlendShapeProxy(0.58)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#blendshapekey">Rework BlendShapeKey’s Interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#blendshape-weight">Apply BlendShape weight from script</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">複数の BlendShape weight を適用する際の競合の問題について</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#setter">何故、複数のSetterがあるのか</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#immediatelysetvalue">ImmediatelySetValue</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#accumulatevalue-apply">AccumulateValue + Apply</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#setvalues">SetValues</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="firstperson.html">How to use VRMFirstPerson</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#samples">Samples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../vrm1/index.html">VRM-1.0(β)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../release/index.html">Release</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">UniVRM Programming Document</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">VRM</a> &raquo;</li>
+      <li>BlendShapeProxy(0.58)</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/vrm-c/UniVRM/blob/master/docs/vrm0/0_58_blendshape.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
   <section class="tex2jax_ignore mathjax_ignore" id="blendshapeproxy-0-58">
-<h1>BlendShapeProxy(0.58)<a class="headerlink" href="#blendshapeproxy-0-58" title="Permalink to this headline">¶</a></h1>
+<h1>BlendShapeProxy(0.58)<a class="headerlink" href="#blendshapeproxy-0-58" title="Permalink to this headline"></a></h1>
 <section id="blendshapekey">
-<h2>Rework BlendShapeKey’s Interface<a class="headerlink" href="#blendshapekey" title="Permalink to this headline">¶</a></h2>
+<h2>Rework BlendShapeKey’s Interface<a class="headerlink" href="#blendshapekey" title="Permalink to this headline"></a></h2>
 <p>BlendShapeKeyを作成する方法が不明瞭だったため、
 より明示的な API に置き換えました。</p>
 <ul class="simple">
@@ -82,7 +133,7 @@
 </table>
 </section>
 <section id="id1">
-<h2>Methods<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<h2>Methods<a class="headerlink" href="#id1" title="Permalink to this headline"></a></h2>
 <ul class="simple">
 <li><p>[Recommended] <code class="docutils literal notranslate"><span class="pre">SetValues</span></code></p></li>
 <li><p>[Not Recommended] <code class="docutils literal notranslate"><span class="pre">ImmediatelySetValue</span></code></p></li>
@@ -91,7 +142,7 @@
 </ul>
 </section>
 <section id="blendshape-weight">
-<h2>Apply BlendShape weight from script<a class="headerlink" href="#blendshape-weight" title="Permalink to this headline">¶</a></h2>
+<h2>Apply BlendShape weight from script<a class="headerlink" href="#blendshape-weight" title="Permalink to this headline"></a></h2>
 <p>Call <code class="docutils literal notranslate"><span class="pre">SetValues</span></code> function once to create the specific expression (merged by multiple BlendShapes) in a frame</p>
 <div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span> <span class="n">proxy</span> <span class="p">=</span> <span class="n">GetComponent</span><span class="p">&lt;</span><span class="n">VRMBlendShapeProxy</span><span class="p">&gt;();</span>
 
@@ -105,7 +156,7 @@
 </div>
 </section>
 <section id="id2">
-<h2>複数の BlendShape weight を適用する際の競合の問題について<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<h2>複数の BlendShape weight を適用する際の競合の問題について<a class="headerlink" href="#id2" title="Permalink to this headline"></a></h2>
 <p>Why use <code class="docutils literal notranslate"><span class="pre">SetValues</span></code> for synthesizing multiple BlendShapes?</p>
 <p>We found that multiple BlendShapes compete with each other when the following expressions are specified</p>
 <p>VRMBlendShape <code class="docutils literal notranslate"><span class="pre">Blink_L</span></code></p>
@@ -144,7 +195,7 @@
 <p>WIP</p>
 </section>
 <section id="setter">
-<h2>何故、複数のSetterがあるのか<a class="headerlink" href="#setter" title="Permalink to this headline">¶</a></h2>
+<h2>何故、複数のSetterがあるのか<a class="headerlink" href="#setter" title="Permalink to this headline"></a></h2>
 <ul class="simple">
 <li><p>LipSync</p></li>
 <li><p>瞬き</p></li>
@@ -158,7 +209,7 @@ BlendShape同士が競合することがわかりました。
 <p>合成したり排他制御した、BlendShapeClipの集合のスナップショットをまとめて適用することを想定して <code class="docutils literal notranslate"><span class="pre">SetValues</span></code></p>
 </section>
 <section id="immediatelysetvalue">
-<h2>ImmediatelySetValue<a class="headerlink" href="#immediatelysetvalue" title="Permalink to this headline">¶</a></h2>
+<h2>ImmediatelySetValue<a class="headerlink" href="#immediatelysetvalue" title="Permalink to this headline"></a></h2>
 <p>簡単なテストプログラムでの利用を想定しています。</p>
 <p>例：</p>
 <div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span> <span class="n">proxy</span> <span class="p">=</span> <span class="n">GetComponent</span><span class="p">&lt;</span><span class="n">VRMBlendShapeProxy</span><span class="p">&gt;();</span>
@@ -168,7 +219,7 @@ BlendShape同士が競合することがわかりました。
 </div>
 </section>
 <section id="accumulatevalue-apply">
-<h2>AccumulateValue + Apply<a class="headerlink" href="#accumulatevalue-apply" title="Permalink to this headline">¶</a></h2>
+<h2>AccumulateValue + Apply<a class="headerlink" href="#accumulatevalue-apply" title="Permalink to this headline"></a></h2>
 <p>例：</p>
 <div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span> <span class="n">proxy</span> <span class="p">=</span> <span class="n">GetComponent</span><span class="p">&lt;</span><span class="n">VRMBlendShapeProxy</span><span class="p">&gt;();</span>
 
@@ -180,7 +231,7 @@ BlendShape同士が競合することがわかりました。
 <p>下記のSetValuesを推奨しています。</p>
 </section>
 <section id="setvalues">
-<h2>SetValues<a class="headerlink" href="#setvalues" title="Permalink to this headline">¶</a></h2>
+<h2>SetValues<a class="headerlink" href="#setvalues" title="Permalink to this headline"></a></h2>
 <p>BlendShape合成器が必要に応じ呼び出すことを想定しています。</p>
 <p>例：</p>
 <div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span> <span class="n">proxy</span> <span class="p">=</span> <span class="n">GetComponent</span><span class="p">&lt;</span><span class="n">VRMBlendShapeProxy</span><span class="p">&gt;();</span>
@@ -196,78 +247,34 @@ BlendShape同士が競合することがわかりました。
 </section>
 
 
-            <div class="clearer"></div>
+           </div>
           </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="0_44_runtime_import.html" class="btn btn-neutral float-left" title="RuntimeImport(0.44)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="firstperson.html" class="btn btn-neutral float-right" title="How to use VRMFirstPerson" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, VRM Consortium.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<ul>
-    <li><a href="../../ja/vrm0/0_58_blendshape.html">日本語</a></li>
-</ul>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
 
-
-  <h3><a href="../index.html">Table of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">BlendShapeProxy(0.58)</a><ul>
-<li><a class="reference internal" href="#blendshapekey">Rework BlendShapeKey’s Interface</a></li>
-<li><a class="reference internal" href="#id1">Methods</a></li>
-<li><a class="reference internal" href="#blendshape-weight">Apply BlendShape weight from script</a></li>
-<li><a class="reference internal" href="#id2">複数の BlendShape weight を適用する際の競合の問題について</a></li>
-<li><a class="reference internal" href="#setter">何故、複数のSetterがあるのか</a></li>
-<li><a class="reference internal" href="#immediatelysetvalue">ImmediatelySetValue</a></li>
-<li><a class="reference internal" href="#accumulatevalue-apply">AccumulateValue + Apply</a></li>
-<li><a class="reference internal" href="#setvalues">SetValues</a></li>
-</ul>
-</li>
-</ul>
-
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="0_44_runtime_import.html"
-                        title="previous chapter">RuntimeImport(0.44)</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="firstperson.html"
-                        title="next chapter">How to use VRMFirstPerson</a></p>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="../_sources/vrm0/0_58_blendshape.md.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="firstperson.html" title="How to use VRMFirstPerson"
-             >next</a> |</li>
-        <li class="right" >
-          <a href="0_44_runtime_import.html" title="RuntimeImport(0.44)"
-             >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">UniVRM Programming Document  documentation</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">BlendShapeProxy(0.58)</a></li> 
-      </ul>
-    </div>
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2021, VRM Consortium.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
-    </div>
-  </body>
+</body>
 </html>

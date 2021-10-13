@@ -2,6 +2,12 @@
 
 **Stable 安定板**
 
+## [v0.81.0](https://github.com/vrm-c/UniVRM/tree/v0.81.0) (2021-08-20)
+
+* [0.81.0](http://github.com/vrm-c/UniVRM/releases/tag/v0.81.0) 
+* [milestone](https://github.com/vrm-c/UniVRM/milestone/43?closed=1) 
+* [Full Changelog](https://github.com/vrm-c/UniVRM/compare/v0.80.0...v0.81.0)
+
 `v0.81.0` から `unitypackage` が変わりました。
 
 * Install `UniGLTF_VRMShaders` and `UniVRM`
@@ -33,13 +39,6 @@
 * VRM(VRM-1.0β)
 
 `UniGLTF_VRMShaders` `UniVRM` の順に２つインストールしてください
-
-## [v0.81.0](https://github.com/vrm-c/UniVRM/tree/v0.81.0) (2021-08-20)
-
-* commit: https://github.com/vrm-c/UniVRM/releases/tag/v0.81.0
-* milestone: https://github.com/vrm-c/UniVRM/milestone/43?closed=1
-
-[Full Changelog](https://github.com/vrm-c/UniVRM/compare/v0.80.0...v0.81.0)
 
 ## パッケージ整理など
 - UniGLTF の UPM id を、`com.vrmc.unigltf` から `com.vrmc.gltf` に変えてバージョンを振り直し [\#1156](https://github.com/vrm-c/UniVRM/issues/1156)

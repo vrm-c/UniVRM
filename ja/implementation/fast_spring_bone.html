@@ -1,66 +1,112 @@
-
 <!DOCTYPE html>
+<html class="writer-html5" lang="ja" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-<html lang="ja">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
-    <title>FastSpringBoneについて &#8212; UniVRM Programming Document  ドキュメント</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/nature.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script src="../_static/translations.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FastSpringBoneについて &mdash; UniVRM Programming Document  ドキュメント</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/translations.js"></script>
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="索引" href="../genindex.html" />
     <link rel="search" title="検索" href="../search.html" />
     <link rel="next" title="VRアプリケーションの FirstPerson 設定による Renderer の可視制御" href="first_person.html" />
     <link rel="prev" title="座標系の変換" href="coordinate.html" /> 
-  </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>ナビゲーション</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="総合索引"
-             accesskey="I">索引</a></li>
-        <li class="right" >
-          <a href="first_person.html" title="VRアプリケーションの FirstPerson 設定による Renderer の可視制御"
-             accesskey="N">次へ</a> |</li>
-        <li class="right" >
-          <a href="coordinate.html" title="座標系の変換"
-             accesskey="P">前へ</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">UniVRM Programming Document  ドキュメント</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">FastSpringBoneについて</a></li> 
-      </ul>
-    </div>  
+</head>
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> UniVRM Programming Document
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../build.html">アプリケーションのビルド</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">実装メモ</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="runtime_resource_management.html">Runtime のリソース管理について</a></li>
+<li class="toctree-l2"><a class="reference internal" href="texture_manipulation.html">Texture関連</a></li>
+<li class="toctree-l2"><a class="reference internal" href="coordinate.html">座標系の変換</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">FastSpringBoneについて</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">概要</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#vrm-1-0-fastspringbone">VRM 1.0 での FastSpringBone の概要</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#vrm-0-x-fastspringbone">VRM 0.x での FastSpringBone の概要</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">VRM 0.x での FastSpringBone の導入方法</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#burst">Burstの導入について</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fastspringboneservice">FastSpringBoneServiceについて</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="first_person.html">VRアプリケーションの FirstPerson 設定による Renderer の可視制御</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../gltf/index.html">glTF</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../vrm0/index.html">VRM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../vrm1/index.html">VRM-1.0(β)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../release/index.html">Release</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">UniVRM Programming Document</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">実装メモ</a> &raquo;</li>
+      <li>FastSpringBoneについて</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/vrm-c/UniVRM/blob/master/docs/implementation/fast_spring_bone.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
   <section class="tex2jax_ignore mathjax_ignore" id="fastspringbone">
-<h1>FastSpringBoneについて<a class="headerlink" href="#fastspringbone" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<h1>FastSpringBoneについて<a class="headerlink" href="#fastspringbone" title="このヘッドラインへのパーマリンク"></a></h1>
 <section id="id1">
-<h2>概要<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<h2>概要<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク"></a></h2>
 <p>UniVRMでは、DOTSを利用した高速なSpringBone実装である「FastSpringBone」を用意しています。</p>
 <p>揺れ物の各房を並列処理・最適化することで1フレームあたりの処理時間を大幅に抑えます。</p>
 <p>VRM0.x と VRM1.0 で、それぞれFastSpringBoneの立ち位置・実装が異なります。</p>
 </section>
 <section id="vrm-1-0-fastspringbone">
-<h2>VRM 1.0 での FastSpringBone の概要<a class="headerlink" href="#vrm-1-0-fastspringbone" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<h2>VRM 1.0 での FastSpringBone の概要<a class="headerlink" href="#vrm-1-0-fastspringbone" title="このヘッドラインへのパーマリンク"></a></h2>
 <p>VRM1.0ではFastSpringBoneが揺れものの標準実装です。</p>
 <p>VRMのライフサイクルに紐付いて自動的に生成・破棄されます。</p>
 </section>
 <section id="vrm-0-x-fastspringbone">
-<h2>VRM 0.x での FastSpringBone の概要<a class="headerlink" href="#vrm-0-x-fastspringbone" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<h2>VRM 0.x での FastSpringBone の概要<a class="headerlink" href="#vrm-0-x-fastspringbone" title="このヘッドラインへのパーマリンク"></a></h2>
 <p>VRM0.xでは後方互換性を保つため、デフォルトでは従来のDOTS実装でないSpringBoneで動作します。</p>
 <p>VRM0.x向けのFastSpringBone実装は <code class="docutils literal notranslate"><span class="pre">VRM/Runtime/FastSpringBone</span></code> ディレクトリにあります。</p>
 </section>
 <section id="id2">
-<h2>VRM 0.x での FastSpringBone の導入方法<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<h2>VRM 0.x での FastSpringBone の導入方法<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク"></a></h2>
 <p>差し替えを行いたいタイミングで <code class="docutils literal notranslate"><span class="pre">FastSpringBoneReplacer.ReplaceAsync</span></code> を呼び出してください</p>
 <p>これを明示的に呼ばなければ、従来のSpringBoneのまま動作します。</p>
 <div class="highlight-cs notranslate"><div class="highlight"><pre><span></span>using (var loader = new UniGLTF.ImporterContext(data))
@@ -76,12 +122,12 @@ instance.ShowMeshes();
 </div>
 </section>
 <section id="burst">
-<h2>Burstの導入について<a class="headerlink" href="#burst" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<h2>Burstの導入について<a class="headerlink" href="#burst" title="このヘッドラインへのパーマリンク"></a></h2>
 <p>UniVRM に加えて Burst を別途導入すると、 FastSpringBone が Burst によって高速化されます。</p>
 <p>Burst の導入方法は <a class="reference external" href="https://docs.unity3d.com/ja/2019.4/Manual/upm-ui-install.html">こちら</a> をご参照ください。</p>
 </section>
 <section id="fastspringboneservice">
-<h2>FastSpringBoneServiceについて<a class="headerlink" href="#fastspringboneservice" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<h2>FastSpringBoneServiceについて<a class="headerlink" href="#fastspringboneservice" title="このヘッドラインへのパーマリンク"></a></h2>
 <p>FastSpringBone が実行されると、<code class="docutils literal notranslate"><span class="pre">FastSpringBone</span> <span class="pre">Service</span></code> GameObject が <code class="docutils literal notranslate"><span class="pre">DontDestroyOnLoad</span></code> で生成されます。</p>
 <p>これは全 VRM の FastSpringBone を集め、バッファの構築や、 FastSpringBone の実行タイミングの制御などを行う GameObject です。</p>
 <p>明示的に破棄を行いたい場合は <code class="docutils literal notranslate"><span class="pre">FastSpringBoneService.Free</span></code> を呼んでください。</p>
@@ -89,76 +135,34 @@ instance.ShowMeshes();
 </section>
 
 
-            <div class="clearer"></div>
+           </div>
           </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="coordinate.html" class="btn btn-neutral float-left" title="座標系の変換" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="first_person.html" class="btn btn-neutral float-right" title="VRアプリケーションの FirstPerson 設定による Renderer の可視制御" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, VRM Consortium.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<ul>
-    <li><a href="../../en/implementation/fast_spring_bone.html">English</a></li>
-</ul>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
 
-
-  <h3><a href="../index.html">目次</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">FastSpringBoneについて</a><ul>
-<li><a class="reference internal" href="#id1">概要</a></li>
-<li><a class="reference internal" href="#vrm-1-0-fastspringbone">VRM 1.0 での FastSpringBone の概要</a></li>
-<li><a class="reference internal" href="#vrm-0-x-fastspringbone">VRM 0.x での FastSpringBone の概要</a></li>
-<li><a class="reference internal" href="#id2">VRM 0.x での FastSpringBone の導入方法</a></li>
-<li><a class="reference internal" href="#burst">Burstの導入について</a></li>
-<li><a class="reference internal" href="#fastspringboneservice">FastSpringBoneServiceについて</a></li>
-</ul>
-</li>
-</ul>
-
-  <h4>前のトピックへ</h4>
-  <p class="topless"><a href="coordinate.html"
-                        title="前の章へ">座標系の変換</a></p>
-  <h4>次のトピックへ</h4>
-  <p class="topless"><a href="first_person.html"
-                        title="次の章へ">VRアプリケーションの FirstPerson 設定による Renderer の可視制御</a></p>
-  <div role="note" aria-label="source link">
-    <h3>このページ</h3>
-    <ul class="this-page-menu">
-      <li><a href="../_sources/implementation/fast_spring_bone.md.txt"
-            rel="nofollow">ソースコードを表示</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">クイック検索</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="検索" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>ナビゲーション</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="総合索引"
-             >索引</a></li>
-        <li class="right" >
-          <a href="first_person.html" title="VRアプリケーションの FirstPerson 設定による Renderer の可視制御"
-             >次へ</a> |</li>
-        <li class="right" >
-          <a href="coordinate.html" title="座標系の変換"
-             >前へ</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">UniVRM Programming Document  ドキュメント</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">FastSpringBoneについて</a></li> 
-      </ul>
-    </div>
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2021, VRM Consortium.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
-    </div>
-  </body>
+</body>
 </html>

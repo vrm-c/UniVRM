@@ -1,51 +1,95 @@
-
 <!DOCTYPE html>
+<html class="writer-html5" lang="ja" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-<html lang="ja">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
-    <title>FirstPerson &#8212; UniVRM Programming Document  ドキュメント</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/nature.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script src="../_static/translations.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FirstPerson &mdash; UniVRM Programming Document  ドキュメント</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/translations.js"></script>
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="索引" href="../genindex.html" />
     <link rel="search" title="検索" href="../search.html" />
     <link rel="next" title="Release" href="../release/index.html" />
     <link rel="prev" title="🚧LookAt" href="vrm1_lookat.html" /> 
-  </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>ナビゲーション</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="総合索引"
-             accesskey="I">索引</a></li>
-        <li class="right" >
-          <a href="../release/index.html" title="Release"
-             accesskey="N">次へ</a> |</li>
-        <li class="right" >
-          <a href="vrm1_lookat.html" title="🚧LookAt"
-             accesskey="P">前へ</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">UniVRM Programming Document  ドキュメント</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">FirstPerson</a></li> 
-      </ul>
-    </div>  
+</head>
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> UniVRM Programming Document
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../build.html">アプリケーションのビルド</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../implementation/index.html">実装メモ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gltf/index.html">glTF</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../vrm0/index.html">VRM</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">VRM-1.0(β)</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="vrm1_runtime_load.html">RuntimeLoad</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vrm1_get_humanoid.html">🚧Humanoid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vrm1_expression.html">🚧Expression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vrm1_lookat.html">🚧LookAt</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">FirstPerson</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#runtime-firstperson">Runtime に FirstPerson 機能を有効にする</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#vrm-vr">VRMの推奨する VR 向けのカメラ構成</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#layer">初期化時に layer を明示する</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#samples">Samples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../release/index.html">Release</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">UniVRM Programming Document</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">VRM-1.0(β)</a> &raquo;</li>
+      <li>FirstPerson</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/vrm-c/UniVRM/blob/master/docs/vrm1/vrm1_firstperson.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
   <section class="tex2jax_ignore mathjax_ignore" id="firstperson">
-<h1>FirstPerson<a class="headerlink" href="#firstperson" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<h1>FirstPerson<a class="headerlink" href="#firstperson" title="このヘッドラインへのパーマリンク"></a></h1>
 <p><a class="reference internal" href="../implementation/first_person.html"><span class="doc">FirstPerson と Renderer の可視制御</span></a></p>
 <section id="runtime-firstperson">
-<h2>Runtime に FirstPerson 機能を有効にする<a class="headerlink" href="#runtime-firstperson" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<h2>Runtime に FirstPerson 機能を有効にする<a class="headerlink" href="#runtime-firstperson" title="このヘッドラインへのパーマリンク"></a></h2>
 <p>VR向け FirstPerson 設定の初期化手順です。</p>
 <ol class="simple">
 <li><p>Load する</p></li>
@@ -81,7 +125,7 @@
 </div>
 </section>
 <section id="vrm-vr">
-<h2>VRMの推奨する VR 向けのカメラ構成<a class="headerlink" href="#vrm-vr" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<h2>VRMの推奨する VR 向けのカメラ構成<a class="headerlink" href="#vrm-vr" title="このヘッドラインへのパーマリンク"></a></h2>
 <p>ヘッドマウントディスプレイを表すカメラ と その他のカメラという２種類のカメラを想定ます。
 それぞれに対して、</p>
 <ul class="simple">
@@ -97,7 +141,7 @@
 サンプルでは、それぞれに <code class="docutils literal notranslate"><span class="pre">9</span></code> と <code class="docutils literal notranslate"><span class="pre">10</span></code> を割り当ています。</p>
 </section>
 <section id="layer">
-<h2>初期化時に layer を明示する<a class="headerlink" href="#layer" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<h2>初期化時に layer を明示する<a class="headerlink" href="#layer" title="このヘッドラインへのパーマリンク"></a></h2>
 <p>追加の引数で指定できます。</p>
 <div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span> <span class="n">created</span> <span class="p">=</span> <span class="k">await</span> <span class="n">controller</span><span class="p">.</span><span class="n">Vrm</span><span class="p">.</span><span class="n">FirstPerson</span><span class="p">.</span><span class="n">SetupAsync</span><span class="p">(</span><span class="n">controller</span><span class="p">.</span><span class="n">gameObject</span><span class="p">,</span> <span class="n">firstPersonOnlyLayer</span><span class="p">:</span> <span class="m">9</span><span class="p">,</span> <span class="n">thirdPersonOnlyLayer</span><span class="p">:</span> <span class="m">10</span><span class="p">);</span>
 </pre></div>
@@ -106,73 +150,34 @@
 </section>
 
 
-            <div class="clearer"></div>
+           </div>
           </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="vrm1_lookat.html" class="btn btn-neutral float-left" title="🚧LookAt" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../release/index.html" class="btn btn-neutral float-right" title="Release" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, VRM Consortium.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<ul>
-    <li><a href="../../en/vrm1/vrm1_firstperson.html">English</a></li>
-</ul>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
 
-
-  <h3><a href="../index.html">目次</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">FirstPerson</a><ul>
-<li><a class="reference internal" href="#runtime-firstperson">Runtime に FirstPerson 機能を有効にする</a></li>
-<li><a class="reference internal" href="#vrm-vr">VRMの推奨する VR 向けのカメラ構成</a></li>
-<li><a class="reference internal" href="#layer">初期化時に layer を明示する</a></li>
-</ul>
-</li>
-</ul>
-
-  <h4>前のトピックへ</h4>
-  <p class="topless"><a href="vrm1_lookat.html"
-                        title="前の章へ">🚧LookAt</a></p>
-  <h4>次のトピックへ</h4>
-  <p class="topless"><a href="../release/index.html"
-                        title="次の章へ">Release</a></p>
-  <div role="note" aria-label="source link">
-    <h3>このページ</h3>
-    <ul class="this-page-menu">
-      <li><a href="../_sources/vrm1/vrm1_firstperson.md.txt"
-            rel="nofollow">ソースコードを表示</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">クイック検索</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="検索" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>ナビゲーション</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="総合索引"
-             >索引</a></li>
-        <li class="right" >
-          <a href="../release/index.html" title="Release"
-             >次へ</a> |</li>
-        <li class="right" >
-          <a href="vrm1_lookat.html" title="🚧LookAt"
-             >前へ</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">UniVRM Programming Document  ドキュメント</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">FirstPerson</a></li> 
-      </ul>
-    </div>
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2021, VRM Consortium.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
-    </div>
-  </body>
+</body>
 </html>

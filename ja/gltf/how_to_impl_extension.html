@@ -1,51 +1,112 @@
-
 <!DOCTYPE html>
+<html class="writer-html5" lang="ja" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-<html lang="ja">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
-    <title>glTF拡張の実装(0.63.2) &#8212; UniVRM Programming Document  ドキュメント</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/nature.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script src="../_static/translations.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>glTF拡張の実装(0.63.2) &mdash; UniVRM Programming Document  ドキュメント</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/translations.js"></script>
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="索引" href="../genindex.html" />
     <link rel="search" title="検索" href="../search.html" />
     <link rel="next" title="GltfUpdate(0.36)" href="0_36_update.html" />
     <link rel="prev" title="GlbImport(0.82)" href="0_82_glb_import.html" /> 
-  </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>ナビゲーション</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="総合索引"
-             accesskey="I">索引</a></li>
-        <li class="right" >
-          <a href="0_36_update.html" title="GltfUpdate(0.36)"
-             accesskey="N">次へ</a> |</li>
-        <li class="right" >
-          <a href="0_82_glb_import.html" title="GlbImport(0.82)"
-             accesskey="P">前へ</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">UniVRM Programming Document  ドキュメント</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">glTF拡張の実装(0.63.2)</a></li> 
-      </ul>
-    </div>  
+</head>
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> UniVRM Programming Document
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../build.html">アプリケーションのビルド</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../implementation/index.html">実装メモ</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">glTF</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="0_82_glb_import.html">GlbImport(0.82)</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">glTF拡張の実装(0.63.2)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#gltf">GLTF 拡張とは</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#unigltf-extensions">UniGLTF の extensions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#unigltf">UniGLTF の拡張の書き方</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#jsonpath">JSONPATH と 型を決める</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#import">import</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#export">export</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id1">実装例</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gltf-gltf">GLTF: GLTF全体</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gltf-meshes-extras-targetnames">GLTF: <code class="docutils literal notranslate"><span class="pre">meshes[*].extras.targetNames</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gltf-materials-extensions-khr-materials-unlit">GLTF: <code class="docutils literal notranslate"><span class="pre">materials[*].extensions.KHR_materials_unlit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gltf-materials-extensions-khr-texture-transform">GLTF: <code class="docutils literal notranslate"><span class="pre">materials[*].extensions.KHR_texture_transform</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#vrm0-extensions-vrm">VRM0: <code class="docutils literal notranslate"><span class="pre">extensions.VRM</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#vrm1-extensions-vrmc-vrm">VRM1: <code class="docutils literal notranslate"><span class="pre">extensions.VRMC_vrm</span></code> など</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">コード生成</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#c">C# の型から生成</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#jsonschema">JsonSchemaから生成</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="0_36_update.html">GltfUpdate(0.36)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="format.html">glbフォーマット概説</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../vrm0/index.html">VRM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../vrm1/index.html">VRM-1.0(β)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../release/index.html">Release</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">UniVRM Programming Document</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">glTF</a> &raquo;</li>
+      <li>glTF拡張の実装(0.63.2)</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/vrm-c/UniVRM/blob/master/docs/gltf/how_to_impl_extension.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
   <section class="tex2jax_ignore mathjax_ignore" id="gltf-0-63-2">
-<h1>glTF拡張の実装(0.63.2)<a class="headerlink" href="#gltf-0-63-2" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<h1>glTF拡張の実装(0.63.2)<a class="headerlink" href="#gltf-0-63-2" title="このヘッドラインへのパーマリンク"></a></h1>
 <p><code class="docutils literal notranslate"><span class="pre">UniVRM-0.63.2</span></code> から <code class="docutils literal notranslate"><span class="pre">UniGLTF</span></code> の構成が変わって、 <code class="docutils literal notranslate"><span class="pre">extensions</span></code> / <code class="docutils literal notranslate"><span class="pre">extras</span></code> の実装方法が変わりました。</p>
 <section id="gltf">
-<h2>GLTF 拡張とは<a class="headerlink" href="#gltf" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<h2>GLTF 拡張とは<a class="headerlink" href="#gltf" title="このヘッドラインへのパーマリンク"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">glTF</span></code> は各所に <code class="docutils literal notranslate"><span class="pre">extensions</span></code>, <code class="docutils literal notranslate"><span class="pre">extras</span></code> が定義してありその中身を拡張できます。</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">extensions</span></code> (またはextras)</p></li>
@@ -66,7 +127,7 @@
 </div></blockquote>
 </section>
 <section id="unigltf-extensions">
-<h2>UniGLTF の extensions<a class="headerlink" href="#unigltf-extensions" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<h2>UniGLTF の extensions<a class="headerlink" href="#unigltf-extensions" title="このヘッドラインへのパーマリンク"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">v0.63.0</span></code> 以前は、<code class="docutils literal notranslate"><span class="pre">GLTF</span> <span class="pre">型</span></code> の <code class="docutils literal notranslate"><span class="pre">extensions</span></code> フィールドに、<code class="docutils literal notranslate"><span class="pre">GLTFExtensions</span></code> 型を定義して、<code class="docutils literal notranslate"><span class="pre">VRM</span></code> フィールドを定義するという方法をとっていました。</p>
 <div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">VRM</span>
 <span class="p">{</span>
@@ -104,7 +165,7 @@ UniGLTF は <code class="docutils literal notranslate"><span class="pre">import/
 </div>
 </section>
 <section id="unigltf">
-<h2>UniGLTF の拡張の書き方<a class="headerlink" href="#unigltf" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<h2>UniGLTF の拡張の書き方<a class="headerlink" href="#unigltf" title="このヘッドラインへのパーマリンク"></a></h2>
 <p>拡張は、以下の部品要素から作れます。</p>
 <ul class="simple">
 <li><p>名前(JsonPath)。例: <code class="docutils literal notranslate"><span class="pre">extensions.VRM</span></code>, <code class="docutils literal notranslate"><span class="pre">materials[*].extensions.KHR_materials_unlit</span></code></p></li>
@@ -113,7 +174,7 @@ UniGLTF は <code class="docutils literal notranslate"><span class="pre">import/
 <li><p>シリアライザーexport)。<code class="docutils literal notranslate"><span class="pre">T型</span> <span class="pre">=&gt;</span> <span class="pre">jsonバイト列</span></code></p></li>
 </ul>
 <section id="jsonpath">
-<h3>JSONPATH と 型を決める<a class="headerlink" href="#jsonpath" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<h3>JSONPATH と 型を決める<a class="headerlink" href="#jsonpath" title="このヘッドラインへのパーマリンク"></a></h3>
 <div class="highlight-C# notranslate"><div class="highlight"><pre><span></span><span class="c1">// 型</span>
 <span class="k">class</span> <span class="nc">GoodMaterial</span>
 <span class="p">{</span>
@@ -126,7 +187,7 @@ UniGLTF は <code class="docutils literal notranslate"><span class="pre">import/
 </div>
 </section>
 <section id="import">
-<h3>import<a class="headerlink" href="#import" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<h3>import<a class="headerlink" href="#import" title="このヘッドラインへのパーマリンク"></a></h3>
 <div class="highlight-C# notranslate"><div class="highlight"><pre><span></span><span class="n">GoodMaterial</span> <span class="nf">DeserializeGoodMaterial</span><span class="p">(</span><span class="n">ListTreeNode</span><span class="p">&lt;</span><span class="n">JsonValue</span><span class="p">&gt;</span> <span class="n">json</span><span class="p">)</span>
 <span class="p">{</span>
     <span class="c1">// デシリアライズ。手で書くかコード生成する(後述)</span>
@@ -164,7 +225,7 @@ UniGLTF は <code class="docutils literal notranslate"><span class="pre">import/
 </div>
 </section>
 <section id="export">
-<h3>export<a class="headerlink" href="#export" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<h3>export<a class="headerlink" href="#export" title="このヘッドラインへのパーマリンク"></a></h3>
 <div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">void</span> <span class="nf">SerializeGoodMaterial</span><span class="p">(</span><span class="n">UniJSON</span><span class="p">.</span><span class="n">JsonFormatter</span> <span class="n">f</span><span class="p">,</span> <span class="n">GoodMaterial</span> <span class="k">value</span><span class="p">)</span>
 <span class="p">{</span>
     <span class="c1">// シリアライズ。手で書くかコード生成する(後述)</span>
@@ -196,9 +257,9 @@ UniGLTF は <code class="docutils literal notranslate"><span class="pre">import/
 </section>
 </section>
 <section id="id1">
-<h2>実装例<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<h2>実装例<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク"></a></h2>
 <section id="gltf-gltf">
-<h3>GLTF: GLTF全体<a class="headerlink" href="#gltf-gltf" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<h3>GLTF: GLTF全体<a class="headerlink" href="#gltf-gltf" title="このヘッドラインへのパーマリンク"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">C#の型からコード生成</span></code></p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">Assets\UniGLTF\Runtime\UniGLTF\Format\GltfSerializer.g.cs</span></code></p></li>
@@ -212,7 +273,7 @@ UniGLTF は <code class="docutils literal notranslate"><span class="pre">import/
 <p>生成コードの呼び出し</p>
 </section>
 <section id="gltf-meshes-extras-targetnames">
-<h3>GLTF: <code class="docutils literal notranslate"><span class="pre">meshes[*].extras.targetNames</span></code><a class="headerlink" href="#gltf-meshes-extras-targetnames" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<h3>GLTF: <code class="docutils literal notranslate"><span class="pre">meshes[*].extras.targetNames</span></code><a class="headerlink" href="#gltf-meshes-extras-targetnames" title="このヘッドラインへのパーマリンク"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">コード生成せずに手書き</span></code></p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">Assets\UniGLTF\Runtime\UniGLTF\Format\ExtensionsAndExtras\gltf_mesh_extras_targetNames.cs</span></code></p></li>
@@ -220,7 +281,7 @@ UniGLTF は <code class="docutils literal notranslate"><span class="pre">import/
 <p>生成コードの呼び出し</p>
 </section>
 <section id="gltf-materials-extensions-khr-materials-unlit">
-<h3>GLTF: <code class="docutils literal notranslate"><span class="pre">materials[*].extensions.KHR_materials_unlit</span></code><a class="headerlink" href="#gltf-materials-extensions-khr-materials-unlit" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<h3>GLTF: <code class="docutils literal notranslate"><span class="pre">materials[*].extensions.KHR_materials_unlit</span></code><a class="headerlink" href="#gltf-materials-extensions-khr-materials-unlit" title="このヘッドラインへのパーマリンク"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">コード生成せずに手書き</span></code></p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">Assets\UniGLTF\Runtime\UniGLTF\Format\ExtensionsAndExtras\KHR_materials_unlit.cs</span></code></p></li>
@@ -228,7 +289,7 @@ UniGLTF は <code class="docutils literal notranslate"><span class="pre">import/
 <p>生成コードの呼び出し</p>
 </section>
 <section id="gltf-materials-extensions-khr-texture-transform">
-<h3>GLTF: <code class="docutils literal notranslate"><span class="pre">materials[*].extensions.KHR_texture_transform</span></code><a class="headerlink" href="#gltf-materials-extensions-khr-texture-transform" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<h3>GLTF: <code class="docutils literal notranslate"><span class="pre">materials[*].extensions.KHR_texture_transform</span></code><a class="headerlink" href="#gltf-materials-extensions-khr-texture-transform" title="このヘッドラインへのパーマリンク"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">コード生成せずに手書き</span></code></p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">Assets\UniGLTF\Runtime\UniGLTF\Format\ExtensionsAndExtras\KHR_texture_transform.cs</span></code></p></li>
@@ -240,7 +301,7 @@ UniGLTF は <code class="docutils literal notranslate"><span class="pre">import/
 </ul>
 </section>
 <section id="vrm0-extensions-vrm">
-<h3>VRM0: <code class="docutils literal notranslate"><span class="pre">extensions.VRM</span></code><a class="headerlink" href="#vrm0-extensions-vrm" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<h3>VRM0: <code class="docutils literal notranslate"><span class="pre">extensions.VRM</span></code><a class="headerlink" href="#vrm0-extensions-vrm" title="このヘッドラインへのパーマリンク"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">C#の型からコード生成</span></code></p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">Assets\VRM\Runtime\Format\VRMSerializer.g.cs</span></code></p></li>
@@ -258,59 +319,59 @@ UniGLTF は <code class="docutils literal notranslate"><span class="pre">import/
 </ul>
 </section>
 <section id="vrm1-extensions-vrmc-vrm">
-<h3>VRM1: <code class="docutils literal notranslate"><span class="pre">extensions.VRMC_vrm</span></code> など<a class="headerlink" href="#vrm1-extensions-vrmc-vrm" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<h3>VRM1: <code class="docutils literal notranslate"><span class="pre">extensions.VRMC_vrm</span></code> など<a class="headerlink" href="#vrm1-extensions-vrmc-vrm" title="このヘッドラインへのパーマリンク"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">JsonSchemaからコード生成</span></code></p>
 <p>5つの Extensions に分かれたので個別に作成。
 ささる場所(JsonPath)が違うのに注意。</p>
 <section id="extensions-vrmc-vrm">
-<h4><code class="docutils literal notranslate"><span class="pre">extensions.VRMC_vrm</span></code><a class="headerlink" href="#extensions-vrmc-vrm" title="このヘッドラインへのパーマリンク">¶</a></h4>
+<h4><code class="docutils literal notranslate"><span class="pre">extensions.VRMC_vrm</span></code><a class="headerlink" href="#extensions-vrmc-vrm" title="このヘッドラインへのパーマリンク"></a></h4>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">Assets\VRM10\Runtime\Format\VRM</span></code></p></li>
 </ul>
 </section>
 <section id="materials-extensions-vrmc-materials-mtoon">
-<h4><code class="docutils literal notranslate"><span class="pre">materials[*].extensions.VRMC_materials_mtoon</span></code><a class="headerlink" href="#materials-extensions-vrmc-materials-mtoon" title="このヘッドラインへのパーマリンク">¶</a></h4>
+<h4><code class="docutils literal notranslate"><span class="pre">materials[*].extensions.VRMC_materials_mtoon</span></code><a class="headerlink" href="#materials-extensions-vrmc-materials-mtoon" title="このヘッドラインへのパーマリンク"></a></h4>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">Assets\VRM10\Runtime\Format\MaterialsMToon</span></code></p></li>
 </ul>
 </section>
 <section id="nodes-extensions-vrmc-node-collider">
-<h4><code class="docutils literal notranslate"><span class="pre">nodes[*].extensions.VRMC_node_collider</span></code><a class="headerlink" href="#nodes-extensions-vrmc-node-collider" title="このヘッドラインへのパーマリンク">¶</a></h4>
+<h4><code class="docutils literal notranslate"><span class="pre">nodes[*].extensions.VRMC_node_collider</span></code><a class="headerlink" href="#nodes-extensions-vrmc-node-collider" title="このヘッドラインへのパーマリンク"></a></h4>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">Assets\VRM10\Runtime\Format\NodeCollider</span></code></p></li>
 </ul>
 </section>
 <section id="extensions-vrmc-springbone">
-<h4><code class="docutils literal notranslate"><span class="pre">extensions.VRMC_springBone</span></code><a class="headerlink" href="#extensions-vrmc-springbone" title="このヘッドラインへのパーマリンク">¶</a></h4>
+<h4><code class="docutils literal notranslate"><span class="pre">extensions.VRMC_springBone</span></code><a class="headerlink" href="#extensions-vrmc-springbone" title="このヘッドラインへのパーマリンク"></a></h4>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">Assets\VRM10\Runtime\Format\SpringBone</span></code></p></li>
 </ul>
 </section>
 <section id="extensions-vrmc-vrm-constraints">
-<h4><code class="docutils literal notranslate"><span class="pre">extensions.VRMC_vrm_constraints</span></code><a class="headerlink" href="#extensions-vrmc-vrm-constraints" title="このヘッドラインへのパーマリンク">¶</a></h4>
+<h4><code class="docutils literal notranslate"><span class="pre">extensions.VRMC_vrm_constraints</span></code><a class="headerlink" href="#extensions-vrmc-vrm-constraints" title="このヘッドラインへのパーマリンク"></a></h4>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">Assets\VRM10\Runtime\Format\Constraints</span></code></p></li>
 </ul>
 </section>
 <section id="id2">
-<h4>ジェネレーターの呼び出しコード<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク">¶</a></h4>
+<h4>ジェネレーターの呼び出しコード<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク"></a></h4>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">Assets\VRM10\Editor\GeneratorMenu.cs</span></code></p></li>
 </ul>
 </section>
 <section id="id3">
-<h4>生成コードの呼び出し<a class="headerlink" href="#id3" title="このヘッドラインへのパーマリンク">¶</a></h4>
+<h4>生成コードの呼び出し<a class="headerlink" href="#id3" title="このヘッドラインへのパーマリンク"></a></h4>
 </section>
 </section>
 </section>
 <section id="id4">
-<h2>コード生成<a class="headerlink" href="#id4" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<h2>コード生成<a class="headerlink" href="#id4" title="このヘッドラインへのパーマリンク"></a></h2>
 <p>JSON と C# の型との シリアライズ/デシリアライズは定型コードになるので、ジェネレーターがあります。
 C# の型から生成するものと、JsonSchema から C# の型とともに生成するものがあります。</p>
 <section id="c">
-<h3>C# の型から生成<a class="headerlink" href="#c" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<h3>C# の型から生成<a class="headerlink" href="#c" title="このヘッドラインへのパーマリンク"></a></h3>
 <section id="id5">
-<h4>シリアライザー<a class="headerlink" href="#id5" title="このヘッドラインへのパーマリンク">¶</a></h4>
+<h4>シリアライザー<a class="headerlink" href="#id5" title="このヘッドラインへのパーマリンク"></a></h4>
 <p>ジェネレーターを呼び出すコードを作成します。</p>
 <ul class="simple">
 <li><p>元になる型</p></li>
@@ -385,7 +446,7 @@ C# の型から生成するものと、JsonSchema から C# の型とともに�
 </div>
 </section>
 <section id="id6">
-<h4>デシリアライザー<a class="headerlink" href="#id6" title="このヘッドラインへのパーマリンク">¶</a></h4>
+<h4>デシリアライザー<a class="headerlink" href="#id6" title="このヘッドラインへのパーマリンク"></a></h4>
 <p>ジェネレーターを呼び出すコードを作成します。</p>
 <ul class="simple">
 <li><p>元になる型</p></li>
@@ -461,7 +522,7 @@ C# の型から生成するものと、JsonSchema から C# の型とともに�
 </div>
 </section>
 <section id="id7">
-<h4>キー出力の抑制<a class="headerlink" href="#id7" title="このヘッドラインへのパーマリンク">¶</a></h4>
+<h4>キー出力の抑制<a class="headerlink" href="#id7" title="このヘッドラインへのパーマリンク"></a></h4>
 <p><code class="docutils literal notranslate"><span class="pre">index</span></code> に無効な値として <code class="docutils literal notranslate"><span class="pre">-1</span></code> を入れる場合に、JSONではキーを出力しないとしたいことがあります。</p>
 <p>TODO: <code class="docutils literal notranslate"><span class="pre">int?</span></code> にするべきだった</p>
 <div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="na">[JsonSchema(Minimum = 0)]</span>
@@ -480,7 +541,7 @@ C# の型から生成するものと、JsonSchema から C# の型とともに�
 </div>
 </section>
 <section id="enum">
-<h4>enum のエンコーディング<a class="headerlink" href="#enum" title="このヘッドラインへのパーマリンク">¶</a></h4>
+<h4>enum のエンコーディング<a class="headerlink" href="#enum" title="このヘッドラインへのパーマリンク"></a></h4>
 <p>enumの値の名前を文字列で使う、enumの値の数値を使うの2種類がありえます。
 enumの場合はデフォルト値が無いので必須です。</p>
 <div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="na">[JsonSchema(EnumSerializationType = EnumSerializationType.AsInt)]</span>
@@ -493,7 +554,7 @@ enumの場合はデフォルト値が無いので必須です。</p>
 </section>
 </section>
 <section id="jsonschema">
-<h3>JsonSchemaから生成<a class="headerlink" href="#jsonschema" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<h3>JsonSchemaから生成<a class="headerlink" href="#jsonschema" title="このヘッドラインへのパーマリンク"></a></h3>
 <p>VRM-1.0 の実装</p>
 <p>TODO:</p>
 </section>
@@ -501,107 +562,34 @@ enumの場合はデフォルト値が無いので必須です。</p>
 </section>
 
 
-            <div class="clearer"></div>
+           </div>
           </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="0_82_glb_import.html" class="btn btn-neutral float-left" title="GlbImport(0.82)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="0_36_update.html" class="btn btn-neutral float-right" title="GltfUpdate(0.36)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, VRM Consortium.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<ul>
-    <li><a href="../../en/gltf/how_to_impl_extension.html">English</a></li>
-</ul>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
 
-
-  <h3><a href="../index.html">目次</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">glTF拡張の実装(0.63.2)</a><ul>
-<li><a class="reference internal" href="#gltf">GLTF 拡張とは</a></li>
-<li><a class="reference internal" href="#unigltf-extensions">UniGLTF の extensions</a></li>
-<li><a class="reference internal" href="#unigltf">UniGLTF の拡張の書き方</a><ul>
-<li><a class="reference internal" href="#jsonpath">JSONPATH と 型を決める</a></li>
-<li><a class="reference internal" href="#import">import</a></li>
-<li><a class="reference internal" href="#export">export</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#id1">実装例</a><ul>
-<li><a class="reference internal" href="#gltf-gltf">GLTF: GLTF全体</a></li>
-<li><a class="reference internal" href="#gltf-meshes-extras-targetnames">GLTF: <code class="docutils literal notranslate"><span class="pre">meshes[*].extras.targetNames</span></code></a></li>
-<li><a class="reference internal" href="#gltf-materials-extensions-khr-materials-unlit">GLTF: <code class="docutils literal notranslate"><span class="pre">materials[*].extensions.KHR_materials_unlit</span></code></a></li>
-<li><a class="reference internal" href="#gltf-materials-extensions-khr-texture-transform">GLTF: <code class="docutils literal notranslate"><span class="pre">materials[*].extensions.KHR_texture_transform</span></code></a></li>
-<li><a class="reference internal" href="#vrm0-extensions-vrm">VRM0: <code class="docutils literal notranslate"><span class="pre">extensions.VRM</span></code></a></li>
-<li><a class="reference internal" href="#vrm1-extensions-vrmc-vrm">VRM1: <code class="docutils literal notranslate"><span class="pre">extensions.VRMC_vrm</span></code> など</a><ul>
-<li><a class="reference internal" href="#extensions-vrmc-vrm"><code class="docutils literal notranslate"><span class="pre">extensions.VRMC_vrm</span></code></a></li>
-<li><a class="reference internal" href="#materials-extensions-vrmc-materials-mtoon"><code class="docutils literal notranslate"><span class="pre">materials[*].extensions.VRMC_materials_mtoon</span></code></a></li>
-<li><a class="reference internal" href="#nodes-extensions-vrmc-node-collider"><code class="docutils literal notranslate"><span class="pre">nodes[*].extensions.VRMC_node_collider</span></code></a></li>
-<li><a class="reference internal" href="#extensions-vrmc-springbone"><code class="docutils literal notranslate"><span class="pre">extensions.VRMC_springBone</span></code></a></li>
-<li><a class="reference internal" href="#extensions-vrmc-vrm-constraints"><code class="docutils literal notranslate"><span class="pre">extensions.VRMC_vrm_constraints</span></code></a></li>
-<li><a class="reference internal" href="#id2">ジェネレーターの呼び出しコード</a></li>
-<li><a class="reference internal" href="#id3">生成コードの呼び出し</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a class="reference internal" href="#id4">コード生成</a><ul>
-<li><a class="reference internal" href="#c">C# の型から生成</a><ul>
-<li><a class="reference internal" href="#id5">シリアライザー</a></li>
-<li><a class="reference internal" href="#id6">デシリアライザー</a></li>
-<li><a class="reference internal" href="#id7">キー出力の抑制</a></li>
-<li><a class="reference internal" href="#enum">enum のエンコーディング</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#jsonschema">JsonSchemaから生成</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-  <h4>前のトピックへ</h4>
-  <p class="topless"><a href="0_82_glb_import.html"
-                        title="前の章へ">GlbImport(0.82)</a></p>
-  <h4>次のトピックへ</h4>
-  <p class="topless"><a href="0_36_update.html"
-                        title="次の章へ">GltfUpdate(0.36)</a></p>
-  <div role="note" aria-label="source link">
-    <h3>このページ</h3>
-    <ul class="this-page-menu">
-      <li><a href="../_sources/gltf/how_to_impl_extension.md.txt"
-            rel="nofollow">ソースコードを表示</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">クイック検索</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="検索" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>ナビゲーション</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="総合索引"
-             >索引</a></li>
-        <li class="right" >
-          <a href="0_36_update.html" title="GltfUpdate(0.36)"
-             >次へ</a> |</li>
-        <li class="right" >
-          <a href="0_82_glb_import.html" title="GlbImport(0.82)"
-             >前へ</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">UniVRM Programming Document  ドキュメント</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">glTF拡張の実装(0.63.2)</a></li> 
-      </ul>
-    </div>
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2021, VRM Consortium.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
-    </div>
-  </body>
+</body>
 </html>
