@@ -20,7 +20,7 @@ msgstr ""
 
 #: ../../release/079/v0.82.0.md:1
 msgid "v0.82.0: 1.0準備, URP 向け Material置き換え機能"
-msgstr ""
+msgstr "v0.82.0: Road to 1.0. Material Customization for URP"
 
 #: ../../release/079/v0.82.0.md:3
 msgid "[v0.82.0](https://github.com/vrm-c/UniVRM/tree/v0.82.0) (2021-09-01)"
@@ -38,15 +38,15 @@ msgstr ""
 
 #: ../../release/079/v0.82.0.md:9
 msgid "URP(Universal Render Pipeline)"
-msgstr ""
+msgstr "URP (Universal Render Pipeline)"
 
 #: ../../release/079/v0.82.0.md:10
 msgid "URP 向けに Material Import をカスタマイズする機能をはじめました (Experimental)"
-msgstr ""
+msgstr "Experimental Features: Add MaterialGenerator customization point (for URP)."
 
 #: ../../release/079/v0.82.0.md:12
 msgid "`TODO:` アプリ開発者向けドキュメント"
-msgstr ""
+msgstr "`TODO:` Documents for app developers"
 
 #: ../../release/079/v0.82.0.md:14
 msgid ""
@@ -94,7 +94,7 @@ msgstr ""
 
 #: ../../release/079/v0.82.0.md:24
 msgid "その他のChangelog"
-msgstr ""
+msgstr "Other Changes"
 
 #: ../../release/079/v0.82.0.md:25
 msgid "Sampleの構成 [\\#1068](https://github.com/vrm-c/UniVRM/issues/1068)"

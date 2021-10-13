@@ -20,7 +20,7 @@ msgstr ""
 
 #: ../../release/079/v0.80.0.md:1
 msgid "v0.80.0: 1.0準備, 最低バージョンを Unity-2019.4LTS に更新"
-msgstr ""
+msgstr "v0.80.0: Road to 1.0. Support Unity-2019.4LTS+"
 
 #: ../../release/079/v0.80.0.md:3
 msgid "[v0.80.0](https://github.com/vrm-c/UniVRM/tree/v0.80.0) (2021-08-11)"
@@ -42,7 +42,7 @@ msgstr ""
 
 #: ../../release/079/v0.80.0.md:10
 msgid "最低バージョンを Unity-2019.4LTS に更新"
-msgstr ""
+msgstr "Support Unity-2019.4LTS+"
 
 #: ../../release/079/v0.80.0.md:11
 msgid ""
@@ -135,7 +135,7 @@ msgstr ""
 
 #: ../../release/079/v0.80.0.md:27
 msgid "その他のChangelog"
-msgstr ""
+msgstr "Other Changes"
 
 #: ../../release/079/v0.80.0.md:28
 msgid ""

@@ -20,15 +20,15 @@ msgstr ""
 
 #: ../../release/079/v0.81.0.md:1
 msgid "v0.81.0: 1.0準備, unitypackage 構成変更"
-msgstr ""
+msgstr "v0.81.0: Road to 1.0. Reorganize unitypackage"
 
 #: ../../release/079/v0.81.0.md:3
 msgid "**Stable 安定板**"
-msgstr ""
+msgstr "**Stable Version**"
 
 #: ../../release/079/v0.81.0.md:5
 msgid "`v0.81.0` から `unitypackage` が変わりました。"
-msgstr ""
+msgstr "Starting with UniVRM `v0.81.0`, the structure of UniVRM's unitypackage has been changed."
 
 #: ../../release/079/v0.81.0.md:7
 msgid "Install `UniGLTF_VRMShaders` and `UniVRM`"
@@ -84,7 +84,7 @@ msgstr ""
 
 #: ../../release/079/v0.81.0.md:17
 msgid "関連情報 (Related Information)"
-msgstr ""
+msgstr "Related Information"
 
 #: ../../release/079/v0.81.0.md:19
 msgid ""
@@ -120,7 +120,7 @@ msgstr ""
 
 #: ../../release/079/v0.81.0.md:29
 msgid "UnityPackage の構成を整理しました"
-msgstr ""
+msgstr "UnityPackage List"
 
 #: ../../release/079/v0.81.0.md:32
 msgid "UniVRM(VRM-0.X)"
@@ -132,7 +132,7 @@ msgstr ""
 
 #: ../../release/079/v0.81.0.md:35
 msgid "`UniGLTF_VRMShaders` `UniVRM` の順に２つインストールしてください"
-msgstr ""
+msgstr "Please install `UniGLTF_VRMShaders`, `UniVRM` in order."
 
 #: ../../release/079/v0.81.0.md:37
 msgid "[v0.81.0](https://github.com/vrm-c/UniVRM/tree/v0.81.0) (2021-08-20)"
@@ -154,7 +154,7 @@ msgstr ""
 
 #: ../../release/079/v0.81.0.md:44
 msgid "パッケージ整理など"
-msgstr ""
+msgstr "Package Contents"
 
 #: ../../release/079/v0.81.0.md:45
 msgid ""
@@ -219,7 +219,7 @@ msgid ""
 msgstr ""
 
 #: ../../release/079/v0.81.0.md:57
-msgid "その他のChangelog"
+msgid "Other Changes"
 msgstr ""
 
 #: ../../release/079/v0.81.0.md:58
