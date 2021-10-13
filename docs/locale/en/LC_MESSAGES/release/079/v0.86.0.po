@@ -36,7 +36,7 @@ msgstr "[[\\#1287](https://github.com/vrm-c/UniVRM/pull/1287)] [1.0] When a rend
 msgid ""
 "[[\\#1280](https://github.com/vrm-c/UniVRM/pull/1280)] [1.0] "
 "ヒエラルキーに回転・スケールが含まれているモデルのマイグレーション"
-msgstr "[[\\#1280](https://github.com/vrm-c/UniVRM/pull/1280)] [1.0] Model migration where the hierarchy contains rotations and scales"
+msgstr "[[\\#1280](https://github.com/vrm-c/UniVRM/pull/1280)] [1.0] Data migration (`vrm0` -> `vrm1`) for models containing rotation/scale in Hierarchy"
 
 #: ../../release/079/v0.86.0.md:6
 msgid ""
