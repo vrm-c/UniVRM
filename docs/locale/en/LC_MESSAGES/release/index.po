@@ -24,11 +24,11 @@ msgstr ""
 
 #: ../../release/index.md
 msgid "バージョン"
-msgstr ""
+msgstr "Version"
 
 #: ../../release/index.md
 msgid "お勧め"
-msgstr ""
+msgstr "Recommended"
 
 #: ../../release/index.md
 msgid "Unity"
@@ -40,7 +40,7 @@ msgstr ""
 
 #: ../../release/index.md
 msgid "最新版"
-msgstr ""
+msgstr "Latest version"
 
 #: ../../release/index.md
 msgid "Unity-2019.4"
@@ -48,14 +48,14 @@ msgstr ""
 
 #: ../../release/index.md
 msgid "特に問題が無ければこれ"
-msgstr ""
+msgstr "Default"
 
 #: ../../release/index.md
 msgid "v0.79, v0.80"
 msgstr ""
 
 #: ../../release/index.md
-msgid "unitypackage の構成変更があった。v0.81～ を使ってください"
+msgid "There was a configuration change in the unity package. Please use v0.81 ~"
 msgstr ""
 
 #: ../../release/index.md
@@ -68,7 +68,7 @@ msgstr ""
 
 #: ../../release/index.md
 msgid "開発版。v0.81～ を使ってください"
-msgstr ""
+msgstr "Development version. Please use v0.81 ~"
 
 #: ../../release/index.md
 msgid "v0.56～v0.67"
@@ -100,36 +100,8 @@ msgstr ""
 
 #: ../../release/index.md:14
 msgid "`from 0.81`: `UniGLTF_VRMShaders` and `UniVRM` ２パッケージ構成"
-msgstr ""
+msgstr "`from 0.81`: `UniGLTF_VRMShaders` and `UniVRM` 2 package configuration"
 
 #: ../../release/index.md:24
 msgid "Older versions"
 msgstr ""
-
-#~ msgid "～0.55"
-#~ msgstr ""
-
-#~ msgid "`Unity-5.6`"
-#~ msgstr ""
-
-#~ msgid "0.56以降"
-#~ msgstr ""
-
-#~ msgid "`Unity-2018.4`"
-#~ msgstr ""
-
-#~ msgid "0.68以降 pre release"
-#~ msgstr ""
-
-#~ msgid "`.Net-3.5` が無くなって `coRoutine` を `Task` に置き換え"
-#~ msgstr ""
-
-#~ msgid "glb/gltf に `ScriptedImporter` の導入"
-#~ msgstr ""
-
-#~ msgid "`Standard` マテリアルの import/export や mipmapパたメーター などの改修"
-#~ msgstr ""
-
-#~ msgid "0.79 以降"
-#~ msgstr ""
-
