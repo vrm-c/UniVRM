@@ -5,7 +5,6 @@
 ```{toctree}
 :glob:
 :maxdepth: 1
-:reversed:
    
 v*
 ```
