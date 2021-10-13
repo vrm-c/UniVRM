@@ -20,7 +20,7 @@ msgstr ""
 
 #: ../../release/079/v0.86.0.md:1
 msgid "v0.86.0: 1.0準備, [1.0]FastSpringBone"
-msgstr "Road to 1.0, [1.0]FastSpringBone"
+msgstr "v0.86.0: Road to 1.0. [1.0]FastSpringBone"
 
 #: ../../release/079/v0.86.0.md:3
 msgid "1.0"
@@ -30,13 +30,13 @@ msgstr ""
 msgid ""
 "[[\\#1287](https://github.com/vrm-c/UniVRM/pull/1287)] [1.0] !isSelf かつ "
 "firstPersonOnly のときに VisibleRenderers から除去する"
-msgstr ""
+msgstr "[[\\#1287](https://github.com/vrm-c/UniVRM/pull/1287)] [1.0] When a renderer's `isSelf` is false and its `firstPersonOnly` is enabled, it will be removed from `VisibleRenderers`"
 
 #: ../../release/079/v0.86.0.md:5
 msgid ""
 "[[\\#1280](https://github.com/vrm-c/UniVRM/pull/1280)] [1.0] "
 "ヒエラルキーに回転・スケールが含まれているモデルのマイグレーション"
-msgstr "Model migration where the hierarchy contains rotations and scales"
+msgstr "[[\\#1280](https://github.com/vrm-c/UniVRM/pull/1280)] [1.0] Data migration (`vrm0` -> `vrm1`) for models containing rotation/scale in Hierarchy"
 
 #: ../../release/079/v0.86.0.md:6
 msgid ""
@@ -84,7 +84,7 @@ msgstr ""
 
 #: ../../release/079/v0.86.0.md:15
 msgid "[[\\#1282](https://github.com/vrm-c/UniVRM/pull/1282)] vrm.devから移動"
-msgstr ""
+msgstr "[[\\#1282](https://github.com/vrm-c/UniVRM/pull/1282)] Move articles from vrm.dev to Sphinx"
 
 #: ../../release/079/v0.86.0.md:16
 msgid "[[\\#1281](https://github.com/vrm-c/UniVRM/pull/1281)] UniVRM-0.86.0"
@@ -94,22 +94,21 @@ msgstr ""
 msgid ""
 "[[\\#1279](https://github.com/vrm-c/UniVRM/pull/1279)] [Maintenance] mv "
 "VrmLib.SpanLike to UniGLTF.SpanLike"
-msgstr ""
+msgstr "[[\\#1279](https://github.com/vrm-c/UniVRM/pull/1279)] [Maintenance] Move `VrmLib.SpanLike` to `UniGLTF.SpanLike`"
 
 #: ../../release/079/v0.86.0.md:18
-#, fuzzy
 msgid ""
 "[[\\#1276](https://github.com/vrm-c/UniVRM/pull/1276)] conf.py "
 "とコマンドラインの評価順ぽい"
-msgstr "Fixed again"
+msgstr "[[\\#1276](https://github.com/vrm-c/UniVRM/pull/1276)] Update Sphinx again"
 
 #: ../../release/079/v0.86.0.md:19
 msgid "[[\\#1275](https://github.com/vrm-c/UniVRM/pull/1275)] もう一回"
-msgstr "Fixed again"
+msgstr "[[\\#1275](https://github.com/vrm-c/UniVRM/pull/1275)] Update Sphinx one more time"
 
 #: ../../release/079/v0.86.0.md:20
 msgid "[[\\#1274](https://github.com/vrm-c/UniVRM/pull/1274)] Sphinx更新"
-msgstr "Udpated sphinx"
+msgstr "[[\\#1274](https://github.com/vrm-c/UniVRM/pull/1274)] Update Sphinx"
 
 #: ../../release/079/v0.86.0.md:21
 msgid "[[\\#1272](https://github.com/vrm-c/UniVRM/pull/1272)] fix name"
@@ -119,7 +118,7 @@ msgstr ""
 msgid ""
 "[[\\#1270](https://github.com/vrm-c/UniVRM/pull/1270)] "
 "BvhImporterContext.Parse の引き数間違いを修正"
-msgstr "Fixed incorrect argument in BvhImporterContext.Parse"
+msgstr "[[\\#1270](https://github.com/vrm-c/UniVRM/pull/1270)] Fix incorrect arguments in BvhImporterContext.Parse"
 
 #: ../../release/079/v0.86.0.md:23
 msgid "[[\\#1269](https://github.com/vrm-c/UniVRM/pull/1269)] fix typo"

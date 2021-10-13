@@ -20,23 +20,23 @@ msgstr ""
 
 #: ../../release/079/v0.83.0.md:1
 msgid "v0.83.0: 1.0準備"
-msgstr ""
+msgstr "v0.83.0: Road to 1.0"
 
 #: ../../release/079/v0.83.0.md:3
-msgid "https://vrm.dev/"
+msgid "https://vrm.dev/en"
 msgstr ""
 
 #: ../../release/079/v0.83.0.md:5
 msgid "のプログラミング関連のドキュメントを"
-msgstr ""
+msgstr "The programming section/sample codes have been moved to:"
 
 #: ../../release/079/v0.83.0.md:7
 msgid "https://vrm-c.github.io/UniVRM/"
-msgstr ""
+msgstr "https://vrm-c.github.io/UniVRM/en/"
 
 #: ../../release/079/v0.83.0.md:9
 msgid "に引越ししました。"
-msgstr ""
+msgstr "The contents in programming sections will be removed soon."
 
 #: ../../release/079/v0.83.0.md:11
 msgid "[v0.83.0](https://github.com/vrm-c/UniVRM/tree/v0.83.0) (2021-09-10)"
@@ -54,7 +54,7 @@ msgstr ""
 
 #: ../../release/079/v0.83.0.md:17
 msgid "bug修正"
-msgstr ""
+msgstr "Bug Fixes"
 
 #: ../../release/079/v0.83.0.md:19
 msgid ""
@@ -152,7 +152,7 @@ msgstr ""
 
 #: ../../release/079/v0.83.0.md:37
 msgid "その他のChangelog"
-msgstr ""
+msgstr "Other Changes"
 
 #: ../../release/079/v0.83.0.md:39
 msgid "MMD4Mecanim+UniVRM [\\#1184](https://github.com/vrm-c/UniVRM/issues/1184)"

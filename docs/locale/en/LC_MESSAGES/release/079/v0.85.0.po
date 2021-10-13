@@ -20,7 +20,7 @@ msgstr ""
 
 #: ../../release/079/v0.85.0.md:1
 msgid "v0.85.0: 1.0準備, [0.x]FastSpringBone"
-msgstr ""
+msgstr "v0.85.0: Road to 1.0. [0.x]FastSpringBone"
 
 #: ../../release/079/v0.85.0.md:3
 msgid "[v0.85.0](https://github.com/vrm-c/UniVRM/tree/v0.85.0) (2021-09-30)"
@@ -115,7 +115,7 @@ msgstr ""
 
 #: ../../release/079/v0.85.0.md:23
 msgid "利用方法は、 `Assets/VRM/Samples/SimpleViewer` を参考にしてください。"
-msgstr ""
+msgstr "Refer to `Assets/VRM/Samples/SimpleViewer` for more details."
 
 #: ../../release/079/v0.85.0.md:25
 msgid ""
@@ -125,7 +125,7 @@ msgstr ""
 
 #: ../../release/079/v0.85.0.md:27
 msgid "その他のChangelog"
-msgstr ""
+msgstr "Other Changes"
 
 #: ../../release/079/v0.85.0.md:29
 msgid ""
