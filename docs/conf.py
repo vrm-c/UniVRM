@@ -58,3 +58,5 @@ locale_dirs = ['locale/']
 gettext_compact = False
 
 html_context = {"language": language}
+
+github_url = "https://github.com/vrm-c/UniVRM"
