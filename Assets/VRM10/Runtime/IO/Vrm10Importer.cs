@@ -239,6 +239,7 @@ namespace UniVRM10
 
             // VrmController
             var controller = Root.AddComponent<Vrm10Instance>();
+            controller.enabled = false;
 
             // vrm
             controller.Vrm = await LoadVrmAsync(awaitCaller, m_vrm.VrmExtension);
@@ -250,6 +251,9 @@ namespace UniVRM10
             }
             // constraint
             await LoadConstraintAsync(awaitCaller, controller);
+            
+            // Hierarchyの構築が終わるまで遅延させる
+            controller.enabled = true;
         }
 
         VRM10Expression GetOrLoadExpression(in SubAssetKey key, ExpressionPreset preset, UniGLTF.Extensions.VRMC_vrm.Expression expression)
