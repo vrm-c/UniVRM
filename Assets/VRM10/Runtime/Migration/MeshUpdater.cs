@@ -82,11 +82,11 @@ namespace UniVRM10
                     case 1:
                         {
                             // byte
-                            var ushort_indices = mesh.IndexBuffer.GetSpan<byte>();
-                            indices = SpanLike.Create<uint>(ushort_indices.Length);
-                            for (int i = 0; i < ushort_indices.Length; ++i)
+                            var byte_indices = mesh.IndexBuffer.GetSpan<byte>();
+                            indices = SpanLike.Create<uint>(byte_indices.Length);
+                            for (int i = 0; i < byte_indices.Length; ++i)
                             {
-                                indices[i] = ushort_indices[i];
+                                indices[i] = byte_indices[i];
                             }
                             break;
                         }
