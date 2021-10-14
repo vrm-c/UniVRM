@@ -72,6 +72,14 @@ namespace UniGLTF
             {
                 return cv.ComponentType;
             }
+            else if (typeof(T) == typeof(sbyte))
+            {
+                return glComponentType.BYTE;
+            }
+            else if (typeof(T) == typeof(byte))
+            {
+                return glComponentType.UNSIGNED_BYTE;
+            }
             else if (typeof(T) == typeof(ushort))
             {
                 return glComponentType.UNSIGNED_SHORT;
