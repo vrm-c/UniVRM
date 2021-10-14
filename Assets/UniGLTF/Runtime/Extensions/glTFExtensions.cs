@@ -123,10 +123,10 @@ namespace UniGLTF
             }
         }
 
-        public static int ExtendBufferAndGetAccessorIndex<T>(this glTF gltf, int bufferIndex, IReadOnlyList<T> list,
+        public static int ExtendBufferAndGetAccessorIndex<T>(this glTF gltf, int bufferIndex, T[] array,
             glBufferTarget target = glBufferTarget.NONE) where T : struct
         {
-            return gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, new ArraySegment<T>(list.ToArray()), target);
+            return gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, new ArraySegment<T>(array), target);
         }
 
         public static int ExtendBufferAndGetAccessorIndex<T>(this glTF gltf, int bufferIndex,
