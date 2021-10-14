@@ -9,6 +9,8 @@ namespace VRMShaders
     {
         private readonly ConcurrentQueue<(Action, Func<bool>)> _continuationQueue =
             new ConcurrentQueue<(Action, Func<bool>)>();
+        private readonly ConcurrentQueue<(Action, Func<bool>)> _temporaryQueue =
+            new ConcurrentQueue<(Action, Func<bool>)>();
 
         public void ManagedUpdate()
         {
@@ -22,8 +24,13 @@ namespace VRMShaders
                 }
                 else
                 {
-                    _continuationQueue.Enqueue(tuple);
+                    _temporaryQueue.Enqueue(tuple);
                 }
+            }
+
+            while (_temporaryQueue.TryDequeue(out var tuple))
+            {
+                _continuationQueue.Enqueue(tuple);
             }
         }
 
