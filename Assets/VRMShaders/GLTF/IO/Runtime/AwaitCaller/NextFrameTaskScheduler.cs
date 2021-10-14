@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace VRMShaders
 {
-    public sealed class NextFrameTaskScheduler
+    internal sealed class NextFrameTaskScheduler
     {
         public bool IsSupported => Application.isPlaying;
 
