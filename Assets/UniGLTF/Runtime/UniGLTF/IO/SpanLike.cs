@@ -475,10 +475,10 @@ namespace UniGLTF
             return new SpanLike<T>(bytes, Marshal.SizeOf<T>(), getset.Getter, getset.Setter);
         }
 
-        public static SpanLike<T> Create<T>(int count) where T : struct
+        public static SpanLike<T> Create<T>(int itemCount) where T : struct
         {
             var itemSize = Marshal.SizeOf<T>();
-            var array = new byte[count / itemSize];
+            var array = new byte[itemCount * itemSize];
             return Wrap<T>(new ArraySegment<byte>(array));
         }
 
