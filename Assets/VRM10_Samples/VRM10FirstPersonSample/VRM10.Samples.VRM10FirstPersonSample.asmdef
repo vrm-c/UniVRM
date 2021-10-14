@@ -1,0 +1,18 @@
+{
+    "name": "VRM10.Samples.VRM10FirstPersonSample",
+    "references": [
+        "GUID:da3e51d19d51a544fa14d43fee843098",
+        "GUID:b7aa47b240b57de44a4b2021c143c9bf",
+        "GUID:8d76e605759c3f64a957d63ef96ada7c",
+        "GUID:e47c917724578cc43b5506c17a27e9a0"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
