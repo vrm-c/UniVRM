@@ -110,6 +110,7 @@ namespace UniVRM10
                     {
                         gltfMorph.POSITION = morph.Position.GetValueOrDefault(-1);
                         gltfMorph.NORMAL = morph.Normal.GetValueOrDefault(-1);
+                        gltfMorph.TANGENT = -1;
                     }
                 }
             }
