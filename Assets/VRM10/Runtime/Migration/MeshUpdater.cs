@@ -76,7 +76,43 @@ namespace UniVRM10
             // update Mesh
             foreach (var (gltfMesh, mesh) in Enumerable.Zip(gltf.meshes, model.MeshGroups, (l, r) => (l, r.Meshes[0])))
             {
-                var indices = mesh.IndexBuffer.GetSpan<uint>();
+                SpanLike<uint> indices;
+                switch (mesh.IndexBuffer.Stride)
+                {
+                    case 1:
+                        {
+                            // byte
+                            var byte_indices = mesh.IndexBuffer.GetSpan<byte>();
+                            indices = SpanLike.Create<uint>(byte_indices.Length);
+                            for (int i = 0; i < byte_indices.Length; ++i)
+                            {
+                                indices[i] = byte_indices[i];
+                            }
+                            break;
+                        }
+
+                    case 2:
+                        {
+                            // ushort
+                            var ushort_indices = mesh.IndexBuffer.GetSpan<ushort>();
+                            indices = SpanLike.Create<uint>(ushort_indices.Length);
+                            for (int i = 0; i < ushort_indices.Length; ++i)
+                            {
+                                indices[i] = ushort_indices[i];
+                            }
+                            break;
+                        }
+
+                    case 4:
+                        {
+                            // uint
+                            indices = mesh.IndexBuffer.GetSpan<uint>();
+                            break;
+                        }
+
+                    default:
+                        throw new NotImplementedException();
+                }
                 var position = AddAccessor<Vector3>(mesh.VertexBuffer.Positions);
                 var normal = AddAccessor<Vector3>(mesh.VertexBuffer.Normals);
                 var uv = AddAccessor<Vector2>(mesh.VertexBuffer.TexCoords);
