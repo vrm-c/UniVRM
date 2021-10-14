@@ -198,13 +198,13 @@ namespace UniVRM10
 
             foreach (var gltf in EnumerateGltfFiles(root))
             {
-                var bytes = File.ReadAllBytes(gltf.FullName);
                 try
                 {
-                    var migrated = MigrationVrm.Migrate(bytes);
-                    var data = new GlbLowLevelParser(gltf.FullName, migrated).Parse();
-                    UniGLTF.Extensions.VRMC_vrm.GltfDeserializer.TryGet(data.GLTF.extensions, out UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm);
-                    Assert.NotNull(vrm);
+                    Vrm10Data.TryParseOrMigrate(gltf.FullName, true, out Vrm10Data vrm);
+                    using (var loader = new Vrm10Importer(vrm))
+                    {
+                        loader.LoadAsync().Wait();
+                    }
                 }
                 catch (UnNormalizedException)
                 {
