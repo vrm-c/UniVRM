@@ -82,6 +82,7 @@ namespace UniVRM10
                 var uv = AddAccessor<Vector2>(mesh.VertexBuffer.TexCoords);
                 var weights = AddAccessor<Vector4>(mesh.VertexBuffer.Weights);
                 var joints = AddAccessor<UShort4>(mesh.VertexBuffer.Joints);
+                var color = AddAccessor<Vector4>(mesh.VertexBuffer.Colors);
 
                 var morphTargets = new MorphAccessor[] { };
                 if (mesh.MorphTargets != null)
@@ -99,7 +100,10 @@ namespace UniVRM10
                     gltfPrim.indices = AddAccessor(subIndices);
                     gltfPrim.attributes.POSITION = position.Value;
                     gltfPrim.attributes.NORMAL = normal.Value;
+                    gltfPrim.attributes.TANGENT = -1;
+                    gltfPrim.attributes.COLOR_0 = color.GetValueOrDefault(-1);
                     gltfPrim.attributes.TEXCOORD_0 = uv.Value;
+                    gltfPrim.attributes.TEXCOORD_1 = -1;
                     gltfPrim.attributes.WEIGHTS_0 = weights.GetValueOrDefault(-1);
                     gltfPrim.attributes.JOINTS_0 = joints.GetValueOrDefault(-1);
                     foreach (var (gltfMorph, morph) in Enumerable.Zip(gltfPrim.targets, morphTargets, (l, r) => (l, r)))
