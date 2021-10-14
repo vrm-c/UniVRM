@@ -266,6 +266,9 @@ namespace VRM
                 {
                     Debug.LogWarning($"InvalidFormat: {m_vrmVersion}");
                 }
+
+                // COPY 
+                VRMSampleCopy.Execute();
             }
 
             if (GUILayout.Button("Close"))
