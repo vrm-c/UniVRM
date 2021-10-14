@@ -79,6 +79,18 @@ namespace UniVRM10
                 SpanLike<uint> indices;
                 switch (mesh.IndexBuffer.Stride)
                 {
+                    case 1:
+                        {
+                            // byte
+                            var ushort_indices = mesh.IndexBuffer.GetSpan<byte>();
+                            indices = SpanLike.Create<uint>(ushort_indices.Length);
+                            for (int i = 0; i < ushort_indices.Length; ++i)
+                            {
+                                indices[i] = ushort_indices[i];
+                            }
+                            break;
+                        }
+
                     case 2:
                         {
                             // ushort
