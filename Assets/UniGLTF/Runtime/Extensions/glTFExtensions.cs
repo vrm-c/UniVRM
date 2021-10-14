@@ -72,6 +72,10 @@ namespace UniGLTF
             {
                 return cv.ComponentType;
             }
+            else if (typeof(T) == typeof(ushort))
+            {
+                return glComponentType.UNSIGNED_SHORT;
+            }
             else if (typeof(T) == typeof(uint))
             {
                 return glComponentType.UNSIGNED_INT;
@@ -119,10 +123,10 @@ namespace UniGLTF
             }
         }
 
-        public static int ExtendBufferAndGetAccessorIndex<T>(this glTF gltf, int bufferIndex, T[] array,
+        public static int ExtendBufferAndGetAccessorIndex<T>(this glTF gltf, int bufferIndex, IReadOnlyList<T> list,
             glBufferTarget target = glBufferTarget.NONE) where T : struct
         {
-            return gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, new ArraySegment<T>(array), target);
+            return gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, new ArraySegment<T>(list.ToArray()), target);
         }
 
         public static int ExtendBufferAndGetAccessorIndex<T>(this glTF gltf, int bufferIndex,

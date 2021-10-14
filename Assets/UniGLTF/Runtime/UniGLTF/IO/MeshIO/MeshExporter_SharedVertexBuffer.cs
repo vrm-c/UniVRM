@@ -127,7 +127,7 @@ namespace UniGLTF
                     indices.Add((uint)i0);
                 }
 
-                var indicesAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, indices.ToArray(), glBufferTarget.ELEMENT_ARRAY_BUFFER);
+                var indicesAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, indices, glBufferTarget.ELEMENT_ARRAY_BUFFER);
                 if (indicesAccessorIndex < 0)
                 {
                     // https://github.com/vrm-c/UniVRM/issues/664                    
