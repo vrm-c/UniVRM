@@ -3,6 +3,10 @@ using System.Threading.Tasks;
 
 namespace VRMShaders
 {
+    /// <summary>
+    /// Runtime (Build 後と、Editor Playing) での非同期ロードを実現する AwaitCaller.
+    /// NOTE: 簡便に実装されたものなので、最適化の余地はある.
+    /// </summary>
     public sealed class RuntimeOnlyAwaitCaller : IAwaitCaller
     {
         private readonly NextFrameTaskScheduler _scheduler;
