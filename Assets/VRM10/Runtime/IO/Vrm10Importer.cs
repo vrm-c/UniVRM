@@ -648,12 +648,16 @@ namespace UniVRM10
         public static void CreateNodes(VrmLib.Node node, GameObject parent, Dictionary<VrmLib.Node, GameObject> nodes)
         {
             GameObject go = new GameObject(node.Name);
-            go.transform.SetPositionAndRotation(node.Translation.ToUnityVector3(), node.Rotation.ToUnityQuaternion());
             nodes.Add(node, go);
+
+            // world
+            go.transform.SetPositionAndRotation(node.Translation.ToUnityVector3(), node.Rotation.ToUnityQuaternion());
             if (parent != null)
             {
-                go.transform.SetParent(parent.transform);
+                go.transform.SetParent(parent.transform, true);
             }
+            // local
+            go.transform.localScale = node.LocalScaling.ToUnityVector3();
 
             if (node.Children.Count > 0)
             {
