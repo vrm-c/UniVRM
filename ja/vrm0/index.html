@@ -19,7 +19,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="索引" href="../genindex.html" />
     <link rel="search" title="検索" href="../search.html" />
-    <link rel="next" title="RuntimeImport(0.82)" href="0_82_runtime_import.html" />
+    <link rel="next" title="RuntimeImport(0.87) 非同期ロード" href="0_87_runtime_import.html" />
     <link rel="prev" title="glbフォーマット概説" href="../gltf/format.html" /> 
 </head>
 
@@ -28,7 +28,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-    <a href="../../en/vrm0/index.html">English</a>
+[日本語] <a href="../../en/vrm0/index.html">English</a>
 
             <a href="../index.html" class="icon icon-home"> UniVRM Programming Document
           </a>
@@ -46,13 +46,15 @@
 <li class="toctree-l1"><a class="reference internal" href="../implementation/index.html">実装メモ</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../gltf/index.html">glTF</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">VRM</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="0_82_runtime_import.html">RuntimeImport(0.82)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="0_79_runtime_import.html">RuntimeImport(0.79)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="0_77_runtime_import.html">RuntimeImport(0.77)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="0_68_runtime_import.html">RuntimeImport(0.68)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="0_87_runtime_import.html">RuntimeImport(0.87) 非同期ロード</a></li>
+<li class="toctree-l2"><a class="reference internal" href="0_82_runtime_import.html">RuntimeImport(0.82) VRMData</a></li>
+<li class="toctree-l2"><a class="reference internal" href="0_79_runtime_import.html">RuntimeImport(0.79) GltfData</a></li>
+<li class="toctree-l2"><a class="reference internal" href="0_77_runtime_import.html">RuntimeImport(0.77) RuntimeGltfInstance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="0_68_runtime_import.html">RuntimeImport(0.68) DisposeOnGameObjectDestroyed(obsolete)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="0_44_runtime_import.html">RuntimeImport(0.44)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="0_58_blendshape.html">BlendShapeProxy(0.58)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="firstperson.html">VRMFirstPersonの使い方</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#todo">TODO:</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#samples">Samples</a></li>
 </ul>
 </li>
@@ -86,29 +88,28 @@
              
   <section class="tex2jax_ignore mathjax_ignore" id="vrm">
 <h1>VRM<a class="headerlink" href="#vrm" title="このヘッドラインへのパーマリンク"></a></h1>
-<table class="colwidths-auto docutils align-default">
-<thead>
-<tr class="row-odd"><th class="head"><p>version</p></th>
-<th class="head"><p></p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>v0.56</p></td>
-<td><p>BlendShapeKey の仕様変更</p></td>
-</tr>
-</tbody>
-</table>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="0_82_runtime_import.html">RuntimeImport(0.82)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="0_79_runtime_import.html">RuntimeImport(0.79)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="0_77_runtime_import.html">RuntimeImport(0.77)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="0_68_runtime_import.html">RuntimeImport(0.68)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="0_87_runtime_import.html">RuntimeImport(0.87) 非同期ロード</a></li>
+<li class="toctree-l1"><a class="reference internal" href="0_82_runtime_import.html">RuntimeImport(0.82) VRMData</a></li>
+<li class="toctree-l1"><a class="reference internal" href="0_79_runtime_import.html">RuntimeImport(0.79) GltfData</a></li>
+<li class="toctree-l1"><a class="reference internal" href="0_77_runtime_import.html">RuntimeImport(0.77) RuntimeGltfInstance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="0_68_runtime_import.html">RuntimeImport(0.68) DisposeOnGameObjectDestroyed(obsolete)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="0_44_runtime_import.html">RuntimeImport(0.44)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="0_58_blendshape.html">BlendShapeProxy(0.58)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="firstperson.html">VRMFirstPersonの使い方</a></li>
 </ul>
 </div>
+<ul class="simple">
+<li><p><a class="reference internal" href="../implementation/fast_spring_bone.html"><span class="doc">FastSpringBone(0.85)</span></a></p></li>
+</ul>
+<section id="todo">
+<h2>TODO:<a class="headerlink" href="#todo" title="このヘッドラインへのパーマリンク"></a></h2>
+<ul class="simple">
+<li><p>🚧 materialGenerator</p></li>
+<li><p>🚧 firstPerson</p></li>
+</ul>
+</section>
 <section id="samples">
 <h2>Samples<a class="headerlink" href="#samples" title="このヘッドラインへのパーマリンク"></a></h2>
 <ul class="simple">
@@ -125,7 +126,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="../gltf/format.html" class="btn btn-neutral float-left" title="glbフォーマット概説" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="0_82_runtime_import.html" class="btn btn-neutral float-right" title="RuntimeImport(0.82)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="0_87_runtime_import.html" class="btn btn-neutral float-right" title="RuntimeImport(0.87) 非同期ロード" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

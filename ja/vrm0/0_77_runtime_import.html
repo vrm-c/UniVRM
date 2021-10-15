@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>RuntimeImport(0.77) &mdash; UniVRM Programming Document  ドキュメント</title>
+  <title>RuntimeImport(0.77) RuntimeGltfInstance &mdash; UniVRM Programming Document  ドキュメント</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -19,8 +19,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="索引" href="../genindex.html" />
     <link rel="search" title="検索" href="../search.html" />
-    <link rel="next" title="RuntimeImport(0.68)" href="0_68_runtime_import.html" />
-    <link rel="prev" title="RuntimeImport(0.79)" href="0_79_runtime_import.html" /> 
+    <link rel="next" title="RuntimeImport(0.68) DisposeOnGameObjectDestroyed(obsolete)" href="0_68_runtime_import.html" />
+    <link rel="prev" title="RuntimeImport(0.79) GltfData" href="0_79_runtime_import.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -28,7 +28,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-    <a href="../../en/vrm0/0_77_runtime_import.html">English</a>
+[日本語] <a href="../../en/vrm0/0_77_runtime_import.html">English</a>
 
             <a href="../index.html" class="icon icon-home"> UniVRM Programming Document
           </a>
@@ -46,13 +46,15 @@
 <li class="toctree-l1"><a class="reference internal" href="../implementation/index.html">実装メモ</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../gltf/index.html">glTF</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">VRM</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="0_82_runtime_import.html">RuntimeImport(0.82)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="0_79_runtime_import.html">RuntimeImport(0.79)</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">RuntimeImport(0.77)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="0_68_runtime_import.html">RuntimeImport(0.68)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="0_87_runtime_import.html">RuntimeImport(0.87) 非同期ロード</a></li>
+<li class="toctree-l2"><a class="reference internal" href="0_82_runtime_import.html">RuntimeImport(0.82) VRMData</a></li>
+<li class="toctree-l2"><a class="reference internal" href="0_79_runtime_import.html">RuntimeImport(0.79) GltfData</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">RuntimeImport(0.77) RuntimeGltfInstance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="0_68_runtime_import.html">RuntimeImport(0.68) DisposeOnGameObjectDestroyed(obsolete)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="0_44_runtime_import.html">RuntimeImport(0.44)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="0_58_blendshape.html">BlendShapeProxy(0.58)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="firstperson.html">VRMFirstPersonの使い方</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#todo">TODO:</a></li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#samples">Samples</a></li>
 </ul>
 </li>
@@ -75,7 +77,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="index.html">VRM</a> &raquo;</li>
-      <li>RuntimeImport(0.77)</li>
+      <li>RuntimeImport(0.77) RuntimeGltfInstance</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/vrm-c/UniVRM/blob/master/docs/vrm0/0_77_runtime_import.md" class="fa fa-github"> Edit on GitHub</a>
       </li>
@@ -85,8 +87,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section class="tex2jax_ignore mathjax_ignore" id="runtimeimport-0-77">
-<h1>RuntimeImport(0.77)<a class="headerlink" href="#runtimeimport-0-77" title="このヘッドラインへのパーマリンク"></a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="runtimeimport-0-77-runtimegltfinstance">
+<h1>RuntimeImport(0.77) RuntimeGltfInstance<a class="headerlink" href="#runtimeimport-0-77-runtimegltfinstance" title="このヘッドラインへのパーマリンク"></a></h1>
 <p><a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/1018">DisposeOnGameObjectDestroyed</a></p>
 <p><code class="docutils literal notranslate"><span class="pre">ImporterContext</span></code> の仕様を変更しました。</p>
 <p><code class="docutils literal notranslate"><span class="pre">Version</span> <span class="pre">0.68</span></code> で導入した、 <code class="docutils literal notranslate"><span class="pre">ImporterContext.DisposeOnGameObjectDestroyed</span></code> が扱いづらかったためのでこれを取りやめ、
@@ -170,8 +172,8 @@ Load の呼び出し後の任意のタイミングで ImporterContext.Dispose �
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="0_79_runtime_import.html" class="btn btn-neutral float-left" title="RuntimeImport(0.79)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="0_68_runtime_import.html" class="btn btn-neutral float-right" title="RuntimeImport(0.68)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="0_79_runtime_import.html" class="btn btn-neutral float-left" title="RuntimeImport(0.79) GltfData" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="0_68_runtime_import.html" class="btn btn-neutral float-right" title="RuntimeImport(0.68) DisposeOnGameObjectDestroyed(obsolete)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

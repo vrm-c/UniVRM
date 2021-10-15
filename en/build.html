@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>アプリケーションのビルド &mdash; UniVRM Programming Document  documentation</title>
+  <title>Build Application &mdash; UniVRM Programming Document  documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -18,7 +18,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="実装メモ" href="implementation/index.html" />
+    <link rel="next" title="Implementation note" href="implementation/index.html" />
     <link rel="prev" title="UniVRM Programming Document" href="index.html" /> 
 </head>
 
@@ -27,7 +27,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-    <a href="../ja/build.html">日本語</a>
+<a href="../ja/build.html">日本語</a> [English]
 
             <a href="index.html" class="icon icon-home"> UniVRM Programming Document
           </a>
@@ -41,16 +41,16 @@
 
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">アプリケーションのビルド</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#id2">ビルドに含めるシェーダー</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Build Application</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id2">Shaders to include in the build</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#unlit">Unlit</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#mtoon">MToon</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#import-export">ランタイム import/export 時のテクスチャー変換用のシェーダー</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#import-export">Shaders for texture conversion during runtime import/export</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="implementation/index.html">実装メモ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="implementation/index.html">Implementation note</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gltf/index.html">glTF</a></li>
 <li class="toctree-l1"><a class="reference internal" href="vrm0/index.html">VRM</a></li>
 <li class="toctree-l1"><a class="reference internal" href="vrm1/index.html">VRM-1.0(β)</a></li>
@@ -71,7 +71,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>アプリケーションのビルド</li>
+      <li>Build Application</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/vrm-c/UniVRM/blob/master/docs/build.md" class="fa fa-github"> Edit on GitHub</a>
       </li>
@@ -82,11 +82,11 @@
            <div itemprop="articleBody">
              
   <section class="tex2jax_ignore mathjax_ignore" id="id1">
-<h1>アプリケーションのビルド<a class="headerlink" href="#id1" title="Permalink to this headline"></a></h1>
+<h1>Build Application<a class="headerlink" href="#id1" title="Permalink to this headline"></a></h1>
 <p>UniVRMを使うアプリケーションのビルドに関する注意事項</p>
 <section id="id2">
-<h2>ビルドに含めるシェーダー<a class="headerlink" href="#id2" title="Permalink to this headline"></a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">Project</span> <span class="pre">Settings</span> <span class="pre">=</span> <span class="pre">Graphics</span> <span class="pre">-</span> <span class="pre">Always</span> <span class="pre">Included</span> <span class="pre">Shaders</span></code> などに設定して、ビルドに含まれるようにしてください。</p>
+<h2>Shaders to include in the build<a class="headerlink" href="#id2" title="Permalink to this headline"></a></h2>
+<p>Set <code class="docutils literal notranslate"><span class="pre">Project</span> <span class="pre">Settings</span> <span class="pre">=</span> <span class="pre">Graphics</span> <span class="pre">-</span> <span class="pre">Always</span> <span class="pre">Included</span> <span class="pre">Shaders</span></code> to included in the build</p>
 <section id="unlit">
 <h3>Unlit<a class="headerlink" href="#unlit" title="Permalink to this headline"></a></h3>
 <ul class="simple">
@@ -100,7 +100,7 @@
 </ul>
 </section>
 <section id="import-export">
-<h3>ランタイム import/export 時のテクスチャー変換用のシェーダー<a class="headerlink" href="#import-export" title="Permalink to this headline"></a></h3>
+<h3>Shaders for texture conversion during runtime import/export<a class="headerlink" href="#import-export" title="Permalink to this headline"></a></h3>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">Assets\VRMShaders\GLTF\IO\Resources\UniGLTF\NormalMapExporter.shader</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">Assets\VRMShaders\GLTF\IO\Resources\UniGLTF\StandardMapExporter.shader</span></code></p></li>
@@ -115,7 +115,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="index.html" class="btn btn-neutral float-left" title="UniVRM Programming Document" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="implementation/index.html" class="btn btn-neutral float-right" title="実装メモ" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="implementation/index.html" class="btn btn-neutral float-right" title="Implementation note" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

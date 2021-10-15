@@ -1,7 +1,6 @@
-# RuntimeImport(0.82)
+# RuntimeImport(0.82) VRMData
 
-* `Version 0.82.0` は `0.82.1` 以降を使ってください。
-* `Version 0.82.1~`
+from `0.82.1`
 
 以下の手順で import します。
 

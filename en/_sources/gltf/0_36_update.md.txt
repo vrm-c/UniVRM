@@ -7,13 +7,13 @@ GLTFの仕様に準拠しました。
 * extraはextrasの間違い
 * imageはnameを持っていた
 
-```json
+```js
 json.images[i].extra.name
 ```
 
 変更後
 
-```json
+```js
 json.images[i].name
 ```
 
@@ -25,12 +25,12 @@ GLTFの仕様に準拠しました。
 * targetにextrasは不許可
 * https://github.com/KhronosGroup/glTF/issues/1036#issuecomment-314078356 
 
-```json
+```js
 json.meshes[i].primitives[j].targets[k].extra.name
 ```
 
 変更後
 
-```json
+```js
 json.meshes[i].primitives[j].extras.targetNames[k]
 ```

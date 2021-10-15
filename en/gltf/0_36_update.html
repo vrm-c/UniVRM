@@ -27,7 +27,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-    <a href="../../ja/gltf/0_36_update.html">日本語</a>
+<a href="../../ja/gltf/0_36_update.html">日本語</a> [English]
 
             <a href="../index.html" class="icon icon-home"> UniVRM Programming Document
           </a>
@@ -41,10 +41,10 @@
 
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../build.html">アプリケーションのビルド</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../implementation/index.html">実装メモ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../build.html">Build Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../implementation/index.html">Implementation note</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">glTF</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="0_82_glb_import.html">GlbImport(0.82)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="0_82_glb_import.html">GlbImport(0.82) GltfData</a></li>
 <li class="toctree-l2"><a class="reference internal" href="how_to_impl_extension.html">The implementation of glTF extensions(0.63.2)</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">GltfUpdate(0.36)</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#id1">Changed Storage Position of Texture Name</a></li>
@@ -93,11 +93,11 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">extras</span></code> is not allowed in target</p></li>
 <li><p>Use image.name</p></li>
 </ul>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>json.images[i].extra.name
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">json</span><span class="p">.</span><span class="nx">images</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">extra</span><span class="p">.</span><span class="nx">name</span>
 </pre></div>
 </div>
 <p>After the change</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>json.images[i].name
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">json</span><span class="p">.</span><span class="nx">images</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">name</span>
 </pre></div>
 </div>
 </section>
@@ -109,11 +109,11 @@
 <li><p>Target has no extras</p></li>
 <li><p>https://github.com/KhronosGroup/glTF/issues/1036#issuecomment-314078356</p></li>
 </ul>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>json.meshes[i].primitives[j].targets[k].extra.name
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">json</span><span class="p">.</span><span class="nx">meshes</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">primitives</span><span class="p">[</span><span class="nx">j</span><span class="p">].</span><span class="nx">targets</span><span class="p">[</span><span class="nx">k</span><span class="p">].</span><span class="nx">extra</span><span class="p">.</span><span class="nx">name</span>
 </pre></div>
 </div>
 <p>After the change</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>json.meshes[i].primitives[j].extras.targetNames[k]
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">json</span><span class="p">.</span><span class="nx">meshes</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">primitives</span><span class="p">[</span><span class="nx">j</span><span class="p">].</span><span class="nx">extras</span><span class="p">.</span><span class="nx">targetNames</span><span class="p">[</span><span class="nx">k</span><span class="p">]</span>
 </pre></div>
 </div>
 </section>

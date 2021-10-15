@@ -1,4 +1,4 @@
-# RuntimeImport(0.68)
+# RuntimeImport(0.68) DisposeOnGameObjectDestroyed(obsolete)
 
 ## 過去バージョンからの仕様変更
 
