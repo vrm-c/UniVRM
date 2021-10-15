@@ -407,7 +407,7 @@ namespace UniVRM10
                 {
                     node.LocalRotation = x.rotation.ToQuaternion();
                 }
-                if (x.scale != null && x.scale.Length == 4)
+                if (x.scale != null && x.scale.Length == 3)
                 {
                     node.LocalScaling = x.scale.ToVector3(Vector3.One);
                 }
