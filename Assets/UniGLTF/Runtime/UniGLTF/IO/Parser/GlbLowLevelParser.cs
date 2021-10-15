@@ -174,7 +174,8 @@ namespace UniGLTF
         /// </summary>
         private static void FixTextureNameUnique(glTF GLTF)
         {
-            var used = new HashSet<string>();
+            // NOTE: Windows FileSystem は大文字小文字の違いは同名ファイルとして扱ってしまうため, IgnoreCase で評価する.
+            var used = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             for (var textureIdx = 0; textureIdx < GLTF.textures.Count; ++textureIdx)
             {
                 var gltfTexture = GLTF.textures[textureIdx];
@@ -200,7 +201,8 @@ namespace UniGLTF
 
         private static void FixMaterialNameUnique(glTF GLTF)
         {
-            var used = new HashSet<string>();
+            // NOTE: Windows FileSystem は大文字小文字の違いは同名ファイルとして扱ってしまうため, IgnoreCase で評価する.
+            var used = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             for (var materialIdx = 0; materialIdx < GLTF.materials.Count; ++materialIdx)
             {
                 var material = GLTF.materials[materialIdx];
@@ -231,7 +233,8 @@ namespace UniGLTF
 
         private static void FixAnimationNameUnique(glTF GLTF)
         {
-            var used = new HashSet<string>();
+            // NOTE: Windows FileSystem は大文字小文字の違いは同名ファイルとして扱ってしまうため, IgnoreCase で評価する.
+            var used = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             for (int i = 0; i < GLTF.animations.Count; ++i)
             {
                 var animation = GLTF.animations[i];
