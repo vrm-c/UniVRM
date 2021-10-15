@@ -132,7 +132,7 @@ namespace VRM.FastSpringBones.Blittables
 
         private static Quaternion FromToRotation(Vector3 from, Vector3 to)
             => Quaternion.AngleAxis(
-                angle: Mathf.Acos(Mathf.Clamp(Vector3.Dot(from.normalized, to.normalized), -1f, 1f)),
+                angle: Mathf.Acos(Mathf.Clamp(Vector3.Dot(from.normalized, to.normalized), -1f, 1f)) * Mathf.Rad2Deg,
                 axis: Vector3.Cross(from, to).normalized
             );
 
