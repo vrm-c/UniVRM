@@ -1,11 +1,11 @@
 {% extends "!layout.html" %}
 
 {% block sidebartitle %}
-  {%- if language != "en" %}
-    <a href="{{ pathto('../en/', 1) }}{{ pathto(pagename, 0, '.') }}">English</a>
-  {%- endif %}
-  {%- if language != "ja" %}
-    <a href="{{ pathto('../ja/', 1) }}{{ pathto(pagename, 0, '.') }}">日本語</a>
-  {%- endif %}
+{%- if language != "en" %}
+[日本語] <a href="{{ pathto('../en/', 1) }}{{ pathto(pagename, 0, '.') }}">English</a>
+{%- endif %}
+{%- if language != "ja" %}
+<a href="{{ pathto('../ja/', 1) }}{{ pathto(pagename, 0, '.') }}">日本語</a> [English]
+{%- endif %}
 {{ super() }}
 {% endblock %}

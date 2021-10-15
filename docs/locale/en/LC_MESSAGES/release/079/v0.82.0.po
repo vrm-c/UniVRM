@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: UniVRM Programming Document \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-11 16:50+0900\n"
+"POT-Creation-Date: 2021-10-15 15:45+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,14 +26,22 @@ msgstr "v0.82.0: Road to 1.0. Material Customization for URP"
 msgid "[v0.82.0](https://github.com/vrm-c/UniVRM/tree/v0.82.0) (2021-09-01)"
 msgstr ""
 
+#: ../../release/079/v0.82.0.md:4
+msgid "[0.82.0](http://github.com/vrm-c/UniVRM/releases/tag/v0.82.0)"
+msgstr ""
+
 #: ../../release/079/v0.82.0.md:5
-msgid "commit: https://github.com/vrm-c/UniVRM/releases/tag/v0.82.0"
+msgid "[milestone](https://github.com/vrm-c/UniVRM/milestone/44?closed=1)"
 msgstr ""
 
 #: ../../release/079/v0.82.0.md:6
 msgid ""
-"milestone: https://github.com/vrm-c/UniVRM/milestone/44?closed=1 [Full "
+"[Full "
 "Changelog](https://github.com/vrm-c/UniVRM/compare/v0.81.0...v0.82.0)"
+msgstr ""
+
+#: ../../release/079/v0.82.0.md:7
+msgid "glb の import, URP API"
 msgstr ""
 
 #: ../../release/079/v0.82.0.md:9
@@ -42,7 +50,9 @@ msgstr "URP (Universal Render Pipeline)"
 
 #: ../../release/079/v0.82.0.md:10
 msgid "URP 向けに Material Import をカスタマイズする機能をはじめました (Experimental)"
-msgstr "Experimental Features: Add MaterialGenerator customization point (for URP)."
+msgstr ""
+"Experimental Features: Add MaterialGenerator customization point (for "
+"URP)."
 
 #: ../../release/079/v0.82.0.md:12
 msgid "`TODO:` アプリ開発者向けドキュメント"
@@ -143,4 +153,13 @@ msgid ""
 "UniVRM-0.81.0 [\\#1157](https://github.com/vrm-c/UniVRM/pull/1157) "
 "([ousttrue](https://github.com/ousttrue))"
 msgstr ""
+
+#~ msgid "commit: https://github.com/vrm-c/UniVRM/releases/tag/v0.82.0"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "milestone: https://github.com/vrm-c/UniVRM/milestone/44?closed=1"
+#~ " [Full "
+#~ "Changelog](https://github.com/vrm-c/UniVRM/compare/v0.81.0...v0.82.0)"
+#~ msgstr ""
 

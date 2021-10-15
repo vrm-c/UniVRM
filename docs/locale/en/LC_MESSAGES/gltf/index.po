@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: UniVRM Programming Document \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-09-14 13:46+0900\n"
+"POT-Creation-Date: 2021-10-15 15:45+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,59 +18,51 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.9.1\n"
 
-#: ../../history.md:1
-msgid "Version"
+#: ../../gltf/index.md:1
+msgid "glTF"
 msgstr ""
 
-#: ../../history.md
+#: ../../gltf/index.md
 msgid "version"
 msgstr ""
 
-#: ../../history.md
+#: ../../gltf/index.md
 msgid "v0.82.1"
 msgstr ""
 
-#: ../../history.md
+#: ../../gltf/index.md
 msgid "`materialGenerator(URP対応)` 引き数と `VrmData`"
-msgstr "`materialGenerator(for URP)` argument and `VrmData`"
+msgstr ""
 
-#: ../../history.md
+#: ../../gltf/index.md
 msgid "v0.79"
 msgstr ""
 
-#: ../../history.md
+#: ../../gltf/index.md
 msgid "`GltfData`"
 msgstr ""
 
-#: ../../history.md
+#: ../../gltf/index.md
 msgid "v0.77"
 msgstr ""
 
-#: ../../history.md
+#: ../../gltf/index.md
 msgid "`RuntimeGltfInstance`"
 msgstr ""
 
-#: ../../history.md
+#: ../../gltf/index.md
 msgid "v0.68"
 msgstr ""
 
-#: ../../history.md
+#: ../../gltf/index.md
 msgid "`GltfParser`"
 msgstr ""
 
-#: ../../history.md
+#: ../../gltf/index.md
 msgid "v0.63.2"
 msgstr ""
 
-#: ../../history.md
+#: ../../gltf/index.md
 msgid "gltf の extension の実装方法を変更"
-msgstr "Update gltf extensions implementation"
-
-#: ../../history.md
-msgid "v0.56"
 msgstr ""
-
-#: ../../history.md
-msgid "BlendShapeKey の仕様変更"
-msgstr "Update BlendShapeKey spec"
 

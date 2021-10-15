@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: UniVRM Programming Document \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-13 14:36+0900\n"
+"POT-Creation-Date: 2021-10-15 15:45+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,8 +34,8 @@ msgstr "Recommended"
 msgid "Unity"
 msgstr ""
 
-#: ../../release/index.md ../../release/index.md:10
-msgid "v0.79～"
+#: ../../release/index.md
+msgid "{doc}`v0.79～ <079/index>`"
 msgstr ""
 
 #: ../../release/index.md
@@ -52,7 +52,7 @@ msgid "特に問題が無ければこれ。"
 msgstr "Default"
 
 #: ../../release/index.md
-msgid "v0.68～v0.78"
+msgid "{doc}`v0.68～v0.78 <068/index>`"
 msgstr ""
 
 #: ../../release/index.md
@@ -65,7 +65,7 @@ msgid "開発版。最新版を使ってください。"
 msgstr "Development version. Please use v0.81 ~"
 
 #: ../../release/index.md
-msgid "v0.56～v0.67"
+msgid "{doc}`v0.56～v0.67 <056/index>`"
 msgstr ""
 
 #: ../../release/index.md
@@ -73,7 +73,7 @@ msgid "v0.66"
 msgstr ""
 
 #: ../../release/index.md
-msgid "～v0.55"
+msgid "{doc}`～v0.55 <055/index>`"
 msgstr ""
 
 #: ../../release/index.md
@@ -84,14 +84,24 @@ msgstr ""
 msgid "Unity-5.6(.NET3.5)"
 msgstr ""
 
-#: ../../release/index.md:12
-msgid "`from 0.80`: `Unity-2019.4`"
-msgstr ""
+#~ msgid "v0.79～"
+#~ msgstr ""
 
-#: ../../release/index.md:13
-msgid "`from 0.81`: `UniGLTF_VRMShaders` and `UniVRM` ２パッケージ構成"
-msgstr "`from 0.81`: `UniGLTF_VRMShaders` and `UniVRM` 2 package configuration"
+#~ msgid "v0.68～v0.78"
+#~ msgstr ""
 
-#: ../../release/index.md:23
-msgid "Older versions"
-msgstr ""
+#~ msgid "v0.56～v0.67"
+#~ msgstr ""
+
+#~ msgid "～v0.55"
+#~ msgstr ""
+
+#~ msgid "`from 0.80`: `Unity-2019.4`"
+#~ msgstr ""
+
+#~ msgid "`from 0.81`: `UniGLTF_VRMShaders` and `UniVRM` ２パッケージ構成"
+#~ msgstr "`from 0.81`: `UniGLTF_VRMShaders` and `UniVRM` 2 package configuration"
+
+#~ msgid "Older versions"
+#~ msgstr ""
+
