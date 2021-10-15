@@ -49,6 +49,10 @@ namespace UniGLTF
         public static (Vector3, float) GetAxisAngle(this Quaternion q)
         {
             var qw = q.W;
+            if (qw == 1)
+            {
+                return (Vector3.UnitX, 0);
+            }
             var angle = 2 * Math.Acos(qw);
             var x = q.X / Math.Sqrt(1 - qw * qw);
             var y = q.Y / Math.Sqrt(1 - qw * qw);
