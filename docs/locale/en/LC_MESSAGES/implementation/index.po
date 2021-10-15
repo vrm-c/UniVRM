@@ -20,5 +20,4 @@ msgstr ""
 
 #: ../../implementation/index.md:1
 msgid "実装メモ"
-msgstr ""
-
+msgstr "Implementation note"

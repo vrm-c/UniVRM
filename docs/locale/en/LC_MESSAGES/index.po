@@ -23,7 +23,6 @@ msgid "UniVRM Programming Document"
 msgstr ""
 
 #: ../../index.md:3
-#, fuzzy
 msgid ""
 "これは、[UniVRM](https://github.com/vrm-c/UniVRM) の開発ドキュメントです。 "
 "UnityでVRMをエクスポートする方法などについては [manual](https://vrm.dev/docs/univrm/) "

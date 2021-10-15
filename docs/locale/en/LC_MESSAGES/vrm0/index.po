@@ -32,7 +32,7 @@ msgstr ""
 
 #: ../../vrm0/index.md
 msgid "BlendShapeKey の仕様変更"
-msgstr ""
+msgstr "BlendShapeKey API update"
 
 #: ../../vrm0/index.md:19
 msgid "Samples"

@@ -20,17 +20,18 @@ msgstr ""
 
 #: ../../build.md:1
 msgid "アプリケーションのビルド"
-msgstr ""
+msgstr "Build Application"
 
 #: ../../build.md:3
 msgid "ビルドに含めるシェーダー"
-msgstr ""
+msgstr "Shaders to include in the build"
 
 #: ../../build.md:5
 msgid ""
 "`Project Settings = Graphics - Always Included Shaders` "
 "などに設定して、ビルドに含まれるようにしてください。"
-msgstr ""
+msgstr "Set `Project Settings = Graphics - Always Included Shaders` "
+"to included in the build"
 
 #: ../../build.md:7
 msgid "Unlit"
@@ -50,7 +51,7 @@ msgstr ""
 
 #: ../../build.md:15
 msgid "ランタイム import/export 時のテクスチャー変換用のシェーダー"
-msgstr ""
+msgstr "Shaders for texture conversion during runtime import/export"
 
 #: ../../build.md:17
 msgid "`Assets\\VRMShaders\\GLTF\\IO\\Resources\\UniGLTF\\NormalMapExporter.shader`"
@@ -63,4 +64,3 @@ msgstr ""
 #: ../../build.md:19
 msgid "`Assets\\VRMShaders\\GLTF\\IO\\Resources\\UniGLTF\\StandardMapImporter.shader`"
 msgstr ""
-

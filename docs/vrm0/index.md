@@ -1,12 +1,9 @@
 # VRM
 
-| version |                                                 |
-|---------|-------------------------------------------------|
-| v0.56   | BlendShapeKey の仕様変更                        |
-
 ```{toctree}
 :maxdepth: 1
 
+0_87_runtime_import
 0_82_runtime_import
 0_79_runtime_import
 0_77_runtime_import
@@ -15,6 +12,13 @@
 0_58_blendshape
 firstperson
 ```
+
+* {doc}`FastSpringBone(0.85) </implementation/fast_spring_bone>`
+
+### TODO:
+
+* 🚧 materialGenerator
+* 🚧 firstPerson
 
 ## Samples
 

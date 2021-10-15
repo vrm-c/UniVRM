@@ -47,7 +47,6 @@ msgid "Unity-2019.4"
 msgstr ""
 
 #: ../../release/index.md
-#, fuzzy
 msgid "特に問題が無ければこれ。"
 msgstr "Default"
 
@@ -60,9 +59,8 @@ msgid "Unity-2018.4"
 msgstr ""
 
 #: ../../release/index.md
-#, fuzzy
 msgid "開発版。最新版を使ってください。"
-msgstr "Development version. Please use v0.81 ~"
+msgstr "Development version. Please use latest"
 
 #: ../../release/index.md
 msgid "{doc}`v0.56～v0.67 <056/index>`"
@@ -83,25 +81,3 @@ msgstr ""
 #: ../../release/index.md
 msgid "Unity-5.6(.NET3.5)"
 msgstr ""
-
-#~ msgid "v0.79～"
-#~ msgstr ""
-
-#~ msgid "v0.68～v0.78"
-#~ msgstr ""
-
-#~ msgid "v0.56～v0.67"
-#~ msgstr ""
-
-#~ msgid "～v0.55"
-#~ msgstr ""
-
-#~ msgid "`from 0.80`: `Unity-2019.4`"
-#~ msgstr ""
-
-#~ msgid "`from 0.81`: `UniGLTF_VRMShaders` and `UniVRM` ２パッケージ構成"
-#~ msgstr "`from 0.81`: `UniGLTF_VRMShaders` and `UniVRM` 2 package configuration"
-
-#~ msgid "Older versions"
-#~ msgstr ""
-

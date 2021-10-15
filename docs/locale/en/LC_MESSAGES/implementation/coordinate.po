@@ -20,31 +20,31 @@ msgstr ""
 
 #: ../../implementation/coordinate.md:1
 msgid "座標系の変換"
-msgstr ""
+msgstr "Coordinate conversion"
 
 #: ../../implementation/coordinate.md:3
 msgid "UniVRMは、インポート・エクスポート時に座標変換を実行しています。"
-msgstr ""
+msgstr "UniVRM convert coordinate when import or export"
 
 #: ../../implementation/coordinate.md
 msgid "右"
-msgstr ""
+msgstr "right"
 
 #: ../../implementation/coordinate.md
 msgid "上"
-msgstr ""
+msgstr "up"
 
 #: ../../implementation/coordinate.md
 msgid "前"
-msgstr ""
+msgstr "forward"
 
 #: ../../implementation/coordinate.md
 msgid "掌性"
-msgstr ""
+msgstr "chirality"
 
 #: ../../implementation/coordinate.md
 msgid "UV原点"
-msgstr ""
+msgstr "Origin of Texture coordinates"
 
 #: ../../implementation/coordinate.md
 msgid "Unity"
@@ -64,11 +64,11 @@ msgstr ""
 
 #: ../../implementation/coordinate.md
 msgid "左手"
-msgstr ""
+msgstr "Left handed"
 
 #: ../../implementation/coordinate.md
 msgid "左下"
-msgstr ""
+msgstr "left bottom"
 
 #: ../../implementation/coordinate.md
 msgid "VRM-0"
@@ -80,11 +80,11 @@ msgstr ""
 
 #: ../../implementation/coordinate.md
 msgid "右手"
-msgstr ""
+msgstr "Right handed"
 
 #: ../../implementation/coordinate.md
 msgid "左上"
-msgstr ""
+msgstr "left top"
 
 #: ../../implementation/coordinate.md
 msgid "VRM-1"
@@ -100,7 +100,7 @@ msgstr ""
 
 #: ../../implementation/coordinate.md
 msgid "デフォルトはVRM-0方式。オプションでVRM-1方式を選べます"
-msgstr ""
+msgstr "The default is the VRM-0 method. Vrm-1 method can be selected as an option"
 
 #: ../../implementation/coordinate.md:12
 msgid "UV"
@@ -108,7 +108,7 @@ msgstr ""
 
 #: ../../implementation/coordinate.md:14
 msgid "以下のように変換します。"
-msgstr ""
+msgstr "The following conversions"
 
 #: ../../implementation/coordinate.md:16
 msgid "V^{\\prime} = 1 - V"
@@ -120,11 +120,11 @@ msgstr ""
 
 #: ../../implementation/coordinate.md:22
 msgid "Z軸を反転します。"
-msgstr ""
+msgstr "Invert Z-axis"
 
 #: ../../implementation/coordinate.md:24
 msgid "Vector3: Position, Normalなど"
-msgstr ""
+msgstr "Vector3: Position, Normal, etc."
 
 #: ../../implementation/coordinate.md:33
 msgid "Quaternion: Rotation"
@@ -136,7 +136,7 @@ msgstr ""
 
 #: ../../implementation/coordinate.md:47
 msgid "スケール値が入っているとうまくいきません"
-msgstr ""
+msgstr "If the scale value is in it, it does not work."
 
 #: ../../implementation/coordinate.md:61
 msgid "Unity <-> VRM1"
@@ -144,5 +144,4 @@ msgstr ""
 
 #: ../../implementation/coordinate.md:63
 msgid "X軸を反転します。"
-msgstr ""
-
+msgstr "Invert X-axis"

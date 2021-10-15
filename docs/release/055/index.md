@@ -1,4 +1,4 @@
-# ～v0.55: Unity-5.6(.NET-3.5)
+# ～v0.55 (Unity-5.6 .NET-3.5) 推奨バージョンv0.55
 
 ## UnityPackage
 
