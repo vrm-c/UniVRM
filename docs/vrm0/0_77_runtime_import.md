@@ -1,4 +1,4 @@
-# RuntimeImport(0.77)
+# RuntimeImport(0.77) RuntimeGltfInstance
 
 [DisposeOnGameObjectDestroyed](https://github.com/vrm-c/UniVRM/issues/1018)
 

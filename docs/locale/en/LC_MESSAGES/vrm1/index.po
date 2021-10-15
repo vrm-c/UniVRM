@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: UniVRM Programming Document \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-15 16:47+0900\n"
+"POT-Creation-Date: 2021-10-15 15:45+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,14 +18,15 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.9.1\n"
 
-#: ../../vrm0/0_79_runtime_import.md:1
-msgid "RuntimeImport(0.79) GltfData"
+#: ../../vrm1/index.md:1
+msgid "VRM-1.0(β)"
 msgstr ""
 
-#: ../../vrm0/0_79_runtime_import.md:3
-msgid "`GltfParser` と `GltfData` の分割"
-msgstr "Separate `GltfData` from `GltfParser`"
+#: ../../vrm1/index.md:13
+msgid "Samples"
+msgstr ""
 
-#~ msgid "RuntimeImport(0.79)"
-#~ msgstr ""
+#: ../../vrm1/index.md:15
+msgid "VRM10Viewer"
+msgstr ""
 

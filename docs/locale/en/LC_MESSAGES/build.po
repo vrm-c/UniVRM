@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: UniVRM Programming Document \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-11 16:50+0900\n"
+"POT-Creation-Date: 2021-10-15 15:45+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,47 +20,53 @@ msgstr ""
 
 #: ../../build.md:1
 msgid "アプリケーションのビルド"
-msgstr ""
+msgstr "Build Application"
 
 #: ../../build.md:3
-msgid "ビルドに含めるシェーダー"
+msgid "UniVRMを使うアプリケーションのビルドに関する注意事項"
 msgstr ""
 
 #: ../../build.md:5
+msgid "ビルドに含めるシェーダー"
+msgstr "Shaders to include in the build"
+
+#: ../../build.md:7
 msgid ""
 "`Project Settings = Graphics - Always Included Shaders` "
 "などに設定して、ビルドに含まれるようにしてください。"
 msgstr ""
+"Set `Project Settings = Graphics - Always Included Shaders` to included "
+"in the build"
 
-#: ../../build.md:7
+#: ../../build.md:9
 msgid "Unlit"
 msgstr ""
 
-#: ../../build.md:9
+#: ../../build.md:11
 msgid "`Assets\\VRMShaders\\GLTF\\UniUnlit\\Resources\\UniGLTF\\UniUnlit.shader`"
 msgstr ""
 
-#: ../../build.md:11
+#: ../../build.md:13
 msgid "MToon"
 msgstr ""
 
-#: ../../build.md:13
+#: ../../build.md:15
 msgid "`Assets\\VRMShaders\\VRM\\MToon\\MToon\\Resources\\Shaders\\MToon.shader`"
 msgstr ""
 
-#: ../../build.md:15
-msgid "ランタイム import/export 時のテクスチャー変換用のシェーダー"
-msgstr ""
-
 #: ../../build.md:17
+msgid "ランタイム import/export 時のテクスチャー変換用のシェーダー"
+msgstr "Shaders for texture conversion during runtime import/export"
+
+#: ../../build.md:19
 msgid "`Assets\\VRMShaders\\GLTF\\IO\\Resources\\UniGLTF\\NormalMapExporter.shader`"
 msgstr ""
 
-#: ../../build.md:18
+#: ../../build.md:20
 msgid "`Assets\\VRMShaders\\GLTF\\IO\\Resources\\UniGLTF\\StandardMapExporter.shader`"
 msgstr ""
 
-#: ../../build.md:19
+#: ../../build.md:21
 msgid "`Assets\\VRMShaders\\GLTF\\IO\\Resources\\UniGLTF\\StandardMapImporter.shader`"
 msgstr ""
 

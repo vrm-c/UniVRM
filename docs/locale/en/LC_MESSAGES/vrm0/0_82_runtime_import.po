@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: UniVRM Programming Document \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-09-14 13:46+0900\n"
+"POT-Creation-Date: 2021-10-15 16:47+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,76 +19,88 @@ msgstr ""
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../vrm0/0_82_runtime_import.md:1
-msgid "RuntimeImport(0.82)"
+msgid "RuntimeImport(0.82) VRMData"
 msgstr ""
 
 #: ../../vrm0/0_82_runtime_import.md:3
-msgid "`Version 0.82.0` は `0.82.1` 以降を使ってください。"
-msgstr "`Version 0.82.0`: Please use  `0.82.1` or later"
-
-#: ../../vrm0/0_82_runtime_import.md:4
-msgid "`Version 0.82.1~`"
+msgid "from `0.82.1`"
 msgstr ""
 
-#: ../../vrm0/0_82_runtime_import.md:6
+#: ../../vrm0/0_82_runtime_import.md:5
 msgid "以下の手順で import します。"
 msgstr "Below step is needed"
 
-#: ../../vrm0/0_82_runtime_import.md:8
+#: ../../vrm0/0_82_runtime_import.md:7
 msgid "VRMをパースして、`GltfData` を得る。"
 msgstr "Parse VRM, and Get `GltfData`."
 
-#: ../../vrm0/0_82_runtime_import.md:9
+#: ../../vrm0/0_82_runtime_import.md:8
 msgid "`GltfData` から `VRMData` を得る。"
 msgstr "Get `VRMData` from `GltfData`."
 
-#: ../../vrm0/0_82_runtime_import.md:10
+#: ../../vrm0/0_82_runtime_import.md:9
 msgid "`VrmData` から `RuntimeGltfInstance` をロードする。"
 msgstr "Load a `RuntimeGltfInstance` from `VRMData`."
 
-#: ../../vrm0/0_82_runtime_import.md:11
+#: ../../vrm0/0_82_runtime_import.md:10
 msgid "`RuntimeGltfInstance` を使う。"
 msgstr "Use the `RuntimeGltfInstance`"
 
-#: ../../vrm0/0_82_runtime_import.md:13
+#: ../../vrm0/0_82_runtime_import.md:12
 msgid "サンプルの `Assets\\VRM\\Samples\\SimpleViewer\\ViewerUI.cs` も参照してください。"
-msgstr "See `Assets\VRM\Samples\SimpleViewer\ViewerUI.cs`"
+msgstr "See `Assets\\VRM\\Samples\\SimpleViewer\\ViewerUI.cs`"
 
-#: ../../vrm0/0_82_runtime_import.md:15
+#: ../../vrm0/0_82_runtime_import.md:14
 msgid "1. `GltfData` を得る"
 msgstr "1. Get `GltfData`"
 
-#: ../../vrm0/0_82_runtime_import.md:24
+#: ../../vrm0/0_82_runtime_import.md:23
 msgid "[GLB import](../gltf/0_82_glb_import.md) も参照してください。"
 msgstr "See [GLB import](../gltf/0_82_glb_import.md)."
 
-#: ../../vrm0/0_82_runtime_import.md:26
+#: ../../vrm0/0_82_runtime_import.md:25
 msgid "2. `VRMData` を得る"
 msgstr "2. Get `VRMData`"
 
-#: ../../vrm0/0_82_runtime_import.md:32
+#: ../../vrm0/0_82_runtime_import.md:31
 msgid "3. Load する"
 msgstr "3. Load"
 
-#: ../../vrm0/0_82_runtime_import.md:46
+#: ../../vrm0/0_82_runtime_import.md:45
 msgid "URP 向けに `materialGenerator` を指定する(実験)"
 msgstr "Set `materialGenerator` argument for URP(Experimental)"
 
-#: ../../vrm0/0_82_runtime_import.md:48
+#: ../../vrm0/0_82_runtime_import.md:47
 msgid ""
 "`materialGenerator` 引き数(省略可能)を指定することで URP マテリアルを生成するようにカスタムできます。 指定しない場合は"
 " `built-in` 向けのデフォルトが使用されます。"
-msgstr "Set `materialGenerator` Argument, material generation is could customized. If omitted, default `materialGenerator` for `built-in` pipeline is used."
+msgstr ""
+"Set `materialGenerator` Argument, material generation is could "
+"customized. If omitted, default `materialGenerator` for `built-in` "
+"pipeline is used."
 
-#: ../../vrm0/0_82_runtime_import.md:63
+#: ../../vrm0/0_82_runtime_import.md:62
 msgid "まだ URP 向け MToonShader が作成されていないので、`UniUnlit` にフォールバックします。"
-msgstr "`MToonShader for URP` has not been implemented yet, fallback to `UniUnlit`."
+msgstr ""
+"`MToonShader for URP` has not been implemented yet, fallback to "
+"`UniUnlit`."
 
-#: ../../vrm0/0_82_runtime_import.md:65
+#: ../../vrm0/0_82_runtime_import.md:64
 msgid "4. Instance"
 msgstr ""
 
-#: ../../vrm0/0_82_runtime_import.md:74
+#: ../../vrm0/0_82_runtime_import.md:73
 msgid "使用後に以下のように破棄してください。関連する Asset(Texture, Material, Meshなど)も破棄されます。"
-msgstr "When destroy, related assets(meshes, materials and textures etc...) is destroyed."
+msgstr ""
+"When destroy, related assets(meshes, materials and textures etc...) is "
+"destroyed."
+
+#~ msgid "RuntimeImport(0.82)"
+#~ msgstr ""
+
+#~ msgid "`Version 0.82.0` は `0.82.1` 以降を使ってください。"
+#~ msgstr "`Version 0.82.0`: Please use  `0.82.1` or later"
+
+#~ msgid "`Version 0.82.1~`"
+#~ msgstr ""
 
