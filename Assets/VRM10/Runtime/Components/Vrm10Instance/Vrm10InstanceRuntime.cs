@@ -15,7 +15,8 @@ namespace UniVRM10
         private readonly VRM10Constraint[] m_constraints;
         private readonly Transform m_head;
         private readonly FastSpringBoneService m_fastSpringBoneService;
-        private readonly FastSpringBoneBuffer m_fastSpringBoneBuffer;
+
+        private FastSpringBoneBuffer m_fastSpringBoneBuffer;
 
         public Vrm10InstanceRuntime(Vrm10Instance target)
         {
@@ -43,6 +44,20 @@ namespace UniVRM10
 
             m_fastSpringBoneService = FastSpringBoneService.Instance;
             m_fastSpringBoneBuffer = CreateFastSpringBoneBuffer(m_target.SpringBone);
+            m_fastSpringBoneService.BufferCombiner.Register(m_fastSpringBoneBuffer);
+        }
+
+        /// <summary>
+        /// このVRMに紐づくSpringBone関連のバッファを再構築する
+        /// ランタイム実行時にSpringBoneに対して変更を行いたいときは、このメソッドを明示的に呼ぶ必要がある
+        /// </summary>
+        public void ReconstructSpringBone()
+        {
+            m_fastSpringBoneService.BufferCombiner.Unregister(m_fastSpringBoneBuffer);
+
+            m_fastSpringBoneBuffer.Dispose();
+            m_fastSpringBoneBuffer = CreateFastSpringBoneBuffer(m_target.SpringBone);
+
             m_fastSpringBoneService.BufferCombiner.Register(m_fastSpringBoneBuffer);
         }
 
