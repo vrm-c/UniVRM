@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: UniVRM Programming Document \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-09-14 13:46+0900\n"
+"POT-Creation-Date: 2021-10-15 16:47+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../vrm0/0_77_runtime_import.md:1
-msgid "RuntimeImport(0.77)"
+msgid "RuntimeImport(0.77) RuntimeGltfInstance"
 msgstr ""
 
 #: ../../vrm0/0_77_runtime_import.md:3
@@ -35,11 +35,16 @@ msgid ""
 "`Version 0.68` で導入した、 `ImporterContext.DisposeOnGameObjectDestroyed` "
 "が扱いづらかったためのでこれを取りやめ、 `ImporterContext.Load` が `RuntimeGltfInstance` "
 "を返すようにしました。"
-msgstr "The function `ImporterContext.DisposeOnGameObjectDestroyed` introduced in `Version 0.68` has been discarded. Instead, `ImporterContext.Load` and `RuntimeGltfInstance` are used in `v0.77`."
+msgstr ""
+"The function `ImporterContext.DisposeOnGameObjectDestroyed` introduced in"
+" `Version 0.68` has been discarded. Instead, `ImporterContext.Load` and "
+"`RuntimeGltfInstance` are used in `v0.77`."
 
 #: ../../vrm0/0_77_runtime_import.md:10
 msgid "`RuntimeGltfInstance` は、 `ImporterContext` の"
-msgstr "In addition, `ImporterContext`'s members have been moved to `RuntimeGltfInstance`:"
+msgstr ""
+"In addition, `ImporterContext`'s members have been moved to "
+"`RuntimeGltfInstance`:"
 
 #: ../../vrm0/0_77_runtime_import.md:12
 msgid "Root"
@@ -58,5 +63,11 @@ msgid ""
 "を引き継ぎます。 Load の呼び出し後の任意のタイミングで ImporterContext.Dispose で Importer "
 "を破棄してください。 任意のタイミングで RuntimeGltfInstance を Destory することで紐づくリソース (Texture,"
 " Material, Mesh, etc) も破棄されます。"
-msgstr "To destroy the Importer, use `ImporterContext.Dispose` after `Load` is called. By destroying RuntimeGltfInstance, the resources associated with the RuntimeGltfInstance (Texture, Material, Mesh, etc) will be destroyed."
+msgstr ""
+"To destroy the Importer, use `ImporterContext.Dispose` after `Load` is "
+"called. By destroying RuntimeGltfInstance, the resources associated with "
+"the RuntimeGltfInstance (Texture, Material, Mesh, etc) will be destroyed."
+
+#~ msgid "RuntimeImport(0.77)"
+#~ msgstr ""
 

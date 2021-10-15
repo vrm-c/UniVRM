@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: UniVRM Programming Document \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-09-14 13:46+0900\n"
+"POT-Creation-Date: 2021-10-15 16:47+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,10 +19,13 @@ msgstr ""
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../vrm0/0_79_runtime_import.md:1
-msgid "RuntimeImport(0.79)"
+msgid "RuntimeImport(0.79) GltfData"
 msgstr ""
 
 #: ../../vrm0/0_79_runtime_import.md:3
 msgid "`GltfParser` と `GltfData` の分割"
 msgstr "Separate `GltfData` from `GltfParser`"
+
+#~ msgid "RuntimeImport(0.79)"
+#~ msgstr ""
 

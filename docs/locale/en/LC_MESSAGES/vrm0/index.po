@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: UniVRM Programming Document \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-15 15:45+0900\n"
+"POT-Creation-Date: 2021-10-15 16:47+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,35 +22,48 @@ msgstr ""
 msgid "VRM"
 msgstr ""
 
-#: ../../vrm0/index.md
-msgid "version"
+#: ../../vrm0/index.md:16
+msgid "{doc}`FastSpringBone(0.85) </implementation/fast_spring_bone>`"
 msgstr ""
 
-#: ../../vrm0/index.md
-msgid "v0.56"
+#: ../../vrm0/index.md:18
+msgid "TODO:"
 msgstr ""
 
-#: ../../vrm0/index.md
-msgid "BlendShapeKey の仕様変更"
-msgstr "BlendShapeKey API update"
-
-#: ../../vrm0/index.md:19
-msgid "Samples"
+#: ../../vrm0/index.md:20
+msgid "🚧 materialGenerator"
 msgstr ""
 
 #: ../../vrm0/index.md:21
-msgid "SimpleViewer"
-msgstr ""
-
-#: ../../vrm0/index.md:22
-msgid "RuntimeExporerSample"
+msgid "🚧 firstPerson"
 msgstr ""
 
 #: ../../vrm0/index.md:23
+msgid "Samples"
+msgstr ""
+
+#: ../../vrm0/index.md:25
+msgid "SimpleViewer"
+msgstr ""
+
+#: ../../vrm0/index.md:26
+msgid "RuntimeExporerSample"
+msgstr ""
+
+#: ../../vrm0/index.md:27
 msgid "FirstPersonSample"
 msgstr ""
 
-#: ../../vrm0/index.md:24
+#: ../../vrm0/index.md:28
 msgid "AnimationBridgeSample"
 msgstr ""
+
+#~ msgid "version"
+#~ msgstr ""
+
+#~ msgid "v0.56"
+#~ msgstr ""
+
+#~ msgid "BlendShapeKey の仕様変更"
+#~ msgstr "BlendShapeKey API update"
 

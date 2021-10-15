@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: UniVRM Programming Document \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-15 15:45+0900\n"
+"POT-Creation-Date: 2021-10-15 16:47+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,8 +19,8 @@ msgstr ""
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../release/079/index.md:1
-msgid "v0.79～: Unity-2019.4"
-msgstr ""
+msgid "v0.79～ (Unity-2019.4) 最新版をご利用ください"
+msgstr "v0.79～ (Unity-2019.4) Latest Version"
 
 #: ../../release/079/index.md:3
 msgid "ReleaseNote"
@@ -89,4 +89,7 @@ msgstr ""
 #: ../../release/079/index.md:34
 msgid "UPM(v0.81~)"
 msgstr ""
+
+#~ msgid "v0.79～: Unity-2019.4"
+#~ msgstr ""
 

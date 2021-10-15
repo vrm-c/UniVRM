@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: UniVRM Programming Document \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-15 15:45+0900\n"
+"POT-Creation-Date: 2021-10-15 16:47+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,62 +22,48 @@ msgstr ""
 msgid "Release"
 msgstr ""
 
-#: ../../release/index.md
-msgid "バージョン"
-msgstr "Version"
+#~ msgid "バージョン"
+#~ msgstr "Version"
 
-#: ../../release/index.md
-msgid "お勧め"
-msgstr "Recommended"
+#~ msgid "お勧め"
+#~ msgstr "Recommended"
 
-#: ../../release/index.md
-msgid "Unity"
-msgstr ""
+#~ msgid "Unity"
+#~ msgstr ""
 
-#: ../../release/index.md
-msgid "{doc}`v0.79～ <079/index>`"
-msgstr ""
+#~ msgid "{doc}`v0.79～ <079/index>`"
+#~ msgstr ""
 
-#: ../../release/index.md
-msgid "最新版"
-msgstr "Latest version"
+#~ msgid "最新版"
+#~ msgstr "Latest version"
 
-#: ../../release/index.md
-msgid "Unity-2019.4"
-msgstr ""
+#~ msgid "Unity-2019.4"
+#~ msgstr ""
 
-#: ../../release/index.md
-msgid "特に問題が無ければこれ。"
-msgstr "Default"
+#~ msgid "特に問題が無ければこれ。"
+#~ msgstr "Default"
 
-#: ../../release/index.md
-msgid "{doc}`v0.68～v0.78 <068/index>`"
-msgstr ""
+#~ msgid "{doc}`v0.68～v0.78 <068/index>`"
+#~ msgstr ""
 
-#: ../../release/index.md
-msgid "Unity-2018.4"
-msgstr ""
+#~ msgid "Unity-2018.4"
+#~ msgstr ""
 
-#: ../../release/index.md
-msgid "開発版。最新版を使ってください。"
-msgstr "Development version. Please use latest"
+#~ msgid "開発版。最新版を使ってください。"
+#~ msgstr "Development version. Please use latest"
 
-#: ../../release/index.md
-msgid "{doc}`v0.56～v0.67 <056/index>`"
-msgstr ""
+#~ msgid "{doc}`v0.56～v0.67 <056/index>`"
+#~ msgstr ""
 
-#: ../../release/index.md
-msgid "v0.66"
-msgstr ""
+#~ msgid "v0.66"
+#~ msgstr ""
 
-#: ../../release/index.md
-msgid "{doc}`～v0.55 <055/index>`"
-msgstr ""
+#~ msgid "{doc}`～v0.55 <055/index>`"
+#~ msgstr ""
 
-#: ../../release/index.md
-msgid "v0.55"
-msgstr ""
+#~ msgid "v0.55"
+#~ msgstr ""
 
-#: ../../release/index.md
-msgid "Unity-5.6(.NET3.5)"
-msgstr ""
+#~ msgid "Unity-5.6(.NET3.5)"
+#~ msgstr ""
+
