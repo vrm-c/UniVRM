@@ -218,6 +218,8 @@ namespace UniVRM10
             gltfExporter.FixName(Storage.Gltf);
         }
 
+        public const string VRM_SPEC_VERSION = "1.0-beta";
+
         /// <summary>
         /// VRMコンポーネントのエクスポート
         /// </summary>
@@ -247,6 +249,7 @@ namespace UniVRM10
 
             var vrm = new UniGLTF.Extensions.VRMC_vrm.VRMC_vrm
             {
+                SpecVersion = VRM_SPEC_VERSION,
                 Humanoid = new UniGLTF.Extensions.VRMC_vrm.Humanoid
                 {
                     HumanBones = new UniGLTF.Extensions.VRMC_vrm.HumanBones
