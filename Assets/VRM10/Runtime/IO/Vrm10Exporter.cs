@@ -11,6 +11,8 @@ namespace UniVRM10
 {
     public class Vrm10Exporter : IDisposable
     {
+        public const string VRM_SPEC_VERSION = "1.0-beta";
+
         public readonly Vrm10Storage Storage = new Vrm10Storage();
 
         public readonly string VrmExtensionName = "VRMC_vrm";
@@ -218,7 +220,6 @@ namespace UniVRM10
             gltfExporter.FixName(Storage.Gltf);
         }
 
-        public const string VRM_SPEC_VERSION = "1.0-beta";
 
         /// <summary>
         /// VRMコンポーネントのエクスポート
