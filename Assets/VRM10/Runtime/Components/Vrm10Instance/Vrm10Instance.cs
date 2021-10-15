@@ -57,17 +57,16 @@ namespace UniVRM10
 
         Vrm10InstanceRuntime m_runtime;
 
-        /// <summary>
-        /// delay new Vrm10InstanceRuntime
-        /// </summary>
-        /// <returns></returns>
-        Vrm10InstanceRuntime GetOrCreate()
+        public Vrm10InstanceRuntime Runtime
         {
-            if (m_runtime == null)
+            get
             {
-                m_runtime = new Vrm10InstanceRuntime(this);
+                if (m_runtime == null)
+                {
+                    m_runtime = new Vrm10InstanceRuntime(this);
+                }
+                return m_runtime;
             }
-            return m_runtime;
         }
 
         void Start()
@@ -85,7 +84,7 @@ namespace UniVRM10
         {
             if (UpdateType == UpdateTypes.Update)
             {
-                GetOrCreate().Process();
+                Runtime.Process();
             }
         }
 
@@ -93,13 +92,13 @@ namespace UniVRM10
         {
             if (UpdateType == UpdateTypes.LateUpdate)
             {
-                GetOrCreate().Process();
+                Runtime.Process();
             }
         }
 
         private void OnDestroy()
         {
-            GetOrCreate().Dispose();
+            Runtime.Dispose();
         }
     }
 }
