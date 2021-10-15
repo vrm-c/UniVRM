@@ -57,6 +57,9 @@ namespace UniVRM10
 
         Vrm10InstanceRuntime m_runtime;
 
+        /// <summary>
+        /// ランタイム実行時に生成されるインスタンス
+        /// </summary>
         public Vrm10InstanceRuntime Runtime
         {
             get
