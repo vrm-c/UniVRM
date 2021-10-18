@@ -21,8 +21,8 @@ def gen(version: str, hash: str):
 > From `v0.87.0`, UniGLTF_VRMShaders and UniVRM have been merged into one.
 
 ReleaseNote
-* [日本語](https://vrm-c.github.io/UniVRM/ja/release/079/{version}.html)
-* [English](https://vrm-c.github.io/UniVRM/en/release/079/{version}.html)
+* [日本語](https://vrm-c.github.io/UniVRM/ja/release/079/v{version}.html)
+* [English](https://vrm-c.github.io/UniVRM/en/release/079/v{version}.html)
 
 ## other unitypackage
 ### UniVRM API sample
