@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>v0.82.0: Road to 1.0. Material Customization for URP &mdash; UniVRM Programming Document  documentation</title>
+  <title>v0.87.0: 1.0準備 &mdash; UniVRM Programming Document  documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -18,8 +18,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="v0.83.0: Road to 1.0" href="v0.83.0.html" />
-    <link rel="prev" title="v0.81.0: Road to 1.0. Reorganize unitypackage" href="v0.81.0.html" /> 
+    <link rel="next" title="v0.68-v0.78 (Unity-2018.4) Development" href="../068/index.html" />
+    <link rel="prev" title="v0.86.0: Road to 1.0. [1.0]FastSpringBone" href="v0.86.0.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -27,7 +27,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-<a href="../../../ja/release/079/v0.82.0.html">日本語</a> [English]
+<a href="../../../ja/release/079/v0.87.0.html">日本語</a> [English]
 
             <a href="../../index.html" class="icon icon-home"> UniVRM Programming Document
           </a>
@@ -52,12 +52,12 @@
 <li class="toctree-l4"><a class="reference internal" href="v0.79.0.html">v0.79.0: Road to 1.0</a></li>
 <li class="toctree-l4"><a class="reference internal" href="v0.80.0.html">v0.80.0: Road to 1.0. Support Unity-2019.4LTS+</a></li>
 <li class="toctree-l4"><a class="reference internal" href="v0.81.0.html">v0.81.0: Road to 1.0. Reorganize unitypackage</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">v0.82.0: Road to 1.0. Material Customization for URP</a></li>
+<li class="toctree-l4"><a class="reference internal" href="v0.82.0.html">v0.82.0: Road to 1.0. Material Customization for URP</a></li>
 <li class="toctree-l4"><a class="reference internal" href="v0.83.0.html">v0.83.0: Road to 1.0</a></li>
 <li class="toctree-l4"><a class="reference internal" href="v0.84.0.html">v0.84.0: Road to 1.0. Restore glTF import menu</a></li>
 <li class="toctree-l4"><a class="reference internal" href="v0.85.0.html">v0.85.0: Road to 1.0. [0.x]FastSpringBone</a></li>
 <li class="toctree-l4"><a class="reference internal" href="v0.86.0.html">v0.86.0: Road to 1.0. [1.0]FastSpringBone</a></li>
-<li class="toctree-l4"><a class="reference internal" href="v0.87.0.html">v0.87.0: 1.0準備</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">v0.87.0: 1.0準備</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="index.html#v0-81">パッケージ(v0.81~)</a></li>
@@ -87,9 +87,9 @@
       <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="../index.html">Release</a> &raquo;</li>
           <li><a href="index.html">v0.79～ (Unity-2019.4) Latest Version</a> &raquo;</li>
-      <li>v0.82.0: Road to 1.0. Material Customization for URP</li>
+      <li>v0.87.0: 1.0準備</li>
       <li class="wy-breadcrumbs-aside">
-              <a href="https://github.com/vrm-c/UniVRM/blob/master/docs/release/079/v0.82.0.md" class="fa fa-github"> Edit on GitHub</a>
+              <a href="https://github.com/vrm-c/UniVRM/blob/master/docs/release/079/v0.87.0.md" class="fa fa-github"> Edit on GitHub</a>
       </li>
   </ul>
   <hr/>
@@ -97,46 +97,51 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section class="tex2jax_ignore mathjax_ignore" id="v0-82-0-1-0-urp-material">
-<h1>v0.82.0: Road to 1.0. Material Customization for URP<a class="headerlink" href="#v0-82-0-1-0-urp-material" title="Permalink to this headline"></a></h1>
-<section id="v0-82-0-2021-09-01">
-<h2><a class="reference external" href="https://github.com/vrm-c/UniVRM/tree/v0.82.0">v0.82.0</a> (2021-09-01)<a class="headerlink" href="#v0-82-0-2021-09-01" title="Permalink to this headline"></a></h2>
-<ul class="simple">
-<li><p><a class="reference external" href="http://github.com/vrm-c/UniVRM/releases/tag/v0.82.0">0.82.0</a></p></li>
-<li><p><a class="reference external" href="https://github.com/vrm-c/UniVRM/milestone/44?closed=1">milestone</a></p></li>
-<li><p><a class="reference external" href="https://github.com/vrm-c/UniVRM/compare/v0.81.0...v0.82.0">Full Changelog</a></p></li>
-<li><p>glb の import, URP API</p></li>
-</ul>
-</section>
-<section id="urp-universal-render-pipeline">
-<h2>URP (Universal Render Pipeline)<a class="headerlink" href="#urp-universal-render-pipeline" title="Permalink to this headline"></a></h2>
-<p>Experimental Features: Add MaterialGenerator customization point (for URP).</p>
-<p><code class="docutils literal notranslate"><span class="pre">TODO:</span></code> Documents for app developers</p>
-<ul class="simple">
-<li><p>Add MaterialGenerator customization point (for URP) <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1177">#1177</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
-</ul>
-</section>
+  <section class="tex2jax_ignore mathjax_ignore" id="v0-87-0-1-0">
+<h1>v0.87.0: 1.0準備<a class="headerlink" href="#v0-87-0-1-0" title="Permalink to this headline"></a></h1>
 <section id="id1">
-<h2>[1.0]<a class="headerlink" href="#id1" title="Permalink to this headline"></a></h2>
+<h2>1.0<a class="headerlink" href="#id1" title="Permalink to this headline"></a></h2>
 <ul class="simple">
-<li><p>[1.0]extract の一覧に matcap など一部のテクスチャーが一覧されない <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/1171">#1171</a></p></li>
-<li><p>[1.0] MToon10でエクスポートするとStandardになってしまう <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/1164">#1164</a></p></li>
-<li><p>[1.0] Vrm-1.0 の Texture 列挙を修正 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1174">#1174</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
-<li><p>SubAssetでも中を見れるように、デフォルトで AdvancedMode にする <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1168">#1168</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
-<li><p>play mode の expression preview <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1169">#1169</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1317">#1317</a>] 1.0-beta</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1314">#1314</a>] FastSpringBone1.0の内部構造を動的に変更するための仕組みを追加しました</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1312">#1312</a>] [1.0] Scale 対応</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1308">#1308</a>] [1.0] ushort, byte 型の indices を持つモデルのマイグレーション</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1306">#1306</a>] Hierarchyの構築が終わるまでVrm10Instanceの有効化を遅延させる</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1305">#1305</a>] [1.0] Migration の修正</p></li>
 </ul>
 </section>
-<section id="changelog">
-<h2>Other Changes<a class="headerlink" href="#changelog" title="Permalink to this headline"></a></h2>
+<section id="unitypackage">
+<h2>unitypackage<a class="headerlink" href="#unitypackage" title="Permalink to this headline"></a></h2>
 <ul class="simple">
-<li><p>Sampleの構成 <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/1068">#1068</a></p></li>
-<li><p>Error Message <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1180">#1180</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
-<li><p>UniVRM-0.82.0 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1179">#1179</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
-<li><p>add VRM10AutoExpression for VRM10Viewer. move test_motion.txt <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1173">#1173</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
-<li><p>simple <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1172">#1172</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
-<li><p>Fix10/mtoon export/import <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1167">#1167</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
-<li><p>Fix/readme etc <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1161">#1161</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
-<li><p>UniVRM-0.81.0 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1157">#1157</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1320">#1320</a>] unity_package</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1309">#1309</a>] copy Samples~ to under Assets</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1299">#1299</a>] [Maintenance] Samples を Samples~ に移動</p></li>
+</ul>
+</section>
+<section id="doc">
+<h2>doc<a class="headerlink" href="#doc" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1313">#1313</a>] Doc/update 20211015</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1302">#1302</a>] rtdテンプレート向けの言語スイッチリンク</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1301">#1301</a>] update release notes</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1298">#1298</a>] Doc/update theme</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1297">#1297</a>] Doc/reelease page</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1292">#1292</a>] Put English version in msgstr</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1291">#1291</a>] update release note v0.86.0(en)</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1290">#1290</a>] 新しい順に並べ替え</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1289">#1289</a>] Doc/release v0.86.0</p></li>
+</ul>
+</section>
+<section id="other">
+<h2>other<a class="headerlink" href="#other" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1318">#1318</a>] Trim whitespaces at generated object field serialization code.</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1315">#1315</a>] At importing, Unity asset name is fixed with ignore-case comparison.</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1316">#1316</a>] Quaternion.AngleAxisの単位が間違えていたことによるバグを修正</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1311">#1311</a>] Implements asynchronous AwaitCaller at runtime.</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1310">#1310</a>] UniVRM-0.87.0</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1307">#1307</a>] VRMShaders.GLTF.IO 以下のディレクトリ整理</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1300">#1300</a>] fix warnings</p></li>
 </ul>
 </section>
 </section>
@@ -145,8 +150,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="v0.81.0.html" class="btn btn-neutral float-left" title="v0.81.0: Road to 1.0. Reorganize unitypackage" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="v0.83.0.html" class="btn btn-neutral float-right" title="v0.83.0: Road to 1.0" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="v0.86.0.html" class="btn btn-neutral float-left" title="v0.86.0: Road to 1.0. [1.0]FastSpringBone" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../068/index.html" class="btn btn-neutral float-right" title="v0.68-v0.78 (Unity-2018.4) Development" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
