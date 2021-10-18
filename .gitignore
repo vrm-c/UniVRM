@@ -55,4 +55,4 @@ Assets/Private.meta
 
 # sphinx build
 public
-
+*.pyc
