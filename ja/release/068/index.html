@@ -20,7 +20,7 @@
     <link rel="index" title="索引" href="../../genindex.html" />
     <link rel="search" title="検索" href="../../search.html" />
     <link rel="next" title="v0.68.0: ImporterContext, ScriptedImporter(glb/gltf), remove DepthFirstScheduler" href="v0.68.0.html" />
-    <link rel="prev" title="v0.87.0: 1.0準備" href="../079/v0.87.0.html" /> 
+    <link rel="prev" title="v0.67.0: UniJson 単純化" href="../056/v0.67.0.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -48,7 +48,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../../vrm0/index.html">VRM</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../vrm1/index.html">VRM-1.0(β)</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">Release</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../079/index.html">v0.79～ (Unity-2019.4) 最新版をご利用ください</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../unitypackage.html">バージョン毎の UnityPackage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../055/index.html">～v0.55 (Unity-5.6 .NET-3.5) 推奨バージョンv0.55</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../056/index.html">v0.56～v0.67 (Unity-2018.4) 推奨バージョンv0.66</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">v0.68～v0.78 (Unity-2018.4) 開発版</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#releasenote">ReleaseNote</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="v0.68.0.html">v0.68.0: ImporterContext, ScriptedImporter(glb/gltf), remove DepthFirstScheduler</a></li>
@@ -67,8 +69,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#download">Download</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../056/index.html">v0.56～v0.67 (Unity-2018.4) 推奨バージョンv0.66</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../055/index.html">～v0.55 (Unity-5.6 .NET-3.5) 推奨バージョンv0.55</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../079/index.html">v0.79～ (Unity-2019.4) 最新版をご利用ください</a></li>
 </ul>
 </li>
 </ul>
@@ -139,7 +140,7 @@
 </thead>
 <tbody>
 <tr class="row-even"><td><p></p></td>
-<td><p><a class="reference external" href="http://github.com/vrm-c/UniVRM/releases/tag/v0.68.0">0.68.0</a> <a class="reference external" href="https://github.com/vrm-c/UniVRM/milestone/30?closed=1">milestone</a></p></td>
+<td><p><a class="reference external" href="http://github.com/vrm-c/UniVRM/releases/tag/v0.68.0">0.68.0</a> <a class="reference external" href="https://github.com/vrm-c/UniVRM/milestone/30?closed=1">Milestone</a></p></td>
 <td><p><a class="footnote-reference brackets" href="#material-import" id="id1">1</a> <a class="footnote-reference brackets" href="#import-bug" id="id2">2</a></p></td>
 <td><p>glb/gltf 座標軸オプション。ImporterContext API</p></td>
 </tr>
@@ -154,7 +155,7 @@
 <td><p></p></td>
 </tr>
 <tr class="row-odd"><td><p>03/22</p></td>
-<td><p><a class="reference external" href="http://github.com/vrm-c/UniVRM/releases/tag/v0.69.0">0.69.0</a> <a class="reference external" href="https://github.com/vrm-c/UniVRM/milestone/31?closed=1">milestone</a></p></td>
+<td><p><a class="reference external" href="http://github.com/vrm-c/UniVRM/releases/tag/v0.69.0">0.69.0</a> <a class="reference external" href="https://github.com/vrm-c/UniVRM/milestone/31?closed=1">Milestone</a></p></td>
 <td><p><a class="footnote-reference brackets" href="#metallicocclusion" id="id4">3</a><a class="footnote-reference brackets" href="#encodetopng" id="id5">4</a> <a class="footnote-reference brackets" href="#notunique" id="id6">5</a></p></td>
 <td><p>SmoothTexture 変換の修正<a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/388">#388</a>, Unity2020対応</p></td>
 </tr>
@@ -164,47 +165,47 @@
 <td><p></p></td>
 </tr>
 <tr class="row-odd"><td><p>03/31</p></td>
-<td><p><a class="reference external" href="http://github.com/vrm-c/UniVRM/releases/tag/v0.70.0">0.70.0</a> <a class="reference external" href="https://github.com/vrm-c/UniVRM/milestone/32?closed=1">milestone</a></p></td>
+<td><p><a class="reference external" href="http://github.com/vrm-c/UniVRM/releases/tag/v0.70.0">0.70.0</a> <a class="reference external" href="https://github.com/vrm-c/UniVRM/milestone/32?closed=1">Milestone</a></p></td>
 <td><p><a class="footnote-reference brackets" href="#metallicocclusion" id="id9">3</a></p></td>
 <td><p>impl <code class="docutils literal notranslate"><span class="pre">WEIGHTS_0</span></code> not float4</p></td>
 </tr>
 <tr class="row-even"><td><p>04/05</p></td>
-<td><p><a class="reference external" href="http://github.com/vrm-c/UniVRM/releases/tag/v0.71.0">0.71.0</a> <a class="reference external" href="https://github.com/vrm-c/UniVRM/milestone/33?closed=1">milestone</a></p></td>
+<td><p><a class="reference external" href="http://github.com/vrm-c/UniVRM/releases/tag/v0.71.0">0.71.0</a> <a class="reference external" href="https://github.com/vrm-c/UniVRM/milestone/33?closed=1">Milestone</a></p></td>
 <td><p>IOS build</p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-odd"><td><p>04/13</p></td>
-<td><p><a class="reference external" href="http://github.com/vrm-c/UniVRM/releases/tag/v0.72.0">0.72.0</a> <a class="reference external" href="https://github.com/vrm-c/UniVRM/milestone/34?closed=1">milestone</a></p></td>
+<td><p><a class="reference external" href="http://github.com/vrm-c/UniVRM/releases/tag/v0.72.0">0.72.0</a> <a class="reference external" href="https://github.com/vrm-c/UniVRM/milestone/34?closed=1">Milestone</a></p></td>
 <td><p></p></td>
 <td><p>頂点バッファを分割するオプション。T-Pose</p></td>
 </tr>
 <tr class="row-even"><td><p>04/22</p></td>
-<td><p><a class="reference external" href="https://github.com/vrm-c/UniVRM/releases/tag/v0.73.0">0.73.0</a> <a class="reference external" href="https://github.com/vrm-c/UniVRM/milestone/35?closed=1">milestone</a></p></td>
+<td><p><a class="reference external" href="https://github.com/vrm-c/UniVRM/releases/tag/v0.73.0">0.73.0</a> <a class="reference external" href="https://github.com/vrm-c/UniVRM/milestone/35?closed=1">Milestone</a></p></td>
 <td><p></p></td>
 <td><p>* <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/897">OtherPermissionUrl欄の修正</a> * <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/894">正規化するときにBlendShapeを使うLookAtがExportされない</a></p></td>
 </tr>
 <tr class="row-odd"><td><p>05/12</p></td>
-<td><p><a class="reference external" href="https://github.com/vrm-c/UniVRM/releases/tag/v0.74.0">0.74.0</a> <a class="reference external" href="https://github.com/vrm-c/UniVRM/milestone/36?closed=1">milestone</a></p></td>
+<td><p><a class="reference external" href="https://github.com/vrm-c/UniVRM/releases/tag/v0.74.0">0.74.0</a> <a class="reference external" href="https://github.com/vrm-c/UniVRM/milestone/36?closed=1">Milestone</a></p></td>
 <td><p></p></td>
 <td><p>* <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/922">Runtime ロード後の　SpringBone　スケーリング挙動の修正</a></p></td>
 </tr>
 <tr class="row-even"><td><p>05/25</p></td>
-<td><p><a class="reference external" href="https://github.com/vrm-c/UniVRM/releases/tag/v0.75.0">0.75.0</a> <a class="reference external" href="https://github.com/vrm-c/UniVRM/milestone/37?closed=1">milestone</a></p></td>
+<td><p><a class="reference external" href="https://github.com/vrm-c/UniVRM/releases/tag/v0.75.0">0.75.0</a> <a class="reference external" href="https://github.com/vrm-c/UniVRM/milestone/37?closed=1">Milestone</a></p></td>
 <td><p></p></td>
 <td><p>正規化時にLookAtのパラメーターが落ちてしまうのを修正</p></td>
 </tr>
 <tr class="row-odd"><td><p>06/08</p></td>
-<td><p><a class="reference external" href="https://github.com/vrm-c/UniVRM/releases/tag/v0.76.0">0.76.0</a> <a class="reference external" href="https://github.com/vrm-c/UniVRM/milestone/38?closed=1">milestone</a></p></td>
+<td><p><a class="reference external" href="https://github.com/vrm-c/UniVRM/releases/tag/v0.76.0">0.76.0</a> <a class="reference external" href="https://github.com/vrm-c/UniVRM/milestone/38?closed=1">Milestone</a></p></td>
 <td><p></p></td>
 <td><p>namespace MeshUtilityがUnityEditor.MeshUtility classと競合するのを修正</p></td>
 </tr>
 <tr class="row-even"><td><p>06/17</p></td>
-<td><p><a class="reference external" href="https://github.com/vrm-c/UniVRM/releases/tag/v0.77.0">0.77.0</a> <a class="reference external" href="https://github.com/vrm-c/UniVRM/milestone/39?closed=1">milestone</a></p></td>
+<td><p><a class="reference external" href="https://github.com/vrm-c/UniVRM/releases/tag/v0.77.0">0.77.0</a> <a class="reference external" href="https://github.com/vrm-c/UniVRM/milestone/39?closed=1">Milestone</a></p></td>
 <td><p></p></td>
 <td><p><a class="reference external" href="https://vrm-c.github.io/UniVRM/">API更新</a> https://github.com/vrm-c/UniVRM/issues/1022 https://github.com/vrm-c/UniVRM/issues/496</p></td>
 </tr>
 <tr class="row-odd"><td><p>06/23</p></td>
-<td><p><a class="reference external" href="https://github.com/vrm-c/UniVRM/releases/tag/v0.78.0">0.78.0</a> <a class="reference external" href="https://github.com/vrm-c/UniVRM/milestone/40?closed=1">milestone</a></p></td>
+<td><p><a class="reference external" href="https://github.com/vrm-c/UniVRM/releases/tag/v0.78.0">0.78.0</a> <a class="reference external" href="https://github.com/vrm-c/UniVRM/milestone/40?closed=1">Milestone</a></p></td>
 <td><p></p></td>
 <td><p>https://github.com/vrm-c/UniVRM/pull/1049</p></td>
 </tr>
@@ -235,7 +236,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../079/v0.87.0.html" class="btn btn-neutral float-left" title="v0.87.0: 1.0準備" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../056/v0.67.0.html" class="btn btn-neutral float-left" title="v0.67.0: UniJson 単純化" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="v0.68.0.html" class="btn btn-neutral float-right" title="v0.68.0: ImporterContext, ScriptedImporter(glb/gltf), remove DepthFirstScheduler" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

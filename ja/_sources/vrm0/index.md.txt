@@ -3,6 +3,7 @@
 ```{toctree}
 :maxdepth: 1
 
+sample/index
 0_87_runtime_import
 0_82_runtime_import
 0_79_runtime_import
@@ -19,10 +20,3 @@ firstperson
 
 * 🚧 materialGenerator
 * 🚧 firstPerson
-
-## Samples
-
-- SimpleViewer
-- RuntimeExporerSample
-- FirstPersonSample
-- AnimationBridgeSample

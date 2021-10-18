@@ -1,7 +1,7 @@
 # v0.57.0: ボーン名重複の自動リネーム
 
-* commit: https://github.com/vrm-c/UniVRM/releases/tag/v0.57.0
-* milestone: https://github.com/vrm-c/UniVRM/milestone/16?closed=1
+* [Release](https://github.com/vrm-c/UniVRM/releases/tag/v0.57.0)
+* [Milestone](https://github.com/vrm-c/UniVRM/milestone/16?closed=1)
 
 [Full Changelog](https://github.com/vrm-c/UniVRM/compare/v0.56...v0.57.0)
 

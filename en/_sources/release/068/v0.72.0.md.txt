@@ -2,8 +2,8 @@
 
 ## [v0.72.0](https://github.com/vrm-c/UniVRM/tree/v0.72.0) (2021-04-13)
 
-* commit: https://github.com/vrm-c/UniVRM/releases/tag/v0.72.0
-* milestone: https://github.com/vrm-c/UniVRM/milestone/34?closed=1
+* [Release](https://github.com/vrm-c/UniVRM/releases/tag/v0.72.0)
+* [Milestone](https://github.com/vrm-c/UniVRM/milestone/34?closed=1)
 
 [Full Changelog](https://github.com/vrm-c/UniVRM/compare/v0.71.0...v0.72.0)
 

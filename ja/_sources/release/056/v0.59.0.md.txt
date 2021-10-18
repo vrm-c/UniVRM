@@ -1,7 +1,7 @@
 # v0.59.0
 
-* commit: https://github.com/vrm-c/UniVRM/releases/tag/v0.59.0
-* milestone: https://github.com/vrm-c/UniVRM/milestone/18?closed=1
+* [Release](https://github.com/vrm-c/UniVRM/releases/tag/v0.59.0)
+* [Milestone](https://github.com/vrm-c/UniVRM/milestone/18?closed=1)
 
 [Full Changelog](https://github.com/vrm-c/UniVRM/compare/v0.58.1...v0.59.0)
 

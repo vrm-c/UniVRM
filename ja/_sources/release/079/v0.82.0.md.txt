@@ -1,8 +1,8 @@
 # v0.82.0: 1.0準備, URP 向け Material置き換え機能
 
 ## [v0.82.0](https://github.com/vrm-c/UniVRM/tree/v0.82.0) (2021-09-01)
-* [0.82.0](http://github.com/vrm-c/UniVRM/releases/tag/v0.82.0)
-* [milestone](https://github.com/vrm-c/UniVRM/milestone/44?closed=1)
+* [Release](http://github.com/vrm-c/UniVRM/releases/tag/v0.82.0)
+* [Milestone](https://github.com/vrm-c/UniVRM/milestone/44?closed=1)
 * [Full Changelog](https://github.com/vrm-c/UniVRM/compare/v0.81.0...v0.82.0)
 * glb の import, URP API
 
