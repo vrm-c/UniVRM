@@ -23,11 +23,11 @@ msgid "v0.61.0: シリアライザーを reflection からコード生成に変�
 msgstr ""
 
 #: ../../release/056/v0.61.0.md:3
-msgid "commit: https://github.com/vrm-c/UniVRM/releases/tag/v0.61.0"
+msgid "[Release](https://github.com/vrm-c/UniVRM/releases/tag/v0.61.0)"
 msgstr ""
 
 #: ../../release/056/v0.61.0.md:4
-msgid "milestone: https://github.com/vrm-c/UniVRM/milestone/20?closed=1"
+msgid "[Milestone](https://github.com/vrm-c/UniVRM/milestone/20?closed=1)"
 msgstr ""
 
 #: ../../release/056/v0.61.0.md:6

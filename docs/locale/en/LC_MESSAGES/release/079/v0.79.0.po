@@ -31,7 +31,7 @@ msgid "[0.79.0](http://github.com/vrm-c/UniVRM/releases/tag/v0.79.0)"
 msgstr ""
 
 #: ../../release/079/v0.79.0.md:6
-msgid "[milestone](https://github.com/vrm-c/UniVRM/milestone/41?closed=1)"
+msgid "[Milestone](https://github.com/vrm-c/UniVRM/milestone/41?closed=1)"
 msgstr ""
 
 #: ../../release/079/v0.79.0.md:7
@@ -295,10 +295,10 @@ msgid ""
 "([Santarh](https://github.com/Santarh))"
 msgstr ""
 
-#~ msgid "commit: https://github.com/vrm-c/UniVRM/releases/tag/v0.79.0"
+#~ msgid "[Release](https://github.com/vrm-c/UniVRM/releases/tag/v0.79.0)"
 #~ msgstr ""
 
-#~ msgid "milestone: https://github.com/vrm-c/UniVRM/milestone/41?closed=1"
+#~ msgid "[Milestone](https://github.com/vrm-c/UniVRM/milestone/41?closed=1)"
 #~ msgstr ""
 
 #~ msgid "ToDo:"

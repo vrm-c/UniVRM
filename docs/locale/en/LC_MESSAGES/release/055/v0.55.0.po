@@ -35,7 +35,7 @@ msgid "<https://github.com/vrm-c/UniVRM/releases/tag/v0.55.0>"
 msgstr ""
 
 #: ../../release/055/v0.55.0.md:8
-msgid "[milestone](https://github.com/vrm-c/UniVRM/milestone/14?closed=1)"
+msgid "[Milestone](https://github.com/vrm-c/UniVRM/milestone/14?closed=1)"
 msgstr ""
 
 #: ../../release/055/v0.55.0.md:10
@@ -88,10 +88,10 @@ msgstr ""
 msgid "GeneratedSerializer 使用時に、KHR_materials_unlit 拡張がエクスポートされていなかった問題の修正"
 msgstr ""
 
-#~ msgid "commit: https://github.com/vrm-c/UniVRM/releases/tag/v0.55.0"
+#~ msgid "[Release](https://github.com/vrm-c/UniVRM/releases/tag/v0.55.0)"
 #~ msgstr ""
 
-#~ msgid "milestone: https://github.com/vrm-c/UniVRM/milestone/14?closed=1"
+#~ msgid "[Milestone](https://github.com/vrm-c/UniVRM/milestone/14?closed=1)"
 #~ msgstr ""
 
 #~ msgid "Changelog"

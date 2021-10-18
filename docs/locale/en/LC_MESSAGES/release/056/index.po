@@ -121,7 +121,7 @@ msgstr ""
 #: ../../release/056/index.md:5
 msgid ""
 "[0.61.0](http://github.com/vrm-c/UniVRM/releases/tag/v0.61.0) "
-"[milestone](https://github.com/vrm-c/UniVRM/milestone/20?closed=1)"
+"[Milestone](https://github.com/vrm-c/UniVRM/milestone/20?closed=1)"
 msgstr ""
 
 #: ../../release/056/index.md:5
@@ -139,7 +139,7 @@ msgstr ""
 #: ../../release/056/index.md:5
 msgid ""
 "[0.62.0](http://github.com/vrm-c/UniVRM/releases/tag/v0.62.0) "
-"[milestone](https://github.com/vrm-c/UniVRM/milestone/21?closed=1)"
+"[Milestone](https://github.com/vrm-c/UniVRM/milestone/21?closed=1)"
 msgstr ""
 
 #: ../../release/056/index.md:5
@@ -153,7 +153,7 @@ msgstr ""
 #: ../../release/056/index.md:5
 msgid ""
 "[0.63.0](http://github.com/vrm-c/UniVRM/releases/tag/v0.63.0) "
-"[milestone](https://github.com/vrm-c/UniVRM/milestone/25?closed=1)"
+"[Milestone](https://github.com/vrm-c/UniVRM/milestone/25?closed=1)"
 msgstr ""
 
 #: ../../release/056/index.md:5
@@ -195,7 +195,7 @@ msgstr ""
 #: ../../release/056/index.md:5
 msgid ""
 "[0.64.0](http://github.com/vrm-c/UniVRM/releases/tag/v0.64.0) "
-"[milestone](https://github.com/vrm-c/UniVRM/milestone/23?closed=1)"
+"[Milestone](https://github.com/vrm-c/UniVRM/milestone/23?closed=1)"
 msgstr ""
 
 #: ../../release/056/index.md:5
@@ -225,7 +225,7 @@ msgstr ""
 #: ../../release/056/index.md:5
 msgid ""
 "[0.65.1](http://github.com/vrm-c/UniVRM/releases/tag/v0.65.1) "
-"[milestone](https://github.com/vrm-c/UniVRM/milestone/28?closed=1)"
+"[Milestone](https://github.com/vrm-c/UniVRM/milestone/28?closed=1)"
 msgstr ""
 
 #: ../../release/056/index.md:5
@@ -235,7 +235,7 @@ msgstr ""
 #: ../../release/056/index.md:5
 msgid ""
 "[0.65.2](http://github.com/vrm-c/UniVRM/releases/tag/v0.65.2) "
-"[milestone](https://github.com/vrm-c/UniVRM/milestone/29?closed=1)"
+"[Milestone](https://github.com/vrm-c/UniVRM/milestone/29?closed=1)"
 msgstr ""
 
 #: ../../release/056/index.md:5
@@ -253,7 +253,7 @@ msgstr ""
 #: ../../release/056/index.md:5
 msgid ""
 "[0.66.0](http://github.com/vrm-c/UniVRM/releases/tag/v0.66.0) "
-"[milestone](https://github.com/vrm-c/UniVRM/milestone/26?closed=1)"
+"[Milestone](https://github.com/vrm-c/UniVRM/milestone/26?closed=1)"
 msgstr ""
 
 #: ../../release/056/index.md:5
@@ -267,7 +267,7 @@ msgstr ""
 #: ../../release/056/index.md:5
 msgid ""
 "[0.67.0](http://github.com/vrm-c/UniVRM/releases/tag/v0.67.0) "
-"[milestone](https://github.com/vrm-c/UniVRM/milestone/27?closed=1)"
+"[Milestone](https://github.com/vrm-c/UniVRM/milestone/27?closed=1)"
 msgstr ""
 
 #: ../../release/056/index.md:5
