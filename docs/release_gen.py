@@ -15,22 +15,22 @@ def gen(version: str, hash: str):
 # Download
 
 * for `Unity-2019.4.LTS` or later
-* [UniVRM-{version_hash}.unitypackage](https://github.com/vrm-c/UniVRM/releases/download/{version}/UniVRM-{version_hash}.unitypackage)
+* [UniVRM-{version_hash}.unitypackage](https://github.com/vrm-c/UniVRM/releases/download/v{version}/UniVRM-{version_hash}.unitypackage)
 
 > `v0.87.0` から UniGLTF_VRMShaders と UniVRM が合体してひとつになりました。
 > From `v0.87.0`, UniGLTF_VRMShaders and UniVRM have been merged into one.
 
 ReleaseNote
-* [日本語](https://vrm-c.github.io/UniVRM/ja/release/079/{version}.html)
-* [English](https://vrm-c.github.io/UniVRM/en/release/079/{version}.html)
+* [日本語](https://vrm-c.github.io/UniVRM/ja/release/079/v{version}.html)
+* [English](https://vrm-c.github.io/UniVRM/en/release/079/v{version}.html)
 
 ## other unitypackage
 ### UniVRM API sample
-* [UniVRM_Samples-{version_hash}.unitypackage](https://github.com/vrm-c/UniVRM/releases/download/{version}/UniVRM_Samples-{version_hash}.unitypackage)
+* [UniVRM_Samples-{version_hash}.unitypackage](https://github.com/vrm-c/UniVRM/releases/download/v{version}/UniVRM_Samples-{version_hash}.unitypackage)
 ### VRM-1.0Beta
-* [VRM-{version_hash}.unitypackage](https://github.com/vrm-c/UniVRM/releases/download/{version}/VRM-{version_hash}.unitypackage)
+* [VRM-{version_hash}.unitypackage](https://github.com/vrm-c/UniVRM/releases/download/v{version}/VRM-{version_hash}.unitypackage)
 ### VRM-1.0Beta API sample
-* [VRM_Samples-{version_hash}.unitypackage](https://github.com/vrm-c/UniVRM/releases/download/{version}/VRM_Samples-{version_hash}.unitypackage)
+* [VRM_Samples-{version_hash}.unitypackage](https://github.com/vrm-c/UniVRM/releases/download/v{version}/VRM_Samples-{version_hash}.unitypackage)
 
 |package|folder|
 |-|-|
