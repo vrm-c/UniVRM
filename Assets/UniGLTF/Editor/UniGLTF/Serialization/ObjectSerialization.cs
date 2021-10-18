@@ -90,11 +90,11 @@ public static $0 $2(JsonNode parsed)
 
         /// <summary>
         /// シリアライザーのコード生成
-        /// 
+        ///
         /// ObjectのFieldのみ値によって、出力するか否かの判定が必用。
-        /// 
+        ///
         /// 例: 空文字列は出力しない
-        /// 
+        ///
         /// </summary>
         /// <param name="writer"></param>
         /// <param name="callName"></param>
@@ -118,7 +118,7 @@ public static void {callName}(JsonFormatter f, {ValueType.Name} value)
                 }
                 writer.Write($@"
     if({f.Serialization.CreateSerializationCondition(valueName, f.Attribute)}{condition}){{
-        f.Key(""{f.Name}"");                
+        f.Key(""{f.Name}"");
         {f.Serialization.GenerateSerializerCall(f.FunctionName, valueName)};
     }}
 ");
