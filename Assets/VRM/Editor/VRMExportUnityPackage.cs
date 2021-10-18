@@ -190,26 +190,36 @@ namespace VRM.DevOnly.PackageExporter
         {
             {
                 var packages = new[]{
-                    // UniGLTF + VRMShaders
-                    new PackageInfo("UniGLTF_VRMShaders")
-                    {
-                        List = new []{
-                            new GlobList("Assets/VRMShaders"),
-                            new GlobList("Assets/UniGLTF"),
-                        }
-                    },
                     // VRM
                     new PackageInfo("UniVRM")
                     {
                         List = new []{
+                            new GlobList("Assets/VRMShaders"),
+                            new GlobList("Assets/UniGLTF"),
                             new GlobList("Assets/VRM"),
+                        }
+                    },
+                    // VRM_Samples
+                    new PackageInfo("UniVRM_Samples")
+                    {
+                        List = new []{
+                            new GlobList("Assets/VRM_Samples"),
                         }
                     },
                     // VRM-1.0
                     new PackageInfo("VRM")
                     {
                         List = new []{
+                            new GlobList("Assets/VRMShaders"),
+                            new GlobList("Assets/UniGLTF"),
                             new GlobList("Assets/VRM10"),
+                        }
+                    },
+                    // VRM-1.0_Samples
+                    new PackageInfo("VRM_Samples")
+                    {
+                        List = new []{
+                            new GlobList("Assets/VRM10_Samples"),
                         }
                     },
                 };
