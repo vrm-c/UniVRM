@@ -23,11 +23,11 @@ msgid "v0.54.0"
 msgstr ""
 
 #: ../../release/055/v0.54.0.md:3
-msgid "commit: https://github.com/vrm-c/UniVRM/releases/tag/v0.54.0"
+msgid "[Release](https://github.com/vrm-c/UniVRM/releases/tag/v0.54.0)"
 msgstr ""
 
 #: ../../release/055/v0.54.0.md:4
-msgid "milestone: https://github.com/vrm-c/UniVRM/milestone/13?closed=1"
+msgid "[Milestone](https://github.com/vrm-c/UniVRM/milestone/13?closed=1)"
 msgstr ""
 
 #: ../../release/055/v0.54.0.md:6

@@ -23,11 +23,11 @@ msgid "v0.58.0: テクスチャサイズの適正な考慮"
 msgstr ""
 
 #: ../../release/056/v0.58.0.md:3
-msgid "commit: https://github.com/vrm-c/UniVRM/releases/tag/v0.58.0"
+msgid "[Release](https://github.com/vrm-c/UniVRM/releases/tag/v0.58.0)"
 msgstr ""
 
 #: ../../release/056/v0.58.0.md:4
-msgid "milestone: https://github.com/vrm-c/UniVRM/milestone/17?closed=1"
+msgid "[Milestone](https://github.com/vrm-c/UniVRM/milestone/17?closed=1)"
 msgstr ""
 
 #: ../../release/056/v0.58.0.md:6

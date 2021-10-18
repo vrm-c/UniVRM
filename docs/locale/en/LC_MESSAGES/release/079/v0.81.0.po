@@ -35,7 +35,7 @@ msgid "[0.81.0](http://github.com/vrm-c/UniVRM/releases/tag/v0.81.0)"
 msgstr ""
 
 #: ../../release/079/v0.81.0.md:8
-msgid "[milestone](https://github.com/vrm-c/UniVRM/milestone/43?closed=1)"
+msgid "[Milestone](https://github.com/vrm-c/UniVRM/milestone/43?closed=1)"
 msgstr ""
 
 #: ../../release/079/v0.81.0.md:9
@@ -257,9 +257,9 @@ msgid ""
 "([ousttrue](https://github.com/ousttrue))"
 msgstr ""
 
-#~ msgid "commit: https://github.com/vrm-c/UniVRM/releases/tag/v0.81.0"
+#~ msgid "[Release](https://github.com/vrm-c/UniVRM/releases/tag/v0.81.0)"
 #~ msgstr ""
 
-#~ msgid "milestone: https://github.com/vrm-c/UniVRM/milestone/43?closed=1"
+#~ msgid "[Milestone](https://github.com/vrm-c/UniVRM/milestone/43?closed=1)"
 #~ msgstr ""
 
