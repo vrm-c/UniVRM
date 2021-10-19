@@ -28,9 +28,7 @@ namespace UniVRM10.FastSpringBones.System
             var colliderSpan = spring.colliderSpan;
             var logicSpan = spring.logicSpan;
 
-            for (var logicIndex = logicSpan.startIndex;
-                logicIndex < logicSpan.startIndex + logicSpan.count;
-                ++logicIndex)
+            for (var logicIndex = logicSpan.startIndex; logicIndex < logicSpan.startIndex + logicSpan.count; ++logicIndex)
             {
                 var logic = Logics[logicIndex];
                 var joint = Joints[logicIndex];
@@ -73,23 +71,20 @@ namespace UniVRM10.FastSpringBones.System
                 nextTail = headTransform.position + (nextTail - headTransform.position).normalized * logic.length;
 
                 // Collisionで移動
-                for (var colliderIndex = colliderSpan.startIndex;
-                    colliderIndex < colliderSpan.startIndex + colliderSpan.count;
-                    ++colliderIndex)
+                for (var colliderIndex = colliderSpan.startIndex; colliderIndex < colliderSpan.startIndex + colliderSpan.count; ++colliderIndex)
                 {
                     var collider = Colliders[colliderIndex];
                     var colliderTransform = Transforms[collider.transformIndex];
                     var worldPosition = colliderTransform.localToWorldMatrix.MultiplyPoint3x4(collider.offset);
                     var worldTail = colliderTransform.localToWorldMatrix.MultiplyPoint3x4(collider.tail);
-
+                    
                     switch (collider.colliderType)
                     {
                         case BlittableColliderType.Sphere:
-                            ResolveSphereCollision(joint, collider, worldPosition, headTransform, logic, ref nextTail);
+                            ResolveSphereCollision(joint, collider,  worldPosition, headTransform, logic, ref nextTail);
                             break;
                         case BlittableColliderType.Capsule:
-                            ResolveCapsuleCollision(worldTail, worldPosition, headTransform, joint, collider, logic,
-                                ref nextTail);
+                            ResolveCapsuleCollision(worldTail, worldPosition, headTransform, joint, collider, logic, ref nextTail);
                             break;
                     }
                 }
@@ -111,8 +106,7 @@ namespace UniVRM10.FastSpringBones.System
                 if (parentTransform.HasValue)
                 {
                     var parentLocalToWorldMatrix = parentTransform.Value.localToWorldMatrix;
-                    headTransform.localRotation =
-                        (Quaternion.Inverse(parentTransform.Value.rotation) * headTransform.rotation).normalized;
+                    headTransform.localRotation = (Quaternion.Inverse(parentTransform.Value.rotation) * headTransform.rotation).normalized;
                     headTransform.localToWorldMatrix =
                         parentLocalToWorldMatrix *
                         Matrix4x4.TRS(
@@ -185,8 +179,7 @@ namespace UniVRM10.FastSpringBones.System
                 var normal = (nextTail - worldPosition).normalized;
                 var posFromCollider = worldPosition + normal * (joint.radius + collider.radius);
                 // 長さをboneLengthに強制
-                nextTail = headTransform.position +
-                           (posFromCollider - headTransform.position).normalized * logic.length;
+                nextTail = headTransform.position + (posFromCollider - headTransform.position).normalized * logic.length;
             }
         }
     }
