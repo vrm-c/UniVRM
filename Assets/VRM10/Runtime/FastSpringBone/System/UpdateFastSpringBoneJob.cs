@@ -106,7 +106,7 @@ namespace UniVRM10.FastSpringBones.System
                 if (parentTransform.HasValue)
                 {
                     var parentLocalToWorldMatrix = parentTransform.Value.localToWorldMatrix;
-                    headTransform.localRotation = Quaternion.Inverse(parentTransform.Value.rotation) * headTransform.rotation;
+                    headTransform.localRotation = (Quaternion.Inverse(parentTransform.Value.rotation) * headTransform.rotation).normalized;
                     headTransform.localToWorldMatrix =
                         parentLocalToWorldMatrix *
                         Matrix4x4.TRS(
