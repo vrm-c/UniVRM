@@ -18,17 +18,17 @@ namespace VRM
         public static glTF Export(GltfExportSettings configuration, GameObject go, ITextureSerializer textureSerializer)
         {
             var gltf = new glTF();
-            using (var exporter = new VRMExporter(gltf))
+            using (var exporter = new VRMExporter(gltf, configuration))
             {
                 exporter.Prepare(go);
-                exporter.Export(configuration, textureSerializer);
+                exporter.Export(textureSerializer);
             }
             return gltf;
         }
 
         public readonly VRM.glTF_VRM_extensions VRM = new glTF_VRM_extensions();
 
-        public VRMExporter(glTF gltf) : base(gltf, new GltfExportSettings())
+        public VRMExporter(glTF gltf, GltfExportSettings exportSettings) : base(gltf, exportSettings)
         {
             gltf.extensionsUsed.Add(glTF_VRM_extensions.ExtensionName);
         }
