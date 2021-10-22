@@ -1,3 +1,4 @@
+using System;
 using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
@@ -106,7 +107,7 @@ namespace UniVRM10.FastSpringBones.System
                 if (parentTransform.HasValue)
                 {
                     var parentLocalToWorldMatrix = parentTransform.Value.localToWorldMatrix;
-                    headTransform.localRotation = (Quaternion.Inverse(parentTransform.Value.rotation) * headTransform.rotation).normalized;
+                    headTransform.localRotation = Normalize(Quaternion.Inverse(parentTransform.Value.rotation) * headTransform.rotation);
                     headTransform.localToWorldMatrix =
                         parentLocalToWorldMatrix *
                         Matrix4x4.TRS(
@@ -134,6 +135,15 @@ namespace UniVRM10.FastSpringBones.System
             }
         }
 
+        /// <summary>
+        /// BurstではMathがエラーを吐くため、内部でMathを呼ばないNormalizeを自前実装
+        /// </summary>
+        private static Quaternion Normalize(Quaternion q)
+        {
+            var num = (float)Math.Sqrt((float)Quaternion.Dot(q, q));
+            return num < float.Epsilon ? Quaternion.identity : new Quaternion(q.x / num, q.y / num, q.z / num, q.w / num);
+        }
+        
         private static void ResolveCapsuleCollision(
             Vector3 worldTail,
             Vector3 worldPosition,
