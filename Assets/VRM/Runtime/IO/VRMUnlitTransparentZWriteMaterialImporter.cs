@@ -52,7 +52,7 @@ namespace VRM
                 // Lit/Shade 色は黒として、Alpha のために Lit にテクスチャを設定する.
                 // Emissive 色は白として、テクスチャを設定する.
                 // また、元のシェーダのうちユーザが設定できるプロパティは Texture のみ.
-                var def = new MToonDefinition
+                MToon.Utils.SetMToonParametersToMaterial(unityMaterial, new MToonDefinition
                 {
                     Meta = new MetaDefinition
                     {
@@ -142,8 +142,7 @@ namespace VRM
                         UvAnimationScrollYSpeedValue = 0,
                         UvAnimationRotationSpeedValue = 0,
                     },
-                };
-                MToon.Utils.SetMToonParametersToMaterial(unityMaterial, def);
+                });
             });
 
             Debug.LogWarning($"fallback: {UnlitTransparentZWriteShaderName} => {MToon.Utils.ShaderName}");
