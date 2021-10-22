@@ -8,8 +8,8 @@ namespace VRM
 {
     public static class VRMUnlitTransparentZWriteMaterialImporter
     {
-        public const string ShaderName = "VRM/UnlitTransparentZWrite";
-        public const string MainTexturePropName = "_MainTex";
+        public const string UnlitTransparentZWriteShaderName = "VRM/UnlitTransparentZWrite";
+        public const string UnlitTransparentZWriteMainTexturePropName = "_MainTex";
 
         public static bool TryCreateParam(GltfData data, glTF_VRM_extensions vrm, int materialIdx, out MaterialDescriptor matDesc)
         {
@@ -25,7 +25,7 @@ namespace VRM
             }
 
             var vrmMaterial = vrm.materialProperties[materialIdx];
-            if (vrmMaterial.shader != ShaderName)
+            if (vrmMaterial.shader != UnlitTransparentZWriteShaderName)
             {
                 matDesc = default;
                 return false;
@@ -36,9 +36,9 @@ namespace VRM
 
             matDesc = new MaterialDescriptor(name, MToon.Utils.ShaderName);
 
-            if (vrmMaterial.textureProperties.ContainsKey(MainTexturePropName))
+            if (vrmMaterial.textureProperties.ContainsKey(UnlitTransparentZWriteMainTexturePropName))
             {
-                if (VRMMToonTextureImporter.TryGetTextureFromMaterialProperty(data, vrmMaterial, MainTexturePropName, out var texture))
+                if (VRMMToonTextureImporter.TryGetTextureFromMaterialProperty(data, vrmMaterial, UnlitTransparentZWriteMainTexturePropName, out var texture))
                 {
                     matDesc.TextureSlots.Add(MToon.Utils.PropMainTex, texture.Item2);
                 }
@@ -135,7 +135,7 @@ namespace VRM
                 MToon.Utils.SetMToonParametersToMaterial(unityMaterial, def);
             });
 
-            Debug.LogWarning($"fallback: {ShaderName} => {MToon.Utils.ShaderName}");
+            Debug.LogWarning($"fallback: {UnlitTransparentZWriteShaderName} => {MToon.Utils.ShaderName}");
             return true;
         }
     }
