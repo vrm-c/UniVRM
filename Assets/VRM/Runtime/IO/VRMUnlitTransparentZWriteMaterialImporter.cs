@@ -9,6 +9,7 @@ namespace VRM
     public static class VRMUnlitTransparentZWriteMaterialImporter
     {
         public const string ShaderName = "VRM/UnlitTransparentZWrite";
+        public const string MainTexturePropName = "_MainTex";
 
         public static bool TryCreateParam(GltfData data, glTF_VRM_extensions vrm, int materialIdx, out MaterialDescriptor matDesc)
         {
@@ -26,7 +27,6 @@ namespace VRM
             var vrmMaterial = vrm.materialProperties[materialIdx];
             if (vrmMaterial.shader != ShaderName)
             {
-                // fallback to gltf
                 matDesc = default;
                 return false;
             }
@@ -34,50 +34,108 @@ namespace VRM
             // use material.name, because material name may renamed in GltfParser.
             var name = data.GLTF.materials[materialIdx].name;
 
-            //
-            // import as MToon
-            //
             matDesc = new MaterialDescriptor(name, MToon.Utils.ShaderName);
 
-            matDesc.RenderQueue = MToon.Utils.GetRenderQueueRequirement(RenderMode.TransparentWithZWrite).DefaultValue;
-
-            // NOTE: Unlit のフォールバックなので、 Lit/Shade 色は黒とし、Emissive Factor に設定する.
-            // また、元のシェーダのうちユーザが設定できるプロパティは Texture のみ.
-            matDesc.Colors[MToon.Utils.PropColor] = Color.black;
-            matDesc.Colors[MToon.Utils.PropShadeColor] = Color.black;
-            matDesc.Colors[MToon.Utils.PropEmissionColor] = Color.white;
-
-            if (vrmMaterial.textureProperties.ContainsKey(MToon.Utils.PropMainTex))
+            if (vrmMaterial.textureProperties.ContainsKey(MainTexturePropName))
             {
-                if (VRMMToonTextureImporter.TryGetTextureFromMaterialProperty(data, vrmMaterial, MToon.Utils.PropMainTex, out var texture))
+                if (VRMMToonTextureImporter.TryGetTextureFromMaterialProperty(data, vrmMaterial, MainTexturePropName, out var texture))
                 {
-                    matDesc.TextureSlots.Add(MToon.Utils.PropEmissionMap, texture.Item2);
+                    matDesc.TextureSlots.Add(MToon.Utils.PropMainTex, texture.Item2);
                 }
             }
 
             matDesc.Actions.Add(unityMaterial =>
             {
-                // NOTE: ZWrite などの属性は util に設定させる.
-                var parameter = MToon.Utils.GetMToonParametersFromMaterial(unityMaterial);
-                parameter.Rendering.CullMode = CullMode.Back;
-                parameter.Rendering.RenderMode = RenderMode.TransparentWithZWrite;
-                parameter.Rendering.RenderQueueOffsetNumber = 0;
-                MToon.Utils.SetMToonParametersToMaterial(unityMaterial, parameter);
+                var mainTexture = (Texture2D) unityMaterial.GetTexture(MToon.Utils.PropMainTex);
+
+                // NOTE: Unlit のフォールバックなので
+                // Lit/Shade 色は黒として、Alpha のために Lit にテクスチャを設定する.
+                // Emissive 色は白として、テクスチャを設定する.
+                // また、元のシェーダのうちユーザが設定できるプロパティは Texture のみ.
+                var def = new MToonDefinition
+                {
+                    Meta = new MetaDefinition
+                    {
+                        Implementation = MToon.Utils.Implementation,
+                        VersionNumber = MToon.Utils.VersionNumber,
+                    },
+                    Rendering = new RenderingDefinition
+                    {
+                        RenderMode = RenderMode.TransparentWithZWrite,
+                        CullMode = CullMode.Back,
+                        RenderQueueOffsetNumber = 0,
+                    },
+                    Color = new ColorDefinition
+                    {
+                        LitColor = Color.black,
+                        LitMultiplyTexture = mainTexture,
+                        ShadeColor = Color.black,
+                        ShadeMultiplyTexture = default,
+                        CutoutThresholdValue = 0.5f,
+                    },
+                    Lighting = new LightingDefinition
+                    {
+                        LitAndShadeMixing = new LitAndShadeMixingDefinition
+                        {
+                            ShadingShiftValue = 0,
+                            ShadingToonyValue = 1,
+                            ShadowReceiveMultiplierValue = 1,
+                            ShadowReceiveMultiplierMultiplyTexture = default,
+                            LitAndShadeMixingMultiplierValue = 1,
+                            LitAndShadeMixingMultiplierMultiplyTexture = default,
+                        },
+                        LightingInfluence = new LightingInfluenceDefinition
+                        {
+                            LightColorAttenuationValue = 0,
+                            GiIntensityValue = 0.1f,
+                        },
+                        Normal = new NormalDefinition
+                        {
+                            NormalTexture = default,
+                            NormalScaleValue = 1,
+                        },
+                    },
+                    Emission = new EmissionDefinition
+                    {
+                        EmissionColor = Color.white,
+                        EmissionMultiplyTexture = mainTexture,
+                    },
+                    MatCap = new MatCapDefinition
+                    {
+                        AdditiveTexture = default,
+                    },
+                    Rim = new RimDefinition
+                    {
+                        RimColor = Color.black,
+                        RimMultiplyTexture = default,
+                        RimLightingMixValue = 1,
+                        RimLiftValue = 0,
+                        RimFresnelPowerValue = 1,
+                    },
+                    Outline = new OutlineDefinition
+                    {
+                        OutlineWidthMode = OutlineWidthMode.None,
+                        OutlineWidthValue = 0,
+                        OutlineWidthMultiplyTexture = default,
+                        OutlineScaledMaxDistanceValue = 1,
+                        OutlineColorMode = OutlineColorMode.FixedColor,
+                        OutlineColor = Color.black,
+                        OutlineLightingMixValue = 1,
+                    },
+                    TextureOption = new TextureUvCoordsDefinition
+                    {
+                        MainTextureLeftBottomOriginScale = new Vector2(1, 1),
+                        MainTextureLeftBottomOriginOffset = new Vector2(0, 0),
+                        UvAnimationMaskTexture = default,
+                        UvAnimationScrollXSpeedValue = 0,
+                        UvAnimationScrollYSpeedValue = 0,
+                        UvAnimationRotationSpeedValue = 0,
+                    },
+                };
+                MToon.Utils.SetMToonParametersToMaterial(unityMaterial, def);
             });
 
-            if (vrmMaterial.shader == MToon.Utils.ShaderName)
-            {
-                // TODO: Material拡張にMToonの項目が追加されたら旧バージョンのshaderPropから変換をかける
-                // インポート時にUniVRMに含まれるMToonのバージョンに上書きする
-                matDesc.FloatValues[MToon.Utils.PropVersion] = MToon.Utils.VersionNumber;
-            }
-
-            matDesc.Actions.Add(m =>
-            {
-                m.SetFloat(MToon.Utils.PropBlendMode, (float)MToon.RenderMode.TransparentWithZWrite);
-                MToon.Utils.ValidateProperties(m, true);
-            });
-
+            Debug.LogWarning($"fallback: {ShaderName} => {MToon.Utils.ShaderName}");
             return true;
         }
     }
