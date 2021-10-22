@@ -17,6 +17,7 @@ jobs:
       - run: pip install sphinx-rtd-theme
       - run: sudo apt install gettext
       - run: pip install sphinx-intl
+      - run: pip install gitinclude
       - name: sphinx build(ja)
         working-directory: ./docs
         run: sphinx-build . ../public/ja
