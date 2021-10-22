@@ -12,11 +12,6 @@ namespace VRM
     {
         public const Axes VrmSpecificationInverseAxis = Axes.Z;
 
-        protected override IMaterialExporter CreateMaterialExporter()
-        {
-            return new VRMMaterialExporter();
-        }
-
         public static glTF Export(GltfExportSettings configuration, GameObject go, ITextureSerializer textureSerializer)
         {
             var gltf = new glTF();
@@ -38,6 +33,11 @@ namespace VRM
             }
 
             gltf.extensionsUsed.Add(glTF_VRM_extensions.ExtensionName);
+        }
+
+        protected override IMaterialExporter CreateMaterialExporter()
+        {
+            return new VRMMaterialExporter();
         }
 
         public override void ExportExtensions(ITextureSerializer textureSerializer)
