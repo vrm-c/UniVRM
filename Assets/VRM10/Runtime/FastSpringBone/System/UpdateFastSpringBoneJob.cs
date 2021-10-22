@@ -140,7 +140,7 @@ namespace UniVRM10.FastSpringBones.System
         /// </summary>
         private static Quaternion Normalize(Quaternion q)
         {
-            var num = (float)Math.Sqrt((float)Quaternion.Dot(q, q));
+            var num = (float)Math.Sqrt(Quaternion.Dot(q, q));
             return num < float.Epsilon ? Quaternion.identity : new Quaternion(q.x / num, q.y / num, q.z / num, q.w / num);
         }
         
