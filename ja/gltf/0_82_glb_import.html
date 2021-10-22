@@ -19,7 +19,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="索引" href="../genindex.html" />
     <link rel="search" title="検索" href="../search.html" />
-    <link rel="next" title="glTF拡張の実装(0.63.2)" href="how_to_impl_extension.html" />
+    <link rel="next" title="Import 時に生成される Material をカスタマイズする" href="how_to_customize_material_import.html" />
     <link rel="prev" title="glTF" href="index.html" /> 
 </head>
 
@@ -63,9 +63,10 @@
 <li class="toctree-l3"><a class="reference internal" href="#id5">3. インスタンスを使用する</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="how_to_impl_extension.html">glTF拡張の実装(0.63.2)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="how_to_customize_material_import.html">Import 時に生成される Material をカスタマイズする</a></li>
 <li class="toctree-l2"><a class="reference internal" href="0_36_update.html">GltfUpdate(0.36)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="format.html">glbフォーマット概説</a></li>
+<li class="toctree-l2"><a class="reference internal" href="how_to_impl_extension.html">glTF拡張の実装(0.63.2)</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../vrm0/index.html">VRM</a></li>
@@ -198,18 +199,7 @@
 </section>
 <section id="materialgenerator-urp">
 <h3>materialGenerator で URP 用のマテリアルをロードする<a class="headerlink" href="#materialgenerator-urp" title="このヘッドラインへのパーマリンク"></a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">materialGenerator</span></code> 引き数(省略可能)を指定することで URP マテリアルを生成するようにカスタムできます。</p>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="n">RuntimeGltfInstance</span> <span class="nf">Load</span><span class="p">(</span><span class="n">GltfData</span> <span class="n">data</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="kt">var</span> <span class="n">materialGenerator</span> <span class="p">=</span> <span class="k">new</span> <span class="n">GltfUrpMaterialDescriptorGenerator</span><span class="p">();</span>
-    <span class="n">using</span><span class="p">(</span><span class="kt">var</span> <span class="n">loader</span> <span class="p">=</span> <span class="k">new</span> <span class="n">UniGLTF</span><span class="p">.</span><span class="n">ImporterContext</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">materialGenerator</span><span class="p">:</span> <span class="n">materialGenerator</span><span class="p">)</span>
-    <span class="p">{</span>
-        <span class="kt">var</span> <span class="n">instance</span> <span class="p">=</span> <span class="k">await</span> <span class="n">loader</span><span class="p">.</span><span class="n">LoadAsync</span><span class="p">();</span>
-        <span class="k">return</span> <span class="n">instance</span><span class="p">;</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-</pre></div>
-</div>
+<p><a class="reference internal" href="how_to_customize_material_import.html"><span class="doc">Import 時に生成される Material をカスタマイズする</span></a></p>
 </section>
 </section>
 <section id="id5">
@@ -232,7 +222,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="index.html" class="btn btn-neutral float-left" title="glTF" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="how_to_impl_extension.html" class="btn btn-neutral float-right" title="glTF拡張の実装(0.63.2)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="how_to_customize_material_import.html" class="btn btn-neutral float-right" title="Import 時に生成される Material をカスタマイズする" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="ja" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ScriptedImporter の実装 &mdash; UniVRM Programming Document  ドキュメント</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/translations.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="検索" href="../search.html" />
+    <link rel="next" title="glTF" href="../gltf/index.html" />
+    <link rel="prev" title="VRアプリケーションの FirstPerson 設定による Renderer の可視制御" href="first_person.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+[日本語] <a href="../../en/implementation/scripted_importer.html">English</a>
+
+            <a href="../index.html" class="icon icon-home"> UniVRM Programming Document
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../build.html">アプリケーションのビルド</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">実装メモ</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="runtime_resource_management.html">Runtime のリソース管理について</a></li>
+<li class="toctree-l2"><a class="reference internal" href="texture_manipulation.html">Texture関連</a></li>
+<li class="toctree-l2"><a class="reference internal" href="coordinate.html">座標系の変換</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fast_spring_bone.html">FastSpringBoneについて</a></li>
+<li class="toctree-l2"><a class="reference internal" href="first_person.html">VRアプリケーションの FirstPerson 設定による Renderer の可視制御</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">ScriptedImporter の実装</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">ScriptedImporter 採用の利点</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#texture-asset">Texture の Asset化 が楽</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#import">Import 設定を作れる</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#forcetext-import">ForceText 時に import が低速化するのを回避できる</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">ScriptedImporter 実装</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../gltf/index.html">glTF</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../vrm0/index.html">VRM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../vrm1/index.html">VRM-1.0(β)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../release/index.html">Release</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">UniVRM Programming Document</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">実装メモ</a> &raquo;</li>
+      <li>ScriptedImporter の実装</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/vrm-c/UniVRM/blob/master/docs/implementation/scripted_importer.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="scriptedimporter">
+<h1>ScriptedImporter の実装<a class="headerlink" href="#scriptedimporter" title="このヘッドラインへのパーマリンク"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">v0.68.0</span></code> 以降 の <code class="docutils literal notranslate"><span class="pre">glb/gltf</span> <span class="pre">editor</span> <span class="pre">importer</span></code> と <code class="docutils literal notranslate"><span class="pre">VRM-1.0</span> <span class="pre">editor</span> <span class="pre">importer</span></code> の実装で使用している <a class="reference external" href="https://docs.unity3d.com/ja/2019.4/ScriptReference/Experimental.AssetImporters.ScriptedImporter.html">ScriptedImporter</a> に関して。</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">VRM-1.0</span></code> の実装と拡張子がぶつかってしまうので <code class="docutils literal notranslate"><span class="pre">VRM-0.x</span></code> への <code class="docutils literal notranslate"><span class="pre">ScriptedImporter</span></code> 実装はしません</p>
+</div></blockquote>
+<section id="id1">
+<h2>ScriptedImporter 採用の利点<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク"></a></h2>
+<section id="texture-asset">
+<h3>Texture の Asset化 が楽<a class="headerlink" href="#texture-asset" title="このヘッドラインへのパーマリンク"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">AssetPostprocessor</span></code> だと普通の方法では実装できない Texture のバイト列を出力して Asset 化して、
+これを参照する Material をアセット化するということが、
+<code class="docutils literal notranslate"><span class="pre">ScriptedImporter.GetExternalObjectMap</span></code> により無理をせずに実装できます。</p>
+<blockquote>
+<div><p>UniVRM では抜け道として <code class="docutils literal notranslate"><span class="pre">EditorApplication.delayCall</span></code> を使用しています。</p>
+</div></blockquote>
+</section>
+<section id="import">
+<h3>Import 設定を作れる<a class="headerlink" href="#import" title="このヘッドラインへのパーマリンク"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">ScriptedImporter</span></code> を継承したクラスの <code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">member</span></code> や <code class="docutils literal notranslate"><span class="pre">[SerializeField]</span></code> に情報を保存できます。</p>
+<div class="highlight-cs notranslate"><div class="highlight"><pre><span></span>// 例
+[ScriptedImporter(1, &quot;cube&quot;)]
+public class CubeImporter : ScriptedImporter
+{
+    public float m_Scale = 1; // これを Asset の Inspector で変更して Apply すると、新しい設定で再importできる
+
+    // 省略
+}
+</pre></div>
+</div>
+</section>
+<section id="forcetext-import">
+<h3>ForceText 時に import が低速化するのを回避できる<a class="headerlink" href="#forcetext-import" title="このヘッドラインへのパーマリンク"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">ScriptedImporter</span></code> の SubAsset にすることで、 <code class="docutils literal notranslate"><span class="pre">mesh</span></code> などがテキスト(yaml)で Asset 化されることを回避できます。
+巨大なアセットで差が出ます。</p>
+</section>
+</section>
+<section id="id2">
+<h2>ScriptedImporter 実装<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク"></a></h2>
+<p>TODO: ExternalObjectMap の扱い</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="first_person.html" class="btn btn-neutral float-left" title="VRアプリケーションの FirstPerson 設定による Renderer の可視制御" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../gltf/index.html" class="btn btn-neutral float-right" title="glTF" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, VRM Consortium.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>glTF &mdash; UniVRM Programming Document  ドキュメント</title>
+  <title>Import 時に生成される Material をカスタマイズする &mdash; UniVRM Programming Document  ドキュメント</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -19,8 +19,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="索引" href="../genindex.html" />
     <link rel="search" title="検索" href="../search.html" />
-    <link rel="next" title="GlbImport(0.82) GltfData" href="0_82_glb_import.html" />
-    <link rel="prev" title="ScriptedImporter の実装" href="../implementation/scripted_importer.html" /> 
+    <link rel="next" title="GltfUpdate(0.36)" href="0_36_update.html" />
+    <link rel="prev" title="GlbImport(0.82) GltfData" href="0_82_glb_import.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -28,7 +28,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-[日本語] <a href="../../en/gltf/index.html">English</a>
+[日本語] <a href="../../en/gltf/how_to_customize_material_import.html">English</a>
 
             <a href="../index.html" class="icon icon-home"> UniVRM Programming Document
           </a>
@@ -44,9 +44,12 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../build.html">アプリケーションのビルド</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../implementation/index.html">実装メモ</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">glTF</a><ul>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">glTF</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="0_82_glb_import.html">GlbImport(0.82) GltfData</a></li>
-<li class="toctree-l2"><a class="reference internal" href="how_to_customize_material_import.html">Import 時に生成される Material をカスタマイズする</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Import 時に生成される Material をカスタマイズする</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#materialgenerator-urp">materialGenerator で URP 用のマテリアルをロードする</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="0_36_update.html">GltfUpdate(0.36)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="format.html">glbフォーマット概説</a></li>
 <li class="toctree-l2"><a class="reference internal" href="how_to_impl_extension.html">glTF拡張の実装(0.63.2)</a></li>
@@ -71,9 +74,10 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>glTF</li>
+          <li><a href="index.html">glTF</a> &raquo;</li>
+      <li>Import 時に生成される Material をカスタマイズする</li>
       <li class="wy-breadcrumbs-aside">
-              <a href="https://github.com/vrm-c/UniVRM/blob/master/docs/gltf/index.md" class="fa fa-github"> Edit on GitHub</a>
+              <a href="https://github.com/vrm-c/UniVRM/blob/master/docs/gltf/how_to_customize_material_import.md" class="fa fa-github"> Edit on GitHub</a>
       </li>
   </ul>
   <hr/>
@@ -81,53 +85,33 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section class="tex2jax_ignore mathjax_ignore" id="gltf">
-<h1>glTF<a class="headerlink" href="#gltf" title="このヘッドラインへのパーマリンク"></a></h1>
-<table class="colwidths-auto docutils align-default">
-<thead>
-<tr class="row-odd"><th class="head"><p>version</p></th>
-<th class="head"><p></p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>v0.82.1</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">materialGenerator(URP対応)</span></code> 引き数と <code class="docutils literal notranslate"><span class="pre">VrmData</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>v0.79</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">GltfData</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p>v0.77</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">RuntimeGltfInstance</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>v0.68</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">GltfParser</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p>v0.63.2</p></td>
-<td><p>gltf の extension の実装方法を変更</p></td>
-</tr>
-</tbody>
-</table>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="0_82_glb_import.html">GlbImport(0.82) GltfData</a></li>
-<li class="toctree-l1"><a class="reference internal" href="how_to_customize_material_import.html">Import 時に生成される Material をカスタマイズする</a></li>
-<li class="toctree-l1"><a class="reference internal" href="0_36_update.html">GltfUpdate(0.36)</a></li>
-</ul>
+  <section class="tex2jax_ignore mathjax_ignore" id="import-material">
+<h1>Import 時に生成される Material をカスタマイズする<a class="headerlink" href="#import-material" title="このヘッドラインへのパーマリンク"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">IMaterialDescriptorGenerator</span></code> を実装することで import 時に適用されるマテリアルを差し替えることができます。</p>
+<section id="materialgenerator-urp">
+<h2>materialGenerator で URP 用のマテリアルをロードする<a class="headerlink" href="#materialgenerator-urp" title="このヘッドラインへのパーマリンク"></a></h2>
+<p>URP マテリアルを生成するようにカスタムする例です。</p>
+<p><a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/1214">https://github.com/vrm-c/UniVRM/issues/1214</a></p>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="n">RuntimeGltfInstance</span> <span class="nf">Load</span><span class="p">(</span><span class="n">GltfData</span> <span class="n">data</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">IMaterialDescriptorGenerator</span> <span class="n">materialGenerator</span> <span class="p">=</span> <span class="k">new</span> <span class="n">GltfUrpMaterialDescriptorGenerator</span><span class="p">();</span>
+    <span class="n">using</span><span class="p">(</span><span class="kt">var</span> <span class="n">loader</span> <span class="p">=</span> <span class="k">new</span> <span class="n">UniGLTF</span><span class="p">.</span><span class="n">ImporterContext</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">materialGenerator</span><span class="p">:</span> <span class="n">materialGenerator</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="kt">var</span> <span class="n">instance</span> <span class="p">=</span> <span class="k">await</span> <span class="n">loader</span><span class="p">.</span><span class="n">LoadAsync</span><span class="p">();</span>
+        <span class="k">return</span> <span class="n">instance</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
 </div>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="format.html">glbフォーマット概説</a></li>
-<li class="toctree-l1"><a class="reference internal" href="how_to_impl_extension.html">glTF拡張の実装(0.63.2)</a></li>
-</ul>
-</div>
+</section>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../implementation/scripted_importer.html" class="btn btn-neutral float-left" title="ScriptedImporter の実装" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="0_82_glb_import.html" class="btn btn-neutral float-right" title="GlbImport(0.82) GltfData" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="0_82_glb_import.html" class="btn btn-neutral float-left" title="GlbImport(0.82) GltfData" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="0_36_update.html" class="btn btn-neutral float-right" title="GltfUpdate(0.36)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
