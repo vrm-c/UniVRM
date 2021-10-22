@@ -10,6 +10,8 @@ namespace VRM
 {
     public class VRMExporter : gltfExporter
     {
+        public const Axes VrmSpecificationInverseAxis = Axes.Z;
+
         protected override IMaterialExporter CreateMaterialExporter()
         {
             return new VRMMaterialExporter();
@@ -30,6 +32,11 @@ namespace VRM
 
         public VRMExporter(glTF gltf, GltfExportSettings exportSettings) : base(gltf, exportSettings)
         {
+            if (exportSettings == null || exportSettings.InverseAxis != VrmSpecificationInverseAxis)
+            {
+                throw new Exception( $"VRM specification requires InverseAxis settings as {VrmSpecificationInverseAxis}");
+            }
+
             gltf.extensionsUsed.Add(glTF_VRM_extensions.ExtensionName);
         }
 
