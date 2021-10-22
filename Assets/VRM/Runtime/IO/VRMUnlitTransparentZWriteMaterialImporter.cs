@@ -143,6 +143,9 @@ namespace VRM
                         UvAnimationRotationSpeedValue = 0,
                     },
                 });
+
+                // NOTE: MToon として正しくはないが、やむをえず renderQueue を元の値で復帰する.
+                unityMaterial.renderQueue = vrmMaterial.renderQueue;
             });
 
             Debug.LogWarning($"fallback: {UnlitTransparentZWriteShaderName} => {MToon.Utils.ShaderName}");
