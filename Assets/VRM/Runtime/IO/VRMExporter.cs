@@ -10,7 +10,7 @@ namespace VRM
 {
     public class VRMExporter : gltfExporter
     {
-        public const Axes VrmSpecificationInverseAxis = Axes.Z;
+        public const Axes Vrm0xSpecificationInverseAxis = Axes.Z;
 
         public static glTF Export(GltfExportSettings configuration, GameObject go, ITextureSerializer textureSerializer)
         {
@@ -27,9 +27,9 @@ namespace VRM
 
         public VRMExporter(glTF gltf, GltfExportSettings exportSettings) : base(gltf, exportSettings)
         {
-            if (exportSettings == null || exportSettings.InverseAxis != VrmSpecificationInverseAxis)
+            if (exportSettings == null || exportSettings.InverseAxis != Vrm0xSpecificationInverseAxis)
             {
-                throw new Exception( $"VRM specification requires InverseAxis settings as {VrmSpecificationInverseAxis}");
+                throw new Exception( $"VRM specification requires InverseAxis settings as {Vrm0xSpecificationInverseAxis}");
             }
 
             gltf.extensionsUsed.Add(glTF_VRM_extensions.ExtensionName);
