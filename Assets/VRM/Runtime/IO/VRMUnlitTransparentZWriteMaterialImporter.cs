@@ -61,15 +61,18 @@ namespace VRM
                     },
                     Rendering = new RenderingDefinition
                     {
+                        // NOTE: Transparent ZWrite
                         RenderMode = RenderMode.TransparentWithZWrite,
                         CullMode = CullMode.Back,
                         RenderQueueOffsetNumber = 0,
                     },
                     Color = new ColorDefinition
                     {
-                        LitColor = Color.black,
+                        // NOTE: Unlit なので、RGB 値は黒とする。
+                        // NOTE: Alpha は使うので、テクスチャを設定する.
+                        LitColor = new Color(0, 0, 0, 1),
                         LitMultiplyTexture = mainTexture,
-                        ShadeColor = Color.black,
+                        ShadeColor = new Color(0, 0, 0, 1),
                         ShadeMultiplyTexture = default,
                         CutoutThresholdValue = 0.5f,
                     },
@@ -77,6 +80,7 @@ namespace VRM
                     {
                         LitAndShadeMixing = new LitAndShadeMixingDefinition
                         {
+                            // NOTE: default value
                             ShadingShiftValue = 0,
                             ShadingToonyValue = 1,
                             ShadowReceiveMultiplierValue = 1,
@@ -86,26 +90,31 @@ namespace VRM
                         },
                         LightingInfluence = new LightingInfluenceDefinition
                         {
+                            // NOTE: default value
                             LightColorAttenuationValue = 0,
                             GiIntensityValue = 0.1f,
                         },
                         Normal = new NormalDefinition
                         {
+                            // NOTE: default value
                             NormalTexture = default,
                             NormalScaleValue = 1,
                         },
                     },
                     Emission = new EmissionDefinition
                     {
+                        // NOTE: Unlit なので Emission にテクスチャを設定する.
                         EmissionColor = Color.white,
                         EmissionMultiplyTexture = mainTexture,
                     },
                     MatCap = new MatCapDefinition
                     {
+                        // NOTE: default value
                         AdditiveTexture = default,
                     },
                     Rim = new RimDefinition
                     {
+                        // NOTE: default value
                         RimColor = Color.black,
                         RimMultiplyTexture = default,
                         RimLightingMixValue = 1,
@@ -114,6 +123,7 @@ namespace VRM
                     },
                     Outline = new OutlineDefinition
                     {
+                        // NOTE: default value
                         OutlineWidthMode = OutlineWidthMode.None,
                         OutlineWidthValue = 0,
                         OutlineWidthMultiplyTexture = default,
@@ -124,6 +134,7 @@ namespace VRM
                     },
                     TextureOption = new TextureUvCoordsDefinition
                     {
+                        // NOTE: default value
                         MainTextureLeftBottomOriginScale = new Vector2(1, 1),
                         MainTextureLeftBottomOriginOffset = new Vector2(0, 0),
                         UvAnimationMaskTexture = default,
