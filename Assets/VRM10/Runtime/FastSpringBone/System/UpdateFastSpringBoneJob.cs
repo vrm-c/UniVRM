@@ -136,7 +136,7 @@ namespace UniVRM10.FastSpringBones.System
         }
 
         /// <summary>
-        /// BurstではMathがエラーを吐くため、内部でMathを呼ばないNormalizeを自前実装
+        /// BurstではMathfがエラーを吐くため、内部でMathfを呼ばないNormalizeを自前実装
         /// </summary>
         private static Quaternion Normalize(Quaternion q)
         {
