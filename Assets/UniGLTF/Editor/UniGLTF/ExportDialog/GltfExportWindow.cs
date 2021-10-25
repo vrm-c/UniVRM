@@ -104,7 +104,7 @@ namespace UniGLTF
             using (var exporter = new gltfExporter(gltf, Settings))
             {
                 exporter.Prepare(State.ExportRoot);
-                exporter.Export(Settings, new EditorTextureSerializer());
+                exporter.Export(new EditorTextureSerializer());
             }
 
             if (isGlb)

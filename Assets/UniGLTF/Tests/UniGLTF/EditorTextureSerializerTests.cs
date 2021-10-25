@@ -125,17 +125,14 @@ namespace UniGLTF
             var gltf = new glTF();
             using (var exporter = new gltfExporter(gltf, new GltfExportSettings
             {
-                InverseAxis = Axes.X
+                InverseAxis = Axes.X,
+                ExportOnlyBlendShapePosition = false,
+                UseSparseAccessorForMorphTarget = false,
+                DivideVertexBuffer = false,
             }))
             {
                 exporter.Prepare(root);
-                var settings = new GltfExportSettings
-                {
-                    ExportOnlyBlendShapePosition = false,
-                    UseSparseAccessorForMorphTarget = false,
-                    DivideVertexBuffer = false,
-                };
-                exporter.Export(settings, new EditorTextureSerializer());
+                exporter.Export(new EditorTextureSerializer());
             }
             Assert.AreEqual(1, gltf.images.Count);
             var exportedImage = gltf.images[0];
