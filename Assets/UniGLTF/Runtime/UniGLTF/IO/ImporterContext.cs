@@ -135,7 +135,7 @@ namespace UniGLTF
                 {
                     await AnimationClipFactory.LoadAnimationClipAsync(key, () =>
                     {
-                        var clip = AnimationImporterUtil.ConvertAnimationClip(GLTF, gltfAnimation, InvertAxis.Create());
+                        var clip = AnimationImporterUtil.ConvertAnimationClip(Data, gltfAnimation, InvertAxis.Create());
                         return Task.FromResult(clip);
                     });
                 }
@@ -178,7 +178,7 @@ namespace UniGLTF
                     var index = i;
                     using (MeasureTime("ReadMesh"))
                     {
-                        var x = await awaitCaller.Run(() => meshImporter.ReadMesh(GLTF, index, inverter));
+                        var x = await awaitCaller.Run(() => meshImporter.ReadMesh(Data, index, inverter));
                         var y = await BuildMeshAsync(awaitCaller, MeasureTime, x, index);
                         Meshes.Add(y);
                     }
@@ -225,7 +225,7 @@ namespace UniGLTF
                     Profiler.BeginSample("NodeImporter.SetupSkinning");
                     for (var i = 0; i < nodes.Count; ++i)
                     {
-                        NodeImporter.SetupSkinning(GLTF, nodes, i, inverter);
+                        NodeImporter.SetupSkinning(Data, nodes, i, inverter);
                     }
                     Profiler.EndSample();
 

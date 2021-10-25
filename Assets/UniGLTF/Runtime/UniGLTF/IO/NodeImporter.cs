@@ -156,7 +156,7 @@ namespace UniGLTF
             }
         }
 
-        public static void SetupSkinning(glTF gltf, List<TransformWithSkin> nodes, int i, IAxisInverter inverter)
+        public static void SetupSkinning(GltfData data, List<TransformWithSkin> nodes, int i, IAxisInverter inverter)
         {
             var x = nodes[i];
             var skinnedMeshRenderer = x.Transform.GetComponent<SkinnedMeshRenderer>();
@@ -168,12 +168,12 @@ namespace UniGLTF
                     if (mesh == null) throw new Exception();
                     if (skinnedMeshRenderer == null) throw new Exception();
 
-                    if (x.SkinIndex.Value < gltf.skins.Count)
+                    if (x.SkinIndex.Value < data.GLTF.skins.Count)
                     {
                         // calculate internal values(boundingBox etc...) when sharedMesh assigned ?
                         skinnedMeshRenderer.sharedMesh = null;
 
-                        var skin = gltf.skins[x.SkinIndex.Value];
+                        var skin = data.GLTF.skins[x.SkinIndex.Value];
                         var joints = skin.joints.Select(y => nodes[y].Transform).ToArray();
                         if (joints.Any())
                         {
@@ -182,7 +182,7 @@ namespace UniGLTF
 
                             if (skin.inverseBindMatrices != -1)
                             {
-                                var bindPoses = gltf.GetArrayFromAccessor<Matrix4x4>(skin.inverseBindMatrices)
+                                var bindPoses = data.GetArrayFromAccessor<Matrix4x4>(skin.inverseBindMatrices)
                                     .Select(inverter.InvertMat4)
                                     .ToArray()
                                     ;
