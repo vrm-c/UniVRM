@@ -47,7 +47,7 @@ namespace UniVRM10
             }
         }
 
-        static void ReverseVector3Array(glTF gltf, int accessorIndex, HashSet<int> used)
+        static void ReverseVector3Array(GltfData data, int accessorIndex, HashSet<int> used)
         {
             if (accessorIndex == -1)
             {
@@ -59,7 +59,7 @@ namespace UniVRM10
                 return;
             }
 
-            var accessor = gltf.accessors[accessorIndex];
+            var accessor = data.GLTF.accessors[accessorIndex];
             var bufferViewIndex = -1;
             if (accessor.bufferView != -1)
             {
@@ -72,7 +72,7 @@ namespace UniVRM10
 
             if (bufferViewIndex != -1)
             {
-                var buffer = gltf.GetViewBytes(bufferViewIndex);
+                var buffer = data.GetViewBytes(bufferViewIndex);
                 var span = SpanLike.Wrap<UnityEngine.Vector3>(buffer);
                 for (int i = 0; i < span.Length; ++i)
                 {
@@ -85,35 +85,35 @@ namespace UniVRM10
         /// シーンをY軸で180度回転する
         /// </summary>
         /// <param name="gltf"></param>
-        public static void Rotate(glTF gltf)
+        public static void Rotate(GltfData data)
         {
-            foreach (var node in gltf.nodes)
+            foreach (var node in data.GLTF.nodes)
             {
                 Rotate(node);
             }
 
             // mesh の回転のみでよい
             var used = new HashSet<int>();
-            foreach (var mesh in gltf.meshes)
+            foreach (var mesh in data.GLTF.meshes)
             {
                 foreach (var prim in mesh.primitives)
                 {
-                    ReverseVector3Array(gltf, prim.attributes.POSITION, used);
-                    ReverseVector3Array(gltf, prim.attributes.NORMAL, used);
+                    ReverseVector3Array(data, prim.attributes.POSITION, used);
+                    ReverseVector3Array(data, prim.attributes.NORMAL, used);
                     foreach (var target in prim.targets)
                     {
-                        ReverseVector3Array(gltf, target.POSITION, used);
-                        ReverseVector3Array(gltf, target.NORMAL, used);
+                        ReverseVector3Array(data, target.POSITION, used);
+                        ReverseVector3Array(data, target.NORMAL, used);
                     }
                 }
             }
 
-            foreach (var skin in gltf.skins)
+            foreach (var skin in data.GLTF.skins)
             {
                 if (used.Add(skin.inverseBindMatrices))
                 {
-                    var accessor = gltf.accessors[skin.inverseBindMatrices];
-                    var buffer = gltf.GetViewBytes(accessor.bufferView);
+                    var accessor = data.GLTF.accessors[skin.inverseBindMatrices];
+                    var buffer = data.GetViewBytes(accessor.bufferView);
                     var span = SpanLike.Wrap<UnityEngine.Matrix4x4>(buffer);
                     for (int i = 0; i < span.Length; ++i)
                     {

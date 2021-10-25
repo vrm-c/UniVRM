@@ -57,7 +57,6 @@ namespace UniGLTF
         public GltfData Data { get; }
         public String Json => Data.Json;
         public glTF GLTF => Data.GLTF;
-        public IStorage Storage => Data.Storage;
         #endregion
 
         // configuration

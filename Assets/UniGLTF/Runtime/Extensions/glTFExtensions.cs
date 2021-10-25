@@ -246,24 +246,6 @@ namespace UniGLTF
 
 
 
-        public static ArraySegment<Byte> GetImageBytesFromTextureIndex(this glTF self, IStorage storage, int textureIndex)
-        {
-            var imageIndex = self.textures[textureIndex].source;
-            return self.GetImageBytes(storage, imageIndex);
-        }
-
-        public static ArraySegment<Byte> GetImageBytes(this glTF self, IStorage storage, int imageIndex)
-        {
-            var image = self.images[imageIndex];
-            if (string.IsNullOrEmpty(image.uri))
-            {
-                return self.GetViewBytes(image.bufferView);
-            }
-            else
-            {
-                return storage.Get(image.uri);
-            }
-        }
 
         static Utf8String s_extensions = Utf8String.From("extensions");
 

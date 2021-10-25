@@ -25,7 +25,6 @@ namespace UniGLTF
                 w.Write(8.0f);
                 bytes = ms.ToArray();
             }
-            var storage = new SimpleStorage(new ArraySegment<byte>(bytes));
 
             var gltf = new glTF
             {
@@ -54,9 +53,9 @@ namespace UniGLTF
                     }
                 }
             };
-            gltf.buffers[0].OpenStorage(storage);
 
-            var (getter, len) = WeightsAccessor.GetAccessor(GltfData.CreateFromGltfDataForTest(gltf), 0);
+            var data = GltfData.CreateFromGltfDataForTest(gltf, new ArraySegment<byte>(bytes));
+            var (getter, len) = WeightsAccessor.GetAccessor(data, 0);
             Assert.AreEqual((1.0f, 2.0f, 3.0f, 4.0f), getter(0));
             Assert.AreEqual((5.0f, 6.0f, 7.0f, 8.0f), getter(1));
         }

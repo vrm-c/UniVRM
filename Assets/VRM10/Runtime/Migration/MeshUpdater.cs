@@ -69,7 +69,7 @@ namespace UniVRM10
             // copy images
             foreach (var image in gltf.images)
             {
-                var bytes = gltf.GetViewBytes(image.bufferView);
+                var bytes = _data.GetViewBytes(image.bufferView);
                 image.bufferView = AddBuffer(bytes);
             }
 

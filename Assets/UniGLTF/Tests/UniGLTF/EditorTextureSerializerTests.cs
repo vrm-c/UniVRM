@@ -142,8 +142,10 @@ namespace UniGLTF
             UnityEngine.Object.DestroyImmediate(mat);
             UnityEngine.Object.DestroyImmediate(root);
 
+            var data = GltfData.CreateFromGltfDataForTest(gltf);
+
             // Extract Image to Texture2D
-            var exportedBytes = gltf.GetViewBytes(exportedImage.bufferView).ToArray();
+            var exportedBytes = data.GetViewBytes(exportedImage.bufferView).ToArray();
             var exportedTexture = new Texture2D(2, 2, TextureFormat.ARGB32, mipChain: false, linear: false);
             Assert.IsTrue(exportedTexture.LoadImage(exportedBytes)); // Always true ?
             Assert.AreEqual(srcTex.width, exportedTexture.width);

@@ -35,7 +35,7 @@ namespace UniGLTF
             var gltfImage = data.GLTF.images[gltfTexture.source];
             var name = TextureImportName.GetUnityObjectName(TextureImportTypes.sRGB, gltfTexture.name, gltfImage.uri);
             var sampler = TextureSamplerUtil.CreateSampler(data.GLTF, textureIndex);
-            GetTextureBytesAsync getTextureBytesAsync = () => Task.FromResult(ToArray(data.GLTF.GetImageBytesFromTextureIndex(data.Storage, textureIndex)));
+            GetTextureBytesAsync getTextureBytesAsync = () => Task.FromResult(ToArray(data.GetImageBytesFromTextureIndex(textureIndex)));
             var param = new TextureDescriptor(name, gltfImage.GetExt(), gltfImage.uri, offset, scale, sampler, TextureImportTypes.sRGB, default, default, getTextureBytesAsync, default, default, default, default, default);
             return (param.SubAssetKey, param);
         }
@@ -46,7 +46,7 @@ namespace UniGLTF
             var gltfImage = data.GLTF.images[gltfTexture.source];
             var name = TextureImportName.GetUnityObjectName(TextureImportTypes.Linear, gltfTexture.name, gltfImage.uri);
             var sampler = TextureSamplerUtil.CreateSampler(data.GLTF, textureIndex);
-            GetTextureBytesAsync getTextureBytesAsync = () => Task.FromResult(ToArray(data.GLTF.GetImageBytesFromTextureIndex(data.Storage, textureIndex)));
+            GetTextureBytesAsync getTextureBytesAsync = () => Task.FromResult(ToArray(data.GetImageBytesFromTextureIndex(textureIndex)));
             var param = new TextureDescriptor(name, gltfImage.GetExt(), gltfImage.uri, offset, scale, sampler, TextureImportTypes.Linear, default, default, getTextureBytesAsync, default, default, default, default, default);
             return (param.SubAssetKey, param);
         }
@@ -57,7 +57,7 @@ namespace UniGLTF
             var gltfImage = data.GLTF.images[gltfTexture.source];
             var name = TextureImportName.GetUnityObjectName(TextureImportTypes.NormalMap, gltfTexture.name, gltfImage.uri);
             var sampler = TextureSamplerUtil.CreateSampler(data.GLTF, textureIndex);
-            GetTextureBytesAsync getTextureBytesAsync = () => Task.FromResult(ToArray(data.GLTF.GetImageBytesFromTextureIndex(data.Storage, textureIndex)));
+            GetTextureBytesAsync getTextureBytesAsync = () => Task.FromResult(ToArray(data.GetImageBytesFromTextureIndex(textureIndex)));
             var param = new TextureDescriptor(name, gltfImage.GetExt(), gltfImage.uri, offset, scale, sampler, TextureImportTypes.NormalMap, default, default, getTextureBytesAsync, default, default, default, default, default);
             return (param.SubAssetKey, param);
         }
@@ -73,7 +73,7 @@ namespace UniGLTF
                 var gltfTexture = data.GLTF.textures[metallicRoughnessTextureIndex.Value];
                 name = TextureImportName.GetUnityObjectName(TextureImportTypes.StandardMap, gltfTexture.name, data.GLTF.images[gltfTexture.source].uri);
                 sampler = TextureSamplerUtil.CreateSampler(data.GLTF, metallicRoughnessTextureIndex.Value);
-                getMetallicRoughnessAsync = () => Task.FromResult(ToArray(data.GLTF.GetImageBytesFromTextureIndex(data.Storage, metallicRoughnessTextureIndex.Value)));
+                getMetallicRoughnessAsync = () => Task.FromResult(ToArray(data.GetImageBytesFromTextureIndex(metallicRoughnessTextureIndex.Value)));
             }
 
             GetTextureBytesAsync getOcclusionAsync = default;
@@ -85,7 +85,7 @@ namespace UniGLTF
                     name = TextureImportName.GetUnityObjectName(TextureImportTypes.StandardMap, gltfTexture.name, data.GLTF.images[gltfTexture.source].uri);
                 }
                 sampler = TextureSamplerUtil.CreateSampler(data.GLTF, occlusionTextureIndex.Value);
-                getOcclusionAsync = () => Task.FromResult(ToArray(data.GLTF.GetImageBytesFromTextureIndex(data.Storage, occlusionTextureIndex.Value)));
+                getOcclusionAsync = () => Task.FromResult(ToArray(data.GetImageBytesFromTextureIndex(occlusionTextureIndex.Value)));
             }
 
             var texDesc = new TextureDescriptor(name, ".png", null, offset, scale, sampler, TextureImportTypes.StandardMap, metallicFactor, roughnessFactor, getMetallicRoughnessAsync, getOcclusionAsync, default, default, default, default);

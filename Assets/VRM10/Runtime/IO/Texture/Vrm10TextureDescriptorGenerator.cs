@@ -110,7 +110,7 @@ namespace UniVRM10
 
             GetTextureBytesAsync getThumbnailImageBytesAsync = () =>
             {
-                var bytes = data.GLTF.GetImageBytes(data.Storage, imageIndex);
+                var bytes = data.GetImageBytes(imageIndex);
                 return Task.FromResult(GltfTextureImporter.ToArray(bytes));
             };
             var texDesc = new TextureDescriptor(objectName, gltfImage.GetExt(), gltfImage.uri, Vector2.zero, Vector2.one, default, TextureImportTypes.sRGB, default, default,

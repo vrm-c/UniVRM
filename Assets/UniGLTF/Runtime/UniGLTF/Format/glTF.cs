@@ -40,13 +40,6 @@ namespace UniGLTF
 
         [JsonSchema(MinItems = 1, ExplicitIgnorableItemLength = 0)]
         public List<glTFAccessor> accessors = new List<glTFAccessor>();
-
-        public ArraySegment<Byte> GetViewBytes(int bufferView)
-        {
-            var view = bufferViews[bufferView];
-            var segment = buffers[view.buffer].GetBytes();
-            return new ArraySegment<byte>(segment.Array, segment.Offset + view.byteOffset, view.byteLength);
-        }
         #endregion
 
         [JsonSchema(MinItems = 1, ExplicitIgnorableItemLength = 0)]

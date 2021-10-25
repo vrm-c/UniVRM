@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace UniGLTF
@@ -56,6 +57,26 @@ namespace UniGLTF
             {
                 return Path.Combine(m_root, url).Replace("\\", "/");
             }
+        }
+    }
+
+    public class GltfStorage : IStorage
+    {
+        glTF _gltf;
+
+        public GltfStorage(glTF gltf)
+        {
+            _gltf = gltf;
+        }
+
+        public ArraySegment<byte> Get(string url)
+        {
+            return _gltf.buffers[0].GetBytes();
+        }
+
+        public string GetPath(string url)
+        {
+            return null;
         }
     }
 }

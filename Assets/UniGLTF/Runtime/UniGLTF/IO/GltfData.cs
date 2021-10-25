@@ -50,7 +50,7 @@ namespace UniGLTF
         /// <summary>
         /// URI access
         /// </summary>
-        public IStorage Storage { get; }
+        IStorage _storage;
 
         /// <summary>
         /// Migration Flags used by ImporterContext
@@ -63,27 +63,50 @@ namespace UniGLTF
             Json = json;
             GLTF = gltf;
             Chunks = chunks;
-            Storage = storage;
+            _storage = storage;
             MigrationFlags = migrationFlags;
         }
 
-        public static GltfData CreateFromGltfDataForTest(glTF gltf)
+        public static GltfData CreateFromGltfDataForTest(glTF gltf, ArraySegment<byte> bytes = default)
         {
+            IStorage storage = null;
+            if (bytes.Array != null)
+            {
+                storage = new SimpleStorage(bytes);
+            }
+            else
+            {
+                storage = new GltfStorage(gltf);
+            }
             return new GltfData(
                 string.Empty,
                 string.Empty,
                 gltf,
                 new List<GlbChunk>(),
-                new SimpleStorage(new ArraySegment<byte>()),
+                storage,
                 new MigrationFlags()
             );
         }
 
         #region bytes access helper methods. buffer, bufferView, accessor(may sparse), image
+        public ArraySegment<Byte> GetBytes(int bufferIndex)
+        {
+            // TODO:
+            var buffer = GLTF.buffers[bufferIndex];
+            return _storage.Get(buffer.uri);
+        }
+
+        public ArraySegment<Byte> GetViewBytes(int bufferView)
+        {
+            var view = GLTF.bufferViews[bufferView];
+            var segment = GetBytes(view.buffer);
+            return new ArraySegment<byte>(segment.Array, segment.Offset + view.byteOffset, view.byteLength);
+        }
+
         T[] GetAttrib<T>(int count, int byteOffset, glTFBufferView view) where T : struct
         {
+            var segment = GetBytes(view.buffer);
             var attrib = new T[count];
-            var segment = GLTF.buffers[view.buffer].GetBytes();
             var bytes = new ArraySegment<Byte>(segment.Array, segment.Offset + view.byteOffset + byteOffset, count * view.byteStride);
             bytes.MarshalCopyTo(attrib);
             return attrib;
@@ -207,7 +230,7 @@ namespace UniGLTF
             {
                 var attrib = new float[vertexAccessor.count * vertexAccessor.TypeCount];
                 var view = GLTF.bufferViews[vertexAccessor.bufferView];
-                var segment = GLTF.buffers[view.buffer].GetBytes();
+                var segment = GetBytes(view.buffer);
                 var bytes = new ArraySegment<Byte>(segment.Array, segment.Offset + view.byteOffset + vertexAccessor.byteOffset, vertexAccessor.count * view.byteStride);
                 bytes.MarshalCopyTo(attrib);
                 result = attrib;
@@ -232,6 +255,25 @@ namespace UniGLTF
                 }
             }
             return result;
+        }
+
+        public ArraySegment<Byte> GetImageBytes(int imageIndex)
+        {
+            var image = GLTF.images[imageIndex];
+            if (string.IsNullOrEmpty(image.uri))
+            {
+                return GetViewBytes(image.bufferView);
+            }
+            else
+            {
+                return _storage.Get(image.uri);
+            }
+        }
+
+        public ArraySegment<Byte> GetImageBytesFromTextureIndex(int textureIndex)
+        {
+            var imageIndex = GLTF.textures[textureIndex].source;
+            return GetImageBytes(imageIndex);
         }
         #endregion
     }
