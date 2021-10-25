@@ -22,7 +22,7 @@ VRM0.x向けのFastSpringBone実装は `VRM/Runtime/FastSpringBone` ディレク
 
 これを明示的に呼ばなければ、従来のSpringBoneのまま動作します。
 
-```cs
+```csharp
 using (var loader = new UniGLTF.ImporterContext(data))
 {
     var instance = await loader.LoadAsync();

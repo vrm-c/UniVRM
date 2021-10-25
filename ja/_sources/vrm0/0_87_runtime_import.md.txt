@@ -2,7 +2,7 @@
 
 ## awaitCaller 引き数
 
-```cs
+```csharp
 public virtual async Task<RuntimeGltfInstance> LoadAsync(IAwaitCaller awaitCaller = null, ...)
 ```
 

@@ -113,15 +113,15 @@
 <h2>VRM 0.x での FastSpringBone の導入方法<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク"></a></h2>
 <p>差し替えを行いたいタイミングで <code class="docutils literal notranslate"><span class="pre">FastSpringBoneReplacer.ReplaceAsync</span></code> を呼び出してください</p>
 <p>これを明示的に呼ばなければ、従来のSpringBoneのまま動作します。</p>
-<div class="highlight-cs notranslate"><div class="highlight"><pre><span></span>using (var loader = new UniGLTF.ImporterContext(data))
-{
-    var instance = await loader.LoadAsync();
-    SetModel(instance);
-}
-FastSpringBoneReplacer.ReplaceAsync(instance.Root)
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="p">(</span><span class="kt">var</span> <span class="n">loader</span> <span class="p">=</span> <span class="k">new</span> <span class="n">UniGLTF</span><span class="p">.</span><span class="n">ImporterContext</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+<span class="p">{</span>
+    <span class="kt">var</span> <span class="n">instance</span> <span class="p">=</span> <span class="k">await</span> <span class="n">loader</span><span class="p">.</span><span class="n">LoadAsync</span><span class="p">();</span>
+    <span class="n">SetModel</span><span class="p">(</span><span class="n">instance</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="n">FastSpringBoneReplacer</span><span class="p">.</span><span class="n">ReplaceAsync</span><span class="p">(</span><span class="n">instance</span><span class="p">.</span><span class="n">Root</span><span class="p">)</span>
 
-instance.EnableUpdateWhenOffscreen();
-instance.ShowMeshes();
+<span class="n">instance</span><span class="p">.</span><span class="n">EnableUpdateWhenOffscreen</span><span class="p">();</span>
+<span class="n">instance</span><span class="p">.</span><span class="n">ShowMeshes</span><span class="p">();</span>
 </pre></div>
 </div>
 </section>

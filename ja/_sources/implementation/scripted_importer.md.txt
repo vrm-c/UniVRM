@@ -18,7 +18,7 @@
 
 `ScriptedImporter` を継承したクラスの `public member` や `[SerializeField]` に情報を保存できます。
 
-```cs
+```csharp
 // 例
 [ScriptedImporter(1, "cube")]
 public class CubeImporter : ScriptedImporter

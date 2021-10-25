@@ -112,14 +112,14 @@
 <section id="import">
 <h3>Import 設定を作れる<a class="headerlink" href="#import" title="このヘッドラインへのパーマリンク"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">ScriptedImporter</span></code> を継承したクラスの <code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">member</span></code> や <code class="docutils literal notranslate"><span class="pre">[SerializeField]</span></code> に情報を保存できます。</p>
-<div class="highlight-cs notranslate"><div class="highlight"><pre><span></span>// 例
-[ScriptedImporter(1, &quot;cube&quot;)]
-public class CubeImporter : ScriptedImporter
-{
-    public float m_Scale = 1; // これを Asset の Inspector で変更して Apply すると、新しい設定で再importできる
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="c1">// 例</span>
+<span class="na">[ScriptedImporter(1, &quot;cube&quot;)]</span>
+<span class="k">public</span> <span class="k">class</span> <span class="nc">CubeImporter</span> <span class="p">:</span> <span class="n">ScriptedImporter</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="kt">float</span> <span class="n">m_Scale</span> <span class="p">=</span> <span class="m">1</span><span class="p">;</span> <span class="c1">// これを Asset の Inspector で変更して Apply すると、新しい設定で再importできる</span>
 
-    // 省略
-}
+    <span class="c1">// 省略</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>
