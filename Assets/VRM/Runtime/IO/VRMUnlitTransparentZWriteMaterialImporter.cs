@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using MToon;
 using UniGLTF;
 using UnityEngine;
@@ -34,48 +36,61 @@ namespace VRM
             // use material.name, because material name may renamed in GltfParser.
             var name = data.GLTF.materials[materialIdx].name;
 
+            var textureSlots = new Dictionary<string, TextureDescriptor>();
+            var floatValues = new Dictionary<string, float>();
+            var colors = new Dictionary<string, Color>();
+            var vectors = new Dictionary<string, Vector4>();
+            var actions = new List<Action<Material>>();
+
             //
             // import as MToon
             //
-            matDesc = new MaterialDescriptor(name, MToon.Utils.ShaderName);
-
-            matDesc.RenderQueue = MToon.Utils.GetRenderQueueRequirement(RenderMode.TransparentWithZWrite).DefaultValue;
+            matDesc = new MaterialDescriptor(
+                name,
+                Utils.ShaderName, 
+                Utils.GetRenderQueueRequirement(RenderMode.TransparentWithZWrite).DefaultValue,
+                textureSlots,
+                floatValues,
+                colors,
+                vectors,
+                actions
+            );
 
             // NOTE: Unlit のフォールバックなので、 Lit/Shade 色は黒とし、Emissive Factor に設定する.
             // また、元のシェーダのうちユーザが設定できるプロパティは Texture のみ.
-            matDesc.Colors[MToon.Utils.PropColor] = Color.black;
-            matDesc.Colors[MToon.Utils.PropShadeColor] = Color.black;
-            matDesc.Colors[MToon.Utils.PropEmissionColor] = Color.white;
+            colors[Utils.PropColor] = Color.black;
+            colors[Utils.PropShadeColor] = Color.black;
+            colors[Utils.PropEmissionColor] = Color.white;
 
-            if (vrmMaterial.textureProperties.ContainsKey(MToon.Utils.PropMainTex))
+            if (vrmMaterial.textureProperties.ContainsKey(Utils.PropMainTex))
             {
-                if (VRMMToonTextureImporter.TryGetTextureFromMaterialProperty(data, vrmMaterial, MToon.Utils.PropMainTex, out var texture))
+                if (VRMMToonTextureImporter.TryGetTextureFromMaterialProperty(data, vrmMaterial, Utils.PropMainTex, out var texture))
                 {
-                    matDesc.TextureSlots.Add(MToon.Utils.PropEmissionMap, texture.Item2);
+                    textureSlots.Add(Utils.PropEmissionMap, texture.Item2);
                 }
             }
 
-            matDesc.Actions.Add(unityMaterial =>
+            actions.Add(unityMaterial =>
             {
                 // NOTE: ZWrite などの属性は util に設定させる.
-                var parameter = MToon.Utils.GetMToonParametersFromMaterial(unityMaterial);
+                var parameter = Utils.GetMToonParametersFromMaterial(unityMaterial);
                 parameter.Rendering.CullMode = CullMode.Back;
                 parameter.Rendering.RenderMode = RenderMode.TransparentWithZWrite;
                 parameter.Rendering.RenderQueueOffsetNumber = 0;
-                MToon.Utils.SetMToonParametersToMaterial(unityMaterial, parameter);
+                Utils.SetMToonParametersToMaterial(unityMaterial, parameter);
             });
 
-            if (vrmMaterial.shader == MToon.Utils.ShaderName)
+            if (vrmMaterial.shader == Utils.ShaderName)
             {
                 // TODO: Material拡張にMToonの項目が追加されたら旧バージョンのshaderPropから変換をかける
                 // インポート時にUniVRMに含まれるMToonのバージョンに上書きする
-                matDesc.FloatValues[MToon.Utils.PropVersion] = MToon.Utils.VersionNumber;
+                floatValues[Utils.PropVersion] = Utils.VersionNumber;
             }
 
-            matDesc.Actions.Add(m =>
+            actions.Add(m =>
             {
-                m.SetFloat(MToon.Utils.PropBlendMode, (float)MToon.RenderMode.TransparentWithZWrite);
-                MToon.Utils.ValidateProperties(m, true);
+                m.SetFloat(Utils.PropBlendMode, (float)RenderMode.TransparentWithZWrite);
+                Utils.ValidateProperties(m, true);
             });
 
             return true;

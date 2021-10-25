@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UniGLTF;
 using UniGLTF.Extensions.VRMC_materials_mtoon;
 using UnityEngine;
@@ -30,33 +31,22 @@ namespace UniVRM10
             }
 
             // use material.name, because material name may renamed in GltfParser.
-            matDesc = new MaterialDescriptor(m.name, MToon10Meta.UnityShaderName);
-
-            foreach (var (key, (subAssetKey, value)) in Vrm10MToonTextureImporter.EnumerateAllTextures(data, m, mtoon))
-            {
-                matDesc.TextureSlots.Add(key, value);
-            }
-
-            foreach (var (key, value) in TryGetAllColors(m, mtoon))
-            {
-                matDesc.Colors.Add(key, value);
-            }
-
-            foreach (var (key, value) in TryGetAllFloats(m, mtoon))
-            {
-                matDesc.FloatValues.Add(key, value);
-            }
-
-            foreach (var (key, value) in TryGetAllFloatArrays(m, mtoon))
-            {
-                matDesc.Vectors.Add(key, value);
-            }
-
-            matDesc.Actions.Add(material =>
-            {
-                // Set hidden properties, keywords from float properties.
-                new MToonValidator(material).Validate();
-            });
+            matDesc = new MaterialDescriptor(
+                m.name,
+                MToon10Meta.UnityShaderName,
+                null,
+                Vrm10MToonTextureImporter.EnumerateAllTextures(data, m, mtoon).ToDictionary(tuple => tuple.key, tuple => tuple.Item2.Item2),
+                TryGetAllFloats(m, mtoon).ToDictionary(tuple => tuple.key, tuple => tuple.value),
+                TryGetAllColors(m, mtoon).ToDictionary(tuple => tuple.key, tuple => tuple.value),
+                TryGetAllFloatArrays(m, mtoon).ToDictionary(tuple => tuple.key, tuple => tuple.value),
+                new Action<Material>[]
+                {
+                    material =>
+                    {
+                        // Set hidden properties, keywords from float properties.
+                        new MToonValidator(material).Validate();
+                    }
+                });
 
             return true;
         }
