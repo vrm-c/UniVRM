@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: UniVRM Programming Document \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-11 16:50+0900\n"
+"POT-Creation-Date: 2021-10-15 15:45+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,283 +27,286 @@ msgid "[v0.79.0](https://github.com/vrm-c/UniVRM/tree/v0.79.0) (2021-07-19)"
 msgstr ""
 
 #: ../../release/079/v0.79.0.md:5
-msgid "commit: https://github.com/vrm-c/UniVRM/releases/tag/v0.79.0"
+msgid "[0.79.0](http://github.com/vrm-c/UniVRM/releases/tag/v0.79.0)"
 msgstr ""
 
 #: ../../release/079/v0.79.0.md:6
-msgid "milestone: https://github.com/vrm-c/UniVRM/milestone/41?closed=1"
+msgid "[Milestone](https://github.com/vrm-c/UniVRM/milestone/41?closed=1)"
 msgstr ""
 
-#: ../../release/079/v0.79.0.md:8
+#: ../../release/079/v0.79.0.md:7
 msgid ""
 "[Full "
 "Changelog](https://github.com/vrm-c/UniVRM/compare/v0.78.0...v0.79.0)"
 msgstr ""
 
-#: ../../release/079/v0.79.0.md:10
+#: ../../release/079/v0.79.0.md:9
 msgid "このバージョンから `pre release` をやめて通常リリースに戻ります。"
 msgstr ""
 
-#: ../../release/079/v0.79.0.md:12
-msgid "ToDo:"
-msgstr ""
-
-#: ../../release/079/v0.79.0.md:14
-msgid "[ ] 0.66 ~ 0.79 の変更まとめ"
-msgstr ""
-
-#: ../../release/079/v0.79.0.md:15
-msgid "[ ] (GLB, GLTF) ScriptedImporter の導入 と Extract の説明"
-msgstr ""
-
-#: ../../release/079/v0.79.0.md:17
+#: ../../release/079/v0.79.0.md:11
 msgid "AutoReference"
 msgstr ""
 
-#: ../../release/079/v0.79.0.md:18
+#: ../../release/079/v0.79.0.md:12
 msgid "Autoreference を有効にします。"
 msgstr ""
 
-#: ../../release/079/v0.79.0.md:20
+#: ../../release/079/v0.79.0.md:14
 msgid ""
 "Make asmdef's `Auto Referenced` `true` . "
 "[\\#1107](https://github.com/vrm-c/UniVRM/issues/1107)"
 msgstr ""
 
-#: ../../release/079/v0.79.0.md:21
+#: ../../release/079/v0.79.0.md:15
 msgid ""
 "Namespace \"VRM\" can't be found by any other script. "
 "[\\#1103](https://github.com/vrm-c/UniVRM/issues/1103)"
 msgstr ""
 
-#: ../../release/079/v0.79.0.md:22
+#: ../../release/079/v0.79.0.md:16
 msgid ""
 "Make asmdef's auto-referenced true. "
 "[\\#1108](https://github.com/vrm-c/UniVRM/pull/1108) "
 "([Santarh](https://github.com/Santarh))"
 msgstr ""
 
-#: ../../release/079/v0.79.0.md:24
+#: ../../release/079/v0.79.0.md:18
 msgid "1.0"
 msgstr ""
 
-#: ../../release/079/v0.79.0.md:25
+#: ../../release/079/v0.79.0.md:19
 msgid ""
 "\\[1.0\\] Invalid migration of MToon screen coordinates outline "
 "[\\#1069](https://github.com/vrm-c/UniVRM/issues/1069)"
 msgstr ""
 
-#: ../../release/079/v0.79.0.md:26
+#: ../../release/079/v0.79.0.md:20
 msgid ""
 "Fix MToon 1.0 functions. "
 "[\\#1101](https://github.com/vrm-c/UniVRM/pull/1101) "
 "([Santarh](https://github.com/Santarh))"
 msgstr ""
 
-#: ../../release/079/v0.79.0.md:27
+#: ../../release/079/v0.79.0.md:21
 msgid ""
 "\\[1.0\\] Expression の仕様更新に追随 "
 "[\\#1092](https://github.com/vrm-c/UniVRM/pull/1092) "
 "([ousttrue](https://github.com/ousttrue))"
 msgstr ""
 
-#: ../../release/079/v0.79.0.md:28
+#: ../../release/079/v0.79.0.md:22
 msgid ""
 "\\[1.0\\] Fix MToon 1.0 bugs "
 "[\\#1071](https://github.com/vrm-c/UniVRM/pull/1071) "
 "([Santarh](https://github.com/Santarh))"
 msgstr ""
 
-#: ../../release/079/v0.79.0.md:30
+#: ../../release/079/v0.79.0.md:24
 msgid "その他のChangelog"
 msgstr "Other Changes"
 
-#: ../../release/079/v0.79.0.md:32
+#: ../../release/079/v0.79.0.md:26
 msgid ""
 "Add properties & Fix the bug in `RuntimeGltfInstance` "
 "[\\#1109](https://github.com/vrm-c/UniVRM/pull/1109) "
 "([Santarh](https://github.com/Santarh))"
 msgstr ""
 
-#: ../../release/079/v0.79.0.md:33
+#: ../../release/079/v0.79.0.md:27
 msgid ""
 "VRChat用に設定したVRoidモデルを再度VRMに変換する時にエラーが出て失敗する "
 "[\\#1100](https://github.com/vrm-c/UniVRM/issues/1100)"
 msgstr ""
 
-#: ../../release/079/v0.79.0.md:34
+#: ../../release/079/v0.79.0.md:28
 msgid ""
 "Fail to convert, \"IndexOutOfRange Exception\" critical error "
 "[\\#1099](https://github.com/vrm-c/UniVRM/issues/1099)"
 msgstr ""
 
-#: ../../release/079/v0.79.0.md:35
+#: ../../release/079/v0.79.0.md:29
 msgid ""
 "UniVRM fails to convert avatar with critical errors.  "
 "[\\#1098](https://github.com/vrm-c/UniVRM/issues/1098)"
 msgstr ""
 
-#: ../../release/079/v0.79.0.md:36
+#: ../../release/079/v0.79.0.md:30
 msgid ""
 "Extract null extract の挙動 "
 "[\\#1070](https://github.com/vrm-c/UniVRM/issues/1070)"
 msgstr ""
 
-#: ../../release/079/v0.79.0.md:37
+#: ../../release/079/v0.79.0.md:31
 msgid "TRS のデフォルト値をスキップ [\\#1059](https://github.com/vrm-c/UniVRM/issues/1059)"
 msgstr ""
 
-#: ../../release/079/v0.79.0.md:38
+#: ../../release/079/v0.79.0.md:32
 msgid ""
 "Minor compatibility issues with Unity 2021.1 "
 "[\\#1051](https://github.com/vrm-c/UniVRM/issues/1051)"
 msgstr ""
 
-#: ../../release/079/v0.79.0.md:39
+#: ../../release/079/v0.79.0.md:33
 msgid ""
 "Show the warning of color space because UniGLTF supports Linear color "
 "space only. [\\#1006](https://github.com/vrm-c/UniVRM/issues/1006)"
 msgstr ""
 
-#: ../../release/079/v0.79.0.md:40
+#: ../../release/079/v0.79.0.md:34
 msgid ""
 "Export texture include alpha channel only when needed while exporting "
 "glTF. [\\#968](https://github.com/vrm-c/UniVRM/issues/968)"
 msgstr ""
 
-#: ../../release/079/v0.79.0.md:42
+#: ../../release/079/v0.79.0.md:36
 msgid ""
 "UnitTestの修正 [\\#1106](https://github.com/vrm-c/UniVRM/pull/1106) "
 "([ousttrue](https://github.com/ousttrue))"
 msgstr ""
 
-#: ../../release/079/v0.79.0.md:43
+#: ../../release/079/v0.79.0.md:37
 msgid ""
 "UniVRM-0.79.0 [\\#1105](https://github.com/vrm-c/UniVRM/pull/1105) "
 "([ousttrue](https://github.com/ousttrue))"
 msgstr ""
 
-#: ../../release/079/v0.79.0.md:44
+#: ../../release/079/v0.79.0.md:38
 msgid ""
 "EditorTextureSerializer で例外になるテクスチャを事前にエラーメッセージにする "
 "[\\#1102](https://github.com/vrm-c/UniVRM/pull/1102) "
 "([ousttrue](https://github.com/ousttrue))"
 msgstr ""
 
-#: ../../release/079/v0.79.0.md:45
+#: ../../release/079/v0.79.0.md:39
 msgid ""
 "fix MissingReferenceException "
 "[\\#1095](https://github.com/vrm-c/UniVRM/pull/1095) "
 "([Santarh](https://github.com/Santarh))"
 msgstr ""
 
-#: ../../release/079/v0.79.0.md:46
+#: ../../release/079/v0.79.0.md:40
 msgid ""
 "Add null check in StringExtension "
 "[\\#1090](https://github.com/vrm-c/UniVRM/pull/1090) "
 "([Santarh](https://github.com/Santarh))"
 msgstr ""
 
-#: ../../release/079/v0.79.0.md:47
+#: ../../release/079/v0.79.0.md:41
 msgid ""
 "Make public resource fix method "
 "[\\#1089](https://github.com/vrm-c/UniVRM/pull/1089) "
 "([Santarh](https://github.com/Santarh))"
 msgstr ""
 
-#: ../../release/079/v0.79.0.md:48
+#: ../../release/079/v0.79.0.md:42
 msgid ""
 "Nodeの行列分解時の負のスケールの限定対応 "
 "[\\#1087](https://github.com/vrm-c/UniVRM/pull/1087) "
 "([ousttrue](https://github.com/ousttrue))"
 msgstr ""
 
-#: ../../release/079/v0.79.0.md:49
+#: ../../release/079/v0.79.0.md:43
 msgid ""
 "Feature10/zip extract "
 "[\\#1086](https://github.com/vrm-c/UniVRM/pull/1086) "
 "([ousttrue](https://github.com/ousttrue))"
 msgstr ""
 
-#: ../../release/079/v0.79.0.md:50
+#: ../../release/079/v0.79.0.md:44
 msgid ""
 "VRMC\\_materials\\_hdr\\_emissiveMultiplier 実装 "
 "[\\#1085](https://github.com/vrm-c/UniVRM/pull/1085) "
 "([ousttrue](https://github.com/ousttrue))"
 msgstr ""
 
-#: ../../release/079/v0.79.0.md:51
+#: ../../release/079/v0.79.0.md:45
 msgid ""
 "Fix error when material count was zero in VRM "
 "[\\#1084](https://github.com/vrm-c/UniVRM/pull/1084) "
 "([Santarh](https://github.com/Santarh))"
 msgstr ""
 
-#: ../../release/079/v0.79.0.md:52
+#: ../../release/079/v0.79.0.md:46
 msgid ""
 "Add unique suffix to same name assets. "
 "[\\#1083](https://github.com/vrm-c/UniVRM/pull/1083) "
 "([Santarh](https://github.com/Santarh))"
 msgstr ""
 
-#: ../../release/079/v0.79.0.md:53
+#: ../../release/079/v0.79.0.md:47
 msgid ""
 "AnimationClip import with AnimationClipFactory "
 "[\\#1082](https://github.com/vrm-c/UniVRM/pull/1082) "
 "([Santarh](https://github.com/Santarh))"
 msgstr ""
 
-#: ../../release/079/v0.79.0.md:54
+#: ../../release/079/v0.79.0.md:48
 msgid ""
 "ApplyModifiedProperties "
 "[\\#1081](https://github.com/vrm-c/UniVRM/pull/1081) "
 "([ousttrue](https://github.com/ousttrue))"
 msgstr ""
 
-#: ../../release/079/v0.79.0.md:55
+#: ../../release/079/v0.79.0.md:49
 msgid ""
 "experimental zip archive importer "
 "[\\#1080](https://github.com/vrm-c/UniVRM/pull/1080) "
 "([ousttrue](https://github.com/ousttrue))"
 msgstr ""
 
-#: ../../release/079/v0.79.0.md:56
+#: ../../release/079/v0.79.0.md:50
 msgid ""
 "fix SettingProvider [\\#1079](https://github.com/vrm-c/UniVRM/pull/1079) "
 "([ousttrue](https://github.com/ousttrue))"
 msgstr ""
 
-#: ../../release/079/v0.79.0.md:57
+#: ../../release/079/v0.79.0.md:51
 msgid ""
 "Fix bug of unarchiving stored file in zip. "
 "[\\#1077](https://github.com/vrm-c/UniVRM/pull/1077) "
 "([Santarh](https://github.com/Santarh))"
 msgstr ""
 
-#: ../../release/079/v0.79.0.md:58
+#: ../../release/079/v0.79.0.md:52
 msgid ""
 "Refactoring `GltfParser` "
 "[\\#1076](https://github.com/vrm-c/UniVRM/pull/1076) "
 "([Santarh](https://github.com/Santarh))"
 msgstr ""
 
-#: ../../release/079/v0.79.0.md:59
+#: ../../release/079/v0.79.0.md:53
 msgid ""
 "TextureDeserializer can await. "
 "[\\#1074](https://github.com/vrm-c/UniVRM/pull/1074) "
 "([Santarh](https://github.com/Santarh))"
 msgstr ""
 
-#: ../../release/079/v0.79.0.md:60
+#: ../../release/079/v0.79.0.md:54
 msgid ""
 "Extract/Clear 改修 [\\#1073](https://github.com/vrm-c/UniVRM/pull/1073) "
 "([ousttrue](https://github.com/ousttrue))"
 msgstr ""
 
-#: ../../release/079/v0.79.0.md:61
+#: ../../release/079/v0.79.0.md:55
 msgid ""
 "Export textures with alpha channel only if necessary "
 "[\\#1072](https://github.com/vrm-c/UniVRM/pull/1072) "
 "([Santarh](https://github.com/Santarh))"
 msgstr ""
+
+#~ msgid "[Release](https://github.com/vrm-c/UniVRM/releases/tag/v0.79.0)"
+#~ msgstr ""
+
+#~ msgid "[Milestone](https://github.com/vrm-c/UniVRM/milestone/41?closed=1)"
+#~ msgstr ""
+
+#~ msgid "ToDo:"
+#~ msgstr ""
+
+#~ msgid "[ ] 0.66 ~ 0.79 の変更まとめ"
+#~ msgstr ""
+
+#~ msgid "[ ] (GLB, GLTF) ScriptedImporter の導入 と Extract の説明"
+#~ msgstr ""
 

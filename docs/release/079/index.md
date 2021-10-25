@@ -1,4 +1,4 @@
-# v0.79～: Unity-2019.4
+# v0.79～ (Unity-2019.4) 最新版をご利用ください
 
 ## ReleaseNote
 
@@ -33,7 +33,7 @@ v*
 
 ## UPM(v0.81~)
 
-```json
+```js
 // manifest.json 抜粋
 {
   "dependencies": {

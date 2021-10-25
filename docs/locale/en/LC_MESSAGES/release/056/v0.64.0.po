@@ -27,11 +27,11 @@ msgid "[v0.64.0](https://github.com/vrm-c/UniVRM/tree/v0.64.0) (2021-01-14)"
 msgstr ""
 
 #: ../../release/056/v0.64.0.md:5
-msgid "commit: https://github.com/vrm-c/UniVRM/releases/tag/v0.64.0"
+msgid "[Release](https://github.com/vrm-c/UniVRM/releases/tag/v0.64.0)"
 msgstr ""
 
 #: ../../release/056/v0.64.0.md:6
-msgid "milestone: https://github.com/vrm-c/UniVRM/milestone/23?closed=1"
+msgid "[Milestone](https://github.com/vrm-c/UniVRM/milestone/23?closed=1)"
 msgstr ""
 
 #: ../../release/056/v0.64.0.md:8

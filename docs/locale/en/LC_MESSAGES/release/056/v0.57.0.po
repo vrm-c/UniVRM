@@ -23,11 +23,11 @@ msgid "v0.57.0: ボーン名重複の自動リネーム"
 msgstr ""
 
 #: ../../release/056/v0.57.0.md:3
-msgid "commit: https://github.com/vrm-c/UniVRM/releases/tag/v0.57.0"
+msgid "[Release](https://github.com/vrm-c/UniVRM/releases/tag/v0.57.0)"
 msgstr ""
 
 #: ../../release/056/v0.57.0.md:4
-msgid "milestone: https://github.com/vrm-c/UniVRM/milestone/16?closed=1"
+msgid "[Milestone](https://github.com/vrm-c/UniVRM/milestone/16?closed=1)"
 msgstr ""
 
 #: ../../release/056/v0.57.0.md:6

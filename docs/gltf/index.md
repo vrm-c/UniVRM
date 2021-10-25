@@ -12,7 +12,12 @@
 :maxdepth: 1
 
 0_82_glb_import
-how_to_impl_extension
+how_to_customize_material_import
 0_36_update
+```
+
+```{toctree}
+:maxdepth: 1
 format
+how_to_impl_extension
 ```

@@ -1,17 +1,15 @@
 # Release
 
-| バージョン                      | お勧め | Unity              |                                  |
-|---------------------------------|--------|--------------------|----------------------------------|
-| {doc}`v0.79～ <079/index>`      | 最新版 | Unity-2019.4       | 特に問題が無ければこれ。         |
-| {doc}`v0.68～v0.78 <068/index>` |        | Unity-2018.4       | 開発版。最新版を使ってください。 |
-| {doc}`v0.56～v0.67 <056/index>` | v0.66  | Unity-2018.4       |                                  |
-| {doc}`～v0.55 <055/index>`      | v0.55  | Unity-5.6(.NET3.5) |                                  |
+```{toctree}
+:maxdepth: 1
+unitypackage
+```
 
 ```{toctree}
 :maxdepth: 1
 
-079/index
-068/index
-056/index
 055/index
+056/index
+068/index
+079/index
 ```

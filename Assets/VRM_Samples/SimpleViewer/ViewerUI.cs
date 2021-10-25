@@ -32,6 +32,9 @@ namespace VRM.SimpleViewer
         Toggle m_useUrpMaterial = default;
 
         [SerializeField]
+        Toggle m_useAsync = default;
+
+        [SerializeField]
         Toggle m_useFastSpringBone = default;
         #endregion
 
@@ -416,6 +419,18 @@ namespace VRM.SimpleViewer
             }
         }
 
+        static IAwaitCaller GetIAwaitCaller(bool useAsync)
+        {
+            if (useAsync)
+            {
+                return new RuntimeOnlyAwaitCaller();
+            }
+            else
+            {
+                return new ImmediateCaller();
+            }
+        }
+
         async void LoadModelAsync(string path, bool isVrm)
         {
             if (!File.Exists(path))
@@ -444,7 +459,7 @@ namespace VRM.SimpleViewer
                     using (var loader = new VRMImporterContext(vrm, materialGenerator: GetVrmMaterialGenerator(m_useUrpMaterial.isOn, vrm.VrmExtension)))
                     {
                         await m_texts.UpdateMetaAsync(loader);
-                        var instance = await loader.LoadAsync();
+                        var instance = await loader.LoadAsync(GetIAwaitCaller(m_useAsync.isOn));
                         SetModel(instance);
                     }
                 }
@@ -454,7 +469,7 @@ namespace VRM.SimpleViewer
                     Debug.LogWarning("file extension is vrm. but not vrm ?");
                     using (var loader = new UniGLTF.ImporterContext(data, materialGenerator: GetGltfMaterialGenerator(m_useUrpMaterial.isOn)))
                     {
-                        var instance = await loader.LoadAsync();
+                        var instance = await loader.LoadAsync(GetIAwaitCaller(m_useAsync.isOn));
                         SetModel(instance);
                     }
                 }
@@ -463,7 +478,7 @@ namespace VRM.SimpleViewer
             {
                 using (var loader = new UniGLTF.ImporterContext(data, materialGenerator: GetGltfMaterialGenerator(m_useUrpMaterial.isOn)))
                 {
-                    var instance = await loader.LoadAsync();
+                    var instance = await loader.LoadAsync(GetIAwaitCaller(m_useAsync.isOn));
                     SetModel(instance);
                 }
             }

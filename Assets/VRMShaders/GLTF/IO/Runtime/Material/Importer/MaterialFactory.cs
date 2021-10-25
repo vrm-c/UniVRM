@@ -17,13 +17,12 @@ namespace VRMShaders
             m_externalMap = externalMaterialMap;
         }
 
+        // TODO: UniVRM 0.x の方に処理を移したい
         static Dictionary<string, string> s_fallbackShaders = new Dictionary<string, string>
         {
             {"VRM/UnlitTexture", "Unlit/Texture"},
             {"VRM/UnlitTransparent", "Unlit/Transparent"},
             {"VRM/UnlitCutout", "Unlit/Transparent Cutout"},
-            // 互換性は無いがとりあえず、
-            {"VRM/UnlitTransparentZWrite", "VRM/MToon"},
             {"UniGLTF/StandardVColor", UniGLTF.UniUnlit.UniUnlitUtil.ShaderName},
         };
 

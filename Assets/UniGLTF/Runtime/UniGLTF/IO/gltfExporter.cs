@@ -222,7 +222,7 @@ namespace UniGLTF
             // do nothing
         }
 
-        public virtual void Export(GltfExportSettings meshExportSettings, ITextureSerializer textureSerializer)
+        public virtual void Export(ITextureSerializer textureSerializer)
         {
             var bytesBuffer = new ArrayByteBuffer(new byte[50 * 1024 * 1024]);
             var bufferIndex = glTF.AddBuffer(bytesBuffer);
@@ -232,7 +232,7 @@ namespace UniGLTF
                 .ToList();
 
             var uniqueUnityMeshes = new MeshExportList();
-            uniqueUnityMeshes.GetInfo(Nodes, meshExportSettings);
+            uniqueUnityMeshes.GetInfo(Nodes, m_settings);
 
             #region Materials and Textures
             Materials = uniqueUnityMeshes.GetUniqueMaterials().ToList();
@@ -252,9 +252,9 @@ namespace UniGLTF
                     continue;
                 }
 
-                var (gltfMesh, blendShapeIndexMap) = meshExportSettings.DivideVertexBuffer
-                    ? MeshExporter_DividedVertexBuffer.Export(glTF, bufferIndex, unityMesh, Materials, m_settings.InverseAxis.Create(), meshExportSettings)
-                    : MeshExporter_SharedVertexBuffer.Export(glTF, bufferIndex, unityMesh, Materials, m_settings.InverseAxis.Create(), meshExportSettings)
+                var (gltfMesh, blendShapeIndexMap) = m_settings.DivideVertexBuffer
+                    ? MeshExporter_DividedVertexBuffer.Export(glTF, bufferIndex, unityMesh, Materials, m_settings.InverseAxis.Create(), m_settings)
+                    : MeshExporter_SharedVertexBuffer.Export(glTF, bufferIndex, unityMesh, Materials, m_settings.InverseAxis.Create(), m_settings)
                     ;
                 glTF.meshes.Add(gltfMesh);
                 Meshes.Add(unityMesh.Mesh);

@@ -433,7 +433,19 @@ namespace UniVRM10.VRM10Viewer
                 return;
             }
 
-            if (Vrm10Data.TryParseOrMigrate(data, doMigrate: true, out Vrm10Data vrm))
+            var vrm = await System.Threading.Tasks.Task.Run(() =>
+            {
+                if (Vrm10Data.TryParseOrMigrate(data, doMigrate: true, out Vrm10Data _vrm))
+                {
+                    return _vrm;
+                }
+                else
+                {
+                    return null;
+                }
+            });
+
+            if (vrm != null)
             {
                 // vrm
                 using (var loader = new Vrm10Importer(vrm, materialGenerator: GetVrmMaterialDescriptorGenerator(m_useUrpMaterial.isOn)))
@@ -452,7 +464,7 @@ namespace UniVRM10.VRM10Viewer
                         m_texts.UpdateMeta(vrm.VrmExtension.Meta, thumbnail);
                     }
 
-                    var instance = await loader.LoadAsync();
+                    var instance = await loader.LoadAsync(new RuntimeOnlyAwaitCaller());
                     SetModel(instance);
                 }
             }
@@ -461,7 +473,7 @@ namespace UniVRM10.VRM10Viewer
                 // gltf
                 using (var loader = new UniGLTF.ImporterContext(data, materialGenerator: GetMaterialDescriptorGenerator(m_useUrpMaterial.isOn)))
                 {
-                    var instance = await loader.LoadAsync();
+                    var instance = await loader.LoadAsync(new RuntimeOnlyAwaitCaller());
                     SetModel(instance);
                 }
             }

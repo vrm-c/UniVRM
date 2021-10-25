@@ -1,6 +1,5 @@
-# GlbImport(0.82)
-`0.82.1` の API です。
-`0.82.0` の場合は更新をお願いします。
+# GlbImport(0.82) GltfData
+from: `0.82.1`
 
 以下のステップでロードします。
 
@@ -98,19 +97,7 @@ async RuntimeGltfInstance Load(GltfData data)
 
 ### materialGenerator で URP 用のマテリアルをロードする
 
-`materialGenerator` 引き数(省略可能)を指定することで URP マテリアルを生成するようにカスタムできます。
-
-```csharp
-async RuntimeGltfInstance Load(GltfData data)
-{
-    var materialGenerator = new GltfUrpMaterialDescriptorGenerator();
-    using(var loader = new UniGLTF.ImporterContext(data, materialGenerator: materialGenerator)
-    {
-        var instance = await loader.LoadAsync();
-        return instance;
-    }
-}
-```
+{doc}`Import 時に生成される Material をカスタマイズする </gltf/how_to_customize_material_import>`
 
 ## 3. インスタンスを使用する
 
