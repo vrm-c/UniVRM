@@ -33,7 +33,7 @@ v*
 
 ## UPM(v0.81~)
 
-```json
+```js
 // manifest.json 抜粋
 {
   "dependencies": {
