@@ -6,5 +6,5 @@ Runtime ローダーのサンプルです。
 :language: csharp
 :linenos:
 :caption:
-:emphasize-lines" 434-485
+:lines: 434-485
 ```
