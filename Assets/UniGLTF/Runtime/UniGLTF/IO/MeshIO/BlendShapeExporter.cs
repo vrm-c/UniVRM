@@ -7,7 +7,7 @@ namespace UniGLTF
 {
     public static class BlendShapeExporter
     {
-        public static gltfMorphTarget Export(GltfBufferWriter w, Vector3[] positions, Vector3[] normals, bool useSparse)
+        public static gltfMorphTarget Export(ExportingGltfData  w, Vector3[] positions, Vector3[] normals, bool useSparse)
         {
             var accessorCount = positions.Length;
             if (normals != null && positions.Length != normals.Length)

@@ -24,7 +24,7 @@ namespace UniGLTF
         /// <param name="axisInverter"></param>
         /// <param name="settings"></param>
         /// <returns></returns>
-        public static (glTFMesh, Dictionary<int, int> blendShapeIndexMap) Export(GltfBufferWriter w,
+        public static (glTFMesh, Dictionary<int, int> blendShapeIndexMap) Export(ExportingGltfData  w,
             MeshExportInfo unityMesh, List<Material> unityMaterials,
             IAxisInverter axisInverter, GltfExportSettings settings)
         {
@@ -200,7 +200,7 @@ namespace UniGLTF
             return useSparse;
         }
 
-        static gltfMorphTarget ExportMorphTarget(GltfBufferWriter w,
+        static gltfMorphTarget ExportMorphTarget(ExportingGltfData  w,
             Mesh mesh, int blendShapeIndex,
             bool useSparseAccessorForMorphTarget,
             bool exportOnlyBlendShapePosition,

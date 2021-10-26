@@ -12,7 +12,7 @@ namespace VRM
     {
         public const Axes Vrm0xSpecificationInverseAxis = Axes.Z;
 
-        public static GltfBufferWriter Export(GltfExportSettings configuration, GameObject go, ITextureSerializer textureSerializer)
+        public static ExportingGltfData  Export(GltfExportSettings configuration, GameObject go, ITextureSerializer textureSerializer)
         {
             var gltf = new glTF();
             using (var exporter = new VRMExporter(gltf, configuration))

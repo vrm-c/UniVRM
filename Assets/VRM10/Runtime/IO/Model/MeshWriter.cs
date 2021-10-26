@@ -66,9 +66,8 @@ namespace UniVRM10
         /// <param name="gltfMesh"></param>
         /// <param name="option"></param>
         static IEnumerable<glTFPrimitives> ExportMeshDivided(this VrmLib.Mesh mesh, List<object> materials,
-            GltfBufferWriter writer, ExportArgs option)
+            ExportingGltfData  writer, ExportArgs option)
         {
-            var bufferIndex = 0;
             var usedIndices = new List<int>();
             var meshIndices = SpanLike.CopyFrom(mesh.IndexBuffer.GetAsIntArray());
             var positions = mesh.VertexBuffer.Positions.GetSpan<UnityEngine.Vector3>().ToArray();
@@ -161,7 +160,7 @@ namespace UniVRM10
         /// <param name="storage"></param>
         /// <param name="option"></param>
         /// <returns></returns>
-        public static glTFMesh ExportMeshGroup(this MeshGroup src, List<object> materials, GltfBufferWriter writer, ExportArgs option)
+        public static glTFMesh ExportMeshGroup(this MeshGroup src, List<object> materials, ExportingGltfData  writer, ExportArgs option)
         {
             var gltfMesh = new glTFMesh
             {

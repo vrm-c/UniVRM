@@ -30,7 +30,7 @@ namespace UniGLTF
                 m_normals[index] = normal;
             }
 
-            public gltfMorphTarget ToGltf(GltfBufferWriter w, bool useNormal, bool useSparse)
+            public gltfMorphTarget ToGltf(ExportingGltfData  w, bool useNormal, bool useSparse)
             {
                 return BlendShapeExporter.Export(w,
                     m_positions,
@@ -103,7 +103,7 @@ namespace UniGLTF
                 m_weights.Add(new Vector4(boneWeight.weight0, boneWeight.weight1, boneWeight.weight2, boneWeight.weight3));
             }
 
-            public glTFPrimitives ToGltfPrimitive(GltfBufferWriter w, int materialIndex, IEnumerable<int> indices)
+            public glTFPrimitives ToGltfPrimitive(ExportingGltfData  w, int materialIndex, IEnumerable<int> indices)
             {
                 var indicesAccessorIndex = w.ExtendBufferAndGetAccessorIndex(indices.Select(x => (uint)m_vertexIndexMap[x]).ToArray(), glBufferTarget.ELEMENT_ARRAY_BUFFER);
                 var positions = m_positions.ToArray();

@@ -57,7 +57,7 @@ namespace UniVRM10
             return asset;
         }
 
-        public static IEnumerable<glTFMesh> ExportMeshes(List<MeshGroup> groups, List<object> materials, GltfBufferWriter w, ExportArgs option)
+        public static IEnumerable<glTFMesh> ExportMeshes(List<MeshGroup> groups, List<object> materials, ExportingGltfData  w, ExportArgs option)
         {
             foreach (var group in groups)
             {

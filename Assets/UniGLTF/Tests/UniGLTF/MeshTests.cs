@@ -118,7 +118,7 @@ namespace UniGLTF
         public void SharedVertexBufferTest()
         {
             var glTF = new glTF();
-            var w = new GltfBufferWriter(glTF, 50 * 1024 * 1024);
+            var w = new ExportingGltfData (glTF, 50 * 1024 * 1024);
 
             var Materials = new List<Material>{
                 new Material(Shader.Find("Standard")), // A
@@ -167,7 +167,7 @@ namespace UniGLTF
         public void DividedVertexBufferTest()
         {
             var glTF = new glTF();
-            var w = new GltfBufferWriter(glTF, 50 * 1024 * 1024);
+            var w = new ExportingGltfData (glTF, 50 * 1024 * 1024);
 
             var Materials = new List<Material>{
                 new Material(Shader.Find("Standard")), // A

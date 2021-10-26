@@ -12,7 +12,7 @@ namespace UniGLTF
     {
         protected glTF glTF;
 
-        protected GltfBufferWriter _writer;
+        protected ExportingGltfData  _writer;
 
         public GameObject Copy
         {
@@ -72,7 +72,7 @@ namespace UniGLTF
         public gltfExporter(glTF gltf, GltfExportSettings settings)
         {
             glTF = gltf;
-            _writer = new GltfBufferWriter(gltf);
+            _writer = new ExportingGltfData (gltf);
 
             glTF.extensionsUsed.AddRange(ExtensionUsed);
 
@@ -225,7 +225,7 @@ namespace UniGLTF
             // do nothing
         }
 
-        public virtual GltfBufferWriter Export(ITextureSerializer textureSerializer)
+        public virtual ExportingGltfData  Export(ITextureSerializer textureSerializer)
         {
             Nodes = Copy.transform.Traverse()
                 .Skip(1) // exclude root object for the symmetry with the importer

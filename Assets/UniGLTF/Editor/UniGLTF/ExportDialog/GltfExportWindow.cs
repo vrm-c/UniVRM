@@ -101,7 +101,7 @@ namespace UniGLTF
             }
 
             var gltf = new glTF();
-            GltfBufferWriter writer = default;
+            ExportingGltfData  writer = default;
             using (var exporter = new gltfExporter(gltf, Settings))
             {
                 exporter.Prepare(State.ExportRoot);

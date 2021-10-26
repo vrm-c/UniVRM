@@ -22,7 +22,7 @@ namespace UniGLTF
         /// <param name="bufferIndex"></param>
         /// <param name="texture"></param>
         /// <returns>gltf texture index</returns>
-        public static int PushGltfTexture(GltfBufferWriter w, Texture2D texture, ColorSpace textureColorSpace, ITextureSerializer textureSerializer)
+        public static int PushGltfTexture(ExportingGltfData  w, Texture2D texture, ColorSpace textureColorSpace, ITextureSerializer textureSerializer)
         {
             var bytesWithMime = textureSerializer.ExportBytesWithMime(texture, textureColorSpace);
 

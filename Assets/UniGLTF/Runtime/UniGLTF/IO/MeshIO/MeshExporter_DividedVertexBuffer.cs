@@ -17,7 +17,7 @@ namespace UniGLTF
         /// <param name="axisInverter"></param>
         /// <param name="settings"></param>
         /// <returns></returns>
-        public static (glTFMesh, Dictionary<int, int>) Export(GltfBufferWriter w,
+        public static (glTFMesh, Dictionary<int, int>) Export(ExportingGltfData  w,
             MeshExportInfo unityMesh, List<Material> unityMaterials,
             IAxisInverter axisInverter, GltfExportSettings settings)
         {

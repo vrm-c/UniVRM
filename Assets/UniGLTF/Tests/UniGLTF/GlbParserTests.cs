@@ -30,7 +30,7 @@ namespace UniGLTF
                 name = "hogefuga",
             });
 
-            var parser = new GlbLowLevelParser("Test", new GltfBufferWriter(gltf).ToGlbBytes());
+            var parser = new GlbLowLevelParser("Test", new ExportingGltfData (gltf).ToGlbBytes());
             var data = parser.Parse();
 
             Assert.AreEqual("FooBar", data.GLTF.textures[0].name);

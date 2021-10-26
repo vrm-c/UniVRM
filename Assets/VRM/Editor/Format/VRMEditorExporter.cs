@@ -223,7 +223,7 @@ namespace VRM
             // 出力
             var sw = System.Diagnostics.Stopwatch.StartNew();
             var gltf = new UniGLTF.glTF();
-            GltfBufferWriter writer = default;
+            ExportingGltfData  writer = default;
             using (var exporter = new VRMExporter(gltf, settings.MeshExportSettings))
             {
                 exporter.Prepare(target);

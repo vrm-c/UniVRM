@@ -10,7 +10,7 @@ using VrmLib;
 
 namespace UniVRM10
 {
-    public class Vrm10Storage : GltfBufferWriter
+    public class Vrm10Storage : ExportingGltfData 
     {
         UniGLTF.GltfData m_data;
         public UniGLTF.glTF Gltf => m_data.GLTF;

@@ -5,13 +5,13 @@ using UniJSON;
 
 namespace UniGLTF
 {
-    public class GltfBufferWriter
+    public class ExportingGltfData
     {
         readonly glTF _gltf;
 
         public glTF GLTF => _gltf;
 
-        public GltfBufferWriter(glTF gltf, int reserved = default)
+        public ExportingGltfData(glTF gltf, int reserved = default)
         {
             if (reserved == 0)
             {
