@@ -85,7 +85,6 @@ namespace UniGLTF
             );
         }
 
-        #region bytes access helper methods. buffer, bufferView, accessor(may sparse), image
         public ArraySegment<Byte> GetBytes(int bufferIndex)
         {
             // TODO:
@@ -272,6 +271,5 @@ namespace UniGLTF
             var imageIndex = GLTF.textures[textureIndex].source;
             return GetImageBytes(imageIndex);
         }
-        #endregion
     }
 }
