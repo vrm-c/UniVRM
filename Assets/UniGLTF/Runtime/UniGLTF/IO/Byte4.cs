@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 namespace UniGLTF
 {
     [Serializable, StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct Byte4
+    public readonly struct Byte4 : IEquatable<Byte4>
     {
         public readonly byte x;
         public readonly byte y;
@@ -16,6 +16,11 @@ namespace UniGLTF
             y = _y;
             z = _z;
             w = _w;
+        }
+
+        public bool Equals(Byte4 other)
+        {
+            return x == other.x && y == other.y && z == other.z && w == other.w;
         }
     }
 }
