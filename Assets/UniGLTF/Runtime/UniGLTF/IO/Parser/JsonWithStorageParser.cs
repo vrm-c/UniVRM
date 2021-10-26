@@ -10,12 +10,12 @@ namespace UniGLTF
     public sealed class JsonWithStorageParser
     {
         private readonly string _json;
-        private readonly IUrlGetter _storage;
+        private readonly IStorage _storage;
 
-        public JsonWithStorageParser(string json, IUrlGetter urlGetter = null)
+        public JsonWithStorageParser(string json, IStorage storage = null)
         {
             _json = json;
-            _storage = urlGetter ?? new SimpleStorage(new ArraySegment<byte>());
+            _storage = storage ?? new SimpleStorage(new ArraySegment<byte>());
         }
 
         public GltfData Parse()

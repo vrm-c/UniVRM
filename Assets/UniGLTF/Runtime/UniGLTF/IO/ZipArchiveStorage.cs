@@ -292,7 +292,10 @@ namespace UniGLTF.Zip
         }
     }
 
-    class ZipArchiveStorage : IUrlGetter
+    /// <summary>
+    /// Implement url that reference zip archive
+    /// </summary>
+    class ZipArchiveStorage : IStorage
     {
         public override string ToString()
         {

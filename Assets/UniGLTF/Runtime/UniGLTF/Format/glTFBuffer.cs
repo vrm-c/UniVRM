@@ -9,9 +9,9 @@ namespace UniGLTF
         IBytesBuffer m_buffer;
         public IBytesBuffer Buffer => m_buffer;
 
-        public void OpenStorage(IUrlGetter urlGetter)
+        public void OpenStorage(IStorage storage)
         {
-            m_buffer = new ArraySegmentByteBuffer(urlGetter.Get(uri));
+            m_buffer = new ArraySegmentByteBuffer(storage.Get(uri));
         }
 
         public glTFBuffer()

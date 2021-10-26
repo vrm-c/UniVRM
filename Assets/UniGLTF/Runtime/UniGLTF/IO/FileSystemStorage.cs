@@ -4,7 +4,10 @@ using System.IO;
 
 namespace UniGLTF
 {
-    public class SimpleStorage : IUrlGetter
+    /// <summary>
+    /// Implement bin chunk access
+    /// </summary>
+    public class SimpleStorage : IStorage
     {
         ArraySegment<Byte> m_bytes;
 
@@ -28,7 +31,10 @@ namespace UniGLTF
         }
     }
 
-    public class FileSystemStorage : IUrlGetter
+    /// <summary>
+    /// Implement url that represnet relative path
+    /// </summary>
+    public class FileSystemStorage : IStorage
     {
         string m_root;
 
@@ -60,7 +66,10 @@ namespace UniGLTF
         }
     }
 
-    public class GltfStorage : IUrlGetter
+    /// <summary>
+    /// for UnitTest
+    /// </summary>
+    public class GltfStorage : IStorage
     {
         glTF _gltf;
 
