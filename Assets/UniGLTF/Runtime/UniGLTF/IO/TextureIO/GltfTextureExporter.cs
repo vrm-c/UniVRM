@@ -22,16 +22,16 @@ namespace UniGLTF
         /// <param name="bufferIndex"></param>
         /// <param name="texture"></param>
         /// <returns>gltf texture index</returns>
-        public static int PushGltfTexture(ExportingGltfData  w, Texture2D texture, ColorSpace textureColorSpace, ITextureSerializer textureSerializer)
+        public static int PushGltfTexture(ExportingGltfData data, Texture2D texture, ColorSpace textureColorSpace, ITextureSerializer textureSerializer)
         {
             var bytesWithMime = textureSerializer.ExportBytesWithMime(texture, textureColorSpace);
 
             // add view
-            var viewIndex = w.ExtendBufferAndGetViewIndex(bytesWithMime.bytes);
+            var viewIndex = data.ExtendBufferAndGetViewIndex(bytesWithMime.bytes);
 
             // add image
-            var imageIndex = w.GLTF.images.Count;
-            w.GLTF.images.Add(new glTFImage
+            var imageIndex = data.GLTF.images.Count;
+            data.GLTF.images.Add(new glTFImage
             {
                 name = TextureImportName.RemoveSuffix(texture.name),
                 bufferView = viewIndex,
@@ -39,13 +39,13 @@ namespace UniGLTF
             });
 
             // add sampler
-            var samplerIndex = w.GLTF.samplers.Count;
+            var samplerIndex = data.GLTF.samplers.Count;
             var sampler = TextureSamplerUtil.Export(texture);
-            w.GLTF.samplers.Add(sampler);
+            data.GLTF.samplers.Add(sampler);
 
             // add texture
-            var textureIndex = w.GLTF.textures.Count;
-            w.GLTF.textures.Add(new glTFTexture
+            var textureIndex = data.GLTF.textures.Count;
+            data.GLTF.textures.Add(new glTFTexture
             {
                 sampler = samplerIndex,
                 source = imageIndex,

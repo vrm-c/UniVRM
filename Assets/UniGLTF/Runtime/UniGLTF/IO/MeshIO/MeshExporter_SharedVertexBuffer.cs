@@ -24,27 +24,27 @@ namespace UniGLTF
         /// <param name="axisInverter"></param>
         /// <param name="settings"></param>
         /// <returns></returns>
-        public static (glTFMesh, Dictionary<int, int> blendShapeIndexMap) Export(ExportingGltfData  w,
+        public static (glTFMesh, Dictionary<int, int> blendShapeIndexMap) Export(ExportingGltfData data,
             MeshExportInfo unityMesh, List<Material> unityMaterials,
             IAxisInverter axisInverter, GltfExportSettings settings)
         {
             var mesh = unityMesh.Mesh;
             var materials = unityMesh.Materials;
             var positions = mesh.vertices.Select(axisInverter.InvertVector3).ToArray();
-            var positionAccessorIndex = w.ExtendBufferAndGetAccessorIndex(positions, glBufferTarget.ARRAY_BUFFER);
-            w.GLTF.accessors[positionAccessorIndex].min = positions.Aggregate(positions[0], (a, b) => new Vector3(Mathf.Min(a.x, b.x), Math.Min(a.y, b.y), Mathf.Min(a.z, b.z))).ToArray();
-            w.GLTF.accessors[positionAccessorIndex].max = positions.Aggregate(positions[0], (a, b) => new Vector3(Mathf.Max(a.x, b.x), Math.Max(a.y, b.y), Mathf.Max(a.z, b.z))).ToArray();
+            var positionAccessorIndex = data.ExtendBufferAndGetAccessorIndex(positions, glBufferTarget.ARRAY_BUFFER);
+            data.GLTF.accessors[positionAccessorIndex].min = positions.Aggregate(positions[0], (a, b) => new Vector3(Mathf.Min(a.x, b.x), Math.Min(a.y, b.y), Mathf.Min(a.z, b.z))).ToArray();
+            data.GLTF.accessors[positionAccessorIndex].max = positions.Aggregate(positions[0], (a, b) => new Vector3(Mathf.Max(a.x, b.x), Math.Max(a.y, b.y), Mathf.Max(a.z, b.z))).ToArray();
 
-            var normalAccessorIndex = w.ExtendBufferAndGetAccessorIndex(mesh.normals.Select(y => axisInverter.InvertVector3(y.normalized)).ToArray(), glBufferTarget.ARRAY_BUFFER);
+            var normalAccessorIndex = data.ExtendBufferAndGetAccessorIndex(mesh.normals.Select(y => axisInverter.InvertVector3(y.normalized)).ToArray(), glBufferTarget.ARRAY_BUFFER);
 
             int? tangentAccessorIndex = default;
             if (settings.ExportTangents)
             {
-                tangentAccessorIndex = w.ExtendBufferAndGetAccessorIndex(mesh.tangents.Select(axisInverter.InvertVector4).ToArray(), glBufferTarget.ARRAY_BUFFER);
+                tangentAccessorIndex = data.ExtendBufferAndGetAccessorIndex(mesh.tangents.Select(axisInverter.InvertVector4).ToArray(), glBufferTarget.ARRAY_BUFFER);
             }
 
-            var uvAccessorIndex0 = w.ExtendBufferAndGetAccessorIndex(mesh.uv.Select(y => y.ReverseUV()).ToArray(), glBufferTarget.ARRAY_BUFFER);
-            var uvAccessorIndex1 = w.ExtendBufferAndGetAccessorIndex(mesh.uv2.Select(y => y.ReverseUV()).ToArray(), glBufferTarget.ARRAY_BUFFER);
+            var uvAccessorIndex0 = data.ExtendBufferAndGetAccessorIndex(mesh.uv.Select(y => y.ReverseUV()).ToArray(), glBufferTarget.ARRAY_BUFFER);
+            var uvAccessorIndex1 = data.ExtendBufferAndGetAccessorIndex(mesh.uv2.Select(y => y.ReverseUV()).ToArray(), glBufferTarget.ARRAY_BUFFER);
 
             var colorAccessorIndex = -1;
 
@@ -54,12 +54,12 @@ namespace UniGLTF
             )
             {
                 // UniUnlit で Multiply 設定になっている
-                colorAccessorIndex = w.ExtendBufferAndGetAccessorIndex(mesh.colors, glBufferTarget.ARRAY_BUFFER);
+                colorAccessorIndex = data.ExtendBufferAndGetAccessorIndex(mesh.colors, glBufferTarget.ARRAY_BUFFER);
             }
 
             var boneweights = mesh.boneWeights;
-            var weightAccessorIndex = w.ExtendBufferAndGetAccessorIndex(boneweights.Select(y => new Vector4(y.weight0, y.weight1, y.weight2, y.weight3)).ToArray(), glBufferTarget.ARRAY_BUFFER);
-            var jointsAccessorIndex = w.ExtendBufferAndGetAccessorIndex(boneweights.Select(y =>
+            var weightAccessorIndex = data.ExtendBufferAndGetAccessorIndex(boneweights.Select(y => new Vector4(y.weight0, y.weight1, y.weight2, y.weight3)).ToArray(), glBufferTarget.ARRAY_BUFFER);
+            var jointsAccessorIndex = data.ExtendBufferAndGetAccessorIndex(boneweights.Select(y =>
                 new UShort4(
                     (ushort)unityMesh.GetJointIndex(y.boneIndex0),
                     (ushort)unityMesh.GetJointIndex(y.boneIndex1),
@@ -127,7 +127,7 @@ namespace UniGLTF
                     indices.Add((uint)i0);
                 }
 
-                var indicesAccessorIndex = w.ExtendBufferAndGetAccessorIndex(indices.ToArray(), glBufferTarget.ELEMENT_ARRAY_BUFFER);
+                var indicesAccessorIndex = data.ExtendBufferAndGetAccessorIndex(indices.ToArray(), glBufferTarget.ELEMENT_ARRAY_BUFFER);
                 if (indicesAccessorIndex < 0)
                 {
                     // https://github.com/vrm-c/UniVRM/issues/664                    
@@ -156,7 +156,7 @@ namespace UniGLTF
                 int exportBlendShapes = 0;
                 for (int j = 0; j < unityMesh.Mesh.blendShapeCount; ++j)
                 {
-                    var morphTarget = ExportMorphTarget(w,
+                    var morphTarget = ExportMorphTarget(data,
                         unityMesh.Mesh, j,
                         settings.UseSparseAccessorForMorphTarget,
                         settings.ExportOnlyBlendShapePosition, axisInverter);
@@ -200,7 +200,7 @@ namespace UniGLTF
             return useSparse;
         }
 
-        static gltfMorphTarget ExportMorphTarget(ExportingGltfData  w,
+        static gltfMorphTarget ExportMorphTarget(ExportingGltfData data,
             Mesh mesh, int blendShapeIndex,
             bool useSparseAccessorForMorphTarget,
             bool exportOnlyBlendShapePosition,
@@ -244,7 +244,7 @@ namespace UniGLTF
                 normals[i] = axisInverter.InvertVector3(normals[i]);
             }
 
-            return BlendShapeExporter.Export(w,
+            return BlendShapeExporter.Export(data,
                 blendShapeVertices,
                 exportOnlyBlendShapePosition && useNormal ? null : blendShapeNormals,
                 useSparseAccessorForMorphTarget);

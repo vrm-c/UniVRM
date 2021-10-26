@@ -17,7 +17,7 @@ namespace UniGLTF
         /// <param name="axisInverter"></param>
         /// <param name="settings"></param>
         /// <returns></returns>
-        public static (glTFMesh, Dictionary<int, int>) Export(ExportingGltfData  w,
+        public static (glTFMesh, Dictionary<int, int>) Export(ExportingGltfData data,
             MeshExportInfo unityMesh, List<Material> unityMaterials,
             IAxisInverter axisInverter, GltfExportSettings settings)
         {
@@ -84,7 +84,7 @@ namespace UniGLTF
                     flipped.Add(t1);
                     flipped.Add(t0);
                 }
-                var gltfPrimitive = buffer.ToGltfPrimitive(w, materialIndex, flipped);
+                var gltfPrimitive = buffer.ToGltfPrimitive(data, materialIndex, flipped);
 
                 // blendShape(morph target)
                 for (int j = 0; j < mesh.blendShapeCount; ++j)
@@ -101,7 +101,7 @@ namespace UniGLTF
                             axisInverter.InvertVector3(blendShapeNormals[k]));
                     }
 
-                    gltfPrimitive.targets.Add(blendShape.ToGltf(w, !settings.ExportOnlyBlendShapePosition,
+                    gltfPrimitive.targets.Add(blendShape.ToGltf(data, !settings.ExportOnlyBlendShapePosition,
                         settings.UseSparseAccessorForMorphTarget));
                 }
 
