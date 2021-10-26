@@ -24,11 +24,6 @@ namespace UniGLTF
         {
             return m_bytes;
         }
-
-        public string GetPath(string url)
-        {
-            return null;
-        }
     }
 
     /// <summary>
@@ -52,18 +47,6 @@ namespace UniGLTF
                 ;
             return new ArraySegment<byte>(bytes);
         }
-
-        public string GetPath(string url)
-        {
-            if (url.FastStartsWith("data:"))
-            {
-                return null;
-            }
-            else
-            {
-                return Path.Combine(m_root, url).Replace("\\", "/");
-            }
-        }
     }
 
     /// <summary>
@@ -81,11 +64,6 @@ namespace UniGLTF
         public ArraySegment<byte> Get(string url)
         {
             return _gltf.buffers[0].GetBytes();
-        }
-
-        public string GetPath(string url)
-        {
-            return null;
         }
     }
 }
