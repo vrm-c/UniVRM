@@ -37,10 +37,6 @@ namespace UniVRM10
             Storage.Gltf.extensionsUsed.Add(UniGLTF.Extensions.VRMC_materials_mtoon.VRMC_materials_mtoon.ExtensionName);
             Storage.Gltf.extensionsUsed.Add(UniGLTF.Extensions.VRMC_springBone.VRMC_springBone.ExtensionName);
             Storage.Gltf.extensionsUsed.Add(UniGLTF.Extensions.VRMC_node_constraint.VRMC_node_constraint.ExtensionName);
-            Storage.Gltf.buffers.Add(new glTFBuffer
-            {
-
-            });
 
             m_textureSerializer = textureSerializer;
             m_textureExporter = new TextureExporter(m_textureSerializer);
@@ -61,11 +57,11 @@ namespace UniVRM10
             return asset;
         }
 
-        public static IEnumerable<glTFMesh> ExportMeshes(List<MeshGroup> groups, List<object> materials, Vrm10Storage storage, ExportArgs option)
+        public static IEnumerable<glTFMesh> ExportMeshes(List<MeshGroup> groups, List<object> materials, GltfBufferWriter w, ExportArgs option)
         {
             foreach (var group in groups)
             {
-                yield return group.ExportMeshGroup(materials, storage, option);
+                yield return group.ExportMeshGroup(materials, w, option);
             }
         }
 
@@ -201,7 +197,7 @@ namespace UniVRM10
             for (var exportedTextureIdx = 0; exportedTextureIdx < exportedTextures.Count; ++exportedTextureIdx)
             {
                 var (unityTexture, texColorSpace) = exportedTextures[exportedTextureIdx];
-                Storage.Gltf.PushGltfTexture(0, unityTexture, texColorSpace, m_textureSerializer);
+                GltfTextureExporter.PushGltfTexture(Storage, unityTexture, texColorSpace, m_textureSerializer);
             }
 
             if (thumbnailTextureIndex.HasValue)

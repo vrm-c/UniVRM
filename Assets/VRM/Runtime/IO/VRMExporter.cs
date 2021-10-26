@@ -12,15 +12,14 @@ namespace VRM
     {
         public const Axes Vrm0xSpecificationInverseAxis = Axes.Z;
 
-        public static glTF Export(GltfExportSettings configuration, GameObject go, ITextureSerializer textureSerializer)
+        public static GltfBufferWriter Export(GltfExportSettings configuration, GameObject go, ITextureSerializer textureSerializer)
         {
             var gltf = new glTF();
             using (var exporter = new VRMExporter(gltf, configuration))
             {
                 exporter.Prepare(go);
-                exporter.Export(textureSerializer);
+                return exporter.Export(textureSerializer);
             }
-            return gltf;
         }
 
         public readonly VRM.glTF_VRM_extensions VRM = new glTF_VRM_extensions();
@@ -29,7 +28,7 @@ namespace VRM
         {
             if (exportSettings == null || exportSettings.InverseAxis != Vrm0xSpecificationInverseAxis)
             {
-                throw new Exception( $"VRM specification requires InverseAxis settings as {Vrm0xSpecificationInverseAxis}");
+                throw new Exception($"VRM specification requires InverseAxis settings as {Vrm0xSpecificationInverseAxis}");
             }
 
             gltf.extensionsUsed.Add(glTF_VRM_extensions.ExtensionName);
@@ -118,7 +117,7 @@ namespace VRM
                     VRM.meta.title = meta.Title;
                     if (meta.Thumbnail != null)
                     {
-                        VRM.meta.texture = glTF.PushGltfTexture(glTF.buffers.Count - 1, meta.Thumbnail, ColorSpace.sRGB, textureSerializer);
+                        VRM.meta.texture = GltfTextureExporter.PushGltfTexture(_writer, meta.Thumbnail, ColorSpace.sRGB, textureSerializer);
                     }
 
                     VRM.meta.licenseType = meta.LicenseType;

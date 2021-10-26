@@ -170,7 +170,7 @@ namespace VRM.Samples
 
                 // TODO: Check contents in JSON
                 /*var exportJson = */
-                JsonParser.Parse(vrm.ToJson());
+                JsonParser.Parse(vrm.GLTF.ToJson());
 
                 // TODO: Check contents in JSON
                 /*var newExportedJson = */

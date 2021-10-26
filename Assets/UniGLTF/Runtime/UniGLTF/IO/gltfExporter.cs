@@ -12,6 +12,8 @@ namespace UniGLTF
     {
         protected glTF glTF;
 
+        protected GltfBufferWriter _writer;
+
         public GameObject Copy
         {
             get;
@@ -70,6 +72,7 @@ namespace UniGLTF
         public gltfExporter(glTF gltf, GltfExportSettings settings)
         {
             glTF = gltf;
+            _writer = new GltfBufferWriter(gltf);
 
             glTF.extensionsUsed.AddRange(ExtensionUsed);
 
@@ -222,11 +225,8 @@ namespace UniGLTF
             // do nothing
         }
 
-        public virtual void Export(ITextureSerializer textureSerializer)
+        public virtual GltfBufferWriter Export(ITextureSerializer textureSerializer)
         {
-            var bytesBuffer = new ArrayByteBuffer(new byte[50 * 1024 * 1024]);
-            var bufferIndex = glTF.AddBuffer(bytesBuffer);
-
             Nodes = Copy.transform.Traverse()
                 .Skip(1) // exclude root object for the symmetry with the importer
                 .ToList();
@@ -253,8 +253,8 @@ namespace UniGLTF
                 }
 
                 var (gltfMesh, blendShapeIndexMap) = m_settings.DivideVertexBuffer
-                    ? MeshExporter_DividedVertexBuffer.Export(glTF, bufferIndex, unityMesh, Materials, m_settings.InverseAxis.Create(), m_settings)
-                    : MeshExporter_SharedVertexBuffer.Export(glTF, bufferIndex, unityMesh, Materials, m_settings.InverseAxis.Create(), m_settings)
+                    ? MeshExporter_DividedVertexBuffer.Export(_writer, unityMesh, Materials, m_settings.InverseAxis.Create(), m_settings)
+                    : MeshExporter_SharedVertexBuffer.Export(_writer, unityMesh, Materials, m_settings.InverseAxis.Create(), m_settings)
                     ;
                 glTF.meshes.Add(gltfMesh);
                 Meshes.Add(unityMesh.Mesh);
@@ -293,7 +293,7 @@ namespace UniGLTF
                     if (uniqueBones != null && renderer is SkinnedMeshRenderer smr)
                     {
                         var matrices = x.GetBindPoses().Select(m_settings.InverseAxis.Create().InvertMat4).ToArray();
-                        var accessor = glTF.ExtendBufferAndGetAccessorIndex(bufferIndex, matrices, glBufferTarget.NONE);
+                        var accessor = _writer.ExtendBufferAndGetAccessorIndex(matrices, glBufferTarget.NONE);
                         var skin = new glTFSkin
                         {
                             inverseBindMatrices = accessor,
@@ -339,10 +339,10 @@ namespace UniGLTF
                     {
                         var sampler = animationWithCurve.Animation.samplers[kv.Key];
 
-                        var inputAccessorIndex = glTF.ExtendBufferAndGetAccessorIndex(bufferIndex, kv.Value.Input);
+                        var inputAccessorIndex = _writer.ExtendBufferAndGetAccessorIndex(kv.Value.Input);
                         sampler.input = inputAccessorIndex;
 
-                        var outputAccessorIndex = glTF.ExtendBufferAndGetAccessorIndex(bufferIndex, kv.Value.Output);
+                        var outputAccessorIndex = _writer.ExtendBufferAndGetAccessorIndex(kv.Value.Output);
                         sampler.output = outputAccessorIndex;
 
                         // modify accessors
@@ -371,6 +371,7 @@ namespace UniGLTF
                     animationWithCurve.Animation.name = clip.name;
                     glTF.animations.Add(animationWithCurve.Animation);
                 }
+
             }
             #endregion
 #endif
@@ -382,10 +383,12 @@ namespace UniGLTF
             for (var exportedTextureIdx = 0; exportedTextureIdx < exported.Count; ++exportedTextureIdx)
             {
                 var (unityTexture, colorSpace) = exported[exportedTextureIdx];
-                glTF.PushGltfTexture(bufferIndex, unityTexture, colorSpace, textureSerializer);
+                GltfTextureExporter.PushGltfTexture(_writer, unityTexture, colorSpace, textureSerializer);
             }
 
             FixName(glTF);
+
+            return _writer;
         }
 
         /// <summary>

@@ -8,29 +8,29 @@ namespace UniGLTF
         [Test]
         public void TextureNameUniqueness()
         {
-            var gltfData = new glTF();
-            gltfData.asset.version = "2.0";
-            gltfData.buffers.Add(new glTFBuffer(new ArrayByteBuffer(Array.Empty<byte>())));
-            gltfData.textures.Add(new glTFTexture
+            var gltf = new glTF();
+            gltf.asset.version = "2.0";
+            gltf.buffers.Add(new glTFBuffer(new ArrayByteBuffer(Array.Empty<byte>())));
+            gltf.textures.Add(new glTFTexture
             {
                 name = "FooBar",
                 source = 0,
             });
-            gltfData.textures.Add(new glTFTexture
+            gltf.textures.Add(new glTFTexture
             {
                 name = "foobar",
                 source = 1,
             });
-            gltfData.images.Add(new glTFImage
+            gltf.images.Add(new glTFImage
             {
                 name = "HogeFuga",
             });
-            gltfData.images.Add(new glTFImage
+            gltf.images.Add(new glTFImage
             {
                 name = "hogefuga",
             });
 
-            var parser = new GlbLowLevelParser("Test", gltfData.ToGlbBytes());
+            var parser = new GlbLowLevelParser("Test", new GltfBufferWriter(gltf).ToGlbBytes());
             var data = parser.Parse();
 
             Assert.AreEqual("FooBar", data.GLTF.textures[0].name);

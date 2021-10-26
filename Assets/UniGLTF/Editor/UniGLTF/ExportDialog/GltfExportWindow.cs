@@ -101,20 +101,21 @@ namespace UniGLTF
             }
 
             var gltf = new glTF();
+            GltfBufferWriter writer = default;
             using (var exporter = new gltfExporter(gltf, Settings))
             {
                 exporter.Prepare(State.ExportRoot);
-                exporter.Export(new EditorTextureSerializer());
+                writer = exporter.Export(new EditorTextureSerializer());
             }
 
             if (isGlb)
             {
-                var bytes = gltf.ToGlbBytes();
+                var bytes = writer.ToGlbBytes();
                 File.WriteAllBytes(path, bytes);
             }
             else
             {
-                var (json, buffers) = gltf.ToGltf(path);
+                var (json, buffers) = writer.ToGltf(path);
                 // without BOM
                 var encoding = new System.Text.UTF8Encoding(false);
                 File.WriteAllText(path, json, encoding);

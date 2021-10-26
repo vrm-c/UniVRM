@@ -118,8 +118,7 @@ namespace UniGLTF
         public void SharedVertexBufferTest()
         {
             var glTF = new glTF();
-            var bytesBuffer = new ArrayByteBuffer(new byte[50 * 1024 * 1024]);
-            var bufferIndex = glTF.AddBuffer(bytesBuffer);
+            var w = new GltfBufferWriter(glTF, 50 * 1024 * 1024);
 
             var Materials = new List<Material>{
                 new Material(Shader.Find("Standard")), // A
@@ -135,8 +134,8 @@ namespace UniGLTF
 
             var unityMesh = MeshExportList.Create(go);
             var (gltfMesh, blendShapeIndexMap) = meshExportSettings.DivideVertexBuffer
-                ? MeshExporter_DividedVertexBuffer.Export(glTF, bufferIndex, unityMesh, Materials, axisInverter, meshExportSettings)
-                : MeshExporter_SharedVertexBuffer.Export(glTF, bufferIndex, unityMesh, Materials, axisInverter, meshExportSettings)
+                ? MeshExporter_DividedVertexBuffer.Export(w, unityMesh, Materials, axisInverter, meshExportSettings)
+                : MeshExporter_SharedVertexBuffer.Export(w, unityMesh, Materials, axisInverter, meshExportSettings)
                 ;
             var data = GltfData.CreateFromGltfDataForTest(glTF);
 
@@ -168,8 +167,7 @@ namespace UniGLTF
         public void DividedVertexBufferTest()
         {
             var glTF = new glTF();
-            var bytesBuffer = new ArrayByteBuffer(new byte[50 * 1024 * 1024]);
-            var bufferIndex = glTF.AddBuffer(bytesBuffer);
+            var w = new GltfBufferWriter(glTF, 50 * 1024 * 1024);
 
             var Materials = new List<Material>{
                 new Material(Shader.Find("Standard")), // A
@@ -185,8 +183,8 @@ namespace UniGLTF
 
             var unityMesh = MeshExportList.Create(go);
             var (gltfMesh, blendShapeIndexMap) = meshExportSettings.DivideVertexBuffer
-                ? MeshExporter_DividedVertexBuffer.Export(glTF, bufferIndex, unityMesh, Materials, axisInverter, meshExportSettings)
-                : MeshExporter_SharedVertexBuffer.Export(glTF, bufferIndex, unityMesh, Materials, axisInverter, meshExportSettings)
+                ? MeshExporter_DividedVertexBuffer.Export(w, unityMesh, Materials, axisInverter, meshExportSettings)
+                : MeshExporter_SharedVertexBuffer.Export(w, unityMesh, Materials, axisInverter, meshExportSettings)
                 ;
 
             var data = GltfData.CreateFromGltfDataForTest(glTF);
