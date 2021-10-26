@@ -1,46 +1,11 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using UnityEngine;
 using System.IO;
 using UniJSON;
 
 namespace UniGLTF
 {
-    [Serializable, StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct Byte4
-    {
-        public readonly byte x;
-        public readonly byte y;
-        public readonly byte z;
-        public readonly byte w;
-        public Byte4(byte _x, byte _y, byte _z, byte _w)
-        {
-            x = _x;
-            y = _y;
-            z = _z;
-            w = _w;
-        }
-    }
-
-    [Serializable, StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct UShort4
-    {
-        public readonly ushort x;
-        public readonly ushort y;
-        public readonly ushort z;
-        public readonly ushort w;
-
-        public UShort4(ushort _x, ushort _y, ushort _z, ushort _w)
-        {
-            x = _x;
-            y = _y;
-            z = _z;
-            w = _w;
-        }
-    }
-
     public static class glTFExtensions
     {
         struct ComponentVec
@@ -238,14 +203,6 @@ namespace UniGLTF
             self.buffers.Add(new glTFBuffer(bytesBuffer));
             return index;
         }
-
-
-
-
-
-
-
-
 
         static Utf8String s_extensions = Utf8String.From("extensions");
 
