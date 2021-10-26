@@ -5,11 +5,8 @@ using System.Linq;
 namespace UniGLTF
 {
     /// <summary>
-    /// gltf の読み込み補助クラス
-    /// 
-    /// * JSONにパースができている
-    /// * glbの場合は bin chunk のバイト列が入手出来ている
-    /// 
+    /// * JSON is parsed but not validated as glTF
+    /// * For glb, bin chunks are already available
     /// </summary>
     public sealed class GltfData
     {
