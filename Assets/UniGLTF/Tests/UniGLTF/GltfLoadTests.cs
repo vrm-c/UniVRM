@@ -57,13 +57,13 @@ namespace UniGLTF
 
         static Byte[] Export(GameObject root)
         {
-            var gltf = new glTF();
-            using (var exporter = new gltfExporter(gltf, new GltfExportSettings()))
+            var data = new ExportingGltfData();
+            using (var exporter = new gltfExporter(data, new GltfExportSettings()))
             {
                 exporter.Prepare(root);
-                var w = exporter.Export(new EditorTextureSerializer());
-                return w.ToGlbBytes();
+                exporter.Export(new EditorTextureSerializer());
             }
+            return data.ToGlbBytes();
         }
 
         // Unsolved Animation Export issue

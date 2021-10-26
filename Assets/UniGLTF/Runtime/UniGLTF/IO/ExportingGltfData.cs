@@ -7,17 +7,16 @@ namespace UniGLTF
 {
     public class ExportingGltfData
     {
-        readonly glTF _gltf;
+        readonly glTF _gltf = new glTF();
 
         public glTF GLTF => _gltf;
 
-        public ExportingGltfData(glTF gltf, int reserved = default)
+        public ExportingGltfData(int reserved = default)
         {
             if (reserved == 0)
             {
                 reserved = 50 * 1024 * 1024;
             }
-            _gltf = gltf;
             // glb body と gltf の bin 兼用
             _gltf.buffers.Add(new glTFBuffer(new ArrayByteBuffer(new byte[reserved])));
         }

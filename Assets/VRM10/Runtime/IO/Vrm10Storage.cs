@@ -10,7 +10,7 @@ using VrmLib;
 
 namespace UniVRM10
 {
-    public class Vrm10Storage : ExportingGltfData 
+    public class Vrm10Storage : ExportingGltfData
     {
         UniGLTF.GltfData m_data;
         public UniGLTF.glTF Gltf => m_data.GLTF;
@@ -24,10 +24,7 @@ namespace UniVRM10
         /// <summary>
         /// for export
         /// </summary>
-        public Vrm10Storage() : base(new glTF
-        {
-            extensionsUsed = new List<string>(),
-        })
+        public Vrm10Storage()
         {
             m_data = new GltfData(
                 string.Empty,
@@ -48,7 +45,7 @@ namespace UniVRM10
         /// </summary>
         /// <param name="json"></param>
         /// <param name="bin"></param>
-        public Vrm10Storage(UniGLTF.GltfData data) : base(data.GLTF)
+        public Vrm10Storage(UniGLTF.GltfData data)
         {
             m_data = data;
 

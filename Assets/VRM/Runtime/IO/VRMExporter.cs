@@ -12,26 +12,27 @@ namespace VRM
     {
         public const Axes Vrm0xSpecificationInverseAxis = Axes.Z;
 
-        public static ExportingGltfData  Export(GltfExportSettings configuration, GameObject go, ITextureSerializer textureSerializer)
+        public static ExportingGltfData Export(GltfExportSettings configuration, GameObject go, ITextureSerializer textureSerializer)
         {
-            var gltf = new glTF();
-            using (var exporter = new VRMExporter(gltf, configuration))
+            var data = new ExportingGltfData();
+            using (var exporter = new VRMExporter(data, configuration))
             {
                 exporter.Prepare(go);
-                return exporter.Export(textureSerializer);
+                exporter.Export(textureSerializer);
             }
+            return data;
         }
 
         public readonly VRM.glTF_VRM_extensions VRM = new glTF_VRM_extensions();
 
-        public VRMExporter(glTF gltf, GltfExportSettings exportSettings) : base(gltf, exportSettings)
+        public VRMExporter(ExportingGltfData data, GltfExportSettings exportSettings) : base(data, exportSettings)
         {
             if (exportSettings == null || exportSettings.InverseAxis != Vrm0xSpecificationInverseAxis)
             {
                 throw new Exception($"VRM specification requires InverseAxis settings as {Vrm0xSpecificationInverseAxis}");
             }
 
-            gltf.extensionsUsed.Add(glTF_VRM_extensions.ExtensionName);
+            _gltf.extensionsUsed.Add(glTF_VRM_extensions.ExtensionName);
         }
 
         protected override IMaterialExporter CreateMaterialExporter()
@@ -117,7 +118,7 @@ namespace VRM
                     VRM.meta.title = meta.Title;
                     if (meta.Thumbnail != null)
                     {
-                        VRM.meta.texture = GltfTextureExporter.PushGltfTexture(_writer, meta.Thumbnail, ColorSpace.sRGB, textureSerializer);
+                        VRM.meta.texture = GltfTextureExporter.PushGltfTexture(_data, meta.Thumbnail, ColorSpace.sRGB, textureSerializer);
                     }
 
                     VRM.meta.licenseType = meta.LicenseType;
@@ -212,7 +213,7 @@ namespace VRM
             var f = new JsonFormatter();
             VRMSerializer.Serialize(f, VRM);
             var bytes = f.GetStoreBytes();
-            glTFExtensionExport.GetOrCreate(ref glTF.extensions).Add("VRM", bytes);
+            glTFExtensionExport.GetOrCreate(ref _gltf.extensions).Add("VRM", bytes);
         }
     }
 }

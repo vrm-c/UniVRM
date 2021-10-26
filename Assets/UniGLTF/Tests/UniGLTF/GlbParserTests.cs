@@ -8,7 +8,8 @@ namespace UniGLTF
         [Test]
         public void TextureNameUniqueness()
         {
-            var gltf = new glTF();
+            var data = new ExportingGltfData();
+            var gltf = data.GLTF;
             gltf.asset.version = "2.0";
             gltf.buffers.Add(new glTFBuffer(new ArrayByteBuffer(Array.Empty<byte>())));
             gltf.textures.Add(new glTFTexture
@@ -30,12 +31,12 @@ namespace UniGLTF
                 name = "hogefuga",
             });
 
-            var parser = new GlbLowLevelParser("Test", new ExportingGltfData (gltf).ToGlbBytes());
-            var data = parser.Parse();
+            var parser = new GlbLowLevelParser("Test", data.ToGlbBytes());
+            var parsed = parser.Parse();
 
-            Assert.AreEqual("FooBar", data.GLTF.textures[0].name);
+            Assert.AreEqual("FooBar", parsed.GLTF.textures[0].name);
             // NOTE: 大文字小文字が違うだけの名前は、同一としてみなされ、Suffix が付く。
-            Assert.AreEqual("foobar__UNIGLTF__DUPLICATED__2", data.GLTF.textures[1].name);
+            Assert.AreEqual("foobar__UNIGLTF__DUPLICATED__2", parsed.GLTF.textures[1].name);
         }
     }
 }
