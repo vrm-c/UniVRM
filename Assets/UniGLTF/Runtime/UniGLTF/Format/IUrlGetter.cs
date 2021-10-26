@@ -2,7 +2,7 @@ using System;
 
 namespace UniGLTF
 {
-    public interface IStorage
+    public interface IUrlGetter
     {
         ArraySegment<Byte> Get(string url = default);
     }

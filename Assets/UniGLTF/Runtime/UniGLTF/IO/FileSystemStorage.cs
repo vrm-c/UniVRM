@@ -4,7 +4,7 @@ using System.IO;
 
 namespace UniGLTF
 {
-    public class SimpleStorage : IStorage
+    public class SimpleStorage : IUrlGetter
     {
         ArraySegment<Byte> m_bytes;
 
@@ -28,7 +28,7 @@ namespace UniGLTF
         }
     }
 
-    public class FileSystemStorage : IStorage
+    public class FileSystemStorage : IUrlGetter
     {
         string m_root;
 
@@ -60,7 +60,7 @@ namespace UniGLTF
         }
     }
 
-    public class GltfStorage : IStorage
+    public class GltfStorage : IUrlGetter
     {
         glTF _gltf;
 

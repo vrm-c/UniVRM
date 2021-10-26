@@ -50,40 +50,40 @@ namespace UniGLTF
         /// <summary>
         /// URI access
         /// </summary>
-        IStorage _storage;
+        IUrlGetter _urlGetter;
 
         /// <summary>
         /// Migration Flags used by ImporterContext
         /// </summary>
         public MigrationFlags MigrationFlags { get; }
 
-        public GltfData(string targetPath, string json, glTF gltf, IReadOnlyList<GlbChunk> chunks, IStorage storage, MigrationFlags migrationFlags)
+        public GltfData(string targetPath, string json, glTF gltf, IReadOnlyList<GlbChunk> chunks, IUrlGetter urlGetter, MigrationFlags migrationFlags)
         {
             TargetPath = targetPath;
             Json = json;
             GLTF = gltf;
             Chunks = chunks;
-            _storage = storage;
+            _urlGetter = urlGetter;
             MigrationFlags = migrationFlags;
         }
 
         public static GltfData CreateFromGltfDataForTest(glTF gltf, ArraySegment<byte> bytes = default)
         {
-            IStorage storage = null;
+            IUrlGetter urlGetter = null;
             if (bytes.Array != null)
             {
-                storage = new SimpleStorage(bytes);
+                urlGetter = new SimpleStorage(bytes);
             }
             else
             {
-                storage = new GltfStorage(gltf);
+                urlGetter = new GltfStorage(gltf);
             }
             return new GltfData(
                 string.Empty,
                 string.Empty,
                 gltf,
                 new List<GlbChunk>(),
-                storage,
+                urlGetter,
                 new MigrationFlags()
             );
         }
@@ -93,7 +93,7 @@ namespace UniGLTF
         {
             // TODO:
             var buffer = GLTF.buffers[bufferIndex];
-            return _storage.Get(buffer.uri);
+            return _urlGetter.Get(buffer.uri);
         }
 
         public ArraySegment<Byte> GetViewBytes(int bufferView)
@@ -266,7 +266,7 @@ namespace UniGLTF
             }
             else
             {
-                return _storage.Get(image.uri);
+                return _urlGetter.Get(image.uri);
             }
         }
 

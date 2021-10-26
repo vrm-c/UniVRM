@@ -71,7 +71,7 @@ namespace UniGLTF
             return chunks;
         }
 
-        public static GltfData ParseGltf(string path, string json, IReadOnlyList<GlbChunk> chunks, IStorage storage, MigrationFlags migrationFlags)
+        public static GltfData ParseGltf(string path, string json, IReadOnlyList<GlbChunk> chunks, IUrlGetter urlGetter, MigrationFlags migrationFlags)
         {
             var GLTF = GltfDeserializer.Deserialize(json.ParseAsJson());
             if (GLTF.asset.version != "2.0")
@@ -96,10 +96,10 @@ namespace UniGLTF
             //GLTF.baseDir = System.IO.Path.GetDirectoryName(Path);
             foreach (var buffer in GLTF.buffers)
             {
-                buffer.OpenStorage(storage);
+                buffer.OpenStorage(urlGetter);
             }
 
-            return new GltfData(path, json, GLTF, chunks, storage, migrationFlags);
+            return new GltfData(path, json, GLTF, chunks, urlGetter, migrationFlags);
         }
 
         private static void FixMeshNameUnique(glTF GLTF)

@@ -292,7 +292,7 @@ namespace UniGLTF.Zip
         }
     }
 
-    class ZipArchiveStorage : IStorage
+    class ZipArchiveStorage : IUrlGetter
     {
         public override string ToString()
         {
