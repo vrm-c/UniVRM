@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using MToon;
 using UniGLTF;
 using UnityEngine;
@@ -11,13 +14,15 @@ namespace VRM
         public const string UnlitTransparentZWriteShaderName = "VRM/UnlitTransparentZWrite";
         public const string UnlitTransparentZWriteMainTexturePropName = "_MainTex";
 
-        public static bool TryCreateParam(GltfData data, glTF_VRM_extensions vrm, int materialIdx, out MaterialDescriptor matDesc)
+        public static bool TryCreateParam(GltfData data, glTF_VRM_extensions vrm, int materialIdx,
+            out MaterialDescriptor matDesc)
         {
             if (vrm?.materialProperties == null || vrm.materialProperties.Count == 0)
             {
                 matDesc = default;
                 return false;
             }
+
             if (materialIdx < 0 || materialIdx >= vrm.materialProperties.Count)
             {
                 matDesc = default;
@@ -34,19 +39,24 @@ namespace VRM
             // use material.name, because material name may renamed in GltfParser.
             var name = data.GLTF.materials[materialIdx].name;
 
-            matDesc = new MaterialDescriptor(name, MToon.Utils.ShaderName);
+            var textureSlots = new Dictionary<string, TextureDescriptor>();
+            var floatValues = new Dictionary<string, float>();
+            var colors = new Dictionary<string, Color>();
+            var vectors = new Dictionary<string, Vector4>();
+            var actions = new Collection<Action<Material>>();
 
             if (vrmMaterial.textureProperties.ContainsKey(UnlitTransparentZWriteMainTexturePropName))
             {
-                if (VRMMToonTextureImporter.TryGetTextureFromMaterialProperty(data, vrmMaterial, UnlitTransparentZWriteMainTexturePropName, out var texture))
+                if (VRMMToonTextureImporter.TryGetTextureFromMaterialProperty(data, vrmMaterial,
+                    UnlitTransparentZWriteMainTexturePropName, out var texture))
                 {
-                    matDesc.TextureSlots.Add(MToon.Utils.PropMainTex, texture.Item2);
+                    textureSlots.Add(MToon.Utils.PropMainTex, texture.Item2);
                 }
             }
 
-            matDesc.Actions.Add(unityMaterial =>
+            actions.Add(unityMaterial =>
             {
-                var mainTexture = (Texture2D) unityMaterial.GetTexture(MToon.Utils.PropMainTex);
+                var mainTexture = (Texture2D)unityMaterial.GetTexture(MToon.Utils.PropMainTex);
 
                 // NOTE: Unlit のフォールバックなので
                 // Lit/Shade 色は黒として、Alpha のために Lit にテクスチャを設定する.
@@ -147,6 +157,13 @@ namespace VRM
                 // NOTE: MToon として正しくはないが、やむをえず renderQueue を元の値で復帰する.
                 unityMaterial.renderQueue = vrmMaterial.renderQueue;
             });
+
+            matDesc = new MaterialDescriptor(name, Utils.ShaderName, null,
+                textureSlots,
+                floatValues,
+                colors,
+                vectors,
+                actions);
 
             Debug.LogWarning($"fallback: {UnlitTransparentZWriteShaderName} => {MToon.Utils.ShaderName}");
             return true;

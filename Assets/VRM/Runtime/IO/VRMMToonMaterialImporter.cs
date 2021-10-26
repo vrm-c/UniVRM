@@ -1,4 +1,6 @@
-﻿using UniGLTF;
+﻿using System;
+using System.Collections.Generic;
+using UniGLTF;
 using UnityEngine;
 using VRMShaders;
 
@@ -6,13 +8,15 @@ namespace VRM
 {
     public static class VRMMToonMaterialImporter
     {
-        public static bool TryCreateParam(GltfData data, glTF_VRM_extensions vrm, int materialIdx, out MaterialDescriptor matDesc)
+        public static bool TryCreateParam(GltfData data, glTF_VRM_extensions vrm, int materialIdx,
+            out MaterialDescriptor matDesc)
         {
             if (vrm?.materialProperties == null || vrm.materialProperties.Count == 0)
             {
                 matDesc = default;
                 return false;
             }
+
             if (materialIdx < 0 || materialIdx >= vrm.materialProperties.Count)
             {
                 matDesc = default;
@@ -20,7 +24,7 @@ namespace VRM
             }
 
             var vrmMaterial = vrm.materialProperties[materialIdx];
-            if (vrmMaterial.shader == VRM.glTF_VRM_Material.VRM_USE_GLTFSHADER)
+            if (vrmMaterial.shader == glTF_VRM_Material.VRM_USE_GLTFSHADER)
             {
                 // fallback to gltf
                 matDesc = default;
@@ -32,30 +36,41 @@ namespace VRM
             //
             // use material.name, because material name may renamed in GltfParser.
             var name = data.GLTF.materials[materialIdx].name;
-            matDesc = new MaterialDescriptor(name, vrmMaterial.shader);
 
-            matDesc.RenderQueue = vrmMaterial.renderQueue;
+            var textureSlots = new Dictionary<string, TextureDescriptor>();
+            var floatValues = new Dictionary<string, float>();
+            var colors = new Dictionary<string, Color>();
+            var vectors = new Dictionary<string, Vector4>();
+            var actions = new List<Action<Material>>();
+            matDesc = new MaterialDescriptor(
+                name,
+                vrmMaterial.shader,
+                vrmMaterial.renderQueue,
+                textureSlots,
+                floatValues,
+                colors,
+                vectors,
+                actions);
 
             foreach (var kv in vrmMaterial.floatProperties)
             {
-                matDesc.FloatValues.Add(kv.Key, kv.Value);
+                floatValues.Add(kv.Key, kv.Value);
             }
 
             foreach (var kv in vrmMaterial.vectorProperties)
             {
                 // vector4 exclude TextureOffsetScale
-                if (!vrmMaterial.textureProperties.ContainsKey(kv.Key))
-                {
-                    var v = new Vector4(kv.Value[0], kv.Value[1], kv.Value[2], kv.Value[3]);
-                    matDesc.Vectors.Add(kv.Key, v);
-                }
+                if (vrmMaterial.textureProperties.ContainsKey(kv.Key)) continue;
+                var v = new Vector4(kv.Value[0], kv.Value[1], kv.Value[2], kv.Value[3]);
+                vectors.Add(kv.Key, v);
             }
 
             foreach (var kv in vrmMaterial.textureProperties)
             {
-                if (VRMMToonTextureImporter.TryGetTextureFromMaterialProperty(data, vrmMaterial, kv.Key, out var texture))
+                if (VRMMToonTextureImporter.TryGetTextureFromMaterialProperty(data, vrmMaterial, kv.Key,
+                    out var texture))
                 {
-                    matDesc.TextureSlots.Add(kv.Key, texture.Item2);
+                    textureSlots.Add(kv.Key, texture.Item2);
                 }
             }
 
@@ -63,28 +78,27 @@ namespace VRM
             {
                 if (kv.Value)
                 {
-                    matDesc.Actions.Add(material => material.EnableKeyword(kv.Key));
+                    actions.Add(material => material.EnableKeyword(kv.Key));
                 }
                 else
                 {
-                    matDesc.Actions.Add(material => material.DisableKeyword(kv.Key));
+                    actions.Add(material => material.DisableKeyword(kv.Key));
                 }
             }
 
             foreach (var kv in vrmMaterial.tagMap)
             {
-                matDesc.Actions.Add(material => material.SetOverrideTag(kv.Key, kv.Value));
+                actions.Add(material => material.SetOverrideTag(kv.Key, kv.Value));
             }
 
             if (vrmMaterial.shader == MToon.Utils.ShaderName)
             {
                 // TODO: Material拡張にMToonの項目が追加されたら旧バージョンのshaderPropから変換をかける
                 // インポート時にUniVRMに含まれるMToonのバージョンに上書きする
-                matDesc.FloatValues[MToon.Utils.PropVersion] = MToon.Utils.VersionNumber;
+                floatValues[MToon.Utils.PropVersion] = MToon.Utils.VersionNumber;
             }
 
             return true;
         }
-
     }
 }

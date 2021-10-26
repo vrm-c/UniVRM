@@ -1,4 +1,6 @@
-﻿using UniGLTF;
+﻿using System;
+using System.Collections.Generic;
+using UniGLTF;
 using UnityEngine;
 using VRMShaders;
 
@@ -14,10 +16,8 @@ namespace VRM
 
         public MaterialDescriptor Get(GltfData data, int i)
         {
-            MaterialDescriptor matDesc;
-
             // legacy "VRM/UnlitTransparentZWrite"
-            if (VRMUnlitTransparentZWriteMaterialImporter.TryCreateParam(data, m_vrm, i, out matDesc))
+            if (VRMUnlitTransparentZWriteMaterialImporter.TryCreateParam(data, m_vrm, i, out var matDesc))
             {
                 return matDesc;
             }
@@ -42,7 +42,15 @@ namespace VRM
 
             // fallback
             Debug.LogWarning($"fallback");
-            return new MaterialDescriptor(GltfMaterialDescriptorGenerator.GetMaterialName(i, null), GltfPbrMaterialImporter.ShaderName);
+            return new MaterialDescriptor(
+                GltfMaterialDescriptorGenerator.GetMaterialName(i, null),
+                GltfPbrMaterialImporter.ShaderName,
+                null,
+                new Dictionary<string, TextureDescriptor>(),
+                new Dictionary<string, float>(),
+                new Dictionary<string, Color>(),
+                new Dictionary<string, Vector4>(),
+                new Action<Material>[]{});
         }
     }
 }
