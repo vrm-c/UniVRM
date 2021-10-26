@@ -69,7 +69,7 @@ namespace UniGLTF
     /// <summary>
     /// for UnitTest
     /// </summary>
-    public class GltfStorage : IStorage
+    public sealed class GltfStorage : IStorage
     {
         glTF _gltf;
 
