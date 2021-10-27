@@ -107,13 +107,28 @@ namespace UniGLTF
             );
         }
 
+        Dictionary<string, ArraySegment<byte>> _dataCache = new Dictionary<string, ArraySegment<byte>>();
+
         public ArraySegment<Byte> GetBytesFromUri(string uri)
         {
             if (string.IsNullOrEmpty(uri))
             {
                 throw new ArgumentNullException();
             }
-            return _storage.Get(uri);
+            if (uri.StartsWith("data:", StringComparison.Ordinal))
+            {
+                if (_dataCache.TryGetValue(uri, out ArraySegment<byte> data))
+                {
+                    return data;
+                }
+                data = new ArraySegment<byte>(UriByteBuffer.ReadEmbedded(uri));
+                _dataCache.Add(uri, data);
+                return data;
+            }
+            else
+            {
+                return _storage.Get(uri);
+            }
         }
 
         public ArraySegment<Byte> GetBytes(int bufferIndex)
