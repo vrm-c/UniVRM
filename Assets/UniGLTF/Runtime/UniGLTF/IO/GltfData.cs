@@ -59,14 +59,16 @@ namespace UniGLTF
         }
 
         /// <summary>
-        /// URI access
-        /// </summary>
-        public IStorage _storage;
-
-        /// <summary>
         /// Migration Flags used by ImporterContext
         /// </summary>
         public MigrationFlags MigrationFlags { get; }
+
+        /// <summary>
+        /// URI access
+        /// </summary>
+        IStorage _storage;
+
+        Dictionary<string, ArraySegment<byte>> _dataUriCache = new Dictionary<string, ArraySegment<byte>>();
 
         public GltfData(string targetPath, string json, glTF gltf, IReadOnlyList<GlbChunk> chunks, IStorage storage, MigrationFlags migrationFlags)
         {
@@ -89,7 +91,7 @@ namespace UniGLTF
                 string.Empty,
                 string.Empty,
                 gltf,
-                new List<GlbChunk>  
+                new List<GlbChunk>
                 {
                     new GlbChunk(), // json
                     GlbChunk.CreateBin(bytes),
@@ -99,8 +101,6 @@ namespace UniGLTF
             );
         }
 
-        Dictionary<string, ArraySegment<byte>> _dataCache = new Dictionary<string, ArraySegment<byte>>();
-
         public ArraySegment<Byte> GetBytesFromUri(string uri)
         {
             if (string.IsNullOrEmpty(uri))
@@ -109,12 +109,12 @@ namespace UniGLTF
             }
             if (uri.StartsWith("data:", StringComparison.Ordinal))
             {
-                if (_dataCache.TryGetValue(uri, out ArraySegment<byte> data))
+                if (_dataUriCache.TryGetValue(uri, out ArraySegment<byte> data))
                 {
                     return data;
                 }
                 data = new ArraySegment<byte>(UriByteBuffer.ReadEmbedded(uri));
-                _dataCache.Add(uri, data);
+                _dataUriCache.Add(uri, data);
                 return data;
             }
             else

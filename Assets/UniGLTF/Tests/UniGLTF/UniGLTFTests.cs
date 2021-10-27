@@ -115,7 +115,7 @@ namespace UniGLTF
             }
 
             // parse
-            var parsed = GltfData.CreateFromExport(data);
+            var parsed = GltfData.CreateFromExportForTest(data);
 
             // import
             using (var context = new ImporterContext(parsed))
@@ -554,7 +554,7 @@ namespace UniGLTF
 
                 // import
                 {
-                    var parsed = GltfData.CreateFromExport(data);
+                    var parsed = GltfData.CreateFromExportForTest(data);
                     using (var context = new ImporterContext(parsed))
                     using (var loaded = context.Load())
                     {
@@ -572,7 +572,7 @@ namespace UniGLTF
 
                 // import new version
                 {
-                    var parsed = GltfData.CreateFromExport(data);
+                    var parsed = GltfData.CreateFromExportForTest(data);
                     using (var context = new ImporterContext(parsed))
                     using (var loaded = context.Load())
                     {
@@ -624,7 +624,7 @@ namespace UniGLTF
 
                 // import
                 {
-                    var parsed = GltfData.CreateFromExport(data);
+                    var parsed = GltfData.CreateFromExportForTest(data);
                     using (var context = new ImporterContext(parsed))
                     using (var loaded = context.Load())
                     {
@@ -688,7 +688,7 @@ namespace UniGLTF
 
                 // import
                 {
-                    var parsed = GltfData.CreateFromExport(data);
+                    var parsed = GltfData.CreateFromExportForTest(data);
                     using (var context = new ImporterContext(parsed))
                     using (var loaded = context.Load())
                     {
