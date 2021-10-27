@@ -68,6 +68,7 @@ namespace UniVRM10
                     Debug.LogWarning($"[MigrationVrmExpression] node.mesh == {meshIndex} index");
                     continue;
                 }
+                bind.Node = nodeIndex;
                 bind.Index = morphTargetIndex;
                 // https://github.com/vrm-c/vrm-specification/issues/209                
                 bind.Weight = weight * 0.01f;
