@@ -78,7 +78,7 @@ namespace UniGLTF
             MigrationFlags = migrationFlags;
         }
 
-        public static GltfData CreateFromExport(ExportingGltfData data)
+        public static GltfData CreateFromExportForTest(ExportingGltfData data)
         {
             return CreateFromGltfDataForTest(data.GLTF, data.BinBytes);
         }
