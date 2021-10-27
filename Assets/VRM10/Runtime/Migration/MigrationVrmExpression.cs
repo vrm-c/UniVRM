@@ -53,7 +53,18 @@ namespace UniVRM10
 
                 // https://github.com/vrm-c/vrm-specification/pull/106
                 // https://github.com/vrm-c/vrm-specification/pull/153
-                bind.Node = gltf.nodes.IndexOf(gltf.nodes.First(y => y.mesh == meshIndex));
+                var node = gltf.nodes.FirstOrDefault(y => y.mesh == meshIndex);
+                if (node == null)
+                {
+                    // invalid data. skip
+                    continue;
+                }
+                var nodeIndex = gltf.nodes.IndexOf(node);
+                if (nodeIndex == -1)
+                {
+                    // invalid data. skip
+                    continue;
+                }
                 bind.Index = morphTargetIndex;
                 // https://github.com/vrm-c/vrm-specification/issues/209                
                 bind.Weight = weight * 0.01f;
@@ -108,7 +119,18 @@ namespace UniVRM10
             foreach (var x in json.ArrayItems())
             {
                 var materialName = x["materialName"].GetString();
-                var materialIndex = gltf.materials.IndexOf(gltf.materials.First(y => y.name == materialName));
+                var material = gltf.materials.FirstOrDefault(y => y.name == materialName);
+                if (material == null)
+                {
+                    // invalid data. skip
+                    continue;
+                }
+                var materialIndex = gltf.materials.IndexOf(material);
+                if (materialIndex == -1)
+                {
+                    // invalid data. skip
+                    continue;
+                }
                 var propertyName = x["propertyName"].GetString();
                 var targetValue = x["targetValue"].ArrayItems().Select(y => y.GetSingle()).ToArray();
                 if (propertyName.EndsWith("_ST"))
