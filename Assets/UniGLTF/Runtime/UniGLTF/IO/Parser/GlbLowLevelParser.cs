@@ -35,7 +35,7 @@ namespace UniGLTF
                     _path,
                     Encoding.UTF8.GetString(jsonBytes.Array, jsonBytes.Offset, jsonBytes.Count),
                     chunks,
-                    new SimpleStorage(chunks[1].Bytes),
+                    default,
                     new MigrationFlags()
                 );
             }
@@ -91,13 +91,6 @@ namespace UniGLTF
             FixMaterialNameUnique(GLTF);
             FixNodeName(GLTF);
             FixAnimationNameUnique(GLTF);
-
-            // parepare byte buffer
-            //GLTF.baseDir = System.IO.Path.GetDirectoryName(Path);
-            foreach (var buffer in GLTF.buffers)
-            {
-                buffer.OpenStorage(storage);
-            }
 
             return new GltfData(path, json, GLTF, chunks, storage, migrationFlags);
         }

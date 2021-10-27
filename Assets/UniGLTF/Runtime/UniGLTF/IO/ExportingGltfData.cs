@@ -11,17 +11,37 @@ namespace UniGLTF
 
         public glTF GLTF => _gltf;
 
+        protected IBytesBuffer _buffer;
+        /// <summary>
+        /// bin chunk
+        /// </summary>
+        public ArraySegment<byte> BinBytes => _buffer.Bytes;
+
         public ExportingGltfData(int reserved = default)
         {
             if (reserved == 0)
             {
                 reserved = 50 * 1024 * 1024;
             }
-            // glb body と gltf の bin 兼用
-            _gltf.buffers.Add(new glTFBuffer(new ArrayByteBuffer(new byte[reserved])));
+
+            // buffers[0] is export target
+            _gltf.buffers.Add(new glTFBuffer());
+            _buffer = new ArrayByteBuffer(new byte[reserved]);
         }
 
         #region Buffer management for export
+        public glTFBufferView Append<T>(ArraySegment<T> segment, glBufferTarget target) where T : struct
+        {
+            var view = _buffer.Extend(segment, target);
+            GLTF.buffers[0].byteLength = _buffer.Bytes.Count;
+            return view;
+        }
+
+        public glTFBufferView Append<T>(T[] array, glBufferTarget target) where T : struct
+        {
+            return Append(new ArraySegment<T>(array), target);
+        }
+
         public int ExtendBufferAndGetViewIndex<T>(
             ArraySegment<T> array,
             glBufferTarget target = glBufferTarget.NONE) where T : struct
@@ -30,7 +50,7 @@ namespace UniGLTF
             {
                 return -1;
             }
-            var view = _gltf.buffers[0].Append(array, target);
+            var view = Append(array, target);
             var viewIndex = _gltf.bufferViews.Count;
             _gltf.bufferViews.Add(view);
             return viewIndex;
@@ -185,8 +205,6 @@ namespace UniGLTF
             return f.ToString();
         }
 
-        public ArraySegment<byte> BinBytes => _gltf.buffers[0].GetBytes();
-
         /// <summary>
         /// GLBバイト列
         /// </summary>
@@ -207,7 +225,7 @@ namespace UniGLTF
         /// </summary>
         /// <param name="gltfPath"></param>
         /// <returns></returns>
-        public (string, List<glTFBuffer>) ToGltf(string gltfPath)
+        public (string, glTFBuffer) ToGltf(string gltfPath)
         {
             // fix buffer path
             if (_gltf.buffers.Count == 1)
@@ -224,7 +242,7 @@ namespace UniGLTF
             GltfSerializer.Serialize(f, _gltf);
             var json = f.ToString().ParseAsJson().ToString("  ");
             RemoveUnusedExtensions(_gltf, json);
-            return (json, _gltf.buffers);
+            return (json, _gltf.buffers[0]);
         }
         #endregion
     }

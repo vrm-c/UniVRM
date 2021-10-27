@@ -85,15 +85,6 @@ namespace UniGLTF
 
         public static GltfData CreateFromGltfDataForTest(glTF gltf, ArraySegment<byte> bytes)
         {
-            IStorage storage = null;
-            if (bytes.Array != null)
-            {
-                storage = new SimpleStorage(bytes);
-            }
-            else
-            {
-                storage = new GltfStorage(gltf);
-            }
             return new GltfData(
                 string.Empty,
                 string.Empty,
@@ -102,7 +93,7 @@ namespace UniGLTF
                     new GlbChunk(), // json
                     GlbChunk.CreateBin(bytes),
                 },
-                storage,
+                default,
                 new MigrationFlags()
             );
         }
