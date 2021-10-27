@@ -28,16 +28,11 @@ namespace UniGLTF
         }
 
         #region Buffer management for export
-        public glTFBufferView Append<T>(ArraySegment<T> segment, glBufferTarget target) where T : struct
+        public glTFBufferView ExtendBufferAndGetView<T>(ArraySegment<T> segment, glBufferTarget target) where T : struct
         {
             var view = _buffer.Extend(segment, target);
             GLTF.buffers[0].byteLength = _buffer.Bytes.Count;
             return view;
-        }
-
-        public glTFBufferView Append<T>(T[] array, glBufferTarget target) where T : struct
-        {
-            return Append(new ArraySegment<T>(array), target);
         }
 
         public int ExtendBufferAndGetViewIndex<T>(
@@ -48,7 +43,7 @@ namespace UniGLTF
             {
                 return -1;
             }
-            var view = Append(array, target);
+            var view = ExtendBufferAndGetView(array, target);
             var viewIndex = GLTF.bufferViews.Count;
             GLTF.bufferViews.Add(view);
             return viewIndex;

@@ -140,7 +140,7 @@ namespace UniGLTF
                 values.AddRange(nums);
                 var bytes = new ArraySegment<Byte>(nums);
                 offset += x;
-                data.Append(bytes, glBufferTarget.NONE);
+                data.ExtendBufferAndGetView(bytes, glBufferTarget.NONE);
             }
 
             Assert.AreEqual(values.Count, data.GLTF.buffers[0].byteLength);
