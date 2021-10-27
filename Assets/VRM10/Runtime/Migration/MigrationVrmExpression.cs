@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UniJSON;
+using UnityEngine;
 
 namespace UniVRM10
 {
@@ -57,12 +58,14 @@ namespace UniVRM10
                 if (node == null)
                 {
                     // invalid data. skip
+                    Debug.LogWarning($"[MigrationVrmExpression] node.mesh == {meshIndex} is not found");
                     continue;
                 }
                 var nodeIndex = gltf.nodes.IndexOf(node);
                 if (nodeIndex == -1)
                 {
                     // invalid data. skip
+                    Debug.LogWarning($"[MigrationVrmExpression] node.mesh == {meshIndex} index");
                     continue;
                 }
                 bind.Index = morphTargetIndex;
@@ -123,12 +126,14 @@ namespace UniVRM10
                 if (material == null)
                 {
                     // invalid data. skip
+                    Debug.LogWarning($"[MigrationVrmExpression] material.name == {materialName} is not found");
                     continue;
                 }
                 var materialIndex = gltf.materials.IndexOf(material);
                 if (materialIndex == -1)
                 {
                     // invalid data. skip
+                    Debug.LogWarning($"[MigrationVrmExpression] material.name == {materialName} index");
                     continue;
                 }
                 var propertyName = x["propertyName"].GetString();
