@@ -42,7 +42,21 @@ namespace UniGLTF
         /// > This chunk MUST be the second chunk of the Binary glTF asset
         /// </summary>
         /// <returns></returns>
-        public ArraySegment<byte> Bin => Chunks[1].Bytes;
+        public ArraySegment<byte> Bin
+        {
+            get
+            {
+                if (Chunks == null)
+                {
+                    return default;
+                }
+                if (Chunks.Count < 2)
+                {
+                    return default;
+                }
+                return Chunks[1].Bytes;
+            }
+        }
 
         /// <summary>
         /// URI access
@@ -64,7 +78,12 @@ namespace UniGLTF
             MigrationFlags = migrationFlags;
         }
 
-        public static GltfData CreateFromGltfDataForTest(glTF gltf, ArraySegment<byte> bytes = default)
+        public static GltfData CreateFromExport(ExportingGltfData data)
+        {
+            return CreateFromGltfDataForTest(data.GLTF, data.BinBytes);
+        }
+
+        public static GltfData CreateFromGltfDataForTest(glTF gltf, ArraySegment<byte> bytes)
         {
             IStorage storage = null;
             if (bytes.Array != null)
@@ -79,17 +98,41 @@ namespace UniGLTF
                 string.Empty,
                 string.Empty,
                 gltf,
-                new List<GlbChunk>(),
+                new List<GlbChunk>{
+                    new GlbChunk(), // json
+                    GlbChunk.CreateBin(bytes),
+                },
                 storage,
                 new MigrationFlags()
             );
         }
 
+        public ArraySegment<Byte> GetBytesFromUri(string uri)
+        {
+            if (string.IsNullOrEmpty(uri))
+            {
+                throw new ArgumentNullException();
+            }
+            return _storage.Get(uri);
+        }
+
         public ArraySegment<Byte> GetBytes(int bufferIndex)
         {
-            // TODO:
             var buffer = GLTF.buffers[bufferIndex];
-            return _storage.Get(buffer.uri);
+            if (bufferIndex == 0 && string.IsNullOrEmpty(buffer.uri))
+            {
+                // https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#glb-stored-buffer
+                // this buffer is reference bin chunk
+                if (Bin.Array == null)
+                {
+                    throw new NullReferenceException();
+                }
+                return Bin;
+            }
+            else
+            {
+                return GetBytesFromUri(buffer.uri);
+            }
         }
 
         public ArraySegment<Byte> GetViewBytes(int bufferView)

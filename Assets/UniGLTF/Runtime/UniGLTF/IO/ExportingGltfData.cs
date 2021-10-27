@@ -185,6 +185,8 @@ namespace UniGLTF
             return f.ToString();
         }
 
+        public ArraySegment<byte> BinBytes => _gltf.buffers[0].GetBytes();
+
         /// <summary>
         /// GLBバイト列
         /// </summary>
@@ -197,7 +199,7 @@ namespace UniGLTF
             // remove unused extenions
             var json = f.ToString().ParseAsJson().ToString("  ");
             RemoveUnusedExtensions(_gltf, json);
-            return Glb.Create(json, _gltf.buffers[0].GetBytes()).ToBytes();
+            return Glb.Create(json, BinBytes).ToBytes();
         }
 
         /// <summary>

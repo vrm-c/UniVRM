@@ -143,7 +143,7 @@ namespace UniGLTF
             UnityEngine.Object.DestroyImmediate(mat);
             UnityEngine.Object.DestroyImmediate(root);
 
-            var parsed = GltfData.CreateFromGltfDataForTest(gltf);
+            var parsed = GltfData.CreateFromGltfDataForTest(gltf, data.BinBytes);
 
             // Extract Image to Texture2D
             var exportedBytes = parsed.GetViewBytes(exportedImage.bufferView).ToArray();

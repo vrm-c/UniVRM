@@ -553,9 +553,7 @@ namespace UniGLTF
 
                 // import
                 {
-                    var storage = new SimpleStorage(new ArraySegment<byte>(new byte[1024 * 1024]));
-                    var parsed = new JsonWithStorageParser(json, storage).Parse();
-
+                    var parsed = GltfData.CreateFromExport(data);
                     using (var context = new ImporterContext(parsed))
                     using (var loaded = context.Load())
                     {
@@ -573,10 +571,7 @@ namespace UniGLTF
 
                 // import new version
                 {
-                    var storage = new SimpleStorage(new ArraySegment<byte>(new byte[1024 * 1024]));
-                    var parsed = new JsonWithStorageParser(json, storage).Parse();
-
-                    //Debug.LogFormat("{0}", context.Json);
+                    var parsed = GltfData.CreateFromExport(data);
                     using (var context = new ImporterContext(parsed))
                     using (var loaded = context.Load())
                     {
