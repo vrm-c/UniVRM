@@ -253,7 +253,7 @@ namespace UniVRM10
                     throw new MigrationException($"expression.{name}.binds.index", $"{index} != {r.Index}");
                 }
 
-                var weight = l["weight"].GetSingle();
+                var weight = l["weight"].GetSingle() * 0.01f; // [0, 100] to [0, 1.0f]
                 if (weight != r.Weight)
                 {
                     throw new MigrationException($"expression.{name}.binds.weight", $"{weight} != {r.Weight}");
@@ -265,7 +265,6 @@ namespace UniVRM10
         {
             foreach (var blendShape in vrm0["blendShapeGroups"].ArrayItems())
             {
-                Debug.Log($"{blendShape}");
                 var name = blendShape["presetName"].GetString().ToLower();
                 switch (name)
                 {
