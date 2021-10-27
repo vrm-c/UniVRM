@@ -119,10 +119,11 @@ namespace UniVRM10
             return Glb.Create(vrm1Json, bin).ToBytes();
         }
 
-        public static void Check(JsonNode vrm0, UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm1)
+        public static void Check(JsonNode vrm0, UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm1, Func<int, int> MeshToNode)
         {
             MigrationVrmMeta.Check(vrm0["meta"], vrm1.Meta);
             MigrationVrmHumanoid.Check(vrm0["humanoid"], vrm1.Humanoid);
+            MigrationVrmExpression.Check(vrm0["blendShapeMaster"], vrm1.Expressions, MeshToNode);
         }
 
         public static void Check(JsonNode vrm0, UniGLTF.Extensions.VRMC_springBone.VRMC_springBone vrm1, List<glTFNode> nodes)

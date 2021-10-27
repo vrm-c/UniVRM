@@ -221,5 +221,89 @@ namespace UniVRM10
                 yield return (preset, name, expression);
             }
         }
+
+        static void Check(string name, JsonNode vrm0, UniGLTF.Extensions.VRMC_vrm.Expression vrm1, Func<int, int> MeshToNode)
+        {
+            if (vrm0["binds"].GetArrayCount() == 0)
+            {
+                if (vrm1.MorphTargetBinds == null)
+                {
+                    // OK
+                    return;
+                }
+                else
+                {
+                    throw new MigrationException($"expression.{name}.binds", "different count");
+                }
+            }
+
+            foreach (var (l, r) in Enumerable.Zip(vrm0["binds"].ArrayItems(), vrm1.MorphTargetBinds, (x, y) => (x, y)))
+            {
+                var mesh = l["mesh"].GetInt32();
+                var node = MeshToNode(mesh);
+                if (node != r.Node)
+                {
+                    throw new MigrationException($"expression.{name}.binds.node", $"{node} != {r.Node}");
+                }
+
+                var index = l["index"].GetInt32();
+                if (index != r.Index)
+                {
+                    throw new MigrationException($"expression.{name}.binds.index", $"{index} != {r.Index}");
+                }
+
+                var weight = l["weight"].GetSingle();
+                if (weight != r.Weight)
+                {
+                    throw new MigrationException($"expression.{name}.binds.weight", $"{weight} != {r.Weight}");
+                }
+            }
+        }
+
+        public static void Check(JsonNode vrm0, UniGLTF.Extensions.VRMC_vrm.Expressions vrm1, Func<int, int> MeshToNode)
+        {
+            foreach (var blendShape in vrm0["blendShapeGroups"].ArrayItems())
+            {
+                Debug.Log($"{blendShape}");
+                var name = blendShape["presetName"].GetString().ToLower();
+                switch (name)
+                {
+                    case "a": Check(name, blendShape, vrm1.Preset.Aa, MeshToNode); break;
+                    case "i": Check(name, blendShape, vrm1.Preset.Ih, MeshToNode); break;
+                    case "u": Check(name, blendShape, vrm1.Preset.Ou, MeshToNode); break;
+                    case "e": Check(name, blendShape, vrm1.Preset.Ee, MeshToNode); break;
+                    case "o": Check(name, blendShape, vrm1.Preset.Oh, MeshToNode); break;
+                    case "blink": Check(name, blendShape, vrm1.Preset.Blink, MeshToNode); break;
+                    case "joy": Check(name, blendShape, vrm1.Preset.Happy, MeshToNode); break;
+                    case "angry": Check(name, blendShape, vrm1.Preset.Angry, MeshToNode); break;
+                    case "sorrow": Check(name, blendShape, vrm1.Preset.Sad, MeshToNode); break;
+                    case "fun": Check(name, blendShape, vrm1.Preset.Relaxed, MeshToNode); break;
+                    case "lookup": Check(name, blendShape, vrm1.Preset.LookUp, MeshToNode); break;
+                    case "lookdown": Check(name, blendShape, vrm1.Preset.LookDown, MeshToNode); break;
+                    case "lookleft": Check(name, blendShape, vrm1.Preset.LookLeft, MeshToNode); break;
+                    case "lookright": Check(name, blendShape, vrm1.Preset.LookRight, MeshToNode); break;
+                    case "blink_l": Check(name, blendShape, vrm1.Preset.BlinkLeft, MeshToNode); break;
+                    case "blink_r": Check(name, blendShape, vrm1.Preset.BlinkRight, MeshToNode); break;
+                    default:
+                        {
+                            string found = default;
+                            foreach (var kv in vrm1.Custom)
+                            {
+                                if (kv.Key.ToLower() == name)
+                                {
+                                    Check(name, blendShape, kv.Value, MeshToNode);
+                                    found = kv.Key;
+                                    break;
+                                }
+                            }
+                            if (found == null)
+                            {
+                                throw new MigrationException(name, $"expression not migrated");
+                            }
+                            break;
+                        }
+                }
+            }
+        }
     }
 }
