@@ -13,6 +13,9 @@ namespace UniVRM10
     {
         public const string VRM_SPEC_VERSION = "1.0-beta";
 
+        public const string LICENSE_URL_JA = "https://vrm.dev/licenses/1.0/";
+        public const string LICENSE_URL_EN = "https://vrm.dev/licenses/1.0/en/";
+
         public readonly Vrm10Storage Storage = new Vrm10Storage();
 
         public readonly string VrmExtensionName = "VRMC_vrm";
@@ -255,6 +258,7 @@ namespace UniVRM10
                 },
                 Meta = new UniGLTF.Extensions.VRMC_vrm.Meta
                 {
+                    LicenseUrl = LICENSE_URL_JA,
                     AllowExcessivelySexualUsage = false,
                     AllowExcessivelyViolentUsage = false,
                     AllowPoliticalOrReligiousUsage = false,
