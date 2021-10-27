@@ -135,10 +135,10 @@ namespace UniVRM10
                     var subIndices = indices.Slice(submesh.Offset, submesh.DrawCount);
                     gltfPrim.indices = AddAccessor(subIndices);
                     gltfPrim.attributes.POSITION = position.Value;
-                    gltfPrim.attributes.NORMAL = normal.Value;
+                    gltfPrim.attributes.NORMAL = normal.GetValueOrDefault(-1); // たぶん、ありえる
                     gltfPrim.attributes.TANGENT = -1;
                     gltfPrim.attributes.COLOR_0 = color.GetValueOrDefault(-1);
-                    gltfPrim.attributes.TEXCOORD_0 = uv.Value;
+                    gltfPrim.attributes.TEXCOORD_0 = uv.GetValueOrDefault(-1); // ありえる？
                     gltfPrim.attributes.TEXCOORD_1 = -1;
                     gltfPrim.attributes.WEIGHTS_0 = weights.GetValueOrDefault(-1);
                     gltfPrim.attributes.JOINTS_0 = joints.GetValueOrDefault(-1);
