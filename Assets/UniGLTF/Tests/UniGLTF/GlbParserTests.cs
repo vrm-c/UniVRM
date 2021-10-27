@@ -11,7 +11,6 @@ namespace UniGLTF
             var data = new ExportingGltfData();
             var gltf = data.GLTF;
             gltf.asset.version = "2.0";
-            gltf.buffers.Add(new glTFBuffer(new ArrayByteBuffer(Array.Empty<byte>())));
             gltf.textures.Add(new glTFTexture
             {
                 name = "FooBar",

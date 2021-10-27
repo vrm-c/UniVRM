@@ -114,16 +114,19 @@ namespace UniGLTF
             }
             else
             {
-                var (json, buffers) = data.ToGltf(path);
-                // without BOM
-                var encoding = new System.Text.UTF8Encoding(false);
-                File.WriteAllText(path, json, encoding);
-                // write to local folder
-                var dir = Path.GetDirectoryName(path);
-                foreach (var b in buffers)
+                var (json, buffer0) = data.ToGltf(path);
+
                 {
-                    var bufferPath = Path.Combine(dir, b.uri);
-                    File.WriteAllBytes(bufferPath, b.GetBytes().ToArray());
+                    // write JSON without BOM
+                    var encoding = new System.Text.UTF8Encoding(false);
+                    File.WriteAllText(path, json, encoding);
+                }
+
+                {
+                    // write to buffer0 local folder
+                    var dir = Path.GetDirectoryName(path);
+                    var bufferPath = Path.Combine(dir, buffer0.uri);
+                    File.WriteAllBytes(bufferPath, data.BinBytes.ToArray());
                 }
             }
 

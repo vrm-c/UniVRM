@@ -42,17 +42,33 @@ namespace UniGLTF
         /// > This chunk MUST be the second chunk of the Binary glTF asset
         /// </summary>
         /// <returns></returns>
-        public ArraySegment<byte> Bin => Chunks[1].Bytes;
-
-        /// <summary>
-        /// URI access
-        /// </summary>
-        public IStorage _storage;
+        public ArraySegment<byte> Bin
+        {
+            get
+            {
+                if (Chunks == null)
+                {
+                    return default;
+                }
+                if (Chunks.Count < 2)
+                {
+                    return default;
+                }
+                return Chunks[1].Bytes;
+            }
+        }
 
         /// <summary>
         /// Migration Flags used by ImporterContext
         /// </summary>
         public MigrationFlags MigrationFlags { get; }
+
+        /// <summary>
+        /// URI access
+        /// </summary>
+        IStorage _storage;
+
+        Dictionary<string, ArraySegment<byte>> _dataUriCache = new Dictionary<string, ArraySegment<byte>>();
 
         public GltfData(string targetPath, string json, glTF gltf, IReadOnlyList<GlbChunk> chunks, IStorage storage, MigrationFlags migrationFlags)
         {
@@ -64,72 +80,114 @@ namespace UniGLTF
             MigrationFlags = migrationFlags;
         }
 
-        public static GltfData CreateFromGltfDataForTest(glTF gltf, ArraySegment<byte> bytes = default)
+        public static GltfData CreateFromExportForTest(ExportingGltfData data)
         {
-            IStorage storage = null;
-            if (bytes.Array != null)
-            {
-                storage = new SimpleStorage(bytes);
-            }
-            else
-            {
-                storage = new GltfStorage(gltf);
-            }
+            return CreateFromGltfDataForTest(data.GLTF, data.BinBytes);
+        }
+
+        public static GltfData CreateFromGltfDataForTest(glTF gltf, ArraySegment<byte> bytes)
+        {
             return new GltfData(
                 string.Empty,
                 string.Empty,
                 gltf,
-                new List<GlbChunk>(),
-                storage,
+                new List<GlbChunk>
+                {
+                    new GlbChunk(), // json
+                    GlbChunk.CreateBin(bytes),
+                },
+                default,
                 new MigrationFlags()
             );
         }
 
-        public ArraySegment<Byte> GetBytes(int bufferIndex)
+        public ArraySegment<Byte> GetBytesFromUri(string uri)
         {
-            // TODO:
-            var buffer = GLTF.buffers[bufferIndex];
-            return _storage.Get(buffer.uri);
+            if (string.IsNullOrEmpty(uri))
+            {
+                throw new ArgumentNullException();
+            }
+            if (uri.StartsWith("data:", StringComparison.Ordinal))
+            {
+                if (_dataUriCache.TryGetValue(uri, out ArraySegment<byte> data))
+                {
+                    return data;
+                }
+                data = new ArraySegment<byte>(UriByteBuffer.ReadEmbedded(uri));
+                _dataUriCache.Add(uri, data);
+                return data;
+            }
+            else
+            {
+                return _storage.Get(uri);
+            }
         }
 
-        public ArraySegment<Byte> GetViewBytes(int bufferView)
+        public ArraySegment<Byte> GetBytesFromBuffer(int bufferIndex)
+        {
+            var buffer = GLTF.buffers[bufferIndex];
+            if (bufferIndex == 0 && string.IsNullOrEmpty(buffer.uri))
+            {
+                // https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#glb-stored-buffer
+                // this buffer is reference bin chunk
+                if (Bin.Array == null)
+                {
+                    throw new NullReferenceException();
+                }
+                return Bin;
+            }
+            else
+            {
+                return GetBytesFromUri(buffer.uri);
+            }
+        }
+
+        public ArraySegment<Byte> GetBytesFromBufferView(int bufferView)
         {
             var view = GLTF.bufferViews[bufferView];
-            var segment = GetBytes(view.buffer);
+            var segment = GetBytesFromBuffer(view.buffer);
             return new ArraySegment<byte>(segment.Array, segment.Offset + view.byteOffset, view.byteLength);
         }
 
-        T[] GetAttrib<T>(int count, int byteOffset, glTFBufferView view) where T : struct
+        T[] GetTypedFromBufferView<T>(int count, int byteOffset, glTFBufferView view) where T : struct
         {
-            var segment = GetBytes(view.buffer);
+            var segment = GetBytesFromBuffer(view.buffer);
             var attrib = new T[count];
             var bytes = new ArraySegment<Byte>(segment.Array, segment.Offset + view.byteOffset + byteOffset, count * view.byteStride);
             bytes.MarshalCopyTo(attrib);
             return attrib;
         }
 
-        T[] GetAttrib<T>(glTFAccessor accessor, glTFBufferView view) where T : struct
+        T[] GetTypedFromAccessor<T>(glTFAccessor accessor, glTFBufferView view) where T : struct
         {
-            return GetAttrib<T>(accessor.count, accessor.byteOffset, view);
+            return GetTypedFromBufferView<T>(accessor.count, accessor.byteOffset, view);
         }
 
-        IEnumerable<int> _GetIndices(glTFBufferView view, int count, int byteOffset, glComponentType componentType)
+        /// <summary>
+        /// for sparse
+        /// </summary>
+        /// <param name="view"></param>
+        /// <param name="count"></param>
+        /// <param name="byteOffset"></param>
+        /// <param name="componentType"></param>
+        /// <returns></returns>
+        IEnumerable<int> GetIntIndicesFromView(glTFBufferView view, int count, int byteOffset, glComponentType componentType)
         {
             switch (componentType)
             {
                 case glComponentType.UNSIGNED_BYTE:
                     {
-                        return GetAttrib<Byte>(count, byteOffset, view).Select(x => (int)(x));
+                        return GetTypedFromBufferView<Byte>(count, byteOffset, view).Select(x => (int)(x));
                     }
 
                 case glComponentType.UNSIGNED_SHORT:
                     {
-                        return GetAttrib<UInt16>(count, byteOffset, view).Select(x => (int)(x));
+                        return GetTypedFromBufferView<UInt16>(count, byteOffset, view).Select(x => (int)(x));
                     }
 
                 case glComponentType.UNSIGNED_INT:
                     {
-                        return GetAttrib<UInt32>(count, byteOffset, view).Select(x => (int)(x));
+                        return GetTypedFromBufferView<UInt32>(count, byteOffset, view).Select(x => (int)(x));
                     }
             }
             throw new NotImplementedException("GetIndices: unknown componenttype: " + componentType);
@@ -141,7 +199,7 @@ namespace UniGLTF
         /// <param name="accessor"></param>
         /// <param name="count"></param>
         /// <returns></returns>
-        IEnumerable<int> _GetIndices(glTFAccessor accessor, out int count)
+        IEnumerable<int> GetIntIndicesFromAccessor(glTFAccessor accessor, out int count)
         {
             count = accessor.count;
             var view = GLTF.bufferViews[accessor.bufferView];
@@ -149,17 +207,17 @@ namespace UniGLTF
             {
                 case glComponentType.UNSIGNED_BYTE:
                     {
-                        return GetAttrib<Byte>(accessor, view).Select(x => (int)(x));
+                        return GetTypedFromAccessor<Byte>(accessor, view).Select(x => (int)(x));
                     }
 
                 case glComponentType.UNSIGNED_SHORT:
                     {
-                        return GetAttrib<UInt16>(accessor, view).Select(x => (int)(x));
+                        return GetTypedFromAccessor<UInt16>(accessor, view).Select(x => (int)(x));
                     }
 
                 case glComponentType.UNSIGNED_INT:
                     {
-                        return GetAttrib<UInt32>(accessor, view).Select(x => (int)(x));
+                        return GetTypedFromAccessor<UInt32>(accessor, view).Select(x => (int)(x));
                     }
             }
             throw new NotImplementedException("GetIndices: unknown componenttype: " + accessor.componentType);
@@ -168,7 +226,7 @@ namespace UniGLTF
         public int[] GetIndices(int accessorIndex)
         {
             int count;
-            var result = _GetIndices(GLTF.accessors[accessorIndex], out count);
+            var result = GetIntIndicesFromAccessor(GLTF.accessors[accessorIndex], out count);
             var indices = new int[count];
 
             // flip triangles
@@ -192,7 +250,7 @@ namespace UniGLTF
             if (vertexAccessor.count <= 0) return new T[] { };
 
             var result = (vertexAccessor.bufferView != -1)
-                ? GetAttrib<T>(vertexAccessor, GLTF.bufferViews[vertexAccessor.bufferView])
+                ? GetTypedFromAccessor<T>(vertexAccessor, GLTF.bufferViews[vertexAccessor.bufferView])
                 : new T[vertexAccessor.count]
                 ;
 
@@ -200,8 +258,8 @@ namespace UniGLTF
             if (sparse != null && sparse.count > 0)
             {
                 // override sparse values
-                var indices = _GetIndices(GLTF.bufferViews[sparse.indices.bufferView], sparse.count, sparse.indices.byteOffset, sparse.indices.componentType);
-                var values = GetAttrib<T>(sparse.count, sparse.values.byteOffset, GLTF.bufferViews[sparse.values.bufferView]);
+                var indices = GetIntIndicesFromView(GLTF.bufferViews[sparse.indices.bufferView], sparse.count, sparse.indices.byteOffset, sparse.indices.componentType);
+                var values = GetTypedFromBufferView<T>(sparse.count, sparse.values.byteOffset, GLTF.bufferViews[sparse.values.bufferView]);
 
                 var it = indices.GetEnumerator();
                 for (int i = 0; i < sparse.count; ++i)
@@ -226,7 +284,7 @@ namespace UniGLTF
             {
                 var attrib = new float[vertexAccessor.count * vertexAccessor.TypeCount];
                 var view = GLTF.bufferViews[vertexAccessor.bufferView];
-                var segment = GetBytes(view.buffer);
+                var segment = GetBytesFromBuffer(view.buffer);
                 var bytes = new ArraySegment<Byte>(segment.Array, segment.Offset + view.byteOffset + vertexAccessor.byteOffset, vertexAccessor.count * view.byteStride);
                 bytes.MarshalCopyTo(attrib);
                 result = attrib;
@@ -240,8 +298,8 @@ namespace UniGLTF
             if (sparse != null && sparse.count > 0)
             {
                 // override sparse values
-                var indices = _GetIndices(GLTF.bufferViews[sparse.indices.bufferView], sparse.count, sparse.indices.byteOffset, sparse.indices.componentType);
-                var values = GetAttrib<float>(sparse.count * vertexAccessor.TypeCount, sparse.values.byteOffset, GLTF.bufferViews[sparse.values.bufferView]);
+                var indices = GetIntIndicesFromView(GLTF.bufferViews[sparse.indices.bufferView], sparse.count, sparse.indices.byteOffset, sparse.indices.componentType);
+                var values = GetTypedFromBufferView<float>(sparse.count * vertexAccessor.TypeCount, sparse.values.byteOffset, GLTF.bufferViews[sparse.values.bufferView]);
 
                 var it = indices.GetEnumerator();
                 for (int i = 0; i < sparse.count; ++i)
@@ -253,23 +311,23 @@ namespace UniGLTF
             return result;
         }
 
-        public ArraySegment<Byte> GetImageBytes(int imageIndex)
+        public ArraySegment<Byte> GetBytesFromImage(int imageIndex)
         {
             var image = GLTF.images[imageIndex];
             if (string.IsNullOrEmpty(image.uri))
             {
-                return GetViewBytes(image.bufferView);
+                return GetBytesFromBufferView(image.bufferView);
             }
             else
             {
-                return _storage.Get(image.uri);
+                return GetBytesFromUri(image.uri);
             }
         }
 
         public ArraySegment<Byte> GetImageBytesFromTextureIndex(int textureIndex)
         {
             var imageIndex = GLTF.textures[textureIndex].source;
-            return GetImageBytes(imageIndex);
+            return GetBytesFromImage(imageIndex);
         }
     }
 }

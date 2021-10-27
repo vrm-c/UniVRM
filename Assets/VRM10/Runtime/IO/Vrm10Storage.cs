@@ -15,8 +15,6 @@ namespace UniVRM10
         UniGLTF.GltfData m_data;
         public UniGLTF.glTF Gltf => m_data.GLTF;
 
-        public List<UniGLTF.IBytesBuffer> Buffers;
-
         public UniGLTF.Extensions.VRMC_vrm.VRMC_vrm gltfVrm;
 
         public UniGLTF.Extensions.VRMC_springBone.VRMC_springBone gltfVrmSpringBone;
@@ -31,13 +29,9 @@ namespace UniVRM10
                 string.Empty,
                 GLTF,
                 new List<GlbChunk>(),
-                new SimpleStorage(new ArraySegment<byte>()),
+                default,
                 new MigrationFlags()
             );
-            Buffers = new List<UniGLTF.IBytesBuffer>()
-            {
-                new UniGLTF.ArrayByteBuffer()
-            };
         }
 
         /// <summary>
@@ -61,20 +55,17 @@ namespace UniVRM10
                 gltfVrmSpringBone = springBone;
             }
 
-            Buffers = new List<UniGLTF.IBytesBuffer>()
-            {
-                Gltf.buffers[0].Buffer,
-            };
+            _buffer = new ArraySegmentByteBuffer(data.Bin);
         }
 
         public void Reserve(int bytesLength)
         {
-            Buffers[0].ExtendCapacity(bytesLength);
+            _buffer.ExtendCapacity(bytesLength);
         }
 
-        public int AppendToBuffer(int bufferIndex, ArraySegment<byte> segment)
+        public int AppendToBuffer(ArraySegment<byte> segment)
         {
-            var gltfBufferView = Buffers[bufferIndex].Extend(segment);
+            var gltfBufferView = _buffer.Extend(segment);
             var viewIndex = Gltf.bufferViews.Count;
             Gltf.bufferViews.Add(gltfBufferView);
             return viewIndex;
@@ -138,7 +129,7 @@ namespace UniVRM10
                 var view = Gltf.bufferViews[bufferViewIndex];
                 if (view.buffer.TryGetValidIndex(Gltf.buffers.Count, out int bufferIndex))
                 {
-                    var buffer = Buffers[bufferIndex];
+                    var buffer = _buffer;
                     var bin = buffer.Bytes;
                     var byteSize = accessor.CalcByteSize();
                     bytes = bin.Slice(view.byteOffset, view.byteLength).Slice(accessor.byteOffset, byteSize);
@@ -480,18 +471,22 @@ namespace UniVRM10
         public ArraySegment<byte> GetBufferBytes(UniGLTF.glTFBuffer buffer)
         {
             int index = Gltf.buffers.IndexOf(buffer);
-            return Buffers[index].Bytes;
+            if (index != 0)
+            {
+                throw new NotImplementedException();
+            }
+            return _buffer.Bytes;
         }
 
         public byte[] ToBytes()
         {
-            Gltf.buffers[0].byteLength = Buffers[0].Bytes.Count;
+            Gltf.buffers[0].byteLength = _buffer.Bytes.Count;
 
             var f = new JsonFormatter();
             UniGLTF.GltfSerializer.Serialize(f, Gltf);
             var json = f.GetStoreBytes();
 
-            var glb = UniGLTF.Glb.Create(json, Buffers[0].Bytes);
+            var glb = UniGLTF.Glb.Create(json, _buffer.Bytes);
             return glb.ToBytes();
         }
     }

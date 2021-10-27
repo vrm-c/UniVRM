@@ -1,31 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 
 namespace UniGLTF
 {
-    /// <summary>
-    /// Implement bin chunk access
-    /// </summary>
-    public class SimpleStorage : IStorage
-    {
-        ArraySegment<Byte> m_bytes;
-
-        public SimpleStorage() : this(new ArraySegment<byte>())
-        {
-        }
-
-        public SimpleStorage(ArraySegment<Byte> bytes)
-        {
-            m_bytes = bytes;
-        }
-
-        public ArraySegment<byte> Get(string url)
-        {
-            return m_bytes;
-        }
-    }
-
     /// <summary>
     /// Implement url that represnet relative path
     /// </summary>
@@ -40,30 +17,8 @@ namespace UniGLTF
 
         public ArraySegment<byte> Get(string url)
         {
-            var bytes =
-                (url.FastStartsWith("data:"))
-                ? UriByteBuffer.ReadEmbedded(url)
-                : File.ReadAllBytes(Path.Combine(m_root, url))
-                ;
+            var bytes = File.ReadAllBytes(Path.Combine(m_root, url));
             return new ArraySegment<byte>(bytes);
-        }
-    }
-
-    /// <summary>
-    /// for UnitTest
-    /// </summary>
-    public sealed class GltfStorage : IStorage
-    {
-        glTF _gltf;
-
-        public GltfStorage(glTF gltf)
-        {
-            _gltf = gltf;
-        }
-
-        public ArraySegment<byte> Get(string url)
-        {
-            return _gltf.buffers[0].GetBytes();
         }
     }
 }

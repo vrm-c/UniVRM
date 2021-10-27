@@ -115,7 +115,7 @@ namespace UniGLTF
             }
 
             // parse
-            var parsed = new JsonWithStorageParser(json).Parse();
+            var parsed = GltfData.CreateFromExportForTest(data);
 
             // import
             using (var context = new ImporterContext(parsed))
@@ -129,7 +129,8 @@ namespace UniGLTF
         {
             var initBytes = init == 0 ? null : new byte[init];
             var storage = new ArrayByteBuffer(initBytes);
-            var buffer = new glTFBuffer(storage);
+            var data = new ExportingGltfData();
+            // var buffer = new glTFBuffer(storage);
 
             var values = new List<byte>();
             int offset = 0;
@@ -139,11 +140,11 @@ namespace UniGLTF
                 values.AddRange(nums);
                 var bytes = new ArraySegment<Byte>(nums);
                 offset += x;
-                buffer.Append(bytes, glBufferTarget.NONE);
+                data.ExtendBufferAndGetView(bytes, glBufferTarget.NONE);
             }
 
-            Assert.AreEqual(values.Count, buffer.byteLength);
-            Assert.True(Enumerable.SequenceEqual(values, buffer.GetBytes().ToArray()));
+            Assert.AreEqual(values.Count, data.GLTF.buffers[0].byteLength);
+            Assert.True(Enumerable.SequenceEqual(values, data.BinBytes.ToArray()));
         }
 
         [Test]
@@ -553,9 +554,7 @@ namespace UniGLTF
 
                 // import
                 {
-                    var storage = new SimpleStorage(new ArraySegment<byte>(new byte[1024 * 1024]));
-                    var parsed = new JsonWithStorageParser(json, storage).Parse();
-
+                    var parsed = GltfData.CreateFromExportForTest(data);
                     using (var context = new ImporterContext(parsed))
                     using (var loaded = context.Load())
                     {
@@ -573,10 +572,7 @@ namespace UniGLTF
 
                 // import new version
                 {
-                    var storage = new SimpleStorage(new ArraySegment<byte>(new byte[1024 * 1024]));
-                    var parsed = new JsonWithStorageParser(json, storage).Parse();
-
-                    //Debug.LogFormat("{0}", context.Json);
+                    var parsed = GltfData.CreateFromExportForTest(data);
                     using (var context = new ImporterContext(parsed))
                     using (var loaded = context.Load())
                     {
@@ -628,9 +624,7 @@ namespace UniGLTF
 
                 // import
                 {
-                    var storage = new SimpleStorage(new ArraySegment<byte>(new byte[1024 * 1024]));
-                    var parsed = new JsonWithStorageParser(json, storage).Parse();
-
+                    var parsed = GltfData.CreateFromExportForTest(data);
                     using (var context = new ImporterContext(parsed))
                     using (var loaded = context.Load())
                     {
@@ -694,9 +688,7 @@ namespace UniGLTF
 
                 // import
                 {
-                    var storage = new SimpleStorage(new ArraySegment<byte>(new byte[1024 * 1024]));
-                    var parsed = new JsonWithStorageParser(json, storage).Parse();
-
+                    var parsed = GltfData.CreateFromExportForTest(data);
                     using (var context = new ImporterContext(parsed))
                     using (var loaded = context.Load())
                     {
