@@ -7,9 +7,7 @@ namespace UniGLTF
 {
     public class ExportingGltfData
     {
-        readonly glTF _gltf = new glTF();
-
-        public glTF GLTF => _gltf;
+        public glTF GLTF { get; } = new glTF();
 
         protected IBytesBuffer _buffer;
         /// <summary>
@@ -25,7 +23,7 @@ namespace UniGLTF
             }
 
             // buffers[0] is export target
-            _gltf.buffers.Add(new glTFBuffer());
+            GLTF.buffers.Add(new glTFBuffer());
             _buffer = new ArrayByteBuffer(new byte[reserved]);
         }
 
@@ -51,8 +49,8 @@ namespace UniGLTF
                 return -1;
             }
             var view = Append(array, target);
-            var viewIndex = _gltf.bufferViews.Count;
-            _gltf.bufferViews.Add(view);
+            var viewIndex = GLTF.bufferViews.Count;
+            GLTF.bufferViews.Add(view);
             return viewIndex;
         }
 
@@ -74,10 +72,10 @@ namespace UniGLTF
             var viewIndex = ExtendBufferAndGetViewIndex(array, target);
 
             // index buffer's byteStride is unnecessary
-            _gltf.bufferViews[viewIndex].byteStride = 0;
+            GLTF.bufferViews[viewIndex].byteStride = 0;
 
-            var accessorIndex = _gltf.accessors.Count;
-            _gltf.accessors.Add(new glTFAccessor
+            var accessorIndex = GLTF.accessors.Count;
+            GLTF.accessors.Add(new glTFAccessor
             {
                 bufferView = viewIndex,
                 byteOffset = 0,
@@ -118,8 +116,8 @@ namespace UniGLTF
                 return -1;
             }
             var sparseValuesViewIndex = ExtendBufferAndGetViewIndex(sparseValues, target);
-            var accessorIndex = _gltf.accessors.Count;
-            _gltf.accessors.Add(new glTFAccessor
+            var accessorIndex = GLTF.accessors.Count;
+            GLTF.accessors.Add(new glTFAccessor
             {
                 byteOffset = 0,
                 componentType = glTFExtensions.GetComponentType<T>(),
@@ -212,11 +210,11 @@ namespace UniGLTF
         public byte[] ToGlbBytes()
         {
             var f = new JsonFormatter();
-            GltfSerializer.Serialize(f, _gltf);
+            GltfSerializer.Serialize(f, GLTF);
 
             // remove unused extenions
             var json = f.ToString().ParseAsJson().ToString("  ");
-            RemoveUnusedExtensions(_gltf, json);
+            RemoveUnusedExtensions(GLTF, json);
             return Glb.Create(json, BinBytes).ToBytes();
         }
 
@@ -228,10 +226,10 @@ namespace UniGLTF
         public (string, glTFBuffer) ToGltf(string gltfPath)
         {
             // fix buffer path
-            if (_gltf.buffers.Count == 1)
+            if (GLTF.buffers.Count == 1)
             {
                 var withoutExt = Path.GetFileNameWithoutExtension(gltfPath);
-                _gltf.buffers[0].uri = $"{withoutExt}.bin";
+                GLTF.buffers[0].uri = $"{withoutExt}.bin";
             }
             else
             {
@@ -239,10 +237,10 @@ namespace UniGLTF
             }
 
             var f = new JsonFormatter();
-            GltfSerializer.Serialize(f, _gltf);
+            GltfSerializer.Serialize(f, GLTF);
             var json = f.ToString().ParseAsJson().ToString("  ");
-            RemoveUnusedExtensions(_gltf, json);
-            return (json, _gltf.buffers[0]);
+            RemoveUnusedExtensions(GLTF, json);
+            return (json, GLTF.buffers[0]);
         }
         #endregion
     }
