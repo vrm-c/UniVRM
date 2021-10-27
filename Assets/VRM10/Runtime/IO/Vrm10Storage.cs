@@ -10,7 +10,7 @@ using VrmLib;
 
 namespace UniVRM10
 {
-    public class Vrm10Storage
+    public class Vrm10Storage : ExportingGltfData
     {
         UniGLTF.GltfData m_data;
         public UniGLTF.glTF Gltf => m_data.GLTF;
@@ -29,10 +29,7 @@ namespace UniVRM10
             m_data = new GltfData(
                 string.Empty,
                 string.Empty,
-                new glTF
-                {
-                    extensionsUsed = new List<string>(),
-                },
+                GLTF,
                 new List<GlbChunk>(),
                 new SimpleStorage(new ArraySegment<byte>()),
                 new MigrationFlags()
@@ -41,8 +38,6 @@ namespace UniVRM10
             {
                 new UniGLTF.ArrayByteBuffer()
             };
-
-            Gltf.AddBuffer(Buffers[0]);
         }
 
         /// <summary>

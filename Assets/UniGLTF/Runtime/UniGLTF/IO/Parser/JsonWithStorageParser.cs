@@ -11,7 +11,7 @@ namespace UniGLTF
     {
         private readonly string _json;
         private readonly IStorage _storage;
-        
+
         public JsonWithStorageParser(string json, IStorage storage = null)
         {
             _json = json;

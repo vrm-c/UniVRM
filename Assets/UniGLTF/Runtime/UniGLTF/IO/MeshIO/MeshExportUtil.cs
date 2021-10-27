@@ -30,9 +30,9 @@ namespace UniGLTF
                 m_normals[index] = normal;
             }
 
-            public gltfMorphTarget ToGltf(glTF gltf, int gltfBuffer, bool useNormal, bool useSparse)
+            public gltfMorphTarget ToGltf(ExportingGltfData data, bool useNormal, bool useSparse)
             {
-                return BlendShapeExporter.Export(gltf, gltfBuffer,
+                return BlendShapeExporter.Export(data,
                     m_positions,
                     useNormal ? m_normals : null,
                     useSparse);
@@ -103,24 +103,24 @@ namespace UniGLTF
                 m_weights.Add(new Vector4(boneWeight.weight0, boneWeight.weight1, boneWeight.weight2, boneWeight.weight3));
             }
 
-            public glTFPrimitives ToGltfPrimitive(glTF gltf, int bufferIndex, int materialIndex, IEnumerable<int> indices)
+            public glTFPrimitives ToGltfPrimitive(ExportingGltfData data, int materialIndex, IEnumerable<int> indices)
             {
-                var indicesAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, indices.Select(x => (uint)m_vertexIndexMap[x]).ToArray(), glBufferTarget.ELEMENT_ARRAY_BUFFER);
+                var indicesAccessorIndex = data.ExtendBufferAndGetAccessorIndex(indices.Select(x => (uint)m_vertexIndexMap[x]).ToArray(), glBufferTarget.ELEMENT_ARRAY_BUFFER);
                 var positions = m_positions.ToArray();
-                var positionAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, positions, glBufferTarget.ARRAY_BUFFER);
+                var positionAccessorIndex = data.ExtendBufferAndGetAccessorIndex(positions, glBufferTarget.ARRAY_BUFFER);
                 var normals = m_normals.ToArray();
-                var normalAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, normals, glBufferTarget.ARRAY_BUFFER);
-                var uvAccessorIndex0 = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, m_uv.ToArray(), glBufferTarget.ARRAY_BUFFER);
+                var normalAccessorIndex = data.ExtendBufferAndGetAccessorIndex(normals, glBufferTarget.ARRAY_BUFFER);
+                var uvAccessorIndex0 = data.ExtendBufferAndGetAccessorIndex(m_uv.ToArray(), glBufferTarget.ARRAY_BUFFER);
 
                 int? jointsAccessorIndex = default;
                 if (m_joints != null)
                 {
-                    jointsAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, m_joints.ToArray(), glBufferTarget.ARRAY_BUFFER);
+                    jointsAccessorIndex = data.ExtendBufferAndGetAccessorIndex(m_joints.ToArray(), glBufferTarget.ARRAY_BUFFER);
                 }
                 int? weightAccessorIndex = default;
                 if (m_weights != null)
                 {
-                    weightAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(bufferIndex, m_weights.ToArray(), glBufferTarget.ARRAY_BUFFER);
+                    weightAccessorIndex = data.ExtendBufferAndGetAccessorIndex(m_weights.ToArray(), glBufferTarget.ARRAY_BUFFER);
                 }
 
                 var primitive = new glTFPrimitives

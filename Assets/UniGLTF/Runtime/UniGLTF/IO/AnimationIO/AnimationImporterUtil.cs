@@ -185,7 +185,7 @@ namespace UniGLTF
             return string.Join("/", path);
         }
 
-        public static AnimationClip ConvertAnimationClip(glTF gltf, glTFAnimation animation, IAxisInverter inverter, glTFNode root = null)
+        public static AnimationClip ConvertAnimationClip(GltfData data, glTFAnimation animation, IAxisInverter inverter, glTFNode root = null)
         {
             var clip = new AnimationClip();
             clip.ClearCurves();
@@ -195,14 +195,14 @@ namespace UniGLTF
 
             foreach (var channel in animation.channels)
             {
-                var relativePath = RelativePathFrom(gltf.nodes, root, gltf.nodes[channel.target.node]);
+                var relativePath = RelativePathFrom(data.GLTF.nodes, root, data.GLTF.nodes[channel.target.node]);
                 switch (channel.target.path)
                 {
                     case glTFAnimationTarget.PATH_TRANSLATION:
                         {
                             var sampler = animation.samplers[channel.sampler];
-                            var input = gltf.GetArrayFromAccessor<float>(sampler.input);
-                            var output = gltf.FlatternFloatArrayFromAccessor(sampler.output);
+                            var input = data.GetArrayFromAccessor<float>(sampler.input);
+                            var output = data.FlatternFloatArrayFromAccessor(sampler.output);
 
                             AnimationImporterUtil.SetAnimationCurve(
                                 clip,
@@ -224,8 +224,8 @@ namespace UniGLTF
                     case glTFAnimationTarget.PATH_ROTATION:
                         {
                             var sampler = animation.samplers[channel.sampler];
-                            var input = gltf.GetArrayFromAccessor<float>(sampler.input);
-                            var output = gltf.FlatternFloatArrayFromAccessor(sampler.output);
+                            var input = data.GetArrayFromAccessor<float>(sampler.input);
+                            var output = data.FlatternFloatArrayFromAccessor(sampler.output);
 
                             AnimationImporterUtil.SetAnimationCurve(
                                 clip,
@@ -250,8 +250,8 @@ namespace UniGLTF
                     case glTFAnimationTarget.PATH_SCALE:
                         {
                             var sampler = animation.samplers[channel.sampler];
-                            var input = gltf.GetArrayFromAccessor<float>(sampler.input);
-                            var output = gltf.FlatternFloatArrayFromAccessor(sampler.output);
+                            var input = data.GetArrayFromAccessor<float>(sampler.input);
+                            var output = data.FlatternFloatArrayFromAccessor(sampler.output);
 
                             AnimationImporterUtil.SetAnimationCurve(
                                 clip,
@@ -267,8 +267,8 @@ namespace UniGLTF
 
                     case glTFAnimationTarget.PATH_WEIGHT:
                         {
-                            var node = gltf.nodes[channel.target.node];
-                            var mesh = gltf.meshes[node.mesh];
+                            var node = data.GLTF.nodes[channel.target.node];
+                            var mesh = data.GLTF.meshes[node.mesh];
                             var primitive = mesh.primitives.FirstOrDefault();
                             var targets = primitive.targets;
 
@@ -283,8 +283,8 @@ namespace UniGLTF
                                 .ToArray();
 
                             var sampler = animation.samplers[channel.sampler];
-                            var input = gltf.GetArrayFromAccessor<float>(sampler.input);
-                            var output = gltf.GetArrayFromAccessor<float>(sampler.output);
+                            var input = data.GetArrayFromAccessor<float>(sampler.input);
+                            var output = data.GetArrayFromAccessor<float>(sampler.output);
                             AnimationImporterUtil.SetAnimationCurve(
                                 clip,
                                 relativePath,

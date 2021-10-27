@@ -65,9 +65,9 @@ namespace UniVRM10
         /// <param name="storage"></param>
         /// <param name="gltfMesh"></param>
         /// <param name="option"></param>
-        static IEnumerable<glTFPrimitives> ExportMeshDivided(this VrmLib.Mesh mesh, List<object> materials, Vrm10Storage storage, ExportArgs option)
+        static IEnumerable<glTFPrimitives> ExportMeshDivided(this VrmLib.Mesh mesh, List<object> materials,
+            ExportingGltfData  writer, ExportArgs option)
         {
-            var bufferIndex = 0;
             var usedIndices = new List<int>();
             var meshIndices = SpanLike.CopyFrom(mesh.IndexBuffer.GetAsIntArray());
             var positions = mesh.VertexBuffer.Positions.GetSpan<UnityEngine.Vector3>().ToArray();
@@ -121,7 +121,7 @@ namespace UniVRM10
                     }
                 }
                 var materialIndex = submesh.Material;
-                var gltfPrimitive = buffer.ToGltfPrimitive(storage.Gltf, bufferIndex, materialIndex, indices);
+                var gltfPrimitive = buffer.ToGltfPrimitive(writer, materialIndex, indices);
 
                 // blendShape
                 for (int j = 0; j < mesh.MorphTargets.Count; ++j)
@@ -145,7 +145,7 @@ namespace UniVRM10
                             );
                     }
 
-                    gltfPrimitive.targets.Add(blendShape.ToGltf(storage.Gltf, bufferIndex, !option.removeMorphNormal, option.sparse));
+                    gltfPrimitive.targets.Add(blendShape.ToGltf(writer, !option.removeMorphNormal, option.sparse));
                 }
 
                 yield return gltfPrimitive;
@@ -160,7 +160,7 @@ namespace UniVRM10
         /// <param name="storage"></param>
         /// <param name="option"></param>
         /// <returns></returns>
-        public static glTFMesh ExportMeshGroup(this MeshGroup src, List<object> materials, Vrm10Storage storage, ExportArgs option)
+        public static glTFMesh ExportMeshGroup(this MeshGroup src, List<object> materials, ExportingGltfData  writer, ExportArgs option)
         {
             var gltfMesh = new glTFMesh
             {
@@ -172,7 +172,7 @@ namespace UniVRM10
                 throw new NotImplementedException();
             }
 
-            foreach (var prim in src.Meshes[0].ExportMeshDivided(materials, storage, option))
+            foreach (var prim in src.Meshes[0].ExportMeshDivided(materials, writer, option))
             {
                 gltfMesh.primitives.Add(prim);
             }

@@ -9,14 +9,14 @@ namespace UniGLTF
     {
         public delegate (ushort x, ushort y, ushort z, ushort w) Getter(int index);
 
-        public static (Getter, int) GetAccessor(glTF gltf, int accessorIndex)
+        public static (Getter, int) GetAccessor(GltfData data, int accessorIndex)
         {
-            var gltfAccessor = gltf.accessors[accessorIndex];
+            var gltfAccessor = data.GLTF.accessors[accessorIndex];
             switch (gltfAccessor.componentType)
             {
                 case glComponentType.UNSIGNED_BYTE:
                     {
-                        var array = gltf.GetArrayFromAccessor<Byte4>(accessorIndex);
+                        var array = data.GetArrayFromAccessor<Byte4>(accessorIndex);
                         Getter getter = (i) =>
                             {
                                 var value = array[i];
@@ -27,7 +27,7 @@ namespace UniGLTF
 
                 case glComponentType.UNSIGNED_SHORT:
                     {
-                        var array = gltf.GetArrayFromAccessor<UShort4>(accessorIndex);
+                        var array = data.GetArrayFromAccessor<UShort4>(accessorIndex);
                         Getter getter = (i) =>
                             {
                                 var value = array[i];

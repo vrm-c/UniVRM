@@ -100,8 +100,8 @@ namespace UniGLTF
                 default: throw new System.Exception();
             }
 
-            var gltf = new glTF();
-            using (var exporter = new gltfExporter(gltf, Settings))
+            var data = new ExportingGltfData();
+            using (var exporter = new gltfExporter(data, Settings))
             {
                 exporter.Prepare(State.ExportRoot);
                 exporter.Export(new EditorTextureSerializer());
@@ -109,12 +109,12 @@ namespace UniGLTF
 
             if (isGlb)
             {
-                var bytes = gltf.ToGlbBytes();
+                var bytes = data.ToGlbBytes();
                 File.WriteAllBytes(path, bytes);
             }
             else
             {
-                var (json, buffers) = gltf.ToGltf(path);
+                var (json, buffers) = data.ToGltf(path);
                 // without BOM
                 var encoding = new System.Text.UTF8Encoding(false);
                 File.WriteAllText(path, json, encoding);

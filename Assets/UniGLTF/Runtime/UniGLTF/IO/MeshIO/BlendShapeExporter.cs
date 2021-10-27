@@ -7,7 +7,7 @@ namespace UniGLTF
 {
     public static class BlendShapeExporter
     {
-        public static gltfMorphTarget Export(glTF gltf, int gltfBuffer, Vector3[] positions, Vector3[] normals, bool useSparse)
+        public static gltfMorphTarget Export(ExportingGltfData data, Vector3[] positions, Vector3[] normals, bool useSparse)
         {
             var accessorCount = positions.Length;
             if (normals != null && positions.Length != normals.Length)
@@ -44,8 +44,8 @@ namespace UniGLTF
                 var positionAccessorIndex = -1;
                 if (sparseIndices.Length > 0)
                 {
-                    var sparseIndicesViewIndex = gltf.ExtendBufferAndGetViewIndex(gltfBuffer, sparseIndices);
-                    positionAccessorIndex = gltf.ExtendSparseBufferAndGetAccessorIndex(gltfBuffer, accessorCount,
+                    var sparseIndicesViewIndex = data.ExtendBufferAndGetViewIndex(sparseIndices);
+                    positionAccessorIndex = data.ExtendSparseBufferAndGetAccessorIndex(accessorCount,
                         sparseIndices.Select(x => positions[x]).ToArray(), sparseIndices, sparseIndicesViewIndex,
                         glBufferTarget.NONE);
                 }
@@ -57,8 +57,8 @@ namespace UniGLTF
                     var sparseNormalIndices = Enumerable.Range(0, positions.Length).Where(x => normals[x] != Vector3.zero).ToArray();
                     if (sparseNormalIndices.Length > 0)
                     {
-                        var sparseNormalIndicesViewIndex = gltf.ExtendBufferAndGetViewIndex(gltfBuffer, sparseNormalIndices);
-                        normalAccessorIndex = gltf.ExtendSparseBufferAndGetAccessorIndex(gltfBuffer, accessorCount,
+                        var sparseNormalIndicesViewIndex = data.ExtendBufferAndGetViewIndex(sparseNormalIndices);
+                        normalAccessorIndex = data.ExtendSparseBufferAndGetAccessorIndex(accessorCount,
                             sparseNormalIndices.Select(x => normals[x]).ToArray(), sparseNormalIndices, sparseNormalIndicesViewIndex,
                             glBufferTarget.NONE);
                     }
@@ -73,15 +73,15 @@ namespace UniGLTF
             else
             {
                 // position
-                var positionAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(gltfBuffer, positions, glBufferTarget.ARRAY_BUFFER);
-                gltf.accessors[positionAccessorIndex].min = positions.Aggregate(positions[0], (a, b) => new Vector3(Mathf.Min(a.x, b.x), Math.Min(a.y, b.y), Mathf.Min(a.z, b.z))).ToArray();
-                gltf.accessors[positionAccessorIndex].max = positions.Aggregate(positions[0], (a, b) => new Vector3(Mathf.Max(a.x, b.x), Math.Max(a.y, b.y), Mathf.Max(a.z, b.z))).ToArray();
+                var positionAccessorIndex = data.ExtendBufferAndGetAccessorIndex(positions, glBufferTarget.ARRAY_BUFFER);
+                data.GLTF.accessors[positionAccessorIndex].min = positions.Aggregate(positions[0], (a, b) => new Vector3(Mathf.Min(a.x, b.x), Math.Min(a.y, b.y), Mathf.Min(a.z, b.z))).ToArray();
+                data.GLTF.accessors[positionAccessorIndex].max = positions.Aggregate(positions[0], (a, b) => new Vector3(Mathf.Max(a.x, b.x), Math.Max(a.y, b.y), Mathf.Max(a.z, b.z))).ToArray();
 
                 // normal
                 var normalAccessorIndex = -1;
                 if (normals != null)
                 {
-                    normalAccessorIndex = gltf.ExtendBufferAndGetAccessorIndex(gltfBuffer, normals, glBufferTarget.ARRAY_BUFFER);
+                    normalAccessorIndex = data.ExtendBufferAndGetAccessorIndex(normals, glBufferTarget.ARRAY_BUFFER);
                 }
 
                 return new gltfMorphTarget

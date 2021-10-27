@@ -1,8 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace UniGLTF
 {
+    /// <summary>
+    /// Implement bin chunk access
+    /// </summary>
     public class SimpleStorage : IStorage
     {
         ArraySegment<Byte> m_bytes;
@@ -20,13 +24,11 @@ namespace UniGLTF
         {
             return m_bytes;
         }
-
-        public string GetPath(string url)
-        {
-            return null;
-        }
     }
 
+    /// <summary>
+    /// Implement url that represnet relative path
+    /// </summary>
     public class FileSystemStorage : IStorage
     {
         string m_root;
@@ -45,17 +47,23 @@ namespace UniGLTF
                 ;
             return new ArraySegment<byte>(bytes);
         }
+    }
 
-        public string GetPath(string url)
+    /// <summary>
+    /// for UnitTest
+    /// </summary>
+    public sealed class GltfStorage : IStorage
+    {
+        glTF _gltf;
+
+        public GltfStorage(glTF gltf)
         {
-            if (url.FastStartsWith("data:"))
-            {
-                return null;
-            }
-            else
-            {
-                return Path.Combine(m_root, url).Replace("\\", "/");
-            }
+            _gltf = gltf;
+        }
+
+        public ArraySegment<byte> Get(string url)
+        {
+            return _gltf.buffers[0].GetBytes();
         }
     }
 }
