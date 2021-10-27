@@ -146,7 +146,7 @@ namespace UniGLTF
             var parsed = GltfData.CreateFromGltfDataForTest(gltf, data.BinBytes);
 
             // Extract Image to Texture2D
-            var exportedBytes = parsed.GetViewBytes(exportedImage.bufferView).ToArray();
+            var exportedBytes = parsed.GetBytesFromBufferView(exportedImage.bufferView).ToArray();
             var exportedTexture = new Texture2D(2, 2, TextureFormat.ARGB32, mipChain: false, linear: false);
             Assert.IsTrue(exportedTexture.LoadImage(exportedBytes)); // Always true ?
             Assert.AreEqual(srcTex.width, exportedTexture.width);
