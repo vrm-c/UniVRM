@@ -89,7 +89,8 @@ namespace UniGLTF
                 string.Empty,
                 string.Empty,
                 gltf,
-                new List<GlbChunk>{
+                new List<GlbChunk>  
+                {
                     new GlbChunk(), // json
                     GlbChunk.CreateBin(bytes),
                 },
