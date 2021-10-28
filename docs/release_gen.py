@@ -79,6 +79,6 @@ def get_hash() -> str:
 
 
 if __name__ == '__main__':
-    version = get_version(UNIVRM_VERSION)
+    version = get_version()
     hash = get_hash()
     gen(version, hash)
