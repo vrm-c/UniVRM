@@ -53,7 +53,14 @@ namespace UniVRM10
                 foreach (var vrm0XMaterial in vrm0XMaterials)
                 {
                     var renderQueue = MigrationMaterialUtil.GetRenderQueue(vrm0XMaterial);
-                    renderQueueSet.Add(renderQueue ?? Unity0XDefaultRenderQueue);
+                    if (renderQueue.HasValue && renderQueue.Value != -1)
+                    {
+                        renderQueueSet.Add(renderQueue.Value);
+                    }
+                    else
+                    {
+                        renderQueueSet.Add(Unity0XDefaultRenderQueue);
+                    }
                 }
 
                 var mapper = new Dictionary<int, int>();
