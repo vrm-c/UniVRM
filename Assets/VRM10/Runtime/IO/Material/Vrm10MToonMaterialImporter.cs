@@ -72,14 +72,14 @@ namespace UniVRM10
             // GI
 
             // Emission
-            var emissionColor = material?.emissiveFactor?.ToColor3(gltfColorSpace, ColorSpace.Linear);
+            var emissionColor = material?.emissiveFactor?.ToColor3(gltfColorSpace, ColorSpace.sRGB);
             if (emissionColor.HasValue)
             {
                 yield return (MToon10Prop.EmissiveFactor.ToUnityShaderLabName(), emissionColor.Value);
             }
 
             // Rim Lighting
-            var rimColor = mToon?.ParametricRimColorFactor?.ToColor3(gltfColorSpace, ColorSpace.Linear);
+            var rimColor = mToon?.ParametricRimColorFactor?.ToColor3(gltfColorSpace, ColorSpace.sRGB);
             if (rimColor.HasValue)
             {
                 yield return (MToon10Prop.ParametricRimColorFactor.ToUnityShaderLabName(), rimColor.Value);
