@@ -42,6 +42,8 @@ namespace UniVRM10
 
         static byte[] MigrateVrm(glTF gltf, ArraySegment<byte> bin, JsonNode vrm0)
         {
+            var meshToNode = CreateMeshToNode(gltf);
+
             {
                 // vrm
                 var vrm1 = new UniGLTF.Extensions.VRMC_vrm.VRMC_vrm();
@@ -59,7 +61,7 @@ namespace UniVRM10
                         Preset = new UniGLTF.Extensions.VRMC_vrm.Preset(),
                         Custom = new Dictionary<string, UniGLTF.Extensions.VRMC_vrm.Expression>(),
                     };
-                    foreach (var (preset, customName, expression) in MigrationVrmExpression.Migrate(gltf, vrm0BlendShape))
+                    foreach (var (preset, customName, expression) in MigrationVrmExpression.Migrate(gltf, vrm0BlendShape, meshToNode))
                     {
                         switch (preset)
                         {
@@ -119,10 +121,29 @@ namespace UniVRM10
             return Glb.Create(vrm1Json, bin).ToBytes();
         }
 
-        public static void Check(JsonNode vrm0, UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm1)
+        public delegate int MeshIndexToNodeIndexFunc(int meshIndex);
+
+        public static MeshIndexToNodeIndexFunc CreateMeshToNode(UniGLTF.glTF gltf)
+        {
+            return (int mesh) =>
+            {
+                for (int i = 0; i < gltf.nodes.Count; ++i)
+                {
+                    var node = gltf.nodes[i];
+                    if (node.mesh == mesh)
+                    {
+                        return i;
+                    }
+                }
+                return -1;
+            };
+        }
+
+        public static void Check(JsonNode vrm0, UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm1, MeshIndexToNodeIndexFunc meshToNode)
         {
             MigrationVrmMeta.Check(vrm0["meta"], vrm1.Meta);
             MigrationVrmHumanoid.Check(vrm0["humanoid"], vrm1.Humanoid);
+            MigrationVrmExpression.Check(vrm0["blendShapeMaster"], vrm1.Expressions, meshToNode);
         }
 
         public static void Check(JsonNode vrm0, UniGLTF.Extensions.VRMC_springBone.VRMC_springBone vrm1, List<glTFNode> nodes)

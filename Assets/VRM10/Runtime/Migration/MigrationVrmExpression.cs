@@ -42,7 +42,8 @@ namespace UniVRM10
             throw new NotImplementedException();
         }
 
-        static IEnumerable<UniGLTF.Extensions.VRMC_vrm.MorphTargetBind> ToMorphTargetBinds(UniGLTF.glTF gltf, JsonNode json)
+        static IEnumerable<UniGLTF.Extensions.VRMC_vrm.MorphTargetBind> ToMorphTargetBinds(JsonNode json,
+            MigrationVrm.MeshIndexToNodeIndexFunc meshToNode)
         {
             foreach (var x in json.ArrayItems())
             {
@@ -54,20 +55,14 @@ namespace UniVRM10
 
                 // https://github.com/vrm-c/vrm-specification/pull/106
                 // https://github.com/vrm-c/vrm-specification/pull/153
-                var node = gltf.nodes.FirstOrDefault(y => y.mesh == meshIndex);
-                if (node == null)
-                {
-                    // invalid data. skip
-                    Debug.LogWarning($"[MigrationVrmExpression] node.mesh == {meshIndex} is not found");
-                    continue;
-                }
-                var nodeIndex = gltf.nodes.IndexOf(node);
+                var nodeIndex = meshToNode(meshIndex);
                 if (nodeIndex == -1)
                 {
                     // invalid data. skip
-                    Debug.LogWarning($"[MigrationVrmExpression] node.mesh == {meshIndex} index");
+                    Debug.LogWarning($"[MigrationVrmExpression] node.mesh == {meshIndex} not found");
                     continue;
                 }
+                bind.Node = nodeIndex;
                 bind.Index = morphTargetIndex;
                 // https://github.com/vrm-c/vrm-specification/issues/209                
                 bind.Weight = weight * 0.01f;
@@ -193,7 +188,8 @@ namespace UniVRM10
             }
         }
 
-        public static IEnumerable<(ExpressionPreset, string, UniGLTF.Extensions.VRMC_vrm.Expression)> Migrate(UniGLTF.glTF gltf, JsonNode json)
+        public static IEnumerable<(ExpressionPreset, string, UniGLTF.Extensions.VRMC_vrm.Expression)> Migrate(UniGLTF.glTF gltf, JsonNode json,
+            MigrationVrm.MeshIndexToNodeIndexFunc meshToNode)
         {
             foreach (var blendShapeClip in json["blendShapeGroups"].ArrayItems())
             {
@@ -211,7 +207,7 @@ namespace UniVRM10
                     MaterialColorBinds = new List<UniGLTF.Extensions.VRMC_vrm.MaterialColorBind>(),
                     TextureTransformBinds = new List<UniGLTF.Extensions.VRMC_vrm.TextureTransformBind>(),
                 };
-                expression.MorphTargetBinds = ToMorphTargetBinds(gltf, blendShapeClip["binds"]).ToList();
+                expression.MorphTargetBinds = ToMorphTargetBinds(blendShapeClip["binds"], meshToNode).ToList();
 
                 if (blendShapeClip.TryGet("materialValues", out JsonNode materialValues))
                 {
@@ -219,6 +215,91 @@ namespace UniVRM10
                 }
 
                 yield return (preset, name, expression);
+            }
+        }
+
+        static void Check(string name, JsonNode vrm0, UniGLTF.Extensions.VRMC_vrm.Expression vrm1,
+            MigrationVrm.MeshIndexToNodeIndexFunc meshToNode)
+        {
+            if (vrm0["binds"].GetArrayCount() == 0)
+            {
+                if (vrm1.MorphTargetBinds == null)
+                {
+                    // OK
+                    return;
+                }
+                else
+                {
+                    throw new MigrationException($"expression.{name}.binds", "different count");
+                }
+            }
+
+            foreach (var (l, r) in Enumerable.Zip(vrm0["binds"].ArrayItems(), vrm1.MorphTargetBinds, (x, y) => (x, y)))
+            {
+                var mesh = l["mesh"].GetInt32();
+                var node = meshToNode(mesh);
+                if (node != r.Node)
+                {
+                    throw new MigrationException($"expression.{name}.binds.node", $"{node} != {r.Node}");
+                }
+
+                var index = l["index"].GetInt32();
+                if (index != r.Index)
+                {
+                    throw new MigrationException($"expression.{name}.binds.index", $"{index} != {r.Index}");
+                }
+
+                var weight = l["weight"].GetSingle() * 0.01f; // [0, 100] to [0, 1.0f]
+                if (weight != r.Weight)
+                {
+                    throw new MigrationException($"expression.{name}.binds.weight", $"{weight} != {r.Weight}");
+                }
+            }
+        }
+
+        public static void Check(JsonNode vrm0, UniGLTF.Extensions.VRMC_vrm.Expressions vrm1,
+            MigrationVrm.MeshIndexToNodeIndexFunc meshToNode)
+        {
+            foreach (var blendShape in vrm0["blendShapeGroups"].ArrayItems())
+            {
+                var name = blendShape["presetName"].GetString().ToLower();
+                switch (name)
+                {
+                    case "a": Check(name, blendShape, vrm1.Preset.Aa, meshToNode); break;
+                    case "i": Check(name, blendShape, vrm1.Preset.Ih, meshToNode); break;
+                    case "u": Check(name, blendShape, vrm1.Preset.Ou, meshToNode); break;
+                    case "e": Check(name, blendShape, vrm1.Preset.Ee, meshToNode); break;
+                    case "o": Check(name, blendShape, vrm1.Preset.Oh, meshToNode); break;
+                    case "blink": Check(name, blendShape, vrm1.Preset.Blink, meshToNode); break;
+                    case "joy": Check(name, blendShape, vrm1.Preset.Happy, meshToNode); break;
+                    case "angry": Check(name, blendShape, vrm1.Preset.Angry, meshToNode); break;
+                    case "sorrow": Check(name, blendShape, vrm1.Preset.Sad, meshToNode); break;
+                    case "fun": Check(name, blendShape, vrm1.Preset.Relaxed, meshToNode); break;
+                    case "lookup": Check(name, blendShape, vrm1.Preset.LookUp, meshToNode); break;
+                    case "lookdown": Check(name, blendShape, vrm1.Preset.LookDown, meshToNode); break;
+                    case "lookleft": Check(name, blendShape, vrm1.Preset.LookLeft, meshToNode); break;
+                    case "lookright": Check(name, blendShape, vrm1.Preset.LookRight, meshToNode); break;
+                    case "blink_l": Check(name, blendShape, vrm1.Preset.BlinkLeft, meshToNode); break;
+                    case "blink_r": Check(name, blendShape, vrm1.Preset.BlinkRight, meshToNode); break;
+                    default:
+                        {
+                            string found = default;
+                            foreach (var kv in vrm1.Custom)
+                            {
+                                if (kv.Key.ToLower() == name)
+                                {
+                                    Check(name, blendShape, kv.Value, meshToNode);
+                                    found = kv.Key;
+                                    break;
+                                }
+                            }
+                            if (found == null)
+                            {
+                                throw new MigrationException(name, $"expression not migrated");
+                            }
+                            break;
+                        }
+                }
             }
         }
     }
