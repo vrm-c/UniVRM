@@ -38,7 +38,7 @@ namespace UniVRM10
                 {
                     throw new Exception("not float4");
                 }
-                return factor.ArrayItems().Select(x => ListTreeNodeExtensions.GetSingle(x)).ToArray();
+                return factor.ArrayItems().Select(x => x.GetSingle()).ToArray();
             }
             catch (Exception)
             {
@@ -51,15 +51,42 @@ namespace UniVRM10
         {
             try
             {
-                return new glTFMaterialBaseColorTextureInfo
+                var textureInfo = new glTFMaterialBaseColorTextureInfo
                 {
                     index = vrm0XMaterial[TexturePropertiesKey][MainTexKey].GetInt32(),
                 };
+                var os = GetBaseColorTextureOffsetScale(vrm0XMaterial);
+                glTF_KHR_texture_transform.Serialize(textureInfo, (os.offsetX, os.offsetY), (os.scaleX, os.scaleY));
+                return textureInfo;
             }
             catch (Exception)
             {
                 Debug.LogWarning($"Migration Warning: BaseColorTexture fallback default.");
                 return null;
+            }
+        }
+
+        private static (float offsetX, float offsetY, float scaleX, float scaleY) GetBaseColorTextureOffsetScale(JsonNode vrm0XMaterial)
+        {
+            try
+            {
+                var unityOffsetScale = vrm0XMaterial[VectorPropertiesKey][MainTexKey];
+                if (!unityOffsetScale.IsArray() || unityOffsetScale.GetArrayCount() != 4)
+                {
+                    throw new Exception("not float4");
+                }
+
+                var unityOffsetX = unityOffsetScale[0].GetSingle();
+                var unityOffsetY = unityOffsetScale[1].GetSingle();
+                var unityScaleX = unityOffsetScale[2].GetSingle();
+                var unityScaleY = unityOffsetScale[3].GetSingle();
+
+                return (unityOffsetX, 1.0f - unityOffsetY - unityScaleY, unityScaleX, unityScaleY);
+            }
+            catch (Exception)
+            {
+                Debug.LogWarning($"Migration Warning: BaseColorTextureScaleOffset fallback default.");
+                return (0, 0, 1, 1);
             }
         }
 
