@@ -10,7 +10,7 @@ namespace UniVRM10
 {
     public static class Vrm10MToonMaterialExporter
     {
-        const string MTOON_SPEC_VERSION = "1.0-draft";
+        const string MTOON_SPEC_VERSION = "1.0-beta";
 
         public static bool TryExportMaterialAsMToon(Material src, ITextureExporter textureExporter, out glTFMaterial dst)
         {
