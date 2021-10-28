@@ -27,7 +27,7 @@ namespace UniVRM10
                     }
 
                     // 2. VRM 拡張のうち、古い Unlit 情報からの取得を試みる.
-                    var unlitMaterial = MigrationLegacyUnlitMaterial.Migrate(vrm0XMaterial);
+                    var unlitMaterial = MigrationLegacyUnlitMaterial.Migrate(vrm0XMaterial, gltf.materials[materialIdx].name);
                     if (unlitMaterial != null)
                     {
                         gltf.materials[materialIdx] = unlitMaterial;
@@ -40,8 +40,15 @@ namespace UniVRM10
                 }
             }
 
-            // 3. VRM 拡張のうち、MToon 情報からの取得を試みる.
-            MigrationMToonMaterial.Migrate(gltf, vrm0);
+            try
+            {
+                // 3. VRM 拡張のうち、MToon 情報からの取得を試みる.
+                MigrationMToonMaterial.Migrate(gltf, vrm0);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogException(ex);
+            }
         }
     }
 }

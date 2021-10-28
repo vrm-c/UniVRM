@@ -9,10 +9,11 @@ namespace UniVRM10
     /// </summary>
     public static class MigrationLegacyUnlitMaterial
     {
-        public static glTFMaterial Migrate(JsonNode vrm0XMaterial)
+        public static glTFMaterial Migrate(JsonNode vrm0XMaterial, string materialName)
         {
             var unlitMaterial = new glTFMaterial
             {
+                name = materialName,
                 pbrMetallicRoughness = new glTFPbrMetallicRoughness
                 {
                     metallicFactor = 0f,
