@@ -102,5 +102,18 @@ namespace UniVRM10
                 return 0.5f;
             }
         }
+
+        public static int? GetRenderQueue(JsonNode vrm0XMaterial)
+        {
+            try
+            {
+                return vrm0XMaterial["renderQueue"].GetInt32();
+            }
+            catch (Exception)
+            {
+                Debug.LogWarning($"Migration Warning: RenderQueue fallback default.");
+                return default;
+            }
+        }
     }
 }

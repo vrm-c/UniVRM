@@ -62,7 +62,7 @@ namespace UniVRM10
                     return unlitMaterial;
                 case "VRM/UnlitTransparentZWrite":
                     // NOTE: ZWrite マテリアルのみ、MToon にマイグレーションするため、別処理.
-                    return MigrationUnlitTransparentZWriteMaterial.Migrate(vrm0XMaterial, materialName);
+                    return null;
                 default:
                     return null;
             }

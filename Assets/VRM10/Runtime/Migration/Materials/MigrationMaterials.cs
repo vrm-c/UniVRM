@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using UniGLTF;
 using UniJSON;
 using UnityEngine;
@@ -46,19 +47,33 @@ namespace UniVRM10
 
             try
             {
-                // 3. VRM 拡張のうち、MToon 情報からの取得を試みる.
+                var vrm0XMaterialList = vrm0[MaterialPropertiesKey].ArrayItems().ToArray();
+
+                // 3. VRM 拡張のうち、UnlitTransparentZWrite 情報からの取得を試みる.
+                if (MigrationUnlitTransparentZWriteMaterial.Migrate(gltf, vrm0XMaterialList))
+                {
+                    // NOTE: 古い Unlit である場合、頂点カラー情報を破棄する.
+                    needsDisablingVertexColor = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogException(ex);
+            }
+
+            try
+            {
+                // 4. VRM 拡張のうち、MToon 情報からの取得を試みる.
                 MigrationMToonMaterial.Migrate(gltf, vrm0);
             }
             catch (Exception ex)
             {
                 Debug.LogException(ex);
             }
-            finally
+
+            if (needsDisablingVertexColor)
             {
-                if (needsDisablingVertexColor)
-                {
-                    DisableVertexColor(gltf);
-                }
+                DisableVertexColor(gltf);
             }
         }
 

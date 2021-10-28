@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using UniGLTF;
 using UniGLTF.Extensions.VRMC_materials_mtoon;
 using UniJSON;
+using UnityEngine;
 
 namespace UniVRM10
 {
@@ -11,50 +13,110 @@ namespace UniVRM10
     /// </summary>
     public static class MigrationUnlitTransparentZWriteMaterial
     {
-        private const string MigrationMToon10SpecVersion = "1.0-draft";
+        private const string MigrationMToon10SpecVersion = "1.0-draft"; // NOTE: vrm-1.0 spec
+        private const int MaxRenderQueueOffset = 9; // NOTE: vrm-1.0 spec
 
-        public static glTFMaterial Migrate(JsonNode vrm0XMaterial, string materialName)
+        private const string Unity0XShaderName = "VRM/UnlitTransparentZWrite";
+        private const int Unity0XDefaultRenderQueue = 2501;
+
+        public static bool Migrate(glTF gltf, IReadOnlyList<JsonNode> vrm0XMaterials)
         {
-            var baseColorFactor = MigrationMaterialUtil.GetBaseColorFactor(vrm0XMaterial);
-            var baseColorTexture = MigrationMaterialUtil.GetBaseColorTexture(vrm0XMaterial);
-            var emissiveTexture = new glTFMaterialEmissiveTextureInfo
-            {
-                index = baseColorTexture.index,
-                extensions = baseColorTexture.extensions,
-            };
+            var anyMigrated = false;
 
-            var mtoonMaterial = new glTFMaterial
+            try
             {
-                name = materialName,
-                extensions = new glTFExtensionExport().Add(
-                    glTF_KHR_materials_unlit.ExtensionName,
-                    new ArraySegment<byte>(glTF_KHR_materials_unlit.Raw)
-                ),
-                pbrMetallicRoughness = new glTFPbrMetallicRoughness
+                var renderQueueSet = new SortedSet<int>();
+                foreach (var vrm0XMaterial in vrm0XMaterials)
                 {
-                    baseColorFactor = new [] {0f, 0f, 0f, baseColorFactor[3]}, // black + _Color.a
-                    baseColorTexture = baseColorTexture, // _MainTex
-                    metallicFactor = 0f,
-                    roughnessFactor = 1f,
-                },
-                alphaMode = "BLEND",
-                alphaCutoff = 0.5f,
-                doubleSided = false,
-                emissiveFactor = new [] {baseColorFactor[0], baseColorFactor[1], baseColorFactor[2]}, // _Color.rgb
-                emissiveTexture = emissiveTexture,
-            };
+                    var renderQueue = MigrationMaterialUtil.GetRenderQueue(vrm0XMaterial);
+                    renderQueueSet.Add(renderQueue ?? Unity0XDefaultRenderQueue);
+                }
 
-            var mtoon10 = new VRMC_materials_mtoon
+                var mapper = new Dictionary<int, int>();
+                var currentQueueOffset = 0;
+                foreach (var queue in renderQueueSet)
+                {
+                    mapper.Add(queue, currentQueueOffset);
+                    currentQueueOffset = Mathf.Min(currentQueueOffset + 1, MaxRenderQueueOffset);
+                }
+
+                for (var materialIdx = 0; materialIdx < gltf.materials.Count; ++materialIdx)
+                {
+                    var newMaterial = Migrate(vrm0XMaterials[materialIdx], gltf.materials[materialIdx].name, mapper);
+                    if (newMaterial != null)
+                    {
+                        // NOTE: UnlitTransparentZWrite の場合は、名前を引き継いで、glTFMaterial を上書きする.
+                        gltf.materials[materialIdx] = newMaterial;
+                        anyMigrated = true;
+                    }
+                }
+            }
+            catch (Exception ex)
             {
-                SpecVersion = MigrationMToon10SpecVersion,
-                TransparentWithZWrite = true, // transparent with zWrite
-                RenderQueueOffsetNumber = 0,
-                ShadeColorFactor = new [] {0f, 0f, 0f}, // black
-                OutlineWidthMode = OutlineWidthMode.none // disable outline
-            };
-            UniGLTF.Extensions.VRMC_materials_mtoon.GltfSerializer.SerializeTo(ref mtoonMaterial.extensions, mtoon10);
+                Debug.LogException(ex);
+            }
 
-            return mtoonMaterial;
+            return anyMigrated;
+        }
+
+        private static glTFMaterial Migrate(JsonNode vrm0XMaterial, string materialName, Dictionary<int, int> renderQueueMapper)
+        {
+            try
+            {
+                if (MigrationMaterialUtil.GetShaderName(vrm0XMaterial) != Unity0XShaderName)
+                {
+                    return null;
+                }
+
+                var baseColorFactor = MigrationMaterialUtil.GetBaseColorFactor(vrm0XMaterial);
+                var baseColorTexture = MigrationMaterialUtil.GetBaseColorTexture(vrm0XMaterial);
+                var emissiveTexture = new glTFMaterialEmissiveTextureInfo
+                {
+                    index = baseColorTexture.index,
+                    extensions = baseColorTexture.extensions,
+                };
+                var renderQueue = MigrationMaterialUtil.GetRenderQueue(vrm0XMaterial) ?? Unity0XDefaultRenderQueue;
+                var renderQueueOffset = renderQueueMapper.ContainsKey(renderQueue) ? renderQueueMapper[renderQueue] : 0;
+
+                var mtoonMaterial = new glTFMaterial
+                {
+                    name = materialName,
+                    extensions = new glTFExtensionExport().Add(
+                        glTF_KHR_materials_unlit.ExtensionName,
+                        new ArraySegment<byte>(glTF_KHR_materials_unlit.Raw)
+                    ),
+                    pbrMetallicRoughness = new glTFPbrMetallicRoughness
+                    {
+                        baseColorFactor = new[] {0f, 0f, 0f, baseColorFactor[3]}, // black + _Color.a
+                        baseColorTexture = baseColorTexture, // _MainTex
+                        metallicFactor = 0f,
+                        roughnessFactor = 1f,
+                    },
+                    alphaMode = "BLEND",
+                    alphaCutoff = 0.5f,
+                    doubleSided = false,
+                    emissiveFactor = new[] {baseColorFactor[0], baseColorFactor[1], baseColorFactor[2]}, // _Color.rgb
+                    emissiveTexture = emissiveTexture,
+                };
+
+                var mtoon10 = new VRMC_materials_mtoon
+                {
+                    SpecVersion = MigrationMToon10SpecVersion,
+                    TransparentWithZWrite = true, // transparent with zWrite
+                    RenderQueueOffsetNumber = renderQueueOffset,
+                    ShadeColorFactor = new[] {0f, 0f, 0f}, // black
+                    OutlineWidthMode = OutlineWidthMode.none // disable outline
+                };
+                UniGLTF.Extensions.VRMC_materials_mtoon.GltfSerializer.SerializeTo(ref mtoonMaterial.extensions,
+                    mtoon10);
+
+                return mtoonMaterial;
+            }
+            catch (Exception)
+            {
+                Debug.LogWarning($"Migration failed in VRM/UnlitTransparentZWrite material: {materialName}");
+                return null;
+            }
         }
     }
 }
