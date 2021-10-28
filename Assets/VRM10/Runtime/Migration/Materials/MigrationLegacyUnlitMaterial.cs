@@ -7,6 +7,8 @@ using UnityEngine;
 namespace UniVRM10
 {
     /// <summary>
+    /// Migration Target: VRM file with Unlit material exported with UniVRM v0.43 or lower.
+    ///
     /// 過去の UniVRM において、KHR_materials_unlit 拡張を使わず、VRM 拡張を用いて Unlit を表現していた Material をマイグレーションする。
     /// KHR_materials_unlit を用いてマイグレーションする.
     /// </summary>

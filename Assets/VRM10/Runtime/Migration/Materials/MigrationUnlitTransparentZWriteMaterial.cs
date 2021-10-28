@@ -8,6 +8,8 @@ using UnityEngine;
 namespace UniVRM10
 {
     /// <summary>
+    /// Migration Target: VRM file with "VRM/UnlitTransparentZWrite" material exported with UniVRM v0.43 or lower.
+    ///
     /// 過去の UniVRM の "VRM/UnlitTransparentZWrite" シェーダをマイグレーションする.
     /// 他の Unlit シェーダと違い、VRMC_materials_mtoon を用いてマイグレーションする.
     /// </summary>
