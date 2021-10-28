@@ -16,14 +16,14 @@ namespace UniVRM10
             var needsDisablingVertexColor = false;
             var vrm0XMaterialList = vrm0[MaterialPropertiesKey].ArrayItems().ToArray();
 
-            // 2. VRM 拡張のうち、古い Unlit 情報からの取得を試みる.
+            // 1. VRM 拡張のうち、古い Unlit 情報からの取得を試みる.
             if (MigrationLegacyUnlitMaterial.Migrate(gltf, vrm0XMaterialList))
             {
                 // NOTE: 古い Unlit である場合、頂点カラー情報を破棄する.
                 needsDisablingVertexColor = true;
             }
 
-            // 3. VRM 拡張のうち、UnlitTransparentZWrite 情報からの取得を試みる.
+            // 2. VRM 拡張のうち、UnlitTransparentZWrite 情報からの取得を試みる.
             if (MigrationUnlitTransparentZWriteMaterial.Migrate(gltf, vrm0XMaterialList))
             {
                 // NOTE: 古い Unlit である場合、頂点カラー情報を破棄する.
@@ -32,7 +32,7 @@ namespace UniVRM10
 
             try
             {
-                // 4. VRM 拡張のうち、MToon 情報からの取得を試みる.
+                // 3. VRM 拡張のうち、MToon 情報からの取得を試みる.
                 MigrationMToonMaterial.Migrate(gltf, vrm0);
             }
             catch (Exception ex)
