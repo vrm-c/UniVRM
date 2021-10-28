@@ -12,6 +12,8 @@ namespace UniVRM10
 
         public static void Migrate(glTF gltf, JsonNode vrm0)
         {
+            var needsDisablingVertexColor = false;
+
             for (var materialIdx = 0; materialIdx < gltf.materials.Count; ++materialIdx)
             {
                 try
@@ -31,6 +33,8 @@ namespace UniVRM10
                     if (unlitMaterial != null)
                     {
                         gltf.materials[materialIdx] = unlitMaterial;
+                        // NOTE: 古い Unlit である場合、頂点カラー情報を破棄する.
+                        needsDisablingVertexColor = true;
                         continue;
                     }
                 }
@@ -48,6 +52,24 @@ namespace UniVRM10
             catch (Exception ex)
             {
                 Debug.LogException(ex);
+            }
+            finally
+            {
+                if (needsDisablingVertexColor)
+                {
+                    DisableVertexColor(gltf);
+                }
+            }
+        }
+
+        private static void DisableVertexColor(glTF gltf)
+        {
+            foreach (var mesh in gltf.meshes)
+            {
+                foreach (var primitive in mesh.primitives)
+                {
+                    primitive.attributes.COLOR_0 = -1;
+                }
             }
         }
     }
