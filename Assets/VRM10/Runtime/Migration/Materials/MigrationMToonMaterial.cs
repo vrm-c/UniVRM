@@ -20,22 +20,16 @@ namespace UniVRM10
             var sourceMaterials = new (Vrm0XMToonValue, glTFMaterial)[gltf.materials.Count];
             for (int i = 0; i < gltf.materials.Count; ++i)
             {
-                var vrmMaterial = vrm0["materialProperties"][i];
-                if (vrmMaterial["shader"].GetString() != "VRM/MToon")
+                var vrm0XMaterial = vrm0["materialProperties"][i];
+                if (MigrationMaterialUtil.GetShaderName(vrm0XMaterial) == "VRM/MToon")
                 {
-                    continue;
+                    sourceMaterials[i] = (new Vrm0XMToonValue(vrm0XMaterial), gltf.materials[i]);
                 }
-                // VRM-0 MToon の情報
-                var mtoon = new Vrm0XMToonValue(vrmMaterial);
-
-                // KHR_materials_unlit として fallback した情報が入っている
-                var gltfMaterial = gltf.materials[i];
-                if (!glTF_KHR_materials_unlit.IsEnable(gltfMaterial))
+                else
                 {
-                    // 古いモデルは無い場合がある
-                    // throw new Exception($"[{i}]{gltfMaterial.name} has no extensions");
+                    // NOTE: MToon ではない場合、マイグレーション先に書き込まない.
+                    sourceMaterials[i] = (null, null);
                 }
-                sourceMaterials[i] = (mtoon, gltfMaterial);
             }
 
             // Collect RenderQueues Pass
