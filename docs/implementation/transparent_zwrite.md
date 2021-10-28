@@ -13,3 +13,14 @@
 * `UniVRM-0.75` 以前はロードできます。
 * `UniVRM-0.88` 以降は見た目が同様になるように MToon に変換されます。
 * 新規に `ZWriteTransparent` にしたい場合は、 `MToon` を使用してください。
+
+## MToon を Unlit 的に設定する
+
+Emission を使うのがこつです。
+
+- _MainTex: 元の _MainTex
+- _Color: (0, 0, 0, 1)
+- _ShadeTex: null
+- _ShadeColor: (0, 0, 0, 1)
+- _EmissiveMap: 元の _MainTex
+- _Emission: (1, 1, 1, 1)
