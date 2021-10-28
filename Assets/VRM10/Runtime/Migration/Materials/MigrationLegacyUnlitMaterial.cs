@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using UniGLTF;
 using UniJSON;
+using UnityEngine;
 
 namespace UniVRM10
 {
@@ -10,7 +12,32 @@ namespace UniVRM10
     /// </summary>
     public static class MigrationLegacyUnlitMaterial
     {
-        public static glTFMaterial Migrate(JsonNode vrm0XMaterial, string materialName)
+        public static bool Migrate(glTF gltf, IReadOnlyList<JsonNode> vrm0XMaterials)
+        {
+            var anyMigrated = false;
+
+            for (var materialIdx = 0; materialIdx < gltf.materials.Count; ++materialIdx)
+            {
+                try
+                {
+                    var newMaterial = Migrate(vrm0XMaterials[materialIdx], gltf.materials[materialIdx].name);
+                    if (newMaterial != null)
+                    {
+                        // NOTE: マイグレーション対象だった場合、上書きする.
+                        gltf.materials[materialIdx] = newMaterial;
+                        anyMigrated = true;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogException(ex);
+                }
+            }
+
+            return anyMigrated;
+        }
+
+        private static glTFMaterial Migrate(JsonNode vrm0XMaterial, string materialName)
         {
             var unlitMaterial = new glTFMaterial
             {

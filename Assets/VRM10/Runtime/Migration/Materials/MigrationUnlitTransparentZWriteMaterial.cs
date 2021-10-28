@@ -22,7 +22,31 @@ namespace UniVRM10
         public static bool Migrate(glTF gltf, IReadOnlyList<JsonNode> vrm0XMaterials)
         {
             var anyMigrated = false;
+            var mapper = GetRenderQueueMapper(vrm0XMaterials);
 
+            for (var materialIdx = 0; materialIdx < gltf.materials.Count; ++materialIdx)
+            {
+                try
+                {
+                    var newMaterial = Migrate(vrm0XMaterials[materialIdx], gltf.materials[materialIdx].name, mapper);
+                    if (newMaterial != null)
+                    {
+                        // NOTE: UnlitTransparentZWrite の場合は、名前を引き継いで、glTFMaterial を上書きする.
+                        gltf.materials[materialIdx] = newMaterial;
+                        anyMigrated = true;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogException(ex);
+                }
+            }
+
+            return anyMigrated;
+        }
+
+        private static Dictionary<int, int> GetRenderQueueMapper(IReadOnlyList<JsonNode> vrm0XMaterials)
+        {
             try
             {
                 var renderQueueSet = new SortedSet<int>();
@@ -40,23 +64,13 @@ namespace UniVRM10
                     currentQueueOffset = Mathf.Min(currentQueueOffset + 1, MaxRenderQueueOffset);
                 }
 
-                for (var materialIdx = 0; materialIdx < gltf.materials.Count; ++materialIdx)
-                {
-                    var newMaterial = Migrate(vrm0XMaterials[materialIdx], gltf.materials[materialIdx].name, mapper);
-                    if (newMaterial != null)
-                    {
-                        // NOTE: UnlitTransparentZWrite の場合は、名前を引き継いで、glTFMaterial を上書きする.
-                        gltf.materials[materialIdx] = newMaterial;
-                        anyMigrated = true;
-                    }
-                }
+                return mapper;
             }
             catch (Exception ex)
             {
                 Debug.LogException(ex);
+                return new Dictionary<int, int>();
             }
-
-            return anyMigrated;
         }
 
         private static glTFMaterial Migrate(JsonNode vrm0XMaterial, string materialName, Dictionary<int, int> renderQueueMapper)
