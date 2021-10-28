@@ -6,6 +6,10 @@ using UnityEngine;
 
 namespace UniVRM10
 {
+    /// <summary>
+    /// VRM 拡張に含まれる Material 情報を用いて、マイグレーションを行う.
+    /// 前提として、glTF の仕様の範囲で glTFMaterial は既に読み込み済みであると仮定する.
+    /// </summary>
     public static class MigrationMaterials
     {
         private const string DontUseExtensionShaderName = "VRM_USE_GLTFSHADER";
