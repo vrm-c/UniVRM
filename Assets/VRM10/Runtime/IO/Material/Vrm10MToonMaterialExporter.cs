@@ -84,7 +84,7 @@ namespace UniVRM10
             mtoon.GiEqualizationFactor = context.GiEqualizationFactor;
 
             // Emission
-            dst.emissiveFactor = context.EmissiveFactorLinear.ToFloat3(ColorSpace.Linear, ColorSpace.Linear);
+            dst.emissiveFactor = context.EmissiveFactorLinear.ToFloat3(ColorSpace.sRGB, ColorSpace.Linear);
             var emissiveTextureIndex = textureExporter.RegisterExportingAsSRgb(context.EmissiveTexture, needsAlpha: false);
             if (emissiveTextureIndex != -1)
             {
