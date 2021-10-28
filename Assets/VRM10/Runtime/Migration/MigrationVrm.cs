@@ -105,9 +105,9 @@ namespace UniVRM10
                 UniGLTF.Extensions.VRMC_springBone.GltfSerializer.SerializeTo(ref gltf.extensions, springBone);
             }
 
-            // MToon                    
+            // MToon
             {
-                MigrationMToon.Migrate(gltf, vrm0);
+                MigrationMToonMaterial.Migrate(gltf, vrm0);
             }
 
             // Serialize whole glTF
