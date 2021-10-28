@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VRアプリケーションの FirstPerson 設定による Renderer の可視制御 &mdash; UniVRM Programming Document  ドキュメント</title>
+  <title>UnlitTransparentZWrite &mdash; UniVRM Programming Document  ドキュメント</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -19,8 +19,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="索引" href="../genindex.html" />
     <link rel="search" title="検索" href="../search.html" />
-    <link rel="next" title="ScriptedImporter の実装" href="scripted_importer.html" />
-    <link rel="prev" title="FastSpringBoneについて" href="fast_spring_bone.html" /> 
+    <link rel="next" title="glTF" href="../gltf/index.html" />
+    <link rel="prev" title="ScriptedImporter の実装" href="scripted_importer.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -28,7 +28,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-[日本語] <a href="../../en/implementation/first_person.html">English</a>
+[日本語] <a href="../../en/implementation/transparent_zwrite.html">English</a>
 
             <a href="../index.html" class="icon icon-home"> UniVRM Programming Document
           </a>
@@ -48,9 +48,12 @@
 <li class="toctree-l2"><a class="reference internal" href="texture_manipulation.html">Texture関連</a></li>
 <li class="toctree-l2"><a class="reference internal" href="coordinate.html">座標系の変換</a></li>
 <li class="toctree-l2"><a class="reference internal" href="fast_spring_bone.html">FastSpringBoneについて</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">VRアプリケーションの FirstPerson 設定による Renderer の可視制御</a></li>
+<li class="toctree-l2"><a class="reference internal" href="first_person.html">VRアプリケーションの FirstPerson 設定による Renderer の可視制御</a></li>
 <li class="toctree-l2"><a class="reference internal" href="scripted_importer.html">ScriptedImporter の実装</a></li>
-<li class="toctree-l2"><a class="reference internal" href="transparent_zwrite.html">UnlitTransparentZWrite</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">UnlitTransparentZWrite</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#mtoon-unlit">MToon を Unlit 的に設定する</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../gltf/index.html">glTF</a></li>
@@ -74,9 +77,9 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="index.html">実装メモ</a> &raquo;</li>
-      <li>VRアプリケーションの FirstPerson 設定による Renderer の可視制御</li>
+      <li>UnlitTransparentZWrite</li>
       <li class="wy-breadcrumbs-aside">
-              <a href="https://github.com/vrm-c/UniVRM/blob/master/docs/implementation/first_person.md" class="fa fa-github"> Edit on GitHub</a>
+              <a href="https://github.com/vrm-c/UniVRM/blob/master/docs/implementation/transparent_zwrite.md" class="fa fa-github"> Edit on GitHub</a>
       </li>
   </ul>
   <hr/>
@@ -84,82 +87,70 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section class="tex2jax_ignore mathjax_ignore" id="vr-firstperson-renderer">
-<h1>VRアプリケーションの FirstPerson 設定による Renderer の可視制御<a class="headerlink" href="#vr-firstperson-renderer" title="このヘッドラインへのパーマリンク"></a></h1>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">isSelf==true</span></code> 自分のアバター</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">isSelf==false</span></code> 自分以外のアバター</p></li>
-<li><p>FP Camera: HMDと連動するカメラ</p></li>
-<li><p>TP Camera: それ以外のすべてのカメラ</p></li>
-</ul>
+  <section class="tex2jax_ignore mathjax_ignore" id="unlittransparentzwrite">
+<h1>UnlitTransparentZWrite<a class="headerlink" href="#unlittransparentzwrite" title="このヘッドラインへのパーマリンク"></a></h1>
+<p>対応状況。</p>
 <table class="colwidths-auto docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"><p>isSelf</p></th>
-<th class="head"><p>FirstPerson設定</p></th>
-<th class="head"><p>FP Camera</p></th>
-<th class="head"><p>TP Camera</p></th>
-<th class="head"><p>レイヤーによる可視制御例</p></th>
+<tr class="row-odd"><th class="head"><p>UniVRM</p></th>
+<th class="head"><p>export</p></th>
+<th class="head"><p>import</p></th>
+<th class="head"><p>comment</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>true</p></td>
-<td><p>FirstPersonOnly</p></td>
+<tr class="row-even"><td><p></p></td>
 <td><p>✅</p></td>
-<td><p>❌</p></td>
-<td><p>FIRSTPERSON</p></td>
+<td><p>✅</p></td>
+<td><p>GLTFの仕様外で MToon でもないので仕様の無い存在に。</p></td>
 </tr>
-<tr class="row-odd"><td><p>true</p></td>
-<td><p>ThirdPersonOnly</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../release/055/v0.44.html"><span class="doc">v0.44</span></a></p></td>
 <td><p>❌</p></td>
 <td><p>✅</p></td>
-<td><p>THIRDPERSON</p></td>
+<td><p>MToon のみを extensions.VRM に記述し、 <code class="docutils literal notranslate"><span class="pre">PBR</span></code> と <code class="docutils literal notranslate"><span class="pre">Unilt</span></code> は GLTF として記録する。</p></td>
 </tr>
-<tr class="row-even"><td><p>true</p></td>
-<td><p>Both</p></td>
-<td><p>✅</p></td>
-<td><p>✅</p></td>
-<td><p>default</p></td>
-</tr>
-<tr class="row-odd"><td><p>true</p></td>
-<td><p>Auto</p></td>
-<td><p>-</p></td>
-<td><p>-</p></td>
-<td><p>FirstPersonOnly と ThirdPersonOnly に分割する</p></td>
-</tr>
-<tr class="row-even"><td><p>false</p></td>
-<td><p>FirstPersonOnly</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../release/068/v0.76.0.html"><span class="doc">v0.76</span></a></p></td>
 <td><p>❌</p></td>
 <td><p>❌</p></td>
-<td><p>完全に描画されない。Rendererの描画を止める</p></td>
+<td><p><a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1004">#1004</a> 仕様外のため削除。import すると MToon になるが調整されていない。</p></td>
 </tr>
-<tr class="row-odd"><td><p>false</p></td>
-<td><p>ThirdPersonOnly</p></td>
-<td><p>✅</p></td>
-<td><p>✅</p></td>
-<td><p>default</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../release/079/v0.85.0.html"><span class="doc">v0.85</span></a></p></td>
+<td><p>❌</p></td>
+<td><p>🔺</p></td>
+<td><p><a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1248">#1248</a> import すると MToon になる。</p></td>
 </tr>
-<tr class="row-even"><td><p>false</p></td>
-<td><p>Both</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../release/079/v0.88.0.html"><span class="doc">v0.88</span></a></p></td>
+<td><p>❌</p></td>
 <td><p>✅</p></td>
-<td><p>✅</p></td>
-<td><p>default</p></td>
-</tr>
-<tr class="row-odd"><td><p>false</p></td>
-<td><p>Auto</p></td>
-<td><p>✅</p></td>
-<td><p>✅</p></td>
-<td><p>default。メッシュ分割など特別な処理は不要</p></td>
+<td><p><a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1331">#1331</a> MToon 変換を見直し。</p></td>
 </tr>
 </tbody>
 </table>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">UniVRM-0.75</span></code> 以前はロードできます。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">UniVRM-0.88</span></code> 以降は見た目が同様になるように MToon に変換されます。</p></li>
+<li><p>新規に <code class="docutils literal notranslate"><span class="pre">ZWriteTransparent</span></code> にしたい場合は、 <code class="docutils literal notranslate"><span class="pre">MToon</span></code> を使用してください。</p></li>
+</ul>
+<section id="mtoon-unlit">
+<h2>MToon を Unlit 的に設定する<a class="headerlink" href="#mtoon-unlit" title="このヘッドラインへのパーマリンク"></a></h2>
+<p>Emission を使うのがこつです。</p>
+<ul class="simple">
+<li><p>_MainTex: 元の _MainTex</p></li>
+<li><p>_Color: (0, 0, 0, 1)</p></li>
+<li><p>_ShadeTex: null</p></li>
+<li><p>_ShadeColor: (0, 0, 0, 1)</p></li>
+<li><p>_EmissiveMap: 元の _MainTex</p></li>
+<li><p>_Emission: (1, 1, 1, 1)</p></li>
+</ul>
+</section>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="fast_spring_bone.html" class="btn btn-neutral float-left" title="FastSpringBoneについて" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="scripted_importer.html" class="btn btn-neutral float-right" title="ScriptedImporter の実装" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="scripted_importer.html" class="btn btn-neutral float-left" title="ScriptedImporter の実装" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../gltf/index.html" class="btn btn-neutral float-right" title="glTF" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
