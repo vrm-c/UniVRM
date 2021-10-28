@@ -11,7 +11,7 @@ namespace UniVRM10
     /// 過去の UniVRM の "VRM/UnlitTransparentZWrite" シェーダをマイグレーションする.
     /// 他の Unlit シェーダと違い、VRMC_materials_mtoon を用いてマイグレーションする.
     /// </summary>
-    public static class MigrationUnlitTransparentZWriteMaterial
+    internal static class MigrationUnlitTransparentZWriteMaterial
     {
         private const string MigrationMToon10SpecVersion = "1.0-draft"; // NOTE: vrm-1.0 spec
         private const int MaxRenderQueueOffset = 9; // NOTE: vrm-1.0 spec

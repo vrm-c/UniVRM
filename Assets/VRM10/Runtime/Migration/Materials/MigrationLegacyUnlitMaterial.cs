@@ -10,7 +10,7 @@ namespace UniVRM10
     /// 過去の UniVRM において、KHR_materials_unlit 拡張を使わず、VRM 拡張を用いて Unlit を表現していた Material をマイグレーションする。
     /// KHR_materials_unlit を用いてマイグレーションする.
     /// </summary>
-    public static class MigrationLegacyUnlitMaterial
+    internal static class MigrationLegacyUnlitMaterial
     {
         public static bool Migrate(glTF gltf, IReadOnlyList<JsonNode> vrm0XMaterials)
         {

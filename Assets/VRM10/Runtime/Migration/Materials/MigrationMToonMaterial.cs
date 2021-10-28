@@ -12,7 +12,7 @@ using RenderMode = MToon.RenderMode;
 
 namespace UniVRM10
 {
-    public static class MigrationMToonMaterial
+    internal static class MigrationMToonMaterial
     {
         private const string MigrationMToon10SpecVersion = "1.0-draft";
 
