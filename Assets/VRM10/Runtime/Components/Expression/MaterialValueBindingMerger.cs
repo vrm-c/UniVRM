@@ -226,6 +226,41 @@ namespace UniVRM10
             }
         }
 
+        // UVアクセスするテクスチャーのScaleOffsetプロパティの一覧
+        static Dictionary<string, string[]> UVPropMap = new Dictionary<string, string[]>
+        {
+            {"Standard", new string[]{
+                "_MainTex_ST",
+                "_BumpMap_ST",
+                "_EmissionMap_ST",
+                "_MetallicGlossMap_ST",
+                "_ParallaxMap_ST",
+            }},
+            {"VRM10/MToon10", new string[]{
+                "_MainTex_ST",
+                "_ShadeTexture_ST",
+                "_BumpMap_ST",
+                "_EmissionMap_ST",
+                "_OutlineWidthTexture_ST",
+                "_ReceiveShadowTexture_ST",
+                "_RimTexture_ST",
+                "_ShadingGradeTexture_ST",
+                "_UvAnimMaskTexture_ST",
+            }},
+        };
+        static string[] DefaultProps = { "_MainTex_ST" };
+        public static String[] GetUVProps(string shaderName)
+        {
+            if (UVPropMap.TryGetValue(shaderName, out string[] props))
+            {
+                return props;
+            }
+            else
+            {
+                return DefaultProps;
+            }
+        }
+
         HashSet<MaterialTarget> m_used = new HashSet<MaterialTarget>();
         public void Apply()
         {
@@ -274,7 +309,10 @@ namespace UniVRM10
                         //
                         // Standard and MToon use _MainTex_ST as uv0 scale/offset
                         //
-                        item.Material.SetVector("_MainTex_ST", kv.Value);
+                        foreach (var prop in GetUVProps(item.Material.shader.name))
+                        {
+                            item.Material.SetVector(prop, kv.Value);
+                        }
                     }
                 }
                 m_materialUVMap.Clear();
