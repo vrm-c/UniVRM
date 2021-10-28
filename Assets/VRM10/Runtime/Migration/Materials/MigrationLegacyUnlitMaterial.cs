@@ -6,6 +6,7 @@ namespace UniVRM10
 {
     /// <summary>
     /// 過去の UniVRM において、KHR_materials_unlit 拡張を使わず、VRM 拡張を用いて Unlit を表現していた Material をマイグレーションする。
+    /// KHR_materials_unlit を用いてマイグレーションする.
     /// </summary>
     public static class MigrationLegacyUnlitMaterial
     {
@@ -59,6 +60,9 @@ namespace UniVRM10
                     unlitMaterial.alphaMode = "MASK";
                     unlitMaterial.alphaCutoff = MigrationMaterialUtil.GetCutoff(vrm0XMaterial);
                     return unlitMaterial;
+                case "VRM/UnlitTransparentZWrite":
+                    // NOTE: ZWrite マテリアルのみ、MToon にマイグレーションするため、別処理.
+                    return MigrationUnlitTransparentZWriteMaterial.Migrate(vrm0XMaterial, materialName);
                 default:
                     return null;
             }
