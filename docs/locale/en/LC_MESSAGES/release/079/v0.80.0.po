@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: UniVRM Programming Document \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-15 15:45+0900\n"
+"POT-Creation-Date: 2021-10-29 16:41+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,7 +27,7 @@ msgid "[v0.80.0](https://github.com/vrm-c/UniVRM/tree/v0.80.0) (2021-08-11)"
 msgstr ""
 
 #: ../../release/079/v0.80.0.md:4
-msgid "[0.80.0](http://github.com/vrm-c/UniVRM/releases/tag/v0.80.0)"
+msgid "[Release](http://github.com/vrm-c/UniVRM/releases/tag/v0.80.0)"
 msgstr ""
 
 #: ../../release/079/v0.80.0.md:5
@@ -239,5 +239,8 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "[Milestone](https://github.com/vrm-c/UniVRM/milestone/42?closed=1)"
+#~ msgstr ""
+
+#~ msgid "[0.80.0](http://github.com/vrm-c/UniVRM/releases/tag/v0.80.0)"
 #~ msgstr ""
 
