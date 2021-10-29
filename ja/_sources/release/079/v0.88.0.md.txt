@@ -12,6 +12,11 @@
 * [Error when load glb file (buffer.uri)](https://github.com/vrm-c/UniVRM/issues/1326)
 
 ## 1.0
+* [[\#1346](https://github.com/vrm-c/UniVRM/pull/1346)] Fix10/fix expression migration
+* [[\#1347](https://github.com/vrm-c/UniVRM/pull/1347)] [1.0] Expression UV Binding の挙動
+* [[\#1353](https://github.com/vrm-c/UniVRM/pull/1353)] Migrate legacy Unlit shaders
+* [[\#1349](https://github.com/vrm-c/UniVRM/pull/1349)] fix (VRM1.0, MToon): exported emissive factor should be in linear colorspace
+* [[\#1348](https://github.com/vrm-c/UniVRM/pull/1348)] fix (VRM1.0, MToon): change export spec version to 1.0-beta
 * [[\#1347](https://github.com/vrm-c/UniVRM/pull/1347)] [1.0] Expression UV Binding の挙動
 * [[\#1346](https://github.com/vrm-c/UniVRM/pull/1346)] Fix10/fix expression migration
 * [[\#1344](https://github.com/vrm-c/UniVRM/pull/1344)] [1.0] const LICENSE_URL_JA
