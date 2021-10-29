@@ -10,7 +10,7 @@
 | true   | FirstPersonOnly | ✅         | ❌         | FIRSTPERSON                                   |
 | true   | ThirdPersonOnly | ❌         | ✅         | THIRDPERSON                                   |
 | true   | Both            | ✅         | ✅         | default                                       |
-| true   | Auto            | -         | -         | FirstPersonOnly と ThirdPersonOnly に分割する |
+| true   | Auto            | -         | -         | Both と ThirdPersonOnly に分割する |
 | false  | FirstPersonOnly | ❌         | ❌         | 完全に描画されない。Rendererの描画を止める    |
 | false  | ThirdPersonOnly | ✅         | ✅         | default                                       |
 | false  | Both            | ✅         | ✅         | default                                       |
