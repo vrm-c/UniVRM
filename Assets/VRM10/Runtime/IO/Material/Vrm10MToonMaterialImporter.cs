@@ -72,7 +72,8 @@ namespace UniVRM10
             // GI
 
             // Emission
-            var emissionColor = material?.emissiveFactor?.ToColor3(gltfColorSpace, ColorSpace.sRGB);
+            // Emissive factor should be stored in Linear space
+            var emissionColor = material?.emissiveFactor?.ToColor3(gltfColorSpace, ColorSpace.Linear);
             if (emissionColor.HasValue)
             {
                 yield return (MToon10Prop.EmissiveFactor.ToUnityShaderLabName(), emissionColor.Value);
