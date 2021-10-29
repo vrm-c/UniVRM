@@ -97,6 +97,33 @@
   <section class="tex2jax_ignore mathjax_ignore" id="runtimeexporter">
 <h1>RuntimeExporter<a class="headerlink" href="#runtimeexporter" title="このヘッドラインへのパーマリンク"></a></h1>
 <p>VRM を Runtime Export するサンプルです。</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">v0.87.0 Assets/VRM_Samples/RuntimeExporterSample/VRMRuntimeExporter.cs</span><a class="headerlink" href="#id1" title="このコードへのパーマリンク"></a></div>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="lineno"> 1 </span>        <span class="k">static</span> <span class="kt">byte</span><span class="p">[]</span> <span class="nf">ExportSimple</span><span class="p">(</span><span class="n">GameObject</span> <span class="n">model</span><span class="p">)</span>
+<span class="lineno"> 2 </span>        <span class="p">{</span>
+<span class="lineno"> 3 </span>            <span class="kt">var</span> <span class="n">vrm</span> <span class="p">=</span> <span class="n">VRMExporter</span><span class="p">.</span><span class="n">Export</span><span class="p">(</span><span class="k">new</span> <span class="n">UniGLTF</span><span class="p">.</span><span class="n">GltfExportSettings</span><span class="p">(),</span> <span class="n">model</span><span class="p">,</span> <span class="k">new</span> <span class="n">RuntimeTextureSerializer</span><span class="p">());</span>
+<span class="lineno"> 4 </span>            <span class="kt">var</span> <span class="n">bytes</span> <span class="p">=</span> <span class="n">vrm</span><span class="p">.</span><span class="n">ToGlbBytes</span><span class="p">();</span>
+<span class="lineno"> 5 </span>            <span class="k">return</span> <span class="n">bytes</span><span class="p">;</span>
+<span class="lineno"> 6 </span>        <span class="p">}</span>
+<span class="lineno"> 7 </span>
+<span class="lineno"> 8 </span>        <span class="k">static</span> <span class="kt">byte</span><span class="p">[]</span> <span class="nf">ExportCustom</span><span class="p">(</span><span class="n">GameObject</span> <span class="n">exportRoot</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">forceTPose</span> <span class="p">=</span> <span class="k">false</span><span class="p">)</span>
+<span class="lineno"> 9 </span>        <span class="p">{</span>
+<span class="lineno">10 </span>            <span class="c1">// normalize</span>
+<span class="lineno">11 </span>            <span class="kt">var</span> <span class="n">target</span> <span class="p">=</span> <span class="n">VRMBoneNormalizer</span><span class="p">.</span><span class="n">Execute</span><span class="p">(</span><span class="n">exportRoot</span><span class="p">,</span> <span class="n">forceTPose</span><span class="p">);</span>
+<span class="lineno">12 </span>
+<span class="lineno">13 </span>            <span class="k">try</span>
+<span class="lineno">14 </span>            <span class="p">{</span>
+<span class="lineno">15 </span>                <span class="k">return</span> <span class="nf">ExportSimple</span><span class="p">(</span><span class="n">target</span><span class="p">);</span>
+<span class="lineno">16 </span>            <span class="p">}</span>
+<span class="lineno">17 </span>            <span class="k">finally</span>
+<span class="lineno">18 </span>            <span class="p">{</span>
+<span class="lineno">19 </span>                <span class="c1">// cleanup</span>
+<span class="lineno">20 </span>                <span class="n">GameObject</span><span class="p">.</span><span class="n">Destroy</span><span class="p">(</span><span class="n">target</span><span class="p">);</span>
+<span class="lineno">21 </span>            <span class="p">}</span>
+<span class="lineno">22 </span>        <span class="p">}</span>
+</pre></div>
+</div>
+</div>
 </section>
 
 

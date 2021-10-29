@@ -96,6 +96,63 @@
   <section class="tex2jax_ignore mathjax_ignore" id="simpleviewer">
 <h1>SimpleViewer<a class="headerlink" href="#simpleviewer" title="Permalink to this headline"></a></h1>
 <p>Runtime ローダーのサンプルです。</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">c89e Assets/VRM_Samples/SimpleViewer/ViewerUI.cs</span><a class="headerlink" href="#id1" title="Permalink to this code"></a></div>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="lineno"> 1 </span>        <span class="k">async</span> <span class="k">void</span> <span class="nf">LoadModelAsync</span><span class="p">(</span><span class="kt">string</span> <span class="n">path</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">isVrm</span><span class="p">)</span>
+<span class="lineno"> 2 </span>        <span class="p">{</span>
+<span class="lineno"> 3 </span>            <span class="k">if</span> <span class="p">(!</span><span class="n">File</span><span class="p">.</span><span class="n">Exists</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+<span class="lineno"> 4 </span>            <span class="p">{</span>
+<span class="lineno"> 5 </span>                <span class="k">return</span><span class="p">;</span>
+<span class="lineno"> 6 </span>            <span class="p">}</span>
+<span class="lineno"> 7 </span>
+<span class="lineno"> 8 </span>            <span class="n">Debug</span><span class="p">.</span><span class="n">LogFormat</span><span class="p">(</span><span class="s">&quot;{0}&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">);</span>
+<span class="lineno"> 9 </span>
+<span class="lineno">10 </span>            <span class="n">GltfData</span> <span class="n">data</span><span class="p">;</span>
+<span class="lineno">11 </span>            <span class="k">try</span>
+<span class="lineno">12 </span>            <span class="p">{</span>
+<span class="lineno">13 </span>                <span class="n">data</span> <span class="p">=</span> <span class="k">new</span> <span class="n">AutoGltfFileParser</span><span class="p">(</span><span class="n">path</span><span class="p">).</span><span class="n">Parse</span><span class="p">();</span>
+<span class="lineno">14 </span>            <span class="p">}</span>
+<span class="lineno">15 </span>            <span class="k">catch</span> <span class="p">(</span><span class="n">Exception</span> <span class="n">ex</span><span class="p">)</span>
+<span class="lineno">16 </span>            <span class="p">{</span>
+<span class="lineno">17 </span>                <span class="n">Debug</span><span class="p">.</span><span class="n">LogWarningFormat</span><span class="p">(</span><span class="s">&quot;parse error: {0}&quot;</span><span class="p">,</span> <span class="n">ex</span><span class="p">);</span>
+<span class="lineno">18 </span>                <span class="k">return</span><span class="p">;</span>
+<span class="lineno">19 </span>            <span class="p">}</span>
+<span class="lineno">20 </span>
+<span class="lineno">21 </span>            <span class="k">if</span> <span class="p">(</span><span class="n">isVrm</span><span class="p">)</span>
+<span class="lineno">22 </span>            <span class="p">{</span>
+<span class="lineno">23 </span>                <span class="k">try</span>
+<span class="lineno">24 </span>                <span class="p">{</span>
+<span class="lineno">25 </span>                    <span class="kt">var</span> <span class="n">vrm</span> <span class="p">=</span> <span class="k">new</span> <span class="n">VRMData</span><span class="p">(</span><span class="n">data</span><span class="p">);</span>
+<span class="lineno">26 </span>                    <span class="k">using</span> <span class="p">(</span><span class="kt">var</span> <span class="n">loader</span> <span class="p">=</span> <span class="k">new</span> <span class="n">VRMImporterContext</span><span class="p">(</span><span class="n">vrm</span><span class="p">,</span> <span class="n">materialGenerator</span><span class="p">:</span> <span class="n">GetVrmMaterialGenerator</span><span class="p">(</span><span class="n">m_useUrpMaterial</span><span class="p">.</span><span class="n">isOn</span><span class="p">,</span> <span class="n">vrm</span><span class="p">.</span><span class="n">VrmExtension</span><span class="p">)))</span>
+<span class="lineno">27 </span>                    <span class="p">{</span>
+<span class="lineno">28 </span>                        <span class="k">await</span> <span class="n">m_texts</span><span class="p">.</span><span class="n">UpdateMetaAsync</span><span class="p">(</span><span class="n">loader</span><span class="p">);</span>
+<span class="lineno">29 </span>                        <span class="kt">var</span> <span class="n">instance</span> <span class="p">=</span> <span class="k">await</span> <span class="n">loader</span><span class="p">.</span><span class="n">LoadAsync</span><span class="p">(</span><span class="n">GetIAwaitCaller</span><span class="p">(</span><span class="n">m_useAsync</span><span class="p">.</span><span class="n">isOn</span><span class="p">));</span>
+<span class="lineno">30 </span>                        <span class="n">SetModel</span><span class="p">(</span><span class="n">instance</span><span class="p">);</span>
+<span class="lineno">31 </span>                    <span class="p">}</span>
+<span class="lineno">32 </span>                <span class="p">}</span>
+<span class="lineno">33 </span>                <span class="k">catch</span> <span class="p">(</span><span class="n">NotVrm0Exception</span><span class="p">)</span>
+<span class="lineno">34 </span>                <span class="p">{</span>
+<span class="lineno">35 </span>                    <span class="c1">// retry</span>
+<span class="lineno">36 </span>                    <span class="n">Debug</span><span class="p">.</span><span class="n">LogWarning</span><span class="p">(</span><span class="s">&quot;file extension is vrm. but not vrm ?&quot;</span><span class="p">);</span>
+<span class="lineno">37 </span>                    <span class="k">using</span> <span class="p">(</span><span class="kt">var</span> <span class="n">loader</span> <span class="p">=</span> <span class="k">new</span> <span class="n">UniGLTF</span><span class="p">.</span><span class="n">ImporterContext</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">materialGenerator</span><span class="p">:</span> <span class="n">GetGltfMaterialGenerator</span><span class="p">(</span><span class="n">m_useUrpMaterial</span><span class="p">.</span><span class="n">isOn</span><span class="p">)))</span>
+<span class="lineno">38 </span>                    <span class="p">{</span>
+<span class="lineno">39 </span>                        <span class="kt">var</span> <span class="n">instance</span> <span class="p">=</span> <span class="k">await</span> <span class="n">loader</span><span class="p">.</span><span class="n">LoadAsync</span><span class="p">(</span><span class="n">GetIAwaitCaller</span><span class="p">(</span><span class="n">m_useAsync</span><span class="p">.</span><span class="n">isOn</span><span class="p">));</span>
+<span class="lineno">40 </span>                        <span class="n">SetModel</span><span class="p">(</span><span class="n">instance</span><span class="p">);</span>
+<span class="lineno">41 </span>                    <span class="p">}</span>
+<span class="lineno">42 </span>                <span class="p">}</span>
+<span class="lineno">43 </span>            <span class="p">}</span>
+<span class="lineno">44 </span>            <span class="k">else</span>
+<span class="lineno">45 </span>            <span class="p">{</span>
+<span class="lineno">46 </span>                <span class="k">using</span> <span class="p">(</span><span class="kt">var</span> <span class="n">loader</span> <span class="p">=</span> <span class="k">new</span> <span class="n">UniGLTF</span><span class="p">.</span><span class="n">ImporterContext</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">materialGenerator</span><span class="p">:</span> <span class="n">GetGltfMaterialGenerator</span><span class="p">(</span><span class="n">m_useUrpMaterial</span><span class="p">.</span><span class="n">isOn</span><span class="p">)))</span>
+<span class="lineno">47 </span>                <span class="p">{</span>
+<span class="lineno">48 </span>                    <span class="kt">var</span> <span class="n">instance</span> <span class="p">=</span> <span class="k">await</span> <span class="n">loader</span><span class="p">.</span><span class="n">LoadAsync</span><span class="p">(</span><span class="n">GetIAwaitCaller</span><span class="p">(</span><span class="n">m_useAsync</span><span class="p">.</span><span class="n">isOn</span><span class="p">));</span>
+<span class="lineno">49 </span>                    <span class="n">SetModel</span><span class="p">(</span><span class="n">instance</span><span class="p">);</span>
+<span class="lineno">50 </span>                <span class="p">}</span>
+<span class="lineno">51 </span>            <span class="p">}</span>
+<span class="lineno">52 </span>        <span class="p">}</span>
+</pre></div>
+</div>
+</div>
 </section>
 
 

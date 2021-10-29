@@ -103,6 +103,34 @@
 <li><p>その他のカメラ</p></li>
 </ul>
 <p>の描画を例示します。</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">v0.87.0 Assets/VRM_Samples/FirstPersonSample/VRMRuntimeLoader.cs</span><a class="headerlink" href="#id1" title="このコードへのパーマリンク"></a></div>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="lineno"> 1 </span>        <span class="k">void</span> <span class="nf">SetupTarget</span><span class="p">()</span>
+<span class="lineno"> 2 </span>        <span class="p">{</span>
+<span class="lineno"> 3 </span>            <span class="k">if</span> <span class="p">(</span><span class="n">m_target</span> <span class="p">!=</span> <span class="k">null</span><span class="p">)</span>
+<span class="lineno"> 4 </span>            <span class="p">{</span>
+<span class="lineno"> 5 </span>                <span class="n">m_target</span><span class="p">.</span><span class="n">Source</span> <span class="p">=</span> <span class="n">m_source</span><span class="p">;</span>
+<span class="lineno"> 6 </span>                <span class="n">m_target</span><span class="p">.</span><span class="n">SourceType</span> <span class="p">=</span> <span class="n">UniHumanoid</span><span class="p">.</span><span class="n">HumanPoseTransfer</span><span class="p">.</span><span class="n">HumanPoseTransferSourceType</span><span class="p">.</span><span class="n">HumanPoseTransfer</span><span class="p">;</span>
+<span class="lineno"> 7 </span>
+<span class="lineno"> 8 </span>                <span class="n">m_blendShape</span> <span class="p">=</span> <span class="n">m_target</span><span class="p">.</span><span class="n">GetComponent</span><span class="p">&lt;</span><span class="n">VRMBlendShapeProxy</span><span class="p">&gt;();</span>
+<span class="lineno"> 9 </span>
+<span class="lineno">10 </span>                <span class="n">m_firstPerson</span> <span class="p">=</span> <span class="n">m_target</span><span class="p">.</span><span class="n">GetComponent</span><span class="p">&lt;</span><span class="n">VRMFirstPerson</span><span class="p">&gt;();</span>
+<span class="lineno">11 </span>
+<span class="lineno">12 </span>                <span class="kt">var</span> <span class="n">animator</span> <span class="p">=</span> <span class="n">m_target</span><span class="p">.</span><span class="n">GetComponent</span><span class="p">&lt;</span><span class="n">Animator</span><span class="p">&gt;();</span>
+<span class="lineno">13 </span>                <span class="k">if</span> <span class="p">(</span><span class="n">animator</span> <span class="p">!=</span> <span class="k">null</span><span class="p">)</span>
+<span class="lineno">14 </span>                <span class="p">{</span>
+<span class="lineno">15 </span><span class="hll">                    <span class="n">m_firstPerson</span><span class="p">.</span><span class="n">Setup</span><span class="p">();</span>
+</span><span class="lineno">16 </span>
+<span class="lineno">17 </span>                    <span class="k">if</span> <span class="p">(</span><span class="n">m_faceCamera</span> <span class="p">!=</span> <span class="k">null</span><span class="p">)</span>
+<span class="lineno">18 </span>                    <span class="p">{</span>
+<span class="lineno">19 </span>                        <span class="n">m_faceCamera</span><span class="p">.</span><span class="n">Target</span> <span class="p">=</span> <span class="n">animator</span><span class="p">.</span><span class="n">GetBoneTransform</span><span class="p">(</span><span class="n">HumanBodyBones</span><span class="p">.</span><span class="n">Head</span><span class="p">);</span>
+<span class="lineno">20 </span>                    <span class="p">}</span>
+<span class="lineno">21 </span>                <span class="p">}</span>
+<span class="lineno">22 </span>            <span class="p">}</span>
+<span class="lineno">23 </span>        <span class="p">}</span>
+</pre></div>
+</div>
+</div>
 </section>
 
 
