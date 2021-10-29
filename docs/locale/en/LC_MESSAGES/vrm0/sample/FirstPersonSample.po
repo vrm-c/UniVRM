@@ -18,47 +18,31 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.9.1\n"
 
-#: ../../vrm0/index.md:1
-msgid "VRM"
+#: ../../vrm0/sample/FirstPersonSample.md:1
+msgid "FirstPersonSample"
 msgstr ""
 
-#: ../../vrm0/index.md:17
-msgid "{doc}`FastSpringBone(0.85) </implementation/fast_spring_bone>`"
+#: ../../vrm0/sample/FirstPersonSample.md:3
+msgid "VR アプリで FistPerson の設定に合わせて、可視設定を反映するサンプルです。"
 msgstr ""
 
-#: ../../vrm0/index.md:19
-msgid "TODO:"
+#: ../../vrm0/sample/FirstPersonSample.md:5
+msgid "画面が４分割されて、"
 msgstr ""
 
-#: ../../vrm0/index.md:21
-msgid "🚧 materialGenerator"
+#: ../../vrm0/sample/FirstPersonSample.md:7
+msgid "HMDカメラ"
 msgstr ""
 
-#: ../../vrm0/index.md:22
-msgid "🚧 firstPerson"
+#: ../../vrm0/sample/FirstPersonSample.md:8
+msgid "その他のカメラ"
 msgstr ""
 
-#~ msgid "version"
-#~ msgstr ""
+#: ../../vrm0/sample/FirstPersonSample.md:10
+msgid "の描画を例示します。"
+msgstr ""
 
-#~ msgid "v0.56"
-#~ msgstr ""
-
-#~ msgid "BlendShapeKey の仕様変更"
-#~ msgstr "BlendShapeKey API update"
-
-#~ msgid "Samples"
-#~ msgstr ""
-
-#~ msgid "SimpleViewer"
-#~ msgstr ""
-
-#~ msgid "RuntimeExporerSample"
-#~ msgstr ""
-
-#~ msgid "FirstPersonSample"
-#~ msgstr ""
-
-#~ msgid "AnimationBridgeSample"
-#~ msgstr ""
+#: ../../vrm0/sample/FirstPersonSample.md:12
+msgid "v0.87.0 Assets/VRM_Samples/FirstPersonSample/VRMRuntimeLoader.cs"
+msgstr ""
 

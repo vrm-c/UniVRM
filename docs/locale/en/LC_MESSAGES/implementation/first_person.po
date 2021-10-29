@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: UniVRM Programming Document \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-11 16:50+0900\n"
+"POT-Creation-Date: 2021-10-29 16:41+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -103,7 +103,7 @@ msgid "-"
 msgstr ""
 
 #: ../../implementation/first_person.md
-msgid "FirstPersonOnly と ThirdPersonOnly に分割する"
+msgid "Both と ThirdPersonOnly に分割する"
 msgstr ""
 
 #: ../../implementation/first_person.md
@@ -117,4 +117,7 @@ msgstr ""
 #: ../../implementation/first_person.md
 msgid "default。メッシュ分割など特別な処理は不要"
 msgstr ""
+
+#~ msgid "FirstPersonOnly と ThirdPersonOnly に分割する"
+#~ msgstr ""
 
