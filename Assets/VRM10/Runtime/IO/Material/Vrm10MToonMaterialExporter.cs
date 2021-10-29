@@ -84,6 +84,7 @@ namespace UniVRM10
             mtoon.GiEqualizationFactor = context.GiEqualizationFactor;
 
             // Emission
+            // Emissive factor is stored in Linear space
             dst.emissiveFactor = context.EmissiveFactorLinear.ToFloat3(ColorSpace.Linear, ColorSpace.Linear);
             var emissiveTextureIndex = textureExporter.RegisterExportingAsSRgb(context.EmissiveTexture, needsAlpha: false);
             if (emissiveTextureIndex != -1)

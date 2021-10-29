@@ -72,6 +72,7 @@ namespace UniVRM10
             // GI
 
             // Emission
+            // Emissive factor should be stored in Linear space
             var emissionColor = material?.emissiveFactor?.ToColor3(gltfColorSpace, ColorSpace.Linear);
             if (emissionColor.HasValue)
             {
@@ -79,7 +80,7 @@ namespace UniVRM10
             }
 
             // Rim Lighting
-            var rimColor = mToon?.ParametricRimColorFactor?.ToColor3(gltfColorSpace, ColorSpace.Linear);
+            var rimColor = mToon?.ParametricRimColorFactor?.ToColor3(gltfColorSpace, ColorSpace.sRGB);
             if (rimColor.HasValue)
             {
                 yield return (MToon10Prop.ParametricRimColorFactor.ToUnityShaderLabName(), rimColor.Value);

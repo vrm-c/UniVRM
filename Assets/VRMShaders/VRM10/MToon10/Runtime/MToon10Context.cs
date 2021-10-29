@@ -102,7 +102,8 @@ namespace VRMShaders.VRM10.MToon10.Runtime
         // Emission
         public Color EmissiveFactorLinear
         {
-            get => _material.GetColor(MToon10Prop.EmissiveFactor).linear;
+            // Emissive factor is stored in Linear space
+            get => _material.GetColor(MToon10Prop.EmissiveFactor);
         }
 
         public Texture EmissiveTexture
