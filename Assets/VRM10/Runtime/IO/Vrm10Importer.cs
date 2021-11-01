@@ -464,6 +464,19 @@ namespace UniVRM10
                     });
                 }
             }
+            else
+            {
+                // default 値を割り当てる
+                foreach (var smr in Root.GetComponentsInChildren<SkinnedMeshRenderer>())
+                {
+                    var relative = smr.transform.RelativePathFrom(Root.transform);
+                    vrm.FirstPerson.Renderers.Add(new RendererFirstPersonFlags
+                    {
+                        FirstPersonFlag = UniGLTF.Extensions.VRMC_vrm.FirstPersonType.auto,
+                        Renderer = relative,
+                    });
+                }
+            }
 
             return vrm;
         }
