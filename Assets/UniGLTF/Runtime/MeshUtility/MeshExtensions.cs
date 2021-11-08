@@ -70,7 +70,7 @@ namespace UniGLTF.MeshUtility
             src.vertices = src.vertices.Select(x => m.MultiplyPoint(x)).ToArray();
             if (src.normals != null && src.normals.Length > 0)
             {
-                src.normals = src.normals.Select(x => m.MultiplyVector(x)).ToArray();
+                src.normals = src.normals.Select(x => m.MultiplyVector(x.normalized)).ToArray();
             }
             if (src.tangents != null && src.tangents.Length > 0)
             {
