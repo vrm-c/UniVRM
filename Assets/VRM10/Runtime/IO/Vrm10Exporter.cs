@@ -686,8 +686,8 @@ namespace UniVRM10
             vrm.Meta.CopyrightInformation = meta.CopyrightInformation;
             vrm.Meta.ContactInformation = meta.ContactInformation;
             vrm.Meta.References = meta.References.ToList();
-            // vrm.Meta.ThirdPartyLicenses =
-            vrm.Meta.AvatarPermission = meta.AllowedUser;
+            vrm.Meta.ThirdPartyLicenses = meta.ThirdPartyLicenses;
+            vrm.Meta.AvatarPermission = meta.AvatarPermission;
             vrm.Meta.AllowExcessivelyViolentUsage = meta.ViolentUsage;
             vrm.Meta.AllowExcessivelySexualUsage = meta.SexualUsage;
             vrm.Meta.CommercialUsage = meta.CommercialUsage;
@@ -695,7 +695,7 @@ namespace UniVRM10
             vrm.Meta.AllowAntisocialOrHateUsage = meta.AntisocialOrHateUsage;
             vrm.Meta.CreditNotation = meta.CreditNotation;
             vrm.Meta.AllowRedistribution = meta.Redistribution;
-            vrm.Meta.Modification = meta.ModificationLicense;
+            vrm.Meta.Modification = meta.Modification;
             vrm.Meta.OtherLicenseUrl = meta.OtherLicenseUrl;
             int? thumbnailTextureIndex = default;
             if (meta.Thumbnail != null)

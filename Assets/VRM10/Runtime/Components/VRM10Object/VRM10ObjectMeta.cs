@@ -10,9 +10,6 @@ namespace UniVRM10
     [Serializable]
     public class VRM10ObjectMeta
     {
-        [SerializeField]
-        public string ExporterVersion;
-
         #region Info
         [SerializeField]
         public string Name;
@@ -21,10 +18,10 @@ namespace UniVRM10
         public string Version;
 
         [SerializeField]
-        public string CopyrightInformation;
+        public List<string> Authors = new List<string>();
 
         [SerializeField]
-        public List<string> Authors = new List<string>();
+        public string CopyrightInformation;
 
         [SerializeField]
         public string ContactInformation;
@@ -33,12 +30,15 @@ namespace UniVRM10
         public List<string> References = new List<string>();
 
         [SerializeField]
+        public string ThirdPartyLicenses;
+
+        [SerializeField]
         public Texture2D Thumbnail;
         #endregion
 
         #region AvatarPermission
         [SerializeField, Tooltip("A person who can perform with this avatar")]
-        public UniGLTF.Extensions.VRMC_vrm.AvatarPermissionType AllowedUser;
+        public UniGLTF.Extensions.VRMC_vrm.AvatarPermissionType AvatarPermission;
 
         [SerializeField, Tooltip("Violent acts using this avatar")]
         public bool ViolentUsage;
@@ -50,16 +50,10 @@ namespace UniVRM10
         public UniGLTF.Extensions.VRMC_vrm.CommercialUsageType CommercialUsage;
 
         [SerializeField]
-        public bool GameUsage;
-
-        [SerializeField]
         public bool PoliticalOrReligiousUsage;
 
         [SerializeField]
         public bool AntisocialOrHateUsage;
-
-        [SerializeField, Tooltip("Other License Url")]
-        public string OtherPermissionUrl;
         #endregion
 
         #region Distribution License
@@ -70,7 +64,7 @@ namespace UniVRM10
         public bool Redistribution;
 
         [SerializeField]
-        public UniGLTF.Extensions.VRMC_vrm.ModificationType ModificationLicense;
+        public UniGLTF.Extensions.VRMC_vrm.ModificationType Modification;
 
         [SerializeField]
         public string OtherLicenseUrl;
@@ -96,7 +90,6 @@ namespace UniVRM10
 
         public void CopyTo(VRM10ObjectMeta dst)
         {
-            dst.ExporterVersion = ExporterVersion;
             dst.Name = Name;
             dst.Version = Version;
             dst.CopyrightInformation = CopyrightInformation;
@@ -110,17 +103,16 @@ namespace UniVRM10
             }
             dst.ContactInformation = ContactInformation;
             dst.References = References;
+			dst.ThirdPartyLicenses = ThirdPartyLicenses;
             dst.Thumbnail = Thumbnail;
-            dst.AllowedUser = AllowedUser;
+            dst.AvatarPermission = AvatarPermission;
             dst.ViolentUsage = ViolentUsage;
             dst.SexualUsage = SexualUsage;
             dst.CommercialUsage = CommercialUsage;
-            dst.GameUsage = GameUsage;
             dst.PoliticalOrReligiousUsage = PoliticalOrReligiousUsage;
-            dst.OtherPermissionUrl = OtherPermissionUrl;
             dst.CreditNotation = CreditNotation;
             dst.Redistribution = Redistribution;
-            dst.ModificationLicense = ModificationLicense;
+            dst.Modification = Modification;
             dst.OtherLicenseUrl = OtherLicenseUrl;
         }
     }

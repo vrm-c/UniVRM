@@ -10,24 +10,25 @@ namespace UniVRM10
     /// </summary>
     public class VRM10MetaEditor : SerializedPropertyEditor
     {
-        SerializedProperty m_exporterVersion;
         SerializedProperty m_thumbnail;
         VRM10MetaProperty m_name;
         VRM10MetaProperty m_version;
         VRM10MetaProperty m_copyright;
-        VRM10MetaProperty m_author;
-        VRM10MetaProperty m_contact;
+        VRM10MetaProperty m_authors;
         VRM10MetaProperty m_references;
+        VRM10MetaProperty m_contact;
+        VRM10MetaProperty m_thirdPartyLicenses;
+        VRM10MetaProperty m_OtherLicenseUrl;
 
-        SerializedProperty m_AllowedUser;
+        SerializedProperty m_AvatarPermission;
         SerializedProperty m_ViolentUssage;
         SerializedProperty m_SexualUssage;
         SerializedProperty m_CommercialUssage;
         SerializedProperty m_PoliticalOrReligiousUsage;
-        SerializedProperty m_OtherPermissionUrl;
-
-        SerializedProperty m_LicenseType;
-        SerializedProperty m_OtherLicenseUrl;
+        SerializedProperty m_AntisocialOrHateUsage;
+        SerializedProperty m_CreditNotation;
+        SerializedProperty m_Redistribution;
+        SerializedProperty m_Modification;
 
         static string RequiredMessage(string name)
         {
@@ -54,21 +55,45 @@ namespace UniVRM10
             [LangMsg(Languages.en, "A person who can perform with this avatar")]
             ALLOWED_USER,
 
-            [LangMsg(Languages.ja, "このアバターを用いて暴力表現を演じることの許可")]
+            [LangMsg(Languages.ja, "このアバターを用いて暴力表現を演じること")]
             [LangMsg(Languages.en, "Violent acts using this avatar")]
             VIOLENT_USAGE,
 
-            [LangMsg(Languages.ja, "このアバターを用いて性的表現を演じることの許可")]
+            [LangMsg(Languages.ja, "このアバターを用いて性的表現を演じること")]
             [LangMsg(Languages.en, "Sexuality acts using this avatar")]
             SEXUAL_USAGE,
 
-            [LangMsg(Languages.ja, "商用利用の許可")]
+            [LangMsg(Languages.ja, "商用利用")]
             [LangMsg(Languages.en, "For commercial use")]
             COMMERCIAL_USAGE,
+
+            [LangMsg(Languages.ja, "政治・宗教用途での利用")]
+            [LangMsg(Languages.en, "Permits to use this model in political or religious contents")]
+            POLITICAL_USAGE,
+
+            [LangMsg(Languages.ja, "反社会的・憎悪表現を含むコンテンツでの利用")]
+            [LangMsg(Languages.en, "Permits to use this model in contents contain anti-social activities or hate speeches")]
+            ANTI_USAGE,
 
             [LangMsg(Languages.ja, "再配布・改変に関する許諾範囲")]
             [LangMsg(Languages.en, "Redistribution / Modifications License")]
             REDISTRIBUTION_MODIFICATIONS,
+
+            [LangMsg(Languages.ja, "クレジット表記")]
+            [LangMsg(Languages.en, "Forces or abandons to display the credit")]
+            MOD_CREDIT,
+
+            [LangMsg(Languages.ja, "再配布")]
+            [LangMsg(Languages.en, "Permits redistribution")]
+            MOD_REDISTRIBUTION,
+
+            [LangMsg(Languages.ja, "改変")]
+            [LangMsg(Languages.en, "Controls the condition to modify")]
+            MOD_MODIFICATION,
+
+            [LangMsg(Languages.ja, "その他のライセンス条件があれば、そのURL")]
+            [LangMsg(Languages.en, "The URL links of other license")]
+            MOD_OTHER,
 
             // [LangMsg(Languages.ja, "")]
             // [LangMsg(Languages.en, "")]
@@ -123,9 +148,6 @@ namespace UniVRM10
 
         public VRM10MetaEditor(SerializedObject serializedObject, SerializedProperty property) : base(serializedObject, property)
         {
-            m_exporterVersion = m_rootProperty.FindPropertyRelative(nameof(VRM10ObjectMeta.ExporterVersion));
-            m_thumbnail = m_rootProperty.FindPropertyRelative(nameof(VRM10ObjectMeta.Thumbnail));
-
             m_name = CreateValidation(nameof(VRM10ObjectMeta.Name), prop =>
                         {
                             if (string.IsNullOrEmpty(prop.stringValue))
@@ -135,8 +157,7 @@ namespace UniVRM10
                             return ("", MessageType.None);
                         });
             m_version = CreateValidation(nameof(VRM10ObjectMeta.Version));
-            m_copyright = CreateValidation(nameof(VRM10ObjectMeta.CopyrightInformation));
-            m_author = CreateValidation(nameof(VRM10ObjectMeta.Authors), prop =>
+            m_authors = CreateValidation(nameof(VRM10ObjectMeta.Authors), prop =>
                         {
                             if (prop.arraySize == 0)
                             {
@@ -144,20 +165,24 @@ namespace UniVRM10
                             }
                             return ("", MessageType.None);
                         });
+            m_copyright = CreateValidation(nameof(VRM10ObjectMeta.CopyrightInformation));
             m_contact = CreateValidation(nameof(VRM10ObjectMeta.ContactInformation));
             m_references = CreateValidation(nameof(VRM10ObjectMeta.References));
-
+            m_thirdPartyLicenses = CreateValidation(nameof(VRM10ObjectMeta.ThirdPartyLicenses));
+            m_OtherLicenseUrl = CreateValidation(nameof(VRM10ObjectMeta.OtherLicenseUrl));
+            m_thumbnail = m_rootProperty.FindPropertyRelative(nameof(VRM10ObjectMeta.Thumbnail));
             // AvatarPermission
-            m_AllowedUser = m_rootProperty.FindPropertyRelative(nameof(VRM10ObjectMeta.AllowedUser));
+            m_AvatarPermission = m_rootProperty.FindPropertyRelative(nameof(VRM10ObjectMeta.AvatarPermission));
             m_ViolentUssage = m_rootProperty.FindPropertyRelative(nameof(VRM10ObjectMeta.ViolentUsage));
             m_SexualUssage = m_rootProperty.FindPropertyRelative(nameof(VRM10ObjectMeta.SexualUsage));
             m_CommercialUssage = m_rootProperty.FindPropertyRelative(nameof(VRM10ObjectMeta.CommercialUsage));
             m_PoliticalOrReligiousUsage = m_rootProperty.FindPropertyRelative(nameof(VRM10ObjectMeta.PoliticalOrReligiousUsage));
-            m_OtherPermissionUrl = m_rootProperty.FindPropertyRelative(nameof(VRM10ObjectMeta.OtherLicenseUrl));
+            m_AntisocialOrHateUsage = m_rootProperty.FindPropertyRelative(nameof(VRM10ObjectMeta.AntisocialOrHateUsage));
+            // Mod
+            m_CreditNotation = m_rootProperty.FindPropertyRelative(nameof(VRM10ObjectMeta.CreditNotation));
+            m_Redistribution = m_rootProperty.FindPropertyRelative(nameof(VRM10ObjectMeta.Redistribution));
+            m_Modification = m_rootProperty.FindPropertyRelative(nameof(VRM10ObjectMeta.Modification));
 
-            // m_LicenseType = m_rootProperty.FindPropertyRelative(nameof(VRM10ObjectMeta.));
-
-            m_OtherLicenseUrl = m_rootProperty.FindPropertyRelative(nameof(VRM10ObjectMeta.OtherLicenseUrl));
         }
 
         public static VRM10MetaEditor Create(SerializedObject serializedObject)
@@ -167,18 +192,10 @@ namespace UniVRM10
 
         protected override void RecursiveProperty(SerializedProperty root)
         {
-            if (VRMVersion.IsNewer(m_exporterVersion.stringValue))
-            {
-                EditorGUILayout.HelpBox("Check UniVRM new version. https://github.com/dwango/UniVRM/releases", MessageType.Warning);
-            }
-
             // texture
             EditorGUILayout.BeginHorizontal();
             {
                 EditorGUILayout.BeginVertical();
-                GUI.enabled = false;
-                EditorGUILayout.PropertyField(m_exporterVersion);
-                GUI.enabled = true;
                 EditorGUILayout.PropertyField(m_thumbnail);
                 EditorGUILayout.EndVertical();
                 m_thumbnail.objectReferenceValue = TextureField("", (Texture2D)m_thumbnail.objectReferenceValue, 100);
@@ -190,32 +207,35 @@ namespace UniVRM10
             {
                 m_name.OnGUI();
                 m_version.OnGUI();
-                m_author.OnGUI();
+                m_authors.OnGUI();
+                m_copyright.OnGUI();
                 m_contact.OnGUI();
                 m_references.OnGUI();
+                m_thirdPartyLicenses.OnGUI();
+                m_OtherLicenseUrl.OnGUI();
             }
-            // EditorGUILayout.LabelField("License ", EditorStyles.boldLabel);
+
             m_foldoutPermission = EditorGUILayout.Foldout(m_foldoutPermission, Msg(MessageKeys.PERSONATION));
             if (m_foldoutPermission)
             {
                 var backup = EditorGUIUtility.labelWidth;
-                RightFixedPropField(m_AllowedUser, Msg(MessageKeys.ALLOWED_USER));
+                RightFixedPropField(m_AvatarPermission, Msg(MessageKeys.ALLOWED_USER));
                 RightFixedPropField(m_ViolentUssage, Msg(MessageKeys.VIOLENT_USAGE));
                 RightFixedPropField(m_SexualUssage, Msg(MessageKeys.SEXUAL_USAGE));
                 RightFixedPropField(m_CommercialUssage, Msg(MessageKeys.COMMERCIAL_USAGE));
-                EditorGUILayout.PropertyField(m_OtherPermissionUrl, new GUIContent("Other License Url"));
+                RightFixedPropField(m_PoliticalOrReligiousUsage, Msg(MessageKeys.POLITICAL_USAGE));
+                RightFixedPropField(m_AntisocialOrHateUsage, Msg(MessageKeys.ANTI_USAGE));
                 EditorGUIUtility.labelWidth = backup;
             }
 
             m_foldoutDistribution = EditorGUILayout.Foldout(m_foldoutDistribution, Msg(MessageKeys.REDISTRIBUTION_MODIFICATIONS));
             if (m_foldoutDistribution)
             {
-                // var licenseType = m_LicenseType;
-                // EditorGUILayout.PropertyField(licenseType);
-                // if ((LicenseType)licenseType.intValue == LicenseType.Other)
-                // {
-                //     EditorGUILayout.PropertyField(m_OtherLicenseUrl);
-                // }
+                var backup = EditorGUIUtility.labelWidth;
+                RightFixedPropField(m_CreditNotation, Msg(MessageKeys.MOD_CREDIT));
+                RightFixedPropField(m_Redistribution, Msg(MessageKeys.MOD_REDISTRIBUTION));
+                RightFixedPropField(m_Modification, Msg(MessageKeys.MOD_MODIFICATION));
+                EditorGUIUtility.labelWidth = backup;
             }
         }
     }
