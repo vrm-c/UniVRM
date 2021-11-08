@@ -370,7 +370,7 @@ namespace UniGLTF.MeshUtility
                     }
                     else
                     {
-                        normals[j] = m.MultiplyVector(normals[j]) - meshNormals[j];
+                        normals[j] = m.MultiplyVector(normals[j].normalized) - meshNormals[j];
                     }
                 }
 
