@@ -361,8 +361,9 @@ namespace UniVRM10
                 meta.Name = src.Name;
                 meta.Version = src.Version;
                 meta.ContactInformation = src.ContactInformation;
+				meta.ThirdPartyLicenses = src.ThirdPartyLicenses;
                 // avatar
-                meta.AllowedUser = src.AvatarPermission;
+                meta.AvatarPermission = src.AvatarPermission;
                 meta.ViolentUsage = src.AllowExcessivelyViolentUsage.GetValueOrDefault();
                 meta.SexualUsage = src.AllowExcessivelySexualUsage.GetValueOrDefault();
                 meta.CommercialUsage = src.CommercialUsage;
@@ -372,7 +373,7 @@ namespace UniVRM10
                 meta.CreditNotation = src.CreditNotation;
                 meta.Redistribution = src.AllowRedistribution.GetValueOrDefault();
 
-                meta.ModificationLicense = src.Modification;
+                meta.Modification = src.Modification;
                 meta.OtherLicenseUrl = src.OtherLicenseUrl;
                 //
                 if (src.References != null)
