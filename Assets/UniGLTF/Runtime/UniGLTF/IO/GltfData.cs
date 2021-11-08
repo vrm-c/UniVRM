@@ -68,7 +68,12 @@ namespace UniGLTF
         /// </summary>
         IStorage _storage;
 
-        Dictionary<string, ArraySegment<byte>> _dataUriCache = new Dictionary<string, ArraySegment<byte>>();
+        /// <summary>
+        /// uri = data: base64デコード
+        /// uri = 相対パス。File.ReadAllBytes
+        /// </summary>
+        /// <returns></returns>
+        Dictionary<string, ArraySegment<byte>> _UriCache = new Dictionary<string, ArraySegment<byte>>();
 
         public GltfData(string targetPath, string json, glTF gltf, IReadOnlyList<GlbChunk> chunks, IStorage storage, MigrationFlags migrationFlags)
         {
@@ -101,39 +106,37 @@ namespace UniGLTF
             );
         }
 
-        public ArraySegment<Byte> GetBytesFromUri(string uri)
+        ArraySegment<Byte> GetBytesFromUri(string uri)
         {
             if (string.IsNullOrEmpty(uri))
             {
                 throw new ArgumentNullException();
             }
+
+            if (_UriCache.TryGetValue(uri, out ArraySegment<byte> data))
+            {
+                // return cache
+                return data;
+            }
+
             if (uri.StartsWith("data:", StringComparison.Ordinal))
             {
-                if (_dataUriCache.TryGetValue(uri, out ArraySegment<byte> data))
-                {
-                    return data;
-                }
                 data = new ArraySegment<byte>(UriByteBuffer.ReadEmbedded(uri));
-                _dataUriCache.Add(uri, data);
-                return data;
             }
             else
             {
-                return _storage.Get(uri);
+                data = _storage.Get(uri);
             }
+            _UriCache.Add(uri, data);
+            return data;
         }
 
         public ArraySegment<Byte> GetBytesFromBuffer(int bufferIndex)
         {
             var buffer = GLTF.buffers[bufferIndex];
-            if (bufferIndex == 0 && string.IsNullOrEmpty(buffer.uri))
+            if (bufferIndex == 0 && Bin.Array != null)
             {
                 // https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#glb-stored-buffer
-                // this buffer is reference bin chunk
-                if (Bin.Array == null)
-                {
-                    throw new NullReferenceException();
-                }
                 return Bin;
             }
             else
