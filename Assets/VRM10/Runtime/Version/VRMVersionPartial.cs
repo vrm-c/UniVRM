@@ -102,6 +102,6 @@ namespace UniVRM10
             public string Pre;
         }
 
-        public const string MENU = "VRM1/";
+        public const string MENU = "VRM1";
     }
 }
