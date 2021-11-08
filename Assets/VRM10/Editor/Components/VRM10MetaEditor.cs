@@ -5,68 +5,19 @@ using UnityEngine;
 
 namespace UniVRM10
 {
+    /// <summary>
+    /// Editor for VRM10ObjectMeta
+    /// </summary>
     public class VRM10MetaEditor : SerializedPropertyEditor
     {
-        class ValidateProperty
-        {
-            public SerializedProperty m_prop;
-
-            public delegate (string, MessageType) Validator(SerializedProperty prop);
-            Validator m_validator;
-
-            public ValidateProperty(SerializedProperty prop, Validator validator)
-            {
-                m_prop = prop;
-                m_validator = validator;
-            }
-
-            public void OnGUI()
-            {
-                // var old = m_prop.stringValue;
-                if (m_prop.propertyType == SerializedPropertyType.Generic)
-                {
-                    if (m_prop.arrayElementType != null)
-                    {
-                        EditorGUILayout.LabelField(m_prop.name);
-
-                        var depth = m_prop.depth;
-                        var iterator = m_prop.Copy();
-                        for (var enterChildren = true; iterator.NextVisible(enterChildren); enterChildren = false)
-                        {
-                            if (iterator.depth < depth)
-                                break;
-
-                            depth = iterator.depth;
-
-                            // using (new EditorGUI.DisabledScope("m_Script" == iterator.propertyPath))
-                            EditorGUILayout.PropertyField(iterator, true);
-                        }
-                    }
-                    else
-                    {
-                        throw new System.NotImplementedException();
-                    }
-                }
-                else
-                {
-                    EditorGUILayout.PropertyField(m_prop);
-                }
-                var (msg, msgType) = m_validator(m_prop);
-                if (!string.IsNullOrEmpty(msg))
-                {
-                    EditorGUILayout.HelpBox(msg, msgType);
-                }
-                // return old != m_prop.stringValue;
-            }
-        }
-
         SerializedProperty m_exporterVersion;
         SerializedProperty m_thumbnail;
-        ValidateProperty m_title;
-        ValidateProperty m_version;
-        ValidateProperty m_author;
-        ValidateProperty m_contact;
-        ValidateProperty m_reference;
+        VRM10MetaProperty m_name;
+        VRM10MetaProperty m_version;
+        VRM10MetaProperty m_copyright;
+        VRM10MetaProperty m_author;
+        VRM10MetaProperty m_contact;
+        VRM10MetaProperty m_references;
 
         SerializedProperty m_AllowedUser;
         SerializedProperty m_ViolentUssage;
@@ -165,12 +116,17 @@ namespace UniVRM10
             return result;
         }
 
+        VRM10MetaProperty CreateValidation(string name, VRM10MetaPropertyValidator validator = null)
+        {
+            return new VRM10MetaProperty(m_rootProperty.FindPropertyRelative(name), validator);
+        }
+
         public VRM10MetaEditor(SerializedObject serializedObject, SerializedProperty property) : base(serializedObject, property)
         {
             m_exporterVersion = m_rootProperty.FindPropertyRelative(nameof(VRM10ObjectMeta.ExporterVersion));
             m_thumbnail = m_rootProperty.FindPropertyRelative(nameof(VRM10ObjectMeta.Thumbnail));
 
-            m_title = new ValidateProperty(m_rootProperty.FindPropertyRelative(nameof(VRM10ObjectMeta.Name)), prop =>
+            m_name = CreateValidation(nameof(VRM10ObjectMeta.Name), prop =>
                         {
                             if (string.IsNullOrEmpty(prop.stringValue))
                             {
@@ -178,15 +134,9 @@ namespace UniVRM10
                             }
                             return ("", MessageType.None);
                         });
-            m_version = new ValidateProperty(m_rootProperty.FindPropertyRelative(nameof(VRM10ObjectMeta.Version)), prop =>
-                        {
-                            // if (string.IsNullOrEmpty(prop.stringValue))
-                            // {
-                            //     return (RequiredMessage(prop.name), MessageType.Error);
-                            // }
-                            return ("", MessageType.None);
-                        });
-            m_author = new ValidateProperty(m_rootProperty.FindPropertyRelative(nameof(VRM10ObjectMeta.Authors)), prop =>
+            m_version = CreateValidation(nameof(VRM10ObjectMeta.Version));
+            m_copyright = CreateValidation(nameof(VRM10ObjectMeta.CopyrightInformation));
+            m_author = CreateValidation(nameof(VRM10ObjectMeta.Authors), prop =>
                         {
                             if (prop.arraySize == 0)
                             {
@@ -194,15 +144,10 @@ namespace UniVRM10
                             }
                             return ("", MessageType.None);
                         });
-            m_contact = new ValidateProperty(m_rootProperty.FindPropertyRelative(nameof(VRM10ObjectMeta.ContactInformation)), prop =>
-                        {
-                            return ("", MessageType.None);
-                        });
-            m_reference = new ValidateProperty(m_rootProperty.FindPropertyRelative(nameof(VRM10ObjectMeta.References)), prop =>
-                        {
-                            return ("", MessageType.None);
-                        });
+            m_contact = CreateValidation(nameof(VRM10ObjectMeta.ContactInformation));
+            m_references = CreateValidation(nameof(VRM10ObjectMeta.References));
 
+            // AvatarPermission
             m_AllowedUser = m_rootProperty.FindPropertyRelative(nameof(VRM10ObjectMeta.AllowedUser));
             m_ViolentUssage = m_rootProperty.FindPropertyRelative(nameof(VRM10ObjectMeta.ViolentUsage));
             m_SexualUssage = m_rootProperty.FindPropertyRelative(nameof(VRM10ObjectMeta.SexualUsage));
@@ -243,11 +188,11 @@ namespace UniVRM10
             m_foldoutInfo = EditorGUILayout.Foldout(m_foldoutInfo, "Information");
             if (m_foldoutInfo)
             {
-                m_title.OnGUI();
+                m_name.OnGUI();
                 m_version.OnGUI();
                 m_author.OnGUI();
                 m_contact.OnGUI();
-                m_reference.OnGUI();
+                m_references.OnGUI();
             }
             // EditorGUILayout.LabelField("License ", EditorStyles.boldLabel);
             m_foldoutPermission = EditorGUILayout.Foldout(m_foldoutPermission, Msg(MessageKeys.PERSONATION));
