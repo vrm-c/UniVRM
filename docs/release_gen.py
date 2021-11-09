@@ -1,12 +1,21 @@
 #
-# github Release の markdown を作るスクリプト
+# Release 時のドキュメントを作成するスクリプト
+#
+# 1. github release page の markdown => clipboard
+# 2. changelog => docs/release/079/v0.XX.Y.md
+# 3. download button => docs/index.html
 #
 import pathlib
 import re
 import subprocess
+import git.repo
+import re
+import pathlib
+import io
 
 HERE = pathlib.Path(__file__).absolute().parent
 UNIVRM_VERSION = HERE.parent / 'Assets/VRM/Runtime/Format/VRMVersion.cs'
+MERGE_PATTERN = re.compile(r'Merge pull request #(\d+)')
 
 
 def gen(version: str, hash: str):
@@ -78,11 +87,107 @@ def get_hash() -> str:
     return res.decode('utf-8')
 
 
-if __name__ == '__main__':
-    version = get_version()
-    hash = get_hash()
+def copy_release_md(version: str, hash: str):
     text = gen(version, hash)
-
     import pyperclip
     pyperclip.copy(text)
     print('copy to clipboard')
+
+
+#
+#
+#
+def change_log(repo: git.repo.Repo, version: str):
+    major, minor, patch = [int(x) for x in version.split('.')]
+    rev = f'v{major}.{minor-1}.0..v{major}.{minor}.0'
+
+    w = io.StringIO()
+    w.write(f'# v{version}: 1.0準備\n')
+    w.write('\n')
+    for item in repo.iter_commits(rev=rev):
+        m = MERGE_PATTERN.match(item.message)
+        if m:
+            # merge commit
+            pr = m[1]
+            lines = item.message.splitlines()
+
+            w.write(
+                f'* [[\\#{pr}](https://github.com/vrm-c/UniVRM/pull/{pr})] {lines[2]}\n'
+            )
+    return w.getvalue()
+
+
+if __name__ == '__main__':
+    version = get_version()
+    hash = get_hash()
+    repo = git.repo.Repo(str(HERE.parent))
+    # 1.
+    copy_release_md(version, hash)
+    # 2.
+    release = HERE / f'release/079/v{version}.md'
+    if not release.exists():
+        text = change_log(repo, version)
+        release.write_text(text, encoding='utf-8')
+    # 3.
+    (HERE / 'index.html').write_text(f'''<html>
+<body>
+
+    <head>
+        <style type="text/css">
+            html,
+            body {{
+                color: black;
+                background-color: white;
+                width: 100%;
+                height: 100%;
+
+                display: flex;
+                flex-direction: column;
+            }}
+
+            main {{
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                flex-grow: 1;
+            }}
+
+            .btn {{
+                color: white;
+                background-color: green;
+                padding: 0.5em;
+                border-radius: 0.3em;
+                text-decoration: none;
+            }}
+
+            .btn h1 {{
+                text-align: center;
+            }}
+
+            .btn h2 {{
+                text-align: center;
+            }}
+        </style>
+    </head>
+    <header>
+
+    </header>
+    <main>
+        <a href="https://github.com/vrm-c/UniVRM/releases/download/v{version}/UniVRM-{version}_{hash[0:4]}.unitypackage" class="btn">
+            <div class="btn">
+                <h1>Download</h1>
+                <h2>UniVRM-{version}</h2>
+            </div>
+        </a>
+    </main>
+    <nav>
+        API Document
+        <ul>
+            <li><a href="./ja/">日本語</a></li>
+            <li><a href="./en/">English</a></li>
+        </ul>
+    </nav>
+</body>
+</html>
+''',
+                                     encoding='utf-8')
