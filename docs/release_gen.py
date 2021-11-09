@@ -12,6 +12,7 @@ import git.repo
 import re
 import pathlib
 import io
+from functools import cmp_to_key
 
 HERE = pathlib.Path(__file__).absolute().parent
 UNIVRM_VERSION = HERE.parent / 'Assets/VRM/Runtime/Format/VRMVersion.cs'
@@ -82,9 +83,13 @@ def get_version() -> str:
     raise Exception("no version")
 
 
-def get_hash() -> str:
-    res = subprocess.check_output("git rev-parse HEAD")
-    return res.decode('utf-8')
+def get_hash(repo, tag_name) -> str:
+    # res = subprocess.check_output("git rev-parse HEAD")
+    # return res.decode('utf-8')
+    for tag in repo.tags:
+        if tag.name == tag_name:
+            return tag.commit.hexsha
+    raise Exception()
 
 
 def copy_release_md(version: str, hash: str):
@@ -117,16 +122,35 @@ def change_log(repo: git.repo.Repo, version: str):
     return w.getvalue()
 
 
+def get_tags(repo):
+    P = re.compile(r'v(\w+)\.(\w+)\.(\w+)')
+    for tag in repo.tags:
+        m = P.match(tag.name)
+        if m:
+            yield int(m[1]), int(m[2]), int(m[3])
+
+
 if __name__ == '__main__':
-    version = get_version()
-    hash = get_hash()
     repo = git.repo.Repo(str(HERE.parent))
+
+    def cmp_tag(l, r):
+        if l[0] != r[0]:
+            return l[0] - r[0]
+        if l[1] != r[1]:
+            return l[1] - r[1]
+        return l[2] - r[2]
+
+    tags = [tag for tag in get_tags(repo)]
+    tags = sorted(tags, key=cmp_to_key(cmp_tag))
+    x, y, z = tags[-1]
+    version = f'{x}.{y}.{z}'
+    hash = get_hash(repo, f'v{version}')
     # 1.
-    copy_release_md(version, hash)
+    copy_release_md(f'{version}', hash)
     # 2.
     release = HERE / f'release/079/v{version}.md'
     if not release.exists():
-        text = change_log(repo, version)
+        text = change_log(repo, f'{version}')
         release.write_text(text, encoding='utf-8')
     # 3.
     (HERE / 'index.html').write_text(f'''<html>
