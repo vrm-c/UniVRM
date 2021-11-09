@@ -11,7 +11,7 @@ UNIVRM_VERSION = HERE.parent / 'Assets/VRM/Runtime/Format/VRMVersion.cs'
 
 def gen(version: str, hash: str):
     version_hash = f'{version}_{hash[0:4]}'
-    print(f'''
+    return f'''
 # Download
 
 * for `Unity-2019.4.LTS` or later
@@ -62,7 +62,7 @@ ReleaseNote
 }}
 ```
 
-''')
+'''
 
 
 def get_version() -> str:
@@ -81,4 +81,8 @@ def get_hash() -> str:
 if __name__ == '__main__':
     version = get_version()
     hash = get_hash()
-    gen(version, hash)
+    text = gen(version, hash)
+
+    import pyperclip
+    pyperclip.copy(text)
+    print('copy to clipboard')
