@@ -9,9 +9,9 @@ namespace UniGLTF
 {
     public class MeshImporter
     {
-        const float FRAME_WEIGHT = 100.0f;
+        private const float FrameWeight = 100.0f;
 
-        static bool HasSharedVertexBuffer(glTFMesh gltfMesh)
+        private static bool HasSharedVertexBuffer(glTFMesh gltfMesh)
         {
             glTFAttributes lastAttributes = null;
             var sharedAttributes = true;
@@ -25,6 +25,7 @@ namespace UniGLTF
 
                 lastAttributes = prim.attributes;
             }
+
             return sharedAttributes;
         }
 
@@ -49,25 +50,23 @@ namespace UniGLTF
             return meshContext;
         }
 
-        static (Mesh, bool) _BuildMesh(MeshContext meshContext)
+        private static (Mesh, bool) _BuildMesh(MeshContext meshContext)
         {
-            if (!meshContext.MaterialIndices.Any())
-            {
-                // add default material
-                meshContext.MaterialIndices.Add(0);
-            }
+            meshContext.AddDefaultMaterial();
 
             //Debug.Log(prims.ToJson());
-            var mesh = new Mesh();
-            mesh.name = meshContext.name;
+            var mesh = new Mesh
+            {
+                name = meshContext.Name
+            };
 
-            if (meshContext.Positions.Count > UInt16.MaxValue)
+            if (meshContext.Positions.Count > ushort.MaxValue)
             {
                 mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
             }
 
             mesh.vertices = meshContext.Positions.ToArray();
-            bool recalculateNormals = false;
+            var recalculateNormals = false;
             if (meshContext.Normals != null && meshContext.Normals.Count > 0)
             {
                 mesh.normals = meshContext.Normals.ToArray();
@@ -81,12 +80,13 @@ namespace UniGLTF
             {
                 mesh.uv = meshContext.UV.ToArray();
             }
+
             if (meshContext.UV2.Count == mesh.vertexCount)
             {
                 mesh.uv2 = meshContext.UV2.ToArray();
             }
 
-            bool recalculateTangents = true;
+            var recalculateTangents = true;
 #if UNIGLTF_IMPORT_TANGENTS
             if (meshContext.Tangents.Length > 0)
             {
@@ -99,12 +99,14 @@ namespace UniGLTF
             {
                 mesh.colors = meshContext.Colors.ToArray();
             }
+
             if (meshContext.BoneWeights.Count > 0)
             {
                 mesh.boneWeights = meshContext.BoneWeights.ToArray();
             }
+
             mesh.subMeshCount = meshContext.SubMeshes.Count;
-            for (int i = 0; i < meshContext.SubMeshes.Count; ++i)
+            for (var i = 0; i < meshContext.SubMeshes.Count; ++i)
             {
                 mesh.SetTriangles(meshContext.SubMeshes[i], i);
             }
@@ -117,7 +119,8 @@ namespace UniGLTF
             return (mesh, recalculateTangents);
         }
 
-        static async Task BuildBlendShapeAsync(IAwaitCaller awaitCaller, Mesh mesh, MeshContext meshContext, BlendShape blendShape, Vector3[] emptyVertices)
+        private static async Task BuildBlendShapeAsync(IAwaitCaller awaitCaller, Mesh mesh, BlendShape blendShape,
+            Vector3[] emptyVertices)
         {
             Vector3[] positions = null;
             Vector3[] normals = null;
@@ -132,31 +135,35 @@ namespace UniGLTF
             {
                 if (blendShape.Positions.Count == mesh.vertexCount)
                 {
-                    mesh.AddBlendShapeFrame(blendShape.Name, FRAME_WEIGHT,
+                    mesh.AddBlendShapeFrame(blendShape.Name, FrameWeight,
                         blendShape.Positions.ToArray(),
                         normals.Length == mesh.vertexCount && normals.Length == positions.Length ? normals : null,
                         null
-                        );
+                    );
                 }
                 else
                 {
-                    Debug.LogWarningFormat("May be partial primitive has blendShape. Require separate mesh or extend blend shape, but not implemented: {0}", blendShape.Name);
+                    Debug.LogWarningFormat(
+                        "May be partial primitive has blendShape. Require separate mesh or extend blend shape, but not implemented: {0}",
+                        blendShape.Name);
                 }
             }
             else
             {
                 // Debug.LogFormat("empty blendshape: {0}.{1}", mesh.name, blendShape.Name);
                 // add empty blend shape for keep blend shape index
-                mesh.AddBlendShapeFrame(blendShape.Name, FRAME_WEIGHT,
+                mesh.AddBlendShapeFrame(blendShape.Name, FrameWeight,
                     emptyVertices,
                     null,
                     null
-                    );
+                );
             }
+
             Profiler.EndSample();
         }
 
-        public static async Task<MeshWithMaterials> BuildMeshAsync(IAwaitCaller awaitCaller, Func<int, Material> ctx, MeshContext meshContext)
+        public static async Task<MeshWithMaterials> BuildMeshAsync(IAwaitCaller awaitCaller, Func<int, Material> ctx,
+            MeshContext meshContext)
         {
             Profiler.BeginSample("MeshImporter._BuildMesh");
             var (mesh, recalculateTangents) = _BuildMesh(meshContext);
@@ -182,7 +189,7 @@ namespace UniGLTF
                 var emptyVertices = new Vector3[mesh.vertexCount];
                 foreach (var blendShape in meshContext.BlendShapes)
                 {
-                    await BuildBlendShapeAsync(awaitCaller, mesh, meshContext, blendShape, emptyVertices);
+                    await BuildBlendShapeAsync(awaitCaller, mesh, blendShape, emptyVertices);
                 }
             }
 
