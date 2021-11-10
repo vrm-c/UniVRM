@@ -285,7 +285,7 @@ namespace UniGLTF
             return Task.FromResult<object>(null);
         }
 
-        async Task<MeshWithMaterials> BuildMeshAsync(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime, MeshImporter.MeshContext x, int i)
+        async Task<MeshWithMaterials> BuildMeshAsync(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime, MeshContext x, int i)
         {
             using (MeasureTime("BuildMesh"))
             {
