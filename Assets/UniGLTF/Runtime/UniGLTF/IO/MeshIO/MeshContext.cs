@@ -17,12 +17,11 @@ namespace UniGLTF
         private readonly List<int[]> _subMeshes = new List<int[]>();
         private readonly List<int> _materialIndices = new List<int>();
         private readonly List<BlendShape> _blendShapes = new List<BlendShape>();
-        
+
         public IReadOnlyList<Vector3> Positions => _positions;
         public IReadOnlyList<Vector3> Normals => _normals;
 
-        [Obsolete]
-        public IReadOnlyList<Vector4> Tangetns => _tangents;
+        [Obsolete] public IReadOnlyList<Vector4> Tangetns => _tangents;
 
         public IReadOnlyList<Vector2> UV => _uv;
 
@@ -62,6 +61,7 @@ namespace UniGLTF
             {
                 name = $"UniGLTF import#{meshIndex}";
             }
+
             this.Name = name;
         }
 
@@ -77,6 +77,7 @@ namespace UniGLTF
             {
                 throw new Exception("Impossible");
             }
+
             while (list.Count < fillLength)
             {
                 list.Add(default);
@@ -90,6 +91,7 @@ namespace UniGLTF
             {
                 return src;
             }
+
             var f = 1.0f / sum;
             src.weight0 *= f;
             src.weight1 *= f;
@@ -127,6 +129,7 @@ namespace UniGLTF
                     {
                         throw new Exception("different length");
                     }
+
                     _normals.AddRange(normals.Select(inverter.InvertVector3));
                     FillZero(_normals, fillLength);
                 }
@@ -139,6 +142,7 @@ namespace UniGLTF
                     {
                         throw new Exception("different length");
                     }
+
                     if (data.GLTF.IsGeneratedUniGLTFAndOlder(1, 16))
                     {
 #pragma warning disable 0612
@@ -162,6 +166,7 @@ namespace UniGLTF
                     {
                         throw new Exception("different length");
                     }
+
                     _uv2.AddRange(uvs.Select(x => x.ReverseUV()));
                     FillZero(_uv2, fillLength);
                 }
@@ -174,6 +179,7 @@ namespace UniGLTF
                     {
                         throw new Exception("different length");
                     }
+
                     _colors.AddRange(colors);
                     FillZero(_colors, fillLength);
                 }
@@ -187,10 +193,12 @@ namespace UniGLTF
                     {
                         throw new Exception("different length");
                     }
+
                     if (weightsLength != positions.Length)
                     {
                         throw new Exception("different length");
                     }
+
                     for (var j = 0; j < jointsLength; ++j)
                     {
                         var bw = new BoneWeight();
@@ -214,6 +222,7 @@ namespace UniGLTF
 
                         _boneWeights.Add(bw);
                     }
+
                     FillZero(_boneWeights, fillLength);
                 }
 
@@ -231,9 +240,11 @@ namespace UniGLTF
                             {
                                 throw new Exception("different length");
                             }
+
                             blendShape.Positions.AddRange(array.Select(inverter.InvertVector3).ToArray());
                             FillZero(blendShape.Positions, fillLength);
                         }
+
                         if (primTarget.NORMAL != -1)
                         {
                             var array = data.GetArrayFromAccessor<Vector3>(primTarget.NORMAL);
@@ -241,9 +252,11 @@ namespace UniGLTF
                             {
                                 throw new Exception("different length");
                             }
+
                             blendShape.Normals.AddRange(array.Select(inverter.InvertVector3).ToArray());
                             FillZero(blendShape.Normals, fillLength);
                         }
+
                         if (primTarget.TANGENT != -1)
                         {
                             var array = data.GetArrayFromAccessor<Vector3>(primTarget.TANGENT);
@@ -251,6 +264,7 @@ namespace UniGLTF
                             {
                                 throw new Exception("different length");
                             }
+
                             blendShape.Tangents.AddRange(array.Select(inverter.InvertVector3).ToArray());
                             FillZero(blendShape.Tangents, fillLength);
                         }
@@ -260,7 +274,8 @@ namespace UniGLTF
                 var indices =
                         (indexBuffer >= 0)
                             ? data.GetIndices(indexBuffer)
-                            : TriangleUtil.FlipTriangle(Enumerable.Range(0, _positions.Count)).ToArray() // without index array
+                            : TriangleUtil.FlipTriangle(Enumerable.Range(0, _positions.Count))
+                                .ToArray() // without index array
                     ;
                 for (var i = 0; i < indices.Length; ++i)
                 {
@@ -287,12 +302,14 @@ namespace UniGLTF
             {
                 //  同じVertexBufferを共有しているので先頭のモノを使う
                 var prim = gltfMesh.primitives.First();
-                _positions.AddRange(data.GetArrayFromAccessor<Vector3>(prim.attributes.POSITION).SelectInplace(inverter.InvertVector3));
+                _positions.AddRange(data.GetArrayFromAccessor<Vector3>(prim.attributes.POSITION)
+                    .SelectInplace(inverter.InvertVector3));
 
                 // normal
                 if (prim.attributes.NORMAL != -1)
                 {
-                    _normals.AddRange(data.GetArrayFromAccessor<Vector3>(prim.attributes.NORMAL).SelectInplace(inverter.InvertVector3));
+                    _normals.AddRange(data.GetArrayFromAccessor<Vector3>(prim.attributes.NORMAL)
+                        .SelectInplace(inverter.InvertVector3));
                 }
 
 #if false
@@ -310,19 +327,22 @@ namespace UniGLTF
                     {
 #pragma warning disable 0612
                         // backward compatibility
-                        _uv.AddRange(data.GetArrayFromAccessor<Vector2>(prim.attributes.TEXCOORD_0).SelectInplace(x => x.ReverseY()));
+                        _uv.AddRange(data.GetArrayFromAccessor<Vector2>(prim.attributes.TEXCOORD_0)
+                            .SelectInplace(x => x.ReverseY()));
 #pragma warning restore 0612
                     }
                     else
                     {
-                        _uv.AddRange(data.GetArrayFromAccessor<Vector2>(prim.attributes.TEXCOORD_0).SelectInplace(x => x.ReverseUV()));
+                        _uv.AddRange(data.GetArrayFromAccessor<Vector2>(prim.attributes.TEXCOORD_0)
+                            .SelectInplace(x => x.ReverseUV()));
                     }
                 }
 
                 // uv2
                 if (prim.attributes.TEXCOORD_1 != -1)
                 {
-                    _uv2.AddRange(data.GetArrayFromAccessor<Vector2>(prim.attributes.TEXCOORD_1).SelectInplace(x => x.ReverseUV()));
+                    _uv2.AddRange(data.GetArrayFromAccessor<Vector2>(prim.attributes.TEXCOORD_1)
+                        .SelectInplace(x => x.ReverseUV()));
                 }
 
                 // color
@@ -398,11 +418,13 @@ namespace UniGLTF
                             blendShape.Positions.Assign(
                                 data.GetArrayFromAccessor<Vector3>(primTarget.POSITION), inverter.InvertVector3);
                         }
+
                         if (primTarget.NORMAL != -1)
                         {
                             blendShape.Normals.Assign(
                                 data.GetArrayFromAccessor<Vector3>(primTarget.NORMAL), inverter.InvertVector3);
                         }
+
                         if (primTarget.TANGENT != -1)
                         {
                             blendShape.Tangents.Assign(
@@ -439,6 +461,7 @@ namespace UniGLTF
                     Debug.LogWarning($"invalid primitive.extras.targetNames length");
                     break;
                 }
+
                 BlendShapes[i].Name = targetNames[i];
             }
         }
@@ -449,6 +472,7 @@ namespace UniGLTF
             {
                 return;
             }
+
             var count = maxIndex + 1;
             if (list.Count > count)
             {
@@ -480,7 +504,7 @@ namespace UniGLTF
             Truncate(_uv2, maxIndex);
             Truncate(_colors, maxIndex);
             Truncate(_boneWeights, maxIndex);
-#if false                
+#if false
                 Truncate(m_tangents, maxIndex);
 #endif
             foreach (var blendshape in _blendShapes)

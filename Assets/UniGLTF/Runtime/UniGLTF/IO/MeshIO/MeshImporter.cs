@@ -25,6 +25,7 @@ namespace UniGLTF
 
                 lastAttributes = prim.attributes;
             }
+
             return sharedAttributes;
         }
 
@@ -79,6 +80,7 @@ namespace UniGLTF
             {
                 mesh.uv = meshContext.UV.ToArray();
             }
+
             if (meshContext.UV2.Count == mesh.vertexCount)
             {
                 mesh.uv2 = meshContext.UV2.ToArray();
@@ -97,10 +99,12 @@ namespace UniGLTF
             {
                 mesh.colors = meshContext.Colors.ToArray();
             }
+
             if (meshContext.BoneWeights.Count > 0)
             {
                 mesh.boneWeights = meshContext.BoneWeights.ToArray();
             }
+
             mesh.subMeshCount = meshContext.SubMeshes.Count;
             for (var i = 0; i < meshContext.SubMeshes.Count; ++i)
             {
@@ -115,7 +119,8 @@ namespace UniGLTF
             return (mesh, recalculateTangents);
         }
 
-        private static async Task BuildBlendShapeAsync(IAwaitCaller awaitCaller, Mesh mesh, BlendShape blendShape, Vector3[] emptyVertices)
+        private static async Task BuildBlendShapeAsync(IAwaitCaller awaitCaller, Mesh mesh, BlendShape blendShape,
+            Vector3[] emptyVertices)
         {
             Vector3[] positions = null;
             Vector3[] normals = null;
@@ -134,11 +139,13 @@ namespace UniGLTF
                         blendShape.Positions.ToArray(),
                         normals.Length == mesh.vertexCount && normals.Length == positions.Length ? normals : null,
                         null
-                        );
+                    );
                 }
                 else
                 {
-                    Debug.LogWarningFormat("May be partial primitive has blendShape. Require separate mesh or extend blend shape, but not implemented: {0}", blendShape.Name);
+                    Debug.LogWarningFormat(
+                        "May be partial primitive has blendShape. Require separate mesh or extend blend shape, but not implemented: {0}",
+                        blendShape.Name);
                 }
             }
             else
@@ -149,12 +156,14 @@ namespace UniGLTF
                     emptyVertices,
                     null,
                     null
-                    );
+                );
             }
+
             Profiler.EndSample();
         }
 
-        public static async Task<MeshWithMaterials> BuildMeshAsync(IAwaitCaller awaitCaller, Func<int, Material> ctx, MeshContext meshContext)
+        public static async Task<MeshWithMaterials> BuildMeshAsync(IAwaitCaller awaitCaller, Func<int, Material> ctx,
+            MeshContext meshContext)
         {
             Profiler.BeginSample("MeshImporter._BuildMesh");
             var (mesh, recalculateTangents) = _BuildMesh(meshContext);
