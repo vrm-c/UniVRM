@@ -11,25 +11,25 @@ namespace UniGLTF
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     internal readonly struct MeshVertex
     {
-        public readonly Vector3 Position;
-        public readonly Vector3 Normal;
-        public readonly Color Color;
-        public readonly Vector2 Uv;
-        public readonly Vector2 Uv2;
-        public readonly float BoneWeight0;
-        public readonly float BoneWeight1;
-        public readonly float BoneWeight2;
-        public readonly float BoneWeight3;
-        public readonly ushort BoneIndex0;
-        public readonly ushort BoneIndex1;
-        public readonly ushort BoneIndex2;
-        public readonly ushort BoneIndex3;
+        private readonly Vector3 _position;
+        private readonly Vector3 _normal;
+        private readonly Color _color;
+        private readonly Vector2 _texcoord0;
+        private readonly Vector2 _texcoord1;
+        private readonly float _boneWeight0;
+        private readonly float _boneWeight1;
+        private readonly float _boneWeight2;
+        private readonly float _boneWeight3;
+        private readonly ushort _boneIndex0;
+        private readonly ushort _boneIndex1;
+        private readonly ushort _boneIndex2;
+        private readonly ushort _boneIndex3;
 
         public MeshVertex(
             Vector3 position,
             Vector3 normal,
-            Vector2 uv,
-            Vector2 uv2,
+            Vector2 texcoord0,
+            Vector2 texcoord1,
             Color color,
             ushort boneIndex0,
             ushort boneIndex1,
@@ -40,19 +40,19 @@ namespace UniGLTF
             float boneWeight2,
             float boneWeight3)
         {
-            Position = position;
-            Normal = normal;
-            Uv = uv;
-            Uv2 = uv2;
-            Color = color;
-            BoneIndex0 = boneIndex0;
-            BoneIndex1 = boneIndex1;
-            BoneIndex2 = boneIndex2;
-            BoneIndex3 = boneIndex3;
-            BoneWeight0 = boneWeight0;
-            BoneWeight1 = boneWeight1;
-            BoneWeight2 = boneWeight2;
-            BoneWeight3 = boneWeight3;
+            _position = position;
+            _normal = normal;
+            _texcoord0 = texcoord0;
+            _texcoord1 = texcoord1;
+            _color = color;
+            _boneIndex0 = boneIndex0;
+            _boneIndex1 = boneIndex1;
+            _boneIndex2 = boneIndex2;
+            _boneIndex3 = boneIndex3;
+            _boneWeight0 = boneWeight0;
+            _boneWeight1 = boneWeight1;
+            _boneWeight2 = boneWeight2;
+            _boneWeight3 = boneWeight3;
         }
 
         public static VertexAttributeDescriptor[] GetVertexAttributeDescriptor() => new[] {
