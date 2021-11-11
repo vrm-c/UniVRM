@@ -29,7 +29,7 @@ namespace UniGLTF
             return sharedAttributes;
         }
 
-        public MeshContext ReadMesh(GltfData data, int meshIndex, IAxisInverter inverter)
+        internal MeshContext ReadMesh(GltfData data, int meshIndex, IAxisInverter inverter)
         {
             var gltfMesh = data.GLTF.meshes[meshIndex];
 
@@ -50,7 +50,7 @@ namespace UniGLTF
             return meshContext;
         }
 
-        private static (Mesh, bool) _BuildMesh(MeshContext meshContext)
+        private static (Mesh, bool) BuildMesh(MeshContext meshContext)
         {
             meshContext.AddDefaultMaterial();
 
@@ -60,50 +60,7 @@ namespace UniGLTF
                 name = meshContext.Name
             };
 
-            if (meshContext.Positions.Count > ushort.MaxValue)
-            {
-                mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
-            }
-
-            mesh.vertices = meshContext.Positions.ToArray();
-            var recalculateNormals = false;
-            if (meshContext.Normals != null && meshContext.Normals.Count > 0)
-            {
-                mesh.normals = meshContext.Normals.ToArray();
-            }
-            else
-            {
-                recalculateNormals = true;
-            }
-
-            if (meshContext.UV.Count == mesh.vertexCount)
-            {
-                mesh.uv = meshContext.UV.ToArray();
-            }
-
-            if (meshContext.UV2.Count == mesh.vertexCount)
-            {
-                mesh.uv2 = meshContext.UV2.ToArray();
-            }
-
-            var recalculateTangents = true;
-#if UNIGLTF_IMPORT_TANGENTS
-            if (meshContext.Tangents.Length > 0)
-            {
-                mesh.tangents = meshContext.Tangents.ToArray();
-                recalculateTangents = false;
-            }
-#endif
-
-            if (meshContext.Colors.Count == mesh.vertexCount)
-            {
-                mesh.colors = meshContext.Colors.ToArray();
-            }
-
-            if (meshContext.BoneWeights.Count > 0)
-            {
-                mesh.boneWeights = meshContext.BoneWeights.ToArray();
-            }
+            meshContext.UploadMeshVertices(mesh);
 
             mesh.subMeshCount = meshContext.SubMeshes.Count;
             for (var i = 0; i < meshContext.SubMeshes.Count; ++i)
@@ -111,12 +68,12 @@ namespace UniGLTF
                 mesh.SetTriangles(meshContext.SubMeshes[i], i);
             }
 
-            if (recalculateNormals)
+            if (!meshContext.HasNormal)
             {
                 mesh.RecalculateNormals();
             }
 
-            return (mesh, recalculateTangents);
+            return (mesh, true);
         }
 
         private static async Task BuildBlendShapeAsync(IAwaitCaller awaitCaller, Mesh mesh, BlendShape blendShape,
@@ -162,11 +119,13 @@ namespace UniGLTF
             Profiler.EndSample();
         }
 
-        public static async Task<MeshWithMaterials> BuildMeshAsync(IAwaitCaller awaitCaller, Func<int, Material> ctx,
+        internal static async Task<MeshWithMaterials> BuildMeshAsync(
+            IAwaitCaller awaitCaller,
+            Func<int, Material> ctx,
             MeshContext meshContext)
         {
             Profiler.BeginSample("MeshImporter._BuildMesh");
-            var (mesh, recalculateTangents) = _BuildMesh(meshContext);
+            var (mesh, recalculateTangents) = BuildMesh(meshContext);
             Profiler.EndSample();
 
             if (recalculateTangents)
