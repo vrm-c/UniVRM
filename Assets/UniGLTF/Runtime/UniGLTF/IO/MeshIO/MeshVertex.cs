@@ -4,6 +4,10 @@ using UnityEngine.Rendering;
 
 namespace UniGLTF
 {
+    /// <summary>
+    /// インターリーブされたメッシュの頂点情報を表す構造体
+    /// そのままGPUにアップロードされる
+    /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public readonly struct MeshVertex
     {
