@@ -10,6 +10,10 @@ namespace UniVRM10
         public static UnityEngine.Mesh LoadDivided(VrmLib.MeshGroup src)
         {
             var dst = new UnityEngine.Mesh();
+            if (src.Meshes.Sum(x => x.IndexBuffer.Count) > ushort.MaxValue)
+            {
+                dst.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
+            }
 
             //
             // vertices
