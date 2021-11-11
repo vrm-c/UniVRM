@@ -14,8 +14,8 @@ namespace UniGLTF
         private readonly Vector3 _position;
         private readonly Vector3 _normal;
         private readonly Color _color;
-        private readonly Vector2 _texcoord0;
-        private readonly Vector2 _texcoord1;
+        private readonly Vector2 _texCoord0;
+        private readonly Vector2 _texCoord1;
         private readonly float _boneWeight0;
         private readonly float _boneWeight1;
         private readonly float _boneWeight2;
@@ -28,8 +28,8 @@ namespace UniGLTF
         public MeshVertex(
             Vector3 position,
             Vector3 normal,
-            Vector2 texcoord0,
-            Vector2 texcoord1,
+            Vector2 texCoord0,
+            Vector2 texCoord1,
             Color color,
             ushort boneIndex0,
             ushort boneIndex1,
@@ -42,8 +42,8 @@ namespace UniGLTF
         {
             _position = position;
             _normal = normal;
-            _texcoord0 = texcoord0;
-            _texcoord1 = texcoord1;
+            _texCoord0 = texCoord0;
+            _texCoord1 = texCoord1;
             _color = color;
             _boneIndex0 = boneIndex0;
             _boneIndex1 = boneIndex1;
