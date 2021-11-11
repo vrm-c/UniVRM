@@ -16,6 +16,10 @@ namespace UniVRM10
         {
             // submesh 方式
             var mesh = new UnityEngine.Mesh();
+            if (src.IndexBuffer.Count > UInt16.MaxValue)
+            {
+                mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
+            }
 
             mesh.vertices = src.VertexBuffer.Positions.GetSpan<Vector3>().ToArray();
             mesh.normals = src.VertexBuffer.Normals?.GetSpan<Vector3>().ToArray();
