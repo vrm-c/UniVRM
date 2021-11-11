@@ -1,22 +1,21 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.Collections;
 using UnityEngine;
+using UnityEngine.Profiling;
+using UnityEngine.Rendering;
 
 namespace UniGLTF
 {
     internal class MeshContext
     {
         private readonly List<MeshVertex> _vertices = new List<MeshVertex>();
-        private readonly List<int[]> _subMeshes = new List<int[]>();
+        private readonly List<int> _indices = new List<int>();
+        private readonly List<SubMeshDescriptor> _subMeshes = new List<SubMeshDescriptor>();
         private readonly List<int> _materialIndices = new List<int>();
         private readonly List<BlendShape> _blendShapes = new List<BlendShape>();
 
-        public IReadOnlyList<int[]> SubMeshes => _subMeshes;
-
         public IReadOnlyList<int> MaterialIndices => _materialIndices;
-
         public IReadOnlyList<BlendShape> BlendShapes => _blendShapes;
 
         public bool HasNormal { get; private set; } = true;
@@ -31,6 +30,20 @@ namespace UniGLTF
         {
             mesh.SetVertexBufferParams(_vertices.Count, MeshVertex.GetVertexAttributeDescriptor());
             mesh.SetVertexBufferData(_vertices, 0, 0, _vertices.Count);
+        }
+        /// <summary>
+        /// インデックス情報をMeshに対して送る
+        /// </summary>
+        /// <param name="mesh"></param>
+        public void UploadMeshIndices(Mesh mesh)
+        {
+            mesh.SetIndexBufferParams(_indices.Count, IndexFormat.UInt32);
+            mesh.SetIndexBufferData(_indices, 0, 0, _indices.Count);
+            mesh.subMeshCount = _subMeshes.Count;
+            for (var i = 0; i < _subMeshes.Count; i++)
+            {
+                mesh.SetSubMesh(i, _subMeshes[i]);
+            }
         }
         
         private BlendShape GetOrCreateBlendShape(int i)
@@ -90,8 +103,8 @@ namespace UniGLTF
         {
             foreach (var primitives in gltfMesh.primitives)
             {
-                var indexOffset = _vertices.Count;
-                var indexBuffer = primitives.indices;
+                var vertexOffset = _vertices.Count;
+                var indexBufferCount = primitives.indices;
 
                 // position は必ずある
                 var positions = primitives.GetPositions(data);
@@ -190,18 +203,19 @@ namespace UniGLTF
                     }
                 }
 
-                var indices =
-                        (indexBuffer >= 0)
-                            ? data.GetIndices(indexBuffer)
-                            : TriangleUtil.FlipTriangle(Enumerable.Range(0, _vertices.Count))
-                                .ToArray() // without index array
-                    ;
-                for (var i = 0; i < indices.Length; ++i)
+                if (indexBufferCount >= 0)
                 {
-                    indices[i] += indexOffset;
+                    var indexOffset = _indices.Count;
+                    var dataIndices = data.GetIndices(indexBufferCount);
+                    _indices.AddRange(dataIndices.Select(index => index + vertexOffset));
+                    _subMeshes.Add(new SubMeshDescriptor(indexOffset, dataIndices.Length));
                 }
-
-                _subMeshes.Add(indices);
+                else
+                {
+                    var indexOffset = _indices.Count;
+                    _indices.AddRange(TriangleUtil.FlipTriangle(Enumerable.Range(0, _vertices.Count)).Select(index => index + vertexOffset));
+                    _subMeshes.Add(new SubMeshDescriptor(indexOffset, _vertices.Count));
+                }
 
                 // material
                 _materialIndices.Add(primitives.material);
@@ -317,12 +331,16 @@ namespace UniGLTF
             {
                 if (primitive.indices == -1)
                 {
-                    _subMeshes.Add(TriangleUtil.FlipTriangle(Enumerable.Range(0, _vertices.Count)).ToArray());
+                    var indexOffset = _indices.Count;
+                    _indices.AddRange(TriangleUtil.FlipTriangle(Enumerable.Range(0, _vertices.Count)));
+                    _subMeshes.Add(new SubMeshDescriptor(indexOffset, _vertices.Count));
                 }
                 else
                 {
+                    var indexOffset = _indices.Count;
                     var indices = data.GetIndices(primitive.indices);
-                    _subMeshes.Add(indices);
+                    _indices.AddRange(indices);
+                    _subMeshes.Add(new SubMeshDescriptor(indexOffset, indices.Length));
                 }
 
                 // material
@@ -369,21 +387,23 @@ namespace UniGLTF
             }
         }
 
-        //
-        // https://github.com/vrm-c/UniVRM/issues/610
-        //
-        // VertexBuffer の後ろに未使用頂点がある場合に削除する
-        //
+        /// <summary>
+        /// https://github.com/vrm-c/UniVRM/issues/610
+        ///
+        /// VertexBuffer の後ろに未使用頂点がある場合に削除する
+        /// </summary>
         public void DropUnusedVertices()
         {
-            var maxIndex = _subMeshes.SelectMany(x => x).Max();
+            Profiler.BeginSample("MeshContext.DropUnusedVertices");
+            var maxIndex = _indices.Max();
             Truncate(_vertices, maxIndex);
-            foreach (var blendshape in _blendShapes)
+            foreach (var blendShape in _blendShapes)
             {
-                Truncate(blendshape.Positions, maxIndex);
-                Truncate(blendshape.Normals, maxIndex);
-                Truncate(blendshape.Tangents, maxIndex);
+                Truncate(blendShape.Positions, maxIndex);
+                Truncate(blendShape.Normals, maxIndex);
+                Truncate(blendShape.Tangents, maxIndex);
             }
+            Profiler.EndSample();
         }
     }
 }

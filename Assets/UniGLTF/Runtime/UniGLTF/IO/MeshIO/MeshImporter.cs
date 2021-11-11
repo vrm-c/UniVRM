@@ -31,6 +31,7 @@ namespace UniGLTF
 
         internal MeshContext ReadMesh(GltfData data, int meshIndex, IAxisInverter inverter)
         {
+            Profiler.BeginSample("ReadMesh");
             var gltfMesh = data.GLTF.meshes[meshIndex];
 
             var meshContext = new MeshContext(gltfMesh.name, meshIndex);
@@ -46,7 +47,8 @@ namespace UniGLTF
             meshContext.RenameBlendShape(gltfMesh);
 
             meshContext.DropUnusedVertices();
-
+            
+            Profiler.EndSample();
             return meshContext;
         }
 
@@ -61,12 +63,7 @@ namespace UniGLTF
             };
 
             meshContext.UploadMeshVertices(mesh);
-
-            mesh.subMeshCount = meshContext.SubMeshes.Count;
-            for (var i = 0; i < meshContext.SubMeshes.Count; ++i)
-            {
-                mesh.SetTriangles(meshContext.SubMeshes[i], i);
-            }
+            meshContext.UploadMeshIndices(mesh);
 
             if (!meshContext.HasNormal)
             {
@@ -124,7 +121,7 @@ namespace UniGLTF
             Func<int, Material> ctx,
             MeshContext meshContext)
         {
-            Profiler.BeginSample("MeshImporter._BuildMesh");
+            Profiler.BeginSample("MeshImporter.BuildMesh");
             var (mesh, recalculateTangents) = BuildMesh(meshContext);
             Profiler.EndSample();
 
