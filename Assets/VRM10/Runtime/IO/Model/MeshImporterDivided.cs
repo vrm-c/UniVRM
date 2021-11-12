@@ -1,15 +1,17 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UniGLTF;
+using Unity.Collections;
+using Unity.Jobs;
 using UnityEngine;
 using UnityEngine.Profiling;
-using Mesh = VrmLib.Mesh;
 
 namespace UniVRM10
 {
     public static class MeshImporterDivided
     {
-        public static UnityEngine.Mesh LoadDivided(VrmLib.MeshGroup src)
+        public static Mesh LoadDivided(VrmLib.MeshGroup src)
         {
             Profiler.BeginSample("MeshImporterDivided.LoadDivided");
             
@@ -19,61 +21,54 @@ namespace UniVRM10
                 dst.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
             }
 
-            //
-            // vertices
-            //
+            // 頂点バッファを構築
             var vertexCount = src.Meshes.Sum(x => x.VertexBuffer.Count);
-            var positions = new List<Vector3>(vertexCount);
-            var normals = new List<Vector3>(vertexCount);
-            var uv = new List<Vector2>(vertexCount);
-            var boneWeights = new List<BoneWeight>(vertexCount);
+            var vertices = new NativeArray<MeshVertex>(vertexCount, Allocator.TempJob);
+
+            var jobDisposables = new List<IDisposable>();
             
+            // JobのSchedule
+            JobHandle jobHandle = default;
+            var indexOffset = 0;
             foreach (var mesh in src.Meshes)
             {
-                positions.AddRange(mesh.VertexBuffer.Positions.GetSpan<Vector3>());
-                normals.AddRange(mesh.VertexBuffer.Normals.GetSpan<Vector3>());
-                uv.AddRange(mesh.VertexBuffer.TexCoords.GetSpan<Vector2>());
-                if (src.Skin == null) continue;
-                var joints = mesh.VertexBuffer.Joints.GetSpan<SkinJoints>();
-                var weights = mesh.VertexBuffer.Weights.GetSpan<Vector4>();
-                for (var i = 0; i < mesh.VertexBuffer.Count; ++i)
-                {
-                    var joint = joints[i];
-                    var weight = weights[i];
-                    boneWeights.Add(new BoneWeight
-                    {
-                        boneIndex0 = joint.Joint0,
-                        boneIndex1 = joint.Joint1,
-                        boneIndex2 = joint.Joint2,
-                        boneIndex3 = joint.Joint3,
-                        weight0 = weight.x,
-                        weight1 = weight.y,
-                        weight2 = weight.z,
-                        weight3 = weight.w,
-                    });
-                }
+                // これらのNativeArrayはJobによって開放される
+                var positions = mesh.VertexBuffer.Positions.AsNativeArray<Vector3>(Allocator.TempJob);
+                var normals = mesh.VertexBuffer.Normals.AsNativeArray<Vector3>(Allocator.TempJob);
+                var texCoords = mesh.VertexBuffer.TexCoords.AsNativeArray<Vector2>(Allocator.TempJob);
+                var weights = src.Skin != null ? mesh.VertexBuffer.Weights.AsNativeArray<Vector4>(Allocator.TempJob) : default;
+                var joints = src.Skin != null ? mesh.VertexBuffer.Joints.AsNativeArray<SkinJoints>(Allocator.TempJob) : default;
+                if (positions.IsCreated) jobDisposables.Add(positions);
+                if (normals.IsCreated) jobDisposables.Add(normals);
+                if (texCoords.IsCreated) jobDisposables.Add(texCoords);
+                if (weights.IsCreated) jobDisposables.Add(weights);
+                if (joints.IsCreated) jobDisposables.Add(joints);
+
+                jobHandle = new InterleaveMeshVerticesJob(vertices, positions, normals, texCoords, default, weights, joints, indexOffset)
+                    .Schedule(mesh.VertexBuffer.Count, 1, jobHandle);
+                indexOffset += mesh.VertexBuffer.Count;
             }
 
-            dst.name = src.Name;
-            dst.vertices = positions.ToArray();
-            dst.normals = normals.ToArray();
-            dst.uv = uv.ToArray();
-            if (src.Skin != null)
-            {
-                dst.boneWeights = boneWeights.ToArray();
-            }
-
-            //
-            // skin
-            //
+            // Jobと並行してBindposeの更新を行う
             if (src.Skin != null)
             {
                 dst.bindposes = src.Skin.InverseMatrices.GetSpan<Matrix4x4>().ToArray();
             }
+            
+            // Jobを完了
+            jobHandle.Complete();
+            
+            foreach (var disposable in jobDisposables)
+            {
+                disposable.Dispose();
+            }
 
-            //
+            MeshVertex.SetVertexBufferParamsToMesh(dst, vertices.Length);
+            dst.SetVertexBufferData(vertices, 0, 0, vertices.Length);
+            
+            vertices.Dispose();
+
             // triangles
-            //
             dst.subMeshCount = src.Meshes.Count;
             var offset = 0;
             for (var meshIndex = 0; meshIndex < src.Meshes.Count; ++meshIndex)
@@ -87,30 +82,30 @@ namespace UniVRM10
             dst.RecalculateBounds();
             dst.RecalculateTangents();
 
-            //
             // blendshape
-            //
             var blendShapeCount = src.Meshes[0].MorphTargets.Count;
+            var blendShapePositions = new List<Vector3>();
+            var blendShapeNormals = new List<Vector3>();
             for (var i = 0; i < blendShapeCount; ++i)
             {
-                positions.Clear();
-                normals.Clear();
+                blendShapePositions.Clear();
+                blendShapeNormals.Clear();
                 var name = src.Meshes[0].MorphTargets[i].Name;
-                for (var meshIndex = 0; meshIndex < src.Meshes.Count; ++meshIndex)
+                foreach (var mesh in src.Meshes)
                 {
-                    var morphTarget = src.Meshes[meshIndex].MorphTargets[i];
-                    positions.AddRange(morphTarget.VertexBuffer.Positions.GetSpan<Vector3>());
+                    var morphTarget = mesh.MorphTargets[i];
+                    blendShapePositions.AddRange(morphTarget.VertexBuffer.Positions.GetSpan<Vector3>());
                     if (morphTarget.VertexBuffer.Normals != null)
                     {
-                        normals.AddRange(morphTarget.VertexBuffer.Normals.GetSpan<Vector3>());
+                        blendShapeNormals.AddRange(morphTarget.VertexBuffer.Normals.GetSpan<Vector3>());
                     }
                     else
                     {
                         // fill zero
-                        normals.AddRange(Enumerable.Range(0, morphTarget.VertexBuffer.Count).Select(x => Vector3.zero));
+                        blendShapeNormals.AddRange(Enumerable.Range(0, morphTarget.VertexBuffer.Count).Select(x => Vector3.zero));
                     }
                 }
-                dst.AddBlendShapeFrame(name, 100.0f, positions.ToArray(), normals.ToArray(), null);
+                dst.AddBlendShapeFrame(name, 100.0f, blendShapePositions.ToArray(), blendShapeNormals.ToArray(), null);
             }
 
             Profiler.EndSample();
