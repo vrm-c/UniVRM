@@ -38,6 +38,7 @@ namespace UniVRM10
                 new InterleaveMeshVerticesJob(vertices, positions, normals, texCoords, colors, weights, joints)
                     .Schedule(vertices.Length, 1);
             
+            // BindPoseを更新
             if (weights.IsCreated && joints.IsCreated)
             {
                 if (weights.Length != positions.Length || joints.Length != positions.Length)
