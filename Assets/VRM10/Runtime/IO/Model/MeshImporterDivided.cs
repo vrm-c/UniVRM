@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using UniGLTF;
 using UnityEngine;
+using UnityEngine.Profiling;
+using Mesh = VrmLib.Mesh;
 
 namespace UniVRM10
 {
@@ -9,6 +11,8 @@ namespace UniVRM10
     {
         public static UnityEngine.Mesh LoadDivided(VrmLib.MeshGroup src)
         {
+            Profiler.BeginSample("MeshImporterDivided.LoadDivided");
+            
             var dst = new UnityEngine.Mesh();
             if (src.Meshes.Sum(x => x.IndexBuffer.Count) > ushort.MaxValue)
             {
@@ -23,32 +27,30 @@ namespace UniVRM10
             var normals = new List<Vector3>(vertexCount);
             var uv = new List<Vector2>(vertexCount);
             var boneWeights = new List<BoneWeight>(vertexCount);
-            for (int meshIndex = 0; meshIndex < src.Meshes.Count; ++meshIndex)
+            
+            foreach (var mesh in src.Meshes)
             {
-                var mesh = src.Meshes[meshIndex];
                 positions.AddRange(mesh.VertexBuffer.Positions.GetSpan<Vector3>());
                 normals.AddRange(mesh.VertexBuffer.Normals.GetSpan<Vector3>());
                 uv.AddRange(mesh.VertexBuffer.TexCoords.GetSpan<Vector2>());
-                if (src.Skin != null)
+                if (src.Skin == null) continue;
+                var joints = mesh.VertexBuffer.Joints.GetSpan<SkinJoints>();
+                var weights = mesh.VertexBuffer.Weights.GetSpan<Vector4>();
+                for (var i = 0; i < mesh.VertexBuffer.Count; ++i)
                 {
-                    var j = mesh.VertexBuffer.Joints.GetSpan<SkinJoints>();
-                    var w = mesh.VertexBuffer.Weights.GetSpan<Vector4>();
-                    for (int i = 0; i < mesh.VertexBuffer.Count; ++i)
+                    var joint = joints[i];
+                    var weight = weights[i];
+                    boneWeights.Add(new BoneWeight
                     {
-                        var jj = j[i];
-                        var ww = w[i];
-                        boneWeights.Add(new BoneWeight
-                        {
-                            boneIndex0 = jj.Joint0,
-                            boneIndex1 = jj.Joint1,
-                            boneIndex2 = jj.Joint2,
-                            boneIndex3 = jj.Joint3,
-                            weight0 = ww.x,
-                            weight1 = ww.y,
-                            weight2 = ww.z,
-                            weight3 = ww.w,
-                        });
-                    }
+                        boneIndex0 = joint.Joint0,
+                        boneIndex1 = joint.Joint1,
+                        boneIndex2 = joint.Joint2,
+                        boneIndex3 = joint.Joint3,
+                        weight0 = weight.x,
+                        weight1 = weight.y,
+                        weight2 = weight.z,
+                        weight3 = weight.w,
+                    });
                 }
             }
 
@@ -74,7 +76,7 @@ namespace UniVRM10
             //
             dst.subMeshCount = src.Meshes.Count;
             var offset = 0;
-            for (int meshIndex = 0; meshIndex < src.Meshes.Count; ++meshIndex)
+            for (var meshIndex = 0; meshIndex < src.Meshes.Count; ++meshIndex)
             {
                 var mesh = src.Meshes[meshIndex];
                 var indices = mesh.IndexBuffer.GetAsIntArray().Select(x => offset + x).ToArray();
@@ -89,12 +91,12 @@ namespace UniVRM10
             // blendshape
             //
             var blendShapeCount = src.Meshes[0].MorphTargets.Count;
-            for (int i = 0; i < blendShapeCount; ++i)
+            for (var i = 0; i < blendShapeCount; ++i)
             {
                 positions.Clear();
                 normals.Clear();
                 var name = src.Meshes[0].MorphTargets[i].Name;
-                for (int meshIndex = 0; meshIndex < src.Meshes.Count; ++meshIndex)
+                for (var meshIndex = 0; meshIndex < src.Meshes.Count; ++meshIndex)
                 {
                     var morphTarget = src.Meshes[meshIndex].MorphTargets[i];
                     positions.AddRange(morphTarget.VertexBuffer.Positions.GetSpan<Vector3>());
@@ -111,6 +113,8 @@ namespace UniVRM10
                 dst.AddBlendShapeFrame(name, 100.0f, positions.ToArray(), normals.ToArray(), null);
             }
 
+            Profiler.EndSample();
+            
             return dst;
         }
     }
