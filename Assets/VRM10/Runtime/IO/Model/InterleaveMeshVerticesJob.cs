@@ -14,14 +14,14 @@ namespace UniVRM10
     /// 渡されたバッファを一つのバッファにインターリーブする
     /// </summary>
 #if ENABLE_VRM10_BURST
-//    [BurstCompile]
+    [BurstCompile]
 #endif
     internal struct InterleaveMeshVerticesJob : IJobParallelFor
     {
         [WriteOnly, NativeDisableParallelForRestriction]
         private NativeArray<MeshVertex> _vertices;
 
-        [ReadOnly, NativeDisableParallelForRestriction]
+        [ReadOnly]
         private readonly NativeArray<Vector3> _positions;
 
         // default値を許容する
