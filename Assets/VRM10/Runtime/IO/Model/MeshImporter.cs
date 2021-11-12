@@ -4,6 +4,9 @@ using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
 using UnityEngine.Profiling;
+using UnityEngine.Rendering;
+using VrmLib;
+using Mesh = UnityEngine.Mesh;
 
 namespace UniVRM10
 {
@@ -19,17 +22,13 @@ namespace UniVRM10
         {
             Profiler.BeginSample("MeshImporter.LoadSharedMesh");
             var mesh = new Mesh();
-            if (src.IndexBuffer.Count > ushort.MaxValue)
-            {
-                mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
-            }
 
-            var positions = src.VertexBuffer.Positions.GetNativeArray<Vector3>(Allocator.TempJob);
-            var normals = src.VertexBuffer.Normals?.GetNativeArray<Vector3>(Allocator.TempJob) ?? default;
-            var texCoords = src.VertexBuffer.TexCoords?.GetNativeArray<Vector2>(Allocator.TempJob) ?? default;
-            var colors = src.VertexBuffer.Colors?.GetNativeArray<Color>(Allocator.TempJob) ?? default;
-            var weights = src.VertexBuffer.Weights?.GetNativeArray<Vector4>(Allocator.TempJob) ?? default;
-            var joints = src.VertexBuffer.Joints?.GetNativeArray<SkinJoints>(Allocator.TempJob) ?? default;
+            var positions = src.VertexBuffer.Positions.GetAsNativeArray<Vector3>(Allocator.TempJob);
+            var normals = src.VertexBuffer.Normals?.GetAsNativeArray<Vector3>(Allocator.TempJob) ?? default;
+            var texCoords = src.VertexBuffer.TexCoords?.GetAsNativeArray<Vector2>(Allocator.TempJob) ?? default;
+            var colors = src.VertexBuffer.Colors?.GetAsNativeArray<Color>(Allocator.TempJob) ?? default;
+            var weights = src.VertexBuffer.Weights?.GetAsNativeArray<Vector4>(Allocator.TempJob) ?? default;
+            var joints = src.VertexBuffer.Joints?.GetAsNativeArray<SkinJoints>(Allocator.TempJob) ?? default;
 
             var vertices = new NativeArray<MeshVertex>(positions.Length, Allocator.TempJob);
             
@@ -69,15 +68,34 @@ namespace UniVRM10
             // 出力のNativeArrayを開放
             vertices.Dispose();
 
-            // submesh 方式
-            mesh.subMeshCount = src.Submeshes.Count;
-            var triangles = src.IndexBuffer.GetAsIntList();
-            for (var i = 0; i < src.Submeshes.Count; ++i)
+            // Indexを更新
+            switch (src.IndexBuffer.ComponentType)
             {
-                var submesh = src.Submeshes[i];
-                mesh.SetTriangles(triangles.GetRange(submesh.Offset, submesh.DrawCount), i);
+                case AccessorValueType.UNSIGNED_SHORT:
+                    var shortIndices = src.IndexBuffer.GetAsNativeArray<short>(Allocator.Temp);
+                    mesh.SetIndexBufferParams(shortIndices.Length, IndexFormat.UInt16);
+                    mesh.SetIndexBufferData(shortIndices, 0, 0, shortIndices.Length);
+                    shortIndices.Dispose();
+                    break;
+                case AccessorValueType.UNSIGNED_INT:
+                    var intIndices = src.IndexBuffer.GetAsNativeArray<int>(Allocator.Temp);
+                    mesh.SetIndexBufferParams(intIndices.Length, IndexFormat.UInt32);
+                    mesh.SetIndexBufferData(intIndices, 0, 0, intIndices.Length);
+                    intIndices.Dispose();
+                    break;
+                default:
+                    throw new NotImplementedException();
             }
 
+            // SubMeshを更新
+            mesh.subMeshCount = src.Submeshes.Count;
+            for (var i = 0; i < src.Submeshes.Count; ++i)
+            {
+                var subMesh = src.Submeshes[i];
+                mesh.SetSubMesh(i, new SubMeshDescriptor(subMesh.Offset, subMesh.DrawCount));
+            }
+
+            // MorphTargetを更新
             foreach (var morphTarget in src.MorphTargets)
             {
                 var morphTargetPositions =
@@ -88,6 +106,7 @@ namespace UniVRM10
                 mesh.AddBlendShapeFrame(morphTarget.Name, 100.0f, morphTargetPositions, null, null);
             }
 
+            // 各種パラメーターを再計算
             mesh.RecalculateBounds();
             mesh.RecalculateTangents();
             
