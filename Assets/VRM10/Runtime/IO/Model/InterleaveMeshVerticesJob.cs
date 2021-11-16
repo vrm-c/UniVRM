@@ -42,12 +42,12 @@ namespace UniVRM10
 
         public InterleaveMeshVerticesJob(
             NativeSlice<MeshVertex> vertices,
-            NativeArray<Vector3> positions,
-            NativeArray<Vector3> normals = default,
-            NativeArray<Vector2> texCoords = default,
-            NativeArray<Color> colors = default,
-            NativeArray<Vector4> weights = default,
-            NativeArray<SkinJoints> joints = default)
+            NativeSlice<Vector3> positions,
+            NativeSlice<Vector3> normals = default,
+            NativeSlice<Vector2> texCoords = default,
+            NativeSlice<Color> colors = default,
+            NativeSlice<Vector4> weights = default,
+            NativeSlice<SkinJoints> joints = default)
         {
             _vertices = vertices;
             _positions = positions;
