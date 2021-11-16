@@ -11,7 +11,7 @@ using Unity.Burst;
 namespace UniVRM10
 {
     /// <summary>
-    /// 渡されたバッファを一つのバッファにインターリーブする
+    /// 渡されたバッファを一つのバッファにインターリーブするJob
     /// </summary>
 #if ENABLE_VRM10_BURST
     [BurstCompile]
