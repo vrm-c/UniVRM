@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -8,7 +9,7 @@ namespace UniGLTF
     /// インターリーブされたメッシュの頂点情報を表す構造体
     /// そのままGPUにアップロードされる
     /// </summary>
-    [StructLayout(LayoutKind.Sequential)]
+    [Serializable, StructLayout(LayoutKind.Sequential)]
     internal readonly struct MeshVertex
     {
         private readonly Vector3 _position;
