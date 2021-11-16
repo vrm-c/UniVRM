@@ -119,6 +119,17 @@ namespace VrmLib
             }
         }
 
+        /// <summary>
+        /// バッファをNativeSliceへと書き込む
+        /// </summary>
+        public unsafe void CopyToNativeSlice<T>(NativeSlice<T> destArray) where T : unmanaged
+        {
+            fixed (byte* byteArray = Bytes.Array)
+            {
+                UnsafeUtility.MemCpy((T*)destArray.GetUnsafePtr(), byteArray + Bytes.Offset, Bytes.Count);
+            }
+        }
+
         public void Assign<T>(T[] values) where T : struct
         {
             if (Marshal.SizeOf(typeof(T)) != Stride)

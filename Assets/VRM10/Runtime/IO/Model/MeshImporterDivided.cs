@@ -40,43 +40,58 @@ namespace UniVRM10
             }
 
             // 各種データを再構築
-            Profiler.BeginSample("Bounds");
             resultMesh.RecalculateBounds();
-            Profiler.EndSample();
-            Profiler.BeginSample("Tangents");
             resultMesh.RecalculateTangents();
-            Profiler.EndSample();
 
             // BlendShapeを更新
-            Profiler.BeginSample("BlendShape");
             var blendShapeCount = meshGroup.Meshes[0].MorphTargets.Count;
-            var blendShapePositions = new List<Vector3>();
-            var blendShapeNormals = new List<Vector3>();
+
             for (var i = 0; i < blendShapeCount; ++i)
             {
-                blendShapePositions.Clear();
-                blendShapeNormals.Clear();
-                var name = meshGroup.Meshes[0].MorphTargets[i].Name;
+                var positionsCount = 0;
+                var normalsCount = 0;
                 foreach (var mesh in meshGroup.Meshes)
                 {
                     var morphTarget = mesh.MorphTargets[i];
-                    blendShapePositions.AddRange(morphTarget.VertexBuffer.Positions.GetSpan<Vector3>());
-                    if (morphTarget.VertexBuffer.Normals != null)
-                    {
-                        blendShapeNormals.AddRange(morphTarget.VertexBuffer.Normals.GetSpan<Vector3>());
-                    }
-                    else
-                    {
-                        // fill zero
-                        blendShapeNormals.AddRange(Enumerable.Range(0, morphTarget.VertexBuffer.Count)
-                            .Select(x => Vector3.zero));
-                    }
+                    positionsCount += morphTarget.VertexBuffer.Positions.Count;
+                    normalsCount += morphTarget.VertexBuffer.Normals?.Count ?? morphTarget.VertexBuffer.Count;
                 }
 
-                resultMesh.AddBlendShapeFrame(name, 100.0f, blendShapePositions.ToArray(), blendShapeNormals.ToArray(),
+                var blendShapePositions = new NativeArray<Vector3>(positionsCount, Allocator.Temp);
+                var blendShapeNormals = new NativeArray<Vector3>(normalsCount, Allocator.Temp);
+
+                var blendShapePositionOffset = 0;
+                var blendShapeNormalOffset = 0;
+                foreach (var mesh in meshGroup.Meshes)
+                {
+                    var morphTarget = mesh.MorphTargets[i];
+                    morphTarget.VertexBuffer.Positions.CopyToNativeSlice(
+                        new NativeSlice<Vector3>(
+                            blendShapePositions,
+                            blendShapePositionOffset,
+                            morphTarget.VertexBuffer.Positions.Count
+                        )
+                    );
+
+                    // nullならdefault(0)のまま
+                    morphTarget.VertexBuffer.Normals?.CopyToNativeSlice(
+                        new NativeSlice<Vector3>(
+                            blendShapeNormals,
+                            blendShapeNormalOffset,
+                            morphTarget.VertexBuffer.Normals.Count
+                        )
+                    );
+
+                    blendShapePositionOffset += morphTarget.VertexBuffer.Positions.Count;
+                    blendShapeNormalOffset += morphTarget.VertexBuffer.Normals?.Count ?? morphTarget.VertexBuffer.Count;
+                }
+
+                resultMesh.AddBlendShapeFrame(meshGroup.Meshes[0].MorphTargets[i].Name,
+                    100.0f,
+                    blendShapePositions.ToArray(),
+                    blendShapeNormals.ToArray(),
                     null);
             }
-            Profiler.EndSample();
 
             Profiler.EndSample();
 
