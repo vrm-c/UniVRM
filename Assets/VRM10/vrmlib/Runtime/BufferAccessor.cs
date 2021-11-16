@@ -109,13 +109,8 @@ namespace VrmLib
         /// バッファをNativeArrayに変換して返す
         /// 開放の責務は使い手側にある点に注意
         /// </summary>
-        public unsafe NativeArray<T> AsNativeArray<T>(Allocator allocator, bool checkStride = true) where T : struct
+        public unsafe NativeArray<T> AsNativeArray<T>(Allocator allocator) where T : struct
         {
-            if (checkStride && Marshal.SizeOf(typeof(T)) != Stride)
-            {
-                throw new Exception("different sizeof(T) with stride");
-            }
-
             fixed (byte* byteArray = Bytes.Array)
             {
                 var nativeArray = new NativeArray<T>(Bytes.Count / Marshal.SizeOf<T>(), allocator);

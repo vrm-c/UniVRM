@@ -23,7 +23,6 @@ namespace UniVRM10
             Profiler.BeginSample("MeshImporter.LoadSharedMesh");
             var mesh = new Mesh();
 
-            // これらのNativeArrayはJobによって開放される
             var positions = src.VertexBuffer.Positions.AsNativeArray<Vector3>(Allocator.TempJob);
             var normals = src.VertexBuffer.Normals?.AsNativeArray<Vector3>(Allocator.TempJob) ?? default;
             var texCoords = src.VertexBuffer.TexCoords?.AsNativeArray<Vector2>(Allocator.TempJob) ?? default;
@@ -37,6 +36,7 @@ namespace UniVRM10
             var jobHandle =
                 new InterleaveMeshVerticesJob(vertices, positions, normals, texCoords, colors, weights, joints)
                     .Schedule(vertices.Length, 1);
+            JobHandle.ScheduleBatchedJobs();
             
             // BindPoseを更新
             if (weights.IsCreated && joints.IsCreated)
@@ -73,13 +73,13 @@ namespace UniVRM10
             switch (src.IndexBuffer.ComponentType)
             {
                 case AccessorValueType.UNSIGNED_SHORT:
-                    var shortIndices = src.IndexBuffer.AsNativeArray<short>(Allocator.Temp);
+                    var shortIndices = src.IndexBuffer.AsNativeArray<ushort>(Allocator.Temp);
                     mesh.SetIndexBufferParams(shortIndices.Length, IndexFormat.UInt16);
                     mesh.SetIndexBufferData(shortIndices, 0, 0, shortIndices.Length);
                     shortIndices.Dispose();
                     break;
                 case AccessorValueType.UNSIGNED_INT:
-                    var intIndices = src.IndexBuffer.AsNativeArray<int>(Allocator.Temp);
+                    var intIndices = src.IndexBuffer.AsNativeArray<uint>(Allocator.Temp);
                     mesh.SetIndexBufferParams(intIndices.Length, IndexFormat.UInt32);
                     mesh.SetIndexBufferData(intIndices, 0, 0, intIndices.Length);
                     intIndices.Dispose();
