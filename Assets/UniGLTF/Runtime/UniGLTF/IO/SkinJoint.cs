@@ -2,6 +2,7 @@ using System;
 
 namespace UniGLTF
 {
+    [Serializable]
     public struct SkinJoints : IEquatable<SkinJoints>
     {
         public ushort Joint0;
