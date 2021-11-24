@@ -192,11 +192,11 @@ namespace UniVRM10
                         //EditorGUI.indentLevel += 1;
                         for (int i = 0; i < mesh.blendShapeCount; ++i)
                         {
-                            var src = renderer.GetBlendShapeWeight(i);
-                            var dst = EditorGUILayout.Slider(mesh.GetBlendShapeName(i), src, 0, 100.0f);
+                            var src = renderer.GetBlendShapeWeight(i) * 0.01f;
+                            var dst = EditorGUILayout.Slider(mesh.GetBlendShapeName(i), src, 0, 1.0f);
                             if (dst != src)
                             {
-                                renderer.SetBlendShapeWeight(i, dst);
+                                renderer.SetBlendShapeWeight(i, dst * 100.0f);
                                 changed = true;
                             }
                         }
@@ -236,7 +236,7 @@ namespace UniVRM10
                             maxWeightName = name;
                             maxWeight = weight;
                         }
-                        list.Add(new MorphTargetBinding(relativePath, i, weight));
+                        list.Add(new MorphTargetBinding(relativePath, i, weight * 0.01f));
                     }
                 }
                 return list;
