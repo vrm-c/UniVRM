@@ -59,8 +59,13 @@ namespace UniVRM10
                             {
                                 m_morphTargetSetterMap.Add(binding, x =>
                                 {
+                                    if (target == null)
+                                    {
+                                        // recompile in editor ?
+                                        return;
+                                    }
                                     // VRM-1.0 weight is 0-1
-                                    target.SetBlendShapeWeight(binding.Index, x * 100.0f);
+                                    target.SetBlendShapeWeight(binding.Index, x * MorphTargetBinding.VRM_TO_UNITY);
                                 });
                             }
                             else

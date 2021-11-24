@@ -7,6 +7,18 @@ namespace UniVRM10
     public struct MorphTargetBinding : IEquatable<MorphTargetBinding>
     {
         /// <summary>
+        /// Unity の BlendShape の値域は 0-100
+        /// </summary>
+        public const float VRM_TO_UNITY = 100.0f;
+
+        /// <summary>
+        /// VRM-1.0 の MorphTargetBinding.Weight の値域は 0-1.0
+        /// </summary>
+        public const float UNITY_TO_VRM = 0.01f;
+
+        public const float MAX_WEIGHT = 1.0f;
+
+        /// <summary>
         /// SkinnedMeshRenderer.BlendShape[Index].Weight を 指し示す。
         /// 
         /// [トレードオフ]

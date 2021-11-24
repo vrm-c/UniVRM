@@ -79,7 +79,7 @@ namespace UniVRM10
                     {
                         if (x.Index >= 0 && x.Index < SkinnedMeshRenderer.sharedMesh.blendShapeCount)
                         {
-                            SkinnedMeshRenderer.SetBlendShapeWeight(x.Index, x.Weight * weight * 100.0f);
+                            SkinnedMeshRenderer.SetBlendShapeWeight(x.Index, x.Weight * weight * MorphTargetBinding.VRM_TO_UNITY);
                         }
                         else
                         {
