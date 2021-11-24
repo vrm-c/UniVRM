@@ -45,9 +45,9 @@ namespace UniVRM10
         {
             RelativePath = path;
             Index = index;
-            if (weight > 1.0f)
+            if (weight > MAX_WEIGHT)
             {
-                Debug.LogWarning($"weight exceed 1.0");
+                Debug.LogWarning($"MorphTargetBinding: {weight} > {MAX_WEIGHT}");
             }
             Weight = weight;
         }
