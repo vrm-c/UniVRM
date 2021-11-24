@@ -13,8 +13,7 @@ namespace UniVRM10
             var node = loader.Nodes[libNode].transform;
             var mesh = loader.Meshes[libNode.MeshGroup];
             var relativePath = node.RelativePathFrom(root.transform);
-            // VRM-1.0 では値域は [0-1.0f]
-            return new UniVRM10.MorphTargetBinding(relativePath, bind.Index.Value, bind.Weight.Value * 100.0f);
+            return new UniVRM10.MorphTargetBinding(relativePath, bind.Index.Value, bind.Weight.Value);
         }
 
         public static UniVRM10.MaterialColorBinding? Build10(this MaterialColorBind bind, IReadOnlyList<VRMShaders.MaterialFactory.MaterialLoadInfo> materials)

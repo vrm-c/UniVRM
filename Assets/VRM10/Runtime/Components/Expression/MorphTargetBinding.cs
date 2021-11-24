@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace UniVRM10
 {
@@ -27,11 +28,15 @@ namespace UniVRM10
         /// </summary>
         /// <param name="path"></param>
         /// <param name="index"></param>
-        /// <param name="weight">0 to 100</param>
+        /// <param name="weight">0 to 1.0</param>
         public MorphTargetBinding(string path, int index, float weight)
         {
             RelativePath = path;
             Index = index;
+            if (weight > 1.0f)
+            {
+                Debug.LogWarning($"weight exceed 1.0");
+            }
             Weight = weight;
         }
 
