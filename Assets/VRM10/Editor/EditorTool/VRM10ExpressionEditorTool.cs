@@ -47,7 +47,7 @@ namespace UniVRM10
 
         public override void OnToolGUI(EditorWindow window)
         {
-            var root = Selection.activeTransform.GetComponent<Vrm10Instance>();
+            var root = Selection.activeTransform?.GetComponent<Vrm10Instance>();
             if (root == null)
             {
                 return;
