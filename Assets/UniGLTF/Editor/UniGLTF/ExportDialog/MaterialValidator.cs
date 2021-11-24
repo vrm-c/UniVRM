@@ -43,16 +43,14 @@ namespace UniGLTF
             // main color
             yield return (MaterialExporter.COLOR_TEXTURE_PROP, m.GetTexture(MaterialExporter.COLOR_TEXTURE_PROP));
 
-            if (GetGltfMaterialTypeFromUnityShaderName(m.shader.name) == "unlit")
+            if (GetGltfMaterialTypeFromUnityShaderName(m.shader.name) == "Standard")
             {
-                yield break;
+                // PBR
+                yield return (MaterialExporter.METALLIC_TEX_PROP, m.GetTexture(MaterialExporter.METALLIC_TEX_PROP));
+                yield return (MaterialExporter.NORMAL_TEX_PROP, m.GetTexture(MaterialExporter.NORMAL_TEX_PROP));
+                yield return (MaterialExporter.EMISSION_TEX_PROP, m.GetTexture(MaterialExporter.EMISSION_TEX_PROP));
+                yield return (MaterialExporter.OCCLUSION_TEX_PROP, m.GetTexture(MaterialExporter.OCCLUSION_TEX_PROP));
             }
-
-            // PBR
-            yield return (MaterialExporter.METALLIC_TEX_PROP, m.GetTexture(MaterialExporter.METALLIC_TEX_PROP));
-            yield return (MaterialExporter.NORMAL_TEX_PROP, m.GetTexture(MaterialExporter.NORMAL_TEX_PROP));
-            yield return (MaterialExporter.EMISSION_TEX_PROP, m.GetTexture(MaterialExporter.EMISSION_TEX_PROP));
-            yield return (MaterialExporter.OCCLUSION_TEX_PROP, m.GetTexture(MaterialExporter.OCCLUSION_TEX_PROP));
         }
     }
 }
