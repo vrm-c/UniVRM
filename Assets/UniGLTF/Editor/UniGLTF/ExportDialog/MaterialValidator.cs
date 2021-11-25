@@ -49,10 +49,22 @@ namespace UniGLTF
             }
 
             // PBR
-            yield return (MaterialExporter.METALLIC_TEX_PROP, m.GetTexture(MaterialExporter.METALLIC_TEX_PROP));
-            yield return (MaterialExporter.NORMAL_TEX_PROP, m.GetTexture(MaterialExporter.NORMAL_TEX_PROP));
-            yield return (MaterialExporter.EMISSION_TEX_PROP, m.GetTexture(MaterialExporter.EMISSION_TEX_PROP));
-            yield return (MaterialExporter.OCCLUSION_TEX_PROP, m.GetTexture(MaterialExporter.OCCLUSION_TEX_PROP));
+            if (m.HasProperty(MaterialExporter.METALLIC_TEX_PROP))
+            {
+                yield return (MaterialExporter.METALLIC_TEX_PROP, m.GetTexture(MaterialExporter.METALLIC_TEX_PROP));
+            }
+            if (m.HasProperty(MaterialExporter.NORMAL_TEX_PROP))
+            {
+                yield return (MaterialExporter.NORMAL_TEX_PROP, m.GetTexture(MaterialExporter.NORMAL_TEX_PROP));
+            }
+            if (m.HasProperty(MaterialExporter.EMISSION_TEX_PROP))
+            {
+                yield return (MaterialExporter.EMISSION_TEX_PROP, m.GetTexture(MaterialExporter.EMISSION_TEX_PROP));
+            }
+            if (m.HasProperty(MaterialExporter.OCCLUSION_TEX_PROP))
+            {
+                yield return (MaterialExporter.OCCLUSION_TEX_PROP, m.GetTexture(MaterialExporter.OCCLUSION_TEX_PROP));
+            }
         }
     }
 }
