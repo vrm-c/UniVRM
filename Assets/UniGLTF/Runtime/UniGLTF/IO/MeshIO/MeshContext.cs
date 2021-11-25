@@ -142,7 +142,7 @@ namespace UniGLTF
                     var joints = jointsGetter?.Invoke(i) ?? (0, 0, 0, 0);
                     var weights = weightsGetter != null ? NormalizeBoneWeight(weightsGetter(i)) : (0, 0, 0, 0);
 
-                    var color = colors[i];
+                    var color = colors != null ? colors[i] : Color.black;
                     _vertices.Add(
                         new MeshVertex(
                             position,
