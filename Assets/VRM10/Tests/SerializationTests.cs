@@ -210,9 +210,14 @@ namespace UniVRM10
             {
                 var data = new UniGLTF.Extensions.VRMC_vrm.Expression();
                 data.OverrideBlink = UniGLTF.Extensions.VRMC_vrm.ExpressionOverrideType.block;
+                data.MorphTargetBinds = new List<UniGLTF.Extensions.VRMC_vrm.MorphTargetBind>{
+                    new UniGLTF.Extensions.VRMC_vrm.MorphTargetBind{
+                        Weight=1.0f
+                    }
+                };
 
                 var json = Serialize(data, UniGLTF.Extensions.VRMC_vrm.GltfSerializer.__expressions_Serialize_Custom_ITEM);
-                Assert.AreEqual($"{{{q}overrideBlink{q}:{q}block{q},{q}overrideLookAt{q}:{q}none{q},{q}overrideMouth{q}:{q}none{q}}}", json);
+                Assert.AreEqual($"{{{q}morphTargetBinds{q}:[{{{q}weight{q}:1}}],{q}overrideBlink{q}:{q}block{q},{q}overrideLookAt{q}:{q}none{q},{q}overrideMouth{q}:{q}none{q}}}", json);
             }
 
             {

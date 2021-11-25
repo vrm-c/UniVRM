@@ -57,7 +57,7 @@ namespace UniVRM10
 
                 y += height;
                 rect = new Rect(position.x, y, position.width, height);
-                if (ExpressionEditorHelper.FloatSlider(rect, property.FindPropertyRelative(nameof(MorphTargetBinding.Weight)), 100))
+                if (ExpressionEditorHelper.FloatSlider(rect, property.FindPropertyRelative(nameof(MorphTargetBinding.Weight)), MorphTargetBinding.MAX_WEIGHT))
                 {
                     changed = true;
                 }

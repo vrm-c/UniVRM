@@ -192,11 +192,11 @@ namespace UniVRM10
                         //EditorGUI.indentLevel += 1;
                         for (int i = 0; i < mesh.blendShapeCount; ++i)
                         {
-                            var src = renderer.GetBlendShapeWeight(i);
-                            var dst = EditorGUILayout.Slider(mesh.GetBlendShapeName(i), src, 0, 100.0f);
+                            var src = renderer.GetBlendShapeWeight(i) * MorphTargetBinding.UNITY_TO_VRM;
+                            var dst = EditorGUILayout.Slider(mesh.GetBlendShapeName(i), src, 0, MorphTargetBinding.MAX_WEIGHT);
                             if (dst != src)
                             {
-                                renderer.SetBlendShapeWeight(i, dst);
+                                renderer.SetBlendShapeWeight(i, dst * MorphTargetBinding.VRM_TO_UNITY);
                                 changed = true;
                             }
                         }
@@ -210,7 +210,7 @@ namespace UniVRM10
 
         MorphTargetBinding[] GetBindings(out string _maxWeightName)
         {
-            var maxWeight = 0.0f;
+            var maxUnityWeight = 0.0f;
             var maxWeightName = "";
             // weightのついたblendShapeを集める
             var values = m_items
@@ -225,18 +225,18 @@ namespace UniVRM10
                 {
                     for (int i = 0; i < mesh.blendShapeCount; ++i)
                     {
-                        var weight = x.SkinnedMeshRenderer.GetBlendShapeWeight(i);
-                        if (weight == 0)
+                        var unityWeight = x.SkinnedMeshRenderer.GetBlendShapeWeight(i);
+                        if (unityWeight == 0)
                         {
                             continue;
                         }
                         var name = mesh.GetBlendShapeName(i);
-                        if (weight > maxWeight)
+                        if (unityWeight > maxUnityWeight)
                         {
                             maxWeightName = name;
-                            maxWeight = weight;
+                            maxUnityWeight = unityWeight;
                         }
-                        list.Add(new MorphTargetBinding(relativePath, i, weight));
+                        list.Add(new MorphTargetBinding(relativePath, i, unityWeight * MorphTargetBinding.UNITY_TO_VRM));
                     }
                 }
                 return list;

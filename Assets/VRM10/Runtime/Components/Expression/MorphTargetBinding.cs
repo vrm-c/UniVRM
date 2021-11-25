@@ -1,10 +1,23 @@
 using System;
+using UnityEngine;
 
 namespace UniVRM10
 {
     [Serializable]
     public struct MorphTargetBinding : IEquatable<MorphTargetBinding>
     {
+        /// <summary>
+        /// Unity の BlendShape の値域は 0-100
+        /// </summary>
+        public const float VRM_TO_UNITY = 100.0f;
+
+        /// <summary>
+        /// VRM-1.0 の MorphTargetBinding.Weight の値域は 0-1.0
+        /// </summary>
+        public const float UNITY_TO_VRM = 0.01f;
+
+        public const float MAX_WEIGHT = 1.0f;
+
         /// <summary>
         /// SkinnedMeshRenderer.BlendShape[Index].Weight を 指し示す。
         /// 
@@ -27,11 +40,15 @@ namespace UniVRM10
         /// </summary>
         /// <param name="path"></param>
         /// <param name="index"></param>
-        /// <param name="weight">0 to 100</param>
+        /// <param name="weight">0 to 1.0</param>
         public MorphTargetBinding(string path, int index, float weight)
         {
             RelativePath = path;
             Index = index;
+            if (weight > MAX_WEIGHT)
+            {
+                Debug.LogWarning($"MorphTargetBinding: {weight} > {MAX_WEIGHT}");
+            }
             Weight = weight;
         }
 
