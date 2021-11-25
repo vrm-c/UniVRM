@@ -1,6 +1,9 @@
 #
 # Release 時のドキュメントを作成するスクリプト
 #
+# required
+#   pip install GitPython pyperclip
+#
 # 1. github release page の markdown => clipboard
 # 2. changelog => docs/release/079/v0.XX.Y.md
 # 3. download button => docs/index.html
