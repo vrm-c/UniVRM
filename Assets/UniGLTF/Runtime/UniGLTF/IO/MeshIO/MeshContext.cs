@@ -45,7 +45,7 @@ namespace UniGLTF
                 mesh.SetSubMesh(i, _subMeshes[i]);
             }
         }
-        
+
         private BlendShape GetOrCreateBlendShape(int i)
         {
             if (i < _blendShapes.Count && _blendShapes[i] != null)
@@ -93,7 +93,7 @@ namespace UniGLTF
         /// <summary>
         /// 各 primitive の attribute の要素が同じでない。=> uv が有るものと無いものが混在するなど
         /// glTF 的にはありうる。
-        /// 
+        ///
         /// primitive を独立した(Independent) Mesh として扱いこれを連結する。
         /// </summary>
         /// <param name="ctx"></param>
@@ -232,7 +232,7 @@ namespace UniGLTF
         }
 
         /// <summary>
-        /// 
+        ///
         /// 各primitiveが同じ attribute を共有している場合専用のローダー。
         ///
         /// </summary>

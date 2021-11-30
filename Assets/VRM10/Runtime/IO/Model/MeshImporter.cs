@@ -31,13 +31,13 @@ namespace UniVRM10
             var joints = src.VertexBuffer.Joints?.AsNativeArray<SkinJoints>(Allocator.TempJob) ?? default;
 
             var vertices = new NativeArray<MeshVertex>(positions.Length, Allocator.TempJob);
-            
+
             // JobとBindPoseの更新を並行して行う
             var jobHandle =
                 new InterleaveMeshVerticesJob(vertices, positions, normals, texCoords, colors, weights, joints)
                     .Schedule(vertices.Length, 1);
             JobHandle.ScheduleBatchedJobs();
-            
+
             // BindPoseを更新
             if (weights.IsCreated && joints.IsCreated)
             {
@@ -53,7 +53,7 @@ namespace UniVRM10
 
             // Jobを完了
             jobHandle.Complete();
-            
+
             // 入力のNativeArrayを開放
             positions.Dispose();
             if (normals.IsCreated) normals.Dispose();
@@ -110,7 +110,7 @@ namespace UniVRM10
             // 各種パラメーターを再計算
             mesh.RecalculateBounds();
             mesh.RecalculateTangents();
-            
+
             Profiler.EndSample();
 
             return mesh;

@@ -47,7 +47,7 @@ namespace UniGLTF
             meshContext.RenameBlendShape(gltfMesh);
 
             meshContext.DropUnusedVertices();
-            
+
             Profiler.EndSample();
             return meshContext;
         }
@@ -64,6 +64,9 @@ namespace UniGLTF
 
             meshContext.UploadMeshVertices(mesh);
             meshContext.UploadMeshIndices(mesh);
+
+            // NOTE: mesh.vertices では自動的に行われていたが、SetVertexBuffer では行われないため、明示的に呼び出す.
+            mesh.RecalculateBounds();
 
             if (!meshContext.HasNormal)
             {
