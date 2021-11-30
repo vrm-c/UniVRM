@@ -65,7 +65,6 @@ namespace UniVRM10
             // 頂点を更新
             MeshVertex.SetVertexBufferParamsToMesh(mesh, vertices.Length);
             mesh.SetVertexBufferData(vertices, 0, 0, vertices.Length);
-            mesh.RecalculateBounds();
 
             // 出力のNativeArrayを開放
             vertices.Dispose();

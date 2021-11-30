@@ -276,7 +276,6 @@ namespace UniVRM10
             // VertexBufferを設定
             MeshVertex.SetVertexBufferParamsToMesh(resultMesh, vertices.Length);
             resultMesh.SetVertexBufferData(vertices, 0, 0, vertices.Length);
-            resultMesh.RecalculateBounds();
 
             // 各種バッファを破棄
             foreach (var disposable in disposables)
