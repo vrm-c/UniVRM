@@ -30,9 +30,6 @@ namespace UniGLTF
         {
             mesh.SetVertexBufferParams(_vertices.Count, MeshVertex.GetVertexAttributeDescriptor());
             mesh.SetVertexBufferData(_vertices, 0, 0, _vertices.Count);
-
-            // NOTE: mesh.vertices では自動的に行われていたが、SetVertexBuffer では行われないため、明示的に呼び出す.
-            mesh.RecalculateBounds();
         }
         /// <summary>
         /// インデックス情報をMeshに対して送る
