@@ -138,4 +138,14 @@ inline bool MToon_IsOutlineModeDisabled()
 #endif
 }
 
+// Compile-time constant
+inline bool MToon_UseStrictMode()
+{
+ #if defined(_MTOON_USE_STRICT_MODE)
+    return true;
+#else
+    return false;
+#endif
+}
+
 #endif

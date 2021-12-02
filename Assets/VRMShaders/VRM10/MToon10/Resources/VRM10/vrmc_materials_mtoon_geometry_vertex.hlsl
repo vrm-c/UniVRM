@@ -24,6 +24,26 @@ inline half MToon_GetOutlineVertex_OutlineWidth(const float2 uv)
     }
 }
 
+inline float MToon_GetOutlineVertex_ScreenCoordinatesWidthMultiplier(const float4 positionCS)
+{
+    // NOTE: VRM 1.0 の仕様にはない実装なので、ユーザが任意で機能を外せるようにする.
+    if (MToon_UseStrictMode())
+    {
+        return 1.0f;
+    }
+    else
+    {
+        const float maxViewFrustumPlaneHeight = 2.0f;
+        const float invTangentHalfVerticalFov = unity_CameraProjection[1][1];
+        // NOTE: viewFrustumPlaneHeight = tan(halfFov) * viewDirDistance * 2.0
+        //           -> viewDirDistance = viewFrustumPlaneHeight / (tan(halfFov) * 2.0)
+        const float widthScaledMaxDistance = maxViewFrustumPlaneHeight * invTangentHalfVerticalFov * 0.5f;
+        // NOTE: VR などの高視野角カメラでは、純粋な実装では太くなりすぎる.
+        //       よってある距離での視錐台平面が高さ 2m 以上になったらスケールをやめる.
+        return min(positionCS.w, widthScaledMaxDistance);
+    }
+}
+
 inline VertexPositionInfo MToon_GetOutlineVertex(const float3 positionOS, const half3 normalOS, const float2 uv)
 {
     if (MToon_IsOutlineModeWorldCoordinates())
@@ -45,30 +65,20 @@ inline VertexPositionInfo MToon_GetOutlineVertex(const float3 positionOS, const 
         const float4 nearUpperRight = mul(unity_CameraInvProjection, float4(1, 1, UNITY_NEAR_CLIP_VALUE, _ProjectionParams.y));
         const half aspect = abs(nearUpperRight.y / nearUpperRight.x);
 
-        float4 positionCS = UnityObjectToClipPos(positionOS);
+        const float4 positionCS = UnityObjectToClipPos(positionOS);
         const half3 normalVS = MToon_GetObjectToViewNormal(normalOS);
         const half3 normalCS = TransformViewToProjection(normalVS.xyz);
 
-        const float maxViewFrustumPlaneHeight = 2.0f;
-        const float invTangentHalfVerticalFov = unity_CameraProjection[1][1];
-        // NOTE: viewFrustumPlaneHeight = tan(halfFov) * viewDirDistance * 2.0
-        //           -> viewDirDistance = viewFrustumPlaneHeight / (tan(halfFov) * 2.0)
-        const float widthScaledMaxMeter = maxViewFrustumPlaneHeight * invTangentHalfVerticalFov * 0.5f;
-        // NOTE: VR などの高視野角カメラでは、純粋な実装では太くなりすぎる.
-        //       よってある距離での視錐台平面が高さ 2m 以上になったらスケールをやめる.
-        const half outlineWidthMultiplier = outlineWidth * min(positionCS.w, widthScaledMaxMeter);
-
         half2 normalProjectedCS = normalize(normalCS.xy);
         const float clipSpaceHeight = 2.0f;
-        normalProjectedCS *= clipSpaceHeight * outlineWidthMultiplier;
+        normalProjectedCS *= clipSpaceHeight * outlineWidth * MToon_GetOutlineVertex_ScreenCoordinatesWidthMultiplier(positionCS);
         normalProjectedCS.x *= aspect;
         // NOTE: カメラ方向軸を向く法線を持つ頂点が XY 方向にだけずれると困るので、それを抑制する.
         normalProjectedCS.xy *= saturate(1 - normalVS.z * normalVS.z);
-        positionCS.xy += normalProjectedCS.xy;
 
         VertexPositionInfo output;
         output.positionWS = float4(positionWS, 1);
-        output.positionCS = positionCS;
+        output.positionCS = float4(positionCS.xy + normalProjectedCS.xy, positionCS.zw);
         return output;
     }
     else
