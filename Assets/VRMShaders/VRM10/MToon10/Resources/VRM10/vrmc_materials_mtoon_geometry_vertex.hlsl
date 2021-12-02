@@ -26,8 +26,6 @@ inline half MToon_GetOutlineVertex_OutlineWidth(const float2 uv)
 
 inline VertexPositionInfo MToon_GetOutlineVertex(const float3 positionOS, const half3 normalOS, const float2 uv)
 {
-    const float minWidthInPixel = 1.5f;
-
     if (MToon_IsOutlineModeWorldCoordinates())
     {
         const float3 positionWS = mul(unity_ObjectToWorld, float4(positionOS, 1)).xyz;
@@ -51,9 +49,7 @@ inline VertexPositionInfo MToon_GetOutlineVertex(const float3 positionOS, const 
         const half3 normalVS = MToon_GetObjectToViewNormal(normalOS);
         const half3 normalCS = TransformViewToProjection(normalVS.xyz);
 
-        const float onePixelMultiplier = positionCS.w * 2.0f / _ScreenParams.y;
         const float widthScaledMaxMeter = 1.0f;
-
         half2 normalProjectedCS = normalize(normalCS.xy);
         // NOTE: VR などの高視野角カメラでは、純粋な実装では太くなりすぎる.
         //       よって 1m 以上離れたら、それ以上太くならないようにする.
