@@ -34,15 +34,8 @@ inline VertexPositionInfo MToon_GetOutlineVertex(const float3 positionOS, const 
         const half3 normalWS = UnityObjectToWorldNormal(normalOS);
         const half outlineWidth = MToon_GetOutlineVertex_OutlineWidth(uv);
 
-        const float viewDirWS = length(MToon_GetWorldSpaceViewDir(positionWS));
-        const float tangentHalfVerticalFov = 1.0f / unity_CameraProjection[1][1];
-        const float onePixelWidth = tangentHalfVerticalFov * viewDirWS * 2.0f / _ScreenParams.y;
-        // NOTE: 線幅が World Space で一定なので、カメラから離れるとすぐに 1 pixel 未満になりエリアシングしてしまう.
-        //       よって 1.5 pixel 未満から徐々に輪郭線を細くし、1 pixel 未満では幅ゼロにする.
-        const float antiAliasingOutlineWidth = mtoon_linearstep(onePixelWidth, onePixelWidth * minWidthInPixel, outlineWidth) * outlineWidth;
-
         VertexPositionInfo output;
-        output.positionWS = float4(positionWS + normalWS * antiAliasingOutlineWidth, 1);
+        output.positionWS = float4(positionWS + normalWS * outlineWidth, 1);
         output.positionCS = UnityWorldToClipPos(output.positionWS);
         return output;
     }
@@ -64,10 +57,8 @@ inline VertexPositionInfo MToon_GetOutlineVertex(const float3 positionOS, const 
         half2 normalProjectedCS = normalize(normalCS.xy);
         // NOTE: VR などの高視野角カメラでは、純粋な実装では太くなりすぎる.
         //       よって 1m 以上離れたら、それ以上太くならないようにする.
-        //       また、World Coords 輪郭線と同様のエリアシング対策もする.
-        const half multiplier = outlineWidth * min(positionCS.w, widthScaledMaxMeter);
-        const half antiAliasingMultiplier = mtoon_linearstep(onePixelMultiplier, onePixelMultiplier * minWidthInPixel, multiplier) * multiplier;
-        normalProjectedCS *= antiAliasingMultiplier;
+        const half outlineWidthMultiplier = outlineWidth * min(positionCS.w, widthScaledMaxMeter);
+        normalProjectedCS *= outlineWidthMultiplier;
         normalProjectedCS.x *= aspect;
         // NOTE: カメラ方向軸を向く法線を持つ頂点が XY 方向にだけずれると困るので、それを抑制する.
         normalProjectedCS.xy *= saturate(1 - normalVS.z * normalVS.z);
