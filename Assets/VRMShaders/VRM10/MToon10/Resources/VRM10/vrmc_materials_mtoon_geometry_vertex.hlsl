@@ -59,13 +59,13 @@ inline VertexPositionInfo MToon_GetOutlineVertex(const float3 positionOS, const 
         const half3 normalCS = TransformViewToProjection(normalVS.xyz);
 
         const float onePixelMultiplier = positionCS.w * 2.0f / _ScreenParams.y;
-        const float oneMeter = 1.0f;
+        const float widthScaledMaxMeter = 1.0f;
 
         half2 normalProjectedCS = normalize(normalCS.xy);
         // NOTE: VR などの高視野角カメラでは、純粋な実装では太くなりすぎる.
         //       よって 1m 以上離れたら、それ以上太くならないようにする.
         //       また、World Coords 輪郭線と同様のエリアシング対策もする.
-        const half multiplier = outlineWidth * min(positionCS.w, oneMeter);
+        const half multiplier = outlineWidth * min(positionCS.w, widthScaledMaxMeter);
         const half antiAliasingMultiplier = mtoon_linearstep(onePixelMultiplier, onePixelMultiplier * minWidthInPixel, multiplier) * multiplier;
         normalProjectedCS *= antiAliasingMultiplier;
         normalProjectedCS.x *= aspect;
