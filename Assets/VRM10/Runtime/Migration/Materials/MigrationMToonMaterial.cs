@@ -166,6 +166,7 @@ namespace UniVRM10
                         );
                     }
                 }
+
                 dst.ShadeColorFactor = mtoon.Definition.Color.ShadeColor.ToFloat3(ColorSpace.sRGB, ColorSpace.Linear);
                 if (mtoon.TextureIndexMap.ShadeTexture.HasValue)
                 {
@@ -182,6 +183,28 @@ namespace UniVRM10
                         );
                     }
                 }
+
+                // NOTE: DESTRUCTIVE MIGRATION
+                // Lit Texture が存在するが Shade Texture が存在しないとき、 Lit Texture を Shade Texture に設定する.
+                // これは破壊的マイグレーションだが、以下の MToon 0.x の状況により、問題が起きるユーザが多いためマイグレーションする.
+                //   - MToon 0.x は 2 枚メインテクスチャを設定するのが正しい状態であるという周知の不足
+                //   - MToon 0.x は Global Illumination の実装不備で、Shade Texture を設定しなくてもそれなりに表示できてしまっていた
+                if (mtoon.TextureIndexMap.MainTex.HasValue && !mtoon.TextureIndexMap.ShadeTexture.HasValue)
+                {
+                    dst.ShadeMultiplyTexture = new TextureInfo
+                    {
+                        Index = mtoon.TextureIndexMap.MainTex.Value
+                    };
+                    if (textureScale.HasValue && textureOffset.HasValue)
+                    {
+                        Vrm10MToonMaterialExporter.ExportTextureTransform(
+                            dst.ShadeMultiplyTexture,
+                            textureScale.Value,
+                            textureOffset.Value
+                        );
+                    }
+                }
+
                 if (mtoon.TextureIndexMap.BumpMap.HasValue)
                 {
                     gltfMaterial.normalTexture = new glTFMaterialNormalTextureInfo
@@ -198,10 +221,12 @@ namespace UniVRM10
                         );
                     }
                 }
+
                 dst.ShadingShiftFactor = MToon10Migrator.MigrateToShadingShift(
                     mtoon.Definition.Lighting.LitAndShadeMixing.ShadingToonyValue,
                     mtoon.Definition.Lighting.LitAndShadeMixing.ShadingShiftValue
                 );
+
                 dst.ShadingToonyFactor = MToon10Migrator.MigrateToShadingToony(
                     mtoon.Definition.Lighting.LitAndShadeMixing.ShadingToonyValue,
                     mtoon.Definition.Lighting.LitAndShadeMixing.ShadingShiftValue
