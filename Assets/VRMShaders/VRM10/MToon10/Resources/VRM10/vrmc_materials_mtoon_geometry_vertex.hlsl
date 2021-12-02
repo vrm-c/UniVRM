@@ -49,13 +49,17 @@ inline VertexPositionInfo MToon_GetOutlineVertex(const float3 positionOS, const 
         const half3 normalVS = MToon_GetObjectToViewNormal(normalOS);
         const half3 normalCS = TransformViewToProjection(normalVS.xyz);
 
-        const float clipSpaceHeight = 2.0f;
-        const float widthScaledMaxMeter = 1.0f;
+        const float maxViewFrustumPlaneHeight = 2.0f;
+        const float invTangentHalfVerticalFov = unity_CameraProjection[1][1];
+        // NOTE: viewFrustumPlaneHeight = tan(halfFov) * viewDirDistance * 2.0
+        //           -> viewDirDistance = viewFrustumPlaneHeight / (tan(halfFov) * 2.0)
+        const float widthScaledMaxMeter = maxViewFrustumPlaneHeight * invTangentHalfVerticalFov * 0.5f;
+        // NOTE: VR などの高視野角カメラでは、純粋な実装では太くなりすぎる.
+        //       よってある距離での視錐台平面が高さ 2m 以上になったらスケールをやめる.
+        const half outlineWidthMultiplier = outlineWidth * min(positionCS.w, widthScaledMaxMeter);
 
         half2 normalProjectedCS = normalize(normalCS.xy);
-        // NOTE: VR などの高視野角カメラでは、純粋な実装では太くなりすぎる.
-        //       よって 1m 以上離れたら、それ以上太くならないようにする.
-        const half outlineWidthMultiplier = outlineWidth * min(positionCS.w, widthScaledMaxMeter);
+        const float clipSpaceHeight = 2.0f;
         normalProjectedCS *= clipSpaceHeight * outlineWidthMultiplier;
         normalProjectedCS.x *= aspect;
         // NOTE: カメラ方向軸を向く法線を持つ頂点が XY 方向にだけずれると困るので、それを抑制する.
