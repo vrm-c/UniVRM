@@ -376,7 +376,7 @@ namespace UniGLTF
             ExportExtensions(textureSerializer);
 
             // Extension で Texture が増える場合があるので最後に呼ぶ
-            var exported = m_textureExporter.Export();
+            var exported = TextureExporter.Export();
             for (var exportedTextureIdx = 0; exportedTextureIdx < exported.Count; ++exportedTextureIdx)
             {
                 var (unityTexture, colorSpace) = exported[exportedTextureIdx];
