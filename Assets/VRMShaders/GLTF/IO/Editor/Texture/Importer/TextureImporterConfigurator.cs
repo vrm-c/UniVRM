@@ -8,7 +8,7 @@ namespace VRMShaders
 {
     public static class TextureImporterConfigurator
     {
-        private static void ConfigureSize(Texture2D texture, TextureImporter textureImporter)
+        private static void ConfigureSize(TextureImporter textureImporter)
         {
             if (!EditorTextureUtility.TryGetOriginalTexturePixelSize(textureImporter, out var originalSize)) return;
 
@@ -38,33 +38,33 @@ namespace VRMShaders
             textureImporter.wrapModeV = texDesc.Sampler.WrapModesV;
         }
 
-        private static void Configure(TextureDescriptor texDesc, Texture2D texture, TextureImporter importer)
+        private static void Configure(TextureDescriptor texDesc, TextureImporter importer)
         {
             switch (texDesc.TextureType)
             {
                 case TextureImportTypes.NormalMap:
                     {
-                        ConfigureSize(texture, importer);
+                        ConfigureSize(importer);
                         ConfigureNormalMap(importer);
                     }
                     break;
 
                 case TextureImportTypes.StandardMap:
                     {
-                        ConfigureSize(texture, importer);
+                        ConfigureSize(importer);
                         ConfigureLinear(importer);
                     }
                     break;
 
                 case TextureImportTypes.sRGB:
                     {
-                        ConfigureSize(texture, importer);
+                        ConfigureSize(importer);
                     }
                     break;
 
                 case TextureImportTypes.Linear:
                     {
-                        ConfigureSize(texture, importer);
+                        ConfigureSize(importer);
                         ConfigureLinear(importer);
                     }
                     break;
@@ -81,7 +81,7 @@ namespace VRMShaders
             if (!externalMap.TryGetValue(texDesc.SubAssetKey, out var externalTexture)) return;
             if (!EditorTextureUtility.TryGetAsEditorTexture2DAsset(externalTexture, out var texture2D, out var importer)) return;
 
-            Configure(texDesc, texture2D, importer);
+            Configure(texDesc, importer);
             importer.SaveAndReimport();
         }
     }
