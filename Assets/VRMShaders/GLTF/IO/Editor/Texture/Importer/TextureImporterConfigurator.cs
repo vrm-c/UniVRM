@@ -8,31 +8,29 @@ namespace VRMShaders
 {
     public static class TextureImporterConfigurator
     {
-        public static void ConfigureSize(Texture texture, TextureImporter textureImporter)
+        private static void ConfigureSize(Texture2D texture, TextureImporter textureImporter)
         {
-            var maxSize = Mathf.Max(texture.width, texture.height);
-            textureImporter.maxTextureSize
-                = maxSize > 4096 ? 8192 :
-                maxSize > 2048 ? 4096 :
-                maxSize > 1024 ? 2048 :
-                maxSize > 512 ? 1024 :
+            if (!EditorTextureUtility.TryGetOriginalTexturePixelSize(textureImporter, out var originalSize)) return;
+
+            var originalMaxSize = Mathf.Max(originalSize.x, originalSize.y);
+            textureImporter.maxTextureSize = originalMaxSize > 4096 ? 8192 :
+                originalMaxSize > 2048 ? 4096 :
+                originalMaxSize > 1024 ? 2048 :
+                originalMaxSize > 512 ? 1024 :
                 512;
-            textureImporter.SaveAndReimport();
         }
 
-        public static void ConfigureNormalMap(Texture texture, TextureImporter textureImporter)
+        private static void ConfigureNormalMap(TextureImporter textureImporter)
         {
             textureImporter.textureType = TextureImporterType.NormalMap;
-            textureImporter.SaveAndReimport();
         }
 
-        public static void ConfigureLinear(Texture texture, TextureImporter textureImporter)
+        private static void ConfigureLinear(TextureImporter textureImporter)
         {
             textureImporter.sRGBTexture = false;
-            textureImporter.SaveAndReimport();
         }
 
-        public static void ConfigureSampler(TextureDescriptor texDesc, TextureImporter textureImporter)
+        private static void ConfigureSampler(TextureDescriptor texDesc, TextureImporter textureImporter)
         {
             textureImporter.mipmapEnabled = texDesc.Sampler.EnableMipMap;
             textureImporter.filterMode = texDesc.Sampler.FilterMode;
@@ -40,72 +38,34 @@ namespace VRMShaders
             textureImporter.wrapModeV = texDesc.Sampler.WrapModesV;
         }
 
-        class ImporterGetter : IDisposable
-        {
-            public TextureImporter Importer;
-
-            ImporterGetter(TextureImporter importer)
-            {
-                Importer = importer;
-            }
-
-            public void Dispose()
-            {
-                Importer.SaveAndReimport();
-            }
-
-            public static bool TryGetImporter(Texture texture, out ImporterGetter getter)
-            {
-                var path = AssetDatabase.GetAssetPath(texture);
-                if (String.IsNullOrEmpty(path))
-                {
-                    Debug.LogWarning($"{path} is not asset");
-                }
-                else
-                {
-                    if (AssetImporter.GetAtPath(path) is TextureImporter importer)
-                    {
-                        getter = new ImporterGetter(importer);
-                        return true;
-                    }
-                    else
-                    {
-                        Debug.LogWarning($"{path}: fail to get TextureImporter");
-                    }
-                }
-                getter = default;
-                return false;
-            }
-        }
-
-        static void Configure(TextureDescriptor texDesc, Texture external, TextureImporter importer)
+        private static void Configure(TextureDescriptor texDesc, Texture2D texture, TextureImporter importer)
         {
             switch (texDesc.TextureType)
             {
                 case TextureImportTypes.NormalMap:
                     {
-                        ConfigureSize(external, importer);
-                        ConfigureNormalMap(external, importer);
+                        ConfigureSize(texture, importer);
+                        ConfigureNormalMap(importer);
                     }
                     break;
 
                 case TextureImportTypes.StandardMap:
                     {
-                        ConfigureSize(external, importer);
-                        ConfigureLinear(external, importer);
+                        ConfigureSize(texture, importer);
+                        ConfigureLinear(importer);
                     }
                     break;
 
                 case TextureImportTypes.sRGB:
                     {
-                        ConfigureSize(external, importer);
+                        ConfigureSize(texture, importer);
                     }
                     break;
 
                 case TextureImportTypes.Linear:
                     {
-                        ConfigureSize(external, importer);
-                        ConfigureLinear(external, importer);
+                        ConfigureSize(texture, importer);
+                        ConfigureLinear(importer);
                     }
                     break;
 
@@ -116,18 +76,13 @@ namespace VRMShaders
             ConfigureSampler(texDesc, importer);
         }
 
-        public static void Configure(TextureDescriptor texDesc, IReadOnlyDictionary<SubAssetKey, Texture> ExternalMap)
+        public static void Configure(TextureDescriptor texDesc, IReadOnlyDictionary<SubAssetKey, Texture> externalMap)
         {
-            if (ExternalMap.TryGetValue(texDesc.SubAssetKey, out Texture external))
-            {
-                if (ImporterGetter.TryGetImporter(external, out ImporterGetter getter))
-                {
-                    using (getter)
-                    {
-                        Configure(texDesc, external, getter.Importer);
-                    }
-                }
-            }
+            if (!externalMap.TryGetValue(texDesc.SubAssetKey, out var externalTexture)) return;
+            if (!EditorTextureUtility.TryGetAsEditorTexture2DAsset(externalTexture, out var texture2D, out var importer)) return;
+
+            Configure(texDesc, texture2D, importer);
+            importer.SaveAndReimport();
         }
     }
 }
