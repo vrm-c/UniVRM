@@ -298,7 +298,9 @@ namespace UniVRM10
                         break;
                     case OutlineWidthMode.ScreenCoordinates:
                         dst.OutlineWidthMode = UniGLTF.Extensions.VRMC_materials_mtoon.OutlineWidthMode.screenCoordinates;
-                        dst.OutlineWidthFactor = mtoon.Definition.Outline.OutlineWidthValue * oneHundredth;
+                        // NOTE: 従来は、縦幅の半分を 100% としたときの % の値だった。
+                        //       1.0 では縦幅を 1 としたときの値とするので、 1/200 する。
+                        dst.OutlineWidthFactor = mtoon.Definition.Outline.OutlineWidthValue * oneHundredth * 0.5f;
                         break;
                     default:
                         throw new ArgumentOutOfRangeException($"OutlineWidthMode: {(int)mtoon.Definition.Outline.OutlineWidthMode}");
