@@ -46,8 +46,6 @@ namespace UniGLTF
             private set;
         }
 
-        public ITextureExporter TextureExporter => m_textureExporter;
-
         protected virtual IMaterialExporter CreateMaterialExporter()
         {
             return new MaterialExporter();
@@ -65,7 +63,7 @@ namespace UniGLTF
             }
         }
 
-        TextureExporter m_textureExporter;
+        protected TextureExporter TextureExporter { get; private set; }
 
         GltfExportSettings m_settings;
 
@@ -236,7 +234,7 @@ namespace UniGLTF
             #region Materials and Textures
             Materials = uniqueUnityMeshes.GetUniqueMaterials().ToList();
 
-            m_textureExporter = new TextureExporter(textureSerializer);
+            TextureExporter = new TextureExporter(textureSerializer);
 
             var materialExporter = CreateMaterialExporter();
             _gltf.materials = Materials.Select(x => materialExporter.ExportMaterial(x, TextureExporter, m_settings)).ToList();
