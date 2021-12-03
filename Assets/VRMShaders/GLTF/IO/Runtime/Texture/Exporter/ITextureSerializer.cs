@@ -22,5 +22,12 @@ namespace VRMShaders
         /// 具体的には Texture2D をコピーする際に、コピー先の Texture2D の色空間を決定するために使用する。
         /// </summary>
         (byte[] bytes, string mime) ExportBytesWithMime(Texture2D texture, ColorSpace exportColorSpace);
+
+        /// <summary>
+        /// エクスポートに使用したい Texture に対して、事前準備を行う。
+        ///
+        /// たとえば UnityEditor においては、Texture Asset の圧縮設定を OFF にしたりしたい。
+        /// </summary>
+        void ModifyTextureAssetBeforeExporting(Texture texture);
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using UnityEngine;
-using VRMShaders;
 
 namespace VRMShaders
 {
@@ -37,6 +36,11 @@ namespace VRMShaders
                 // 単純に EncodeToPNG できないため、コピーしてから EncodeToPNG する。
                 return CopyTextureAndGetBytesWithMime(texture, exportColorSpace);
             }
+        }
+
+        public void ModifyTextureAssetBeforeExporting(Texture texture)
+        {
+            // NOTE: Do nothing.
         }
 
         private static (byte[] bytes, string mime) CopyTextureAndGetBytesWithMime(Texture2D texture, ColorSpace colorSpace)
