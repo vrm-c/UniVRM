@@ -24,13 +24,13 @@ namespace VRMShaders
         public bool CanExportAsEditorAssetFile(Texture texture, ColorSpace exportColorSpace)
         {
             // Exists as UnityEditor Texture2D Assets ?
-            if (!TryGetAsEditorTexture2DAsset(texture, out var texture2D, out var textureImporter)) return false;
+            if (!EditorTextureUtility.TryGetAsEditorTexture2DAsset(texture, out var texture2D, out var textureImporter)) return false;
 
             // Maintain original width/height ?
-            if (!IsTextureSizeMaintained(texture2D, textureImporter)) return false;
+            if (!IsTextureSizeMaintained(textureImporter)) return false;
 
             // Equals color space ?
-            if (!IsFileColorSpaceSameWithExportColorSpace(texture2D, textureImporter, exportColorSpace)) return false;
+            if (!IsFileColorSpaceSameWithExportColorSpace(textureImporter, exportColorSpace)) return false;
 
             // Each Texture Importer Type Validation
             switch (textureImporter.textureType)
@@ -94,44 +94,17 @@ namespace VRMShaders
             return false;
         }
 
-        private bool TryGetAsEditorTexture2DAsset(Texture texture, out Texture2D texture2D, out TextureImporter assetImporter)
-        {
-            texture2D = texture as Texture2D;
-            if (texture2D != null)
-            {
-                var path = AssetDatabase.GetAssetPath(texture2D);
-                if (!string.IsNullOrEmpty(path))
-                {
-                    assetImporter = AssetImporter.GetAtPath(path) as TextureImporter;
-                    if (assetImporter != null)
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            texture2D = null;
-            assetImporter = null;
-            return false;
-        }
-
         /// <summary>
         /// Texture2D の画像サイズが、オリジナルの画像サイズを維持しているかどうか
         ///
         /// TextureImporter の MaxTextureSize 設定によっては、Texture2D の画像サイズはオリジナルも小さくなりうる。
         /// </summary>
-        private bool IsTextureSizeMaintained(Texture2D texture, TextureImporter textureImporter)
+        private bool IsTextureSizeMaintained(TextureImporter textureImporter)
         {
-            // private メソッド TextureImporter.GetWidthAndHeight を無理やり呼ぶ
-            var getSizeMethod = typeof(TextureImporter).GetMethod("GetWidthAndHeight", BindingFlags.NonPublic | BindingFlags.Instance);
-            if (textureImporter != null && getSizeMethod != null)
+            if (EditorTextureUtility.TryGetOriginalTexturePixelSize(textureImporter, out var originalSize))
             {
-                var args = new object[2] { 0, 0 };
-                getSizeMethod.Invoke(textureImporter, args);
-                var originalWidth = (int)args[0];
-                var originalHeight = (int)args[1];
-                var originalSize = Mathf.Max(originalWidth, originalHeight);
-                if (textureImporter.maxTextureSize >= originalSize)
+                var originalMaxSize = Mathf.Max(originalSize.x, originalSize.y);
+                if (textureImporter.maxTextureSize >= originalMaxSize)
                 {
                     return true;
                 }
@@ -140,7 +113,7 @@ namespace VRMShaders
             return false;
         }
 
-        private bool IsFileColorSpaceSameWithExportColorSpace(Texture2D texture, TextureImporter textureImporter, ColorSpace colorSpace)
+        private bool IsFileColorSpaceSameWithExportColorSpace(TextureImporter textureImporter, ColorSpace colorSpace)
         {
             switch (colorSpace)
             {
