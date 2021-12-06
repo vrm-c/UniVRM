@@ -118,7 +118,7 @@ namespace VRM
                     VRM.meta.title = meta.Title;
                     if (meta.Thumbnail != null)
                     {
-                        VRM.meta.texture = GltfTextureExporter.PushGltfTexture(_data, meta.Thumbnail, ColorSpace.sRGB, textureSerializer);
+                        VRM.meta.texture = TextureExporter.RegisterExportingAsSRgb(meta.Thumbnail, needsAlpha: true);
                     }
 
                     VRM.meta.licenseType = meta.LicenseType;

@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
@@ -8,7 +7,7 @@ namespace VRMShaders
 {
     public sealed class EditorTextureSerializer : ITextureSerializer
     {
-        private readonly RuntimeTextureSerializer m_runtimeSerializer = new RuntimeTextureSerializer();
+        private readonly RuntimeTextureSerializer _runtimeSerializer = new RuntimeTextureSerializer();
 
         /// <summary>
         /// Texture をオリジナルのテクスチャアセット(png/jpg)ファイルのバイト列そのまま出力してよいかどうか判断する。
@@ -56,7 +55,19 @@ namespace VRMShaders
                 return (bytes, mime);
             }
 
-            return m_runtimeSerializer.ExportBytesWithMime(texture, exportColorSpace);
+            return _runtimeSerializer.ExportBytesWithMime(texture, exportColorSpace);
+        }
+
+        /// <summary>
+        /// 出力に使用したいテクスチャに対して、Unity のエディタアセットとしての圧縮設定を OFF にする。
+        /// </summary>
+        public void ModifyTextureAssetBeforeExporting(Texture texture)
+        {
+            if (EditorTextureUtility.TryGetAsEditorTexture2DAsset(texture, out var texture2D, out var assetImporter))
+            {
+                assetImporter.textureCompression = TextureImporterCompression.Uncompressed;
+                assetImporter.SaveAndReimport();
+            }
         }
 
         /// <summary>

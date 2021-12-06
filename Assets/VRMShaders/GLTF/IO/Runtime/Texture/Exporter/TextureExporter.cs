@@ -10,12 +10,12 @@ namespace VRMShaders
     /// </summary>
     public sealed class TextureExporter : IDisposable, ITextureExporter
     {
-        private readonly ITextureSerializer m_textureSerializer;
+        private readonly ITextureSerializer _textureSerializer;
         private readonly List<TextureExportParam> _exportingList = new List<TextureExportParam>();
 
         public TextureExporter(ITextureSerializer textureSerializer)
         {
-            m_textureSerializer = textureSerializer;
+            _textureSerializer = textureSerializer;
         }
 
         public void Dispose()
@@ -94,7 +94,13 @@ namespace VRMShaders
 
             var param = new TextureExportParam(TextureExportTypes.OcclusionMetallicRoughness, ColorSpace.Linear,
                 metallicSmoothTexture, occlusionTexture, smoothness, false,
-                () => OcclusionMetallicRoughnessConverter.Export(metallicSmoothTexture, smoothness, occlusionTexture));
+                () =>
+                {
+                    _textureSerializer.ModifyTextureAssetBeforeExporting(metallicSmoothTexture);
+                    _textureSerializer.ModifyTextureAssetBeforeExporting(occlusionTexture);
+                    return OcclusionMetallicRoughnessConverter.Export(metallicSmoothTexture, smoothness,
+                        occlusionTexture);
+                });
             if (TryGetExistsParam(param, out var existsIdx))
             {
                 // Return cacehd
@@ -116,7 +122,11 @@ namespace VRMShaders
             }
 
             var param = new TextureExportParam(TextureExportTypes.Normal, ColorSpace.Linear, src, default, default,
-                false, () => NormalConverter.Export(src));
+                false, () =>
+                {
+                    _textureSerializer.ModifyTextureAssetBeforeExporting(src);
+                    return NormalConverter.Export(src);
+                });
             if (TryGetExistsParam(param, out var existsIdx))
             {
                 // Return cached;
@@ -136,12 +146,15 @@ namespace VRMShaders
         {
             // get Texture2D
             var texture2D = src as Texture2D;
-            if (m_textureSerializer.CanExportAsEditorAssetFile(texture2D, exportColorSpace))
+            if (_textureSerializer.CanExportAsEditorAssetFile(texture2D, exportColorSpace))
             {
-                // do nothing
+                // NOTE: 生のファイルとして出力可能な場合、何もせずそのまま Texture2D を渡す。
+                //       ただし、この場合のみ圧縮設定をオフにしなかった場合、挙動としてバグっぽく見えるので、これもオフにする。
+                _textureSerializer.ModifyTextureAssetBeforeExporting(src);
             }
             else
             {
+                _textureSerializer.ModifyTextureAssetBeforeExporting(src);
                 texture2D = TextureConverter.CopyTexture(src, exportColorSpace, needsAlpha, null);
             }
             return texture2D;
