@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="ja" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UniHumanoid &mdash; UniVRM Programming Document  ドキュメント</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/translations.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="検索" href="../search.html" />
+    <link rel="next" title="VRM" href="../vrm0/index.html" />
+    <link rel="prev" title="glTF拡張の実装(0.63.2)" href="../gltf/how_to_impl_extension.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+[日本語] <a href="../../en/unihumanoid/index.html">English</a>
+
+            <a href="../index.html" class="icon icon-home"> UniVRM Programming Document
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../build.html">アプリケーションのビルド</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../implementation/index.html">実装メモ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gltf/index.html">glTF</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">UniHumanoid</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#bvh-runtime-loader">BVH runtime loader</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#runtimeloader">RuntimeLoader</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#runtimeloader-and-posetransfer">RuntimeLoader and PoseTransfer</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#load-bvh-and-create-prefab-with-animationclip">Load bvh and create prefab with AnimationClip</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#bonemapping">BoneMapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#download-bvh-files">Download BVH files</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../vrm0/index.html">VRM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../vrm1/index.html">VRM-1.0(β)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../release/index.html">Release</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">UniVRM Programming Document</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>UniHumanoid</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/vrm-c/UniVRM/blob/master/docs/unihumanoid/index.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="unihumanoid">
+<h1>UniHumanoid<a class="headerlink" href="#unihumanoid" title="このヘッドラインへのパーマリンク"></a></h1>
+<p>Unity humanoid utility with bvh importer.</p>
+<section id="bvh-runtime-loader">
+<h2>BVH runtime loader<a class="headerlink" href="#bvh-runtime-loader" title="このヘッドラインへのパーマリンク"></a></h2>
+<div class="highlight-cs notranslate"><div class="highlight"><pre><span></span>var context = new BvhImporterContext();
+context.Parse(path);
+context.Load(); // create Skeleton hierarchy and mesh for visualize
+GameObject root = context.Root;
+</pre></div>
+</div>
+<section id="runtimeloader">
+<h3>RuntimeLoader<a class="headerlink" href="#runtimeloader" title="このヘッドラインへのパーマリンク"></a></h3>
+<ul class="simple">
+<li><p>Scenes/RuntimeBvhLoader.unity</p></li>
+</ul>
+</section>
+<section id="runtimeloader-and-posetransfer">
+<h3>RuntimeLoader and PoseTransfer<a class="headerlink" href="#runtimeloader-and-posetransfer" title="このヘッドラインへのパーマリンク"></a></h3>
+<p>Load BVH and transfer pose to any model with humanoid avatar.</p>
+<ul class="simple">
+<li><p>Scenes/PoseTransfer.unity</p></li>
+</ul>
+<p><img alt="humanpose transfer target" src="../_images/humanpose_transfer_inspector.png" /></p>
+<p><img alt="humanpose transfer" src="../_images/humanpose_transfer.png" /></p>
+</section>
+</section>
+<section id="load-bvh-and-create-prefab-with-animationclip">
+<h2>Load bvh and create prefab with AnimationClip<a class="headerlink" href="#load-bvh-and-create-prefab-with-animationclip" title="このヘッドラインへのパーマリンク"></a></h2>
+<p>Drop bvh file to Assets folder.
+Then, AssetPostprocessor import bvh file.</p>
+<ul class="simple">
+<li><p>create a hierarchy prefab</p></li>
+<li><p>create a humanoid Avatar</p></li>
+<li><p>create a legacy mode AnimationClip</p></li>
+<li><p>create a skinned mesh for preview</p></li>
+</ul>
+<p><img alt="bvh prefab" src="../_images/assets.png" /></p>
+<p>Instanciate prefab to scene.</p>
+<p><img alt="bvh gameobject" src="../_images/mesh.png" /></p>
+<p>That object can play.</p>
+</section>
+<section id="bonemapping">
+<h2>BoneMapping<a class="headerlink" href="#bonemapping" title="このヘッドラインへのパーマリンク"></a></h2>
+<p>This script help create human avatar from exist GameObject hierarchy.
+First, attach this script to root GameObject that has Animator.</p>
+<p>Next, setup below.</p>
+<ul class="simple">
+<li><p>model position is origin</p></li>
+<li><p>model look at +z orientation</p></li>
+<li><p>model root node rotation is Quatenion.identity</p></li>
+<li><p>Set hips bone.</p></li>
+</ul>
+<p>press Guess bone mapping.
+If fail to guess bone mapping, you can set bones manually.</p>
+<p>Optional, press Ensure T-Pose.
+Create avatar.</p>
+<p><img alt="bvh bone mapping" src="../_images/bvh_bonemapping.png" /></p>
+<p>These humanoids imported by <a class="reference external" href="https://github.com/ousttrue/UniGLTF">UniGLTF</a> and created human avatar by BoneMapping.</p>
+<p><img alt="humanoid" src="../_images/humanoid.gif" /></p>
+</section>
+<section id="download-bvh-files">
+<h2>Download BVH files<a class="headerlink" href="#download-bvh-files" title="このヘッドラインへのパーマリンク"></a></h2>
+<ul class="simple">
+<li><p>https://sites.google.com/a/cgspeed.com/cgspeed/motion-capture</p></li>
+<li><p>http://mocapdata.com/</p></li>
+<li><p>http://www.thetrailerspark.com/download/Mocap/Packed/EYES-JAPAN/BVH/</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../gltf/how_to_impl_extension.html" class="btn btn-neutral float-left" title="glTF拡張の実装(0.63.2)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../vrm0/index.html" class="btn btn-neutral float-right" title="VRM" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, VRM Consortium.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
