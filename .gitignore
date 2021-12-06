@@ -56,3 +56,4 @@ Assets/Private.meta
 # sphinx build
 public
 *.pyc
+/ProjectSettings/BurstAotSettings_StandaloneWindows.json
