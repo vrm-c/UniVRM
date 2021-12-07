@@ -186,13 +186,11 @@ namespace UniGLTF
 
             var gltfSampler = gltf.samplers[gltfTexture.sampler];
             var (filterMode, enableMipMap) = ImportFilterMode(gltfSampler.minFilter);
-            return new SamplerParam
-            {
-                WrapModesU = ImportWrapMode(gltfSampler.wrapS),
-                WrapModesV = ImportWrapMode(gltfSampler.wrapT),
-                FilterMode = filterMode,
-                EnableMipMap = enableMipMap,
-            };
+            return new SamplerParam(
+                ImportWrapMode(gltfSampler.wrapS),
+                ImportWrapMode(gltfSampler.wrapT),
+                filterMode,
+                enableMipMap);
         }
     }
 }

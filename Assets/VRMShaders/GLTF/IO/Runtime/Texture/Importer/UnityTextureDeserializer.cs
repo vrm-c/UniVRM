@@ -9,12 +9,15 @@ namespace VRMShaders
     /// </summary>
     public sealed class UnityTextureDeserializer : ITextureDeserializer
     {
-        public async Task<Texture2D> LoadTextureAsync(byte[] imageData, bool useMipmap, ColorSpace colorSpace, IAwaitCaller awaitCaller)
+        public async Task<Texture2D> LoadTextureAsync(DeserializingTextureInfo textureInfo, IAwaitCaller awaitCaller)
         {
-            var texture = new Texture2D(2, 2, TextureFormat.ARGB32, useMipmap, colorSpace == ColorSpace.Linear);
-            if (imageData != null)
+            var texture = new Texture2D(2, 2, TextureFormat.ARGB32, textureInfo.UseMipmap, textureInfo.ColorSpace == ColorSpace.Linear);
+            if (textureInfo.ImageData != null)
             {
-                texture.LoadImage(imageData);
+                texture.LoadImage(textureInfo.ImageData);
+                texture.wrapModeU = textureInfo.WrapModeU;
+                texture.wrapModeV = textureInfo.WrapModeV;
+                texture.filterMode = textureInfo.FilterMode;
                 await awaitCaller.NextFrame();
             }
 

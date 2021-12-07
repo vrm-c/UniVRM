@@ -1,0 +1,60 @@
+﻿using UnityEngine;
+
+namespace VRMShaders
+{
+    /// <summary>
+    /// ITextureDeserializer 実装者にテクスチャロード処理を委譲するために必要な情報.
+    /// </summary>
+    public sealed class DeserializingTextureInfo
+    {
+        /// <summary>
+        /// Texture のバイト列
+        /// </summary>
+        public byte[] ImageData { get; }
+
+        /// <summary>
+        /// Texture に求められる色空間
+        /// </summary>
+        public ColorSpace ColorSpace { get; }
+
+        /// <summary>
+        /// Texture に Mipmap が求められるか否か
+        /// </summary>
+        public bool UseMipmap { get; }
+
+        /// <summary>
+        /// Texture に求められる FilterMode
+        /// </summary>
+        public FilterMode FilterMode { get; }
+
+        /// <summary>
+        /// Texture に求められる U-Axis の WrapMode
+        /// </summary>
+        public TextureWrapMode WrapModeU { get; }
+
+        /// <summary>
+        /// Texture に求められる V-Axis の WrapMode
+        /// </summary>
+        public TextureWrapMode WrapModeV { get; }
+
+        internal DeserializingTextureInfo(byte[] imageData, ColorSpace colorSpace, bool useMipmap, FilterMode filterMode, TextureWrapMode wrapModeU, TextureWrapMode wrapModeV)
+        {
+            ImageData = imageData;
+            ColorSpace = colorSpace;
+            UseMipmap = useMipmap;
+            FilterMode = filterMode;
+            WrapModeU = wrapModeU;
+            WrapModeV = wrapModeV;
+        }
+
+        internal DeserializingTextureInfo(byte[] imageData, ColorSpace colorSpace, SamplerParam samplerParam)
+        {
+            ImageData = imageData;
+            ColorSpace = colorSpace;
+            UseMipmap = samplerParam.EnableMipMap;
+            FilterMode = samplerParam.FilterMode;
+            WrapModeU = samplerParam.WrapModesU;
+            WrapModeV = samplerParam.WrapModesV;
+        }
+    }
+}

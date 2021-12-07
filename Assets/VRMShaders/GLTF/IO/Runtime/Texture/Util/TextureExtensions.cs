@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace VRMShaders
 {
-    public static class TextureExtensions
+    internal static class TextureExtensions
     {
         public static bool HasMipMap(this Texture texture)
         {
@@ -18,6 +18,17 @@ namespace VRMShaders
             {
                 return false;
             }
+        }
+
+        public static void SetSampler(this Texture2D texture, in SamplerParam param)
+        {
+            if (texture == null)
+            {
+                return;
+            }
+            texture.wrapModeU = param.WrapModesU;
+            texture.wrapModeV = param.WrapModesV;
+            texture.filterMode = param.FilterMode;
         }
     }
 }
