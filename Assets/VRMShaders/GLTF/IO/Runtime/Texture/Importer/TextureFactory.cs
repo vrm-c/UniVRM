@@ -79,9 +79,10 @@ namespace VRMShaders
                         // > contrary to Unity’s usual convention of using Y as “up”
                         // https://docs.unity3d.com/2018.4/Documentation/Manual/StandardShaderMaterialParameterNormalMap.html
                         var data0 = await texDesc.Index0();
-                        var rawTexture = await TextureDeserializer.LoadTextureAsync(data0, texDesc.Sampler.EnableMipMap, ColorSpace.Linear, awaitCaller);
+                        var rawTexture = await TextureDeserializer.LoadTextureAsync(
+                            new DeserializingTextureInfo(data0, ColorSpace.Linear, texDesc.Sampler),
+                            awaitCaller);
                         rawTexture.name = subAssetKey.Name;
-                        rawTexture.SetSampler(texDesc.Sampler);
                         _textureCache.Add(subAssetKey, rawTexture);
                         return rawTexture;
                     }
@@ -94,17 +95,23 @@ namespace VRMShaders
                         if (texDesc.Index0 != null)
                         {
                             var data0 = await texDesc.Index0();
-                            metallicRoughnessTexture = await TextureDeserializer.LoadTextureAsync(data0, texDesc.Sampler.EnableMipMap, ColorSpace.Linear, awaitCaller);
+                            metallicRoughnessTexture = await TextureDeserializer.LoadTextureAsync(
+                                new DeserializingTextureInfo(data0, ColorSpace.Linear, texDesc.Sampler),
+                                awaitCaller);
                         }
                         if (texDesc.Index1 != null)
                         {
                             var data1 = await texDesc.Index1();
-                            occlusionTexture = await TextureDeserializer.LoadTextureAsync(data1, texDesc.Sampler.EnableMipMap, ColorSpace.Linear, awaitCaller);
+                            occlusionTexture = await TextureDeserializer.LoadTextureAsync(
+                                new DeserializingTextureInfo(data1, ColorSpace.Linear, texDesc.Sampler),
+                                awaitCaller);
                         }
 
                         var combinedTexture = OcclusionMetallicRoughnessConverter.Import(metallicRoughnessTexture,
                             texDesc.MetallicFactor, texDesc.RoughnessFactor, occlusionTexture, _isLegacySquaredRoughness);
                         combinedTexture.name = subAssetKey.Name;
+                        // NOTE: StandardMap は glTF の 2 枚の Texture を Unity 上では 1 枚に合成する.
+                        //       したがって合成後の Texture に Sampler Param を設定する必要があるが、エッジケースで不整合な結果になる可能性がある.
                         combinedTexture.SetSampler(texDesc.Sampler);
                         _textureCache.Add(subAssetKey, combinedTexture);
                         UnityObjectDestoyer.DestroyRuntimeOrEditor(metallicRoughnessTexture);
@@ -115,18 +122,20 @@ namespace VRMShaders
                 case TextureImportTypes.sRGB:
                     {
                         var data0 = await texDesc.Index0();
-                        var rawTexture = await TextureDeserializer.LoadTextureAsync(data0, texDesc.Sampler.EnableMipMap, ColorSpace.sRGB, awaitCaller);
+                        var rawTexture = await TextureDeserializer.LoadTextureAsync(
+                            new DeserializingTextureInfo(data0, ColorSpace.sRGB, texDesc.Sampler),
+                            awaitCaller);
                         rawTexture.name = subAssetKey.Name;
-                        rawTexture.SetSampler(texDesc.Sampler);
                         _textureCache.Add(subAssetKey, rawTexture);
                         return rawTexture;
                     }
                 case TextureImportTypes.Linear:
                     {
                         var data0 = await texDesc.Index0();
-                        var rawTexture = await TextureDeserializer.LoadTextureAsync(data0, texDesc.Sampler.EnableMipMap, ColorSpace.Linear, awaitCaller);
+                        var rawTexture = await TextureDeserializer.LoadTextureAsync(
+                            new DeserializingTextureInfo(data0, ColorSpace.Linear, texDesc.Sampler),
+                            awaitCaller);
                         rawTexture.name = subAssetKey.Name;
-                        rawTexture.SetSampler(texDesc.Sampler);
                         _textureCache.Add(subAssetKey, rawTexture);
                         return rawTexture;
                     }

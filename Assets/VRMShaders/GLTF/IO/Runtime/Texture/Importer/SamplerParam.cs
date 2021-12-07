@@ -3,36 +3,29 @@
 
 namespace VRMShaders
 {
-    public struct SamplerParam
+    public readonly struct SamplerParam
     {
-        public TextureWrapMode WrapModesU;
+        public TextureWrapMode WrapModesU { get; }
 
-        public TextureWrapMode WrapModesV;
+        public TextureWrapMode WrapModesV { get; }
 
-        public FilterMode FilterMode;
+        public FilterMode FilterMode { get; }
 
-        public bool EnableMipMap;
+        public bool EnableMipMap { get; }
 
-        public static SamplerParam Default => new SamplerParam
+        public SamplerParam(TextureWrapMode wrapModesU, TextureWrapMode wrapModesV, FilterMode filterMode, bool enableMipMap)
         {
-            FilterMode = FilterMode.Bilinear,
-            WrapModesU = TextureWrapMode.Repeat,
-            WrapModesV = TextureWrapMode.Repeat,
-            EnableMipMap = true,
-        };
-    }
-
-    public static class SamplerParamExtensions
-    {
-        public static void SetSampler(this Texture2D texture, in SamplerParam param)
-        {
-            if (texture == null)
-            {
-                return;
-            }
-            texture.wrapModeU = param.WrapModesU;
-            texture.wrapModeV = param.WrapModesV;
-            texture.filterMode = param.FilterMode;
+            WrapModesU = wrapModesU;
+            WrapModesV = wrapModesV;
+            FilterMode = filterMode;
+            EnableMipMap = enableMipMap;
         }
+
+        public static SamplerParam Default => new SamplerParam(
+            TextureWrapMode.Repeat,
+            TextureWrapMode.Repeat,
+            FilterMode.Bilinear,
+            true
+        );
     }
 }

@@ -50,8 +50,8 @@ Assets/StreamingAssets/crashlytics-build.properties
 # Manually appended
 #
 .idea/
-Assets/Private/
-Assets/Private.meta
+Assets/_Private/
+Assets/_Private.meta
 
 # sphinx build
 public
