@@ -9,6 +9,7 @@ UnityでVRMをエクスポートする方法などについては [manual](https
 build
 implementation/index
 gltf/index
+unihumanoid/index
 vrm0/index
 vrm1/index
 release/index

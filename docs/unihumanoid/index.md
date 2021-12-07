@@ -2,11 +2,7 @@
 
 Unity humanoid utility with bvh importer.
 
-# License
-
-* [MIT](./LICENSE.md)
-
-# BVH runtime loader
+## BVH runtime loader
 
 ```cs
 var context = new BvhImporterContext();
@@ -15,19 +11,19 @@ context.Load(); // create Skeleton hierarchy and mesh for visualize
 GameObject root = context.Root;
 ```
 
-## RuntimeLoader
+### RuntimeLoader
 * Scenes/RuntimeBvhLoader.unity
 
-## RuntimeLoader and PoseTransfer
+### RuntimeLoader and PoseTransfer
 Load BVH and transfer pose to any model with humanoid avatar.
 
 * Scenes/PoseTransfer.unity
 
-![humanpose transfer target](doc/humanpose_transfer_inspector.png)
+![humanpose transfer target](humanpose_transfer_inspector.png)
 
-![humanpose transfer](doc/humanpose_transfer.png)
+![humanpose transfer](humanpose_transfer.png)
 
-# Load bvh and create prefab with AnimationClip
+## Load bvh and create prefab with AnimationClip
 
 Drop bvh file to Assets folder.
 Then, AssetPostprocessor import bvh file.
@@ -37,15 +33,15 @@ Then, AssetPostprocessor import bvh file.
 * create a legacy mode AnimationClip
 * create a skinned mesh for preview
 
-![bvh prefab](doc/assets.png)
+![bvh prefab](assets.png)
 
 Instanciate prefab to scene.
 
-![bvh gameobject](doc/mesh.png)
+![bvh gameobject](mesh.png)
 
 That object can play. 
 
-# BoneMapping
+## BoneMapping
 
 This script help create human avatar from exist GameObject hierarchy.
 First, attach this script to root GameObject that has Animator.
@@ -63,15 +59,14 @@ If fail to guess bone mapping, you can set bones manually.
 Optional, press Ensure T-Pose.
 Create avatar.
 
-![bvh bone mapping](doc/bvh_bonemapping.png)
+![bvh bone mapping](bvh_bonemapping.png)
 
 These humanoids imported by [UniGLTF](https://github.com/ousttrue/UniGLTF) and created human avatar by BoneMapping. 
 
-![humanoid](doc/humanoid.gif)
+![humanoid](humanoid.gif)
 
-# Download BVH files
+## Download BVH files
 
 * https://sites.google.com/a/cgspeed.com/cgspeed/motion-capture
 * http://mocapdata.com/
 * http://www.thetrailerspark.com/download/Mocap/Packed/EYES-JAPAN/BVH/
-

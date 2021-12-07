@@ -49,10 +49,16 @@ Assets/StreamingAssets/crashlytics-build.properties
 #
 # Manually appended
 #
+
+# Personal
 .idea/
 Assets/_Private/
 Assets/_Private.meta
 
+# Unity
+/ProjectSettings/BurstAotSettings_StandaloneWindows.json
+
 # sphinx build
 public
 *.pyc
+

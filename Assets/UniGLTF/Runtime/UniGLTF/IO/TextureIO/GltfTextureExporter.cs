@@ -17,10 +17,10 @@ namespace UniGLTF
         ///
         /// を更新し、textures の index を返す
         ///
+        /// もっとも根本の Exporter クラスのみが呼び出すべきである。
+        /// 他の拡張機能などが呼び出すべきではない。
+        ///
         /// </summary>
-        /// <param name="gltf"></param>
-        /// <param name="bufferIndex"></param>
-        /// <param name="texture"></param>
         /// <returns>gltf texture index</returns>
         public static int PushGltfTexture(ExportingGltfData data, Texture2D texture, ColorSpace textureColorSpace, ITextureSerializer textureSerializer)
         {

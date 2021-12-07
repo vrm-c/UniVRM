@@ -157,7 +157,7 @@ namespace UniVRM10
                 gltfNode.translation = node.LocalTranslation.ToFloat3();
                 gltfNode.rotation = node.LocalRotation.ToFloat4();
                 gltfNode.scale = node.LocalScaling.ToFloat3();
-                if (gltfNode.skin >= 0)
+                if (gltfNode.mesh >= 0 && gltfNode.skin >= 0)
                 {
                     var gltfSkin = gltf.skins[gltfNode.skin];
                     gltfSkin.inverseBindMatrices = AddAccessor(node.MeshGroup.Skin.InverseMatrices.GetSpan<Matrix4x4>());
