@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿using UniGLTF;
+using UnityEditor;
 using VRM.DevOnly.PackageExporter;
 
 namespace VRM
@@ -57,6 +58,9 @@ namespace VRM
 
         [MenuItem(DevelopmentMenuPrefix + "/Create UnityPackage", priority = 34)]
         private static void CreateUnityPackage() => VRMExportUnityPackage.CreateUnityPackageWithoutBuild();
+
+        [MenuItem(DevelopmentMenuPrefix + "/Export ShaderProps Code", priority = 35)]
+        private static void ExportShaderPropertyCode() => ShaderPropMenu.PreExport();
 #endif
     }
 }
