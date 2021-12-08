@@ -314,8 +314,10 @@ namespace UniGLTF
             return result;
         }
 
-        public ArraySegment<Byte> GetBytesFromImage(int imageIndex)
+        public ArraySegment<byte> GetBytesFromImage(int imageIndex)
         {
+            if (imageIndex < 0 || imageIndex >= GLTF.images.Count) return new ArraySegment<byte>();
+
             var image = GLTF.images[imageIndex];
             if (string.IsNullOrEmpty(image.uri))
             {
@@ -325,12 +327,6 @@ namespace UniGLTF
             {
                 return GetBytesFromUri(image.uri);
             }
-        }
-
-        public ArraySegment<Byte> GetImageBytesFromTextureIndex(int textureIndex)
-        {
-            var imageIndex = GLTF.textures[textureIndex].source;
-            return GetBytesFromImage(imageIndex);
         }
     }
 }
