@@ -12,8 +12,7 @@ namespace VRM
 {
     public static class VRMImporterMenu
     {
-        [MenuItem(VRMVersion.MENU + "/Import", priority = 1)]
-        static void ImportMenu()
+        public static void OpenImportMenu()
         {
             var path = EditorUtility.OpenFilePanel("open vrm", "", "vrm");
             if (string.IsNullOrEmpty(path))

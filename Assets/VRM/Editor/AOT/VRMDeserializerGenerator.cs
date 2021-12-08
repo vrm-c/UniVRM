@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace VRM
 {
-    public static class DeserializerGenerator
+    internal static class VRMDeserializerGenerator
     {
         public const BindingFlags FIELD_FLAGS = BindingFlags.Instance | BindingFlags.Public;
 
@@ -22,8 +22,7 @@ namespace VRM
         /// <summary>
         /// AOT向けにデシリアライザを生成する
         /// </summary>
-        [MenuItem(VRM.VRMVersion.MENU + "/VRM: Generate Deserializer")]
-        static void GenerateSerializer()
+        public static void GenerateCode()
         {
             var info = new UniGLTF.ObjectSerialization(typeof(glTF_VRM_extensions), "vrm", "_Deserialize");
             Debug.Log(info);

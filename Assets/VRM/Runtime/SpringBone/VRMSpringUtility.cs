@@ -5,112 +5,12 @@ using UniGLTF;
 using UnityEngine;
 using System.IO;
 using System.Text;
-#if UNITY_EDITOR
 using UnityEditor;
-
-#endif
-
 
 namespace VRM
 {
     public static class VRMSpringUtility
     {
-#if UNITY_EDITOR
-
-        #region save
-
-        [MenuItem(VRMVersion.MENU + "/SaveSpringBoneToJSON", validate = true)]
-        static bool SaveSpringBoneToJSONIsEnable()
-        {
-            var root = Selection.activeObject as GameObject;
-            if (root == null)
-            {
-                return false;
-            }
-
-            var animator = root.GetComponent<Animator>();
-            if (animator == null)
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        [MenuItem(VRMVersion.MENU + "/SaveSpringBoneToJSON")]
-        static void SaveSpringBoneToJSON()
-        {
-            var path = EditorUtility.SaveFilePanel(
-                "Save spring to json",
-                null,
-                "VRMSpring.json",
-                "json");
-            if (string.IsNullOrEmpty(path))
-            {
-                return;
-            }
-
-            var go = Selection.activeObject as GameObject;
-            var root = go.transform;
-            var nodes = root.Traverse().Skip(1).ToList();
-            var spring = new glTF_VRM_SecondaryAnimation();
-            ExportSecondary(root, nodes,
-                spring.colliderGroups.Add,
-                spring.boneGroups.Add
-            );
-
-            var f = new UniJSON.JsonFormatter();
-            VRM.VRMSerializer.Serialize_vrm_secondaryAnimation(f, spring);
-            File.WriteAllBytes(path, f.GetStore().Bytes.ToArray());
-        }
-
-        #endregion
-
-        #region load
-
-        [MenuItem(VRMVersion.MENU + "/LoadSpringBoneFromJSON", true)]
-        static bool LoadSpringBoneFromJSONIsEnable()
-        {
-            var root = Selection.activeObject as GameObject;
-            if (root == null)
-            {
-                return false;
-            }
-
-            var animator = root.GetComponent<Animator>();
-            if (animator == null)
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        [MenuItem(VRMVersion.MENU + "/LoadSpringBoneFromJSON")]
-        static void LoadSpringBoneFromJSON()
-        {
-            var path = EditorUtility.OpenFilePanel(
-                "Load spring from json",
-                null,
-                "json");
-            if (string.IsNullOrEmpty(path))
-            {
-                return;
-            }
-
-            var json = File.ReadAllText(path, Encoding.UTF8);
-            var spring = JsonUtility.FromJson<glTF_VRM_SecondaryAnimation>(json);
-
-            var go = Selection.activeObject as GameObject;
-            var root = go.transform;
-            var nodes = root.Traverse().Skip(1).ToList();
-
-            LoadSecondary(root, nodes, spring);
-        }
-
-        #endregion
-
-#endif
 
         public static void ExportSecondary(Transform root, List<Transform> nodes,
             Action<glTF_VRM_SecondaryAnimationColliderGroup> addSecondaryColliderGroup,

@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace VRM
 {
-    public static class VRMSerializerGenerator
+    internal static class VRMSerializerGenerator
     {
         const BindingFlags FIELD_FLAGS = BindingFlags.Instance | BindingFlags.Public;
 
@@ -41,8 +41,7 @@ namespace VRM {
         /// <summary>
         /// AOT向けにシリアライザを生成する
         /// </summary>
-        [MenuItem(VRM.VRMVersion.MENU + "/VRM: Generate Serializer")]
-        static void GenerateSerializer()
+        public static void GenerateCode()
         {
             var info = new ObjectSerialization(typeof(glTF_VRM_extensions), "vrm", "Serialize_");
             Debug.Log(info);

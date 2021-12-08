@@ -17,19 +17,16 @@ namespace VRM
     [DisallowMultipleComponent]
     public static class MeshIntegratorEditor
     {
-        const string MENU_KEY = VRMVersion.MENU + "/MeshIntegrator";
         const string ASSET_SUFFIX = ".mesh.asset";
 
-        [MenuItem(MENU_KEY, true)]
-        private static bool ExportValidate()
+        public static bool IntegrateValidation()
         {
             return Selection.activeObject != null &&
                    Selection.activeObject is GameObject &&
                    SkinnedMeshUtility.IsPrefab(Selection.activeObject);
         }
 
-        [MenuItem(MENU_KEY, priority = 1)]
-        private static void ExportFromMenu()
+        public static void Integrate()
         {
             var go = Selection.activeObject as GameObject;
 

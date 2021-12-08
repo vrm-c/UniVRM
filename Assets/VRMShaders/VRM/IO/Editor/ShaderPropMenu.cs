@@ -10,9 +10,6 @@ namespace UniGLTF
 {
     public static class ShaderPropMenu
     {
-#if VRM_DEVELOP
-        [MenuItem("VRMShaders/PreExport ShaderProps")]
-#endif
         public static void PreExport()
         {
             foreach (var fi in typeof(PreExportShaders).GetFields(

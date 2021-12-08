@@ -2,14 +2,11 @@
 
 namespace VRM
 {
-    public class BuildClass
+    public static class BuildClass
     {
         /// <summary>
         /// dummy build for CI
         /// </summary>
-#if VRM_DEVELOP
-        [MenuItem(VRMVersion.MENU + "/dummy_build")]
-#endif
         public static void Build()
         {
             var scenes = new string[]{

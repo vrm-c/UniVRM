@@ -17,10 +17,7 @@ namespace VRM
         /// <summary>
         /// AOT向けにダミーのGenerics呼び出しを作成する
         /// </summary>
-#if VRM_DEVELOP
-        [MenuItem(VRMVersion.MENU + "/GenerateAOTCall")]
-#endif
-        static void GenerateAOTCall()
+        public static void GenerateAOTCall()
         {
             var path = UnityPath.FromUnityPath("Assets/VRM/UniVRM/Scripts/AOTCall.g.cs");
             var encoding = new UTF8Encoding(false);

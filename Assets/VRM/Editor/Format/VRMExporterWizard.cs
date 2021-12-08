@@ -11,10 +11,7 @@ namespace VRM
 {
     public class VRMExporterWizard : ExportDialogBase
     {
-        const string CONVERT_HUMANOID_KEY = VRMVersion.MENU + "/Export " + VRMVersion.VRM_VERSION;
-
-        [MenuItem(CONVERT_HUMANOID_KEY, false, 1)]
-        private static void ExportFromMenu()
+        public static void OpenExportMenu()
         {
             var window = (VRMExporterWizard)GetWindow(typeof(VRMExporterWizard));
             window.titleContent = new GUIContent("VRM Exporter");
