@@ -49,9 +49,6 @@ namespace VRM
         [MenuItem(DevelopmentMenuPrefix + "/Generate Serialization Code", priority = 30)]
         private static void GenerateSerializer() => VRMAOTCodeGenerator.GenerateCode();
 
-        [MenuItem(DevelopmentMenuPrefix + "/Generate AOTCall", priority = 31)]
-        private static void GenerateAOTCall() => VRMAOTMenu.GenerateAOTCall();
-
         [MenuItem(DevelopmentMenuPrefix + "/Version Dialog", priority = 32)]
         private static void ShowVersionDialog() => VRMVersionMenu.ShowVersionDialog();
 
