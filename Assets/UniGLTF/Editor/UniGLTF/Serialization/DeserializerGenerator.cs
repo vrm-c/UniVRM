@@ -35,7 +35,7 @@ public static class GltfDeserializer
             get
             {
                 return Path.Combine(UnityEngine.Application.dataPath,
-                "UniGLTF/UniGLTF/Scripts/IO/GltfDeserializer.g.cs");
+                "UniGLTF/Runtime/UniGLTF/Format/GltfDeserializer.g.cs");
             }
         }
 
