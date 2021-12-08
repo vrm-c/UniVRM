@@ -69,7 +69,7 @@ namespace VRM
         {
             if (vrm.meta.texture > -1)
             {
-                texture = GltfTextureImporter.CreateSRGB(data, vrm.meta.texture, Vector2.zero, Vector2.one);
+                texture = GltfTextureImporter.CreateSrgb(data, vrm.meta.texture, Vector2.zero, Vector2.one);
                 return true;
             }
 

@@ -11,6 +11,17 @@ namespace VRMShaders
     {
         public async Task<Texture2D> LoadTextureAsync(DeserializingTextureInfo textureInfo, IAwaitCaller awaitCaller)
         {
+            switch (textureInfo.DataMimeType)
+            {
+                case "image/png":
+                    break;
+                case "image/jpeg":
+                    break;
+                default:
+                    Debug.LogWarning($"Texture image MIME type `{textureInfo.DataMimeType}` is not supported.");
+                    break;
+            }
+
             var texture = new Texture2D(2, 2, TextureFormat.ARGB32, textureInfo.UseMipmap, textureInfo.ColorSpace == ColorSpace.Linear);
             if (textureInfo.ImageData != null)
             {

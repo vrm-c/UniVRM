@@ -106,18 +106,7 @@ namespace UniVRM10
             }
             var uniqueName = GlbLowLevelParser.FixNameUnique(used, imageName);
 
-            var objectName = TextureImportName.GetUnityObjectName(TextureImportTypes.sRGB, uniqueName, gltfImage.uri);
-
-            GetTextureBytesAsync getThumbnailImageBytesAsync = () =>
-            {
-                var bytes = data.GetBytesFromImage(imageIndex);
-                return Task.FromResult(GltfTextureImporter.ToArray(bytes));
-            };
-            var texDesc = new TextureDescriptor(objectName, gltfImage.GetExt(), gltfImage.uri, Vector2.zero, Vector2.one, default, TextureImportTypes.sRGB, default, default,
-               getThumbnailImageBytesAsync, default, default,
-               default, default, default
-               );
-            value = (texDesc.SubAssetKey, texDesc);
+            value = GltfTextureImporter.CreateSrgbFromOnlyImage(data, imageIndex, uniqueName, gltfImage.uri);
             return true;
         }
     }

@@ -54,7 +54,7 @@ namespace UniGLTF
         public static (SubAssetKey, TextureDescriptor) BaseColorTexture(GltfData data, glTFMaterial src)
         {
             var (offset, scale) = GltfTextureImporter.GetTextureOffsetAndScale(src.pbrMetallicRoughness.baseColorTexture);
-            return GltfTextureImporter.CreateSRGB(data, src.pbrMetallicRoughness.baseColorTexture.index, offset, scale);
+            return GltfTextureImporter.CreateSrgb(data, src.pbrMetallicRoughness.baseColorTexture.index, offset, scale);
         }
 
         public static (SubAssetKey, TextureDescriptor) StandardTexture(GltfData data, glTFMaterial src)
@@ -84,7 +84,7 @@ namespace UniGLTF
         public static (SubAssetKey, TextureDescriptor) EmissiveTexture(GltfData data, glTFMaterial src)
         {
             var (offset, scale) = GltfTextureImporter.GetTextureOffsetAndScale(src.emissiveTexture);
-            return GltfTextureImporter.CreateSRGB(data, src.emissiveTexture.index, offset, scale);
+            return GltfTextureImporter.CreateSrgb(data, src.emissiveTexture.index, offset, scale);
         }
 
     }

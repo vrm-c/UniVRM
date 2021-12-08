@@ -13,7 +13,7 @@ namespace VRMShaders
     ///   File.WriteAllBytes
     /// </summary>
     /// <returns></returns>
-    public delegate Task<byte[]> GetTextureBytesAsync();
+    public delegate Task<(byte[] binary, string mimeType)?> GetTextureBytesAsync();
 
     /// <summary>
     /// 入力 glTF ファイルを Import した結果生成される、UnityEngine.Texture のアセット 1 つを確定させる Import 情報。
@@ -21,8 +21,6 @@ namespace VRMShaders
     public readonly struct TextureDescriptor
     {
         public readonly string UnityObjectName;
-        public readonly string Ext;
-        public readonly string Uri;
 
         public readonly Vector2 Offset;
         public readonly Vector2 Scale;
@@ -46,7 +44,7 @@ namespace VRMShaders
         /// </summary>
         public SubAssetKey SubAssetKey => new SubAssetKey(SubAssetKey.TextureType, UnityObjectName);
 
-        public TextureDescriptor(string name, string ext, string uri, Vector2 offset, Vector2 scale, SamplerParam sampler, TextureImportTypes textureType, float metallicFactor, float roughnessFactor,
+        public TextureDescriptor(string name, Vector2 offset, Vector2 scale, SamplerParam sampler, TextureImportTypes textureType, float metallicFactor, float roughnessFactor,
             GetTextureBytesAsync i0,
             GetTextureBytesAsync i1,
             GetTextureBytesAsync i2,
@@ -55,8 +53,6 @@ namespace VRMShaders
             GetTextureBytesAsync i5)
         {
             UnityObjectName = name;
-            Ext = ext;
-            Uri = uri;
             Offset = offset;
             Scale = scale;
             Sampler = sampler;

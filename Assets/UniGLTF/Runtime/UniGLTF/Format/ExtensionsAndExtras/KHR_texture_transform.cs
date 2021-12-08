@@ -5,6 +5,11 @@ using UniJSON;
 
 namespace UniGLTF
 {
+    /// <summary>
+    /// material が参照する `textureInfo` に対する extension.
+    ///
+    /// https://github.com/KhronosGroup/glTF/tree/main/extensions/2.0/Khronos/KHR_texture_transform
+    /// </summary>
     [Serializable]
     public class glTF_KHR_texture_transform
     {

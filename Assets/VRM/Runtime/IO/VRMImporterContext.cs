@@ -292,7 +292,7 @@ namespace VRM
             meta.Title = gltfMeta.title;
             if (gltfMeta.texture >= 0)
             {
-                var (key, param) = GltfTextureImporter.CreateSRGB(Data, gltfMeta.texture, Vector2.zero, Vector2.one);
+                var (key, param) = GltfTextureImporter.CreateSrgb(Data, gltfMeta.texture, Vector2.zero, Vector2.one);
                 meta.Thumbnail = await TextureFactory.GetTextureAsync(param, awaitCaller) as Texture2D;
             }
             meta.AllowedUser = gltfMeta.allowedUser;
