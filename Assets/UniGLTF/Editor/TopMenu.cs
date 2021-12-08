@@ -16,7 +16,6 @@ namespace UniGLTF
         private const int UserMeshUtilityMenuPriority = 10;
         private const int DevelopmentMenuPriority = 30;
 
-        #region USER
         [MenuItem(
             UserGltfMenuPrefix + "/Version: " + UniGLTFVersion.UNIGLTF_VERSION,
             validate = true)]
@@ -38,9 +37,6 @@ namespace UniGLTF
             UserGltfMenuPrefix + "/Import from GLTF (*.gltf|*.glb|*.zip)",
             priority = UserGltfMenuPriority + 2)]
         private static void ImportGltfFile() => TopMenuImplementation.ImportGltfFileToGameObject();
-        #endregion
-
-        #region MESH_UTILITY
 
         [MenuItem(
             UserMeshUtilityPrefix + "/MeshProcessing Wizard",
@@ -51,9 +47,8 @@ namespace UniGLTF
             UserMeshUtilityPrefix + "/Open Documents",
             priority = UserMeshUtilityMenuPriority + 1)]
         private static void MeshUtilityDocs() => Application.OpenURL("https://vrm.dev/en/docs/univrm/gltf/mesh_utility/");
-        #endregion
 
-        #region DEVELOPMENT
+#if VRM_DEVELOP
         [MenuItem(
             DevelopmentMenuPrefix + "/Generate Serialization Code",
             priority = DevelopmentMenuPriority + 1)]
@@ -64,6 +59,6 @@ namespace UniGLTF
             DevelopmentMenuPrefix + "/Generate UniJSON ConcreteCast",
             priority = DevelopmentMenuPriority + 2)]
         private static void GenerateUniJsonConcreteCastCode() => UniJSON.ConcreteCast.GenerateGenericCast();
-        #endregion
+#endif
     }
 }
