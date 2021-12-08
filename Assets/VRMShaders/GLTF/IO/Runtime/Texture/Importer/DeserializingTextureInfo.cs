@@ -13,6 +13,11 @@ namespace VRMShaders
         public byte[] ImageData { get; }
 
         /// <summary>
+        /// Texture の mimeType
+        /// </summary>
+        public string DataMimeType { get; }
+
+        /// <summary>
         /// Texture に求められる色空間
         /// </summary>
         public ColorSpace ColorSpace { get; }
@@ -37,9 +42,10 @@ namespace VRMShaders
         /// </summary>
         public TextureWrapMode WrapModeV { get; }
 
-        internal DeserializingTextureInfo(byte[] imageData, ColorSpace colorSpace, bool useMipmap, FilterMode filterMode, TextureWrapMode wrapModeU, TextureWrapMode wrapModeV)
+        internal DeserializingTextureInfo(byte[] imageData, string dataMimeType, ColorSpace colorSpace, bool useMipmap, FilterMode filterMode, TextureWrapMode wrapModeU, TextureWrapMode wrapModeV)
         {
             ImageData = imageData;
+            DataMimeType = dataMimeType;
             ColorSpace = colorSpace;
             UseMipmap = useMipmap;
             FilterMode = filterMode;
@@ -47,9 +53,10 @@ namespace VRMShaders
             WrapModeV = wrapModeV;
         }
 
-        internal DeserializingTextureInfo(byte[] imageData, ColorSpace colorSpace, SamplerParam samplerParam)
+        internal DeserializingTextureInfo(byte[] imageData, string dataMimeType, ColorSpace colorSpace, SamplerParam samplerParam)
         {
             ImageData = imageData;
+            DataMimeType = dataMimeType;
             ColorSpace = colorSpace;
             UseMipmap = samplerParam.EnableMipMap;
             FilterMode = samplerParam.FilterMode;

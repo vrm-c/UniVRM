@@ -151,7 +151,7 @@ namespace UniVRM10
             try
             {
                 var (offset, scale) = GetTextureOffsetAndScale(info);
-                pair = GltfTextureImporter.CreateSRGB(data, info.index, offset, scale);
+                pair = GltfTextureImporter.CreateSrgb(data, info.index, offset, scale);
                 return true;
             }
             catch (NullReferenceException)

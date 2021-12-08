@@ -13,7 +13,7 @@ namespace VRMShaders
     ///   File.WriteAllBytes
     /// </summary>
     /// <returns></returns>
-    public delegate Task<byte[]> GetTextureBytesAsync();
+    public delegate Task<(byte[] binary, string mimeType)?> GetTextureBytesAsync();
 
     /// <summary>
     /// 入力 glTF ファイルを Import した結果生成される、UnityEngine.Texture のアセット 1 つを確定させる Import 情報。

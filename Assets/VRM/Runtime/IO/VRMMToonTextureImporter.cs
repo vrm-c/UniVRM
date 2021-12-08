@@ -36,7 +36,7 @@ namespace VRM
                         texture = GltfTextureImporter.CreateNormal(data, textureIdx, offset, scale);
                         break;
                     default:
-                        texture = GltfTextureImporter.CreateSRGB(data, textureIdx, offset, scale);
+                        texture = GltfTextureImporter.CreateSrgb(data, textureIdx, offset, scale);
                         break;
                 }
                 return true;
