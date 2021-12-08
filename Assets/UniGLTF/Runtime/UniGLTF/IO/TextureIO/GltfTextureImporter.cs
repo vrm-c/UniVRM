@@ -18,9 +18,7 @@ namespace UniGLTF
         {
             var name = TextureImportName.GetUnityObjectName(TextureImportTypes.sRGB, uniqueName, uri);
             var texDesc = new TextureDescriptor(
-                uniqueName,
-                string.Empty,
-                uri,
+                name,
                 Vector2.zero,
                 Vector2.one,
                 default,
@@ -44,8 +42,6 @@ namespace UniGLTF
             var sampler = TextureSamplerUtil.CreateSampler(data.GLTF, textureIndex);
             var param = new TextureDescriptor(
                 name,
-                gltfImage.GetExt(),
-                gltfImage.uri,
                 offset, scale,
                 sampler,
                 TextureImportTypes.sRGB,
@@ -64,8 +60,6 @@ namespace UniGLTF
             var sampler = TextureSamplerUtil.CreateSampler(data.GLTF, textureIndex);
             var param = new TextureDescriptor(
                 name,
-                gltfImage.GetExt(),
-                gltfImage.uri,
                 offset,
                 scale,
                 sampler,
@@ -85,8 +79,6 @@ namespace UniGLTF
             var sampler = TextureSamplerUtil.CreateSampler(data.GLTF, textureIndex);
             var param = new TextureDescriptor(
                 name,
-                gltfImage.GetExt(),
-                gltfImage.uri,
                 offset,
                 scale,
                 sampler,
@@ -126,8 +118,6 @@ namespace UniGLTF
 
             var texDesc = new TextureDescriptor(
                 name,
-                ".png",
-                null,
                 offset,
                 scale,
                 sampler,
