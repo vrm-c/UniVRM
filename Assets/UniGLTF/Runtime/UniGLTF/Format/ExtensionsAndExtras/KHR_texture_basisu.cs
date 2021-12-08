@@ -4,6 +4,8 @@ using UniJSON;
 namespace UniGLTF
 {
     /// <summary>
+    /// `texture` に対する extension.
+    ///
     /// https://github.com/KhronosGroup/glTF/tree/main/extensions/2.0/Khronos/KHR_texture_basisu
     /// </summary>
     [Serializable]
@@ -19,9 +21,9 @@ namespace UniGLTF
         [JsonSchema(Minimum = 0)]
         public int source = -1;
 
-        public static bool TryGet(glTFTextureInfo textureInfo, out glTF_KHR_texture_basisu basisuExtension)
+        public static bool TryGet(glTFTexture texture, out glTF_KHR_texture_basisu basisuExtension)
         {
-            if (textureInfo?.extensions is glTFExtensionImport importedExtensions)
+            if (texture?.extensions is glTFExtensionImport importedExtensions)
             {
                 foreach (var kv in importedExtensions.ObjectItems())
                 {
