@@ -1,17 +1,19 @@
-using System.IO;
+﻿using System.IO;
 using UnityEditor;
 using UnityEngine;
 
 namespace UniGLTF
 {
-    /// <summary>
-    /// Menuは一か所で管理する
-    /// </summary>
-    public static class Menu
+    public static class TopMenuImplementation
     {
-        #region UniGLTF
-        [MenuItem(UniGLTFVersion.MENU + "/Import(gltf, glb, zip)", priority = 1)]
-        public static void ImportMenu()
+        public static void ExportGameObjectToGltfFile()
+        {
+            var window = (GltfExportWindow) GltfExportWindow.GetWindow(typeof(GltfExportWindow));
+            window.titleContent = new GUIContent("Gltf Exporter");
+            window.Show();
+        }
+
+        public static void ImportGltfFileToGameObject()
         {
             var path = EditorUtility.OpenFilePanel("open glb", "", "gltf,glb,zip");
             if (string.IsNullOrEmpty(path))
@@ -90,72 +92,19 @@ namespace UniGLTF
             Selection.activeObject = asset;
         }
 
-        [MenuItem(UniGLTFVersion.MENU + "/Export " + UniGLTFVersion.UNIGLTF_VERSION, false, 0)]
-        private static void ExportFromMenu()
+        public static void OpenMeshProcessingWindow()
         {
-            var window = (GltfExportWindow)GltfExportWindow.GetWindow(typeof(GltfExportWindow));
-            window.titleContent = new GUIContent("Gltf Exporter");
-            window.Show();
-        }
-
-        [MenuItem(UniGLTFVersion.MENU + "/GLTF: Generate Deserializer")]
-        static void GenerateDeserializer()
-        {
-            DeserializerGenerator.GenerateSerializer();
-        }
-
-        [MenuItem(UniGLTFVersion.MENU + "/GLTF: Generate Serializer")]
-        static void GenerateSerializer()
-        {
-            DeserializerGenerator.GenerateSerializer();
-        }
-        #endregion
-
-        #region  MeshUtility
-        // [MenuItem(MeshUtility.MENU_PARENT + "BoneMeshEraser Wizard", priority = 31)]
-        // static void CreateWizard()
-        // {
-        //     ScriptableWizard.DisplayWizard<BoneMeshEraserWizard>("BoneMeshEraser", "Erase triangles by bone", "Erase");
-        // }
-        const string MESH_UTILITY_DICT = "UniGLTF/Mesh Utility/";
-        [MenuItem(MESH_UTILITY_DICT + "MeshProcessing Wizard", priority = 30)]
-        static void MeshProcessFromMenu()
-        {
-            var window = (MeshUtility.MeshProcessDialog)EditorWindow.GetWindowWithRect(typeof(MeshUtility.MeshProcessDialog), new Rect(0, 0, 650, 500));
+            var window =
+                (MeshUtility.MeshProcessDialog) EditorWindow.GetWindowWithRect(typeof(MeshUtility.MeshProcessDialog),
+                    new Rect(0, 0, 650, 500));
             window.titleContent = new GUIContent("Mesh Processing Window");
             window.Show();
         }
 
-        [MenuItem(MESH_UTILITY_DICT + "MeshUtility Docs", priority = 32)]
-        public static void MeshUtilityDocs()
+        public static void GenerateSerializationCode()
         {
-            Application.OpenURL("https://vrm.dev/en/docs/univrm/gltf/mesh_utility/");
-        }
-
-        [MenuItem("Assets/SaveAsPng", true)]
-        [MenuItem("Assets/SaveAsPngLinear", true)]
-        static bool IsTextureAsset()
-        {
-            return Selection.activeObject is Texture2D;
-        }
-
-        [MenuItem("Assets/SaveAsPng")]
-        static void SaveAsPng()
-        {
-            MeshUtility.EditorChangeTextureType.SaveAsPng(true);
-        }
-
-        [MenuItem("Assets/SaveAsPngLinear")]
-        static void SaveAsPngLinear()
-        {
-            MeshUtility.EditorChangeTextureType.SaveAsPng(false);
-        }
-        #endregion
-
-        [MenuItem("UniGLTF/UniJSON/Generate ConcreteCast")]
-        static void GenerateConcreteCast()
-        {
-            UniJSON.ConcreteCast.GenerateGenericCast();
+            SerializerGenerator.GenerateSerializer();
+            DeserializerGenerator.GenerateSerializer();
         }
     }
 }
