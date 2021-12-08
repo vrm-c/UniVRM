@@ -314,23 +314,19 @@ namespace UniGLTF
             return result;
         }
 
-        public ArraySegment<Byte> GetBytesFromImage(int imageIndex)
+        public (ArraySegment<byte> binary, string mimeType)? GetBytesFromImage(int imageIndex)
         {
+            if (imageIndex < 0 || imageIndex >= GLTF.images.Count) return default;
+
             var image = GLTF.images[imageIndex];
             if (string.IsNullOrEmpty(image.uri))
             {
-                return GetBytesFromBufferView(image.bufferView);
+                return (GetBytesFromBufferView(image.bufferView), image.mimeType);
             }
             else
             {
-                return GetBytesFromUri(image.uri);
+                return (GetBytesFromUri(image.uri), image.mimeType);
             }
-        }
-
-        public ArraySegment<Byte> GetImageBytesFromTextureIndex(int textureIndex)
-        {
-            var imageIndex = GLTF.textures[textureIndex].source;
-            return GetBytesFromImage(imageIndex);
         }
     }
 }

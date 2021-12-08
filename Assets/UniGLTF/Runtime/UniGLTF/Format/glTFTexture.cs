@@ -47,32 +47,6 @@ namespace UniGLTF
         [JsonSchema(EnumValues = new object[] { "image/jpeg", "image/png" }, EnumSerializationType = EnumSerializationType.AsString)]
         public string mimeType;
 
-        public string GetExt()
-        {
-            switch (mimeType)
-            {
-                case "image/png":
-                    return ".png";
-
-                case "image/jpeg":
-                    return ".jpg";
-
-                default:
-                    if (uri.FastStartsWith("data:image/jpeg;"))
-                    {
-                        return ".jpg";
-                    }
-                    else if (uri.FastStartsWith("data:image/png;"))
-                    {
-                        return ".png";
-                    }
-                    else
-                    {
-                        return Path.GetExtension(uri)?.ToLowerInvariant() ?? string.Empty;
-                    }
-            }
-        }
-
         // empty schemas
         public glTFExtension extensions;
         public glTFExtension extras;
