@@ -8,9 +8,7 @@ namespace VRM
 {
     public static class VRMHumanoidNormalizerMenu
     {
-        const string MENU_KEY = VRMVersion.MENU + "/Freeze T-Pose";
-        [MenuItem(MENU_KEY, true, 1)]
-        private static bool ExportValidate()
+        public static bool NormalizeValidation()
         {
             var root = Selection.activeObject as GameObject;
             if (root == null)
@@ -43,8 +41,7 @@ namespace VRM
             return true;
         }
 
-        [MenuItem(MENU_KEY, false, 1)]
-        private static void ExportFromMenu()
+        public static void Normalize()
         {
             var go = Selection.activeObject as GameObject;
 

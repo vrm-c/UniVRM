@@ -9,13 +9,13 @@ namespace VRM
 {
     /// <summary>
     /// VersionDialog
-    /// 
+    ///
     /// v0.81.0: com.vrmc.unigltf to com.vrmc.gltf and same version with univrm.
-    /// 
+    ///
     /// Major = 2
     /// Minor = VRMVersion.MINOR - 64
     /// Patch = VRMVersion.PATCH
-    /// 
+    ///
     /// </summary>
     public class VRMVersionMenu : EditorWindow
     {
@@ -267,7 +267,7 @@ namespace VRM
                     Debug.LogWarning($"InvalidFormat: {m_vrmVersion}");
                 }
 
-                // COPY 
+                // COPY
                 VRMSampleCopy.Execute();
             }
 
@@ -309,10 +309,7 @@ namespace VRM
             }
         }
 
-#if VRM_DEVELOP
-        [MenuItem(VRMVersion.MENU + "/VersionDialog")]
-#endif
-        static void ShowVersionDialog()
+        public static void ShowVersionDialog()
         {
             var window = ScriptableObject.CreateInstance<VRMVersionMenu>();
             window.m_vrmVersion = VRMVersion.VERSION;

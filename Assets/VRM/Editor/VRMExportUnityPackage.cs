@@ -123,8 +123,7 @@ namespace VRM.DevOnly.PackageExporter
             }
         }
 
-        [MenuItem(VRMVersion.MENU + "/Export unitypackage")]
-        static void CreateUnityPackageWithoutBuild()
+        public static void CreateUnityPackageWithoutBuild()
         {
             var folder = GetProjectRoot();
             if (!Directory.Exists(folder))
@@ -136,7 +135,7 @@ namespace VRM.DevOnly.PackageExporter
 
         /// <summary>
         /// This is call from Jenkins build
-        /// 
+        ///
         /// -quit -batchMode -executeMethod VRM.DevOnly.PackageExporter.VRMExportUnityPackage.CreateUnityPackageWithBuild
         /// </summary>
         public static void CreateUnityPackageWithBuild()
