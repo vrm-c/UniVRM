@@ -100,7 +100,7 @@ namespace UniVRM10
                     {
                         // indices から参照される頂点だけを蓄える
                         usedIndices.Add(k);
-                        buffer.Push(k, positions[k], normals[k], uv[k]);
+                        buffer.PushVertex(k, positions[k], normals[k], uv[k]);
                         if (getJointIndex != null)
                         {
                             var j = joints[k];
@@ -116,7 +116,7 @@ namespace UniVRM10
                                 weight2 = w.z,
                                 weight3 = w.w,
                             };
-                            buffer.Push(boneWeight);
+                            buffer.PushBoneWeight(boneWeight);
                         }
                     }
                 }

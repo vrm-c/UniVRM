@@ -236,7 +236,7 @@ namespace VRM
                     //
                     // T-Pose
                     //
-                    if (GUILayout.Button(VRMExportSettingsEditor.Options.DO_TPOSE.Msg()))
+                    if (GUILayout.Button(VRMExportOptions.DO_TPOSE.Msg()))
                     {
                         if (State.ExportRoot != null)
                         {
@@ -247,7 +247,7 @@ namespace VRM
                         }
                     }
 
-                    if (GUILayout.Button(VRMExportSettingsEditor.Options.DO_TPOSE.Msg() + "(unity internal)"))
+                    if (GUILayout.Button(VRMExportOptions.DO_TPOSE.Msg() + "(unity internal)"))
                     {
                         if (State.ExportRoot != null)
                         {

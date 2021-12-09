@@ -7,7 +7,6 @@ namespace VRM
     [Serializable]
     public class VRMExportSettings : ScriptableObject
     {
-
         /// <summary>
         /// エクスポート時に強制的にT-Pose化する
         /// </summary>
@@ -50,11 +49,18 @@ namespace VRM
         [Tooltip("Divide vertex buffer. For more gltf compatibility")]
         public bool DivideVertexBuffer = false;
 
+        /// <summary>
+        /// Export時にVertexColorを落とさない。特別な用途で使えるように敢えて残す設定
+        /// </summary>
+        [Tooltip("Keep vertex color attribute")]
+        public bool KeepVertexColor = false;
+
         public GltfExportSettings MeshExportSettings => new GltfExportSettings
         {
             UseSparseAccessorForMorphTarget = UseSparseAccessor,
             ExportOnlyBlendShapePosition = OnlyBlendshapePosition,
             DivideVertexBuffer = DivideVertexBuffer,
+            KeepVertexColor = KeepVertexColor,
         };
 
         public GameObject Root { get; set; }

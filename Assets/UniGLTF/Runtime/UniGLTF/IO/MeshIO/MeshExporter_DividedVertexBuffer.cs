@@ -34,6 +34,7 @@ namespace UniGLTF
             var normals = mesh.normals;
             var uv = mesh.uv;
             var boneWeights = mesh.boneWeights;
+            var colors = mesh.colors;
 
             Func<int, int> getJointIndex = null;
             if (boneWeights != null && boneWeights.Length == positions.Length)
@@ -44,25 +45,40 @@ namespace UniGLTF
             Vector3[] blendShapePositions = new Vector3[mesh.vertexCount];
             Vector3[] blendShapeNormals = new Vector3[mesh.vertexCount];
 
+            var vColorState = VertexColorUtility.DetectVertexColor(mesh, unityMaterials);
+            var exportVertexColor = (
+                (settings.KeepVertexColor && mesh.colors != null && mesh.colors.Length == mesh.vertexCount) // vertex color を残す設定
+                || vColorState == VertexColorState.ExistsAndIsUsed // VColor使っている
+                || vColorState == VertexColorState.ExistsAndMixed // VColorを使っているところと使っていないところが混在(とりあえずExportする)
+            );
+
             var usedIndices = new List<int>();
             for (int i = 0; i < mesh.subMeshCount; ++i)
             {
                 var indices = mesh.GetIndices(i);
                 var hash = new HashSet<int>(indices);
 
-                // aggrigate vertex attributes
+                // aggregate vertex attributes
                 var buffer = new MeshExportUtil.VertexBuffer(indices.Length, getJointIndex);
                 usedIndices.Clear();
                 for (int k = 0; k < positions.Length; ++k)
                 {
                     if (hash.Contains(k))
                     {
-                        // aggrigate indices
+                        // aggregate indices
                         usedIndices.Add(k);
-                        buffer.Push(k, axisInverter.InvertVector3(positions[k]), axisInverter.InvertVector3(normals[k]), uv[k].ReverseUV());
+                        buffer.PushVertex(k,
+                            axisInverter.InvertVector3(positions[k]), // POSITION
+                            axisInverter.InvertVector3(normals[k]), // NORMAL
+                            uv[k].ReverseUV() // UV
+                            );
                         if (getJointIndex != null)
                         {
-                            buffer.Push(boneWeights[k]);
+                            buffer.PushBoneWeight(boneWeights[k]);
+                        }
+                        if (exportVertexColor)
+                        {
+                            buffer.PushColor(colors[k]);
                         }
                     }
                 }
