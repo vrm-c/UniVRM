@@ -120,7 +120,7 @@ namespace UniVRM10
 #if VRM_DEVELOP
                                 if (GUILayout.Button("debug export"))
                                 {
-                                    File.WriteAllBytes("tmp.vrm", UniGLTF.Glb.Create(m_result.Data.Json, m_result.Data.Bin).ToBytes());
+                                    File.WriteAllBytes("tmp.vrm", m_result.MigratedBytes);
                                 }
 #endif
 

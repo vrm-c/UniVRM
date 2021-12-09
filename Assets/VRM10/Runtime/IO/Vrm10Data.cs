@@ -22,6 +22,8 @@ namespace UniVRM10
         public readonly Vrm10FileType FileType;
         public readonly String Message;
 
+        public byte[] MigratedBytes;
+
         public Vrm10Data(GltfData data, VRMC_vrm vrm, Vrm10FileType fileType, string message, Migration.Vrm0Meta oldMeta = null)
         {
             Data = data;
@@ -118,6 +120,10 @@ namespace UniVRM10
                         throw new NullReferenceException("oldMeta");
                     }
                     result = new Vrm10Data(migratedData, vrm, Vrm10FileType.Vrm0, "vrm0: migrated", oldMeta);
+#if VRM_DEVELOP            
+                    // 右手左手座標変換でバッファが破壊的変更されるので、コピーを作っている        
+                    result.MigratedBytes = migrated.Select(x => x).ToArray();
+#endif
                     return true;
                 }
 
