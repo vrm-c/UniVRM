@@ -151,16 +151,34 @@ namespace UniVRM10
                 }
             }
 
-            // update nodes
+            // update nodes and remove unused skin
+            var skins = gltf.skins.ToArray();
+            gltf.skins.Clear();
             foreach (var (gltfNode, node) in Enumerable.Zip(gltf.nodes, model.Nodes, (l, r) => (l, r)))
             {
                 gltfNode.translation = node.LocalTranslation.ToFloat3();
                 gltfNode.rotation = node.LocalRotation.ToFloat4();
                 gltfNode.scale = node.LocalScaling.ToFloat3();
-                if (gltfNode.mesh >= 0 && gltfNode.skin >= 0)
+                if (gltfNode.mesh >= 0)
                 {
-                    var gltfSkin = gltf.skins[gltfNode.skin];
-                    gltfSkin.inverseBindMatrices = AddAccessor(node.MeshGroup.Skin.InverseMatrices.GetSpan<Matrix4x4>());
+                    if (gltfNode.skin >= 0)
+                    {
+                        var gltfSkin = skins[gltfNode.skin];
+                        // get or create
+                        var skinIndex = gltf.skins.IndexOf(gltfSkin);
+                        if (skinIndex == -1)
+                        {
+                            skinIndex = gltf.skins.Count;
+                            gltfSkin.inverseBindMatrices = AddAccessor(node.MeshGroup.Skin.InverseMatrices.GetSpan<Matrix4x4>());
+                            gltf.skins.Add(gltfSkin);
+                        }
+                        // update
+                        gltfNode.skin = skinIndex;
+                    }
+                }
+                else
+                {
+                    gltfNode.skin = -1;
                 }
             }
 
