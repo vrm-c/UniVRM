@@ -43,5 +43,9 @@ namespace VRM
         [LangMsg(Languages.ja, "頂点バッファをsubmeshで分割する。GLTF互換性のため。UniVRM-0.72 からロードできる。")]
         [LangMsg(Languages.en, "Divide vertex buffer by submesh。For more gltf compatibility。UniVRM-0.72 or later can load.")]
         DIVIDE_VERTEX_BUFFER,
+
+        [LangMsg(Languages.ja, "頂点カラーの自動削除をしない。")]
+        [LangMsg(Languages.en, "Do not automatically delete vertex colors.")]
+        KEEP_VERTEX_COLOR,
     }
 }

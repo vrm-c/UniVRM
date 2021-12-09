@@ -3,6 +3,7 @@ using System;
 using UnityEditor;
 using UnityEngine;
 using UniGLTF.M17N;
+using System.Collections.Generic;
 
 namespace VRM
 {
@@ -36,12 +37,7 @@ namespace VRM
             }
         }
 
-        CheckBoxProp m_poseFreeze;
-        CheckBoxProp m_useSparseAccessor;
-        CheckBoxProp m_onlyBlendShapePosition;
-        CheckBoxProp m_reduceBlendShape;
-        CheckBoxProp m_reduceBlendShapeClip;
-        CheckBoxProp m_divideVertexBuffer;
+        List<CheckBoxProp> m_checkbox_list = new List<CheckBoxProp>();
 
         static string Msg(VRMExportOptions key)
         {
@@ -51,12 +47,13 @@ namespace VRM
 
         private void OnEnable()
         {
-            m_poseFreeze = new CheckBoxProp(serializedObject.FindProperty(nameof(VRMExportSettings.PoseFreeze)), VRMExportOptions.NORMALIZE);
-            m_useSparseAccessor = new CheckBoxProp(serializedObject.FindProperty(nameof(VRMExportSettings.UseSparseAccessor)), VRMExportOptions.BLENDSHAPE_USE_SPARSE);
-            m_onlyBlendShapePosition = new CheckBoxProp(serializedObject.FindProperty(nameof(VRMExportSettings.OnlyBlendshapePosition)), VRMExportOptions.BLENDSHAPE_EXCLUDE_NORMAL_AND_TANGENT);
-            m_reduceBlendShape = new CheckBoxProp(serializedObject.FindProperty(nameof(VRMExportSettings.ReduceBlendshape)), VRMExportOptions.BLENDSHAPE_ONLY_CLIP_USE);
-            m_reduceBlendShapeClip = new CheckBoxProp(serializedObject.FindProperty(nameof(VRMExportSettings.ReduceBlendshapeClip)), VRMExportOptions.BLENDSHAPE_EXCLUDE_UNKNOWN);
-            m_divideVertexBuffer = new CheckBoxProp(serializedObject.FindProperty(nameof(VRMExportSettings.DivideVertexBuffer)), VRMExportOptions.DIVIDE_VERTEX_BUFFER);
+            m_checkbox_list.Add(new CheckBoxProp(serializedObject.FindProperty(nameof(VRMExportSettings.PoseFreeze)), VRMExportOptions.NORMALIZE));
+            m_checkbox_list.Add(new CheckBoxProp(serializedObject.FindProperty(nameof(VRMExportSettings.UseSparseAccessor)), VRMExportOptions.BLENDSHAPE_USE_SPARSE));
+            m_checkbox_list.Add(new CheckBoxProp(serializedObject.FindProperty(nameof(VRMExportSettings.OnlyBlendshapePosition)), VRMExportOptions.BLENDSHAPE_EXCLUDE_NORMAL_AND_TANGENT));
+            m_checkbox_list.Add(new CheckBoxProp(serializedObject.FindProperty(nameof(VRMExportSettings.ReduceBlendshape)), VRMExportOptions.BLENDSHAPE_ONLY_CLIP_USE));
+            m_checkbox_list.Add(new CheckBoxProp(serializedObject.FindProperty(nameof(VRMExportSettings.ReduceBlendshapeClip)), VRMExportOptions.BLENDSHAPE_EXCLUDE_UNKNOWN));
+            m_checkbox_list.Add(new CheckBoxProp(serializedObject.FindProperty(nameof(VRMExportSettings.DivideVertexBuffer)), VRMExportOptions.DIVIDE_VERTEX_BUFFER));
+            m_checkbox_list.Add(new CheckBoxProp(serializedObject.FindProperty(nameof(VRMExportSettings.KeepVertexColor)), VRMExportOptions.KEEP_VERTEX_COLOR));
         }
 
 
@@ -70,13 +67,10 @@ namespace VRM
 
             EditorGUIUtility.labelWidth = 160;
             serializedObject.Update();
-            m_poseFreeze.Draw();
-            m_useSparseAccessor.Draw();
-            m_onlyBlendShapePosition.Draw();
-            m_reduceBlendShape.Draw();
-            m_reduceBlendShapeClip.Draw();
-            m_divideVertexBuffer.Draw();
-
+            foreach (var checkbox in m_checkbox_list)
+            {
+                checkbox.Draw();
+            }
             serializedObject.ApplyModifiedProperties();
         }
     }
