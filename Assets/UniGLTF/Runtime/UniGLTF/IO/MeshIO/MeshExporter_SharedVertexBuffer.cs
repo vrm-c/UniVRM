@@ -49,7 +49,7 @@ namespace UniGLTF
             var colorAccessorIndex = -1;
 
             var vColorState = VertexColorUtility.DetectVertexColor(mesh, materials);
-            if (settings.KeepVertexColor // vertex color を残す設定
+            if ((settings.KeepVertexColor && mesh.colors != null && mesh.colors.Length == mesh.vertexCount) // vertex color を残す設定
             || vColorState == VertexColorState.ExistsAndIsUsed // VColor使っている
             || vColorState == VertexColorState.ExistsAndMixed // VColorを使っているところと使っていないところが混在(とりあえずExportする)
             )

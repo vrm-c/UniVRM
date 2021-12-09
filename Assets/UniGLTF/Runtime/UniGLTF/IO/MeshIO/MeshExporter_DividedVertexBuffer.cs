@@ -46,9 +46,10 @@ namespace UniGLTF
             Vector3[] blendShapeNormals = new Vector3[mesh.vertexCount];
 
             var vColorState = VertexColorUtility.DetectVertexColor(mesh, unityMaterials);
-            var exportVertexColor = (settings.KeepVertexColor // vertex color を残す設定
-            || vColorState == VertexColorState.ExistsAndIsUsed // VColor使っている
-            || vColorState == VertexColorState.ExistsAndMixed // VColorを使っているところと使っていないところが混在(とりあえずExportする)
+            var exportVertexColor = (
+                (settings.KeepVertexColor && mesh.colors != null && mesh.colors.Length == mesh.vertexCount) // vertex color を残す設定
+                || vColorState == VertexColorState.ExistsAndIsUsed // VColor使っている
+                || vColorState == VertexColorState.ExistsAndMixed // VColorを使っているところと使っていないところが混在(とりあえずExportする)
             );
 
             var usedIndices = new List<int>();
