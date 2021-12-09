@@ -159,10 +159,16 @@ namespace UniVRM10
                 gltfNode.translation = node.LocalTranslation.ToFloat3();
                 gltfNode.rotation = node.LocalRotation.ToFloat4();
                 gltfNode.scale = node.LocalScaling.ToFloat3();
+
                 if (gltfNode.mesh >= 0)
                 {
                     if (gltfNode.skin >= 0)
                     {
+                        //
+                        // mesh with skin
+                        // only this case, skin is enable
+                        // [SkinnedMeshRenderer]
+                        //
                         var gltfSkin = skins[gltfNode.skin];
                         // get or create
                         var skinIndex = gltf.skins.IndexOf(gltfSkin);
@@ -172,13 +178,37 @@ namespace UniVRM10
                             gltfSkin.inverseBindMatrices = AddAccessor(node.MeshGroup.Skin.InverseMatrices.GetSpan<Matrix4x4>());
                             gltf.skins.Add(gltfSkin);
                         }
+                        else{
+                            // multi nodes sharing a same skin may be error ?
+                            // edge case.
+                        }
                         // update
                         gltfNode.skin = skinIndex;
+                    }
+                    else
+                    {
+                        //
+                        // mesh without skin
+                        // [MeshRenderer]
+                        //
                     }
                 }
                 else
                 {
-                    gltfNode.skin = -1;
+                    if (gltfNode.skin >= 0)
+                    {
+                        //
+                        // no mesh but skin
+                        // fix error
+                        //
+                        gltfNode.skin = -1;
+                    }
+                    else
+                    {
+                        //
+                        // no mesh no skin
+                        //
+                    }
                 }
             }
 
