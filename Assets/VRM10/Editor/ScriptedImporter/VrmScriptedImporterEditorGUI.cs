@@ -106,13 +106,25 @@ namespace UniVRM10
                                     serializedObject.Update();
                                     EditorGUILayout.HelpBox("Experimental", MessageType.Warning);
                                     EditorGUILayout.PropertyField(serializedObject.FindProperty(nameof(VrmScriptedImporter.RenderPipeline)));
+
+
                                     serializedObject.ApplyModifiedProperties();
                                 }
+
                                 ApplyRevertGUI();
                                 break;
 
                             case Vrm10FileType.Vrm0:
                                 EditorGUILayout.HelpBox(m_result.Message, m_model != null ? MessageType.Info : MessageType.Warning);
+
+                                if (VRMShaders.Symbols.VRM_DEVELOP)
+                                {
+                                    if (GUILayout.Button("debug export"))
+                                    {
+                                        File.WriteAllBytes("tmp.vrm", m_result.MigratedBytes);
+                                    }
+                                }
+
                                 // migration check boxs
                                 base.OnInspectorGUI();
                                 break;

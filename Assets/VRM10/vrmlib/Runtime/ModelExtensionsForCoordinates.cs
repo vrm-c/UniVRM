@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using UniGLTF;
@@ -153,6 +154,10 @@ namespace VrmLib
         /// </summary>
         static void ReverseAxisAndFlipTriangle(this Model model, Reverser reverser, bool ignoreVrm)
         {
+            // 複数の gltf.accessor が別の要素間で共有されている場合に、２回処理されることを防ぐ
+            // edgecase: InverseBindMatrices で遭遇
+            var unique = new HashSet<ArraySegment<byte>>();
+
             foreach (var g in model.MeshGroups)
             {
                 foreach (var m in g.Meshes)
@@ -161,7 +166,10 @@ namespace VrmLib
                     {
                         if (k == VertexBuffer.PositionKey || k == VertexBuffer.NormalKey)
                         {
-                            reverser.ReverseBuffer(v);
+                            if (unique.Add(v.Bytes))
+                            {
+                                reverser.ReverseBuffer(v);
+                            }
                         }
                         else if (k == VertexBuffer.TangentKey)
                         {
@@ -169,19 +177,22 @@ namespace VrmLib
                         }
                     }
 
-                    switch (m.IndexBuffer.ComponentType)
+                    if (unique.Add(m.IndexBuffer.Bytes))
                     {
-                        case AccessorValueType.UNSIGNED_BYTE:
-                            FlipTriangle(SpanLike.Wrap<Byte>(m.IndexBuffer.Bytes));
-                            break;
-                        case AccessorValueType.UNSIGNED_SHORT:
-                            FlipTriangle(SpanLike.Wrap<UInt16>(m.IndexBuffer.Bytes));
-                            break;
-                        case AccessorValueType.UNSIGNED_INT:
-                            FlipTriangle(SpanLike.Wrap<UInt32>(m.IndexBuffer.Bytes));
-                            break;
-                        default:
-                            throw new NotImplementedException();
+                        switch (m.IndexBuffer.ComponentType)
+                        {
+                            case AccessorValueType.UNSIGNED_BYTE:
+                                FlipTriangle(SpanLike.Wrap<Byte>(m.IndexBuffer.Bytes));
+                                break;
+                            case AccessorValueType.UNSIGNED_SHORT:
+                                FlipTriangle(SpanLike.Wrap<UInt16>(m.IndexBuffer.Bytes));
+                                break;
+                            case AccessorValueType.UNSIGNED_INT:
+                                FlipTriangle(SpanLike.Wrap<UInt32>(m.IndexBuffer.Bytes));
+                                break;
+                            default:
+                                throw new NotImplementedException();
+                        }
                     }
 
                     foreach (var mt in m.MorphTargets)
@@ -190,7 +201,10 @@ namespace VrmLib
                         {
                             if (k == VertexBuffer.PositionKey || k == VertexBuffer.NormalKey)
                             {
-                                reverser.ReverseBuffer(v);
+                                if (unique.Add(v.Bytes))
+                                {
+                                    reverser.ReverseBuffer(v);
+                                }
                             }
                             if (k == VertexBuffer.TangentKey)
                             {
@@ -214,7 +228,10 @@ namespace VrmLib
             {
                 if (s.InverseMatrices != null)
                 {
-                    reverser.ReverseBuffer(s.InverseMatrices);
+                    if (unique.Add(s.InverseMatrices.Bytes))
+                    {
+                        reverser.ReverseBuffer(s.InverseMatrices);
+                    }
                 }
             }
 
