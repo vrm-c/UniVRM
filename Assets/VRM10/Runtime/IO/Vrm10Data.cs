@@ -120,10 +120,13 @@ namespace UniVRM10
                         throw new NullReferenceException("oldMeta");
                     }
                     result = new Vrm10Data(migratedData, vrm, Vrm10FileType.Vrm0, "vrm0: migrated", oldMeta);
-#if VRM_DEVELOP            
-                    // 右手左手座標変換でバッファが破壊的変更されるので、コピーを作っている        
-                    result.MigratedBytes = migrated.Select(x => x).ToArray();
-#endif
+
+                    if (VRMShaders.Symbols.VRM_DEVELOP)
+                    {
+                        // 右手左手座標変換でバッファが破壊的変更されるので、コピーを作っている        
+                        result.MigratedBytes = migrated.Select(x => x).ToArray();
+                    }
+
                     return true;
                 }
 

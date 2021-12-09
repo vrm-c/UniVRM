@@ -117,12 +117,13 @@ namespace UniVRM10
                             case Vrm10FileType.Vrm0:
                                 EditorGUILayout.HelpBox(m_result.Message, m_model != null ? MessageType.Info : MessageType.Warning);
 
-#if VRM_DEVELOP
-                                if (GUILayout.Button("debug export"))
+                                if (VRMShaders.Symbols.VRM_DEVELOP)
                                 {
-                                    File.WriteAllBytes("tmp.vrm", m_result.MigratedBytes);
+                                    if (GUILayout.Button("debug export"))
+                                    {
+                                        File.WriteAllBytes("tmp.vrm", m_result.MigratedBytes);
+                                    }
                                 }
-#endif
 
                                 // migration check boxs
                                 base.OnInspectorGUI();
