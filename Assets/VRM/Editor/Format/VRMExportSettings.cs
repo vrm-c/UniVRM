@@ -60,6 +60,7 @@ namespace VRM
             UseSparseAccessorForMorphTarget = UseSparseAccessor,
             ExportOnlyBlendShapePosition = OnlyBlendshapePosition,
             DivideVertexBuffer = DivideVertexBuffer,
+            KeepVertexColor = KeepVertexColor,
         };
 
         public GameObject Root { get; set; }

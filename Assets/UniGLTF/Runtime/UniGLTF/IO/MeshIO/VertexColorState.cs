@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace UniGLTF
@@ -37,7 +38,7 @@ namespace UniGLTF
             return true;
         }
 
-        public static VertexColorState DetectVertexColor(Mesh mesh, Material[] materials)
+        public static VertexColorState DetectVertexColor(Mesh mesh, IEnumerable<Material> materials)
         {
             if (mesh != null && mesh.colors != null && mesh.colors.Length == mesh.vertexCount)
             {
