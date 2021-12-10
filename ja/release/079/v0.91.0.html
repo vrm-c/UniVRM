@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>v0.86.0: 1.0準備, [1.0]FastSpringBone &mdash; UniVRM Programming Document  ドキュメント</title>
+  <title>v0.91.0: 1.0準備 &mdash; UniVRM Programming Document  ドキュメント</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -19,8 +19,7 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="索引" href="../../genindex.html" />
     <link rel="search" title="検索" href="../../search.html" />
-    <link rel="next" title="v0.87.0: 1.0準備" href="v0.87.0.html" />
-    <link rel="prev" title="v0.85.0: 1.0準備, [0.x]FastSpringBone" href="v0.85.0.html" /> 
+    <link rel="prev" title="v0.90.0: 1.0準備" href="v0.90.0.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -28,7 +27,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-[日本語] <a href="../../../en/release/079/v0.86.0.html">English</a>
+[日本語] <a href="../../../en/release/079/v0.91.0.html">English</a>
 
             <a href="../../index.html" class="icon icon-home"> UniVRM Programming Document
           </a>
@@ -62,12 +61,12 @@
 <li class="toctree-l4"><a class="reference internal" href="v0.83.0.html">v0.83.0: 1.0準備</a></li>
 <li class="toctree-l4"><a class="reference internal" href="v0.84.0.html">v0.84.0: 1.0準備, glTF import menu 復活</a></li>
 <li class="toctree-l4"><a class="reference internal" href="v0.85.0.html">v0.85.0: 1.0準備, [0.x]FastSpringBone</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">v0.86.0: 1.0準備, [1.0]FastSpringBone</a></li>
+<li class="toctree-l4"><a class="reference internal" href="v0.86.0.html">v0.86.0: 1.0準備, [1.0]FastSpringBone</a></li>
 <li class="toctree-l4"><a class="reference internal" href="v0.87.0.html">v0.87.0: 1.0準備</a></li>
 <li class="toctree-l4"><a class="reference internal" href="v0.88.0.html">v0.88.0: 1.0準備</a></li>
 <li class="toctree-l4"><a class="reference internal" href="v0.89.0.html">v0.89.0: 1.0準備</a></li>
 <li class="toctree-l4"><a class="reference internal" href="v0.90.0.html">v0.90.0: 1.0準備</a></li>
-<li class="toctree-l4"><a class="reference internal" href="v0.91.0.html">v0.91.0: 1.0準備</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">v0.91.0: 1.0準備</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="index.html#v0-81">パッケージ(v0.81~)</a></li>
@@ -94,9 +93,9 @@
       <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="../index.html">Release</a> &raquo;</li>
           <li><a href="index.html">v0.79～ (Unity-2019.4) 最新版をご利用ください</a> &raquo;</li>
-      <li>v0.86.0: 1.0準備, [1.0]FastSpringBone</li>
+      <li>v0.91.0: 1.0準備</li>
       <li class="wy-breadcrumbs-aside">
-              <a href="https://github.com/vrm-c/UniVRM/blob/master/docs/release/079/v0.86.0.md" class="fa fa-github"> Edit on GitHub</a>
+              <a href="https://github.com/vrm-c/UniVRM/blob/master/docs/release/079/v0.91.0.md" class="fa fa-github"> Edit on GitHub</a>
       </li>
   </ul>
   <hr/>
@@ -104,34 +103,43 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section class="tex2jax_ignore mathjax_ignore" id="v0-86-0-1-0-1-0-fastspringbone">
-<h1>v0.86.0: 1.0準備, [1.0]FastSpringBone<a class="headerlink" href="#v0-86-0-1-0-1-0-fastspringbone" title="このヘッドラインへのパーマリンク"></a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="v0-91-0-1-0">
+<h1>v0.91.0: 1.0準備<a class="headerlink" href="#v0-91-0-1-0" title="このヘッドラインへのパーマリンク"></a></h1>
+<section id="export-option">
+<h2>export option 追加<a class="headerlink" href="#export-option" title="このヘッドラインへのパーマリンク"></a></h2>
+<ul class="simple">
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1415">#1415</a>] Feature/keep vertex color</p></li>
+</ul>
+</section>
+<section id="texture-importer">
+<h2>texture importer 設定関連<a class="headerlink" href="#texture-importer" title="このヘッドラインへのパーマリンク"></a></h2>
+<ul class="simple">
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1410">#1410</a>] Add the capability of importing texture extension.</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1402">#1402</a>] While importing in Unity Editor, <code class="docutils literal notranslate"><span class="pre">Max</span> <span class="pre">Size</span></code> property is invalid if a texture size was larger than 2048.</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1403">#1403</a>] Ignore texture compression settings while exporting glTF / VRM.</p></li>
+</ul>
+</section>
 <section id="id1">
 <h2>1.0<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク"></a></h2>
 <ul class="simple">
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1287">#1287</a>] [1.0] !isSelf かつ firstPersonOnly のときに VisibleRenderers から除去する</p></li>
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1280">#1280</a>] [1.0] ヒエラルキーに回転・スケールが含まれているモデルのマイグレーション</p></li>
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1278">#1278</a>] Avoid FastSpringBone in UnitTest</p></li>
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1277">#1277</a>] Add fastSpringBone documents</p></li>
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1273">#1273</a>] Improve buffer construction performance</p></li>
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1271">#1271</a>] Add FastSpringBone for VRM1.0</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1409">#1409</a>] 同一のバイト列を参照するBufferAccessor が複数回、座標変換(右手・左手変換)されるのを回避する</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1405">#1405</a>] skin があるが mesh が無い</p></li>
 </ul>
 </section>
 <section id="id2">
 <h2>その他<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク"></a></h2>
 <ul class="simple">
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1288">#1288</a>] Fix/test filter</p></li>
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1285">#1285</a>] Doc/add release note</p></li>
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1283">#1283</a>] Ignore meshFilter if it hided or hasn't vertex</p></li>
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1282">#1282</a>] vrm.devから移動</p></li>
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1281">#1281</a>] UniVRM-0.86.0</p></li>
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1279">#1279</a>] [Maintenance] mv VrmLib.SpanLike to UniGLTF.SpanLike</p></li>
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1276">#1276</a>] conf.py とコマンドラインの評価順ぽい</p></li>
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1275">#1275</a>] もう一回</p></li>
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1274">#1274</a>] Sphinx更新</p></li>
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1272">#1272</a>] fix name</p></li>
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1270">#1270</a>] BvhImporterContext.Parse の引き数間違いを修正</p></li>
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1269">#1269</a>] fix typo</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1416">#1416</a>] UniVRM-0.91.0</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1414">#1414</a>] Make public constructor of interface class.</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1412">#1412</a>] Remove unused AOT Call generation</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1411">#1411</a>] Refactoring top menues of UniGLTF and UniVRM 0.x</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1407">#1407</a>] Change ITextureDeserializer interface. The implementation must set sampler params.</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1404">#1404</a>] UniHumanoid のフォルダ構成を整理</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1400">#1400</a>] Fix migration error in MToon &amp; Modify Screen Coords Outline drawing algorithm.</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1399">#1399</a>] Add a destructive MToon migration in edge case.</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1398">#1398</a>] UniVRM-0.90.1</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1397">#1397</a>] UniGLTF において、メッシュの Bounds が計算されていなかった問題を修正</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1395">#1395</a>] release v0.90.0</p></li>
 </ul>
 </section>
 </section>
@@ -140,8 +148,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="v0.85.0.html" class="btn btn-neutral float-left" title="v0.85.0: 1.0準備, [0.x]FastSpringBone" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="v0.87.0.html" class="btn btn-neutral float-right" title="v0.87.0: 1.0準備" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="v0.90.0.html" class="btn btn-neutral float-left" title="v0.90.0: 1.0準備" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>
