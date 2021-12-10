@@ -7,12 +7,16 @@ namespace VRMShaders
         /// VRMShaders が最下層になるため、ここに配置している
         /// </summary>
         /// <value></value>
-        public const bool VRM_DEVELOP =
+        public static bool VRM_DEVELOP
+        {
+            get
+            {
 #if VRM_DEVELOP
-true
+                return true;
 #else
-false
+                return false;
 #endif
-        ;
+            }
+        }
     }
 }
