@@ -76,7 +76,7 @@ namespace UniGLTF
         public static IReadOnlyList<UniGLTF.MeshExportInfo> MeshInformations;
         public static bool EnableFreeze;
 
-        public static IEnumerable<Validation> Validate(GameObject ExportRoot)
+        public static IEnumerable<Validation> Validate_Normalize(GameObject ExportRoot)
         {
             if (!ExportRoot)
             {
@@ -113,6 +113,14 @@ namespace UniGLTF
                         yield return Validation.Info("Root OK");
                     }
                 }
+            }
+        }
+
+        public static IEnumerable<Validation> Validate_TPose(GameObject ExportRoot)
+        {
+            if (!ExportRoot)
+            {
+                yield break;
             }
 
             //

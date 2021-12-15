@@ -136,7 +136,7 @@ namespace UniVRM10
                 yield break;
             }
 
-            yield return HumanoidValidator.Validate;
+            yield return HumanoidValidator.Validate_TPose;
 
             // MeshUtility.Validators.HumanoidValidator.EnableFreeze = false;
             // yield return MeshUtility.Validators.HumanoidValidator.Validate;

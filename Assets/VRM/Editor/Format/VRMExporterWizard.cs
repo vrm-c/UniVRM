@@ -174,7 +174,8 @@ namespace VRM
             // Humanoid のチェック
             HumanoidValidator.MeshInformations = m_meshes.Meshes;
             HumanoidValidator.EnableFreeze = m_settings.PoseFreeze;
-            yield return HumanoidValidator.Validate;
+            yield return HumanoidValidator.Validate_Normalize;
+            yield return HumanoidValidator.Validate_TPose;
 
             //
             // VRM のチェック
