@@ -136,7 +136,7 @@ namespace UniVRM10
                 yield break;
             }
 
-            yield return HumanoidValidator.Validate;
+            yield return HumanoidValidator.Validate_TPose;
 
             // MeshUtility.Validators.HumanoidValidator.EnableFreeze = false;
             // yield return MeshUtility.Validators.HumanoidValidator.Validate;
@@ -175,19 +175,6 @@ namespace UniVRM10
 
             if (State.ExportRoot.GetComponent<Animator>() != null)
             {
-                //
-                // T-Pose
-                //
-                // if (GUILayout.Button("T-Pose"))
-                // {
-                //     if (State.ExportRoot != null)
-                //     {
-                //         // fallback
-                //         Undo.RecordObjects(State.ExportRoot.GetComponentsInChildren<Transform>(), "tpose");
-                //         VRMBoneNormalizer.EnforceTPose(State.ExportRoot);
-                //     }
-                // }
-
                 var backup = GUI.enabled;
                 GUI.enabled = State.ExportRoot.scene.IsValid();
                 if (GUI.enabled)
@@ -281,14 +268,6 @@ namespace UniVRM10
             {
                 var converter = new UniVRM10.ModelExporter();
                 var model = converter.Export(root);
-
-                if (HumanoidValidator.HasRotationOrScale(root))
-                {
-                    // 正規化
-                    m_logLabel += $"normalize...\n";
-                    var modifier = new ModelModifier(model);
-                    modifier.SkinningBake();
-                }
 
                 // 右手系に変換
                 m_logLabel += $"convert to right handed coordinate...\n";
