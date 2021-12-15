@@ -29,7 +29,15 @@ namespace UniVRM10
             }
         }
 
-        public static void Import(ScriptedImporter scriptedImporter, AssetImportContext context, bool migrateToVrm1, RenderPipelineTypes renderPipeline)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="scriptedImporter"></param>
+        /// <param name="context"></param>
+        /// <param name="migrateToVrm1">vrm0 だった場合に vrm1 化する</param>
+        /// <param name="renderPipeline"></param>
+        /// <param name="normalize">normalize する</param>
+        public static void Import(ScriptedImporter scriptedImporter, AssetImportContext context, bool migrateToVrm1, RenderPipelineTypes renderPipeline, bool normalize)
         {
 #if VRM_DEVELOP
             Debug.Log("OnImportAsset to " + scriptedImporter.assetPath);
