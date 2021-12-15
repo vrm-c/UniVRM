@@ -269,14 +269,6 @@ namespace UniVRM10
                 var converter = new UniVRM10.ModelExporter();
                 var model = converter.Export(root);
 
-                if (HumanoidValidator.HasRotationOrScale(root))
-                {
-                    // 正規化
-                    m_logLabel += $"normalize...\n";
-                    var modifier = new ModelModifier(model);
-                    modifier.SkinningBake();
-                }
-
                 // 右手系に変換
                 m_logLabel += $"convert to right handed coordinate...\n";
                 model.ConvertCoordinate(VrmLib.Coordinates.Vrm1, ignoreVrm: false);
