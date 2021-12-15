@@ -17,9 +17,12 @@ namespace UniVRM10
         [SerializeField]
         public UniGLTF.RenderPipelineTypes RenderPipeline = default;
 
+        [SerializeField]
+        public bool Normalize = default;
+
         public override void OnImportAsset(AssetImportContext ctx)
         {
-            VrmScriptedImporterImpl.Import(this, ctx, MigrateToVrm1, RenderPipeline);
+            VrmScriptedImporterImpl.Import(this, ctx, MigrateToVrm1, RenderPipeline, Normalize);
         }
 
         void OnValidate()

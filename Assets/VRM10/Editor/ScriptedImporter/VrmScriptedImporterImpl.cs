@@ -29,7 +29,15 @@ namespace UniVRM10
             }
         }
 
-        public static void Import(ScriptedImporter scriptedImporter, AssetImportContext context, bool migrateToVrm1, RenderPipelineTypes renderPipeline)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="scriptedImporter"></param>
+        /// <param name="context"></param>
+        /// <param name="migrateToVrm1">vrm0 だった場合に vrm1 化する</param>
+        /// <param name="renderPipeline"></param>
+        /// <param name="doNormalize">normalize する</param>
+        public static void Import(ScriptedImporter scriptedImporter, AssetImportContext context, bool migrateToVrm1, RenderPipelineTypes renderPipeline, bool doNormalize)
         {
 #if VRM_DEVELOP
             Debug.Log("OnImportAsset to " + scriptedImporter.assetPath);
@@ -50,7 +58,9 @@ namespace UniVRM10
 
             var materialGenerator = GetMaterialDescriptorGenerator(renderPipeline);
 
-            using (var loader = new Vrm10Importer(result, extractedObjects, materialGenerator: materialGenerator))
+            using (var loader = new Vrm10Importer(result, extractedObjects,
+                materialGenerator: materialGenerator,
+                doNormalize: doNormalize))
             {
                 // settings TextureImporters
                 foreach (var textureInfo in loader.TextureDescriptorGenerator.Get().GetEnumerable())

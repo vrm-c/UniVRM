@@ -101,13 +101,15 @@ namespace UniVRM10
                         switch (m_result.FileType)
                         {
                             case Vrm10FileType.Vrm1:
+
                                 EditorGUILayout.HelpBox(m_result.Message, MessageType.Info);
+
                                 {
                                     serializedObject.Update();
-                                    EditorGUILayout.HelpBox("Experimental", MessageType.Warning);
-                                    EditorGUILayout.PropertyField(serializedObject.FindProperty(nameof(VrmScriptedImporter.RenderPipeline)));
-
-
+                                    // normalize
+                                    EditorGUILayout.Space();
+                                    EditorGUILayout.HelpBox("Create normalized prefab", MessageType.Info);
+                                    EditorGUILayout.PropertyField(serializedObject.FindProperty(nameof(VrmScriptedImporter.Normalize)));
                                     serializedObject.ApplyModifiedProperties();
                                 }
 
@@ -125,8 +127,14 @@ namespace UniVRM10
                                     }
                                 }
 
-                                // migration check boxs
-                                base.OnInspectorGUI();
+                                {
+                                    serializedObject.Update();
+                                    // migration
+                                    EditorGUILayout.PropertyField(serializedObject.FindProperty(nameof(VrmScriptedImporter.MigrateToVrm1)));
+                                    serializedObject.ApplyModifiedProperties();
+                                }
+
+                                ApplyRevertGUI();
                                 break;
 
                             default:
@@ -142,6 +150,12 @@ namespace UniVRM10
                         m_materialEditor.OnGUI(m_importer, m_result.Data, new Vrm10TextureDescriptorGenerator(m_result.Data),
                             assetPath => $"{Path.GetFileNameWithoutExtension(assetPath)}.vrm1.Textures",
                             assetPath => $"{Path.GetFileNameWithoutExtension(assetPath)}.vrm1.Materials");
+
+                        // render pipeline
+                        EditorGUILayout.Space();
+                        EditorGUILayout.HelpBox("Experimental", MessageType.Warning);
+                        EditorGUILayout.PropertyField(serializedObject.FindProperty(nameof(VrmScriptedImporter.RenderPipeline)));
+
                         ApplyRevertGUI();
                     }
                     break;

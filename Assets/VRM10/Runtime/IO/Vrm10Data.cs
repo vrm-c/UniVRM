@@ -18,19 +18,38 @@ namespace UniVRM10
     {
         public GltfData Data { get; }
         public UniGLTF.Extensions.VRMC_vrm.VRMC_vrm VrmExtension { get; }
-        public readonly Migration.Vrm0Meta OriginalMetaBeforeMigration;
+
+        /// <summary>
+        /// TryParse した元のファイルの種類。元が vrm0 だったか分かる
+        /// </summary>
         public readonly Vrm10FileType FileType;
+
+        /// <summary>
+        /// マイグレーション失敗など
+        /// </summary>
         public readonly String Message;
 
-        public byte[] MigratedBytes;
+        /// <summary>
+        /// vrm0 からマイグレーションした場合に、vrm0 版の meta 情報
+        /// </summary>
+        public readonly Migration.Vrm0Meta OriginalMetaBeforeMigration;
 
-        public Vrm10Data(GltfData data, VRMC_vrm vrm, Vrm10FileType fileType, string message, Migration.Vrm0Meta oldMeta = null)
+        /// <summary>
+        /// Migration した結果のバイト列(デバッグ用)
+        /// </summary>
+        public readonly byte[] MigratedBytes;
+
+        Vrm10Data(GltfData data, VRMC_vrm vrm, Vrm10FileType fileType, string message,
+            Migration.Vrm0Meta oldMeta = null,
+            byte[] migratedBytes = null)
         {
             Data = data;
             VrmExtension = vrm;
             FileType = fileType;
             Message = message;
+
             OriginalMetaBeforeMigration = oldMeta;
+            MigratedBytes = migratedBytes;
         }
 
         public static bool TryParseOrMigrate(string path, bool doMigrate, out Vrm10Data result)
@@ -119,13 +138,18 @@ namespace UniVRM10
                     {
                         throw new NullReferenceException("oldMeta");
                     }
-                    result = new Vrm10Data(migratedData, vrm, Vrm10FileType.Vrm0, "vrm0: migrated", oldMeta);
-
+                    byte[] migratedBytes = null;
                     if (VRMShaders.Symbols.VRM_DEVELOP)
                     {
                         // 右手左手座標変換でバッファが破壊的変更されるので、コピーを作っている        
-                        result.MigratedBytes = migrated.Select(x => x).ToArray();
+                        migratedBytes = migrated.Select(x => x).ToArray();
                     }
+
+                    result = new Vrm10Data(migratedData, vrm, Vrm10FileType.Vrm0,
+                        message: "vrm0: migrated",
+                        oldMeta: oldMeta,
+                        migratedBytes: migratedBytes
+                        );
 
                     return true;
                 }
