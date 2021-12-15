@@ -175,19 +175,6 @@ namespace UniVRM10
 
             if (State.ExportRoot.GetComponent<Animator>() != null)
             {
-                //
-                // T-Pose
-                //
-                // if (GUILayout.Button("T-Pose"))
-                // {
-                //     if (State.ExportRoot != null)
-                //     {
-                //         // fallback
-                //         Undo.RecordObjects(State.ExportRoot.GetComponentsInChildren<Transform>(), "tpose");
-                //         VRMBoneNormalizer.EnforceTPose(State.ExportRoot);
-                //     }
-                // }
-
                 var backup = GUI.enabled;
                 GUI.enabled = State.ExportRoot.scene.IsValid();
                 if (GUI.enabled)
