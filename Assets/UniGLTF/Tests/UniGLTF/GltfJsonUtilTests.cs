@@ -9,7 +9,7 @@ namespace UniGLTF
         [Test]
         public void Update_extensionUsed()
         {
-            var dst = GltfJsonUtil.Update_extensionsUsed(@"{
+            var dst = GltfJsonUtil.FindUsedExtensionsAndUpdateJson(@"{
     ""asset"": {
         ""generator"": ""COLLADA2GLTF"",
         ""version"": ""2.0""
@@ -50,7 +50,7 @@ namespace UniGLTF
         [Test]
         public void Replace_extensionUsed()
         {
-            var dst = GltfJsonUtil.Update_extensionsUsed(@"{
+            var dst = GltfJsonUtil.FindUsedExtensionsAndUpdateJson(@"{
     ""asset"": {
         ""generator"": ""COLLADA2GLTF"",
         ""version"": ""2.0""

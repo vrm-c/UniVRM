@@ -149,7 +149,7 @@ namespace UniGLTF
 
             var json = f.ToString().ParseAsJson().ToString("  ");
 
-            json = GltfJsonUtil.Update_extensionsUsed(json);
+            json = GltfJsonUtil.FindUsedExtensionsAndUpdateJson(json);
 
             return Glb.Create(json, BinBytes).ToBytes();
         }
@@ -176,7 +176,7 @@ namespace UniGLTF
             GltfSerializer.Serialize(f, GLTF);
             var json = f.ToString().ParseAsJson().ToString("  ");
 
-            json = GltfJsonUtil.Update_extensionsUsed(json);
+            json = GltfJsonUtil.FindUsedExtensionsAndUpdateJson(json);
 
             return (json, GLTF.buffers[0]);
         }

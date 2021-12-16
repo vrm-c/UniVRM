@@ -61,7 +61,7 @@ namespace UniGLTF
         /// </summary>
         /// <param name="src"></param>
         /// <returns></returns>
-        public static string Update_extensionsUsed(string src)
+        public static string FindUsedExtensionsAndUpdateJson(string src)
         {
             var used = new HashSet<string>();
             var parsed = src.ParseAsJson();
