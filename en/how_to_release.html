@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>リリース作業手順 &mdash; UniVRM Programming Document  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+<a href="../ja/how_to_release.html">日本語</a> [English]
+
+            <a href="index.html" class="icon icon-home"> UniVRM Programming Document
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="build.html">Build Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="implementation/index.html">Implementation note</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gltf/index.html">glTF</a></li>
+<li class="toctree-l1"><a class="reference internal" href="unihumanoid/index.html">UniHumanoid</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vrm0/index.html">VRM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vrm1/index.html">VRM-1.0(β)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release/index.html">Release</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">UniVRM Programming Document</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>リリース作業手順</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/vrm-c/UniVRM/blob/master/docs/how_to_release.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="id1">
+<h1>リリース作業手順<a class="headerlink" href="#id1" title="Permalink to this headline"></a></h1>
+<section id="id2">
+<h2>リリース番号を決める。<a class="headerlink" href="#id2" title="Permalink to this headline"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">vX.Y.Z</span></code></p>
+</section>
+<section id="id3">
+<h2>ライブラリのバージョンを上げる<a class="headerlink" href="#id3" title="Permalink to this headline"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">VRM0-development-Version</span> <span class="pre">Dialog</span></code> によりバージョンを上げる。</p>
+<p>branch: <code class="docutils literal notranslate"><span class="pre">version/vX_Y_Z</span></code>
+commit: <code class="docutils literal notranslate"><span class="pre">UniVRM-X.Y.Z</span></code>
+PR
+merge</p>
+</section>
+<section id="unittest">
+<h2>UnitTest をすべて実行する<a class="headerlink" href="#unittest" title="Permalink to this headline"></a></h2>
+<p>all green</p>
+</section>
+<section id="build">
+<h2>Build確認<a class="headerlink" href="#build" title="Permalink to this headline"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">VRM0-development-Dummy</span> <span class="pre">build</span> <span class="pre">for</span> <span class="pre">CI</span></code> により <code class="docutils literal notranslate"><span class="pre">#if</span> <span class="pre">UNITY_EDITOR</span></code> などでビルド時のみに起きるエラーが無いことｗ確認する</p>
+</section>
+<section id="unity-package">
+<h2>unity package 作成<a class="headerlink" href="#unity-package" title="Permalink to this headline"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">VRM0-development-Create</span> <span class="pre">Unity</span> <span class="pre">Package</span></code> により unity package を作成する</p>
+<ul class="simple">
+<li><p>UniVRM</p></li>
+<li><p>UniVRM-Sample</p></li>
+<li><p>VRM</p></li>
+<li><p>VRM-Sample</p></li>
+</ul>
+<p>の４パッケージ</p>
+</section>
+<section id="id4">
+<h2>リポジトリにタグを打つ<a class="headerlink" href="#id4" title="Permalink to this headline"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">vX.Y.Z</span></code></p>
+</section>
+<section id="github-tag-draft">
+<h2>github で tag からリリースを作成して draft で保存する。<a class="headerlink" href="#github-tag-draft" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p>unity package をアップロード</p></li>
+<li><p>unity package の動作確認</p></li>
+<li><p>UPM の動作確認</p></li>
+</ul>
+</section>
+<section id="id5">
+<h2>リリース記事<a class="headerlink" href="#id5" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">/doc/release_gen.py</span></code></p>
+<ul>
+<li><p>release の記事をコピペ</p></li>
+<li><p>sphinx の release 記事が生成されるので、必用であれば手を入れてコミット、push(<code class="docutils literal notranslate"><span class="pre">doc/vX_Y_Z</span></code>: <code class="docutils literal notranslate"><span class="pre">release</span> <span class="pre">vX.Y.Z</span></code>)、merge</p></li>
+</ul>
+</li>
+<li><p>github release を draft から publish</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, VRM Consortium.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
