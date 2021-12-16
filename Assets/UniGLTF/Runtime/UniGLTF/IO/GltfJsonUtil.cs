@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using UniJSON;
 using UnityEngine;
@@ -9,6 +11,8 @@ namespace UniGLTF
 {
     public static class GltfJsonUtil
     {
+        const string EXTENSION_USED_KEY = "extensionUsed";
+
         /// <summary>
         /// JsonPath を 再帰的に列挙する
         /// object[] の中身は int(array index) or string(object key)
@@ -119,18 +123,57 @@ namespace UniGLTF
                 }
             }
 
-            var values = "\"extensionUsed\":[" + string.Join(",", used.Select(x => DoubleQuote(x))) + "]";
-            Debug.Log(values);
-            if (parsed.ContainsKey("extensionUsed"))
+            if (used.Count == 0)
             {
-                // replace
-                src = Regex.Replace(src, @"""extensionUsed""\s*:\s*\[[^\]]+\]", values);
+                // 無いとき
+                if (parsed.ContainsKey(EXTENSION_USED_KEY))
+                {
+                    // 消す
+                    throw new NotImplementedException();
+                }
+                else
+                {
+                    // OK
+                }
             }
             else
             {
-                // add
-                var close = src.LastIndexOf("}");
-                src = src.Substring(0, close) + "," + values + "}";
+                if (parsed.ContainsKey(EXTENSION_USED_KEY))
+                {
+                    var values = "[" + string.Join(",", used.Select(x => DoubleQuote(x))) + "]";
+                    // Debug.Log($"replace: {values}");
+                    // replace
+                    var node = parsed[EXTENSION_USED_KEY];
+
+                    var segment = node.Value.Segment.Bytes;
+                    // arraySegment.Array に JSON 全体
+                    // arraySegment.Offset~Count に extensionUsed 値が入っている
+
+                    // BOM 無し encoder
+                    var utf8 = new UTF8Encoding(false);
+                    var bytes = utf8.GetBytes(values);
+
+                    using (var w = new MemoryStream())
+                    {
+                        // before
+                        w.Write(segment.Array, 0, segment.Offset);
+                        // replace
+                        w.Write(bytes, 0, bytes.Length);
+                        // after
+                        var after = segment.Offset + segment.Count;
+                        w.Write(segment.Array, after, segment.Array.Length - after);
+
+                        src = utf8.GetString(w.ToArray());
+                    }
+                }
+                else
+                {
+                    var values = "\"" + EXTENSION_USED_KEY + "\":[" + string.Join(",", used.Select(x => DoubleQuote(x))) + "]";
+                    // Debug.Log($"add: {values}");
+                    // add
+                    var close = src.LastIndexOf("}");
+                    src = src.Substring(0, close) + "," + values + "}";
+                }
             }
 
             return src;
