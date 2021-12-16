@@ -105,7 +105,7 @@ namespace UniGLTF
             ]
     }
     ],
-    ""extensionUsed"": [""dummy""],
+    ""extensionUsed"": [""dummy""]  ,  
     ""materials"": [
         {
             ""pbrMetallicRoughness"": {
@@ -125,5 +125,43 @@ namespace UniGLTF
             var parsed = dst.ParseAsJson();
             Assert.False(parsed.ContainsKey("extensionUsed"));
         }
+
+        [Test]
+        public void Empty2_extensionUsed()
+        {
+            var dst = GltfJsonUtil.FindUsedExtensionsAndUpdateJson(@"{
+    ""asset"": {
+        ""generator"": ""COLLADA2GLTF"",
+        ""version"": ""2.0""
+    },
+    ""scene"": 0,
+    ""scenes"": [
+        {
+            ""nodes"": [
+                0
+            ]
+    }
+    ],
+    ""materials"": [
+        {
+            ""pbrMetallicRoughness"": {
+                ""baseColorFactor"": [
+                    0.800000011920929,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                ""metallicFactor"": 0.0
+            },
+            ""name"": ""Red""
+        }
+    ],
+    ""extensionUsed"": [""dummy""]
+}");
+
+            var parsed = dst.ParseAsJson();
+            Assert.False(parsed.ContainsKey("extensionUsed"));
+        }
+
     }
 }

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -127,8 +126,52 @@ namespace UniGLTF
                 // 無いとき
                 if (parsed.ContainsKey(EXTENSION_USED_KEY))
                 {
-                    // 消す
-                    throw new NotImplementedException();
+                    foreach (var kv in parsed.ObjectItems())
+                    {
+                        if (kv.Key.GetString() == EXTENSION_USED_KEY)
+                        {
+                            // 削除範囲は
+                            // kv.Key の先頭から kv.Value の後ろ
+                            // kv.Value の次の文字は , か } がありえる。
+                            var begin = kv.Key.Value.Segment.Bytes.Offset;
+                            var end = kv.Value.Value.Segment.Bytes.Offset + kv.Value.Value.Segment.Bytes.Count;
+                            var array = kv.Key.Value.Segment.Bytes.Array;
+                            for (var i = end; i < array.Length; ++i)
+                            {
+                                if (array[i] == ',')
+                                {
+                                    end = i + 1;
+                                    break;
+                                }
+                                else if (array[i] == '}')
+                                {
+                                    // begin 側の , を探す
+                                    for (var j = begin - 1; j >= 0; --j)
+                                    {
+                                        if (array[j] == ',')
+                                        {
+                                            begin = j;
+                                            break;
+                                        }
+                                    }
+                                    end = i;
+                                    break;
+                                }
+                            }
+
+                            using (var w = new MemoryStream())
+                            {
+                                // before
+                                w.Write(array, 0, begin);
+                                // after
+                                w.Write(array, end, array.Length - end);
+
+                                // BOM 無し encoder
+                                var utf8 = new UTF8Encoding(false);
+                                src = utf8.GetString(w.ToArray());
+                            }
+                        }
+                    }
                 }
                 else
                 {
@@ -150,8 +193,8 @@ namespace UniGLTF
 
                     // BOM 無し encoder
                     var utf8 = new UTF8Encoding(false);
-                    var bytes = utf8.GetBytes(values);
 
+                    var bytes = utf8.GetBytes(values);
                     using (var w = new MemoryStream())
                     {
                         // before
