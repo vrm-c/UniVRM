@@ -96,6 +96,84 @@ namespace UniGLTF
             return false;
         }
 
+        static void CopyJson(IReadOnlyList<string> extensionUsed, JsonFormatter dst, JsonNode src, int level)
+        {
+            if (src.IsArray())
+            {
+                dst.BeginList();
+                foreach (var v in src.ArrayItems())
+                {
+                    CopyJson(extensionUsed, dst, v, level + 1);
+                }
+                dst.EndList();
+            }
+            else if (src.IsMap())
+            {
+                if (level == 0)
+                {
+                    // 最上層だけ extensionsUsed の処理をする
+                    var done = false;
+                    dst.BeginMap();
+                    foreach (var kv in src.ObjectItems())
+                    {
+                        var key = kv.Key.GetString();
+                        if (key == EXTENSION_USED_KEY)
+                        {
+                            if (extensionUsed.Count == 0)
+                            {
+                                // skip
+                            }
+                            else
+                            {
+                                dst.Key(key);
+                                // replace
+                                dst.BeginList();
+                                foreach (var ex in extensionUsed)
+                                {
+                                    dst.Value(ex);
+                                }
+                                dst.EndList();
+                                // 処理済
+                            }
+                            done = true;
+                        }
+                        else
+                        {
+                            dst.Key(key);
+                            CopyJson(extensionUsed, dst, kv.Value, level + 1);
+                        }
+                    }
+                    if (!done && level == 0 && extensionUsed.Count > 0)
+                    {
+                        // add
+                        dst.Key(EXTENSION_USED_KEY);
+                        dst.BeginList();
+                        foreach (var ex in extensionUsed)
+                        {
+                            dst.Value(ex);
+                        }
+                        dst.EndList();
+                    }
+                    dst.EndMap();
+                }
+                else
+                {
+                    dst.BeginMap();
+                    foreach (var kv in src.ObjectItems())
+                    {
+                        dst.Key(kv.Key.GetUtf8String());
+                        CopyJson(extensionUsed, dst, kv.Value, level + 1);
+                    }
+                    dst.EndMap();
+                }
+            }
+            else
+            {
+                // leaf
+                dst.Value(src);
+            }
+        }
+
         /// <summary>
         /// https://github.com/KhronosGroup/glTF/blob/main/specification/2.0/schema/glTF.schema.json
         /// 
@@ -121,104 +199,14 @@ namespace UniGLTF
                 }
             }
 
-            if (used.Count == 0)
-            {
-                // 無いとき
-                if (parsed.ContainsKey(EXTENSION_USED_KEY))
-                {
-                    foreach (var kv in parsed.ObjectItems())
-                    {
-                        if (kv.Key.GetString() == EXTENSION_USED_KEY)
-                        {
-                            // 削除範囲は
-                            // kv.Key の先頭から kv.Value の後ろ
-                            // kv.Value の次の文字は , か } がありえる。
-                            var begin = kv.Key.Value.Segment.Bytes.Offset;
-                            var end = kv.Value.Value.Segment.Bytes.Offset + kv.Value.Value.Segment.Bytes.Count;
-                            var array = kv.Key.Value.Segment.Bytes.Array;
-                            for (var i = end; i < array.Length; ++i)
-                            {
-                                if (array[i] == ',')
-                                {
-                                    end = i + 1;
-                                    break;
-                                }
-                                else if (array[i] == '}')
-                                {
-                                    // begin 側の , を探す
-                                    for (var j = begin - 1; j >= 0; --j)
-                                    {
-                                        if (array[j] == ',')
-                                        {
-                                            begin = j;
-                                            break;
-                                        }
-                                    }
-                                    end = i;
-                                    break;
-                                }
-                            }
+            // json 加工
+            var f = new JsonFormatter();
+            CopyJson(used.ToArray(), f, parsed, 0);
 
-                            using (var w = new MemoryStream())
-                            {
-                                // before
-                                w.Write(array, 0, begin);
-                                // after
-                                w.Write(array, end, array.Length - end);
-
-                                // BOM 無し encoder
-                                var utf8 = new UTF8Encoding(false);
-                                src = utf8.GetString(w.ToArray());
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    // OK
-                }
-            }
-            else
-            {
-                if (parsed.ContainsKey(EXTENSION_USED_KEY))
-                {
-                    var values = "[" + string.Join(",", used.Select(x => DoubleQuote(x))) + "]";
-                    // Debug.Log($"replace: {values}");
-                    // replace
-                    var node = parsed[EXTENSION_USED_KEY];
-
-                    var segment = node.Value.Segment.Bytes;
-                    // arraySegment.Array に JSON 全体
-                    // arraySegment.Offset~Count に extensionUsed 値が入っている
-
-                    // BOM 無し encoder
-                    var utf8 = new UTF8Encoding(false);
-
-                    var bytes = utf8.GetBytes(values);
-                    using (var w = new MemoryStream())
-                    {
-                        // before
-                        w.Write(segment.Array, 0, segment.Offset);
-                        // replace
-                        w.Write(bytes, 0, bytes.Length);
-                        // after
-                        var after = segment.Offset + segment.Count;
-                        w.Write(segment.Array, after, segment.Array.Length - after);
-
-                        src = utf8.GetString(w.ToArray());
-                    }
-                }
-                else
-                {
-                    var values = "\"" + EXTENSION_USED_KEY + "\":[" + string.Join(",", used.Select(x => DoubleQuote(x))) + "]";
-                    // Debug.Log($"add: {values}");
-                    // add
-                    var close = src.LastIndexOf("}");
-                    src = src.Substring(0, close) + "," + values + "}";
-                }
-            }
-
-            return src;
+            // bom無しutf8
+            var bytes = f.GetStoreBytes();
+            var utf8 = new UTF8Encoding(false);
+            return utf8.GetString(bytes.Array, bytes.Offset, bytes.Count);
         }
     }
 }
