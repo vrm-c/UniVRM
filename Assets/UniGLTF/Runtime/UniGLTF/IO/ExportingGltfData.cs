@@ -138,66 +138,6 @@ namespace UniGLTF
         #endregion
 
         #region ToGltf & ToGlb
-        static Utf8String s_extensions = Utf8String.From("extensions");
-
-        static bool UsedExtension(glTF self, string key)
-        {
-            if (self.extensionsUsed.Contains(key))
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        static void Traverse(glTF self, JsonNode node, JsonFormatter f, Utf8String parentKey)
-        {
-            if (node.IsMap())
-            {
-                f.BeginMap();
-                foreach (var kv in node.ObjectItems())
-                {
-                    if (parentKey == s_extensions)
-                    {
-                        if (!UsedExtension(self, kv.Key.GetString()))
-                        {
-                            // skip extension not in used
-                            continue;
-                        }
-                    }
-                    f.Key(kv.Key.GetUtf8String());
-                    Traverse(self, kv.Value, f, kv.Key.GetUtf8String());
-                }
-                f.EndMap();
-            }
-            else if (node.IsArray())
-            {
-                f.BeginList();
-                foreach (var x in node.ArrayItems())
-                {
-                    Traverse(self, x, f, default(Utf8String));
-                }
-                f.EndList();
-            }
-            else
-            {
-                f.Value(node);
-            }
-        }
-
-        /// <summary>
-        /// 出力前に不要な extension を削除する
-        /// </summary>
-        /// <param name="self"></param>
-        /// <param name="json"></param>
-        /// <returns></returns>
-        static string RemoveUnusedExtensions(glTF self, string json)
-        {
-            var f = new JsonFormatter();
-            Traverse(self, JsonParser.Parse(json), f, default(Utf8String));
-            return f.ToString();
-        }
-
         /// <summary>
         /// GLBバイト列
         /// </summary>
@@ -207,9 +147,10 @@ namespace UniGLTF
             var f = new JsonFormatter();
             GltfSerializer.Serialize(f, GLTF);
 
-            // remove unused extenions
             var json = f.ToString().ParseAsJson().ToString("  ");
-            RemoveUnusedExtensions(GLTF, json);
+
+            json = GltfJsonUtil.Update_extensionsUsed(json);
+
             return Glb.Create(json, BinBytes).ToBytes();
         }
 
@@ -234,7 +175,9 @@ namespace UniGLTF
             var f = new JsonFormatter();
             GltfSerializer.Serialize(f, GLTF);
             var json = f.ToString().ParseAsJson().ToString("  ");
-            RemoveUnusedExtensions(GLTF, json);
+
+            json = GltfJsonUtil.Update_extensionsUsed(json);
+
             return (json, GLTF.buffers[0]);
         }
         #endregion
