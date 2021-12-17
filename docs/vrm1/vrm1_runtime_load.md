@@ -1,6 +1,6 @@
 # RuntimeLoad
 
-## Runtime Normalization
+## Runtime Normalization (from `v0.92.0`)
 
 `VRM-1.0` は、ノードの `回転・スケールの削除` をしません。
 後方互換性のため、 `RuntimeLoad` 時に動的に `回転・スケールの削除` する機能を提供します。
