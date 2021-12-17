@@ -11,7 +11,7 @@ namespace UniVRM10.VRM10Viewer
 {
     public class VRM10ViewerUI : MonoBehaviour
     {
-        #region UI
+        [Header("UI")]
         [SerializeField]
         Text m_version = default;
 
@@ -29,8 +29,11 @@ namespace UniVRM10.VRM10Viewer
 
         [SerializeField]
         Toggle m_useUrpMaterial = default;
-        #endregion
 
+        [SerializeField]
+        Toggle m_useNormalization = default;
+
+        [Header("Runtime")]
         [SerializeField]
         HumanPoseTransfer m_src = default;
 
@@ -448,7 +451,9 @@ namespace UniVRM10.VRM10Viewer
             if (vrm != null)
             {
                 // vrm
-                using (var loader = new Vrm10Importer(vrm, materialGenerator: GetVrmMaterialDescriptorGenerator(m_useUrpMaterial.isOn)))
+                using (var loader = new Vrm10Importer(vrm, 
+                    materialGenerator: GetVrmMaterialDescriptorGenerator(m_useUrpMaterial.isOn),
+                    doNormalize: m_useNormalization.isOn))
                 {
                     // migrate しても thumbnail は同じ
                     var thumbnail = await loader.LoadVrmThumbnailAsync();
