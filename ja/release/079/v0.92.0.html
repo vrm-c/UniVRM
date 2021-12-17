@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>v0.84.0: 1.0準備, glTF import menu 復活 &mdash; UniVRM Programming Document  ドキュメント</title>
+  <title>v0.92.0: 1.0準備 &mdash; UniVRM Programming Document  ドキュメント</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -19,8 +19,7 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="索引" href="../../genindex.html" />
     <link rel="search" title="検索" href="../../search.html" />
-    <link rel="next" title="v0.85.0: 1.0準備, [0.x]FastSpringBone" href="v0.85.0.html" />
-    <link rel="prev" title="v0.83.0: 1.0準備" href="v0.83.0.html" /> 
+    <link rel="prev" title="v0.91.0: 1.0準備" href="v0.91.0.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -28,7 +27,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-[日本語] <a href="../../../en/release/079/v0.84.0.html">English</a>
+[日本語] <a href="../../../en/release/079/v0.92.0.html">English</a>
 
             <a href="../../index.html" class="icon icon-home"> UniVRM Programming Document
           </a>
@@ -60,7 +59,7 @@
 <li class="toctree-l4"><a class="reference internal" href="v0.81.0.html">v0.81.0: 1.0準備, unitypackage 構成変更</a></li>
 <li class="toctree-l4"><a class="reference internal" href="v0.82.0.html">v0.82.0: 1.0準備, URP 向け Material置き換え機能</a></li>
 <li class="toctree-l4"><a class="reference internal" href="v0.83.0.html">v0.83.0: 1.0準備</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">v0.84.0: 1.0準備, glTF import menu 復活</a></li>
+<li class="toctree-l4"><a class="reference internal" href="v0.84.0.html">v0.84.0: 1.0準備, glTF import menu 復活</a></li>
 <li class="toctree-l4"><a class="reference internal" href="v0.85.0.html">v0.85.0: 1.0準備, [0.x]FastSpringBone</a></li>
 <li class="toctree-l4"><a class="reference internal" href="v0.86.0.html">v0.86.0: 1.0準備, [1.0]FastSpringBone</a></li>
 <li class="toctree-l4"><a class="reference internal" href="v0.87.0.html">v0.87.0: 1.0準備</a></li>
@@ -68,7 +67,7 @@
 <li class="toctree-l4"><a class="reference internal" href="v0.89.0.html">v0.89.0: 1.0準備</a></li>
 <li class="toctree-l4"><a class="reference internal" href="v0.90.0.html">v0.90.0: 1.0準備</a></li>
 <li class="toctree-l4"><a class="reference internal" href="v0.91.0.html">v0.91.0: 1.0準備</a></li>
-<li class="toctree-l4"><a class="reference internal" href="v0.92.0.html">v0.92.0: 1.0準備</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">v0.92.0: 1.0準備</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="index.html#v0-81">パッケージ(v0.81~)</a></li>
@@ -95,9 +94,9 @@
       <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="../index.html">Release</a> &raquo;</li>
           <li><a href="index.html">v0.79～ (Unity-2019.4) 最新版をご利用ください</a> &raquo;</li>
-      <li>v0.84.0: 1.0準備, glTF import menu 復活</li>
+      <li>v0.92.0: 1.0準備</li>
       <li class="wy-breadcrumbs-aside">
-              <a href="https://github.com/vrm-c/UniVRM/blob/master/docs/release/079/v0.84.0.md" class="fa fa-github"> Edit on GitHub</a>
+              <a href="https://github.com/vrm-c/UniVRM/blob/master/docs/release/079/v0.92.0.md" class="fa fa-github"> Edit on GitHub</a>
       </li>
   </ul>
   <hr/>
@@ -105,50 +104,31 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section class="tex2jax_ignore mathjax_ignore" id="v0-84-0-1-0-gltf-import-menu">
-<h1>v0.84.0: 1.0準備, glTF import menu 復活<a class="headerlink" href="#v0-84-0-1-0-gltf-import-menu" title="このヘッドラインへのパーマリンク"></a></h1>
-<section id="v0-84-0-2021-09-22">
-<h2><a class="reference external" href="https://github.com/vrm-c/UniVRM/tree/v0.84.0">v0.84.0</a> (2021-09-22)<a class="headerlink" href="#v0-84-0-2021-09-22" title="このヘッドラインへのパーマリンク"></a></h2>
-<ul class="simple">
-<li><p><a class="reference external" href="https://github.com/vrm-c/UniVRM/releases/tag/v0.84.0">Release</a></p></li>
-<li><p><a class="reference external" href="https://github.com/vrm-c/UniVRM/milestone/46?closed=1">Milestone</a></p></li>
-</ul>
-<p><a class="reference external" href="https://github.com/vrm-c/UniVRM/compare/v0.83.0...v0.84.0">Full Changelog</a></p>
-<ul class="simple">
-<li><p>ScriptedImporterのExtract挙動を FbxImporter の挙動に合わせる <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/1048">#1048</a></p></li>
-</ul>
-</section>
-<section id="gltf">
-<h2>glTF<a class="headerlink" href="#gltf" title="このヘッドラインへのパーマリンク"></a></h2>
-<ul class="simple">
-<li><p>no import menu <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/1162">#1162</a></p></li>
-<li><p>restore UniGLTF/import menu <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1233">#1233</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
-<li><p>URP 未インストール時に、URPを選択できないように修正 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1232">#1232</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
-</ul>
-</section>
+  <section class="tex2jax_ignore mathjax_ignore" id="v0-92-0-1-0">
+<h1>v0.92.0: 1.0準備<a class="headerlink" href="#v0-92-0-1-0" title="このヘッドラインへのパーマリンク"></a></h1>
 <section id="id1">
-<h2>1.0<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク"></a></h2>
+<h2>[1.0] 正規化しない<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク"></a></h2>
 <ul class="simple">
-<li><p>CreateErasedMeshAsync <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/1221">#1221</a></p></li>
-<li><p>Shader error in 'VRM10/MToon10': undeclared identifier 'i' <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/1211">#1211</a></p></li>
-<li><p>Make MToon10's fog work. <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1237">#1237</a> (<a class="reference external" href="https://github.com/Santarh">Santarh</a>)</p></li>
-<li><p>[1.0] TextureTransformBind の Scale/Offset 変換 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1234">#1234</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
-<li><p>[1.0] DefaultExecutionOrder <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1230">#1230</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
-<li><p>[1.0] bone selector(experimental) 【squash merge】 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1228">#1228</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
-<li><p>[1.0] meta の仕様準拠 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1227">#1227</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
-<li><p>[1.0] preview の MaterialUVBindings 動作を修正 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1226">#1226</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
-<li><p>Can not access Mesh on thread <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1223">#1223</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1429">#1429</a>] [1.0][Importer] Import 時の正規化を実装</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1428">#1428</a>] [1.0] Export ダイアログは正規化しない</p></li>
 </ul>
 </section>
-<section id="changelog">
-<h2>その他のChangelog<a class="headerlink" href="#changelog" title="このヘッドラインへのパーマリンク"></a></h2>
+<section id="vrm-0-x">
+<h2>VRM-0.x<a class="headerlink" href="#vrm-0-x" title="このヘッドラインへのパーマリンク"></a></h2>
+<p>meta オブジェクトの置き換え機能の修正。
+シーンインスタンス毎に異なる meta オブジェクトを設定できます。</p>
 <ul class="simple">
-<li><p>UniVRM-0.84.0 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1231">#1231</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
-<li><p>docfx を sphinx に変更 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1224">#1224</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
-<li><p>(Optimize) Profiler.Begin()/End()をMeshImporterに仕込んだ <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1222">#1222</a> (<a class="reference external" href="https://github.com/notargs">notargs</a>)</p></li>
-<li><p>(Optimize) ImporterContextのうち、BuildHierarchyまわりのフレームを分散 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1220">#1220</a> (<a class="reference external" href="https://github.com/notargs">notargs</a>)</p></li>
-<li><p>(Optimize) BuildBlendShape・LoadGeometryAsyncをワーカースレッドでの読み込みに対応 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1219">#1219</a> (<a class="reference external" href="https://github.com/notargs">notargs</a>)</p></li>
-<li><p>LoadTexturesAsync・LoadMaterialsAsyncへのAwaitCallerの受け渡しが漏れていた問題を修正 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1215">#1215</a> (<a class="reference external" href="https://github.com/notargs">notargs</a>)</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1423">#1423</a>] meta の PropertyField に対するオブジェクト置き換えを有効にする</p></li>
+</ul>
+</section>
+<section id="id2">
+<h2>その他<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク"></a></h2>
+<ul class="simple">
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1433">#1433</a>] Fix/exporter extensionused</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1432">#1432</a>] Version/v0 92 0</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1420">#1420</a>] UniVRM-0.91.1</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1419">#1419</a>] Suppress compler warning <code class="docutils literal notranslate"><span class="pre">unreachable</span> <span class="pre">code</span> <span class="pre">detected</span> <span class="pre">warning</span></code> when <code class="docutils literal notranslate"><span class="pre">VRM_DEVELOP</span></code> symbol is undefined.</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1418">#1418</a>] Release v0.91.0</p></li>
 </ul>
 </section>
 </section>
@@ -157,8 +137,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="v0.83.0.html" class="btn btn-neutral float-left" title="v0.83.0: 1.0準備" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="v0.85.0.html" class="btn btn-neutral float-right" title="v0.85.0: 1.0準備, [0.x]FastSpringBone" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="v0.91.0.html" class="btn btn-neutral float-left" title="v0.91.0: 1.0準備" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

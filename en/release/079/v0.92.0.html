@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>v0.89.0: 1.0準備 &mdash; UniVRM Programming Document  documentation</title>
+  <title>v0.92.0: 1.0準備 &mdash; UniVRM Programming Document  documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -18,8 +18,7 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="v0.90.0: 1.0準備" href="v0.90.0.html" />
-    <link rel="prev" title="v0.88.0: Road to 1.0." href="v0.88.0.html" /> 
+    <link rel="prev" title="v0.91.0: 1.0準備" href="v0.91.0.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -27,7 +26,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-<a href="../../../ja/release/079/v0.89.0.html">日本語</a> [English]
+<a href="../../../ja/release/079/v0.92.0.html">日本語</a> [English]
 
             <a href="../../index.html" class="icon icon-home"> UniVRM Programming Document
           </a>
@@ -64,10 +63,10 @@
 <li class="toctree-l4"><a class="reference internal" href="v0.86.0.html">v0.86.0: Road to 1.0. [1.0]FastSpringBone</a></li>
 <li class="toctree-l4"><a class="reference internal" href="v0.87.0.html">v0.87.0: Road to 1.0.</a></li>
 <li class="toctree-l4"><a class="reference internal" href="v0.88.0.html">v0.88.0: Road to 1.0.</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">v0.89.0: 1.0準備</a></li>
+<li class="toctree-l4"><a class="reference internal" href="v0.89.0.html">v0.89.0: 1.0準備</a></li>
 <li class="toctree-l4"><a class="reference internal" href="v0.90.0.html">v0.90.0: 1.0準備</a></li>
 <li class="toctree-l4"><a class="reference internal" href="v0.91.0.html">v0.91.0: 1.0準備</a></li>
-<li class="toctree-l4"><a class="reference internal" href="v0.92.0.html">v0.92.0: 1.0準備</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">v0.92.0: 1.0準備</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="index.html#v0-81">パッケージ(v0.81~)</a></li>
@@ -94,9 +93,9 @@
       <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="../index.html">Release</a> &raquo;</li>
           <li><a href="index.html">v0.79～ (Unity-2019.4) Latest Version</a> &raquo;</li>
-      <li>v0.89.0: 1.0準備</li>
+      <li>v0.92.0: 1.0準備</li>
       <li class="wy-breadcrumbs-aside">
-              <a href="https://github.com/vrm-c/UniVRM/blob/master/docs/release/079/v0.89.0.md" class="fa fa-github"> Edit on GitHub</a>
+              <a href="https://github.com/vrm-c/UniVRM/blob/master/docs/release/079/v0.92.0.md" class="fa fa-github"> Edit on GitHub</a>
       </li>
   </ul>
   <hr/>
@@ -104,49 +103,31 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section class="tex2jax_ignore mathjax_ignore" id="v0-89-0-1-0">
-<h1>v0.89.0: 1.0準備<a class="headerlink" href="#v0-89-0-1-0" title="Permalink to this headline"></a></h1>
-<section id="exporter">
-<h2>exporter<a class="headerlink" href="#exporter" title="Permalink to this headline"></a></h2>
-<p>一部のモデルでエクスポート時に blend shape の法線が乱れる問題を修正しました。</p>
-<ul class="simple">
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1363">#1363</a>] meshを正規化するときに、法線を正規化する</p></li>
-</ul>
+  <section class="tex2jax_ignore mathjax_ignore" id="v0-92-0-1-0">
+<h1>v0.92.0: 1.0準備<a class="headerlink" href="#v0-92-0-1-0" title="Permalink to this headline"></a></h1>
 <section id="id1">
-<h3>発生条件<a class="headerlink" href="#id1" title="Permalink to this headline"></a></h3>
+<h2>[1.0] 正規化しない<a class="headerlink" href="#id1" title="Permalink to this headline"></a></h2>
 <ul class="simple">
-<li><p>正規化する</p></li>
-<li><p>正規化する前のモデルに回転が含まれている(blender由来 の Z-UP Meshなど)</p></li>
-<li><p>法線が正規化されていない({100, 0, 0} などの値)</p>
-<ul>
-<li><p>scale の影響かもしれない</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1429">#1429</a>] [1.0][Importer] Import 時の正規化を実装</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1428">#1428</a>] [1.0] Export ダイアログは正規化しない</p></li>
 </ul>
-</li>
-</ul>
-<p>が組み合わさったときに blend shape の bake 結果が破綻する場合があるようです。</p>
 </section>
-</section>
-<section id="importer">
-<h2>importer<a class="headerlink" href="#importer" title="Permalink to this headline"></a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">v0.88.0</span></code> で <code class="docutils literal notranslate"><span class="pre">GLTF</span></code> のロードが低速化した問題を修正しました。</p>
+<section id="vrm-0-x">
+<h2>VRM-0.x<a class="headerlink" href="#vrm-0-x" title="Permalink to this headline"></a></h2>
+<p>meta オブジェクトの置き換え機能の修正。
+シーンインスタンス毎に異なる meta オブジェクトを設定できます。</p>
 <ul class="simple">
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1362">#1362</a>] glTF 形式の uri アクセスをキャッシュ(たぶん、0.87以前の動作)</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1423">#1423</a>] meta の PropertyField に対するオブジェクト置き換えを有効にする</p></li>
 </ul>
 </section>
 <section id="id2">
-<h2>1.0<a class="headerlink" href="#id2" title="Permalink to this headline"></a></h2>
+<h2>その他<a class="headerlink" href="#id2" title="Permalink to this headline"></a></h2>
 <ul class="simple">
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1365">#1365</a>] [1.0] meta の Editor 仕様に追随</p></li>
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1356">#1356</a>] [1.0] Fix10/firstperson import fallback</p></li>
-</ul>
-</section>
-<section id="other">
-<h2>other<a class="headerlink" href="#other" title="Permalink to this headline"></a></h2>
-<ul class="simple">
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1366">#1366</a>] UniVRM-0.89</p></li>
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1364">#1364</a>] menu that contains “//” is not visible in Unity-2021.2</p></li>
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1358">#1358</a>] download button</p></li>
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1355">#1355</a>] Doc/fix v0 88 0</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1433">#1433</a>] Fix/exporter extensionused</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1432">#1432</a>] Version/v0 92 0</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1420">#1420</a>] UniVRM-0.91.1</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1419">#1419</a>] Suppress compler warning <code class="docutils literal notranslate"><span class="pre">unreachable</span> <span class="pre">code</span> <span class="pre">detected</span> <span class="pre">warning</span></code> when <code class="docutils literal notranslate"><span class="pre">VRM_DEVELOP</span></code> symbol is undefined.</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1418">#1418</a>] Release v0.91.0</p></li>
 </ul>
 </section>
 </section>
@@ -155,8 +136,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="v0.88.0.html" class="btn btn-neutral float-left" title="v0.88.0: Road to 1.0." accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="v0.90.0.html" class="btn btn-neutral float-right" title="v0.90.0: 1.0準備" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="v0.91.0.html" class="btn btn-neutral float-left" title="v0.91.0: 1.0準備" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>
