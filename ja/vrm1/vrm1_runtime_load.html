@@ -48,7 +48,11 @@
 <li class="toctree-l1"><a class="reference internal" href="../unihumanoid/index.html">UniHumanoid</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../vrm0/index.html">VRM</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">VRM-1.0(β)</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">RuntimeLoad</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">RuntimeLoad</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#runtime-normalization-from-v0-92-0">Runtime Normalization (from <code class="docutils literal notranslate"><span class="pre">v0.92.0</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#migration-vrm-0-to-vrm-1">Migration(VRM-0 to VRM-1)</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="vrm1_get_humanoid.html">🚧Humanoid</a></li>
 <li class="toctree-l2"><a class="reference internal" href="vrm1_expression.html">🚧Expression</a></li>
 <li class="toctree-l2"><a class="reference internal" href="vrm1_lookat.html">🚧LookAt</a></li>
@@ -86,6 +90,26 @@
              
   <section class="tex2jax_ignore mathjax_ignore" id="runtimeload">
 <h1>RuntimeLoad<a class="headerlink" href="#runtimeload" title="このヘッドラインへのパーマリンク"></a></h1>
+<section id="runtime-normalization-from-v0-92-0">
+<h2>Runtime Normalization (from <code class="docutils literal notranslate"><span class="pre">v0.92.0</span></code>)<a class="headerlink" href="#runtime-normalization-from-v0-92-0" title="このヘッドラインへのパーマリンク"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">VRM-1.0</span></code> は、ノードの <code class="docutils literal notranslate"><span class="pre">回転・スケールの削除</span></code> をしません。
+後方互換性のため、 <code class="docutils literal notranslate"><span class="pre">RuntimeLoad</span></code> 時に動的に <code class="docutils literal notranslate"><span class="pre">回転・スケールの削除</span></code> する機能を提供します。</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">VRM-0.x</span></code> のエクスポート時の正規化に相当する処理です</p>
+</div></blockquote>
+<p>以下のように doNormalize に true を付与してください。</p>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="p">(</span><span class="kt">var</span> <span class="n">loader</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Vrm10Importer</span><span class="p">(</span><span class="n">vrm</span><span class="p">,</span> 
+    <span class="c1">// normalize option</span>
+    <span class="n">doNormalize</span><span class="p">:</span> <span class="k">true</span><span class="p">))</span>
+<span class="p">{</span>
+    <span class="n">RuntimeGltfInstance</span> <span class="n">instance</span> <span class="p">=</span> <span class="k">await</span> <span class="n">loader</span><span class="p">.</span><span class="n">LoadAsync</span><span class="p">();</span>
+    <span class="k">return</span> <span class="n">instance</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="migration-vrm-0-to-vrm-1">
+<h2>Migration(VRM-0 to VRM-1)<a class="headerlink" href="#migration-vrm-0-to-vrm-1" title="このヘッドラインへのパーマリンク"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">VRM-1.0</span></code> は、 <code class="docutils literal notranslate"><span class="pre">VRM-0.x</span></code> もロードできます。
 その場合、あたらしい meta への変換が発生し互換性の無い部分はすべて <code class="docutils literal notranslate"><span class="pre">不許可</span></code> の値になります。
 このため、変換前のライセンスにアクセスする API を提供します。</p>
@@ -138,6 +162,7 @@
 <span class="p">}</span>
 </pre></div>
 </div>
+</section>
 </section>
 
 
