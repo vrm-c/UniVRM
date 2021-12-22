@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace UniGLTF
 {
@@ -156,7 +157,7 @@ namespace UniGLTF
         {
             var segment = GetBytesFromBuffer(view.buffer);
             var attrib = new T[count];
-            var bytes = new ArraySegment<Byte>(segment.Array, segment.Offset + view.byteOffset + byteOffset, count * view.byteStride);
+            var bytes = new ArraySegment<Byte>(segment.Array, segment.Offset + view.byteOffset + byteOffset, count * Marshal.SizeOf<T>());
             SafeMarshalCopy.CopyBytesToArray(bytes, attrib);
             return attrib;
         }
@@ -288,7 +289,7 @@ namespace UniGLTF
                 var attrib = new float[vertexAccessor.count * vertexAccessor.TypeCount];
                 var view = GLTF.bufferViews[vertexAccessor.bufferView];
                 var segment = GetBytesFromBuffer(view.buffer);
-                var bytes = new ArraySegment<Byte>(segment.Array, segment.Offset + view.byteOffset + vertexAccessor.byteOffset, vertexAccessor.count * view.byteStride);
+                var bytes = new ArraySegment<Byte>(segment.Array, segment.Offset + view.byteOffset + vertexAccessor.byteOffset, vertexAccessor.count * 4 * vertexAccessor.TypeCount);
                 SafeMarshalCopy.CopyBytesToArray(bytes, attrib);
                 result = attrib;
             }
