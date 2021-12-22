@@ -10,7 +10,7 @@ namespace UniGLTF
         Byte[] m_bytes;
         int m_pos;
 
-        public BytesReader(Byte[] bytes, int pos=0)
+        public BytesReader(Byte[] bytes, int pos = 0)
         {
             m_bytes = bytes;
             m_pos = pos;
@@ -63,8 +63,9 @@ namespace UniGLTF
 
         public void ReadToArray<T>(T[] dst) where T : struct
         {
-            var size = new ArraySegment<Byte>(m_bytes, m_pos, m_bytes.Length - m_pos).MarshalCopyTo(dst);
-            m_pos += size;
+            var bytes = new ArraySegment<Byte>(m_bytes, m_pos, m_bytes.Length - m_pos);
+            SafeMarshalCopy.CopyBytesToArray(bytes, dst);
+            m_pos += bytes.Count;
         }
 
         public T ReadStruct<T>() where T : struct

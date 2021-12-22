@@ -89,15 +89,6 @@ namespace UniGLTF
 
     public static class ArrayExtensions
     {
-        public static int MarshalCopyTo<T>(this ArraySegment<byte> src, T[] dst) where T : struct
-        {
-            var size = dst.Length * Marshal.SizeOf(typeof(T));
-            using (var pin = Pin.Create(dst))
-            {
-                Marshal.Copy(src.Array, src.Offset, pin.Ptr, size);
-            }
-            return size;
-        }
 
         public static T[] SelectInplace<T>(this T[] src, Func<T, T> pred)
         {
@@ -106,21 +97,6 @@ namespace UniGLTF
                 src[i] = pred(src[i]);
             }
             return src;
-        }
-
-        public static void Copy<TFrom, TTo>(ArraySegment<TFrom> src, ArraySegment<TTo> dst)
-            where TFrom : struct
-            where TTo : struct
-        {
-            var bytes = new byte[src.Count * Marshal.SizeOf(typeof(TFrom))];
-            using (var pin = Pin.Create(src))
-            {
-                Marshal.Copy(pin.Ptr, bytes, 0, bytes.Length);
-            };
-            using (var pin = Pin.Create(dst))
-            {
-                Marshal.Copy(bytes, 0, pin.Ptr, bytes.Length);
-            };
         }
     }
 
@@ -134,7 +110,7 @@ namespace UniGLTF
     }
 
     public static class ArraySegmentExtensions
-    {       
+    {
         public static ArraySegment<T> Slice<T>(this ArraySegment<T> self, int start, int length)
         {
             if (start + length > self.Count)
@@ -156,6 +132,6 @@ namespace UniGLTF
             }
             return self.Slice(start, self.Count - start);
         }
-       
+
     }
 }

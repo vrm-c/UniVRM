@@ -121,10 +121,7 @@ namespace UniVRM10
             u.m33 = 15;
             Assert.AreEqual(new UnityEngine.Vector4(0, 1, 2, 3), u.GetRow(0));
             var bytes = new Byte[64];
-            using (var pin = Pin.Create(new[] { u }))
-            {
-                Marshal.Copy(pin.Ptr, bytes, 0, 64);
-            }
+            SafeMarshalCopy.CopyArrayToToBytes(new[] { u }, new ArraySegment<byte>(bytes));
             Assert.AreEqual(1.0f, BitConverter.ToSingle(bytes, 16));
         }
 
@@ -149,10 +146,7 @@ namespace UniVRM10
             u.M43 = 14;
             u.M44 = 15;
             var bytes = new Byte[64];
-            using (var pin = Pin.Create(new[] { u }))
-            {
-                Marshal.Copy(pin.Ptr, bytes, 0, 64);
-            }
+            SafeMarshalCopy.CopyArrayToToBytes(new[] { u }, new ArraySegment<byte>(bytes));
             Assert.AreEqual(1.0f, BitConverter.ToSingle(bytes, 4));
         }
 

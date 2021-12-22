@@ -89,30 +89,14 @@ namespace UniGLTF
     {
         public static int FromBytes<T>(this ArraySegment<byte> src, T[] dst) where T : struct
         {
-            var dstSize = dst.Length * Marshal.SizeOf(typeof(T));
-            if (src.Count > dstSize)
-            {
-                throw new ArgumentOutOfRangeException();
-            }
-            using (var pin = ArrayPin.Create(dst))
-            {
-                Marshal.Copy(src.Array, src.Offset, pin.Ptr, src.Count);
-            }
+            SafeMarshalCopy.CopyBytesToArray(src, dst);
             return src.Count;
         }
 
         public static int ToBytes<T>(this T[] src, ArraySegment<byte> dst) where T : struct
         {
-            var srcSize = src.Length * Marshal.SizeOf(typeof(T));
-            if (srcSize > dst.Count)
-            {
-                throw new ArgumentOutOfRangeException();
-            }
-            using (var pin = ArrayPin.Create(src))
-            {
-                Marshal.Copy(pin.Ptr, dst.Array, dst.Offset, srcSize);
-            }
-            return srcSize;
+            SafeMarshalCopy.CopyArrayToToBytes(src, dst);
+            return dst.Count;
         }
     }
 }
