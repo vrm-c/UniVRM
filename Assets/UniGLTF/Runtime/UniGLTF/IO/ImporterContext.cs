@@ -266,7 +266,8 @@ namespace UniGLTF
             if (Data.GLTF.materials == null || Data.GLTF.materials.Count == 0)
             {
                 // no material. work around.
-                var param = MaterialDescriptorGenerator.Get(Data, 0);
+                // TODO: https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#default-material
+                var param = MaterialDescriptor.Default;
                 var material = await MaterialFactory.LoadAsync(param, TextureFactory.GetTextureAsync, awaitCaller);
             }
             else
