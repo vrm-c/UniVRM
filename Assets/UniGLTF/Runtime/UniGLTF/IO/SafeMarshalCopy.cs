@@ -21,7 +21,7 @@ namespace UniGLTF
         /// </summary>
         public static void CopyBytesToArray<T>(ArraySegment<byte> src, T[] dst) where T : struct
         {
-            if (src.Array == null || dst == null)
+            if (src.Array == null || dst == null || src.Count == 0)
             {
                 throw new System.ArgumentNullException();
             }
@@ -50,7 +50,7 @@ namespace UniGLTF
         /// </summary>
         public static void CopyArrayToToBytes<T>(T[] src, ArraySegment<byte> dst) where T : struct
         {
-            if (dst.Array == null || src == null)
+            if (dst.Array == null || src == null || dst.Count == 0)
             {
                 throw new System.ArgumentNullException();
             }
