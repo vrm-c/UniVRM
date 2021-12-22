@@ -36,10 +36,8 @@ namespace VRMShaders
                 case TextureExportTypes.Normal:
                     return PrimaryTexture == other.PrimaryTexture;
                 case TextureExportTypes.OcclusionMetallicRoughness:
-                    var primaryDifference = PrimaryTexture != other.PrimaryTexture ? 1 : 0;
-                    var secondaryDifference = SecondaryTexture != other.SecondaryTexture ? 1 : 0;
-                    var difference = primaryDifference + secondaryDifference;
-                    return difference < 2;
+                    return PrimaryTexture == other.PrimaryTexture &&
+                           SecondaryTexture == other.SecondaryTexture;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
