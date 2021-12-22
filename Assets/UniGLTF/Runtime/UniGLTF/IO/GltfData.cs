@@ -157,7 +157,7 @@ namespace UniGLTF
             var segment = GetBytesFromBuffer(view.buffer);
             var attrib = new T[count];
             var bytes = new ArraySegment<Byte>(segment.Array, segment.Offset + view.byteOffset + byteOffset, count * view.byteStride);
-            bytes.MarshalCopyTo(attrib);
+            SafeMarshalCopy.CopyBytesToArray(bytes, attrib);
             return attrib;
         }
 
@@ -289,7 +289,7 @@ namespace UniGLTF
                 var view = GLTF.bufferViews[vertexAccessor.bufferView];
                 var segment = GetBytesFromBuffer(view.buffer);
                 var bytes = new ArraySegment<Byte>(segment.Array, segment.Offset + view.byteOffset + vertexAccessor.byteOffset, vertexAccessor.count * view.byteStride);
-                bytes.MarshalCopyTo(attrib);
+                SafeMarshalCopy.CopyBytesToArray(bytes, attrib);
                 result = attrib;
             }
             else
