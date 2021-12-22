@@ -17,6 +17,13 @@ namespace VRMShaders
 
         public SubAssetKey SubAssetKey => new SubAssetKey(SubAssetKey.MaterialType, Name);
 
+        public static readonly MaterialDescriptor Default = new MaterialDescriptor("__default__", "Standard", default,
+            new Dictionary<string, TextureDescriptor>(),
+            new Dictionary<string, float>(),
+            new Dictionary<string, Color>(),
+            new Dictionary<string, Vector4>(),
+            new List<Action<Material>>());
+
         public MaterialDescriptor(
             string name,
             string shaderName,
