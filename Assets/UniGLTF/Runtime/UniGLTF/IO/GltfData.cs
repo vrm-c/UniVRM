@@ -329,5 +329,32 @@ namespace UniGLTF
                 return (GetBytesFromUri(image.uri), image.mimeType);
             }
         }
+
+        public bool HasVertexColor(glTFAttributes attributes)
+        {
+            return attributes.COLOR_0 != -1;
+        }
+
+        public bool MaterialHasVertexColor(int materialIndex)
+        {
+            if (materialIndex < 0 || materialIndex >= GLTF.materials.Count)
+            {
+                // index out of range. material not exists
+                return false;
+            }
+
+            foreach (var mesh in GLTF.meshes)
+            {
+                foreach (var prim in mesh.primitives)
+                {
+                    if (HasVertexColor(prim.attributes))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
     }
 }

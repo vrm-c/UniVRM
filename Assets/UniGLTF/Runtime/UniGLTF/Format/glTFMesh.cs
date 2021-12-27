@@ -84,14 +84,6 @@ namespace UniGLTF
         [JsonSchema(Required = true, SkipSchemaComparison = true)]
         public glTFAttributes attributes;
 
-        public bool HasVertexColor
-        {
-            get
-            {
-                return attributes.COLOR_0 != -1;
-            }
-        }
-
         [JsonSchema(Minimum = 0)]
         public int material;
 
