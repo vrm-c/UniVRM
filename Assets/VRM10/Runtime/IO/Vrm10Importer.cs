@@ -587,13 +587,18 @@ namespace UniVRM10
                             {
                                 throw new IndexOutOfRangeException($"{index} > {Nodes.Count}");
                             }
+                            // https://github.com/vrm-c/UniVRM/issues/1441
+                            //
+                            // https://github.com/vrm-c/vrm-specification/blob/master/specification/VRMC_springBone-1.0-beta/schema/VRMC_springBone.joint.schema.json
+                            // に基づきデフォルト値を補う
+
+                            // node is required
                             var joint = Nodes[gltfJoint.Node.Value].gameObject.AddComponent<VRM10SpringBoneJoint>();
-                            joint.m_jointRadius = gltfJoint.HitRadius.Value;
-                            joint.m_dragForce = gltfJoint.DragForce.Value;
-                            joint.m_gravityDir = Vector3InvertX(gltfJoint.GravityDir);
-                            joint.m_gravityPower = gltfJoint.GravityPower.Value;
-                            joint.m_stiffnessForce = gltfJoint.Stiffness.Value;
-                            // joint.m_exclude = gltfJoint.Exclude.GetValueOrDefault();
+                            joint.m_jointRadius = gltfJoint.HitRadius.GetValueOrDefault(0.0f);
+                            joint.m_dragForce = gltfJoint.DragForce.GetValueOrDefault(0.5f);
+                            joint.m_gravityDir = gltfJoint.GravityDir != null ? Vector3InvertX(gltfJoint.GravityDir) : Vector3.down;
+                            joint.m_gravityPower = gltfJoint.GravityPower.GetValueOrDefault(0.0f);
+                            joint.m_stiffnessForce = gltfJoint.Stiffness.GetValueOrDefault(1.0f);
                             spring.Joints.Add(joint);
                         }
                     }
