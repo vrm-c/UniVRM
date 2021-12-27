@@ -364,7 +364,7 @@ namespace UniGLTF
             {
                 foreach (var prim in mesh.primitives)
                 {
-                    if (HasVertexColor(prim.attributes))
+                    if (prim.material == materialIndex && HasVertexColor(prim.attributes))
                     {
                         return true;
                     }
