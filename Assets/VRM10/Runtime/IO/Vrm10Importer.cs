@@ -634,35 +634,14 @@ namespace UniVRM10
                 {
                     var constraint = ext.Constraint;
                     var node = Nodes[i];
-                    if (constraint.Position != null)
-                    {
-                        var p = constraint.Position;
-                        var positionConstraint = node.gameObject.AddComponent<VRM10PositionConstraint>();
-                        positionConstraint.SourceCoordinate = p.SourceSpace;
-                        positionConstraint.Source = Nodes[p.Source.Value];
-                        positionConstraint.DestinationCoordinate = p.DestinationSpace;
-                        positionConstraint.FreezeAxes = FreezeAxis(p.FreezeAxes);
-                        positionConstraint.Weight = p.Weight.Value;
-                        positionConstraint.ModelRoot = Root.transform;
-                    }
-                    else if (constraint.Rotation != null)
+                    if (constraint.Rotation != null)
                     {
                         var r = constraint.Rotation;
                         var rotationConstraint = node.gameObject.AddComponent<VRM10RotationConstraint>();
-                        rotationConstraint.SourceCoordinate = r.SourceSpace;
                         rotationConstraint.Source = Nodes[r.Source.Value];
-                        rotationConstraint.DestinationCoordinate = r.DestinationSpace;
                         rotationConstraint.FreezeAxes = FreezeAxis(r.FreezeAxes);
                         rotationConstraint.Weight = r.Weight.Value;
                         rotationConstraint.ModelRoot = Root.transform;
-                    }
-                    else if (constraint.Aim != null)
-                    {
-                        var a = constraint.Aim;
-                        var aimConstraint = node.gameObject.AddComponent<VRM10AimConstraint>();
-                        aimConstraint.Source = Nodes[a.Source.Value];
-                        // aimConstraint.AimVector = Vector3InvertX(a.AimVector);
-                        // aimConstraint.UpVector = Vector3InvertX(a.UpVector);
                     }
                 }
             }

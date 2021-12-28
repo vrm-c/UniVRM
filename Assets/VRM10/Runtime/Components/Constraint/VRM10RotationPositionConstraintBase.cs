@@ -25,13 +25,6 @@ namespace UniVRM10
             set => m_source = value;
         }
 
-        [SerializeField]
-        ObjectSpace m_sourceCoordinate = default;
-        public ObjectSpace SourceCoordinate
-        {
-            get => m_sourceCoordinate;
-            set => m_sourceCoordinate = value;
-        }
 
         [SerializeField]
         VRM10RotationOffset m_sourceOffset = VRM10RotationOffset.Identity;
@@ -46,14 +39,6 @@ namespace UniVRM10
 
         #region Destination
         [Header("Destination")]
-        [SerializeField]
-        ObjectSpace m_destinationCoordinate = default;
-        public ObjectSpace DestinationCoordinate
-        {
-            get => m_destinationCoordinate;
-            set => m_destinationCoordinate = value;
-        }
-
         [SerializeField]
         public VRM10RotationOffset m_destinationOffset = VRM10RotationOffset.Identity;
 
@@ -71,54 +56,16 @@ namespace UniVRM10
                 throw new ConstraintException(ConstraintException.ExceptionTypes.NoSource);
             }
 
-            switch (SourceCoordinate)
-            {
-                case ObjectSpace.model:
-                    {
-                        if (ModelRoot == null)
-                        {
-                            throw new ConstraintException(ConstraintException.ExceptionTypes.NoModelWithModelSpace);
-                        }
-                        var init = SourceInitialCoords(ObjectSpace.model);
-                        return new TR(init.Rotation * SourceOffset, init.Translation);
-                    }
-
-                case ObjectSpace.local:
-                    {
-                        var init = SourceInitialCoords(ObjectSpace.local);
-                        return new TR(init.Rotation * SourceOffset, init.Translation);
-                    }
-
-                default:
-                    throw new NotImplementedException();
-            }
+            var init = SourceInitialCoords();
+            return new TR(init.Rotation * SourceOffset, init.Translation);
         }
 
         public abstract TR GetSourceCurrent();
 
         public TR GetDstCoords()
         {
-            switch (DestinationCoordinate)
-            {
-                case ObjectSpace.model:
-                    {
-                        if (ModelRoot == null)
-                        {
-                            throw new ConstraintException(ConstraintException.ExceptionTypes.NoModelWithModelSpace);
-                        }
-                        var init = DestinationInitialCoords(ObjectSpace.model);
-                        return new TR(init.Rotation * DestinationOffset, init.Translation);
-                    }
-
-                case ObjectSpace.local:
-                    {
-                        var init = DestinationInitialCoords(ObjectSpace.local);
-                        return new TR(init.Rotation * DestinationOffset, init.Translation);
-                    }
-
-                default:
-                    throw new NotImplementedException();
-            }
+            var init = DestinationInitialCoords();
+            return new TR(init.Rotation * DestinationOffset, init.Translation);
         }
 
         public abstract TR GetDstCurrent();
@@ -151,7 +98,7 @@ namespace UniVRM10
 
         public override void OnProcess()
         {
-            m_delta = m_src.Delta(SourceCoordinate, SourceOffset);
+            m_delta = m_src.Delta(SourceOffset);
             ApplyDelta();
         }
     }

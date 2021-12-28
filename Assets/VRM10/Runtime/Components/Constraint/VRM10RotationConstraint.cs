@@ -34,19 +34,7 @@ namespace UniVRM10
 
         protected override void ApplyDelta()
         {
-            switch (DestinationCoordinate)
-            {
-                case ObjectSpace.local:
-                    m_dst.ApplyLocal(m_dst.LocalInitial * new TR(DestinationOffset) * new TR(Quaternion.Euler(Delta)));
-                    break;
-
-                case ObjectSpace.model:
-                    m_dst.ApplyModel(DestinationInitialCoords(ObjectSpace.model) * new TR(DestinationOffset) * new TR(Quaternion.Euler(Delta)));
-                    break;
-
-                default:
-                    throw new NotImplementedException();
-            }
+            m_dst.ApplyLocal(m_dst.LocalInitial * new TR(DestinationOffset) * new TR(Quaternion.Euler(Delta)));
         }
     }
 }

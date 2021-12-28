@@ -38,35 +38,15 @@ namespace UniVRM10
 
         public ConstraintSource m_src;
 
-
-        protected TR SourceInitialCoords(ObjectSpace space)
+        protected TR SourceInitialCoords()
         {
-            switch (space)
+            if (m_src == null)
             {
-                case ObjectSpace.model:
-                    if (m_src == null)
-                    {
-                        return new TR(ModelRoot.rotation, Source.position);
-                    }
-                    else
-                    {
-                        var r = (TR.FromParent(ModelRoot) * m_src.ModelInitial).Rotation;
-                        var t = (TR.FromParent(Source) * m_src.LocalInitial).Translation;
-                        return new TR(r, t);
-                    }
-
-                case ObjectSpace.local:
-                    if (m_src == null)
-                    {
-                        return TR.FromWorld(Source);
-                    }
-                    else
-                    {
-                        return TR.FromParent(Source) * m_src.LocalInitial;
-                    }
-
-                default:
-                    throw new NotImplementedException();
+                return TR.FromWorld(Source);
+            }
+            else
+            {
+                return TR.FromParent(Source) * m_src.LocalInitial;
             }
         }
         #endregion
@@ -74,34 +54,15 @@ namespace UniVRM10
         #region Destination
         protected ConstraintDestination m_dst;
 
-        protected TR DestinationInitialCoords(ObjectSpace space)
+        protected TR DestinationInitialCoords()
         {
-            switch (space)
+            if (m_dst == null)
             {
-                case ObjectSpace.model:
-                    if (m_dst == null)
-                    {
-                        return new TR(ModelRoot.rotation, transform.position);
-                    }
-                    else
-                    {
-                        var r = (TR.FromParent(ModelRoot) * m_dst.ModelInitial).Rotation;
-                        var t = (TR.FromParent(transform) * m_dst.LocalInitial).Translation;
-                        return new TR(r, t);
-                    }
-
-                case ObjectSpace.local:
-                    if (m_dst == null)
-                    {
-                        return TR.FromWorld(transform);
-                    }
-                    else
-                    {
-                        return TR.FromParent(transform) * m_dst.LocalInitial;
-                    }
-
-                default:
-                    throw new NotImplementedException();
+                return TR.FromWorld(transform);
+            }
+            else
+            {
+                return TR.FromParent(transform) * m_dst.LocalInitial;
             }
         }
         #endregion
