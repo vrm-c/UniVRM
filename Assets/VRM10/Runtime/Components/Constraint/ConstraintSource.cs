@@ -13,15 +13,9 @@ namespace UniVRM10
 
         public readonly TR LocalInitial;
 
-        public TR Delta(ObjectSpace coords, Quaternion sourceRotationOffset)
+        public TR Delta(Quaternion sourceRotationOffset)
         {
-            switch (coords)
-            {
-                // case SourceCoordinates.World: return m_transform.rotation * Quaternion.Inverse(m_initial.Rotation);
-                case ObjectSpace.local: return TR.FromLocal(Source) * (LocalInitial * new TR(sourceRotationOffset)).Inverse();
-                case ObjectSpace.model: return TR.FromWorld(Source) * (TR.FromParent(ModelRoot) * ModelInitial * new TR(sourceRotationOffset)).Inverse();
-                default: throw new NotImplementedException();
-            }
+            return TR.FromLocal(Source) * (LocalInitial * new TR(sourceRotationOffset)).Inverse();
         }
 
         public ConstraintSource(Transform t, Transform modelRoot = null)

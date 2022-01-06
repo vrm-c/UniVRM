@@ -390,16 +390,8 @@ namespace UniVRM10
                 UniGLTF.Extensions.VRMC_node_constraint.VRMC_node_constraint vrmConstraint = default;
                 switch (constraint)
                 {
-                    case VRM10PositionConstraint positionConstraint:
-                        vrmConstraint = ExportPostionConstraint(positionConstraint, model, converter);
-                        break;
-
                     case VRM10RotationConstraint rotationConstraint:
                         vrmConstraint = ExportRotationConstraint(rotationConstraint, model, converter);
-                        break;
-
-                    case VRM10AimConstraint aimConstraint:
-                        vrmConstraint = ExportAimConstraint(aimConstraint, model, converter);
                         break;
 
                     default:
@@ -424,24 +416,6 @@ namespace UniVRM10
             };
         }
 
-        static UniGLTF.Extensions.VRMC_node_constraint.VRMC_node_constraint ExportPostionConstraint(VRM10PositionConstraint c, Model model, ModelExporter converter)
-        {
-            return new UniGLTF.Extensions.VRMC_node_constraint.VRMC_node_constraint
-            {
-                Constraint = new UniGLTF.Extensions.VRMC_node_constraint.Constraint
-                {
-                    Position = new UniGLTF.Extensions.VRMC_node_constraint.PositionConstraint
-                    {
-                        Source = model.Nodes.IndexOf(converter.Nodes[c.Source.gameObject]),
-                        SourceSpace = c.SourceCoordinate,
-                        DestinationSpace = c.DestinationCoordinate,
-                        FreezeAxes = ToArray(c.FreezeAxes),
-                        Weight = c.Weight,
-                    }
-                },
-            };
-        }
-
         static UniGLTF.Extensions.VRMC_node_constraint.VRMC_node_constraint ExportRotationConstraint(VRM10RotationConstraint c, Model model, ModelExporter converter)
         {
             return new UniGLTF.Extensions.VRMC_node_constraint.VRMC_node_constraint
@@ -451,26 +425,7 @@ namespace UniVRM10
                     Rotation = new UniGLTF.Extensions.VRMC_node_constraint.RotationConstraint
                     {
                         Source = model.Nodes.IndexOf(converter.Nodes[c.Source.gameObject]),
-                        SourceSpace = c.SourceCoordinate,
-                        DestinationSpace = c.DestinationCoordinate,
                         FreezeAxes = ToArray(c.FreezeAxes),
-                        Weight = c.Weight,
-                    },
-                },
-            };
-        }
-
-        static UniGLTF.Extensions.VRMC_node_constraint.VRMC_node_constraint ExportAimConstraint(VRM10AimConstraint c, Model model, ModelExporter converter)
-        {
-            return new UniGLTF.Extensions.VRMC_node_constraint.VRMC_node_constraint
-            {
-                Constraint = new UniGLTF.Extensions.VRMC_node_constraint.Constraint
-                {
-                    Aim = new UniGLTF.Extensions.VRMC_node_constraint.AimConstraint
-                    {
-                        Source = model.Nodes.IndexOf(converter.Nodes[c.Source.gameObject]),
-                        // AimVector = ReverseX(c.AimVector),
-                        // UpVector = ReverseX(c.UpVector),
                         Weight = c.Weight,
                     },
                 },

@@ -87,7 +87,6 @@ namespace UniVRM10
                 var sb = new StringBuilder();
                 sb.AppendLine();
                 sb.AppendLine();
-                sb.AppendLine($"source: {m_target.SourceCoordinate}");
                 sb.AppendLine($"{delta.x:0.00}");
                 sb.AppendLine($"{delta.y:0.00}");
                 sb.Append($"{delta.z:0.00}");
@@ -97,7 +96,6 @@ namespace UniVRM10
             // show dst
             {
                 var sb = new StringBuilder();
-                sb.AppendLine($"constraint: {m_target.DestinationCoordinate}");
                 sb.AppendLine(m_target.FreezeAxes.HasFlag(AxisMask.X) ? $"freeze" : $"{delta.x:0.00}");
                 sb.AppendLine(m_target.FreezeAxes.HasFlag(AxisMask.Y) ? $"freeze" : $"{delta.y:0.00}");
                 sb.Append(m_target.FreezeAxes.HasFlag(AxisMask.Z) ? $"freeze" : $"{delta.z:0.00}");
