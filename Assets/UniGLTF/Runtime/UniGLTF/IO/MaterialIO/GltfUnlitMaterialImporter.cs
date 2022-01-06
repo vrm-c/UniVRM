@@ -91,7 +91,7 @@ namespace UniGLTF
                         }
 
                         // VColor
-                        var hasVertexColor = data.GLTF.MaterialHasVertexColor(i);
+                        var hasVertexColor = data.MaterialHasVertexColor(i);
                         if (hasVertexColor)
                         {
                             UniUnlitUtil.SetVColBlendMode(material, UniUnlitVertexColorBlendOp.Multiply);

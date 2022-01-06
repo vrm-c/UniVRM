@@ -81,35 +81,8 @@ namespace UniGLTF
             }
         }
 
-        public bool MaterialHasVertexColor(glTFMaterial material)
-        {
-            if (material == null)
-            {
-                return false;
-            }
-
-            var materialIndex = materials.IndexOf(material);
-            if (materialIndex == -1)
-            {
-                return false;
-            }
-
-            return MaterialHasVertexColor(materialIndex);
-        }
-
         [JsonSchema(MinItems = 1, ExplicitIgnorableItemLength = 0)]
         public List<glTFMesh> meshes = new List<glTFMesh>();
-
-        public bool MaterialHasVertexColor(int materialIndex)
-        {
-            if (materialIndex < 0 || materialIndex >= materials.Count)
-            {
-                return false;
-            }
-
-            var hasVertexColor = meshes.SelectMany(x => x.primitives).Any(x => x.material == materialIndex && x.HasVertexColor);
-            return hasVertexColor;
-        }
 
         [JsonSchema(MinItems = 1, ExplicitIgnorableItemLength = 0)]
         public List<glTFNode> nodes = new List<glTFNode>();

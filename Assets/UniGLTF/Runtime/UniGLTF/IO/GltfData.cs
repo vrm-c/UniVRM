@@ -329,5 +329,49 @@ namespace UniGLTF
                 return (GetBytesFromUri(image.uri), image.mimeType);
             }
         }
+
+        // not black(0, 0, 0, 1)
+        static readonly UnityEngine.Color ZERO = new UnityEngine.Color(0, 0, 0, 0);
+
+        public bool HasVertexColor(glTFAttributes attributes)
+        {
+            if (attributes.COLOR_0 == -1)
+            {
+                return false;
+            }
+
+            var colors = GetArrayFromAccessor<UnityEngine.Color>(attributes.COLOR_0);
+            foreach (var color in colors)
+            {
+                if (color != ZERO)
+                {
+                    return true;
+                }
+            }
+            // すべて (0, 0, 0, 0) だった。使っていないと見做す。
+            return false;
+        }
+
+        public bool MaterialHasVertexColor(int materialIndex)
+        {
+            if (materialIndex < 0 || materialIndex >= GLTF.materials.Count)
+            {
+                // index out of range. material not exists
+                return false;
+            }
+
+            foreach (var mesh in GLTF.meshes)
+            {
+                foreach (var prim in mesh.primitives)
+                {
+                    if (prim.material == materialIndex && HasVertexColor(prim.attributes))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
     }
 }
