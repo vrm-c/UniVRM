@@ -61,4 +61,4 @@ Assets/_Private.meta
 # sphinx build
 public
 *.pyc
-
+.venv
