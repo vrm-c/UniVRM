@@ -12,12 +12,8 @@ jobs:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
     steps:
       - uses: actions/checkout@v1
-      - run: pip install sphinx
-      - run: pip install myst-parser
-      - run: pip install sphinx-rtd-theme
       - run: sudo apt install gettext
-      - run: pip install sphinx-intl
-      - run: pip install gitinclude
+      - run: pip install -r requirements.txt
       - name: sphinx build(ja)
         working-directory: ./docs
         run: sphinx-build . ../public/ja
