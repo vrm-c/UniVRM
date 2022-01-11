@@ -103,5 +103,17 @@ namespace UniVRM10
         {
             Runtime.Dispose();
         }
+
+        private void OnDrawGizmos()
+        {
+            foreach (var spring in SpringBone.Springs)
+            {
+                foreach (var (head, tail) in spring.EnumHeadTail())
+                {
+                    Gizmos.DrawLine(head.transform.position, tail.transform.position);
+                    Gizmos.DrawSphere(tail.transform.position, head.m_jointRadius);
+                }
+            }
+        }
     }
 }
