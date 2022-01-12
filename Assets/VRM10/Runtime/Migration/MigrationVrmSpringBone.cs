@@ -121,20 +121,27 @@ namespace UniVRM10
                 }
                 else
                 {
-                    // https://github.com/vrm-c/vrm-specification/pull/255
-                    // 1.0 では末端に7cmの遠さに joint を追加する動作をしなくなった。
-                    // その差異に対応して、7cmの遠さに node を追加する。
 
-                    // var tail = AddTail7cm(nodes, nodes[spring.Joints.Last().Node])
+                    if (spring != null && spring.Joints.Count > 0)
+                    {
+                        var last = spring.Joints.Last().Node;
+                        if (last.HasValue)
+                        {
+                            var tailJoint = AddTail7cm(last.Value);
+                            spring.Joints.Add(tailJoint);
+                        }
+                    }
                 }
             }
 
-            int AddTail7cm(List<UniGLTF.glTFNode> nodes, UniGLTF.glTFNode last)
+            // https://github.com/vrm-c/vrm-specification/pull/255
+            // 1.0 では末端に7cmの遠さに joint を追加する動作をしなくなった。
+            // その差異に対応して、7cmの遠さに node を追加する。
+            UniGLTF.Extensions.VRMC_springBone.SpringBoneJoint AddTail7cm(int lastIndex)
             {
+                var last = _gltf.nodes[lastIndex];
                 var name = last.name ?? "";
                 var v1 = new UnityEngine.Vector3(last.translation[0], last.translation[1], last.translation[2]);
-                // var last2 = joints[joints.Length - 2];
-                // var v2 = new UnityEngine.Vector3(last2.translation[0], last2.translation[1], last2.translation[2]);
                 var delta = v1.normalized * 0.07f; // 7cm
                 var tail = new UniGLTF.glTFNode
                 {
@@ -145,14 +152,21 @@ namespace UniVRM10
                     delta.z
                 },
                 };
-                var tail_index = nodes.Count;
-                nodes.Add(tail);
+                var tail_index = _gltf.nodes.Count;
+                _gltf.nodes.Add(tail);
                 if (last.children != null && last.children.Length > 0)
                 {
                     throw new System.Exception();
                 }
                 last.children = new[] { tail_index };
-                return tail_index;
+
+                // 1.0 では、head + tail のペアでスプリングを表し、
+                // 揺れ挙動のパラメーターは head の方に入る。
+                // 要するに 末端の joint では Node しか使われない。
+                return new UniGLTF.Extensions.VRMC_springBone.SpringBoneJoint
+                {
+                    Node = tail_index,
+                };
             }
         }
 
