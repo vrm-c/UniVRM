@@ -7,53 +7,122 @@ namespace UniVRM10
 {
     public static class MigrationVrmSpringBone
     {
-        static void CreateJointsRecursive(UniGLTF.Extensions.VRMC_springBone.Spring spring, List<UniGLTF.glTFNode> nodes, UniGLTF.glTFNode node, Func<int, UniGLTF.Extensions.VRMC_springBone.SpringBoneJoint> createJoint)
+        class SpringBoneGroupMigrator
         {
-            spring.Joints.Add(createJoint(nodes.IndexOf(node)));
+            UniGLTF.glTF _gltf;
 
-            if (node.children != null && node.children.Length > 0)
+            string _comment;
+            float _dragForce;
+            float[] _gravityDir;
+            float _gravityPower;
+            float _hitRadius;
+            float _stiffness;
+            int[] _colliderGroups;
+
+            List<UniGLTF.Extensions.VRMC_springBone.Spring> _springs = new List<UniGLTF.Extensions.VRMC_springBone.Spring>();
+            public IReadOnlyList<UniGLTF.Extensions.VRMC_springBone.Spring> Springs => _springs;
+
+            public SpringBoneGroupMigrator(UniGLTF.glTF gltf, JsonNode x)
             {
-                // 先頭の子ノードを追加する
-                CreateJointsRecursive(spring, nodes, nodes[node.children[0]], createJoint);
-                // foreach (var x in TraverseFirstChild(nodes, nodes[node.children[0]]))
-                // {
-                //     yield return x;
-                // }
+                _gltf = gltf;
+
+                _comment = x.GetObjectValueOrDefault("comment", "");
+                _dragForce = x["dragForce"].GetSingle();
+                _gravityDir = MigrateVector3.Migrate(x["gravityDir"]);
+                _gravityPower = x["gravityPower"].GetSingle();
+                _hitRadius = x["hitRadius"].GetSingle();
+                _stiffness = x["stiffiness"].GetSingle();
+                _colliderGroups = x["colliderGroups"].ArrayItems().Select(z => z.GetInt32()).ToArray();
+                if (x.ContainsKey("bones"))
+                {
+                    foreach (var y in x["bones"].ArrayItems())
+                    {
+                        MigrateRootBone(y);
+                    }
+                }
             }
-            else
-            {
-                // https://github.com/vrm-c/vrm-specification/pull/255
-                // 1.0 では末端に7cmの遠さに joint を追加する動作をしなくなった。
-                // その差異に対応して、7cmの遠さに node を追加する。
 
-                // var tail = AddTail7cm(nodes, nodes[spring.Joints.Last().Node])
+            UniGLTF.Extensions.VRMC_springBone.Spring CreateSpring()
+            {
+                var spring = new UniGLTF.Extensions.VRMC_springBone.Spring
+                {
+                    Name = _comment,
+                    ColliderGroups = _colliderGroups,
+                    Joints = new List<UniGLTF.Extensions.VRMC_springBone.SpringBoneJoint>(),
+                };
+                _springs.Add(spring);
+                return spring;
             }
-        }
 
-        static int AddTail7cm(List<UniGLTF.glTFNode> nodes, UniGLTF.glTFNode last)
-        {
-            var name = last.name ?? "";
-            var v1 = new UnityEngine.Vector3(last.translation[0], last.translation[1], last.translation[2]);
-            // var last2 = joints[joints.Length - 2];
-            // var v2 = new UnityEngine.Vector3(last2.translation[0], last2.translation[1], last2.translation[2]);
-            var delta = v1.normalized * 0.07f; // 7cm
-            var tail = new UniGLTF.glTFNode
+            UniGLTF.Extensions.VRMC_springBone.SpringBoneJoint CreateJoint(int node)
             {
-                name = name + "_end",
-                translation = new float[] {
+                return new UniGLTF.Extensions.VRMC_springBone.SpringBoneJoint
+                {
+                    Node = node,
+                    DragForce = _dragForce,
+                    GravityDir = _gravityDir,
+                    GravityPower = _gravityPower,
+                    HitRadius = _hitRadius,
+                    Stiffness = _stiffness,
+                };
+            }
+
+            void MigrateRootBone(JsonNode y)
+            {
+                var rootBoneIndex = y.GetInt32();
+                CreateJointsRecursive(CreateSpring(), _gltf.nodes[rootBoneIndex]);
+            }
+
+            void CreateJointsRecursive(UniGLTF.Extensions.VRMC_springBone.Spring spring, UniGLTF.glTFNode node)
+            {
+                spring.Joints.Add(CreateJoint(_gltf.nodes.IndexOf(node)));
+
+                if (node.children != null && node.children.Length > 0)
+                {
+                    // 先頭の子ノードを追加する
+                    CreateJointsRecursive(spring, _gltf.nodes[node.children[0]]);
+
+                    for (int i = 1; i < node.children.Length; ++i)
+                    {
+                        // ２番目以降の子ノードの子から新しい Spring を作る。
+                        var childIndex = node.children[i];
+                    }
+                }
+                else
+                {
+                    // https://github.com/vrm-c/vrm-specification/pull/255
+                    // 1.0 では末端に7cmの遠さに joint を追加する動作をしなくなった。
+                    // その差異に対応して、7cmの遠さに node を追加する。
+
+                    // var tail = AddTail7cm(nodes, nodes[spring.Joints.Last().Node])
+                }
+            }
+
+            int AddTail7cm(List<UniGLTF.glTFNode> nodes, UniGLTF.glTFNode last)
+            {
+                var name = last.name ?? "";
+                var v1 = new UnityEngine.Vector3(last.translation[0], last.translation[1], last.translation[2]);
+                // var last2 = joints[joints.Length - 2];
+                // var v2 = new UnityEngine.Vector3(last2.translation[0], last2.translation[1], last2.translation[2]);
+                var delta = v1.normalized * 0.07f; // 7cm
+                var tail = new UniGLTF.glTFNode
+                {
+                    name = name + "_end",
+                    translation = new float[] {
                     delta.x,
                     delta.y,
                     delta.z
                 },
-            };
-            var tail_index = nodes.Count;
-            nodes.Add(tail);
-            if (last.children != null && last.children.Length > 0)
-            {
-                throw new System.Exception();
+                };
+                var tail_index = nodes.Count;
+                nodes.Add(tail);
+                if (last.children != null && last.children.Length > 0)
+                {
+                    throw new System.Exception();
+                }
+                last.children = new[] { tail_index };
+                return tail_index;
             }
-            last.children = new[] { tail_index };
-            return tail_index;
         }
 
         /// <summary>
@@ -158,40 +227,8 @@ namespace UniVRM10
                 //     5
                 //   ]
                 // },
-                if (x.ContainsKey("bones"))
-                {
-                    var comment = x.GetObjectValueOrDefault("comment", "");
-                    var dragForce = x["dragForce"].GetSingle();
-                    var gravityDir = MigrateVector3.Migrate(x["gravityDir"]);
-                    var gravityPower = x["gravityPower"].GetSingle();
-                    var hitRadius = x["hitRadius"].GetSingle();
-                    var stiffiness = x["stiffiness"].GetSingle();
-                    foreach (var y in x["bones"].ArrayItems())
-                    {
-                        var rootBone = gltf.nodes[y.GetInt32()];
-
-                        var spring = new UniGLTF.Extensions.VRMC_springBone.Spring
-                        {
-                            Name = comment,
-                            ColliderGroups = x["colliderGroups"].ArrayItems().Select(z => z.GetInt32()).ToArray(),
-                            Joints = new List<UniGLTF.Extensions.VRMC_springBone.SpringBoneJoint>(),
-                        };
-                        springBone.Springs.Add(spring);
-
-                        CreateJointsRecursive(spring, gltf.nodes, rootBone, (int node) =>
-                        {
-                            return new UniGLTF.Extensions.VRMC_springBone.SpringBoneJoint
-                            {
-                                Node = node,
-                                DragForce = dragForce,
-                                GravityDir = gravityDir,
-                                GravityPower = gravityPower,
-                                HitRadius = hitRadius,
-                                Stiffness = stiffiness,
-                            };
-                        });
-                    }
-                }
+                var migrator = new SpringBoneGroupMigrator(gltf, x);
+                springBone.Springs.AddRange(migrator.Springs);
             }
 
             return springBone;
