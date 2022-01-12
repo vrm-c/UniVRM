@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UniJSON;
 
@@ -6,26 +7,31 @@ namespace UniVRM10
 {
     public static class MigrationVrmSpringBone
     {
-        static IEnumerable<UniGLTF.glTFNode> TraverseFirstChild(List<UniGLTF.glTFNode> nodes, UniGLTF.glTFNode node)
+        static void CreateJointsRecursive(UniGLTF.Extensions.VRMC_springBone.Spring spring, List<UniGLTF.glTFNode> nodes, UniGLTF.glTFNode node, Func<int, UniGLTF.Extensions.VRMC_springBone.SpringBoneJoint> createJoint)
         {
-            yield return node;
+            spring.Joints.Add(createJoint(nodes.IndexOf(node)));
 
             if (node.children != null && node.children.Length > 0)
             {
-                foreach (var x in TraverseFirstChild(nodes, nodes[node.children[0]]))
-                {
-                    yield return x;
-                }
+                // 先頭の子ノードを追加する
+                CreateJointsRecursive(spring, nodes, nodes[node.children[0]], createJoint);
+                // foreach (var x in TraverseFirstChild(nodes, nodes[node.children[0]]))
+                // {
+                //     yield return x;
+                // }
+            }
+            else
+            {
+                // https://github.com/vrm-c/vrm-specification/pull/255
+                // 1.0 では末端に7cmの遠さに joint を追加する動作をしなくなった。
+                // その差異に対応して、7cmの遠さに node を追加する。
+
+                // var tail = AddTail7cm(nodes, nodes[spring.Joints.Last().Node])
             }
         }
 
-        static void AddTail7cm(UniGLTF.glTF gltf, UniGLTF.glTFNode[] joints)
+        static int AddTail7cm(List<UniGLTF.glTFNode> nodes, UniGLTF.glTFNode last)
         {
-            if (joints.Length < 2)
-            {
-                return;
-            }
-            var last = joints.Last();
             var name = last.name ?? "";
             var v1 = new UnityEngine.Vector3(last.translation[0], last.translation[1], last.translation[2]);
             // var last2 = joints[joints.Length - 2];
@@ -40,13 +46,14 @@ namespace UniVRM10
                     delta.z
                 },
             };
-            var tail_index = gltf.nodes.Count;
-            gltf.nodes.Add(tail);
+            var tail_index = nodes.Count;
+            nodes.Add(tail);
             if (last.children != null && last.children.Length > 0)
             {
                 throw new System.Exception();
             }
             last.children = new[] { tail_index };
+            return tail_index;
         }
 
         /// <summary>
@@ -124,21 +131,6 @@ namespace UniVRM10
                 springBone.ColliderGroups.Add(colliderGroup);
             }
 
-            // https://github.com/vrm-c/vrm-specification/pull/255
-            // 1.0 では末端に7cmの遠さに joint を追加する動作をしなくなった。
-            // その差異に対応して、7cmの遠さに node を追加する。
-            foreach (var x in sa["boneGroups"].ArrayItems())
-            {
-                if (x.ContainsKey("bones"))
-                {
-                    foreach (var y in x["bones"].ArrayItems())
-                    {
-                        var joints = TraverseFirstChild(gltf.nodes, gltf.nodes[y.GetInt32()]).ToArray();
-                        AddTail7cm(gltf, joints);
-                    }
-                }
-            }
-
             foreach (var x in sa["boneGroups"].ArrayItems())
             {
                 // {
@@ -176,7 +168,7 @@ namespace UniVRM10
                     var stiffiness = x["stiffiness"].GetSingle();
                     foreach (var y in x["bones"].ArrayItems())
                     {
-                        var rootBoneIndex = y.GetInt32();
+                        var rootBone = gltf.nodes[y.GetInt32()];
 
                         var spring = new UniGLTF.Extensions.VRMC_springBone.Spring
                         {
@@ -184,23 +176,20 @@ namespace UniVRM10
                             ColliderGroups = x["colliderGroups"].ArrayItems().Select(z => z.GetInt32()).ToArray(),
                             Joints = new List<UniGLTF.Extensions.VRMC_springBone.SpringBoneJoint>(),
                         };
+                        springBone.Springs.Add(spring);
 
-                        // create joints
-                        foreach (var z in TraverseFirstChild(gltf.nodes, gltf.nodes[rootBoneIndex]))
+                        CreateJointsRecursive(spring, gltf.nodes, rootBone, (int node) =>
                         {
-                            var nodeIndex = gltf.nodes.IndexOf(z);
-                            spring.Joints.Add(new UniGLTF.Extensions.VRMC_springBone.SpringBoneJoint
+                            return new UniGLTF.Extensions.VRMC_springBone.SpringBoneJoint
                             {
-                                Node = nodeIndex,
+                                Node = node,
                                 DragForce = dragForce,
                                 GravityDir = gravityDir,
                                 GravityPower = gravityPower,
                                 HitRadius = hitRadius,
                                 Stiffness = stiffiness,
-                            });
-                        }
-
-                        springBone.Springs.Add(spring);
+                            };
+                        });
                     }
                 }
             }
