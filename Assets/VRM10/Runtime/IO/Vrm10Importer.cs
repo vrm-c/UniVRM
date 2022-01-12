@@ -551,10 +551,13 @@ namespace UniVRM10
                         var colliderGroup = secondary.gameObject.AddComponent<VRM10SpringBoneColliderGroup>();
                         controller.SpringBone.ColliderGroups.Add(colliderGroup);
 
-                        foreach (var c in g.Colliders)
+                        if (g != null && g.Colliders != null)
                         {
-                            var collider = colliders[c];
-                            colliderGroup.Colliders.Add(collider);
+                            foreach (var c in g.Colliders)
+                            {
+                                var collider = colliders[c];
+                                colliderGroup.Colliders.Add(collider);
+                            }
                         }
                     }
                 }
