@@ -26,5 +26,19 @@ namespace UniVRM10
         public static int SelectedGuid;
 
         public bool IsSelected => GetInstanceID() == SelectedGuid;
+
+        private void OnDrawGizmos()
+        {
+            Gizmos.matrix = transform.localToWorldMatrix;
+            switch (ColliderType)
+            {
+                case VRM10SpringBoneColliderTypes.Sphere:
+                    Gizmos.DrawWireSphere(Offset, Radius);
+                    break;
+
+                case VRM10SpringBoneColliderTypes.Capsule:
+                    break;
+            }
+        }
     }
 }

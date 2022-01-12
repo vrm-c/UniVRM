@@ -27,14 +27,5 @@ namespace UniVRM10
 
         [SerializeField, Range(0, 0.5f), Header("Collision")]
         public float m_jointRadius = 0.02f;
-
-        public void DrawGizmo(Transform center, Color color)
-        {
-#if UNITY_EDITOR                
-            // Gizmos.matrix = Transform.localToWorldMatrix;
-            Gizmos.color = color;
-            Gizmos.DrawSphere(transform.position, m_jointRadius);
-#endif
-        }
     }
 }
