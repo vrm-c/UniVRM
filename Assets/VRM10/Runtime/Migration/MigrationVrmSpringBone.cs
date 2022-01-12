@@ -168,9 +168,16 @@ namespace UniVRM10
                 // },
                 if (x.ContainsKey("bones"))
                 {
+                    var comment = x.GetObjectValueOrDefault("comment", "");
+                    var dragForce = x["dragForce"].GetSingle();
+                    var gravityDir = MigrateVector3.Migrate(x["gravityDir"]);
+                    var gravityPower = x["gravityPower"].GetSingle();
+                    var hitRadius = x["hitRadius"].GetSingle();
+                    var stiffiness = x["stiffiness"].GetSingle();
                     foreach (var y in x["bones"].ArrayItems())
                     {
-                        var comment = x.GetObjectValueOrDefault("comment", "");
+                        var rootBoneIndex = y.GetInt32();
+
                         var spring = new UniGLTF.Extensions.VRMC_springBone.Spring
                         {
                             Name = comment,
@@ -178,16 +185,18 @@ namespace UniVRM10
                             Joints = new List<UniGLTF.Extensions.VRMC_springBone.SpringBoneJoint>(),
                         };
 
-                        foreach (var z in TraverseFirstChild(gltf.nodes, gltf.nodes[y.GetInt32()]))
+                        // create joints
+                        foreach (var z in TraverseFirstChild(gltf.nodes, gltf.nodes[rootBoneIndex]))
                         {
+                            var nodeIndex = gltf.nodes.IndexOf(z);
                             spring.Joints.Add(new UniGLTF.Extensions.VRMC_springBone.SpringBoneJoint
                             {
-                                Node = gltf.nodes.IndexOf(z),
-                                DragForce = x["dragForce"].GetSingle(),
-                                GravityDir = MigrateVector3.Migrate(x["gravityDir"]),
-                                GravityPower = x["gravityPower"].GetSingle(),
-                                HitRadius = x["hitRadius"].GetSingle(),
-                                Stiffness = x["stiffiness"].GetSingle(),
+                                Node = nodeIndex,
+                                DragForce = dragForce,
+                                GravityDir = gravityDir,
+                                GravityPower = gravityPower,
+                                HitRadius = hitRadius,
+                                Stiffness = stiffiness,
                             });
                         }
 
