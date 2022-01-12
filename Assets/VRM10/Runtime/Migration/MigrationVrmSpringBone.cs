@@ -70,22 +70,53 @@ namespace UniVRM10
             void MigrateRootBone(JsonNode y)
             {
                 var rootBoneIndex = y.GetInt32();
-                CreateJointsRecursive(CreateSpring(), _gltf.nodes[rootBoneIndex]);
+                if (rootBoneIndex >= 0 && rootBoneIndex < _gltf.nodes.Count)
+                {
+                    // root
+                    CreateJointsRecursive(_gltf.nodes[rootBoneIndex], 1);
+                }
             }
 
-            void CreateJointsRecursive(UniGLTF.Extensions.VRMC_springBone.Spring spring, UniGLTF.glTFNode node)
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <param name="node"></param>
+            /// <param name="level">children[0] のみカウントアップする。その他は0にリセットする</param>
+            /// <param name="spring"></param>
+            void CreateJointsRecursive(UniGLTF.glTFNode node, int level, UniGLTF.Extensions.VRMC_springBone.Spring spring = null)
             {
-                spring.Joints.Add(CreateJoint(_gltf.nodes.IndexOf(node)));
+                if (spring == null && level > 0)
+                {
+                    // ２番目以降の子ノードの子から新しい Spring を作る。
+                    spring = CreateSpring();
+                }
+                if (spring != null)
+                {
+                    // level==0 のとき(２番目以降の兄弟ボーン)は飛ばす
+                    spring.Joints.Add(CreateJoint(_gltf.nodes.IndexOf(node)));
+                }
 
                 if (node.children != null && node.children.Length > 0)
                 {
-                    // 先頭の子ノードを追加する
-                    CreateJointsRecursive(spring, _gltf.nodes[node.children[0]]);
-
-                    for (int i = 1; i < node.children.Length; ++i)
+                    for (int i = 0; i < node.children.Length; ++i)
                     {
-                        // ２番目以降の子ノードの子から新しい Spring を作る。
                         var childIndex = node.children[i];
+                        if (childIndex < 0 || childIndex >= _gltf.nodes.Count)
+                        {
+                            // -1 など？
+                            continue;
+                        }
+
+                        if (i == 0)
+                        {
+                            // spring に joint を追加する
+                            CreateJointsRecursive(_gltf.nodes[childIndex], level + 1, spring);
+                        }
+                        else
+                        {
+                            // 再帰
+                            CreateJointsRecursive(_gltf.nodes[childIndex], 0);
+                        }
                     }
                 }
                 else
