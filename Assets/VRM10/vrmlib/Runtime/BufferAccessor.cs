@@ -122,7 +122,20 @@ namespace VrmLib
             }
             else
             {
-                throw new Exception($"Stride:{Stride}!= sizeof({typeof(T).Name}:{Marshal.SizeOf(typeof(T))}");
+                if (typeof(T) == typeof(SkinJoints) && Stride == 4)
+                {
+                    // 例えば SkinJoints を使う JOINTS_0 は UNSIGNED_BYTE と UNSIGNED_SHORT の２種類がありえる。
+                    fixed (UShort4* p = GetAsUShort4())
+                    {
+                        var nativeArray = new NativeArray<T>(Count, allocator);
+                        UnsafeUtility.MemCpy(nativeArray.GetUnsafePtr(), p, Bytes.Count);
+                        return nativeArray;
+                    }
+                }
+                else
+                {
+                    throw new Exception($"Stride:{Stride}!= sizeof({typeof(T).Name}:{Marshal.SizeOf(typeof(T))}");
+                }
             }
         }
 
