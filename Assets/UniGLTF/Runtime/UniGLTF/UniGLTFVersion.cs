@@ -5,7 +5,7 @@ namespace UniGLTF
     {
         public const int MAJOR = 2;
         public const int MINOR = 29;
-        public const int PATCH = 1;
-        public const string VERSION = "2.29.1";
+        public const int PATCH = 2;
+        public const string VERSION = "2.29.2";
     }
 }
