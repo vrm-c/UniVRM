@@ -22,22 +22,22 @@ namespace UniVRM10
             List<UniGLTF.Extensions.VRMC_springBone.Spring> _springs = new List<UniGLTF.Extensions.VRMC_springBone.Spring>();
             public IReadOnlyList<UniGLTF.Extensions.VRMC_springBone.Spring> Springs => _springs;
 
-            public SpringBoneGroupMigrator(UniGLTF.glTF gltf, JsonNode x)
+            public SpringBoneGroupMigrator(UniGLTF.glTF gltf, JsonNode vrm0BoneGroup)
             {
                 _gltf = gltf;
 
-                _comment = x.GetObjectValueOrDefault("comment", "");
-                _dragForce = x["dragForce"].GetSingle();
-                _gravityDir = MigrateVector3.Migrate(x["gravityDir"]);
-                _gravityPower = x["gravityPower"].GetSingle();
-                _hitRadius = x["hitRadius"].GetSingle();
-                _stiffness = x["stiffiness"].GetSingle();
-                _colliderGroups = x["colliderGroups"].ArrayItems().Select(z => z.GetInt32()).ToArray();
-                if (x.ContainsKey("bones"))
+                _comment = vrm0BoneGroup.GetObjectValueOrDefault("comment", "");
+                _dragForce = vrm0BoneGroup["dragForce"].GetSingle();
+                _gravityDir = MigrateVector3.Migrate(vrm0BoneGroup["gravityDir"]);
+                _gravityPower = vrm0BoneGroup["gravityPower"].GetSingle();
+                _hitRadius = vrm0BoneGroup["hitRadius"].GetSingle();
+                _stiffness = vrm0BoneGroup["stiffiness"].GetSingle();
+                _colliderGroups = vrm0BoneGroup["colliderGroups"].ArrayItems().Select(z => z.GetInt32()).ToArray();
+                if (vrm0BoneGroup.ContainsKey("bones"))
                 {
-                    foreach (var y in x["bones"].ArrayItems())
+                    foreach (var vrm0Bone in vrm0BoneGroup["bones"].ArrayItems())
                     {
-                        MigrateRootBone(y);
+                        MigrateRootBone(vrm0Bone.GetInt32());
                     }
                 }
             }
@@ -67,9 +67,8 @@ namespace UniVRM10
                 };
             }
 
-            void MigrateRootBone(JsonNode y)
+            void MigrateRootBone(int rootBoneIndex)
             {
-                var rootBoneIndex = y.GetInt32();
                 if (rootBoneIndex >= 0 && rootBoneIndex < _gltf.nodes.Count)
                 {
                     // root
@@ -179,9 +178,9 @@ namespace UniVRM10
         /// }
         /// </summary>
         /// <param name="gltf"></param>
-        /// <param name="sa"></param>
+        /// <param name="vrm0"></param>
         /// <returns></returns>
-        public static UniGLTF.Extensions.VRMC_springBone.VRMC_springBone Migrate(UniGLTF.glTF gltf, JsonNode sa)
+        public static UniGLTF.Extensions.VRMC_springBone.VRMC_springBone Migrate(UniGLTF.glTF gltf, JsonNode vrm0)
         {
             var springBone = new UniGLTF.Extensions.VRMC_springBone.VRMC_springBone
             {
@@ -190,7 +189,7 @@ namespace UniVRM10
                 Springs = new List<UniGLTF.Extensions.VRMC_springBone.Spring>(),
             };
 
-            foreach (var x in sa["colliderGroups"].ArrayItems())
+            foreach (var vrm0ColliderGroup in vrm0["colliderGroups"].ArrayItems())
             {
                 // {
                 //   "node": 14,
@@ -222,18 +221,18 @@ namespace UniVRM10
                 //   ]
                 // },
                 var colliders = new List<int>();
-                foreach (var y in x["colliders"].ArrayItems())
+                foreach (var vrm0Collider in vrm0ColliderGroup["colliders"].ArrayItems())
                 {
                     colliders.Add(springBone.Colliders.Count);
                     springBone.Colliders.Add(new UniGLTF.Extensions.VRMC_springBone.Collider
                     {
-                        Node = x["node"].GetInt32(),
+                        Node = vrm0ColliderGroup["node"].GetInt32(),
                         Shape = new UniGLTF.Extensions.VRMC_springBone.ColliderShape
                         {
                             Sphere = new UniGLTF.Extensions.VRMC_springBone.ColliderShapeSphere
                             {
-                                Offset = MigrateVector3.Migrate(y["offset"]),
-                                Radius = y["radius"].GetSingle()
+                                Offset = MigrateVector3.Migrate(vrm0Collider["offset"]),
+                                Radius = vrm0Collider["radius"].GetSingle()
                             }
                         }
                     });
@@ -245,7 +244,7 @@ namespace UniVRM10
                 springBone.ColliderGroups.Add(colliderGroup);
             }
 
-            foreach (var x in sa["boneGroups"].ArrayItems())
+            foreach (var vrm0BoneGroup in vrm0["boneGroups"].ArrayItems())
             {
                 // {
                 //   "comment": "",
@@ -272,7 +271,7 @@ namespace UniVRM10
                 //     5
                 //   ]
                 // },
-                var migrator = new SpringBoneGroupMigrator(gltf, x);
+                var migrator = new SpringBoneGroupMigrator(gltf, vrm0BoneGroup);
                 springBone.Springs.AddRange(migrator.Springs);
             }
 
