@@ -33,10 +33,14 @@ namespace UniVRM10
             switch (ColliderType)
             {
                 case VRM10SpringBoneColliderTypes.Sphere:
+                    Gizmos.color = Color.magenta;
                     Gizmos.DrawWireSphere(Offset, Radius);
                     break;
 
                 case VRM10SpringBoneColliderTypes.Capsule:
+                    Gizmos.color = Color.cyan;
+                    Gizmos.DrawWireSphere(Offset, Radius);
+                    Gizmos.DrawWireSphere(Tail, Radius);
                     break;
             }
         }

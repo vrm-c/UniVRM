@@ -106,12 +106,13 @@ namespace UniVRM10
 
         private void OnDrawGizmos()
         {
+            Gizmos.color = Color.green;
             foreach (var spring in SpringBone.Springs)
             {
                 foreach (var (head, tail) in spring.EnumHeadTail())
                 {
                     Gizmos.DrawLine(head.transform.position, tail.transform.position);
-                    Gizmos.DrawSphere(tail.transform.position, head.m_jointRadius);
+                    Gizmos.DrawWireSphere(tail.transform.position, head.m_jointRadius);
                 }
             }
         }
