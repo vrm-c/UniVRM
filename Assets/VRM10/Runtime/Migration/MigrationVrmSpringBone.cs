@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using UniGLTF.Extensions.VRMC_springBone;
 using UniJSON;
 
 namespace UniVRM10
@@ -19,8 +19,8 @@ namespace UniVRM10
             float _stiffness;
             int[] _colliderGroups;
 
-            List<UniGLTF.Extensions.VRMC_springBone.Spring> _springs = new List<UniGLTF.Extensions.VRMC_springBone.Spring>();
-            public IReadOnlyList<UniGLTF.Extensions.VRMC_springBone.Spring> Springs => _springs;
+            List<Spring> _springs = new List<Spring>();
+            public IReadOnlyList<Spring> Springs => _springs;
 
             public SpringBoneGroupMigrator(UniGLTF.glTF gltf, JsonNode vrm0BoneGroup)
             {
@@ -42,21 +42,21 @@ namespace UniVRM10
                 }
             }
 
-            UniGLTF.Extensions.VRMC_springBone.Spring CreateSpring()
+            Spring CreateSpring()
             {
-                var spring = new UniGLTF.Extensions.VRMC_springBone.Spring
+                var spring = new Spring
                 {
                     Name = _comment,
                     ColliderGroups = _colliderGroups,
-                    Joints = new List<UniGLTF.Extensions.VRMC_springBone.SpringBoneJoint>(),
+                    Joints = new List<SpringBoneJoint>(),
                 };
                 _springs.Add(spring);
                 return spring;
             }
 
-            UniGLTF.Extensions.VRMC_springBone.SpringBoneJoint CreateJoint(int node)
+            SpringBoneJoint CreateJoint(int node)
             {
-                return new UniGLTF.Extensions.VRMC_springBone.SpringBoneJoint
+                return new SpringBoneJoint
                 {
                     Node = node,
                     DragForce = _dragForce,
@@ -82,7 +82,7 @@ namespace UniVRM10
             /// <param name="node"></param>
             /// <param name="level">children[0] のみカウントアップする。その他は0にリセットする</param>
             /// <param name="spring"></param>
-            void CreateJointsRecursive(UniGLTF.glTFNode node, int level, UniGLTF.Extensions.VRMC_springBone.Spring spring = null)
+            void CreateJointsRecursive(UniGLTF.glTFNode node, int level, Spring spring = null)
             {
                 if (spring == null && level > 0)
                 {
@@ -136,7 +136,7 @@ namespace UniVRM10
             // https://github.com/vrm-c/vrm-specification/pull/255
             // 1.0 では末端に7cmの遠さに joint を追加する動作をしなくなった。
             // その差異に対応して、7cmの遠さに node を追加する。
-            UniGLTF.Extensions.VRMC_springBone.SpringBoneJoint AddTail7cm(int lastIndex)
+            SpringBoneJoint AddTail7cm(int lastIndex)
             {
                 var last = _gltf.nodes[lastIndex];
                 var name = last.name ?? "";
@@ -162,7 +162,7 @@ namespace UniVRM10
                 // 1.0 では、head + tail のペアでスプリングを表し、
                 // 揺れ挙動のパラメーターは head の方に入る。
                 // 要するに 末端の joint では Node しか使われない。
-                return new UniGLTF.Extensions.VRMC_springBone.SpringBoneJoint
+                return new SpringBoneJoint
                 {
                     Node = tail_index,
                 };
@@ -180,13 +180,13 @@ namespace UniVRM10
         /// <param name="gltf"></param>
         /// <param name="vrm0"></param>
         /// <returns></returns>
-        public static UniGLTF.Extensions.VRMC_springBone.VRMC_springBone Migrate(UniGLTF.glTF gltf, JsonNode vrm0)
+        public static VRMC_springBone Migrate(UniGLTF.glTF gltf, JsonNode vrm0)
         {
-            var springBone = new UniGLTF.Extensions.VRMC_springBone.VRMC_springBone
+            var springBone = new VRMC_springBone
             {
-                Colliders = new List<UniGLTF.Extensions.VRMC_springBone.Collider>(),
-                ColliderGroups = new List<UniGLTF.Extensions.VRMC_springBone.ColliderGroup>(),
-                Springs = new List<UniGLTF.Extensions.VRMC_springBone.Spring>(),
+                Colliders = new List<Collider>(),
+                ColliderGroups = new List<ColliderGroup>(),
+                Springs = new List<Spring>(),
             };
 
             foreach (var vrm0ColliderGroup in vrm0["colliderGroups"].ArrayItems())
@@ -224,12 +224,12 @@ namespace UniVRM10
                 foreach (var vrm0Collider in vrm0ColliderGroup["colliders"].ArrayItems())
                 {
                     colliders.Add(springBone.Colliders.Count);
-                    springBone.Colliders.Add(new UniGLTF.Extensions.VRMC_springBone.Collider
+                    springBone.Colliders.Add(new Collider
                     {
                         Node = vrm0ColliderGroup["node"].GetInt32(),
-                        Shape = new UniGLTF.Extensions.VRMC_springBone.ColliderShape
+                        Shape = new ColliderShape
                         {
-                            Sphere = new UniGLTF.Extensions.VRMC_springBone.ColliderShapeSphere
+                            Sphere = new ColliderShapeSphere
                             {
                                 Offset = MigrateVector3.Migrate(vrm0Collider["offset"]),
                                 Radius = vrm0Collider["radius"].GetSingle()
@@ -237,7 +237,7 @@ namespace UniVRM10
                         }
                     });
                 }
-                var colliderGroup = new UniGLTF.Extensions.VRMC_springBone.ColliderGroup()
+                var colliderGroup = new ColliderGroup()
                 {
                     Colliders = colliders.ToArray(),
                 };
