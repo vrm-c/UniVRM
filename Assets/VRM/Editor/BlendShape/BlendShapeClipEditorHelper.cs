@@ -21,17 +21,25 @@ namespace VRM
                 var y = position.y;
                 var rect = new Rect(position.x, y, position.width, height);
                 int pathIndex;
-                if (StringPopup(rect, property.FindPropertyRelative("RelativePath"), scene.SkinnedMeshRendererPathList, out pathIndex))
+                var (relChanged, oldIndex) = StringPopup(rect, property.FindPropertyRelative("RelativePath"), scene.SkinnedMeshRendererPathList, out pathIndex);
+                if (relChanged)
                 {
                     changed = true;
                 }
 
                 y += height;
                 rect = new Rect(position.x, y, position.width, height);
-                int blendShapeIndex;
-                if (IntPopup(rect, property.FindPropertyRelative("Index"), scene.GetBlendShapeNames(pathIndex), out blendShapeIndex))
+                if (!relChanged && oldIndex == -1)
                 {
-                    changed = true;
+                    EditorGUI.HelpBox(rect, "renderer not found ! please fix", MessageType.Error);
+                }
+                else
+                {
+                    int blendShapeIndex;
+                    if (IntPopup(rect, property.FindPropertyRelative("Index"), scene.GetBlendShapeNames(pathIndex), out blendShapeIndex))
+                    {
+                        changed = true;
+                    }
                 }
 
                 y += height;
@@ -58,7 +66,7 @@ namespace VRM
                 var y = position.y;
                 var rect = new Rect(position.x, y, position.width, height);
                 int materialIndex;
-                if (StringPopup(rect, property.FindPropertyRelative("MaterialName"), scene.MaterialNames, out materialIndex))
+                if (StringPopup(rect, property.FindPropertyRelative("MaterialName"), scene.MaterialNames, out materialIndex).Item1)
                 {
                     changed = true;
                 }
@@ -73,7 +81,7 @@ namespace VRM
 
                         // プロパティ名のポップアップ
                         int propIndex;
-                        if (StringPopup(rect, property.FindPropertyRelative("ValueName"), materialItem.PropNames, out propIndex))
+                        if (StringPopup(rect, property.FindPropertyRelative("ValueName"), materialItem.PropNames, out propIndex).Item1)
                         {
                             changed = true;
                         }
@@ -122,12 +130,12 @@ namespace VRM
         }
 
         #region Private
-        static bool StringPopup(Rect rect, SerializedProperty prop, string[] options, out int newIndex)
+        static (bool, int?) StringPopup(Rect rect, SerializedProperty prop, string[] options, out int newIndex)
         {
             if (options == null)
             {
                 newIndex = -1;
-                return false;
+                return (false, default);
             }
 
             var oldIndex = Array.IndexOf(options, prop.stringValue);
@@ -135,11 +143,11 @@ namespace VRM
             if (newIndex != oldIndex && newIndex >= 0 && newIndex < options.Length)
             {
                 prop.stringValue = options[newIndex];
-                return true;
+                return (true, oldIndex);
             }
             else
             {
-                return false;
+                return (false, oldIndex);
             }
         }
 
