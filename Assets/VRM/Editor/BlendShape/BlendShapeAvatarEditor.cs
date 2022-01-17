@@ -76,27 +76,27 @@ namespace VRM
 
             m_clipList.onAddCallback += (list) =>
             {
-                // Add slot
-                prop.arraySize++;
-                // select last item
-                list.index = prop.arraySize - 1;
-                // get last item
-                var element = prop.GetArrayElementAtIndex(list.index);
-                element.objectReferenceValue = null;
-
+                // OpenFile dialog, create new BlendShapeClip
                 var dir = Path.GetDirectoryName(AssetDatabase.GetAssetPath(target));
                 var path = EditorUtility.SaveFilePanel(
                                "Create BlendShapeClip",
                                dir,
                                string.Format("BlendShapeClip#{0}.asset", list.count),
                                "asset");
+                BlendShapeClip clip = null;
                 if (!string.IsNullOrEmpty(path))
                 {
-                    var clip = BlendShapeAvatar.CreateBlendShapeClip(path.ToUnityRelativePath());
+                    clip = BlendShapeAvatar.CreateBlendShapeClip(path.ToUnityRelativePath());
                     //clip.Prefab = AssetDatabase.LoadAssetAtPath<GameObject>(AssetDatabase.GetAssetPath(target));
-
-                    element.objectReferenceValue = clip;
                 }
+
+                // Add slot
+                prop.arraySize++;
+                // select last item
+                list.index = prop.arraySize - 1;
+                // get last item
+                var element = prop.GetArrayElementAtIndex(list.index);
+                element.objectReferenceValue = clip;
             };
 
             m_clipList.onSelectCallback += (list) =>
