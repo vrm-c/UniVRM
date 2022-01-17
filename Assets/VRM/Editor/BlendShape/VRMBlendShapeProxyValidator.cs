@@ -59,7 +59,7 @@ namespace VRM
                     var target = p.transform.Find(v.RelativePath);
                     if (target == null)
                     {
-                        yield return Validation.Warning($"{c}.Values[{i}].RelativePath({v.RelativePath} is not found");
+                        yield return Validation.Warning($"{c}.Values[{i}].RelativePath({v.RelativePath}) is not found", ValidationContext.Create(c));
                     }
                 }
 
