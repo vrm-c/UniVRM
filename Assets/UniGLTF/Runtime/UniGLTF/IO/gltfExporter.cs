@@ -68,7 +68,18 @@ namespace UniGLTF
 
         GltfExportSettings m_settings;
 
-        public gltfExporter(ExportingGltfData data, GltfExportSettings settings)
+        IProgress<ExportProgress> m_progress;
+
+        void ReportProgress(string msg, float progress)
+        {
+            if (m_progress == null)
+            {
+                return;
+            }
+            m_progress.Report(new ExportProgress("gltfExporter", msg, progress));
+        }
+
+        public gltfExporter(ExportingGltfData data, GltfExportSettings settings, IProgress<ExportProgress> progress = null)
         {
             _data = data;
 
@@ -113,6 +124,8 @@ namespace UniGLTF
                 // should throw ?
                 Debug.LogError("root mesh is not exported");
             }
+
+            ReportProgress("prepared", 0.1f);
         }
 
         public void Dispose()
@@ -233,6 +246,7 @@ namespace UniGLTF
             uniqueUnityMeshes.GetInfo(Nodes, m_settings);
 
             #region Materials and Textures
+            ReportProgress("Materials and Textures", 0.2f);
             Materials = uniqueUnityMeshes.GetUniqueMaterials().ToList();
 
             _textureExporter = new TextureExporter(textureSerializer);
@@ -242,6 +256,7 @@ namespace UniGLTF
             #endregion
 
             #region Meshes
+            ReportProgress("Meshes", 0.4f);
             MeshBlendShapeIndexMap = new Dictionary<Mesh, Dictionary<int, int>>();
             foreach (var unityMesh in uniqueUnityMeshes)
             {
@@ -265,6 +280,7 @@ namespace UniGLTF
             #endregion
 
             #region Nodes and Skins
+            ReportProgress("Nodes and Skins", 0.8f);
             var skins = uniqueUnityMeshes
                 .SelectMany(x => x.Renderers)
                 .Where(x => x.Item1 is SkinnedMeshRenderer && x.UniqueBones != null)
@@ -314,6 +330,7 @@ namespace UniGLTF
 
 #if UNITY_EDITOR
             #region Animations
+            ReportProgress("Animations", 0.9f);
 
             var clips = new List<AnimationClip>();
             var animator = Copy.GetComponent<Animator>();
