@@ -66,7 +66,7 @@ namespace VrmLib
             switch (t)
             {
                 case AccessorValueType.BYTE: return 1;
-                case AccessorValueType.UNSIGNED_BYTE: return 4;
+                case AccessorValueType.UNSIGNED_BYTE: return 1;
                 case AccessorValueType.SHORT: return 2;
                 case AccessorValueType.UNSIGNED_SHORT: return 2;
                 case AccessorValueType.UNSIGNED_INT: return 4;
@@ -111,11 +111,31 @@ namespace VrmLib
         /// </summary>
         public unsafe NativeArray<T> AsNativeArray<T>(Allocator allocator) where T : struct
         {
-            fixed (byte* byteArray = Bytes.Array)
+            if (Stride == Marshal.SizeOf(typeof(T)))
             {
-                var nativeArray = new NativeArray<T>(Bytes.Count / Marshal.SizeOf<T>(), allocator);
-                UnsafeUtility.MemCpy(nativeArray.GetUnsafePtr(), byteArray + Bytes.Offset, Bytes.Count);
-                return nativeArray;
+                fixed (byte* byteArray = Bytes.Array)
+                {
+                    var nativeArray = new NativeArray<T>(Bytes.Count / Marshal.SizeOf<T>(), allocator);
+                    UnsafeUtility.MemCpy(nativeArray.GetUnsafePtr(), byteArray + Bytes.Offset, Bytes.Count);
+                    return nativeArray;
+                }
+            }
+            else
+            {
+                if (typeof(T) == typeof(SkinJoints) && Stride == 4)
+                {
+                    // 例えば SkinJoints を使う JOINTS_0 は UNSIGNED_BYTE と UNSIGNED_SHORT の２種類がありえる。
+                    fixed (UShort4* p = GetAsUShort4())
+                    {
+                        var nativeArray = new NativeArray<T>(Count, allocator);
+                        UnsafeUtility.MemCpy(nativeArray.GetUnsafePtr(), p, Bytes.Count);
+                        return nativeArray;
+                    }
+                }
+                else
+                {
+                    throw new Exception($"Stride:{Stride}!= sizeof({typeof(T).Name}:{Marshal.SizeOf(typeof(T))}");
+                }
             }
         }
 
