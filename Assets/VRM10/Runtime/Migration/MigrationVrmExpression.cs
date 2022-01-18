@@ -8,12 +8,17 @@ namespace UniVRM10
 {
     public static class MigrationVrmExpression
     {
-        static ExpressionPreset ToPreset(JsonNode json)
+        static ExpressionPreset ToPreset(JsonNode json, string name)
         {
-            switch (json.GetString().ToLower())
+            var src = json.GetString().ToLower();
+            if (src == "unknown")
             {
-                case "unknown": return ExpressionPreset.custom;
+                // fallback
+                src = name.ToLower();
+            }
 
+            switch (src)
+            {
                 // https://github.com/vrm-c/vrm-specification/issues/185
                 case "neutral": return ExpressionPreset.neutral;
 
@@ -39,7 +44,7 @@ namespace UniVRM10
                 case "lookright": return ExpressionPreset.lookRight;
             }
 
-            throw new NotImplementedException();
+            return ExpressionPreset.custom;
         }
 
         static IEnumerable<UniGLTF.Extensions.VRMC_vrm.MorphTargetBind> ToMorphTargetBinds(JsonNode json,
@@ -199,7 +204,7 @@ namespace UniVRM10
                 {
                     isBinary = isBinaryNode.GetBoolean();
                 }
-                var preset = ToPreset(blendShapeClip["presetName"]);
+                var preset = ToPreset(blendShapeClip["presetName"], name);
                 var expression = new UniGLTF.Extensions.VRMC_vrm.Expression
                 {
                     IsBinary = isBinary,
