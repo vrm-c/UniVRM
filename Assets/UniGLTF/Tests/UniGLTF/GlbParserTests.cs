@@ -66,7 +66,7 @@ namespace UniGLTF
             // glb header + 1st chunk only
             var mod = bytes.Take(12 + 8 + data.Chunks[0].Bytes.Count).ToArray();
 
-            Assert.Throws<EndOfStreamException>(() =>
+            Assert.Throws<GlbParseException>(() =>
             {
                 // 再パース
                 var data2 = new GlbBinaryParser(mod, Path.GetFileNameWithoutExtension(path)).Parse();
