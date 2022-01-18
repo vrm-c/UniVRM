@@ -10,6 +10,8 @@ namespace UniVRM10
     /// </summary>
     public static class MigrationVrm
     {
+        const string NEUTRAL_KEY = "Neutral";
+
         public static byte[] Migrate(byte[] src)
         {
             var data = new GlbBinaryParser(src, "migration").Parse();
@@ -40,6 +42,20 @@ namespace UniVRM10
             return MigrateVrm(gltf, bin, data.Json.ParseAsJson()["extensions"]["VRM"]);
         }
 
+        /// <summary>
+        /// dst が null の場合だけ代入する。
+        /// 先に来た方を有効にしたい。
+        /// </summary>
+        /// <param name="dst"></param>
+        /// <param name="src"></param>
+        static void SetIfNull(ref UniGLTF.Extensions.VRMC_vrm.Expression dst, UniGLTF.Extensions.VRMC_vrm.Expression src)
+        {
+            if (dst == null)
+            {
+                dst = src;
+            }
+        }
+
         static byte[] MigrateVrm(glTF gltf, ArraySegment<byte> bin, JsonNode vrm0)
         {
             var meshToNode = CreateMeshToNode(gltf);
@@ -65,25 +81,38 @@ namespace UniVRM10
                     {
                         switch (preset)
                         {
-                            case ExpressionPreset.happy: vrm1.Expressions.Preset.Happy = expression; break;
-                            case ExpressionPreset.angry: vrm1.Expressions.Preset.Angry = expression; break;
-                            case ExpressionPreset.sad: vrm1.Expressions.Preset.Sad = expression; break;
-                            case ExpressionPreset.relaxed: vrm1.Expressions.Preset.Relaxed = expression; break;
-                            case ExpressionPreset.surprised: vrm1.Expressions.Preset.Surprised = expression; break;
-                            case ExpressionPreset.aa: vrm1.Expressions.Preset.Aa = expression; break;
-                            case ExpressionPreset.ih: vrm1.Expressions.Preset.Ih = expression; break;
-                            case ExpressionPreset.ou: vrm1.Expressions.Preset.Ou = expression; break;
-                            case ExpressionPreset.ee: vrm1.Expressions.Preset.Ee = expression; break;
-                            case ExpressionPreset.oh: vrm1.Expressions.Preset.Oh = expression; break;
-                            case ExpressionPreset.blink: vrm1.Expressions.Preset.Blink = expression; break;
-                            case ExpressionPreset.blinkLeft: vrm1.Expressions.Preset.BlinkLeft = expression; break;
-                            case ExpressionPreset.blinkRight: vrm1.Expressions.Preset.BlinkRight = expression; break;
-                            case ExpressionPreset.lookUp: vrm1.Expressions.Preset.LookUp = expression; break;
-                            case ExpressionPreset.lookDown: vrm1.Expressions.Preset.LookDown = expression; break;
-                            case ExpressionPreset.lookLeft: vrm1.Expressions.Preset.LookLeft = expression; break;
-                            case ExpressionPreset.lookRight: vrm1.Expressions.Preset.LookRight = expression; break;
-                            case ExpressionPreset.neutral: vrm1.Expressions.Custom[customName] = expression; break;
-                            case ExpressionPreset.custom: vrm1.Expressions.Custom[customName] = expression; break;
+                            case ExpressionPreset.happy: SetIfNull(ref vrm1.Expressions.Preset.Happy, expression); break;
+                            case ExpressionPreset.angry: SetIfNull(ref vrm1.Expressions.Preset.Angry, expression); break;
+                            case ExpressionPreset.sad: SetIfNull(ref vrm1.Expressions.Preset.Sad, expression); break;
+                            case ExpressionPreset.relaxed: SetIfNull(ref vrm1.Expressions.Preset.Relaxed, expression); break;
+                            case ExpressionPreset.surprised: SetIfNull(ref vrm1.Expressions.Preset.Surprised, expression); break;
+                            case ExpressionPreset.aa: SetIfNull(ref vrm1.Expressions.Preset.Aa, expression); break;
+                            case ExpressionPreset.ih: SetIfNull(ref vrm1.Expressions.Preset.Ih, expression); break;
+                            case ExpressionPreset.ou: SetIfNull(ref vrm1.Expressions.Preset.Ou, expression); break;
+                            case ExpressionPreset.ee: SetIfNull(ref vrm1.Expressions.Preset.Ee, expression); break;
+                            case ExpressionPreset.oh: SetIfNull(ref vrm1.Expressions.Preset.Oh, expression); break;
+                            case ExpressionPreset.blink: SetIfNull(ref vrm1.Expressions.Preset.Blink, expression); break;
+                            case ExpressionPreset.blinkLeft: SetIfNull(ref vrm1.Expressions.Preset.BlinkLeft, expression); break;
+                            case ExpressionPreset.blinkRight: SetIfNull(ref vrm1.Expressions.Preset.BlinkRight, expression); break;
+                            case ExpressionPreset.lookUp: SetIfNull(ref vrm1.Expressions.Preset.LookUp, expression); break;
+                            case ExpressionPreset.lookDown: SetIfNull(ref vrm1.Expressions.Preset.LookDown, expression); break;
+                            case ExpressionPreset.lookLeft: SetIfNull(ref vrm1.Expressions.Preset.LookLeft, expression); break;
+                            case ExpressionPreset.lookRight: SetIfNull(ref vrm1.Expressions.Preset.LookRight, expression); break;
+                            case ExpressionPreset.neutral:
+                                // TODO: 仕様確定待ち
+                                // Presetに格上げするか、小文字にする
+                                vrm1.Expressions.Custom[NEUTRAL_KEY] = expression;
+                                break;
+                            case ExpressionPreset.custom:
+                                if (vrm1.Expressions.Custom.ContainsKey(customName))
+                                {
+                                    // 同名が既存。不採用
+                                }
+                                else
+                                {
+                                    vrm1.Expressions.Custom[customName] = expression;
+                                }
+                                break;
                             default: throw new NotImplementedException();
                         }
                     }

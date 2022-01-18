@@ -8,12 +8,24 @@ namespace UniVRM10
 {
     public static class MigrationVrmExpression
     {
+        /// <summary>
+        /// preset 名の文字列から ExpressionPreset を確定させる。
+        /// 
+        /// 0.x の特殊な挙動として、
+        /// preset名が "unknown" の場合に、
+        /// "name" を preset 名として解釈を試みる。
+        /// </summary>
+        /// <param name="json"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
         static ExpressionPreset ToPreset(JsonNode json, string name)
         {
             var src = json.GetString().ToLowerInvariant();
             if (src == "unknown")
             {
-                // fallback
+                // VRM 0.x では以下の実装が存在した。
+                // Preset が unknown で Name が Joy の表情があったときに
+                // それは Preset が Joy であるとみなしてロードしていた。
                 src = name.ToLowerInvariant();
             }
 
