@@ -144,6 +144,17 @@ namespace UniGLTF
             Assert.True(gltfTextures.SequenceEqual(distinct));
         }
 
+        static bool Exclude(FileInfo f)
+        {
+            // RecursiveSkeletons/glTF-Binary/RecursiveSkeletons.glb
+            if (f.Directory.Parent.Name == "RecursiveSkeletons")
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         [Test]
         public void GltfSampleModelsTests()
         {
@@ -160,6 +171,10 @@ namespace UniGLTF
 
             foreach (var gltf in EnumerateGltfFiles(root))
             {
+                if (Exclude(gltf))
+                {
+                    continue;
+                }
                 RuntimeLoadExport(gltf, root.FullName.Length);
 
                 EditorLoad(gltf, root.FullName.Length);
