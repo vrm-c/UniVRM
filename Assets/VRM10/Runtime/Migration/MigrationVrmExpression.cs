@@ -10,11 +10,11 @@ namespace UniVRM10
     {
         static ExpressionPreset ToPreset(JsonNode json, string name)
         {
-            var src = json.GetString().ToLower();
+            var src = json.GetString().ToLowerInvariant();
             if (src == "unknown")
             {
                 // fallback
-                src = name.ToLower();
+                src = name.ToLowerInvariant();
             }
 
             switch (src)
