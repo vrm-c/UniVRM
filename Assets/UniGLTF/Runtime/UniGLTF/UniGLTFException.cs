@@ -14,4 +14,12 @@ namespace UniGLTF
         public UniGLTFNotSupportedException(string fmt, params object[] args) : this(string.Format(fmt, args)) { }
         public UniGLTFNotSupportedException(string msg) : base(msg) { }
     }
+
+    /// <summary>
+    /// Exception in parse the glb header
+    /// </summary>
+    public class GlbParseException : UniGLTFException
+    {
+        public GlbParseException(string msg) : base(msg) { }
+    }
 }

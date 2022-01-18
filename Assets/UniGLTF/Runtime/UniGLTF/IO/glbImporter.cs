@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using UnityEngine;
 
 
 namespace UniGLTF
@@ -14,7 +13,7 @@ namespace UniGLTF
 
         public static GlbChunkType ToChunkType(this string src)
         {
-            switch(src)
+            switch (src)
             {
                 case "BIN":
                     return GlbChunkType.BIN;
@@ -48,27 +47,33 @@ namespace UniGLTF
 
         public static List<GlbChunk> ParseGlbChunks(Byte[] bytes)
         {
-            if (bytes.Length == 0)
+            //
+            // glb header(12byte)
+            //
+            if (bytes.Length < 12)
             {
-                throw new Exception("empty bytes");
+                throw new GlbParseException("glb header not found");
             }
 
             int pos = 0;
             if (Encoding.ASCII.GetString(bytes, 0, 4) != GLB_MAGIC)
             {
-                throw new Exception("invalid magic");
+                throw new GlbParseException("invalid magic");
             }
             pos += 4;
 
             var version = BitConverter.ToUInt32(bytes, pos);
             if (version != GLB_VERSION)
             {
-                Debug.LogWarningFormat("unknown version: {0}", version);
-                return null;
+                throw new GlbParseException($"unknown version: {version}");
             }
             pos += 4;
 
-            //var totalLength = BitConverter.ToUInt32(bytes, pos);
+            var totalLength = BitConverter.ToUInt32(bytes, pos);
+            if (bytes.Length < totalLength)
+            {
+                throw new GlbParseException($"not enough size: {bytes.Length} < {totalLength}");
+            }
             pos += 4;
 
             var chunks = new List<GlbChunk>();

@@ -24,30 +24,6 @@ namespace UniGLTF
             s.Write(GLB_VERSION, 0, GLB_VERSION.Length);
         }
 
-        public static int TryParse(ArraySegment<Byte> bytes, out int pos, out Exception message)
-        {
-            pos = 0;
-
-            if (!bytes.Slice(0, 4).SequenceEqual(GLB_MAGIC))
-            {
-                message = new FormatException("invalid magic");
-                return 0;
-            }
-            pos += 4;
-
-            if (!bytes.Slice(pos, 4).SequenceEqual(GLB_VERSION))
-            {
-                message = new FormatException("invalid magic");
-                return 0;
-            }
-            pos += 4;
-
-            var totalLength = BitConverter.ToInt32(bytes.Array, bytes.Offset + pos);
-            pos += 4;
-
-            message = null;
-            return totalLength;
-        }
     }
 
     public struct GlbChunk
@@ -217,76 +193,6 @@ namespace UniGLTF
 
                 default:
                     throw new FormatException("unknown chunk type: " + src);
-            }
-        }
-
-        public static Glb Parse(Byte[] bytes)
-        {
-            return Parse(new ArraySegment<byte>(bytes));
-        }
-
-        public static Glb Parse(ArraySegment<Byte> bytes)
-        {
-            if (TryParse(bytes, out Glb glb, out Exception ex))
-            {
-                return glb;
-            }
-            else
-            {
-                throw ex;
-            }
-        }
-
-        public static bool TryParse(Byte[] bytes, out Glb glb, out Exception ex)
-        {
-            return TryParse(new ArraySegment<byte>(bytes), out glb, out ex);
-        }
-
-        public static bool TryParse(ArraySegment<Byte> bytes, out Glb glb, out Exception ex)
-        {
-            glb = default(Glb);
-            if (bytes.Count == 0)
-            {
-                ex = new Exception("empty bytes");
-                return false;
-            }
-
-            var length = GlbHeader.TryParse(bytes, out int pos, out ex);
-            if (length == 0)
-            {
-                return false;
-            }
-            bytes = bytes.Slice(0, length);
-
-            try
-            {
-                var chunks = new List<GlbChunk>();
-                while (pos < bytes.Count)
-                {
-                    var chunkDataSize = BitConverter.ToInt32(bytes.Array, bytes.Offset + pos);
-                    pos += 4;
-
-                    //var type = (GlbChunkType)BitConverter.ToUInt32(bytes, pos);
-                    var chunkTypeBytes = bytes.Slice(pos, 4).Where(x => x != 0).ToArray();
-                    var chunkTypeStr = Encoding.ASCII.GetString(chunkTypeBytes);
-                    pos += 4;
-
-                    chunks.Add(new GlbChunk
-                    {
-                        ChunkTypeString = chunkTypeStr,
-                        Bytes = bytes.Slice(pos, chunkDataSize)
-                    });
-
-                    pos += chunkDataSize;
-                }
-
-                glb = new Glb(chunks[0], chunks[1]);
-                return true;
-            }
-            catch (Exception _ex)
-            {
-                ex = _ex;
-                return false;
             }
         }
     }
